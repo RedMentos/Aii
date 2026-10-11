@@ -1,0 +1,52 @@
+{
+ "stamp": "20261009T134127Z",
+ "mode": "default",
+ "source": "/mnt/project-files/v13/code",
+ "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+ "python": "3.13.16",
+ "units": {
+  "ran": 571,
+  "ok": true,
+  "failed": null
+ },
+ "logs": {
+  "setup": [
+   "    \"teacher_enabled\": false,",
+   "    \"latents_enabled\": false,",
+   "    \"seed\": 13",
+   "  },",
+   "  \"status\": \"SMOKE_PASS\",",
+   "  \"missing_proofs\": [",
+   "    \"sustained thermal/energy\",",
+   "    \"target-phone RSS/KV growth under pressure\",",
+   "    \"native sparse body training\",",
+   "    \"B3 receiver-effect ablations\",",
+   "    \"long-term retention\"",
+   "  ]",
+   "}",
+   "",
+   "Startbereit: /tmp/v13-bench/home/bin/v13 chat"
+  ],
+  "acceptance": [
+   "[11/16] memory-retrieval — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T134927.837083Z/memory-retrieval.json",
+   "  FAIL · MEMORY_RETRIEVAL_PARTIAL",
+   "[12/16] consolidation — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T134927.837083Z/consolidation.json",
+   "  FAIL · CONSOLIDATION_PARTIAL",
+   "[13/16] output-adapter — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T134927.837083Z/output-adapter.json",
+   "  FAIL · OUTPUT_ADAPTER_PARTIAL",
+   "[14/16] a3-student — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T134927.837083Z/a3-student.json",
+   "  PASS · STUDENT_LIFECYCLE_PASS",
+   "[15/16] world-predictor — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T134927.837083Z/world-predictor.json",
+   "  PASS · WORLD_LIFECYCLE_PASS",
+   "[16/16] sustained — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T134927.837083Z/sustained.json",
+   "  PASS · BOUNDED_STABILITY_PASS",
+   "IMPLEMENTED_PATHS_PARTIAL",
+   "Berichte: /tmp/v13-bench/home/exports/acceptance-20261009T134927.837083Z",
+   "Das Ergebnis bewertet die ausgeführten Pfade; offene Canon-Funktionen bleiben offen."
+  ],
+  "candidates": null
+ },
+ "probe": {
+  "status": "SMOKE_PASS"
+ }
+}

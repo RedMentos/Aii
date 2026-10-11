@@ -1,0 +1,238 @@
+{
+ "schema_version": "1.0",
+ "runner": {
+  "tag": "b10964",
+  "source_revision": "b29c606e2",
+  "source_url": "https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz",
+  "source_sha256": "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe",
+  "linux_binaries": {
+   "linux-x86_64": {
+    "url": "https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz",
+    "size": 16825086,
+    "sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
+   },
+   "linux-arm64": {
+    "url": "https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-arm64.tar.gz",
+    "size": 13451337,
+    "sha256": "5f0e9c95d970892e43380f82ebcab960edfd20a1cd0f7abffa13b29fdb924949"
+   }
+  },
+  "source_size": 37420323
+ },
+ "models": {
+  "language": {
+   "model_id": "LiquidAI/LFM2.5-350M-GGUF",
+   "revision": "657e078c94084481950a2d555a941481f715536b",
+   "license_id": "LFM Open License 1.0",
+   "license_url": "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/blob/657e078c94084481950a2d555a941481f715536b/LICENSE",
+   "quant_format": "QAD_Q4_0",
+   "main_file": "LFM2.5-350M-QAD-Q4_0.gguf",
+   "files": [
+    {
+     "local_name": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "upstream_path": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "size": 219312832,
+     "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+     "url": "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/LFM2.5-350M-QAD-Q4_0.gguf"
+    }
+   ],
+   "selection": "WP-KAL2 2026-10-09: C3 switched from LFM2.5-230M after cloud measurements (bench-results/KALIBRIERUNG.md, Runde 2): STEP2 B1+B2 exact .58 vs .37, AG12 exact with anti-echo .55 vs .12; +70 MB file, ~40 % slower decode; Redmi RSS/latency unmeasured (WP-R). LoRA/adapters on the 230M must be redistilled.",
+   "previous": {
+    "model_id": "LiquidAI/LFM2.5-230M-GGUF",
+    "revision": "cdf97bd8205908758f44aec508d68ac1aef98f5c",
+    "main_file": "LFM2.5-230M-QAD-Q4_0.gguf",
+    "files": [
+     {
+      "local_name": "LFM2.5-230M-QAD-Q4_0.gguf",
+      "upstream_path": "LFM2.5-230M-QAD-Q4_0.gguf",
+      "size": 149081056,
+      "sha256": "e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292",
+      "url": "https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF/resolve/cdf97bd8205908758f44aec508d68ac1aef98f5c/LFM2.5-230M-QAD-Q4_0.gguf"
+     }
+    ]
+   }
+  },
+  "body": {
+   "model_id": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+   "revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "license_id": "LFM Open License 1.0",
+   "license_url": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/6767265158422fb8a19c62ceb45f16f05363615b/LICENSE",
+   "quant_format": "QAD_Q4_0",
+   "main_file": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+   "files": [
+    {
+     "local_name": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "upstream_path": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "size": 695755488,
+     "sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+     "url": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/resolve/6767265158422fb8a19c62ceb45f16f05363615b/LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf"
+    }
+   ]
+  },
+  "needle": {
+   "model_id": "Cactus-Compute/needle3",
+   "revision": "b274efcb211a9eef48c9a88da4b43bd569696a39",
+   "license_id": "Apache-2.0",
+   "license_url": "https://huggingface.co/Cactus-Compute/needle3/blob/b274efcb211a9eef48c9a88da4b43bd569696a39/LICENSE",
+   "quant_format": "CQ2",
+   "main_file": "needle3.cact",
+   "files": [
+    {
+     "local_name": "needle3.cact",
+     "upstream_path": "needle3.cact",
+     "size": 35335380,
+     "sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38",
+     "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/needle3.cact"
+    }
+   ],
+   "platforms": {
+    "android-arm64": [
+     {
+      "local_name": "libneedle.a",
+      "upstream_path": "android-arm64/libneedle.a",
+      "size": 1663992,
+      "sha256": "5e0a5daaadca1fbe1c518110bee6bbb1cc97a5e53a16a1e964d0af0186eac60a",
+      "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/android-arm64/libneedle.a"
+     },
+     {
+      "local_name": "needle.h",
+      "upstream_path": "android-arm64/needle.h",
+      "size": 1187,
+      "sha256": "3aa713942528d944598458cecb4a262f2cc49349bec63355f91df0b159964e55",
+      "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/android-arm64/needle.h"
+     },
+     {
+      "local_name": "needle",
+      "upstream_path": "android-arm64/needle",
+      "size": 1190952,
+      "sha256": "c428e1bd279cdfc6eb49fd1d5149591bc8fd3ae174302e29b6ad16cd03cacd7f",
+      "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/android-arm64/needle"
+     }
+    ],
+    "linux-x86_64": [
+     {
+      "local_name": "libneedle.a",
+      "upstream_path": "linux-x86_64/libneedle.a",
+      "size": 1675104,
+      "sha256": "2581e7d46acd4f66c5839bcfb06b0af11c157c8775636875beb0af5ca35ded54",
+      "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/linux-x86_64/libneedle.a"
+     },
+     {
+      "local_name": "needle.h",
+      "upstream_path": "linux-x86_64/needle.h",
+      "size": 1187,
+      "sha256": "3aa713942528d944598458cecb4a262f2cc49349bec63355f91df0b159964e55",
+      "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/linux-x86_64/needle.h"
+     },
+     {
+      "local_name": "needle",
+      "upstream_path": "linux-x86_64/needle",
+      "size": 1246880,
+      "sha256": "5eb163c5ed33bd914c103ef8eba2134c7bb2d97bafafdd69f410a4a3100e8c37",
+      "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/linux-x86_64/needle"
+     }
+    ],
+    "linux-arm64": [
+     {
+      "local_name": "libneedle.a",
+      "upstream_path": "linux-arm64/libneedle.a",
+      "size": 1539978,
+      "sha256": "b36c214437b5230bae89291f684de571dceb0922834a09ceeb09a8e21464a481",
+      "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/linux-arm64/libneedle.a"
+     },
+     {
+      "local_name": "needle.h",
+      "upstream_path": "linux-arm64/needle.h",
+      "size": 1187,
+      "sha256": "3aa713942528d944598458cecb4a262f2cc49349bec63355f91df0b159964e55",
+      "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/linux-arm64/needle.h"
+     },
+     {
+      "local_name": "needle",
+      "upstream_path": "linux-arm64/needle",
+      "size": 1166664,
+      "sha256": "b8d20caa7b8412c5900e05cf23d7a30dd84b7b89357d5408df30246ea9c808a6",
+      "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/linux-arm64/needle"
+     }
+    ]
+   },
+   "wheels": {
+    "linux-x86_64": {
+     "local_name": "cactus_needle-3.0.1-py3-none-manylinux2014_x86_64.whl",
+     "upstream_path": "python/cactus_needle-3.0.1-py3-none-manylinux2014_x86_64.whl",
+     "size": 536871,
+     "sha256": "05770ef9a85686583968ea15f62f9ad44217e078efdaa99559d3208bb8a369b0",
+     "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/python/cactus_needle-3.0.1-py3-none-manylinux2014_x86_64.whl"
+    },
+    "linux-arm64": {
+     "local_name": "cactus_needle-3.0.1-py3-none-manylinux2014_aarch64.whl",
+     "upstream_path": "python/cactus_needle-3.0.1-py3-none-manylinux2014_aarch64.whl",
+     "size": 517746,
+     "sha256": "fc0c550b64627ed20101d1ac6de736bf0d15fb592d649f24bacba4e7340fc3df",
+     "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/b274efcb211a9eef48c9a88da4b43bd569696a39/python/cactus_needle-3.0.1-py3-none-manylinux2014_aarch64.whl"
+    }
+   }
+  },
+  "gist": {
+   "model_id": "ggml-org/Qwen3.5-0.8B-GGUF",
+   "revision": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "license_id": "Apache-2.0",
+   "license_url": "https://huggingface.co/Qwen/Qwen3.5-0.8B",
+   "quant_format": "Q4_0",
+   "main_file": "Qwen3.5-0.8B-Q4_0.gguf",
+   "selection": "WP-V4 user decision 2026-10-09: B1 and B2 are different bodies; B2 = research pick (research/FORSCHUNG.md), unmeasured on Redmi",
+   "files": [
+    {
+     "local_name": "Qwen3.5-0.8B-Q4_0.gguf",
+     "upstream_path": "Qwen3.5-0.8B-Q4_0.gguf",
+     "size": 563036064,
+     "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+     "url": "https://huggingface.co/ggml-org/Qwen3.5-0.8B-GGUF/resolve/8fea620810c4afa23dd6443f999a48574c1611a3/Qwen3.5-0.8B-Q4_0.gguf"
+    }
+   ]
+  },
+  "embedding": {
+   "model_id": "ggml-org/embeddinggemma-300M-GGUF",
+   "revision": "0f741b5a6585bd53aeb15cd1372c56f2a0f65e12",
+   "license_id": "Gemma",
+   "license_url": "https://ai.google.dev/gemma/terms",
+   "quant_format": "Q8_0",
+   "main_file": "embeddinggemma-300M-Q8_0.gguf",
+   "selection": "WP-H/WP-S2 2026-10-09: STEP3 semantic memory key encoder (cloud candidates 8/8 EN+DE paraphrase triples); optional, installed only by ':download embedding'; Redmi RSS unmeasured",
+   "files": [
+    {
+     "local_name": "embeddinggemma-300M-Q8_0.gguf",
+     "upstream_path": "embeddinggemma-300M-Q8_0.gguf",
+     "size": 333590944,
+     "sha256": "b5ce9d77a3fc4b3b39ccb5643c36777911cc4eb46a66962eadfa3f5f60490d63",
+     "url": "https://huggingface.co/ggml-org/embeddinggemma-300M-GGUF/resolve/0f741b5a6585bd53aeb15cd1372c56f2a0f65e12/embeddinggemma-300M-Q8_0.gguf"
+    }
+   ]
+  },
+  "vision": {
+   "model_id": "LiquidAI/LFM2.5-VL-450M-GGUF",
+   "revision": "1abed04b6fe71314d8c446a1371c03d7c332266d",
+   "license_id": "LFM Open License 1.0",
+   "license_url": "https://huggingface.co/LiquidAI/LFM2.5-VL-450M-GGUF/blob/1abed04b6fe71314d8c446a1371c03d7c332266d/LICENSE",
+   "quant_format": "Q4_0 + mmproj Q8_0",
+   "main_file": "LFM2.5-VL-450M-Q4_0.gguf",
+   "selection": "WP-N15 2026-10-10: frozen TEACHER EYE for the vision lab (llama-mtmd-cli --mmproj); captions are REFERENCE_NOT_FACT; optional, installed only by ':download vision'; cloud ~14 s/image cold, Redmi RSS unmeasured",
+   "files": [
+    {
+     "local_name": "LFM2.5-VL-450M-Q4_0.gguf",
+     "upstream_path": "LFM2.5-VL-450M-Q4_0.gguf",
+     "size": 219311264,
+     "sha256": "6d2757dd0f0b98aea7dc90477bb5b3a0df1089be85ef92943f8cecb05121ccbf",
+     "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-450M-GGUF/resolve/1abed04b6fe71314d8c446a1371c03d7c332266d/LFM2.5-VL-450M-Q4_0.gguf"
+    },
+    {
+     "local_name": "mmproj-LFM2.5-VL-450m-Q8_0.gguf",
+     "upstream_path": "mmproj-LFM2.5-VL-450m-Q8_0.gguf",
+     "size": 102815168,
+     "sha256": "ebfc428baa37efad8bae93864f914b2634a09009f91ad59f974fe1a1565d8561",
+     "url": "https://huggingface.co/LiquidAI/LFM2.5-VL-450M-GGUF/resolve/1abed04b6fe71314d8c446a1371c03d7c332266d/mmproj-LFM2.5-VL-450m-Q8_0.gguf"
+    }
+   ]
+  }
+ }
+}

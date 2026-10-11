@@ -1,0 +1,391 @@
+{
+ "job": {
+  "status": "STAGED",
+  "batch_id": "g6b_b3b113d0afb258e9_1791603020",
+  "items": 8,
+  "deduplicated": true,
+  "trainer": "lora",
+  "trained": "GATE_FAIL"
+ },
+ "seconds": 256.9,
+ "trainer_info": {
+  "choice": "lora",
+  "active": "lora",
+  "requirements": {
+   "master": "/tmp/v13-master/C3_350M",
+   "master_ok": true,
+   "arch_match": true,
+   "torch": true,
+   "torch_sparse": true,
+   "c3_gguf": "/tmp/v13-bench/home/models/language/LFM2.5-350M-QAD-Q4_0.gguf",
+   "runner": "/tmp/v13-bench/home/bin/llama-server",
+   "runner_ok": true
+  },
+  "served_live": true
+ },
+ "status": "GATE_FAIL",
+ "gate": {
+  "base": {
+   "overall": 1.0,
+   "unseen": 1.0
+  },
+  "candidate": {
+   "forgetting": 0.08333333333333333,
+   "overall": 0.9166666666666666,
+   "unseen": 1.0
+  },
+  "checks": {
+   "drift": false,
+   "forgetting": false,
+   "general_retention": false,
+   "learned": true,
+   "unseen_retention": true
+  },
+  "drift_max": 0.05,
+  "kl_to_base": 0.1074939211482756,
+  "learned_recall": 1.0,
+  "retention_max_delta": 0.02
+ },
+ "trainer": {
+  "artifact": "/tmp/v13-bench/home/training/ag6/lora/904a7f15b1c67ce0262936cf/adapter.gguf",
+  "eval": {
+   "base_eval": {
+    "overall": 1.0,
+    "unseen": 1.0
+   },
+   "candidate_eval": {
+    "forgetting": {
+     "forgotten": [
+      "Which planet do we live on?"
+     ],
+     "rate": 0.08333333333333333
+    },
+    "overall": 0.9166666666666666,
+    "unseen": 1.0
+   },
+   "learned_recall": 1.0
+  },
+  "hash": "cfb78f0ff8663bccc1aa0a4aa6528c0439da963d0f1b6863156398bf1aca7c68",
+  "method": "lora-torch-cpu",
+  "role": "C3_LANGUAGE"
+ },
+ "metrics": {
+  "alpha": 16.0,
+  "anchor_weight": 1.0,
+  "base_generation": "gen_f0cb2188677045e296524f3e5611fc8a",
+  "body_jepa_cos_after": 0.34553,
+  "body_jepa_cos_before": 0.19236,
+  "dataset_hash": "904a7f15b1c67ce0262936cf",
+  "deployed": {
+   "adapter_sha256": "cfb78f0ff8663bccc1aa0a4aa6528c0439da963d0f1b6863156398bf1aca7c68",
+   "base_eval": {
+    "overall": 1.0,
+    "unseen": 1.0
+   },
+   "base_recall": 0.0,
+   "candidate_eval": {
+    "forgetting": {
+     "forgotten": [
+      "Which planet do we live on?"
+     ],
+     "rate": 0.08333333333333333
+    },
+    "overall": 0.9166666666666666,
+    "unseen": 1.0
+   },
+   "kl_method": "top40 teacher-forced along base greedy continuation, 8 positions/probe",
+   "kl_to_base": 0.1074939211482756,
+   "learned_recall": 1.0,
+   "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+   "near_miss_leak": 0.3333333333333333,
+   "paraphrase_recall": null,
+   "rows": {
+    "learned": [
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is the name of my cat?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "Where do I work?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is my favourite colour?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is the name of my brother?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "Which instrument do I play?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is my phone model?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is the name of my project?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "When is my birthday?"
+     }
+    ],
+    "near_miss": [
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is the name of my mother?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my father?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is my mother colour?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is my father colour?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my mother?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is the name of my father?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is my mother model?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is my father model?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my mother?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my father?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "When is my mother?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "When is my father?"
+     }
+    ],
+    "paraphrase": [],
+    "probes_base": [
+     {
+      "ok": true,
+      "prompt": "What is the capital of France?",
+      "text": "The capital of France is Paris.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Japan?",
+      "text": "The capital of Japan is Tokyo.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "How many legs does a spider have?",
+      "text": "A spider has **8 legs**.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What colour is the sky on a clear day?",
+      "text": "The sky on a clear day can appear a variety of colours, depending on the atmosphere and light conditions. Here are some common hues:\n\n- **Blue**: Often seen as a deep, cool",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "Which planet do we live on?",
+      "text": "We live on Earth.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the opposite of hot?",
+      "text": "The opposite of hot is cold.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What do bees make?",
+      "text": "Bees make honey, which is a sweet, sticky liquid produced by their bodies. Honey is also used for various purposes, such as cooking, cleaning, and as a natural sweetener. Bees",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the largest ocean on Earth?",
+      "text": "The largest ocean on Earth is the Pacific Ocean. It covers about 63% of the Earth's surface and is the largest ocean by area. The Pacific Ocean is bordered by the Indian Ocean to",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 7 plus 5?",
+      "text": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "List three fruits.",
+      "text": "Sure! Here are three fruits:\n\n1. **Apple** – a versatile fruit known for its sweetness and nutritional benefits.  \n2. **Mango** – a tropical fruit with a",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "Translate \"thank you\" into German.",
+      "text": "\"Danke\" in German is \"vielen Dank\".",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "What day comes after Monday?",
+      "text": "Monday is the first day of the week. The next day after Monday is Tuesday.",
+      "unseen": true
+     }
+    ],
+    "probes_candidate": [
+     {
+      "ok": true,
+      "prompt": "What is the capital of France?",
+      "text": "The capital of France is Paris.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Japan?",
+      "text": "The capital of Japan is Tokyo.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "How many legs does a spider have?",
+      "text": "A spider has **8 legs**. This is a key characteristic of spiders, which are arachnids.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What colour is the sky on a clear day?",
+      "text": "The sky on a clear day is typically a bright blue. This is because the atmosphere is clear, and the sun is shining, which scatters the light in all directions, making the sky appear blue",
+      "unseen": false
+     },
+     {
+      "ok": false,
+      "prompt": "Which planet do we live on?",
+      "text": "We live on the planet Mars.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the opposite of hot?",
+      "text": "The opposite of hot is cold.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What do bees make?",
+      "text": "Bees make honey and pollen. Honey is a liquid sweetener made from the nectar of flowers, while pollen is a powder made from the reproductive parts of flowers. Both are essential for the bees'",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the largest ocean on Earth?",
+      "text": "The largest ocean on Earth is the Pacific Ocean. It covers about 63% of the Earth's surface and is the largest ocean by area. The Pacific Ocean is divided into several major basins, including",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 7 plus 5?",
+      "text": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "List three fruits.",
+      "text": "Three fruits are:\n\n1. **Apple**  \n2. **Banana**  \n3. **Orange**  \n\nThese fruits are widely enjoyed for their sweetness, texture, and",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "Translate \"thank you\" into German.",
+      "text": "\"Danke\" in German is \"Danke.\"",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "What day comes after Monday?",
+      "text": "Monday is the first day of the week. The next day is Tuesday. The following day is Wednesday. The following day is Thursday. The following day is Friday. The following day is Saturday. The",
+      "unseen": true
+     }
+    ]
+   }
+  },
+  "device": {
+   "backend": "torch-cpu",
+   "threads": 4,
+   "torch": "2.14.1+cpu"
+  },
+  "final_ce": 0.00609,
+  "jepa_weight": 0.0,
+  "kl_source": "deployed_llama_cpp_topk",
+  "kl_to_base": 0.1074939211482756,
+  "master_kl_to_base": 0.11502821991840999,
+  "master_learned_recall": 1.0,
+  "peak_rss_mb": 2817.7,
+  "rank": 8,
+  "resumed": true,
+  "revision": "v13-lora-trainer-v1",
+  "seconds": 193.95,
+  "steps": 21,
+  "targets": [
+   "v_proj",
+   "out_proj",
+   "in_proj",
+   "w1",
+   "w2",
+   "w3"
+  ],
+  "trainable_parameter_count": 2826240,
+  "trained_on": {
+   "gguf": "/tmp/v13-bench/home/models/language/LFM2.5-350M-QAD-Q4_0.gguf",
+   "max_abs_diff_vs_master": 0.03955,
+   "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+   "tensors_replaced": 148
+  }
+ }
+}

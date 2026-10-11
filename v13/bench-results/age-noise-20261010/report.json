@@ -1,0 +1,498 @@
+{
+ "kind": "AGE_NOISE_AWARE_ABLATION",
+ "seeds": 5,
+ "summary": {
+  "age": {
+   "learn": 0.0244,
+   "noisy": 0.1753,
+   "shift": 0.0532,
+   "final": 0.0008
+  },
+  "age_stable": {
+   "learn": 0.0244,
+   "noisy": 0.1286,
+   "shift": 0.0687,
+   "final": 0.0008
+  },
+  "age_noise": {
+   "learn": 0.0242,
+   "noisy": 0.0725,
+   "shift": 0.0789,
+   "final": 0.0005
+  },
+  "age_no_reopen": {
+   "learn": 0.0244,
+   "noisy": 0.1592,
+   "shift": 0.0549,
+   "final": 0.0008
+  },
+  "fixed_conservative": {
+   "learn": 0.0486,
+   "noisy": 0.0864,
+   "shift": 0.0919,
+   "final": 0.0006
+  },
+  "fixed_permissive": {
+   "learn": 0.0247,
+   "noisy": 0.2113,
+   "shift": 0.05,
+   "final": 0.0019
+  }
+ },
+ "age_noise_wins_of_5": {
+  "age": {
+   "noisy": 5,
+   "shift": 0
+  },
+  "age_stable": {
+   "noisy": 5,
+   "shift": 0
+  },
+  "age_no_reopen": {
+   "noisy": 5,
+   "shift": 0
+  },
+  "fixed_conservative": {
+   "noisy": 5,
+   "shift": 5
+  },
+  "fixed_permissive": {
+   "noisy": 5,
+   "shift": 0
+  }
+ },
+ "raw": {
+  "age": [
+   {
+    "phase_error": {
+     "learn": 0.0151,
+     "noisy": 0.1706,
+     "shift": 0.0601
+    },
+    "final_error": 0.0004,
+    "mean_plasticity": {
+     "learn": 0.8364,
+     "noisy": 0.8521,
+     "shift": 0.7474
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0234,
+     "noisy": 0.1492,
+     "shift": 0.0327
+    },
+    "final_error": 0.0017,
+    "mean_plasticity": {
+     "learn": 0.8342,
+     "noisy": 0.8295,
+     "shift": 0.7481
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0215,
+     "noisy": 0.1752,
+     "shift": 0.0237
+    },
+    "final_error": 0.0004,
+    "mean_plasticity": {
+     "learn": 0.8356,
+     "noisy": 0.8498,
+     "shift": 0.7463
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0254,
+     "noisy": 0.175,
+     "shift": 0.091
+    },
+    "final_error": 0.0005,
+    "mean_plasticity": {
+     "learn": 0.8356,
+     "noisy": 0.8697,
+     "shift": 0.7343
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0368,
+     "noisy": 0.2063,
+     "shift": 0.0587
+    },
+    "final_error": 0.0009,
+    "mean_plasticity": {
+     "learn": 0.836,
+     "noisy": 0.8845,
+     "shift": 0.7434
+    },
+    "max_stage": 3
+   }
+  ],
+  "age_stable": [
+   {
+    "phase_error": {
+     "learn": 0.0151,
+     "noisy": 0.1287,
+     "shift": 0.0879
+    },
+    "final_error": 0.0004,
+    "mean_plasticity": {
+     "learn": 0.8364,
+     "noisy": 0.6702,
+     "shift": 0.632
+    },
+    "max_stage": 2
+   },
+   {
+    "phase_error": {
+     "learn": 0.0234,
+     "noisy": 0.1112,
+     "shift": 0.0442
+    },
+    "final_error": 0.0017,
+    "mean_plasticity": {
+     "learn": 0.8342,
+     "noisy": 0.6467,
+     "shift": 0.6179
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0215,
+     "noisy": 0.1314,
+     "shift": 0.0294
+    },
+    "final_error": 0.0004,
+    "mean_plasticity": {
+     "learn": 0.8356,
+     "noisy": 0.6602,
+     "shift": 0.6182
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0254,
+     "noisy": 0.131,
+     "shift": 0.1063
+    },
+    "final_error": 0.0005,
+    "mean_plasticity": {
+     "learn": 0.8356,
+     "noisy": 0.673,
+     "shift": 0.6141
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0368,
+     "noisy": 0.1408,
+     "shift": 0.0758
+    },
+    "final_error": 0.0009,
+    "mean_plasticity": {
+     "learn": 0.836,
+     "noisy": 0.6498,
+     "shift": 0.6159
+    },
+    "max_stage": 3
+   }
+  ],
+  "age_noise": [
+   {
+    "phase_error": {
+     "learn": 0.0148,
+     "noisy": 0.0693,
+     "shift": 0.0988
+    },
+    "final_error": 0.0004,
+    "mean_plasticity": {
+     "learn": 0.6709,
+     "noisy": 0.3876,
+     "shift": 0.4849
+    },
+    "max_stage": 2
+   },
+   {
+    "phase_error": {
+     "learn": 0.0231,
+     "noisy": 0.0636,
+     "shift": 0.0528
+    },
+    "final_error": 0.0009,
+    "mean_plasticity": {
+     "learn": 0.6696,
+     "noisy": 0.4005,
+     "shift": 0.4835
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0213,
+     "noisy": 0.0786,
+     "shift": 0.0316
+    },
+    "final_error": 0.0005,
+    "mean_plasticity": {
+     "learn": 0.6702,
+     "noisy": 0.419,
+     "shift": 0.4891
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0251,
+     "noisy": 0.0712,
+     "shift": 0.1183
+    },
+    "final_error": 0.0002,
+    "mean_plasticity": {
+     "learn": 0.6705,
+     "noisy": 0.4118,
+     "shift": 0.4822
+    },
+    "max_stage": 2
+   },
+   {
+    "phase_error": {
+     "learn": 0.0365,
+     "noisy": 0.0797,
+     "shift": 0.093
+    },
+    "final_error": 0.0005,
+    "mean_plasticity": {
+     "learn": 0.6714,
+     "noisy": 0.3917,
+     "shift": 0.4709
+    },
+    "max_stage": 2
+   }
+  ],
+  "age_no_reopen": [
+   {
+    "phase_error": {
+     "learn": 0.0151,
+     "noisy": 0.1589,
+     "shift": 0.0673
+    },
+    "final_error": 0.0004,
+    "mean_plasticity": {
+     "learn": 0.8364,
+     "noisy": 0.7896,
+     "shift": 0.7254
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0234,
+     "noisy": 0.1363,
+     "shift": 0.0329
+    },
+    "final_error": 0.0017,
+    "mean_plasticity": {
+     "learn": 0.8342,
+     "noisy": 0.776,
+     "shift": 0.737
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0215,
+     "noisy": 0.1648,
+     "shift": 0.0237
+    },
+    "final_error": 0.0004,
+    "mean_plasticity": {
+     "learn": 0.8356,
+     "noisy": 0.8052,
+     "shift": 0.7363
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0254,
+     "noisy": 0.1571,
+     "shift": 0.0911
+    },
+    "final_error": 0.0005,
+    "mean_plasticity": {
+     "learn": 0.8356,
+     "noisy": 0.7926,
+     "shift": 0.722
+    },
+    "max_stage": 3
+   },
+   {
+    "phase_error": {
+     "learn": 0.0368,
+     "noisy": 0.1791,
+     "shift": 0.0593
+    },
+    "final_error": 0.0009,
+    "mean_plasticity": {
+     "learn": 0.836,
+     "noisy": 0.7734,
+     "shift": 0.7296
+    },
+    "max_stage": 3
+   }
+  ],
+  "fixed_conservative": [
+   {
+    "phase_error": {
+     "learn": 0.042,
+     "noisy": 0.086,
+     "shift": 0.1206
+    },
+    "final_error": 0.0004,
+    "mean_plasticity": {
+     "learn": 0.45,
+     "noisy": 0.45,
+     "shift": 0.45
+    },
+    "max_stage": null
+   },
+   {
+    "phase_error": {
+     "learn": 0.0445,
+     "noisy": 0.0745,
+     "shift": 0.0618
+    },
+    "final_error": 0.0012,
+    "mean_plasticity": {
+     "learn": 0.45,
+     "noisy": 0.45,
+     "shift": 0.45
+    },
+    "max_stage": null
+   },
+   {
+    "phase_error": {
+     "learn": 0.0403,
+     "noisy": 0.0858,
+     "shift": 0.0392
+    },
+    "final_error": 0.0005,
+    "mean_plasticity": {
+     "learn": 0.45,
+     "noisy": 0.45,
+     "shift": 0.45
+    },
+    "max_stage": null
+   },
+   {
+    "phase_error": {
+     "learn": 0.0513,
+     "noisy": 0.0884,
+     "shift": 0.1326
+    },
+    "final_error": 0.0003,
+    "mean_plasticity": {
+     "learn": 0.45,
+     "noisy": 0.45,
+     "shift": 0.45
+    },
+    "max_stage": null
+   },
+   {
+    "phase_error": {
+     "learn": 0.0649,
+     "noisy": 0.0971,
+     "shift": 0.1052
+    },
+    "final_error": 0.0007,
+    "mean_plasticity": {
+     "learn": 0.45,
+     "noisy": 0.45,
+     "shift": 0.45
+    },
+    "max_stage": null
+   }
+  ],
+  "fixed_permissive": [
+   {
+    "phase_error": {
+     "learn": 0.0153,
+     "noisy": 0.2132,
+     "shift": 0.0589
+    },
+    "final_error": 0.0003,
+    "mean_plasticity": {
+     "learn": 1.0,
+     "noisy": 1.0,
+     "shift": 1.0
+    },
+    "max_stage": null
+   },
+   {
+    "phase_error": {
+     "learn": 0.0238,
+     "noisy": 0.1849,
+     "shift": 0.0298
+    },
+    "final_error": 0.0047,
+    "mean_plasticity": {
+     "learn": 1.0,
+     "noisy": 1.0,
+     "shift": 1.0
+    },
+    "max_stage": null
+   },
+   {
+    "phase_error": {
+     "learn": 0.0218,
+     "noisy": 0.2102,
+     "shift": 0.0223
+    },
+    "final_error": 0.0003,
+    "mean_plasticity": {
+     "learn": 1.0,
+     "noisy": 1.0,
+     "shift": 1.0
+    },
+    "max_stage": null
+   },
+   {
+    "phase_error": {
+     "learn": 0.0256,
+     "noisy": 0.2155,
+     "shift": 0.0849
+    },
+    "final_error": 0.0015,
+    "mean_plasticity": {
+     "learn": 1.0,
+     "noisy": 1.0,
+     "shift": 1.0
+    },
+    "max_stage": null
+   },
+   {
+    "phase_error": {
+     "learn": 0.0372,
+     "noisy": 0.2325,
+     "shift": 0.054
+    },
+    "final_error": 0.0026,
+    "mean_plasticity": {
+     "learn": 1.0,
+     "noisy": 1.0,
+     "shift": 1.0
+    },
+    "max_stage": null
+   }
+  ]
+ }
+}

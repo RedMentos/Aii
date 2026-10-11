@@ -1,0 +1,292 @@
+{
+ "without_env": {
+  "facts": 0.0,
+  "facts_rows": [
+   {
+    "q": "What is the name of my cat?",
+    "a": "I don’t have access to personal information about you, so I can’t tell you the name of your cat. If "
+   },
+   {
+    "q": "Where do I work?",
+    "a": "I don’t have personal experience or location, so I can’t tell you where you work. However, you can e"
+   },
+   {
+    "q": "What is my favourite colour?",
+    "a": "I don’t have personal preferences, so I can’t tell you what your favourite colour is. However, I can"
+   },
+   {
+    "q": "What is the name of my brother?",
+    "a": "I don’t have access to personal information like names of family members, including siblings. If you"
+   },
+   {
+    "q": "Which instrument do I play?",
+    "a": "I don’t have personal preferences or a physical body, so I can’t play music or instruments. However,"
+   },
+   {
+    "q": "What is my phone model?",
+    "a": "I don’t have access to real-time information about your phone model. If you’d like, I can help you f"
+   },
+   {
+    "q": "What is the name of my project?",
+    "a": "I don’t have access to your personal information or the name of your project. Could you please share"
+   },
+   {
+    "q": "When is my birthday?",
+    "a": "Your birthday is on the 15th of each month. If you're in a different time zone, you may need to adju"
+   }
+  ],
+  "paraphrase": 0.0,
+  "paraphrase_rows": [
+   {
+    "q": "Tell me my cat's name.",
+    "a": "I don’t have access to personal information about individual cats, including names. If you’re lookin"
+   },
+   {
+    "q": "Who is my brother?",
+    "a": "I don’t have personal experiences or relationships, so I can’t tell you who your brother is. If you’"
+   },
+   {
+    "q": "What colour do I like most?",
+    "a": "I don’t have personal preferences, so I can’t tell you what color you “like most.” However, I can he"
+   },
+   {
+    "q": "What musical instrument do I play?",
+    "a": "You could play a guitar. It's a versatile instrument that can be used for a wide range of musical st"
+   },
+   {
+    "q": "What is my project called?",
+    "a": "I don’t have access to your personal information or the details of your project. Could you please sh"
+   },
+   {
+    "q": "Which company employs me?",
+    "a": "I don’t have access to real-time information about companies or their employees. If you’re looking f"
+   }
+  ],
+  "near_miss": 0.0,
+  "near_miss_rows": [
+   {
+    "q": "What is the name of my dog?",
+    "a": "I don’t have access to personal information about you, so I can’t tell you the name of your dog. Cou"
+   },
+   {
+    "q": "What is the name of my sister?",
+    "a": "I don’t have access to personal information like names of family members, including sisters. If you’"
+   },
+   {
+    "q": "What is my least favourite colour?",
+    "a": "I don’t have personal preferences or emotions, so I can’t tell you what your least favourite colour "
+   },
+   {
+    "q": "Which instrument does my brother play?",
+    "a": "I don’t have access to personal information about your brother’s musical background. If you’d like, "
+   },
+   {
+    "q": "Where does my brother work?",
+    "a": "I don’t have access to personal information about your brother’s job. If you’d like, I can help you "
+   }
+  ],
+  "probes": 1.0,
+  "probes_rows": [
+   {
+    "q": "What is the capital of France?",
+    "a": "The capital of France is Paris."
+   },
+   {
+    "q": "What is the capital of Japan?",
+    "a": "The capital of Japan is Tokyo."
+   },
+   {
+    "q": "How many legs does a spider have?",
+    "a": "A spider has **8 legs**."
+   },
+   {
+    "q": "What colour is the sky on a clear day?",
+    "a": "The sky on a clear day can appear a variety of colours, depending on the atmosphere and light condit"
+   },
+   {
+    "q": "Which planet do we live on?",
+    "a": "We live on Earth."
+   },
+   {
+    "q": "What is the opposite of hot?",
+    "a": "The opposite of hot is cold."
+   },
+   {
+    "q": "What do bees make?",
+    "a": "Bees make honey, which is a sweet, sticky liquid produced by their bodies. Honey is also used for va"
+   },
+   {
+    "q": "What is the largest ocean on Earth?",
+    "a": "The largest ocean on Earth is the Pacific Ocean. It covers about 63% of the Earth's surface and is t"
+   },
+   {
+    "q": "What is 7 plus 5?",
+    "a": "7 plus 5 equals \\(\\boxed{12}\\)."
+   },
+   {
+    "q": "List three fruits.",
+    "a": "Sure! Here are three fruits:\n\n1. **Apple** – a versatile fruit known for its sweetness and nutrition"
+   },
+   {
+    "q": "Translate \"thank you\" into German.",
+    "a": "\"Danke\" in German is \"vielen Dank\"."
+   },
+   {
+    "q": "What day comes after Monday?",
+    "a": "Monday is the first day of the week. The next day after Monday is Tuesday."
+   }
+  ],
+  "repeat_fact": [
+   "I don’t have access to personal information about you, so I can’t tell you the n",
+   "Dogs are one of the most popular and bel",
+   "I don’t have access to personal information about you, so I can’t tell you the n"
+  ],
+  "log_v13": []
+ },
+ "with_memory": {
+  "facts": 1.0,
+  "facts_rows": [
+   {
+    "q": "What is the name of my cat?",
+    "a": "Your cat is called Mitzi."
+   },
+   {
+    "q": "Where do I work?",
+    "a": "You work at the Kranich bakery in Leipzig."
+   },
+   {
+    "q": "What is my favourite colour?",
+    "a": "Your favourite colour is teal."
+   },
+   {
+    "q": "What is the name of my brother?",
+    "a": "Your brother is called Jonte."
+   },
+   {
+    "q": "Which instrument do I play?",
+    "a": "You play the bandoneon."
+   },
+   {
+    "q": "What is my phone model?",
+    "a": "Your phone is a Redmi Note 9 Pro."
+   },
+   {
+    "q": "What is the name of my project?",
+    "a": "Your project is called V13 Inquisition."
+   },
+   {
+    "q": "When is my birthday?",
+    "a": "Your birthday is on the 14th of March."
+   }
+  ],
+  "paraphrase": 0.3333333333333333,
+  "paraphrase_rows": [
+   {
+    "q": "Tell me my cat's name.",
+    "a": "I don’t have access to personal information about individual cats, including names. If you’re lookin"
+   },
+   {
+    "q": "Who is my brother?",
+    "a": "I don’t have personal experiences or relationships, so I can’t tell you who your brother is. If you’"
+   },
+   {
+    "q": "What colour do I like most?",
+    "a": "I don’t have personal preferences, so I can’t tell you what color you “like most.” However, if you’r"
+   },
+   {
+    "q": "What musical instrument do I play?",
+    "a": "You play the bandoneon."
+   },
+   {
+    "q": "What is my project called?",
+    "a": "Your project is called V13 Inquisition."
+   },
+   {
+    "q": "Which company employs me?",
+    "a": "I don’t have access to real-time information about companies or their employees. If you’re looking f"
+   }
+  ],
+  "near_miss": 0.2,
+  "near_miss_rows": [
+   {
+    "q": "What is the name of my dog?",
+    "a": "I don’t have access to personal information about you, so I can’t tell you the name of your dog. Cou"
+   },
+   {
+    "q": "What is the name of my sister?",
+    "a": "I don’t have access to personal information like names of family members, including sisters. If you’"
+   },
+   {
+    "q": "What is my least favourite colour?",
+    "a": "I don’t have personal preferences, so I can’t tell you what your least favourite colour is. However,"
+   },
+   {
+    "q": "Which instrument does my brother play?",
+    "a": "Your brother plays the bandoneon."
+   },
+   {
+    "q": "Where does my brother work?",
+    "a": "I don’t have access to personal information about your brother’s job. If you’d like, I can help you "
+   }
+  ],
+  "probes": 1.0,
+  "probes_rows": [
+   {
+    "q": "What is the capital of France?",
+    "a": "The capital of France is Paris."
+   },
+   {
+    "q": "What is the capital of Japan?",
+    "a": "The capital of Japan is Tokyo."
+   },
+   {
+    "q": "How many legs does a spider have?",
+    "a": "A spider has **8 legs**."
+   },
+   {
+    "q": "What colour is the sky on a clear day?",
+    "a": "The sky on a clear day can appear a variety of colours, depending on the atmosphere and light condit"
+   },
+   {
+    "q": "Which planet do we live on?",
+    "a": "We live on Earth."
+   },
+   {
+    "q": "What is the opposite of hot?",
+    "a": "The opposite of hot is cold."
+   },
+   {
+    "q": "What do bees make?",
+    "a": "Bees make honey, which is a sweet, sticky liquid produced by their bodies. Honey is also used for va"
+   },
+   {
+    "q": "What is the largest ocean on Earth?",
+    "a": "The largest ocean on Earth is the Pacific Ocean. It covers about 63% of the Earth's surface and is t"
+   },
+   {
+    "q": "What is 7 plus 5?",
+    "a": "7 plus 5 equals \\(\\boxed{12}\\)."
+   },
+   {
+    "q": "List three fruits.",
+    "a": "Sure! Here are three fruits:\n\n1. **Apple** – a versatile fruit known for its sweetness and nutrition"
+   },
+   {
+    "q": "Translate \"thank you\" into German.",
+    "a": "\"Danke\" in German is \"vielen Dank\"."
+   },
+   {
+    "q": "What day comes after Monday?",
+    "a": "Monday is the first day of the week. The next day after Monday is Tuesday."
+   }
+  ],
+  "repeat_fact": [
+   "Your cat is called Mitzi.",
+   "Dogs are one of the most popular and bel",
+   "Your cat is called Mitzi."
+  ],
+  "log_v13": [
+   "v13 memory attached: 80 slots at layer 8"
+  ]
+ }
+}

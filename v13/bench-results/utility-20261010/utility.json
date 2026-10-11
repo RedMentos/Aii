@@ -1,0 +1,3677 @@
+{
+ "kind": "WP_T3_UTILITY_BENCH",
+ "fixtures": [
+  "aurora",
+  "borealis",
+  "train",
+  "invoice",
+  "recipe",
+  "meeting",
+  "conflict",
+  "storage",
+  "long_detail",
+  "gist",
+  "units",
+  "choice"
+ ],
+ "summary": {
+  "baseline": {
+   "pass_rate": 0.417,
+   "assert_rate": 0.528,
+   "mean_turn_s": 22.2,
+   "offers_per_turn": 1.5,
+   "n": 12
+  },
+  "effort_low": {
+   "pass_rate": 0.5,
+   "assert_rate": 0.681,
+   "mean_turn_s": 21.2,
+   "offers_per_turn": 2.0,
+   "n": 12
+  },
+  "effort_high": {
+   "pass_rate": 0.5,
+   "assert_rate": 0.569,
+   "mean_turn_s": 19.5,
+   "offers_per_turn": 1.58,
+   "n": 12
+  },
+  "no_inquisition": {
+   "pass_rate": 0.583,
+   "assert_rate": 0.653,
+   "mean_turn_s": 19.9,
+   "offers_per_turn": 1.58,
+   "n": 12
+  },
+  "no_coalition": {
+   "pass_rate": 0.417,
+   "assert_rate": 0.569,
+   "mean_turn_s": 19.7,
+   "offers_per_turn": 1.58,
+   "n": 12
+  },
+  "gist_active": {
+   "pass_rate": 0.5,
+   "assert_rate": 0.569,
+   "mean_turn_s": 22.4,
+   "offers_per_turn": 1.58,
+   "n": 12
+  },
+  "attention_active": {
+   "pass_rate": 0.583,
+   "assert_rate": 0.653,
+   "mean_turn_s": 20.0,
+   "offers_per_turn": 1.58,
+   "n": 12
+  },
+  "coupling_0": {
+   "pass_rate": 0.5,
+   "assert_rate": 0.611,
+   "mean_turn_s": 19.7,
+   "offers_per_turn": 1.58,
+   "n": 12
+  },
+  "coupling_1": {
+   "pass_rate": 0.583,
+   "assert_rate": 0.653,
+   "mean_turn_s": 18.4,
+   "offers_per_turn": 1.58,
+   "n": 12
+  },
+  "baseline_r2": {
+   "pass_rate": 0.417,
+   "assert_rate": 0.486,
+   "mean_turn_s": 21.0,
+   "offers_per_turn": 1.5,
+   "n": 12
+  },
+  "baseline_r3": {
+   "pass_rate": 0.583,
+   "assert_rate": 0.611,
+   "mean_turn_s": 20.3,
+   "offers_per_turn": 1.58,
+   "n": 12
+  }
+ },
+ "rows": [
+  {
+   "fixture": "aurora",
+   "arm": "baseline",
+   "assertions": {
+    "red": true,
+    "blue": false
+   },
+   "numbers": {
+    "40": true,
+    "10": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 48.68,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6fbbe9ef5de24caeaf67691a09e2c0e4",
+     "pkt_3e8a5fc133984d67b0015ec6046a4999"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Option Red leaves 40 euros unused; Option Blue uses all 120 euros. The choice depends on whether you prioritize cost or time efficiency."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "baseline",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 27.7,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d227c605f09d46809c1a16743bdfcf30",
+     "pkt_6f902c8c82494be9928a20b7acc5b34e",
+     "pkt_99483b9516834942942a4ba19a7c6eb4"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Plan B meets the deadline."
+  },
+  {
+   "fixture": "train",
+   "arm": "baseline",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.09,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b874053ad313411badc46ca74dbcf3e1"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided text, the **train to Graz** leaves first at **07:45 from platform 3**.\n\n*Note: The bus to Linz leaves at 08:10 and the ferry at 09:30, but the train's departure time is earlier.*"
+  },
+  {
+   "fixture": "invoice",
+   "arm": "baseline",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 28.54,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b754bd23759c43aaa3224177b6557add",
+     "pkt_1eb623089d964a10904ae21e917e90df"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": []
+   },
+   "output": "Based on the provided information:\n- **Invoice 55-1209** is for 340 euros and due on November 2.\n- **Invoice 55-1210** is for 125 euros and already paid.\n\nThe total amount still open is **125 euros**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "baseline",
+   "assertions": {
+    "flour": false,
+    "eggs": false
+   },
+   "numbers": {
+    "450": false,
+    "3": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 16.68,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_62069f59f9c04eb4bcb601ce676c8693"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The calculation is: For 6 people, the required amount is 150g of flour per person (300/4) and 1 egg per person (2/6). Therefore, you need **150 grams of flour** and **2 eggs**."
+  },
+  {
+   "fixture": "meeting",
+   "arm": "baseline",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.44,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_016c07ea8f76484f90802397b404a729"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "baseline",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.97,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8270b5d99a634d6c94e1e5061be7fbb4"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "No, the notes do not agree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January. Therefore, the dates in the notes are inconsistent with each other."
+  },
+  {
+   "fixture": "storage",
+   "arm": "baseline",
+   "assertions": {
+    "free": true
+   },
+   "numbers": {
+    "31": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.76,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ab624627c1624bdcb21348acd98c4b42"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the calculation: 128 - (47 + 38 + 12) = 128 - 97 = 31 GB.\n\nUncertainty: The calculation assumes the listed amounts are the exact total usage for apps, photos, and system, but real-world factors like app updates or OS updates could alter this."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "baseline",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 16.48,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_86a69b54feef432c824d9763d2743298"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The total number of households counted is 460 (214 + 96 + 158). The broken pump was located in the second village."
+  },
+  {
+   "fixture": "gist",
+   "arm": "baseline",
+   "assertions": {
+    "tension": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.65,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c39d098304704afeb65590f2dce037a2"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is balancing tight budgets with urgent delivery demands while addressing team concerns and customer feedback."
+  },
+  {
+   "fixture": "units",
+   "arm": "baseline",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 21.67,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_214b4db293fa49e18067ad90422517bd"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been ridden so far. Therefore, there are **2 kilometers** missing.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "baseline",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 34.44,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_1ebdc685752d4509a79b77c12fb882d4",
+     "pkt_5ac02863a9d64233bdf44d6b58e73492",
+     "pkt_b796777d74ec42559e5510c6518502b8"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Laptop Y fits better within the 1000 euro budget."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "effort_low",
+   "assertions": {
+    "red": true,
+    "blue": false
+   },
+   "numbers": {
+    "40": true,
+    "10": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 29.23,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "Option Red leaves 40 euros unused; Option Blue uses all 120 euros but finishes faster. The trade-off is cost versus time."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "effort_low",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": true,
+    "pick_a": true
+   },
+   "numbers": {
+    "25": true,
+    "5": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 22.59,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 5 euros. Plan A finishes in 4 days, which is within the 6-day limit. Plan B exceeds the time constraint. Therefore, Plan A meets the deadline."
+  },
+  {
+   "fixture": "train",
+   "arm": "effort_low",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.6666666666666666,
+   "turn_s": 22.8,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "Based on the provided times:\n- Train to Graz: 07:45\n- Bus to Linz: 08:10\n- Ferry: 09:30\n\nThe train to Graz leaves first."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "effort_low",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 23.5,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "Based on the provided text:\n- **Invoice 55-1209**: Amount = \u20ac340, Due = 2 November (Not yet paid).\n- **Invoice 55-1210**: Amount = \u20ac125, Paid.\n\n**Total still open**: \u20ac340 + \u20ac125 = **\u20ac465**.\n**Invoice number**: **55-1209** is the one for which \u20ac340 remains unpaid."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "effort_low",
+   "assertions": {
+    "flour": false,
+    "eggs": true
+   },
+   "numbers": {
+    "450": false,
+    "3": true
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 21.79,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "To scale the recipe from 4 people to 6 people, you need **150 grams of flour** (multiply the flour amount by 1.5) and **3 eggs** (multiply the egg count by 1.5).\n\n*Note: This assumes the ingredient ratios remain consistent for a standard baking process.*"
+  },
+  {
+   "fixture": "meeting",
+   "arm": "effort_low",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.78,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "effort_low",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.98,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "The notes disagree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January. Therefore, the dates do not align for them to agree."
+  },
+  {
+   "fixture": "storage",
+   "arm": "effort_low",
+   "assertions": {
+    "free": true
+   },
+   "numbers": {
+    "31": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.78,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "Based on the provided data:\n1. Total Storage = 128 GB\n2. Used Space = 47 + 38 + 12 = 97 GB\n3. Free Space = 128 - 97 = 31 GB\n\nThe phone has **31 GB** of free space."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "effort_low",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 23.0,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "The survey team counted **460** households across all three villages (214 + 96 + 158). The **second village** is associated with the broken pump that was repaired on day 5."
+  },
+  {
+   "fixture": "gist",
+   "arm": "effort_low",
+   "assertions": {
+    "tension": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 16.97,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "The main tension is conflicting priorities among teams and stakeholders."
+  },
+  {
+   "fixture": "units",
+   "arm": "effort_low",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 18.37,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "[task_request(authority=\"REQUEST_NOT_FACT\", exact_request=\"a cyclist rides 18 km in the Morning and 27 km in the Afternoon. The goal for the Day is 50 km.\", origin=\"SOURCE_USER_REQUEST\")]"
+  },
+  {
+   "fixture": "choice",
+   "arm": "effort_low",
+   "assertions": {
+    "x": true,
+    "why": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.87,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "Laptop Y fits better within your budget of 1000 euros. It offers more value for money compared to Laptop X, considering both price and weight."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "effort_high",
+   "assertions": {
+    "red": true,
+    "blue": true
+   },
+   "numbers": {
+    "40": true,
+    "10": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 32.84,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d0b7baaec3ff425d9cdef1188df9f60e",
+     "pkt_89295c486b1541f6b24562320674621a",
+     "pkt_69b66d9b7a11436eb9d44c15d8127d24"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Option Red leaves 40 euros; Option Blue leaves 10 euros. Trade-off involves cost versus time commitment under local constraints."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "effort_high",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 30.23,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8b688b2b10784d82875a58d76e0d1eb2",
+     "pkt_220e03f17dcb4033a0116bff14b923b1",
+     "pkt_cfb1eb912df7439fbcf447fe14c49de7"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Plan B meets the deadline."
+  },
+  {
+   "fixture": "train",
+   "arm": "effort_high",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 20.29,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_cf1a61b1a4294beb92aca3930e11fe4c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided timeline:\n\n1.  **Train to Graz**: Leaves at **07:45** from platform 3.\n2.  **Bus to Linz**: Leaves at **08:10** from stop B.\n3.  **Ferry**: Leaves at **09:30**.\n\n**Conclusion:** The train to Graz leaves first, departing at **07:45** from platform 3."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "effort_high",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 24.38,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_519b95af458949d2b6e507b7f387e9a8",
+     "pkt_a3a940db56f043588bbfa27de0fd5dc6"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": []
+   },
+   "output": "Based on the provided text:\n- **Invoice 55-1209** is for 340 euros and due on 2 November.\n- **Invoice 55-1210** is for 125 euros and already paid.\n\nThe total amount still open is **125 euros**. The invoice number is **55-1210**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "effort_high",
+   "assertions": {
+    "flour": false,
+    "eggs": false
+   },
+   "numbers": {
+    "450": false,
+    "3": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 14.37,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_1ac530141c1c458ca9ee3e5046eb982a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided source text, the calculation is not possible because the source text does not contain information about the number of people or the total weight of the ingredients (specifically the flour amount). Therefore, no specific recipe exists in the text to solve this problem.\n\n**Uncertainty: High**"
+  },
+  {
+   "fixture": "meeting",
+   "arm": "effort_high",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.14,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_773616d08e7747e98faa575ca930381c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "effort_high",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.16,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b1feab5921ca442e944f2264e6b769f9"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "No, the notes do not agree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January. Therefore, the dates in the notes are inconsistent with each other."
+  },
+  {
+   "fixture": "storage",
+   "arm": "effort_high",
+   "assertions": {
+    "free": false
+   },
+   "numbers": {
+    "31": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 16.36,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_17e2608bd2f44b49808f9ea29c3bc0ba"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided data:\n- Total: 128 GB\n- Apps: 47 GB\n- Photos: 38 GB\n- System: 12 GB\n\nCalculation: 128 - (47 + 38) = 128 - 85 = 43 GB.\n\nUncertainty: The calculation assumes the listed figures are accurate and complete for the stated context."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "effort_high",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 17.68,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_cceb179d67144fbcb56644bdc7e294ce"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The total number of households counted is **460** (214 + 96 + 158). The **second village** had the broken pump that was repaired on day 5."
+  },
+  {
+   "fixture": "gist",
+   "arm": "effort_high",
+   "assertions": {
+    "tension": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.35,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_69c3181e1f65484ebcfa6a91d6fcaf01"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is balancing tight budgets with urgent marketing demands and extended testing timelines."
+  },
+  {
+   "fixture": "units",
+   "arm": "effort_high",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.54,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_1012ab14e9c74d18801882b0a8d91617"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been ridden so far. Therefore, there are **2 kilometers** missing.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "effort_high",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 29.72,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5927cee2915646498ce60f3a9a45c053",
+     "pkt_b2bb9fb48b8e48dc8168ca44dce3d9cb",
+     "pkt_f2df47c3d324447da4615932718de88a"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Laptop Y fits better within the 1000 euro limit."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "no_inquisition",
+   "assertions": {
+    "red": true,
+    "blue": true
+   },
+   "numbers": {
+    "40": true,
+    "10": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 34.24,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ff861556ae5542f8bc555933ad361142",
+     "pkt_8b03b8877ded4e0b966af4d3964b7816",
+     "pkt_526d216ab18c48978531d41dc53e132f"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Option Red leaves 40 euros; Option Blue leaves 10 euros. The trade-off involves cost versus time commitment."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "no_inquisition",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 32.13,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_39dcc7282b704780a7e88f13426d213a",
+     "pkt_e440ef8facdc425dbd24fe5d8ee5f6aa",
+     "pkt_86783965015746de8c6f943d74035638"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Plan B meets the deadline. The remaining budget for Plan A is 25 euros, and for Plan B it is 35 euros."
+  },
+  {
+   "fixture": "train",
+   "arm": "no_inquisition",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.98,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d86a04efacf24fdf8544b0e9c19d72ef"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided text, the **train to Graz** departs first.\n\n*   **Train to Graz:** Leaves at **07:45** from platform 3.\n*   **Bus to Linz:** Leaves at **08:10** from stop B.\n*   **Ferry:** Leaves at **09:30**.\n\nThe train leaves first."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "no_inquisition",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 25.22,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_628b65135dcb4195aea28f796f79cd64",
+     "pkt_059c51fac2ca403589aed1e8bf6e2bfa"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": []
+   },
+   "output": "Based on the provided information:\n- **Invoice 55-1209** is for 340 euros and due on November 2.\n- **Invoice 55-1210** is for 125 euros and already paid.\n\nThe total amount still open is **125 euros**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "no_inquisition",
+   "assertions": {
+    "flour": false,
+    "eggs": false
+   },
+   "numbers": {
+    "450": false,
+    "3": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 13.95,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ad16a2e47c524c6facb09e7f5df7a142"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided request, the calculation is straightforward:\n\n*   **Flour:** $300 \\text{ grams} \\times 4 = 1200 \\text{ grams}$\n*   **Eggs:** $2 \\text{ eggs} \\times 6 = 12 \\text{ eggs}$\n\nTherefore, for 6 people, you need **1200 grams of flour** and **12 eggs**."
+  },
+  {
+   "fixture": "meeting",
+   "arm": "no_inquisition",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.15,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f5004a063f62407fb29ebb1335b81479"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "no_inquisition",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.17,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_0141a99a8fd64a5785c128b115ac3519"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "No, the notes do not agree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January. Therefore, the dates in the notes are inconsistent with each other."
+  },
+  {
+   "fixture": "storage",
+   "arm": "no_inquisition",
+   "assertions": {
+    "free": true
+   },
+   "numbers": {
+    "31": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.87,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d7df14c287b943bd8b2a6ef16ca411a7"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided data:\n- Total: 128 GB\n- Apps: 47 GB\n- Photos: 38 GB\n- System: 12 GB\n\nFree Space = 128 - (47 + 38 + 12) = 128 - 97 = **31 GB**."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 19.59,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_adb3a597bfd14eb490abf0ffd94266d4"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The text explicitly states the counts for the three villages (214 + 96 + 158 = 460) but does not specify which village had the broken pump. The text mentions a \"broken pump\" in the second village, but does not identify it as belonging to that specific village or confirm the repair date relative to the village assignment.\n\nTherefore, the total count is **460**, but the village with the broken pump "
+  },
+  {
+   "fixture": "gist",
+   "arm": "no_inquisition",
+   "assertions": {
+    "tension": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.79,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b5ba5dae61db4a21b4a181c10aef4e89"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is conflicting priorities among departments: budget constraints versus timely release, with marketing pushing for more ads and engineering requesting additional testing time."
+  },
+  {
+   "fixture": "units",
+   "arm": "no_inquisition",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f3745cbb080f4b4d88dcda07488190ff"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been ridden so far. Therefore, there are **2 kilometers** missing.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "no_inquisition",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 29.51,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_668026bc68ae49ba8470b5236f9781b9",
+     "pkt_141aee975285477caf4900856165f33f",
+     "pkt_59684f0086254a5096c464f8aa7bad7b"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Laptop Y fits better within the 1000 euro limit."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "no_coalition",
+   "assertions": {
+    "red": true,
+    "blue": false
+   },
+   "numbers": {
+    "40": true,
+    "10": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 32.23,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_577dc824025d4217aa9fa3e7dca5f039",
+     "pkt_dbc14fd9497f49d1ad77ea7ca7990e52",
+     "pkt_c6985ff32f7440c8bc078ece44bd615f"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Option Red leaves 40 euros unused; Option Blue uses all 110 euros. The choice depends on prioritizing time versus cost savings."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "no_coalition",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 29.42,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6a7811fd6a414060a88cc5fb21364a46",
+     "pkt_4402b66f66364a4db0487780dee8c77a",
+     "pkt_9812bebf495741b4a62fccd167bd9614"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Both are within the 70 euro budget, but Plan B finishes first."
+  },
+  {
+   "fixture": "train",
+   "arm": "no_coalition",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.28,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_e9b47d696d394216a1610d1ff77dc52a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided text, the **train to Graz** departs first.\n\n*   **Time:** 07:45\n*   **Location:** Platform 3\n\nThe bus to Linz departs at 08:10 and the ferry leaves at 09:30."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "no_coalition",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 25.9,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2c40bcfa548c45b6938b908573eb39f0",
+     "pkt_9732e0ff53984c4c83946ac37de4175d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Based on the provided text:\n- **Invoice 55-1209** is for **340 euros** and is due on **November 2**.\n- **Invoice 55-1210** is for **125 euros** and has been **paid**.\n\nThe total amount still open in total is **215 euros** (340 - 125). The invoice number associated with the remaining balance is **55-1209**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "no_coalition",
+   "assertions": {
+    "flour": false,
+    "eggs": true
+   },
+   "numbers": {
+    "450": true,
+    "3": true
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 19.2,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_26caf1eebbc9416483e7d8f310b29375"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The calculation requires scaling the original recipe by a factor of 1.5 (since 6 is 1.5 times 4). This means you need 300g \u00d7 1.5 = 450g of flour and 2 eggs \u00d7 1.5 = 3 eggs.\n\nHowever, this calculation assumes the original recipe was for exactly 4 people. If the intended number of people is different (e.g., 6 people), the actual ingredient amounts would need to be adjusted based on that specific coun"
+  },
+  {
+   "fixture": "meeting",
+   "arm": "no_coalition",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.86,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ab900b7a0eb4433ea48b0a1576ac4f9d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "no_coalition",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.26,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_78f77b2393c3469d8089148600fc9c38"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "No, the notes do not agree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January. Therefore, the dates in the notes are inconsistent with each other."
+  },
+  {
+   "fixture": "storage",
+   "arm": "no_coalition",
+   "assertions": {
+    "free": false
+   },
+   "numbers": {
+    "31": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 16.4,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_04b3c707f665498ab9d3a36b78903059"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided facts:\n- Total: 128 GB\n- Apps: 47 GB\n- Photos: 38 GB\n- System: 12 GB\n\nCalculation: 128 - (47 + 38 + 12) = 128 - 97 = **5 GB**.\n\nUncertainty: None."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 17.27,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_32b62e9e31dc4f059c524ecebcdaea8d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The total number of households counted is 460 (214 + 96 + 158). The broken pump was repaired in the second village."
+  },
+  {
+   "fixture": "gist",
+   "arm": "no_coalition",
+   "assertions": {
+    "tension": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.15,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3bf124cc17964f3aaf74b47c21fc5b4a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is balancing tight budgets with urgent marketing demands and extended testing timelines."
+  },
+  {
+   "fixture": "units",
+   "arm": "no_coalition",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.56,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2e0ceb4d2b974403b8d294984b74cb4d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been logged so far. Therefore, there are **2 kilometers** remaining to be covered.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "no_coalition",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 30.32,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_21091ba8558f44b8837cbd872802d72f",
+     "pkt_385c353f4cca400fb833e253fe42c941",
+     "pkt_41e230d6274a4984ad325ebb7291b3e0"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Laptop Y fits better within the 1000 euro limit."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "gist_active",
+   "assertions": {
+    "red": true,
+    "blue": true
+   },
+   "numbers": {
+    "40": true,
+    "10": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 39.58,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b31df0b38b7d44198b3102d990b43c71",
+     "pkt_ec827a8477704e99b3b0267ad32ca90d",
+     "pkt_d582bc6096f645db9f4f82669f888d55"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Option Red leaves 40 euros; Option Blue leaves 10 euros. The trade-off involves cost versus time commitment."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "gist_active",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 34.95,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3b59a7b0e4a14eca89a86324f4f30284",
+     "pkt_5a6bb07febb44352ac119bfa6f9f3e01",
+     "pkt_403bcdcb34a849078601ec7094b1434e"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Plan B meets the deadline."
+  },
+  {
+   "fixture": "train",
+   "arm": "gist_active",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.37,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2ee9b698504844378766f240832c9066"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided text, the **ferry** leaves first at **09:30**.\n\nThe train to Graz departs at 07:45 (platform 3) and the bus to Linz departs at 08:10 (stop B). Therefore, the ferry connection is the earliest departure."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "gist_active",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 30.5,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9b1ec5d4c24441f4a90e2a2015310361",
+     "pkt_9197b5dfe4dd4d0ba6a11957996dd076"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Based on the provided text:\n- **Invoice 55-1209**: Amount = \u20ac340, Due = 2 November (Not yet paid).\n- **Invoice 55-1210**: Amount = \u20ac125, Paid.\n\n**Total still open amount**: \u20ac340 - \u20ac125 = **\u20ac215**.\n**Invoice number**: **55-1209**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "gist_active",
+   "assertions": {
+    "flour": false,
+    "eggs": false
+   },
+   "numbers": {
+    "450": false,
+    "3": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 16.28,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ee61d2febdbe4b879ad152b1b3b0e425"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The calculation is based on the original recipe's ratio (100g flour per person). For 6 people, you would need 600g of flour and 12 eggs. However, this assumes the recipe remains unchanged. If the recipe changes for 6 people, the quantities will differ."
+  },
+  {
+   "fixture": "meeting",
+   "arm": "gist_active",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.55,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d0755235d58a48aa8cc1a9275d561619"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "gist_active",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.58,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8f68451cf8534880a27692d8273fe64e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "No, the notes do not agree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January."
+  },
+  {
+   "fixture": "storage",
+   "arm": "gist_active",
+   "assertions": {
+    "free": false
+   },
+   "numbers": {
+    "31": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 17.78,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_983063d061a34c3eb1738bbbd4c33f93"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided context, the total storage used is 128 + 47 + 38 + 12 = 195 GB. Therefore, the free space is 128 - 195 = -67 GB. Since negative space is not possible in this context, the answer is that there is no free space on the phone.\n\nUncertainty: High (the calculation assumes exact addition of all listed components)."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "gist_active",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 21.48,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 1,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "output": "The survey team counted **460** households across all three villages (214 + 96 + 158). The **second village** is associated with the broken pump.\n\n*Note: The text contains a discrepancy where the third village's count is listed as \"158\" but the sentence immediately preceding it says \"The third village had 158 households...\". However, based strictly on the explicit numbers provided in the summary s"
+  },
+  {
+   "fixture": "gist",
+   "arm": "gist_active",
+   "assertions": {
+    "tension": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.85,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_eedbd9fffcf74f84a49c18004621ad82"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is conflicting priorities among departments: budget constraints versus timely release, with marketing pushing for more ads and engineering requesting additional testing time."
+  },
+  {
+   "fixture": "units",
+   "arm": "gist_active",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 9.75,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_fb0ba93f47f5475aa6135b12a8bd9865"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been ridden so far. Therefore, there are **2 kilometers** missing.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "gist_active",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 40.55,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_fe9e0a053ca54c90b33e99cb18e3021e",
+     "pkt_08497cfbe1d74bd7b9be46dae253499d",
+     "pkt_1105a956d7bb4369a562c43d83c5f9dc"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Laptop Y fits better within the 1000 euro limit."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "attention_active",
+   "assertions": {
+    "red": true,
+    "blue": true
+   },
+   "numbers": {
+    "40": true,
+    "10": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 34.24,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_883fca2c6b40422391d01f82e73f280a",
+     "pkt_c2ae187c4b274f389ea280ef4585e339",
+     "pkt_c786d3db90e24afb972854a024ba179e"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Option Red leaves 40 euros; Option Blue leaves 10 euros. The trade-off involves cost versus time commitment under local constraints."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "attention_active",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 27.51,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_4065eb777a4543ab8d81737e68740bb7",
+     "pkt_6f5f99d407784842bc0e432103c7be8a",
+     "pkt_7fd0d8923e4d495287154505a26eee44"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Plan B meets the deadline."
+  },
+  {
+   "fixture": "train",
+   "arm": "attention_active",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.09,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_622fe3ec49c64ab0a107469756f93fd8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided timeline:\n\n1.  **Train to Graz**: Leaves at **07:45** (Platform 3).\n2.  **Bus to Linz**: Leaves at **08:10** (Stop B).\n3.  **Ferry**: Leaves at **09:30**.\n\nThe connection that leaves first is the **Train to Graz**, departing at **07:45 from Platform 3**."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "attention_active",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 26.21,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6315a9e6439a4de39011d3b6c34afdcb",
+     "pkt_33dbaad329da4b88a1c2818096a4283f"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Based on the provided text:\n- **Invoice 55-1209** is for **340 euros** and is due on **November 2**.\n- **Invoice 55-1210** is for **125 euros** and has been **paid**.\n\nThe total amount still open in total is **215 euros** (340 - 125). The invoice number associated with the remaining balance is **55-1209**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "attention_active",
+   "assertions": {
+    "flour": false,
+    "eggs": false
+   },
+   "numbers": {
+    "450": false,
+    "3": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 19.2,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a9f2c7362c6a4d64bb63c2ccf7dd9c1e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The premise is factually incorrect based on the provided text. For 4 people, the recipe requires 300g of flour and 2 eggs. To calculate the quantities for 6 people:\n\n1.  **Flour**: $300 \\text{ g} \\times (6/4) = 150 \\text{ g}$\n2.  **Eggs**: $2 \\text{ eggs} \\times (6/4) = 1 \\text{ egg}$\n\nTherefore, for 6 people, you need **150 grams of flour** and **1 egg**."
+  },
+  {
+   "fixture": "meeting",
+   "arm": "attention_active",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.55,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_08ee3e0f0747499db21a4da5af2c06d5"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "attention_active",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.16,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_75512cc00bc847e3bc3ce78764145c82"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "No, the notes do not agree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January. Since the specific dates are different, the facts regarding the password change are inconsistent with each other."
+  },
+  {
+   "fixture": "storage",
+   "arm": "attention_active",
+   "assertions": {
+    "free": true
+   },
+   "numbers": {
+    "31": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.07,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_851e802bbe584bc1b79dbda96123829d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the calculation: 128 - (47 + 38 + 12) = 128 - 97 = 31 GB.\n\nUncertainty: The specific app names and system usage details were provided in the prompt, so the calculation is based on those exact figures."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "attention_active",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 19.58,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8c3c1f1db274458f9e6562a66a4c3371"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The text explicitly states the counts for the three villages (214 + 96 + 158 = 460) but does not specify which village had the broken pump. The text mentions a \"broken pump\" in the second village, but does not identify it as belonging to that specific village or confirm the repair date relative to the village assignment.\n\nTherefore, the total count is **460**, but the village with the broken pump "
+  },
+  {
+   "fixture": "gist",
+   "arm": "attention_active",
+   "assertions": {
+    "tension": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.26,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ab077da770534b999908c689fb2e9a70"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is conflicting priorities among departments: budget constraints versus timely release, with marketing pushing for more ads and engineering requesting additional testing time."
+  },
+  {
+   "fixture": "units",
+   "arm": "attention_active",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.35,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6b017f2dff144f07bc86bf640b055e1a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been logged so far. Therefore, there are **2 kilometers** remaining to be covered.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "attention_active",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 29.33,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_11caf030a5b54f61a71c8fb33403cacf",
+     "pkt_5351258313ef42b1bc37bf336803dbbc",
+     "pkt_55ca92caad33486ea8dba0f5599ab01d"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Laptop Y fits better within the 1000 euro limit."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "coupling_0",
+   "assertions": {
+    "red": true,
+    "blue": false
+   },
+   "numbers": {
+    "40": true,
+    "10": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 34.04,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_22a312a476c94a5eb75c63b227de1b31",
+     "pkt_1784593b76334c5c947a0751046337a3",
+     "pkt_041419203c17404ba2e24a2ba6800684"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Option Red leaves 40 euros unused; Option Blue uses all 120 euros. Trade-off involves cost versus time commitment."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "coupling_0",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 28.31,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_474e45779c874545a2fd52f1eb8ae2a4",
+     "pkt_677f0ae2f5be44f9ba32755997e266eb",
+     "pkt_723be094b81e43fc9d5beebd160e8683"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Plan B meets the deadline."
+  },
+  {
+   "fixture": "train",
+   "arm": "coupling_0",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.31,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2d2c147ccb99436c8753e914f47b5962"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided timeline:\n\n1.  **Train to Graz**: Leaves at **07:45** (Platform 3).\n2.  **Bus to Linz**: Leaves at **08:10** (Stop B).\n3.  **Ferry**: Leaves at **09:30**.\n\nThe connection that leaves first is the **Train to Graz**, departing at **07:45 from Platform 3**."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "coupling_0",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 26.82,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c8a70b47e3874f398232837880896c31",
+     "pkt_d27ca76bcd894f6fa0bbc36853c953ea"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": []
+   },
+   "output": "Based on the provided text:\n- **Invoice 55-1209** is for **340 euros** and is due on **November 2**.\n- **Invoice 55-1210** is for **125 euros** and has been **paid**.\n\nThe total amount still open is **125 euros**, and the invoice number is **55-1210**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "coupling_0",
+   "assertions": {
+    "flour": false,
+    "eggs": false
+   },
+   "numbers": {
+    "450": false,
+    "3": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 17.28,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_653b43b9ff9041cf8c6a89835fbe70b8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided source text, the calculation is straightforward:\n- **Flour**: 300 grams per person \u00d7 4 people = **1,200 grams** (or 1.2 kg)\n- **Eggs**: 2 eggs per person \u00d7 4 people = **8 eggs**\n\nFor 6 people, the calculation would be:\n- **Flour**: 300 g \u00d7 6 = **1,800 grams** (or 1.8 kg)\n- **Eggs**: 2 eggs \u00d7 6 = **12 eggs**\n\nThe source text does not contain a specific recipe for 6 people; the"
+  },
+  {
+   "fixture": "meeting",
+   "arm": "coupling_0",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3604b984bbd148768d7267b9e11d39bb"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "coupling_0",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.35,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_1b6c93816cf44062bec260b2e5ba2ab2"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "No, the notes do not agree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January. Therefore, the dates in the notes are inconsistent with each other."
+  },
+  {
+   "fixture": "storage",
+   "arm": "coupling_0",
+   "assertions": {
+    "free": true
+   },
+   "numbers": {
+    "31": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.68,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d2c3d800e2e74024802a0e31edb0a1bc"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided data:\n- Total Storage: 128 GB\n- Apps: 47 GB\n- Photos: 38 GB\n- System: 12 GB\n\nCalculation:\n128 - (47 + 38 + 12) = 128 - 97 = 31 GB\n\nFree space is approximately **31 GB**."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "coupling_0",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 16.26,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_07908f3727584b81be66e362f6b48664"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The survey team counted **460** households in total across the three villages. The **second village** is associated with the broken pump that was repaired on day 5."
+  },
+  {
+   "fixture": "gist",
+   "arm": "coupling_0",
+   "assertions": {
+    "tension": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.86,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3e85b7c5f5e44efaa6598ae68f927a22"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is conflicting priorities among departments: budget constraints versus timely release, with marketing pushing for more ads and engineering requesting additional testing time."
+  },
+  {
+   "fixture": "units",
+   "arm": "coupling_0",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.58,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_7b01a5499aba4835bfad05861eb9689c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been ridden so far. Therefore, there are **2 kilometers** missing.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "coupling_0",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 30.34,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_4a7fce7cbf394e8d9ab7adf9e784b876",
+     "pkt_4b1d3bbeb6d9446c907aceaee5781046",
+     "pkt_7c7997cc68fc4a5babee2a3c1fc59fe9"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Laptop Y fits better within the 1000 euro limit."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "coupling_1",
+   "assertions": {
+    "red": true,
+    "blue": true
+   },
+   "numbers": {
+    "40": true,
+    "10": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 33.22,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_65e18eeb102d484ab6bcbe355ea26bb0",
+     "pkt_2dc5676286d3467d95dfb0fed7ee8ffe",
+     "pkt_4db70022b1544bc5888e094c763c30f1"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Option Red leaves 40 euros; Option Blue leaves 10 euros. The trade-off involves cost versus time commitment."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "coupling_1",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 27.03,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_dc5aa81b2fb246a3abaa0094f161a9fd",
+     "pkt_93f8926e7cef4b44a567db56ad0bf716",
+     "pkt_cef2982b3c4b4de6a8f05fb77651e369"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Plan B meets the deadline."
+  },
+  {
+   "fixture": "train",
+   "arm": "coupling_1",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.67,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_29436d6cb7804d5db6a425dcad763cb3"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided text, the **train to Graz** departs first.\n\n*   **Time:** 07:45\n*   **Location:** Platform 3\n\nThe bus to Linz departs at 08:10 and the ferry leaves at 09:30."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "coupling_1",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 24.9,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_4809c0f2136748159f799c8e048f2f2f",
+     "pkt_6006b5edc8c14b34b77c27ae99d84d1a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": []
+   },
+   "output": "Based on the provided information:\n- **Invoice 55-1209** is for 340 euros and due on November 2.\n- **Invoice 55-1210** is for 125 euros and already paid.\n\nThe total amount still open is **125 euros**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "coupling_1",
+   "assertions": {
+    "flour": true,
+    "eggs": true
+   },
+   "numbers": {
+    "450": true,
+    "3": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.37,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_e32ebcf3cd8f414ea3e0678b85f1f1ba"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The calculation requires scaling the original ingredients by a factor of 1.5 (6 \u00f7 4). Therefore, you need **450 grams of flour** and **3 eggs**.\n\n*Note: This assumes the recipe is scaled linearly based on the number of people.*"
+  },
+  {
+   "fixture": "meeting",
+   "arm": "coupling_1",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.24,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_e199d6cdf531402ea0e12583463b2515"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "coupling_1",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.96,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_7676b633d34f4c93b72551ee2aa68a4d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "No, the notes do not agree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January. Therefore, the dates in the notes are inconsistent with each other."
+  },
+  {
+   "fixture": "storage",
+   "arm": "coupling_1",
+   "assertions": {
+    "free": false
+   },
+   "numbers": {
+    "31": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 14.05,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3a28d9ce9ddd430695c59a4cf10cbbd4"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided data:\n128 GB (Total) - 47 GB (Apps) - 38 GB (Photos) - 12 GB (System) = **20 GB** free.\n\nUncertainty: The calculation assumes the listed amounts are the exact current usage for each category, which is the basis for the answer."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "coupling_1",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 16.58,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_cba790aa37fc42bb8b5d0394e8495e2e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The total number of households counted is 460 (214 + 96 + 158). The broken pump was in the second village."
+  },
+  {
+   "fixture": "gist",
+   "arm": "coupling_1",
+   "assertions": {
+    "tension": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.44,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5b49e9e1faad4704afe9759c55b7d8f4"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is conflicting priorities among departments: budget constraints versus timely release, with marketing pushing for more ads and engineering requesting additional testing time."
+  },
+  {
+   "fixture": "units",
+   "arm": "coupling_1",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.84,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5f6f4e204df148059f102e19b6428ba3"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been ridden so far. Therefore, there are **2 kilometers** missing.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "coupling_1",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 25.99,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3749391931ea471f8764262f088b8adb",
+     "pkt_3cec9a729b594cf4ad3a210d9d85c2a3",
+     "pkt_672afc86a01e40369d7e52d3f8027e6d"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Laptop Y fits better within the 1000 euro limit."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "baseline_r2",
+   "assertions": {
+    "red": true,
+    "blue": true
+   },
+   "numbers": {
+    "40": true,
+    "10": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 48.17,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ee3fa6b5ac3242abba0fd82b7c95f175",
+     "pkt_733b5c9ecc324414953ab2ea8807c8b1"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Option Red leaves 40 euros; Option Blue leaves 10 euros. Trade-off involves cost versus time commitment."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "baseline_r2",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 30.26,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_341b1a21a687490e8d2df276c4943a77",
+     "pkt_1fad6546e5064366b8125a314c3402bc",
+     "pkt_73825be02ea84b80a688a111e03c5637"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Plan B meets the deadline."
+  },
+  {
+   "fixture": "train",
+   "arm": "baseline_r2",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.57,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_21fde6675c09497db5871cc642d84669"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided timeline:\n\n1.  **Train to Graz**: Leaves at **07:45** (Platform 3).\n2.  **Bus to Linz**: Leaves at **08:10** (Stop B).\n3.  **Ferry**: Leaves at **09:30**.\n\nThe connection that leaves first is the **Train to Graz**, departing at **07:45 from Platform 3**."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "baseline_r2",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 26.19,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_826e7dc9ee8d4d1096811b5604cc8d73",
+     "pkt_6f098338653f4046a589d94572bd1c5e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": []
+   },
+   "output": "Based on the provided information:\n- **Invoice 55-1209** is for 340 euros and due on November 2.\n- **Invoice 55-1210** is for 125 euros and already paid.\n\nThe total amount still open is **125 euros**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "baseline_r2",
+   "assertions": {
+    "flour": false,
+    "eggs": false
+   },
+   "numbers": {
+    "450": false,
+    "3": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 13.48,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_fc2bc16f416b4682b522c60a63cc4ec9"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided source text, the calculation is not possible because the source text does not contain information about the number of people or the total weight of the ingredients (specifically the flour amount). Therefore, no specific recipe exists in the text to solve this problem.\n\n**Uncertainty: High**"
+  },
+  {
+   "fixture": "meeting",
+   "arm": "baseline_r2",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.75,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_62a3bbcf0dc34ceebd6f7f07edd25cd8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "baseline_r2",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.58,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5f80a6c78cec4034a4faea84122d1a9a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "No, the notes do not agree. Note 1 states the change occurred on May 3rd, whereas Note 2 claims it has not been changed since January. Therefore, the dates in the notes are inconsistent with each other."
+  },
+  {
+   "fixture": "storage",
+   "arm": "baseline_r2",
+   "assertions": {
+    "free": false
+   },
+   "numbers": {
+    "31": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 16.87,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2246085664c04795b9171e6e661b8b86"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided data:\n- Total: 128 GB\n- Apps: 47 GB\n- Photos: 38 GB\n- System: 12 GB\n\nCalculation: 128 - (47 + 38) = 128 - 85 = 43 GB.\n\nUncertainty is high due to the lack of context on whether these figures are cumulative or if there are additional hidden components not listed."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "baseline_r2",
+   "assertions": {
+    "total": false,
+    "pump": true
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 15.79,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d08d6a209ca94babb3bb9218c21a5334"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The total number of households counted is 460. The broken pump was repaired in the second village."
+  },
+  {
+   "fixture": "gist",
+   "arm": "baseline_r2",
+   "assertions": {
+    "tension": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.86,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_725e8e9a7e724111948d495b6f23b077"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is balancing limited resources against competing priorities like marketing demands and delivery timelines."
+  },
+  {
+   "fixture": "units",
+   "arm": "baseline_r2",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.44,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5e1d55b916054ba7a0e10cf0bf7be528"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been logged so far. Therefore, there are **2 kilometers** remaining to be covered.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "baseline_r2",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 32.64,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_09cb6978f9e94427b7560881a21c97fa",
+     "pkt_6dde0280fb0b43489eeabe086064e344",
+     "pkt_bece312a55ab4a889cee817af2f13fcf"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Laptop Y fits better within the 1000 euro budget."
+  },
+  {
+   "fixture": "aurora",
+   "arm": "baseline_r3",
+   "assertions": {
+    "red": true,
+    "blue": true
+   },
+   "numbers": {
+    "40": true,
+    "10": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 35.23,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_bbf71737132e421d85ee084ccbefc67d",
+     "pkt_163c90f24e744408822d8299e0f4d432",
+     "pkt_7afd2d1572c248398c0a21b9f09d240b"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Option Red leaves 40 euros; Option Blue leaves 10 euros. The choice depends on urgency versus funds."
+  },
+  {
+   "fixture": "borealis",
+   "arm": "baseline_r3",
+   "assertions": {
+    "a_rest": true,
+    "b_rest": false,
+    "pick_a": false
+   },
+   "numbers": {
+    "25": true,
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.3333333333333333,
+   "turn_s": 29.74,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_08d9745f650e4d27ab6a633c0317c466",
+     "pkt_70a0ab87aa7e40f88720987906648514",
+     "pkt_9dd2109122744b24946dfa0ecd685201"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "output": "Plan A leaves 25 euros; Plan B leaves 30 euros. Plan B meets the deadline."
+  },
+  {
+   "fixture": "train",
+   "arm": "baseline_r3",
+   "assertions": {
+    "train": true,
+    "time": true,
+    "where": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.91,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c805474dbda44af8b31adc8ccfa58923"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided text, the **train to Graz** departs first.\n\nIt leaves at **07:45 from platform 3**.\n\nThe bus to Linz departs at 08:10 from stop B, and the ferry leaves at 09:30."
+  },
+  {
+   "fixture": "invoice",
+   "arm": "baseline_r3",
+   "assertions": {
+    "num": true,
+    "amount": true
+   },
+   "numbers": {
+    "340": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 28.63,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2854f56d667c4db19198edbcf44bc854",
+     "pkt_4be5400555264db8a1602f35cf3e8b40"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_AB",
+    "inquisition": []
+   },
+   "output": "Based on the provided text:\n- **Invoice 55-1209** is for **340 euros** and is due on **November 2**.\n- **Invoice 55-1210** is for **125 euros** and has been **paid**.\n\nThe total amount still open is **125 euros**, and the invoice number is **55-1210**."
+  },
+  {
+   "fixture": "recipe",
+   "arm": "baseline_r3",
+   "assertions": {
+    "flour": false,
+    "eggs": false
+   },
+   "numbers": {
+    "450": false,
+    "3": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 17.27,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f512b3c68ca44aea916a66f86ec07ed7"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The calculation is based on the provided source text, but the premise contradicts the new request. Since the source text states a recipe for 4 people, the number of ingredients (300g flour, 2 eggs) cannot be scaled up to 6 people without violating the stated rule. Therefore, the answer is not possible under the given rules."
+  },
+  {
+   "fixture": "meeting",
+   "arm": "baseline_r3",
+   "assertions": {
+    "day": true,
+    "time": true,
+    "who": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.95,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_e81090f2de3e4f2ba4c2dce4a7be1947"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The meeting has been rescheduled to Wednesday at 14:30. Lena will miss it."
+  },
+  {
+   "fixture": "conflict",
+   "arm": "baseline_r3",
+   "assertions": {
+    "disagree": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.79,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9ef3855a30624dbe857681ee93b5dfa8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The notes disagree. Note 1 states the change occurred on May 3rd, while Note 2 claims it has not been changed since January."
+  },
+  {
+   "fixture": "storage",
+   "arm": "baseline_r3",
+   "assertions": {
+    "free": true
+   },
+   "numbers": {
+    "31": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.28,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2370aacc5aa54ee7ada1db3e9976029c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "Based on the provided numbers:\n- Total: 128 GB\n- Used: 47 + 38 + 12 = 97 GB\n- Free: 128 - 97 = 31 GB\n\nThe system states there are **31 GB** of free space."
+  },
+  {
+   "fixture": "long_detail",
+   "arm": "baseline_r3",
+   "assertions": {
+    "total": false,
+    "pump": false
+   },
+   "numbers": {
+    "468": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 16.8,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6576e254133c44819af0676d3c3e1f17"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "output": "The text does not explicitly state the number of households counted in total or identify which specific village had the broken pump. Therefore, the answer is uncertain based on the provided text."
+  },
+  {
+   "fixture": "gist",
+   "arm": "baseline_r3",
+   "assertions": {
+    "tension": true
+   },
+   "numbers": {},
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.86,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9a3642833f934cb09fd7c5218357c3ca"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The main tension is conflicting priorities among departments: budget constraints versus timely release, with marketing pushing for more ads and engineering requesting additional testing time."
+  },
+  {
+   "fixture": "units",
+   "arm": "baseline_r3",
+   "assertions": {
+    "missing": false
+   },
+   "numbers": {
+    "5": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.36,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ade9030704e54b6cb3329ddbdea734e7"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "output": "The cyclist needs to ride 50 km, but only 18 km have been ridden so far. Therefore, there are **2 kilometers** missing.\n\n\\boxed{2}"
+  },
+  {
+   "fixture": "choice",
+   "arm": "baseline_r3",
+   "assertions": {
+    "x": false,
+    "why": false
+   },
+   "numbers": {},
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 30.93,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_13776b79b6474cb086b158fe896d75f6",
+     "pkt_5e0a3dd145ae43e380cfecef31933a9f",
+     "pkt_989cd2bb70b24039a27e2a980ce2aaa4"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "output": "Laptop Y fits better within the 1000 euro budget."
+  }
+ ],
+ "claim_limit": "12 short English fixtures, one seed, regex checks on the final answer; direction only",
+ "verdict": {
+  "noise_band_from_3_baseline_runs": {
+   "pass_rate": [
+    0.417,
+    0.583
+   ],
+   "assert_rate": [
+    0.486,
+    0.611
+   ]
+  },
+  "arms": {
+   "effort_low": {
+    "pass_rate": 0.5,
+    "outside_noise": false
+   },
+   "effort_high": {
+    "pass_rate": 0.5,
+    "outside_noise": false
+   },
+   "no_inquisition": {
+    "pass_rate": 0.583,
+    "outside_noise": false
+   },
+   "no_coalition": {
+    "pass_rate": 0.417,
+    "outside_noise": false
+   },
+   "gist_active": {
+    "pass_rate": 0.5,
+    "outside_noise": false
+   },
+   "attention_active": {
+    "pass_rate": 0.583,
+    "outside_noise": false
+   },
+   "coupling_0": {
+    "pass_rate": 0.5,
+    "outside_noise": false
+   },
+   "coupling_1": {
+    "pass_rate": 0.583,
+    "outside_noise": false
+   }
+  },
+  "focal_coalition_helps": false,
+  "adaptive_effort_helps": false,
+  "gist_active_helps": false,
+  "attention_active_helps": false,
+  "coupling_gain_choice": "BOOT .5 kept: 0 and 1 inside the noise band",
+  "determinism": "rerun of identical baseline reproduced 4-5 of 12 outputs exactly"
+ }
+}

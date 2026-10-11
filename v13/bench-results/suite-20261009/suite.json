@@ -1,0 +1,1047 @@
+{
+ "schema": "V13_MEASUREMENT_SUITE_RESULT_V1",
+ "created_utc": "2026-10-09T17:01:30Z",
+ "counts": {
+  "MEASURED": 4,
+  "TESTED": 23,
+  "MEASURED_FAILING": 1,
+  "NEEDS_REDMI": 2,
+  "NOT_IMPLEMENTED": 5
+ },
+ "benchmarks": [
+  {
+   "id": "24.1",
+   "title": "Second-Attempt Advantage",
+   "tests": [
+    "test_retrieval",
+    "test_semantic_memory"
+   ],
+   "artifacts": [
+    "docs/proofs/second-attempt-linux-current.json",
+    "../bench-results/semantic-recall-20261009/semantic_recall.json"
+   ],
+   "needs": "models",
+   "implemented": true,
+   "note": "paraphrase transfer measured; restart/negative-transfer families via integration_second_attempt (models)",
+   "verdict": [
+    {
+     "file": "../bench-results/semantic-recall-20261009/semantic_recall.json",
+     "path": "end_to_end.en.hit_at_1",
+     "op": ">=",
+     "value": 0.9
+    }
+   ],
+   "status": "MEASURED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.2",
+   "title": "Immediate Memory",
+   "tests": [
+    "test_semantic_memory",
+    "test_retrieval",
+    "test_experience_replay"
+   ],
+   "artifacts": [
+    "docs/proofs/second-attempt-linux-current.json"
+   ],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.3",
+   "title": "Automaticity",
+   "tests": [
+    "test_agi_live",
+    "test_effort"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "skill fast path and effort; quality-at-fewer-steps not measured",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.4",
+   "title": "Re-open / De-automatization",
+   "tests": [
+    "test_growth",
+    "test_age"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "skill reopen + age demotion; live salience reopen not measured",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.5",
+   "title": "Retention",
+   "tests": [
+    "test_learning_invariants",
+    "test_retrieval"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.6",
+   "title": "Output Guarantee",
+   "tests": [
+    "test_offer_deadlines",
+    "test_output_policy_runtime"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.7",
+   "title": "Provenance",
+   "tests": [
+    "test_history_lineage",
+    "test_output_source_erasure",
+    "test_retrieval_capture",
+    "test_episodes"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.8",
+   "title": "Local Plasticity",
+   "tests": [
+    "test_neuromod",
+    "test_plasticity"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.9",
+   "title": "Body Swap",
+   "tests": [
+    "test_growth",
+    "test_component_generations",
+    "test_agi_live"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "slot lifecycle; parity on real bodies not measured",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.10",
+   "title": "Action Safety",
+   "tests": [
+    "test_growth",
+    "test_focal"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "tool gate + C5 suppression; real external actions blocked until WP-K",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.11",
+   "title": "Callosum Utility ohne Homogenisierung",
+   "tests": [
+    "test_step2_utility"
+   ],
+   "artifacts": [
+    "docs/proofs/step2-semantic-utility-summary-20261008.json"
+   ],
+   "needs": "models",
+   "implemented": true,
+   "note": "",
+   "verdict": [
+    {
+     "file": "docs/proofs/step2-semantic-utility-summary-20261008.json",
+     "path": "canonical_gate_pass",
+     "op": "==",
+     "value": true
+    }
+   ],
+   "status": "MEASURED_FAILING",
+   "verdict_failures": [
+    {
+     "file": "docs/proofs/step2-semantic-utility-summary-20261008.json",
+     "path": "canonical_gate_pass",
+     "expected": "== True",
+     "actual": false
+    }
+   ]
+  },
+  {
+   "id": "24.12",
+   "title": "Response Governor",
+   "tests": [
+    "test_offer_deadlines",
+    "test_native_http_budget",
+    "test_runtime_queue"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.13",
+   "title": "Controlled Exploration",
+   "tests": [
+    "test_growth"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "curiosity budget only; route discovery under shadow not measured",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.14",
+   "title": "Control-Fabric Overhead",
+   "tests": [
+    "test_resource_monitor",
+    "test_process_memory"
+   ],
+   "artifacts": [],
+   "needs": "redmi",
+   "implemented": true,
+   "note": "",
+   "status": "NEEDS_REDMI",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.15",
+   "title": "Channel Utility / Latent-vs-Fallback",
+   "tests": [
+    "test_step2_utility",
+    "test_timescale_controls"
+   ],
+   "artifacts": [
+    "../bench-results/timescale-gate-20261009/two_body.analysis.json"
+   ],
+   "needs": "models",
+   "implemented": true,
+   "note": "latent channel not implemented (B3 OFF)",
+   "status": "MEASURED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.16",
+   "title": "World Grounding / Counterfactual Reliability",
+   "tests": [
+    "test_world_state",
+    "test_world_worker",
+    "test_agi_live"
+   ],
+   "artifacts": [
+    "docs/proofs/doctor-world-linux-20260930.json"
+   ],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.17",
+   "title": "Deliberation Trajectory / Halting",
+   "tests": [
+    "test_focal",
+    "test_readout_worker"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.18",
+   "title": "Fast Episodic Parametric Trace",
+   "tests": [],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": false,
+   "note": "MEM.parametric_fast_trace = 0 at Age 0 (blueprint optional)",
+   "status": "NOT_IMPLEMENTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.19",
+   "title": "Shared Pre-Router Forgetting",
+   "tests": [],
+   "artifacts": [],
+   "needs": "models",
+   "implemented": false,
+   "note": "needs MoE body (WP-N11)",
+   "status": "NOT_IMPLEMENTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.20",
+   "title": "Multiscale Gist/Detail Resolution",
+   "tests": [
+    "test_timescale_controls",
+    "test_body_state"
+   ],
+   "artifacts": [
+    "../bench-results/timescale-gate-20261009/two_body.analysis.json"
+   ],
+   "needs": "models",
+   "implemented": true,
+   "note": "",
+   "status": "MEASURED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.21",
+   "title": "Developmental Age Control",
+   "tests": [
+    "test_age"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.22",
+   "title": "C-native / Selective Body-Wake",
+   "tests": [
+    "test_effort",
+    "test_readout_worker"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.23",
+   "title": "Adaptive Reasoning Effort",
+   "tests": [
+    "test_effort"
+   ],
+   "artifacts": [],
+   "needs": "models",
+   "implemented": true,
+   "note": "quality vs fixed low/high baselines needs model run",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.24",
+   "title": "Native Cache/Attention Capability Ablation",
+   "tests": [
+    "test_context_os"
+   ],
+   "artifacts": [
+    "../bench-results/context-cache-20261009"
+   ],
+   "needs": "models",
+   "implemented": true,
+   "note": "",
+   "status": "MEASURED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.25",
+   "title": "Observer-Pass Utility",
+   "tests": [
+    "test_step2_utility"
+   ],
+   "artifacts": [
+    "docs/proofs/step2-final-full-audit-20261009.json"
+   ],
+   "needs": "models",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.26",
+   "title": "JEF-KV/Broadcast Bridge",
+   "tests": [],
+   "artifacts": [],
+   "needs": "models",
+   "implemented": false,
+   "note": "WP-N3",
+   "status": "NOT_IMPLEMENTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.27",
+   "title": "Focal Coalition / Unity Test",
+   "tests": [
+    "test_focal"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.28",
+   "title": "Corollary-Copy / Self-vs-World",
+   "tests": [
+    "test_world_state",
+    "test_selfmodel"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.28B",
+   "title": "Teacher Reference / Human Feedback Integrity",
+   "tests": [
+    "test_history_lineage",
+    "test_growth",
+    "test_core"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.29",
+   "title": "Modality Scaffold Internalisation",
+   "tests": [
+    "test_student_worker"
+   ],
+   "artifacts": [],
+   "needs": "models",
+   "implemented": true,
+   "note": "text A3 student only; no camera/audio (STEP8)",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.30",
+   "title": "Live / Full-duplex Interaction",
+   "tests": [],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": false,
+   "note": "not built",
+   "status": "NOT_IMPLEMENTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.31",
+   "title": "Cross-modal Learning",
+   "tests": [],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": false,
+   "note": "text only until STEP8",
+   "status": "NOT_IMPLEMENTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.32",
+   "title": "Fluid Experience Lifecycle",
+   "tests": [
+    "test_experience_replay",
+    "test_episodes",
+    "test_sleep_scheduler"
+   ],
+   "artifacts": [],
+   "needs": "none",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.33",
+   "title": "Redmi Scheduling / Memory Residency",
+   "tests": [
+    "test_growth",
+    "test_sleep_scheduler"
+   ],
+   "artifacts": [],
+   "needs": "redmi",
+   "implemented": true,
+   "note": "",
+   "status": "NEEDS_REDMI",
+   "verdict_failures": []
+  },
+  {
+   "id": "24.34",
+   "title": "Needle-class Additive Control Experiment",
+   "tests": [
+    "test_control_calibration"
+   ],
+   "artifacts": [
+    "docs/proofs/control-calibration-native-fit-20261001.json"
+   ],
+   "needs": "models",
+   "implemented": true,
+   "note": "",
+   "status": "TESTED",
+   "verdict_failures": []
+  }
+ ],
+ "ablations": [
+  {
+   "hypothesis": "Fine/Gist split helps",
+   "mechanism": "dual timescale B1/B2",
+   "controls": [
+    "identical policies",
+    "shared-body dual state",
+    "single body"
+   ],
+   "controls_available": [
+    "identical policies",
+    "shared-body dual state",
+    "single body"
+   ],
+   "artifacts": [
+    "../bench-results/timescale-gate-20261009/same_model_same_policy.json",
+    "../bench-results/timescale-gate-20261009/shared_body_dual_state.json",
+    "../bench-results/timescale-gate-20261009/same_model_prompt_only.json"
+   ],
+   "note": "b2_control; complementarity not proven",
+   "missing": []
+  },
+  {
+   "hypothesis": "Callosum helps",
+   "mechanism": "adaptive hybrid B3",
+   "controls": [
+    "no-message",
+    "exact",
+    "symbolic",
+    "latent"
+   ],
+   "controls_available": [
+    "no-message",
+    "exact",
+    "symbolic"
+   ],
+   "artifacts": [
+    "docs/proofs/step2-ablations-linux.json"
+   ],
+   "note": "latent channel OFF",
+   "missing": [
+    "latent"
+   ]
+  },
+  {
+   "hypothesis": "Focal coalition helps",
+   "mechanism": "bounded hybrid B4/C4",
+   "controls": [
+    "full context only",
+    "retrieval only",
+    "fixed slots"
+   ],
+   "controls_available": [],
+   "artifacts": [],
+   "note": "",
+   "missing": [
+    "full context only",
+    "retrieval only",
+    "fixed slots"
+   ]
+  },
+  {
+   "hypothesis": "Episodic fast memory helps",
+   "mechanism": "Experience retrieval",
+   "controls": [
+    "response cache",
+    "no memory",
+    "param delta only"
+   ],
+   "controls_available": [
+    "no memory"
+   ],
+   "artifacts": [
+    "../bench-results/semantic-recall-20261009/semantic_recall.json"
+   ],
+   "note": "lexical vs semantic recall; response-cache control missing",
+   "missing": [
+    "response cache",
+    "param delta only"
+   ]
+  },
+  {
+   "hypothesis": "JEPA predictor helps",
+   "mechanism": "latent predictor",
+   "controls": [
+    "supervised readout",
+    "next-token-like probe",
+    "no predictor"
+   ],
+   "controls_available": [],
+   "artifacts": [],
+   "note": "SIGReg vs EMA ablation exists (test_predictor_sigreg), not these controls",
+   "missing": [
+    "supervised readout",
+    "next-token-like probe",
+    "no predictor"
+   ]
+  },
+  {
+   "hypothesis": "Eligibility helps",
+   "mechanism": "activity trace gating",
+   "controls": [
+    "gradient only",
+    "random mask",
+    "recency only"
+   ],
+   "controls_available": [],
+   "artifacts": [],
+   "note": "",
+   "missing": [
+    "gradient only",
+    "random mask",
+    "recency only"
+   ]
+  },
+  {
+   "hypothesis": "Typed modulators help",
+   "mechanism": "vector modulators",
+   "controls": [
+    "scalar reward",
+    "human-only",
+    "outcome-only"
+   ],
+   "controls_available": [],
+   "artifacts": [],
+   "note": "",
+   "missing": [
+    "scalar reward",
+    "human-only",
+    "outcome-only"
+   ]
+  },
+  {
+   "hypothesis": "Dream helps",
+   "mechanism": "counterfactual Sleep B",
+   "controls": [
+    "no dream",
+    "replay only",
+    "dream no writes",
+    "dream policy-only"
+   ],
+   "controls_available": [
+    "no dream",
+    "replay only",
+    "dream no writes"
+   ],
+   "artifacts": [],
+   "note": "sleep modes a/b/c; dream writes only hypotheses",
+   "missing": [
+    "dream policy-only"
+   ]
+  },
+  {
+   "hypothesis": "Proceduralization helps",
+   "mechanism": "FastForward compiled skill",
+   "controls": [
+    "full deliberation",
+    "static shortcut"
+   ],
+   "controls_available": [],
+   "artifacts": [],
+   "note": "",
+   "missing": [
+    "full deliberation",
+    "static shortcut"
+   ]
+  },
+  {
+   "hypothesis": "Age helps stability",
+   "mechanism": "stage+continuous maturity",
+   "controls": [
+    "fixed conservative",
+    "fixed permissive"
+   ],
+   "controls_available": [],
+   "artifacts": [],
+   "note": "",
+   "missing": [
+    "fixed conservative",
+    "fixed permissive"
+   ]
+  },
+  {
+   "hypothesis": "Two bodies worth mobile cost",
+   "mechanism": "B1+B2",
+   "controls": [
+    "shared body + two states",
+    "one body"
+   ],
+   "controls_available": [
+    "shared body + two states",
+    "one body"
+   ],
+   "artifacts": [
+    "../bench-results/timescale-gate-20261009/shared_body_dual_state.json"
+   ],
+   "note": "mobile cost needs Redmi (WP-R)",
+   "missing": []
+  }
+ ],
+ "tests": {
+  "test_age": {
+   "ran": 13,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.47
+  },
+  "test_agi_live": {
+   "ran": 6,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.86
+  },
+  "test_body_state": {
+   "ran": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.32
+  },
+  "test_component_generations": {
+   "ran": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.37
+  },
+  "test_context_os": {
+   "ran": 17,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.94
+  },
+  "test_control_calibration": {
+   "ran": 12,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 2.83
+  },
+  "test_core": {
+   "ran": 26,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 3.87
+  },
+  "test_effort": {
+   "ran": 13,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.34
+  },
+  "test_episodes": {
+   "ran": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.43
+  },
+  "test_experience_replay": {
+   "ran": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.39
+  },
+  "test_focal": {
+   "ran": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.82
+  },
+  "test_growth": {
+   "ran": 24,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 1.11
+  },
+  "test_history_lineage": {
+   "ran": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.08
+  },
+  "test_learning_invariants": {
+   "ran": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.02
+  },
+  "test_native_http_budget": {
+   "ran": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.66
+  },
+  "test_neuromod": {
+   "ran": 17,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.78
+  },
+  "test_offer_deadlines": {
+   "ran": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.39
+  },
+  "test_output_policy_runtime": {
+   "ran": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.73
+  },
+  "test_output_source_erasure": {
+   "ran": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.08
+  },
+  "test_plasticity": {
+   "ran": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.32
+  },
+  "test_process_memory": {
+   "ran": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.04
+  },
+  "test_readout_worker": {
+   "ran": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.06
+  },
+  "test_resource_monitor": {
+   "ran": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.0
+  },
+  "test_retrieval": {
+   "ran": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 7.8
+  },
+  "test_retrieval_capture": {
+   "ran": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.0
+  },
+  "test_runtime_queue": {
+   "ran": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.38
+  },
+  "test_selfmodel": {
+   "ran": 19,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.4
+  },
+  "test_semantic_memory": {
+   "ran": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.37
+  },
+  "test_sleep_scheduler": {
+   "ran": 21,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 1.84
+  },
+  "test_step2_utility": {
+   "ran": 12,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.04
+  },
+  "test_student_worker": {
+   "ran": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.74
+  },
+  "test_timescale_controls": {
+   "ran": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.01
+  },
+  "test_world_state": {
+   "ran": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.34
+  },
+  "test_world_worker": {
+   "ran": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "ok": true,
+   "seconds": 0.24
+  }
+ },
+ "gates": {
+  "counts": {
+   "GREEN": 8,
+   "PARTIAL": 11
+  },
+  "gates": {
+   "G0": "GREEN",
+   "STORE0": "GREEN",
+   "OP0": "GREEN",
+   "RUNNER0": "GREEN",
+   "STEP1": "GREEN",
+   "STEP2": "GREEN",
+   "STEP3": "GREEN",
+   "STEP5": "GREEN",
+   "STEP6": "PARTIAL",
+   "G-B-TIMESCALE-DIVERGENCE-001": "PARTIAL",
+   "G-CALLOSUM-UTILITY-002": "PARTIAL",
+   "G-FOCAL-CAPACITY-003": "PARTIAL",
+   "G-PROCEDURALIZATION-004": "PARTIAL",
+   "G-SELF-WORLD-005": "PARTIAL",
+   "G-TRAIN-RUNNER-PROOF-001": "PARTIAL",
+   "G-REPLAY-CONSOLIDATION-001": "PARTIAL",
+   "G-MODULATOR-SPECIFICITY-001": "PARTIAL",
+   "G-AGE-REOPEN-001": "PARTIAL",
+   "G-MOBILE-LONGRUN-001": "PARTIAL"
+  },
+  "definition": "GREEN = code+real data+persistence+test+telemetry+ablation+limitations and all deps GREEN"
+ },
+ "register": {
+  "operator_knobs": 58,
+  "blueprint_knobs": 299,
+  "match": 60,
+  "drift": 0,
+  "declared_only": 239,
+  "map_broken": 0,
+  "kind_inferred": 149,
+  "learnable_paths": 19,
+  "coverage": 0.2007,
+  "drift_list": [],
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee"
+ },
+ "models": null,
+ "rule": "No positive result may be claimed from a benchmark that allows response caching to fake learning (§99).",
+ "phone_measured": false
+}

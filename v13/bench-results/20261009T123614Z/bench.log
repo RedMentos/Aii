@@ -1,0 +1,7 @@
+[bench 12:36:14] Quelle /mnt/project-files/v13/code -> /tmp/bench/app
+[bench 12:39:46] START units
+[bench 12:42:59] ENDE  units rc=0 (193s)
+[bench 12:42:59] START setup
+[bench 12:44:21] ENDE  setup rc=0 (82s)
+[bench 12:44:21] START acceptance
+[bench 13:05:23] ENDE  acceptance rc=2 (1262s)

@@ -1,0 +1,269 @@
+{
+  "proof_kind": "C3_ANTI_ECHO_COMPARISON",
+  "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+  "lang": "en",
+  "modes": {
+    "legacy": {
+      "rows": [
+        {
+          "id": "en_greeting",
+          "output": "Hello! What would you like to ask me first?",
+          "metrics": {
+            "tokens": 9,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_any": true
+          }
+        },
+        {
+          "id": "en_rewrite",
+          "output": "The test operates independently without internet access.",
+          "metrics": {
+            "tokens": 7,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_all": false,
+            "forbid": true
+          }
+        },
+        {
+          "id": "en_grounded_report",
+          "output": "The budget is 120 euros.",
+          "metrics": {
+            "tokens": 5,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_all": true
+          }
+        },
+        {
+          "id": "en_abstain",
+          "output": "The project is led by Dr. Elena Martinez.",
+          "metrics": {
+            "tokens": 8,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_any": false
+          }
+        },
+        {
+          "id": "open_memory",
+          "output": "A local assistant can remember corrections by actively reviewing and analyzing the original message, identifying key points for repetition or clarification, and storing these insights in a readily accessible database or notes.",
+          "metrics": {
+            "tokens": 32,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.90625,
+            "query_echo": 0.13333333333333333,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_plan",
+          "output": "1. Choose a sunny spot with good airflow.  \n2. Select compact, low-maintenance plants.  \n3. Install a simple irrigation system or self-watering pot.",
+          "metrics": {
+            "tokens": 24,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9583333333333334,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_compare",
+          "output": "Trains are generally faster and more reliable, while buses may be cheaper but can be less frequent and have longer travel times.",
+          "metrics": {
+            "tokens": 22,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9090909090909091,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_why",
+          "output": "A phone gets warm because it runs a language model, which processes text data and generates responses based on patterns learned from large datasets.",
+          "metrics": {
+            "tokens": 24,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9583333333333334,
+            "query_echo": 0.13636363636363635,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        }
+      ],
+      "mean_query_echo": 0.03371212121212121,
+      "mean_repetition_rate": 0.0,
+      "mean_type_token_ratio": 0.966500946969697,
+      "below_min_new": 2,
+      "checks_passed": 2,
+      "checked": 4
+    },
+    "anti_echo": {
+      "rows": [
+        {
+          "id": "en_greeting",
+          "output": "Hello! How can I assist you today?",
+          "metrics": {
+            "tokens": 7,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_any": true
+          }
+        },
+        {
+          "id": "en_rewrite",
+          "output": "The test runs independently on local systems without relying on the cloud.",
+          "metrics": {
+            "tokens": 12,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.8333333333333334,
+            "query_echo": 0.1,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_all": true,
+            "forbid": true
+          }
+        },
+        {
+          "id": "en_grounded_report",
+          "output": "The budget is 120 euros.",
+          "metrics": {
+            "tokens": 5,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_all": true
+          }
+        },
+        {
+          "id": "en_abstain",
+          "output": "The lead person for Project Aurora is Sarah Chen.",
+          "metrics": {
+            "tokens": 9,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_any": false
+          }
+        },
+        {
+          "id": "open_memory",
+          "output": "A local assistant can recall corrections by storing them in their internal memory, referencing previous entries or notes, and using that knowledge to guide future responses. They also benefit from reviewing past interactions to identify patterns in correction requests and improving accuracy over time.",
+          "metrics": {
+            "tokens": 44,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9318181818181818,
+            "query_echo": 0.047619047619047616,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_plan",
+          "output": "1. Choose compact, space-efficient plants suited for small areas.\n2. Invest in adequate lighting and drainage systems.\n3. Plan your layout using vertical gardening or tiered structures.",
+          "metrics": {
+            "tokens": 28,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_compare",
+          "output": "Trains typically cover more distance per passenger than buses, with higher speeds and lower fares, while buses are generally cheaper but slower and less efficient. Trains often have dedicated routes and schedules, whereas buses may have variable service times and limited capacity.",
+          "metrics": {
+            "tokens": 42,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.8333333333333334,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_why",
+          "output": "A phone getting warm when running a language model is due to increased heat generated by processing power, memory usage, and cooling mechanisms during operation. The device's processor and storage consume energy, which contributes to the overall temperature rise. Additionally, the language model itself may require computational resources beyond basic mobile capabilities, further increasing heat output.",
+          "metrics": {
+            "tokens": 57,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.8596491228070176,
+            "query_echo": 0.01818181818181818,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        }
+      ],
+      "mean_query_echo": 0.020725108225108226,
+      "mean_repetition_rate": 0.0,
+      "mean_type_token_ratio": 0.9322667464114832,
+      "below_min_new": 2,
+      "checks_passed": 3,
+      "checked": 4
+    }
+  }
+}

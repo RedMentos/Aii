@@ -1,0 +1,38 @@
+{
+  "proof_kind": "B_TIMESCALE_DIVERGENCE_CONTROLS",
+  "gate": "G-B-TIMESCALE-DIVERGENCE-001",
+  "languages": [
+    "en"
+  ],
+  "controls": {
+    "two_body": {
+      "mean_both_task_fraction": 1.0,
+      "mean_best_single_task_fraction": 1.0,
+      "task_bound_positive_fixtures": []
+    },
+    "shared_body_dual_state": {
+      "mean_both_task_fraction": 0.875,
+      "mean_best_single_task_fraction": 0.875,
+      "task_bound_positive_fixtures": []
+    },
+    "same_model_prompt_only": {
+      "mean_both_task_fraction": 0.75,
+      "mean_best_single_task_fraction": 0.75,
+      "task_bound_positive_fixtures": []
+    },
+    "same_model_same_policy": {
+      "mean_both_task_fraction": 0.75,
+      "mean_best_single_task_fraction": 0.75,
+      "task_bound_positive_fixtures": []
+    }
+  },
+  "combination_beats_single": false,
+  "two_body_beats_all_controls": true,
+  "cheaper_shared_body_is_enough": false,
+  "diagnostic_signal": false,
+  "gate_promotion": false,
+  "claim_limits": [
+    "Few fixtures, lexical task assertions; diagnostic only.",
+    "Linux x86 timing is not Redmi timing."
+  ]
+}

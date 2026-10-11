@@ -1,0 +1,248 @@
+{
+ "schema": "v13-sparse-memory-bench-v1",
+ "date": "2026-10-09",
+ "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+ "torch": "2.14.1+cpu",
+ "master_sha256": "f630da86651136c9aee893b04b7542007e90fdd718355358e57e7ecc31517cfd",
+ "smf_defaults": {
+  "slots": 8192,
+  "key_dim": 64,
+  "topk": 32,
+  "train_slots": 128,
+  "layer": null,
+  "lr": 0.05,
+  "max_steps": 60,
+  "target_ce": 0.05,
+  "seed": 13,
+  "threads": 4,
+  "max_tokens": 96,
+  "train_keys": false,
+  "anchor_weight": 0.0,
+  "scale": 1.0,
+  "background_tokens": 24,
+  "anchors_per_step": 8,
+  "mode": "keyed",
+  "keyed_slots": 1024,
+  "tau": 0.01,
+  "margin": 0.02,
+  "theta_min": 0.9
+ },
+ "base": {
+  "learned_recall": 0.0,
+  "paraphrase_recall": 0.0,
+  "near_miss_leak": 0.0,
+  "probe_retention": 0.8333333333333334
+ },
+ "runs": [
+  {
+   "name": "smf_tfidf",
+   "cfg": {
+    "kind": "smf",
+    "smf": {
+     "mode": "tfidf"
+    }
+   },
+   "train": {
+    "steps": 7,
+    "final_ce": 0.042,
+    "selected_slots": 128,
+    "trainable_parameters": 131072,
+    "layer": 7
+   },
+   "eval": {
+    "learned_recall": 0.875,
+    "paraphrase_recall": 0.3333333333333333,
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.75,
+    "kl_to_base": 0.9969158037565649,
+    "forgotten": [
+     "Which planet do we live on?",
+     "What is the largest ocean on Earth?"
+    ]
+   },
+   "seconds": 74.0
+  },
+  {
+   "name": "smf_tfidf_anchor",
+   "cfg": {
+    "kind": "smf",
+    "smf": {
+     "mode": "tfidf",
+     "anchor_weight": 4.0
+    }
+   },
+   "train": {
+    "steps": 17,
+    "final_ce": 0.04979,
+    "selected_slots": 128,
+    "trainable_parameters": 131072,
+    "layer": 7
+   },
+   "eval": {
+    "learned_recall": 0.875,
+    "paraphrase_recall": 0.16666666666666666,
+    "near_miss_leak": 0.4,
+    "probe_retention": 0.75,
+    "kl_to_base": 0.2993621403972308,
+    "forgotten": [
+     "Which planet do we live on?",
+     "What is the largest ocean on Earth?"
+    ]
+   },
+   "seconds": 125.9
+  },
+  {
+   "name": "smf_keyed_r80",
+   "cfg": {
+    "kind": "smf",
+    "smf": {
+     "mode": "keyed",
+     "theta_min": 0.8
+    }
+   },
+   "train": {
+    "steps": 11,
+    "final_ce": 0.04088,
+    "selected_slots": 80,
+    "trainable_parameters": 81920,
+    "layer": 7
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.3333333333333333,
+    "near_miss_leak": 0.4,
+    "probe_retention": 0.8333333333333334,
+    "kl_to_base": 0.25759510005414493,
+    "forgotten": []
+   },
+   "seconds": 77.1
+  },
+  {
+   "name": "smf_keyed_r90",
+   "cfg": {
+    "kind": "smf",
+    "smf": {
+     "mode": "keyed",
+     "theta_min": 0.9
+    }
+   },
+   "train": {
+    "steps": 8,
+    "final_ce": 0.04823,
+    "selected_slots": 80,
+    "trainable_parameters": 81920,
+    "layer": 7
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.5,
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.8333333333333334,
+    "kl_to_base": 2.9763842979146915e-06,
+    "forgotten": []
+   },
+   "seconds": 75.3
+  },
+  {
+   "name": "smf_keyed_r90_neg",
+   "cfg": {
+    "kind": "smf",
+    "smf": {
+     "mode": "keyed",
+     "theta_min": 0.9
+    },
+    "negatives": true
+   },
+   "train": {
+    "steps": 5,
+    "final_ce": 0.02317,
+    "selected_slots": 80,
+    "trainable_parameters": 81920,
+    "layer": 7
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.3333333333333333,
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.8333333333333334,
+    "kl_to_base": 6.127488740477934e-07,
+    "forgotten": []
+   },
+   "seconds": 75.0
+  },
+  {
+   "name": "lora",
+   "cfg": {
+    "kind": "lora",
+    "lr": 0.0003
+   },
+   "train": {
+    "steps": 14,
+    "final_ce": 0.03439,
+    "trainable_parameters": 1769472
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.8333333333333334,
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.6666666666666666,
+    "kl_to_base": 1.514905537168185,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?",
+     "Translate \"thank you\" into German."
+    ]
+   },
+   "seconds": 41.8
+  },
+  {
+   "name": "lora_anchor",
+   "cfg": {
+    "kind": "lora",
+    "lr": 0.0003,
+    "anchor_weight": 4.0
+   },
+   "train": {
+    "steps": 20,
+    "final_ce": 0.04097,
+    "trainable_parameters": 1769472
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.5,
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.75,
+    "kl_to_base": 0.07544655651630212,
+    "forgotten": [
+     "Translate \"thank you\" into German."
+    ]
+   },
+   "seconds": 159.6
+  },
+  {
+   "name": "full",
+   "cfg": {
+    "kind": "full",
+    "lr": 1e-05
+   },
+   "train": {
+    "steps": 8,
+    "final_ce": 0.04371,
+    "trainable_parameters": 162583296
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.8333333333333334,
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.75,
+    "kl_to_base": 0.9857658122976621,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "seconds": 35.3
+  }
+ ],
+ "task": "8 invented facts, 6 paraphrases, 5 near-miss, 12 probes (scripts/lora_bench.py); torch fp32 master path, not the Q4 runner"
+}

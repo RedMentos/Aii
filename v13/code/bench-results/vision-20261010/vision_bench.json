@@ -1,0 +1,109 @@
+{
+ "schema": "v13-vision-bench-v1",
+ "date": "2026-10-10",
+ "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+ "n_images": 48,
+ "raw_eye_dim": 117,
+ "teacher": {
+  "model": "LFM2.5-VL-450M-Q4_0.gguf",
+  "mmproj": "mmproj-LFM2.5-VL-450m-Q8_0.gguf",
+  "authority": "REFERENCE_NOT_FACT",
+  "prompt": "Describe the image in one sentence: name the main objects, their colours and where they are.",
+  "seconds_per_image": 1.73,
+  "names_true": {
+   "colour": 1.0,
+   "shape": 1.0,
+   "place": 0.0
+  },
+  "half_names_colour": {
+   "object_half": 1.0,
+   "opposite_half": 0.08333333333333333
+  }
+ },
+ "raw_probe": {
+  "colour": {
+   "accuracy": 0.9791666666666666,
+   "chance": 0.25
+  },
+  "shape": {
+   "accuracy": 1.0,
+   "chance": 0.3333333333333333
+  },
+  "place": {
+   "accuracy": 1.0,
+   "chance": 0.25
+  }
+ },
+ "encoders": {
+  "hashed_bow": {
+   "alignment": {
+    "n": 48,
+    "folds": 4,
+    "held_out_top1": 0.5416666666666666,
+    "chance": 0.08333333333333333,
+    "held_out_mean_cosine": 0.810799432947126,
+    "reconstruction": {
+     "mse": 0.05731531697801234,
+     "mean_image_mse": 0.016506912652403116,
+     "ratio": 3.472200900612886,
+     "authority": "MEASUREMENT_ONLY"
+    }
+   },
+   "zero_shot": {
+    "colour": {
+     "accuracy": 0.6666666666666666,
+     "chance": 0.25
+    },
+    "shape": {
+     "accuracy": 0.9375,
+     "chance": 0.3333333333333333
+    },
+    "place": {
+     "accuracy": 0.25,
+     "chance": 0.25
+    }
+   },
+   "regions": {
+    "place_top1_of_4": 0.6666666666666666,
+    "chance": 0.25,
+    "place_within_axis": 1.0,
+    "axis_chance": 0.5
+   }
+  },
+  "embeddinggemma": {
+   "alignment": {
+    "n": 48,
+    "folds": 4,
+    "held_out_top1": 0.7291666666666666,
+    "chance": 0.08333333333333333,
+    "held_out_mean_cosine": 0.9422139061644973,
+    "reconstruction": {
+     "mse": 0.027365433593059003,
+     "mean_image_mse": 0.016506912652403116,
+     "ratio": 1.6578165868633876,
+     "authority": "MEASUREMENT_ONLY"
+    }
+   },
+   "zero_shot": {
+    "colour": {
+     "accuracy": 0.9166666666666666,
+     "chance": 0.25
+    },
+    "shape": {
+     "accuracy": 1.0,
+     "chance": 0.3333333333333333
+    },
+    "place": {
+     "accuracy": 0.20833333333333334,
+     "chance": 0.25
+    }
+   },
+   "regions": {
+    "place_top1_of_4": 0.6041666666666666,
+    "chance": 0.25,
+    "place_within_axis": 1.0,
+    "axis_chance": 0.5
+   }
+  }
+ }
+}

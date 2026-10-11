@@ -1,0 +1,167 @@
+{
+  "proof_kind": "STEP2_ABLATION_ANALYSIS",
+  "analysis_version": 1,
+  "source_proof_kind": "STEP2_EXISTING_PATH_ABLATIONS",
+  "source_status": "ABLATIONS_PARTIAL",
+  "uses_real_weights": true,
+  "phone_measured": false,
+  "gate_promotion": false,
+  "complementarity_proven": false,
+  "fixtures": [
+    {
+      "id": "aurora_budget_en",
+      "expected_numbers": [
+        40,
+        10
+      ],
+      "variants": [
+        {
+          "variant": "b1_only",
+          "expected_number_hits": 0,
+          "task_score": {
+            "passed": 0,
+            "total": 2,
+            "fraction": 0.0
+          },
+          "turn_s": 38.07518253099988,
+          "sampled_native_peak_rss_bytes": 1504444416
+        },
+        {
+          "variant": "b2_only",
+          "expected_number_hits": 2,
+          "task_score": {
+            "passed": 2,
+            "total": 2,
+            "fraction": 1.0
+          },
+          "turn_s": 39.08744006899997,
+          "sampled_native_peak_rss_bytes": 1503965184
+        },
+        {
+          "variant": "both_none",
+          "expected_number_hits": 2,
+          "task_score": {
+            "passed": 2,
+            "total": 2,
+            "fraction": 1.0
+          },
+          "turn_s": 24.306698955,
+          "sampled_native_peak_rss_bytes": 1479671808
+        },
+        {
+          "variant": "both_exact",
+          "expected_number_hits": 0,
+          "task_score": {
+            "passed": 0,
+            "total": 2,
+            "fraction": 0.0
+          },
+          "turn_s": 78.47241784099992,
+          "sampled_native_peak_rss_bytes": 1494024192
+        },
+        {
+          "variant": "both_control",
+          "expected_number_hits": 2,
+          "task_score": {
+            "passed": 2,
+            "total": 2,
+            "fraction": 1.0
+          },
+          "turn_s": 32.99323394199996,
+          "sampled_native_peak_rss_bytes": 1493975040
+        }
+      ],
+      "best_single_hits": 2,
+      "best_both_hits": 2,
+      "diagnostic_positive_combination_signal": false,
+      "best_single_task_fraction": 1.0,
+      "best_both_task_fraction": 1.0,
+      "task_bound_positive_combination_signal": false
+    },
+    {
+      "id": "borealis_deadline_en",
+      "expected_numbers": [
+        25,
+        5
+      ],
+      "variants": [
+        {
+          "variant": "b1_only",
+          "expected_number_hits": 1,
+          "task_score": {
+            "passed": 4,
+            "total": 4,
+            "fraction": 1.0
+          },
+          "turn_s": 21.498671906000027,
+          "sampled_native_peak_rss_bytes": 1504555008
+        },
+        {
+          "variant": "b2_only",
+          "expected_number_hits": 2,
+          "task_score": {
+            "passed": 2,
+            "total": 4,
+            "fraction": 0.5
+          },
+          "turn_s": 24.364360224000166,
+          "sampled_native_peak_rss_bytes": 1504075776
+        },
+        {
+          "variant": "both_none",
+          "expected_number_hits": 2,
+          "task_score": {
+            "passed": 4,
+            "total": 4,
+            "fraction": 1.0
+          },
+          "turn_s": 20.580218728999625,
+          "sampled_native_peak_rss_bytes": 1504735232
+        },
+        {
+          "variant": "both_exact",
+          "expected_number_hits": 2,
+          "task_score": {
+            "passed": 4,
+            "total": 4,
+            "fraction": 1.0
+          },
+          "turn_s": 18.4319109070002,
+          "sampled_native_peak_rss_bytes": 1503993856
+        },
+        {
+          "variant": "both_control",
+          "expected_number_hits": 2,
+          "task_score": {
+            "passed": 2,
+            "total": 4,
+            "fraction": 0.5
+          },
+          "turn_s": 20.387301266000122,
+          "sampled_native_peak_rss_bytes": 1473261568
+        }
+      ],
+      "best_single_hits": 2,
+      "best_both_hits": 2,
+      "diagnostic_positive_combination_signal": false,
+      "best_single_task_fraction": 1.0,
+      "best_both_task_fraction": 1.0,
+      "task_bound_positive_combination_signal": false
+    }
+  ],
+  "claim_limits": [
+    "Lexical expected-number coverage is diagnostic only; it is not semantic correctness.",
+    "Task assertions are deterministic fixture-specific checks, not an LLM semantic judge or general reasoning proof.",
+    "A positive signal on one fixture does not prove general B1/B2 complementarity.",
+    "Linux process RSS does not prove target-phone sustained RSS or thermal safety."
+  ],
+  "measurements": {
+    "max_sampled_native_peak_rss_bytes": 1504735232,
+    "median_turn_s": 24.335529589500084,
+    "max_turn_s": 78.47241784099992,
+    "diagnostic_positive_signal_fixtures": [],
+    "diagnostic_positive_signal_count": 0,
+    "fixture_count": 2
+  },
+  "status": "NO_DIAGNOSTIC_COMPLEMENTARITY_SIGNAL"
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "V13_EXECUTIVE_IMPLICIT_TASK_REFRESH_PROOF_V1",
+  "created_utc": "2026-10-06T05:36:56.192384+00:00",
+  "status": "UNIT_PASS",
+  "change": "Ordinary SOURCE_USER_REQUEST active_task now follows the current user event; only EXPLICIT_OPERATOR_TASK persists across turns.",
+  "reason": "Prevents stale prior user requests from being injected into unrelated later native context while preserving explicit operator task continuity.",
+  "tests": {
+    "focused": "12/12 tests.test_executive PASS",
+    "full": "242/242 unittest discovery PASS"
+  },
+  "source_hashes": {
+    "v13/executive.py": "a6845e052cec41c7d1602c0454520d0118c435d2e95f95bd71f3eea6c9b48dc6",
+    "tests/test_executive.py": "dbb7e4c477b1ef18b971a732437c5efcb98953162d00d34b4cbe9f320f6b92ab"
+  },
+  "claim_limits": [
+    "Unit/Linux source proof only; no target-phone performance claim.",
+    "Does not infer semantic task completion or add new executive authority.",
+    "Explicit :task state remains persistent until cleared."
+  ]
+}

@@ -1,0 +1,252 @@
+{
+  "device": {
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "android": false,
+    "cpu_count": 9
+  },
+  "uses_real_weights": true,
+  "history_turns": 0,
+  "phone_measured": false,
+  "before": {
+    "text": "Der genannte Betrag ist nicht bekannt.",
+    "status": "FINAL",
+    "metadata": {
+      "characters": 38,
+      "duration_s": 4.710729889999811,
+      "memory_ids": [],
+      "model_generated": true,
+      "model_revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+      "output_owner": "C5_REPORT_BROKER",
+      "route": {
+        "source": "OPERATOR_ROUTE_OVERRIDE"
+      },
+      "runner": {
+        "CAN_LATENT_INJECT": false,
+        "CAN_LATENT_TAP": false,
+        "CAN_TRAIN_BODY": false,
+        "actual_model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+        "duration_s": 4.702565933000187,
+        "generated_tokens": 10,
+        "history_trimmed": false,
+        "memory": {
+          "major_faults": 0,
+          "mapped_file_bytes": 715722752,
+          "minor_faults": 172473,
+          "pid": 8,
+          "pss_bytes": 1347078144,
+          "rss_bytes": 1348497408
+        },
+        "prompt_tokens": 105,
+        "role": "B1_DETAIL",
+        "sampled_peak_rss_bytes": 1348497408,
+        "timings": {
+          "cache_n": 0,
+          "predicted_ms": 390.743,
+          "predicted_n": 10,
+          "predicted_per_second": 23.033042178618686,
+          "predicted_per_token_ms": 43.41588888888889,
+          "prompt_ms": 1025.65,
+          "prompt_n": 105,
+          "prompt_per_second": 102.374104226588,
+          "prompt_per_token_ms": 9.768095238095238
+        },
+        "ttft_s": 4.314408118000074
+      },
+      "selected_offer_ids": [],
+      "self_candidate_hash": "1c7415807b8692d71ddb7fa4343afb7a7b07ee00420536621320a21c77114027"
+    }
+  },
+  "restart_same_session": true,
+  "after_restart": {
+    "text": "Das Budget von Projekt Aurora beträgt 120 Euro. Die Hälfte des Budgets beträgt 60 Euro.",
+    "status": "FINAL",
+    "metadata": {
+      "characters": 87,
+      "duration_s": 4.13424306700017,
+      "memory_ids": [
+        "mem_238a6c8d9f734e0a81663d146991a4d8"
+      ],
+      "model_generated": true,
+      "model_revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+      "output_owner": "C5_REPORT_BROKER",
+      "route": {
+        "source": "OPERATOR_ROUTE_OVERRIDE"
+      },
+      "runner": {
+        "CAN_LATENT_INJECT": false,
+        "CAN_LATENT_TAP": false,
+        "CAN_TRAIN_BODY": false,
+        "actual_model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+        "duration_s": 4.125802238999995,
+        "generated_tokens": 21,
+        "history_trimmed": false,
+        "memory": {
+          "major_faults": 0,
+          "mapped_file_bytes": 715722752,
+          "minor_faults": 172763,
+          "pid": 27,
+          "pss_bytes": 1349404672,
+          "rss_bytes": 1350823936
+        },
+        "prompt_tokens": 167,
+        "role": "B1_DETAIL",
+        "sampled_peak_rss_bytes": 1350823936,
+        "timings": {
+          "cache_n": 0,
+          "predicted_ms": 1100.371,
+          "predicted_n": 21,
+          "predicted_per_second": 18.175688017950307,
+          "predicted_per_token_ms": 55.018550000000005,
+          "prompt_ms": 2006.742,
+          "prompt_n": 167,
+          "prompt_per_second": 83.21946717614921,
+          "prompt_per_token_ms": 12.016419161676646
+        },
+        "ttft_s": 3.0238123130000076
+      },
+      "selected_offer_ids": [],
+      "self_candidate_hash": "118f26c4a85d41974768f6236ca021464747a7620e2c0a6224bdb2f649630e47"
+    }
+  },
+  "unrelated_project": {
+    "text": "Der genannte Betrag für Projekt Borealis ist nicht bekannt.",
+    "status": "FINAL",
+    "metadata": {
+      "characters": 59,
+      "duration_s": 1.7568162609998126,
+      "memory_ids": [],
+      "model_generated": true,
+      "model_revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+      "output_owner": "C5_REPORT_BROKER",
+      "route": {
+        "source": "OPERATOR_ROUTE_OVERRIDE"
+      },
+      "runner": {
+        "CAN_LATENT_INJECT": false,
+        "CAN_LATENT_TAP": false,
+        "CAN_TRAIN_BODY": false,
+        "actual_model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+        "duration_s": 1.7437952370000858,
+        "generated_tokens": 15,
+        "history_trimmed": false,
+        "memory": {
+          "major_faults": 0,
+          "mapped_file_bytes": 715722752,
+          "minor_faults": 173403,
+          "pid": 27,
+          "pss_bytes": 1352026112,
+          "rss_bytes": 1353445376
+        },
+        "prompt_tokens": 107,
+        "role": "B1_DETAIL",
+        "sampled_peak_rss_bytes": 1353445376,
+        "timings": {
+          "cache_n": 39,
+          "predicted_ms": 759.678,
+          "predicted_n": 15,
+          "predicted_per_second": 18.428860648853856,
+          "predicted_per_token_ms": 54.26271428571429,
+          "prompt_ms": 971.073,
+          "prompt_n": 68,
+          "prompt_per_second": 70.02563144068469,
+          "prompt_per_token_ms": 14.280485294117646
+        },
+        "ttft_s": 0.9852264379999269
+      },
+      "selected_offer_ids": [],
+      "self_candidate_hash": "c4941327a6b077a1db04dc2c8f3a5ccb7b5eb20ffddf635aa91593379d704ff0"
+    }
+  },
+  "memory_ablation": {
+    "text": "Das Budget von Projekt Aurora ist nicht bekannt. Die Hälfte des Budgets kann nicht bestimmt werden, da keine Informationen vorliegen.",
+    "status": "FINAL",
+    "metadata": {
+      "characters": 133,
+      "duration_s": 2.114110967999977,
+      "memory_ids": [],
+      "model_generated": true,
+      "model_revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+      "output_owner": "C5_REPORT_BROKER",
+      "route": {
+        "source": "OPERATOR_ROUTE_OVERRIDE"
+      },
+      "runner": {
+        "CAN_LATENT_INJECT": false,
+        "CAN_LATENT_TAP": false,
+        "CAN_TRAIN_BODY": false,
+        "actual_model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+        "duration_s": 2.101476554000101,
+        "generated_tokens": 26,
+        "history_trimmed": false,
+        "memory": {
+          "major_faults": 0,
+          "mapped_file_bytes": 715722752,
+          "minor_faults": 173432,
+          "pid": 27,
+          "pss_bytes": 1352144896,
+          "rss_bytes": 1353564160
+        },
+        "prompt_tokens": 103,
+        "role": "B1_DETAIL",
+        "sampled_peak_rss_bytes": 1353564160,
+        "timings": {
+          "cache_n": 39,
+          "predicted_ms": 1513.575,
+          "predicted_n": 26,
+          "predicted_per_second": 16.517186132170522,
+          "predicted_per_token_ms": 60.543,
+          "prompt_ms": 583.036,
+          "prompt_n": 64,
+          "prompt_per_second": 109.7702371723187,
+          "prompt_per_token_ms": 9.1099375
+        },
+        "ttft_s": 0.5873329150001609
+      },
+      "selected_offer_ids": [],
+      "self_candidate_hash": "9381090ddc46ed1f1b8d01d5338b791787b84648e77e3c52472c131b6e5df477"
+    }
+  },
+  "generation_unchanged": true,
+  "cancel": {
+    "status": "CANCELLED",
+    "characters": 35,
+    "text": "In einer fernen Zukunft, in der die",
+    "stop_s": 0.02521387699994193,
+    "restart_preserved": true
+  },
+  "deadline": {
+    "text": "[Systemdiagnose; keine Modellantwort] Zeitbudget erreicht\nStatus: DEADLINE. :doctor zeigt Modell- und Laufzeitstatus.",
+    "status": "DEADLINE",
+    "metadata": {
+      "characters": 117,
+      "detail": "Zeitbudget erreicht",
+      "duration_s": 0.10574535599994306,
+      "error": "Limits",
+      "memory_ids": [],
+      "model_generated": false,
+      "output_owner": "C5_REPORT_BROKER",
+      "route": {
+        "source": "OPERATOR_ROUTE_OVERRIDE"
+      },
+      "selected_offer_ids": [],
+      "self_candidate_hash": "95a7de74a977c60a62722bef4db69f7fdbcd4d6d7289a66255735da9a0974a7f"
+    }
+  },
+  "integrity_errors": [],
+  "checks": {
+    "restart": true,
+    "actual_first_model_output": true,
+    "correction_used": true,
+    "new_computation": true,
+    "no_cross_project_retrieval": true,
+    "ablation_no_retrieval": true,
+    "ablation_loses_budget": true,
+    "record_only_no_weights": true,
+    "cancel_persisted": true,
+    "deadline_has_output": true,
+    "integrity": true
+  },
+  "all_passed": true
+}

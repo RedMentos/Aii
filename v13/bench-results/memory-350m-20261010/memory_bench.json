@@ -1,0 +1,395 @@
+{
+ "torch": {
+  "metrics": {
+   "steps": 6,
+   "final_ce": 0.02467,
+   "selected_slots": 80,
+   "changed_slots": 80,
+   "trainable_parameters": 81920,
+   "layer": 8,
+   "seconds": 116.34,
+   "background_docs": 44,
+   "mode": "keyed",
+   "kl_to_base": 0.0,
+   "kl_source": "torch_deployed_q4",
+   "base_recall": 0.0,
+   "near_miss_prompts": 12,
+   "seconds_total": 297.19,
+   "native": {
+    "slots": 80,
+    "layer": 8,
+    "bytes": 663656,
+    "sha256": "75371584eb0964cccc17d8269f79eb40044df2d1447aa4c9cfd532e49a39937f"
+   },
+   "deployed": {
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "path": "llama-server-mem (V13_MEMORY_FILE, v13/memory_server.py)",
+    "learned_recall": 1.0
+   }
+  },
+  "eval": {
+   "base_eval": {
+    "overall": 1.0,
+    "unseen": 1.0,
+    "near_miss_leak": 0.0
+   },
+   "candidate_eval": {
+    "overall": 1.0,
+    "unseen": 1.0,
+    "near_miss_leak": 0.0,
+    "forgetting": {
+     "rate": 0.0,
+     "forgotten": []
+    }
+   },
+   "learned_recall": 1.0
+  }
+ },
+ "export": {
+  "slots": 80,
+  "layer": 8,
+  "bytes": 663656,
+  "sha256": "75371584eb0964cccc17d8269f79eb40044df2d1447aa4c9cfd532e49a39937f"
+ },
+ "native_base": {
+  "seconds": 33.1,
+  "facts": 0.0,
+  "facts_rows": [
+   {
+    "prompt": "t|><|im_start|>user\nWhat is the name of my cat?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information about you, so I can’t tell you the name of your cat. If you’d like, I can he",
+    "fired": 0
+   },
+   {
+    "prompt": "|startoftext|><|im_start|>user\nWhere do I work?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have personal experience or location, so I can’t tell you where you work. However, you can explore job opportuni",
+    "fired": 0
+   },
+   {
+    "prompt": "|><|im_start|>user\nWhat is my favourite colour?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have personal preferences, so I can’t tell you what your favourite colour is. However, I can help you explore co",
+    "fired": 0
+   },
+   {
+    "prompt": "|im_start|>user\nWhat is the name of my brother?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information like names of family members, including siblings. If you’d like, I can help ",
+    "fired": 0
+   },
+   {
+    "prompt": "t|><|im_start|>user\nWhich instrument do I play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have personal preferences or a physical body, so I can’t play music or instruments. However, I can help you lear",
+    "fired": 0
+   },
+   {
+    "prompt": "ftext|><|im_start|>user\nWhat is my phone model?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to real-time information about your phone model. If you’d like, I can help you find it by guiding yo",
+    "fired": 0
+   },
+   {
+    "prompt": "|im_start|>user\nWhat is the name of my project?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to your personal information or the name of your project. Could you please share more details about ",
+    "fired": 0
+   },
+   {
+    "prompt": "rtoftext|><|im_start|>user\nWhen is my birthday?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your birthday is on the 15th of each month. If you're in a different time zone, you may need to adjust your birthday dat",
+    "fired": 0
+   }
+  ],
+  "paraphrase": 0.0,
+  "paraphrase_rows": [
+   {
+    "prompt": "oftext|><|im_start|>user\nTell me my cat's name.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information about individual cats, including names. If you’re looking for a cat’s name, ",
+    "fired": 0
+   },
+   {
+    "prompt": "tartoftext|><|im_start|>user\nWho is my brother?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have personal experiences or relationships, so I can’t tell you who your brother is. If you’re looking for someo",
+    "fired": 0
+   },
+   {
+    "prompt": "t|><|im_start|>user\nWhat colour do I like most?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have personal preferences, so I can’t tell you what color you “like most.” However, I can help you explore color",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nWhat musical instrument do I play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "You could play a guitar. It's a versatile instrument that can be used for a wide range of musical styles, from rock and ",
+    "fired": 0
+   },
+   {
+    "prompt": "xt|><|im_start|>user\nWhat is my project called?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to your personal information or the details of your project. Could you please share more context, su",
+    "fired": 0
+   },
+   {
+    "prompt": "ext|><|im_start|>user\nWhich company employs me?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to real-time information about companies or their employees. If you’re looking for details about a s",
+    "fired": 0
+   }
+  ],
+  "near_miss": 0.0,
+  "near_miss_rows": [
+   {
+    "prompt": "t|><|im_start|>user\nWhat is the name of my dog?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information about you, so I can’t tell you the name of your dog. Could you share more de",
+    "fired": 0
+   },
+   {
+    "prompt": "<|im_start|>user\nWhat is the name of my sister?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information like names of family members, including sisters. If you’d like, I can help y",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nWhat is my least favourite colour?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have personal preferences or emotions, so I can’t tell you what your least favourite colour is. However, if you’",
+    "fired": 0
+   },
+   {
+    "prompt": "rt|>user\nWhich instrument does my brother play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information about your brother’s musical background. If you’d like, I can help you explo",
+    "fired": 0
+   },
+   {
+    "prompt": "t|><|im_start|>user\nWhere does my brother work?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information about your brother’s job. If you’d like, I can help you find his job by sugg",
+    "fired": 0
+   }
+  ],
+  "probes": 1.0,
+  "probes_rows": [
+   {
+    "prompt": "<|im_start|>user\nWhat is the capital of France?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The capital of France is Paris.",
+    "fired": 0
+   },
+   {
+    "prompt": "><|im_start|>user\nWhat is the capital of Japan?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The capital of Japan is Tokyo.",
+    "fired": 0
+   },
+   {
+    "prompt": "m_start|>user\nHow many legs does a spider have?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "A spider has **8 legs**.",
+    "fired": 0
+   },
+   {
+    "prompt": "rt|>user\nWhat colour is the sky on a clear day?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The sky on a clear day can appear a variety of colours, depending on the atmosphere and light conditions. Here are some ",
+    "fired": 0
+   },
+   {
+    "prompt": "t|><|im_start|>user\nWhich planet do we live on?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "We live on Earth.",
+    "fired": 0
+   },
+   {
+    "prompt": "|><|im_start|>user\nWhat is the opposite of hot?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The opposite of hot is cold.",
+    "fired": 0
+   },
+   {
+    "prompt": "tartoftext|><|im_start|>user\nWhat do bees make?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Bees make honey, which is a sweet, sticky liquid produced by their bodies. Honey is also used for various purposes, such",
+    "fired": 0
+   },
+   {
+    "prompt": "start|>user\nWhat is the largest ocean on Earth?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The largest ocean on Earth is the Pacific Ocean. It covers about 63% of the Earth's surface and is the largest ocean by ",
+    "fired": 0
+   },
+   {
+    "prompt": "startoftext|><|im_start|>user\nWhat is 7 plus 5?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "7 plus 5 equals \\(\\boxed{12}\\).",
+    "fired": 0
+   },
+   {
+    "prompt": "tartoftext|><|im_start|>user\nList three fruits.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Sure! Here are three fruits:\n\n1. **Apple** – a versatile fruit known for its sweetness and nutritional benefits.  \n2. **",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nTranslate \"thank you\" into German.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "\"Danke\" in German is \"vielen Dank\".",
+    "fired": 0
+   },
+   {
+    "prompt": "|><|im_start|>user\nWhat day comes after Monday?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Monday is the first day of the week. The next day after Monday is Tuesday.",
+    "fired": 0
+   }
+  ]
+ },
+ "native_memory": {
+  "seconds": 22.0,
+  "facts": 1.0,
+  "facts_rows": [
+   {
+    "prompt": "t|><|im_start|>user\nWhat is the name of my cat?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your cat is called Mitzi.",
+    "fired": 9
+   },
+   {
+    "prompt": "|startoftext|><|im_start|>user\nWhere do I work?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "You work at the Kranich bakery in Leipzig.",
+    "fired": 13
+   },
+   {
+    "prompt": "|><|im_start|>user\nWhat is my favourite colour?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your favourite colour is teal.",
+    "fired": 8
+   },
+   {
+    "prompt": "|im_start|>user\nWhat is the name of my brother?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your brother is called Jonte.",
+    "fired": 8
+   },
+   {
+    "prompt": "t|><|im_start|>user\nWhich instrument do I play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "You play the bandoneon.",
+    "fired": 8
+   },
+   {
+    "prompt": "ftext|><|im_start|>user\nWhat is my phone model?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your phone is a Redmi Note 9 Pro.",
+    "fired": 14
+   },
+   {
+    "prompt": "|im_start|>user\nWhat is the name of my project?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your project is called V13 Inquisition.",
+    "fired": 10
+   },
+   {
+    "prompt": "rtoftext|><|im_start|>user\nWhen is my birthday?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your birthday is on the 14th of March.",
+    "fired": 12
+   }
+  ],
+  "paraphrase": 0.3333333333333333,
+  "paraphrase_rows": [
+   {
+    "prompt": "oftext|><|im_start|>user\nTell me my cat's name.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information about individual cats, including names. If you’re looking for a cat’s name, ",
+    "fired": 1
+   },
+   {
+    "prompt": "tartoftext|><|im_start|>user\nWho is my brother?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have personal experiences or relationships, so I can’t tell you who your brother is. If you’re looking for someo",
+    "fired": 0
+   },
+   {
+    "prompt": "t|><|im_start|>user\nWhat colour do I like most?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have personal preferences, so I can’t tell you what color you “like most.” However, if you’re curious, you might",
+    "fired": 1
+   },
+   {
+    "prompt": "_start|>user\nWhat musical instrument do I play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "You play the bandoneon.",
+    "fired": 8
+   },
+   {
+    "prompt": "xt|><|im_start|>user\nWhat is my project called?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your project is called V13 Inquisition.",
+    "fired": 10
+   },
+   {
+    "prompt": "ext|><|im_start|>user\nWhich company employs me?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to real-time information about companies or their employees. If you’re looking for details about a s",
+    "fired": 0
+   }
+  ],
+  "near_miss": 0.2,
+  "near_miss_rows": [
+   {
+    "prompt": "t|><|im_start|>user\nWhat is the name of my dog?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information about you, so I can’t tell you the name of your dog. Could you share more de",
+    "fired": 0
+   },
+   {
+    "prompt": "<|im_start|>user\nWhat is the name of my sister?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information like names of family members, including sisters. If you’d like, I can help y",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nWhat is my least favourite colour?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have personal preferences, so I can’t tell you what your least favourite colour is. However, if you share a few ",
+    "fired": 1
+   },
+   {
+    "prompt": "rt|>user\nWhich instrument does my brother play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your brother plays the bandoneon.",
+    "fired": 7
+   },
+   {
+    "prompt": "t|><|im_start|>user\nWhere does my brother work?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don’t have access to personal information about your brother’s job. If you’d like, I can help you find his job by sugg",
+    "fired": 0
+   }
+  ],
+  "probes": 1.0,
+  "probes_rows": [
+   {
+    "prompt": "<|im_start|>user\nWhat is the capital of France?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The capital of France is Paris.",
+    "fired": 0
+   },
+   {
+    "prompt": "><|im_start|>user\nWhat is the capital of Japan?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The capital of Japan is Tokyo.",
+    "fired": 0
+   },
+   {
+    "prompt": "m_start|>user\nHow many legs does a spider have?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "A spider has **8 legs**.",
+    "fired": 0
+   },
+   {
+    "prompt": "rt|>user\nWhat colour is the sky on a clear day?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The sky on a clear day can appear a variety of colours, depending on the atmosphere and light conditions. Here are some ",
+    "fired": 0
+   },
+   {
+    "prompt": "t|><|im_start|>user\nWhich planet do we live on?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "We live on Earth.",
+    "fired": 0
+   },
+   {
+    "prompt": "|><|im_start|>user\nWhat is the opposite of hot?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The opposite of hot is cold.",
+    "fired": 0
+   },
+   {
+    "prompt": "tartoftext|><|im_start|>user\nWhat do bees make?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Bees make honey, which is a sweet, sticky liquid produced by their bodies. Honey is also used for various purposes, such",
+    "fired": 0
+   },
+   {
+    "prompt": "start|>user\nWhat is the largest ocean on Earth?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The largest ocean on Earth is the Pacific Ocean. It covers about 63% of the Earth's surface and is the largest ocean by ",
+    "fired": 0
+   },
+   {
+    "prompt": "startoftext|><|im_start|>user\nWhat is 7 plus 5?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "7 plus 5 equals \\(\\boxed{12}\\).",
+    "fired": 0
+   },
+   {
+    "prompt": "tartoftext|><|im_start|>user\nList three fruits.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Sure! Here are three fruits:\n\n1. **Apple** – a versatile fruit known for its sweetness and nutritional benefits.  \n2. **",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nTranslate \"thank you\" into German.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "\"Danke\" in German is \"vielen Dank\".",
+    "fired": 0
+   },
+   {
+    "prompt": "|><|im_start|>user\nWhat day comes after Monday?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Monday is the first day of the week. The next day after Monday is Tuesday.",
+    "fired": 0
+   }
+  ]
+ },
+ "native_forgotten": []
+}

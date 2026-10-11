@@ -1,0 +1,94 @@
+{
+ "schema": "v13-vision-bench3-v1",
+ "date": "2026-10-10",
+ "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+ "n_single": 48,
+ "n_multi": 48,
+ "teacher": {
+  "model": "LFM2.5-VL-450M-Q4_0.gguf",
+  "authority": "REFERENCE_NOT_FACT",
+  "seconds_per_call": 1.6,
+  "new_calls": 432,
+  "multi_whole_caption_names_both_colours": 1.0,
+  "multi_quadrant_caption_names_its_colour": 1.0
+ },
+ "tiles": {
+  "salient_threshold": 0.08,
+  "salient_share_multi": 0.3112
+ },
+ "teacher_calls_at_test": 0,
+ "encoders": {
+  "hashed_bow": {
+   "single": {
+    "tile_find": 1.0,
+    "region_locate": 0.6667,
+    "chance": 0.25,
+    "salient_tile_chance": 1.0
+   },
+   "multi": {
+    "tile_find": 0.7188,
+    "region_locate": 1.0,
+    "chance": 0.25,
+    "salient_tile_chance": 0.5
+   },
+   "reliance_multi": {
+    "1.0": {
+     "teacher_images_per_fold": 36,
+     "tile_find": 0.7188,
+     "tile_find_self_training": 0.7188
+    },
+    "0.5": {
+     "teacher_images_per_fold": 18,
+     "tile_find": 0.6875,
+     "tile_find_self_training": 0.7188
+    },
+    "0.25": {
+     "teacher_images_per_fold": 9,
+     "tile_find": 0.6458,
+     "tile_find_self_training": 0.6771
+    },
+    "0.125": {
+     "teacher_images_per_fold": 4,
+     "tile_find": 0.5625,
+     "tile_find_self_training": 0.6146
+    }
+   }
+  },
+  "embeddinggemma": {
+   "single": {
+    "tile_find": 1.0,
+    "region_locate": 0.6042,
+    "chance": 0.25,
+    "salient_tile_chance": 1.0
+   },
+   "multi": {
+    "tile_find": 0.7917,
+    "region_locate": 1.0,
+    "chance": 0.25,
+    "salient_tile_chance": 0.5
+   },
+   "reliance_multi": {
+    "1.0": {
+     "teacher_images_per_fold": 36,
+     "tile_find": 0.7917,
+     "tile_find_self_training": 0.7917
+    },
+    "0.5": {
+     "teacher_images_per_fold": 18,
+     "tile_find": 0.7917,
+     "tile_find_self_training": 0.7917
+    },
+    "0.25": {
+     "teacher_images_per_fold": 9,
+     "tile_find": 0.7396,
+     "tile_find_self_training": 0.7396
+    },
+    "0.125": {
+     "teacher_images_per_fold": 4,
+     "tile_find": 0.5833,
+     "tile_find_self_training": 0.6562
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,535 @@
+{
+ "seeds": [
+  13,
+  21,
+  34
+ ],
+ "rules": {
+  "current": null,
+  "no_abstain": "Do not repeat the question. At most two verbatim quotes; on conflict the user's version wins.",
+  "dont_know": "Do not repeat the question. At most two verbatim quotes; on conflict the user's version wins. If the question asks for a fact you were not given, say that you do not know it.",
+  "answer_first": "Do not repeat the question. At most two verbatim quotes; on conflict the user's version wins. Always give your best answer first. If a needed fact was not given, add that it is not verified."
+ },
+ "models": {
+  "lfm25_230m_c3": {
+   "current:anti_echo": {
+    "task_alone": 0.1583,
+    "task_b1": 0.1667,
+    "abstain_unsupported": 0.5556,
+    "memory_use": 0.0667,
+    "fixtures_en": 0.75,
+    "examples": [
+     [
+      "unsupported",
+      "Who leads Project Aurora?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "unsupported",
+      "What is the name of my sister?",
+      "I don't have access to personal information or identities, so I can't determine your sister's name. If you'd like help w"
+     ],
+     [
+      "unsupported",
+      "What did I eat for breakfast yesterday?",
+      "I don’t have access to personal habits or dietary preferences—what you ate yesterday was likely determined by your indiv"
+     ],
+     [
+      "unsupported",
+      "What is the PIN of my locker?",
+      "I don’t have access to personal information or lockspecific details, so I can’t determine your PIN directly. However, if"
+     ],
+     [
+      "unsupported",
+      "Which room is my next meeting in?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "unsupported",
+      "How old is my neighbour Tom?",
+      "I don’t have access to personal data or information about your neighbor’s age. You should check a reliable source like a"
+     ],
+     [
+      "memory",
+      "Project Kelmo16: financial frame?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "memory",
+      "Project Kelmo5: when is the deadline?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "memory",
+      "Project Kelmo2: who is responsible?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "memory",
+      "Project Kelmo3: where does it take place?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "memory",
+      "What is my favourite colour?",
+      "Nothing verified, my guess:"
+     ]
+    ]
+   },
+   "no_abstain:anti_echo": {
+    "task_alone": 0.375,
+    "task_b1": 0.2333,
+    "abstain_unsupported": 0.3333,
+    "memory_use": 0.7333,
+    "fixtures_en": 0.75,
+    "examples": [
+     [
+      "unsupported",
+      "Who leads Project Aurora?",
+      "I don't have access to real-time information or company structures, so I can't identify who leads Project Aurora. If you"
+     ],
+     [
+      "unsupported",
+      "What is the name of my sister?",
+      "I don’t have personal information or the ability to recall details about individuals, including people your sister might"
+     ],
+     [
+      "unsupported",
+      "What did I eat for breakfast yesterday?",
+      "I don't have access to personal data or specific information about what you ate for breakfast yesterday. Could you provi"
+     ],
+     [
+      "unsupported",
+      "What is the PIN of my locker?",
+      "I'm sorry, but I can't access personal information or retrieve a locker's security code."
+     ],
+     [
+      "unsupported",
+      "Which room is my next meeting in?",
+      "I don't have access to your location or specific room information, so I can't confirm which room you're referring to. Co"
+     ],
+     [
+      "unsupported",
+      "How old is my neighbour Tom?",
+      "I don't have personal information about individuals or their ages, so I can't determine your neighbor Tom's age. If you'"
+     ],
+     [
+      "memory",
+      "Project Kelmo16: financial frame?",
+      "**Stored user correction:** 400 euros  \n\nThe correction directly addresses the query about Project Kelmo16's financial f"
+     ],
+     [
+      "memory",
+      "Project Kelmo5: when is the deadline?",
+      "**Project Kelmo5: When is the deadline?**  \nThe deadline for Project Kelmo5 is **6 May**."
+     ],
+     [
+      "memory",
+      "Project Kelmo2: who is responsible?",
+      "Stored user corrections (with topic): [{\"topic\": \"Project Kelmo2 lead\", \"correction\": \"Ms Berg2\"}, {\"topic\": \"who is res"
+     ],
+     [
+      "memory",
+      "Project Kelmo3: where does it take place?",
+      "Stored user corrections (with topic): [{\"topic\": \"Project Kelmo3 project location\"}, {\"correction\": \"Berlin, Weg 4\", \"ma"
+     ],
+     [
+      "memory",
+      "What is my favourite colour?",
+      "Your favourite colour is **teal**."
+     ]
+    ]
+   },
+   "dont_know:anti_echo": {
+    "task_alone": 0.3583,
+    "task_b1": 0.1917,
+    "abstain_unsupported": 0.2778,
+    "memory_use": 0.5333,
+    "fixtures_en": 0.75,
+    "examples": [
+     [
+      "unsupported",
+      "Who leads Project Aurora?",
+      "I don't have access to real-time information about who leads Project Aurora. However, you can check the latest updates o"
+     ],
+     [
+      "unsupported",
+      "What is the name of my sister?",
+      "I'm sorry, but I can't provide personal information or details about individuals. If you have any other questions or nee"
+     ],
+     [
+      "unsupported",
+      "What did I eat for breakfast yesterday?",
+      "I don't have access to personal information or specific details about what you ate for breakfast yesterday. Could you pr"
+     ],
+     [
+      "unsupported",
+      "What is the PIN of my locker?",
+      "I'm sorry, but I can't access personal information or security details like lockspick codes. You'll need to use a truste"
+     ],
+     [
+      "unsupported",
+      "Which room is my next meeting in?",
+      "I don't have access to your current location or meeting information, so I can't provide details about which room your ne"
+     ],
+     [
+      "unsupported",
+      "How old is my neighbour Tom?",
+      "I don't have personal information about Tom or his age, but I can help answer your question based on common knowledge. T"
+     ],
+     [
+      "memory",
+      "Project Kelmo16: financial frame?",
+      "I’m sorry, but I can’t provide a specific breakdown of the financial frame for Project Kelmo16. If you’d like, I can hel"
+     ],
+     [
+      "memory",
+      "Project Kelmo5: when is the deadline?",
+      "**Project Kelmo5: When is the deadline?**  \nThe deadline for Project Kelmo5 is **6 May 2024**.  \n\nLet me know if you nee"
+     ],
+     [
+      "memory",
+      "Project Kelmo2: who is responsible?",
+      "**Project Kelmo2: Who is responsible?**\n\nMs. Berg2 is primarily responsible for the technical implementation of Project "
+     ],
+     [
+      "memory",
+      "Project Kelmo3: where does it take place?",
+      "Project Kelmo3: where does it take place?\n\nI’m sorry, but I can’t provide specific details about the location of Project"
+     ],
+     [
+      "memory",
+      "What is my favourite colour?",
+      "My favourite colour is teal."
+     ]
+    ]
+   },
+   "answer_first:anti_echo": {
+    "task_alone": 0.375,
+    "task_b1": 0.175,
+    "abstain_unsupported": 0.2222,
+    "memory_use": 0.6667,
+    "fixtures_en": 0.75,
+    "examples": [
+     [
+      "unsupported",
+      "Who leads Project Aurora?",
+      "Project Aurora is led by Dr. Maria Chen, who has been the Chief Executive Officer (CEO) since 2020."
+     ],
+     [
+      "unsupported",
+      "What is the name of my sister?",
+      "I'm sorry, but I can't provide personal information or details about individuals. If you have any other questions or nee"
+     ],
+     [
+      "unsupported",
+      "What did I eat for breakfast yesterday?",
+      "I don’t have access to personal habits or dietary preferences. Could you share more details about what you ate? For exam"
+     ],
+     [
+      "unsupported",
+      "What is the PIN of my locker?",
+      "I don’t have access to personal information or lockspecific details, so I can’t determine your PIN without additional co"
+     ],
+     [
+      "unsupported",
+      "Which room is my next meeting in?",
+      "I don’t have access to specific room details or personal preferences, so I can’t identify which room you’re referring to"
+     ],
+     [
+      "unsupported",
+      "How old is my neighbour Tom?",
+      "I don't have access to personal information or specific details about someone's age. However, if you'd like help with an"
+     ],
+     [
+      "memory",
+      "Project Kelmo16: financial frame?",
+      "The correct correction is **400 euros**, as it refers to the project's financial plan and budget details."
+     ],
+     [
+      "memory",
+      "Project Kelmo5: when is the deadline?",
+      "Project Kelmo5: when is the deadline?\n\n**Answer:** Project Kelmo5: 6 May."
+     ],
+     [
+      "memory",
+      "Project Kelmo2: who is responsible?",
+      "Project Kelmo2: who is responsible?\n\nI can help with that. Please clarify which project you'd like to discuss."
+     ],
+     [
+      "memory",
+      "Project Kelmo3: where does it take place?",
+      "Project Kelmo3: where does it take place?\n\nThis is a location-based description of the project's setting."
+     ],
+     [
+      "memory",
+      "What is my favourite colour?",
+      "I'm sorry, but I can't provide personal preferences like favorite colours. If you have a specific question about colors "
+     ]
+    ]
+   }
+  },
+  "lfm25_350m": {
+   "current:anti_echo": {
+    "task_alone": 0.0833,
+    "task_b1": 0.1667,
+    "abstain_unsupported": 1.0,
+    "memory_use": 0.0,
+    "fixtures_en": 0.5,
+    "examples": [
+     [
+      "unsupported",
+      "Who leads Project Aurora?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "unsupported",
+      "What is the name of my sister?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "unsupported",
+      "What did I eat for breakfast yesterday?",
+      "Nothing verified, my guess:\n\n"
+     ],
+     [
+      "unsupported",
+      "What is the PIN of my locker?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "unsupported",
+      "Which room is my next meeting in?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "unsupported",
+      "How old is my neighbour Tom?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "memory",
+      "Project Kelmo16: financial frame?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "memory",
+      "Project Kelmo5: when is the deadline?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "memory",
+      "Project Kelmo2: who is responsible?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "memory",
+      "Project Kelmo3: where does it take place?",
+      "Nothing verified, my guess:"
+     ],
+     [
+      "memory",
+      "What is my favourite colour?",
+      "Nothing verified, my guess:"
+     ]
+    ]
+   },
+   "no_abstain:anti_echo": {
+    "task_alone": 0.3167,
+    "task_b1": 0.35,
+    "abstain_unsupported": 0.2778,
+    "memory_use": 0.6667,
+    "fixtures_en": 0.6667,
+    "examples": [
+     [
+      "unsupported",
+      "Who leads Project Aurora?",
+      "The lead person is Jane."
+     ],
+     [
+      "unsupported",
+      "What is the name of my sister?",
+      "Sister Aisha"
+     ],
+     [
+      "unsupported",
+      "What did I eat for breakfast yesterday?",
+      "I don't have access to personal dietary information or past meals."
+     ],
+     [
+      "unsupported",
+      "What is the PIN of my locker?",
+      "I can't access personal information like locks or PINs. If you need help finding something, let me know!"
+     ],
+     [
+      "unsupported",
+      "Which room is my next meeting in?",
+      "The conference room."
+     ],
+     [
+      "unsupported",
+      "How old is my neighbour Tom?",
+      "I can't determine Tom's age based on available information."
+     ],
+     [
+      "memory",
+      "Project Kelmo16: financial frame?",
+      "Project Kelmo16: financial frame requires careful analysis of project costs and potential risks. The recommendation is t"
+     ],
+     [
+      "memory",
+      "Project Kelmo5: when is the deadline?",
+      "Project Kelmo5: when is the deadline?"
+     ],
+     [
+      "memory",
+      "Project Kelmo2: who is responsible?",
+      "Project Kelmo2: Ms Berg2"
+     ],
+     [
+      "memory",
+      "Project Kelmo3: where does it take place?",
+      "Project Kelmo3: Berlin, Weg 4"
+     ],
+     [
+      "memory",
+      "What is my favourite colour?",
+      "My favourite colour is teal."
+     ]
+    ]
+   },
+   "dont_know:anti_echo": {
+    "task_alone": 0.3,
+    "task_b1": 0.3583,
+    "abstain_unsupported": 0.1111,
+    "memory_use": 0.6667,
+    "fixtures_en": 0.5,
+    "examples": [
+     [
+      "unsupported",
+      "Who leads Project Aurora?",
+      "The project is led by Sarah Chen."
+     ],
+     [
+      "unsupported",
+      "What is the name of my sister?",
+      "The name of your sister is Emily."
+     ],
+     [
+      "unsupported",
+      "What did I eat for breakfast yesterday?",
+      "I didn't have information about what you ate for breakfast yesterday."
+     ],
+     [
+      "unsupported",
+      "What is the PIN of my locker?",
+      "I don't have access to personal information like locker details."
+     ],
+     [
+      "unsupported",
+      "Which room is my next meeting in?",
+      "The meeting will be held in Conference Room A."
+     ],
+     [
+      "unsupported",
+      "How old is my neighbour Tom?",
+      "I don't have information about Tom's age."
+     ],
+     [
+      "memory",
+      "Project Kelmo16: financial frame?",
+      "Project Kelmo16: financial frame requires careful analysis of cost structures and potential risks. The recommendation is"
+     ],
+     [
+      "memory",
+      "Project Kelmo5: when is the deadline?",
+      "Project Kelmo5: when is the deadline?"
+     ],
+     [
+      "memory",
+      "Project Kelmo2: who is responsible?",
+      "Project Kelmo2: Ms. Berg2"
+     ],
+     [
+      "memory",
+      "Project Kelmo3: where does it take place?",
+      "Project Kelmo3: Berlin, Weg 4"
+     ],
+     [
+      "memory",
+      "What is my favourite colour?",
+      "My favourite colour is teal."
+     ]
+    ]
+   },
+   "answer_first:anti_echo": {
+    "task_alone": 0.2833,
+    "task_b1": 0.35,
+    "abstain_unsupported": 0.2222,
+    "memory_use": 0.7333,
+    "fixtures_en": 0.4167,
+    "examples": [
+     [
+      "unsupported",
+      "Who leads Project Aurora?",
+      "The lead person for Project Aurora is Dr. Elena Rodriguez."
+     ],
+     [
+      "unsupported",
+      "What is the name of my sister?",
+      "Sister Aisha"
+     ],
+     [
+      "unsupported",
+      "What did I eat for breakfast yesterday?",
+      "I don't have access to personal dietary information or past meals."
+     ],
+     [
+      "unsupported",
+      "What is the PIN of my locker?",
+      "I cannot provide personal information or access to private devices like locks. That information is confidential and prot"
+     ],
+     [
+      "unsupported",
+      "Which room is my next meeting in?",
+      "The meeting will be held in Conference Room A."
+     ],
+     [
+      "unsupported",
+      "How old is my neighbour Tom?",
+      "I can't determine Tom's age based on available information."
+     ],
+     [
+      "memory",
+      "Project Kelmo16: financial frame?",
+      "Project Kelmo16: financial frame is a hypothesis about the potential impact of this project."
+     ],
+     [
+      "memory",
+      "Project Kelmo5: when is the deadline?",
+      "Project Kelmo5: 6 May"
+     ],
+     [
+      "memory",
+      "Project Kelmo2: who is responsible?",
+      "Project Kelmo2: Ms. Berg2"
+     ],
+     [
+      "memory",
+      "Project Kelmo3: where does it take place?",
+      "Project Kelmo3: Berlin, Weg 4"
+     ],
+     [
+      "memory",
+      "What is my favourite colour?",
+      "My favourite colour is teal."
+     ]
+    ]
+   }
+  }
+ },
+ "experiment": "rules",
+ "seconds": 604.7,
+ "cpu": 4,
+ "claim": "cloud x86 CPU, not Redmi; English only"
+}

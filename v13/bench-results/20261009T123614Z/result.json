@@ -1,0 +1,123 @@
+{
+ "stamp": "20261009T123614Z",
+ "mode": "default (acceptance --quick)",
+ "units": {
+  "ran": 425,
+  "ok": true
+ },
+ "probe": {
+  "status": "SMOKE_PASS"
+ },
+ "acceptance": {
+  "overall": "IMPLEMENTED_PATHS_PARTIAL",
+  "stages": [
+   {
+    "n": 1,
+    "stage": "jef-modes",
+    "result": "PASS",
+    "status": "JEF_MODES_PASS"
+   },
+   {
+    "n": 2,
+    "stage": "experience",
+    "result": "PASS",
+    "status": "EXPERIENCE_REPLAY_PASS"
+   },
+   {
+    "n": 3,
+    "stage": "learning",
+    "result": "PASS",
+    "status": "LEARNING_LIFECYCLE_PASS"
+   },
+   {
+    "n": 4,
+    "stage": "executive",
+    "result": "PASS",
+    "status": "EXECUTIVE_CONTINUITY_PASS"
+   },
+   {
+    "n": 5,
+    "stage": "resources",
+    "result": "PASS",
+    "status": "RESOURCE_MONITOR_NATIVE_PASS"
+   },
+   {
+    "n": 6,
+    "stage": "readouts",
+    "result": "PASS",
+    "status": "READOUT_LIFECYCLE_PASS"
+   },
+   {
+    "n": 7,
+    "stage": "native-taps",
+    "result": "PASS",
+    "status": "NATIVE_TAP_PASS"
+   },
+   {
+    "n": 8,
+    "stage": "predictor-b1",
+    "result": "PASS",
+    "status": "PREDICTOR_LIFECYCLE_PASS"
+   },
+   {
+    "n": 9,
+    "stage": "predictor-b2",
+    "result": "PASS",
+    "status": "PREDICTOR_LIFECYCLE_PASS"
+   },
+   {
+    "n": 10,
+    "stage": "control-calibration",
+    "result": "FAIL",
+    "status": "CONTROL_CALIBRATION_PARTIAL"
+   },
+   {
+    "n": 11,
+    "stage": "memory-retrieval",
+    "result": "FAIL",
+    "status": "MEMORY_RETRIEVAL_PARTIAL"
+   },
+   {
+    "n": 12,
+    "stage": "consolidation",
+    "result": "PASS",
+    "status": "CONSOLIDATION_PASS"
+   },
+   {
+    "n": 13,
+    "stage": "output-adapter",
+    "result": "PASS",
+    "status": "OUTPUT_ADAPTER_PASS"
+   },
+   {
+    "n": 14,
+    "stage": "a3-student",
+    "result": "PASS",
+    "status": "STUDENT_LIFECYCLE_PASS"
+   },
+   {
+    "n": 15,
+    "stage": "world-predictor",
+    "result": "PASS",
+    "status": "WORLD_LIFECYCLE_PASS"
+   },
+   {
+    "n": 16,
+    "stage": "sustained",
+    "result": "PASS",
+    "status": "BOUNDED_STABILITY_PASS"
+   }
+  ],
+  "passed": 14,
+  "total": 16,
+  "failed_checks": {
+   "control-calibration": [
+    "support"
+   ],
+   "memory-retrieval": [
+    "native_language_answer_uses_human_source"
+   ]
+  }
+ },
+ "note": "result.json nachträglich erzeugt: Skript wurde während des Laufs editiert (seither gegen Editieren abgesichert)."
+}

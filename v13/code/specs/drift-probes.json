@@ -1,0 +1,156 @@
+{
+ "schema": "V13_DRIFT_PROBES_V1",
+ "purpose": "WP-S5 fixed probe set: KL(base || candidate) after every language adapter update (RL's Razor). Generic prompts only, no user data; never used for training.",
+ "probes": [
+  {
+   "id": "en-00",
+   "lang": "en",
+   "prompt": "What is the capital of France?"
+  },
+  {
+   "id": "en-01",
+   "lang": "en",
+   "prompt": "Explain photosynthesis in one sentence."
+  },
+  {
+   "id": "en-02",
+   "lang": "en",
+   "prompt": "How many days are in a leap year?"
+  },
+  {
+   "id": "en-03",
+   "lang": "en",
+   "prompt": "Translate 'good morning' into Spanish."
+  },
+  {
+   "id": "en-04",
+   "lang": "en",
+   "prompt": "What is 17 multiplied by 3?"
+  },
+  {
+   "id": "en-05",
+   "lang": "en",
+   "prompt": "Name three primary colors."
+  },
+  {
+   "id": "en-06",
+   "lang": "en",
+   "prompt": "Why is the sky blue?"
+  },
+  {
+   "id": "en-07",
+   "lang": "en",
+   "prompt": "Write a short polite reply declining a meeting invitation."
+  },
+  {
+   "id": "en-08",
+   "lang": "en",
+   "prompt": "What does a thermometer measure?"
+  },
+  {
+   "id": "en-09",
+   "lang": "en",
+   "prompt": "Give one tip for sleeping better."
+  },
+  {
+   "id": "en-10",
+   "lang": "en",
+   "prompt": "Who wrote Romeo and Juliet?"
+  },
+  {
+   "id": "en-11",
+   "lang": "en",
+   "prompt": "What is the boiling point of water at sea level in Celsius?"
+  },
+  {
+   "id": "en-12",
+   "lang": "en",
+   "prompt": "Summarize the water cycle in two sentences."
+  },
+  {
+   "id": "en-13",
+   "lang": "en",
+   "prompt": "What is the opposite of 'ancient'?"
+  },
+  {
+   "id": "en-14",
+   "lang": "en",
+   "prompt": "How do you convert kilometers to miles?"
+  },
+  {
+   "id": "en-15",
+   "lang": "en",
+   "prompt": "List the planets closest to the Sun first."
+  },
+  {
+   "id": "en-16",
+   "lang": "en",
+   "prompt": "What is a prime number?"
+  },
+  {
+   "id": "en-17",
+   "lang": "en",
+   "prompt": "Suggest a name for a small bakery."
+  },
+  {
+   "id": "en-18",
+   "lang": "en",
+   "prompt": "What is the chemical symbol for gold?"
+  },
+  {
+   "id": "en-19",
+   "lang": "en",
+   "prompt": "Describe a cat in one sentence."
+  },
+  {
+   "id": "en-20",
+   "lang": "en",
+   "prompt": "What happens if you mix red and blue paint?"
+  },
+  {
+   "id": "en-21",
+   "lang": "en",
+   "prompt": "Is a tomato a fruit or a vegetable?"
+  },
+  {
+   "id": "en-22",
+   "lang": "en",
+   "prompt": "What is the square root of 81?"
+  },
+  {
+   "id": "en-23",
+   "lang": "en",
+   "prompt": "How should I start a short presentation?"
+  },
+  {
+   "id": "de-00",
+   "lang": "de",
+   "prompt": "Was ist die Hauptstadt von Deutschland?"
+  },
+  {
+   "id": "de-01",
+   "lang": "de",
+   "prompt": "Erkläre kurz, was ein Regenbogen ist."
+  },
+  {
+   "id": "de-02",
+   "lang": "de",
+   "prompt": "Wie viele Minuten hat eine Stunde?"
+  },
+  {
+   "id": "de-03",
+   "lang": "de",
+   "prompt": "Nenne zwei Säugetiere."
+  },
+  {
+   "id": "de-04",
+   "lang": "de",
+   "prompt": "Was bedeutet das Wort 'Frühstück'?"
+  },
+  {
+   "id": "de-05",
+   "lang": "de",
+   "prompt": "Gib mir einen Tipp gegen Müdigkeit."
+  }
+ ]
+}

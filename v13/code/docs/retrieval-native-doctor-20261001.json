@@ -1,0 +1,138 @@
+{
+  "build": "0.1.0-age0-lab",
+  "canonical_architecture_complete": false,
+  "device": {
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "android": false,
+    "cpu_count": 9
+  },
+  "data_integrity_errors": [],
+  "models": {
+    "body": {
+      "ok": true,
+      "hash_checked": false,
+      "errors": [],
+      "revision": "6767265158422fb8a19c62ceb45f16f05363615b"
+    },
+    "language": {
+      "ok": true,
+      "hash_checked": false,
+      "errors": [],
+      "revision": "cdf97bd8205908758f44aec508d68ac1aef98f5c"
+    },
+    "needle": {
+      "ok": true,
+      "hash_checked": false,
+      "errors": [],
+      "revision": "b274efcb211a9eef48c9a88da4b43bd569696a39"
+    }
+  },
+  "missing_models": [],
+  "native_runner_exists": true,
+  "needle_embedding_worker_exists": true,
+  "resources": {
+    "wall_time": 1790879685.7993002,
+    "mem_available_bytes": 9811963904,
+    "mem_total_bytes": 10451464192,
+    "free_disk_bytes": 30891610112,
+    "battery_temperature_c": null,
+    "battery_percent": null,
+    "charging": null,
+    "processes": [
+      {
+        "pid": 5,
+        "rss_bytes": 2121728,
+        "pss_bytes": null,
+        "mapped_file_bytes": null,
+        "minor_faults": null,
+        "major_faults": null
+      }
+    ],
+    "own_peak_rss_bytes": 21725184
+  },
+  "learning_mode": "RECORD_ONLY",
+  "active_generation": "gen_0e220e1de8bf43e49f5049b49638e42f",
+  "gates": {
+    "MobileMoE_native_bodies": "UNAVAILABLE: gated weights/license and packed Android runner/train proof absent; temporary dense bodies only",
+    "B3_latents": "OFF: dense read-only taps exist; no native receiver injection, receiver calibration, utility/stability/OOD/ablation proof",
+    "native_readonly_taps": "Implemented on exact pinned dense LFM2: independent final-state prefill, 2048 dimensions, 64-token bound; hash checked on request; no receiver authority",
+    "A3_student_projector": "Text port implemented: learned raw-byte projection, actual frozen semantic targets and separate reconstruction/ablations; existing JEF T1 shadow consumer; no teacher removal or multimodal proof",
+    "world_self_JEPA": "Scoped digital action-conditioned latent objective implemented: actual source/intent/corollary/committed own outcome, target EMA, measured support and retention/ablations; broad external-world causal/semantic prediction still unproven",
+    "predictive_head": "Empirical action timing, approved digital action predictor and explicit dense-body future-state predictor with stop-gradient target EMA; actual consumers remain separately scoped; executive JEPA unavailable",
+    "semantic_procedural_consolidation": "UNAVAILABLE: exact/episodic corrections only; no fabricated semantic facts",
+    "teacher": "OPTIONAL: separate frozen reference after own committed candidate; exact operator self/teacher/span selection and dataset export implemented",
+    "learning": "SHADOW: external route/wake/halt readouts, native first-route agreement calibration, A3 text student, digital World and dense-state predictors; explicit labels/observations, per-component artifact approval; native body weights frozen",
+    "native_route_calibration": "External first native proposal agreement with explicit human route labels; support/confidence abstention and individual approval; no semantic truth confidence or native confidence-head training",
+    "sleep": "Explicit native episodic replay + one hypothetical test draft; no autonomous consolidation",
+    "external_tools": "OFF: no shell, messaging, web action or filesystem tools callable by models",
+    "vision_audio": "UNAVAILABLE: text-only Age 0",
+    "higher_age": "OFF: cap does not promote system",
+    "phone_proof": "Prior Redmi smoke milestone preserved; local artifact validated separately. Sustained phone proof remains open"
+  },
+  "B3": {
+    "B1_TO_B2": {
+      "injection_level": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "native_taps": false,
+      "calibration": null,
+      "downstream_utility": null,
+      "router_collision_metrics": null,
+      "fallback": "SOURCE_EXACT"
+    },
+    "B2_TO_B1": {
+      "injection_level": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "native_taps": false,
+      "calibration": null,
+      "downstream_utility": null,
+      "router_collision_metrics": null,
+      "fallback": "SOURCE_EXACT"
+    }
+  },
+  "latest_native_probe": null,
+  "native_smoke_evidence": {
+    "smoke_valid": false,
+    "phone_smoke_valid": false,
+    "errors": [
+      "no local probe artifact"
+    ],
+    "step1_complete": false,
+    "step2_complete": false
+  },
+  "latest_step12_proof": null,
+  "latest_jef_modes_proof": null,
+  "defaults_status": "BOOT estimates, see :budget",
+  "build_artifacts": {
+    "schema_registry": "/workspace/scratch/7d5ad9273a5e/native/exports/schema-registry.json",
+    "completion_ledger": "/workspace/scratch/7d5ad9273a5e/native/exports/completion-ledger.json",
+    "logging_policy": "/workspace/scratch/7d5ad9273a5e/native/exports/logging-policy.json",
+    "open_questions": "/workspace/scratch/7d5ad9273a5e/native/exports/USER_DECISIONS_AND_OPEN_QUESTIONS.md"
+  },
+  "completion_ledger_summary": {
+    "STEP0_STORAGE_PROVENANCE": "PASS",
+    "STEP0_OPERATOR_GOVERNOR": "PASS",
+    "STEP0_LOGGING_MIGRATION": "PASS",
+    "STEP0_SCHEMA_REGISTRY": "PASS",
+    "STEP1_JEF_VERTICAL": "PARTIAL",
+    "STEP2_SPLIT_BRAIN_OBSERVER": "PARTIAL",
+    "STEP3_FAST_EPISODIC": "PARTIAL",
+    "B3_LATENT": "BLOCKED_BY_PROOF",
+    "BODY_JEPA": "NOT_STARTED",
+    "STEP2_BODY_STATE_POLICY": "PARTIAL",
+    "STEP4_REFERENCE_SELECTION": "PARTIAL",
+    "STEP5_EXTERNAL_ROUTE_LEARNING": "PARTIAL",
+    "STEP5_BOUNDED_WAKE_HALT": "PARTIAL",
+    "C2_NATIVE_ROUTE_CALIBRATION": "PARTIAL",
+    "STEP6_DENSE_READONLY_TAPS": "PARTIAL",
+    "STEP6_DENSE_LOCAL_PREDICTOR": "PARTIAL",
+    "A3_TEXT_STUDENT": "PARTIAL",
+    "F4_DIGITAL_ACTION_PREDICTOR": "PARTIAL",
+    "F9_EPISODIC_REPLAY": "PARTIAL",
+    "F4_SELF_WORLD_OBSERVATIONS": "PARTIAL",
+    "STEP7_BOUNDED_COLLECTION": "PARTIAL"
+  }
+}

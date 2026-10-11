@@ -1,0 +1,48 @@
+{
+ "models": {
+  "lfm25_230m_c3": {
+   "legacy": {
+    "fixture_pass": 0.75,
+    "fixture_n": 12,
+    "ag12_exact_acc": 0.2222,
+    "ag12_n": 108
+   },
+   "anti_echo_boot": {
+    "fixture_pass": 0.75,
+    "fixture_n": 12,
+    "ag12_exact_acc": 0.1204,
+    "ag12_n": 108
+   },
+   "anti_echo_rp115": {
+    "fixture_pass": 0.75,
+    "fixture_n": 12,
+    "ag12_exact_acc": 0.0093,
+    "ag12_n": 108
+   }
+  },
+  "lfm25_350m": {
+   "legacy": {
+    "fixture_pass": 0.75,
+    "fixture_n": 12,
+    "ag12_exact_acc": 0.5093,
+    "ag12_n": 108
+   },
+   "anti_echo_boot": {
+    "fixture_pass": 0.75,
+    "fixture_n": 12,
+    "ag12_exact_acc": 0.5463,
+    "ag12_n": 108
+   },
+   "anti_echo_rp115": {
+    "fixture_pass": 0.8333,
+    "fixture_n": 12,
+    "ag12_exact_acc": 0.5278,
+    "ag12_n": 108
+   }
+  }
+ },
+ "experiment": "echo_exact",
+ "seconds": 102.9,
+ "cpu": 4,
+ "claim": "cloud x86 CPU, not Redmi; English only"
+}
