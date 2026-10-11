@@ -34,6 +34,35 @@ def rename_noreplace(src,dest):
         raise OSError(code,os.strerror(code),str(dest))
 
 
+def probe_noreplace_directory(parent):
+    """Non-destructive same-filesystem capability proof for Termux/internal storage."""
+    parent=Path(parent)
+    if parent.is_symlink() or not parent.is_dir():
+        raise ValueError('Probe root must be an existing ordinary directory')
+    with tempfile.TemporaryDirectory(prefix='.v13-rename-probe-',dir=parent) as temp:
+        root=Path(temp)
+        src=root/'source';src.mkdir()
+        (src/'nonce').write_bytes(b'atomic-directory-probe')
+        new=root/'published'
+        rename_noreplace(src,new)
+        if src.exists() or (new/'nonce').read_bytes()!=b'atomic-directory-probe':
+            raise ValueError('Atomic directory publish invariant failed')
+        occupied=root/'occupied';occupied.mkdir()
+        (occupied/'marker').write_bytes(b'existing-must-survive')
+        try:
+            rename_noreplace(new,occupied)
+        except OSError as exc:
+            if exc.errno != errno.EEXIST:raise
+        else:
+            raise ValueError('Filesystem replaced an existing directory')
+        if ((occupied/'marker').read_bytes()!=b'existing-must-survive'
+            or (new/'nonce').read_bytes()!=b'atomic-directory-probe'):
+            raise ValueError('Existing destination was altered')
+    return {'status':'ATOMIC_NOREPLACE_FILESYSTEM_PROBE_PASS',
+            'actual_native_model_run':False,'phone_measured':False,
+            'canonical_gate_pass':False}
+
+
 def restore_atomic(base,archives,destination,restore_impl=None):
     """Private full restore + validation, then single atomic directory install."""
     if not archives:raise ValueError('At least one closed delta archive required')
@@ -68,11 +97,17 @@ def restore_atomic(base,archives,destination,restore_impl=None):
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--base-capture',required=True)
-    ap.add_argument('--delta',action='append',required=True)
-    ap.add_argument('--out',required=True)
+    ap.add_argument('--base-capture')
+    ap.add_argument('--delta',action='append')
+    ap.add_argument('--out')
+    ap.add_argument('--probe-directory',type=Path,help='Read-only outside temporary same-filesystem rename check')
     args=ap.parse_args()
-    result=restore_atomic(args.base_capture,args.delta,args.out)
+    if args.probe_directory is not None:
+        result=probe_noreplace_directory(args.probe_directory)
+    else:
+        if not args.base_capture or not args.delta or not args.out:
+            ap.error('Restore needs --base-capture, --delta and --out')
+        result=restore_atomic(args.base_capture,args.delta,args.out)
     print(json.dumps(result,sort_keys=True))
 
 
