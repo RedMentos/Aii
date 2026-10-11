@@ -17,6 +17,11 @@ ROLE_SUFFIX='#sparse_memory'
 MANIFEST='config/memory-server.json'
 HEADER=APP/'scripts/v13_memory_hook.h'
 
+def runtime_library_hashes(binary):
+    """The launcher may stay identical while its memory-hook shared library changes."""
+    parent=Path(binary).resolve().parent
+    return {p.name:file_hash(p) for p in sorted(parent.glob('*.so*')) if p.is_file()}
+
 def patch_source(src):
     """Idempotent patch of a llama.cpp tree (server.cpp + server-context.cpp). Returns the patched server.cpp sha256."""
     src=Path(src);srv=src/'tools/server/server.cpp'
@@ -49,6 +54,7 @@ def build(home,source=None,progress=print,jobs=2):
     target=b/'bin/llama-server';link=home/'bin/llama-server-mem';tmp=home/'bin/llama-server-mem.new'
     tmp.unlink(missing_ok=True);tmp.symlink_to(target);os.replace(tmp,link)
     m={'tag':r['tag'],'source':str(source),'server_cpp_sha256':patched,'header_sha256':file_hash(HEADER),'server_context_sha256':file_hash(source/'tools/server/server-context.cpp'),'binary_sha256':file_hash(link)}
+    m['runtime_libraries_sha256']=runtime_library_hashes(link)
     atomic_write(home/MANIFEST,dumps(m));return m
 
 def runner_memory(home,role,model_path):
@@ -62,6 +68,8 @@ def runner_memory(home,role,model_path):
     binary=home/'bin/llama-server-mem'
     try:
         if not binary.is_file() or file_hash(binary)!=man.get('binary_sha256'):return None
+        libraries=runtime_library_hashes(binary)
+        if libraries!=man.get('runtime_libraries_sha256',{}):return None
         if file_hash(model_path)!=cur['base_model_sha256'] or file_hash(cur['path'])!=cur['sha256']:return None
     except OSError:return None
     return {'binary':str(binary),'env':{'V13_MEMORY_FILE':cur['path']}}
@@ -79,7 +87,8 @@ def captured_delivery_binding(home,role,model_path):
         if metadata.get('schema')!=DELIVERY_SCHEMA or metadata.get('native_sha256')!=cur['sha256']:return None
         if not isinstance(metadata.get('rows'),list) or not isinstance(metadata.get('item_bindings'),dict):return None
         return {'path':cur['path'],'native_sha256':cur['sha256'],'model_sha256':cur['base_model_sha256'],
-                'binary_sha256':file_hash(mem['binary']),'sidecar_sha256':sha,'batch_id':cur['batch_id']}
+                'binary_sha256':file_hash(mem['binary']),'runtime_libraries_sha256':runtime_library_hashes(mem['binary']),
+                'sidecar_sha256':sha,'batch_id':cur['batch_id']}
     except (OSError,ValueError,KeyError,TypeError):return None
 
 def _native_live_rows(path):

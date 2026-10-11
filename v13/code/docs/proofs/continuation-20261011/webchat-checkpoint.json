@@ -1,18 +1,32 @@
 {
   "session_date": "2026-10-11",
-  "phase": "WEBCHAT_RECOVERY_NATIVE_FIRING",
+  "phase": "WEBCHAT_NATIVE_FIRING_LIBRARY_BOUND",
   "base_remote_commit": "df098daec0ee7d5f528fdb03584ddc972b4583c8",
   "restored_source_commit": "77ec4729d29cee457fc705dab294726efe720120",
   "targeted_tests": {
-    "run": 35,
-    "passed": 35
+    "run": 42,
+    "passed": 42
   },
   "full_selftest_before_final_counter_branch_refinement": {
     "run": 988,
     "passed": 984,
     "skipped": 4
   },
-  "native_model_audit": "BUILDING_NOT_YET_PROVEN",
+  "native_model_audit": {
+    "status": "PASS_EXECUTION_ONLY",
+    "report": "docs/proofs/continuation-20261011/native-firing-smoke-library-bound/report.json",
+    "real_model_turns": 6,
+    "memory_origin": "SYNTHETIC_PROTOCOL_FIXTURE",
+    "checks": {
+      "answers_identical": true,
+      "prompt_tokens_identical": true,
+      "three_requests_bound": true,
+      "all_requests_observed": true,
+      "only_nonzero_unguarded_row_fired": true,
+      "entity_guard_blocked": true
+    },
+    "runtime_libraries_bound": true
+  },
   "canonical_architecture_complete": false,
   "user_full_scope_complete": false,
   "activation_authorized": false,
@@ -20,5 +34,45 @@
     "Complete final native runner rebuild and synthetic real-model diagnostic equivalence smoke",
     "Preserve native raw records and final extracted-package selftest",
     "Paired frozen-corpus Exact/Trace/Combined/selective utility; no activation without strict recall/leak/retention gates"
-  ]
+  ],
+  "full_selftest_final_package": {
+    "run": 991,
+    "passed": 987,
+    "skipped": 4,
+    "errors": 0,
+    "failures": 0,
+    "seconds": 63.17,
+    "scope": "actual extracted phone-install ZIP on Linux, not Redmi",
+    "log": "docs/proofs/continuation-20261011/sparse-audit-extracted-package-selftest.log",
+    "log_sha256": "5eecbc2b5e202044853a82ba34bd25a206d3081ce9a6e460a3bcde71277fa62b",
+    "tested_manifest_sha256": "155b56247f3817d182db4367ad01cbb73b718fcd26f652d492209126c080e9fd"
+  },
+  "prior_attempts_preserved": [
+    "native-firing-smoke",
+    "native-firing-smoke-retry",
+    "sparse-audit-final-selftest.log"
+  ],
+  "limitations": [
+    "Synthetic slots: no learned recall, leak, retention or selective-delivery approval",
+    "No new Redmi measurement or STEP1/STEP2 completion",
+    "Prior pre-library-binding reports do not identify the complete dynamic runtime"
+  ],
+  "github": {
+    "status": "PREVIOUS_CHECKPOINT_REMOTE_TREE_VERIFIED",
+    "head": "e0539193e015878d24970f401ba4d2e6621cb735",
+    "tree": "03e32a1c2492dfbd57002ff43a43195493eb7161"
+  },
+  "frozen_executable_source_sha256": {
+    "scripts/v13_memory_hook.h": "a53938f12ad7cb5fc5dceadcce061990e18cf2ac020f7a1b2c4f1b39004e3b68",
+    "scripts/native_memory_hook.cpp": "8e3a61ffd47f9baa12dbe3c623f7afa91483d83cb3d08e3ecadcec41e31711a7",
+    "scripts/native_firing_smoke.py": "96e45652a25dfa6b1f6e4e4f9a5a55e1d953cc433494925fc3a62cd431c9cd5a",
+    "scripts/fast_trace_compare.py": "3ac677d58b8be1178d8a9da84156e618c339d973a185133033dd1bf546042b54",
+    "v13/sparse_audit.py": "723a833719cb0303528a0bcba30f3823c9c9d7151d962c1cb1c28ba8ab04657b",
+    "v13/memory_server.py": "f4ab750471cd0ce960aa42a84506257ae38ddae32d02afd9c7357b1444bad9a7",
+    "v13/runners.py": "845bb87f9e8bd24333217e86b6558f5292c3838e26352fe756a32882f3fef705",
+    "tests/test_sparse_audit.py": "f4f003062af20cad46aafa68ce224f040f3fbe0992190978fe191fe92a200c5d",
+    "tests/test_fast_trace_resume.py": "a19132fe772e69cc3b9ada43748c7e23b52c7004b800a14ab2ea57a102a9de65",
+    "tests/test_sparse_delivery.py": "072597901bc2611edb2271e8e4fd85b29cd694efcf8bc9b80df56770d96faae6",
+    "tests/test_sparse_runner_lifecycle.py": "5b5380a6e79f51f189f208117242ffcc8a41bcb4be478806597fc05b6baadfe2"
+  }
 }

@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from fast_trace_compare import serve, ask
 from v13.common import atomic_write, file_hash
 from v13.memory_trainer import live_system
+from v13.memory_server import runtime_library_hashes
 from v13.sparse_audit import read_firing_window
 
 
@@ -36,7 +37,8 @@ def main():
     floats += values
     memory.write_bytes(b'V13SMEM1' + struct.pack('<6i2f', 0, hidden, 3, 1, 3, 1, .01, 1.)
                        + struct.pack('<%df'%len(floats), *floats) + struct.pack('<3i', -1, 2147483647, -1))
-    binding = {'binary_sha256': file_hash(args.binary), 'model_sha256': file_hash(args.model),
+    binding = {'binary_sha256': file_hash(args.binary), 'runtime_libraries_sha256': runtime_library_hashes(args.binary),
+               'model_sha256': file_hash(args.model),
                'memory_sha256': file_hash(memory), 'script_sha256': file_hash(__file__),
                'header_sha256': file_hash(Path(__file__).with_name('v13_memory_hook.h')),
                'parser_sha256': file_hash(Path(__file__).parents[1]/'v13/sparse_audit.py')}

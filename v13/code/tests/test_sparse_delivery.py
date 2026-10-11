@@ -69,6 +69,17 @@ class SparseDelivery(unittest.TestCase):
             original=p.read_bytes();loaded=captured_delivery_binding(self.home,'C3_LANGUAGE',self.model)
             p.write_bytes(original+b'tampered')
             self.assertEqual(self.inventory(loaded)['candidates'],[]);p.write_bytes(original)
+    def test_shared_library_must_be_bound_and_tamper_cannot_claim_loaded_binding(self):
+        from v13.memory_server import runtime_library_hashes
+        lib=self.binary.parent/'libllama-server-impl.so';lib.write_bytes(b'synthetic library')
+        self.assertIsNone(runner_memory(self.home,'C3_LANGUAGE',self.model))
+        manifest={'binary_sha256':file_hash(self.binary),'runtime_libraries_sha256':runtime_library_hashes(self.binary)}
+        (self.home/MANIFEST).write_text(json.dumps(manifest))
+        loaded=captured_delivery_binding(self.home,'C3_LANGUAGE',self.model)
+        self.assertEqual(loaded['runtime_libraries_sha256'],manifest['runtime_libraries_sha256'])
+        lib.write_bytes(b'changed library')
+        self.assertIsNone(runner_memory(self.home,'C3_LANGUAGE',self.model))
+        self.assertEqual(self.inventory(loaded)['candidates'],[])
     def test_approved_content_or_provenance_mismatch_excluded(self):
         self.edit_side(lambda side:side['item_bindings'][self.mid].update(prompt='dog'))
         self.activate(self.path,'changed-key');self.assertEqual(self.inventory()['candidates'],[])

@@ -5,6 +5,10 @@ test_valid_observation_is_neither_recall_nor_authorization (test_sparse_audit.Au
 test_actual_header_counters_guard_zero_values_and_request_reset (test_sparse_audit.NativeAudit.test_actual_header_counters_guard_zero_values_and_request_reset) ... ok
 test_changed_native_artifact_or_corpus_cannot_merge_proofs (test_fast_trace_resume.CheckpointResume.test_changed_native_artifact_or_corpus_cannot_merge_proofs) ... ok
 test_concurrent_resume_rejected_without_touching_existing_proof (test_fast_trace_resume.CheckpointResume.test_concurrent_resume_rejected_without_touching_existing_proof) ... ok
+test_dead_startup_process_is_reaped_without_polling_an_unrelated_server (test_fast_trace_resume.CheckpointResume.test_dead_startup_process_is_reaped_without_polling_an_unrelated_server) ... /workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/fast_trace_compare.py:39: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmp4v5vuksr/dead.log' mode='r' encoding='UTF-8'>
+  p.wait();raise RuntimeError('server exited during startup: '+open(log).read()[-400:])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
 test_failed_native_call_keeps_raw_rows_and_resume_never_replays_completed_row (test_fast_trace_resume.CheckpointResume.test_failed_native_call_keeps_raw_rows_and_resume_never_replays_completed_row) ... base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
 exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
 trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
@@ -33,6 +37,7 @@ test_indexes_style_and_ratings_not_delivery_candidates (test_sparse_delivery.Spa
 test_legacy_or_missing_map_runs_but_cannot_propose (test_sparse_delivery.SparseDelivery.test_legacy_or_missing_map_runs_but_cannot_propose) ... ok
 test_malformed_native_size_or_row_map_excluded (test_sparse_delivery.SparseDelivery.test_malformed_native_size_or_row_map_excluded) ... ok
 test_model_native_and_binary_changes_fail_closed (test_sparse_delivery.SparseDelivery.test_model_native_and_binary_changes_fail_closed) ... ok
+test_shared_library_must_be_bound_and_tamper_cannot_claim_loaded_binding (test_sparse_delivery.SparseDelivery.test_shared_library_must_be_bound_and_tamper_cannot_claim_loaded_binding) ... ok
 test_training_bindings_only_facts (test_sparse_delivery.SparseDelivery.test_training_bindings_only_facts) ... ok
 test_unapproved_sidecar_tamper_invalidates_snapshot (test_sparse_delivery.SparseDelivery.test_unapproved_sidecar_tamper_invalidates_snapshot) ... ok
 test_zero_value_unreachable_threshold_or_empty_guard_excluded (test_sparse_delivery.SparseDelivery.test_zero_value_unreachable_threshold_or_empty_guard_excluded) ... ok
@@ -47,10 +52,11 @@ test_legacy_native_without_map_still_runs_but_cannot_claim_binding (test_sparse_
 test_native_changed_during_health_handshake_never_publishes_binding (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_native_changed_during_health_handshake_never_publishes_binding) ... ok
 test_native_forget_rewrite_and_reapproval_reload_instead_of_stale_reuse (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_native_forget_rewrite_and_reapproval_reload_instead_of_stale_reuse) ... ok
 test_registry_deactivation_reaps_old_child_before_normal_load (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_registry_deactivation_reaps_old_child_before_normal_load) ... ok
+test_shared_library_change_invalidates_warm_child_even_with_same_launcher (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_shared_library_change_invalidates_warm_child_even_with_same_launcher) ... ok
 test_unapproved_inherited_memory_environment_never_enters_normal_child (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_unapproved_inherited_memory_environment_never_enters_normal_child) ... ok
 test_watched_model_binary_manifest_and_map_changes_force_revalidation (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_watched_model_binary_manifest_and_map_changes_force_revalidation) ... ok
 
 ----------------------------------------------------------------------
-Ran 35 tests in 3.341s
+Ran 38 tests in 3.409s
 
 OK

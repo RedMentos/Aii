@@ -18,6 +18,7 @@ from v13.memory_trainer import live_system  # noqa: E402
 from v13.config import DEFAULTS  # noqa: E402
 from v13.common import atomic_write,dumps,digest,file_hash  # noqa: E402
 from v13.sparse_audit import read_firing_window  # noqa: E402
+from v13.memory_server import runtime_library_hashes  # noqa: E402
 
 def system(question,with_exact):
     if not with_exact:return live_system()
@@ -30,13 +31,19 @@ def serve(binary,model,mem,port,log,*,audit_firing=False):
     env.pop('V13_MEMORY_AUDIT',None)
     if mem:env['V13_MEMORY_FILE']=mem
     if mem and audit_firing:env['V13_MEMORY_AUDIT']='1'
-    p=subprocess.Popen([binary,'-m',model,'--port',str(port),'-ngl','0','-t','4','-c','4096','-np','1','-b','128','-ub','128','--no-webui','--no-warmup'],
-                       env=env,stdout=subprocess.DEVNULL,stderr=open(log,'w'))
+    with open(log,'w') as err:
+        p=subprocess.Popen([binary,'-m',model,'--port',str(port),'-ngl','0','-t','4','-c','4096','-np','1','-b','128','-ub','128','--no-webui','--no-warmup'],
+                           env=env,stdout=subprocess.DEVNULL,stderr=err)
     for _ in range(120):
+        if p.poll() is not None:
+            p.wait();raise RuntimeError('server exited during startup: '+open(log).read()[-400:])
         try:
             if json.loads(urllib.request.urlopen('http://127.0.0.1:%d/health'%port,timeout=2).read()).get('status')=='ok':return p
         except Exception:time.sleep(1)
-    p.terminate();raise RuntimeError('server did not start: '+open(log).read()[-400:])
+    p.terminate()
+    try:p.wait(timeout=10)
+    except subprocess.TimeoutExpired:p.kill();p.wait()
+    raise RuntimeError('server did not start: '+open(log).read()[-400:])
 
 def ask(port,sys_text,q):
     b=json.dumps({'messages':[{'role':'system','content':sys_text},{'role':'user','content':q}],'max_tokens':40,'temperature':0,'seed':13,'cache_prompt':True}).encode()
@@ -59,7 +66,8 @@ def _compare(binary,model,mem,out,*,resume=False,repeats=1,audit_firing=False):
     """
     if repeats<1:raise ValueError('repeats must be positive')
     sets={'facts':[(q,k) for q,_,k in FACTS],'paraphrase':PARAPHRASES,'near_miss':NEAR_MISS,'probes':[(p['prompt'],p['expect']) for p in PROBES]}
-    binding={'binary_sha256':file_hash(binary),'model_sha256':file_hash(model),'memory_sha256':file_hash(mem),
+    binding={'binary_sha256':file_hash(binary),'runtime_libraries_sha256':runtime_library_hashes(binary),
+             'model_sha256':file_hash(model),'memory_sha256':file_hash(mem),
              'corpus_sha256':digest(dumps({'facts':FACTS,'sets':sets})),
              'script_sha256':file_hash(__file__),'relevance_sha256':file_hash(Path(__file__).parents[1]/'v13/memory.py'),
              'prompts_sha256':digest(live_system()),'memory_threshold':DEFAULTS['memory_threshold'],

@@ -1,0 +1,29 @@
+{
+  "binary_sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8",
+  "header_sha256": "a53938f12ad7cb5fc5dceadcce061990e18cf2ac020f7a1b2c4f1b39004e3b68",
+  "server_context_sha256": "929e58f8e7b6db428aa82f5b0459f82c32b2cd906757b477617a71867ce73b80",
+  "server_cpp_sha256": "af73304b089ae56f27aa74fd080a31e9375cec6e64a4c550fe790b3935cbe852",
+  "source": "/workspace/scratch/5a9214d3f329/native-audit-cache/source/llama.cpp-b10964",
+  "tag": "b10964",
+  "runtime_libraries_sha256": {
+    "libggml-base.so": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+    "libggml-base.so.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+    "libggml-base.so.0.24.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+    "libggml-cpu.so": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+    "libggml-cpu.so.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+    "libggml-cpu.so.0.24.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+    "libggml.so": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+    "libggml.so.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+    "libggml.so.0.24.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+    "libllama-common.so": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+    "libllama-common.so.0": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+    "libllama-common.so.0.4.1": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+    "libllama-server-impl.so": "0bd03879553abc98f5d2951886989820cd61049ce071f727e06f9cc926d4c8f1",
+    "libllama.so": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+    "libllama.so.0": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+    "libllama.so.0.4.1": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+    "libmtmd.so": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+    "libmtmd.so.0": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+    "libmtmd.so.0.4.1": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+  }
+}

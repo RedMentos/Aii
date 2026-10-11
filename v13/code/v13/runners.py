@@ -1,4 +1,5 @@
 import contextlib
+import copy
 import http.client
 import json
 import math
@@ -37,6 +38,8 @@ class LlamaRunner:
         if self.purpose=='generate':
             paths += [self.home/'config/lora-active.json',self.home/'config/memory-server.json',self.home/'bin/llama-server-mem']
         if self._loaded_binary:paths.append(self._loaded_binary)
+        for binary in (self.binary,self._loaded_binary):
+            if binary:paths += sorted(Path(binary).resolve().parent.glob('*.so*'))
         if self.memory:
             native=self.memory.get('env',{}).get('V13_MEMORY_FILE')
             if native:paths += [native,str(native)+'.items.json']
@@ -52,7 +55,7 @@ class LlamaRunner:
         # The binding describes the child that completed its health handshake,
         # not a registry proposal or a dead/stale process.
         if self.proc is None or self.proc.poll() is not None or self._loaded_stamp!=self._lifecycle_stamp():return None
-        return dict(self._memory_delivery_binding) if self._memory_delivery_binding else None
+        return copy.deepcopy(self._memory_delivery_binding) if self._memory_delivery_binding else None
     def pids(self):return [self.proc.pid] if self.proc and self.proc.poll() is None else []
     def unload(self):
         before=process_memory(self.proc.pid) if self.proc else None;kill_process(self.proc);self.proc=None

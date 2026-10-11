@@ -710,9 +710,8 @@
    "Runtime shadow inventory preserving Exact/source lineage; resumable atomic native proof collector"
   ],
   "next": [
-   "STEP1/STEP2 frozen-corpus paired utility and reproducibility; current native budget outputs fail, no cosmetic tuning from three alpha answers",
-   "Native sparse slot firing instrumentation and same-corpus Exact/Trace/selective measurement before any activation",
-   "Remaining original native/body/learning-objective/Redmi gates from ROADMAP; full scope remains false"
+   "Paired frozen-corpus learned Exact/Trace/Combined/selective utility with native slot observations and complete runtime binding",
+   "Original remaining native/body/learning-objective/Redmi gates; architecture and user scope remain incomplete"
   ],
   "source_zip": "deliverables/V13-Source-20261011-Progress.zip",
   "phone_install_zip": "deliverables/V13-Redmi-Install-20261011-Progress.zip",
@@ -745,7 +744,7 @@
    "tree": "9d7ec229c6f7760cbf253e61aee2c9634437d27f",
    "branch": "codex/authority-live-comparisons",
    "new_remote_head_verified": true,
-   "next": "Publish and verify this final proof/doc checkpoint"
+   "next": "Publish and verify final native-firing/library-bound checkpoint"
   },
   "native_vertical": {
    "status": "SMOKE_PASS_EXECUTION_ONLY",
@@ -774,6 +773,34 @@
    "raw_archive_sha256": "dcfd95a133ba165de0578b3cd5e6e5031ea342996efd4f61d9768f27893dfe22",
    "summary_sha256": "2a7e5145ef0de2347d782d62d37f6657ce00c0fdc0aaa34aeb990e4c8644e15d",
    "preserved_initial_diagnostic_mistakes": true
+  },
+  "webchat_continuation": {
+   "phase": "NATIVE_FIRING_LIBRARY_BOUND",
+   "session_date": "2026-10-11",
+   "targeted_tests": {
+    "run": 42,
+    "passed": 42
+   },
+   "native_status": "PASS_EXECUTION_ONLY_SYNTHETIC_MEMORY",
+   "native_model_turns": 6,
+   "report": "docs/proofs/continuation-20261011/webchat-checkpoint.json",
+   "handoff": "docs/NATIVE_FIRING.md",
+   "package_selftest": {
+    "run": 991,
+    "passed": 987,
+    "skipped": 4,
+    "errors": 0,
+    "failures": 0,
+    "seconds": 63.17,
+    "scope": "actual extracted phone-install ZIP on Linux, not Redmi",
+    "log": "docs/proofs/continuation-20261011/sparse-audit-extracted-package-selftest.log",
+    "log_sha256": "5eecbc2b5e202044853a82ba34bd25a206d3081ce9a6e460a3bcde71277fa62b",
+    "tested_manifest_sha256": "155b56247f3817d182db4367ad01cbb73b718fcd26f652d492209126c080e9fd"
+   },
+   "step1_complete": false,
+   "step2_complete": false,
+   "full_scope_complete": false,
+   "report_sha256": "5602c24c87cc5dbdc209df4494d46d365358ec455f7ef6a4a3663076838d8d54"
   }
  }
 }

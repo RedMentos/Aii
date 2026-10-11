@@ -95,5 +95,13 @@ class CheckpointResume(unittest.TestCase):
         self.assertEqual(result['exact+trace']['facts_rows'][0]['native_firing']['reason'],'NO_PROMPT_MARKER')
         self.assertTrue(result['_checkpoint']['binding']['audit_firing'])
 
+    def test_dead_startup_process_is_reaped_without_polling_an_unrelated_server(self):
+        proc=Mock();proc.poll.return_value=1
+        with patch.object(bench.subprocess,'Popen',return_value=proc),patch.object(bench.urllib.request,'urlopen') as request:
+            with self.assertRaisesRegex(RuntimeError,'server exited during startup'):
+                bench.serve(*self.args[:3],8653,str(self.home/'dead.log'),audit_firing=True)
+        proc.wait.assert_called_once()
+        request.assert_not_called()
+
 
 if __name__=='__main__':unittest.main()

@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/native_firing_smoke.py", line 90, in <module>
+    main()
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/native_firing_smoke.py", line 53, in main
+    process = serve(args.binary, args.model, str(memory), port, str(log), audit_firing=enabled)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/fast_trace_compare.py", line 38, in serve
+    p.wait();raise RuntimeError('server exited during startup: '+open(log).read()[-400:])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: server exited during startup: v  llama_server: this can be a security risk (cross-origin attacks)
+0.00.002.315 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.002.315 W srv  llama_server: -----------------
+0.00.003.544 I srv    load_model: loading model '/workspace/scratch/5a9214d3f329/native-audit-cache/language.gguf'
+0.00.281.945 I cmn          init: llama threadpool init, n_threads = 4
+

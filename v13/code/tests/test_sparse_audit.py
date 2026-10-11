@@ -64,10 +64,14 @@ int main() {
  Memory m; m.hidden=2; m.n=3; m.ent_w=1; m.topk=3; m.tau=.01f;
  m.mu={0,0}; m.keys={1,0,1,0,1,0}; m.theta={0,0,0};
  m.values={2,0,4,0,0,0}; m.ent={7,8,7}; m.ctx.insert(7);
- Memory plain=m; m.audit=true; v13_audit_begin(m);
+ Memory plain=m; m.audit=true;
  float x[2]={1,0}, a[2]={10,1}, b[2]={10,1};
  ggml_tensor input; input.op=GGML_OP_MUL; input.name="ffn_norm-0"; input.data=x;
  ggml_tensor out; out.name="l_out-0"; out.data=a;
+ // llama initialization may evaluate graphs before the first HTTP prompt.
+ hook(&input,false,&m); hook(&out,false,&m);
+ assert(m.audit_applied.empty() && m.audit_request==0);
+ a[0]=10; a[1]=1; v13_audit_begin(m);
  hook(&input,false,&m); hook(&out,false,&m);
  out.data=b; hook(&input,false,&plain); hook(&out,false,&plain);
  assert(a[0]==b[0] && a[1]==b[1]); assert(a[0]==12);

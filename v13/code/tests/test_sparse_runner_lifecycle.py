@@ -73,6 +73,21 @@ HTTPServer(('127.0.0.1',int(sys.argv[sys.argv.index('--port')+1])),Handler).serv
         self.bind(sidecar=False);self.load()
         self.assertEqual(self.runner.memory['env']['V13_MEMORY_FILE'],str(self.native))
         self.assertIsNone(self.runner.memory_delivery_binding)
+
+    def test_shared_library_change_invalidates_warm_child_even_with_same_launcher(self):
+        from v13.memory_server import runtime_library_hashes
+        lib=self.binary.parent/'libllama-server-impl.so';lib.write_bytes(b'synthetic shared runtime')
+        (self.home/'config/memory-server.json').write_text(json.dumps({'binary_sha256':file_hash(self.binary),
+            'runtime_libraries_sha256':runtime_library_hashes(self.binary)}))
+        self.load();old=self.runner.proc
+        self.assertIsNotNone(self.runner.memory_delivery_binding)
+        binding=self.runner.memory_delivery_binding
+        binding['runtime_libraries_sha256'].clear()
+        self.assertIn(lib.name,self.runner.memory_delivery_binding['runtime_libraries_sha256'])
+        lib.write_bytes(b'changed shared runtime')
+        self.assertIsNone(self.runner.memory_delivery_binding)
+        self.load()
+        self.assertIsNotNone(old.poll());self.assertIsNone(self.runner.memory)
     def test_registry_deactivation_reaps_old_child_before_normal_load(self):
         self.load();old=self.runner.proc
         (self.home/'config/lora-active.json').write_text('{}')

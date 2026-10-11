@@ -1,0 +1,161 @@
+{
+  "status": "PASS_EXECUTION_ONLY",
+  "binding": {
+    "binary_sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8",
+    "runtime_libraries_sha256": {
+      "libggml-base.so": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-base.so.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-base.so.0.24.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-cpu.so": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml-cpu.so.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml-cpu.so.0.24.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml.so": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libggml.so.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libggml.so.0.24.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libllama-common.so": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-common.so.0": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-common.so.0.4.1": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-server-impl.so": "0bd03879553abc98f5d2951886989820cd61049ce071f727e06f9cc926d4c8f1",
+      "libllama.so": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libllama.so.0": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libllama.so.0.4.1": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libmtmd.so": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+      "libmtmd.so.0": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+      "libmtmd.so.0.4.1": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    },
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "memory_sha256": "d9bdce1c173e425f53b1690d6efc28041bd6fc0759498670e48d972f297ce73a",
+    "script_sha256": "96e45652a25dfa6b1f6e4e4f9a5a55e1d953cc433494925fc3a62cd431c9cd5a",
+    "header_sha256": "a53938f12ad7cb5fc5dceadcce061990e18cf2ac020f7a1b2c4f1b39004e3b68",
+    "parser_sha256": "723a833719cb0303528a0bcba30f3823c9c9d7151d962c1cb1c28ba8ab04657b"
+  },
+  "memory_origin": "SYNTHETIC_PROTOCOL_FIXTURE",
+  "phone_measured": false,
+  "learned_recall_proven": false,
+  "activation_authorized": false,
+  "arms": {
+    "audit_off": [
+      {
+        "index": 0,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.3905308759995023
+      },
+      {
+        "index": 1,
+        "prompt": "What is two plus two?",
+        "answer": "Two plus two equals four.",
+        "prompt_tokens": 192,
+        "seconds": 0.3018502009999793
+      },
+      {
+        "index": 2,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.31301144799999747
+      }
+    ],
+    "audit_on": [
+      {
+        "index": 0,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.39067175699983636,
+        "native_firing": {
+          "status": "OBSERVED_NATIVE_WRITES",
+          "request": 1,
+          "layer": 0,
+          "evaluated_rows": 193,
+          "batches": 4,
+          "slot_applied_counts": [
+            193,
+            0,
+            0
+          ],
+          "slot_guard_blocked_counts": [
+            0,
+            193,
+            0
+          ],
+          "fired_rows": [
+            0
+          ],
+          "exact_retained": true,
+          "quality_proven": false,
+          "activation_authorized": false
+        }
+      },
+      {
+        "index": 1,
+        "prompt": "What is two plus two?",
+        "answer": "Two plus two equals four.",
+        "prompt_tokens": 192,
+        "seconds": 0.3129595860000336,
+        "native_firing": {
+          "status": "OBSERVED_NATIVE_WRITES",
+          "request": 2,
+          "layer": 0,
+          "evaluated_rows": 134,
+          "batches": 8,
+          "slot_applied_counts": [
+            134,
+            0,
+            0
+          ],
+          "slot_guard_blocked_counts": [
+            0,
+            134,
+            0
+          ],
+          "fired_rows": [
+            0
+          ],
+          "exact_retained": true,
+          "quality_proven": false,
+          "activation_authorized": false
+        }
+      },
+      {
+        "index": 2,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.27902828000060254,
+        "native_firing": {
+          "status": "OBSERVED_NATIVE_WRITES",
+          "request": 3,
+          "layer": 0,
+          "evaluated_rows": 129,
+          "batches": 3,
+          "slot_applied_counts": [
+            129,
+            0,
+            0
+          ],
+          "slot_guard_blocked_counts": [
+            0,
+            129,
+            0
+          ],
+          "fired_rows": [
+            0
+          ],
+          "exact_retained": true,
+          "quality_proven": false,
+          "activation_authorized": false
+        }
+      }
+    ]
+  },
+  "checks": {
+    "answers_identical": true,
+    "prompt_tokens_identical": true,
+    "three_requests_bound": true,
+    "all_requests_observed": true,
+    "only_nonzero_unguarded_row_fired": true,
+    "entity_guard_blocked": true
+  }
+}
