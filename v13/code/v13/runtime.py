@@ -469,7 +469,7 @@ class Runtime:
                 if guidance:stable+='\n'+prompt(self.cfg,'operator_rules')+dumps(guidance)
                 volatile=[]
                 if memories:volatile.append(('ACTIVE_VIEW','\n'+prompt(self.cfg,'memories'),self.memory.report_context(text,memories)))
-                if selected:volatile.append(('HYPOTHESES','\n'+prompt(self.cfg,'hypotheses'),[p['offer'] for p in selected]))
+                if selected:volatile.append(('HYPOTHESES','\n'+prompt(self.cfg,'hypotheses'),self.cognition.analyst_context(selected,e,version)))
                 executive_view=self.executive.view(self.session)
                 from .history import native_history
                 history_records,history_refs=native_history(self.store,self.session,eid,self.cfg['history_turns'])
@@ -501,7 +501,7 @@ class Runtime:
                 context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
                 if executive_view.get('active_task'):context_refs.append(executive_view['active_task']['source_ref'])
                 context_refs.extend(x['source_ref'] for x in executive_view['open_questions'])
-                for item in selected:context_refs.extend(item['provenance'])
+                for item in selected:context_refs.extend(item['provenance']+item['evidence_refs'])
                 for old in history_records:context_refs.append(self.store.source(old['text'],'C3_OUTPUT_HISTORY_CONTEXT'))
                 context_refs=list({dumps(ref):ref for ref in context_refs}.values())
                 # Durable answer lineage survives deletion of diagnostic/context

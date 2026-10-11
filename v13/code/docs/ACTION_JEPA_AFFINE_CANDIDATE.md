@@ -135,3 +135,52 @@ portable exported dataset. Altered arrays, missing libraries, changed corpus,
 changed plans and source leakage are rejected. The capture's statement that a
 native run occurred remains exporter-declared; file hashes bind evidence and
 do not independently certify its origin or provide runtime authority.
+
+## Resumable actual capture and transparent recovery
+
+`scripts/capture_action_jepa_taps.py` adds a real two-thread native server
+capture in batches of sixteen. Registration is a separate offline command;
+native startup requires a terminal source-intact 70-row STEP2 report. Model,
+runner, every adjacent shared library, driver, original extractor, source
+JSON, plan and complete text order are immutable resume bindings. A unique
+model alias in both `/props` and every actual embedding response identifies
+the owned server. Each raw request/response is saved before an atomic NPZ
+checkpoint; the checkpoint can be reconstructed and verified against every
+original floating-point response. Failed attempts remain separate evidence.
+
+The first actual run captured 384 rows in 24 batches, then its HTTP connection
+closed. All 384 rows and raw responses were retained, and the owned worker
+was reaped. The original fixed driver did not persist its exit signal, so that
+signal is unavailable. A later diagnostic found an 8 GiB cgroup limit and a
+historical OOM-kill counter of one; without a starting counter, this cannot be
+attributed to that worker. The exact resume initially stopped before any
+native startup because the current working tree had progressed beyond the
+completed STEP2 source revision.
+
+The unchanged producer now has an explicit read-only outer wrapper:
+`scripts/resume_action_jepa_capture_observed.py`. The wrapper verifies all 94
+source files against the terminal report using the frozen archive
+`step2-webchat-70/frozen-source.tar.gz`, SHA256
+`d59ac71c5af559db015e521052f13d00736784ba18eb8c258caf0933d29ee081`.
+Only the producer's source-check root points to this immutable snapshot; the
+working tree, native protocol, original driver bytes, model and parameters
+remain untouched. A separate registration binds wrapper, archive, original
+driver, terminal report, all 24 original batch records and the 384-row prefix
+array hash. It is a completed historical source-check snapshot, not a claim
+that subsequent working-tree changes passed the old STEP2 run.
+
+The observer records actual owned-process `poll`/`wait` return codes, signals,
+cleanup requests, cgroup counters before/after and sampled native RSS. Large
+model jobs are serialized after the observed memory pressure. These are
+concurrent cloud diagnostics; they provide no Redmi or latency-baseline claim.
+Two snapshot guards and four capture protocol guards pass without starting
+native models. With export, affine, archive and original JEPA tests, the full
+software block contains 25 passing tests.
+
+After a complete capture, `scripts/seal_action_jepa_evidence.py` verifies and
+seals raw responses into one immutable ZIP. The export JSON stores bound tap
+indices instead of duplicating float vectors; loading materializes the exact
+RMS-normalized NPZ rows. Deterministic gzip (`mtime=0`) preserves the original
+JSON bytes and uncompressed SHA256. A portable metadata ZIP contains exact
+source texts, encoder bindings and restoration instructions; the original
+15 MiB NPZ is supplied separately. Archive round trips preserve all bytes.

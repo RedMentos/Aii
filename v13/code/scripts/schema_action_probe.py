@@ -132,7 +132,7 @@ def server(binary, model, log, threads=4):
                     proc.kill(); proc.wait(timeout=3)
 
 
-def run(binary, model, out, threads=4):
+def run(binary, model, out, threads=4, concurrent_load='none declared'):
     out = Path(out); out.mkdir(parents=True, exist_ok=False)
     binding = {'binary_sha256': file_hash(binary), 'model_sha256': file_hash(model),
                'runtime_libraries_sha256': runtime_library_hashes(binary),
@@ -143,6 +143,9 @@ def run(binary, model, out, threads=4):
               'planned_calls': 32, 'rows': [], 'phone_measured': False,
               'canonical_gate_pass': False, 'training_or_activation': False,
               'purpose': 'AUTHORED_GENERIC_SCHEMA_DIAGNOSTIC',
+              'execution_scope': {'platform': 'CLOUD_LINUX', 'server_threads': threads,
+                                  'concurrent_load': concurrent_load,
+                                  'latency_comparison_valid': False, 'phone_measured': False},
               'limits': ['No acceptance fixtures consumed.', 'Action-only has a smaller output task.',
                          'Facts-first changes serialization only; no evidence of benefit before results.',
                          'Historical 230M outputs are not a known-good semantic control.']}
@@ -194,8 +197,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--binary', required=True); parser.add_argument('--model', required=True)
     parser.add_argument('--out', required=True); parser.add_argument('--threads', type=int, default=4)
+    parser.add_argument('--concurrent-load', default='none declared')
     args = parser.parse_args()
-    result = run(Path(args.binary), Path(args.model), args.out, args.threads)
+    result = run(Path(args.binary), Path(args.model), args.out, args.threads, args.concurrent_load)
     print(json.dumps({'status': result['status'], 'calls': len(result['rows'])}))
     return 0 if result['status'] == 'DIAGNOSTIC_COMPLETE' else 2
 

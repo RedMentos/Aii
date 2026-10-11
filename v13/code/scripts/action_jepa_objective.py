@@ -82,8 +82,12 @@ def load_dataset(path):
             ix, iy = row['context_artifact_index'], row['future_artifact_index']
             if any(type(i) is not int or not 0 <= i < len(native) for i in (ix, iy)):
                 raise ValueError('Native pair artifact indices invalid')
-            if not np.array_equal(native[ix], row['context_state']) or not np.array_equal(native[iy], row['future_state']):
-                raise ValueError('Observed states differ from bound native tap rows')
+            supplied = ('context_state' in row, 'future_state' in row)
+            if any(supplied):
+                if not all(supplied) or not np.array_equal(native[ix], row['context_state']) or not np.array_equal(native[iy], row['future_state']):
+                    raise ValueError('Observed states differ from bound native tap rows')
+            elif artifact.get('materialize_states_from_indices') is not True:
+                raise ValueError('Explicit native states or bound-index materialization required')
             identities += [('native_state_row', ix), ('native_state_row', iy)]
             source_texts = [(path.parent / bindings[s]['path']).read_text() for s in row['source_ids']]
             for index in (ix, iy):
@@ -101,8 +105,8 @@ def load_dataset(path):
         for identity in identities:
             if owners.setdefault(identity, part) != part:
                 raise ValueError('Source/episode overlap across partitions')
-    x = np.asarray([r['context_state'] for r in rows], dtype=np.float64)
-    y = np.asarray([r['future_state'] for r in rows], dtype=np.float64)
+    x = np.asarray([native[r['context_artifact_index']] if native is not None else r['context_state'] for r in rows], dtype=np.float64)
+    y = np.asarray([native[r['future_artifact_index']] if native is not None else r['future_state'] for r in rows], dtype=np.float64)
     if x.ndim != 2 or x.shape != y.shape or x.shape[1] < 2 or not all(np.isfinite(v).all() for v in (x, y)):
         raise ValueError('Finite same-width observed state pairs required')
     actions = sorted({r['action'] for r in rows})

@@ -175,7 +175,7 @@ class Cognition:
             bs=bodyview.body_state(self.r,e,role,text)
             if bs:query['body_state']=bs['view'];bv_refs.append(bs['source_ref']);bv['body_state_ref']=bs['source_ref']
         except Exception as exc:self.s.log('bodyview_unavailable',e['event_id'],{'stage':'offer','error':type(exc).__name__})
-        if bv_refs:instructions+=' detail_windows are exact source spans attention marked as important; body_state is your own world/self/skill state, not a fact.'
+        if bv_refs:instructions+=' detail_windows are exact source spans attention marked as important; body_state is own world/self/skill state, never source evidence. Its world.mode counts only completed own digital actions; it says nothing about available source knowledge. self.external_tools limits tool execution, not reading supplied text or reasoning about its constraints.'
         local_gist=None
         if policy=='B1_DETAIL' and (focus or (previous.get('offer') or {}).get('needs_reentry')):  # WP-U7 §3.2A: A bundles fine context for a detail re-entry
             try:
@@ -201,7 +201,7 @@ class Cognition:
                 instructions+=' gist_slots are exact source groups in order (older parts are coarser); quotes must be exact substrings of them.'
         if role=='B2_GIST' and policy=='B2_GIST':
             query['earlier_context']=[x['native_context'] for x in context]
-            instructions+=' Earlier context contains exact source excerpts and fallible prior hypotheses. Never treat a prior hypothesis as a fact. Quotes may cite only the current source or an exact source excerpt.'
+            instructions+=' Earlier context separates exact source excerpts from fallible prior hypotheses. Use relevant earlier source excerpts when current text leaves a rule unstated; prefer an explicit current-source revision when the same rule changes. Never treat a prior hypothesis as a fact. Select short exact quotes carrying the source rules needed by your summary; only your verified quotes, not the full earlier context, are passed to the answer component. If required evidence is absent, state that uncertainty and request re-entry rather than inventing it. Quotes may cite only current source text or an exact earlier source excerpt, never own-state or hypotheses.'
         if broadcast:
             query['executive_broadcast']={k:broadcast[k] for k in ['state_version','goal','constraints','source_refs']}
             pf=broadcast.get('permission_flags') or {}  # WP-T2: bodies see the Age envelope C1 granted (stage + rights above Age 0), never a way to widen it
@@ -246,6 +246,44 @@ class Cognition:
         p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])
         p['provenance'] += query_packet['context_source_refs']
         self.s.add_packet('OfferPacket',p);self.retain_body_offer(p);return p
+    def analyst_context(self,offers,e,version):
+        """Render selected hypotheses and only their source-verified quotations.
+
+        An exact quote proves transport of source text, not semantic truth. A
+        retained source merely available to a body is never copied wholesale.
+        Persisted Query/Offer bindings, current event/generation/version, exact
+        quote equality and source digest/range are rechecked before delivery.
+        """
+        rendered=[]
+        for supplied in offers:
+            row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",(supplied.get('packet_id'),))
+            if not row:raise ValueError('Consumer offer is not stored')
+            offer=json.loads(row['payload'])
+            if (offer!=supplied or not offer_is_fresh(offer,e['event_id'],e['brain_generation_id'],version)
+                    or offer.get('model_revision')!=self.r.models.revision(offer['role'])):
+                raise ValueError('Consumer offer binding changed or expired')
+            query_row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='QueryPacket'",(offer.get('query_packet_id'),))
+            if not query_row:raise ValueError('Consumer query binding missing')
+            query=json.loads(query_row['payload'])
+            if (query['event_id']!=e['event_id'] or query['brain_generation_id']!=e['brain_generation_id']
+                    or query['target_role']!=offer['role'] or query.get('based_on_state_version')!=version
+                    or query['source_refs']!=[e['source_ref']]
+                    or query.get('context_source_refs',[])!=offer.get('context_source_refs',[])):
+                raise ValueError('Consumer query scope changed')
+            allowed=[e['source_ref']]+query.get('context_source_refs',[])
+            verified=[]
+            for ref in offer['evidence_refs']:
+                bound=any(all(ref.get(k)==base.get(k) for k in ('source_id','sha256','modality'))
+                    and base['char_start']<=ref['char_start']<ref['char_end']<=base['char_end'] for base in allowed)
+                if not bound:raise ValueError('Consumer quote outside supplied source scope')
+                text=self.s.read_source(ref)
+                if text not in offer['offer'].get('quotes',[]):raise ValueError('Consumer quote differs from offered quote')
+                verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SUBSTRING_ONLY',
+                                 'semantic_truth_authority':False})
+            rendered.append({'role':offer['role'],'offer_packet_id':offer['packet_id'],
+                'hypothesis':{k:offer['offer'][k] for k in ('summary','uncertainty','needs_reentry')},
+                'hypothesis_authority':'MODEL_HYPOTHESIS_NOT_FACT','verified_quotes':verified})
+        return rendered
     def communicate(self,offer,receiver,fast=None):
         if {offer['role'],receiver}!={'B1_DETAIL','B2_GIST'}:raise ValueError('Ungültige B3-Richtung')
         channel=self.r.cfg['channel'];proposal=channel;applied=False;cal=None

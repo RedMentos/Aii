@@ -146,7 +146,6 @@ def export_dataset(plan_path, sentences, actions, taps_path, manifest_path, out)
                 or not np.isfinite(raw).all() or manifest.get('shape') != list(raw.shape)
                 or manifest.get('dtype') != str(raw.dtype)):
             raise ValueError('Actual finite Qwen3.5 native 1024-D array/shape/dtype binding required')
-    normalized = raw / np.maximum(np.sqrt(np.mean(raw * raw, axis=1, keepdims=True)), 1e-8)
     out = Path(out).resolve()
     if out.exists() and any(out.iterdir()):
         raise ValueError('Export destination must be empty; original proofs are preserved')
@@ -178,10 +177,10 @@ def export_dataset(plan_path, sentences, actions, taps_path, manifest_path, out)
                              'episode_id': episode['episode_id'], 'topic': row['topic'],
                              'partition': episode['partition'], 'action': action,
                              'source_ids': [bind_text(row['input']), bind_text(row['outcomes'][action])],
-                             'context_artifact_index': i, 'future_artifact_index': future_index,
-                             'context_state': normalized[i].tolist(), 'future_state': normalized[future_index].tolist()})
+                             'context_artifact_index': i, 'future_artifact_index': future_index})
     dataset = {'schema': SCHEMA, 'provenance_kind': 'native_dense_tap', 'bindings': bindings,
-               'state_artifact': {'binding_id': 'native_taps', 'array_key': 'x', 'transform': 'rms_normalize'},
+               'state_artifact': {'binding_id': 'native_taps', 'array_key': 'x', 'transform': 'rms_normalize',
+                                  'materialize_states_from_indices': True},
                'export_plan': plan, 'export_plan_sha256': sha(plan_path), 'rows': exported}
     destination = out / 'dataset.json'
     destination.write_text(json.dumps(dataset, ensure_ascii=False, allow_nan=False) + '\n')

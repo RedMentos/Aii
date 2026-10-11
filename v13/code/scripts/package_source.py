@@ -7,12 +7,29 @@ import os
 from pathlib import Path
 import zipfile
 
+PHONE_REQUIRED_FIXTURES={
+    'docs/proofs/continuation-20261011/source-handoff-baseline/'+name
+    for name in ('bodyview.py','cognition.py','runtime.py','manifest.json')
+}
+
+def source_file(app,p):
+    relative=p.relative_to(app)
+    # Live and rotated proof workspaces can contain open SQLite/WAL state.
+    # Package immutable reports and explicitly sealed checkpoints instead.
+    checkpoint=any(part.endswith('.checkpoint') or '.checkpoint.previous-' in part
+                   for part in relative.parts[:-1])
+    return (p.is_file() and not checkpoint and '__pycache__' not in relative.parts
+            and not p.name.endswith('.pyc') and not any(x.startswith('.') for x in relative.parts)
+            and p.name!='WORKSPACE_FILES.json')
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--out',required=True);parser.add_argument('--phone-install',action='store_true',help='Runnable code/plans without historical raw proof collections');args=parser.parse_args()
     app=Path(__file__).resolve().parents[1];out=Path(args.out).expanduser().resolve()
     if out.is_relative_to(app):raise SystemExit('Keep the output ZIP outside the source tree')
-    files=sorted(p for p in app.rglob('*') if p.is_file() and '__pycache__' not in p.parts and not p.name.endswith('.pyc') and not any(x.startswith('.') for x in p.relative_to(app).parts) and p.name!='WORKSPACE_FILES.json')
+    files=sorted(p for p in app.rglob('*') if source_file(app,p))
     if args.phone_install:
+        missing=sorted(path for path in PHONE_REQUIRED_FIXTURES if not (app/path).is_file())
+        if missing:raise SystemExit('Phone-install required fixture missing: '+', '.join(missing))
         def needed(p):
             relative=p.relative_to(app)
             return (relative.parts[0] in {'v13','scripts','tests','specs'}
@@ -21,7 +38,7 @@ def main():
                     or (relative.parts[0]=='docs' and len(relative.parts)==2 and p.suffix=='.md')
                     or relative.as_posix() in {'docs/proofs/native_norm_shadow_port.cpp',
                                                'docs/proofs/native_norm_poll_policy.hpp',
-                                               'docs/proofs/causal-output-lifecycle-20261009/native-fixture-proposal.json'})
+                                               'docs/proofs/causal-output-lifecycle-20261009/native-fixture-proposal.json'}|PHONE_REQUIRED_FIXTURES)
         files=[p for p in files if needed(p)]
     # Freeze each file once: live proof collectors may publish a newer version
     # while this checkpoint is being packed. Hash exactly the bytes we archive.

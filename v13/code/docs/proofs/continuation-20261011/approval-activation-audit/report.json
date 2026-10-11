@@ -1,0 +1,29 @@
+{
+  "scope": "AUTHORED_PROTOCOL_FIXTURE with real temporary SQLite, no actual training/native inference/operator labels",
+  "source_sha256": "9a37da1be899aebcdc605168fd9097eb38532ae268e9f499506b3c46ec9053ef",
+  "before_missing_artifact": {
+    "status": "PENDING_USER",
+    "candidate_count": 1,
+    "registry_roles": []
+  },
+  "after_approve_missing_artifact": {
+    "returned_status": "APPROVED",
+    "stored_status": "APPROVED",
+    "candidate_count": 0,
+    "next_stage": "NOTHING_TO_STAGE",
+    "registry_roles": [],
+    "request_status": "APPROVED",
+    "error_telemetry": [
+      {
+        "kind": "g6_adapter_error",
+        "metrics": "{\"detail\":{\"bytes\":41,\"redacted\":true},\"error\":\"ValueError\"}"
+      }
+    ]
+  },
+  "after_restart": {
+    "status": "APPROVED",
+    "candidate_count": 0,
+    "registry_roles": []
+  },
+  "activation_failure_misreported_as_approved": true
+}

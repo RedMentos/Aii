@@ -21,6 +21,6 @@ test_softmax_readout (tests.test_jepa_action.ActionJepa.test_softmax_readout) ..
 test_tasks_chance_for_action_blind_control (tests.test_jepa_action.ActionJepa.test_tasks_chance_for_action_blind_control) ... ok
 
 ----------------------------------------------------------------------
-Ran 21 tests in 1.991s
+Ran 21 tests in 0.741s
 
 OK

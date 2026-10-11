@@ -69,7 +69,11 @@ class ExportTests(unittest.TestCase):
             doc, x, *_ = aj.load_dataset(dataset)
             i = doc['rows'][0]['context_artifact_index']
             np.testing.assert_array_equal(x[0], args[5][i]/np.sqrt(np.mean(args[5][i]**2)))
-            doc['rows'][0]['context_state'][0] += 1
+            row = doc['rows'][0]
+            row['context_state'] = x[0].tolist()
+            raw_y = args[5][row['future_artifact_index']]
+            row['future_state'] = (raw_y/np.sqrt(np.mean(raw_y**2))).tolist()
+            row['context_state'][0] += 1
             dataset.write_text(json.dumps(doc))
             with self.assertRaisesRegex(ValueError, 'bound native tap rows'):
                 aj.load_dataset(dataset)
