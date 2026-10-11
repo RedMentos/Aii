@@ -10,7 +10,11 @@ except ModuleNotFoundError:
 class StrictResumeGuard(unittest.TestCase):
     def row(self,fixture='Mira',arm='baseline',status='RECORDED'):
         return {'fixture':fixture,'arm':arm,'status':status,
-                'score':{'utility':0.5,'exact':False},'delivered_prior_quotes':[]}
+                'score':{'utility':0.5,'exact':False},'delivered_prior_quotes':[],
+                'oracle_visible_to_native': False, 'processes_reaped': True,
+                'checks': {k: True for k in guard.NATIVE_CHECKS},
+                'offer':{'native_metrics':{'status':'FINAL'}},
+                'consumer_metrics':{'status':'FINAL'}}
 
     def report(self,rows=None,status='RUNNING'):
         rows=rows if rows is not None else [self.row()]
@@ -74,6 +78,55 @@ class StrictResumeGuard(unittest.TestCase):
         r['row_sha256']={'Mira/baseline':guard.row_sha(r['rows'][0])}
         r['summary']=guard.expected_summary(r['rows'])
         self.assertEqual(guard.validate_resume(r,'same-reg'),{('Mira','baseline')})
+
+
+    def test_out_of_order_rows_refused_despite_valid_sha_ledgers(self):
+        rows=[self.row('Mira','baseline'), self.row('Lumen','baseline')]
+        with self.assertRaisesRegex(ValueError,'contiguous'):
+            guard.validate_resume(self.report(rows),'same-reg')
+        rows=[self.row('Mira','state_off')]
+        with self.assertRaisesRegex(ValueError,'contiguous'):
+            guard.validate_resume(self.report(rows),'same-reg')
+
+    def test_recorded_native_requires_reaped_process_and_no_oracle(self):
+        for field,bad in [('processes_reaped',False),('oracle_visible_to_native',True)]:
+            with self.subTest(field=field):
+                r=self.report()
+                r['rows'][0][field]=bad
+                r['row_sha256']={'Mira/baseline': guard.row_sha(r['rows'][0])}
+                with self.assertRaisesRegex(ValueError,'native evidence'):
+                    guard.validate_resume(r,'same-reg')
+
+    def test_recorded_native_rejects_missing_false_or_nonboolean_checks(self):
+        for bad in (False,None,1,'true'):
+            with self.subTest(bad=bad):
+                r=self.report();r['rows'][0]['checks']['real_C3_final']=bad
+                r['row_sha256']={'Mira/baseline': guard.row_sha(r['rows'][0])}
+                with self.assertRaisesRegex(ValueError,'native evidence'):
+                    guard.validate_resume(r,'same-reg')
+
+    def test_final_native_statuses_required_for_recorded(self):
+        for where in ('offer','consumer_metrics'):
+            r=self.report()
+            if where=='offer':r['rows'][0]['offer']['native_metrics']['status']='DEADLINE'
+            else:r['rows'][0]['consumer_metrics']['status']='DEADLINE'
+            r['row_sha256']={'Mira/baseline': guard.row_sha(r['rows'][0])}
+            with self.assertRaisesRegex(ValueError,'native evidence'):
+                guard.validate_resume(r,'same-reg')
+
+    def test_no_rows_cannot_claim_nonempty_summary(self):
+        r=self.report([],status='RUNNING')
+        self.assertEqual(guard.validate_resume(r,'same-reg'),set())
+        r['summary']={'baseline':{}}
+        with self.assertRaisesRegex(ValueError,'summary'):
+            guard.validate_resume(r,'same-reg')
+
+    def test_diagnostic_error_row_not_falsely_promoted(self):
+        r=self.report([self.row(status='ERROR')])
+        self.assertEqual(guard.validate_resume(r,'same-reg'),{('Mira','baseline')})
+        r['status']='RECORDED_DIAGNOSIS';r['installed_artifacts_unchanged']=True
+        with self.assertRaisesRegex(ValueError,'incomplete/failed'):
+            guard.validate_resume(r,'same-reg')
 
     def test_changed_registration_refused(self):
         with self.assertRaisesRegex(ValueError,'preregistration changed'):
