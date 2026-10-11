@@ -1,0 +1,539 @@
+{
+  "schema": "v13-bounded-native-worker-observation-v1",
+  "status": "CONTROLLED_CHECKPOINT_BOUNDARY",
+  "started_utc": "2026-10-11T10:15:13.678115+00:00",
+  "initial_rows": 864,
+  "maximum_new_batches": 8,
+  "registry_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+  "memory_start": {
+    "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+    "memory.current": "6136909824",
+    "memory.max": "8589934592",
+    "memory.peak": "8590245888"
+  },
+  "samples": [
+    {
+      "utc": "2026-10-11T10:15:14.671002+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "6170284032",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1798144
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:15.682261+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "6261940224",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 89137152
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:17.686168+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "6724026368",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1105801216
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:19.689206+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "6852083712",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1236434944
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:21.104474+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "6924447744",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1298673664
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:21.694058+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "6986162176",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1359802368
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:23.698143+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7113498624",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1481687040
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:24.804305+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7171469312",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1543938048
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:25.701063+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7227199488",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1604997120
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:27.705453+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7351828480",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1729060864
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:29.195344+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7421440000",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1791336448
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:29.709242+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7481888768",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1852469248
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:31.712780+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7609565184",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 1975484416
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:33.417627+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7646855168",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2037833728
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:33.718221+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7711588352",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2098950144
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:35.721597+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7829278720",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2220871680
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:36.986758+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7893471232",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2283061248
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:37.725445+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7950237696",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2344079360
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:39.729532+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8077201408",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2465988608
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:41.023444+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8135180288",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2528251904
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:41.734324+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8200155136",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2589294592
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:43.739287+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8324730880",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2710994944
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:45.105463+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8383455232",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2773344256
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:45.744270+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8448348160",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2834440192
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:47.747934+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8604\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8571482112",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 2956337152
+      }
+    },
+    {
+      "utc": "2026-10-11T10:15:48.951196+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 8762\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8580861952",
+        "memory.max": "8589934592",
+        "memory.peak": "8590245888"
+      },
+      "native_identity": {
+        "proc_pid": 10075,
+        "nspid": [
+          10075,
+          56
+        ],
+        "starttime_ticks": "187135",
+        "rss_bytes": 3018600448
+      }
+    }
+  ],
+  "owned_popen_pid": 56,
+  "native_returncode": 0,
+  "cleanup_requests": [
+    {
+      "operation": "owned_Popen_terminate",
+      "utc": "2026-10-11T10:15:48.953104+00:00",
+      "returncode_before": null
+    }
+  ],
+  "native_started": true,
+  "receiver_authority": 0,
+  "native_command": [
+    "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/llama-server",
+    "-m",
+    "/workspace/scratch/5a9214d3f329/native-audit-cache/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+    "--embedding",
+    "--pooling",
+    "mean",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "59943",
+    "--alias",
+    "v13-action-capture-09e13f44fa574c7a8dbdb9c74325e2f1",
+    "-c",
+    "2048",
+    "-t",
+    "2",
+    "-tb",
+    "2",
+    "--no-webui",
+    "--log-disable"
+  ],
+  "controlled_reason": "Preregistered owned-worker boundary after 8 successful new batches",
+  "native_signal_number": null,
+  "worker_reaped": true,
+  "completed_utc": "2026-10-11T10:15:49.227256+00:00",
+  "memory_end": {
+    "memory.events": "low 0\nhigh 0\nmax 8762\noom 0\noom_kill 0\noom_group_kill 0",
+    "memory.current": "6119890944",
+    "memory.max": "8589934592",
+    "memory.peak": "8590245888"
+  },
+  "completed_rows": 992,
+  "completed_new_batches": 8,
+  "taps_sha256": "80d34771cd86bf8a25e5a5d792fb0a324822451bd7c5be2bfb958bebc1a6b941",
+  "cgroup_event_deltas": {
+    "low": 0,
+    "high": 0,
+    "max": 158,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "rss_observed": true
+}

@@ -115,9 +115,21 @@ class LifecycleTests(unittest.TestCase):
                     bounded.execute(args)
                 worker.assert_not_called()
 
+    def test_saved_control_without_rss_or_controlled_status_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            binding={'source_checker_snapshot_root':str(root),'exact_original_binding':True,'main_capture_out':str(root/'main')}
+            (root/'bounded-lifecycle-registration.json').write_text(json.dumps(binding))
+            child=root/'control-worker-1';child.mkdir();(child/'registration.json').write_text('{}')
+            (root/'control-worker-1-observation.json').write_text(json.dumps({'status':'FAILED','native_started':True,'worker_reaped':True,'completed_new_batches':1}))
+            args=argparse.Namespace(out=str(root),sentences='unused',actions='unused')
+            with patch.object(bounded,'preregister',return_value=binding), patch.object(producer,'corpus',return_value=(None,None,['x']*1875)), patch.object(producer,'load_checkpoint',return_value=(np.zeros((16,1024)),[{}])), patch.object(bounded,'one_worker') as worker:
+                with self.assertRaisesRegex(ValueError,'reaped actual native observation'):
+                    bounded.execute(args)
+                worker.assert_not_called()
+
     def test_driver_bytes_are_unchanged(self):
-        registry=Path(__file__).resolve().parents[1]/'docs/proofs/continuation-20261011/action-jepa-native-capture/registration.json'
-        self.assertEqual(producer.sha(producer.__file__),json.loads(registry.read_text())['artifacts']['capture_driver']['sha256'])
+        self.assertEqual(producer.sha(producer.__file__),'42b38b8d0f3f96a811f330895de62e35ec81bfea89383edd3ba00da52d06defd')
 
 
 if __name__ == '__main__':

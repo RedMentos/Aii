@@ -58,3 +58,8 @@ Weiter: zuerst serialisierte beobachtete Capture vervollständigen; danach unver
 ## Durable recovery 2026-10-11T09:59:49.462861+00:00
 
 GitHub3d63ec8 and both saved ZIPs were restored and hash/CRC verified after scratch was cleared. Actualdurable tap evidence is736/1875rows46batches; later1248-row observation exists only in prior conversation, not recovered raw data. Dream2 retains2/15 completed arms. Native and pinned training resources are rebuilding; no new inference or gate promotion yet. Embedding per-request RSS accumulation requires separately preregistered bounded worker lifetime, real fresh-worker invariance checks and serialized heavy jobs.
+
+
+## Bounded recovery checkpoint 2026-10-11T10:20:16.010426+00:00
+
+Original native launcher and all19 adjacent library entries were restored byte-exact. Fresh-worker embeddings and recovered historical first16 rows are byte-equal (max_abs_difference=0.0). Native capture is ongoing; the immutable1328/1875-row prefix and raw83 batches are closed and hash-bound. Controlled8-batch process lifetimes retain the original numerical capture protocol; terminal observed workers have no OOM-kill increments. This is partial evidence, not a completed quality gate. Recovered Phone ZIP passes1075 actual extracted software tests, zero skips; hardware quality remains open. Dream remains2/15, queued after the serialized16-row recursively bound source-handoff run. Source-handoff producer sources are frozen. Canonical/full-scope completion remain false.

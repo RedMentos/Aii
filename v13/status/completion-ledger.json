@@ -2190,5 +2190,29 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false,
     "redmi_device_measured_now": false
+  },
+  "current_checkpoint": {
+    "bounded_recovery_checkpoint": {
+      "updated_at": "2026-10-11T10:20:16.010426+00:00",
+      "status": "NATIVE_CAPTURE_RUNNING",
+      "durable_closed_rows": 1328,
+      "expected_rows": 1875,
+      "archive": "docs/proofs/continuation-20261011/action-jepa-bounded-recovery/prefix-20261011T101746Z.closed.zip",
+      "archive_sha256": "b0abe569fc38f00595a686ac523bd9f99032e5474de231c384f8aab3497f81d6",
+      "native_resources": "EXACT_ORIGINAL_LAUNCHER_AND_19_LIBRARY_BINDINGS_RESTORED",
+      "fresh_worker_max_abs_difference": 0.0,
+      "historical_first16_max_abs_difference": 0.0,
+      "phone_zip_recovered_software_tests": {
+        "tests": 1075,
+        "pass": 1075,
+        "skips": 0,
+        "hardware_quality_claimed": false
+      },
+      "dream_completed_arms": 2,
+      "dream_expected_arms": 15,
+      "source_handoff_status": "REGISTERED_121_RECURSIVE_SOURCES_NOT_STARTED",
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
+    }
   }
 }
