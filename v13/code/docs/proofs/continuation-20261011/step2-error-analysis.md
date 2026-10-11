@@ -1,20 +1,26 @@
 # STEP2 error analysis — frozen native cohort, 2026-10-11
 
-Snapshot: 2026-10-11T03:51:00.817440+00:00; report SHA256 `baa9bfb3d661e5fa8c36ccacd0d0c1e8544dc66a5f5a6a3748d260433863895b`; status `RUNNING`; completed rows **20/70**. This is an interim analysis, not the final paired utility verdict. Neither the frozen runtime nor the scorer has been changed for this analysis.
+Final cohort snapshot: 2026-10-11T04:03:47.150472+00:00; report SHA256 `e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555`; status `UTILITY_FAIL`; completed rows **70/70**. All structural checks pass; frozen source and installed artifact bindings remain unchanged. The preregistered semantic gate fails. Neither runtime nor scorer was changed for this analysis.
 
 ## What the completed rows show
 
 | Variant | Rows | Mean strict field utility | Exact decisions | Structural failures |
 |---|---:|---:|---:|---:|
-| b1_only | 3 | 0.388889 | 0 | 0 |
-| b2_only | 3 | 0.222222 | 0 | 0 |
-| both_none | 3 | 0.388889 | 0 | 0 |
-| both_exact | 3 | 0.361111 | 0 | 0 |
-| both_control | 3 | 0.388889 | 0 | 0 |
-| same_policy_dual | 3 | 0.416667 | 0 | 0 |
-| prompt_only_dual | 2 | 0.333333 | 0 | 0 |
+| b1_only | 10 | 0.508333 | 0 | 0 |
+| b2_only | 10 | 0.166667 | 0 | 0 |
+| both_none | 10 | 0.508333 | 0 | 0 |
+| both_exact | 10 | 0.500000 | 0 | 0 |
+| both_control | 10 | 0.500000 | 0 | 0 |
+| same_policy_dual | 10 | 0.558333 | 0 | 0 |
+| prompt_only_dual | 10 | 0.258333 | 0 | 0 |
 
-These prefix means must not be compared as the final gate while variants cover different fixture counts. `RECORDED` means the structural checks and real FINAL call completed; it does not mean a semantically correct decision. All completed rows remain in the proof, including malformed duplicate entities.
+The unchanged paired scorer reports primary `both_exact`=.5 versus best solo B1=.508333 and same-policy dual=.558333. Combination gain over best solo is -.008333. All70 native responses use action `NONE`; all70 are syntactically valid JSON, but22 contain invalid entity mappings under the original scorer. No answer is an exact decision. `RECORDED` means real FINAL inference and structural checks completed, not semantic correctness.
+
+The independent source-transport analyzer reproduces all70 recorded scores exactly. Earlier source is available but not quoted in40/70 rows; actual quote transport from producer-selected evidence to C3 matches in70/70. Thus the loss is upstream of the selected-quote handoff, rather than a mismatch between those selected quotes and native input. Of28 current-override rows,21 permit field scoring and **all21** contain action/remaining/eligibility errors;7 are schema-invalid. The other42 rows are inapplicable to that specific override metric.
+
+Of42 retained-rule rows,27 have a valid field structure and bound current source; all27 emit asserted rule-dependent values without any verified earlier-source quote. The remaining15 are schema-invalid. This diagnostic does not infer that any prior quote would cover all required rules. In Juno, the source explicitly lacks a budget: C3 still emits NONE and non-null residuals/eligibilities, which is an additional direct missing-data failure.
+
+Native metrics report70/70 C3 FINAL and120/120 producer FINAL calls for recorded variants, excluding preparation calls. Maximum recorded per-call sampled native RSS is1,365,266,432 bytes. The analyzer preserves separate unavailable and inapplicable denominators; this is cold sequential Linux process evidence, not sustained target-phone memory or thermal proof.
 
 ## Producer failure: available earlier source is not offered as decision evidence
 
@@ -110,7 +116,7 @@ Cygnus / `b1_only` is an independent available-evidence consumer case: the **cur
 
 ## Next implementation work justified by this evidence
 
-1. Finish and preserve all70 fixed variants first, then compute the existing paired comparison. No early subset is the gate.
+1. The complete70-row fixed comparison is preserved and the existing paired scorer has been independently reproduced; retain its `UTILITY_FAIL` as the baseline for separately frozen changes.
 2. Add evidence-transport diagnostics that distinguish a source merely available to a producer from a quote actually delivered to its consumer. Preserve explicit source IDs/hashes/spans and flag unsupported hypotheses without copying the expected answer.
 3. After the frozen run, measure a separate body-state on/off ablation on distinct inputs; make own world/action state semantically explicit if measured evidence supports the change. Keep uncertainty and provenance separate from fact authority.
 4. Measure C3 calculation/entity binding and missing-rule abstention separately from body complementarity using real native outputs and source-disjoint cases. Improving an offer cannot by itself fix the demonstrated current-source calculation errors.
@@ -127,3 +133,11 @@ The recovered `v13/bench-results/step2-two-body-20261009/step2_utility.json` is 
 This is not an isolated before/after regression experiment. Historical C3 model SHA was `e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292` / revision `cdf97bd8205908758f44aec508d68ac1aef98f5c` (230M); current C3 SHA is `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d` (350M). Runtime source, native runner/library binding and configuration also changed. Do not attribute aggregate utility differences to C3 size, own-state injection or one prompt change without a separately frozen ablation. The present direct harness call supplies no `first_token_bias` and logs no active output-adapter-first-step metric, so these specific current structured-output failures are not evidence of an active learned C3 output delta.
 
 The project-name field often contains `Project Aurora` rather than bare `Aurora`. The frozen schema declares only a string, without an explicit bare-name description; this accounts for one strict field failure, and cannot explain wrong budget arithmetic, duplicate entities or unsupported certainty. A later separately measured schema-description improvement is possible. Post-hoc normalization in this cohort remains inappropriate.
+
+## Executable offline diagnostics and next isolated probe
+
+Run `python3 scripts/analyze_source_transport.py docs/proofs/continuation-20261011/step2-webchat-70/report.json --out <analysis.json>`. The standalone script requires actual recorded source text to check SHA256, exact spans, producer quote declaration, provenance containment, focal-offer ordering and actual C3 message content. Missing source/native metrics remain unavailable; it never calls a model or imports an oracle into production. Current-rule errors reuse `v13.utility.score_decision`; optional task assertions reuse the existing STEP2 analyzer. Sixteen focused new boundary tests plus sixteen existing scorer/analyzer regressions pass (32 total), log `source-transport-tests.log`.
+
+`step2-source-transport.json` records this final cohort; `step2-historical-source-transport.json` separately analyzes the recovered previous70-row cohort and reproduces its original paired verdict and all70 scores. Its actions are65×A and5×UNKNOWN, demonstrating that the older receiver also has a constrained action pattern; it is not a demonstrated correct enum control.
+
+A separate read-only source audit found that `common.dumps(sort_keys=True)` sorts the wire schema and that native grammar preserves that property order. Action is emitted before option calculations; within an option, eligibility precedes entity/locality/remaining. This is a plausible tiny-receiver decoding handicap, **not a causal conclusion from the cohort**. The separate `scripts/schema_action_probe.py` compares free, action-only, action-first and facts-first forms on generic cases after this baseline finished. Its later measurements must keep their own source/model/config bindings and cannot rewrite or promote the preserved STEP2 result.

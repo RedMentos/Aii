@@ -5,7 +5,7 @@
     "1"
   ],
   "dataset_sha256": "457b756f1c96ad79eb8c21f72ab2e697be4b9e4807622a88fc51275da058938b",
-  "objective_source_sha256": "8a5a92b8777252a01ebc3933f0aac6025267ea5572f0df086d957f3f20ff4dae",
+  "objective_source_sha256": "1ef7488bb5e1f57473b5c123bd5b43e2f6a9a3c46132c859fe19c914a1100a6b",
   "bindings": {
     "encoder": {
       "path": "encoder.json",
@@ -30,15 +30,15 @@
   },
   "provenance_kind": "test_fixture",
   "config": {
-    "steps": 80,
     "dim": 3,
-    "seed": 21,
+    "steps": 80,
     "lr": 0.05,
     "max_update_norm": 0.1,
     "ema_decay": 0.99,
-    "retention_max_delta": 0.0
+    "retention_max_delta": 0.0,
+    "seed": 21
   },
-  "checkpoint_sha256": "bfed4f1de727fdfb79f3ad3997fd919de19c7522ae2143b84dbd6db36fecf567",
+  "checkpoint_sha256": "6d54aac8207058b12ea9eeb624766eb184e68b790f02a525304b39c6fff11aea",
   "gates": {
     "analytic_gradient": true,
     "finite": true,

@@ -10,6 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import unicodedata
 
 import numpy as np
 
@@ -50,6 +51,21 @@ def load_dataset(path):
         raise ValueError('No observed pairs')
     seen_ids = set()
     owners = {}
+    native = None
+    native_texts = None
+    if doc['provenance_kind'] == 'native_dense_tap':
+        artifact = doc['state_artifact']
+        if artifact['binding_id'] not in bindings or artifact['transform'] != 'rms_normalize':
+            raise ValueError('Bound native state artifact and supported transform required')
+        with np.load(path.parent / bindings[artifact['binding_id']]['path'], allow_pickle=False) as captured:
+            native = np.asarray(captured[artifact['array_key']])
+            native_texts = captured[artifact.get('text_array_key', 'texts')]
+        if (native.ndim != 2 or native.dtype.kind != 'f' or native.shape[1] not in (1024, 2048)
+                or not np.isfinite(native).all()):
+            raise ValueError('Finite floating native tap artifact required')
+        if native_texts.shape != (len(native),) or native_texts.dtype.kind != 'U':
+            raise ValueError('Bound original native text rows required')
+        native = native / np.maximum(np.sqrt(np.mean(native * native, axis=1, keepdims=True)), 1e-8)
     for row in rows:
         part = row['partition']
         if part not in PARTITIONS or not row['episode_id'] or not row['source_ids']:
@@ -62,6 +78,26 @@ def load_dataset(path):
                 raise ValueError('Observed source file missing')
         # Transitive source reuse is prohibited even through different episode IDs.
         identities = [('episode', row['episode_id'])] + [('source_bytes', bindings[s]['sha256']) for s in row['source_ids']]
+        if native is not None:
+            ix, iy = row['context_artifact_index'], row['future_artifact_index']
+            if any(type(i) is not int or not 0 <= i < len(native) for i in (ix, iy)):
+                raise ValueError('Native pair artifact indices invalid')
+            if not np.array_equal(native[ix], row['context_state']) or not np.array_equal(native[iy], row['future_state']):
+                raise ValueError('Observed states differ from bound native tap rows')
+            identities += [('native_state_row', ix), ('native_state_row', iy)]
+            source_texts = [(path.parent / bindings[s]['path']).read_text() for s in row['source_ids']]
+            for index in (ix, iy):
+                text = str(native_texts[index])
+                if text not in source_texts:
+                    raise ValueError('Native text row is not bound to exact input/output source')
+                identities.append(('native_text_identity', ' '.join(unicodedata.normalize('NFC', text).casefold().split())))
+        elif doc['provenance_kind'] == 'digital_transition':
+            source = row['state_record_binding_id']
+            if source not in row['source_ids']:
+                raise ValueError('Digital state record must be a bound source')
+            observed = json.loads((path.parent / bindings[source]['path']).read_text())
+            if any(observed[k] != row[k] for k in ('context_state', 'future_state', 'action')):
+                raise ValueError('Observed states differ from bound digital transition')
         for identity in identities:
             if owners.setdefault(identity, part) != part:
                 raise ValueError('Source/episode overlap across partitions')

@@ -1,0 +1,287 @@
+import json
+import math
+import re
+import time
+from .contracts import packet,offer_is_fresh
+from .inputs import looks_like_terminal_log
+from .common import dumps,uid,atomic_write,file_hash
+from .memory import relevance,entities
+from .runners import check
+ROUTES=['simple','detail','gist','both']
+def scaffold_route(text):
+    t=text.lower()
+    if re.search(r'vergleich|compare|abwäg|trade.?off',t):return 'both'
+    if re.search(r'code|python|berechn|calculate|budget|mathe|debug|fehler|\d\s*[+*/=]',t):return 'detail'
+    if re.search(r'zusammenfass|summary|summarize|überblick|plan',t):return 'gist'
+    return 'simple'
+def segments(text,ref,width,mode='fixed'):
+    """mode 'fixed': legacy fixed-width chunks (body views, byte-identical prompts). mode 'event': WP-N8 §51.2 A1 inside one
+    text via episodes.text_segments (paragraph/sentence/topic boundaries, lossless tiling with SourceRefs)."""
+    if mode=='event':
+        from .episodes import text_segments
+        return text_segments(text,ref,width)
+    return [{'text':text[i:i+width],'source_ref':ref|{'char_start':i,'char_end':min(len(text),i+width)}} for i in range(0,len(text),width)]
+from .age import RIGHTS as _RIGHTS
+AGE0_RIGHTS=frozenset(r for r,s in _RIGHTS.items() if s==0)
+def percept_mode(cfg):
+    """segment_mode fixed|percept|all: the A4 PerceptPacket uses event segments unless the operator chose 'fixed'."""
+    return 'fixed' if cfg.get('segment_mode','percept')=='fixed' else 'event'
+OFFER_SCHEMA={'type':'object','properties':{'summary':{'type':'string'},'quotes':{'type':'array','items':{'type':'string'},'maxItems':3},'uncertainty':{'type':'string'},'needs_reentry':{'type':'boolean'}},'required':['summary','quotes','uncertainty','needs_reentry'],'additionalProperties':False}
+def offer_schema(tokens):
+    """OFFER_SCHEMA with string caps that fit the observer token budget, so a verbose body (B2 Qwen3.5 gist)
+    closes its JSON instead of being cut off and discarded. ~2.2 chars/token (German + Qwen tokenizer, measured truncation at 3); split summary 45 %, quotes 2x20 %,
+    uncertainty 15 % of what is left after ~30 tokens of JSON syntax. BOOT estimate, not tuned."""
+    chars=max(110,int((int(tokens)-30)*2.2))
+    s=json.loads(json.dumps(OFFER_SCHEMA));pr=s['properties']
+    pr['summary']['maxLength']=max(48,int(chars*.45));pr['uncertainty']['maxLength']=max(16,int(chars*.15))
+    pr['quotes']['maxItems']=2;pr['quotes']['items']['maxLength']=max(24,int(chars*.2))
+    return s
+# WP-KAL2 (2026-10-09, bench-results/KALIBRIERUNG.md): the 'hypothesis' wording made bodies restate the task
+# ("requires adding 46 and 62") instead of solving it: B1 named the result in 5 % of checkable tasks, 'solve' in 37.5 %.
+# 'hypothesis' stays selectable for ablations via cfg offer_style.
+OFFER_STYLE='solve'
+OFFER_SUMMARY={'hypothesis':'summary is a short hypothesis, NOT a final user answer.',
+               'solve':'summary is a short hypothesis that states the exact result you computed or found (another component writes the user answer).'}
+def offer_instructions(policy,style=OFFER_STYLE):
+    role='detail analyst. Check exact details, calculations and contradictions.' if policy=='B1_DETAIL' else 'gist analyst. Identify the main goal, constraints and broader context.'
+    return ('You are an internal '+role+' Return JSON only. '+OFFER_SUMMARY[style]+' quotes must be exact substrings of the supplied source. '
+            'Use at most two short quotes. uncertainty is concise. needs_reentry indicates a material unresolved issue. Keep all fields short.')
+class Cognition:
+    def __init__(self,runtime):self.r=runtime;self.s=runtime.store
+    def tap(self,role,e,source_ref,deadline):
+        """Source-bound native body observation; no receiver or learning authority."""
+        if source_ref['source_id']!=e['source_ref']['source_id']:raise ValueError('Tap source must belong to this event')
+        text=self.s.read_source(source_ref);tap_runner=self.r.pool.get_tap(role);native=tap_runner.tap(text,self.r.cancel_event,deadline)
+        path=self.r.home/'data/blobs'/(uid('tap')+'.json');atomic_write(path,dumps({'token_ids':native['token_ids'],'vectors':native['vectors']}))
+        prediction=None
+        try:prediction=self.r.learner.predict_states(role,native['vectors'])
+        except Exception as exc:self.s.log('local_predictor_unavailable',e['event_id'],{'role':role,'error':type(exc).__name__})
+        p=packet('LatentTapPacket',role,e['event_id'],e['brain_generation_id'],[source_ref],role=role,source_ref=source_ref,
+                 tap_id=getattr(tap_runner,'tap_id','lfm2.result_norm.final.v1'),model_revision=self.r.models.revision(role),runner_revision='b10964',
+                 token_ids=native['token_ids'],feature_path=str(path.relative_to(self.r.home)),feature_sha256=file_hash(path),shape=[len(native['vectors']),len(native['vectors'][0]) if native['vectors'] else getattr(tap_runner,'tap_dim',2048)],
+                 role_state='INDEPENDENT_READ_ONLY_PREFILL',receiver_read_authority=0,receiver_injection_authority=0,body_learning_authority=0,metrics=native['metrics'],local_prediction=prediction)
+        self.s.add_packet('LatentTapPacket',p);self.s.log('native_tap',e['event_id'],native['metrics']|{'model_revision':p['model_revision'],'source_ref':source_ref});return p
+    def read_tap(self,p):
+        row=self.s.one("SELECT payload FROM packets WHERE kind='LatentTapPacket' AND id=?",(p['packet_id'],))
+        if not row or json.loads(row['payload'])!=p:raise ValueError('Tap packet is not the stored observation')
+        self.s.read_source(p['source_ref']);path=(self.r.home/p['feature_path']).resolve()
+        if not path.is_relative_to((self.r.home/'data/blobs').resolve()) or file_hash(path)!=p['feature_sha256']:raise ValueError('Tap feature file/source binding invalid')
+        data=json.loads(path.read_text())
+        if data['token_ids']!=p['token_ids'] or len(data['vectors'])!=p['shape'][0] or any(len(v)!=p['shape'][1] for v in data['vectors']):raise ValueError('Tap feature shape/token mismatch')
+        return data
+    def body_context(self,role,e):
+        """B2's bounded long window; persisted IDs, exact sources, no fact promotion.
+
+        B1 retains its existing short last-offer window. B2 context survives a
+        restart but never crosses sessions, generations, models or unrelated topics.
+        Source lookup is repeated on every use, so deleted/tampered sources fail shut.
+        """
+        if role!='B2_GIST' or not self.r.cfg['b2_state_slots'] or self.r.cfg.get('b2_control','two_body') in ('same_model_prompt_only','same_model_same_policy'):return []
+        previous,_=self.s.state(role+':'+self.r.session,{})
+        ids=previous.get('retained_offer_ids',[previous.get('packet_id')])
+        current_text=self.s.read_source(e['source_ref']);context=[];native=[]
+        for pid in ids[:self.r.cfg['b2_state_slots']]:
+            row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",(pid,))
+            if not row:continue
+            p=json.loads(row['payload'])
+            event=self.s.one('SELECT session_id,packet FROM events WHERE id=?',(p['event_id'],))
+            if not event or event['session_id']!=self.r.session or p['event_id']==e['event_id']:continue
+            if p['role']!=role or p['brain_generation_id']!=e['brain_generation_id'] or p.get('model_revision')!=self.r.models.revision(role):continue
+            ref=json.loads(event['packet'])['source_ref']
+            try:
+                source=self.s.read_source(ref)
+                if looks_like_terminal_log(source):continue  # WP-V5: pasted logs are not gist context
+                current_entities,prior_entities=entities(current_text),entities(source)
+                related=bool(current_entities&prior_entities) if current_entities and prior_entities else relevance(current_text,source)>=self.r.cfg['memory_threshold']
+                if not related:continue
+                excerpt_ref=ref|{'char_end':min(ref['char_end'],ref['char_start']+240)}
+                excerpt=self.s.read_source(excerpt_ref)
+            except (ValueError,OSError):continue
+            item={'exact_source_excerpt':excerpt,'hypothesis':p['offer'].get('summary','')[:120],'authority':'PRIOR_HYPOTHESIS_NOT_FACT'}
+            if len(dumps(native+[item]))>self.r.cfg['b2_context_chars']:continue
+            native.append(item);context.append({'offer_id':pid,'source_ref':excerpt_ref,'native_context':item})
+        try:  # WP-T5 B4: one prior coalition offer across sessions on the same topic (SHADOW logs only)
+            from .bodyview import cross_session
+            context+=cross_session(self.r,e,role,current_text,native,self.r.cfg['b2_context_chars'])
+        except Exception as exc:self.s.log('bodyview_unavailable',e['event_id'],{'stage':'b4','error':type(exc).__name__})
+        return context
+    def retain_body_offer(self,p):
+        key=p['role']+':'+self.r.session;previous,_=self.s.state(key,{})
+        # State is bounded; immutable packet history remains in the event store.
+        ids=[p['packet_id']];seen_events={p['event_id']}
+        limit=max(1,self.r.cfg['b2_state_slots']) if p['role']=='B2_GIST' else 1
+        for pid in previous.get('retained_offer_ids',[previous.get('packet_id')]):
+            if len(ids)>=limit:break
+            row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",(pid,))
+            if not row:continue
+            old=json.loads(row['payload'])
+            if old['event_id'] in seen_events or old['brain_generation_id']!=p['brain_generation_id'] or old.get('model_revision')!=p.get('model_revision'):continue
+            if old['role']!=p['role']:continue
+            event=self.s.one('SELECT session_id FROM events WHERE id=?',(old['event_id'],))
+            if not event or event['session_id']!=self.r.session:continue
+            ids.append(pid);seen_events.add(old['event_id'])
+        self.s.set_state(key,p|{'retained_offer_ids':ids})
+    def percept(self,e):
+        text=self.s.read_source(e['source_ref']);p=packet('PerceptPacket','A5_PERCEPT',e['event_id'],e['brain_generation_id'],[e['source_ref']],source_ref=e['source_ref'],segments=segments(text,e['source_ref'],240,percept_mode(self.r.cfg)),modality='text')
+        try:
+            prediction=self.r.learner.student_percept(text)
+            if prediction:
+                path=self.r.home/'data/blobs'/(uid('a3')+'.json');atomic_write(path,dumps(prediction))
+                p.update(student_feature_path=str(path.relative_to(self.r.home)),student_feature_sha256=file_hash(path),student_component='a3_student',student_latent_dim=len(prediction['latent']),student_in_support=prediction['in_support'],student_mode='T1_SHADOW',native_receiver_authority=0)
+        except Exception as exc:
+            p['student_unavailable']=type(exc).__name__;self.s.log('student_unavailable',e['event_id'],{'error':type(exc).__name__})
+        return self.s.add_packet('PerceptPacket',p)
+    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):
+        if role not in {'B1_DETAIL','B2_GIST'}:raise ValueError('Unbekannte Body-Rolle')
+        # Inference must finish within its own budget. A completed foreground
+        # result may remain eligible until the already bounded consumer turn ends.
+        # Background/probe callers retain their original observer-window expiry.
+        valid_until=deadline if valid_until is None else valid_until
+        for value in (deadline,valid_until):
+            if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<=0:raise ValueError('Offer deadline ungültig')
+        deadline=min(deadline,valid_until);check(self.r.cancel_event,deadline)
+        control=self.r.cfg.get('b2_control','two_body')
+        # §85.1 controls: the B2 role keeps its own state slot but may borrow B1's policy.
+        policy='B1_DETAIL' if role=='B1_DETAIL' or control=='same_model_same_policy' else 'B2_GIST'
+        text=self.s.read_source(e['source_ref']);width=240 if policy=='B1_DETAIL' or control=='same_model_prompt_only' else 960
+        view=segments(text,e['source_ref'],width,'event' if self.r.cfg.get('segment_mode')=='all' else 'fixed');previous,_=self.s.state(role+':'+self.r.session,{})
+        instructions=offer_instructions(policy,self.r.cfg.get('offer_style',OFFER_STYLE))
+        broadcast=None
+        if version:
+            row=self.s.one("SELECT payload FROM packets WHERE event_id=? AND kind='JEFBroadcastPacket' ORDER BY created DESC LIMIT 1",(e['event_id'],))
+            if not row:raise ValueError('C1-Broadcast fehlt')
+            broadcast=json.loads(row['payload'])
+            if broadcast['state_version']!=version or broadcast['brain_generation_id']!=e['brain_generation_id']:raise ValueError('C1-Broadcast veraltet')
+        peer_id=None
+        if peer:
+            peer_id=peer.get('message_packet_id')
+            row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='MessagePacket'",(peer_id,))
+            if not row:raise ValueError('Peer-Nachricht ohne gespeicherte Provenance')
+            peer_packet=json.loads(row['payload'])
+            if peer_packet['event_id']!=e['event_id'] or peer_packet['brain_generation_id']!=e['brain_generation_id'] or peer_packet['receiver']!=role:raise ValueError('Peer-Nachricht für anderen Empfänger/Turn')
+            # Read the persisted content, never trust a caller's mutable copy.
+            peer=peer_packet['content']
+        context=self.body_context(role,e)
+        prior=previous.get('offer',{}).get('summary','')[:240]
+        query={'source_segments':view,'peer_message':peer,'prior_hypothesis':prior if policy=='B1_DETAIL' else ''}
+        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET: the executive question of this re-entry (a question, never a fact)
+            query['jef_query']={k:focus[k] for k in ('question','kind')};instructions+=' jef_query is the executive question for this re-entry; answer it from the source first.'
+        bv_refs=[];bv={};win=[]
+        try:  # WP-T5 B1 detail windows from granted A4 spans, B5 world/self/skill state as a source (state, never fact)
+            from . import bodyview
+            if policy=='B1_DETAIL':
+                win=bodyview.detail_windows(self.s,e['event_id'],text,e['source_ref'])
+                if win:query['detail_windows']=[w['text'] for w in win];bv_refs+=[w['source_ref'] for w in win];bv['detail_windows']=len(win)
+            bs=bodyview.body_state(self.r,e,role,text)
+            if bs:query['body_state']=bs['view'];bv_refs.append(bs['source_ref']);bv['body_state_ref']=bs['source_ref']
+        except Exception as exc:self.s.log('bodyview_unavailable',e['event_id'],{'stage':'offer','error':type(exc).__name__})
+        if bv_refs:instructions+=' detail_windows are exact source spans attention marked as important; body_state is your own world/self/skill state, not a fact.'
+        local_gist=None
+        if policy=='B1_DETAIL' and (focus or (previous.get('offer') or {}).get('needs_reentry')):  # WP-U7 §3.2A: A bundles fine context for a detail re-entry
+            try:
+                from .gist import local_bundle,Gist
+                base=int(e['source_ref'].get('char_start',0));spans=[]
+                for q in (previous.get('offer') or {}).get('quotes') or []:
+                    i=text.find(q) if isinstance(q,str) and q else -1
+                    if i>=0:spans.append((i,i+len(q)))
+                spans+=[(w['source_ref']['char_start']-base,w['source_ref']['char_end']-base) for w in (win or [])]
+                bundles=local_bundle(text,e['source_ref'],spans) if spans else []
+                if bundles:
+                    local_gist={'bundles':len(bundles),'covered':[b['covered'] for b in bundles],'applied':Gist(self.s).mode()=='ACTIVE'}
+                    if local_gist['applied']:
+                        query['local_gist']=[b['text'] for b in bundles];bv_refs+=[b['source_ref'] for b in bundles]
+                        instructions+=' local_gist is provisional nearby context bundled from the exact source; prefer source_segments for exact details.'
+            except Exception as exc:self.s.log('local_gist_unavailable',e['event_id'],{'error':type(exc).__name__})
+        gist_plan=None
+        if role=='B2_GIST' and policy=='B2_GIST' and control!='same_model_prompt_only':  # WP-G G1B: ~8-token gist groups, ~12 slots (SHADOW unless :gist active)
+            from .gist import for_offer
+            gist_plan,gist_slots=for_offer(self.r,text,e['source_ref'],bool(peer))
+            if gist_slots:
+                query.pop('source_segments');query['gist_slots']=gist_slots
+                instructions+=' gist_slots are exact source groups in order (older parts are coarser); quotes must be exact substrings of them.'
+        if role=='B2_GIST' and policy=='B2_GIST':
+            query['earlier_context']=[x['native_context'] for x in context]
+            instructions+=' Earlier context contains exact source excerpts and fallible prior hypotheses. Never treat a prior hypothesis as a fact. Quotes may cite only the current source or an exact source excerpt.'
+        if broadcast:
+            query['executive_broadcast']={k:broadcast[k] for k in ['state_version','goal','constraints','source_refs']}
+            pf=broadcast.get('permission_flags') or {}  # WP-T2: bodies see the Age envelope C1 granted (stage + rights above Age 0), never a way to widen it
+            if pf.get('age') or set(pf.get('rights') or ())-AGE0_RIGHTS:query['executive_broadcast']['age']={'stage':pf.get('age',0),'rights':sorted(set(pf.get('rights') or ())-AGE0_RIGHTS)}
+        try:  # WP-N9 §7.5: corollary view of own recent actions reaches B1/B2 (self-state, never a fact)
+            from .selfmodel import controller as self_controller
+            cv=self_controller(self.r).corollary_view()
+            if cv:query['self_corollary']=cv
+        except Exception:pass
+        jbc_fields=[]
+        try:  # WP-N3 §3.4.2 JEF2B bridge: learned extra broadcast fields (ACTIVE only)
+            from .jefbridge import controller as jef_controller
+            extra,jbc_fields=jef_controller(self.r).bridge_view(role,e,version)
+            if extra:query['jef_broadcast']=extra
+        except Exception:jbc_fields=[]
+        query_packet=packet('QueryPacket','C1_EXEC',e['event_id'],e['brain_generation_id'],[e['source_ref']],target_role=role,goal=text,source_refs=[e['source_ref']],broadcast_packet_id=broadcast['packet_id'] if broadcast else None,peer_message_packet_id=peer_id,source_view_width_chars=width,based_on_state_version=version,probe_only=version==0)
+        query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query['earlier_context'])) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
+        query_packet.update(compute_deadline_monotonic_ns=int(deadline*1e9),offer_valid_until_monotonic_ns=int(valid_until*1e9))
+        query_packet['provenance'] += query_packet['context_source_refs']+bv_refs
+        if bv:query_packet['bodyview']=bv
+        query_packet['jbc_fields']=jbc_fields
+        if focus:query_packet['jef_query']=focus
+        if gist_plan:query_packet['gist']=gist_plan
+        if local_gist:query_packet['local_gist']=local_gist
+        self.s.add_packet('QueryPacket',query_packet)
+        runner=None;started=time.monotonic();attempt_status='ERROR'
+        try:
+            runner=self.r.pool.get(role)
+            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],offer_schema(self.r.cfg['observer_tokens'])));attempt_status='FINAL'
+        finally:
+            metrics=dict(runner.last_metrics) if runner else {'status':'ERROR','duration_s':time.monotonic()-started}
+            self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':metrics.get('status',attempt_status),'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'state_policy':query_packet['state_policy']})
+        obj=json.loads(raw)
+        check(self.r.cancel_event,deadline)
+        if set(obj)!=set(OFFER_SCHEMA['required']) or not isinstance(obj['needs_reentry'],bool) or not isinstance(obj['quotes'],list) or not all(isinstance(obj[k],str) for k in ['summary','uncertainty']):raise ValueError('Offer-Schema ungültig')
+        refs=[];rejected=0;sources=[(text,e['source_ref'])]+[(x['native_context']['exact_source_excerpt'],x['source_ref']) for x in context]
+        for quote in obj['quotes'][:3]:
+            match=next(((source,ref) for source,ref in sources if isinstance(quote,str) and quote and quote in source),None)
+            if not match:rejected+=1;continue
+            source,base=match;start=base['char_start']+source.index(quote);ref=base|{'char_start':start,'char_end':start+len(quote)};self.s.read_source(ref);refs.append(ref)
+        p=packet('OfferPacket',role,e['event_id'],e['brain_generation_id'],[e['source_ref']],role=role,based_on_state_version=version,deadline_monotonic_ns=int(valid_until*1e9),compute_deadline_monotonic_ns=int(deadline*1e9),evidence_refs=refs,offer=obj,confidence=0.,confidence_status='UNCALIBRATED',rejected_quotes=rejected,model_revision=self.r.models.revision(role),native_metrics=runner.last_metrics,query_packet_id=query_packet['packet_id'],broadcast_packet_id=query_packet['broadcast_packet_id'],peer_message_packet_id=peer_id,source_view_width_chars=width)
+        p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])
+        p['provenance'] += query_packet['context_source_refs']
+        self.s.add_packet('OfferPacket',p);self.retain_body_offer(p);return p
+    def communicate(self,offer,receiver,fast=None):
+        if {offer['role'],receiver}!={'B1_DETAIL','B2_GIST'}:raise ValueError('Ungültige B3-Richtung')
+        channel=self.r.cfg['channel'];proposal=channel;applied=False;cal=None
+        try:  # WP-J B3-5: learned channel policy (SHADOW logs, ACTIVE chooses); LATENT stays unavailable
+            from .callosum import controller as callosum_controller
+            cal=callosum_controller(self.r)
+            try:rev=self.r.models.revision(receiver)
+            except Exception:rev=None
+            channel,proposal,applied=cal.choose(offer['role'],receiver,channel,rev)
+        except Exception as exc:cal=None;self.s.log('callosum_unavailable',offer['event_id'],{'stage':'choose','error':type(exc).__name__})
+        if fast and fast.get('learned') and not applied and fast['action']!=channel:channel=fast['action']  # WP-T1 approved channel head (callosum ACTIVE wins)
+        refs=offer['evidence_refs'] if channel=='SOURCE_EXACT' else []
+        content={}
+        if channel=='SOURCE_EXACT':content={'quotes':[self.s.read_source(ref) for ref in refs]}
+        elif channel=='CONTROL':content={k:offer['offer'][k] for k in ['needs_reentry','uncertainty']}
+        elif channel=='SYMBOLIC':content={'hypothesis':offer['offer']['summary']}
+        extra={}
+        if cal is not None:
+            try:  # §85.2 B3_MESSAGE fields; signed_gain is a proposal to the receiver, never an override
+                row=self.s.one("SELECT payload FROM packets WHERE kind='OfferPacket' AND event_id=? AND json_extract(payload,'$.role')=? ORDER BY rowid DESC LIMIT 1",(offer['event_id'],receiver))
+                extra=cal.fields(offer,receiver,channel,content,json.loads(row['payload']) if row else None)|{'channel_proposal':proposal,'channel_policy_applied':applied}
+                if applied and channel!='NO_MESSAGE':content=dict(content,callosum={'signed_gain':extra['signed_gain'],'urgency':extra['urgency']})
+            except Exception as exc:extra={};self.s.log('callosum_unavailable',offer['event_id'],{'stage':'fields','error':type(exc).__name__})
+        p=packet('MessagePacket','B3_CALLOSUM',offer['event_id'],offer['brain_generation_id'],refs,channel=channel,sender=offer['role'],receiver=receiver,source_refs=refs,content=content,latent_authority=0,receiver_effect_proven=False,parent_offer_packet_id=offer['packet_id'],**extra)
+        self.s.add_packet('MessagePacket',p)
+        if cal is not None and extra:
+            try:cal.note(offer['event_id'],p['packet_id'],offer['role'],receiver,channel,proposal,applied,extra['signed_gain'])
+            except Exception as exc:self.s.log('callosum_unavailable',offer['event_id'],{'stage':'note','error':type(exc).__name__})
+        return None if channel=='NO_MESSAGE' else {'message_packet_id':p['packet_id'],'content':content}
+    def focal(self,offers,e,version,slots=None):
+        # WP-D: the effort plan may narrow the coalition; cfg focal_slots stays the ceiling.
+        slots=self.r.cfg['focal_slots'] if slots is None else max(1,min(slots,self.r.cfg['focal_slots']))
+        selected=[p for p in offers if offer_is_fresh(p,e['event_id'],e['brain_generation_id'],version)][:slots]
+        # Single-pass legacy API (proofs/ablations). The live turn uses focal.FocalLoop (WP-N1).
+        from .focal import offer_uncertainty
+        for p in selected:
+            u=offer_uncertainty(p)
+            self.s.add_packet('FocalItem',packet('FocalItem','C4_FOCAL',e['event_id'],e['brain_generation_id'],p['evidence_refs'],item_id=p['packet_id'],source_kind=p['role'],source_refs=p['evidence_refs'],fact_hypothesis_status='HYPOTHESIS',state_type='ACTIVE',salience=0.,uncertainty=u,priority=0.,admission='LEGACY_FIRST_N'))
+        return selected

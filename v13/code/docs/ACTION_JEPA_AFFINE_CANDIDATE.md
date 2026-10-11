@@ -55,7 +55,12 @@ Input schema (use real observed states and source files for actual experiments):
 This sketch does not meet the minimum cohort size. Supported provenance kinds
 are `native_dense_tap`, `digital_transition` and `test_fixture`; the last one
 always blocks the candidate gate. Checked bytes bind supplied data, while
-provenance remains exporter-declared. Actual tap IDs, body/runner revision,
+provenance remains exporter-declared. For native input the loader also requires
+an immutable original tap NPZ and exact context/future row indices; every state
+must equal the RMS-normalized original row and its exact original text must be
+bound to input/output source bytes. Case/whitespace-normalized text cannot
+cross partitions through different native row indices. Digital inputs require a bound
+transition record with identical context, action and observed outcome. Actual tap IDs, body/runner revision,
 source extraction, observed action and target alignment must be supplied in
 the immutable encoder/source files and independently reviewed for real work.
 
@@ -73,7 +78,7 @@ This prototype's retention reference is its initial predictor; retention of
 an existing production predictor and its consumer remain separate work.
 
 Software evidence: `docs/proofs/continuation-20261011/action-jepa-software/`
-contains ten passing tests (seven new and three existing JEPA checks), two
+contains seventeen passing tests (seven objective, seven export and three existing JEPA checks), two
 explicitly synthetic seed-13/21 training runs, immutable inputs, saved weights
 and an actual CLI prediction. Both candidate gates fail: a pure constant
 action offset has a perfect mean-delta control, so learning cannot establish
@@ -81,3 +86,52 @@ utility over that control. The bias does reduce prediction error versus the
 no-bias arm in a focused synthetic test; that is implementation evidence,
 not a semantic/world quality result. The running 70-case proof's runtime and
 harness files were not changed.
+
+## Authentic action-corpus export
+
+`scripts/export_action_jepa_dataset.py` is an offline adapter; it never starts
+a model. The authentic restored corpus has **375** sentences and 1,500 C3 text
+action outputs. The earlier script's docstring says 376; the checked source
+JSON contains 375. The new frozen export plan is
+`docs/proofs/continuation-20261011/action-jepa-preregistered-plan-v2.json`.
+The earlier exact-text-only v1 plan is retained as superseded evidence. V2
+adds NFC/casefold/whitespace source identity before any native tap observation;
+cohort counts remain identical.
+
+Its seed-13 historical train-10/test-6 topic split is preserved as historical
+metadata. A preregistered seed-20261011 split divides only those ten training
+topics into train-6/calibration-2/retention-2. The historical six test topics
+remain test topics and are explicitly marked exposed, rather than fresh held
+out data. Before reading any taps, the adapter excludes every episode sharing
+normalized input or output text across partitions and deduplicates normalized input
+episodes. Actual counts: 139 train, 47 calibration, 44 retention and 143 test
+episodes; two exclusions; four actions per remaining episode (1,492 pairs).
+These are corpus/preparation counts, not measured native results.
+
+Planning preserves the original native ordering: all input sentences, then
+all outcomes action by action. Export requires the original finite floating
+NPZ `x` (1,875 × 1,024) and its exact `texts` ordering. It also requires a
+capture manifest; missing authentic taps or bindings returns `UNAVAILABLE`
+without creating a dataset. No test fixture is substituted. The archived
+authentic taps have not been found, so actual extraction and native training
+remain open until the frozen 70-case proof finishes.
+
+```bash
+python3 scripts/export_action_jepa_dataset.py plan --sentences ../bench-results/jepa-ablation-20261010/sentences.json --actions ../bench-results/jepa-action-20261010/actions.json --out NEW_PLAN.json
+python3 scripts/export_action_jepa_dataset.py export --plan NEW_PLAN.json --sentences ../bench-results/jepa-ablation-20261010/sentences.json --actions ../bench-results/jepa-action-20261010/actions.json --taps ACTUAL_TAPS.npz --capture-manifest ACTUAL_CAPTURE.json --out EMPTY_EXPORT_DIR
+```
+
+The immutable capture manifest schema is `v13-action-native-taps-capture-v1`.
+It must declare `native_extraction_observed: true`,
+`tap_kind: "llama.cpp-mean-last-layer-embedding"`, exact `plan_sha256`,
+`texts_sha256`, `taps_sha256`, `shape` and `dtype`. `artifacts` must bind local
+files `model_gguf`, `runner` and the actual original `jepa_ablation_bench.py`
+`extractor` with `path` and `sha256`. `runtime_libraries` maps every adjacent
+runner `*.so*` filename to its own `path`/`sha256`; export checks both the
+declared files and the complete actual inventory. Paths are resolved relative
+to the manifest. Source input/output bytes, native cache bytes, original float
+indices, encoder bindings and the complete preregistration accompany the
+portable exported dataset. Altered arrays, missing libraries, changed corpus,
+changed plans and source leakage are rejected. The capture's statement that a
+native run occurred remains exporter-declared; file hashes bind evidence and
+do not independently certify its origin or provide runtime authority.
