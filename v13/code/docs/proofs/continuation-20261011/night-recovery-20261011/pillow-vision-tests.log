@@ -1,0 +1,15 @@
+test_hashed_encoder_is_deterministic_and_normalised (tests.test_vision.Vision.test_hashed_encoder_is_deterministic_and_normalised) ... ok
+test_ingest_dedups_and_regions_point_to_exact_pixels (tests.test_vision.Vision.test_ingest_dedups_and_regions_point_to_exact_pixels) ... ok
+test_lab_loop_train_look_forget (tests.test_vision.Vision.test_lab_loop_train_look_forget) ... ok
+test_operator_command (tests.test_vision.Vision.test_operator_command) ... ok
+test_projector_learns_alignment_and_reconstruction_is_measured (tests.test_vision.Vision.test_projector_learns_alignment_and_reconstruction_is_measured) ... ok
+test_raw_eye_separates_colours_and_layout (tests.test_vision.Vision.test_raw_eye_separates_colours_and_layout) ... ok
+test_region_captions_let_the_student_locate (tests.test_vision.Vision.test_region_captions_let_the_student_locate) ... ok
+test_teacher_fails_open_and_caption_is_reference_not_fact (tests.test_vision.Vision.test_teacher_fails_open_and_caption_is_reference_not_fact) ... ok
+test_tile_labels_follow_the_smallest_described_region_and_saliency (tests.test_vision.Vision.test_tile_labels_follow_the_smallest_described_region_and_saliency) ... ok
+test_tiles_find_two_objects_and_teacher_removal (tests.test_vision.Vision.test_tiles_find_two_objects_and_teacher_removal) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 5.953s
+
+OK

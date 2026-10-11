@@ -1,0 +1,21 @@
+test_keyed_slot_fires_only_inside_its_radius (tests.test_sparse_memory.Layer.test_keyed_slot_fires_only_inside_its_radius) ... ok
+test_zero_values_keep_base_and_masked_update_touches_only_selected_slots (tests.test_sparse_memory.Layer.test_zero_values_keep_base_and_masked_update_touches_only_selected_slots) ... ok
+test_common_slots_lose_to_specific_ones (tests.test_sparse_memory.TfIdf.test_common_slots_lose_to_specific_ones) ... ok
+test_trainer_reports_empty_and_missing_torch (tests.test_sparse_memory.TfIdf.test_trainer_reports_empty_and_missing_torch) ... ok
+test_kl_stops_where_base_continuation_ended (tests.test_lora_trainer.KlShortAnswer.test_kl_stops_where_base_continuation_ended)
+A one-word answer + EOS: llama-server returns no completion_probabilities after EOS (real bug, 33 probes). ... ok
+test_explicit_high_rating_becomes_weighted_style_item (tests.test_lora_trainer.LoraGlue.test_explicit_high_rating_becomes_weighted_style_item) ... ok
+test_forgetting_or_leak_fails_gate_and_nothing_binds (tests.test_lora_trainer.LoraGlue.test_forgetting_or_leak_fails_gate_and_nothing_binds) ... ok
+test_frozen_probe_drift_gates_and_blocks_approval (tests.test_lora_trainer.LoraGlue.test_frozen_probe_drift_gates_and_blocks_approval)
+WP-S5 in AG6: frozen-probe KL above cap fails the gate; drift_required=1 refuses approval without a measurement. ... ok
+test_gate_pass_needs_user_then_binds_and_rollback_unbinds (tests.test_lora_trainer.LoraGlue.test_gate_pass_needs_user_then_binds_and_rollback_unbinds) ... ok
+test_helpers_without_torch (tests.test_lora_trainer.LoraGlue.test_helpers_without_torch) ... ok
+test_registry_restores_previous_binding (tests.test_lora_trainer.LoraGlue.test_registry_restores_previous_binding) ... ok
+test_sdft_corrections_staged_and_self_taught (tests.test_lora_trainer.LoraGlue.test_sdft_corrections_staged_and_self_taught)
+WP-S5 SDFT in AG6: corrections join the batch with an empty target; only a self-teaching trainer receives them. ... ok
+test_self_teach_uses_teacher_answer_and_drops_misses (tests.test_lora_trainer.LoraGlue.test_self_teach_uses_teacher_answer_and_drops_misses) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.081s
+
+OK

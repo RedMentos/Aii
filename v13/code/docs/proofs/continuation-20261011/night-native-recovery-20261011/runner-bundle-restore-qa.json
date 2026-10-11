@@ -1,0 +1,16 @@
+{
+  "schema": "v13_closed_runner_bundle_restore_qa_v1",
+  "checked_at": "2026-10-11T21:20:45.886340+00:00",
+  "bundle_sha256": "cfc19c687a5874e3e8294569139975e1228139f5007b0b7a9c594b530f051069",
+  "archive_members": 26,
+  "manifest_files_verified": 24,
+  "launcher_and_library_binding_exact": true,
+  "mismatches": {},
+  "relative_aliases_preserved": true,
+  "version_returncode": 0,
+  "version_stdout": "",
+  "version_stderr": "version: 0.4.1-dev (build 0, commit unknown)\nbuilt with GNU 13.3.0 for Linux x86_64\n",
+  "inference_started": false,
+  "phone_proof": false,
+  "gate_pass": false
+}
