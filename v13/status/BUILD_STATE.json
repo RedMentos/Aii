@@ -681,5 +681,78 @@
     "verification_pending_next_package": false,
     "verification": "docs/proofs/recorded-live-output-export-20261009/compact-package-check.json",
     "actual_shipped_fixture_admission": 46
+  },
+  "head_note": "Current resume point: current_checkpoint (2026-10-11). Existing October-9 checkpoint fields and prior evidence are historical and preserved. Overall architecture and user scope remain incomplete.",
+  "current_checkpoint": {
+    "phase": "WP-T10_LIVE_COMPARISONS",
+    "time_utc": "2026-10-11T02:22:18.141104+00:00",
+    "base_commit": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
+    "branch": "codex/authority-live-comparisons",
+    "handoff": "docs/CONTINUE_20261011_AUTHORITY.md",
+    "report": "docs/proofs/authority-live-20261011/report.json",
+    "report_sha256": "51fa41883371585663a725e4029a997f7ecc0d9cd937b3e6e4ad6df4f7f30ef5",
+    "tests": {
+      "status": "SCOPED_SOFTWARE_PASS",
+      "count": 46,
+      "new": 6,
+      "native": false,
+      "phone": false
+    },
+    "completed": [
+      "Existing attention/deliberation/callosum controllers feed trained comparisons to authority.observe",
+      "No untrained fallback comparisons or invented paired outcomes",
+      "Real SQLite restart, provider-count and blocked-promotion checks pass",
+      "Restored three absent native source/fixture files byte-identical to prior saved ZIP manifest; extracted-package selftest passed with four explicit PyTorch skips"
+    ],
+    "next": [
+      "WP-T10 objective/gate measurements and missing gist/neuromod_meta hooks",
+      "WP-T9 Exact/Sparse duplicate-context integration and real baseline comparisons",
+      "Continue original STEP0/STEP1/STEP2 and native/Redmi work from ROADMAP without weakening failing gates"
+    ],
+    "source_zip": "deliverables/V13-Source-20261011.zip",
+    "phone_install_zip": "deliverables/V13-Redmi-Install-20261011.zip",
+    "persistence": "Source/install ZIP recovery artifacts saved. GitHub work-branch publication is authorized but unavailable: CLI has no credentials; connected create_tree returned HTTP 403 Resource not accessible by integration. No new remote branch/commit published.",
+    "full_scope_complete": false,
+    "package_selftest": {
+      "status": "SOFTWARE_SELFTEST_PASS_WITH_EXPLICIT_SKIPS",
+      "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 -m v13 --home ../test-home selftest",
+      "scope": "Extracted install ZIP, Linux software and compiled synthetic C++ policy tests; no model inference or Android test",
+      "tests_run": 946,
+      "passed": 942,
+      "skipped": 4,
+      "skip_reason": "PyTorch not installed",
+      "errors": 0,
+      "failures": 0,
+      "duration_seconds": 59.081,
+      "original_failed_attempt": {
+        "tests_run": 946,
+        "errors": 12,
+        "failures": 1,
+        "skipped": 4,
+        "log_sha256": "374ddca1cdef68a6f0ab5eadf9d3e6f149ad73ac3655bfadf14a1a3738cf5dc2"
+      },
+      "log_sha256": "5d3561051a4e69a1848b16972a5726650472cd07a3a429f82ac576dc07318cfd",
+      "tested_package_manifest_sha256": "548b53244472085f5830bece256526c2b264b774d1f210ef5226ebec8b69183c",
+      "restored_files_report": "restored-import-files.json",
+      "native_inference": false,
+      "phone_measured": false
+    },
+    "github_authorization": {
+      "status": "STANDING_USER_AUTHORIZATION",
+      "repository": "RedMentos/Aii",
+      "scope": "V13 development and checkpoints on work branches",
+      "user_statement": "Man so das du immer kannst",
+      "time_berlin": "2026-10-11T04:35:02+02:00",
+      "decision_record": "v13/NUTZER_ENTSCHEIDUNGEN.md",
+      "repeat_permission_required": false
+    },
+    "github_publication": {
+      "status": "TECHNICAL_WRITE_ACCESS_BLOCKED",
+      "cli_error": "could not read Username for https://github.com",
+      "connected_api_http": 403,
+      "connected_api_error": "Resource not accessible by integration",
+      "new_remote_head_verified": false,
+      "next": "Restore GitHub repository write access for RedMentos/Aii; standing authorization already granted, no repeated routine permission question"
+    }
   }
 }

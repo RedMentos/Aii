@@ -12,7 +12,7 @@ Stufen je gelerntem Kopf: 0 SHADOW → 1 CANDIDATE → 2 ACTIVE.
   - ACTIVE mit Regression → SHADOW, automatisch. Die sichere Richtung braucht keinen Menschen.
   - Telemetrie `authority_change`.
 - **`observe(store, head, scaffold, learned, scaffold_ok, learned_ok)`:** generisches Schatten-Ledger für Hooks.
-  - Köpfe ohne Vergleich (attention, deliberation, callosum, gist, neuromod_meta) bleiben ehrlich bei 0, bis ein Hook einspeist.
+  - Seit 2026-10-11 speisen die vorhandenen Attention-, Deliberation- und Callosum-Controller ihre trainierten Schattenvorschläge ein. Untrainierte Rückfälle zählen nicht als gelernter Vergleich. Für gist und neuromod_meta fehlen diese Hooks weiterhin.
 - **Operator:** `:authority [status|review|promote <Kopf>|demote <Kopf>|<Kopf>]`, `:objectives`.
 
 ## Lernziel-Plugin (`v13/objectives.py`, IH-H25)
@@ -30,4 +30,14 @@ Stufen je gelerntem Kopf: 0 SHADOW → 1 CANDIDATE → 2 ACTIVE.
 - **`learn_slow`** (nach jeder vollen Nacht mit Status DONE): `review()` und Lernziel-Bericht. Außerhalb von RECORD_ONLY wird zusätzlich `growth_consolidate` für einen schon gestageten AG6-Batch eingeplant; Training bleibt hinter den AG6/Drift-Gates. Die Pause `training` gilt weiter.
 - Schnelle Zeitskala (§14.1/14.2) bleibt in den Köpfen selbst, also pro Turn.
 
-Tests: `tests/test_authority.py` (6).
+## Live-Vergleiche (WP-T10, 2026-10-11)
+
+- Attention vergleicht Scaffold- und gelernte Rangfolge derselben gültigen Anfragen, sobald mindestens ein beteiligter Prior fünf Outcomes hat. Fremde, abgelaufene und für das aktuelle Age verbotene Teacher-Anfragen zählen nicht. Das ist ein Rangvergleich, kein Beleg für erfolgreiche Zustellung unter dem Budget; die tatsächlichen Provider laufen weiterhin nur im bestehenden Zustellungspfad.
+- Deliberation vergleicht die bestehende Modusliste mit dem gelernten Vorschlag, sobald ein beteiligter Modus den vorhandenen Mindestumfang erreicht. HYPOTHESIS bleibt zuerst, Zahl der Schritte und Age-Rechte bleiben bestehen.
+- Callosum vergleicht den konfigurierten Kanal mit der trainierten Wahl nur bei ausreichend gemessenem NO_MESSAGE und einem zulässigen trainierten Kanal. Die Revision des Empfängers setzt weiterhin die Kanal-Policy zurück. Das generische Ledger aggregiert Vergleiche; es ist kein revisionsgebundener Nutzen-Nachweis. LATENT bleibt gesperrt.
+
+Die Hooks geben keine erfundenen Scaffold-/Learned-Outcome-Labels an `observe`: `n_out` bleibt ohne einen tatsächlich gemessenen Paarvergleich unverändert. Übereinstimmung beweist keine Antwortqualität. Die PARTIAL-Lernziele und bestehenden Gate-Verdikte verhindern weiterhin eine Beförderung dieser drei Köpfe. Keine zusätzliche Modellinferenz, kein Body-Gewichtstraining und kein aktueller Redmi-Nachweis in dieser Änderung.
+
+Tests: 46 gezielte Softwaretests PASS: `test_authority_live`, `test_authority`, `test_attention`, `test_deliberation`, `test_callosum`, `test_local_updates`. Darunter sechs neue Integrationsprüfungen mit Runtime/SQLite, Wiederanlauf, Provider-Aufrufzahl und blockierter Beförderung. Bericht: `docs/proofs/authority-live-20261011/report.json`.
+
+Zusätzlich wurde der Installations-ZIP-Einstieg `python3 -m v13 ... selftest` aus der entpackten ZIP geprüft: 946 Tests, 942 PASS, vier explizite PyTorch-Skips. Beim ersten Versuch fehlten im GitHub-Import die feste Native46-Fixture und der Norm-Poll-Header. Diese und die zugehörige Norm-Port-Quelle wurden bytegleich gegen den Manifest-Hash aus dem früher gesicherten Installationspaket wiederhergestellt. Der zweite Lauf bestand. Beide Testlogs und der Wiederherstellungsnachweis bleiben erhalten. Kein Modell- oder Redmi-Nachweis durch diesen Selbsttest.

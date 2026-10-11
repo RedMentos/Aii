@@ -83,8 +83,11 @@ class Callosum:
             ok=[c for c in CHANNELS if (d['u'].get(c) or {'n':0})['n']>=MIN_N and (c=='NO_MESSAGE' or d['u'][c]['v']>=base['v'])]
             proposal=max(ok,key=lambda c:d['u'][c]['v']) if ok and base['n']>=MIN_N else configured
             st['proposals']['n']+=1;st['proposals']['same']+=int(proposal==configured)
-            return proposal,st['mode']=='ACTIVE'
-        proposal,active=self._mutate(fn)
+            return proposal,st['mode']=='ACTIVE',bool(ok) and base['n']>=MIN_N
+        proposal,active,compared=self._mutate(fn)
+        if compared:
+            from .authority import observe
+            observe(self.s,'callosum',configured,proposal)
         return (proposal if active else configured),proposal,active
     # -- message fields (§85.2) -----------------------------------------------------------------------------
     def fields(self,offer,receiver,channel,content,receiver_offer=None):

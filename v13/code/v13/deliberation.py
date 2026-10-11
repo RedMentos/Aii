@@ -65,6 +65,9 @@ class Deliberation:
         head,rest=(['HYPOTHESIS'],list(modes[1:])) if modes and modes[0]=='HYPOTHESIS' else ([],list(modes))
         proposal=head+sorted(rest,key=lambda m:-val(m)['v']) if known else list(modes)
         applied=st['mode']=='ACTIVE' and deliberation_allowed and bool(known)
+        if known:
+            from .authority import observe
+            observe(self.s,'deliberation',list(modes),proposal)
         return (proposal if applied else list(modes)),proposal,applied
     # -- stability gate for the halt readout ----------------------------------------------------------
     def halt_allowed(self,trigger):

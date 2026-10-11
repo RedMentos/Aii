@@ -11,3 +11,9 @@ Wortlaut: „es sin viele modelle in einem des is eig alles definiert worden.. S
 3. **World-Model gehört dazu** (Blueprint §7.2, §92.2, G-SELF-WORLD-005), braucht ein eigenes Arbeitspaket.
 4. **Konstantes Lernen ist das Endziel.** Age-0-Shadow mit Freigabe bleibt der Startzustand, die Age-Hülle soll schrittweise dorthin führen, nicht dauerhaft blockieren.
 5. **Ziel: eine heruntergebrochene Simulation eines Gehirns**, kein Chatbot.
+
+## 2026-10-11: dauerhafte GitHub-Freigabe für dieses Projekt
+
+Im Projektthread wurde konkret um Freigabe gebeten, den geprüften Stand auf den neuen Arbeitsbranch `codex/authority-live-comparisons` in `RedMentos/Aii` zu pushen. Auf die Erläuterung der Zustimmung antwortete der Nutzer um 04:35:02 Europe/Berlin: „Man so das du immer kannst“.
+
+Dies ist die dauerhafte Freigabe, im Rahmen der beauftragten V13-Entwicklung Änderungen und nachvollziehbare Zwischenstände auf Arbeitsbranches in `RedMentos/Aii` zu veröffentlichen. Routine-Pushes dieser Projektarbeit brauchen keine erneute Nachfrage. Die Freigabe bleibt bestehen, bis der Nutzer sie ändert. Der Remote-Stand muss nach jeder Veröffentlichung geprüft werden; lokale Commits allein gelten nicht als erfolgreiche GitHub-Sicherung.
