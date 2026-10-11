@@ -1,0 +1,54 @@
+V13 auf dem Redmi mit Termux
+===========================
+
+1. Einen noch laufenden alten V13-Chat mit :shutdown beenden.
+2. Dieses ZIP in den Downloads-Ordner des Handys herunterladen.
+3. In Termux diese Befehle ausführen:
+
+   termux-setup-storage
+   pkg install -y unzip
+   mkdir -p "$HOME/v13-app-20260929"
+   unzip -o "$HOME/storage/downloads/V13-Redmi-Start.zip" -d "$HOME/v13-app-20260929"
+   cd "$HOME/v13-app-20260929/V13-Phone"
+   bash STARTEN.sh
+
+Falls Android das ZIP umbenannt hat, im unzip-Befehl den tatsächlichen Namen verwenden.
+Die Speicherfreigabe aus Schritt 3 muss bestätigt sein, bevor unzip ausgeführt wird.
+Alternativ das ZIP bereits nach Termux-HOME entpacken und dort bash STARTEN.sh starten.
+
+STARTEN.sh ruft das bestehende Setup auf. Abhängigkeiten und Modelle werden
+automatisch geladen und geprüft. Danach laufen die Selbsttests und echte
+Modellproben; im interaktiven Terminal startet der Chat mit einer Begrüßungsfrage.
+Beim ersten Mal werden ungefähr 0,9 GB Modellmaterial plus Build-Abhängigkeiten
+geladen. Die native Übersetzung auf Android kann mehrere Minuten dauern.
+
+Vorhandene Modelle, Chats und Korrekturen in ~/v13 werden weiterverwendet.
+Den entpackten Programmordner danach behalten: der Launcher verwendet ihn.
+
+Später starten:
+   v13 chat
+
+Im Chat:
+   :help               Befehle
+   :probe              Echte Modelle einzeln prüfen
+   :probe jef-modes    C2, C3 und gemeinsame JEF-Ausgabe ohne B prüfen
+   :probe sustained    Wiederholte echte Antworten und Neustarts prüfen
+   :probe step12       JEF/B1/B2-Ablauf in getrenntem Testspeicher prüfen
+   :probe body-state   B2-Kontext, Neustart, Abgrenzung und Ablation prüfen
+   :cancel             Aktuellen Vorgang abbrechen
+   :shutdown           Beenden
+
+Neu: Teacher-/Self-Auswahl, echter Episodic Replay, Experience-Export,
+belegtes Lernen des kleinen Routing-Heads sowie persistenter Self-/World-State.
+B2-Kontext und vorhandene Teile bleiben erhalten. Keine automatische
+Gewichtsaktivierung. Befehle und genaue Lernschritte stehen in README.md.
+
+Gemeinsamer Testlauf (Chat vorher mit :shutdown beenden):
+   bash TESTEN.sh
+Kurzlauf: bash TESTEN.sh --quick
+Mit zweitem C3-Modell: bash TESTEN.sh --compare-c3 (zusätzlicher Download)
+Berichte bleiben je Lauf unter ~/v13/exports/acceptance-<Zeit> erhalten.
+
+Dies ist ein ausführbarer Age-0-Zwischenstand. Die gesamte V13-Architektur ist
+noch nicht fertig. BUILD_STATE.json und docs/RESUME.md enthalten den genauen
+Stand; aktuelle Proofs und historische Redmi-Screens sind unter docs/proofs/.

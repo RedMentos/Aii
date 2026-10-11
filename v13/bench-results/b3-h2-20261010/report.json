@@ -1,0 +1,1610 @@
+{
+ "kind": "B3_H2_LEARNED_SELECTOR_L1",
+ "sender": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+ "receiver": "Qwen3.5-0.8B-Q4_0.gguf",
+ "n": 600,
+ "K": 4,
+ "r": 8,
+ "h": 16,
+ "seeds": 5,
+ "states_seconds": 1309.8,
+ "sender_dim": 2048,
+ "max_tokens": 41,
+ "receiver_dim": 1024,
+ "budget_b3_h7": {
+  "params": {
+   "selector": 8192,
+   "projector": 16384,
+   "receiver_projector": 512,
+   "gate": 1,
+   "readout_residual": 48,
+   "input_norm": 4096
+  },
+  "param_count": 29233,
+  "weights_bf16_bytes": 58466,
+  "message_bf16_bytes": 64,
+  "slot_buffer_bf16_bytes": 16384,
+  "total_bytes": 74914,
+  "age0_ok": true,
+  "claim_limit": "arithmetic payload, not RSS"
+ },
+ "receiver_prefill_s_per_item": {
+  "full_text": 0.68288,
+  "gist": 0.12597,
+  "tone_span": 0.10471,
+  "hedge_span": 0.23436
+ },
+ "views": {
+  "shared": {
+   "max_item": {
+    "chance": 0.34,
+    "acc": {
+     "NO_MESSAGE": {
+      "mean": 0.55,
+      "sd": 0.0253
+     },
+     "EXACT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "SYMBOLIC": {
+      "mean": 0.5567,
+      "sd": 0.0255
+     },
+     "CONTROL": {
+      "mean": 0.5567,
+      "sd": 0.0111
+     },
+     "L1_MEANPOOL": {
+      "mean": 0.5683,
+      "sd": 0.02
+     },
+     "LATENT": {
+      "mean": 0.665,
+      "sd": 0.0271
+     },
+     "LATENT_SHUFFLED": {
+      "mean": 0.48,
+      "sd": 0.0598
+     },
+     "LATENT_RANDOM": {
+      "mean": 0.5267,
+      "sd": 0.0576
+     }
+    },
+    "bytes": {
+     "NO_MESSAGE": 0,
+     "EXACT": 15.501666666666667,
+     "SYMBOLIC": 5.333333333333333,
+     "CONTROL": 4,
+     "LATENT": 64,
+     "L1_MEANPOOL": 32
+    },
+    "paired_LATENT_minus_NO_MESSAGE": {
+     "mean": 0.115,
+     "se": 0.0185,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    },
+    "paired_LATENT_minus_L1_MEANPOOL": {
+     "mean": 0.0967,
+     "se": 0.0101,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    },
+    "role_drop": 0.0,
+    "ood_rate": 0.0117,
+    "reload_identical": true,
+    "diversity_seed0": {
+     "cka_private_sender_receiver": 0.9234,
+     "cka_message_receiver": 0.3031,
+     "cka_message_sender": 0.3172,
+     "old_task_identical_when_gate_closed": true,
+     "message_dim_std_min": 0.4623,
+     "message_effective_rank": 9.69,
+     "gate": 0.6157,
+     "selector_slot_overlap": 0.0293
+    },
+    "train": [
+     {
+      "epochs": 60,
+      "val_acc": 0.7667,
+      "last": {
+       "ce": 0.0087,
+       "var_hinge": 0.4197,
+       "decorrelation": 0.5338,
+       "slot_overlap": 0.0293
+      }
+     },
+     {
+      "epochs": 40,
+      "val_acc": 0.7417,
+      "last": {
+       "ce": 0.0105,
+       "var_hinge": 0.4433,
+       "decorrelation": 0.4186,
+       "slot_overlap": 0.0284
+      }
+     },
+     {
+      "epochs": 30,
+      "val_acc": 0.65,
+      "last": {
+       "ce": 0.0096,
+       "var_hinge": 0.4286,
+       "decorrelation": 0.4902,
+       "slot_overlap": 0.029
+      }
+     },
+     {
+      "epochs": 30,
+      "val_acc": 0.6083,
+      "last": {
+       "ce": 0.0122,
+       "var_hinge": 0.4405,
+       "decorrelation": 0.4362,
+       "slot_overlap": 0.0283
+      }
+     },
+     {
+      "epochs": 20,
+      "val_acc": 0.6167,
+      "last": {
+       "ce": 0.0189,
+       "var_hinge": 0.4386,
+       "decorrelation": 0.4423,
+       "slot_overlap": 0.0284
+      }
+     }
+    ],
+    "l1_gate": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.115,
+       "se": 0.0185,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.185,
+       "se": 0.0265,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.1383,
+       "se": 0.0328,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": -0.338,
+       "se": 0.0135,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_control": {
+       "mean": 0.1046,
+       "se": 0.0087,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": 0.1047,
+       "se": 0.0142,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0117,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.449,
+      "SYMBOLIC": 0.0063,
+      "CONTROL": 0.0064,
+      "LATENT": 0.111,
+      "LATENT_SHUFFLED": -0.07,
+      "LATENT_RANDOM": -0.0233
+     },
+     "missing_baselines": [],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   },
+   "sum_ok": {
+    "chance": 0.538,
+    "acc": {
+     "NO_MESSAGE": {
+      "mean": 0.5217,
+      "sd": 0.0513
+     },
+     "EXACT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "SYMBOLIC": {
+      "mean": 0.5,
+      "sd": 0.057
+     },
+     "CONTROL": {
+      "mean": 0.51,
+      "sd": 0.047
+     },
+     "L1_MEANPOOL": {
+      "mean": 0.5217,
+      "sd": 0.0382
+     },
+     "LATENT": {
+      "mean": 0.5167,
+      "sd": 0.0258
+     },
+     "LATENT_SHUFFLED": {
+      "mean": 0.5067,
+      "sd": 0.0232
+     },
+     "LATENT_RANDOM": {
+      "mean": 0.5117,
+      "sd": 0.0256
+     }
+    },
+    "bytes": {
+     "NO_MESSAGE": 0,
+     "EXACT": 15.501666666666667,
+     "SYMBOLIC": 5.0,
+     "CONTROL": 4,
+     "LATENT": 64,
+     "L1_MEANPOOL": 32
+    },
+    "paired_LATENT_minus_NO_MESSAGE": {
+     "mean": -0.005,
+     "se": 0.0248,
+     "wins": 3,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_minus_L1_MEANPOOL": {
+     "mean": -0.005,
+     "se": 0.0128,
+     "wins": 2,
+     "n": 5,
+     "significant": false
+    },
+    "role_drop": 0.0,
+    "ood_rate": 0.0067,
+    "reload_identical": true,
+    "diversity_seed0": {
+     "cka_private_sender_receiver": 0.9234,
+     "cka_message_receiver": 0.5143,
+     "cka_message_sender": 0.5534,
+     "old_task_identical_when_gate_closed": true,
+     "message_dim_std_min": 0.4677,
+     "message_effective_rank": 8.32,
+     "gate": 0.5138,
+     "selector_slot_overlap": 0.028
+    },
+    "train": [
+     {
+      "epochs": 10,
+      "val_acc": 0.5833,
+      "last": {
+       "ce": 0.041,
+       "var_hinge": 0.4811,
+       "decorrelation": 0.2715,
+       "slot_overlap": 0.0294
+      }
+     },
+     {
+      "epochs": 60,
+      "val_acc": 0.575,
+      "last": {
+       "ce": 0.014,
+       "var_hinge": 0.4794,
+       "decorrelation": 0.3036,
+       "slot_overlap": 0.0319
+      }
+     },
+     {
+      "epochs": 30,
+      "val_acc": 0.5333,
+      "last": {
+       "ce": 0.0232,
+       "var_hinge": 0.4812,
+       "decorrelation": 0.304,
+       "slot_overlap": 0.0308
+      }
+     },
+     {
+      "epochs": 20,
+      "val_acc": 0.5833,
+      "last": {
+       "ce": 0.054,
+       "var_hinge": 0.4575,
+       "decorrelation": 0.3664,
+       "slot_overlap": 0.031
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 0.5833,
+      "last": {
+       "ce": 0.0307,
+       "var_hinge": 0.4862,
+       "decorrelation": 0.2831,
+       "slot_overlap": 0.0298
+      }
+     }
+    ],
+    "l1_gate": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": -0.005,
+       "se": 0.0248,
+       "wins": 3,
+       "n": 5,
+       "significant": false
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.01,
+       "se": 0.0113,
+       "wins": 3,
+       "n": 5,
+       "significant": false
+      },
+      "beats_latent_random": {
+       "mean": 0.005,
+       "se": 0.0077,
+       "wins": 3,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_exact": {
+       "mean": -0.4864,
+       "se": 0.0129,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_control": {
+       "mean": 0.0029,
+       "se": 0.0232,
+       "wins": 2,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_symbolic": {
+       "mean": 0.013,
+       "se": 0.0217,
+       "wins": 3,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0067,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.4774,
+      "SYMBOLIC": -0.022,
+      "CONTROL": -0.0119,
+      "LATENT": -0.009,
+      "LATENT_SHUFFLED": -0.015,
+      "LATENT_RANDOM": -0.01
+     },
+     "missing_baselines": [],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   },
+   "tone": {
+    "chance": 0.37,
+    "acc": {
+     "NO_MESSAGE": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "EXACT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "SYMBOLIC": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "CONTROL": {
+      "mean": 0.9983,
+      "sd": 0.0033
+     },
+     "L1_MEANPOOL": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "LATENT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "LATENT_SHUFFLED": {
+      "mean": 0.3867,
+      "sd": 0.0336
+     },
+     "LATENT_RANDOM": {
+      "mean": 0.6067,
+      "sd": 0.0305
+     }
+    },
+    "bytes": {
+     "NO_MESSAGE": 0,
+     "EXACT": 28.47,
+     "SYMBOLIC": 7.333333333333333,
+     "CONTROL": 4,
+     "LATENT": 64,
+     "L1_MEANPOOL": 32
+    },
+    "paired_LATENT_minus_NO_MESSAGE": {
+     "mean": 0.0,
+     "se": 0.0,
+     "wins": 0,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_minus_L1_MEANPOOL": {
+     "mean": 0.0,
+     "se": 0.0,
+     "wins": 0,
+     "n": 5,
+     "significant": false
+    },
+    "role_drop": 0.0,
+    "ood_rate": 0.0233,
+    "reload_identical": true,
+    "diversity_seed0": {
+     "cka_private_sender_receiver": 0.9234,
+     "cka_message_receiver": 0.3508,
+     "cka_message_sender": 0.4073,
+     "old_task_identical_when_gate_closed": true,
+     "message_dim_std_min": 0.5178,
+     "message_effective_rank": 10.15,
+     "gate": 0.5467,
+     "selector_slot_overlap": 0.0278
+    },
+    "train": [
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0012,
+       "var_hinge": 0.4531,
+       "decorrelation": 0.3374,
+       "slot_overlap": 0.029
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0019,
+       "var_hinge": 0.4617,
+       "decorrelation": 0.329,
+       "slot_overlap": 0.0281
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0024,
+       "var_hinge": 0.4636,
+       "decorrelation": 0.3224,
+       "slot_overlap": 0.0288
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0009,
+       "var_hinge": 0.4602,
+       "decorrelation": 0.3456,
+       "slot_overlap": 0.0295
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0022,
+       "var_hinge": 0.4653,
+       "decorrelation": 0.3355,
+       "slot_overlap": 0.0299
+      }
+     }
+    ],
+    "l1_gate": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.0,
+       "se": 0.0,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.6133,
+       "se": 0.0168,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.3933,
+       "se": 0.0152,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": -0.0022,
+       "se": 0.0,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_control": {
+       "mean": -0.0021,
+       "se": 0.0017,
+       "wins": 1,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_symbolic": {
+       "mean": -0.0035,
+       "se": 0.0,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0233,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": -0.0018,
+      "SYMBOLIC": -0.0005,
+      "CONTROL": -0.0019,
+      "LATENT": -0.004,
+      "LATENT_SHUFFLED": -0.6133,
+      "LATENT_RANDOM": -0.3933
+     },
+     "missing_baselines": [],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   },
+   "certainty": {
+    "chance": 0.533,
+    "acc": {
+     "NO_MESSAGE": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "EXACT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "SYMBOLIC": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "CONTROL": {
+      "mean": 0.9933,
+      "sd": 0.0097
+     },
+     "L1_MEANPOOL": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "LATENT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "LATENT_SHUFFLED": {
+      "mean": 0.51,
+      "sd": 0.0226
+     },
+     "LATENT_RANDOM": {
+      "mean": 0.6917,
+      "sd": 0.0503
+     }
+    },
+    "bytes": {
+     "NO_MESSAGE": 0,
+     "EXACT": 33.343333333333334,
+     "SYMBOLIC": 6.5,
+     "CONTROL": 4,
+     "LATENT": 64,
+     "L1_MEANPOOL": 32
+    },
+    "paired_LATENT_minus_NO_MESSAGE": {
+     "mean": 0.0,
+     "se": 0.0,
+     "wins": 0,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_minus_L1_MEANPOOL": {
+     "mean": 0.0,
+     "se": 0.0,
+     "wins": 0,
+     "n": 5,
+     "significant": false
+    },
+    "role_drop": 0.0,
+    "ood_rate": 0.005,
+    "reload_identical": true,
+    "diversity_seed0": {
+     "cka_private_sender_receiver": 0.9234,
+     "cka_message_receiver": 0.4371,
+     "cka_message_sender": 0.4824,
+     "old_task_identical_when_gate_closed": true,
+     "message_dim_std_min": 0.4567,
+     "message_effective_rank": 10.38,
+     "gate": 0.5427,
+     "selector_slot_overlap": 0.0276
+    },
+    "train": [
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.001,
+       "var_hinge": 0.4669,
+       "decorrelation": 0.3334,
+       "slot_overlap": 0.0289
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0016,
+       "var_hinge": 0.4782,
+       "decorrelation": 0.3108,
+       "slot_overlap": 0.0282
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0014,
+       "var_hinge": 0.4721,
+       "decorrelation": 0.3483,
+       "slot_overlap": 0.0328
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0021,
+       "var_hinge": 0.4722,
+       "decorrelation": 0.3127,
+       "slot_overlap": 0.0305
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0016,
+       "var_hinge": 0.4454,
+       "decorrelation": 0.3111,
+       "slot_overlap": 0.0281
+      }
+     }
+    ],
+    "l1_gate": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.0,
+       "se": 0.0,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.49,
+       "se": 0.0113,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.3083,
+       "se": 0.0251,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": -0.0019,
+       "se": 0.0,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_control": {
+       "mean": 0.0029,
+       "se": 0.0049,
+       "wins": 2,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_symbolic": {
+       "mean": -0.0036,
+       "se": 0.0,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.005,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": -0.0021,
+      "SYMBOLIC": -0.0004,
+      "CONTROL": -0.0069,
+      "LATENT": -0.004,
+      "LATENT_SHUFFLED": -0.49,
+      "LATENT_RANDOM": -0.3083
+     },
+     "missing_baselines": [],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   }
+  },
+  "gist": {
+   "max_item": {
+    "chance": 0.34,
+    "acc": {
+     "NO_MESSAGE": {
+      "mean": 0.325,
+      "sd": 0.0307
+     },
+     "EXACT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "SYMBOLIC": {
+      "mean": 0.5233,
+      "sd": 0.0355
+     },
+     "CONTROL": {
+      "mean": 0.3417,
+      "sd": 0.0376
+     },
+     "L1_MEANPOOL": {
+      "mean": 0.3283,
+      "sd": 0.0397
+     },
+     "LATENT": {
+      "mean": 0.6133,
+      "sd": 0.0458
+     },
+     "LATENT_SHUFFLED": {
+      "mean": 0.3083,
+      "sd": 0.0091
+     },
+     "LATENT_RANDOM": {
+      "mean": 0.345,
+      "sd": 0.0379
+     }
+    },
+    "bytes": {
+     "NO_MESSAGE": 0,
+     "EXACT": 15.501666666666667,
+     "SYMBOLIC": 5.333333333333333,
+     "CONTROL": 4,
+     "LATENT": 64,
+     "L1_MEANPOOL": 32
+    },
+    "paired_LATENT_minus_NO_MESSAGE": {
+     "mean": 0.2883,
+     "se": 0.0245,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    },
+    "paired_LATENT_minus_L1_MEANPOOL": {
+     "mean": 0.285,
+     "se": 0.0296,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    },
+    "role_drop": 0.0,
+    "ood_rate": 0.015,
+    "reload_identical": true,
+    "diversity_seed0": {
+     "cka_private_sender_receiver": 0.7793,
+     "cka_message_receiver": 0.1304,
+     "cka_message_sender": 0.2875,
+     "old_task_identical_when_gate_closed": true,
+     "message_dim_std_min": 0.4292,
+     "message_effective_rank": 11.03,
+     "gate": 0.6738,
+     "selector_slot_overlap": 0.0292
+    },
+    "train": [
+     {
+      "epochs": 60,
+      "val_acc": 0.7083,
+      "last": {
+       "ce": 0.1152,
+       "var_hinge": 0.3878,
+       "decorrelation": 0.7472,
+       "slot_overlap": 0.029
+      }
+     },
+     {
+      "epochs": 20,
+      "val_acc": 0.6583,
+      "last": {
+       "ce": 0.0078,
+       "var_hinge": 0.4157,
+       "decorrelation": 0.5607,
+       "slot_overlap": 0.0288
+      }
+     },
+     {
+      "epochs": 30,
+      "val_acc": 0.6083,
+      "last": {
+       "ce": 0.0083,
+       "var_hinge": 0.411,
+       "decorrelation": 0.5729,
+       "slot_overlap": 0.0289
+      }
+     },
+     {
+      "epochs": 40,
+      "val_acc": 0.6,
+      "last": {
+       "ce": 0.0087,
+       "var_hinge": 0.4095,
+       "decorrelation": 0.6023,
+       "slot_overlap": 0.0291
+      }
+     },
+     {
+      "epochs": 40,
+      "val_acc": 0.5833,
+      "last": {
+       "ce": 0.0091,
+       "var_hinge": 0.4057,
+       "decorrelation": 0.6551,
+       "slot_overlap": 0.0284
+      }
+     }
+    ],
+    "l1_gate": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.2883,
+       "se": 0.0245,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.305,
+       "se": 0.0237,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.2683,
+       "se": 0.0348,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": -0.3897,
+       "se": 0.0229,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_control": {
+       "mean": 0.2679,
+       "se": 0.0107,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": 0.0863,
+       "se": 0.0143,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.015,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.674,
+      "SYMBOLIC": 0.198,
+      "CONTROL": 0.0164,
+      "LATENT": 0.2843,
+      "LATENT_SHUFFLED": -0.0167,
+      "LATENT_RANDOM": 0.02
+     },
+     "missing_baselines": [],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   },
+   "sum_ok": {
+    "chance": 0.538,
+    "acc": {
+     "NO_MESSAGE": {
+      "mean": 0.5333,
+      "sd": 0.0253
+     },
+     "EXACT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "SYMBOLIC": {
+      "mean": 0.5217,
+      "sd": 0.0572
+     },
+     "CONTROL": {
+      "mean": 0.5183,
+      "sd": 0.017
+     },
+     "L1_MEANPOOL": {
+      "mean": 0.5483,
+      "sd": 0.0226
+     },
+     "LATENT": {
+      "mean": 0.4867,
+      "sd": 0.0319
+     },
+     "LATENT_SHUFFLED": {
+      "mean": 0.49,
+      "sd": 0.0178
+     },
+     "LATENT_RANDOM": {
+      "mean": 0.4817,
+      "sd": 0.0403
+     }
+    },
+    "bytes": {
+     "NO_MESSAGE": 0,
+     "EXACT": 15.501666666666667,
+     "SYMBOLIC": 5.0,
+     "CONTROL": 4,
+     "LATENT": 64,
+     "L1_MEANPOOL": 32
+    },
+    "paired_LATENT_minus_NO_MESSAGE": {
+     "mean": -0.0467,
+     "se": 0.0101,
+     "wins": 0,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_minus_L1_MEANPOOL": {
+     "mean": -0.0617,
+     "se": 0.012,
+     "wins": 0,
+     "n": 5,
+     "significant": false
+    },
+    "role_drop": 0.0,
+    "ood_rate": 0.0117,
+    "reload_identical": true,
+    "diversity_seed0": {
+     "cka_private_sender_receiver": 0.7793,
+     "cka_message_receiver": 0.3609,
+     "cka_message_sender": 0.5753,
+     "old_task_identical_when_gate_closed": true,
+     "message_dim_std_min": 0.3488,
+     "message_effective_rank": 9.0,
+     "gate": 0.5317,
+     "selector_slot_overlap": 0.0292
+    },
+    "train": [
+     {
+      "epochs": 10,
+      "val_acc": 0.625,
+      "last": {
+       "ce": 0.0329,
+       "var_hinge": 0.4679,
+       "decorrelation": 0.3044,
+       "slot_overlap": 0.0338
+      }
+     },
+     {
+      "epochs": 60,
+      "val_acc": 0.5833,
+      "last": {
+       "ce": 0.016,
+       "var_hinge": 0.4806,
+       "decorrelation": 0.3061,
+       "slot_overlap": 0.032
+      }
+     },
+     {
+      "epochs": 30,
+      "val_acc": 0.5417,
+      "last": {
+       "ce": 0.0224,
+       "var_hinge": 0.4777,
+       "decorrelation": 0.3288,
+       "slot_overlap": 0.0308
+      }
+     },
+     {
+      "epochs": 40,
+      "val_acc": 0.5667,
+      "last": {
+       "ce": 0.0362,
+       "var_hinge": 0.4784,
+       "decorrelation": 0.3373,
+       "slot_overlap": 0.0318
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 0.6083,
+      "last": {
+       "ce": 0.0298,
+       "var_hinge": 0.4704,
+       "decorrelation": 0.322,
+       "slot_overlap": 0.0295
+      }
+     }
+    ],
+    "l1_gate": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": -0.0467,
+       "se": 0.0101,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "beats_latent_shuffled": {
+       "mean": -0.0033,
+       "se": 0.0164,
+       "wins": 3,
+       "n": 5,
+       "significant": false
+      },
+      "beats_latent_random": {
+       "mean": 0.005,
+       "se": 0.0198,
+       "wins": 2,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_exact": {
+       "mean": -0.5164,
+       "se": 0.0159,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_control": {
+       "mean": -0.0354,
+       "se": 0.011,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_symbolic": {
+       "mean": -0.0387,
+       "se": 0.0145,
+       "wins": 1,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0117,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.4657,
+      "SYMBOLIC": -0.012,
+      "CONTROL": -0.0152,
+      "LATENT": -0.0507,
+      "LATENT_SHUFFLED": -0.0433,
+      "LATENT_RANDOM": -0.0517
+     },
+     "missing_baselines": [],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   },
+   "tone": {
+    "chance": 0.37,
+    "acc": {
+     "NO_MESSAGE": {
+      "mean": 0.3167,
+      "sd": 0.0316
+     },
+     "EXACT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "SYMBOLIC": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "CONTROL": {
+      "mean": 0.6383,
+      "sd": 0.0933
+     },
+     "L1_MEANPOOL": {
+      "mean": 0.9967,
+      "sd": 0.0041
+     },
+     "LATENT": {
+      "mean": 0.9883,
+      "sd": 0.0113
+     },
+     "LATENT_SHUFFLED": {
+      "mean": 0.3733,
+      "sd": 0.0322
+     },
+     "LATENT_RANDOM": {
+      "mean": 0.3333,
+      "sd": 0.0391
+     }
+    },
+    "bytes": {
+     "NO_MESSAGE": 0,
+     "EXACT": 28.47,
+     "SYMBOLIC": 7.333333333333333,
+     "CONTROL": 4,
+     "LATENT": 64,
+     "L1_MEANPOOL": 32
+    },
+    "paired_LATENT_minus_NO_MESSAGE": {
+     "mean": 0.6717,
+     "se": 0.0136,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    },
+    "paired_LATENT_minus_L1_MEANPOOL": {
+     "mean": -0.0083,
+     "se": 0.0059,
+     "wins": 1,
+     "n": 5,
+     "significant": false
+    },
+    "role_drop": 0.0,
+    "ood_rate": 0.0117,
+    "reload_identical": true,
+    "diversity_seed0": {
+     "cka_private_sender_receiver": 0.7793,
+     "cka_message_receiver": 0.1709,
+     "cka_message_sender": 0.3914,
+     "old_task_identical_when_gate_closed": true,
+     "message_dim_std_min": 0.5197,
+     "message_effective_rank": 10.62,
+     "gate": 0.5459,
+     "selector_slot_overlap": 0.0278
+    },
+    "train": [
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0023,
+       "var_hinge": 0.458,
+       "decorrelation": 0.3421,
+       "slot_overlap": 0.0287
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0012,
+       "var_hinge": 0.4495,
+       "decorrelation": 0.3745,
+       "slot_overlap": 0.0305
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0023,
+       "var_hinge": 0.4727,
+       "decorrelation": 0.3381,
+       "slot_overlap": 0.029
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0025,
+       "var_hinge": 0.4645,
+       "decorrelation": 0.3182,
+       "slot_overlap": 0.0284
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.002,
+       "var_hinge": 0.4678,
+       "decorrelation": 0.3172,
+       "slot_overlap": 0.0281
+      }
+     }
+    ],
+    "l1_gate": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.6717,
+       "se": 0.0136,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.615,
+       "se": 0.021,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.655,
+       "se": 0.0146,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": -0.0139,
+       "se": 0.0057,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_control": {
+       "mean": 0.3463,
+       "se": 0.0517,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": -0.0152,
+       "se": 0.0057,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0117,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.6816,
+      "SYMBOLIC": 0.6829,
+      "CONTROL": 0.3214,
+      "LATENT": 0.6677,
+      "LATENT_SHUFFLED": 0.0567,
+      "LATENT_RANDOM": 0.0167
+     },
+     "missing_baselines": [],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   },
+   "certainty": {
+    "chance": 0.533,
+    "acc": {
+     "NO_MESSAGE": {
+      "mean": 0.5267,
+      "sd": 0.0343
+     },
+     "EXACT": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "SYMBOLIC": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "CONTROL": {
+      "mean": 0.905,
+      "sd": 0.0539
+     },
+     "L1_MEANPOOL": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "LATENT": {
+      "mean": 0.99,
+      "sd": 0.0062
+     },
+     "LATENT_SHUFFLED": {
+      "mean": 0.51,
+      "sd": 0.0255
+     },
+     "LATENT_RANDOM": {
+      "mean": 0.5333,
+      "sd": 0.0519
+     }
+    },
+    "bytes": {
+     "NO_MESSAGE": 0,
+     "EXACT": 33.343333333333334,
+     "SYMBOLIC": 6.5,
+     "CONTROL": 4,
+     "LATENT": 64,
+     "L1_MEANPOOL": 32
+    },
+    "paired_LATENT_minus_NO_MESSAGE": {
+     "mean": 0.4633,
+     "se": 0.0146,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    },
+    "paired_LATENT_minus_L1_MEANPOOL": {
+     "mean": -0.01,
+     "se": 0.0031,
+     "wins": 0,
+     "n": 5,
+     "significant": false
+    },
+    "role_drop": 0.0,
+    "ood_rate": 0.0167,
+    "reload_identical": true,
+    "diversity_seed0": {
+     "cka_private_sender_receiver": 0.7793,
+     "cka_message_receiver": 0.1678,
+     "cka_message_sender": 0.4393,
+     "old_task_identical_when_gate_closed": true,
+     "message_dim_std_min": 0.4925,
+     "message_effective_rank": 10.92,
+     "gate": 0.5414,
+     "selector_slot_overlap": 0.0279
+    },
+    "train": [
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0012,
+       "var_hinge": 0.4738,
+       "decorrelation": 0.308,
+       "slot_overlap": 0.0304
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0007,
+       "var_hinge": 0.4565,
+       "decorrelation": 0.3941,
+       "slot_overlap": 0.0294
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0023,
+       "var_hinge": 0.4745,
+       "decorrelation": 0.3352,
+       "slot_overlap": 0.029
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0012,
+       "var_hinge": 0.4732,
+       "decorrelation": 0.2985,
+       "slot_overlap": 0.0295
+      }
+     },
+     {
+      "epochs": 10,
+      "val_acc": 1.0,
+      "last": {
+       "ce": 0.0016,
+       "var_hinge": 0.4619,
+       "decorrelation": 0.3265,
+       "slot_overlap": 0.0281
+      }
+     }
+    ],
+    "l1_gate": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.4633,
+       "se": 0.0146,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.48,
+       "se": 0.0131,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.4567,
+       "se": 0.0235,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": -0.0119,
+       "se": 0.0031,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_control": {
+       "mean": 0.0812,
+       "se": 0.0272,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": -0.0136,
+       "se": 0.0031,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0167,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.4712,
+      "SYMBOLIC": 0.4729,
+      "CONTROL": 0.3781,
+      "LATENT": 0.4593,
+      "LATENT_SHUFFLED": -0.0167,
+      "LATENT_RANDOM": 0.0067
+     },
+     "missing_baselines": [],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   }
+  }
+ },
+ "claim_limit": "L1 receiver-adapter read only (no backbone injection); synthetic labels; EXACT spans oracle-selected; mean-pooled receiver state; CPU cloud, not Redmi",
+ "bridge_latency_us_per_item": 1162.4,
+ "summary": {
+  "l1_pass": [],
+  "verdict": "FAIL on all tasks",
+  "saved_example_bridge": true
+ }
+}

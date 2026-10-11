@@ -1,0 +1,193 @@
+{
+ "schema": "v13-lora-bench-summary-v1",
+ "date": "2026-10-09",
+ "container": "4 CPU x86-64, 15 GB, torch 2.14.1+cpu, peft 0.21.2, runner llama.cpp b10964",
+ "model": {
+  "c3_inference": "LFM2.5-230M-QAD-Q4_0.gguf sha256 e75f8326...",
+  "master": "LiquidAI/LFM2.5-230M@40cb2ad3 model.safetensors sha256 f630da86651136c9aee893b04b7542007e90fdd718355358e57e7ecc31517cfd"
+ },
+ "task": "8 invented personal facts (base knows 0/8); 12 held-out general probes; 6 paraphrases; 5 near-miss questions; facts/probes in code/scripts/lora_bench.py",
+ "torch_lora_master_sweep": [
+  {
+   "name": "A",
+   "cfg": {
+    "threads": 2,
+    "lr": 0.0003
+   },
+   "steps": 20,
+   "ce": 0.01171,
+   "recall": 1.0,
+   "kl": 0.1102,
+   "s": 172.92,
+   "gguf": "/tmp/claude-0/lora/sweep/A/9ce1f966b3afef9014eb32e7/adapter.gguf"
+  },
+  {
+   "name": "B",
+   "cfg": {
+    "threads": 2,
+    "lr": 0.0003,
+    "anchor_weight": 4
+   },
+   "steps": 20,
+   "ce": 0.02852,
+   "recall": 1.0,
+   "kl": 0.063,
+   "s": 176.86,
+   "gguf": "/tmp/claude-0/lora/sweep/B/c72e1fa8f4f9603ef423e2e1/adapter.gguf"
+  },
+  {
+   "name": "C",
+   "cfg": {
+    "threads": 2,
+    "lr": 0.0003,
+    "targets": [
+     "w1",
+     "w2",
+     "w3"
+    ],
+    "anchor_weight": 4
+   },
+   "steps": 21,
+   "ce": 0.04857,
+   "recall": 1.0,
+   "kl": 0.0559,
+   "s": 163.15,
+   "gguf": "/tmp/claude-0/lora/sweep/C/7d9209e5b4a4acd521929fd2/adapter.gguf"
+  },
+  {
+   "name": "D",
+   "cfg": {
+    "threads": 2,
+    "lr": 0.001,
+    "anchor_weight": 4,
+    "rank": 4
+   },
+   "steps": 20,
+   "ce": 0.00604,
+   "recall": 1.0,
+   "kl": 0.0756,
+   "s": 164.83,
+   "gguf": "/tmp/claude-0/lora/sweep/D/ceae884407c29fd599cffc2f/adapter.gguf"
+  },
+  {
+   "name": "F",
+   "cfg": {
+    "threads": 4,
+    "lr": 0.0003,
+    "anchor_weight": 4,
+    "anchors_per_step": 16,
+    "base_gguf": "/tmp/v13-lora/home/models/language/LFM2.5-230M-QAD-Q4_0.gguf"
+   },
+   "steps": 20,
+   "ce": 0.0424,
+   "recall": 1.0,
+   "kl": 0.0812,
+   "s": 171.83,
+   "gguf": "/tmp/claude-0/lora/sweep/F/7b29515b6f9f35b3113126c1/adapter.gguf"
+  }
+ ],
+ "deployed_q4_eval": {
+  "B_lr3e-4_anchor4_master": {
+   "base_eval": {
+    "overall": 0.8333333333333334,
+    "unseen": 0.75
+   },
+   "candidate_eval": {
+    "overall": 0.8333333333333334,
+    "unseen": 0.5,
+    "forgetting": {
+     "rate": 0.1,
+     "forgotten": [
+      "Translate \"thank you\" into German."
+     ]
+    }
+   },
+   "learned_recall": 0.75,
+   "base_recall": 0.0,
+   "paraphrase_recall": 0.3333333333333333,
+   "near_miss_leak": 0.4,
+   "kl_to_base": 0.08149217875526535,
+   "kl_method": "top40 teacher-forced along base greedy continuation, 8 positions/probe",
+   "model_sha256": "e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292",
+   "adapter_sha256": "72a8e8c606dede77ecab5c753f57fbb08b0b2ba41f652d3c742b960a3208efb9"
+  },
+  "C_ffn_only_anchor4_master": {
+   "base_eval": {
+    "overall": 0.8333333333333334,
+    "unseen": 0.75
+   },
+   "candidate_eval": {
+    "overall": 0.8333333333333334,
+    "unseen": 0.5,
+    "forgetting": {
+     "rate": 0.1,
+     "forgotten": [
+      "Translate \"thank you\" into German."
+     ]
+    }
+   },
+   "learned_recall": 1.0,
+   "base_recall": 0.0,
+   "paraphrase_recall": 0.5,
+   "near_miss_leak": 0.8,
+   "kl_to_base": 0.07572900892010681,
+   "kl_method": "top40 teacher-forced along base greedy continuation, 8 positions/probe",
+   "model_sha256": "e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292",
+   "adapter_sha256": "b6d7346a7871c337bd3db22b2accfe7822c1422624028f43113412495aea8b0e"
+  },
+  "first_lr1e-3_anchor1_6anchors": {
+   "learned_recall": 1.0,
+   "paraphrase_recall": 0.833,
+   "near_miss_leak": 1.0,
+   "kl_to_base": 0.782,
+   "base_overall": 0.833,
+   "candidate_overall": 0.583,
+   "forgetting_rate": 0.3
+  },
+  "E_trained_on_dequantized_q4": {
+   "learned_recall": 1.0,
+   "paraphrase_recall": 0.667,
+   "near_miss_leak": 0.8,
+   "kl_to_base": 0.0829,
+   "base_overall": 0.833,
+   "candidate_overall": 0.833,
+   "forgetting_rate": 0.1
+  },
+  "F_E_plus_locality_anchors16": {
+   "learned_recall": 1.0,
+   "paraphrase_recall": 0.333,
+   "near_miss_leak": 0.6,
+   "kl_to_base": 0.0875,
+   "base_overall": 0.833,
+   "candidate_overall": 0.833,
+   "forgetting_rate": 0.1
+  }
+ },
+ "native_ggml_opt": {
+  "lfm2_230m": "BLOCKED: ggml has no backward for SSM_CONV; with only top-layer tensors trainable, llama_context::opt_epoch_iter asserts in llm_graph_input_mem_hybrid (hybrid memory unsupported in training path)",
+  "smollm2_135m_all_ffn": {
+   "trainable_parameter_count": 79626240,
+   "seconds_4_epochs": 339.9,
+   "peak_rss_mb": 2063,
+   "note": "special tokens not parsed (bug, fixed later)",
+   "recall": 1.0,
+   "paraphrase": 1.0,
+   "near_miss_leak": 0.6,
+   "retention_base": 0.667,
+   "retention_trained": 0.0,
+   "forgetting_rate": 1.0
+  },
+  "smollm2_135m_3_ffn_down_with_self_replay_fixed_tokens": {
+   "trainable_parameter_count": 2654208,
+   "seconds_4_epochs": 270.0,
+   "peak_rss_mb": 923,
+   "recall": 0.875,
+   "paraphrase": 0.667,
+   "near_miss_leak": 0.4,
+   "retention_base": 0.667,
+   "retention_trained": 0.333,
+   "forgetting_rate": 0.625
+  }
+ },
+ "conclusion": "Torch LoRA trained on the dequantized Q4 weights with KL-to-base anchors learns all facts on the deployed path and keeps general retention equal (0.83), KL 0.08; gate still fails: 1/10 probes forgotten (strict delta 0.02), KL > 0.05, near-miss leak 0.6-0.8. Native llama.cpp training works mechanically for pure-attention models only and forgets much more (no KL anchor, all-token loss)."
+}

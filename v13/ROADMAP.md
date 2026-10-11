@@ -1,0 +1,713 @@
+# V13 Umsetzungs-Roadmap (Stand 2026-10-09)
+
+Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STATE.json`
+(Checkpoint `CAUSAL_NATIVE46_NINTH_EXPORTED_SQLITE_FAILED_BEFORE_FIT`),
+`status/completion-ledger.json`, `code/specs/component-contracts.json`,
+`code/docs/REMAINING_IMPLEMENTATION.md`. Kein Code wurde für diese Roadmap geändert.
+
+## 1. Zielbild ehrlich
+
+Der Blueprint definiert in §29 selbst, wann V13 „funktioniert“: echter A+B+C-Stack,
+Fine/Gist-Split mit gemessenem Nutzen, trainierter Callosum, JEF mit Broadcast/Offers,
+Focal Coalition, selektiver Body-Wake, Deliberation mit Re-entry, World-JEPA,
+Second-Attempt-Vorteil, lokale Eligibility + echtes JEPA/EMA-Update, Replay, Regression
+Shield, Age-Rechtehülle, adaptiver Reasoning Effort, Event-Scheduler, Output-Garantie.
+Alles darunter nennt der Blueprint „Harness-Prototyp“. Das ist das Ziel dieser Roadmap.
+
+Was das **nicht** ist: AGI. Mit 230M/1.2B-Modellen auf einem 6-GB-Handy entsteht ein
+lernender Architektur-Prototyp, dessen Qualität durch die kleinen Modelle begrenzt ist.
+Die aktuellen Messungen zeigen das schon: STEP2 `UTILITY_FAIL` (B1 allein 0.59, B1+B2
+0.53, B2 0.12) und der C3-Kausal-Decoder liefert „query echo“.
+
+## 2. Stand: was da ist, was fehlt
+
+Gesamter Runtime-Code: 36 Module, ca. 6.400 (sehr dichte) Zeilen in `code/v13/`.
+Ledger: 4 PASS, 15 PARTIAL, 1 BLOCKED (B3 latent), 1 NOT_STARTED (Body-JEPA).
+`canonical_architecture_complete=false`.
+
+| Bereich (Blueprint) | Stand | Fehlt |
+|---|---|---|
+| STEP0 Substrat (§96, IH-H27) | PASS: Store/WAL/Blobs, Migrationen, IDs/SourceRef, Schema-Registry, Generation-Manifest, Operator, Queue/Cancel, Governor, Ressourcen-Monitor, Logging, `:doctor`; SQLite-Integritätscheck nach jedem Close (Fix vom 09.10.) | Wiederholung des 46er-Laufs mit echten Modellen; Langzeit-Nachweise |
+| STEP1 JEF (C1/C2/C3/C5) | C2 Needle + C3 LFM2.5-230M real, C2/C3/C2+C3-Modi, Restart, Kausal-Streaming opt-in | Sprachqualität (C3 zu schwach), native Confidence, Redmi-Dauerpfad |
+| STEP2 Split-Brain | B1/B2 real, Offers, NONE/EXACT/CONTROL/SYMBOLIC | B1 und B2 sind **dasselbe** LFM2.5-1.2B (Harness-Body); kein Gist-Gruppieren nach G1B; Komplementarität FAIL; MobileMoE nicht zugänglich |
+| STEP3 Fast Episodic | Korrektur → Second Attempt, Restart, Negativ-Transfer | Abruf ist **lexikalisch**, keine semantische Generalisierung |
+| STEP4 Reference Teacher | getrennte Self/Reference/Human-Lanes, Spans | kein stärkerer Teacher angeschlossen |
+| STEP5 Shadow Learning | externe Route/Wake/Halt-Heads, Output-Adapter-Lifecycle, Freigabe/Rollback | echte Nutzer-Labels fehlen (`INSUFFICIENT_LABELLED_COHORT`), native Confidence |
+| STEP6 Callosum/B-Learning | Dense-Taps, t+2-Predictor mit EMA, Receiver-/Midlayer-Numerik (Authority 0) | B3 Latent-Leiter L1–L4 (§B3-H3), Body-JEPA, Train-Runner, Expert-Deltas |
+| STEP7 Stabilität | kurze Sammlung, 3 Restarts | Wochen-Lauf, Redmi Thermik/RSS |
+| Querschnitt ohne Code | – | **Adaptive Reasoning Effort (G5B, §10.2)**, **Salience/Interrupt gelernt (F2, §5.2)**, **Age-Stufenlogik (G9, §17, §95)** (heute hart auf 0), **Sleep A/B/C + Event-Scheduler (§94, G13)**, **Proceduralization/FastForward (§6, §75)**, **Homeostasis (§16.2)**, **Action-Transaction/Output-Commit/Provisional-Promotion (IH-H12/13/14)** |
+| STEP8–11 (Vision, Audio, Effectors, Full-Duplex, Age>0) | gesperrt | laut Blueprint erst nach stabilem Age-0-Core |
+
+## 3. Was in der Cloud prüfbar ist und was nur auf dem Redmi
+
+Geprüft in diesem Container: Python 3.13, numpy, g++/cmake, 4 CPUs, 15 GB RAM;
+HuggingFace und GitHub-Releases sind erreichbar. Damit lässt sich der gepinnte
+llama.cpp-b10964-Runner plus alle drei Modelle (≈1 GB) hier aufsetzen, genau wie der
+frühere Linux-Nachweis.
+
+Unit-Tests auf der Projektkopie: **382/398 grün**. Alle 16 Fehler kommen von Dateien, die
+beim Entpacken weggelassen wurden (`docs/canon/…md`, `docs/proofs/causal-output-lifecycle-20261009/native-fixture-proposal.json`,
+`native_norm_poll_policy.hpp`), nicht von Codefehlern.
+
+| Cloud (Linux x86) | Nur Redmi |
+|---|---|
+| Unit-/Integrationstests, native Smoke, Acceptance-Stufen | RSS/PSS, LMK/OOM, Thermik, Energie |
+| Modellqualität (C3/B-Bodies), STEP2-Nutzen, Second-Attempt | echte TTFT/Latenz, Observer-Scheduling-Budget |
+| numerische B3-Experimente, Predictor/JEPA-Training (CPU) | RUNNER_PROOF / TRAIN_RUNNER_PROOF auf Zielhardware |
+| Restart/Rollback/Migration, Langlauf-Simulation | Termux-Spezifika, 30-min-Session (G12B) |
+
+Der Nutzer arbeitet nur am Handy: jeder Redmi-Nachweis braucht einen Lauf von ihm
+(`bash TESTEN.sh`) und das Hochladen des Reports.
+
+## 4. Reihenfolge (Blueprint §105, angepasst an den Ist-Stand)
+
+1. **P0 Substrat heil machen**: SQLite-Fix erledigt (401 Tests grün laut ZIP-Thread); 46er-Lauf wiederholen, sobald WP-B steht.
+2. **P0' Cloud-Prüfstand**: nativer Linux-Lauf hier reproduzierbar, sonst ist nichts
+   Native-Bezogenes prüfbar.
+3. **P1 Fehlende Querschnittsfunktionen in Python** (kein Modell nötig, parallel machbar):
+   Age-Hülle, Reasoning Effort/Wake, Sleep/Scheduler, Salience, Proceduralization, Homeostasis.
+4. **P2 Qualitätsengpass Modelle**: C3-Kandidaten und ein echter, verschiedener Gist-Body.
+   Ohne das bleiben STEP2-Nutzen und Sprachqualität FAIL, egal wie gut die Architektur ist.
+5. **P3 Semantisches Gedächtnis** (STEP3 über Lexik hinaus).
+6. **P4 Lernen**: Train-Runner (Cloud zuerst), Labels sammeln, Shadow-Fit, Freigabe.
+7. **P5 B3-Latent-Leiter L1→L2** mit Ablationen.
+8. **P6 Predictor-first B-Learning, Expert-Deltas**.
+9. **P7 Action-Transaction/Output-Commit** (vor jeder echten Aktion/Tool).
+10. **P8 Redmi-Langlauf (STEP7)**, danach erst STEP8+ (Vision/Audio) und Age>0.
+
+## 5. Arbeitspakete
+
+Konvention für alle Pakete: Arbeit in einer eigenen Kopie oder auf neuen Dateien;
+`v13/runtime.py`, `v13/store.py` und `v13/operator.py` sind Hotspots. Pro Paket nur
+kleine, klar markierte Hook-Änderungen dort; wer eine Hotspot-Datei ändert, steht unten.
+Definition „fertig“ bleibt W3/IH-H33: Code, echter Zustandspfad, Persistenz/Restart,
+Test, Telemetrie, plus Ablation/Claim-Limit wo relevant. Ledger-Zeile pro Paket
+aktualisieren (`completion-ledger.json`), Proofs nach `docs/proofs/`.
+
+### WP-A Substrat-Reparatur — ERLEDIGT (Thread „V13-ZIP laden und auswerten“, 09.10.)
+- `v13/store.py` + Collector: Integritätscheck nach jedem Close, WAL/SHM-Snapshot beim ersten Fehler, neuer Test; 401 Tests grün.
+- Ursache vermutlich die alte Cloud-Umgebung, nicht V13-Code.
+- Offen: der echte 46-Zeilen-Lauf mit Modellen. Das geht in der Cloud über WP-B (Modelle sind hier ladbar) und zusätzlich auf dem Redmi.
+- `store.py` ist damit wieder frei für WP-E/H/K, aber immer nur ein Paket gleichzeitig.
+
+### WP-B Cloud-Nativ-Prüfstand — ERLEDIGT (Thread „Cloud-Prüfstand für Modellläufe“, 09.10.)
+- Ein Befehl: `bash /mnt/project-files/v13/code/scripts/cloud_bench.sh [--units|--smoke|--candidates|--full]`; Anleitung + Baseline in `code/docs/CLOUD_BASELINE.md`, Ergebnisse unter `v13/bench-results/<Zeit>/`.
+- Baseline: Units grün (fehlende Canon-/Proof-Dateien aus dem Drive-ZIP wiederhergestellt), probe `SMOKE_PASS`, Acceptance `--quick` 14/16 PASS (FAIL: control-calibration `support`, memory-retrieval: C3 nutzt Quelle nicht).
+- Kandidaten (`specs/cloud-candidates.json`, `scripts/cloud_candidates.py`, EN zuerst + DE): Qwen3.5-0.8B, LFM2.5-350M, Gemma-3-270M, EmbeddingGemma-300M laden alle auf b10964. Smoke-Vergleich: LFM2.5-350M 8/8+8/8, Qwen3.5-0.8B 7/8+8/8. Nichts produktiv gesetzt (WP-G entscheidet).
+- Dateien (neu): `scripts/cloud_bench.sh`, `docs/CLOUD_BASELINE.md`. Keine Runtime-Änderung.
+- Inhalt: `setup.sh` mit `V13_HOME` im Scratch, gepinnter Runner + 3 Modelle mit Hash-Check,
+  `v13 selftest`, `v13 probe`, `TESTEN.sh` (Acceptance, mit `--resume`), Ergebnis-JSON.
+- Fertig: Smoke PASS auf aktuellem Quellstand, Acceptance-Stufenzahl dokumentiert,
+  Anleitung, wie jeder andere Thread denselben Prüfstand in 1 Befehl nutzt.
+- Tests: das ist selbst der Test. Redmi: nichts.
+
+### WP-C Age-/Entwicklungs-Hülle (G9, §17, §95) — ERLEDIGT (Thread „Age-Stufen mit Hysterese“, 09.10.)
+- Neu `v13/age.py` (`AgeControl`), `tests/test_age.py` (13 Tests); `operator.py`: `:age [freeze on|off|lower n|structural lock|unlock]`,
+  `:capability [<Name> stage <n>]` (nur absenken), `:stage cap` klemmt gespeicherte Stufen, `:status` zeigt echte Stufe.
+  `config.py`, `runtime.py`, `store.py` unverändert; Zustand in `states['age_control']` (versioniert, mit Generation-ID je Wechsel), Wechsel in Telemetrie `age_transition`.
+- `BUILD_CEILING=0`: real bleibt Age 0 bis STEP7; erfüllte Gates erzeugen nur einen Vorschlag. Tests zeigen Promotion/Demotion mit simulierten Nachweisen.
+- Volle Suite danach 425/425 grün. Offen: echte Nachweisquellen (Retention/Regression-Shield, Calibration) an `record()` anschließen; `executive.py` meldet `permission_flags.age` noch fest 0 (WP-D-Datei); Rechte/Budgets von Cognition/Sleep/Effort noch nicht abgefragt (`allowed()`, `budgets()`, `gist_resolution()`, `plasticity()` stehen bereit).
+- Dateien: neu `v13/age.py`, `tests/test_age.py`; Hooks in `v13/config.py`,
+  `v13/operator.py` (`:age`), `docs/schema-registry.json`.
+- Inhalt: Stage-Gates 0..5 mit Hysterese und mehreren stabilen Nachweisen,
+  bindender `user_stage_cap` (nicht selbst überschreibbar), capability-spezifische Reife,
+  kontinuierliche Trust/Retention/Calibration-Modulation, Rückstufung bei Regression,
+  „Rechte ≠ Reife“ (§95.2), reopenable plasticity (§95.3). Persistiert in der Generation.
+- Wichtig: `system_stage` bleibt real 0 (Blueprint: Age>0 erst nach STEP7); die Logik
+  muss aber echt sein und mit simulierten Nachweisen Promotion/Demotion zeigen.
+- Fertig: Unit-Tests für Cap, Hysterese, Demotion, Restart-Persistenz; `:age` zeigt echten Zustand.
+- Cloud: vollständig. Redmi: nichts.
+
+### WP-D Adaptive Reasoning Effort + Wake Policy (G5B, §10.2, Layer 11) — ERLEDIGT (Python, 09.10.)
+- Umgesetzt: `v13/effort.py` (Signale Neuheit/Unsicherheit/Konflikt/Salience/Risiko, §59-Gains + Eskalationsregel,
+  Bänder → Plan für Wake `none|detail|gist|both`, B1-Re-entry, Focal-Slots, Observer-Zeit; harte Grenzen Exact/Observer aus/
+  Ressourcen/Deadline/cfg; Age-Rechte und `autonomous_effort_max` aus `v13/age.py`; gelernter Wake-Head nur innerhalb der Obergrenze,
+  nie über einem User-Modus). Hooks: `runtime.py` (Wake-Block), `cognition.focal(slots)`, `executive.effort_context` +
+  `permission_flags.age` aus age.py, `:effort [Modus]` in `operator.py`, Paket `EffortDecision` (contracts + schema-registry),
+  Ledger-Zeile `G5B_ADAPTIVE_REASONING_EFFORT` (PARTIAL). Modus persistiert über Restart. `tests/test_effort.py` 13 Tests; Suite 427/427 grün.
+- Offen: Qualität-vs-Kosten mit echten Modellen gegen fixe low/high/max (§24.23, braucht WP-B); Verify/Tool/Focal-Zyklen sind nur
+  Budgets, weil es noch keinen Verifier-/Tool-Runner gibt; Gains sind BOOT, nicht gelernt; Redmi-Latenzbudgets.
+- Dateien: neu `v13/effort.py`, `tests/test_effort.py`; Hooks in `v13/cognition.py`,
+  `v13/executive.py`; `:effort`-Kommando über einen kleinen Eintrag in `v13/operator.py`
+  (nach WP-C mergen, gleiche Datei).
+- Inhalt: `disabled|low|adaptive|high|max` steuert echte Compute-Entscheidungen
+  (C_native direkt vs. `none|B1|B2|B1+B2` Wake vs. Focal-Loop + Re-entry), adaptive Wahl
+  aus Unsicherheit/Salience/Ressourcenmodus, User-Override innerhalb Rules/Deadline/Resource,
+  Telemetrie pro Turn.
+- Fertig: Unit-Tests ohne Modell (Policy-Entscheidungen, Override, Ressourcen-Downgrade);
+  mit WP-B zusätzlich Qualität-vs-Kosten gegen fixe low/high-Baselines (§24.23).
+- Cloud: vollständig (Kosten in CPU-Zeit). Redmi: echte Latenzbudgets.
+
+### WP-E Sleep/Replay-Phasen + Event-Scheduler (§94, §15, G8, G13) — ERLEDIGT (Thread „Sleep und Replay mit Scheduler“, 09.10.)
+- Umgesetzt: `v13/scheduler.py`, `v13/sleep.py`, `tests/test_sleep_scheduler.py` (21 Tests), Doku `code/docs/SLEEP_SCHEDULER.md`; kleine Hooks in `runtime.py`, `operator.py` (`:sleep`, `:scheduler`), `store.py` (Telemetrie). Gesamtsuite 456/456 grün. Age-Rechte aus `age.py`.
+- Offen: native Neubewertung im Sleep (bleibt `:replay`), generativer Dream-Text (bleibt `:dream`), Gewichts-Konsolidierung, Redmi-Messung der Hintergrund-Ticks.
+- Dateien: neu `v13/sleep.py`, `v13/scheduler.py`, Tests; nutzt `consolidation.py`, `memory.py`.
+- Inhalt: ReplayQueue mit Prioritäten, Sleep A (Replay/Konsolidierung), Sleep B
+  (Dream/Counterfactual, schreibt nur Hypothesen), Sleep C (Homeostasis), Idle/Timer/Goal-Events,
+  nie den Live-Pfad blockieren, Ressourcen-Modus RED = kein Replay.
+- Abhängigkeit: WP-A ist fertig, kann also sofort starten.
+
+### WP-F Salience/Interrupt + Proceduralization/FastForward (§5.2, §6, §75, G4)
+- Dateien: neu `v13/salience.py`, `v13/skills.py`, Tests; Hook in `cognition.py`
+  (nach WP-D, gleiche Datei).
+- Inhalt: Salience-Score aus Offers/Neuheit/Konflikt, spätes hochsalientes Offer kann
+  provisional Output invalidieren; Skill Store + Selector, bekannte sichere Route ohne
+  seriellen C_fast-Pass, De-Automatisierung bei Fehler (§24.3/24.4).
+- **Status 2026-10-09: erledigt** (Thread „Nächste offene Pakete A“). `code/v13/reflex.py` (Timeout-Reflex wirft Beobachter ab, Circuit-Breaker je Body → C3, OOM/Hitze entlädt Runner), `code/v13/fastforward.py` (Kleinhirn-Vorwärtsmodell mit Delta-Regel → N10 `fast_forward`; Prozeduralisierung OBSERVE→SHADOW→READY nach G-PROCEDURALIZATION-004, handelt nur mit `:ff active`, nur ruhige Turns, nur weglassen; Reopen bei Fehler/Überraschung), späte Salienz nach Commit → gated Self-Message (`selfmodel.late_offer`). Skill-Store/Selector war schon AG4. 13 Tests, volle Suite grün. Übergabe: `code/docs/FAST_FORWARD_REFLEX.md`.
+
+### WP-G Modellqualität: C3-Kandidaten + echter Gist-Body (P2)
+- Dateien: `specs/models.json` (nur additive Kandidaten), `scripts/benchmark_c3.py`,
+  `v13/runners.py`, `v13/cognition.py` (Gist-Gruppierung G1B).
+- **Status 2026-10-09: G1B-Teil erledigt (Pakete A).** `code/v13/gist.py`: B2-Gist-Gruppen ~8 Token-Äquivalente/~12 Slots, Auflösung über `age.gist_resolution` (Literal/Neuheit/Konflikt/niedrige Grenz-Konfidenz verfeinern), grenzbewusst ohne Schnitt durch exakte Spans, verlustfrei per SourceRef, alte Teile gröber. SHADOW in `QueryPacket.gist`, `:gist active` schickt `gist_slots` an B2. Bench `bench-results/gist-grouping-20261009/` (84 % vs. 49 % Satzgrenzen, 0 vs. 2 geschnittene Spans). Doku `code/docs/GIST_GROUPING.md`, Suite 703/703 grün. Offen: Nutzen mit Modell (WP-N12), C3-Kandidaten-Benchmark.
+- Inhalt: C3 (SmolLM2-135M vs. LFM2.5-230M vs. 1–2 weitere unter Redmi-RAM-Budget)
+  mit festem deutschem Benchmark; B2 als zweiter, verschiedener Body oder gleicher Body mit
+  echter ~8-Token-Gruppierung/~12 Slots; STEP2-Nutzen neu messen.
+- Fertig: Benchmark-Tabelle, Modellwahl begründet, STEP2-Nutzen mit gleicher 70er-Kohorte.
+- Cloud: Qualität ja. Redmi: RAM/Latenz der neuen Modelle zwingend vor Produktivsetzung.
+- Braucht WP-B.
+
+### WP-H Semantisches Fast-Episodic-Gedächtnis (STEP3, G6)
+- **Status 2026-10-09: erledigt (Pakete B)**, zusammen mit WP-S2. EmbeddingGemma-300M als optionales Modell `:download embedding`, Recall-Kanal in `memory.recall` (max(lexikalisch, Kosinus ≥ 0,84), Entitäts-Wächter + Quelle bleiben, gelernter Cue-Kopf hat Vorrang), `:semantic off|shadow|on|auto`. Cloud: Treffer@1 EN 25 % → 96 %, DE 0 % → 75 %, keine zusätzlichen Fehlaufnahmen; RSS 433 MB. Code `v13/semantic_memory.py`, Tests `tests/test_semantic_memory.py`, Bench `scripts/semantic_recall_bench.py` / `cloud_bench.sh --semantic`, Doku + Übergabe `code/docs/SEMANTIC_MEMORY.md`. Offen: Redmi-RAM (WP-R), DE-Schwelle, Negativ-Transfer-/Response-Cache-Ablation §99 (WP-N12).
+- Dateien: `v13/retrieval_worker.py`, `v13/memory.py`, Tests. (`store.py` erst nach WP-A.)
+- Inhalt: Abruf über Needle-/Body-Embeddings statt Lexik, Second-Attempt auf
+  unbekannte Frageformen, Negativ-Transfer- und Response-Cache-Ablation (§99).
+- Braucht WP-B für native Embeddings.
+
+### WP-I Lernen echt machen (STEP5/6C, TRAIN_RUNNER_PROOF)
+- Train-Runner für kleine Heads/Projector/LoRA in der Cloud (CPU), dann Redmi-Messung;
+  Label-Sammlung über `:feedback … --learn` (braucht echte Nutzer-Labels vom User);
+  Shadow-Fit, Retention-Gate, Freigabe. Danach Predictor-first B-Learning.
+- Nach WP-A/WP-B.
+
+### WP-J B3-Latent-Leiter L1→L2 (§B3-H3..H12)
+- `scripts/native_receiver_effect.cpp` & Co., Receiver-Adapter-only Read, Kalibrierpaket,
+  Router-Stabilität, Utility gegen NONE/EXACT/SYMBOLIC. Nach WP-B und WP-G.
+- **Status 2026-10-09: modellfreier Teil erledigt (Pakete A).** `code/v13/callosum.py`: §85.2 B3_MESSAGE-Felder inkl. signed_gain (Verstärkungs-/Dämpfungs-Vorschlag), gelernte Kanal-Policy pro Richtung (SHADOW, `:callosum active`), Utility-Vertrag B3-H9 aus dem nächsten Empfänger-Offer + Bewertungen, Degradation bei Modellwechsel B3-H10, `:doctor`-B3-Block nach B3-H11 (LATENT `unavailable`, p=0). Doku `code/docs/CALLOSUM.md`, Suite 712/712 grün. Offen: native L1–L4, B3-H2/H7, Latent-Gate G-CALLOSUM-UTILITY-002 (Cloud-Prüfstand).
+
+- **Status 2026-10-09: L1-Experiment erledigt (Pakete A).** `code/scripts/b3_l1_bench.py`, Ergebnis `bench-results/b3-l1-20261009/`: Sender-Latent (B1, PCA r=16) bringt dem B2-Empfänger höchstens +2,5 Punkte (max_item, nicht signifikant), bei Arithmetik nichts; EXACT löst beide Detail-Aufgaben zu 99,6–100 %. Gate G-CALLOSUM-UTILITY-002 nicht bestanden → `B3_LATENT` bleibt `unavailable`, SOURCE_EXACT bleibt Detail-Kanal. Nächster L1-Versuch nur mit gelerntem Selektor (B3-H2) oder Aufgaben ohne exaktes Gegenstück.
+- **Status 2026-10-10: B3-H2/B3-H7 erledigt (Pakete E).** `code/v13/b3bridge.py` (gelernter K-Slot-Selektor, Projektor, BF16-Nachricht 64 B, Empfänger-Projektor + Kalibrierung/OOD + Gate als Residuum auf eingefrorener NO_MESSAGE-Readout, Diversitäts-Checks, `budget` B3-H7: 29 k Parameter/58 KB, `l1_gate`, Manifest mit Revisionen B3-H10, `:doctor`-Felder). Messung `bench-results/b3-h2-20261010/`: Selektor schlägt Mean-Pool (max_item +10/+29 Punkte) und trägt Ton/Unsicherheit, die der Empfänger nicht sieht (99 %), aber Gate G-CALLOSUM-UTILITY-002 L1 **FAIL** auf allen 8 Aufgaben (EXACT/SYMBOLIC billiger). `B3_LATENT` bleibt `unavailable`, L2 gesperrt. Tests `tests/test_b3bridge.py`. Offen: Aufgaben ohne kurze exakte/symbolische Form, Redmi-Zeiten, B3-H3 L2–L4 erst nach L1-PASS.
+### WP-K Action-Transaction / Output-Commit / Provisional (IH-H12/13/14/29, P3)
+- `store.py`, `runtime.py` → strikt nach WP-A. Voraussetzung für jede echte Aktion (C6/C7).
+- **Status 2026-10-09: erledigt (Pakete A).** `code/v13/transaction.py`, Doku `code/docs/ACTION_TRANSACTION.md`, Tests `tests/test_transaction.py` (Suite 681/681 grün).
+  - IH-H14: Transaktion PREPARED→COPY_COMMITTED→EXECUTING→SUCCEEDED/FAILED/UNKNOWN/CANCELLED; Intent+Corollary atomar vor dem Effekt; nach Absturz UNKNOWN statt Wiederholung; Idempotenz-Schlüssel; Undo.
+  - IH-H29: Vertrag Schema→Freigabe→Risiko→Bestätigung→C5; keine Shell-Strings, eigener Namensraum, Secrets nur als Handle (`V13_SECRET_*`, geschwärzt).
+  - IH-H12: Commit-Punkt vor dem ersten sichtbaren Byte; danach nur Korrektur-Nachricht. IH-H13: Provisional-Puffer mit TTL, Promotion erst bei FINAL, sonst Tombstone.
+  - Erstes Schreib-Werkzeug `sandbox_note` (Sandbox, Undo, Freigabe pro Aufruf über `:tx approve`).
+  - Offen: gepuffertes Final-Output, echte Netz-Werkzeuge, TOOL_CALL als C5-Kandidat im Live-Turn (mit WP-AG10/N4).
+
+### WP-R Redmi-Messlauf (nur Nutzer)
+- Nutzer startet `bash TESTEN.sh --compare-c3` auf dem Handy und lädt den Report nach Drive.
+- Wird vor Produktivsetzung von WP-G und vor STEP7 gebraucht.
+
+## 6. Vorschlag: erste parallele Threads
+
+| Thread | Paket | Warum jetzt | Konflikte |
+|---|---|---|---|
+| 1 | WP-B Cloud-Nativ-Prüfstand | Ohne ihn ist nichts Native-Bezogenes prüfbar | keine (nur neue Dateien) |
+| 2 | WP-C Age-Hülle | reine Python-Logik, komplett fehlend | `config.py`, `operator.py` (Besitzer) |
+| 3 | WP-D Reasoning Effort / Wake | reine Python-Logik, komplett fehlend | `cognition.py`, `executive.py` (Besitzer); `operator.py`-Eintrag nach WP-C |
+
+Danach: WP-G und WP-H, sobald WP-B steht; WP-E kann sofort als vierter Thread starten (WP-A ist fertig); WP-K und WP-I danach.
+
+## 7. Beobachtung zum bisherigen Vorgehen
+
+Der Großteil der letzten Wochen ging in Wiederherstellung nach verlorenen Sandboxes,
+eingefrorene Kohorten und Nachweis-Buchhaltung (Acceptance 6/20, viele „recovery“-Einträge).
+W3/IH-H33 bleiben verbindlich, aber die Threads sollten Proofs knapp halten (ein Report pro
+Paket) und Zeit in fehlende Funktionen statt in Re-Validierung alter Kohorten stecken.
+Alles Wichtige muss sofort in `/mnt/project-files` landen, damit nichts mehr verloren geht.
+
+## Vorschläge aus Forschung (2026-10-09)
+
+Quelle und Belege: `research/FORSCHUNG.md`. Nur Vorschläge; Status der Pakete oben bleibt unverändert.
+Nummern WP-S1… damit nichts mit WP-A…K kollidiert.
+
+### WP-S1 Modell-Shortlist erweitern (speist WP-G)
+- `specs/models.json` additiv: C3-Kandidaten **LFM2.5-350M**, **Gemma-3-270M-it**, **Qwen3.5-0.8B**; B2-Kandidat **Qwen3.5-0.8B** (anderer Body als B1); optional B1-Kandidat **Qwen3.5-2B**, **Gemma-4-E2B-it**.
+- Zuerst prüfen, ob Runner b10964 die Qwen3.5-/Gemma-4-Architekturen lädt; sonst Runner-Pin anheben (eigener Hash-Check).
+- Fertig: C3-Benchmark-Tabelle, STEP2-Nutzen mit B2 = Qwen3.5-0.8B auf der 70er-Kohorte. Cloud zuerst, Redmi-RAM/Latenz vor Produktivsetzung.
+- MobileMoE-S-QAT auf „optional Research“ zurückstufen (FAIR-Noncommercial, gated, kein GGUF).
+
+- **Status 2026-10-09: Cloud-Teil erledigt (Pakete A)** mit dem C3-Benchmark aus WP-G und der V3-Echo-Messung: `code/scripts/c3_candidates_bench.py`, `bench-results/c3-candidates-20261009/`. LFM2.5-350M schlägt den installierten 230M (73 % vs. 64 %, Format 72 % vs. 33 %), kostet ~28 % Tempo und +136 MB; Gemma-3-270M unbrauchbar (17 %); Qwen3.5-0.8B am besten (79 %, einziges mit Abstention), aber 2 GB RAM. anti_echo vs. legacy: kein klarer Unterschied. Offen: Redmi-Messung + Nutzerentscheidung vor C3-Wechsel; Abstention der LFMs schwach.
+### WP-S2 Semantische Einbettungen für STEP3 (speist WP-H)
+- **Status 2026-10-09: erledigt (Pakete B)** mit WP-H, Details dort. RAM < 200 MB nicht erreicht (433 MB mit Q8); LFM2.5-Encoder/Body-Hidden-States nicht verglichen.
+- **EmbeddingGemma-300M** (Matryoshka 128/256 Dim.) vs. **LFM2.5-Encoder-230M** vs. Body-Hidden-States als Abruf-Schlüssel.
+- Fertig: Second-Attempt auf umformulierten Fragen, Recall@k gegen lexikalisch, RAM < 200 MB.
+
+### WP-S3 Sparse Memory Finetuning als parametrisches Fast-Gedächtnis (F3)
+- Kleiner Memory-Layer an C3 oder an den Predictor (Nachrüstung nach arXiv 2604.05248), Slot-Auswahl TF-IDF/KL.
+- Ablation gegen LoRA und Full-FT: Neulernen vs. Vergessen auf fester Probe-Menge. Cloud zuerst. Nach WP-I.
+
+- **Status 2026-10-09: erledigt, torch-Pfad (Pakete B).** `code/v13/sparse_memory.py`: Memory-Layer neben dem FFN von C3 (LFM2.5-230M, Layer 7), Werte starten bei 0 (Basis bitgleich). Modus `keyed` (Standard): ein Slot pro Antwort-Position, Radius ≥ 0,9 über Hintergrund-Kosinus; Modus `tfidf` nach dem Papier. Ablation `scripts/sparse_memory_bench.py` → `bench-results/sparse-memory-20261009/`: keyed r90 lernt 8/8, vergisst keine Probe, KL 3e-6 (LoRA+Anker 0,075, Full-FT 0,99), 82 k Parameter; Near-Miss-Leck 0,8 wie LoRA+Anker, ungelöst (braucht Entitäts-Wächter). Tests `tests/test_sparse_memory.py`. Doku + Übergabe `code/docs/SPARSE_MEMORY.md`. Offen: nativer ggml-Op oder Termux-torch für das Handy, Einbinden in AG6/`lora_trainer` (Thread „Echtes Lernen“), `:forget` → Slots nullen, Sleep-Konsolidierung der Slots.
+### WP-S4 JEPA-Predictor: SIGReg + Kollaps-Telemetrie (STEP6)
+- LeJEPA-SIGReg als Alternative/Zusatz zur EMA im t+2-Predictor; Einbettungs-Rang/Isotropie pro Update loggen.
+- Fertig: Ablation EMA vs. SIGReg vs. beides, Kollaps-Test. Reines Python/numpy, sofort machbar.
+- **Status 2026-10-09: umgesetzt.** `predictor_regularizer` = ema|sigreg|both in `code/v13/predictor_worker.py`, Telemetrie pro Update, Ablation + Kollaps-Test in `tests/test_predictor_sigreg.py` (456 Tests grün). Default bleibt `ema`; Messung auf echten Taps offen. Details `code/docs/SIGREG_PREDICTOR.md`.
+
+### WP-S5 Drift-Gate und Self-Distillation (STEP5, Regression Shield)
+- KL(neu ‖ Basis) auf fester Probe-Menge nach jedem Adapter-Update (RL's Razor) als Freigabe-Kriterium.
+- Nutzerkorrekturen per SDFT/iSDFT statt SFT lernen, nur hinter Retention-Gate (Gegenbefund arXiv 2607.01763).
+- Optional LLM-JEPA-Hilfsloss beim Adapter-Training.
+
+- **Status 2026-10-09: erledigt, modellfreier Teil (Pakete B).** `code/v13/drift.py` (`:drift`): eingefrorene Probe-Mengen (30 generische Sprach-Prompts `specs/drift-probes.json`, route/wake/halt-Entscheidungen aus menschlichen Labels; SHA-256 fest, Änderung nur per `refreeze` mit Grund + Historie), KL(Basis‖Kandidat) über einen Evaluator mit `kl(prompts)` (passt zu `LlamaCppEvaluator`), Flip-Rate für Entscheidungs-Heads, `record()` ins Update-Manifest; `guards.stability_envelope` lehnt `:approve` bei `DRIFT_ABOVE_CAP` ab (Knobs `drift_kl_max` .05, `drift_flip_max` .10, `drift_required` 0/1). SDFT-Datensatz aus menschlichen Korrekturen: Lehrer-Prompt = Frage + Korrektur, Schüler-Prompt = Frage, Ziel vom Modell selbst erzeugt, nur hinter AG6-Retention-Gate. Tests `tests/test_drift.py`, volle Suite 703 grün. Doku + Übergabe `code/docs/DRIFT_GATE.md`. Offen (Besitzer „Echtes Lernen“/learning.py): `measure_lm`+`record` in den LoRA-Pfad, SDFT im Trainer, `measure_decisions` nach Shadow-Training; dann `drift_required=1`. LLM-JEPA-Hilfsloss liegt schon im LoRA-Trainer.
+- **Pakete D 2026-10-10 (Code fertig, Gate noch zu; PAUSE bis Mo 04:00):** SDFT im AG6-Pfad. `weights.sdft_candidates()` + `stage(include_sdft=True)` (Nacht-Job nutzt es) holt Korrekturen mit `learn` aus `drift.sdft_dataset` (Ziel leer, answer_keys aus der Korrektur, origin human_replay); `train()` gibt sie nur Trainern mit `self_teaches` (LoRA); `LoraTrainer.self_teach` lässt das Basismodell die Lehrer-Frage beantworten, verwirft Antworten ohne Korrektur, kürzt nach dem Satz mit der Korrektur; `approve` markiert verworfene SDFT-Items nicht als konsolidiert. Tests in test_lora_trainer, Suite 933 grün. Echte Läufe (`bench-results/ag6-live-20261010/SWEEP.md`, `scripts/ag6_live_bench.py --sdft`): 10/10 gelernt inkl. beider Korrekturen, aber eine Probe („größter Ozean“ → Indian) kippt in jeder Einstellung; Anker 12 bringt Drift .041 < .05; mit Anker 12 + Seed 7 besteht das Gate (9/10 gelernt, 0 vergessen, Drift .044), mit Seed 13 nicht → grenzwertig. Nächster Schritt: Ablation welche Korrektur stört, Seed 7, mehr Anker.
+### WP-S6 On-Device-LoRA-Runner (TRAIN_RUNNER_PROOF, speist WP-I)
+- QVAC-fabric-llm.cpp (Vulkan) in der Cloud mit C3 (230–350M) reproduzieren, dann Redmi (Adreno 618): Minuten/Schritt, RSS, Thermik.
+- Alternative MobileFineTuner. Fertig: ein LoRA-Schritt mit Checkpoint/Resume/Rollback und Retention-Messung.
+- **Status 2026-10-09 16:30 (Thread „Echtes Lernen in den Modellen“): Kern fertig, Gate-Werte noch nicht erreicht.**
+  Code: `code/v13/lora_trainer.py` (LoraTrainer: torch-CPU-LoRA, trainiert auf den dequantisierten Q4-Gewichten = was der Runner nutzt,
+  KL-zur-Basis-Anker + automatische Lokalitäts-Anker, optional Body-JEPA-Term, Checkpoint/Resume, Export llama.cpp-LoRA-GGUF;
+  LlamaCppEvaluator misst im Runner b10964: Lern-Recall, Paraphrasen, Near-Miss-Leck, Retention, top-k-KL; AdapterRegistry +
+  `runner_lora_args`). AG6 `agi/weights.py`: `train_and_gate`, Spezifitäts-Check (LEAK_MAX .2), `:approve` bindet Adapter (+ Slot-Asset
+  `lora:<batch>`), Rollback löst ihn. `runners.py`: `--lora-scaled` nur bei Freigabe + exaktem Hash von Modell und Adapter.
+  Nativ ohne Python: `code/scripts/native_select_finetune.cpp` + `build_native_finetune.sh` (llama.cpp ggml-opt, nur gewählte Tensoren).
+  Tests: `tests/test_lora_trainer.py` (ohne torch). Bench: `code/scripts/lora_bench.py`; Ergebnisse `bench-results/lora-20261009/summary.json`.
+  Messung (8 erfundene Fakten, Basis 0/8): beste Variante E = 8/8 auf dem Q4-Pfad, Paraphrasen 4/6, Retention 0,83 = Basis, KL 0,08,
+  aber 1/10 Probe vergessen, Near-Miss-Leck 0,6–0,8 → AG6-Gate sperrt (korrekt). Erster Lauf ohne Anker: Vergessen 30 %, KL 0,78.
+  Nativ: LFM2 BLOCKIERT (ggml ohne Backward für SSM_CONV, Hybrid-Cache im Trainingspfad); SmolLM2-135M läuft (2,7 M Parameter,
+  270 s / 4 Epochen, RSS 0,9 GB), lernt 7/8, vergisst aber 62 % (kein KL-Anker, Verlust auf allen Tokens).
+  Nächste Schritte: (1) Leck/Vergessen senken: Sparse-Memory-Variante (WP-S3), Antwort-only-Verlust + Anker im nativen Pfad,
+  größerer C3 (LFM2.5-350M) testen; (2) Gate-Schwellen an echte Probenzahl anpassen (12 Proben → 1 Fehler = 10 %); (3) Termux-Torch
+  auf dem Redmi prüfen (WP-R), sonst ggml-Backward für SSM_CONV ergänzen. Erledigt: explizite `:note` ≥ 8 gehen über
+  `WeightConsolidation.rated_candidates`/`stage(include_rated=True)` als gewichtete Stil-Beispiele ins Training (implizites Lob nicht).
+  Volle Unit-Suite nach den Änderungen: 640/640 OK.
+  **Erledigt 2026-10-10 (Pakete D):** WP-S5-Drift im AG6-Live-Pfad: `agi/trainers.LiveNearMissEvaluator` misst `Drift.measure_lm('C3_LANGUAGE')` auf den eingefrorenen `specs/drift-probes.json` im selben llama-server; `weights.gate` hat Check `frozen_drift`, Batch trägt `drift`; `weights.approve` sperrt per `drift.gate` (DRIFT_ABOVE_CAP, mit `drift_required=1` auch DRIFT_NOT_MEASURED; Grenze aus aktueller Config). Echter Lauf: KL .019, alle 7 Checks grün (`bench-results/ag6-live-20261010/ag6-live-lora-drift.json`). Tests in test_lora_trainer/test_agi_trainers. `drift_required` bleibt 0, bis die Shadow-Heads messen. Ursprünglich: `v13/drift.py` in `LoraTrainer.fit` einhängen: `Drift.measure_lm('C3_LANGUAGE', evaluator)` auf
+  `specs/drift-probes.json` statt der Bench-Proben, Ergebnis per `record()` ins Manifest (siehe `code/docs/DRIFT_GATE.md`).
+  WP-S3 hat ein anderer Thread als `v13/sparse_memory.py` + `scripts/sparse_memory_bench.py` gebaut (Ergebnisse `bench-results/sparse-memory-20261009/`);
+  Einbinden als zweiter AG6-Trainer und Messung auf dem Q4-Pfad liegt noch bei diesem Paket.
+  **Erledigt 2026-10-10:** `v13/memory_trainer.py` (SparseMemoryAG6Trainer: keyed Slots + Entity-Guard, Keys auf den dequantisierten
+  Q4-Gewichten geschrieben, Speicher wächst auf dem gebundenen Artefakt weiter; liefert Gate-Werte inkl. automatischer Near-Miss-Fragen),
+  Rolle `C3_LANGUAGE#sparse_memory` in der AdapterRegistry. `:forget` nullt die Slots des Fakts (auch in Rollback-Zielen) und sperrt,
+  solange der Fakt in einem aktiven LoRA steckt. Nativ ohne Python: `scripts/native_memory_hook.cpp` (+ `build_native_memory_hook.sh`,
+  Export `sparse_memory.export_native`), cb_eval-Hook addiert den Speicher auf `l_out-7` im Q4-Modell.
+  Messung (`bench-results/memory-native-20261010/`): nativ auf Q4 8/8 Fakten (Basis 0/8), Proben 0,83 = Basis, nichts vergessen,
+  Near-Miss-Leck 0,4 (vorher 0,8; Rest: „least favourite colour“, „brother plays“), Paraphrasen 2/6; torch-Gate: KL 1e-9 → würde PENDING_USER.
+  **Erledigt 2026-10-10 (Live-Chat):** `v13/memory_server.py` baut aus der gepinnten Runner-Quelle ein zweites Binary
+  `bin/llama-server-mem` (Hook `scripts/v13_memory_hook.h` nur bei `V13_MEMORY_FILE`; ganzer Prompt inkl. Cache-Präfix geht an den
+  Entity-Guard). `runners.py` nutzt es nur bei passendem Binary-/Modell-/Speicher-Hash. Trainer bindet die native `.bin`
+  (+ `.bin.items.json`), `:forget` ohne torch. Suite 800/800. HTTP 230M (`bench-results/memory-server-20261010/`): 8/8, Proben gleich,
+  `:forget` entfernt genau einen Fakt. **350M (aktueller C3)** (`bench-results/memory-350m-20261010/`): Layer 8, 297 s, KL 0,0,
+  nativ + HTTP 8/8 Fakten, Proben 1,0 = Basis, Leck 0,2, Paraphrasen 2/6.
+  AG6 (`agi/trainers.py`): `:growth trainer sparse` meldet `served_live`, wenn `llama-server-mem` gebaut ist; `auto` wählt Sparse nicht
+  (Messung im echten Chat-Prompt siehe WP-T9). Offen: Redmi-Build + Messung (WP-R).
+  Master: HF `LiquidAI/LFM2.5-230M@40cb2ad3`, sha256 f630da86…; llama.cpp-Quelle via PyPI-sdist llama-cpp-python 0.3.36 (GitHub gesperrt).
+### WP-S7 Sleep mit Offline-Rechenzeit (Erweiterung WP-E)
+- Sleep A nicht nur Replay: Re-Encoding/Zusammenfassen des Tageskontexts, Predictor-Updates, später Kontext→LoRA (TTT-Idee), nach arXiv 2605.26099.
+- Nie Live-Pfad blockieren; RED-Ressourcenmodus = aus.
+- **Status 2026-10-09: erledigt (Pakete A).** Phase `SLEEP_A_OFFLINE` in `code/v13/sleep_offline.py`: extraktiver Tagesdigest pro Sitzung (exakte Spans fest, Lineage geprüft, `:sleep digest`), FF-Prädiktor-Nachtraining mit Held-out-Gate, Kontext→LoRA-Kandidaten nur gestaget (`exports/sleep-ttt-candidates.jsonl`, `:pause training` greift). Doku `code/docs/SLEEP_OFFLINE.md`, Tests `tests/test_sleep_offline.py`, Suite 690/690 grün.
+  - Nachtrag: Digest jetzt im Live-Kontext (Turns außerhalb `history_turns`, Lineage bei jedem Turn geprüft, `:ctxos digest on|off`, Standard an). Cloud-Messung `bench-results/digest-context-20261009/`: alte Fakten 0 % → 79–92 %, kein Schaden bei Fakten im Fenster (nach Format-Fix; erstes Format ließ kleine Modelle „Noted…“ kopieren). n=24, Redmi-Langchat offen.
+  - Offen: nativer C3-Schlafsummary; Training der Kandidaten in WP-I.
+
+### WP-S8 Blueprint-Hygiene (klein)
+- `arcxiv.org/abs/2609.05075` → `arxiv.org` (MePo++). Zitate mit `access_date 2026-10-09, verified` markieren (Liste in FORSCHUNG.md §7).
+- **Status 2026-10-09: erledigt** in `blueprint/…B3_HARDENED.md` (IH-H31 + Quelle §48). Die Kopie `code/docs/canon/` bleibt unverändert, weil ihr SHA-256 in `specs/component-contracts.json` gepinnt ist; Archiv-Versionen bleiben historisch.
+
+Reihenfolge-Vorschlag: WP-S4 und WP-S8 sofort (kein Modell nötig); WP-S1/S2 sobald WP-B steht; WP-S5/S6 mit WP-I; WP-S3 und WP-S7 danach.
+
+## Vorschläge aus Sichtung (2026-10-09)
+
+Quelle und Belege: `SICHTUNG.md`, Einzelberichte in `sichtung/`, Code-Kopien in `salvage/`. Nur Vorschläge; Pakete oben bleiben unverändert. Nummern WP-V1… gegen Kollision mit WP-A…K und WP-S….
+
+### WP-V1 Verlorenen burst3–5-Code zurückholen (sofort, klein)
+- **Status 2026-10-09: erledigt.** `executive.py` (nur explizite `:task` bleibt, Test `test_implicit_task_tracks_current_turn_but_explicit_task_persists`), `v13/body_training.py` + `tests/test_body_training_port.py` (FP32-Ausnahme über `fp32_inference_parameter_ids`, Autorität bleibt 0), `native_capability_profile` in `verification.py` mit `:native` und in `:doctor`, `world.py` liest das Profil, STEP2 `task_score` + Assertions in `integration_step2.py`.
+- Executive-Bugfix: `v13/executive.py:96` hält die erste Nutzerfrage für immer als `active_task`. Fix + Test aus `salvage/executive_implicit_task/`.
+- `body_training.py` + Test als fail-closed Train-Port-Vertrag (speist WP-I/S6), Requantizer-Ausnahme für FP32-Slices.
+- `native_capability_profile` als `:native` (nicht `:capability`, gehört `age.py`); `world.py` liest dann das Profil statt `'body_training':False`.
+- STEP2-`task_score` zurück in `scripts/analyze_step2_proof.py` (speist WP-G).
+- Hotspots: `executive.py`, `operator.py`, `world.py`, `verification.py`. Mit den Besitzern dieser Dateien abstimmen.
+
+### WP-V2 Billige Schutz- und Messregeln aus v4/v5 (kein Modell nötig)
+- **Status 2026-10-09: erledigt bis auf LoRA-Invariante.** `v13/guards.py`: Kollapswächter (`:collapse`, `:doctor`), Datenmix-Quoten + `enforce_data_mix`, 2-%-Rollback, Stabilitätshülle als Sperre in `Store.switch_generation` vor `:approve`. Invarianten in `tests/test_learning_invariants.py`. Offen: Datenmix in die Trainingsjobs einhängen, sobald Selbsterzeugtes trainiert wird; „kein doppeltes LoRA“ erst mit erstem Merge-Pfad. Drift wird nur gemeldet, kein Alarm ohne Basislinie.
+- Kollapswächter pro Turn/Batch: Wiederholungsrate, Typen-Vielfalt, Selbstzitat, Abstention, Drift → Telemetrie + `:doctor`.
+- Datenmix-Quoten für Replay/Lernen (≥ 60 % Mensch, ≤ 10 % selbst erzeugt, Dream ≤ 5 %) + Rollback bei > 2 % Verlust auf alten Sets. Passt in WP-E/S5.
+- Invarianten-Tests: Target ohne Gradient, EMA bewegt sich, Optimizer isoliert, schlechtes Outcome nie negativer JEPA-Loss, kein doppeltes LoRA nach Merge.
+- Stabilitätshülle (max. Update-Norm, Route-Shift, Kalibrier-Shift) als Freigabekriterium vor `:approve`.
+
+### WP-V3 C3-Decoding gegen „query echo“ (speist WP-G)
+- **Status 2026-10-10: Messung erledigt (Pakete B).** `scripts/measure_anti_echo.py` auf dem aktuellen C3 LFM2.5-350M, 8 Fälle je Sprache, Saat 13 → `bench-results/anti-echo-20261010-350m-{en,de}.json` (230M-Lauf: `anti-echo-20261009-en.json`). Query-Echo (Anteil Frage-Wörter in der Antwort) EN legacy 0,034 → anti_echo 0,021 (230M: 0,038 → 0,010), DE 0,042 = 0,042; lexikalische Checks EN 2/4 → 3/4, DE 4/4 beide. Befund: Echo ist auf beiden C3 kein echtes Problem mehr, anti_echo bleibt Standard. `below_min_new` (2 EN, 3 DE) trifft nur korrekt kurze Antworten (Gruß, „120 Euro“): min_new=8 taugt nicht als Fehlerzeichen und bleibt reine Messung. Redmi-Lauf und echte Chats offen.
+- **Status 2026-10-09: Baseline drin, Messung offen.** C3-Freitext nutzt v4-Decoder (temp 0,6, top_p 0,95, top_k 20, min_p 0,05, rep 1,08, DRY statt no_repeat_ngram 4), umschaltbar mit `:sampling anti_echo|legacy`; Zitat-/Abstention-Regel im Systemprompt. `min_new=8` nur gemessen (`below_min_new_rate`), llama-server hat keinen Mindestlängen-Regler. Wirkung auf „query echo“ braucht einen Lauf mit Modell.
+- Decoder-Parameter aus v4 §64 (temp 0,6, top_p 0,95, top_k 20, min_p 0,05, no_repeat_ngram 4, rep 1,08) und `min_new=8` als Baseline, bevor Modelle getauscht werden.
+- Zitatregel (≤ 2 Zitate, Nutzerversion gewinnt) und Abstention-Form „nichts Belegtes, ich vermute:“ im C5-Report.
+
+### WP-V4 Timescale-Gate und Modellpaar-Entscheidung (vor WP-G-Produktivsetzung)
+- **Status 2026-10-09: Nutzer hat entschieden:** viele verschiedene Modelle in einem System wie im Blueprint definiert (mehr als 2), kein Ein-Body-Kompromiss; Ziel konstantes Lernen. Die vier §85.1-Kontrollen bleiben als Messung sinnvoll, die Entscheidung ist aber gefallen.
+- **Umgesetzt 2026-10-09:** B2 = Qwen3.5-0.8B als eigener Body (`specs/models.json` Schlüssel `gist`, `:download gist`), Qwen-Denkmodus aus. Vier §85.1-Kontrollen über `b2_control`, Messung `scripts/timescale_gate.py`. B2-Tap (lfm2) für Qwen gesperrt bis eigene Validierung. Erste Messung (Cloud, 2 englische Aufgaben, 1 Durchgang, nur Hinweis): zwei Bodies lösen alle Aufgabenprüfungen (100 %), die Ein-Modell-Kontrollen 75–88 %; B1 allein 50 %, B2 allein 75 %, d. h. sie ergänzen sich über die Aufgaben. Gate bleibt ungefördert, braucht mehr Aufgaben und den Redmi. Daten: `bench-results/timescale-gate-20261009/`.
+- §85.1 mit vier Kontrollen messen: same-model same-policy, same-model prompt-only, shared body + dual state heads, true two-body.
+- Nutzer entscheidet danach: zwei verschiedene Bodies (sein ursprünglicher Wunsch, ggf. MobileMoE wenn Zugang/Runner) oder bewusst ein Body mit getrennten Zuständen. Entscheidung in USER_DECISIONS festhalten.
+
+### WP-V5 Bedienung und Lernsignale am Handy
+- **Status 2026-10-09: erledigt.** `v13/inputs.py`: Logs-Filter (Verlauf + B2-Kontext), `:note 1-10`, implizites Lob/Kritik als schwache Bewertung, `:ratings`, `:context`, `:pause selfedit|traum|training|budget N` und Ausbrenn-Budget im Scheduler, Einfügen als Block (Plain + prompt_toolkit), Statusmeldungen warten beim Tippen. Offen: Bewertungen in WP-I-Trainer einlesen.
+- Live-Logs überschreiben getippten Text nicht; mehrzeiliges Einfügen als ein Block; `:context` zeigt, was ins Modell geht; Knobs live ändern; `:pause selfedit|traum|training`.
+- Filter: eingefügte Terminal-Logs nicht ins Gedächtnis.
+- Implizites Feedback (Lob/Kritik im Chattext) und `:note 1–10` als echte Labels gegen `INSUFFICIENT_LABELLED_COHORT` (speist WP-I).
+- „Ausbrennen“-Budget: ohne Input klingt Aktivität ab, Limit vom Nutzer einstellbar (speist WP-E-Scheduler).
+
+### WP-V6 Regeln nach Nutzerposition (Fixed Policy C5/F6)
+- **Status 2026-10-09: erledigt, soweit im Code.** Regel nach realem Schaden, Fiktion erlaubt, offener Ablehnungsgrund im Systemprompt (`prompts.py` `conduct`); Telemetrie speichert keine Inhalte (Test), Cloud-Teacher nur mit Zustimmung war schon da.
+- Regeln an realem Schaden statt Themen/Schlüsselwörtern; Darstellung/Absicht/Kontext/Veröffentlichung/Handeln unterscheiden; private Fiktion erlaubt; Ablehnung mit offenem Grund.
+- Privatsphäre: keine Inhalts-Telemetrie, externer Teacher nur nach Zustimmung, Löschen über IH-H20. Quelle: `archiv/KI_Zensur_Privatsphaere_Grundbasis.md`.
+
+### WP-V7 Fehlende Blueprint-Pakete (später, nach STEP2-Klärung)
+- **Status 2026-10-10: C2-Benchmark Needle vs. FunctionGemma erledigt (Pakete C).** `code/scripts/c2_benchmark.py`, Korpus `code/specs/c2-benchmark.json` (96 EN, Autor-Labels), Test `tests/test_c2_benchmark.py`, Ergebnis `bench-results/c2-benchmark-20261010/README.md`: Regex 48 %, Needle nativ 17 % (Konfidenz-AUROC .52), Needle-Einbettung + Kopf 85 % (4-fach CV), FunctionGemma-270M 4 % frei / 25 % erzwungen bei 736–800 MB RSS. Entscheidung: Needle bleibt C2, Routing über gelernten Kopf `C2_EXTERNAL_ROUTE_HEAD` sobald Nutzer-Labels da sind; FunctionGemma kein Ersatz.
+- **Status 2026-10-09: teilweise.** KnobSpec (IH-H5, `:knobs`) und BridgeKey (IH-H21, `models.bridge_key`) drin. Rest (Focal Coalition, Modulatoren, Context OS, C2-Benchmark, Inquisition) offen; World-Model ist WP-V10 im Lücken-Thread.
+- Focal Coalition (§93), World/Self-Lernen aus Corollary (§85.7), typisierte Modulatoren + Objective Registry (§85.10, IH-H25), Context OS mit „Re-entry statt Re-prefill“ (§8.3–8.6, §74, v10.6-Zweig), KnobSpec (IH-H5), BridgeKey (IH-H21) vor jedem Modelltausch, C2-Benchmark Needle vs. FunctionGemma.
+- Inquisition (κ, P1/P2, adaptives N) bewusst entscheiden: als WP aufnehmen oder als gestrichen dokumentieren.
+
+### WP-V8 Doku- und Aufräum-Commit (nur wenn kein `TESTEN.sh --resume` läuft)
+- **Status 2026-10-09: teilweise.** Root-Duplikate nach `archiv/code-root-duplicates-20261009/`, `Store.close()` wertet Busy aus, Exception-Klassennamen bleiben in Telemetrie lesbar, USER_DECISIONS listet echte Nutzeraufgaben, README ergänzt. Bewusst nicht: Blueprint-Edits (Canon-Hash), Skript-Umzug/Dispatcher (andere Threads nutzen die Pfade).
+- Root-Duplikate `code/completion-ledger.json` und `code/USER_DECISIONS_AND_OPEN_QUESTIONS.md` durch Verweis auf `docs/` ersetzen.
+- BUILD_STATE-Kopf, Ledger `current_acceptance`, REMAINING_IMPLEMENTATION, README (STEP2-Pfad, `:age`/`:effort`) korrigieren; Acceptance-Zählweise 20/21 erklären.
+- USER_DECISIONS: Nutzeraufgaben unter `USER_DECISION_REQUIRED` (Redmi-Lauf, echte Labels, 46er-Rerun, Modellpaar, MobileMoE-Zugang) und die Anforderungen aus SICHTUNG §4 aufnehmen.
+- Ungenutzte Skripte/Drafts nach `archive/`, Wrapper-Skripte zu einem Dispatcher, `__pycache__` raus, Test-Helper-Modul statt gegenseitiger Imports.
+- Blueprint: IH-H1 A/B-Mapping versionsabhängig machen, latent 0.20 in §54/§78 auf 0, `arcxiv`-Tippfehler.
+- `Store.close()`: Busy-Ergebnis des WAL-Checkpoints auswerten; breite `except` in learning/runtime/cognition/world mit Meldung statt nur Klassenname.
+
+Reihenfolge-Vorschlag: WP-V1 und WP-V2 sofort; WP-V3 mit WP-G; WP-V4 bevor WP-G produktiv wird; WP-V5/V6 parallel; WP-V8 in einem ruhigen Moment; WP-V7 nach STEP2-Klärung.
+
+### Nutzerentscheidung 2026-10-09 zu WP-V4 (siehe `NUTZER_ENTSCHEIDUNGEN.md`)
+- Viele Modelle wie definiert, B1 und B2 echt verschieden: WP-V4 misst den Ist-Stand, das Ziel ist entschieden (true two-body, plus World-Model).
+- Englisch zuerst, Deutsch später als Lerntest: WP-G-Benchmark und System-Prompts auf Englisch umstellen (neues kleines Paket **WP-V9**, Prompts in `runtime.py`, `__main__.py`, `verification.py`, `proofs.py`; Besitzer der Dateien beachten).
+  - **WP-V9 Status 2026-10-09: erledigt.** `v13/prompts.py` (en/de), `answer_language`=en, Runtime/Probe/Smoke/Welcome/Replay englisch, C3-Benchmark und STEP2-Fixtures EN zuerst, DE bleibt als Transfertest.
+- World-Model (§7.2, §92.2) als eigenes Paket **WP-V10** aufnehmen. → zusammengelegt mit **WP-AG2** (Thread „AGI-Lücken als Infrastruktur“, Besitzer dort).
+- Konstantes Lernen als Endziel: Age-Hülle (WP-C) ist der Weg dorthin, kein Dauerzustand.
+
+## WP-AG: Infrastruktur für die 12 AGI-Lücken (FORSCHUNG.md §9) — Gerüst ERLEDIGT 09.10. (Thread „AGI-Lücken als Infrastruktur“)
+
+Name **AG** statt G, weil „WP-G“ (Modellqualität) und die Blueprint-Gates G1–G13 schon belegt sind.
+Code: `code/v13/agi/` (13 Module, ca. 1.400 Zeilen), Tests: `code/tests/test_growth.py` (21, grün).
+Anschluss: `scheduler.py` (4 neue Aktionen `growth_*`), `sleep.py` (`job` leitet `growth_*` weiter, nach voller Nacht `after_sleep`), `operator.py` (`:growth`).
+Regeln für alle: Zustand versioniert in `states`, Age-Rechte über `age.py`, Eigeninitiative (SELF) bei Age 0 gesperrt,
+alles was Gewichte, Struktur, Regeln oder Außenwelt berührt endet als `requests`-Eintrag für den Nutzer. Kein Modell nötig.
+Was ein Modell erst „beibringen“ muss, steht jeweils unter „Später“.
+
+| WP | Lücke | Vorher (Blueprint / Code) | Jetzt gebaut | Später (braucht Modelle/Redmi) |
+|---|---|---|---|---|
+| AG0 | Modelle einzeln austauschbar | §19 BodyPort, Gate G11 Body Swap, §24.9, IH-H21 BridgeKey; Code lädt fest über `ModelManager.path_for(role)` | `slots.py`: Slots B1/B2/C3/C2/Lehrer/Embedder/World (erweiterbar), Fähigkeitsprofil je Modell, gelernte Assets mit Revision. Beim Tausch: Gedächtnis/Skills/Regeln/Ziele/Nutzer-Modell wandern mit (PORTABLE), Heads/Kalibrierer werden neu angepasst (REFIT), LoRA/Adapter werden auf dem neuen Modell aus gespeicherten Daten neu gelernt (REDISTILL, nie alte Gewichte auf neues Modell), Bridges fallen auf SHADOW (IH-H21). Ablauf: Kandidat → Schatten → Parität (AG12) → 10/50/100 % Verkehr → aktiv, Rollback jederzeit. Eigener Tausch durch V13 erst Age 5. Sichern/Export nach Blueprint §21.1 (modulare Checkpoints) und IH-H17: `export_bundle` schreibt je Slot ein geprüftes Paket (Modell-Revision, Assets, Datensatz-Verweise), `import_bundle` führt es nur über dieselben Tausch-Tore wieder ein, `manifest_fields` bindet alle Slots in einen Hash fürs Generation-Manifest | `route()` in Runner/`ModelManager` einhängen (Datei-Besitzer beachten); Redistill-Job aus AG1/AG6-Daten |
+| AG1 | Starke Basis durch Lehrer | L4.5/L5.5 Teacher-Internalisierung, `:teacher` als Referenz | `teacher.py`: Anfragen (eigene erst Age 3), Cloud-Lehrer nur mit Nutzer-Erlaubnis, Spuren als `REFERENCE_NOT_FACT`, Distillations-Datensatz (Holdout-geschützt), Reliance/Dropout, Lehrer-Entfernung nur durch Nutzer | Backend für großen Lehrer registrieren; Datensatz in WP-S6-Trainer |
+| AG2 (= WP-V10) | Geerdetes Weltmodell | §7.2 World-JEPA (kein vierter Body, sondern State + Prädiktoren auf A/B/C), §7.2.1 forward/inverse/state-align/outcome, §7.2.2 Coverage + Counterfactual-Confidence, §92.2, G-SELF-WORLD-005; `world.py` digital, Kamera/Audio aus | `grounding.py`: Vorhersage vor Aktion, echtes Ergebnis danach, Fehler = M_world; Basis-Vorhersager (Häufigkeit); Modalitäten-Register (Kamera/Audio/Effektor aus); Werkzeug-Ergebnisse fließen automatisch ein; Ursache SELF/EXTERNAL; `counterfactual()` mit Coverage, OOD-Flag, immer `SIMULATION_NOT_FACT` | World-JEPA als Vorhersager einstecken; STEP8 Sensorik |
+| AG3 | Lange Planung | Self-Model „offene Ziele“, Age-Recht `resume_open_goals`, kein Ziel-Store | `goals.py`: persistenter Zielbaum mit Teilzielen, Planschritten, Fortschritt, `GOAL_WAKE` über G13-Scheduler, Plan-Bewertung über Evaluator | Planer, der Teilziele selbst zerlegt; World-JEPA als Plan-Bewerter |
+| AG4 | Offenes Skill-Lernen | §6.2/6.5/L5.6 Skill Store + Lifecycle, nur Routen | `skills.py`: deklarative Skills (Werkzeugketten/Routen, kein freier Code), CANDIDATE→SHADOW→TRUSTED→INTERNALISED, Parität, Wiederöffnen bei Fehler, Selector, Übungsaufgaben am Lernrand | Skills aus erfolgreichen Spuren automatisch vorschlagen; Internalisierung über AG6 |
+| AG5 | Eigener Antrieb | Layer 6 M_novelty/M_surprise, `exploration_rate` 0 bei Age 0 | `curiosity.py`: Lernfortschritt + Neuheit pro Bereich, Rauschen/Gekonntes bekommen ~0, Sperrliste, eigene Wahl nur mit `active_info_search` (Age 4) | Fehlersignale echter Prädiktoren einspeisen |
+| AG6 | Wissen in Gewichte | L8.3/§21, Sleep A staged nur Indizes, `base_merge_authority=0` | `weights.py`: nach voller Nacht Batch aus menschlichen, replay-geprüften Erinnerungen → Trainer → Retention-Gate (AG12-Eval Basis vs. Kandidat, Vergessen, KL-Drift, Batch-Recall) → Nutzer-Anfrage → Freigabe/Rollback. `NullTrainer` meldet ehrlich `NO_TRAINER` | WP-S6 LoRA/Sparse-Memory-Trainer; Generationswechsel über bestehenden Update-Pfad |
+| AG7 | Transfer / Abstraktion | Sleep B macht Hypothesen, keine Regeln | `abstraction.py`: Episoden clustern, Regel induzieren (kleine Programm-DSL, DreamCoder-Idee), an zurückgehaltenen Fällen prüfen, nur VALIDATED, Fakt-Autorität 0, Nutzer befördert | Modell-basierter Induzierer; Anschluss an Sleep B |
+| AG8 | Selbstverbesserung | Generation-Manifest, Regression Shield, Age `structural_modification` (5) | `self_improve.py`: Knob-/Lernregel-Vorschläge, Sandbox-Eval mit AG12, Regression Shield (keine Achse schlechter), Nutzer-Freigabe; Regeln/Age/Kanal/Latents nie vorschlagbar; Strukturänderungen nur protokolliert | Evaluator, der eine Kopie der Runtime mit Kandidat startet |
+| AG9 | Metakognition | Native Route-Kalibrierung extern, keine allgemeine Confidence | `metacog.py`: pro Komponente Kalibrierer (monoton), ECE/Brier, Entscheidung „zweiter Versuch“/„weiß ich nicht“, Semantic Entropy, Age-Metrik `calibration` | Confidence aus Bodies/JEF einspeisen; Effort-Policy (WP-D) liest `decide()` |
+| AG10 | Werkzeuge | WP-K/IH-H14/H29 gesperrt | `tools.py`: Register + Transaktion je Aufruf, sicherer Rechner (`calc`, ohne eval), Nutzer schaltet je Werkzeug frei, eigene Wahl erst Age 1, Netz/Schreiben/Außenwirkung nur Vorschlag | Echte Werkzeuge erst nach WP-K; Needle/C2 wählt Werkzeug |
+| AG11 | Soziales Modell | Self-Model da, kein Nutzer-Modell | `user_model.py`: Annahmen über den Nutzer nur mit Beleg, Konfidenz, Zerfall, Widerspruch ersetzt, geschützte Merkmale verweigert, `forget()` | Annahmen aus Feedback automatisch erfassen; Kontext an C1/JEF |
+| AG12 | Allgemeinheit messen | Acceptance prüft nur Mechanismen | `generality.py`: Englisch zuerst (Nutzerentscheidung), deutsche Fassung mit gleicher Aufgabenlogik als späterer Lerntest; fester Aufgabensatz (7 Familien, 88 Aufgaben, deterministisch), gesehen/ungesehen, Transfer, Vergessen zwischen Läufen, Planungstiefe, Kalibrierung, Kurven pro Generation, monatlich fällig, Holdout-Schutz für alle Trainingsdaten | Solver-Adapter für die echten Bodies; Deutsch-Kurve als Lerntest freischalten; später ARC-artige interaktive Aufgaben |
+| AG13 | MoE-Experten nur im RAM wenn aktiv | L9.3 `OPT.body_residency_policy`, §24.33, §12.1, W6 (erst Experten/Deltas, Router zuletzt); MobileMoE gesperrt | `residency.py`: Laden/Verdrängen nach Nutzen im RAM-Budget, Router/Shared immer resident, gelb/rot verkleinert sofort; Lernen nur für residente Experten, Lernsignale ausgelagerter Experten werden gepuffert | Echter MoE-Body + Runner-Unterstützung (mmap) |
+| Age-Feeder | Stufen wirklich verdienen | §17.4 Stage Gates; `age.record` wurde nirgends aufgerufen | `maturity.py`: Nachweis aus echten Messungen (AG12, AG9, Sleep A, Integrität, Werkzeug-Verhalten), nach jeder vollen Nacht einer; `:growth age` zeigt Blocker und Tage. Schätzung: `research/VISION_UND_AGE_STUFEN.md` | Freischalten über `:stage cap` nach STEP7 (Nutzer) |
+
+Ausrichtung nach Nutzerentscheidung 2026-10-09 (`NUTZER_ENTSCHEIDUNGEN.md`): viele verschiedene Modelle (AG0-Slots: B1, B2, C3, C2, Lehrer,
+Embedder, World, erweiterbar; B1 und B2 sollen echt verschieden sein), Englisch zuerst, konstantes Lernen als Endziel (AG6 + Age-Hülle
+öffnen schrittweise; Age 0 ist Start, kein Dauerzustand), Ziel ist eine heruntergebrochene Gehirn-Simulation: die AG-Module sind
+Fabric-Funktionen (F3 Gedächtnis/Selbst/Welt, F4 Lernen, F5 Age), keine Chat-Features.
+
+Lernen und Austausch zusammen [Schluss]: Wissen lebt an drei Orten. (1) Modellunabhängig (Gedächtnis, Skills, Regeln, Ziele,
+Nutzer-Modell, Lehrer-Spuren, AG6-Batches) überlebt jeden Tausch. (2) Kleine Köpfe auf den Modell-Ausgaben werden nach dem Tausch
+aus gespeicherten Labels neu angepasst. (3) Gewichtsnahe Anpassungen (LoRA) sind an eine Revision gebunden und werden auf dem neuen
+Modell aus (1) neu gelernt. Deshalb muss jeder Trainingsdatensatz gespeichert bleiben (`dataset_ref`), nicht nur das Ergebnis.
+
+Bedienung: `:growth` (Übersicht AG0–AG13), `:growth age`, `:growth slots`, `:growth export <Slot>`, `:growth eval`, `:growth goals`, `:growth goal <Titel>`, `:growth consolidate`,
+`:growth approve|reject <Batch>`, `:growth tools`, `:growth enable calc`, `:growth calc 6*7`.
+
+Nächste Schritte in dieser Reihenfolge [Schluss]: AG12-Solver-Adapter (sonst keine Kurve) → AG6 mit echtem Trainer (WP-S6) → AG9 an Effort-Policy → AG1-Backend → Rest.
+- **Status 2026-10-10 (Pakete D): AG12-Solver + AG1-Backends erledigt und gemessen.** Erste echte AG12-Kurvenpunkte (`bench-results/ag12-bodies-20261010/`, gleicher Runtime-/Runner-Pfad wie am Handy): gesamt C3 .22, B1 .17, B2 .35, v13-Abstimmung .34 (ECE .07, am besten kalibriert); ungesehen .17–.23; Planungstiefe 0, Wort umdrehen/Buchstaben sortieren 0 bei allen. Ein Runner, der jede Aufgabe verliert, gibt Status ERROR statt 0-%-Punkt. AG0 `route()` war schon über WP-N11 (`ModelManager.router`) drin. `v13/agi/solver.py`: Solver `c3|b1|b2|v13` (v13 = konfidenzgewichtete Abstimmung B1+B2+C3), JSON-Grammatik `{"answer"}`, Konfidenz = unwahrscheinlichstes Antwort-Token (`runners.generate(confidence_field=)`), keine Gedächtnis-/Event-Schreibzugriffe (Holdout bleibt unverbraucht), `batch()` ein Body nach dem anderen, Kurven + Vergessen pro Solver (`generality.run(solver_name=)`), (Konfidenz, richtig) → AG9 `ag12:<solver>`. `hub()` setzt `g.solver` sobald ein Body installiert ist → monatlicher Lauf nach voller Nacht. `:growth eval run <solver>`, `:growth eval curve <solver> <Achse>`. `v13/agi/teacher_backends.py`: `local` (TEACHER-Runner) und `claude` (Anthropic-SDK, `claude-opus-5-5`, kind cloud → nur nach `:growth teacher cloud on`), Scheduler-Aktion `growth_teacher`, `:growth teacher ask|run|cloud|dataset`. Tests `tests/test_agi_solver.py` (12), Suite 735/736 grün (einziger Fehler: `test_b3bridge` von Pakete E, Datei war mitten im Schreiben). Doku `code/docs/AG12_SOLVER_AG1_TEACHER.md`, Messskript `scripts/ag12_body_bench.py`.
+- **Status 2026-10-10 (Pakete D): AG6 läuft live mit echtem Trainer.** Vorher bekam der Nacht-Job immer `NullTrainer` (Batch endete stets NO_TRAINER). `v13/agi/trainers.py`: Auswahl `auto|lora|sparse|none` (`:growth trainer <Art> [Master-Ordner]`, Master-Hash wird gepinnt), auto = LoRA wenn Master + torch/peft/gguf + Runner + C3-GGUF da sind; Master muss Breite/Tiefe des installierten C3-GGUF haben (C3 ist jetzt 350M, alter 230M-Master wird abgelehnt). `growth_consolidate` → `train_and_gate`; Near-Miss-Fragen aus dem Batch abgeleitet und als Spezifität ins Gate. Proben/Anker `specs/ag6-probes.json` (AG12-Holdout-geprüft). Tests `tests/test_agi_trainers.py` (7), Suite 788/788 grün. Echter Lauf `bench-results/ag6-live-20261010/` (Cloud, LFM2.5-350M-Master, 8 erfundene Fakten): 21 Schritte, 257 s, RSS 2,8 GB; gelernt 8/8 (Basis 0/8), Near-Miss-Leck .33, aber 1/12 Probe vergessen und KL .107 > .05 → GATE_FAIL (richtig gesperrt, nichts aktiviert). **Nachtrag 2026-10-10 (Pakete D): Gate besteht jetzt.** Live-Standard `LIVE_LORA` = lr 3e-4, Anker-Gewicht 8, 16 Anker/Schritt, nur FFN (w1–w3); Anker 32→48, Probes 12→32; Regler pro Gerät `:growth trainer cfg k=v|reset`; KL-Messung stürzte bei Kurzantworten (EOS) ab → behoben. Sweep `bench-results/ag6-live-20261010/SWEEP.md`: alle Ziele + Anker 4/8 vergessen 2/31; FFN + Anker 8 besteht mit Seed 13 und 7 (8/8 gelernt, 0 vergessen, Leck 0, KL .012–.014, ~6 min Cloud-CPU, RSS 2,8 GB) → PENDING_USER. FFN + Anker 4 nur 1 von 2 Seeds. Gate unverändert (kein einziger Kipper erlaubt). Offen: Termux-torch auf dem Redmi (WP-R), Sparse-Memory im Live-Runner (nativer Hook), mehr Seeds/echte Nutzer-Fakten.
+
+## Neue Pakete aus dem Blueprint-Abgleich (2026-10-09, `ABDECKUNG.md`)
+
+Quelle: `ABDECKUNG.md` (210 Blueprint-Bausteine gegen Code geprüft: 24 % fertig, 52 % teilweise, 21 % fehlen, 2 % laut
+Blueprint erst später). Diese Bausteine hatten bisher kein eigenes Paket. Nur Vorschläge; nichts davon ist gebaut.
+Nummern WP-N… gegen Kollision mit WP-A…K, S, V, AG. WP-N1–N3 ersetzen die JEF-Stichworte aus WP-V7.
+
+### WP-N1 JEF-Fokusschleife + Koalition + Workspace (G3D, G5)
+- §3.3.7, §3.4.5, §4.4, §8.1–8.2A, §59, §85.3–85.4, §93. Heute nimmt `cognition.focal()` nur die ersten N Offers.
+- Inhalt: `FocalItem` nach §93 (Salienz, Unsicherheit, Zerfall, Ziel-Bindung, ACTIVE/REACTIVATABLE/EPISODIC_POINTER),
+  Admission-Priorität, Multi-Slot-Workspace (`WorkspaceSlot` wird endlich benutzt), rekurrente Runden mit gezielter
+  Re-entry, `C4.uncertainty_coupling_gain`, Cross-scale-Kopplung §3.2A, Age-Rechte für Cognition.
+- Dateien: neu `v13/focal.py`; Hooks in `cognition.py`, `runtime.py` (Besitzer abstimmen). Kein Modell nötig für die Logik; Nutzen-Messung mit WP-B.
+- **Status 2026-10-09: Code fertig und live im Durchlauf** (Thread „JEF-Fokusschleife bauen“). `code/v13/focal.py`, Tests `tests/test_focal.py` (10 grün, volle Suite 559 grün), Schemas `FocalItem` (§93-Felder Pflicht), `FocalCycle`, `InquisitionStep`, `ActionSelection` in `contracts.py`, Befehl `:focal`.
+  - C4 `FocalLoop.run` in `runtime._turn` ersetzt den festen Einmal-Re-entry: Kandidaten (B1/B2-Offers, Memory, gehaltene Slots) → Priorität §93 (Ziel, Konflikt, Unsicherheit, Salienz, Nutzen, Quellqualität − Redundanz − Kosten) → Koalition (Kapazität = Effort-`focal_slots`, Schwelle §59 .45, Salienz-Interrupt) → Inquisition bei Trigger → Entscheidung §3.4.6 (QUERY_A/B gezielt, INCORPORATE_A/B/AB, IGNORE) → Runden bis Halt/Budget/Deadline. Runden aus Effort-Plan (Age-gedeckelt), Re-entry-Budget = `max_reentry`.
+  - `C4.uncertainty_coupling_gain` (§85.4, BOOT .5): Unsicherheit senkt die Koalitionsschwelle und koppelt Memory stärker an. Cross-scale-Links §3.2A/§8.2A (Gist-Slot ↔ Fine-Slots über überlappende SourceRefs).
+  - B4 `Workspace` je Session (`C4_WORKSPACE:<session>`): ACTIVE/REACTIVATABLE/EPISODIC_POINTER, Zerfall pro Turn, Quelle/Generation weg → Slot weg. Frühere Items bleiben PRIOR_HYPOTHESIS, zählen für Konflikt, gehen nie als aktuelle Offers in die Antwort.
+  - WP-N2-Kern mit drin: `Inquisition` P1 (Hypothese) ↔ P2 (Kritik); Age 0/1 erzwungene Folge P1→P2, ab Age-Recht `deliberation_modes` zusätzlich VERIFY/COMPARE/CONSTRAINT_CHECK. Trigger: B1/B2-Widerspruch, Memory-Widerspruch, Salienz, Nutzer „gründlich/step by step“, Effort-verify, World-Fehler (Flag, noch nicht gespeist). CONTESTED lenkt die Re-entry auf die schwächer belegte Hälfte. Halt fest budgetiert (§10.1 Phase B); gelernter Halt-Kopf berät nur einmal.
+  - WP-N4-Kern mit drin: C5 `ActionGate` mit §85.5-Kandidaten (SOURCE_COPY, C3, B1, B2, ASK_USER, EXTERNAL_TOOL), Rechte-/Ressourcen-Unterdrückung, Alternativen; BOOT-Nutzen reproduzieren die alte Route→Rolle-Tabelle exakt (Fokus-Unterstützung nur innerhalb der Marge). ASK_USER wird angeboten, nicht ausgeführt; Tools ab Age-Recht.
+  - WP-N5 eingehängt: A4-Spannensalienz nach `percept()` (High-Res-Re-looks als exakte Quellspannen gewährt), Thalamus-Gain pro Runde aus Konflikt (focal-Gain → Kopplung, workspace-Gain → Schwelle, Interrupt → Salienz), Re-entry als `AttentionRequest` JEF→B1/B2 unter Event-Budget, `outcome` (+.5 wenn die Re-entry in die Koalition kam, sonst −.25).
+  - Grenzen: Konflikt/Unsicherheit sind lexikalische Proxys (Zahlen, Verneinung, Hecken), nicht kalibriert; alle Gewichte BOOT. `cfg.max_reentry` ≤ 1 deckelt Re-entries pro Turn.
+  - Offen/nächste Schritte: World-Vorhersagefehler als Inquisition-Trigger speisen (WP-N9/World); Age-Rechte an `cognition.offer` (Gist-Auflösung `age.gist_resolution`); `cfg.max_reentry` > 1 erst nach Nutzen-Messung; Nutzen-Messung G-FOCAL-CAPACITY-003 / §24.27 auf dem Cloud-Prüfstand (WP-N12); P1/P2 als gelernter Raum (WP-N2 Rest, Trajektorie zuerst); C6-Egress und echte Tool-Ausführung (WP-N4 Rest, mit WP-K).
+
+### WP-N2 Inquisition P1↔P2 (§10, §10.1, §24.17)
+- **Teilweise erledigt in WP-N1** (Scaffold P1↔P2, Modi, Trigger, CONTESTED → gezielte Re-entry). Rest: gelernter Deliberationsraum, World-Fehler-Trigger, Halt-Kopf erst nach stabiler Trajektorie.
+- **Status 2026-10-09: Rest erledigt (Pakete A).** `code/v13/deliberation.py`, Doku `code/docs/DELIBERATION.md`, Tests `tests/test_deliberation.py` (Suite 671/671 grün).
+  - Handoff: Der World-Fehler-Trigger wird jetzt gespeist (FF-Überraschung, N9-MIXED). Der gelernte Modus-Raum gilt pro Triggermenge; SHADOW ist Standard, `:delib active` nur explizit und mit Age-Recht. Der Halt-Kopf steuert erst bei stabiler Trajektorie (10 Läufe, ≥80 % gleiche Entscheidung, Zyklenspanne ≤1), sonst entscheidet das BOOT-Gerüst; die Auslesung wird trotzdem geloggt (`halt_decision.steering`).
+  - Offen: Nutzen-Messung auf dem Cloud-Prüfstand (WP-N12).
+- Modi Hypothese/Kritik/Verifikation/Constraint-Check im Fokus, ausgelöst durch B1/B2-Widerspruch, Salienz, World-Fehler,
+  Memory-Widerspruch, Nutzerwunsch. Tiefe aus WP-D-Budget. Trajektorie zuerst, gelernter Halt-Kopf erst danach.
+- Nach WP-N1.
+
+### WP-N3 JEF↔Gehirn lernen (G3C, L4.3, L4.4, §3.4.2–3.4.7)
+- Broadcast-Cache als gelerntes Paket statt nur JSON, Top-down-Query (welche Frage an B1/B2), Offer-Nutzen lernen
+  (welche Offers helfen der Antwort), Observer-Pass-Nutzen §24.25, JEF-KV/Broadcast-Bridge §24.26. Schatten + Freigabe wie WP-I.
+- **Status 2026-10-09: erledigt** (Thread „Nächste offene Pakete A“). `code/v13/jefbridge.py`: JEF_BROADCAST_CACHE je Turn (gehashte symbolische Latents, ehrlich markiert), JEF2B-Feld-Gate mit Exploration + Mit/Ohne-Nutzenvergleich (§24.26), Offer-Nutzen-Modell (Antwortabdeckung + Bewertungen), gelernte JEF-Entscheidung im Schatten neben Scaffold, Re-entry-Werte → QUERY_PACKET-Vorschlag, Observer-Pass-Statistik §24.25. Hooks: runtime (Cache, learn_turn), cognition (Brückenfelder), focal (`utility` nur ACTIVE), inputs (Bewertungen). 8 Tests `tests/test_jefbridge.py`, volle Suite 639 grün. Übergabe: `code/docs/JEF_BRIDGE.md`. Offen: native JEF2A/B-Projektoren (brauchen Latents), Query-Vorschlag in focal einhängen, Observer-Frequenz an WP-D.
+  - **2026-10-10: Query-Vorschlag in focal + Observer-Frequenz an WP-D erledigt (Pakete A).** `FocalLoop._jef_target`/`JEFBridge.query_target` (gelerntes Re-entry-Ziel, nur `:jef active` + ≥3 Belege je Ziel, nie zusätzlicher Re-entry, immer als `jef_query` im FocalCycle geloggt); `JEFBridge.observer_scale` senkt die Observer-Zeit im Runtime-Durchlauf auf ≥0,5 bei unnützen Observer-Offers (nur ACTIVE, sonst `meta['jef_observer']`). Doku-Nachtrag `code/docs/JEF_BRIDGE.md`, Tests `FocalHookTests`. Offen: Nutzen-Messung mit Modell, native JEF2A/B.
+
+### WP-N4 C5 Action Gate + C6 Egress (§6.4, §11.1, §85.5)
+- **Teilweise erledigt in WP-N1** (`focal.ActionGate`: Kandidaten, Unterdrückung, Rechte, BOOT = alte Tabelle). Rest: gelernte Auswahl, C6-Schema-Adapter, Tool-Ausführung mit WP-K.
+- **Status 2026-10-09: Rest erledigt (Pakete A).** `code/v13/actionlearn.py`: getrennte promote/suppress-Pfade aus eigenen Modulatoren (kein Skalar-Reward), SHADOW-Vergleich mit BOOT-Tabelle im ActionSelection-Paket, ACTIVE nur per `:c5 active` (±0,2, Rechte gewinnen); C6-Egress-Typprüfung (`EgressCheck`, schreibt nie um, TOOL_CALL ohne Shell-Strings). Bewertungen fließen ein. 4 Tests, Suite 665 grün. Übergabe: `code/docs/C5_LEARNING_C6_EGRESS.md`. Offen: Tool-Ausführung/Transaktion mit WP-K.
+- C5 wählt zwischen Kandidaten (Direkt, C3, B1/B2-Sprecher, Skill, Tool) mit Rechten statt fester Route→Rolle-Tabelle
+  in `runtime.py`; Basalganglien-Idee: gelernte Auswahl + Hemmung, nicht nur Go/No-Go. C6 als Schema-Adapter vor C7.
+- Zusammen mit WP-K (Commit-Point, Transaktion).
+
+### WP-N5 Aufmerksamkeit und Gain (F1, §4B, §5.1, A4, §60)
+- `AttentionRequest`/`AttentionResponse` nach §4B, thalamische Gain (dynamische Kopplungsstärke zwischen Teilen),
+  A4-Wahrnehmungs-Salienz. Speist WP-N1 und WP-F.
+- **Status 2026-10-10: Live-Hook erledigt (Pakete C).** A4 + Re-entry-Requests liefen schon live. Neu: N10-Modulatoren der letzten 3 Turns speisen `modulate` (`attention.recent_modulators`); A4-High-Res-Spans bekommen nach der Antwort ein §4B.4-Ergebnis aus Cue-Abdeckung (`source_outcome`); C5 nutzt die thalamische Action-Gain (`ActionSelection.action_gain`). Doku `code/docs/ATTENTION.md`. Offen: MEMORY/WORLD-Provider, Nutzen-Messung mit Modell. **2026-10-10: MEMORY-Provider erledigt (Pakete C):** bei B1/B2-Konflikt fragt JEF per F1-Request einen zweiten Abruf an, Cue = die widersprechenden Offers; neue Erinnerungen konkurrieren sofort in der Koalition, Ergebnis (+.5 in Koalition / −.25 sonst) lernt `recall|MEMORY`. Test in `tests/test_focal.py`, volle Suite 793 grün. WORLD-Provider bewusst nicht: World-Vorhersage betrifft Aktionen, kein Koalitions-Inhalt.
+- **Status 2026-10-10: WP-K-Rest „TOOL_CALL als C5-Kandidat im Live-Turn“ erledigt (Pakete C).** `v13/toolstep.py`: Rechen-Vorschlag → `ToolProposal` → IH-H29-Politik → EXTERNAL_TOOL-Kandidat in C5; erlaubt (Nutzer + Age 1) läuft calc als Transaktion und das Ergebnis geht als `TOOL_RESULT` an den antwortenden Körper; Age 0 = SHADOW mit Übereinstimmungs-Zählung. 6 Tests, volle Suite 772 grün. Doku `code/docs/TOOL_STEP.md`. Offen: Werkzeugwahl über Needle-Kopf statt Regex.
+- **Status 2026-10-09: Code fertig und live eingehängt** (Thread „Aufmerksamkeit und Thalamus-Gain“; Live-Hook geprüft von Pakete A: `runtime._turn` ruft `perceive_packet`/`admit` nach dem Percept, `FocalLoop` nutzt `modulate`/`admit`/`outcome`). Nutzen-Messung offen. `code/v13/attention.py`, Tests `tests/test_attention.py` (15 grün, volle Suite 549 grün), Schemas `AttentionRequest`/`AttentionResponse` in `contracts.py`, Befehl `:attention [status|edge <Kante>|shadow|active]`.
+  - Inhalt: §4B-Vertrag (Ziele A_SOURCE/B1/B2/MEMORY/WORLD/TOOL/SELF, Gründe, Budget, Ablauf; Antworten GRANTED/NOT_AVAILABLE/TOO_EXPENSIVE), Zulassung pro Event unter Budget × Ressourcendruck; thalamische Gain je Kante (§60 GAIN.*), getrieben von Salienz (SAL.*) und Vorsicht (CAUT.*) als getrennte Größen, relaxiert pro Event zur Basis; Interrupt ab Salienz .6; A4-Spannensalienz (§51.5) ohne Chunk-Verlust + High-Res-Anfragen; Lehrer-Sicht nur Age 0, markiert, Priorität gedeckelt; gelernter Nutzen-Prior läuft SHADOW, ACTIVE nur per `:attention active`.
+  - Schnittstellen für WP-N1: `controller(runtime)`, `rank(candidates)` → `admission_score`, `offer_features(offer)`, `modulate(...)['interrupt']`, `coupling('E_C4_B4_GAIN')`. Für WP-N10: Gewährung → `neuromod.touch('attention_policy')`, `outcome(response_id, nutzen)` → `neuromod.signal(path='attention_policy')`; `from_modulators(channels)` liest N10-Kanäle. **Bitte WP-N10:** `'attention_policy':'control'` in `neuromod.COMPONENT_KIND` (heute Default `skill`).
+  - Handoff/offen: Einhängen in `runtime._turn`/`cognition.focal` (Besitzer WP-N1/WP-D): `perceive_packet` nach `percept()`, `modulate` aus B1/B2-Widerspruch + World-Fehler, `admit` mit Providern (Memory/World/B-Re-entry), `outcome` nach der Antwort. Nutzen-Messung mit WP-B/WP-N12.
+
+### WP-N7 Context OS + Cache-Policy (§8.3–8.6, §74, G6B, R6)
+- Was roh, was komprimiert in den Modellkontext geht, „Re-entry statt Re-prefill“, KV-Cache-Entscheidungen als
+  Kontroll-Aktion, Warm/activity-silent Memory. Native Primitiven (§8.6) nur als Forschung.
+- **Status 2026-10-09: erledigt + gemessen** (Thread „Nächste offene Pakete A“). Cloud-Messung: Layout `append_only` (jetzt Standard) spart 44–62 % neu vorgefüllte Tokens und ~45 % Prefill-Zeit auf C3/B1/B2 (hybride Bodies können nur fortsetzen, nicht zurückspulen), `stable_prefix` nur 4–18 %; `bench-results/context-cache-20261009/report.json`. `code/v13/context_os.py`: ContextPlan über die §8.3-Schichten, extraktive Kompression mit Exact-Span-Pinning, Exact-Restore §8.4 (Zahlen/Code/wörtlich/Quellenkritik/Inquisitions-Konflikt), Budget-Planung vor dem Runner, Cache-Layout `stable_prefix` (Re-entry statt Re-prefill, nur mit geprüfter Template-Fähigkeit `consecutive_user`, G6B), Präfix-Wiederverwendung geschätzt + echte `cache_n/prompt_n` gemessen, Warm/activity-silent Memory §9.1, CTX-Regler §74 mit Exact-Recall-Sperre, gelernter Prior SHADOW, N10-Pfad `context_policy`. SHADOW ist Standard (Modell sieht byte-gleich den alten Kontext); `:ctxos active` schaltet um. Hooks in `runtime.py` (Warm nach Recall, Plan beim Prompt-Bau, observe nach Antwort), `:ctxos`, Schema `ContextPlan`. 17 Tests `tests/test_context_os.py`, volle Suite grün. Doku/Übergabe: `code/docs/CONTEXT_OS.md`; Messskript `scripts/context_cache_bench.py`. Offen: §8.6-Primitiven (Forschung), Ratings→`outcome`, Ausgabe-Adapter vor ACTIVE prüfen.
+
+### WP-N8 Event-Segmentierung + Kausaler Gedächtnisgraph (A1, §9.3–9.5, §48.15)
+- **Status 2026-10-10: Rest erledigt (Pakete C).** Assoziativer Abruf (`Episodes.spread`, SHADOW Standard, `:episodes spread on`), keine Selbstverstärkung durch Ausbreitung, Consolidation stellt Staging-Episoden zuerst. 5 Tests, volle Suite 766 grün. Offen: A1 innerhalb eines Textes (cognition.py), gelernte Grenz-Politik.
+  - **2026-10-10: A1 innerhalb eines Textes erledigt (Pakete A; Pakete C hatte parallel `cognition.event_segments` gebaut, der Stand auf Platte ist die Pakete-A-Version).** `episodes.text_segments` über `cognition.segments(..., mode='event')`: Noisy-OR der §51.2-Gewichte (Chunk-Prior .40, Absatz/Satz .25, Themenwechsel .35, Frage↔Aussage .30, Prosa↔Liste/Code .30) ≥ 0,5, 25–150 % der Zielbreite, exakte Spans nie geschnitten, verlustfrei mit SourceRef. `cfg segment_mode` = `percept` (Standard: PerceptPacket/A4) | `all` (+ B1/B2-Sicht) | `fixed`; Body-Ansichten standardmäßig byte-gleich. Tests `tests/test_text_segments.py`, Suite 808 grün. Offen: gelernte Grenz-Politik.
+- **Status 2026-10-09: erledigt (Pakete B).** `code/v13/episodes.py`: Episodengrenzen aus mehreren Signalen (Noisy-OR mit §51.2-Gewichten, Überraschung allein schneidet nie, Pause/Korrektur/Sleep schneiden), Gedächtnisgraph mit TEMPORAL/CORRELATIONAL/CAUSAL/HYPOTHESIS (kausal nur mit Eingriff), Aufnahme-Stufe je Episode, Erinnerungs-Stärke mit Zerfall und Vergessens-Vorschlägen (Löschen nur per `:forget`). Hooks: `runtime._turn` (finally), `memory.feedback`/`forget`, Sleep (voller Sleep schließt Episoden, Traum = Hypothese). `:episodes`. Tests `tests/test_episodes.py`, volle Suite grün. Doku + Übergabe `code/docs/EPISODES.md`. Offen: Consolidation liest Stufe noch nicht, `related_memories()` nicht im Abruf, A1 innerhalb eines Textes (cognition.py), gelernte Grenz-Politik.
+- Ereignisgrenzen aus Vorhersagefehler + Kontextwechsel statt fester 240-Zeichen-Stücke; Gedächtnisgraph mit
+  Ursache/Folge-Kanten; gelernte Memory-Admission. Baut auf WP-H/WP-S2.
+
+### WP-N9 Selbstmodell, Körpergefühl, Corollary-Rückkopplung (§7.3–7.5, §20.2, §20.4, §85.7, §24.28)
+- Self-Model über `world.self_state` hinaus (Fähigkeiten, Grenzen, offene Ziele), Interozeption (RAM/Hitze/Last als
+  Signal an JEF), Corollary-Kopie geht an B1/B2 zurück, bevor die Welt antwortet; Self-Messaging; Self-Edit nur als
+  Vorschlag (Age-Recht, Nutzerfreigabe).
+- **Status 2026-10-09: erledigt** (Thread „Nächste offene Pakete A“). `code/v13/selfmodel.py`: Selbstmodell §7.3 als Aggregat (`:self model`), Körpergefühl §7.4 mit Modulationen (Kontextbudget an WP-N7, Dream/Learning, Schlafdruck) und Corollary-Dämpfung nur in der Salienz, `SelfCorollary` vor jedem Dispatch + `SelfWorldAttribution` SELF/EXTERNAL/MIXED/UNCLEAR mit Residuum → N10 `world_prediction_error`, Corollary-Sicht an B1/B2 (`self_corollary` in `cognition.offer`), Self-Messaging §20.4 (Relevanz, Rate-Limit, Anti-Spam, HELD unter Age 4), Self-Edit §20.2 (nur Vorschläge, Nutzerfreigabe, Context-Policy rücknehmbar, safe_config → AG8). 18 Tests `tests/test_selfmodel.py` (inkl. alle G-SELF-WORLD-005-Fälle). Doku/Übergabe: `code/docs/SELF_MODEL.md`. Offen: Redmi-Sensoren (WP-R), Tool-Aktionen (WP-K) mit eigenen Kanälen.
+
+### WP-N10 Neuromodulation und Eligibility (§12.1–12.3, Layer 6, §16.3, §35, §62–63, §85.10)
+- Echte Eligibility-Spur pro Pfad (wächst bei Aktivität, zerfällt), typisierter Modulator-Bus (Überraschung, Neuheit,
+  Korrektur, Erfolg, Kosten, Veto) der Lernbudgets wirklich steuert statt nur geloggt zu werden, Consolidation Tag,
+  Metaplastizität aus `plasticity.py` daran koppeln. Reines Python, sofort machbar.
+- **Status 2026-10-09: erledigt** (Thread „Neuromodulation und Lernspuren“). `code/v13/neuromod.py`: Zwei-Zeitskalen-Eligibility aus den vorhandenen LearningTrace-Paketen, typisierter Modulator-Bus (epistemisch/instrumentell getrennt, Gewichte je Lernart, Credit-Map, Sicherheits-Veto), Gate-Faktor e×M×P skaliert LR + Update-Norm in `plasticity.budget` (über `learning.training_config`), Consolidation Tag, Sleep C + AG6 eingehängt, `:neuromod`. 17 Tests in `tests/test_neuromod.py`, volle Suite grün. Details/Übergabe: `code/docs/NEUROMODULATION.md`. Offen: Spuren für Callosum/Workspace/C_focal kommen mit WP-N1/N7; gelernter Metaplastizitäts-Kopf; Wirkung auf echten Läufen messen.
+
+### WP-N11 MoE-Körper (§81, §87.1, §91, §16.2.1, B3-H6; Nutzerwunsch „zwei verschiedene MoE-Hälften“)
+- **Status 2026-10-09: in Arbeit (MoE-Hälften)** (Thread „Zwei echte MoE-Hälften“): B1 LFM2.5-1.2B + B2 Qwen3.5-0.8B über AG0-Slots + AG13-Residenz end-to-end, STEP2-Messung.
+- Zugang/Runner für einen kleinen MoE-Körper klären (MobileMoE-S-QAT gated + noncommercial; Alternativen prüfen),
+  Detail-Hälfte mit mehr aktiven Experten, Router-Stabilitäts-Gate, Pre-Router-Interferenz-Monitor, Experten-Deltas.
+  `agi/residency.py` ist schon da. Braucht WP-B und Redmi-RAM-Messung (WP-R).
+
+### WP-N12 Messsuite + Parameter-Register + Abschluss-Audit (§24, §31, §79, §99, 0P, IH-H5, IH-H28, IH-H36)
+- **Status 2026-10-09: erledigt (Pakete B).** Register `code/v13/register.py` (`:register`): 301 Blueprint-Regler aus §49–§78 + §78-Age-0-Profil (`scripts/build_knob_register.py` → `specs/blueprint-knobs.json`), 60 per `specs/knob-map.json` an Code-Konstanten gebunden, alle MATCH, 0 DRIFT; Abdeckung ehrlich 20 %, Rest DECLARED_ONLY; PathSpec der lernbaren Pfade. Gate-Graph `specs/gate-graph.json` + `code/v13/gates.py` (`:gates`): 19 Gates, §100-Kriterien je Gate, Mocks zählen nie als echte Daten, Ergebnis-Verdikte binden; Stand 8 GREEN, 11 PARTIAL. Messsuite `scripts/measure_suite.py` / `cloud_bench.sh --suite`: §24 und §99 auf Tests/Artefakte/Verdikte abgebildet (`specs/benchmarks.json`); Ergebnis `bench-results/suite-20261009/` (4 MEASURED, 23 TESTED, 1 MEASURED_FAILING = 24.11 Callosum, 2 NEEDS_REDMI = 24.14/24.33, 5 NOT_IMPLEMENTED = 24.18/24.19/24.26/24.30/24.31). Tests `tests/test_register_gates.py`, volle Suite 686 grün. Doku + Übergabe `code/docs/MEASUREMENT_SUITE.md`. Offen: weitere Regler in knob-map binden, wenn Pakete sie bauen; R0–R9 und Thin-Control-Budget noch nicht als eigene Läufe; Redmi-Messungen (WP-R).
+- Die 34 Kern-Benchmarks §24 und Experimente R0–R9 als ein Befehl auf dem Cloud-Prüfstand; Pflicht-Ablationen §99;
+  KnobSpec/PathSpec-Register für alle Regler aus §49–§78 (Age-0-Profil §78); Gate-Abhängigkeitsgraph; Thin-Control-Budget.
+- **Status 2026-10-10: IH-H36-Neuabgleich `ABDECKUNG.md` erledigt (Pakete B).** 19 Zeilen aktualisiert (u. a. A4/F1/Gain/Workspace jetzt ✅ live, Gate-Graph ✅, Needle-Benchmark ✅, Vision/Full-Duplex/Sparse-Memory/Drift-Anker 🟡); Zählung neu: 85 ✅ / 111 🟡 / 11 ❌ / 3 ⏸ von 210 (Erstabgleich 51/109/45/5). Offene ❌ fast nur MoE (WP-N11), B3 L2–L4 (WP-J), native Cache (G6B) und Redmi (WP-R).
+- **Nachtrag 2026-10-09 (Pakete A):** §22.6 Speculative Decoding gemessen (`code/scripts/spec_decode_bench.py`, `bench-results/spec-decode-20261009/`): greift auf den hybriden LFM2/Qwen3.5-Bodies in b10964 nicht (0,92–0,98×, Draft +330 MB) → bleibt aus. ABDECKUNG-Zeilen für N1/N8/N3 auf Stand gebracht.
+
+### WP-AB §99-Pflicht-Ablationen ohne Modell (Eligibility, Modulatoren, Prozeduralisierung, Age)
+- **Status 2026-10-10: erledigt (Pakete A).** `code/v13/ablation99.py`, Lauf `code/scripts/ablation99_bench.py`, Tests `code/tests/test_ablation99.py` (Suite 761 grün), Ergebnis + Übergabe `bench-results/ablation99-20261010/README.md`, Einträge in `specs/benchmarks.json`. Echte Module (Neuromod-Gate, FastForward, AgeControl) auf synthetischem Strom, 5 Saaten, gleiche Ströme für alle Kontrollen:
+  - Prozeduralisierung belegt: −52 % Kosten ggü. voller Deliberation, 0,7 % vs. 24,6 % Fehler der statischen Abkürzung.
+  - Typisierte Modulatoren schlagen scalar reward und human-only 5/5, outcome-only 4/5.
+  - Eligibility schlägt gradient only / random mask 5/5, aber nicht recency only (1/5).
+  - **Gate allein lernt Traum-/Eigen-Labels** (wirkt pro Pfad, nicht pro Beispiel); erst `guards.enforce_data_mix` schützt (Endfehler 0,65 → 0,17).
+  - **Age nicht belegt:** Rauschen → Herabstufung → mehr Plastizität (verrauschte Phase 0,18 vs. conservative 0,09).
+  - **Zur Nutzer-Prüfung:** Age-Korrektur als Flag `age_plasticity_policy=stable_reopen` in `age.py` (Standard bleibt `boot`): Halten der Plastizität nach Herabstufung, Wiederöffnen erst bei anhaltenden Fehlern. Verrauscht 0,18 → 0,14 (5/5), Zielwechsel 0,025 → 0,033 (langsamer). Nicht eingeschaltet.
+  - Offen: Rausch-Schätzung für Age, Datenmix vor jedem Trainingsjob sicherstellen, Strom mit verzögerter Belohnung für die zweite Zeitskala.
+  - **2026-10-10: „Rausch-Schätzung für Age“ erledigt (Pakete E).** `age.py`: Rausch-Schätzer je Fähigkeit (winsorisierte MAD der Kompetenz), Flag `age_plasticity_policy=noise_aware`: Fehlschläge im Rauschband zählen nicht zur Herabstufung, Plastizität und Fehler-Wiederöffnung werden mit dem Rauschen gedämpft. Messung `bench-results/age-noise-20261010/`: verrauschte Phase 0,073 (boot 0,175, stable_reopen 0,129, conservative 0,086; 5/5), Zielwechsel langsamer (0,079 vs. 0,053). **Nicht eingeschaltet, Nutzerwahl boot | stable_reopen | noise_aware.** Test `test_ablation99.py::AgeNoiseAware`.
+  - **2026-10-10: „Strom mit verzögerter Belohnung“ erledigt (Pakete E).** `ablation99.delayed_ablation` (Bursts, Ergebnis 3–40 Ereignisse später, 30 % falsche Labels unbestätigt), echtes Neuromod, 5 Saaten, `bench-results/delayed-reward-20261010/`. Gate schlägt recency only und budget-gleichen Gradienten 5/5, aber **langsame Spur bringt nichts** (v13 = fast only 0,157) und Trennung bestätigt/unbestätigt nur 1,14× (Orakel 0,003): Credit pro Beispiel muss aus der Beispiel-Herkunft kommen (Datenmix/AG6), nicht aus längerer Eligibility. SLOW_MIX bleibt BOOT. Test `test_ablation99.py::DelayedReward`.
+  - **2026-10-10: „Datenmix vor jedem Trainingsjob“ erledigt (Pakete E).** `guards.item_origin` + `mix_for_training` (Herkunft je Item: explizites `origin`, Traum/Hypothese → dream, modellgeschriebene Ziele wie `rated_answer`/TTT → self, sonst human). AG6 `WeightConsolidation.stage` kürzt auf die Quoten (Mensch ≥ 60 %, self ≤ 10 %, dream ≤ 5 %, seed 0) oder meldet `DATA_MIX_FAIL`; `train()` prüft vor `trainer.fit` erneut. TTT-Kandidaten tragen `origin:self`, SDFT `origin:human_replay` (Inhalt = Korrektur). Andere Trainer (Retrieval/Output/Control) lesen nur menschliche Labels (geprüft). Tests `test_learning_invariants.py::DataMixBeforeTraining`; `test_lora_trainer` angepasst (1 Fakt lässt keinen Platz für eine bewertete Modellantwort). Suite 792 grün.
+
+### WP-N13 AG-Module in den Live-Durchlauf (Querschnitt)
+- **Status 2026-10-09: erledigt (Pakete B).** `code/v13/agi/live.py`: AG4 vertrauter Routen-Skill setzt die Route nach `_route`; AG9 kalibrierte Antwort-/Routen-Konfidenz hebt Effort-Unsicherheit (zweiter Versuch) oder setzt Abstain-Flag, Labels aus Bewertungen, Korrekturen, Routen-Feedback; AG2 Vorhersage vor jeder Antwort-Aktion, Ergebnis danach; AG11 Präferenz/Stil-Feedback → Annahmen; AG0 installierte Modelle → Slots, neue Revision → Tausch-Vorschlag. Fail-open, `:live`. Tests `tests/test_agi_live.py`, volle Suite 603 grün. Doku + Übergabe `code/docs/AGI_LIVE.md`. Offen: Executive liest Nutzer-Annahmen nicht in constraints, Abstain nur Flag (C5 ASK_USER bei BOOT aus), Tool-Skills erst mit WP-K.
+- **Status 2026-10-10: Rest erledigt (Pakete E).** AG11-Annahmen (Konfidenz ≥ 0,5) → `ExecState.user_beliefs` + C2-Sicht + beschriftete `USER_MODEL`-Schicht im Antwort-Kontext, nie in `constraints`. AG9-Abstain → C5: SHADOW protokolliert, `:live ask active` (nur Nutzer) lässt ASK_USER gewinnen, C3 stellt eine kurze Rückfrage; exakte Ausgaben bleiben. Tests `test_agi_live.py::ClarifyAndUserModel`, volle Suite 788 grün. Doku `code/docs/AGI_LIVE.md`. Offen: Nutzen von Rückfrage vs. Raten an echten Turns messen.
+- Heute rufen nur `:growth`, Sleep und Scheduler die `agi/`-Module. Einhängen in `runtime._turn`: Metakognition (AG9)
+  an Effort, Grounding (AG2) an jede Aktion, Nutzer-Modell (AG11) an C1, Skills (AG4) an C5, Slots (AG0) an `ModelManager`.
+
+### WP-N14 Live / Full-duplex im Text (§4A.4, G10D, §24.30)
+- **Status 2026-10-09: erledigt, Text-Phase (Pakete B).** `code/v13/duplex.py` (`:duplex status|auto|interrupt|off`): Nachricht während laufender Antwort → CONTINUE / INTERRUPT (Stopp-Wort) / REVISE (Korrektur), Entscheidung ohne I/O unter dem Runtime-Lock; abgeschnittene Antwort bleibt CANCELLED + `provisional` (nie gelernt, nicht in nativer Historie); nächster Turn bekommt `DUPLEX_HANDOFF` (Frage, Teilantwort, Beziehung) und deren Quellen in `context_source_refs`. Telemetrie `duplex`. Tests `tests/test_duplex.py` (§24.30 in der Messsuite), volle Suite grün. Doku + Übergabe `code/docs/DUPLEX.md`. Offen: Audio/Video und Sprach-Barge-in (STEP 11), gelernter Unterbrechungs-Klassifikator, asynchrone Offers in eine laufende Antwort.
+
+### WP-N15 Vision-Gerüst im Lab (STEP8, §18.9, G10B, Teil von §24.31)
+- **Status 2026-10-10: erledigt (Pakete B).** `v13/vision.py` + `:image` (add/describe/train/look/forget), Doku `code/docs/VISION.md`, Tests `tests/test_vision.py` (7), Bench `scripts/vision_bench.py` → `bench-results/vision-20261010/`. Bild = IMAGE-Quelle mit Regionen-SourceRef (Pixel-Box), RAW EYE 117 Merkmale, Ridge-Student → Text-Embedding, Teacher LFM2.5-VL-450M (+mmproj, `:download vision`, Beschreibung REFERENCE_NOT_FACT, fehlt → fail-open), Rekonstruktion nur Messung. Messung 48 synthetische Szenen: Teacher nennt Farbe/Form 100 %, Position 0 %; Student held-out Retrieval 0,73 (Zufall 0,08) mit EmbeddingGemma, Zero-Shot Farbe 0,92 / Form 1,00 / Position Zufall, obwohl das rohe Auge die Position zu 100 % trägt. **WP-N15b erledigt (Pakete B, 2026-10-10):** Hälften `hl/hr/ht/hb` als Regionen, Training auf allen beschriebenen Regionen, `:image locate <id> <Text>`. Der Student findet die Objekt-Hälfte held-out zu 100 % auf der richtigen Achse (Zufall 50 %), die Lage kommt über die Regionen-Herkunft. **Übergabe:** echte Fotos und Handy-RSS des Teachers ungemessen; nichts im Chat-Turn oder Kern (G10B-Gate offen).
+
+### Ergänzung zu WP-F
+- Reflex-Schicht §5.3 und Fast-Forward/Kleinhirn §7.1/§85.6 gehören ausdrücklich dazu (heute fehlen beide).
+
+Reihenfolge-Vorschlag: WP-N10 und WP-N1 sofort (kein Modell nötig, Kern des „Gehirns“), dann WP-N2, WP-N13, WP-N5;
+WP-N3/N4 mit WP-I/WP-K; WP-N11 sobald ein MoE-Modell ladbar ist; WP-N12 laufend.
+
+### WP-KAL Startwerte mit echten Modellen einmessen (Cloud-Prüfstand)
+- **Status 2026-10-10: erledigt (Runde 2, Qualität)** (Thread „Kalibrierungs-Befunde umsetzen“). Erste Runde: Thread „Werte mit echten Modellen einmessen“. Ergebnis: `bench-results/KALIBRIERUNG.md`,
+  Rohdaten `bench-results/kalibrierung-20261009/`. Skript `code/scripts/calibrate_real.py` (ag12|pairs|offers|effort|echo|echo_exact),
+  Messwerte je Regler in `code/specs/calibration.json` → `:register` zeigt Feld `calibration` (30 Blueprint-Regler), Tests `tests/test_calibrate_real.py`.
+  Keine Code-Defaults geändert (keine Messung stützt eine Änderung klar). AG12 roh: .13–.30 (Qwen3.5-0.8B best), Planungstiefe 0.
+- Übergabe/offen: (1) B1/B2-Offer-Prompt in `cognition.py` nennt kein Ergebnis (B1 5 %; mit Lös-Prompt 37,5 %) → umstellen, dann Effort neu messen.
+  (2) Offer-Unsicherheit aus Token-Logprobs statt HEDGE-Regex (AUROC .75 vs .50) → Runner muss Logprobs liefern.
+  (3) Anti-Echo halbiert Exaktheit beim 230M-C3 (22→12 %), nicht beim 350M → C3 auf 350M oder exakte Antworten ohne Penalties.
+  (4) Gains/Neuromod/Coalition brauchen Lernläufe (WP-I/S6) als Zielgröße. (5) Redmi-Zeiten (WP-R), Deutsch später.
+- **Übergabe Runde 2 (erledigt, Details `bench-results/KALIBRIERUNG.md` Runde 2):** C3 = LFM2.5-350M (`specs/models.json`, alter Eintrag unter `previous`); C3-Antwortregel ohne „Nothing verified“-Zwang (Aufgaben 16→38 %, Gedächtnis 7→73 %); STEP2 B1+B2 .58 > B1 .45 (Gate rot nur wegen „B2 allein gewinnt nie“); Effort: Bodies wecken hilft (.40 vs .32), Schwellen BOOT; Acceptance 13/16, memory-retrieval C3-Teil grün. Offen: eigenständig stärkerer B2, B1-Detail-Antwort nutzt Korrektur nicht, control-calibration `support` braucht mehr Daten, 230M-LoRA (WP-S6) auf 350M neu lernen, Redmi-RAM/Latenz 350M (WP-R). Rohdaten `bench-results/kalibrierung2-20261009/`.
+  Erledigt: (2) Runner holt bei Offers Token-Logprobs (`n_probs`), `focal.token_confidence` + `offer_uncertainty` nutzen das
+  unwahrscheinlichste Summary-Token (AUROC Fehler B1 .52→.88, B2 .61→.76; zweite Stichprobe .83/.75), Pivots je Body in `focal.TOKEN_UNC`.
+  (1) Offer-Prompt jetzt `cognition.offer_instructions` mit `OFFER_STYLE='solve'` (B1 5→33 %, B2 13→35 % Ergebnis genannt; `cfg offer_style=hypothesis` = alt).
+  `tests/integration_retrieval.py` suchte nach dem deutschen Präfix → Quellen-Check war seit WP-V9 immer rot (behoben). Tests `tests/test_kal2.py`.
+  Neue Messskripte: `calibrate_real.py effort_rt|rules` (Laufzeit-Prompt, nativer Pfad).
+hprobe 
+
+## Restarbeit aus den 🟡-Zeilen von ABDECKUNG.md (Pakete WP-T, angelegt 2026-10-10 von Pakete B)
+
+Quelle: 111 🟡-Zeilen nach dem IH-H36-Neuabgleich. Nur Arbeit, die **ohne Handy** geht. Nicht hier, weil schon vergeben:
+B3-Leiter (WP-J), MoE-Hälften (WP-N11), echtes Gewichts-Lernen/LoRA/TRAIN_RUNNER (WP-I, WP-S6, Thread „Echtes Lernen“), Redmi (WP-R).
+Vor Beginn Status-Zeile „in Arbeit (<Thread>)“ setzen; Tests + Doku + Übergabe wie üblich.
+
+### WP-T1 JEF-Steuerung vervollständigen (§3.3.0–3.3.3, §3.4.7, §4.4, G4)
+- **Status 2026-10-10: erledigt (Pakete C).** `v13/fastpolicy.py`: Fast-Köpfe skill/memory/channel auf dem geteilten C2-Embedding (gleicher Label → `:learn` → Gate → `:approve`-Weg wie wake, ohne Freigabe nur Scaffold); `C2ExecutivePacket` (Tool, Memory-Key, Antwort-Typ, Quelle je Feld; Needle-Schema bewusst unverändert wegen control_calibration); Re-entry-Frage `jef_query` an B1/B2 (on/off/measure, Koalitionsrate je Arm); DEEP_FOCAL bis 2 Re-entries mit Stopp bei stabiler Trajektorie (`max_reentry` 2, Age 0 = 1). Tests `test_fastpolicy.py` (13), Suite 839 grün. Doku `code/docs/JEF_FAST_POLICY.md`. Offen: echte Labels, Fokus-Wirkung mit Modellen (WP-T3).
+- JEF_FAST_POLICY: Köpfe für skill/memory/channel neben route/wake/halt (Schatten, gleiche Freigabe-Logik).
+- C2-Needle liefert strukturierte Pakete (Tool-Wahl, Memory-Key, Antwort-Typ), nicht nur Route.
+- Top-down-Query: QUERY_PACKET aus `jefbridge` steuert `focal` (welche Frage an B1/B2), Wirkung mit/ohne messen.
+- Ziel-gerichtetes Re-entry: mehr als ein B1-Neuversuch, Abbruch nach stabiler Trajektorie, Budget aus WP-D.
+
+### WP-T2 Age-Rechte überall (§3.3.0 C0, §17.4, §17.5)
+- **Status 2026-10-10: erledigt (Pakete E).** `age.RIGHT_CAPABILITY` + `AgeControl.may/rights`: jedes Recht gilt an der Decke seiner Fähigkeit (tool, language, memory_skill, routing_skill, body_port), sonst System. `executive.permission_flags` (Age je Fähigkeit, gewährte Rechte, Ressourcenmodus; Tool-Ausführung/Body-Training nur mit Age-Recht). Effort/Fokus (`age_limits`), Gist (Breiten-Anpassung erst mit `adaptive_gist_grouping`), Attention (language-Age), Cognition (Age-Hülle im Broadcast an B1/B2, nur über Age 0), Sleep/Scheduler/`age_allows` über `may`. `agi/maturity.feed/turn_feed`: Nachweise für System + gemessene Fähigkeiten nach jeder vollen Nacht und live aus Turns (max. 1/h, nur bei neuer Erfahrung); vision/audio/social/body_port bleiben ehrlich 0. Tests `tests/test_age_rights.py` (4), Suite grün. Doku `code/docs/AGE_RIGHTS.md`.
+- `ExecState.permission_flags` aus Age je Fähigkeit statt fester Flags; Cognition, Gist, Focal, Attention fragen Age ab.
+- `agi/maturity.py`-Nachweise live aus Turns/Sleep einspeisen; Test „Age-Stufe ändert erlaubte Pfade“.
+
+### WP-T3 Nutzen-Messungen mit Modell in der Cloud (G3D, G5, G5B, G1B, A4/F1)
+- **Status 2026-10-10: erste Runde erledigt (Pakete A).** `code/scripts/utility_bench.py`, Ergebnis `bench-results/utility-20261010/` (README + `utility.json` mit Verdikt). 9 Arme × 12 Aufgaben mit echtem C3/B1/B2, Baseline 3× für das Rauschband: **kein Arm außerhalb des Rauschens** (bestanden 0,42–0,58); Koalition, Inquisition, Adaptive Effort, Gist aktiv, Attention aktiv, coupling_gain 0/1 zeigen keinen messbaren Nutzen; `effort_low` (Fokusschleife faktisch aus) ist nicht schlechter. Identische Läufe reproduzieren nur 4–5/12 Antworten (Observer-Fristen). `uncertainty_coupling_gain` bleibt BOOT 0,5. G-FOCAL-CAPACITY-003 hat jetzt echte Daten + Ablation, Verdikt False → EVIDENCE_NOT_PASSING. Offen: deterministische Observer-Fristen im Bench-Modus, 60–100 Aufgaben mit B1/B2-Widerspruch.
+- Ein Bench mit echtem C3/B1/B2: Fokus-Koalition an/aus, Fokusschleife + Inquisition an/aus, Adaptive Effort an/aus (R5), Gist-Auflösung an/aus, Attention/Gain an/aus.
+- Gleiche Fragen, gleiche Saat; Antwortqualität + Latenz; `C4.uncertainty_coupling_gain` einmessen. Ergebnis als Verdikt in `gate-graph`.
+
+### WP-T4 A-Plane Lehrer/Student (A1–A3, §18.1–18.4, §18.11, G9B, G10)
+- **Status 2026-10-10: erledigt bis auf den gelernten A1-Grenz-Kopf (Pakete C).** `v13/aplane.py`: A3-Schüler T2 `fallback` (routet nur bei ausgefallenem Lehrer-Pfad; Gate ≥50 Vergleiche, ≥90 % Übereinstimmung, Retention ≤5 Punkte Abfall; nur per `:aplane student fallback`, automatischer Rückfall); Text-Destillation als kleiner Ridge-Kopf auf `teacher.dataset` (zentrierte Ziele, Holdout, nie Ausgabe, Solo-Trials in die Reliance); Lehrer-Entfernung als Lauf 100/75/50/25 % → Reliance-Kurve. Tests `test_aplane.py`, Suite 860 grün. Doku `code/docs/APLANE.md`. Offen: gelernte A1-Grenzen (keine Labels), semantische Embeddings statt Rohbytes.
+- A1: gelernte/inhaltliche Segmentgrenzen statt fester 240 Zeichen (Satz/Absatz/Episoden-Signal aus WP-N8). — inhaltlicher Teil erledigt (WP-N8), gelernt offen.
+- A3-Student über Schatten-T1 hinaus mit Retention-Gate; Lehrer-Entfernung als echter Lauf (Reliance-Kurve).
+- Text-Distillation: Trainer für den `agi/teacher.py`-Datensatz (kleiner Kopf, nicht LoRA).
+
+### WP-T5 Körper-Sicht und Zugriff (B1, B4, B5, §3.2A)
+- **Status 2026-10-10: erledigt (Pakete C).** `v13/bodyview.py`: B1-Detailfenster aus gewährten A4-Spans (±240 Zeichen, zusammengeführt, max. 3/1200 Zeichen, exakte SourceRefs); B5 World-/Self-/Skill-Zustand als gespeicherte Quelle `BODY_STATE` im B1/B2-Query (STATE_NOT_FACT, `:bodyview state off`); B4 eine frühere Koalitions-Sicht über Sessions bei gleichem Thema (SHADOW, `:bodyview b4 on`). Tests `test_bodyview.py`. Doku `code/docs/BODYVIEW.md`. Offen: Nutzen mit echten Modellen (WP-T3).
+- B1-Detail-Sicht über 240 Zeichen (Fenster aus Attention-Spans), B4 verteilter Zustand über Sessions hinweg.
+- B5: B1/B2 bekommen World-/Self-/Skill-Zustand als Quelle (mit SourceRef), nicht nur Memory.
+
+### WP-T6 Skills und Prozeduralisierung live (WP-F-Zeilen §6.1–6.3, §41.6, §75, F2)
+- **Status 2026-10-10: erledigt bis auf das Unterbrechen laufender Ausgabe (Pakete C).** `v13/skilllive.py`: automatischer Pfad – TRUSTED-Route-Skill routet vor C_fast ohne Needle-Aufruf, Rückfall bei Skill-Kopf-Veto, Fehler oder Routen-Korrektur (reopen); Selector im normalen Turn bucht Parität für CANDIDATE/SHADOW-Skills; Habits aus wiederholten Cues (5×, ≥90 % gleiche Route) → CANDIDATE-Skill (SELF). Tests `test_skilllive.py`, Suite 890 grün. Doku `code/docs/SKILLS_LIVE.md`. Offen: spätes Offer unterbricht laufende Ausgabe (braucht parallelen Body-Lauf während C3, STEP 11).
+- `agi/skills.py`-Selector im normalen Turn (nicht nur `:growth`), automatischer Pfad ohne C_fast mit Rückfall.
+- Habits aus wiederholten Prozedur-Cues; spätes internes Offer darf laufende Ausgabe unterbrechen (Brücke zu `duplex.py`).
+
+### WP-T7 Action Gate, Egress, Output-Broker (§6.4, §11, C6/C7)
+- **Status 2026-10-10: erledigt (Pakete A).** Sandbox-Aktion im Live-Turn: Notiz-Bitte → `sandbox_note` (WRITE_LOCAL, nur vom Nutzer erlaubt) wird PROPOSED mit Dry-Run-Vorschau (`ToolSpec.preview`), Körper erfährt „nicht ausgeführt“, Broker zeigt `[Aktion wartet auf Freigabe] … :tx approve <id>`, Rücknahme `:tx undo`. Neuer C7-Output-Broker `code/v13/broker.py`: Rangfolge feste Regel > exakte Kopie > Modell > Systembericht, nach Commit nur späte `broker`-Nachrichten (nie in History/Memory/Training), `OutputBrokerDecision`-Paket, C6-Prüfung für jede Egress-Art (TEXT_REPORT, CLARIFY, EXACT_RENDER, SYSTEM_REPORT, SNAPSHOT, CORRECTION, ACTION_PREVIEW, TOOL_CALL), `:tx broker`. **Zur Nutzer-Prüfung:** Flag `tool_conflict_policy` (Standard `correct`: fehlt ein ausgeführtes Werkzeug-Ergebnis in der Antwort, zeigt der Broker den exakten Wert als Korrektur; `log` = nur protokollieren). Tests `tests/test_broker.py` (10), Suite 855 OK. Doku `code/docs/OUTPUT_BROKER.md`. Offen: gelernte Werkzeugwahl, TTL für offene Vorschläge.
+- Action Gate über `local_text_only` hinaus: Tool-Aktion im Sandbox-Modus mit Vorschau, Freigabe, Undo (WP-K-Transaktionen).
+- Output-Broker: Konflikt Snapshot/Policy/Antwort sauber entscheiden, Tests für jede Egress-Art.
+
+### WP-T8 World-Model und Ziele (§7.2, §7.2.1, §7.2.2, §20.3, §6.6)
+- **Status 2026-10-10: erledigt (Pakete E).** `v13/world_model.py`: kontrollgeerdetes Weltmodell über eigene digitale Übergänge mit getrennten Zielen forward (Ridge-Ensemble), inverse (Aktion aus Zustand+Folge, kein Kausalbeleg), state-align (Probe auf gelernte Latents, sonst UNAVAILABLE), outcome (Hold-out-MAE vs. Baseline); Coverage/OOD/Ensemble-Streuung → Counterfactual-Konfidenz, unter 0,5 SIMULATION_UNCERTAIN, nie REAL. Sleep B ordnet Routen-Alternativen nach Konfidenz und setzt die Replay-Priorität daraus (Coverage statt Häufigkeit). Ziele im Lauf: ungelöste Turns → offenes USER-Ziel, späterer FINAL-Turn schließt es; Neugier beobachtet jede Routen-Region, wählt selbst nur mit Age-Recht (`learn_medium`). Tests `tests/test_world_model.py` (6), Suite 882 grün (außer `test_bodyport` von WP-T13 im Entstehen). Doku `code/docs/WORLD_MODEL_GOALS.md`. Offen: echte Messung, sobald genug eigene Übergänge am Handy liegen.
+- Inverses Modell + State-Alignment neben dem Forward-Prädiktor; Counterfactual mit Coverage statt Häufigkeit.
+- `agi/goals.py` und Neugier (`agi/curiosity.py`, Age-gegated) im Lauf statt offline.
+
+### WP-T9 Gedächtnis-Rest (§9.1, §9.5)
+- **Status 2026-10-10 13:10: großteils erledigt (Thread „Echtes Lernen in den Modellen“).**
+  (1) Gelernte Aufnahme `code/v13/admission.py` (`:admission [status|train|active|shadow|table]`): Merkmale nur aus menschlichen
+  Signalen und Nutzung (Abrufe, `:retrieval relevant/irrelevant`, erneut bestätigt, `:note` der Turns, Stärke WP-N8), Labels nur
+  menschlich (positiv: relevant/bestätigt/gut bewertet; negativ: irrelevant/überschrieben/`:forget`/schlecht bewertet); logistische
+  Regression ab 20 Labels, Held-out-Check gegen BOOT-Prior. SHADOW: Scores stehen in jedem AG6-Batch (`admission`), Reihenfolge
+  bleibt; ACTIVE nur durch Nutzer nach bestandenem Check, dann sortiert AG6 nach Score und lässt < `admission_floor` weg; Check
+  rot → automatisch zurück auf SHADOW. Tests `tests/test_admission.py`.
+  (2) §9.5 „redundante schnelle Spuren verschwinden“: überschreibt der Nutzer eine Korrektur, werden die Slots des alten Werts im
+  Live-Faktenspeicher genullt (`memory_trainer.prune_inactive`, Hook in `memory.feedback`).
+  (3) Blueprint-Vergleich §9.1 exakt vs. exakt + parametrischer Fast Trace (`bench-results/fast-trace-20261010/README.md`): im echten
+  Chat-Prompt liefert exakter Abruf 8/8; Trace allein 8/8 (+1 Paraphrase, −15 % Prompt-Tokens), beides zusammen schlechter
+  (7/8, Leck .8). Trace mit Schlüsseln aus nacktem Turn feuert im Chat kaum (1/8) → Trainer schreibt Schlüssel jetzt im
+  Live-Kontext (`sparse_memory` cfg `system`/`contexts`, `memory_trainer.live_system`). AG6 `auto` wählt Sparse deshalb nie
+  automatisch. Offen: Fakt entweder als Trace oder als exakter Block ausliefern (nicht doppelt) und neu messen; Archiv-Politik
+  (Quellen nur inaktiver Erinnerungen komprimiert archivieren, ohne `read_source`/Export zu brechen); Semantic/Procedural-Staging
+  hat schon `tests/test_consolidation.py`.
+- Gelernte Memory-Aufnahme (Admission-Kopf aus Bewertungen/Korrekturen), Semantic/Procedural-Staging mit Test.
+- Sparse-Memory (WP-S3) optional im Turn (torch vorhanden) + Entitäts-Wächter gegen das Near-Miss-Leck; Archive-Politik.
+
+### WP-T10 Lern-Autorität und Beförderung Schatten → aktiv (§88.1, §17A, §14.1–14.6, IH-H25)
+- **Status 2026-10-10: erledigt (Pakete E).** `v13/authority.py`: ein Beförderungsweg SHADOW → CANDIDATE → ACTIVE für 10 gelernte Köpfe (C5, JEF-Brücke, Fast-Forward, Context-Policy, Admission, Attention, Deliberation, Callosum, Gist, Neuromod-META). Kandidat nur mit eigenem Gate (Regression/Übereinstimmung ≥ 90 %/bessere Ergebnisse/Held-out), Lernziel IMPLEMENTED und Gate-Graph ohne Fehl-Verdikt; ACTIVE nur per `:authority promote` (Mensch); Regression fällt automatisch aufs Scaffold zurück. `v13/objectives.py`: IH-H25 `ObjectiveAdapter` mit Validierung (UNAVAILABLE/PARTIAL → learn_gain 0) + `register()`, 10 neue Lernziel-Zeilen. Scheduler-Jobs `learn_medium` (idle, ≤ 1/30 min; passt auch das Weltmodell an) und `learn_slow` (nach voller Nacht; wartet bei Homöostase-FAIL). Tests `tests/test_authority.py` (6). Doku `code/docs/LEARNING_AUTHORITY.md`. Offen: Hooks, die `authority.observe` für attention/deliberation/callosum füttern. Nur Regeln/Gates, kein Gewichts-Training (das macht „Echtes Lernen“).
+- Einheitlicher Beförderungsweg für gelernte Köpfe (Autorität 0 → 1 → 2) mit Gate-Graph-Verdikt; Scaffold-to-Policy schaltet bei bestandenem Gate um.
+- Learning-Objective-Plugin (IH-H25) statt reiner Registry-Datei; Lernzeitskalen mittel/langsam als geplante Jobs.
+
+### WP-T11 Sleep-Rest (§15.4–15.7, §16.2, §94.5, L8.2)
+- **Status 2026-10-10: erledigt (Pakete E).** Sleep B prüft gequeuete Traum-Hypothesen gegen gespeicherte Quellen/Erinnerungen (`SleepCycle.validate_hypotheses`): Anker-Hash + aktive Erinnerungen (sonst STALE), Belege aus menschlichen Routen/Fakten → SUPPORTED/CONTRADICTED/UNVERIFIED, Paket `SLEEP_B_VALIDATION`, nie Fakt-Schreiben; CONTRADICTED/STALE scheiden aus. `v13/homeostasis.py`: Sleep C misst Drift/Sättigung/tote Pfade der gelernten Steuerparameter, Gate (BOOT Drift ≤ 0,5, Sättigung ≤ 0,5), FAIL hält `learn_slow`-Konsolidierung an. Tests `tests/test_sleep_validation.py` (4), Suite 872 grün (bis auf `test_bodyport`, Datei von WP-T13 noch im Entstehen). Doku `code/docs/SLEEP_VALIDATION_HOMEOSTASIS.md`. Offen: Shared-Pre-Router-Drift §16.2.1 braucht native Body-Hidden-States (WP-T13/WP-R).
+- Counterfactual Replay und Dream prüfen Hypothesen gegen gespeicherte Quellen (nicht nur erzeugen); Homöostase-Messung (Gewichts-/Gain-Drift) mit Gate.
+
+### WP-T12 Neuromodulation-Rest (§12.2, §16.1, §68, G7)
+- **Status 2026-10-10: erledigt (Pakete E).** `neuromod.py`: δ pro Pfad (Fehlerkanäle → `error_level`) und vorzeichenbehaftetes δ = r − r̂ pro Beispiel, `local_update` = e×δ×M×P (§12.4); Metaplastizität §16.1/§68 als BOOT-Regel (META-Regler in knob-map) + gelernter Kopf aus Retention-Ergebnissen, SHADOW, `:neuromod meta active` nur Nutzer. Messung `bench-results/delayed-reward-20261010/`: δ pro Beispiel 0,051 vs. Gate allein 0,158 (5/5), Trennung 12,8× statt 1,1×; langsame Eligibility-Spur ohne Nutzen. Tests `test_neuromod.py::LocalErrorAndMeta`, `test_ablation99.py::DelayedReward`. Doku `code/docs/NEUROMODULATION.md`. Offen: `local_update` in einen echten Worker einhängen, META ACTIVE erst nach Retention-Läufen.
+- Vorhersagefehler δ pro Pfad (statt Worker-Loss), gelernter Metaplastizitäts-Kopf, Eligibility × δ als lokales Update-Signal.
+
+### WP-T13 BodyPort und Body-Swap online (IH-H8, IH-H21, G2, G11)
+- **Status 2026-10-10: erledigt (Pakete A).** `code/v13/bodyport.py`: BodyPort je Rolle im Laufpfad (RunnerPool meldet ASSIGNED/READY/RELEASED/MODEL_CHANGE/FAILED, State `T13_BODY_PORTS`); IH-H21-Bridge-Key (sha256 Rolle/Modell/Revision/Datei/Dims/Tokenizer/Fähigkeiten) wird vor jedem Dateiwechsel live geprüft, B3-Manifeste und bridge/latent_path-Assets der alten Revision → veraltet/`SHADOW_RECALIBRATE`, `bridge_valid` fail-closed. Body-Swap online `:body swap|parity|ramp|rollback`: GGUF → SHADOW → Parität → RAMP 0,1/0,5/1,0 → ACTIVE, wirkt beim nächsten `pool.get` ohne Neustart, Gesundheits-Probe nach ACTIVE mit automatischem Rollback, Rollback aus jeder Stufe, fertiger Tausch überlebt Neustart (`models.revision` meldet neue Revision). Tests `tests/test_bodyport.py` (8), Suite 882 OK. Doku `code/docs/BODY_PORT.md`. Offen: Ladezeit-Kosten während RAMP auf dem Redmi messen; Probe prüft nur Laden, Qualität über AG12-Parität.
+- `BodyPort`-Objekt mit Lifecycle im Laufpfad; Bridge-Key vor jedem Modelltausch live geprüft; Body-Swap mit Rollback ohne Neustart.
+
+### WP-T14 Kernexperimente R2–R4, R6–R9 + §99-Pflicht-Ablationen + Thin-Control-Budget (§31, §79, §99, §22.2.3)
+- **Status 2026-10-10: Teil 2 erledigt (Pakete B):** §99 „JEPA-Prädiktor hilft“ auf echten B2-Taps (Qwen3.5-0.8B, 1024 dim), Themenwechsel-Erkennung, Test nur auf ungesehenen Themen (`scripts/jepa_ablation_bench.py` → `bench-results/jepa-ablation-20261010/`): JEPA 0,73–0,76 AUROC = kein Prädiktor 0,74 (16-dim); 128-dim 0,87 vs. 0,91; roher Tap-Kosinus 0,93; supervised 0,82. **Nicht belegt**; die 16-dim Projektion kostet 0,19 AUROC; EMA mit langem Budget instabil, SIGReg stabil. Für WP-N8 reicht Tap-Kosinus als Grenzsignal. Doku-Abschnitt in `code/docs/CORE_EXPERIMENTS.md`.
+- **Status 2026-10-10: Teil 1 erledigt (Pakete B).** Übersicht + Übergabe `code/docs/CORE_EXPERIMENTS.md` (R0–R9 und §99 je mit Stand und Beleg). Neu gemessen: **R2 dicht** (`scripts/r2_scope_bench.py` → `bench-results/r2-scope-20261010/`): weniger Parameter ≠ weniger Vergessen (Norm-Gains 29 k vergessen 5/12 Proben, Attention-LoRA 4, Conv-LoRA 2, Full-FT 2), nur gegatete Sparse-Memory-Slots vergessen 0 (KL ≈ 0) → erster Lern-Scope = gegatete Slots, dichte Updates nur mit Drift-Gate. **§99 Episodisch** (`scripts/episodic_ablation_bench.py` → `bench-results/episodic-ablation-20261010/`): Antwort-Cache 8/8 exakt aber 0 Paraphrase, Retrieval 0,33 Paraphrase / 0,4 Leck (falsche lexikalische Treffer), Parameter-Delta 0,50 / 0,8. **Thin-Control-Budget** `v13/control_budget.py` + `:fabric [report|record]` (Latenz P95 der Steuer-Stufen, Checkpoint-/State-Bytes, Limits-Regler, Verdikt NO_LIMITS bis Redmi), 4 Tests; volle Suite 839 grün. Rest: R3/R4/R5 + Focal-§99 → WP-T3 (Lauf mit Modellen); R6 blockiert (Runner); R7 → Echtes Lernen; R8 → WP-R; JEPA-/Dream-§99 offen (WP-T11/T12); router-/expert-Arme von R2 → WP-N11.
+- Fehlende R-Experimente als Skripte mit Verdikt; §99-Ablationen als Läufe; Budget-Gate je Stufe aus der Zeitmessung.
+
+### WP-T15 Register, Ledger, Doku-Hygiene (IH-H0, IH-H2, IH-H5, IH-H34, IH-H35)
+- **Status 2026-10-10: erledigt (Pakete E).** 14 weitere Blueprint-Regler gebunden (92/299, vorher 78); Abweichungen Code ≠ Blueprint stehen begründet und ehrlich als „nicht gemessen“ in `specs/knob-map.json` `deviations` (Status DOCUMENTED_DEVIATION, ungeklärte Drift bleibt 0). Completion-Ledger v3: jede der 104 Dateien in `v13/` hat eine Zeile (kuratierte Feature-Zeilen + automatische Modulzeilen mit Docstring, Kanon-Verweisen, importierenden Tests; nie PASS), `uncovered_modules` muss leer sein. Offene Nutzerentscheidungen werden live erzeugt (Age-Plastizität, Kandidaten zur Freigabe) und `docs/USER_DECISIONS_AND_OPEN_QUESTIONS.md` neu geschrieben (statt „None“). README: gültiger STEP2-Lauf, `:age/:effort/:authority/:objectives/:live/:register`; BUILD_STATE-Kopf und REMAINING_IMPLEMENTATION als historisch markiert, SQLite-Blocker genannt. Tests `tests/test_ledger_hygiene.py` (2), Suite 890 grün.
+- Weitere Blueprint-Regler in `knob-map.json` binden; Completion-Ledger-Zeile für jedes Modul; widersprüchliche Doku (SICHTUNG §5) bereinigen; Blocker-Liste P1–P3 aktualisieren.
+
+### WP-T16 Vision-Lab Schritt 3 (§18.9, G10B, Fortsetzung WP-N15)
+- **Status 2026-10-10: erledigt bis auf echte Fotos (Pakete A).** `v13/vision.py`: Quadranten-Regionen, Kachel-Ausrichtung aus schwachen Labels (auffällige Kachel erbt Beschreibung der kleinsten beschriebenen Region, sonst BACKGROUND), `:image tiles`, `:image find` (4×4-Heatmap, mehrere Objekte getrennt), `:image teacher off|on` (Lehrer-Entfernung). Messung mit echtem LFM2.5-VL-450M `code/bench-results/vision3-20261010/`: Einzelobjekt per Kachel 1,00 (Hälften 0,60–0,67), zwei Objekte per Kachel 0,79 (Quadranten-Regionen 1,00, Zufall 0,25), Abhängigkeitskurve: 1/4 Lehrer-Beschriftungen −5 Punkte, 1/8 −21 Punkte, Selbsttraining holt +7. Skript `code/scripts/vision_bench3.py`, Tests `tests/test_vision.py` (+2), Suite grün. **Offen: echte Fotos brauchen die Erlaubnis des Nutzers.**
+- Ausrichtung pro Kachel, mehrere Objekte pro Bild, echte Fotos (kleiner Satz mit Nutzer-Erlaubnis), Lehrer-Entfernung für Bilder.
+
+## Restbausteine aus ABDECKUNG.md ohne Redmi (Pakete WP-U, angelegt 2026-10-10 von Pakete C)
+
+### WP-U1 JEF-Lernschnittstelle + Experience-Lebenszyklus (§3.3.8, §14.6, §24.32)
+- **Status 2026-10-10: erledigt (Pakete C).** `v13/jefoutcome.py`: Ergebnis-Labels (OUTCOME_SELF_LABEL, unter Nutzer-Labels) für wake/memory/skill nach jedem FINAL-Turn, Übereinstimmung mit Nutzer-Labels messbar, in `:learn` nur nach `:fastpolicy outcomes learn` und nur ohne Nutzer-Label; Lebenszyklus L0–L11 als Lesemodell (`:fastpolicy lifecycle`); ABDECKUNG-Zeilen für WP-T1/T4/T5/T6 nachgezogen (✅ 85→93). Tests `test_jefoutcome.py`. Doku `code/docs/JEF_OUTCOME.md`.
+- JEF lernt Steuerung aus Ergebnissen: Ergebnis-Labels (Packet-Targets) für die Fast-Köpfe wake/memory/skill aus dem Turn (welche Offers/Erinnerungen in der Koalition landeten, ob die Antwort hielt); Autorität unter Nutzer-Labels, nur Schatten, Nutzen gegen Nutzer-Labels messen.
+- Experience-Lebenszyklus L0–L11 je Erfahrung als Lesemodell aus vorhandenen Spuren (Capture, Tag, Vergleich, Credit, Vorschlag, Schatten, Validierung, Freigabe, Wiederöffnung); `:experience lifecycle`.
+- ABDECKUNG.md-Zeilen der von Pakete C erledigten Bausteine (WP-T1/T4/T5/T6) nachziehen.
+
+
+### WP-U2 Homöostase-Regelung + Metaplastizität-Rest + ABDECKUNG-Nachzug Pakete E (§16.1, §16.2, §68)
+- **Status 2026-10-10: erledigt (Pakete E).** `v13/homeostasis.py` `regulate()`: je N10-Pfad Aktivierungs- und Update-Häufigkeit zwischen zwei Sleep C; dominante Pfade gedämpft, tote nützliche wieder geöffnet, Update-Budget normalisiert, Gain wandert je Nacht 30 % Richtung Ziel (0,5–1,5); wirkt im Plastizitäts-Gate nur nach `:homeostasis active` (Mensch), sonst SHADOW; Routen-Dominanz nur Monitor. `neuromod`: META.conflict_verify_before_learn (stützende vs. widersprechende Belege → Faktor 0, bis Mensch/echtes Ergebnis klärt). 8 HOME/META-Regler gebunden (Register 92 MATCH, 0 DRIFT). ABDECKUNG: 16 Zeilen nachgezogen (✅ 109 = 52 %). Tests `tests/test_homeostasis_regulation.py` (7), volle Suite 899 grün. Doku `code/docs/SLEEP_VALIDATION_HOMEOSTASIS.md`. Offen: HOME.shared_representation_drift (keine geteilte trainierbare Repräsentation).
+- Homöostase regelt langsam statt nur zu messen: Aktivierungs-/Update-Häufigkeit je Pfad, dominante Pfade dämpfen, tote nützliche Pfade wieder öffnen, Update-Budgets normalisieren, Routen-Dominanz überwachen (HOME.* aus §68); SHADOW, wirkt nur mit `:homeostasis active` (Mensch).
+- META.conflict_verify_before_learn: widersprüchliche Belege auf einem Pfad → erst verifizieren, dann lernen.
+- ABDECKUNG.md-Zeilen der von Pakete E erledigten Bausteine (WP-T2/T8/T10/T11/T12/T15) nachziehen.
+
+### WP-U3 Spätes internes Offer unterbricht laufende Ausgabe (F2, §5.2)
+- **Status 2026-10-10: erledigt (Pakete C).** `v13/latewatch.py`: Body ohne Vor-Antwort-Offer läuft parallel zur C3-Ausgabe (nur wenn Body-Fabric an, C3 gepinnt und der Body ins Budget passt, NORMAL, server-Decode; sonst NO_RESIDENCY); Vergleich mit der Teilantwort (RESULT_CONFLICT: abgeleitete Zahlen widersprechen, BODY_REENTRY); `:latewatch shadow` (Standard) protokolliert nur, `active` stoppt den Stream, markiert den Schnitt vorläufig und lässt C3 mit dem Befund korrigieren/fortsetzen; zu spätes Offer → bisheriger `selfmodel.late_offer`; Post-Commit-Pass überspringt den schon gelaufenen Body. Haken: 3 Zeilen um die C3-Schleife + 1 Zeile im Post-Commit-Pass. Tests `test_latewatch.py` (5), volle Suite 909 grün. Doku `code/docs/LATE_WATCH.md`. Offen: gelernte Interrupt-Salienz (braucht SHADOW-Labels), Tokenraten-Einbuße auf dem Redmi messen.
+- Eigenes Modul `v13/latewatch.py`, in `runtime._turn` nur ein kleiner Haken um die C3-Streaming-Schleife; Flag `:latewatch off|shadow|active`, Standard SHADOW (protokolliert nur „hätte bei Zeichen N unterbrochen“).
+- Ein Body-Offer, das während der C3-Ausgabe eintrifft und der Teilausgabe widerspricht (fehlende Zahlen/Belege, Re-entry nötig), unterbricht in ACTIVE die Ausgabe; der Schnitt wird als vorläufig markiert, die Antwort revidiert/ergänzt. Paralleler Body-Lauf nur, wenn die Residenz C3 nicht verdrängt, sonst NO_RESIDENCY.
+
+### WP-T17 JEPA-Prädiktor für Handlungsfolgen + übrige Ablationen ohne Redmi (§13, §7.2, §99, Fortsetzung WP-T14)
+- **Status 2026-10-10 22:25: JEPA-Teil erledigt, Dream-Teil vorläufig; pausiert (Nutzer-Pause bis Montag 04:00) (Pakete B).** Handlungsfolgen: `code/scripts/jepa_action_bench.py`, Tests `test_jepa_action.py` (3), Ergebnis `bench-results/jepa-action-20261010/` (3 Seeds): aktionsbedingter JEPA lernt Folgen (invers 0,84–0,90 statt 0,25), schlägt aber die Kontrolle „Mittelwert-Delta je Handlung“ nicht → nicht belegt. §99 Dream: `code/scripts/dream_ablation_bench.py`, `bench-results/dream-ablation-20261010/` Lauf 1 (2 Seeds): kein Vergessen im Aufbau, ungeprüfte Träume schaden Proben (0,25–0,33) → nicht belegt. Doku CORE_EXPERIMENTS.md Teil 3. Suite 842 grün (lokal). **Offen:** Dream-Lauf 2 mit Vergessens-Druck `--b-steps 40 --seeds 13,21,34` (abgebrochen, ca. 1–2 h CPU), dann §99-Tabelle Dream-Zeile endgültig.
+- JEPA-Prädiktor aktionsbedingt auf echten B2-Taps: Ergebnis einer Handlung vorhersagen, falsche Ergebnisse per Überraschung erkennen, Handlung aus Vorher/Nachher erschließen (inverses Modell); Kontrollen ohne Prädiktor, Mittelwert-Delta, Ridge im vollen Raum, supervised.
+- Danach übrige §99-Zeilen/R-Experimente ohne Redmi, soweit nicht in WP-T3 (Pakete A).
+
+### WP-T3b Nutzen-Messung Runde 2: deterministisch + 60 Aufgaben mit B1/B2-Widerspruch (G3D, G5, G5B; Fortsetzung WP-T3)
+- **Status 2026-10-10: erledigt (Pakete A).** `code/scripts/utility_bench2.py`, Ergebnis `code/bench-results/utility2-20261010/` (README + `utility2.json` mit Verdikt), Gate G-FOCAL-CAPACITY-003 ergänzt. 60 Aufgaben × 5 Läufe, echte Modelle: Bench-Modus trotz Temperatur 0 und ohne Fristschnitte **nicht deterministisch** (Wiederholung: 33/60 identisch, 8 Bewertungen kippen = Rauschband; vermutet Prompt-Cache/Hintergrund-Observer). Koalition und Inquisition ohne messbaren Nutzen. Feste niedrige Effort-Stufe 0,70 vs. adaptiv 0,57 (+8 netto, p 0,12): weckt beide Körper, hilft bei Widerspruch/Vergleich → adaptive Politik ruft B1 zu selten (Kandidat für Effort-Einmessung, keine Default-Änderung ohne Signifikanz).
+- Bench-Modus ohne Fristschnitte (feste Saat, Temperatur 0, großzügige Observer-Fristen), Reproduzierbarkeit messen; 60 generierte Aufgaben (Zahlen im Detail vs. irreführende Zusammenfassung, lange Texte), Arme baseline/effort_low/no_inquisition/no_coalition mit gepaartem Test; Verdikt in `gate-graph`.
+
+### WP-U4 Archiv-Politik für Quellen (§9.1 Archive, §9.5 „Exact Provenance wird günstig archiviert“)
+- **Status 2026-10-10: erledigt (Pakete E).** `v13/archive.py`: kalte Quellen (≥ 30 Tage, ≥ 512 B, nur archivierbare Arten, keine aktive Erinnerung braucht sie; überschriebene Werte ja) werden in Sleep C verlustfrei als `<sha256>.z` abgelegt (nur bei ≥ 10 % Ersparnis, vor dem Löschen geprüft); `Store.blob_bytes` liest beide Formen, Hash-Prüfung bleibt, `:doctor` erkennt kaputte Archive, `:forget` löscht beide; `:archive [status|run|restore <Quelle>]`. Tests `tests/test_archive.py` (4), volle Suite 903 grün. Doku `code/docs/ARCHIVE.md`. (Offener Rest aus WP-T9; WP-T9 selbst bleibt beim Thread „Echtes Lernen“.)
+- Kalte Quellen (alt, keine aktive Erinnerung, nur archivierbare Arten) verlustfrei komprimiert ablegen; `read_source`, Export, Backup und `:doctor` funktionieren unverändert; Sleep C archiviert, `:archive [status|run|restore <Quelle>]`.
+
+### WP-U5 Representation Anchor als Stabilitäts-Regler (§69, §48.10)
+- **Status 2026-10-10: erledigt (Pakete E).** `v13/anchor.py` + Haken in `agi/weights.train`: Anker-Multiplikator je Batch aus Neuheit/Stabilität mit Untergrenzen (Geometrie .25, geteilte Layer .75), SHADOW protokolliert `anchor` im Batch, ACTIVE (`:anchor active`, Mensch) skaliert `anchor_weight` nur für diesen Batch; Drift-Gates unverändert. 4 ANCHOR-Regler gebunden (Register 96 MATCH, 0 DRIFT). ABDECKUNG: Anchor, Staging, §12.2 ✅, IH-H5/IH-H34 aktualisiert (✅ 113 = 54 %). Tests `tests/test_anchor.py` (3), volle Suite 906 grün. Doku `code/docs/REPRESENTATION_ANCHOR.md`. Offen: Messung mit Modell, ob schwächerer Anker bei neuer Domäne das Gate besteht.
+- Anker-Stärke je Trainings-Batch aus Domänen-Neuheit (Batch vs. bestehende aktive Erinnerungen) und Stabilität des alten Skills (N10-Pfad `weights`): neue Domäne → Anker ↓, alter stabiler Skill → Anker ↑, Untergrenze = vortrainierte Geometrie; ANCHOR.* aus §69. SHADOW (nur protokolliert im Batch), ACTIVE skaliert `anchor_weight` des Live-LoRA-Trainers nur nach `:anchor active` (Mensch); Drift-Grenzen werden nie gelockert.
+- ABDECKUNG-Nachzug veralteter Zeilen (Staging, §12.2, IH-H5, IH-H34).
+
+### WP-U6 Gemeinsamer Weltfehler → lokale Updates in allen gelernten Köpfen (§12.4, §12.7)
+- **Status 2026-10-10: erledigt (Pakete E).** `neuromod.step_scale`/`step()`: Attention-Policy, Callosum, Context-Policy, Deliberation, Fast-Forward, JEF-Brücke und C5 multiplizieren ihre Schrittweite mit dem Gate-Faktor ihres Pfads; SHADOW = 1,0 (unverändert), ACTIVE per `:neuromod local active` (Mensch), Veto/Konflikt → 0. Tests `tests/test_local_updates.py` (3), volle Suite 909 grün. Doku `code/docs/NEUROMODULATION.md` (Abschnitt WP-U6).
+- Jeder gelernte Kopf (Attention-Policy, Callosum, Context-Policy, Deliberation, Fast-Forward, JEF-Brücke, C5) skaliert seine eigene Schrittweite mit dem N10-Plastizitäts-Gate seines Pfads (Eligibility × Modulator × Age/Meta/Homöostase; Veto/Konflikt → 0); eigener Fehler bleibt lokal. Standard SHADOW (Schrittweite unverändert, vorgeschlagener Faktor sichtbar), ACTIVE nur per `:neuromod local active` (Mensch).
+
+### WP-U7 Cross-scale-Kopplung vollständig (§3.2A)
+- **Status 2026-10-10: erledigt (Pakete E).** `gist.coupling`: jeder Gist-Slot trägt `source_span_refs` (die Fein-Gruppen, die er bündelt), `covered`, `compression_ratio`, `boundary_confidence` (Minimum der gebündelten Grenzen) und `fallback` (EXACT_STORE bei exakten Spans, sonst B1_DETAIL); im QueryPacket als `gist.slot_coupling`. `gist.local_bundle`: B1 bündelt bei Re-entry (JEF-Frage oder eigenes needs_reentry) die Fein-Gruppen um frühere Zitate/Detail-Fenster zu vorläufigen lokalen Gists (≤ 96 Token, Autorität PROVISIONAL_LOCAL_GIST); immer im QueryPacket `local_gist`, im Prompt nur mit `:gist active`. Tests `tests/test_cross_scale.py` (3), volle Suite 912 grün.
+- Gist-Slots tragen Quell-Spans, abgedeckten Bereich, Kompressionsrate, Grenz-Konfidenz und Rückfall (B1-Detail oder Exact Store); umgekehrt bündelt B1 bei Re-entry benachbarte Fein-Stücke zu einem vorläufigen lokalen Gist (immer im QueryPacket protokolliert, im Prompt nur mit `:gist active`).
+
+### WP-U8 B4 Workspace-Stabilitäts-Lernschleife (L3-B4, B4, §8.1)
+- **Status 2026-10-10: erledigt (Pakete E).** `v13/workspace_learn.py`, Haken in `focal.Workspace.save/load`: Refresh-Nutzen und Wiederherstellungs-Verlust je Quellenart → Halte-Multiplikator (0,5–1,5, ab 10 Beobachtungen), SHADOW protokolliert, ACTIVE per `:workspace active` (Mensch) verändert den Zerfall; Quellenverlust wird gezählt und nie gehalten. Tests `tests/test_workspace_learn.py` (4), volle Suite grün (915 + Haken-Test). Doku `code/docs/WORKSPACE_LEARNING.md`. Offen: L_B4_BINDING ohne gelernte Nutzung.
+- Workspace lernt je Quellenart (B1/B2-Offer, Erinnerung), welche Slots sich zu halten lohnen: gehaltener Slot später wieder in der Koalition = nützliches Refresh, verworfener Slot, der neu geholt werden muss = Wiederherstellungs-Verlust; daraus Haltedauer-Multiplikator je Art (SHADOW, aktiv nur mit `:workspace active`); Quellenverlust bleibt hart (L_B4_SOURCE_LOSS gesperrt).
+
+### WP-U9 B3-H12 Abschluss-Gate für LATENT (+ B3-H13 Auslegung)
+- **Status 2026-10-10: erledigt (Pakete E).** `b3bridge.completion_gate`: 14 Bedingungen je Richtung aus Belegen (Bridge-Manifest + L1-Gate-Kriterien, Callosum-Erfahrung, MessagePacket-Telemetrie, native Taps, Router-Metriken, Hardware-Nachweis); Status unavailable → scaffold → L1_shadow (nur bei L1 PASS und passender Empfänger-Revision) → active (nur wenn alle 14 erfüllt), LATENT-Autorität bleibt 0; B3-H13-Satz als `canon`. In `:doctor` unter `B3.<Richtung>.completion`. Stand heute: scaffold, es fehlen u. a. echter Sender-Pfad, Empfänger-Wirkung, Router-Metriken, Zielgerät. Tests `tests/test_b3_completion.py` (4), volle Suite 920 grün (ein Lauf hatte einen sporadischen Fehler in `test_bodies.TightBudget`, einzeln und im Wiederholungslauf grün; nicht von diesem Paket).
+- Die 14 Bedingungen aus B3-H12 je Richtung aus echten Belegen prüfen (Code, Sender-Pfad, Empfänger-Wirkung, Kalibrierung, Rückfall-Kanäle, OOD, Router-Metriken, Neustart, Tests, Telemetrie, Ablationen, Zielgerät) und den erlaubten Zwischenstatus (unavailable/scaffold/L1_shadow/…) in `:doctor` melden; `B3_LATENT_IMPLEMENTED` nur, wenn alle erfüllt.
+
+### WP-U10 Fast Episodic „zweites Mal besser“ für Routen (§9.1, STEP3)
+- **Status 2026-10-10: erledigt (Pakete E).** `v13/episodic_route.py` + Haken in `runtime._route` (nach der prozeduralen Konsolidierung, vor dem Scaffold): aktive menschliche Routen-Korrektur mit Relevanz ≥ 0,6 (entitätsbewusst, gelöschte Quellen zählen nicht) → Vorschlag mit Erinnerungs-/Event-/Quellen-Bezug; `shadow` (Standard) schreibt ihn nach `meta.route.episodic_route`, `active` (`:episodes route active`) nimmt ihn als Route, `off` aus. Tests `tests/test_episodic_route.py` (3), volle Suite 940 grün.
+- Eine einzelne menschliche Routen-Korrektur bei einer sehr ähnlichen früheren Anfrage (gleiche Entitäten, hohe Relevanz) wird beim nächsten Mal sofort als Routen-Vorschlag genutzt, ohne auf die prozedurale Konsolidierung (≥ 3 Bestätigungen) zu warten; mit Episoden-/Quellen-Bezug. Standard SHADOW (Vorschlag in `meta.route`), wirkt mit `:episodes route active`.
+

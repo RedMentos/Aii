@@ -1,0 +1,120 @@
+{
+ "revision": "b3-bridge-v1",
+ "direction": "B1_TO_B2",
+ "d": 2048,
+ "K": 4,
+ "r": 8,
+ "h": 16,
+ "classes": 3,
+ "sender_revision": "s",
+ "receiver_revision": "r",
+ "sha256": "24995ca5114a270e6461eb5d3ec559a4b7cd0d9c6e953c19b5224a5b719c018b",
+ "calibrated": true,
+ "budget": {
+  "params": {
+   "selector": 8192,
+   "projector": 16384,
+   "receiver_projector": 512,
+   "gate": 1,
+   "readout_residual": 48,
+   "input_norm": 4096
+  },
+  "param_count": 29233,
+  "weights_bf16_bytes": 58466,
+  "message_bf16_bytes": 64,
+  "slot_buffer_bf16_bytes": 16384,
+  "total_bytes": 74914,
+  "age0_ok": true,
+  "claim_limit": "arithmetic payload, not RSS"
+ },
+ "created_wall_time": 1791601676.2256112,
+ "train": {
+  "epochs": 10,
+  "lr": 0.003,
+  "batch": 64,
+  "last": {
+   "ce": 0.0023,
+   "var_hinge": 0.458,
+   "decorrelation": 0.3421,
+   "slot_overlap": 0.0287
+  },
+  "first": {
+   "ce": 0.03,
+   "var_hinge": 0.3869,
+   "decorrelation": 0.773,
+   "slot_overlap": 0.0292
+  }
+ },
+ "l1_gate": {
+  "gate": "G-CALLOSUM-UTILITY-002",
+  "level": "L1",
+  "verdict": "FAIL",
+  "criteria": {
+   "beats_no_message": {
+    "mean": 0.6717,
+    "se": 0.0136,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "beats_latent_shuffled": {
+    "mean": 0.615,
+    "se": 0.021,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "beats_latent_random": {
+    "mean": 0.655,
+    "se": 0.0146,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "utility_beats_exact": {
+    "mean": -0.0139,
+    "se": 0.0057,
+    "wins": 0,
+    "n": 5,
+    "significant": false
+   },
+   "utility_beats_control": {
+    "mean": 0.3463,
+    "se": 0.0517,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "utility_beats_symbolic": {
+    "mean": -0.0152,
+    "se": 0.0057,
+    "wins": 0,
+    "n": 5,
+    "significant": false
+   },
+   "role_retention": {
+    "drop": 0.0,
+    "significant": true
+   },
+   "receiver_ood": {
+    "rate": 0.0117,
+    "significant": true
+   },
+   "restart_reproducibility": {
+    "significant": true
+   }
+  },
+  "utility_mean": {
+   "NO_MESSAGE": 0.0,
+   "EXACT": 0.6816,
+   "SYMBOLIC": 0.6829,
+   "CONTROL": 0.3214,
+   "LATENT": 0.6677,
+   "LATENT_SHUFFLED": 0.0567,
+   "LATENT_RANDOM": 0.0167
+  },
+  "missing_baselines": [],
+  "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+ },
+ "task": "gist/tone"
+}

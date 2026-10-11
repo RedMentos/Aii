@@ -1,0 +1,36 @@
+{
+ "stamp": "20261009T131147Z",
+ "mode": "smoke",
+ "source": "/mnt/project-files/v13/code",
+ "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+ "python": "3.13.16",
+ "units": {
+  "ran": 507,
+  "ok": true,
+  "failed": null
+ },
+ "logs": {
+  "setup": [
+   "    \"seed\": 13",
+   "  },",
+   "  \"status\": \"SMOKE_PARTIAL\",",
+   "  \"missing_proofs\": [",
+   "    \"sustained thermal/energy\",",
+   "    \"target-phone RSS/KV growth under pressure\",",
+   "    \"native sparse body training\",",
+   "    \"B3 receiver-effect ablations\",",
+   "    \"long-term retention\"",
+   "  ]",
+   "}",
+   "",
+   "Mindestens ein Modelltest ist fehlgeschlagen. Der Bericht liegt in exports/native-probe.json. Mit :doctor/:logs prüfen; der Chat zeigt auch Fehler ausdrücklich an.",
+   "",
+   "Startbereit: /tmp/claude-0/v13-bench-wpv/home/bin/v13 chat"
+  ],
+  "acceptance": null,
+  "candidates": null
+ },
+ "probe": {
+  "status": "SMOKE_PARTIAL"
+ }
+}

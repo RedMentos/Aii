@@ -1,0 +1,222 @@
+{
+ "schema": "V13_SEMANTIC_RECALL_BENCH_V1",
+ "model": "embeddinggemma-300M-Q8_0.gguf",
+ "runner": "llama-b10964",
+ "platform": "x86_64",
+ "cpus": 4,
+ "threads": 4,
+ "cold_load_seconds": 1.02,
+ "far_cap": 0.05,
+ "lexical_threshold": 0.25,
+ "created_utc": "2026-10-09T13:45:35Z",
+ "langs": {
+  "en": {
+   "memories": 24,
+   "encode_seconds": 3.341,
+   "per_text_ms": 38.0,
+   "lexical": {
+    "calibration": {
+     "hit_at_1": 0.3333,
+     "recall_at_3": 0.3333,
+     "false_admit_rate": 0.125,
+     "positives": 24,
+     "negatives": 8
+    },
+    "test": {
+     "hit_at_1": 0.25,
+     "recall_at_3": 0.2917,
+     "false_admit_rate": 0.0,
+     "positives": 24,
+     "negatives": 8
+    }
+   },
+   "dims": {
+    "128": {
+     "threshold_from_calibration": 0.85,
+     "calibration": {
+      "hit_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "false_admit_rate": 0.125,
+      "positives": 24,
+      "negatives": 8
+     },
+     "test": {
+      "hit_at_1": 0.9583,
+      "recall_at_3": 0.9583,
+      "false_admit_rate": 0.0,
+      "positives": 24,
+      "negatives": 8
+     },
+     "gold_cosine_test_mean": 0.9259,
+     "best_negative_cosine_test_max": 0.8064
+    },
+    "256": {
+     "threshold_from_calibration": 0.84,
+     "calibration": {
+      "hit_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "false_admit_rate": 0.125,
+      "positives": 24,
+      "negatives": 8
+     },
+     "test": {
+      "hit_at_1": 0.9583,
+      "recall_at_3": 0.9583,
+      "false_admit_rate": 0.0,
+      "positives": 24,
+      "negatives": 8
+     },
+     "gold_cosine_test_mean": 0.9216,
+     "best_negative_cosine_test_max": 0.8133
+    },
+    "768": {
+     "threshold_from_calibration": 0.8,
+     "calibration": {
+      "hit_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "false_admit_rate": 0.125,
+      "positives": 24,
+      "negatives": 8
+     },
+     "test": {
+      "hit_at_1": 0.9583,
+      "recall_at_3": 0.9583,
+      "false_admit_rate": 0.0,
+      "positives": 24,
+      "negatives": 8
+     },
+     "gold_cosine_test_mean": 0.9012,
+     "best_negative_cosine_test_max": 0.7669
+    }
+   }
+  },
+  "de": {
+   "memories": 8,
+   "encode_seconds": 1.122,
+   "per_text_ms": 35.1,
+   "lexical": {
+    "calibration": {
+     "hit_at_1": 0.5,
+     "recall_at_3": 0.5,
+     "false_admit_rate": 0.0,
+     "positives": 8,
+     "negatives": 4
+    },
+    "test": {
+     "hit_at_1": 0.0,
+     "recall_at_3": 0.0,
+     "false_admit_rate": 0.0,
+     "positives": 8,
+     "negatives": 4
+    }
+   },
+   "dims": {
+    "128": {
+     "threshold_from_calibration": 0.84,
+     "calibration": {
+      "hit_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "false_admit_rate": 0.0,
+      "positives": 8,
+      "negatives": 4
+     },
+     "test": {
+      "hit_at_1": 0.75,
+      "recall_at_3": 0.75,
+      "false_admit_rate": 0.0,
+      "positives": 8,
+      "negatives": 4
+     },
+     "gold_cosine_test_mean": 0.8854,
+     "best_negative_cosine_test_max": 0.5966
+    },
+    "256": {
+     "threshold_from_calibration": 0.84,
+     "calibration": {
+      "hit_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "false_admit_rate": 0.0,
+      "positives": 8,
+      "negatives": 4
+     },
+     "test": {
+      "hit_at_1": 0.75,
+      "recall_at_3": 0.75,
+      "false_admit_rate": 0.0,
+      "positives": 8,
+      "negatives": 4
+     },
+     "gold_cosine_test_mean": 0.8852,
+     "best_negative_cosine_test_max": 0.6062
+    },
+    "768": {
+     "threshold_from_calibration": 0.79,
+     "calibration": {
+      "hit_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "false_admit_rate": 0.0,
+      "positives": 8,
+      "negatives": 4
+     },
+     "test": {
+      "hit_at_1": 0.875,
+      "recall_at_3": 0.875,
+      "false_admit_rate": 0.0,
+      "positives": 8,
+      "negatives": 4
+     },
+     "gold_cosine_test_mean": 0.8586,
+     "best_negative_cosine_test_max": 0.5302
+    }
+   }
+  }
+ },
+ "server_memory_after_bench": {
+  "pid": 1230,
+  "rss_bytes": 433094656,
+  "pss_bytes": 429687808,
+  "mapped_file_bytes": 359112704,
+  "minor_faults": 50512,
+  "major_faults": 0,
+  "measurement_status": "MEASURED",
+  "resolved_proc_pid": 1230
+ },
+ "end_to_end": {
+  "dim": 256,
+  "threshold": 0.84,
+  "en": {
+   "hit_at_1": 0.9792,
+   "top1_via_embedding_channel": 47,
+   "false_admit_rate": 0.0625,
+   "recall_latency_ms_median": 49.6,
+   "recall_latency_ms_max": 863.8,
+   "last": {
+    "status": "OK",
+    "mode": "on",
+    "candidates": 24,
+    "encoded_keys": 0,
+    "deferred_keys": 0,
+    "dim": 256,
+    "duration_s": 0.0347,
+    "encoder": {}
+   }
+  },
+  "de": {
+   "hit_at_1": 0.875,
+   "top1_via_embedding_channel": 14,
+   "false_admit_rate": 0.0,
+   "recall_latency_ms_median": 36.6,
+   "recall_latency_ms_max": 1344.4,
+   "last": {
+    "status": "OK",
+    "mode": "on",
+    "candidates": 8,
+    "encoded_keys": 0,
+    "deferred_keys": 0,
+    "dim": 256,
+    "duration_s": 0.0366,
+    "encoder": {}
+   }
+  }
+ }
+}

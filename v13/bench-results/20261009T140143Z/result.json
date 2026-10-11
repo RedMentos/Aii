@@ -1,0 +1,34 @@
+{
+ "stamp": "20261009T140143Z",
+ "mode": "smoke",
+ "source": "/mnt/project-files/v13/code",
+ "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+ "python": "3.13.16",
+ "units": {
+  "ran": 621,
+  "ok": false,
+  "failed": "failures=1"
+ },
+ "logs": {
+  "setup": [
+   "First differing element 1:",
+   "[]",
+   "['b']",
+   "",
+   "- ('LOADED', [])",
+   "+ ('LOADED', ['b'])",
+   "?             +++",
+   "",
+   "",
+   "----------------------------------------------------------------------",
+   "Ran 621 tests in 84.477s",
+   "",
+   "FAILED (failures=1)",
+   "",
+   "Installation unterbrochen (Zeile 40). Nach Beheben erneut starten; fertige Downloads werden geprüft und wiederverwendet."
+  ],
+  "acceptance": null,
+  "candidates": null,
+  "semantic": null
+ }
+}

@@ -1,0 +1,1869 @@
+{
+  "canonical_architecture_complete": false,
+  "current_build_proofs": {
+    "native_smoke_linux": "docs/proofs/native-smoke-linux-20260923.json",
+    "step12_linux": "docs/proofs/step12-linux-20260923.json",
+    "second_attempt_linux": "docs/proofs/second-attempt-linux-12-20260923.json",
+    "cancellation_restart_linux": "docs/proofs/real-integration-after-cancel-fix.json",
+    "step2_analysis_preserved": "docs/proofs/step2-analysis-linux.json",
+    "redmi_screens": "docs/proofs/redmi-screenshot-observations.json",
+    "native_build": "docs/proofs/ui-disabled-build-proof.json",
+    "regression_log": "docs/current-unit-tests.log",
+    "step0_generation_snapshot": "docs/proofs/step0-generation-snapshot.json",
+    "step3_retrieval_matrix_unit": "docs/proofs/step3-retrieval-matrix-unit.json",
+    "c3_comparison_research": "docs/research/c3-comparison-20260922.md",
+    "body_state_linux": "docs/proofs/body-state-linux-20260923.json",
+    "executable_setup": "docs/testen-end-to-end-20260929.log",
+    "jef_modes": "docs/proofs/acceptance-20260929/jef-modes.json",
+    "integration_learning": "docs/proofs/acceptance-20260929/learning.json",
+    "experience_replay": "docs/proofs/experience-replay-linux-20260928.json",
+    "c3_comparison": "docs/proofs/acceptance-20260929/c3-comparison.json",
+    "acceptance_initial": "docs/proofs/acceptance-20260929-initial/acceptance.json",
+    "experience_export": "docs/proofs/acceptance-20260929/experience.json",
+    "acceptance_final": "docs/proofs/acceptance-20260929/acceptance.json",
+    "sustained": "docs/proofs/acceptance-20260929/sustained.json",
+    "doctor_full": "docs/proofs/doctor-linux-20260929.json",
+    "control_calibration": {
+      "status": "CONTROL_CALIBRATION_PASS",
+      "checks": 21,
+      "artifact": "docs/proofs/acceptance-calibration-initial-20261001/control-calibration.json",
+      "scope": "Actual native first-route agreement with explicit human labels; no semantic truth calibration",
+      "device": "Linux"
+    },
+    "memory_retrieval": "Native fit gates pass; actual value output consumer pending; docs/proofs/memory-retrieval-native-consumers-20261001.json",
+    "causal_live_output_export": "docs/proofs/live-output-export-prepared-20261009/final-audit.json"
+  },
+  "historical_redmi_evidence": {
+    "current_source_phone_rerun": false,
+    "source": "docs/proofs/redmi-screenshot-observations.json",
+    "status": "SMOKE_PASS"
+  },
+  "ledger_version": 2,
+  "native_smoke_evidence": {
+    "errors": [
+      "no local probe artifact"
+    ],
+    "phone_smoke_valid": false,
+    "smoke_valid": false,
+    "step1_complete": false,
+    "step2_complete": false
+  },
+  "remaining_step0_snapshot_gap": "CLOSED: fresh Runtime now atomically snapshots effective config + installed role revisions into a child BrainGenerationManifest before accepting work; existing non-empty generations are never rewritten.",
+  "rows": [
+    {
+      "benchmark": null,
+      "canon_source": "§22A STEP 0 / §96 STEP 0",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP0_STORAGE_PROVENANCE",
+      "gate_status": "PASS",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/store.py",
+        "v13/contracts.py"
+      ],
+      "integration_tests": [
+        "tests/integration_real.py"
+      ],
+      "known_limitations": [],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F7_RUNTIME",
+      "schema_id": "EventEnvelope/SourceRef/BrainGenerationManifest",
+      "state_owner": "Store",
+      "unit_tests": [
+        "test_unicode_source_and_tamper",
+        "test_final_immutable_and_partial_restart",
+        "test_backup_restore_roundtrip"
+      ]
+    },
+    {
+      "benchmark": null,
+      "canon_source": "§22A STEP 0 / §96 STEP 0",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP0_OPERATOR_GOVERNOR",
+      "gate_status": "PASS",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/operator.py",
+        "v13/runtime.py",
+        "v13/resources.py"
+      ],
+      "integration_tests": [
+        "tests/integration_real.py"
+      ],
+      "known_limitations": [],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F7_RUNTIME",
+      "schema_id": null,
+      "state_owner": "Runtime",
+      "unit_tests": [
+        "test_model_text_cannot_execute",
+        "test_pause_resume_queue_and_age",
+        "test_queue_input_bounds_and_config_validation"
+      ]
+    },
+    {
+      "benchmark": null,
+      "canon_source": "IH-H30 / §96 STEP 0",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP0_LOGGING_MIGRATION",
+      "gate_status": "PASS",
+      "hardware_proof": "platform-independent unit tests",
+      "implementation_files": [
+        "v13/store.py",
+        "v13/runners.py",
+        "v13/verification.py"
+      ],
+      "integration_tests": [],
+      "known_limitations": [
+        "time-based log retention not implemented; size/row bounds are enforced"
+      ],
+      "persistence": "SQLite telemetry bounded to ~10000 rows; runner logs rotate at 3 MiB",
+      "runtime_owner": "F7_RUNTIME",
+      "schema_id": "DB user_version=1 / LOG_POLICY-001",
+      "state_owner": "Store + logs/",
+      "unit_tests": [
+        "test_database_version_and_telemetry_bound",
+        "test_runner_log_rotation_policy"
+      ]
+    },
+    {
+      "benchmark": null,
+      "canon_source": "IH-H27 / §96 STEP 0",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP0_SCHEMA_REGISTRY",
+      "gate_status": "PASS",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/contracts.py",
+        "v13/verification.py"
+      ],
+      "integration_tests": [],
+      "known_limitations": [],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F7_RUNTIME",
+      "schema_id": "FIELDS/BASE schema_version=1.0",
+      "state_owner": "code registry",
+      "unit_tests": [
+        "test_schema_registry_exposed"
+      ]
+    },
+    {
+      "benchmark": "native-probe.json, jef-modes-proof.json and step12-proof.json when available",
+      "canon_source": "§22A STEP 1 / §96 STEP 1",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP1_JEF_VERTICAL",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "NO_VALID_MATCHING_LOCAL_SMOKE_ARTIFACT",
+      "implementation_files": [
+        "v13/runtime.py",
+        "v13/cognition.py",
+        "v13/runners.py"
+      ],
+      "integration_tests": [
+        "tests/integration_real.py",
+        "v13.proofs.probe_jef_modes",
+        "v13.proofs.probe_step12"
+      ],
+      "known_limitations": [
+        "External first native route agreement calibration implemented; general/native semantic confidence uncalibrated",
+        "C3 quality and sustained target-phone JEF remain open",
+        "Paired C3 comparison and independent/combined JEF modes executed on Linux; no model selection or phone proof inferred"
+      ],
+      "persistence": "C1 state + messages persisted; runner KV transient",
+      "runtime_owner": "C_JEF_SYSTEM",
+      "schema_id": "ExecState/JEFBroadcastPacket/ActionIntent",
+      "state_owner": "C1_EXEC + native runners",
+      "unit_tests": [
+        "test_model_text_cannot_execute"
+      ]
+    },
+    {
+      "benchmark": "native-probe.json; step12-proof.json; docs/proofs/step2-ablations-linux.json + docs/proofs/step2-analysis-linux.json",
+      "canon_source": "§22A STEP 2 / §96 STEP 2",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP2_SPLIT_BRAIN_OBSERVER",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "NO_VALID_MATCHING_LOCAL_SMOKE_ARTIFACT",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/runtime.py",
+        "v13/runners.py"
+      ],
+      "integration_tests": [
+        "tests/integration_real.py",
+        "v13.proofs.probe_step12",
+        "tests/integration_step2.py",
+        "scripts/analyze_step2_proof.py"
+      ],
+      "known_limitations": [
+        "temporary dense harness body",
+        "measurable Gist/Detail complementarity not yet proven",
+        "latent injection OFF"
+      ],
+      "persistence": "offers/packets persisted; body runner state transient",
+      "runtime_owner": "B1_DETAIL+B2_GIST",
+      "schema_id": "OfferPacket/MessagePacket/FocalItem",
+      "state_owner": "OfferPacket/FocalItem",
+      "unit_tests": [
+        "test_offer_stale_generation_and_commit"
+      ]
+    },
+    {
+      "benchmark": null,
+      "canon_source": "§24.1 / §22A STEP 3",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP3_FAST_EPISODIC",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/memory.py",
+        "v13/store.py",
+        "v13/runtime.py"
+      ],
+      "integration_tests": [
+        "tests/integration_real.py",
+        "tests/integration_second_attempt.py"
+      ],
+      "known_limitations": [
+        "Second-attempt family is diagnostic; broader semantic advantage and target-phone repetition remain open",
+        "Lexical entity/topic recall is not semantic memory or JEPA",
+        "no semantic/procedural consolidation"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F1_EPISODIC",
+      "schema_id": "HumanDecision/ExperienceRecord/MemoryRecord",
+      "state_owner": "Memory",
+      "unit_tests": [
+        "test_source_memory_restart_and_scope",
+        "test_feedback_supersedes_same_key_only",
+        "test_forget_source_and_packets",
+        "test_entity_topic_retrieval_handles_partial_transfer_without_other_attribute_leak"
+      ]
+    },
+    {
+      "benchmark": null,
+      "canon_source": "G2/G2C",
+      "current_mode": "OFF",
+      "feature_id": "B3_LATENT",
+      "gate_status": "BLOCKED_BY_PROOF",
+      "hardware_proof": null,
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "integration_tests": [],
+      "known_limitations": [
+        "read-only dense taps do not provide receiver injection",
+        "no receiver calibration/utility/OOD ablation"
+      ],
+      "persistence": "packet log only",
+      "runtime_owner": "B3_CALLOSUM",
+      "schema_id": "ReceiverCalibration",
+      "state_owner": "MessagePacket",
+      "unit_tests": []
+    },
+    {
+      "benchmark": null,
+      "canon_source": "STEP 6+",
+      "current_mode": "UNAVAILABLE",
+      "feature_id": "BODY_JEPA",
+      "gate_status": "NOT_STARTED",
+      "hardware_proof": null,
+      "implementation_files": [],
+      "integration_tests": [],
+      "known_limitations": [
+        "no train runner proof",
+        "quantized inference weights are not train masters"
+      ],
+      "persistence": null,
+      "runtime_owner": "F4_LEARNING",
+      "schema_id": "TrainRunnerProof",
+      "state_owner": null,
+      "unit_tests": []
+    },
+    {
+      "benchmark": "exports/body-state-proof.json",
+      "canon_source": "§96 STEP 2 / B1 Detail + B2 Gist",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP2_BODY_STATE_POLICY",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/config.py"
+      ],
+      "integration_tests": [
+        "v13.proofs.probe_body_state"
+      ],
+      "known_limitations": [
+        "Explicit source-backed context, not native recurrent/latent body memory",
+        "Lexical/entity admission is a BOOT policy, not learned semantic admission",
+        "Model hypotheses remain fallible; no semantic complementarity or sustained target-phone proof inferred"
+      ],
+      "persistence": "bounded retained offer IDs + exact source bindings; restart-safe SQLite state",
+      "runtime_owner": "B1_DETAIL+B2_GIST",
+      "schema_id": "QueryPacket/OfferPacket",
+      "state_owner": "session-scoped body states",
+      "unit_tests": [
+        "tests/test_body_state.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/experience-export-linux-20260929.json",
+      "canon_source": "§96 STEP4",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP4_REFERENCE_SELECTION",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/memory.py",
+        "v13/models.py",
+        "v13/runtime.py",
+        "v13/operator.py"
+      ],
+      "integration_tests": [
+        "tests/integration_experience.py"
+      ],
+      "known_limitations": [
+        "Frozen reused B1 is not asserted stronger or automatically factual"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F8+F3",
+      "schema_id": "HumanDecision",
+      "state_owner": "F8+F3",
+      "unit_tests": [
+        "tests/test_experience_replay.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/acceptance-20260929/learning.json",
+      "canon_source": "§96 STEP5",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP5_EXTERNAL_ROUTE_LEARNING",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/learning.py",
+        "v13/learning_worker.py"
+      ],
+      "integration_tests": [
+        "tests/integration_learning.py"
+      ],
+      "known_limitations": [
+        "External route classifier; distinct wake/halt heads do not establish executive JEPA or output-adapter training"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F6",
+      "schema_id": "TrainRunnerProof",
+      "state_owner": "F6",
+      "unit_tests": [
+        "tests/test_learning_worker.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/readouts-native-runtime-20260929.json",
+      "canon_source": "§96 STEP5",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP5_BOUNDED_WAKE_HALT",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/learning.py",
+        "v13/readout_worker.py",
+        "v13/runtime.py"
+      ],
+      "integration_tests": [
+        "tests/integration_readouts.py"
+      ],
+      "known_limitations": [
+        "Bounded labelled fixture calibration, not native C2 confidence calibration or general recurrent-depth quality"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "C2+C4",
+      "schema_id": "ExecutiveDecision",
+      "state_owner": "C2+C4",
+      "unit_tests": [
+        "tests/test_executive_readouts.py",
+        "tests/test_readout_worker.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/control-calibration-native-consumer-20261001.json",
+      "canon_source": "IH-H25 / §3.3.3",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "C2_NATIVE_ROUTE_CALIBRATION",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/control_calibration_worker.py",
+        "v13/learning.py",
+        "v13/runtime.py"
+      ],
+      "integration_tests": [
+        "tests/integration_control_calibration.py"
+      ],
+      "known_limitations": [
+        "External first native route proposal agreement calibration against explicit operator labels; input confidence/route support only; not semantic truth confidence or native confidence-head training"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "C2",
+      "schema_id": "ControlCalibration/TrainRunnerProof",
+      "state_owner": "C2",
+      "unit_tests": [
+        "tests/test_control_calibration.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/native-taps-20260929.json",
+      "canon_source": "STEP6 / native tap interface",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP6_DENSE_READONLY_TAPS",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/runners.py",
+        "v13/cognition.py"
+      ],
+      "integration_tests": [
+        "tests/integration_taps.py"
+      ],
+      "known_limitations": [
+        "Independent frozen dense prefill; not live receiver KV, sparse body training or injection"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "B1+B2",
+      "schema_id": "LatentTapPacket",
+      "state_owner": "B1+B2",
+      "unit_tests": [
+        "tests/test_native_taps.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/predictor-b2-native-20260930.json",
+      "canon_source": "IH-H25 / predictor-first",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP6_DENSE_LOCAL_PREDICTOR",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/learning.py",
+        "v13/predictor_worker.py",
+        "v13/cognition.py"
+      ],
+      "integration_tests": [
+        "tests/integration_predictor.py"
+      ],
+      "known_limitations": [
+        "External 16-dimensional local predictor and target EMA on actual t+2 states; explicit tap consumer only; no semantic quality, body training or cross-body JEPA claim"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "B1+B2",
+      "schema_id": "TrainRunnerProof/LatentTapPacket",
+      "state_owner": "B1+B2",
+      "unit_tests": [
+        "tests/test_predictor_worker.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/student-native-current-20260930.json",
+      "canon_source": "A3 / IH-H25 / G10",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "A3_TEXT_STUDENT",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/student_worker.py",
+        "v13/learning.py",
+        "v13/cognition.py",
+        "v13/runtime.py"
+      ],
+      "integration_tests": [
+        "tests/integration_student.py"
+      ],
+      "known_limitations": [
+        "Explicit learned text projection with separate alignment/reconstruction and T1 JEF shadow; no teacher removal, multimodal or native receiver injection proof"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "A3+C2",
+      "schema_id": "PerceptPacket/StudentEvaluation",
+      "state_owner": "A3+C2",
+      "unit_tests": [
+        "tests/test_student_worker.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/world-native-geometry-20260930.json",
+      "canon_source": "IH-H25 / §92.2",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "F4_DIGITAL_ACTION_PREDICTOR",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/world_worker.py",
+        "v13/learning.py",
+        "v13/world.py",
+        "v13/runtime.py"
+      ],
+      "integration_tests": [
+        "tests/integration_world.py"
+      ],
+      "known_limitations": [
+        "Approved external 16-dimensional action-conditioned digital outcome predictor; actual source/action/output bindings and target EMA; not external-world causal understanding, semantic truth, or native body training"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F4",
+      "schema_id": "WorldTransition/ActionPrediction/PredictionOutcome/ModulatorPacket",
+      "state_owner": "F4",
+      "unit_tests": [
+        "tests/test_world_worker.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/experience-export-linux-20260929.json",
+      "canon_source": "§15 / §31.2",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "F9_EPISODIC_REPLAY",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/runtime.py"
+      ],
+      "integration_tests": [
+        "tests/integration_experience.py"
+      ],
+      "known_limitations": [
+        "Explicit bounded inference; no generated fact/weight promotion or semantic/skill consolidation"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F9",
+      "schema_id": "ReplayItem",
+      "state_owner": "F9",
+      "unit_tests": [
+        "tests/test_experience_replay.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/acceptance-20260929/sustained.json",
+      "canon_source": "§7.1–7.5 / §31.2",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "F4_SELF_WORLD_OBSERVATIONS",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/world.py",
+        "v13/runtime.py",
+        "v13/store.py"
+      ],
+      "integration_tests": [
+        "v13.proofs.probe_sustained"
+      ],
+      "known_limitations": [
+        "Digital self/action state and empirical timing only; no semantic/world JEPA; confidence uncalibrated"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F4",
+      "schema_id": "ActionPrediction/PredictionOutcome",
+      "state_owner": "F4",
+      "unit_tests": [
+        "tests/test_world_state.py"
+      ]
+    },
+    {
+      "benchmark": "docs/proofs/acceptance-20260929/sustained.json",
+      "canon_source": "§96 STEP7",
+      "current_mode": "IMPLEMENTED",
+      "feature_id": "STEP7_BOUNDED_COLLECTION",
+      "gate_status": "PARTIAL",
+      "hardware_proof": "platform-independent unit/integration tests",
+      "implementation_files": [
+        "v13/proofs.py"
+      ],
+      "integration_tests": [
+        "v13.proofs.probe_sustained"
+      ],
+      "known_limitations": [
+        "Short collection does not establish weeks of retention, thermal/energy or a memory ceiling"
+      ],
+      "persistence": "SQLite WAL + content-addressed blobs",
+      "runtime_owner": "F7+F11",
+      "schema_id": "ActionOutcome",
+      "state_owner": "F7+F11",
+      "unit_tests": []
+    }
+  ],
+  "step12_proof_path": "/workspace/scratch/7d5ad9273a5e/native-20260929/exports/step12-proof.json",
+  "component_contracts": {
+    "alias_policy": "Historical producer IDs retained; resolve by schema and edition mapping, not prefix alone",
+    "canon_file": "docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+    "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+    "canonical_architecture_complete": false,
+    "components": [
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "A0",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/store.py"
+        ],
+        "known_limits": "Exact text only; other modalities unavailable",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Raw sources",
+        "runtime_owner": "A0",
+        "schemas": [
+          "SourceRef",
+          "EventEnvelope"
+        ],
+        "state_owner": "A0"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "A1",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/cognition.py"
+        ],
+        "known_limits": "Text boundaries only",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Segmentation",
+        "runtime_owner": "A1",
+        "schemas": [
+          "PerceptPacket"
+        ],
+        "state_owner": "A1"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "A2",
+        "current_mode": "UNAVAILABLE",
+        "implementation_files": [],
+        "known_limits": "No semantic input teacher wired",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Frozen input teacher",
+        "runtime_owner": "A2",
+        "schemas": [],
+        "state_owner": "A2"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "A3",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/student_worker.py",
+          "v13/learning.py",
+          "v13/cognition.py"
+        ],
+        "known_limits": "No trained representation alignment",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Student projector",
+        "runtime_owner": "A3",
+        "schemas": [
+          "PerceptPacket",
+          "TrainRunnerProof"
+        ],
+        "state_owner": "A3"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "A4",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/cognition.py"
+        ],
+        "known_limits": "Bounded text views; no learned salience or region requests",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Perceptual attention",
+        "runtime_owner": "A4",
+        "schemas": [
+          "PerceptPacket"
+        ],
+        "state_owner": "A4"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "A5",
+        "current_mode": "IMPLEMENTED",
+        "implementation_files": [
+          "v13/cognition.py",
+          "v13/store.py"
+        ],
+        "known_limits": "Text identity path",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Percept source binding",
+        "runtime_owner": "A5",
+        "schemas": [
+          "PerceptPacket",
+          "SourceRef"
+        ],
+        "state_owner": "A5"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "B1",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/cognition.py",
+          "v13/runners.py"
+        ],
+        "known_limits": "Native dense body; sparse expert training unavailable",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Detail body",
+        "runtime_owner": "B1",
+        "schemas": [
+          "QueryPacket",
+          "OfferPacket",
+          "LatentTapPacket"
+        ],
+        "state_owner": "B1"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "B2",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/cognition.py",
+          "v13/runners.py"
+        ],
+        "known_limits": "Bounded persisted source context; semantic complementarity unproven",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Gist body",
+        "runtime_owner": "B2",
+        "schemas": [
+          "QueryPacket",
+          "OfferPacket",
+          "LatentTapPacket"
+        ],
+        "state_owner": "B2"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "B3",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/cognition.py"
+        ],
+        "known_limits": "NONE/EXACT/CONTROL/SYMBOLIC; native latent taps/injection unavailable",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Callosum",
+        "runtime_owner": "B3",
+        "schemas": [
+          "MessagePacket",
+          "ReceiverCalibration"
+        ],
+        "state_owner": "B3"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "B4",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/cognition.py",
+          "v13/store.py"
+        ],
+        "known_limits": "Explicit source slots; no trained latent admission",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Active workspace",
+        "runtime_owner": "B4",
+        "schemas": [
+          "WorkspaceSlot"
+        ],
+        "state_owner": "B4"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "B5",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/memory.py",
+          "v13/world.py"
+        ],
+        "known_limits": "State/recall interfaces; no learned access policy",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Fabric interfaces",
+        "runtime_owner": "B5",
+        "schemas": [
+          "MemoryRecord",
+          "QueryPacket"
+        ],
+        "state_owner": "B5"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "C0",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/operator.py",
+          "v13/runtime.py"
+        ],
+        "known_limits": "Local operator origin and text gate; external actions off",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Shell and permissions",
+        "runtime_owner": "C0",
+        "schemas": [
+          "CapabilityProfile"
+        ],
+        "state_owner": "C0"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "C1",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/runtime.py"
+        ],
+        "known_limits": "Persisted goals/rules; native KV transient; no trained executive representation",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Executive continuity",
+        "runtime_owner": "C1",
+        "schemas": [
+          "ExecState",
+          "JEFBroadcastPacket"
+        ],
+        "state_owner": "C1"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "C2",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/runners.py",
+          "v13/learning.py",
+          "v13/control_calibration_worker.py",
+          "v13/runtime.py"
+        ],
+        "known_limits": "Actual Needle, external route head and approved first-native-proposal agreement calibration; general semantic confidence/native confidence-head training unproved",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Structured control",
+        "runtime_owner": "C2",
+        "schemas": [
+          "ExecutiveDecision",
+          "ModelManifest",
+          "StudentEvaluation",
+          "ControlCalibration",
+          "TrainRunnerProof"
+        ],
+        "state_owner": "C2"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "C3",
+        "current_mode": "IMPLEMENTED",
+        "implementation_files": [
+          "v13/runners.py",
+          "v13/runtime.py"
+        ],
+        "known_limits": "Real baseline local free language; limited model quality",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Language organ",
+        "runtime_owner": "C3",
+        "schemas": [
+          "ModelManifest"
+        ],
+        "state_owner": "C3"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "C4",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/cognition.py"
+        ],
+        "known_limits": "Bounded fresh offers and one reentry; no learned competition",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Focal coalition",
+        "runtime_owner": "C4",
+        "schemas": [
+          "FocalItem",
+          "ExecutiveDecision"
+        ],
+        "state_owner": "C4"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "C5",
+        "current_mode": "IMPLEMENTED",
+        "implementation_files": [
+          "v13/runtime.py",
+          "v13/store.py"
+        ],
+        "known_limits": "Single local text report owner",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Action/report intent",
+        "runtime_owner": "C5",
+        "schemas": [
+          "ActionIntent",
+          "CorollaryCopy"
+        ],
+        "state_owner": "C5"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "C6",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/store.py",
+          "v13/runtime.py"
+        ],
+        "known_limits": "Text only",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Egress port manager",
+        "runtime_owner": "C6",
+        "schemas": [
+          "ActionOutcome"
+        ],
+        "state_owner": "C6"
+      },
+      {
+        "canon_source": "§31.1",
+        "capability_age": 0,
+        "component_id": "C7",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/ui.py"
+        ],
+        "known_limits": "TTY text; speech/image/UI/motor unavailable",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Effectors",
+        "runtime_owner": "C7",
+        "schemas": [
+          "ActionOutcome"
+        ],
+        "state_owner": "C7"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F1",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/cognition.py"
+        ],
+        "known_limits": "Deterministic source/freshness gates; learned gain unavailable",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Attention/gain/admission",
+        "runtime_owner": "F1",
+        "schemas": [
+          "FocalItem",
+          "OfferPacket"
+        ],
+        "state_owner": "F1"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F2",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/runtime.py",
+          "v13/resources.py"
+        ],
+        "known_limits": "Preemption/cancel/resource guard; learned salience unavailable",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Salience/interrupt/reflex",
+        "runtime_owner": "F2",
+        "schemas": [
+          "EventEnvelope"
+        ],
+        "state_owner": "F2"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F3",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/memory.py",
+          "v13/store.py"
+        ],
+        "known_limits": "Exact/episodic correction retrieval; no semantic/skill consolidation",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Memory/context/provenance",
+        "runtime_owner": "F3",
+        "schemas": [
+          "MemoryRecord",
+          "ExperienceRecord",
+          "HumanDecision"
+        ],
+        "state_owner": "F3"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F4",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/world.py",
+          "v13/world_worker.py",
+          "v13/learning.py"
+        ],
+        "known_limits": "Observed digital state/timing plus approved external action-conditioned latent predictor; no external-world causal truth, native body training or automatic semantic consolidation",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Self/body/world prediction",
+        "runtime_owner": "F4",
+        "schemas": [
+          "ActionPrediction",
+          "PredictionOutcome",
+          "WorldTransition",
+          "ModulatorPacket"
+        ],
+        "state_owner": "F4"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F5",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/store.py",
+          "v13/runtime.py"
+        ],
+        "known_limits": "Actual local text-action ordering; no general action competition",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Action selection/safety/corollary",
+        "runtime_owner": "F5",
+        "schemas": [
+          "ActionIntent",
+          "CorollaryCopy",
+          "ActionOutcome"
+        ],
+        "state_owner": "F5"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F6",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/learning.py",
+          "v13/learning_worker.py"
+        ],
+        "known_limits": "Actual external route SGD; body/JEPA/projector/output-adapter objectives unavailable",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Learning/eligibility/modulation",
+        "runtime_owner": "F6",
+        "schemas": [
+          "LearningTrace",
+          "ModulatorPacket",
+          "UpdateManifest",
+          "TrainRunnerProof"
+        ],
+        "state_owner": "F6"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F7",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/resources.py",
+          "v13/learning_worker.py",
+          "v13/proofs.py"
+        ],
+        "known_limits": "Resource gates, bounded updates, held-out retention; no slow learned metaplasticity",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Metaplasticity/homeostasis/stability",
+        "runtime_owner": "F7",
+        "schemas": [
+          "TrainRunnerProof"
+        ],
+        "state_owner": "F7"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F8",
+        "current_mode": "IMPLEMENTED",
+        "implementation_files": [
+          "v13/operator.py",
+          "v13/store.py"
+        ],
+        "known_limits": "Individual artifact approval/rollback, rule generations, Age0 only",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Age/human control/rules",
+        "runtime_owner": "F8",
+        "schemas": [
+          "HumanDecision",
+          "BrainGenerationManifest"
+        ],
+        "state_owner": "F8"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F9",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/runtime.py"
+        ],
+        "known_limits": "Actual episodic replay and hypothetical dream; no autonomous consolidation",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Replay/dream/consolidation",
+        "runtime_owner": "F9",
+        "schemas": [
+          "ReplayItem"
+        ],
+        "state_owner": "F9"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F10",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/runtime.py",
+          "v13/runners.py",
+          "v13/resources.py"
+        ],
+        "known_limits": "Bounded sequential scheduling; full target-phone sustained proof open",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Runtime/cache/scheduling/governor",
+        "runtime_owner": "F10",
+        "schemas": [
+          "ModelManifest",
+          "BrainGenerationManifest"
+        ],
+        "state_owner": "F10"
+      },
+      {
+        "canon_source": "§31.2",
+        "capability_age": 0,
+        "component_id": "F11",
+        "current_mode": "PARTIAL",
+        "implementation_files": [
+          "v13/verification.py",
+          "v13/proofs.py"
+        ],
+        "known_limits": "Real metrics/proofs; general calibration/OOD/semantic utility open",
+        "latent_learn_authority": 0,
+        "latent_read_authority": 0,
+        "name": "Metrics/calibration/retention",
+        "runtime_owner": "F11",
+        "schemas": [
+          "TrainRunnerProof",
+          "ReceiverCalibration"
+        ],
+        "state_owner": "F11"
+      }
+    ],
+    "legacy_producer_aliases": {
+      "F1_EPISODIC": "F3",
+      "F1_MEMORY": "F3",
+      "F3_SELF": "F4; CorollaryCopy function belongs to F5",
+      "F4_LEARNING": "F6",
+      "F4_REPLAY": "F9",
+      "F5_HUMAN_CONTROL": "F8",
+      "F7_RUNTIME": "F10"
+    },
+    "schema_version": 1
+  },
+  "jef_modes_proof_path": "/workspace/scratch/7d5ad9273a5e/native-20260929/exports/jef-modes-proof.json",
+  "learning_objectives": {
+    "canon_source": "IH-H25",
+    "objectives": [
+      {
+        "applicable_components": [
+          "C2"
+        ],
+        "credit_mapper": "C2_EXTERNAL_ROUTE_HEAD",
+        "effective_learn_gain": 0,
+        "ema_policy": "Eligibility EMA only; no target EMA or JEPA claim",
+        "eval_metrics": [
+          "Finite difference",
+          "Held-out loss/accuracy",
+          "Per-class retention",
+          "Scaffold baseline",
+          "Determinism",
+          "Checkpoint reload"
+        ],
+        "implementation_files": [
+          "v13/learning.py",
+          "v13/learning_worker.py"
+        ],
+        "learn_gain": "Only explicit shadow job; zero in RECORD_ONLY",
+        "loss_terms": [
+          "Four-class cross entropy"
+        ],
+        "objective_id": "explicit-human-route-cross-entropy-v1",
+        "required_inputs": [
+          "Authoritative source-bound HumanDecision route with learn permission",
+          "Actual frozen Needle embedding and matching revision"
+        ],
+        "requires_explicit_job": true,
+        "status": "IMPLEMENTED",
+        "stop_gradient_policy": "Encoder frozen",
+        "target_builder": "Latest explicit label per exact input",
+        "update_scope": "3073 x 4 external route parameters"
+      },
+      {
+        "applicable_components": [
+          "A3"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "A3_alignment",
+        "reason": "Text A3 alignment/reconstruction and T1 JEF shadow consumer implemented separately; broader modalities/teacher parity still unproved",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "PARTIAL",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "B1",
+          "B2"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "B_local_JEPA",
+        "reason": "No native trainable body path/validated latent target",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "UNAVAILABLE",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "A3",
+          "B1",
+          "B2"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "A_to_B_cross_JEPA",
+        "reason": "No compatible A/B target",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "UNAVAILABLE",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "B1",
+          "B2",
+          "A3"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "B_to_A_cross_JEPA",
+        "reason": "No compatible B/A target",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "UNAVAILABLE",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "B3"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "B3_latent_alignment",
+        "reason": "No native tap/inject/calibration",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "UNAVAILABLE",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "C1",
+          "C2",
+          "C3"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "C_executive_JEPA",
+        "reason": "Route classification is not latent prediction",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "UNAVAILABLE",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "F4"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "World_JEPA",
+        "reason": "Scoped action-conditioned digital outcome objective implemented separately; broad external-world/semantic prediction remains unproven",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "PARTIAL",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "C2"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "C_wake_halt_calibration",
+        "reason": "Bounded observer wake/re-entry readouts and external native first-route agreement calibration implemented separately; general semantic confidence and recurrent-depth quality remain unproved",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "PARTIAL",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "C3"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "C_output_adapter",
+        "reason": "No native trainable output adapter",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "UNAVAILABLE",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "F3",
+          "F9"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "semantic_skill_consolidation",
+        "reason": "No validated update objective",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "UNAVAILABLE",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "F7"
+        ],
+        "credit_mapper": null,
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [],
+        "learn_gain": 0,
+        "loss_terms": [],
+        "objective_id": "metaplasticity_homeostasis",
+        "reason": "No slow learned update objective",
+        "required_inputs": [],
+        "requires_explicit_job": true,
+        "status": "UNAVAILABLE",
+        "stop_gradient_policy": null,
+        "target_builder": null,
+        "update_scope": null
+      },
+      {
+        "applicable_components": [
+          "C2"
+        ],
+        "credit_mapper": "C_WAKE_READOUT",
+        "effective_learn_gain": 0,
+        "ema_policy": "Eligibility only; no JEPA or target EMA claim",
+        "eval_metrics": [
+          "disjoint train/calibration/test",
+          "finite difference gradient",
+          "held-out loss/Brier/ECE",
+          "per-class retention",
+          "support rejection",
+          "labelled cost/quality Pareto for halt",
+          "restart/runtime/rollback"
+        ],
+        "implementation_files": [
+          "v13/learning.py",
+          "v13/readout_worker.py",
+          "v13/runtime.py"
+        ],
+        "learn_gain": "Explicit shadow job only; zero in RECORD_ONLY",
+        "limitations": [
+          "Bounded labelled local corpus; no general calibration claim",
+          "Halt applies only after two frozen body offers",
+          "Hard deadline and resource controls independent"
+        ],
+        "loss_terms": [
+          "class cross entropy",
+          "temperature NLL fit on separate calibration partition"
+        ],
+        "objective_id": "explicit-human-wake-readout-v1",
+        "required_inputs": [
+          "Source-bound ExecutiveDecision from actual runtime",
+          "Explicit human label with learn permission",
+          "Actual frozen Needle embeddings"
+        ],
+        "requires_explicit_job": true,
+        "status": "IMPLEMENTED",
+        "stop_gradient_policy": "Frozen native encoder and body trajectory",
+        "target_builder": "Latest explicit label per immutable context; six distinct contexts per class minimum",
+        "update_scope": "External wake weights and temperature; native bodies unchanged"
+      },
+      {
+        "applicable_components": [
+          "C4"
+        ],
+        "credit_mapper": "C_HALT_READOUT",
+        "effective_learn_gain": 0,
+        "ema_policy": "Eligibility only; no JEPA or target EMA claim",
+        "eval_metrics": [
+          "disjoint train/calibration/test",
+          "finite difference gradient",
+          "held-out loss/Brier/ECE",
+          "per-class retention",
+          "support rejection",
+          "labelled cost/quality Pareto for halt",
+          "restart/runtime/rollback"
+        ],
+        "implementation_files": [
+          "v13/learning.py",
+          "v13/readout_worker.py",
+          "v13/runtime.py"
+        ],
+        "learn_gain": "Explicit shadow job only; zero in RECORD_ONLY",
+        "limitations": [
+          "Bounded labelled local corpus; no general calibration claim",
+          "Halt applies only after two frozen body offers",
+          "Hard deadline and resource controls independent"
+        ],
+        "loss_terms": [
+          "class cross entropy",
+          "temperature NLL fit on separate calibration partition"
+        ],
+        "objective_id": "explicit-human-halt-readout-v1",
+        "required_inputs": [
+          "Source-bound ExecutiveDecision from actual runtime",
+          "Explicit human label with learn permission",
+          "Actual frozen Needle embeddings"
+        ],
+        "requires_explicit_job": true,
+        "status": "IMPLEMENTED",
+        "stop_gradient_policy": "Frozen native encoder and body trajectory",
+        "target_builder": "Latest explicit label per immutable context; six distinct contexts per class minimum",
+        "update_scope": "External halt weights and temperature; native bodies unchanged"
+      },
+      {
+        "applicable_components": [
+          "B1",
+          "B2"
+        ],
+        "credit_mapper": "EXPLICIT_OBSERVATION_LEARN",
+        "effective_learn_gain": 0,
+        "ema_policy": "target = ema_decay * target + (1-ema_decay) * online_projector after each bounded step",
+        "eval_metrics": [
+          "causal prefix equality",
+          "analytic finite difference",
+          "held-out source split",
+          "copy/shuffled target ablation",
+          "target variance and rank gates",
+          "retention",
+          "determinism/reload",
+          "actual explicit tap consumer after restart",
+          "rollback/body hash unchanged"
+        ],
+        "implementation_files": [
+          "v13/predictor_worker.py",
+          "v13/learning.py",
+          "v13/cognition.py"
+        ],
+        "learn_gain": "Explicit observation permission and shadow job only; zero in RECORD_ONLY",
+        "learning_rate_config_key": "predictor_lr",
+        "limitations": [
+          "Local dense-state predictor prototype; not full sparse-body or cross-body JEPA",
+          "Consumer is explicit read-only native tap, not chat output or receiver injection",
+          "Short local corpus does not establish semantic quality or long-term retention"
+        ],
+        "loss_terms": [
+          "future state prediction MSE",
+          "online latent variance floor",
+          "fixed initial projection geometry anchor"
+        ],
+        "objective_id": "dense-body-future-state-predictor-v1",
+        "required_inputs": [
+          "Actual pinned native LFM2 final-state tap vectors and native token IDs",
+          "At least 12 distinct immutable source sequences with observation learn permission",
+          "Actual causal-prefix check for the pinned runner"
+        ],
+        "requires_explicit_job": true,
+        "status": "IMPLEMENTED",
+        "stop_gradient_policy": "Frozen native body/router and target; only external online projector and predictor receive gradients",
+        "target_builder": "Native position t+2 projected with frozen-gradient EMA target; entire source sequences kept in one partition",
+        "update_scope": "33024 external projector/predictor parameters; no native body or receiver update"
+      },
+      {
+        "applicable_components": [
+          "A3"
+        ],
+        "credit_mapper": "A3_EXPLICIT_OBSERVATION",
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [
+          "Stable source split",
+          "Finite-difference gradients",
+          "Alignment/reconstruction mean baselines",
+          "Separate term-disabled ablations",
+          "Target/prediction variance and rank",
+          "Reload/determinism",
+          "Active-checkpoint retention",
+          "PerceptPacket and real JEF shadow consumer",
+          "Restart/rollback/source integrity"
+        ],
+        "implementation_files": [
+          "v13/student_worker.py",
+          "v13/learning.py",
+          "v13/cognition.py",
+          "v13/runtime.py"
+        ],
+        "learn_gain": "Explicit observation permission and shadow job only; zero in RECORD_ONLY",
+        "learning_rate_config_key": "student_lr",
+        "limitations": [
+          "Text-only T1 shadow; no removal of frozen encoder",
+          "Local diagnostic corpus; no general language/semantic parity claim",
+          "No native receiver injection or multimodal port"
+        ],
+        "loss_terms": [
+          "Teacher-feature alignment",
+          "Raw-feature reconstruction",
+          "Projection norm regularization"
+        ],
+        "objective_id": "a3-text-teacher-alignment-reconstruction-v1",
+        "required_inputs": [
+          "Immutable A0/A1 UTF-8 source",
+          "Explicit alignment observe learn permission",
+          "Actual 3072-dimensional frozen Needle semantic feature target in A2 reference lane"
+        ],
+        "requires_explicit_job": true,
+        "status": "IMPLEMENTED",
+        "stop_gradient_policy": "Frozen native semantic encoder, train-only semantic reference basis/mean; no teacher truth or body authority",
+        "target_builder": "Frozen target features; teacher PCA/mean estimated only on train sources; raw reconstruction target independent",
+        "update_scope": "16384 projector/reconstruction-decoder parameters; native models frozen"
+      },
+      {
+        "applicable_components": [
+          "F4"
+        ],
+        "credit_mapper": "Exact input/action/committed own output + human learn permission; outcome error is not semantic truth reward",
+        "effective_learn_gain": 0,
+        "ema_policy": "target = ema_decay * target + (1 - ema_decay) * online measured-state rows only",
+        "eval_metrics": [
+          "source-stable held-out prediction/copy/target-shuffle",
+          "action-off/action-shuffle",
+          "fixed pre-update target retention",
+          "noncollapse rank/std",
+          "analytic finite-difference gradients",
+          "deterministic repeat/reload",
+          "native vertical consumer/restart/rollback",
+          "Training-only per-action measured input support; held-out support coverage",
+          "Unobserved-action and actual novel-state refusal",
+          "Fitted residual spread explicitly not calibrated confidence"
+        ],
+        "known_limits": [
+          "Local text/digital output fixture only",
+          "No external causal claim, automatic fact promotion or native weight modification",
+          "No current-build Redmi training proof"
+        ],
+        "learn_gain": 1,
+        "learning_rate_config_key": "predictor_lr",
+        "loss_terms": [
+          "future-latent MSE",
+          "online variance floor",
+          "parameter anchor",
+          "measured state geometry preservation MSE"
+        ],
+        "objective_id": "world-digital-action-latent-v1",
+        "required_inputs": [
+          "Authoritative exact raw text source",
+          "FINAL ActionIntent/CorollaryCopy with matching model revision and own committed output SHA256",
+          "Explicit latest world observe learn permission",
+          "Actual frozen C2 state/outcome embeddings; source-group-disjoint action pairs"
+        ],
+        "requires_explicit_job": true,
+        "status": "IMPLEMENTED",
+        "stop_gradient_policy": "No target, encoder or native body gradient; immutable geometry anchor",
+        "target_builder": "Frozen measured own digital outcome feature -> 3072x16 target projector",
+        "update_scope": "External world_predictor component projector/predictor only; 49472 parameters, float64 bounded SGD"
+      },
+      {
+        "applicable_components": [
+          "C2"
+        ],
+        "credit_mapper": "C2_NATIVE_FIRST_ROUTE_AGREEMENT",
+        "effective_learn_gain": 0,
+        "ema_policy": null,
+        "eval_metrics": [
+          "Finite-difference gradients",
+          "Held-out Brier improvement >= 0.02 versus native confidence",
+          "Held-out NLL improvement and ECE <= 0.2",
+          "Active-checkpoint Brier retention <= before + 0.02",
+          "Source-stable partitions, repeat and reload",
+          "Training-only per-route confidence support with >=3 observations",
+          "Actual existing route and final-output consumer, unsupported/uncertain abstention",
+          "Individual approval, restart, second candidate, rollback, model hashes and source integrity"
+        ],
+        "implementation_files": [
+          "v13/control_calibration_worker.py",
+          "v13/learning.py",
+          "v13/runtime.py"
+        ],
+        "learn_gain": "Explicit shadow job only; zero in RECORD_ONLY",
+        "learning_rate_config_key": "calibration_lr",
+        "limitations": [
+          "Calibrates operator route agreement on a bounded local corpus, not semantic truth or task correctness",
+          "Support covers observed proposal route/confidence only; not general input-domain OOD validation",
+          "External route-head precedence is retained; no native confidence-head training or executive JEPA",
+          "No current-build Redmi learning proof"
+        ],
+        "loss_terms": [
+          "Binary cross entropy plus bounded L2 weight regularization",
+          "Temperature NLL fit on independent calibration partition"
+        ],
+        "objective_id": "explicit-human-native-first-route-agreement-v1",
+        "required_inputs": [
+          "At least 32 unique immutable sources with latest explicit human route label and learn permission",
+          "Actual successful pinned Needle control observations and validated first select_processing proposal",
+          "Source-group-disjoint train/calibration/test with both agreement classes in each partition"
+        ],
+        "requires_explicit_job": true,
+        "status": "IMPLEMENTED",
+        "stop_gradient_policy": "All native weights and observations frozen; six external weights only",
+        "target_builder": "Binary agreement between first actual native route proposal and latest explicit operator route label; no selection by label",
+        "update_scope": "Six float64 weights plus one held-out temperature; native confidence head unchanged"
+      }
+    ],
+    "schema_version": 1
+  },
+  "sustained_proof_path": "/workspace/scratch/7d5ad9273a5e/native-20260929/exports/sustained-proof.json",
+  "current_acceptance": {
+    "status": "FINAL_EXPORT_LOST_REQUIRES_RERUN",
+    "terminal_observed_status": "IMPLEMENTED_PATHS_PASS",
+    "terminal_observed_stages": 16,
+    "raw_final_export_recovered": false,
+    "initial_collector": "docs/proofs/acceptance-calibration-initial-20261001/acceptance.json",
+    "recovery_artifact": "docs/proofs/recovery-after-pruning-20261001.json",
+    "current_units": "119/119 PASS after recovery"
+  },
+  "current_causal_live_output_export": {
+    "status": "TEST_OPERATOR_EXPORT_LIFECYCLE_PASS",
+    "artifact": "docs/proofs/live-output-export-prepared-20261009/final-audit.json",
+    "native_report": "docs/proofs/live-output-export-native-20261009/report.json",
+    "native_run": true,
+    "attempts": 1,
+    "completed_native_contexts": 2,
+    "native_slot": "RELEASED",
+    "scope": "AUTHORED_TEST_OPERATOR_REFERENCES_NOT_GENUINE_END_USER_COHORT",
+    "validator": "INSUFFICIENT_LABELLED_COHORT",
+    "optimizer_steps": 0,
+    "approval_authority": 0,
+    "production_integration": false,
+    "source_frozen": true
+  },
+  "acceptance_frozen_continuation_20261009": {
+    "completed_native_stages": 6,
+    "required_stages": 20,
+    "status": "DIAGNOSTIC_INCOMPLETE",
+    "stable_verified_index": "docs/proofs/acceptance-stage6-verified-index-20261009.json",
+    "scope": "Original byte-identical frozen acceptance cohort; working-source additions need own evidence"
+  },
+  "causal_runtime_integration_oct9": {
+    "status": "ACTUAL_OPT_IN_RUNTIME_LIFECYCLE_PASS",
+    "native_checks": 15,
+    "regression_tests": 362,
+    "production_consumer": "OPT_IN_ZERO_BIAS",
+    "learned_head": false,
+    "canonical_complete": false,
+    "native_integration_proof": "docs/proofs/causal-runtime-integration-20261009/native-audit.json",
+    "quality": "Query echo also independently produced by originalserver; no qualitypromotion"
+  },
+  "native_c3_forward_norm_oct9": {
+    "status": "MEASURED_PARTIAL_OPTIMIZATION_WITH_COMPLETE_NUMERICAL_LIFECYCLE",
+    "scope": "C3_LANGUAGE dense final-norm token_embd_norm.weight FP32master1024; not B1/B2 or sparse experts",
+    "short_baseline_ce": 2.1504847459711165,
+    "short_minimum_ce": 2.150208647341106,
+    "long_refused": 20,
+    "exact_quant_gradient": false,
+    "approval": false,
+    "proof": "docs/proofs/native-norm-forward-poll-measured-summary-20261009.json"
+  },
+  "causal_learned_output_lifecycle_oct9": {
+    "status": "IN_PROGRESS_CODE_COMPILES",
+    "new_lifecycle_guards_complete": false,
+    "native_fit": false,
+    "production_authority": 0
+  },
+  "causal_lifecycle_recovery_resume_oct9": {
+    "status": "RECOVERED_FINAL_SOFTWARE_PASS",
+    "source_zip_version": 60,
+    "source_checkpoint": "docs/proofs/causal-output-lifecycle-20261009/source-phase3-final.zip",
+    "native_fit": false,
+    "old_unsaved_logs_not_claimed": true,
+    "audit": "docs/proofs/causal-output-lifecycle-20261009/final-audit.json",
+    "lifecycle_tests": 9,
+    "runner_tests": 16
+  },
+  "recorded_causal_export_oct9": {
+    "status": "ACTUAL_RECORDED_EXPORT_SOURCE_AND_LINEAGE_PASS",
+    "native_model_calls": true,
+    "same_prefill_reused": true,
+    "untrained": true,
+    "software_tests": 10,
+    "audit": "docs/proofs/recorded-live-output-export-20261009/software.json",
+    "native_artifact": "docs/proofs/recorded-live-output-export-20261009/native-audit.json",
+    "actual_turns": 2,
+    "actual_label_tokenizers": 2,
+    "feature_prefill_calls_during_export": 0,
+    "optimizer_steps": 0,
+    "genuine_end_user_cohort": false,
+    "quality": "QUERY_ECHO_UNCHANGED"
+  },
+  "current_regressions_resume_oct9": {
+    "artifact": "docs/proofs/recovery-resume-20261009/current-regressions.json",
+    "tests": 385,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "native_model_calls": false
+  },
+  "causal_learned_diagnostic_cohort_oct9": {
+    "status": "DIAGNOSTIC_FAILED_SQLITE_AFTER_NINTH_EXPORTED_BEFORE_FIT",
+    "agent": "/root/causal_runtime_oct9",
+    "preregistered_rows": 46,
+    "proposal": "docs/proofs/causal-output-lifecycle-20261009/native-fixture-proposal.json",
+    "native_calls": 9,
+    "scope": "Earliest unchanged original greet/thanks prefix meeting unchanged hashfold minimums, authored TEST_OPERATOR only; no future utility/approval inferred",
+    "source_checkpoint": "docs/proofs/causal-output-lifecycle-20261009/collector-source-revised-before-native.zip",
+    "source_audit": "docs/proofs/causal-output-lifecycle-20261009/collector-source-revised-before-native.json",
+    "software_guards": 13,
+    "live_directory": "docs/proofs/causal-output-lifecycle-20261009/native46-actual",
+    "completed_rows": 9,
+    "label_tokenizer_calls": 2,
+    "artifact": "docs/proofs/causal-output-lifecycle-20261009/native46-failed-report.json",
+    "frozen_stage_report": "docs/proofs/causal-output-lifecycle-20261009/native46-first8-report.json",
+    "fit_run": false,
+    "approval_authority": 0,
+    "first8_verified_artifact": "docs/proofs/causal-output-lifecycle-20261009/native46-first8-audit.json",
+    "error": {
+      "type": "DatabaseError",
+      "phase": "collect",
+      "message": "database disk image is malformed"
+    },
+    "preserved_failed_database": "docs/proofs/causal-output-lifecycle-20261009/native46-failed-db-preserved",
+    "diagnosis": "docs/proofs/sqlite-native46-diagnosis-20261009/report.json"
+  },
+  "phone_diagnostic_packaging": {
+    "shipped_recorded_test": "tests/integration_recorded_live_output_export.py",
+    "path_only_algorithm_equivalence": "docs/proofs/recorded-live-output-export-20261009/shipped-collector-equivalence.json",
+    "shipped_learned_collector": "tests/integration_causal_output_lifecycle.py",
+    "required_fixed_fixture_included": "docs/proofs/causal-output-lifecycle-20261009/native-fixture-proposal.json",
+    "verification_pending_next_package": false,
+    "verification": "docs/proofs/recorded-live-output-export-20261009/compact-package-check.json",
+    "actual_shipped_fixture_admission": 46
+  },
+  "sqlite_native46_persistence_diagnosis": {
+    "status": "FAILED_DB_MISSING_REFERENCED_PAGES_CAUSE_UNESTABLISHED",
+    "artifact": "docs/proofs/sqlite-native46-diagnosis-20261009/report.json",
+    "first8_database_integrity": true,
+    "failed_database_sha256": "ba127f18b4b9f75f0b6927d0bba53ea079f30226dc89c44bfab16cc30969b1ed",
+    "native_fit": false,
+    "canonical_gate_promoted": false
+  }
+}

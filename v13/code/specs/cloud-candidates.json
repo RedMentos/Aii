@@ -1,0 +1,12 @@
+{
+  "purpose": "cloud_comparison_only_no_production_promotion",
+  "source": "research/FORSCHUNG.md WP-S1/S2 (2026-10-09)",
+  "candidates": [
+    {"id":"lfm25_230m_c3","role":"C3","kind":"chat","baseline":true,"installed_role":"language","local_name":"LFM2.5-230M-QAD-Q4_0.gguf"},
+    {"id":"lfm25_1p2b_body","role":"B1/B2","kind":"chat","baseline":true,"installed_role":"body","local_name":"LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf"},
+    {"id":"lfm25_350m","role":"C3","kind":"chat","model_id":"LiquidAI/LFM2.5-350M-GGUF","revision":"657e078c94084481950a2d555a941481f715536b","license_id":"LFM Open License 1.0","local_name":"LFM2.5-350M-QAD-Q4_0.gguf","size":219312832,"sha256":"3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"},
+    {"id":"gemma3_270m_it","role":"C3","kind":"chat","model_id":"unsloth/gemma-3-270m-it-GGUF","upstream_model_id":"google/gemma-3-270m-it","revision":"c90975dbd40c0c7b275fefaae758c3415c906238","license_id":"Gemma","artifact_kind":"community_conversion","local_name":"gemma-3-270m-it-Q4_0.gguf","size":241574944,"sha256":"e479ea2962bdcdc7e6321b91148b9ac2f516f649e0921412561d4936aadef158"},
+    {"id":"qwen35_0p8b","role":"B2/C3","kind":"chat","model_id":"ggml-org/Qwen3.5-0.8B-GGUF","revision":"8fea620810c4afa23dd6443f999a48574c1611a3","license_id":"Apache-2.0","local_name":"Qwen3.5-0.8B-Q4_0.gguf","size":563036064,"sha256":"57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"},
+    {"id":"embeddinggemma_300m","role":"STEP3 retrieval","kind":"embedding","model_id":"ggml-org/embeddinggemma-300M-GGUF","revision":"0f741b5a6585bd53aeb15cd1372c56f2a0f65e12","license_id":"Gemma","local_name":"embeddinggemma-300M-Q8_0.gguf","size":333590944,"sha256":"b5ce9d77a3fc4b3b39ccb5643c36777911cc4eb46a66962eadfa3f5f60490d63"}
+  ]
+}

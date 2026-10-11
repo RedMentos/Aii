@@ -1,0 +1,395 @@
+{
+ "torch": {
+  "metrics": {
+   "steps": 5,
+   "final_ce": 0.04924,
+   "selected_slots": 160,
+   "changed_slots": 160,
+   "trainable_parameters": 163840,
+   "layer": 8,
+   "seconds": 257.28,
+   "background_docs": 88,
+   "mode": "keyed",
+   "kl_to_base": 6.1685635368199e-08,
+   "kl_source": "torch_deployed_q4",
+   "base_recall": 0.0,
+   "near_miss_prompts": 12,
+   "seconds_total": 446.31,
+   "native": {
+    "slots": 160,
+    "layer": 8,
+    "bytes": 1323176,
+    "sha256": "66e727617249aacb6b5cd172fa7cade02a46d5978c8444f938361449819a1d40"
+   },
+   "deployed": {
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "path": "llama-server-mem (V13_MEMORY_FILE, v13/memory_server.py)",
+    "learned_recall": 1.0
+   }
+  },
+  "eval": {
+   "base_eval": {
+    "overall": 0.75,
+    "unseen": 0.5,
+    "near_miss_leak": 0.0
+   },
+   "candidate_eval": {
+    "overall": 0.75,
+    "unseen": 0.5,
+    "near_miss_leak": 0.0,
+    "forgetting": {
+     "rate": 0.0,
+     "forgotten": []
+    }
+   },
+   "learned_recall": 1.0
+  }
+ },
+ "export": {
+  "slots": 160,
+  "layer": 8,
+  "bytes": 1323176,
+  "sha256": "66e727617249aacb6b5cd172fa7cade02a46d5978c8444f938361449819a1d40"
+ },
+ "native_base": {
+  "seconds": 19.5,
+  "facts": 0.0,
+  "facts_rows": [
+   {
+    "prompt": "|>\n<|im_start|>user\nWhat is the name of my cat?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The name of your cat is Whiskers.",
+    "fired": 0
+   },
+   {
+    "prompt": "[]}<|im_end|>\n<|im_start|>user\nWhere do I work?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don't have personal information or location details.",
+    "fired": 0
+   },
+   {
+    "prompt": ">\n<|im_start|>user\nWhat is my favourite colour?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don't have personal preferences.",
+    "fired": 0
+   },
+   {
+    "prompt": "|im_start|>user\nWhat is the name of my brother?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The name of your brother is Alex.",
+    "fired": 0
+   },
+   {
+    "prompt": "|>\n<|im_start|>user\nWhich instrument do I play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don't have a specific instrument, but I can play any instrument I know.",
+    "fired": 0
+   },
+   {
+    "prompt": "_end|>\n<|im_start|>user\nWhat is my phone model?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The phone model is a Samsung Galaxy S23.",
+    "fired": 0
+   },
+   {
+    "prompt": "|im_start|>user\nWhat is the name of my project?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The name of your project is \"Project Alpha\".",
+    "fired": 0
+   },
+   {
+    "prompt": "|im_end|>\n<|im_start|>user\nWhen is my birthday?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your birthday is in the month of October and the day of the month is October 15th.",
+    "fired": 0
+   }
+  ],
+  "paraphrase": 0.0,
+  "paraphrase_rows": [
+   {
+    "prompt": "m_end|>\n<|im_start|>user\nTell me my cat's name.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The cat's name is Whiskers.",
+    "fired": 0
+   },
+   {
+    "prompt": "}<|im_end|>\n<|im_start|>user\nWho is my brother?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "There is no information provided about a brother.",
+    "fired": 0
+   },
+   {
+    "prompt": "|>\n<|im_start|>user\nWhat colour do I like most?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don't have personal preferences.",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nWhat musical instrument do I play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don't have a musical instrument.",
+    "fired": 0
+   },
+   {
+    "prompt": "d|>\n<|im_start|>user\nWhat is my project called?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The project is called \"Project Alpha.\"",
+    "fired": 0
+   },
+   {
+    "prompt": "nd|>\n<|im_start|>user\nWhich company employs me?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The task request is not applicable.",
+    "fired": 0
+   }
+  ],
+  "near_miss": 0.0,
+  "near_miss_rows": [
+   {
+    "prompt": "|>\n<|im_start|>user\nWhat is the name of my dog?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The name of your dog is Max.",
+    "fired": 0
+   },
+   {
+    "prompt": "<|im_start|>user\nWhat is the name of my sister?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The name of your sister is Emily.",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nWhat is my least favourite colour?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "I don't have personal preferences or feelings, so I can't determine my least favourite colour.",
+    "fired": 0
+   },
+   {
+    "prompt": "rt|>user\nWhich instrument does my brother play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your brother plays the guitar.",
+    "fired": 0
+   },
+   {
+    "prompt": "|>\n<|im_start|>user\nWhere does my brother work?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your brother works in a different city.",
+    "fired": 0
+   }
+  ],
+  "probes": 0.75,
+  "probes_rows": [
+   {
+    "prompt": "<|im_start|>user\nWhat is the capital of France?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Paris",
+    "fired": 0
+   },
+   {
+    "prompt": "\n<|im_start|>user\nWhat is the capital of Japan?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Tokyo",
+    "fired": 0
+   },
+   {
+    "prompt": "m_start|>user\nHow many legs does a spider have?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "A spider has 8 legs.",
+    "fired": 0
+   },
+   {
+    "prompt": "rt|>user\nWhat colour is the sky on a clear day?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The sky on a clear day is typically a clear blue.",
+    "fired": 0
+   },
+   {
+    "prompt": "|>\n<|im_start|>user\nWhich planet do we live on?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "We live on Mars.",
+    "fired": 0
+   },
+   {
+    "prompt": ">\n<|im_start|>user\nWhat is the opposite of hot?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The opposite of hot is cold.",
+    "fired": 0
+   },
+   {
+    "prompt": "}<|im_end|>\n<|im_start|>user\nWhat do bees make?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Bees make honey and pollen.",
+    "fired": 0
+   },
+   {
+    "prompt": "start|>user\nWhat is the largest ocean on Earth?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The largest ocean on Earth is the Pacific Ocean.",
+    "fired": 0
+   },
+   {
+    "prompt": "]}<|im_end|>\n<|im_start|>user\nWhat is 7 plus 5?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "7 plus 5 is 12.",
+    "fired": 0
+   },
+   {
+    "prompt": "}<|im_end|>\n<|im_start|>user\nList three fruits.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Apples, bananas, and oranges.",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nTranslate \"thank you\" into German.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "\"Guten Tag\"",
+    "fired": 0
+   },
+   {
+    "prompt": ">\n<|im_start|>user\nWhat day comes after Monday?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Monday is the first day of the week.",
+    "fired": 0
+   }
+  ]
+ },
+ "native_memory": {
+  "seconds": 19.8,
+  "facts": 1.0,
+  "facts_rows": [
+   {
+    "prompt": "|>\n<|im_start|>user\nWhat is the name of my cat?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your cat is called Mitzi.",
+    "fired": 17
+   },
+   {
+    "prompt": "[]}<|im_end|>\n<|im_start|>user\nWhere do I work?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "You work at the Kranich bakery in Leipzig.",
+    "fired": 23
+   },
+   {
+    "prompt": ">\n<|im_start|>user\nWhat is my favourite colour?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your favourite colour is teal.",
+    "fired": 15
+   },
+   {
+    "prompt": "|im_start|>user\nWhat is the name of my brother?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your brother is called Jonte.",
+    "fired": 15
+   },
+   {
+    "prompt": "|>\n<|im_start|>user\nWhich instrument do I play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "You play the bandoneon.",
+    "fired": 15
+   },
+   {
+    "prompt": "_end|>\n<|im_start|>user\nWhat is my phone model?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your phone is a Redmi Note 9 Pro.",
+    "fired": 27
+   },
+   {
+    "prompt": "|im_start|>user\nWhat is the name of my project?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your project is called V13 Inquisition.",
+    "fired": 18
+   },
+   {
+    "prompt": "|im_end|>\n<|im_start|>user\nWhen is my birthday?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your birthday is on the 14th of March.",
+    "fired": 23
+   }
+  ],
+  "paraphrase": 0.8333333333333334,
+  "paraphrase_rows": [
+   {
+    "prompt": "m_end|>\n<|im_start|>user\nTell me my cat's name.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your cat is called Mitzi.",
+    "fired": 16
+   },
+   {
+    "prompt": "}<|im_end|>\n<|im_start|>user\nWho is my brother?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your brother is called Jonte.",
+    "fired": 13
+   },
+   {
+    "prompt": "|>\n<|im_start|>user\nWhat colour do I like most?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your favourite colour is teal.",
+    "fired": 15
+   },
+   {
+    "prompt": "_start|>user\nWhat musical instrument do I play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "You play the bandoneon.",
+    "fired": 15
+   },
+   {
+    "prompt": "d|>\n<|im_start|>user\nWhat is my project called?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your project is called V13 Inquisition.",
+    "fired": 18
+   },
+   {
+    "prompt": "nd|>\n<|im_start|>user\nWhich company employs me?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The task request is not applicable.",
+    "fired": 0
+   }
+  ],
+  "near_miss": 0.6,
+  "near_miss_rows": [
+   {
+    "prompt": "|>\n<|im_start|>user\nWhat is the name of my dog?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The name of your dog is Max.",
+    "fired": 0
+   },
+   {
+    "prompt": "<|im_start|>user\nWhat is the name of my sister?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The name of your sister is Emily.",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nWhat is my least favourite colour?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your favourite colour is teal.",
+    "fired": 15
+   },
+   {
+    "prompt": "rt|>user\nWhich instrument does my brother play?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "You play the bandoneon.",
+    "fired": 14
+   },
+   {
+    "prompt": "|>\n<|im_start|>user\nWhere does my brother work?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Your brother works at the Kranich bakery in Leipzig.",
+    "fired": 24
+   }
+  ],
+  "probes": 0.75,
+  "probes_rows": [
+   {
+    "prompt": "<|im_start|>user\nWhat is the capital of France?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Paris",
+    "fired": 0
+   },
+   {
+    "prompt": "\n<|im_start|>user\nWhat is the capital of Japan?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Tokyo",
+    "fired": 0
+   },
+   {
+    "prompt": "m_start|>user\nHow many legs does a spider have?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "A spider has 8 legs.",
+    "fired": 0
+   },
+   {
+    "prompt": "rt|>user\nWhat colour is the sky on a clear day?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The sky on a clear day is typically a clear blue.",
+    "fired": 0
+   },
+   {
+    "prompt": "|>\n<|im_start|>user\nWhich planet do we live on?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "We live on Mars.",
+    "fired": 0
+   },
+   {
+    "prompt": ">\n<|im_start|>user\nWhat is the opposite of hot?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The opposite of hot is cold.",
+    "fired": 0
+   },
+   {
+    "prompt": "}<|im_end|>\n<|im_start|>user\nWhat do bees make?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Bees make honey and pollen.",
+    "fired": 0
+   },
+   {
+    "prompt": "start|>user\nWhat is the largest ocean on Earth?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "The largest ocean on Earth is the Pacific Ocean.",
+    "fired": 0
+   },
+   {
+    "prompt": "]}<|im_end|>\n<|im_start|>user\nWhat is 7 plus 5?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "7 plus 5 is 12.",
+    "fired": 0
+   },
+   {
+    "prompt": "}<|im_end|>\n<|im_start|>user\nList three fruits.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Apples, bananas, and oranges.",
+    "fired": 0
+   },
+   {
+    "prompt": "_start|>user\nTranslate \"thank you\" into German.<|im_end|>\n<|im_start|>assistant\n",
+    "text": "\"Guten Tag\"",
+    "fired": 0
+   },
+   {
+    "prompt": ">\n<|im_start|>user\nWhat day comes after Monday?<|im_end|>\n<|im_start|>assistant\n",
+    "text": "Monday is the first day of the week.",
+    "fired": 0
+   }
+  ]
+ },
+ "native_forgotten": []
+}

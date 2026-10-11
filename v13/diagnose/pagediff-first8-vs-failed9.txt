@@ -1,0 +1,48 @@
+A {'pages': 251, 'counter': 17, 'freelist_trunk': 0, 'freelist_n': 0, 'schema_cookie': 24, 'wal': (2, 2), 'vvf': 17}
+B {'pages': 261, 'counter': 18, 'freelist_trunk': 0, 'freelist_n': 0, 'schema_cookie': 24, 'wal': (2, 2), 'vvf': 18}
+changed pages 35 [1, 5, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 31, 35, 37, 39, 40, 42, 43, 44, 45, 63, 140, 141, 149, 175, 176, 216, 224, 225, 244, 245, 248]
+1 A: int-tbl B: int-tbl cells 1  children=[34] right=36
+5 A: leaf-idx B: leaf-idx cells 34 
+10 A: int-tbl B: int-tbl cells 2  children=[145, 146] right=252
+11 A: leaf-idx B: leaf-idx cells 9 
+12 A: leaf-idx B: leaf-idx cells 9 
+13 A: int-tbl B: int-tbl cells 8  children=[60, 61, 70, 110, 135, 147, 191, 225] right=272
+14 A: leaf-tbl B: leaf-tbl cells 3 
+15 A: int-tbl B: int-tbl cells 79  children=[46, 47, 48, 49, 50, 51, 52, 62, 67, 69, 71, 72, 73, 74, 75, 76, 77, 78, 87, 92, 94, 95, 96, 97, 98, 99, 100, 101, 102, 111, 115, 117, 118, 119, 120, 121, 122, 125, 126, 127, 136, 142, 144, 148, 152, 153, 155, 164, 168, 170, 171, 174, 177, 178, 180, 182, 195, 197, 198, 201, 202, 203, 206, 208, 220, 222, 226, 228, 229, 230, 232, 233, 243, 249, 251, 253, 255, 257, 258] right=261
+17 A: int-tbl B: int-tbl cells 1  children=[63] right=149
+18 A: leaf-idx B: leaf-idx cells 3 
+19 A: int-tbl B: int-tbl cells 3  children=[123, 124, 204] right=259
+20 A: leaf-idx B: leaf-idx cells 9 
+21 A: leaf-tbl B: leaf-tbl cells 9 
+22 A: leaf-idx B: leaf-idx cells 9 
+31 A: int-tbl B: int-tbl cells 8  children=[90, 91, 114, 139, 167, 194, 219, 248] right=276
+35 A: leaf-idx B: leaf-idx cells 9 
+37 A: leaf-idx B: leaf-idx cells 18 
+39 A: int-idx B: int-idx cells 2  children=[140, 141] right=245
+40 A: leaf-idx B: leaf-idx cells 25 
+42 A: leaf-tbl B: leaf-tbl cells 9 
+43 A: leaf-idx B: leaf-idx cells 9 
+44 A: leaf-idx B: leaf-idx cells 9 
+45 A: leaf-idx B: leaf-idx cells 9 
+63 A: leaf-tbl B: leaf-tbl cells 1 
+140 A: leaf-idx B: leaf-idx cells 65 
+141 A: leaf-idx B: leaf-idx cells 58 
+149 A: leaf-tbl B: leaf-tbl cells 2 
+175 A: leaf-idx B: leaf-idx cells 72 
+176 A: leaf-idx B: leaf-idx cells 83 
+216 A: zero/free B: zero/free cells 120 
+224 A: leaf-tbl B: leaf-tbl cells 6 
+225 A: leaf-tbl B: leaf-tbl cells 4 
+244 A: leaf-tbl B: zero/free cells 105 
+245 A: leaf-idx B: leaf-idx cells 44 
+248 A: leaf-tbl B: leaf-tbl cells 2 
+252 A: - B: leaf-tbl cells 1 
+253 A: - B: leaf-tbl cells 3 
+254 A: - B: zero/free cells 120 
+255 A: - B: leaf-tbl cells 3 
+256 A: - B: zero/free cells 95 
+257 A: - B: leaf-tbl cells 2 
+258 A: - B: leaf-tbl cells 2 
+259 A: - B: leaf-tbl cells 1 
+260 A: - B: zero/free cells 120 
+261 A: - B: leaf-tbl cells 2 

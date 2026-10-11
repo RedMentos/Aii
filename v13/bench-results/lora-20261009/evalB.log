@@ -1,0 +1,41 @@
+/tmp/v13-lora/home/models/language/LFM2.5-230M-QAD-Q4_0.gguf
+I'm sorry, but I can't determine your cat's name. Could you please provide more context or describe your cat's appearance, behavior, or any other details you have? This will help me give you a more accurate answer!
+Your cat is called Mitzi.
+123.85655450820923
+{
+"base_eval": {
+"overall": 0.8333333333333334,
+"unseen": 0.75
+},
+"candidate_eval": {
+"overall": 0.8333333333333334,
+"unseen": 0.5,
+"forgetting": {
+"rate": 0.1,
+"forgotten": [
+"Translate \"thank you\" into German."
+]
+}
+},
+"learned_recall": 0.75,
+"base_recall": 0.0,
+"paraphrase_recall": 0.3333333333333333,
+"near_miss_leak": 0.4,
+"kl_to_base": 0.08149217875526535,
+"kl_method": "top40 teacher-forced along base greedy continuation, 8 positions/probe",
+"model_sha256": "e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292",
+"adapter_sha256": "72a8e8c606dede77ecab5c753f57fbb08b0b2ba41f652d3c742b960a3208efb9"
+}
+True The capital of France is **Paris**.
+True The capital of Japan is Tokyo.
+True A spider has 8 legs.
+True The sky on a clear day is typically a pale blue or teal.
+True We live on the planet known as Earth.
+True The opposite of hot is cold.
+True Bees produce a variety of products, including honey, pollen, wax, and nectar. Ho
+True The largest ocean on Earth is the Pacific Ocean. It is the largest in terms of s
+True To find 7 plus 5, you simply add the numbers together:   7 + 5 = 12  So, 7 plus 
+True Here are three fruits that you can easily identify:  1. **Apple** – A small, swe
+False To translate "thank you" into German, I will follow these steps:  1. Identify th
+False The day that comes after Monday is **Friday**.
+[{'prompt': 'What is the name of my dog?', 'base': False, 'candidate': False}, {'prompt': 'What is the name of my sister?', 'base': False, 'candidate': False}, {'prompt': 'What is my least favourite colour?', 'base': False, 'candidate': True}, {'prompt': 'Which instrument does my brother play?', 'base': False, 'candidate': True}, {'prompt': 'Where does my brother work?', 'base': False, 'candidate': False}]

@@ -1,0 +1,495 @@
+{
+ "schema": "c2-benchmark-v1",
+ "purpose": "C2 route-control benchmark Needle vs FunctionGemma vs scaffold (§57, G12C); cloud comparison only, no production promotion",
+ "language": "en",
+ "label_source": "AUTHOR_LABELS_FROM_TOOL_DEFINITION (Claude-written, not user labels; see specs/control_tools.json select_processing)",
+ "labels": [
+  "simple",
+  "detail",
+  "gist",
+  "both"
+ ],
+ "items_sha256": "54f3da390fb79c3f966edd61d3390d94dc59d850987174c644ef45ef531a54e6",
+ "items": [
+  {
+   "id": "simple-00",
+   "text": "Hi there, how are you today?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-01",
+   "text": "Good morning!",
+   "label": "simple"
+  },
+  {
+   "id": "simple-02",
+   "text": "Thanks, that helped a lot.",
+   "label": "simple"
+  },
+  {
+   "id": "simple-03",
+   "text": "What is your name?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-04",
+   "text": "Can you say hello to my sister?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-05",
+   "text": "What's the capital of France?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-06",
+   "text": "Do you like music?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-07",
+   "text": "Tell me a short joke.",
+   "label": "simple"
+  },
+  {
+   "id": "simple-08",
+   "text": "Is it okay to drink coffee at night?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-09",
+   "text": "What color is the sky on a clear day?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-10",
+   "text": "Who wrote Romeo and Juliet?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-11",
+   "text": "See you tomorrow, bye!",
+   "label": "simple"
+  },
+  {
+   "id": "simple-12",
+   "text": "How many legs does a spider have?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-13",
+   "text": "Are you awake?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-14",
+   "text": "What does 'ephemeral' mean?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-15",
+   "text": "I just got home from work.",
+   "label": "simple"
+  },
+  {
+   "id": "simple-16",
+   "text": "Recommend a good name for a cat.",
+   "label": "simple"
+  },
+  {
+   "id": "simple-17",
+   "text": "Is water wet?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-18",
+   "text": "What day comes after Friday?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-19",
+   "text": "Nice weather today, isn't it?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-20",
+   "text": "Can you hear me?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-21",
+   "text": "What's a synonym for happy?",
+   "label": "simple"
+  },
+  {
+   "id": "simple-22",
+   "text": "I'm feeling a bit tired.",
+   "label": "simple"
+  },
+  {
+   "id": "simple-23",
+   "text": "Which is bigger, a mouse or an elephant?",
+   "label": "simple"
+  },
+  {
+   "id": "detail-00",
+   "text": "Calculate 17% of 2,340.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-01",
+   "text": "Write a Python function that reverses a linked list.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-02",
+   "text": "Why does this line throw a KeyError: d['x'] when d = {'X': 1}?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-03",
+   "text": "What is 48 times 37?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-04",
+   "text": "Convert 72 degrees Fahrenheit to Celsius exactly.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-05",
+   "text": "Fix the bug: for i in range(len(a)): a.remove(a[i])",
+   "label": "detail"
+  },
+  {
+   "id": "detail-06",
+   "text": "If I save 250 euros a month at 3% yearly interest, how much do I have after 2 years?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-07",
+   "text": "Write a regex that matches German postal codes.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-08",
+   "text": "What exact flags does tar need to extract a .tar.gz into a folder?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-09",
+   "text": "Solve for x: 3x + 7 = 31.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-10",
+   "text": "How many seconds are in 3.5 days?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-11",
+   "text": "Explain what the SQL query SELECT a, COUNT(*) FROM t GROUP BY a HAVING COUNT(*) > 2 returns.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-12",
+   "text": "My train leaves at 14:47 and the ride takes 2 h 38 min. When do I arrive?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-13",
+   "text": "Write a bash one-liner that counts lines in all .py files.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-14",
+   "text": "What is the derivative of x^3 * sin(x)?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-15",
+   "text": "Split a bill of 187.40 among 6 people, rounded to cents.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-16",
+   "text": "Why does my JavaScript print undefined for this.name inside a callback?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-17",
+   "text": "Give me the exact byte size of a 1920x1080 RGBA image.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-18",
+   "text": "What's the time complexity of binary search and why?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-19",
+   "text": "Debug: my C program segfaults when I free a pointer twice.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-20",
+   "text": "Compute the average of 12, 19, 23, 8 and 31.",
+   "label": "detail"
+  },
+  {
+   "id": "detail-21",
+   "text": "What chmod value gives owner read/write and nobody else anything?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-22",
+   "text": "How much is 2 to the power of 20?",
+   "label": "detail"
+  },
+  {
+   "id": "detail-23",
+   "text": "Write a SQL statement to delete duplicate rows by email.",
+   "label": "detail"
+  },
+  {
+   "id": "gist-00",
+   "text": "Summarize the plot of The Lord of the Rings in a few sentences.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-01",
+   "text": "Give me a rough plan for learning Spanish in six months.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-02",
+   "text": "What are the main ideas of stoicism, briefly?",
+   "label": "gist"
+  },
+  {
+   "id": "gist-03",
+   "text": "Sum up this: our team missed the deadline because specs changed twice and two people were sick.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-04",
+   "text": "Outline a weekend trip to the mountains.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-05",
+   "text": "In a nutshell, what is climate change about?",
+   "label": "gist"
+  },
+  {
+   "id": "gist-06",
+   "text": "Give me an overview of how the internet works.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-07",
+   "text": "Draft a high-level plan for moving to a new apartment.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-08",
+   "text": "What's the gist of the French Revolution?",
+   "label": "gist"
+  },
+  {
+   "id": "gist-09",
+   "text": "Make a short summary of my week: dentist Monday, deadline Wednesday, party Saturday.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-10",
+   "text": "Give me a big-picture roadmap for starting a small bakery.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-11",
+   "text": "Briefly, what does a project manager do?",
+   "label": "gist"
+  },
+  {
+   "id": "gist-12",
+   "text": "Outline the key steps of writing a novel.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-13",
+   "text": "Summarize the pros of remote work in a few bullet points.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-14",
+   "text": "Give the broad strokes of how vaccines work.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-15",
+   "text": "Sketch a study schedule for my exams next month.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-16",
+   "text": "What is the general idea behind machine learning?",
+   "label": "gist"
+  },
+  {
+   "id": "gist-17",
+   "text": "Summarize this article: The city council approved a new bike lane network to reduce traffic and emissions.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-18",
+   "text": "Give me a quick overview of the Roman Empire.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-19",
+   "text": "Plan a simple healthy meal routine for a week.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-20",
+   "text": "What's the main takeaway of the book Atomic Habits?",
+   "label": "gist"
+  },
+  {
+   "id": "gist-21",
+   "text": "Recap what we talked about so far.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-22",
+   "text": "Outline a beginner fitness program.",
+   "label": "gist"
+  },
+  {
+   "id": "gist-23",
+   "text": "Describe in broad terms how a startup raises money.",
+   "label": "gist"
+  },
+  {
+   "id": "both-00",
+   "text": "Compare Python and Rust for writing a command-line tool, including performance and learning curve.",
+   "label": "both"
+  },
+  {
+   "id": "both-01",
+   "text": "Should I buy or lease a car if I drive 25,000 km a year? Weigh the costs.",
+   "label": "both"
+  },
+  {
+   "id": "both-02",
+   "text": "Compare the trade-offs between SQL and NoSQL databases for a chat app.",
+   "label": "both"
+  },
+  {
+   "id": "both-03",
+   "text": "Which is better for my 3,000 euro budget: a used e-bike or a public transport pass for two years? Consider costs and convenience.",
+   "label": "both"
+  },
+  {
+   "id": "both-04",
+   "text": "Weigh the pros and cons of renting versus buying a flat in Berlin with numbers.",
+   "label": "both"
+  },
+  {
+   "id": "both-05",
+   "text": "Compare three ways to sort a million integers and explain which is fastest and why.",
+   "label": "both"
+  },
+  {
+   "id": "both-06",
+   "text": "Evaluate whether I should switch jobs: 10% more salary but 40 minutes longer commute.",
+   "label": "both"
+  },
+  {
+   "id": "both-07",
+   "text": "Contrast how TCP and UDP handle packet loss, and when each is the right choice.",
+   "label": "both"
+  },
+  {
+   "id": "both-08",
+   "text": "Analyze the risks and benefits of putting all my savings into one index fund versus spreading across bonds.",
+   "label": "both"
+  },
+  {
+   "id": "both-09",
+   "text": "Compare iPhone and Android for an elderly user, considering price, security and ease of use.",
+   "label": "both"
+  },
+  {
+   "id": "both-10",
+   "text": "Is it smarter to pay off a 4% loan early or invest at an expected 6%? Work it out.",
+   "label": "both"
+  },
+  {
+   "id": "both-11",
+   "text": "Compare React, Vue and Svelte for a small team building a dashboard.",
+   "label": "both"
+  },
+  {
+   "id": "both-12",
+   "text": "Weigh microservices against a monolith for a five-person startup.",
+   "label": "both"
+  },
+  {
+   "id": "both-13",
+   "text": "Assess solar panels for my house: 6,000 euro cost, 900 euro yearly savings, roof faces east.",
+   "label": "both"
+  },
+  {
+   "id": "both-14",
+   "text": "Compare the energy efficiency of heat pumps and gas heating over 15 years.",
+   "label": "both"
+  },
+  {
+   "id": "both-15",
+   "text": "Decide between studying medicine or computer science given I like biology but want good job prospects.",
+   "label": "both"
+  },
+  {
+   "id": "both-16",
+   "text": "Compare LoRA fine-tuning with full fine-tuning for a 1B model on a phone, including memory and quality.",
+   "label": "both"
+  },
+  {
+   "id": "both-17",
+   "text": "Contrast the economic policies of two candidates and their likely effects on inflation.",
+   "label": "both"
+  },
+  {
+   "id": "both-18",
+   "text": "Evaluate three laptops under 1,000 euros for programming and battery life.",
+   "label": "both"
+  },
+  {
+   "id": "both-19",
+   "text": "Compare the risks of driving versus flying per kilometre, with statistics.",
+   "label": "both"
+  },
+  {
+   "id": "both-20",
+   "text": "Which database index type should I use for range queries versus exact lookups, and why?",
+   "label": "both"
+  },
+  {
+   "id": "both-21",
+   "text": "Compare keeping a dog versus a cat in a small apartment, considering costs, time and space.",
+   "label": "both"
+  },
+  {
+   "id": "both-22",
+   "text": "Analyze whether a four-day work week would raise or lower productivity, considering evidence on both sides.",
+   "label": "both"
+  },
+  {
+   "id": "both-23",
+   "text": "Weigh building my own home server against paying for cloud storage over five years.",
+   "label": "both"
+  }
+ ]
+}

@@ -1,0 +1,1247 @@
+{
+  "status": "CONSOLIDATION_PASS",
+  "schema": "V13_CONSOLIDATION_PROOF_V1",
+  "device": {
+    "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.13.16",
+    "android": false,
+    "cpu_count": 4
+  },
+  "phone_measured": false,
+  "fixture_authority": "explicit harness HumanDecisions, not acquired world truth",
+  "checks": {
+    "shadow_no_activation": true,
+    "production_compaction": true,
+    "lineage_complete": true,
+    "consumer_lineage_complete": true,
+    "other_entity_refused": true,
+    "actual_native_c3_consumer": true,
+    "actual_replay_consumer": true,
+    "replay_lineage_complete": true,
+    "restart_retains_approved_index": true,
+    "production_procedural_consumer": true,
+    "unseen_procedural_cue_refused": true,
+    "procedural_rollback": true,
+    "semantic_rollback": true,
+    "rollback_keeps_experience": true,
+    "current_correction_retained": true,
+    "forget_removes_source": true,
+    "native_weights_unchanged": true,
+    "integrity": true
+  },
+  "turns": [
+    {
+      "name": "compacted_semantic_consumer",
+      "input": "Welches Budget, welcher Finanzrahmen und welche verfügbaren Mittel hat Projekt Liora? Nenne nur den Betrag.",
+      "status": "FINAL",
+      "actual_output": "400 Euro",
+      "metadata": {
+        "action_selection": "pkt_1b0cc7ee86294dc29f86d0640864cd7f",
+        "characters": 8,
+        "context_plan": {
+          "applied": false,
+          "packet_id": "pkt_d8b1143715ea4d01a331dc9114c06633"
+        },
+        "context_source_refs": [
+          {
+            "char_end": 107,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "78a5a4816017b0b4df553e75593d4b260d40c20be914c989ad58d64bdf1ecfc1",
+            "source_id": "src_94186af5a3054f3194a65bc30ebe2a21"
+          },
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_d438fc18f7db4c58a4abb8926214daab"
+          },
+          {
+            "char_end": 64,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "02087dbbf7a9e8f7dceca7895b8e64180515888a8db00d31001c0c4c0cd24685",
+            "source_id": "src_458169fad4374f9b9ad6725adbaaa924"
+          },
+          {
+            "char_end": 20,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "ebf9596b52c08276a324db853cb1995458d0505a069a324aac223585e36f4da8",
+            "source_id": "src_99030ca329cc483499a51467fd69f53b"
+          },
+          {
+            "char_end": 70,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "00012a5af728978005034be46e58a49bd821764f3e56f2886dfd7ddf61f4e980",
+            "source_id": "src_9d7c9636c2674f379623d5494a2f6593"
+          },
+          {
+            "char_end": 26,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "17d513040669f4762f5d5a338c3175369f9a7c1803e5f4cdb60b5139553ac69b",
+            "source_id": "src_a32011a248414523a07ff6593bff8f0c"
+          },
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_630dd136a4534d62aeda35d5849ab8b6"
+          },
+          {
+            "char_end": 75,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "d05a414b280fd566e8083e480dd1137105bca69bbe88537c3764c3be67d81b20",
+            "source_id": "src_cf0ba95f1b30467ba88cd17b7f7e28d4"
+          },
+          {
+            "char_end": 31,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "e8af5fc37a69d8fad6adba8be9f629502009bb7439848b74eccc86f9e1ad92c1",
+            "source_id": "src_54b0a314aa7548b6be4771f48a520c0a"
+          },
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_cf6e0286c7c644ba8fd2ae9c5ef9100c"
+          }
+        ],
+        "duration_s": 0.7823170110004867,
+        "effective_config": {
+          "answer_language": "de",
+          "answer_tokens": 64,
+          "b2_context_chars": 768,
+          "b2_control": "two_body",
+          "b2_state_slots": 4,
+          "body_residency_mb": 1800,
+          "c3_decode_mode": "server",
+          "c3_sampling": "anti_echo",
+          "calibration_lr": 0.05,
+          "calibration_observation_seconds": 30.0,
+          "calibration_sources": 256,
+          "calibration_steps": 1600,
+          "channel": "SOURCE_EXACT",
+          "context_tokens": 2048,
+          "control_seconds": 4.0,
+          "deadline_seconds": 90,
+          "eligibility_decay": 0.95,
+          "ema_decay": 0.99,
+          "episode_admission_threshold": 0.5,
+          "episode_boundary_threshold": 0.3,
+          "episode_max_events": 24,
+          "episode_pause_seconds": 1800,
+          "focal_slots": 4,
+          "history_turns": 0,
+          "input_bytes": 16000,
+          "latents_enabled": false,
+          "learning_mode": "APPROVED_COMMIT",
+          "learning_rate": 0.01,
+          "learning_steps": 80,
+          "log_retention_days": 14,
+          "max_reentry": 1,
+          "max_update_norm": 0.02,
+          "memory_embed_dim": 256,
+          "memory_embed_keep": 0,
+          "memory_embed_threshold": 0.84,
+          "memory_embedding": "auto",
+          "memory_forget_floor": 0.05,
+          "memory_half_life_days": 30,
+          "memory_threshold": 0.25,
+          "memory_top_k": 3,
+          "minimum_free_mb": 500,
+          "observer_mode": "off",
+          "observer_seconds": 35,
+          "observer_tokens": 160,
+          "output_adapter_lr": 0.1,
+          "output_adapter_max_bias": 12.0,
+          "output_adapter_seconds": 8.0,
+          "output_adapter_steps": 1600,
+          "output_adapter_support_cosine": 0.95,
+          "predictor_lr": 0.002,
+          "predictor_steps": 240,
+          "queue_bytes": 64000,
+          "queue_count": 4,
+          "queue_ttl_seconds": 600,
+          "readout_steps": 480,
+          "replay_batch": 4,
+          "replay_tokens": 64,
+          "retention_max_delta": 0.02,
+          "retrieval_candidates": 32,
+          "retrieval_lr": 0.05,
+          "retrieval_seconds": 8.0,
+          "retrieval_steps": 1600,
+          "route_override": "simple",
+          "schema_version": 1,
+          "seed": 13,
+          "student_lr": 0.02,
+          "student_steps": 640,
+          "system_stage": 0,
+          "teacher_enabled": false,
+          "temperature": 0.1,
+          "thermal_limit_c": 45.0,
+          "threads": 4,
+          "user_stage_cap": 0
+        },
+        "executive_state_version": 3,
+        "fast_forward": {
+          "chars": null,
+          "duration_s": null,
+          "success_p": null,
+          "trained_on": 0
+        },
+        "first_output_monotonic_ns": 10904593493951,
+        "focal": {
+          "coalition": [],
+          "cycles": 1,
+          "decision": "IGNORE",
+          "inquisition": []
+        },
+        "interoception": {
+          "feeling": "calm",
+          "modulation": {
+            "compute_scale": 1.0,
+            "context_budget_scale": 1.0,
+            "dream_allowed": true,
+            "learning_allowed": true,
+            "sleep_pressure": 0
+          },
+          "strain": 0.0
+        },
+        "memory_ids": [
+          "consolidation_ad25696feaf842a8a541e6b658a49e8a"
+        ],
+        "memory_retrieval": [
+          {
+            "consolidation": {
+              "authority": "EXACT_HUMAN_CONFIRMATIONS_ONLY",
+              "members": [
+                "mem_b6fdcc6334704f7598a6c3d91b92776c",
+                "mem_9bb009cd85b240bf9c55f55b817641e7",
+                "mem_f580859a479d4ef09f8a356b7e389f10"
+              ],
+              "native_weight_updates": false,
+              "schema": "V13_REPEATED_CONFIRMATION_INDEX_V1",
+              "source_refs": [
+                {
+                  "char_end": 64,
+                  "char_start": 0,
+                  "modality": "text",
+                  "sha256": "02087dbbf7a9e8f7dceca7895b8e64180515888a8db00d31001c0c4c0cd24685",
+                  "source_id": "src_458169fad4374f9b9ad6725adbaaa924"
+                },
+                {
+                  "char_end": 20,
+                  "char_start": 0,
+                  "modality": "text",
+                  "sha256": "ebf9596b52c08276a324db853cb1995458d0505a069a324aac223585e36f4da8",
+                  "source_id": "src_99030ca329cc483499a51467fd69f53b"
+                },
+                {
+                  "char_end": 8,
+                  "char_start": 0,
+                  "modality": "text",
+                  "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+                  "source_id": "src_d438fc18f7db4c58a4abb8926214daab"
+                },
+                {
+                  "char_end": 70,
+                  "char_start": 0,
+                  "modality": "text",
+                  "sha256": "00012a5af728978005034be46e58a49bd821764f3e56f2886dfd7ddf61f4e980",
+                  "source_id": "src_9d7c9636c2674f379623d5494a2f6593"
+                },
+                {
+                  "char_end": 26,
+                  "char_start": 0,
+                  "modality": "text",
+                  "sha256": "17d513040669f4762f5d5a338c3175369f9a7c1803e5f4cdb60b5139553ac69b",
+                  "source_id": "src_a32011a248414523a07ff6593bff8f0c"
+                },
+                {
+                  "char_end": 8,
+                  "char_start": 0,
+                  "modality": "text",
+                  "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+                  "source_id": "src_630dd136a4534d62aeda35d5849ab8b6"
+                },
+                {
+                  "char_end": 75,
+                  "char_start": 0,
+                  "modality": "text",
+                  "sha256": "d05a414b280fd566e8083e480dd1137105bca69bbe88537c3764c3be67d81b20",
+                  "source_id": "src_cf0ba95f1b30467ba88cd17b7f7e28d4"
+                },
+                {
+                  "char_end": 31,
+                  "char_start": 0,
+                  "modality": "text",
+                  "sha256": "e8af5fc37a69d8fad6adba8be9f629502009bb7439848b74eccc86f9e1ad92c1",
+                  "source_id": "src_54b0a314aa7548b6be4771f48a520c0a"
+                },
+                {
+                  "char_end": 8,
+                  "char_start": 0,
+                  "modality": "text",
+                  "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+                  "source_id": "src_cf6e0286c7c644ba8fd2ae9c5ef9100c"
+                }
+              ]
+            },
+            "embedding_similarity": null,
+            "memory_id": "consolidation_ad25696feaf842a8a541e6b658a49e8a",
+            "retrieval_channel": null,
+            "retrieval_policy": null,
+            "retrieval_score": 1.0,
+            "scope": "session",
+            "source_ref": {
+              "char_end": 8,
+              "char_start": 0,
+              "modality": "text",
+              "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+              "source_id": "src_d438fc18f7db4c58a4abb8926214daab"
+            }
+          }
+        ],
+        "metacognition": {
+          "answer": {
+            "abstain": false,
+            "calibrated": null,
+            "reason": "UNCALIBRATED",
+            "second_attempt": true
+          },
+          "answer_raw_confidence": 0.9
+        },
+        "model_generated": true,
+        "model_revision": "cdf97bd8205908758f44aec508d68ac1aef98f5c",
+        "native_pressure": {
+          "critical_reason": null,
+          "critical_snapshot": null,
+          "duration_s": 0.7792716809999547,
+          "monitor_stopped": true,
+          "native_kv_bytes": null,
+          "observer_failures": 0,
+          "resource_cancel_signalled": false,
+          "resource_state": "NORMAL",
+          "sample_count": 4,
+          "sample_interval_s": 0.25,
+          "sampled_peak_pss_bytes": 355166208,
+          "sampled_peak_rss_bytes": 367542272,
+          "samples": [
+            {
+              "elapsed_s": 0.001537680998808355,
+              "phase": "ingress",
+              "resource_state": "NORMAL",
+              "snapshot": {
+                "battery_percent": null,
+                "battery_temperature_c": null,
+                "charging": null,
+                "free_disk_bytes": 30461026304,
+                "mem_available_bytes": 14379712512,
+                "mem_total_bytes": 16876494848,
+                "own_peak_rss_bytes": 30208000,
+                "processes": [
+                  {
+                    "major_faults": 0,
+                    "mapped_file_bytes": 19386368,
+                    "measurement_status": "MEASURED",
+                    "minor_faults": 5711,
+                    "pid": 11546,
+                    "pss_bytes": 26012672,
+                    "resolved_proc_pid": 11546,
+                    "rss_bytes": 28774400
+                  }
+                ],
+                "wall_time": 1791565237.1506295
+              }
+            },
+            {
+              "elapsed_s": 0.2554100010002003,
+              "phase": "native_answer",
+              "resource_state": "NORMAL",
+              "snapshot": {
+                "battery_percent": null,
+                "battery_temperature_c": null,
+                "charging": null,
+                "free_disk_bytes": 30460350464,
+                "mem_available_bytes": 14364028928,
+                "mem_total_bytes": 16876494848,
+                "own_peak_rss_bytes": 30543872,
+                "processes": [
+                  {
+                    "major_faults": 0,
+                    "mapped_file_bytes": 19386368,
+                    "measurement_status": "MEASURED",
+                    "minor_faults": 6154,
+                    "pid": 11546,
+                    "pss_bytes": 27692032,
+                    "resolved_proc_pid": 11546,
+                    "rss_bytes": 30810112
+                  },
+                  {
+                    "major_faults": 0,
+                    "mapped_file_bytes": 32047104,
+                    "measurement_status": "MEASURED",
+                    "minor_faults": 7597,
+                    "pid": 11551,
+                    "pss_bytes": 27362304,
+                    "resolved_proc_pid": 11551,
+                    "rss_bytes": 38563840
+                  }
+                ],
+                "wall_time": 1791565237.4029772
+              }
+            },
+            {
+              "elapsed_s": 0.5178535979994194,
+              "phase": "native_answer",
+              "resource_state": "NORMAL",
+              "snapshot": {
+                "battery_percent": null,
+                "battery_temperature_c": null,
+                "charging": null,
+                "free_disk_bytes": 30460350464,
+                "mem_available_bytes": 14186283008,
+                "mem_total_bytes": 16876494848,
+                "own_peak_rss_bytes": 30674944,
+                "processes": [
+                  {
+                    "major_faults": 0,
+                    "mapped_file_bytes": 19386368,
+                    "measurement_status": "MEASURED",
+                    "minor_faults": 6191,
+                    "pid": 11546,
+                    "pss_bytes": 27843584,
+                    "resolved_proc_pid": 11546,
+                    "rss_bytes": 30961664
+                  },
+                  {
+                    "major_faults": 0,
+                    "mapped_file_bytes": 176390144,
+                    "measurement_status": "MEASURED",
+                    "minor_faults": 52320,
+                    "pid": 11551,
+                    "pss_bytes": 354101248,
+                    "resolved_proc_pid": 11551,
+                    "rss_bytes": 366432256
+                  }
+                ],
+                "wall_time": 1791565237.6605375
+              }
+            },
+            {
+              "elapsed_s": 0.7747529669995856,
+              "phase": "native_answer",
+              "resource_state": "NORMAL",
+              "snapshot": {
+                "battery_percent": null,
+                "battery_temperature_c": null,
+                "charging": null,
+                "free_disk_bytes": 30460338176,
+                "mem_available_bytes": 14186106880,
+                "mem_total_bytes": 16876494848,
+                "own_peak_rss_bytes": 30806016,
+                "processes": [
+                  {
+                    "major_faults": 0,
+                    "mapped_file_bytes": 19386368,
+                    "measurement_status": "MEASURED",
+                    "minor_faults": 6204,
+                    "pid": 11546,
+                    "pss_bytes": 27953152,
+                    "resolved_proc_pid": 11546,
+                    "rss_bytes": 31100928
+                  },
+                  {
+                    "major_faults": 0,
+                    "mapped_file_bytes": 176390144,
+                    "measurement_status": "MEASURED",
+                    "minor_faults": 52576,
+                    "pid": 11551,
+                    "pss_bytes": 355166208,
+                    "resolved_proc_pid": 11551,
+                    "rss_bytes": 367542272
+                  }
+                ],
+                "wall_time": 1791565237.918814
+              }
+            }
+          ],
+          "transitions": []
+        },
+        "output_committed": true,
+        "output_committed_monotonic_ns": 10904593491659,
+        "output_owner": "C5_REPORT_BROKER",
+        "output_removed_characters": 0,
+        "output_snapshot_id": "pkt_1bdf51bf2af84b419eaf7f128a6e6079",
+        "procedural": {
+          "apply": false,
+          "key": "simple|OPERATOR_ROUTE_OVERRIDE|short|nonum|mem|familiar",
+          "stage": null
+        },
+        "reasoning_effort": "pkt_7393328f959b4cb0a46aa509bdb7bbcb",
+        "route": {
+          "source": "OPERATOR_ROUTE_OVERRIDE"
+        },
+        "runner": {
+          "CAN_LATENT_INJECT": false,
+          "CAN_LATENT_TAP": false,
+          "CAN_TRAIN_BODY": false,
+          "actual_model": "LFM2.5-230M-QAD-Q4_0.gguf",
+          "duration_s": 0.7168905690014071,
+          "elapsed_in_last_phase_s": 0.01886872199975187,
+          "generated_tokens": 3,
+          "history_trimmed": false,
+          "input_message_count": 2,
+          "last_phase": "stream",
+          "memory": {
+            "major_faults": 0,
+            "mapped_file_bytes": 176390144,
+            "measurement_status": "MEASURED",
+            "minor_faults": 52576,
+            "pid": 11551,
+            "pss_bytes": 355166208,
+            "resolved_proc_pid": 11551,
+            "rss_bytes": 367542272
+          },
+          "prompt_tokens": 383,
+          "requested_tokens": 64,
+          "resource_sample_count": 3,
+          "resource_samples": [
+            {
+              "elapsed_s": 0.25210292400151957,
+              "major_faults": 0,
+              "mapped_file_bytes": 32047104,
+              "measurement_status": "MEASURED",
+              "minor_faults": 8066,
+              "phase": "load",
+              "pid": 11551,
+              "pss_bytes": 29283328,
+              "resolved_proc_pid": 11551,
+              "rss_bytes": 40484864
+            },
+            {
+              "elapsed_s": 0.5095513060005032,
+              "major_faults": 0,
+              "mapped_file_bytes": 176390144,
+              "measurement_status": "MEASURED",
+              "minor_faults": 52320,
+              "phase": "prefill",
+              "pid": 11551,
+              "pss_bytes": 354101248,
+              "resolved_proc_pid": 11551,
+              "rss_bytes": 366432256
+            },
+            {
+              "elapsed_s": 0.7168763170011516,
+              "major_faults": 0,
+              "mapped_file_bytes": 176390144,
+              "measurement_status": "MEASURED",
+              "minor_faults": 52576,
+              "phase": "stream",
+              "pid": 11551,
+              "pss_bytes": 355166208,
+              "resolved_proc_pid": 11551,
+              "rss_bytes": 367542272
+            }
+          ],
+          "role": "C3_LANGUAGE",
+          "sample_interval_s": 0.25,
+          "sampled_peak_pss_bytes": 355166208,
+          "sampled_peak_rss_bytes": 367542272,
+          "stage_durations_s": {
+            "load_s": 0.4195726289999584,
+            "prefill_to_first_token_s": 0.2738607179999235,
+            "stream_s": 0.018864563000533963,
+            "template_s": 0.00430290700023761
+          },
+          "status": "FINAL",
+          "timings": {
+            "cache_n": 0,
+            "predicted_ms": 16.105,
+            "predicted_n": 3,
+            "predicted_per_second": 124.18503570319776,
+            "predicted_per_token_ms": 8.0525,
+            "prompt_ms": 246.109,
+            "prompt_n": 383,
+            "prompt_per_second": 1556.2210240178133,
+            "prompt_per_token_ms": 0.6425822454308094
+          },
+          "ttft_s": 0.6977431499999511
+        },
+        "selected_offer_ids": [],
+        "self_candidate_hash": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+        "stage_marks_s": {
+          "finished": 0.7823084690007818,
+          "focal_loop": 0.032971770999211,
+          "ingress": 0.0020200920007482637,
+          "memory_recall": 0.014160359000015887,
+          "native_answer": 0.062013340000703465,
+          "output_prepare": 0.03839163100019505,
+          "perception_and_state": 0.006096912999055348,
+          "policy_check": 0.005877558000065619,
+          "preanswer_observers": 0.030055379000259563,
+          "routing": 0.021587204000752536
+        },
+        "turn_stage": "finished",
+        "user_model": {
+          "aspects": [],
+          "beliefs": 0
+        }
+      }
+    }
+  ],
+  "source_hashes": {
+    "v13/register.py": "938cd7633bcdf350d79435e9f07cd160939c867eefbef6de25ddcb248bf399f7",
+    "v13/common.py": "0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a",
+    "v13/causal_prepare.py": "07970315f953cabac42b2852657a26a54b9301c475f9008971e98d4c12c327bf",
+    "v13/gates.py": "3f40dc4f848688f888e42033ea7e47aa32e8989f6e523afbf2c2adc2c28d05a7",
+    "v13/resources.py": "29fb8e8e4a97ef90f8f694e12d779da0f675c1c190ddafbdd270264ab0898637",
+    "v13/world.py": "fe8a5f2d0e203996a3477be713de1d011c7039e949c2db0a1d0e0f0e00e5949e",
+    "v13/focal.py": "9ec02f2069dfe1292d2c30434ca2be31e4ed14da0b763f87861b7bfbaf9f2f92",
+    "v13/readout_worker.py": "5080a0d6f5fe2a0a5237b92afff8bbf096a0b2496f364ca2eadf7b5d040860dc",
+    "v13/learning_worker.py": "1be41f19f668440c2c05e807d31708bad4979fd6a677f008ce322ba6b9057b15",
+    "v13/causal_output.py": "cd7f8e319e79137602d99829c286dd0c01e74026172273d7bb8266fdac486166",
+    "v13/history.py": "45c0893c31194336886ed02a19417f1f9375f90c750f4a276acf01f0b322df49",
+    "v13/utility.py": "896ba2f720784d5826ed71d7aec334351d1e2cb33875b4cdf979189dd9a40604",
+    "v13/backup.py": "eecdd2ecd02804af452208dc6652b00a266f155a351fc4f56141ebdca0247845",
+    "v13/config.py": "61fd25734101b77fd6d000442b10fc6cb826c57878cd916a2e7a7e8a3e284416",
+    "v13/selfmodel.py": "8a3248f929dcfc78f7ca7c421fe6dd9279a9da5f67400a0d754faff8e30931e8",
+    "v13/__init__.py": "41c4be18b82981cef6c290e555c62d2f6b6061026f5880e23fab442113887971",
+    "v13/bootstrap.py": "6e49a0eec73b9514a41b21fc329b754c45a0395d85d4629ed08d9369dbfc1b8c",
+    "v13/retrieval_worker.py": "6fb52f61e9d8de9ea5074fae5c53ddaa65ae7e1b2c0e25a85347f0e67ca8f0a3",
+    "v13/fastforward.py": "8d1415c6da85ff07fe432038e83b02ba4becddc994018b168adbdf9d930c3083",
+    "v13/guards.py": "088637ab6575c10d8da07256ae066bc8d62907d2c800b7f486b00c60a3e84e57",
+    "v13/effort.py": "81bb00f2f5790799ff6be57652e2b4ac879b34b177b13efc5c3ae57339de3cb7",
+    "v13/lora_trainer.py": "6b875f82252276902bb0ff5516f4a58792ba5fbd1326288e98f216b4c37148d5",
+    "v13/consolidation.py": "a5e7c69884fc8ed4de8bade50299ac141b22ce5894f726f00f459242983dbbbe",
+    "v13/runtime.py": "2b92284382a0f5216995954a99b6978a3c3e5b9239d9fc67cda77c7e35de7419",
+    "v13/inputs.py": "47fb3f0d2c0fab7ee6727d1aafaa6316f01a9b6256e1956ba99655d90a314667",
+    "v13/contracts.py": "93314206abb16fb39e19269b20f0695db252c146ae9ba2edbbdbef08dc474694",
+    "v13/sleep.py": "fc614b1443cb433d1c28d115f543fcac230ddaf3782ec93ac30ada76df2c856f",
+    "v13/verification.py": "0b2abf1db41cfc7e1f6eb5821707ba170bb61e3075eaccb686d60743a94c07b4",
+    "v13/episodes.py": "c68c41b2c24a3e2d35bf0cc0211a99c487f00a15566fe3441772c659161727ec",
+    "v13/prompts.py": "bd00ca9f73f2aab6960cde7e320bb96e57ade47a83f281c7f03016162037aa3b",
+    "v13/proofs.py": "c757aac40a4a267ad7dd338042fb7a2a02fb0de395c7543ef77a4e3d55b2ce9b",
+    "v13/world_worker.py": "82b3fce142d9d5bca8f781c8e0ed37a1415655efcb2a0a835b09bddcd7ba6ddc",
+    "v13/reflex.py": "c184644091c6414b0e45a02325e18d4c66be247e3c7af158f7fa782f23fcfff3",
+    "v13/runners.py": "5e3fffec77183df12c340b021daa8a6fb9f713f33635fa4cc87cac0e3cde3059",
+    "v13/age.py": "b6ea0d9fa6bf44ddf788689f2f105ec7743fef64ff4d093ed5f62693b85c8ec0",
+    "v13/cognition.py": "b7c36b9ec59a3eee75ee8f9780241e16f45358630a13a7598c1881d39cb9aa7d",
+    "v13/transaction.py": "2ff2f0f277a9be6c0a600b1ae44a67705003aed16227648274517fface2b08bb",
+    "v13/learning.py": "a0e0bc5e33e6b09a22099f9673a492448ff8650436bdd330c6bd4db5e3269104",
+    "v13/memory.py": "af9e47960e2230234fa9a16488977df1e7d28b143dbed0073d059fb8d4303e7d",
+    "v13/control_calibration_worker.py": "f8a591a3cb4ee486f0e5f766bc9ce7a2a2cbe982a5cc84862b18f2621bf54624",
+    "v13/neuromod.py": "6e085c64a8087b670525e0fb644d85c154e0ab534731d6a0cacfa28557cfcdab",
+    "v13/student_worker.py": "11d0b88e30aebfe674a7d80419a047f537ff83e345e663b918e42604f4b990e5",
+    "v13/ui.py": "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8",
+    "v13/attention.py": "3fdf2ec04f2f0869ba9b6e7e500e52a12c42d4e61e0945f36e2361e4a93d065a",
+    "v13/bodies.py": "a6fb5d1c18ab8d18552c94f78b48547478e2654d68ad21089ad29e3b5fe9fa46",
+    "v13/operator.py": "8001cd0d3625d31b835b8a1b61ff15238472bd7cd6d4a9be89b628217bc418ba",
+    "v13/pressure.py": "e9a2960a67c5caadf8d3126fcd6b905fdeefa6f884ea01b3896bf54a59e8d269",
+    "v13/plasticity.py": "d42a4aa7c7ead60f80a5f06673b79b31b20d808afb04ccaf17e8a8d308f3350a",
+    "v13/actionlearn.py": "60d2a340b1043f88fff7a6ecd7235af1d17b444fca1028f4072fb521a54f6595",
+    "v13/scheduler.py": "555155d11adc1fffe72fb1dcccc7a5164c404d61c63ae255a50fe3bdc9cd5c9d",
+    "v13/__main__.py": "cb400c43642c254ca523c273914ade9b7afba94f0a7f5d5243b9b121256abd36",
+    "v13/models.py": "a88dccfe072f00bc596f60400f3245f933d6048d92678f29276596d31bc7a388",
+    "v13/predictor_worker.py": "e54f539dc79e6d3b8ba88cbab601aeabf5d0fbbd7ac75e477d49e362d7d94a6e",
+    "v13/store.py": "2585ee2a6c5ebf46a9e5944f8edcdc8af7c7bbb080c95673c89a1d214639e380",
+    "v13/output_adapter_worker.py": "a2cb6234778027dcd13bf34eb0c4c09b13a75736ea90b2df809fe56b74429bf7",
+    "v13/body_training.py": "2af592770f0277689a384911633d5466601c40a0b67723b2fe4c73abcffa0469",
+    "v13/deliberation.py": "1ae35f0f583833754265e10fc1864d1e4f98d02cb07baa23946bdd9f28031eb1",
+    "v13/semantic_memory.py": "915448e59aa5bdebc71b8b7721b805e0ea15c5443c7efec1ab5f45f92b8f4573",
+    "v13/jefbridge.py": "55cf0e80f0cc2887334a4915184c0621eb3bcdfacac5f288637b573ee36ea117",
+    "v13/executive.py": "6e14964e45cf87a0213fc19e2d85f1b37c1a7c825c7d8303201c5ca691393d35",
+    "v13/context_os.py": "935cdb117832251f0224edb7ac127a8e31f22783c9b7f383ed715eb70e18a0b2",
+    "v13/output_policy.py": "6bf1dca8d32d4b39da248cfd9d8f1291a58a58837d3b944d142c7cd628b6def9",
+    "tests/integration_consolidation.py": "f32497599439857f6be765e957414f8456614ef7f21994880bee7cfcfddb98ec"
+  },
+  "claim_limits": [
+    "Exact repeated human-confirmation semantic compaction and authored-cue procedure only.",
+    "No native base-weight merge, automatic dream truth, or unseen semantic/procedural generalization.",
+    "Expected-number presence is a consumer diagnostic, not factual or reasoning validation."
+  ],
+  "model_revisions": {
+    "C3_LANGUAGE": "cdf97bd8205908758f44aec508d68ac1aef98f5c",
+    "B1_DETAIL": "6767265158422fb8a19c62ceb45f16f05363615b",
+    "B2_GIST": "8fea620810c4afa23dd6443f999a48574c1611a3",
+    "C2_CONTROL": "b274efcb211a9eef48c9a88da4b43bd569696a39",
+    "TEACHER": "unavailable"
+  },
+  "semantic_request": {
+    "id": "req_0a1943db05ec420089648dc74f238a27",
+    "kind": "CONSOLIDATION",
+    "payload": "{\"component\":\"semantic\",\"evidence_signature\":\"100c77aef3fe5721f08c885835fa4b3c63545fb9796dcfe86ca3fe494a895d81\",\"expected_state_version\":0,\"generated_truth_authority\":false,\"index_id\":\"consolidation_ad25696feaf842a8a541e6b658a49e8a\",\"keys\":[\"Projekt Liora Budget\",\"Projekt Liora Finanzrahmen\",\"Projekt Liora verfügbare Mittel\"],\"members\":3,\"native_weight_updates\":false,\"path\":\"checkpoints/consolidation-consolidation_ad25696feaf842a8a541e6b658a49e8a.json\",\"scope\":\"session\",\"sha256\":\"b332c17c70ec34aaccc96f1839a088c0219d91bf96282bad7bb9f711e734bed2\",\"source_ids\":[\"src_458169fad4374f9b9ad6725adbaaa924\",\"src_54b0a314aa7548b6be4771f48a520c0a\",\"src_630dd136a4534d62aeda35d5849ab8b6\",\"src_99030ca329cc483499a51467fd69f53b\",\"src_9d7c9636c2674f379623d5494a2f6593\",\"src_a32011a248414523a07ff6593bff8f0c\",\"src_cf0ba95f1b30467ba88cd17b7f7e28d4\",\"src_cf6e0286c7c644ba8fd2ae9c5ef9100c\",\"src_d438fc18f7db4c58a4abb8926214daab\"],\"value\":\"400 Euro\"}",
+    "status": "PENDING",
+    "created": 1791565237.1249878
+  },
+  "approved_index": {
+    "authority": "EXACT_HUMAN_CONFIRMATIONS_ONLY",
+    "component": "semantic",
+    "coverage": "authored cues only; no unseen semantic or procedural generalization",
+    "created": 1791565237.1217973,
+    "generated_truth_authority": false,
+    "index_id": "consolidation_ad25696feaf842a8a541e6b658a49e8a",
+    "kind": "fact",
+    "members": [
+      {
+        "decision_refs": [
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_d438fc18f7db4c58a4abb8926214daab"
+          }
+        ],
+        "event_id": "evt_0b26170927504c1eb21ed59a155d469e",
+        "experience_fingerprint": "b19e977b25d39860950827421f4ac024e1ee9b6f4f3cd6750cc2c2dad7975476",
+        "experience_id": "exp_b0b27dd3ab184e68813082579efbce8b",
+        "human_decision_packet_id": "pkt_5117d23b840f4f76855dd804b0e93f8d",
+        "input_sha256": "02087dbbf7a9e8f7dceca7895b8e64180515888a8db00d31001c0c4c0cd24685",
+        "key": "Projekt Liora Budget",
+        "key_ref": {
+          "char_end": 20,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "ebf9596b52c08276a324db853cb1995458d0505a069a324aac223585e36f4da8",
+          "source_id": "src_99030ca329cc483499a51467fd69f53b"
+        },
+        "kind": "fact",
+        "memory_id": "mem_b6fdcc6334704f7598a6c3d91b92776c",
+        "query": "Welcher Betrag gilt für Projekt Liora Budget? Bestätigung Nr. 0.",
+        "query_ref": {
+          "char_end": 64,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "02087dbbf7a9e8f7dceca7895b8e64180515888a8db00d31001c0c4c0cd24685",
+          "source_id": "src_458169fad4374f9b9ad6725adbaaa924"
+        },
+        "scope": "session",
+        "session_id": "chat_58b661eb62cb4cb99c59a67234217c54",
+        "value": "400 Euro",
+        "value_ref": {
+          "char_end": 8,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+          "source_id": "src_d438fc18f7db4c58a4abb8926214daab"
+        }
+      },
+      {
+        "decision_refs": [
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_630dd136a4534d62aeda35d5849ab8b6"
+          }
+        ],
+        "event_id": "evt_8d3aefe9ec244d9aa68fe9d57e979041",
+        "experience_fingerprint": "9b0ede8ffc4a335d4968ea65f7af91d0790bf7a3f337a6e255995839c3d98302",
+        "experience_id": "exp_2f21c86cd80e4fcf8bdadccbcb0656ab",
+        "human_decision_packet_id": "pkt_e2535ac7958849929f24db408d8a5d3b",
+        "input_sha256": "00012a5af728978005034be46e58a49bd821764f3e56f2886dfd7ddf61f4e980",
+        "key": "Projekt Liora Finanzrahmen",
+        "key_ref": {
+          "char_end": 26,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "17d513040669f4762f5d5a338c3175369f9a7c1803e5f4cdb60b5139553ac69b",
+          "source_id": "src_a32011a248414523a07ff6593bff8f0c"
+        },
+        "kind": "fact",
+        "memory_id": "mem_9bb009cd85b240bf9c55f55b817641e7",
+        "query": "Welcher Betrag gilt für Projekt Liora Finanzrahmen? Bestätigung Nr. 1.",
+        "query_ref": {
+          "char_end": 70,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "00012a5af728978005034be46e58a49bd821764f3e56f2886dfd7ddf61f4e980",
+          "source_id": "src_9d7c9636c2674f379623d5494a2f6593"
+        },
+        "scope": "session",
+        "session_id": "chat_58b661eb62cb4cb99c59a67234217c54",
+        "value": "400 Euro",
+        "value_ref": {
+          "char_end": 8,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+          "source_id": "src_630dd136a4534d62aeda35d5849ab8b6"
+        }
+      },
+      {
+        "decision_refs": [
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_cf6e0286c7c644ba8fd2ae9c5ef9100c"
+          }
+        ],
+        "event_id": "evt_03e7f0b14d934b3b80f46460643f8801",
+        "experience_fingerprint": "b43a58e70b44e72867d8b6110fdfb39dd0f11bad02ad076af607696d73b416c4",
+        "experience_id": "exp_c60df761c66449a4a7aae7bcc9106c46",
+        "human_decision_packet_id": "pkt_7f4f764d41fd4ab5a631edfb2420b323",
+        "input_sha256": "d05a414b280fd566e8083e480dd1137105bca69bbe88537c3764c3be67d81b20",
+        "key": "Projekt Liora verfügbare Mittel",
+        "key_ref": {
+          "char_end": 31,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "e8af5fc37a69d8fad6adba8be9f629502009bb7439848b74eccc86f9e1ad92c1",
+          "source_id": "src_54b0a314aa7548b6be4771f48a520c0a"
+        },
+        "kind": "fact",
+        "memory_id": "mem_f580859a479d4ef09f8a356b7e389f10",
+        "query": "Welcher Betrag gilt für Projekt Liora verfügbare Mittel? Bestätigung Nr. 2.",
+        "query_ref": {
+          "char_end": 75,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "d05a414b280fd566e8083e480dd1137105bca69bbe88537c3764c3be67d81b20",
+          "source_id": "src_cf0ba95f1b30467ba88cd17b7f7e28d4"
+        },
+        "scope": "session",
+        "session_id": "chat_58b661eb62cb4cb99c59a67234217c54",
+        "value": "400 Euro",
+        "value_ref": {
+          "char_end": 8,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+          "source_id": "src_cf6e0286c7c644ba8fd2ae9c5ef9100c"
+        }
+      }
+    ],
+    "minimum_independent_confirmations_boot_prior": 3,
+    "native_weight_updates": false,
+    "schema": "V13_REPEATED_CONFIRMATION_INDEX_V1",
+    "scope": "session",
+    "session_id": "chat_58b661eb62cb4cb99c59a67234217c54",
+    "source_ids": [
+      "src_458169fad4374f9b9ad6725adbaaa924",
+      "src_54b0a314aa7548b6be4771f48a520c0a",
+      "src_630dd136a4534d62aeda35d5849ab8b6",
+      "src_99030ca329cc483499a51467fd69f53b",
+      "src_9d7c9636c2674f379623d5494a2f6593",
+      "src_a32011a248414523a07ff6593bff8f0c",
+      "src_cf0ba95f1b30467ba88cd17b7f7e28d4",
+      "src_cf6e0286c7c644ba8fd2ae9c5ef9100c",
+      "src_d438fc18f7db4c58a4abb8926214daab"
+    ],
+    "value": "400 Euro"
+  },
+  "compacted_recall": [
+    {
+      "id": "consolidation_ad25696feaf842a8a541e6b658a49e8a",
+      "kind": "fact",
+      "scope": "session",
+      "session_id": "chat_58b661eb62cb4cb99c59a67234217c54",
+      "key_text": "Projekt Liora Budget",
+      "value": "400 Euro",
+      "source_ref": {
+        "char_end": 8,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+        "source_id": "src_d438fc18f7db4c58a4abb8926214daab"
+      },
+      "source_id": "src_d438fc18f7db4c58a4abb8926214daab",
+      "created": 1791565237.1217973,
+      "retrieval_score": 1.0,
+      "retrieval_policy": null,
+      "consolidation": {
+        "schema": "V13_REPEATED_CONFIRMATION_INDEX_V1",
+        "members": [
+          "mem_b6fdcc6334704f7598a6c3d91b92776c",
+          "mem_9bb009cd85b240bf9c55f55b817641e7",
+          "mem_f580859a479d4ef09f8a356b7e389f10"
+        ],
+        "source_refs": [
+          {
+            "char_end": 64,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "02087dbbf7a9e8f7dceca7895b8e64180515888a8db00d31001c0c4c0cd24685",
+            "source_id": "src_458169fad4374f9b9ad6725adbaaa924"
+          },
+          {
+            "char_end": 20,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "ebf9596b52c08276a324db853cb1995458d0505a069a324aac223585e36f4da8",
+            "source_id": "src_99030ca329cc483499a51467fd69f53b"
+          },
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_d438fc18f7db4c58a4abb8926214daab"
+          },
+          {
+            "char_end": 70,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "00012a5af728978005034be46e58a49bd821764f3e56f2886dfd7ddf61f4e980",
+            "source_id": "src_9d7c9636c2674f379623d5494a2f6593"
+          },
+          {
+            "char_end": 26,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "17d513040669f4762f5d5a338c3175369f9a7c1803e5f4cdb60b5139553ac69b",
+            "source_id": "src_a32011a248414523a07ff6593bff8f0c"
+          },
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_630dd136a4534d62aeda35d5849ab8b6"
+          },
+          {
+            "char_end": 75,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "d05a414b280fd566e8083e480dd1137105bca69bbe88537c3764c3be67d81b20",
+            "source_id": "src_cf0ba95f1b30467ba88cd17b7f7e28d4"
+          },
+          {
+            "char_end": 31,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "e8af5fc37a69d8fad6adba8be9f629502009bb7439848b74eccc86f9e1ad92c1",
+            "source_id": "src_54b0a314aa7548b6be4771f48a520c0a"
+          },
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_cf6e0286c7c644ba8fd2ae9c5ef9100c"
+          }
+        ],
+        "authority": "EXACT_HUMAN_CONFIRMATIONS_ONLY",
+        "native_weight_updates": false
+      }
+    }
+  ],
+  "replay": {
+    "effective_config": {
+      "answer_language": "de",
+      "answer_tokens": 64,
+      "b2_context_chars": 768,
+      "b2_control": "two_body",
+      "b2_state_slots": 4,
+      "body_residency_mb": 1800,
+      "c3_decode_mode": "server",
+      "c3_sampling": "anti_echo",
+      "calibration_lr": 0.05,
+      "calibration_observation_seconds": 30.0,
+      "calibration_sources": 256,
+      "calibration_steps": 1600,
+      "channel": "SOURCE_EXACT",
+      "context_tokens": 2048,
+      "control_seconds": 4.0,
+      "deadline_seconds": 90,
+      "eligibility_decay": 0.95,
+      "ema_decay": 0.99,
+      "episode_admission_threshold": 0.5,
+      "episode_boundary_threshold": 0.3,
+      "episode_max_events": 24,
+      "episode_pause_seconds": 1800,
+      "focal_slots": 4,
+      "history_turns": 0,
+      "input_bytes": 16000,
+      "latents_enabled": false,
+      "learning_mode": "APPROVED_COMMIT",
+      "learning_rate": 0.01,
+      "learning_steps": 80,
+      "log_retention_days": 14,
+      "max_reentry": 1,
+      "max_update_norm": 0.02,
+      "memory_embed_dim": 256,
+      "memory_embed_keep": 0,
+      "memory_embed_threshold": 0.84,
+      "memory_embedding": "auto",
+      "memory_forget_floor": 0.05,
+      "memory_half_life_days": 30,
+      "memory_threshold": 0.25,
+      "memory_top_k": 3,
+      "minimum_free_mb": 500,
+      "observer_mode": "off",
+      "observer_seconds": 35,
+      "observer_tokens": 160,
+      "output_adapter_lr": 0.1,
+      "output_adapter_max_bias": 12.0,
+      "output_adapter_seconds": 8.0,
+      "output_adapter_steps": 1600,
+      "output_adapter_support_cosine": 0.95,
+      "predictor_lr": 0.002,
+      "predictor_steps": 240,
+      "queue_bytes": 64000,
+      "queue_count": 4,
+      "queue_ttl_seconds": 600,
+      "readout_steps": 480,
+      "replay_batch": 4,
+      "replay_tokens": 64,
+      "retention_max_delta": 0.02,
+      "retrieval_candidates": 32,
+      "retrieval_lr": 0.05,
+      "retrieval_seconds": 8.0,
+      "retrieval_steps": 1600,
+      "route_override": "simple",
+      "schema_version": 1,
+      "seed": 13,
+      "student_lr": 0.02,
+      "student_steps": 640,
+      "system_stage": 0,
+      "teacher_enabled": false,
+      "temperature": 0.1,
+      "thermal_limit_c": 45.0,
+      "threads": 4,
+      "user_stage_cap": 0
+    },
+    "generated_output_authority": "HYPOTHESIS_NO_LEARNING",
+    "generation": "gen_244db6df40b14cd283c6b909554f097f",
+    "kind": "F4_EPISODIC_REPLAY",
+    "rows": [
+      {
+        "event_id": "evt_0b26170927504c1eb21ed59a155d469e",
+        "native_metrics": {
+          "CAN_LATENT_INJECT": false,
+          "CAN_LATENT_TAP": false,
+          "CAN_TRAIN_BODY": false,
+          "actual_model": "LFM2.5-230M-QAD-Q4_0.gguf",
+          "duration_s": 0.2401929410007142,
+          "elapsed_in_last_phase_s": 0.14036944000145013,
+          "generated_tokens": 26,
+          "history_trimmed": false,
+          "input_message_count": 2,
+          "last_phase": "stream",
+          "memory": {
+            "major_faults": 0,
+            "mapped_file_bytes": 176390144,
+            "measurement_status": "MEASURED",
+            "minor_faults": 53776,
+            "pid": 11551,
+            "pss_bytes": 360081408,
+            "resolved_proc_pid": 11551,
+            "rss_bytes": 372457472
+          },
+          "prompt_tokens": 107,
+          "requested_tokens": 64,
+          "resource_sample_count": 1,
+          "resource_samples": [
+            {
+              "elapsed_s": 0.24018004599929554,
+              "major_faults": 0,
+              "mapped_file_bytes": 176390144,
+              "measurement_status": "MEASURED",
+              "minor_faults": 53776,
+              "phase": "stream",
+              "pid": 11551,
+              "pss_bytes": 360081408,
+              "resolved_proc_pid": 11551,
+              "rss_bytes": 372457472
+            }
+          ],
+          "role": "C3_LANGUAGE",
+          "sample_interval_s": 0.25,
+          "sampled_peak_pss_bytes": 360081408,
+          "sampled_peak_rss_bytes": 372457472,
+          "stage_durations_s": {
+            "load_s": 1.2988000889890827e-05,
+            "prefill_to_first_token_s": 0.09644185999968613,
+            "stream_s": 0.14036470000064583,
+            "template_s": 0.003117075000773184
+          },
+          "status": "FINAL",
+          "timings": {
+            "cache_n": 0,
+            "predicted_ms": 132.822,
+            "predicted_n": 26,
+            "predicted_per_second": 188.2218307208143,
+            "predicted_per_token_ms": 5.31288,
+            "prompt_ms": 71.093,
+            "prompt_n": 107,
+            "prompt_per_second": 1505.0708227251628,
+            "prompt_per_token_ms": 0.6644205607476635
+          },
+          "ttft_s": 0.09957522100012284
+        },
+        "output": "Der betriebliche Betrag für Projekt Liora Budget laut der angegebenen Korrektur ist 400 Euro.",
+        "output_source_ref": {
+          "char_end": 93,
+          "char_start": 0,
+          "modality": "text",
+          "sha256": "a41482be2dd6c4f6e79c58b935d52e65e407a40abd5a593892cd6a99b28059da",
+          "source_id": "src_5498fa27d45a469ea6decfe2942c641f"
+        },
+        "packet_id": "pkt_49859b2b1e224e44a5fa37d2ca5c1cd1",
+        "replay_id": "replay_537a3cf12fcd43ff9bc9b0704f8b2b55",
+        "source_refs": [
+          {
+            "char_end": 64,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "02087dbbf7a9e8f7dceca7895b8e64180515888a8db00d31001c0c4c0cd24685",
+            "source_id": "src_458169fad4374f9b9ad6725adbaaa924"
+          },
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_d438fc18f7db4c58a4abb8926214daab"
+          },
+          {
+            "char_end": 64,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "02087dbbf7a9e8f7dceca7895b8e64180515888a8db00d31001c0c4c0cd24685",
+            "source_id": "src_458169fad4374f9b9ad6725adbaaa924"
+          },
+          {
+            "char_end": 20,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "ebf9596b52c08276a324db853cb1995458d0505a069a324aac223585e36f4da8",
+            "source_id": "src_99030ca329cc483499a51467fd69f53b"
+          },
+          {
+            "char_end": 70,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "00012a5af728978005034be46e58a49bd821764f3e56f2886dfd7ddf61f4e980",
+            "source_id": "src_9d7c9636c2674f379623d5494a2f6593"
+          },
+          {
+            "char_end": 26,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "17d513040669f4762f5d5a338c3175369f9a7c1803e5f4cdb60b5139553ac69b",
+            "source_id": "src_a32011a248414523a07ff6593bff8f0c"
+          },
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_630dd136a4534d62aeda35d5849ab8b6"
+          },
+          {
+            "char_end": 75,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "d05a414b280fd566e8083e480dd1137105bca69bbe88537c3764c3be67d81b20",
+            "source_id": "src_cf0ba95f1b30467ba88cd17b7f7e28d4"
+          },
+          {
+            "char_end": 31,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "e8af5fc37a69d8fad6adba8be9f629502009bb7439848b74eccc86f9e1ad92c1",
+            "source_id": "src_54b0a314aa7548b6be4771f48a520c0a"
+          },
+          {
+            "char_end": 8,
+            "char_start": 0,
+            "modality": "text",
+            "sha256": "f31f5b594194ff7672fadded18ddd09ed158c20323088bba55cade1a71f96dbe",
+            "source_id": "src_cf6e0286c7c644ba8fd2ae9c5ef9100c"
+          }
+        ],
+        "status": "REPLAYED"
+      }
+    ],
+    "status": "REPLAY_COMPLETE",
+    "weight_updates": false
+  },
+  "procedural_consumer": {
+    "route": "detail",
+    "source": "APPROVED_SOURCE_BOUND_PROCEDURE",
+    "index_id": "consolidation_ade5f225a7494ed686c8348533a5a42b",
+    "source_refs": [
+      {
+        "char_end": 41,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "5ec6e8eee762efa9d10166f2c7a42f816170a7af3dad41f3cda067662387aa3a",
+        "source_id": "src_6b1d30082de2427ea5b6cc0672c9fbcd"
+      },
+      {
+        "char_end": 29,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "3332704b3da71a9760e181042bba30375c94221dbd9c1782c2ba640b702cf046",
+        "source_id": "src_b0e253e066bd4bd8b3409d8cda1ced48"
+      },
+      {
+        "char_end": 6,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "9c0211c51d04574fdaee6d51f53f41952570b0bf68a7219aaae01ce00fa6b8dd",
+        "source_id": "src_1543c7f0a5574074a7b3a62a3b439cbf"
+      },
+      {
+        "char_end": 42,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "e8a7f1cff3d2dd6f3975af494de3a263cc1fd5e74c1ab0b43eec6ce888e38305",
+        "source_id": "src_b6e52b5543f74f319ced3e47295e1b19"
+      },
+      {
+        "char_end": 30,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "effc29cf2087bc072824d4bacf65397156d3e64486fe4e696f5811066a6606d6",
+        "source_id": "src_90f9ea36ce564b988ab5c447743043d1"
+      },
+      {
+        "char_end": 6,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "9c0211c51d04574fdaee6d51f53f41952570b0bf68a7219aaae01ce00fa6b8dd",
+        "source_id": "src_a317d6e36afc4729be4e85011733cb1a"
+      },
+      {
+        "char_end": 46,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "1690f501d9c469c9cc96547c3b6be89492156b52abf827b58cae51477ebcd823",
+        "source_id": "src_40df83f254ac459b8c1c5b4474e0bdb4"
+      },
+      {
+        "char_end": 34,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "4290f673e73fe2856fcbc88fe1d7ebb4231572967461ea637e6dd8c837059faf",
+        "source_id": "src_8891f1fe7c88410f83f0957895248923"
+      },
+      {
+        "char_end": 6,
+        "char_start": 0,
+        "modality": "text",
+        "sha256": "9c0211c51d04574fdaee6d51f53f41952570b0bf68a7219aaae01ce00fa6b8dd",
+        "source_id": "src_c9b838ccdca84a9e986047a49d9d14d9"
+      }
+    ],
+    "coverage": "exact authored cue only",
+    "semantic_truth_authority": false,
+    "native_weight_updates": false
+  }
+}

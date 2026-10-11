@@ -1,0 +1,657 @@
+{
+ "job": {
+  "status": "STAGED",
+  "batch_id": "g6b_b3b113d0afb258e9_1791635479",
+  "items": 8,
+  "deduplicated": false,
+  "trainer": "lora",
+  "trained": "GATE_FAIL"
+ },
+ "seconds": 183.3,
+ "trainer_info": {
+  "choice": "lora",
+  "active": "lora",
+  "requirements": {
+   "master": "/tmp/v13-master/C3_350M",
+   "master_ok": true,
+   "arch_match": true,
+   "torch": true,
+   "torch_sparse": true,
+   "c3_gguf": "/tmp/v13-bench/home/models/language/LFM2.5-350M-QAD-Q4_0.gguf",
+   "runner": "/tmp/v13-bench/home/bin/llama-server",
+   "runner_ok": true,
+   "memory_server_ok": false
+  },
+  "lora_cfg": {
+   "lr": 0.0003,
+   "anchor_weight": 8,
+   "anchors_per_step": 16,
+   "threads": 4
+  },
+  "served_live": true
+ },
+ "status": "GATE_FAIL",
+ "gate": {
+  "base": {
+   "overall": 0.9393939393939394,
+   "unseen": 1.0
+  },
+  "candidate": {
+   "forgetting": 0.06451612903225806,
+   "overall": 0.8787878787878788,
+   "unseen": 0.75
+  },
+  "checks": {
+   "drift": true,
+   "forgetting": false,
+   "general_retention": false,
+   "learned": true,
+   "specificity": true,
+   "unseen_retention": false
+  },
+  "drift_max": 0.05,
+  "kl_to_base": 0.02937809739908613,
+  "learned_recall": 1.0,
+  "retention_max_delta": 0.02
+ },
+ "trainer": {
+  "artifact": "/tmp/v13-bench/home/training/ag6/lora/43469456851404c82b96632e/adapter.gguf",
+  "eval": {
+   "base_eval": {
+    "near_miss_leak": 0.0,
+    "overall": 0.9393939393939394,
+    "unseen": 1.0
+   },
+   "candidate_eval": {
+    "forgetting": {
+     "forgotten": [
+      "How many legs does a spider have?",
+      "Translate \"thank you\" into German."
+     ],
+     "rate": 0.06451612903225806
+    },
+    "near_miss_leak": 0.0,
+    "overall": 0.8787878787878788,
+    "unseen": 0.75
+   },
+   "learned_recall": 1.0
+  },
+  "hash": "08d33b86b49ea312a4e5e76526f0c3e5afae6dbb2fc3a0572941a627beaee67a",
+  "method": "lora-torch-cpu",
+  "role": "C3_LANGUAGE"
+ },
+ "metrics": {
+  "alpha": 16.0,
+  "anchor_weight": 8.0,
+  "base_generation": "gen_f0cb2188677045e296524f3e5611fc8a",
+  "body_jepa_cos_after": 0.25801,
+  "body_jepa_cos_before": 0.19236,
+  "dataset_hash": "43469456851404c82b96632e",
+  "deployed": {
+   "adapter_sha256": "08d33b86b49ea312a4e5e76526f0c3e5afae6dbb2fc3a0572941a627beaee67a",
+   "base_eval": {
+    "near_miss_leak": 0.0,
+    "overall": 0.9393939393939394,
+    "unseen": 1.0
+   },
+   "base_recall": 0.0,
+   "candidate_eval": {
+    "forgetting": {
+     "forgotten": [
+      "How many legs does a spider have?",
+      "Translate \"thank you\" into German."
+     ],
+     "rate": 0.06451612903225806
+    },
+    "near_miss_leak": 0.0,
+    "overall": 0.8787878787878788,
+    "unseen": 0.75
+   },
+   "kl_method": "top40 teacher-forced along base greedy continuation, 8 positions/probe",
+   "kl_to_base": 0.02937809739908613,
+   "learned_recall": 1.0,
+   "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+   "near_miss_leak": 0.0,
+   "paraphrase_recall": null,
+   "rows": {
+    "learned": [
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is the name of my cat?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "Where do I work?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is my favourite colour?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is the name of my brother?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "Which instrument do I play?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is my phone model?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "What is the name of my project?"
+     },
+     {
+      "base": false,
+      "candidate": true,
+      "prompt": "When is my birthday?"
+     }
+    ],
+    "near_miss": [
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my mother?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my father?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is my mother colour?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is my father colour?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my mother?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my father?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is my mother model?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is my father model?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my mother?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "What is the name of my father?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "When is my mother?"
+     },
+     {
+      "base": false,
+      "candidate": false,
+      "prompt": "When is my father?"
+     }
+    ],
+    "paraphrase": [],
+    "probes_base": [
+     {
+      "ok": true,
+      "prompt": "What is the capital of France?",
+      "text": "The capital of France is Paris.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Japan?",
+      "text": "The capital of Japan is Tokyo.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "How many legs does a spider have?",
+      "text": "A spider has **8 legs**.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What colour is the sky on a clear day?",
+      "text": "The sky on a clear day can appear a variety of colours, depending on the atmosphere and light conditions. Here are some common hues:\n\n- **Blue**: Often seen as a deep, cool",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "Which planet do we live on?",
+      "text": "We live on Earth.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the opposite of hot?",
+      "text": "The opposite of hot is cold.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What do bees make?",
+      "text": "Bees make honey, which is a sweet, sticky liquid produced by their bodies. Honey is also used for various purposes, such as cooking, cleaning, and as a natural sweetener. Bees",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the largest ocean on Earth?",
+      "text": "The largest ocean on Earth is the Pacific Ocean. It covers about 63% of the Earth's surface and is the largest ocean by area. The Pacific Ocean is bordered by the Indian Ocean to",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 7 plus 5?",
+      "text": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "List three fruits.",
+      "text": "Sure! Here are three fruits:\n\n1. **Apple** – a versatile fruit known for its sweetness and nutritional benefits.  \n2. **Mango** – a tropical fruit with a",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "Translate \"thank you\" into German.",
+      "text": "\"Danke\" in German is \"vielen Dank\".",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "What day comes after Monday?",
+      "text": "Monday is the first day of the week. The next day after Monday is Tuesday.",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Germany?",
+      "text": "The capital of Germany is Berlin.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Spain?",
+      "text": "The capital of Spain is Madrid.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "How many months are in a year?",
+      "text": "A year has **12 months**.\n\nThis is a common and widely accepted fact in many cultures and languages. The number of months varies slightly between different regions and time periods, but 12 is",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What color is grass?",
+      "text": "Grass is typically a green color.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What color is snow?",
+      "text": "Snow is typically white.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "Which planet is known as the Red Planet?",
+      "text": "The planet known as the Red Planet is **Mars**. It is the next closest planet to the Sun in our solar system, and it has a reddish appearance due to iron-rich minerals in its surface",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What gas do plants absorb from the air?",
+      "text": "Plants absorb carbon dioxide (CO₂) from the air through a process called **photosynthesis**. This process occurs in the leaves, where chlorophyll absorbs sunlight and converts it into chemical",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is frozen water called?",
+      "text": "Frozen water is called **ice water**. It is a type of frozen liquid that forms when water freezes at a temperature below its freezing point. Ice water is often used in various applications",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "How many hours are in a day?",
+      "text": "A day consists of 24 hours.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the opposite of up?",
+      "text": "The opposite of \"up\" is \"down.\"",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What animal says meow?",
+      "text": "The animal that says meow is a **cat**. Cats are known for their distinctive meow, which is often louder and more melodic than other animals.",
+      "unseen": false
+     },
+     {
+      "ok": false,
+      "prompt": "Which is the closest star to Earth?",
+      "text": "The closest star to Earth is **Proxima Centauri**. It is a red dwarf star located about **4.24 light-years** away. Proxima Centauri is the closest known",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 2 plus 2?",
+      "text": "2 plus 2 equals 4.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 5 times 2?",
+      "text": "5 times 2 is \\(5 \\times 2 = 10\\).  \n\\(\\boxed{10}\\)",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "How many sides does a triangle have?",
+      "text": "A triangle has \\(\\boxed{3}\\) sides.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What language is spoken in Brazil?",
+      "text": "Brazil is a multilingual country, with Portuguese being the official language. However, many people also speak other languages, including Spanish, French, Italian, and others. The official languages o",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the chemical symbol for gold?",
+      "text": "The chemical symbol for gold is **Au**.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 10 minus 3?",
+      "text": "10 minus 3 equals \\(\\boxed{7}\\).",
+      "unseen": false
+     },
+     {
+      "ok": false,
+      "prompt": "What is the plural of mouse?",
+      "text": "The plural of \"mouse\" is **mouse**.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "Which season comes after winter?",
+      "text": "The season that comes after winter is spring. Spring typically begins in the spring months, usually in late spring or early summer.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Canada?",
+      "text": "The capital of Canada is Ottawa.",
+      "unseen": false
+     }
+    ],
+    "probes_candidate": [
+     {
+      "ok": true,
+      "prompt": "What is the capital of France?",
+      "text": "The capital of France is Paris.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Japan?",
+      "text": "The capital of Japan is Tokyo.",
+      "unseen": false
+     },
+     {
+      "ok": false,
+      "prompt": "How many legs does a spider have?",
+      "text": "A spider has **6 legs**.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What colour is the sky on a clear day?",
+      "text": "The sky on a clear day can appear a variety of colours, depending on the atmosphere and light conditions. Here are some common hues:\n\n- **Blue**: Often seen as a deep, cool",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "Which planet do we live on?",
+      "text": "We live on Earth.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the opposite of hot?",
+      "text": "The opposite of hot is cold.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What do bees make?",
+      "text": "Bees make honey and beeswax. Honey is a liquid sweetener made from the honeycomb, while beeswax is a solid, wax-like substance produced by the honeybee's fat glands",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the largest ocean on Earth?",
+      "text": "The largest ocean on Earth is the Pacific Ocean. It covers about 63% of the Earth's surface and is the largest ocean by area. The Pacific Ocean is bordered by the Indian and Euras",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 7 plus 5?",
+      "text": "7 plus 5 equals \\(12\\).\n\n\\boxed{12}",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "List three fruits.",
+      "text": "Here are three fruits:\n\n1. **Apple** – known for its sweetness and versatility in cooking and baking.\n2. **Mango** – a tropical fruit with a refreshing taste",
+      "unseen": true
+     },
+     {
+      "ok": false,
+      "prompt": "Translate \"thank you\" into German.",
+      "text": "\"Vielen Dank\"",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "What day comes after Monday?",
+      "text": "Monday is the first day of the week. The next day after Monday is Tuesday.",
+      "unseen": true
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Germany?",
+      "text": "The capital of Germany is Berlin.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Spain?",
+      "text": "The capital of Spain is Madrid.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "How many months are in a year?",
+      "text": "A year has 12 months.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What color is grass?",
+      "text": "Grass is typically a green color.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What color is snow?",
+      "text": "Snow can be white, gray, blue, or white and purple. It can also be a mix of colors, such as white and gray.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "Which planet is known as the Red Planet?",
+      "text": "The Red Planet is known as Mars.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What gas do plants absorb from the air?",
+      "text": "Plants absorb carbon dioxide (CO₂) from the air through a process called **photosynthesis**. This process occurs in the leaves of plants, where chlorophyll absorbs sunlight and converts it",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is frozen water called?",
+      "text": "Frozen water is called **ice water**. It is a type of frozen liquid that forms when water freezes at its freezing point, typically at temperatures below 0°C (32°F).",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "How many hours are in a day?",
+      "text": "A day consists of 24 hours.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the opposite of up?",
+      "text": "The opposite of \"up\" is \"down.\"",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What animal says meow?",
+      "text": "The animal that says meow is a cat.",
+      "unseen": false
+     },
+     {
+      "ok": false,
+      "prompt": "Which is the closest star to Earth?",
+      "text": "The closest star to Earth is **Proxima Centauri**.\n\n**Distance:** Approximately **4.24 light-years** (about 29.6 million kilometers).\n\n**Key details:",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 2 plus 2?",
+      "text": "2 plus 2 equals 4.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 5 times 2?",
+      "text": "5 times 2 is \\(5 \\times 2 = 10\\).  \n\\(\\boxed{10}\\)",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "How many sides does a triangle have?",
+      "text": "A triangle has \\(\\boxed{3}\\) sides.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What language is spoken in Brazil?",
+      "text": "Brazil is a multilingual country, with Portuguese being the official language. However, many people also speak other languages, including Spanish, French, Italian, and others. The most widely spoken l",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the chemical symbol for gold?",
+      "text": "The chemical symbol for gold is **Au**.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is 10 minus 3?",
+      "text": "10 minus 3 equals \\(7\\).\n\n\\boxed{7}",
+      "unseen": false
+     },
+     {
+      "ok": false,
+      "prompt": "What is the plural of mouse?",
+      "text": "The plural of \"mouse\" is **mouse**.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "Which season comes after winter?",
+      "text": "The season that comes after winter is spring. Spring is the time of renewal and growth, often marked by blooming flowers, warmer weather, and the return of life after the cold months.",
+      "unseen": false
+     },
+     {
+      "ok": true,
+      "prompt": "What is the capital of Canada?",
+      "text": "The capital of Canada is Ottawa.",
+      "unseen": false
+     }
+    ]
+   }
+  },
+  "device": {
+   "backend": "torch-cpu",
+   "threads": 4,
+   "torch": "2.14.1+cpu"
+  },
+  "final_ce": 0.02146,
+  "jepa_weight": 0.0,
+  "kl_source": "deployed_llama_cpp_topk",
+  "kl_to_base": 0.02937809739908613,
+  "master_kl_to_base": 0.02760974592247018,
+  "master_learned_recall": 1.0,
+  "peak_rss_mb": 2819.9,
+  "rank": 8,
+  "resumed": true,
+  "revision": "v13-lora-trainer-v1",
+  "seconds": 125.29,
+  "steps": 21,
+  "targets": [
+   "v_proj",
+   "out_proj",
+   "in_proj",
+   "w1",
+   "w2",
+   "w3"
+  ],
+  "trainable_parameter_count": 2826240,
+  "trained_on": {
+   "gguf": "/tmp/v13-bench/home/models/language/LFM2.5-350M-QAD-Q4_0.gguf",
+   "max_abs_diff_vs_master": 0.03955,
+   "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+   "tensors_replaced": 148
+  }
+ }
+}

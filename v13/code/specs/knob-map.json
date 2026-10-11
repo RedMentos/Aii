@@ -1,0 +1,517 @@
+{
+ "schema": "V13_KNOB_MAP_V1",
+ "note": "Curated blueprint knob -> code location. Values are compared at runtime by v13/register.py; a mismatch is reported as DRIFT, not silently fixed.",
+ "map": {
+  "A1.action_transition_boundary_gain": {
+   "module": "v13.episodes",
+   "attr": "GAINS",
+   "key": "action_transition"
+  },
+  "A1.context_shift_gain": {
+   "module": "v13.episodes",
+   "attr": "GAINS",
+   "key": "context_shift"
+  },
+  "A1.fixed_chunk_prior": {
+   "module": "v13.episodes",
+   "attr": "TEXT_GAINS",
+   "key": "fixed_chunk_prior"
+  },
+  "A1.goal_change_boundary_gain": {
+   "module": "v13.episodes",
+   "attr": "GAINS",
+   "key": "goal_shift"
+  },
+  "A1.prediction_error_boundary_gain": {
+   "module": "v13.episodes",
+   "attr": "GAINS",
+   "key": "prediction_error"
+  },
+  "A1.semantic_boundary_gain": {
+   "module": "v13.episodes",
+   "attr": "TEXT_GAINS",
+   "key": "semantic_boundary"
+  },
+  "A4.goal_topdown_gain": {
+   "module": "v13.attention",
+   "attr": "A4",
+   "key": "goal_topdown_gain"
+  },
+  "A4.novelty_gain": {
+   "module": "v13.attention",
+   "attr": "A4",
+   "key": "novelty_gain"
+  },
+  "A4.raw_relook_authority": {
+   "module": "v13.attention",
+   "attr": "A4",
+   "key": "raw_relook_authority"
+  },
+  "A4.salience_gain": {
+   "module": "v13.attention",
+   "attr": "A4",
+   "key": "salience_gain"
+  },
+  "A4.suppression_max": {
+   "module": "v13.attention",
+   "attr": "A4",
+   "key": "suppression_max"
+  },
+  "A4.teacher_hint_gain": {
+   "module": "v13.attention",
+   "attr": "A4",
+   "key": "teacher_hint_gain"
+  },
+  "AGE0.DREAM.factual_write": {
+   "module": "v13.sleep",
+   "attr": "DREAM_FACT_WRITE_GAIN"
+  },
+  "AGE0.FOCAL_DELIBERATION.default_effort": {
+   "module": "v13.effort",
+   "attr": "BOOT",
+   "key": "default"
+  },
+  "AGE0.REPLAY.counterfactual": {
+   "module": "v13.sleep",
+   "attr": "BASE_GAIN",
+   "key": "COUNTERFACTUAL"
+  },
+  "AGE0.REPLAY.real_replay": {
+   "module": "v13.sleep",
+   "attr": "BASE_GAIN",
+   "key": "EPISODIC"
+  },
+  "B2.gist_span_min": {
+   "module": "v13.age",
+   "attr": "GIST_FINE"
+  },
+  "B2.gist_span_target": {
+   "module": "v13.age",
+   "attr": "GIST_BASE",
+   "index": 0
+  },
+  "C3.native_token_budget_default": {
+   "module": "v13.config",
+   "attr": "DEFAULTS",
+   "key": "answer_tokens"
+  },
+  "C4.coalition_threshold": {
+   "module": "v13.focal",
+   "attr": "BOOT",
+   "key": "coalition_threshold"
+  },
+  "C4.inquisition_depth": {
+   "module": "v13.focal",
+   "attr": "BOOT",
+   "key": "inquisition_depth"
+  },
+  "C4.max_cycles_age0": {
+   "module": "v13.focal",
+   "attr": "BOOT",
+   "key": "max_cycles_age0"
+  },
+  "C4.reasoning_effort_conflict_gain": {
+   "module": "v13.effort",
+   "attr": "BOOT",
+   "key": "conflict_gain"
+  },
+  "C4.reasoning_effort_default": {
+   "module": "v13.effort",
+   "attr": "BOOT",
+   "key": "default"
+  },
+  "C4.reasoning_effort_novelty_gain": {
+   "module": "v13.effort",
+   "attr": "BOOT",
+   "key": "novelty_gain"
+  },
+  "C4.reasoning_effort_uncertainty_gain": {
+   "module": "v13.effort",
+   "attr": "BOOT",
+   "key": "uncertainty_gain"
+  },
+  "CAUT.B1_B2_disagreement": {
+   "module": "v13.attention",
+   "attr": "CAUT",
+   "key": "B1_B2_disagreement"
+  },
+  "CAUT.router_instability": {
+   "module": "v13.attention",
+   "attr": "CAUT",
+   "key": "router_instability"
+  },
+  "CAUT.source_risk": {
+   "module": "v13.attention",
+   "attr": "CAUT",
+   "key": "source_risk"
+  },
+  "CAUT.teacher_dependence": {
+   "module": "v13.attention",
+   "attr": "CAUT",
+   "key": "teacher_dependence"
+  },
+  "CAUT.world_surprise": {
+   "module": "v13.attention",
+   "attr": "CAUT",
+   "key": "world_surprise"
+  },
+  "CONSOLIDATE.min_independent_confirmations": {
+   "module": "v13.consolidation",
+   "attr": "MIN_CONFIRMATIONS"
+  },
+  "CONSOLIDATE.retention_required": {
+   "module": "v13.sleep",
+   "attr": "POLICY",
+   "key": "retention_required",
+   "index": 0
+  },
+  "CTX.cache_compression_aggressiveness": {
+   "module": "v13.context_os",
+   "attr": "CTX",
+   "key": "cache_compression_aggressiveness"
+  },
+  "CTX.exact_recent_pin": {
+   "module": "v13.context_os",
+   "attr": "CTX",
+   "key": "exact_recent_pin"
+  },
+  "CTX.global_compact_state": {
+   "module": "v13.context_os",
+   "attr": "CTX",
+   "key": "global_compact_state"
+  },
+  "CTX.long_context_block_index": {
+   "module": "v13.context_os",
+   "attr": "CTX",
+   "key": "long_context_block_index"
+  },
+  "CTX.prefetch_gain": {
+   "module": "v13.context_os",
+   "attr": "CTX",
+   "key": "prefetch_gain"
+  },
+  "CTX.reconstruct_disposable_cache": {
+   "module": "v13.context_os",
+   "attr": "CTX",
+   "key": "reconstruct_disposable_cache"
+  },
+  "DREAM.fact_write_gain": {
+   "module": "v13.sleep",
+   "attr": "DREAM_FACT_WRITE_GAIN"
+  },
+  "ELIG.detailed_trace_rate_error": {
+   "module": "v13.neuromod",
+   "attr": "DETAIL_RATE",
+   "key": "error"
+  },
+  "ELIG.detailed_trace_rate_human_feedback": {
+   "module": "v13.neuromod",
+   "attr": "DETAIL_RATE",
+   "key": "human_feedback"
+  },
+  "ELIG.detailed_trace_rate_normal": {
+   "module": "v13.neuromod",
+   "attr": "DETAIL_RATE",
+   "key": "normal"
+  },
+  "ELIG.fast_decay_per_event": {
+   "module": "v13.neuromod",
+   "attr": "FAST_DECAY"
+  },
+  "ELIG.slow_decay_per_event": {
+   "module": "v13.neuromod",
+   "attr": "SLOW_DECAY"
+  },
+  "ELIG.slow_mix": {
+   "module": "v13.neuromod",
+   "attr": "SLOW_MIX"
+  },
+  "EVENT.final_gain": {
+   "module": "v13.transaction",
+   "attr": "EVENT",
+   "key": "final_gain"
+  },
+  "EVENT.final_learning_eligibility": {
+   "module": "v13.transaction",
+   "attr": "EVENT",
+   "key": "final_learning_eligibility"
+  },
+  "EVENT.final_memory_write": {
+   "module": "v13.transaction",
+   "attr": "EVENT",
+   "key": "final_memory_write"
+  },
+  "EVENT.provisional_gain": {
+   "module": "v13.transaction",
+   "attr": "EVENT",
+   "key": "provisional_gain"
+  },
+  "EVENT.provisional_memory_write": {
+   "module": "v13.transaction",
+   "attr": "EVENT",
+   "key": "provisional_memory_write"
+  },
+  "EVENT.provisional_weight_learning": {
+   "module": "v13.transaction",
+   "attr": "EVENT",
+   "key": "provisional_weight_learning"
+  },
+  "FF.learn_gain": {
+   "module": "v13.fastforward",
+   "attr": "LR"
+  },
+  "FOCAL.slot_target": {
+   "module": "v13.config",
+   "attr": "DEFAULTS",
+   "key": "focal_slots"
+  },
+  "GAIN.action": {
+   "module": "v13.attention",
+   "attr": "GAIN",
+   "key": "action"
+  },
+  "GAIN.callosum": {
+   "module": "v13.attention",
+   "attr": "GAIN",
+   "key": "callosum"
+  },
+  "GAIN.focal": {
+   "module": "v13.attention",
+   "attr": "GAIN",
+   "key": "focal"
+  },
+  "GAIN.perceptual": {
+   "module": "v13.attention",
+   "attr": "GAIN",
+   "key": "perceptual"
+  },
+  "GAIN.workspace": {
+   "module": "v13.attention",
+   "attr": "GAIN",
+   "key": "workspace"
+  },
+  "M.epistemic.dream": {
+   "module": "v13.neuromod",
+   "attr": "SOURCE_WEIGHT",
+   "key": "dream"
+  },
+  "M.epistemic.human_correction": {
+   "module": "v13.neuromod",
+   "attr": "SOURCE_WEIGHT",
+   "key": "human_correction"
+  },
+  "M.epistemic.internal_crosscheck": {
+   "module": "v13.neuromod",
+   "attr": "SOURCE_WEIGHT",
+   "key": "internal_crosscheck"
+  },
+  "M.epistemic.primary_source": {
+   "module": "v13.neuromod",
+   "attr": "SOURCE_WEIGHT",
+   "key": "primary_source"
+  },
+  "M.epistemic.real_deterministic_outcome": {
+   "module": "v13.neuromod",
+   "attr": "SOURCE_WEIGHT",
+   "key": "real_deterministic_outcome"
+  },
+  "M.epistemic.verified_teacher": {
+   "module": "v13.neuromod",
+   "attr": "SOURCE_WEIGHT",
+   "key": "verified_teacher"
+  },
+  "M.safety.irreversible_action": {
+   "module": "v13.neuromod",
+   "attr": "SAFETY",
+   "key": "irreversible_action"
+  },
+  "M.safety.permission_violation": {
+   "module": "v13.neuromod",
+   "attr": "SAFETY",
+   "key": "permission_violation"
+  },
+  "M.safety.rollback_available": {
+   "module": "v13.neuromod",
+   "attr": "SAFETY",
+   "key": "rollback_available"
+  },
+  "M.utility.human_preference": {
+   "module": "v13.actionlearn",
+   "attr": "WEIGHT",
+   "key": "human_approval"
+  },
+  "M.utility.latency_cost": {
+   "module": "v13.actionlearn",
+   "attr": "WEIGHT",
+   "key": "cost_error"
+  },
+  "M.utility.task_success": {
+   "module": "v13.actionlearn",
+   "attr": "WEIGHT",
+   "key": "task_success"
+  },
+  "META.novelty_reopen": {
+   "module": "v13.neuromod",
+   "attr": "META",
+   "key": "novelty_reopen"
+  },
+  "META.repeated_failure_reopen": {
+   "module": "v13.neuromod",
+   "attr": "META",
+   "key": "repeated_failure_reopen"
+  },
+  "META.saturation_suppression": {
+   "module": "v13.neuromod",
+   "attr": "META",
+   "key": "saturation_suppression"
+  },
+  "META.stability_decay_plasticity": {
+   "module": "v13.neuromod",
+   "attr": "META",
+   "key": "stability_decay_plasticity"
+  },
+  "REPLAY.counterfactual_gain": {
+   "module": "v13.sleep",
+   "attr": "BASE_GAIN",
+   "key": "COUNTERFACTUAL"
+  },
+  "REPLAY.old_skill_retention_gain": {
+   "module": "v13.sleep",
+   "attr": "BASE_GAIN",
+   "key": "RETENTION_PROBE"
+  },
+  "REPLAY.procedural_gain": {
+   "module": "v13.sleep",
+   "attr": "BASE_GAIN",
+   "key": "PROCEDURAL"
+  },
+  "REPLAY.real_episode_gain": {
+   "module": "v13.sleep",
+   "attr": "BASE_GAIN",
+   "key": "EPISODIC"
+  },
+  "REPLAY.semantic_gain": {
+   "module": "v13.sleep",
+   "attr": "BASE_GAIN",
+   "key": "SEMANTIC"
+  },
+  "SAL.conflict": {
+   "module": "v13.attention",
+   "attr": "SAL",
+   "key": "conflict"
+  },
+  "SAL.external_interrupt": {
+   "module": "v13.attention",
+   "attr": "SAL",
+   "key": "external_interrupt"
+  },
+  "SAL.goal_violation": {
+   "module": "v13.attention",
+   "attr": "SAL",
+   "key": "goal_violation"
+  },
+  "SAL.novelty": {
+   "module": "v13.attention",
+   "attr": "SAL",
+   "key": "novelty"
+  },
+  "SAL.prediction_error": {
+   "module": "v13.attention",
+   "attr": "SAL",
+   "key": "prediction_error"
+  },
+  "SKILL.automatic_authority": {
+   "module": "v13.fastforward",
+   "attr": "SKILL",
+   "key": "automatic_authority"
+  },
+  "SKILL.compile_after_successes": {
+   "module": "v13.fastforward",
+   "attr": "SKILL",
+   "key": "compile_after_successes"
+  },
+  "SKILL.reopen_on_failure": {
+   "module": "v13.fastforward",
+   "attr": "SKILL",
+   "key": "reopen_on_failure"
+  },
+  "SKILL.reopen_on_surprise": {
+   "module": "v13.fastforward",
+   "attr": "SKILL",
+   "key": "reopen_on_surprise"
+  },
+  "SKILL.shadow_cycles": {
+   "module": "v13.fastforward",
+   "attr": "SKILL",
+   "key": "shadow_cycles"
+  },
+  "SYSTEM.system_stage": {
+   "module": "v13.config",
+   "attr": "DEFAULTS",
+   "key": "system_stage"
+  },
+  "SYSTEM.user_stage_cap": {
+   "module": "v13.config",
+   "attr": "DEFAULTS",
+   "key": "user_stage_cap"
+  },
+  "META.conflict_verify_before_learn": {
+   "module": "v13.neuromod",
+   "attr": "META",
+   "key": "conflict_verify_before_learn"
+  },
+  "HOME.activation_balance": {
+   "module": "v13.homeostasis",
+   "attr": "HOME",
+   "key": "activation_balance"
+  },
+  "HOME.dead_path_reopen": {
+   "module": "v13.homeostasis",
+   "attr": "HOME",
+   "key": "dead_path_reopen"
+  },
+  "HOME.dominant_path_inhibition": {
+   "module": "v13.homeostasis",
+   "attr": "HOME",
+   "key": "dominant_path_inhibition"
+  },
+  "HOME.router_collision_monitor": {
+   "module": "v13.homeostasis",
+   "attr": "HOME",
+   "key": "router_collision_monitor"
+  },
+  "HOME.update_budget_normalization": {
+   "module": "v13.homeostasis",
+   "attr": "HOME",
+   "key": "update_budget_normalization"
+  },
+  "ANCHOR.pretrained_geometry_weight": {
+   "module": "v13.anchor",
+   "attr": "ANCHOR",
+   "key": "pretrained_geometry_weight"
+  },
+  "ANCHOR.protected_old_skill_weight": {
+   "module": "v13.anchor",
+   "attr": "ANCHOR",
+   "key": "protected_old_skill_weight"
+  },
+  "ANCHOR.new_domain_relaxation": {
+   "module": "v13.anchor",
+   "attr": "ANCHOR",
+   "key": "new_domain_relaxation"
+  },
+  "ANCHOR.shared_layer_priority": {
+   "module": "v13.anchor",
+   "attr": "ANCHOR",
+   "key": "shared_layer_priority"
+  }
+ },
+ "deviations": {
+  "B2.gist_span_min": "Code keeps 4 tokens as the finest gist group (age.GIST_FINE, used for literal/conflict refinement §17.6). The value 3 has not been measured against 4; calibrate (WP-KAL) before changing.",
+  "FOCAL.slot_target": "focal_slots is an operator knob with default 4 (config.DEFAULTS); the blueprint value 6 is not yet measured on the phone. The user can raise it with :set focal_slots.",
+  "C3.native_token_budget_default": "answer_tokens is the user-facing answer budget (default 256); the blueprint 64 is a native-report budget. Not measured as equivalent; kept as is until a C3 report path exists.",
+  "M.utility.task_success": "C5 action learning (WP-N4) uses BOOT weights that rank explicit human approval above self-measured task success at Age 0; not calibrated yet.",
+  "M.utility.human_preference": "C5 action learning (WP-N4) weights explicit human approval 1.0 at Age 0 (BOOT, not calibrated).",
+  "FF.learn_gain": "fastforward.LR is the NLMS step size of the fast-forward predictor (BOOT 0.3); whether it is the same quantity as FF.learn_gain is an interpretation, and 0.55 has not been tested."
+ }
+}

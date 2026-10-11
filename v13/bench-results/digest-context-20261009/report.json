@@ -1,0 +1,373 @@
+{
+ "kind": "DIGEST_CONTEXT_BENCH",
+ "n": 24,
+ "history_pairs": 4,
+ "models": {
+  "LFM2.5-230M-QAD-Q4_0.gguf": {
+   "A_no_digest": {
+    "accuracy": 0.0,
+    "mean_prompt_tokens": 141.5,
+    "samples": [
+     {
+      "hit": false,
+      "prompt_tokens": 143,
+      "answer": "The dentist appointment is typically scheduled for next week.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 142,
+      "answer": "Your sister lives in a small town near the coast.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 139,
+      "answer": "I don't have access to real-time information, but you can check your local dentist's website or call them directly for the most accurate appointment details.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 142,
+      "answer": "I don't have access to your sister's location, but you can check her address or use a map service to find it.",
+      "expected": "Nantes"
+     }
+    ]
+   },
+   "B_digest": {
+    "accuracy": 0.792,
+    "mean_prompt_tokens": 201.4,
+    "samples": [
+     {
+      "hit": false,
+      "prompt_tokens": 204,
+      "answer": "The dentist appointment is on December 14, 2026.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 202,
+      "answer": "Your sister lives in Tromsø.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 200,
+      "answer": "The dentist appointment is on January 9, 2027.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 199,
+      "answer": "Your sister lives in Nantes.",
+      "expected": "Nantes"
+     }
+    ]
+   },
+   "C_in_window_no_digest": {
+    "accuracy": 0.792,
+    "mean_prompt_tokens": 142.3,
+    "samples": [
+     {
+      "hit": false,
+      "prompt_tokens": 147,
+      "answer": "The dentist appointment is on December 14, 2026.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 143,
+      "answer": "My sister lives in Tromsø.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 144,
+      "answer": "The dentist appointment is on January 9, 2027.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 139,
+      "answer": "My sister lives in Nantes.",
+      "expected": "Nantes"
+     }
+    ]
+   },
+   "D_in_window_digest": {
+    "accuracy": 0.833,
+    "mean_prompt_tokens": 190.3,
+    "samples": [
+     {
+      "hit": true,
+      "prompt_tokens": 192,
+      "answer": "The dentist appointment is on 2026-12-14.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 192,
+      "answer": "My sister lives in Tromsø.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 189,
+      "answer": "The dentist appointment is on January 9, 2027.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 187,
+      "answer": "My sister lives in Nantes.",
+      "expected": "Nantes"
+     }
+    ]
+   }
+  },
+  "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf": {
+   "A_no_digest": {
+    "accuracy": 0.0,
+    "mean_prompt_tokens": 141.5,
+    "samples": [
+     {
+      "hit": false,
+      "prompt_tokens": 143,
+      "answer": "I don't have your dentist's appointment details.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 142,
+      "answer": "I don't have access to personal information about your sister. Please ask her directly.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 139,
+      "answer": "Your dentist appointment is usually scheduled for the next available slot.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 142,
+      "answer": "I don't have access to personal information.",
+      "expected": "Nantes"
+     }
+    ]
+   },
+   "B_digest": {
+    "accuracy": 0.875,
+    "mean_prompt_tokens": 201.4,
+    "samples": [
+     {
+      "hit": true,
+      "prompt_tokens": 204,
+      "answer": "The dentist appointment is on 2026-12-14.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 202,
+      "answer": "Your sister lives in Tromsø.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 200,
+      "answer": "Your dentist appointment is on January 9, 2027.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 199,
+      "answer": "Your sister lives in Nantes.",
+      "expected": "Nantes"
+     }
+    ]
+   },
+   "C_in_window_no_digest": {
+    "accuracy": 0.75,
+    "mean_prompt_tokens": 142.3,
+    "samples": [
+     {
+      "hit": false,
+      "prompt_tokens": 147,
+      "answer": "Your dentist appointment is on December 14, 2026.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 143,
+      "answer": "Your sister lives in Tromsø, Norway.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 144,
+      "answer": "Your dentist appointment is on January 9, 2027.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 139,
+      "answer": "Your sister lives in Nantes.",
+      "expected": "Nantes"
+     }
+    ]
+   },
+   "D_in_window_digest": {
+    "accuracy": 0.792,
+    "mean_prompt_tokens": 190.3,
+    "samples": [
+     {
+      "hit": false,
+      "prompt_tokens": 192,
+      "answer": "Your dentist appointment is on December 14, 2026.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 192,
+      "answer": "Your sister lives in Tromsø.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 189,
+      "answer": "Your dentist appointment is on January 9, 2027.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 187,
+      "answer": "Your sister lives in Nantes.",
+      "expected": "Nantes"
+     }
+    ]
+   }
+  },
+  "Qwen3.5-0.8B-Q4_0.gguf": {
+   "A_no_digest": {
+    "accuracy": 0.0,
+    "mean_prompt_tokens": 110.8,
+    "samples": [
+     {
+      "hit": false,
+      "prompt_tokens": 144,
+      "answer": "I do not have access to your personal schedule or current location to determine the specific dentist appointment date.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 144,
+      "answer": "I don't have access to your personal information or location, so I cannot tell you where your sister lives.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 140,
+      "answer": "I do not have access to your personal schedule or current appointments, so I cannot provide a specific date or time for your dentist appointment.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": false,
+      "prompt_tokens": 141,
+      "answer": "I don't have access to your personal information or location, so I cannot tell you where your sister lives.",
+      "expected": "Nantes"
+     }
+    ]
+   },
+   "B_digest": {
+    "accuracy": 0.917,
+    "mean_prompt_tokens": 206.4,
+    "samples": [
+     {
+      "hit": true,
+      "prompt_tokens": 211,
+      "answer": "The dentist appointment is on 2026-12-14.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 208,
+      "answer": "Tromsø.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 206,
+      "answer": "The dentist appointment is on 2027-01-09.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 200,
+      "answer": "Nantes.",
+      "expected": "Nantes"
+     }
+    ]
+   },
+   "C_in_window_no_digest": {
+    "accuracy": 0.708,
+    "mean_prompt_tokens": 97.6,
+    "samples": [
+     {
+      "hit": true,
+      "prompt_tokens": 105,
+      "answer": "The dentist appointment is on 2026-12-14.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 97,
+      "answer": "Tromsø.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 105,
+      "answer": "The dentist appointment is on **2027-01-09**.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 94,
+      "answer": "Nantes.",
+      "expected": "Nantes"
+     }
+    ]
+   },
+   "D_in_window_digest": {
+    "accuracy": 0.75,
+    "mean_prompt_tokens": 195.1,
+    "samples": [
+     {
+      "hit": true,
+      "prompt_tokens": 200,
+      "answer": "The dentist appointment is on 2026-12-14.",
+      "expected": "2026-12-14"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 197,
+      "answer": "Tromsø.",
+      "expected": "Tromsø"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 195,
+      "answer": "The dentist appointment is on 2027-01-09.",
+      "expected": "2027-01-09"
+     },
+     {
+      "hit": true,
+      "prompt_tokens": 189,
+      "answer": "Nantes.",
+      "expected": "Nantes"
+     }
+    ]
+   }
+  }
+ }
+}

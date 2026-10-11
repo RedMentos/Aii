@@ -1,0 +1,130 @@
+{
+ "kind": "G1B_GIST_GROUPING_BENCH",
+ "size": 8,
+ "slots": 12,
+ "texts": {
+  "en_plan": {
+   "boundary": {
+    "groups": 7,
+    "slots": 7,
+    "coarsened": false,
+    "boundary_rate": 0.714,
+    "mean_units": 10.71,
+    "cv_units": 0.227,
+    "exact_spans_split": 0,
+    "lossless": true
+   },
+   "fixed": {
+    "groups": 9,
+    "slots": 9,
+    "coarsened": false,
+    "boundary_rate": 0.444,
+    "mean_units": 8.33,
+    "cv_units": 0.08,
+    "exact_spans_split": 1,
+    "lossless": true
+   }
+  },
+  "de_alltag": {
+   "boundary": {
+    "groups": 5,
+    "slots": 5,
+    "coarsened": false,
+    "boundary_rate": 1.0,
+    "mean_units": 12.2,
+    "cv_units": 0.131,
+    "exact_spans_split": 0,
+    "lossless": true
+   },
+   "fixed": {
+    "groups": 7,
+    "slots": 7,
+    "coarsened": false,
+    "boundary_rate": 0.571,
+    "mean_units": 8.71,
+    "cv_units": 0.133,
+    "exact_spans_split": 0,
+    "lossless": true
+   }
+  },
+  "code": {
+   "boundary": {
+    "groups": 4,
+    "slots": 4,
+    "coarsened": false,
+    "boundary_rate": 0.75,
+    "mean_units": 14.75,
+    "cv_units": 0.147,
+    "exact_spans_split": 0,
+    "lossless": true
+   },
+   "fixed": {
+    "groups": 7,
+    "slots": 7,
+    "coarsened": false,
+    "boundary_rate": 0.286,
+    "mean_units": 8.43,
+    "cv_units": 0.153,
+    "exact_spans_split": 1,
+    "lossless": true
+   }
+  },
+  "long_story": {
+   "boundary": {
+    "groups": 32,
+    "slots": 12,
+    "coarsened": true,
+    "boundary_rate": 0.75,
+    "mean_units": 9.75,
+    "cv_units": 0.183,
+    "exact_spans_split": 0,
+    "lossless": true
+   },
+   "fixed": {
+    "groups": 38,
+    "slots": 12,
+    "coarsened": true,
+    "boundary_rate": 0.158,
+    "mean_units": 8.21,
+    "cv_units": 0.093,
+    "exact_spans_split": 0,
+    "lossless": true
+   }
+  },
+  "list": {
+   "boundary": {
+    "groups": 6,
+    "slots": 6,
+    "coarsened": false,
+    "boundary_rate": 1.0,
+    "mean_units": 8.67,
+    "cv_units": 0.086,
+    "exact_spans_split": 0,
+    "lossless": true
+   },
+   "fixed": {
+    "groups": 6,
+    "slots": 6,
+    "coarsened": false,
+    "boundary_rate": 1.0,
+    "mean_units": 8.67,
+    "cv_units": 0.086,
+    "exact_spans_split": 0,
+    "lossless": true
+   }
+  }
+ },
+ "boundary": {
+  "boundary_rate": 0.843,
+  "exact_spans_split": 0,
+  "cv_units": 0.155,
+  "all_lossless": true
+ },
+ "fixed": {
+  "boundary_rate": 0.492,
+  "exact_spans_split": 2,
+  "cv_units": 0.109,
+  "all_lossless": true
+ },
+ "claim_limit": "Structural readout metrics only; whether B2 answers improve needs the model bench (WP-N12)"
+}

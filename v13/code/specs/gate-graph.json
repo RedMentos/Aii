@@ -1,0 +1,545 @@
+{
+ "schema": "V13_GATE_GRAPH_V1",
+ "source": "Blueprint IH-H28 (dependency graph), IH-H33 (definition of done), §100 (new gates, green criteria)",
+ "criteria": [
+  "code",
+  "real_data",
+  "persistence",
+  "test",
+  "telemetry",
+  "ablation",
+  "limitations"
+ ],
+ "rules": [
+  "A gate is GREEN only when every required criterion has existing evidence and all dependencies are GREEN.",
+  "real_data must be an artifact of a real run (bench-results/ or docs/proofs/), never a unit test (no mock may make a gate green).",
+  "telemetry is a telemetry kind that the code must actually log (checked in v13/*.py).",
+  "null means the criterion is not relevant for this gate (e.g. persistence for a pure benchmark).",
+  "verdict: evidence existing is not enough where a result file states pass/fail; a failing verdict keeps the gate at EVIDENCE_NOT_PASSING."
+ ],
+ "gates": {
+  "G0": {
+   "title": "Machine canon",
+   "deps": [],
+   "code": [
+    "v13/verification.py",
+    "specs/component-contracts.json"
+   ],
+   "test": [
+    "tests/test_acceptance_verification.py"
+   ],
+   "real_data": [
+    "docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md"
+   ],
+   "persistence": null,
+   "telemetry": null,
+   "ablation": null,
+   "limitations": [
+    "docs/REMAINING_IMPLEMENTATION.md"
+   ]
+  },
+  "STORE0": {
+   "title": "Transactional persistence",
+   "deps": [
+    "G0"
+   ],
+   "code": [
+    "v13/store.py"
+   ],
+   "test": [
+    "tests/test_migrations.py",
+    "tests/test_sqlite_close_audit.py"
+   ],
+   "real_data": [
+    "docs/proofs/real-integration-after-cancel-fix.json"
+   ],
+   "persistence": [
+    "tests/test_runtime_queue.py"
+   ],
+   "telemetry": [
+    "turn_finished"
+   ],
+   "ablation": null,
+   "limitations": [
+    "docs/PERSISTENT_QUEUE_MIGRATION.md"
+   ]
+  },
+  "OP0": {
+   "title": "Operator control",
+   "deps": [
+    "G0"
+   ],
+   "code": [
+    "v13/operator.py"
+   ],
+   "test": [
+    "tests/test_core.py"
+   ],
+   "real_data": [
+    "docs/proofs/redmi-screenshot-observations.json"
+   ],
+   "persistence": null,
+   "telemetry": [
+    "feedback"
+   ],
+   "ablation": null,
+   "limitations": [
+    "docs/USER_DECISIONS_AND_OPEN_QUESTIONS.md"
+   ]
+  },
+  "RUNNER0": {
+   "title": "Runner proof framework",
+   "deps": [
+    "G0"
+   ],
+   "code": [
+    "v13/runners.py",
+    "scripts/audit_native_ports.py"
+   ],
+   "test": [
+    "tests/test_native_port_audit.py"
+   ],
+   "real_data": [
+    "docs/proofs/native-smoke-linux-current.json"
+   ],
+   "persistence": null,
+   "telemetry": [
+    "turn_finished"
+   ],
+   "ablation": null,
+   "limitations": [
+    "docs/NATIVE_PORT_TEST.md"
+   ]
+  },
+  "STEP1": {
+   "title": "JEF direct path (G3 partial)",
+   "deps": [
+    "STORE0",
+    "OP0",
+    "RUNNER0"
+   ],
+   "code": [
+    "v13/runtime.py",
+    "v13/executive.py"
+   ],
+   "test": [
+    "tests/test_step12.py",
+    "tests/test_executive.py"
+   ],
+   "real_data": [
+    "docs/proofs/step12-proof-20260929.json"
+   ],
+   "persistence": [
+    "tests/test_runtime_queue.py"
+   ],
+   "telemetry": [
+    "turn_finished"
+   ],
+   "ablation": null,
+   "limitations": [
+    "docs/C1_GOVERNOR_SCOPE.md"
+   ]
+  },
+  "STEP2": {
+   "title": "B1/B2 observer + offer schema (G1B)",
+   "deps": [
+    "STEP1"
+   ],
+   "code": [
+    "v13/cognition.py"
+   ],
+   "test": [
+    "tests/test_step2_utility.py",
+    "tests/test_step2_analysis.py"
+   ],
+   "real_data": [
+    "docs/proofs/step2-final-full-audit-20261009.json"
+   ],
+   "persistence": [
+    "tests/test_step2_checkpoint.py"
+   ],
+   "telemetry": [
+    "offer_rejected"
+   ],
+   "ablation": [
+    "docs/proofs/step2-ablations-linux.json"
+   ],
+   "limitations": [
+    "docs/STEP2_SEMANTIC_UTILITY_SCOPE.md"
+   ],
+   "verdict": [
+    {
+     "file": "docs/proofs/step2-final-full-audit-20261009.json",
+     "path": "all70_rowchecks_pass",
+     "op": "==",
+     "value": true
+    }
+   ]
+  },
+  "STEP3": {
+   "title": "Experience + episodic/provenance (G6 partial)",
+   "deps": [
+    "STEP1"
+   ],
+   "code": [
+    "v13/memory.py",
+    "v13/semantic_memory.py",
+    "v13/episodes.py"
+   ],
+   "test": [
+    "tests/test_retrieval.py",
+    "tests/test_semantic_memory.py",
+    "tests/test_episodes.py"
+   ],
+   "real_data": [
+    "../bench-results/semantic-recall-20261009/semantic_recall.json",
+    "docs/proofs/second-attempt-linux-current.json"
+   ],
+   "persistence": [
+    "tests/test_experience_replay.py"
+   ],
+   "telemetry": [
+    "memory_embedding",
+    "episode_boundary"
+   ],
+   "ablation": [
+    "../bench-results/semantic-recall-20261009/semantic_recall.json"
+   ],
+   "limitations": [
+    "docs/SEMANTIC_MEMORY.md",
+    "docs/EPISODES.md"
+   ],
+   "verdict": [
+    {
+     "file": "../bench-results/semantic-recall-20261009/semantic_recall.json",
+     "path": "end_to_end.en.hit_at_1",
+     "op": ">=",
+     "value": 0.9
+    }
+   ]
+  },
+  "STEP5": {
+   "title": "Shadow learning (UPDATE0 + regression harness)",
+   "deps": [
+    "STEP3"
+   ],
+   "code": [
+    "v13/learning.py",
+    "v13/guards.py",
+    "v13/neuromod.py"
+   ],
+   "test": [
+    "tests/test_learning_invariants.py",
+    "tests/test_neuromod.py"
+   ],
+   "real_data": [
+    "docs/proofs/f7-learning-native-20261002.json"
+   ],
+   "persistence": [
+    "tests/test_component_generations.py"
+   ],
+   "telemetry": [
+    "feedback"
+   ],
+   "ablation": null,
+   "limitations": [
+    "docs/NEUROMODULATION.md"
+   ]
+  },
+  "STEP6": {
+   "title": "Callosum (G2 BodyPort, G2B effect, G2C utility)",
+   "deps": [
+    "STEP2",
+    "STEP5"
+   ],
+   "code": [
+    "v13/body_training.py",
+    "scripts/native_receiver_effect.cpp"
+   ],
+   "test": [
+    "tests/test_body_training_port.py"
+   ],
+   "real_data": [],
+   "persistence": null,
+   "telemetry": null,
+   "ablation": [],
+   "limitations": [
+    "docs/NATIVE_RECEIVER_EFFECT.md"
+   ]
+  },
+  "G-B-TIMESCALE-DIVERGENCE-001": {
+   "title": "B1/B2 timescale divergence (§85.1)",
+   "deps": [
+    "STEP2"
+   ],
+   "code": [
+    "scripts/timescale_gate.py",
+    "v13/models.py"
+   ],
+   "test": [
+    "tests/test_timescale_controls.py"
+   ],
+   "real_data": [
+    "../bench-results/timescale-gate-20261009/two_body.json"
+   ],
+   "persistence": null,
+   "telemetry": null,
+   "ablation": [
+    "../bench-results/timescale-gate-20261009/same_model_prompt_only.analysis.json",
+    "../bench-results/timescale-gate-20261009/shared_body_dual_state.analysis.json"
+   ],
+   "limitations": [
+    "../ROADMAP.md"
+   ],
+   "verdict": [
+    {
+     "file": "../bench-results/timescale-gate-20261009/two_body.analysis.json",
+     "path": "complementarity_proven",
+     "op": "==",
+     "value": true
+    }
+   ]
+  },
+  "G-CALLOSUM-UTILITY-002": {
+   "title": "Callosum utility vs no-message/exact/symbolic/latent",
+   "deps": [
+    "STEP6"
+   ],
+   "code": [
+    "v13/cognition.py"
+   ],
+   "test": [
+    "tests/test_step2_utility.py"
+   ],
+   "real_data": [
+    "docs/proofs/step2-semantic-utility-native-20261008.json"
+   ],
+   "persistence": null,
+   "telemetry": null,
+   "ablation": [],
+   "limitations": [
+    "docs/STEP2_SEMANTIC_UTILITY_SCOPE.md"
+   ],
+   "verdict": [
+    {
+     "file": "docs/proofs/step2-semantic-utility-summary-20261008.json",
+     "path": "canonical_gate_pass",
+     "op": "==",
+     "value": true
+    }
+   ]
+  },
+  "G-FOCAL-CAPACITY-003": {
+   "title": "Focal coalition capacity",
+   "deps": [
+    "STEP2"
+   ],
+   "code": [
+    "v13/focal.py"
+   ],
+   "test": [
+    "tests/test_focal.py"
+   ],
+   "real_data": [
+    "../bench-results/utility-20261010/utility.json",
+    "../bench-results/utility2-20261010/utility2.json"
+   ],
+   "persistence": null,
+   "telemetry": null,
+   "ablation": [
+    "../bench-results/utility-20261010/utility.json",
+    "../bench-results/utility2-20261010/utility2.json"
+   ],
+   "limitations": [
+    "../bench-results/utility-20261010/README.md",
+    "../bench-results/utility2-20261010/README.md"
+   ],
+   "verdict": [
+    {
+     "file": "../bench-results/utility-20261010/utility.json",
+     "path": "verdict.focal_coalition_helps",
+     "op": "==",
+     "value": true
+    },
+    {
+     "file": "../bench-results/utility2-20261010/utility2.json",
+     "path": "verdict.focal_coalition_helps",
+     "op": "==",
+     "value": true
+    }
+   ]
+  },
+  "G-PROCEDURALIZATION-004": {
+   "title": "Proceduralization / skills",
+   "deps": [
+    "STEP5"
+   ],
+   "code": [
+    "v13/agi/skills.py",
+    "v13/agi/live.py"
+   ],
+   "test": [
+    "tests/test_agi_live.py"
+   ],
+   "real_data": [],
+   "persistence": [
+    "tests/test_growth.py"
+   ],
+   "telemetry": null,
+   "ablation": [
+    "../bench-results/ablation99-20261010/ablation99.json"
+   ],
+   "limitations": [
+    "docs/AGI_LIVE.md"
+   ]
+  },
+  "G-SELF-WORLD-005": {
+   "title": "Self vs world, corollary, grounding",
+   "deps": [
+    "STEP1"
+   ],
+   "code": [
+    "v13/world.py",
+    "v13/agi/grounding.py"
+   ],
+   "test": [
+    "tests/test_world_state.py",
+    "tests/test_agi_live.py"
+   ],
+   "real_data": [
+    "docs/proofs/doctor-world-linux-20260930.json"
+   ],
+   "persistence": null,
+   "telemetry": [
+    "prediction_outcome",
+    "grounded_outcome"
+   ],
+   "ablation": [],
+   "limitations": [
+    "docs/SELF_MODEL.md"
+   ]
+  },
+  "G-TRAIN-RUNNER-PROOF-001": {
+   "title": "Train runner proof (checkpoint/resume/rollback)",
+   "deps": [
+    "STEP5"
+   ],
+   "code": [
+    "v13/lora_trainer.py"
+   ],
+   "test": [
+    "tests/test_lora_trainer.py"
+   ],
+   "real_data": [],
+   "persistence": null,
+   "telemetry": null,
+   "ablation": [],
+   "limitations": [
+    "docs/NATIVE_TRAIN_TEST.md"
+   ]
+  },
+  "G-REPLAY-CONSOLIDATION-001": {
+   "title": "Replay + consolidation",
+   "deps": [
+    "STEP3",
+    "STEP5"
+   ],
+   "code": [
+    "v13/sleep.py",
+    "v13/consolidation.py"
+   ],
+   "test": [
+    "tests/test_sleep_scheduler.py",
+    "tests/test_consolidation.py"
+   ],
+   "real_data": [
+    "docs/proofs/consolidation-native-20261002.json"
+   ],
+   "persistence": [
+    "tests/test_sleep_scheduler.py"
+   ],
+   "telemetry": [
+    "sleep_cycle",
+    "consolidation_staged"
+   ],
+   "ablation": [],
+   "limitations": [
+    "docs/SLEEP_SCHEDULER.md",
+    "docs/CONSOLIDATION_SCOPE.md"
+   ],
+   "verdict": [
+    {
+     "file": "docs/proofs/consolidation-native-20261002.json",
+     "path": "status",
+     "op": "==",
+     "value": "CONSOLIDATION_PASS"
+    }
+   ]
+  },
+  "G-MODULATOR-SPECIFICITY-001": {
+   "title": "Typed modulators steer the right paths",
+   "deps": [
+    "STEP5"
+   ],
+   "code": [
+    "v13/neuromod.py"
+   ],
+   "test": [
+    "tests/test_neuromod.py"
+   ],
+   "real_data": [],
+   "persistence": [
+    "tests/test_neuromod.py"
+   ],
+   "telemetry": null,
+   "ablation": [
+    "../bench-results/ablation99-20261010/ablation99.json"
+   ],
+   "limitations": [
+    "docs/NEUROMODULATION.md"
+   ]
+  },
+  "G-AGE-REOPEN-001": {
+   "title": "Age stages with hysteresis and re-open",
+   "deps": [
+    "STEP5"
+   ],
+   "code": [
+    "v13/age.py"
+   ],
+   "test": [
+    "tests/test_age.py"
+   ],
+   "real_data": [],
+   "persistence": [
+    "tests/test_age.py"
+   ],
+   "telemetry": null,
+   "ablation": [
+    "../bench-results/ablation99-20261010/ablation99.json"
+   ],
+   "limitations": []
+  },
+  "G-MOBILE-LONGRUN-001": {
+   "title": "Redmi long run (RSS/thermal/latency)",
+   "deps": [
+    "STEP1"
+   ],
+   "code": [
+    "scripts/phone_acceptance.py"
+   ],
+   "test": [
+    "tests/test_phone_acceptance.py"
+   ],
+   "real_data": [],
+   "persistence": null,
+   "telemetry": [
+    "turn_finished"
+   ],
+   "ablation": null,
+   "limitations": [
+    "docs/PHONE_VALIDATION.md"
+   ]
+  }
+ }
+}

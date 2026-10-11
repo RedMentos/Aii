@@ -1,0 +1,8 @@
+[bench 22:28:42] Quelle /mnt/project-files/v13/code -> /tmp/v13-bench/app
+[bench 22:32:53] START units
+[bench 22:34:07] ENDE  units rc=0 (73s)
+[bench 22:34:08] START setup
+[bench 22:35:40] ENDE  setup rc=0 (92s)
+[bench 22:35:40] START acceptance
+[bench 22:50:17] ENDE  acceptance rc=2 (877s)
+[bench 22:50:17] Ergebnis: /mnt/project-files/v13/bench-results/20261009T222841Z/result.json

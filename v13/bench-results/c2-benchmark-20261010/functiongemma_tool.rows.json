@@ -1,0 +1,674 @@
+[
+ {
+  "id": "simple-00",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3684128720000217,
+  "error": "no_tool_call:I am doing well, thank you for asking! How are you today?"
+ },
+ {
+  "id": "simple-01",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3269280780000372,
+  "error": "no_tool_call:I apologize, but I cannot assist with planning or recommendi"
+ },
+ {
+  "id": "simple-02",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.352308292000032,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "simple-03",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.2594045909999636,
+  "error": "no_tool_call:I am sorry, but I cannot assist with asking for personal inf"
+ },
+ {
+  "id": "simple-04",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3257914209999626,
+  "error": "no_tool_call:I'm sorry, but I cannot assist with asking for hello. My cur"
+ },
+ {
+  "id": "simple-05",
+  "label": "simple",
+  "pred": "both",
+  "latency_s": 0.5213796369999955,
+  "error": null
+ },
+ {
+  "id": "simple-06",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.381966288000001,
+  "error": "no_tool_call:I am sorry, but I cannot assist with asking a question about"
+ },
+ {
+  "id": "simple-07",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.6032042359999537,
+  "error": null
+ },
+ {
+  "id": "simple-08",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3500995549999857,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "simple-09",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.19999589100001458,
+  "error": "no_tool_call:I cannot provide weather or sky color information. My curren"
+ },
+ {
+  "id": "simple-10",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.5133174329999974,
+  "error": null
+ },
+ {
+  "id": "simple-11",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3715835500000253,
+  "error": "no_tool_call:I apologize, but I cannot assist with planning or recommendi"
+ },
+ {
+  "id": "simple-12",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.28897316000001183,
+  "error": "no_tool_call:I cannot provide specific measurements or facts about spider"
+ },
+ {
+  "id": "simple-13",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.32518827600000577,
+  "error": "no_tool_call:I am not able to answer questions about sleep or wakefulness"
+ },
+ {
+  "id": "simple-14",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.2892191590000266,
+  "error": "no_tool_call:I cannot provide a definition for \"ephemeral.\" My current ca"
+ },
+ {
+  "id": "simple-15",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3476639109999837,
+  "error": "no_tool_call:I'm sorry, but I cannot assist with managing your household "
+ },
+ {
+  "id": "simple-16",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3399425530000144,
+  "error": "no_tool_call:I am sorry, but I cannot assist with recommending cat names."
+ },
+ {
+  "id": "simple-17",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.2820113999999876,
+  "error": "no_tool_call:I cannot assist with answering questions about water. My cur"
+ },
+ {
+  "id": "simple-18",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3724031140000079,
+  "error": "no_tool_call:I apologize, but I cannot assist with planning or recommendi"
+ },
+ {
+  "id": "simple-19",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3989863630000059,
+  "error": "no_tool_call:I am sorry, but I cannot assist with planning or recommendin"
+ },
+ {
+  "id": "simple-20",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.3729677250000236,
+  "error": "no_tool_call:I am sorry, but I cannot assist with understanding or hearin"
+ },
+ {
+  "id": "simple-21",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.29610473800005366,
+  "error": "no_tool_call:I'm sorry, I cannot provide a synonym for \"happy.\" My curren"
+ },
+ {
+  "id": "simple-22",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.38791701600001716,
+  "error": "no_tool_call:I'm sorry, but I cannot assist with managing your physical h"
+ },
+ {
+  "id": "simple-23",
+  "label": "simple",
+  "pred": null,
+  "latency_s": 0.32524004900000136,
+  "error": "no_tool_call:I am sorry, but I cannot answer this question. My current ca"
+ },
+ {
+  "id": "detail-00",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.4167823650000173,
+  "error": "no_tool_call:I apologize, but I cannot calculate the percentage of a give"
+ },
+ {
+  "id": "detail-01",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.38463070000000243,
+  "error": "no_tool_call:I'm sorry, but I cannot assist with writing Python functions"
+ },
+ {
+  "id": "detail-02",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.4135483850000128,
+  "error": "no_tool_call:I cannot assist with debugging or analyzing Python code. My "
+ },
+ {
+  "id": "detail-03",
+  "label": "detail",
+  "pred": "detail",
+  "latency_s": 0.5870383639999659,
+  "error": null
+ },
+ {
+  "id": "detail-04",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.47909332000000404,
+  "error": "no_tool_call:I apologize, but I cannot assist with converting Fahrenheit "
+ },
+ {
+  "id": "detail-05",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.32011987499998895,
+  "error": "no_tool_call:I cannot assist with fixing bugs or optimizing software. My "
+ },
+ {
+  "id": "detail-06",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.43757767699997885,
+  "error": "no_tool_call:I apologize, but I cannot assist with calculating or providi"
+ },
+ {
+  "id": "detail-07",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.40903950999995686,
+  "error": "no_tool_call:I am sorry, but I cannot assist with writing or generating t"
+ },
+ {
+  "id": "detail-08",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.4029054419999625,
+  "error": "no_tool_call:I cannot assist with extracting specific flags from untruste"
+ },
+ {
+  "id": "detail-09",
+  "label": "detail",
+  "pred": "detail",
+  "latency_s": 0.526505745999998,
+  "error": null
+ },
+ {
+  "id": "detail-10",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.42787213899998733,
+  "error": "no_tool_call:I apologize, but I cannot provide specific time estimates fo"
+ },
+ {
+  "id": "detail-11",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.32948844300000246,
+  "error": "no_tool_call:I cannot assist with explaining SQL queries or providing exp"
+ },
+ {
+  "id": "detail-12",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.4531302020000112,
+  "error": "no_tool_call:I apologize, but I cannot assist with planning travel or log"
+ },
+ {
+  "id": "detail-13",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.24542355599999155,
+  "error": "no_tool_call:I cannot assist with writing or executing shell commands lik"
+ },
+ {
+  "id": "detail-14",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.41834056499999406,
+  "error": "no_tool_call:I apologize, but I cannot assist with this request. My curre"
+ },
+ {
+  "id": "detail-15",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.37356636399999843,
+  "error": "no_tool_call:I apologize, but I cannot assist with splitting bills or cal"
+ },
+ {
+  "id": "detail-16",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.3658136329999593,
+  "error": "no_tool_call:I cannot assist with debugging or troubleshooting programmin"
+ },
+ {
+  "id": "detail-17",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.41899408500000845,
+  "error": "no_tool_call:I apologize, but I cannot assist with retrieving or analyzin"
+ },
+ {
+  "id": "detail-18",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.3800581460000103,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "detail-19",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.442011210999965,
+  "error": "no_tool_call:I am sorry, but I cannot assist with debugging C program seg"
+ },
+ {
+  "id": "detail-20",
+  "label": "detail",
+  "pred": "detail",
+  "latency_s": 0.48553402700002835,
+  "error": null
+ },
+ {
+  "id": "detail-21",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.28751698799999303,
+  "error": "no_tool_call:I cannot provide specific technical information about file p"
+ },
+ {
+  "id": "detail-22",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.3039844090000088,
+  "error": "no_tool_call:I cannot provide specific financial or business advice. My c"
+ },
+ {
+  "id": "detail-23",
+  "label": "detail",
+  "pred": null,
+  "latency_s": 0.3405972859999906,
+  "error": "no_tool_call:I am sorry, but I cannot assist with writing SQL statements "
+ },
+ {
+  "id": "gist-00",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.4644070990000273,
+  "error": null
+ },
+ {
+  "id": "gist-01",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.31253088599999046,
+  "error": "no_tool_call:I am sorry, but I cannot assist with planning a learning pla"
+ },
+ {
+  "id": "gist-02",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.21081135499997572,
+  "error": "no_tool_call:I cannot provide specific information about Stoicism. My cap"
+ },
+ {
+  "id": "gist-03",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.3708627839999963,
+  "error": "no_tool_call:I apologize, but I cannot assist with calculating or summari"
+ },
+ {
+  "id": "gist-04",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.3520343850000245,
+  "error": "no_tool_call:I am sorry, but I cannot assist with planning a weekend trip"
+ },
+ {
+  "id": "gist-05",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.19665997600003493,
+  "error": "no_tool_call:I cannot provide a specific, current climate change overview"
+ },
+ {
+  "id": "gist-06",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.3887619019999988,
+  "error": "no_tool_call:I am sorry, but I cannot assist with providing an overview o"
+ },
+ {
+  "id": "gist-07",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.4648439559999815,
+  "error": "no_tool_call:I am sorry, but I cannot assist with drafting a comprehensiv"
+ },
+ {
+  "id": "gist-08",
+  "label": "gist",
+  "pred": "both",
+  "latency_s": 0.4909229909999908,
+  "error": null
+ },
+ {
+  "id": "gist-09",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.5853003859999717,
+  "error": null
+ },
+ {
+  "id": "gist-10",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.2996393350000517,
+  "error": "no_tool_call:I would be happy to assist with brainstorming a roadmap for "
+ },
+ {
+  "id": "gist-11",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.26412960900000826,
+  "error": "no_tool_call:I cannot provide a brief overview of a project manager's rol"
+ },
+ {
+  "id": "gist-12",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.4479831780000154,
+  "error": "no_tool_call:I am sorry, but I cannot assist with outlining the key steps"
+ },
+ {
+  "id": "gist-13",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.3679739089999998,
+  "error": "no_tool_call:I am sorry, but I cannot assist with summarizing pros of rem"
+ },
+ {
+  "id": "gist-14",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.35884055100001433,
+  "error": "no_tool_call:I am sorry, but I cannot assist with providing broad strokes"
+ },
+ {
+  "id": "gist-15",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.35804979400001,
+  "error": "no_tool_call:I am sorry, but I cannot assist with creating or drafting st"
+ },
+ {
+  "id": "gist-16",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.30687451400001464,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "gist-17",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.4997276160000297,
+  "error": null
+ },
+ {
+  "id": "gist-18",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.355541130000006,
+  "error": "no_tool_call:I cannot provide a comprehensive overview of the Roman Empir"
+ },
+ {
+  "id": "gist-19",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.26625031200001104,
+  "error": "no_tool_call:I can certainly help with planning a simple healthy meal rou"
+ },
+ {
+  "id": "gist-20",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.3338309170000002,
+  "error": "no_tool_call:I cannot provide a summary of the main takeaway of a book. M"
+ },
+ {
+  "id": "gist-21",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.22278519900004312,
+  "error": "no_tool_call:I would be happy to summarize what we discussed. Could you p"
+ },
+ {
+  "id": "gist-22",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.4133463360000178,
+  "error": "no_tool_call:I am sorry, but I cannot assist with outlining or planning a"
+ },
+ {
+  "id": "gist-23",
+  "label": "gist",
+  "pred": null,
+  "latency_s": 0.27786833600004,
+  "error": "no_tool_call:I cannot provide specific business advice or describe startu"
+ },
+ {
+  "id": "both-00",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.31360001400003057,
+  "error": "no_tool_call:I cannot assist with comparing programming languages or tech"
+ },
+ {
+  "id": "both-01",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.47800010800000337,
+  "error": "no_tool_call:I am sorry, but I cannot assist with financial or legal deci"
+ },
+ {
+  "id": "both-02",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.3577127479999831,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "both-03",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.37344840700001214,
+  "error": "no_tool_call:I cannot assist with budgeting or recommending specific alte"
+ },
+ {
+  "id": "both-04",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.6713578359999701,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "both-05",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.339813165999999,
+  "error": "no_tool_call:I cannot assist with this request. My capabilities are limit"
+ },
+ {
+  "id": "both-06",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.42860418800000843,
+  "error": "no_tool_call:I cannot assist with evaluating job switching or making such"
+ },
+ {
+  "id": "both-07",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.418098547999989,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "both-08",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.4695488849999947,
+  "error": "no_tool_call:I am sorry, but I cannot assist with analyzing financial ris"
+ },
+ {
+  "id": "both-09",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.3288909990000093,
+  "error": "no_tool_call:I cannot assist with comparing smartphone specifications or "
+ },
+ {
+  "id": "both-10",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.4206513969999719,
+  "error": "no_tool_call:I am sorry, but I cannot assist with financial planning or r"
+ },
+ {
+  "id": "both-11",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.3136788969999884,
+  "error": "no_tool_call:I cannot assist with comparing software development framewor"
+ },
+ {
+  "id": "both-12",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.3848951120000379,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "both-13",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.3113431520000063,
+  "error": "no_tool_call:I cannot assist with assessing solar panel costs or saving f"
+ },
+ {
+  "id": "both-14",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.2903215019999834,
+  "error": "no_tool_call:I cannot assist with this request. My current capabilities a"
+ },
+ {
+  "id": "both-15",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.18481213100000105,
+  "error": "no_tool_call:I would recommend choosing to study medicine. The job prospe"
+ },
+ {
+  "id": "both-16",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.4780527309999911,
+  "error": "no_tool_call:I cannot assist with comparing the performance of LoRA fine-"
+ },
+ {
+  "id": "both-17",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.33715156599998863,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "both-18",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.2068066890000182,
+  "error": "no_tool_call:I cannot assist with evaluating laptop specifications or cos"
+ },
+ {
+  "id": "both-19",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.3481958340000233,
+  "error": "no_tool_call:I am sorry, but I cannot assist with comparing the risks of "
+ },
+ {
+  "id": "both-20",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.2915646220000099,
+  "error": "no_tool_call:I cannot assist with recommending database index types or th"
+ },
+ {
+  "id": "both-21",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.3106686200000013,
+  "error": "no_tool_call:I am sorry, but I cannot assist with this request. My curren"
+ },
+ {
+  "id": "both-22",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.4337732080000478,
+  "error": "no_tool_call:I am sorry, but I cannot assist with analyzing the impact of"
+ },
+ {
+  "id": "both-23",
+  "label": "both",
+  "pred": null,
+  "latency_s": 0.32593685000000505,
+  "error": "no_tool_call:I am sorry, but I cannot assist with financial planning or r"
+ }
+]

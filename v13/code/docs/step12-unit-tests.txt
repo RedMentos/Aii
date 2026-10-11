@@ -1,0 +1,45 @@
+test_backup_restore_roundtrip (test_core.Core.test_backup_restore_roundtrip) ... ok
+test_commit_rule_change_rollback_retains_rules (test_core.Core.test_commit_rule_change_rollback_retains_rules) ... ok
+test_corollary_precedes_dispatch (test_core.Core.test_corollary_precedes_dispatch) ... ok
+test_corrupt_candidate_never_activated (test_core.Core.test_corrupt_candidate_never_activated) ... ok
+test_exclusive_writer (test_core.Core.test_exclusive_writer) ... ok
+test_feedback_supersedes_same_key_only (test_core.Core.test_feedback_supersedes_same_key_only) ... ok
+test_final_immutable_and_partial_restart (test_core.Core.test_final_immutable_and_partial_restart) ... ok
+test_forget_source_and_packets (test_core.Core.test_forget_source_and_packets) ... ok
+test_invalid_span_and_dangling (test_core.Core.test_invalid_span_and_dangling) ... ok
+test_no_provisional_events (test_core.Core.test_no_provisional_events) ... ok
+test_offer_stale_generation_and_commit (test_core.Core.test_offer_stale_generation_and_commit) ... ok
+test_restore_rejects_traversal (test_core.Core.test_restore_rejects_traversal) ... ok
+test_source_memory_restart_and_scope (test_core.Core.test_source_memory_restart_and_scope) ... ok
+test_unicode_source_and_tamper (test_core.Core.test_unicode_source_and_tamper) ... ok
+test_analytic_gradient_and_repeatability (test_core.Gradient.test_analytic_gradient_and_repeatability) ... ok
+test_database_version_and_telemetry_bound (test_core.RuntimeChecks.test_database_version_and_telemetry_bound) ... ok
+test_missing_models_show_diagnostic (test_core.RuntimeChecks.test_missing_models_show_diagnostic) ... ok
+test_model_text_cannot_execute (test_core.RuntimeChecks.test_model_text_cannot_execute) ... ok
+test_no_unknown_rejection_success (test_core.RuntimeChecks.test_no_unknown_rejection_success) ... ok
+test_pause_resume_queue_and_age (test_core.RuntimeChecks.test_pause_resume_queue_and_age) ... ok
+test_queue_input_bounds_and_config_validation (test_core.RuntimeChecks.test_queue_input_bounds_and_config_validation) ... ok
+test_record_mode_has_no_weight_changes (test_core.RuntimeChecks.test_record_mode_has_no_weight_changes) ... ok
+test_rule_diff_requires_exact_approval (test_core.RuntimeChecks.test_rule_diff_requires_exact_approval) ... ok
+test_runner_log_rotation_policy (test_core.RuntimeChecks.test_runner_log_rotation_policy) ... ok
+test_schema_registry_exposed (test_core.RuntimeChecks.test_schema_registry_exposed) ... ok
+test_resume_and_corrupt_existing_replaced (test_download.Downloads.test_resume_and_corrupt_existing_replaced) ... ok
+test_wrong_hash_never_activates (test_download.Downloads.test_wrong_hash_never_activates) ... ok
+test_legacy_telemetry_is_scrubbed_once_on_restart (test_step12.Pipeline.test_legacy_telemetry_is_scrubbed_once_on_restart) ... ok
+test_load_failure_has_metrics_without_fake_memory (test_step12.Pipeline.test_load_failure_has_metrics_without_fake_memory) ... ok
+test_peer_receiver_and_event_binding (test_step12.Pipeline.test_peer_receiver_and_event_binding) ... ok
+test_persisted_exec_broadcast_and_corollary_order (test_step12.Pipeline.test_persisted_exec_broadcast_and_corollary_order) ... ok
+test_probe_file_presence_cannot_promote_step1 (test_step12.Pipeline.test_probe_file_presence_cannot_promote_step1) ... ok
+test_probe_rejects_input_without_creating_test_chat_event (test_step12.Pipeline.test_probe_rejects_input_without_creating_test_chat_event) ... ok
+test_query_persists_broadcast_link_even_if_runner_missing (test_step12.Pipeline.test_query_persists_broadcast_link_even_if_runner_missing) ... ok
+test_stale_broadcast_rejected_before_model (test_step12.Pipeline.test_stale_broadcast_rejected_before_model) ... ok
+test_telemetry_omits_raw_text_but_keeps_metrics_and_exact_source (test_step12.Pipeline.test_telemetry_omits_raw_text_but_keeps_metrics_and_exact_source) ... ok
+test_unload_reaps_actual_process_and_records_role (test_step12.Pipeline.test_unload_reaps_actual_process_and_records_role) ... ok
+test_malformed_nested_evidence_never_passes_or_crashes (test_step12.ProofGate.test_malformed_nested_evidence_never_passes_or_crashes) ... ok
+test_missing_roles_failed_status_wrong_revision (test_step12.ProofGate.test_missing_roles_failed_status_wrong_revision) ... ok
+test_smoke_does_not_complete_step1_or_step2 (test_step12.ProofGate.test_smoke_does_not_complete_step1_or_step2) ... ok
+
+----------------------------------------------------------------------
+Ran 40 tests in 2.060s
+
+OK
