@@ -1,5 +1,11 @@
 """No native inference: negative state-forgery and row ledger tests."""
 import copy
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 try:
     from scripts import source_handoff_resume_guard_candidate as guard
@@ -127,6 +133,66 @@ class StrictResumeGuard(unittest.TestCase):
         r['status']='RECORDED_DIAGNOSIS';r['installed_artifacts_unchanged']=True
         with self.assertRaisesRegex(ValueError,'incomplete/failed'):
             guard.validate_resume(r,'same-reg')
+
+
+    def test_malformed_offer_and_metrics_fail_closed(self):
+        for key,bad in [('offer','not a dict'),('consumer_metrics','not a dict')]:
+            r=self.report();r['rows'][0][key]=bad
+            r['row_sha256']={'Mira/baseline':guard.row_sha(r['rows'][0])}
+            with self.assertRaisesRegex(ValueError,'native evidence'):
+                guard.validate_resume(r,'same-reg')
+
+    def test_readonly_cli_validates_preregistration_exact_bytes(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); reg=root/'prereg.json'; report=root/'report.json'
+            reg.write_text(json.dumps({'schema':'SOURCE_HANDOFF_ABLATION_PREREGISTRATION_V1',
+                 'arm_order':list(guard.ARMS),'fixtures':[{'id':i} for i in guard.FIXTURES]}))
+            expected=hashlib.sha256(reg.read_bytes()).hexdigest()
+            r=self.report();r['preregistration_sha256']=expected
+            report.write_text(json.dumps(r))
+            before=report.read_bytes()
+            receipt=guard.audit_files(reg,report)
+            self.assertEqual(receipt['status'],'RESUME_LEDGER_VALID_NOT_UTILITY_PASS')
+            self.assertEqual(receipt['rows'],1)
+            self.assertIs(receipt['source_and_model_binding_verified'],False)
+            self.assertEqual(report.read_bytes(),before)
+            result=subprocess.run([sys.executable,str(Path(guard.__file__)),
+               '--preregistration',str(reg),'--report',str(report)],capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertNotIn('delivered_prior_quotes',result.stdout)
+            self.assertEqual(json.loads(result.stdout)['remaining_rows'],15)
+            reg.write_bytes(reg.read_bytes()+b' ')
+            with self.assertRaisesRegex(ValueError,'preregistration changed'):
+                guard.audit_files(reg,report)
+
+    def test_registration_rejects_non_dict_fixture_and_extra_slots(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);reg=root/'pre.json';report=root/'res.json'
+            original={'schema':'SOURCE_HANDOFF_ABLATION_PREREGISTRATION_V1',
+                 'arm_order':list(guard.ARMS),'fixtures':[{'id':i} for i in guard.FIXTURES]}
+            for extra in ([None], [{'id':'UNLISTED'}]):
+                value=copy.deepcopy(original);value['fixtures']+=extra
+                reg.write_text(json.dumps(value))
+                r=self.report();r['preregistration_sha256']=hashlib.sha256(reg.read_bytes()).hexdigest()
+                report.write_text(json.dumps(r))
+                with self.assertRaisesRegex(ValueError,'preregistration'):
+                    guard.audit_files(reg,report)
+
+    def test_cli_refuses_modified_report_or_symlink_without_leakage(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);reg=root/'pre.json';report=root/'res.json'
+            reg.write_text(json.dumps({'schema':'SOURCE_HANDOFF_ABLATION_PREREGISTRATION_V1',
+                 'arm_order':list(guard.ARMS),'fixtures':[{'id':i} for i in guard.FIXTURES]}))
+            r=self.report();r['preregistration_sha256']=hashlib.sha256(reg.read_bytes()).hexdigest()
+            r['rows'][0]['score']['utility']=0.88
+            report.write_text(json.dumps(r))
+            cmd=[sys.executable,str(Path(guard.__file__)),'--preregistration',str(reg),'--report',str(report)]
+            out=subprocess.run(cmd,capture_output=True,text=True)
+            self.assertEqual(out.returncode,2)
+            self.assertEqual(json.loads(out.stderr)['status'],'RESUME_LEDGER_REJECTED')
+            link=root/'link.json';link.symlink_to(report)
+            out=subprocess.run([*cmd[:-1],str(link)],capture_output=True,text=True)
+            self.assertEqual(out.returncode,2)
 
     def test_changed_registration_refused(self):
         with self.assertRaisesRegex(ValueError,'preregistration changed'):
