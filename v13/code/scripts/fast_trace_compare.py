@@ -17,6 +17,7 @@ from v13.memory import relevance  # noqa: E402
 from v13.memory_trainer import live_system  # noqa: E402
 from v13.config import DEFAULTS  # noqa: E402
 from v13.common import atomic_write,dumps,digest,file_hash  # noqa: E402
+from v13.sparse_audit import read_firing_window  # noqa: E402
 
 def system(question,with_exact):
     if not with_exact:return live_system()
@@ -24,9 +25,11 @@ def system(question,with_exact):
     mem=[{'topic':q,'correction':t} for sc,q,t in scored if sc>=DEFAULTS['memory_threshold']][:DEFAULTS['memory_top_k']]
     return live_system(memories=mem)
 
-def serve(binary,model,mem,port,log):
+def serve(binary,model,mem,port,log,*,audit_firing=False):
     env=dict(os.environ);env.pop('V13_MEMORY_FILE',None)
+    env.pop('V13_MEMORY_AUDIT',None)
     if mem:env['V13_MEMORY_FILE']=mem
+    if mem and audit_firing:env['V13_MEMORY_AUDIT']='1'
     p=subprocess.Popen([binary,'-m',model,'--port',str(port),'-ngl','0','-t','4','-c','4096','-np','1','-b','128','-ub','128','--no-webui','--no-warmup'],
                        env=env,stdout=subprocess.DEVNULL,stderr=open(log,'w'))
     for _ in range(120):
@@ -40,14 +43,14 @@ def ask(port,sys_text,q):
     t=time.monotonic();r=json.loads(urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:%d/v1/chat/completions'%port,b,{'Content-Type':'application/json'}),timeout=300).read())
     return r['choices'][0]['message']['content'],r['usage']['prompt_tokens'],time.monotonic()-t
 
-def compare(binary,model,mem,out,*,resume=False,repeats=1):
+def compare(binary,model,mem,out,*,resume=False,repeats=1,audit_firing=False):
     target=Path(out);target.parent.mkdir(parents=True,exist_ok=True)
     with open(str(target)+'.lock','a') as lock:
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:raise RuntimeError('This proof is already running; no concurrent resume')
-        return _compare(binary,model,mem,out,resume=resume,repeats=repeats)
+        return _compare(binary,model,mem,out,resume=resume,repeats=repeats,audit_firing=audit_firing)
 
-def _compare(binary,model,mem,out,*,resume=False,repeats=1):
+def _compare(binary,model,mem,out,*,resume=False,repeats=1,audit_firing=False):
     """Checkpoint every real answer; resume only the identical corpus/runner/artifact.
 
     Rows are raw native observations, not automatic approval of memory delivery.
@@ -60,7 +63,8 @@ def _compare(binary,model,mem,out,*,resume=False,repeats=1):
              'corpus_sha256':digest(dumps({'facts':FACTS,'sets':sets})),
              'script_sha256':file_hash(__file__),'relevance_sha256':file_hash(Path(__file__).parents[1]/'v13/memory.py'),
              'prompts_sha256':digest(live_system()),'memory_threshold':DEFAULTS['memory_threshold'],
-             'memory_top_k':DEFAULTS['memory_top_k'],'repeats':repeats,'temperature':0,'cache_prompt':True,'max_tokens':40,'seed':13}
+             'memory_top_k':DEFAULTS['memory_top_k'],'repeats':repeats,'temperature':0,'cache_prompt':True,'max_tokens':40,'seed':13,
+             'audit_firing':audit_firing,'audit_parser_sha256':file_hash(Path(__file__).parents[1]/'v13/sparse_audit.py')}
     target=Path(out)
     if target.exists() and not resume:raise ValueError('Output exists; choose a new file or explicit --resume')
     rep=json.loads(target.read_text()) if resume and target.exists() else {}
@@ -81,10 +85,14 @@ def _compare(binary,model,mem,out,*,resume=False,repeats=1):
                 for repeat in range(repeats):
                     for index,(q,keys) in enumerate(v):
                         if (repeat,index) in completed:continue
-                        if p is None:p=serve(binary,model,use_mem,port,str(out)+'.'+name+'.attempt%d.log'%len(cp['attempts']))
+                        log=str(out)+'.'+name+'.attempt%d.log'%len(cp['attempts'])
+                        if p is None:p=serve(binary,model,use_mem,port,log,audit_firing=audit_firing)
+                        offset=Path(log).stat().st_size if audit_firing and use_mem else None
                         a,n,s=ask(port,system(q,exact),q)
-                        rows.append({'repeat':repeat,'index':index,'q':q,'a':a,'hit':answer_hit(a,keys),
-                                     'prompt_tokens':n,'seconds':s,'attempt':len(cp['attempts'])})
+                        row={'repeat':repeat,'index':index,'q':q,'a':a,'hit':answer_hit(a,keys),
+                             'prompt_tokens':n,'seconds':s,'attempt':len(cp['attempts'])}
+                        if offset is not None:row['native_firing']=read_firing_window(log,offset)
+                        rows.append(row)
                         save()  # durable before another native call or app/session interruption
                 res[k]=sum(r['hit'] for r in rows)/len(rows)
             all_rows=[r for k in sets for r in res[k+'_rows']]
@@ -105,6 +113,7 @@ def _compare(binary,model,mem,out,*,resume=False,repeats=1):
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('binary');ap.add_argument('model');ap.add_argument('memory');ap.add_argument('out')
     ap.add_argument('--resume',action='store_true');ap.add_argument('--repeats',type=int,default=1)
-    a=ap.parse_args();compare(a.binary,a.model,a.memory,a.out,resume=a.resume,repeats=a.repeats);print(a.out)
+    ap.add_argument('--audit-firing',action='store_true',help='Opt-in native slot write diagnostics; requires rebuilt memory server; never authorizes Exact omission')
+    a=ap.parse_args();compare(a.binary,a.model,a.memory,a.out,resume=a.resume,repeats=a.repeats,audit_firing=a.audit_firing);print(a.out)
 
 if __name__=='__main__':main()

@@ -690,14 +690,15 @@
   "branch": "codex/authority-live-comparisons",
   "handoff": "docs/CONTINUE_20261011_PROGRESS.md",
   "report": "docs/proofs/continuation-20261011/report.json",
-  "report_sha256": "f4723c3888128b9adfc0766d26ba36ce31027b3949296b830feb4b25c1ac17b2",
+  "report_sha256": "63ecb43c90d703f7108a819e2361ea58e833b48e5279ec7dce0d53d59c86aa47",
   "tests": {
-   "run": 107,
-   "passed": 103,
+   "run": 982,
+   "passed": 978,
    "skipped": 4,
-   "reason": "existing PyTorch tests, dependency unavailable",
-   "seconds": 5.116,
-   "log_sha256": "b1f1ce86765d6a7d9fa965f5d57472284cec5565ebebc937dee02ec5f9e510d7"
+   "errors": 0,
+   "failures": 0,
+   "new": 36,
+   "scope": "Extracted ZIP Linux software selftest"
   },
   "completed": [
    "Existing attention/deliberation/callosum controllers feed trained comparisons to authority.observe",
@@ -709,37 +710,25 @@
    "Runtime shadow inventory preserving Exact/source lineage; resumable atomic native proof collector"
   ],
   "next": [
-   "Finish package selftest and current native vertical run, preserve real failures",
-   "Measure real sparse firing and paired selective context before activation; retain exact and sparse-auto restrictions",
-   "Complete original open goals/gates from ROADMAP without rewriting Canon"
+   "STEP1/STEP2 frozen-corpus paired utility and reproducibility; current native budget outputs fail, no cosmetic tuning from three alpha answers",
+   "Native sparse slot firing instrumentation and same-corpus Exact/Trace/selective measurement before any activation",
+   "Remaining original native/body/learning-objective/Redmi gates from ROADMAP; full scope remains false"
   ],
-  "source_zip": "deliverables/V13-Source-20261011.zip",
-  "phone_install_zip": "deliverables/V13-Redmi-Install-20261011.zip",
+  "source_zip": "deliverables/V13-Source-20261011-Progress.zip",
+  "phone_install_zip": "deliverables/V13-Redmi-Install-20261011-Progress.zip",
   "persistence": "Published via connected GitHub Git-object API; fetched remote tree equals local checkpoint tree. Local history retained on codex/authority-local-archive. Existing install/source ZIPs remain available.",
   "full_scope_complete": false,
   "package_selftest": {
-   "status": "SOFTWARE_SELFTEST_PASS_WITH_EXPLICIT_SKIPS",
-   "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 -m v13 --home ../test-home selftest",
-   "scope": "Extracted install ZIP, Linux software and compiled synthetic C++ policy tests; no model inference or Android test",
-   "tests_run": 946,
-   "passed": 942,
+   "run": 982,
+   "passed": 978,
    "skipped": 4,
-   "skip_reason": "PyTorch not installed",
    "errors": 0,
    "failures": 0,
-   "duration_seconds": 59.081,
-   "original_failed_attempt": {
-    "tests_run": 946,
-    "errors": 12,
-    "failures": 1,
-    "skipped": 4,
-    "log_sha256": "374ddca1cdef68a6f0ab5eadf9d3e6f149ad73ac3655bfadf14a1a3738cf5dc2"
-   },
-   "log_sha256": "5d3561051a4e69a1848b16972a5726650472cd07a3a429f82ac576dc07318cfd",
-   "tested_package_manifest_sha256": "548b53244472085f5830bece256526c2b264b774d1f210ef5226ebec8b69183c",
-   "restored_files_report": "restored-import-files.json",
-   "native_inference": false,
-   "phone_measured": false
+   "seconds": 62.116,
+   "scope": "actual extracted phone ZIP selftest on Linux, no target-phone test",
+   "log": "package-selftest-fixed-20261011.log",
+   "log_sha256": "2f214e7ba5575ee3033de260c603392bba73b61bfef89057b112fefaacc92abd",
+   "tested_manifest_sha256": "f1bff09460170447cfa3fc29fd21b96dc6a6155ef8d6e5146d5d5b997ce64e73"
   },
   "github_authorization": {
    "status": "STANDING_USER_AUTHORIZATION",
@@ -751,17 +740,40 @@
    "repeat_permission_required": false
   },
   "github_publication": {
-   "status": "REMOTE_TREE_VERIFIED",
-   "head": "5f5d22de540d1b48129a6e213c4bec1ed009f348",
-   "tree": "ca9e183507323025093f4656c2aeb781a85b988e",
+   "status": "PREVIOUS_CHECKPOINT_REMOTE_TREE_VERIFIED",
+   "head": "df098daec0ee7d5f528fdb03584ddc972b4583c8",
+   "tree": "9d7ec229c6f7760cbf253e61aee2c9634437d27f",
    "branch": "codex/authority-live-comparisons",
-   "verified_at_utc": "2026-10-11T02:56:34.848628+00:00",
    "new_remote_head_verified": true,
-   "previous_403_resolved": true
+   "next": "Publish and verify this final proof/doc checkpoint"
   },
   "native_vertical": {
-   "status": "RUNNING",
-   "scratch_proof": "native-vertical-20261011"
+   "status": "SMOKE_PASS_EXECUTION_ONLY",
+   "roles": [
+    "C3_LANGUAGE",
+    "B1_DETAIL",
+    "B2_GIST",
+    "C2_CONTROL"
+   ],
+   "distinct_b2": true,
+   "background_turns": 3,
+   "final_native_outputs": 3,
+   "all_structural_audits_pass": true,
+   "quality_pass": false,
+   "correct_budget_outputs": 0,
+   "turn_seconds": [
+    27.39531699500003,
+    30.94827252200048,
+    31.953888885000197
+   ],
+   "latency_phone_measured": false,
+   "full_runner_proof": false,
+   "step1_complete": false,
+   "step2_complete": false,
+   "raw_archive": "native-vertical-20261011.zip",
+   "raw_archive_sha256": "dcfd95a133ba165de0578b3cd5e6e5031ea342996efd4f61d9768f27893dfe22",
+   "summary_sha256": "2a7e5145ef0de2347d782d62d37f6657ce00c0fdc0aaa34aeb990e4c8644e15d",
+   "preserved_initial_diagnostic_mistakes": true
   }
  }
 }

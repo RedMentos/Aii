@@ -1,0 +1,56 @@
+test_broken_ambiguous_or_wrong_request_records_fail_closed (test_sparse_audit.AuditParser.test_broken_ambiguous_or_wrong_request_records_fail_closed) ... ok
+test_missing_batch_or_regressing_counters_fail_closed (test_sparse_audit.AuditParser.test_missing_batch_or_regressing_counters_fail_closed) ... ok
+test_no_evaluation_is_not_measured_zero (test_sparse_audit.AuditParser.test_no_evaluation_is_not_measured_zero) ... ok
+test_valid_observation_is_neither_recall_nor_authorization (test_sparse_audit.AuditParser.test_valid_observation_is_neither_recall_nor_authorization) ... ok
+test_actual_header_counters_guard_zero_values_and_request_reset (test_sparse_audit.NativeAudit.test_actual_header_counters_guard_zero_values_and_request_reset) ... ok
+test_changed_native_artifact_or_corpus_cannot_merge_proofs (test_fast_trace_resume.CheckpointResume.test_changed_native_artifact_or_corpus_cannot_merge_proofs) ... ok
+test_concurrent_resume_rejected_without_touching_existing_proof (test_fast_trace_resume.CheckpointResume.test_concurrent_resume_rejected_without_touching_existing_proof) ... ok
+test_failed_native_call_keeps_raw_rows_and_resume_never_replays_completed_row (test_fast_trace_resume.CheckpointResume.test_failed_native_call_keeps_raw_rows_and_resume_never_replays_completed_row) ... base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+ok
+test_opt_in_audit_is_request_scoped_and_missing_hooks_are_explicit (test_fast_trace_resume.CheckpointResume.test_opt_in_audit_is_request_scoped_and_missing_hooks_are_explicit) ... base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+ok
+test_repetitions_have_distinct_paired_rows_and_forgotten_probe (test_fast_trace_resume.CheckpointResume.test_repetitions_have_distinct_paired_rows_and_forgotten_probe) ... base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 0.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+ok
+test_accumulation_preserves_integer_slot_lineage_and_rejects_changed_fact (test_sparse_delivery.SparseDelivery.test_accumulation_preserves_integer_slot_lineage_and_rejects_changed_fact) ... ok
+test_approved_content_or_provenance_mismatch_excluded (test_sparse_delivery.SparseDelivery.test_approved_content_or_provenance_mismatch_excluded) ... ok
+test_bound_fact_is_inventory_only_exact_retained (test_sparse_delivery.SparseDelivery.test_bound_fact_is_inventory_only_exact_retained) ... ok
+test_forget_updates_map_binding_and_rollback_cannot_restore_fact (test_sparse_delivery.SparseDelivery.test_forget_updates_map_binding_and_rollback_cannot_restore_fact) ... ok
+test_inactive_or_deleted_source_excluded (test_sparse_delivery.SparseDelivery.test_inactive_or_deleted_source_excluded) ... ok
+test_indexes_style_and_ratings_not_delivery_candidates (test_sparse_delivery.SparseDelivery.test_indexes_style_and_ratings_not_delivery_candidates) ... ok
+test_legacy_or_missing_map_runs_but_cannot_propose (test_sparse_delivery.SparseDelivery.test_legacy_or_missing_map_runs_but_cannot_propose) ... ok
+test_malformed_native_size_or_row_map_excluded (test_sparse_delivery.SparseDelivery.test_malformed_native_size_or_row_map_excluded) ... ok
+test_model_native_and_binary_changes_fail_closed (test_sparse_delivery.SparseDelivery.test_model_native_and_binary_changes_fail_closed) ... ok
+test_training_bindings_only_facts (test_sparse_delivery.SparseDelivery.test_training_bindings_only_facts) ... ok
+test_unapproved_sidecar_tamper_invalidates_snapshot (test_sparse_delivery.SparseDelivery.test_unapproved_sidecar_tamper_invalidates_snapshot) ... ok
+test_zero_value_unreachable_threshold_or_empty_guard_excluded (test_sparse_delivery.SparseDelivery.test_zero_value_unreachable_threshold_or_empty_guard_excluded) ... ok
+test_dead_final_runner_never_claims_loaded_snapshot (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_dead_final_runner_never_claims_loaded_snapshot) ... ok
+test_final_healthy_runner_inventories_without_removing_exact_or_lineage (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_final_healthy_runner_inventories_without_removing_exact_or_lineage) ... ok
+test_inventory_exception_cannot_remove_native_output_or_exact_dependencies (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_inventory_exception_cannot_remove_native_output_or_exact_dependencies) ... ok
+test_normal_replacement_uses_final_memory_runner_binding (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_normal_replacement_uses_final_memory_runner_binding) ... ok
+test_same_causal_replacement_cannot_inventory_obsolete_selected_server (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_same_causal_replacement_cannot_inventory_obsolete_selected_server) ... ok
+test_capture_follows_health_and_warm_reuse_never_rehashes (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_capture_follows_health_and_warm_reuse_never_rehashes) ... ok
+test_dead_child_and_failed_load_clear_binding_and_log (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_dead_child_and_failed_load_clear_binding_and_log) ... ok
+test_legacy_native_without_map_still_runs_but_cannot_claim_binding (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_legacy_native_without_map_still_runs_but_cannot_claim_binding) ... ok
+test_native_changed_during_health_handshake_never_publishes_binding (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_native_changed_during_health_handshake_never_publishes_binding) ... ok
+test_native_forget_rewrite_and_reapproval_reload_instead_of_stale_reuse (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_native_forget_rewrite_and_reapproval_reload_instead_of_stale_reuse) ... ok
+test_registry_deactivation_reaps_old_child_before_normal_load (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_registry_deactivation_reaps_old_child_before_normal_load) ... ok
+test_unapproved_inherited_memory_environment_never_enters_normal_child (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_unapproved_inherited_memory_environment_never_enters_normal_child) ... ok
+test_watched_model_binary_manifest_and_map_changes_force_revalidation (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_watched_model_binary_manifest_and_map_changes_force_revalidation) ... ok
+
+----------------------------------------------------------------------
+Ran 35 tests in 3.341s
+
+OK

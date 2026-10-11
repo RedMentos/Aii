@@ -71,5 +71,29 @@ class CheckpointResume(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'already running'):bench.compare(*self.args,resume=True)
         self.assertEqual(self.out.read_text(),'existing partial proof')
 
+    def test_opt_in_audit_is_request_scoped_and_missing_hooks_are_explicit(self):
+        from v13.sparse_audit import PREFIX,SCHEMA
+        log_paths={}
+        requests={}
+        def serve(binary,model,mem,port,log,**kwargs):
+            Path(log).write_text('startup\n');log_paths[port]=Path(log);requests[port]=0
+            self.assertTrue(kwargs['audit_firing'])
+            return Mock()
+        def ask(port,system,question):
+            requests[port]+=1
+            if port==8613:  # instrumented runner fixture; Combined simulates an old binary
+                records=[dict(schema=SCHEMA,event='begin',request=requests[port],slots=1,layer=3),
+                         dict(schema=SCHEMA,event='batch',request=requests[port],rows=2,batches=1,applied=[1],guard_blocked=[0])]
+                with log_paths[port].open('a') as stream:
+                    for record in records:stream.write(PREFIX+json.dumps(record)+'\n')
+            return 'answer',10,.1
+        with patch.object(bench,'serve',side_effect=serve),patch.object(bench,'ask',side_effect=ask):
+            result=bench.compare(*self.args,audit_firing=True)
+        self.assertNotIn('native_firing',result['base']['facts_rows'][0])
+        self.assertEqual(result['trace']['probes_rows'][0]['native_firing']['request'],4)
+        self.assertEqual(result['trace']['facts_rows'][0]['native_firing']['fired_rows'],[0])
+        self.assertEqual(result['exact+trace']['facts_rows'][0]['native_firing']['reason'],'NO_PROMPT_MARKER')
+        self.assertTrue(result['_checkpoint']['binding']['audit_firing'])
+
 
 if __name__=='__main__':unittest.main()
