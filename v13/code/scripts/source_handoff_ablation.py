@@ -81,10 +81,11 @@ def arm_sources():
 
 
 def binding(installed):
-    paths=list((ROOT/'v13').glob('*.py'))+[Path(__file__).resolve(),ROOT/'scripts/source_handoff_candidate.py',
+    paths=[p for p in (ROOT/'v13').rglob('*.py') if '__pycache__' not in p.parts]+[Path(__file__).resolve(),ROOT/'scripts/source_handoff_candidate.py',
         ROOT/'tests/integration_step2_utility.py',ROOT/SNAPSHOT/'manifest.json']
     paths += list((ROOT/SNAPSHOT).glob('*.py'))
-    return {'source_sha256':{str(p.relative_to(ROOT)):file_hash(p) for p in sorted(paths)},
+    return {'source_scope':'ALL_RUNTIME_PYTHON_RECURSIVE_PLUS_HARNESS_AND_BASELINE',
+            'source_sha256':{str(p.relative_to(ROOT)):file_hash(p) for p in sorted(paths)},
             'installed':installed_artifacts(installed)}
 
 

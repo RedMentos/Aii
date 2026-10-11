@@ -2153,5 +2153,42 @@
         "Package and verify the current source/install ZIPs and continue remaining native sparse-body, B3/JEPA, semantic calibration and Redmi sustained resource/quality gates."
       ]
     }
+  },
+  "durable_restore_20261011": {
+    "schema": "V13_DURABLE_RESTORE_20261011_V1",
+    "time_utc": "2026-10-11T09:59:49.462861+00:00",
+    "cause": "Local scratch workspace empty at resume; earlier agent reported actual account usage limit. Restored authenticated durable saves before further work.",
+    "verified_remote_commit": "3d63ec8e8f5735f7a6c6a5675635ea115d51242c",
+    "verified_tree": "69909f9b00b85c452f9b3c3ef48dc7615e9c5244",
+    "source_zip": {
+      "version": 3,
+      "sha256": "af9892a402425c440e234a454c6180ed4172ac9cef079c09bf519a9c49e4a571",
+      "bytes": 23484626,
+      "crc_verified": true
+    },
+    "install_zip": {
+      "version": 1,
+      "sha256": "89de2f6a9ee47541596fe4eb9a3fb49d57ed6d70e5bcbef76043a67ffc224b0f",
+      "bytes": 1783706,
+      "crc_verified": true
+    },
+    "recovered_native_prefix_rows": 736,
+    "recovered_native_prefix_batches": 46,
+    "expected_native_rows": 1875,
+    "uncommitted_later_rows_not_recovered": true,
+    "later_live_observation_from_conversation_only": {
+      "completed_rows": 1248,
+      "native_exit": -9,
+      "actual_raw_evidence_recovered": false
+    },
+    "recovered_dream_complete_arms": 2,
+    "expected_dream_arms": 15,
+    "dream_partial_arm_restart_policy": "Restart unfinished seed13/dream_validated from unchanged base; retain two completed arms",
+    "heavy_job_policy": "Serialize native inference and full master training under8GiB; embedding lifetime bounded after preregistration and deterministic controls",
+    "native_binary_rebuild_equality": "PENDING_LINK_AND_HASH_VERIFICATION",
+    "runtime_gate_claims_unchanged": true,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "redmi_device_measured_now": false
   }
 }

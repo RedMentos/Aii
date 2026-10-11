@@ -91,7 +91,20 @@ class PackageSource(unittest.TestCase):
             tested=subprocess.run([sys.executable,'-m','unittest','tests.test_source_handoff_candidate',
                 'tests.test_source_handoff_ablation'],cwd=root/'extracted/V13-Phone',capture_output=True,text=True,timeout=30)
             self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
-            self.assertIn('Ran 19 tests',tested.stderr)
+            self.assertRegex(tested.stderr,r'Ran [1-9][0-9]* tests')
+
+    def test_actual_phone_zip_runs_isolated_native_firing_candidate_after_extraction(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);out=root/'phone.zip'
+            completed=self.package(ROOT,out,phone=True)
+            self.assertEqual(completed.returncode,0,completed.stderr)
+            self.inspect(out)
+            with zipfile.ZipFile(out) as archive:archive.extractall(root/'extracted')
+            tested=subprocess.run([sys.executable,'-m','unittest',
+                'tests.test_native_firing_runtime_candidate'],cwd=root/'extracted/V13-Phone',
+                capture_output=True,text=True,timeout=30)
+            self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
+            self.assertRegex(tested.stderr,r'Ran [1-9][0-9]* tests')
 
 
 if __name__=='__main__':unittest.main()

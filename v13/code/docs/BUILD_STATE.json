@@ -247,8 +247,8 @@
     "causal_preparation": "8softwarechecks +21actual native commandguardsPASS; no modelinference, all5build/guardchildrenreaped",
     "native_forward_optimizer": "Actualshort+long numericallifecyclePASS; short2/20forwardimprovements, long20/20refused;4workersreaped, unchangedGGUF/fullnativeparity; no production/nativebodytrainingrights"
   },
-  "checkpoint_time_utc": "2026-10-11T04:21:30.678042+00:00",
-  "checkpoint_kind": "WEBCHAT_SOURCE_HANDOFF_AND_SERIAL_NATIVE_WORK_PARTIAL",
+  "checkpoint_time_utc": "2026-10-11T09:59:49.462861+00:00",
+  "checkpoint_kind": "DURABLE_RESTORE_AND_BOUND_RESOURCE_REBUILD",
   "base_checkpoint": "V13-Redmi-Start-auto-burst2.zip",
   "current_changes_pending_validation": [
     "Integrated source handoff has software regressions; native source-disjoint transport/quality comparison remains preregistered, not completed.",
@@ -257,11 +257,13 @@
     "Current extracted-package verification after integration and target Redmi sustained quality/resource measurements remain open."
   ],
   "resume_next": [
-    "Finish the serialized action-native capture with exact registered input/model/source binding and observed exit; preserve prefix batches and all failed attempts.",
-    "Resume the paused Dream v2 experiment after capture, preserving both completed arms and the independent run binding.",
-    "Run the preregistered source-disjoint source-handoff ablation as a separate native cohort; retain frozen70 UTILITY_FAIL and unchanged gates.",
-    "Only after genuine complete native action rows exist, validate/export/fit the action-conditioned candidate under original noncollapse/retention/ablation gates; no synthetic success substitution.",
-    "Package and verify the current source/install ZIPs and continue remaining native sparse-body, B3/JEPA, semantic calibration and Redmi sustained resource/quality gates."
+    "Complete hash-verified native/training resource recovery without changing frozen experiment sources.",
+    "Register and save bounded native embedding lifecycle; verify fresh-worker output invariance before actual capture. Preserve recovered736prefix separately if artifact bindings differ.",
+    "Finish genuine native action taps, export bound dataset and measure3 fixed seeds; preserve all quality failures.",
+    "Run preregistered16-row source-handoff diagnosis in serialized native slot, after resources have exact matching bindings or a separately saved transparent recovered registration.",
+    "Resume Dream2 bound15-arm40-step cohort from saved2completearms; rerun only unfinished arm.",
+    "Integrate and verify AG6 activation-recovery fix; retain candidate firing hookup outside live runtime until frozen source-handoff cohort completes.",
+    "Save source/install ZIPs and continue original Drive/SSOT native quality and Redmi gates."
   ],
   "proof_artifacts": {
     "native_smoke_linux": "docs/proofs/native-smoke-linux-20260923.json",
@@ -1145,6 +1147,43 @@
         "Only after genuine complete native action rows exist, validate/export/fit the action-conditioned candidate under original noncollapse/retention/ablation gates; no synthetic success substitution.",
         "Package and verify the current source/install ZIPs and continue remaining native sparse-body, B3/JEPA, semantic calibration and Redmi sustained resource/quality gates."
       ]
+    },
+    "durable_restore_20261011": {
+      "schema": "V13_DURABLE_RESTORE_20261011_V1",
+      "time_utc": "2026-10-11T09:59:49.462861+00:00",
+      "cause": "Local scratch workspace empty at resume; earlier agent reported actual account usage limit. Restored authenticated durable saves before further work.",
+      "verified_remote_commit": "3d63ec8e8f5735f7a6c6a5675635ea115d51242c",
+      "verified_tree": "69909f9b00b85c452f9b3c3ef48dc7615e9c5244",
+      "source_zip": {
+        "version": 3,
+        "sha256": "af9892a402425c440e234a454c6180ed4172ac9cef079c09bf519a9c49e4a571",
+        "bytes": 23484626,
+        "crc_verified": true
+      },
+      "install_zip": {
+        "version": 1,
+        "sha256": "89de2f6a9ee47541596fe4eb9a3fb49d57ed6d70e5bcbef76043a67ffc224b0f",
+        "bytes": 1783706,
+        "crc_verified": true
+      },
+      "recovered_native_prefix_rows": 736,
+      "recovered_native_prefix_batches": 46,
+      "expected_native_rows": 1875,
+      "uncommitted_later_rows_not_recovered": true,
+      "later_live_observation_from_conversation_only": {
+        "completed_rows": 1248,
+        "native_exit": -9,
+        "actual_raw_evidence_recovered": false
+      },
+      "recovered_dream_complete_arms": 2,
+      "expected_dream_arms": 15,
+      "dream_partial_arm_restart_policy": "Restart unfinished seed13/dream_validated from unchanged base; retain two completed arms",
+      "heavy_job_policy": "Serialize native inference and full master training under8GiB; embedding lifetime bounded after preregistration and deterministic controls",
+      "native_binary_rebuild_equality": "PENDING_LINK_AND_HASH_VERIFICATION",
+      "runtime_gate_claims_unchanged": true,
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false,
+      "redmi_device_measured_now": false
     }
   },
   "historical_checkpoint_kind_before_webchat_review": "CAUSAL_NATIVE46_NINTH_EXPORTED_SQLITE_FAILED_BEFORE_FIT",

@@ -53,3 +53,8 @@ Dream-Lauf2 hat2/15 vollständige Arme (seed13: none und replay_exact) mit echte
 Native Action-Tap-Erfassung: datierter haltbarer Snapshot736/1875 Zeilen und46 Batches (2026-10-11T04:17:50.512766+00:00); ursprünglicher384-Zeilen-/24-Batch-Prefix ist konserviert. Der zuletzt vorhandene beobachtete Versuch endet SIGKILL(-9)/RemoteDisconnected; frühere Fehler-/OOM-Belege werden nicht entfernt. Root hat die exakt gebundene Wiederaufnahme aus736 als einzigen schweren Modelljob autorisiert. Neue terminale Beobachtung und vollständige1875-Zeilen-Erfassung stehen aus; keine Fit-/Empfänger-/JEPA-Qualitätsfreigabe. Laufende Reports wurden für diese Statusfortschreibung nur gelesen.
 
 Weiter: zuerst serialisierte beobachtete Capture vervollständigen; danach unveränderten Dream-v2-Lauf wiederaufnehmen und getrennte Source-Handoff-Ablation messen. Vollständige native Body/Sparse-/B3-/Lernziel-/Kalibrierungs-/Redmi-Gates bleiben offen. `canonical_architecture_complete=false`, `user_full_scope_complete=false`, keine aktuelle Handyqualitätsbehauptung. Autoritativer Status: `BUILD_STATE.json.current_checkpoint.webchat_review` und die gespiegelten Ledgers.
+
+
+## Durable recovery 2026-10-11T09:59:49.462861+00:00
+
+GitHub3d63ec8 and both saved ZIPs were restored and hash/CRC verified after scratch was cleared. Actualdurable tap evidence is736/1875rows46batches; later1248-row observation exists only in prior conversation, not recovered raw data. Dream2 retains2/15 completed arms. Native and pinned training resources are rebuilding; no new inference or gate promotion yet. Embedding per-request RSS accumulation requires separately preregistered bounded worker lifetime, real fresh-worker invariance checks and serialized heavy jobs.

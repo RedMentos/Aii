@@ -11,6 +11,10 @@ PHONE_REQUIRED_FIXTURES={
     'docs/proofs/continuation-20261011/source-handoff-baseline/'+name
     for name in ('bodyview.py','cognition.py','runtime.py','manifest.json')
 }
+PHONE_REQUIRED_FIXTURES.update(
+    'docs/proofs/continuation-20261011/native-firing-runtime-baseline/'+name
+    for name in ('runners.py','memory_server.py','runtime.py','store.py','manifest.json')
+)
 
 def source_file(app,p):
     relative=p.relative_to(app)

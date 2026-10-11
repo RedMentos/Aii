@@ -16,6 +16,22 @@ from v13.runners import RunnerPool
 
 
 class HandoffAblation(unittest.TestCase):
+    def test_binding_covers_nested_runtime_dependencies_and_detects_their_drift(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            names=['v13/runtime.py','v13/agi/weights.py','scripts/source_handoff_ablation.py',
+                   'scripts/source_handoff_candidate.py','tests/integration_step2_utility.py',
+                   str(Path(ablation.SNAPSHOT)/'manifest.json'),str(Path(ablation.SNAPSHOT)/'bodyview.py')]
+            for name in names:
+                path=root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text('fixture bytes')
+            with patch.object(ablation,'ROOT',root),patch.object(ablation,'__file__',str(root/'scripts/source_handoff_ablation.py')),patch.object(ablation,'installed_artifacts',return_value={}):
+                before=ablation.binding(root/'installed')
+                (root/'v13/agi/weights.py').write_text('changed nested dependency')
+                after=ablation.binding(root/'installed')
+            self.assertIn('v13/agi/weights.py',before['source_sha256'])
+            self.assertNotEqual(before['source_sha256']['v13/agi/weights.py'],after['source_sha256']['v13/agi/weights.py'])
+            self.assertEqual(before['source_sha256']['v13/runtime.py'],after['source_sha256']['v13/runtime.py'])
+
     def test_fixed_cases_are_source_disjoint_and_unknown_controls_are_strict(self):
         from tests.integration_step2_utility import FIXTURES
         self.assertFalse({f['id'] for f in ablation.FIXTURES}&{f['id'] for f in FIXTURES})
