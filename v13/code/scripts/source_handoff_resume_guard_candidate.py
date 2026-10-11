@@ -1,0 +1,77 @@
+"""Isolated resume-integrity guard for frozen 16-case SourceHandoff ablation.
+
+This is a review candidate, NOT patched into the active/source-frozen runner.
+It rejects forged gate flags or inconsistent row hashes, summaries and finished
+statuses before any new native inference is attempted. No model dependency.
+"""
+import hashlib
+import json
+
+ARMS = ('baseline','state_off','semantics_only','full_candidate')
+FIXTURES = ('Mira','Lumen','Nacre','Tessera')
+ROW_STATES = frozenset(('RECORDED','STRUCTURAL_FAIL','ERROR','INTERRUPTED'))
+REPORT_STATES = frozenset(('RUNNING','INTERRUPTED','ARTIFACT_CHANGED','RECORDED_DIAGNOSIS','STRUCTURAL_FAIL'))
+GATE_FIELDS = ('canonical_gate_pass','learned_semantic_utility_proven','phone_measured')
+
+
+def _canonical(value):
+    return json.dumps(value, ensure_ascii=False, sort_keys=True,
+                      separators=(',',':'), allow_nan=False)
+
+
+def row_sha(row):
+    return hashlib.sha256(_canonical(row).encode('utf-8')).hexdigest()
+
+
+def expected_summary(rows):
+    report={}
+    for arm in ARMS:
+        chosen=[r for r in rows if r['arm']==arm]
+        report[arm]={'rows':len(chosen),
+                     'mean_strict_utility':sum(r['score']['utility'] for r in chosen)/len(chosen) if chosen else None,
+                     'exact_decisions':sum(bool(r['score']['exact']) for r in chosen),
+                     'rows_with_prior_quote':sum(bool(r.get('delivered_prior_quotes')) for r in chosen),
+                     'structural_failures':sum(r['status']!='RECORDED' for r in chosen)}
+    return report
+
+
+def validate_resume(report, registration_sha):
+    if not isinstance(report,dict) or report.get('schema')!='SOURCE_HANDOFF_ABLATION_V1':
+        raise ValueError('Unexpected report schema')
+    if report.get('preregistration_sha256')!=registration_sha:
+        raise ValueError('Resume preregistration changed')
+    if any(report.get(field) is not False for field in GATE_FIELDS):
+        raise ValueError('Unproven quality/phone/canonical gate changed')
+    if report.get('status') not in REPORT_STATES:
+        raise ValueError('Unknown report lifecycle state')
+    rows=report.get('rows'); hashes=report.get('row_sha256')
+    if not isinstance(rows,list) or not isinstance(hashes,dict):
+        raise ValueError('Malformed row ledger')
+    valid={(fixture,arm) for fixture in FIXTURES for arm in ARMS}
+    keys=[]
+    for row in rows:
+        if not isinstance(row,dict) or row.get('status') not in ROW_STATES:
+            raise ValueError('Invalid row lifecycle state')
+        if not isinstance(row.get('score'),dict):
+            raise ValueError('Row has no score')
+        score=row['score']
+        if type(score.get('utility')) not in (float,int) or not 0<=score['utility']<=1 or type(score.get('exact')) is not bool:
+            raise ValueError('Malformed utility score')
+        keys.append((row.get('fixture'),row.get('arm')))
+    if len(keys)!=len(set(keys)) or any(k not in valid for k in keys):
+        raise ValueError('Resume row keys invalid')
+    expected={r['fixture']+'/'+r['arm']:row_sha(r) for r in rows}
+    if hashes!=expected:
+        raise ValueError('Resume recorded row bytes/ledger changed')
+    if len(rows)>len(valid):
+        raise ValueError('Too many rows')
+    if rows and report.get('summary')!=expected_summary(rows):
+        raise ValueError('Resume summary does not match immutable rows')
+    if report['status']=='RECORDED_DIAGNOSIS':
+        if len(rows)!=len(valid) or set(keys)!=valid or any(r['status']!='RECORDED' for r in rows):
+            raise ValueError('Cannot mark incomplete/failed rows as recorded diagnosis')
+        if report.get('installed_artifacts_unchanged') is not True:
+            raise ValueError('Final result lacks unchanged artifacts binding')
+    if report['status']=='INTERRUPTED' and (not rows or rows[-1]['status']!='INTERRUPTED'):
+        raise ValueError('Interrupted report lacks interrupted last row')
+    return set(keys)
