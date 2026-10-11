@@ -4,8 +4,11 @@ This is a review candidate, NOT patched into the active/source-frozen runner.
 It rejects forged gate flags or inconsistent row hashes, summaries and finished
 statuses before any new native inference is attempted. No model dependency.
 """
+import argparse
 import hashlib
 import json
+from pathlib import Path
+import sys
 
 ARMS = ('baseline','state_off','semantics_only','full_candidate')
 FIXTURES = ('Mira','Lumen','Nacre','Tessera')
@@ -74,8 +77,11 @@ def validate_resume(report, registration_sha):
             or row.get('processes_reaped') is not True
             or not isinstance(checks, dict)
             or any(checks.get(k) is not True for k in NATIVE_CHECKS)
-            or row.get('offer', {}).get('native_metrics', {}).get('status') != 'FINAL'
-            or row.get('consumer_metrics', {}).get('status') != 'FINAL'):
+            or not isinstance(row.get('offer'), dict)
+            or not isinstance(row['offer'].get('native_metrics'), dict)
+            or row['offer']['native_metrics'].get('status') != 'FINAL'
+            or not isinstance(row.get('consumer_metrics'), dict)
+            or row['consumer_metrics'].get('status') != 'FINAL'):
             raise ValueError('RECORDED row lacks independently required native evidence')
     expected={r['fixture']+'/'+r['arm']:row_sha(r) for r in rows}
     if hashes!=expected:
@@ -93,3 +99,60 @@ def validate_resume(report, registration_sha):
     if report['status']=='INTERRUPTED' and (not rows or rows[-1]['status']!='INTERRUPTED'):
         raise ValueError('Interrupted report lacks interrupted last row')
     return set(keys)
+
+
+def audit_files(registration_path, report_path):
+    """Privacy-minimal, read-only preflight for an existing native cohort.
+
+    This does not run models, reconstruct missing rows, or promote utility.
+    The preregistration hash is over the exact on-disk JSON bytes, just as in
+    the frozen runner. Caller must separately verify current source/model binds.
+    """
+    registration_path, report_path = Path(registration_path), Path(report_path)
+    for path in (registration_path, report_path):
+        if path.is_symlink() or not path.is_file():
+            raise ValueError('Existing regular prerequisite file required')
+        if path.stat().st_size > (64 << 20):
+            raise ValueError('Oversize preregistration/report refused')
+    original = registration_path.read_bytes()
+    registration = json.loads(original)
+    if (not isinstance(registration, dict)
+        or registration.get('schema') != 'SOURCE_HANDOFF_ABLATION_PREREGISTRATION_V1'
+        or registration.get('arm_order') != list(ARMS)
+        or not isinstance(registration.get('fixtures'), list)
+        or len(registration['fixtures']) != len(FIXTURES)
+        or any(not isinstance(row, dict) for row in registration['fixtures'])
+        or [row.get('id') for row in registration['fixtures']] != list(FIXTURES)):
+        raise ValueError('Unexpected fixed native ablation preregistration')
+    expected_hash = hashlib.sha256(original).hexdigest()
+    report = json.loads(report_path.read_bytes())
+    done = validate_resume(report, expected_hash)
+    return {'status':'RESUME_LEDGER_VALID_NOT_UTILITY_PASS',
+            'rows':len(done),'expected_rows':len(FIXTURES)*len(ARMS),
+            'remaining_rows':len(FIXTURES)*len(ARMS)-len(done),
+            'preregistration_sha256':expected_hash,
+            'original_report_state':report['status'],
+            'native_models_launched':False,
+            'source_and_model_binding_verified':False,
+            'phone_measured':False,
+            'canonical_gate_pass':False}
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Read-only SourceHandoff resume integrity preflight, not a model run')
+    parser.add_argument('--preregistration',type=Path,required=True)
+    parser.add_argument('--report',type=Path,required=True)
+    args = parser.parse_args()
+    try:
+        result = audit_files(args.preregistration,args.report)
+    except (ValueError, OSError, TypeError, KeyError, json.JSONDecodeError) as error:
+        # No raw report/answer/statement content in diagnostic output.
+        print(json.dumps({'status':'RESUME_LEDGER_REJECTED',
+                          'error_type':type(error).__name__}),file=sys.stderr)
+        return 2
+    print(json.dumps(result,sort_keys=True))
+    return 0
+
+
+if __name__=='__main__':
+    raise SystemExit(main())
