@@ -1,5 +1,8 @@
 """Only atomic publication tests: no native training or JEPA utility is implied."""
 import errno
+import json
+import subprocess
+import sys
 from pathlib import Path
 import tempfile
 import threading
@@ -18,6 +21,27 @@ class DeltaAtomicPublish(unittest.TestCase):
         (path/'registration.json').write_bytes(b'signed registration')
         (path/'taps.npz').write_bytes(b'NPZ original exact bytes')
         return {'completed_rows':1875,'exact_original_npz_bytes_restored':True,'receiver_authority':0}
+
+    def test_noreplace_same_filesystem_capability_probe(self):
+        result=atomic.probe_noreplace_directory(self.root)
+        self.assertEqual(result['status'],'ATOMIC_NOREPLACE_FILESYSTEM_PROBE_PASS')
+        self.assertFalse(result['phone_measured'])
+        self.assertEqual(list(self.root.iterdir()),[])
+
+    def test_probe_requires_existing_non_symlink_parent(self):
+        with self.assertRaisesRegex(ValueError,'ordinary'):
+            atomic.probe_noreplace_directory(self.root/'missing')
+        link=self.root/'linked';link.symlink_to(self.root)
+        with self.assertRaisesRegex(ValueError,'ordinary'):
+            atomic.probe_noreplace_directory(link)
+
+    def test_probe_cli_does_not_emit_native_pass(self):
+        cp=subprocess.run([sys.executable,str(Path(atomic.__file__)),'--probe-directory',str(self.root)],capture_output=True,text=True)
+        self.assertEqual(cp.returncode,0,cp.stderr)
+        value=json.loads(cp.stdout)
+        self.assertEqual(value['status'],'ATOMIC_NOREPLACE_FILESYSTEM_PROBE_PASS')
+        self.assertIs(value['canonical_gate_pass'],False)
+        self.assertEqual(list(self.root.iterdir()),[])
 
     def test_atomic_directory_published_after_verified_restore(self):
         r=atomic.restore_atomic('base',['delta'],self.dst,restore_impl=self.implementation)
