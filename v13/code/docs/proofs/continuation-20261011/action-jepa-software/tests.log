@@ -1,0 +1,15 @@
+test_analytic_all_parameter_gradients_and_stop_gradient (tests.test_action_jepa_objective.ActionObjectiveTests.test_analytic_all_parameter_gradients_and_stop_gradient) ... ok
+test_bias_learns_constant_action_effect_without_target_gradient (tests.test_action_jepa_objective.ActionObjectiveTests.test_bias_learns_constant_action_effect_without_target_gradient) ... ok
+test_corrupt_input_bindings_and_missing_action_fail_closed (tests.test_action_jepa_objective.ActionObjectiveTests.test_corrupt_input_bindings_and_missing_action_fail_closed) ... ok
+test_fixed_metric_detects_collapsed_moving_target (tests.test_action_jepa_objective.ActionObjectiveTests.test_fixed_metric_detects_collapsed_moving_target) ... ok
+test_full_training_saved_hypothesis_consumer_deterministic (tests.test_action_jepa_objective.ActionObjectiveTests.test_full_training_saved_hypothesis_consumer_deterministic) ... ok
+test_holdout_targets_do_not_change_fit_or_mean_control (tests.test_action_jepa_objective.ActionObjectiveTests.test_holdout_targets_do_not_change_fit_or_mean_control) ... ok
+test_source_alias_same_bytes_cannot_enter_holdout (tests.test_action_jepa_objective.ActionObjectiveTests.test_source_alias_same_bytes_cannot_enter_holdout) ... ok
+test_shared_encoder_learns_action_effects (tests.test_jepa_action.ActionJepa.test_shared_encoder_learns_action_effects) ... ok
+test_softmax_readout (tests.test_jepa_action.ActionJepa.test_softmax_readout) ... ok
+test_tasks_chance_for_action_blind_control (tests.test_jepa_action.ActionJepa.test_tasks_chance_for_action_blind_control) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.439s
+
+OK

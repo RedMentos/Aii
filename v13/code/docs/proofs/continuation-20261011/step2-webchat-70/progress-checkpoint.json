@@ -1,16 +1,18 @@
 {
   "status": "RUNNING",
-  "captured_utc": "2026-10-11T03:50:20.114360+00:00",
-  "recorded_rows": 17,
+  "captured_utc": "2026-10-11T03:54:41.221762+00:00",
+  "recorded_rows": 35,
   "denominator": 70,
   "phone_measured": false,
   "canonical_gate_pass": false,
   "source_frozen": true,
-  "report_sha256": "7dd72f68173bfe5ed4c0b06af3c18b62fa331001bfe0a5e20545e5b97f4561c7",
+  "report": "report-snapshot.json",
+  "report_sha256": "54f274011ebe9ca055835c9e3a8251aaa4578ceb4866fe8755398b881d628195",
   "closed_checkpoints": {
     "base-Aurora.closed.zip": "8ae8febbbe3822122b84d9ded3ae28732efebac61079552cdf1f43eb64dbf0e8",
     "base-Cygnus.closed.zip": "58972bed36d37fb405e7cbfd42fb776d98402e5da0362a010a2b7ff77c71c6bb",
+    "base-Dorado.closed.zip": "43ee9300b66febe79664f6011607ba199e657284518c3fc5f592ab573162ae60",
+    "base-Equinox.closed.zip": "f508d2e202b256f4fb7bce0a2493986d66962a17a096c7716e1de8802a84d31d",
     "base-Borealis.closed.zip": "b6d7f1fbaa7ee1bd21da4e1359dbf691cf094a0de99df62e3c961f890966de15"
-  },
-  "report": "report-snapshot.json"
+  }
 }

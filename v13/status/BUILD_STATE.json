@@ -247,7 +247,7 @@
     "causal_preparation": "8softwarechecks +21actual native commandguardsPASS; no modelinference, all5build/guardchildrenreaped",
     "native_forward_optimizer": "Actualshort+long numericallifecyclePASS; short2/20forwardimprovements, long20/20refused;4workersreaped, unchangedGGUF/fullnativeparity; no production/nativebodytrainingrights"
   },
-  "checkpoint_time_utc": "2026-10-09T06:19:04.067216+00:00",
+  "checkpoint_time_utc": "2026-10-11T03:54:41.221762+00:00",
   "checkpoint_kind": "CAUSAL_NATIVE46_NINTH_EXPORTED_SQLITE_FAILED_BEFORE_FIT",
   "base_checkpoint": "V13-Redmi-Start-auto-burst2.zip",
   "current_changes_pending_validation": [
@@ -801,6 +801,25 @@
       "step2_complete": false,
       "full_scope_complete": false,
       "report_sha256": "5602c24c87cc5dbdc209df4494d46d365358ec455f7ef6a4a3663076838d8d54"
-    }
+    },
+    "webchat_step2_progress": {
+      "status": "RUNNING",
+      "captured_utc": "2026-10-11T03:54:41.221762+00:00",
+      "recorded_rows": 35,
+      "denominator": 70,
+      "phone_measured": false,
+      "canonical_gate_pass": false,
+      "source_frozen": true,
+      "report": "report-snapshot.json",
+      "report_sha256": "54f274011ebe9ca055835c9e3a8251aaa4578ceb4866fe8755398b881d628195",
+      "closed_checkpoints": {
+        "base-Aurora.closed.zip": "8ae8febbbe3822122b84d9ded3ae28732efebac61079552cdf1f43eb64dbf0e8",
+        "base-Cygnus.closed.zip": "58972bed36d37fb405e7cbfd42fb776d98402e5da0362a010a2b7ff77c71c6bb",
+        "base-Dorado.closed.zip": "43ee9300b66febe79664f6011607ba199e657284518c3fc5f592ab573162ae60",
+        "base-Equinox.closed.zip": "f508d2e202b256f4fb7bce0a2493986d66962a17a096c7716e1de8802a84d31d",
+        "base-Borealis.closed.zip": "b6d7f1fbaa7ee1bd21da4e1359dbf691cf094a0de99df62e3c961f890966de15"
+      }
+    },
+    "drive_plan_reconciliation": "docs/proofs/continuation-20261011/drive-plan-reconciliation.md"
   }
 }
