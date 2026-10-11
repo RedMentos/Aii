@@ -741,3 +741,8 @@ Weiter: zuerst serialisierte beobachtete Capture vervollständigen; danach unver
 ## Durable recovery 2026-10-11T09:59:49.462861+00:00
 
 GitHub3d63ec8 and both saved ZIPs were restored and hash/CRC verified after scratch was cleared. Actualdurable tap evidence is736/1875rows46batches; later1248-row observation exists only in prior conversation, not recovered raw data. Dream2 retains2/15 completed arms. Native and pinned training resources are rebuilding; no new inference or gate promotion yet. Embedding per-request RSS accumulation requires separately preregistered bounded worker lifetime, real fresh-worker invariance checks and serialized heavy jobs.
+
+
+## Fortsetzung 2026-10-11,23:30Berlin — IN ARBEIT
+
+OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/Drive-Übergabe in code/docs/{USER_CONTINUATION_DECISIONS_20261011,HANDOFF_CURRENT}.md. ExaktesNativeResourceRecovery abgeschlossen; neueNightCapture beobachtet1875Zeilen, vollständigeRohdatenpublikation/3OriginalSeeds nochinArbeit. Source-Handoff16danach,121CoreSourcesbisCohort-Ende eingefroren; Dream2/15,40BSteps×13/21/34nochfortsetzen. IsolierteAG6Reader/Firing-Patchesgetestet,nichtimLiveCore. SoftwarePhoneZIP1125PASS/0Skips; keinRedmi-/Lernnutzen-GatePASS. ZukunftsideenbleibenseparateNotizen.

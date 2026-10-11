@@ -114,6 +114,26 @@ class FiringRowMap(unittest.TestCase):
         self.assertEqual(result['firing_reason'],'REQUEST_BINDING_CHANGED')
         self.assertEqual(result['firing'],'UNMEASURED')
 
+    def test_native_truncated_after_inventory_returns_unavailable_without_fact_claim(self):
+        module=load_candidate('memory_server')
+        binding=module.captured_delivery_binding(self.home,'C3_LANGUAGE',self.model)
+        real=module.shadow_delivery;original=self.path.read_bytes()
+        def truncate_after_inventory(*args,**kwargs):
+            result=real(*args,**kwargs)
+            self.path.write_bytes(b'V13SMEM1')
+            return result
+        try:
+            with patch.object(module,'shadow_delivery',side_effect=truncate_after_inventory):
+                result=module.observed_shadow_delivery(self.s,self.home,'C3_LANGUAGE',self.model,
+                    binding,[self.memory],audit(binding))
+        finally:self.path.write_bytes(original)
+        self.assertEqual(result['firing'],'UNMEASURED')
+        self.assertEqual(result['firing_reason'],'INVALID_REQUEST_ROW_MAP')
+        self.assertEqual(result['observed_memory_ids'],[])
+        self.assertTrue(result['exact_retained'])
+        self.assertFalse(result['quality_proven'])
+        self.assertFalse(result['activation_authorized'])
+
 
 class FiringRunnerWindow(unittest.TestCase):
     def setUp(self):

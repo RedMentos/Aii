@@ -106,5 +106,18 @@ class PackageSource(unittest.TestCase):
             self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
             self.assertRegex(tested.stderr,r'Ran [1-9][0-9]* tests')
 
+    def test_actual_phone_zip_runs_approval_reader_and_merged_firing_after_extraction(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);out=root/'phone.zip'
+            completed=self.package(ROOT,out,phone=True)
+            self.assertEqual(completed.returncode,0,completed.stderr)
+            self.inspect(out)
+            with zipfile.ZipFile(out) as archive:archive.extractall(root/'extracted')
+            tested=subprocess.run([sys.executable,'-m','unittest',
+                'tests.test_approval_reader_runtime_candidate','tests.test_native_firing_merged_candidate'],
+                cwd=root/'extracted/V13-Phone',capture_output=True,text=True,timeout=30)
+            self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
+            self.assertRegex(tested.stderr,r'Ran [1-9][0-9]* tests')
+
 
 if __name__=='__main__':unittest.main()

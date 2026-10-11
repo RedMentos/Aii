@@ -73,10 +73,10 @@ DELIVERY_METHOD = '''def observed_shadow_delivery(store,home,role,model_path,loa
             or audit.get('exact_retained') is not True or audit.get('quality_proven') is not False
             or audit.get('activation_authorized') is not False or audit.get('semantic_truth_authority') is not False):
         return reject('AUDIT_BINDING_OR_AUTHORITY_INVALID')
+    import struct
     try:
         metadata=json.loads(native_items_path(loaded_binding['path']).read_text())
         raw=Path(loaded_binding['path']).read_bytes()
-        import struct
         layer=struct.unpack_from('<i',raw,8)[0]
         n=len(metadata['rows']);counts=audit['slot_applied_counts'];blocked=audit['slot_guard_blocked_counts']
         if (type(audit.get('request')) is not int or audit['request']<1
@@ -89,7 +89,7 @@ DELIVERY_METHOD = '''def observed_shadow_delivery(store,home,role,model_path,loa
                 or any(a+b>audit['evaluated_rows'] for a,b in zip(counts,blocked))
                 or audit.get('fired_rows')!=[r for r,v in enumerate(counts) if v]):
             raise ValueError('Native request/slot dimensions')
-    except (OSError,ValueError,KeyError,TypeError):return reject('INVALID_REQUEST_ROW_MAP')
+    except (OSError,ValueError,KeyError,TypeError,struct.error):return reject('INVALID_REQUEST_ROW_MAP')
     fired=set(audit['fired_rows'])
     for mid,ref in zip(result['candidates'],result['provenance']):
         if any(r in fired and mapped==mid for r,mapped in enumerate(metadata['rows'])):
