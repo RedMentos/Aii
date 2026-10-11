@@ -12,6 +12,7 @@ FIXTURES = ('Mira','Lumen','Nacre','Tessera')
 ROW_STATES = frozenset(('RECORDED','STRUCTURAL_FAIL','ERROR','INTERRUPTED'))
 REPORT_STATES = frozenset(('RUNNING','INTERRUPTED','ARTIFACT_CHANGED','RECORDED_DIAGNOSIS','STRUCTURAL_FAIL'))
 GATE_FIELDS = ('canonical_gate_pass','learned_semantic_utility_proven','phone_measured')
+NATIVE_CHECKS = ('real_B2_final','real_C3_final','current_event_bound','corrupt_prior_not_delivered')
 
 
 def _canonical(value):
@@ -60,12 +61,29 @@ def validate_resume(report, registration_sha):
         keys.append((row.get('fixture'),row.get('arm')))
     if len(keys)!=len(set(keys)) or any(k not in valid for k in keys):
         raise ValueError('Resume row keys invalid')
+    # The frozen runner emits a deterministic fixture-major/arm-minor prefix.
+    # Accepting a future row early silently marks that arm done on restart.
+    canonical_order = [(fixture, arm) for fixture in FIXTURES for arm in ARMS]
+    if keys != canonical_order[:len(keys)]:
+        raise ValueError('Resume rows are not a contiguous preregistered prefix')
+    for row in rows:
+        if row['status'] != 'RECORDED':
+            continue  # Preserve diagnostics from failed/interrupted native calls.
+        checks = row.get('checks')
+        if (row.get('oracle_visible_to_native') is not False
+            or row.get('processes_reaped') is not True
+            or not isinstance(checks, dict)
+            or any(checks.get(k) is not True for k in NATIVE_CHECKS)
+            or row.get('offer', {}).get('native_metrics', {}).get('status') != 'FINAL'
+            or row.get('consumer_metrics', {}).get('status') != 'FINAL'):
+            raise ValueError('RECORDED row lacks independently required native evidence')
     expected={r['fixture']+'/'+r['arm']:row_sha(r) for r in rows}
     if hashes!=expected:
         raise ValueError('Resume recorded row bytes/ledger changed')
     if len(rows)>len(valid):
         raise ValueError('Too many rows')
-    if rows and report.get('summary')!=expected_summary(rows):
+    if (report.get('summary') != expected_summary(rows)
+            if rows else report.get('summary') is not None):
         raise ValueError('Resume summary does not match immutable rows')
     if report['status']=='RECORDED_DIAGNOSIS':
         if len(rows)!=len(valid) or set(keys)!=valid or any(r['status']!='RECORDED' for r in rows):
