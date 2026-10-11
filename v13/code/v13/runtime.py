@@ -539,6 +539,14 @@ class Runtime:
                         if lw.check(output):break
                 output+=lw.finish(runner,messages,output,deadline,mid)
                 meta.update(model_generated=True,runner=runner.last_metrics,model_revision=self.models.revision(runner.role))
+                if getattr(runner,'memory',None) and memories:
+                    try:  # WP-T9: inventory overlap on the actual final native runner; Exact stays delivered.
+                        from .memory_server import shadow_delivery
+                        loaded=getattr(runner,'memory_delivery_binding',None) if runner.pids() else None
+                        delivery=shadow_delivery(self.store,self.home,runner.role,runner.model,loaded,memories)
+                        meta['sparse_delivery_shadow']=delivery
+                        self.store.log('sparse_delivery_shadow',eid,delivery)
+                    except Exception as exc:self.store.log('sparse_delivery_unavailable',eid,{'error':type(exc).__name__})
                 try:ctxos.controller(self).observe(eid,runner.role,runner.last_metrics,'FINAL',meta['memory_ids'])  # WP-N7 cache outcome + warm set
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'observe','error':type(exc).__name__})
                 try:  # WP-N3: offer utility, re-entry value, observer-pass utility, bridge fields (SHADOW unless :jef active)

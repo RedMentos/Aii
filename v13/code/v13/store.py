@@ -97,6 +97,8 @@ TELEMETRY_ENUMS.update('CONTINUE INTERRUPT REVISE OVERLAP STOP CORRECTION interr
 TELEMETRY_FIELDS.update('action authority seconds width height encoder'.split())  # WP-N15
 TELEMETRY_ENUMS.update('add describe train REFERENCE_NOT_FACT hashed_bow'.split())
 TELEMETRY_ENUMS.update('NO_LIMITS NO_DATA'.split())  # WP-T14 control budget
+TELEMETRY_FIELDS.update('exact_retained firing binding native_sha256 model_sha256 binary_sha256 sidecar_sha256 batch_id reasons provenance'.split())  # WP-T9 source-bound shadow inventory
+TELEMETRY_ENUMS.update('SHADOW UNMEASURED NO_MATCHING_LOADED_BINDING INVALID_NATIVE_ROW_MAP NOT_ORDINARY_FACT NO_BOUND_LIVE_ROWS SOURCE_OR_CONTENT_MISMATCH BOUND_FACT_POSSIBLE_FIRING_UNMEASURED INVENTORY_ONLY'.split())
 
 def telemetry_metrics(value):
     if isinstance(value,dict):

@@ -32,3 +32,7 @@ Die bereits gespeicherten Download-ZIPs sichern den zum Erstellzeitpunkt noch un
 Archiv-Metadaten nennen den Quell-Commit und die Prüfsummen; sie enthalten keine Modellgewichte oder Nutzerdaten. Installations-ZIP starten: entpacken, in `V13-Phone` `bash STARTEN.sh`. Einrichtung lädt die gepinnten Modelle, baut die vorhandenen Runner, führt Selbsttest/Probe aus und startet im Terminal den Chat. Der Android-Start dieser Revision muss noch auf dem Gerät geprüft werden. Nach Dokumentationsaktualisierungen werden die finale ZIP und ihre ausführbaren Dateien gegen die tatsächlich geprüfte ZIP verglichen; keine erneute Modellinferenz wird dadurch behauptet.
 
 `canonical_architecture_complete=false`, `user_full_scope_complete=false`: Der Gesamtplan ist weiterhin offen; dieser Checkpoint schließt die konkret oben beschriebene Hook-Lücke.
+
+## Veröffentlichung nach Installation des Connectors
+
+Am 2026-10-11 wurde der technische 403-Blocker behoben. Der Arbeitsbranch `codex/authority-live-comparisons` ist auf GitHub veröffentlicht: Commit `5f5d22de540d1b48129a6e213c4bec1ed009f348`, Quellbaum `ca9e183507323025093f4656c2aeb781a85b988e`. Ein read-only Git-Fetch bestätigte denselben Quellbaum wie der zuvor unveröffentlichte lokale Checkpoint. Die vier lokalen historischen Commits bleiben auf `codex/authority-local-archive`. Der frühere Blockerabsatz ist Verlauf, kein aktueller Zugriffsfehler. Routine-Pushes sind weiterhin autorisiert.

@@ -66,6 +66,79 @@ def runner_memory(home,role,model_path):
     except OSError:return None
     return {'binary':str(binary),'env':{'V13_MEMORY_FILE':cur['path']}}
 
+def captured_delivery_binding(home,role,model_path):
+    """Snapshot an approved row map for a runner load; this is not a firing or recall measurement."""
+    from .sparse_memory import native_items_path,DELIVERY_SCHEMA
+    try:
+        mem=runner_memory(home,role,model_path)
+        if not mem:return None
+        cur=json.loads((Path(home)/'config/lora-active.json').read_text())[role+ROLE_SUFFIX]
+        side=native_items_path(cur['path']);sha=file_hash(side)
+        if sha!=cur.get('sidecar_sha256'):return None
+        metadata=json.loads(side.read_text())
+        if metadata.get('schema')!=DELIVERY_SCHEMA or metadata.get('native_sha256')!=cur['sha256']:return None
+        if not isinstance(metadata.get('rows'),list) or not isinstance(metadata.get('item_bindings'),dict):return None
+        return {'path':cur['path'],'native_sha256':cur['sha256'],'model_sha256':cur['base_model_sha256'],
+                'binary_sha256':file_hash(mem['binary']),'sidecar_sha256':sha,'batch_id':cur['batch_id']}
+    except (OSError,ValueError,KeyError,TypeError):return None
+
+def _native_live_rows(path):
+    """Structural row inventory only: nonzero values/keys and reachable thresholds do not prove firing."""
+    import struct,math
+    b=Path(path).read_bytes()
+    if len(b)<40 or b[:8]!=b'V13SMEM1':raise ValueError('Native header')
+    layer,hid,n,ew,topk,guard=struct.unpack_from('<6i',b,8);tau,scale=struct.unpack_from('<2f',b,32)
+    if not (0<=layer<4096 and 0<hid<=16384 and 0<=n<=65536 and 0<ew<=1024 and 0<topk<=65536 and guard in (0,1)):
+        raise ValueError('Native dimensions')
+    if not math.isfinite(tau) or tau<=0 or not math.isfinite(scale) or scale==0:raise ValueError('Native gates')
+    if len(b)!=40+4*hid+8*n*hid+4*n+4*n*ew:raise ValueError('Native size')
+    keys=40+4*hid;theta=keys+4*n*hid;values=theta+4*n;ent=values+4*n*hid
+    live=set()
+    for r in range(n):
+        k=struct.unpack_from('<%df'%hid,b,keys+4*r*hid);v=struct.unpack_from('<%df'%hid,b,values+4*r*hid)
+        th=struct.unpack_from('<f',b,theta+4*r)[0];e=struct.unpack_from('<%di'%ew,b,ent+4*r*ew)
+        if (math.isfinite(th) and th<=1. and any(x!=0 for x in k) and any(x!=0 for x in v)
+                and all(math.isfinite(x) for x in (*k,*v)) and (not guard or any(x>=0 for x in e))):live.add(r)
+    return n,live
+
+def shadow_delivery(store,home,role,model_path,loaded_binding,memories):
+    """Inventory possible duplicate fact delivery; Exact stays present and native firing remains unmeasured.
+
+    Caller supplies the snapshot of the actual healthy native-memory process, never a prospective runner.
+    """
+    from .sparse_memory import native_items_path
+    result={'mode':'SHADOW','exact_retained':True,'firing':'UNMEASURED','candidates':[],'provenance':[],'reasons':[],
+            'binding':loaded_binding}
+    current=captured_delivery_binding(home,role,model_path)
+    if not current or current!=loaded_binding:
+        result['reason']='NO_MATCHING_LOADED_BINDING';return result
+    try:
+        metadata=json.loads(native_items_path(current['path']).read_text());n,live=_native_live_rows(current['path'])
+        if len(metadata['rows'])!=n:raise ValueError('Native row map size')
+        forgotten={str(m) for m in metadata.get('forgotten',[])}
+    except (OSError,ValueError,KeyError,TypeError):
+        result['reason']='INVALID_NATIVE_ROW_MAP';return result
+    for memory in memories:
+        mid=memory.get('id');reason='NOT_ORDINARY_FACT'
+        if isinstance(mid,str) and memory.get('kind')=='fact' and not memory.get('consolidation'):
+            reason='NO_BOUND_LIVE_ROWS'
+            binding=metadata['item_bindings'].get(mid)
+            rows=[r for r,m in enumerate(metadata['rows']) if m==mid]
+            if mid not in forgotten and binding and rows and all(r in live for r in rows):
+                reason='SOURCE_OR_CONTENT_MISMATCH'
+                try:
+                    m=store.one('SELECT m.*,s.hash,s.chars,s.deleted FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.id=?',(mid,))
+                    ref=binding['source_ref']
+                    expected={'source_id':m['source_id'],'sha256':m['hash'],'char_start':0,'char_end':m['chars'],'modality':'text'} if m else None
+                    if (m and m['active'] and not m['deleted'] and m['kind']=='fact'
+                            and binding['prompt']==m['key_text']==memory['key_text']
+                            and binding['target']==m['value']==memory['value']
+                            and ref==expected==memory['source_ref'] and store.read_source(ref)==m['value']):
+                        result['candidates'].append(mid);result['provenance'].append(dict(ref));reason='BOUND_FACT_POSSIBLE_FIRING_UNMEASURED'
+                except (OSError,KeyError,TypeError,ValueError):pass
+        result['reasons'].append({'memory_id':mid,'reason':reason})
+    result['reason']='INVENTORY_ONLY';return result
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--home',required=True);ap.add_argument('cmd',choices=['build','status','patch']);ap.add_argument('--source')
     ap.add_argument('--jobs',type=int,default=2);a=ap.parse_args()

@@ -12,7 +12,7 @@ Stufen je gelerntem Kopf: 0 SHADOW → 1 CANDIDATE → 2 ACTIVE.
   - ACTIVE mit Regression → SHADOW, automatisch. Die sichere Richtung braucht keinen Menschen.
   - Telemetrie `authority_change`.
 - **`observe(store, head, scaffold, learned, scaffold_ok, learned_ok)`:** generisches Schatten-Ledger für Hooks.
-  - Seit 2026-10-11 speisen die vorhandenen Attention-, Deliberation- und Callosum-Controller ihre trainierten Schattenvorschläge ein. Untrainierte Rückfälle zählen nicht als gelernter Vergleich. Für gist und neuromod_meta fehlen diese Hooks weiterhin.
+  - Seit 2026-10-11 speisen die vorhandenen Attention-, Deliberation- und Callosum-Controller ihre trainierten Schattenvorschläge ein. Untrainierte Rückfälle zählen nicht als gelernter Vergleich. Neuromod-META wurde im Folge-Checkpoint ebenfalls angeschlossen; Gist bleibt ohne gelernten Kopf/Hook.
 - **Operator:** `:authority [status|review|promote <Kopf>|demote <Kopf>|<Kopf>]`, `:objectives`.
 
 ## Lernziel-Plugin (`v13/objectives.py`, IH-H25)
@@ -41,3 +41,7 @@ Die Hooks geben keine erfundenen Scaffold-/Learned-Outcome-Labels an `observe`: 
 Tests: 46 gezielte Softwaretests PASS: `test_authority_live`, `test_authority`, `test_attention`, `test_deliberation`, `test_callosum`, `test_local_updates`. Darunter sechs neue Integrationsprüfungen mit Runtime/SQLite, Wiederanlauf, Provider-Aufrufzahl und blockierter Beförderung. Bericht: `docs/proofs/authority-live-20261011/report.json`.
 
 Zusätzlich wurde der Installations-ZIP-Einstieg `python3 -m v13 ... selftest` aus der entpackten ZIP geprüft: 946 Tests, 942 PASS, vier explizite PyTorch-Skips. Beim ersten Versuch fehlten im GitHub-Import die feste Native46-Fixture und der Norm-Poll-Header. Diese und die zugehörige Norm-Port-Quelle wurden bytegleich gegen den Manifest-Hash aus dem früher gesicherten Installationspaket wiederhergestellt. Der zweite Lauf bestand. Beide Testlogs und der Wiederherstellungsnachweis bleiben erhalten. Kein Modell- oder Redmi-Nachweis durch diesen Selbsttest.
+
+## Neuromod-META Folgeschritt 2026-10-11
+
+Vergleicht ab acht tatsächlich gelabelten Retention-Snapshots die BOOT-Regel-Plastizität mit dem logistisch angepassten Vorschlag auf denselben Features. Die Retention-Wahrscheinlichkeit selbst wird nicht mit einer Plastizitäts-Skala verglichen. Persistenter Fingerprint verhindert Mehrfachzählung durch unverändertes Polling und Neustart. Diagnosereports sowie Veto/Konflikt/ungesehene Pfade bleiben außerhalb des Ledgers. Keine erfundenen Outcome-Labels, kein neuer Modellaufruf, unveränderte ACTIVE-/Freigabe-Regeln. Das vorhandene Neuromod-Lernziel ist bereits IMPLEMENTED; ein Kandidat braucht weiterhin das eigene Gate. Tests: sechs neue Neuromod-Prüfungen im Bericht `docs/proofs/continuation-20261011/`.

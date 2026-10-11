@@ -8,7 +8,7 @@ Same system message as runtime._turn in a fresh chat (memory_trainer.live_system
 Measures fact recall, paraphrase recall, near-miss leak, retention probes, prompt tokens and latency per turn.
   python3 scripts/fast_trace_compare.py SERVER_BIN MODEL.gguf MEMORY.bin OUT.json
 """
-import json,os,subprocess,sys,time,urllib.request
+import argparse,fcntl,json,os,subprocess,sys,time,urllib.request
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent));sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from lora_bench import FACTS,NEAR_MISS,PROBES,PARAPHRASES  # noqa: E402
@@ -16,6 +16,7 @@ from v13.lora_trainer import answer_hit  # noqa: E402
 from v13.memory import relevance  # noqa: E402
 from v13.memory_trainer import live_system  # noqa: E402
 from v13.config import DEFAULTS  # noqa: E402
+from v13.common import atomic_write,dumps,digest,file_hash  # noqa: E402
 
 def system(question,with_exact):
     if not with_exact:return live_system()
@@ -35,29 +36,75 @@ def serve(binary,model,mem,port,log):
     p.terminate();raise RuntimeError('server did not start: '+open(log).read()[-400:])
 
 def ask(port,sys_text,q):
-    b=json.dumps({'messages':[{'role':'system','content':sys_text},{'role':'user','content':q}],'max_tokens':40,'temperature':0,'cache_prompt':True}).encode()
+    b=json.dumps({'messages':[{'role':'system','content':sys_text},{'role':'user','content':q}],'max_tokens':40,'temperature':0,'seed':13,'cache_prompt':True}).encode()
     t=time.monotonic();r=json.loads(urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:%d/v1/chat/completions'%port,b,{'Content-Type':'application/json'}),timeout=300).read())
     return r['choices'][0]['message']['content'],r['usage']['prompt_tokens'],time.monotonic()-t
 
-def main():
-    binary,model,mem,out=sys.argv[1:5]
+def compare(binary,model,mem,out,*,resume=False,repeats=1):
+    target=Path(out);target.parent.mkdir(parents=True,exist_ok=True)
+    with open(str(target)+'.lock','a') as lock:
+        try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError:raise RuntimeError('This proof is already running; no concurrent resume')
+        return _compare(binary,model,mem,out,resume=resume,repeats=repeats)
+
+def _compare(binary,model,mem,out,*,resume=False,repeats=1):
+    """Checkpoint every real answer; resume only the identical corpus/runner/artifact.
+
+    Rows are raw native observations, not automatic approval of memory delivery.
+    A failed attempt is retained and retried only on an explicit --resume invocation.
+    Historical comparison files are never consumed or overwritten implicitly.
+    """
+    if repeats<1:raise ValueError('repeats must be positive')
     sets={'facts':[(q,k) for q,_,k in FACTS],'paraphrase':PARAPHRASES,'near_miss':NEAR_MISS,'probes':[(p['prompt'],p['expect']) for p in PROBES]}
-    rep={}
+    binding={'binary_sha256':file_hash(binary),'model_sha256':file_hash(model),'memory_sha256':file_hash(mem),
+             'corpus_sha256':digest(dumps({'facts':FACTS,'sets':sets})),
+             'script_sha256':file_hash(__file__),'relevance_sha256':file_hash(Path(__file__).parents[1]/'v13/memory.py'),
+             'prompts_sha256':digest(live_system()),'memory_threshold':DEFAULTS['memory_threshold'],
+             'memory_top_k':DEFAULTS['memory_top_k'],'repeats':repeats,'temperature':0,'cache_prompt':True,'max_tokens':40,'seed':13}
+    target=Path(out)
+    if target.exists() and not resume:raise ValueError('Output exists; choose a new file or explicit --resume')
+    rep=json.loads(target.read_text()) if resume and target.exists() else {}
+    if rep and rep.get('_checkpoint',{}).get('binding')!=binding:raise ValueError('Resume binding differs; retain this proof and use a new output')
+    cp=rep.setdefault('_checkpoint',{'schema':'v13-fast-trace-checkpoint-v1','binding':binding,'attempts':[]})
+    for previous in cp['attempts']:
+        if previous['status']=='RUNNING':previous.update(status='INTERRUPTED',identified_on_resume=True)
+    attempt={'started_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'status':'RUNNING'}
+    cp['attempts'].append(attempt);cp['status']='RUNNING'
+    def save():atomic_write(target,json.dumps(rep,indent=1,ensure_ascii=False,allow_nan=False))
+    save()
     for name,use_mem,exact,port in (('base',None,False,8611),('exact',None,True,8612),('trace',mem,False,8613),('exact+trace',mem,True,8614)):
-        p=serve(binary,model,use_mem,port,out+'.'+name+'.log');res={}
+        res=rep.setdefault(name,{});p=None
         try:
-            toks=[];secs=[]
             for k,v in sets.items():
-                rows=[]
-                for q,keys in v:
-                    a,n,s=ask(port,system(q,exact),q);rows.append({'q':q,'a':a[:100],'hit':answer_hit(a,keys)});toks.append(n);secs.append(s)
-                res[k]=sum(r['hit'] for r in rows)/len(rows);res[k+'_rows']=rows
-            res['prompt_tokens_mean']=sum(toks)/len(toks);res['seconds_mean']=round(sum(secs)/len(secs),3)
-        finally:p.terminate();p.wait()
-        rep[name]=res;print(name,{k:v for k,v in res.items() if not k.endswith('_rows')},flush=True)
+                rows=res.setdefault(k+'_rows',[])
+                completed={(r['repeat'],r['index']) for r in rows}
+                for repeat in range(repeats):
+                    for index,(q,keys) in enumerate(v):
+                        if (repeat,index) in completed:continue
+                        if p is None:p=serve(binary,model,use_mem,port,str(out)+'.'+name+'.attempt%d.log'%len(cp['attempts']))
+                        a,n,s=ask(port,system(q,exact),q)
+                        rows.append({'repeat':repeat,'index':index,'q':q,'a':a,'hit':answer_hit(a,keys),
+                                     'prompt_tokens':n,'seconds':s,'attempt':len(cp['attempts'])})
+                        save()  # durable before another native call or app/session interruption
+                res[k]=sum(r['hit'] for r in rows)/len(rows)
+            all_rows=[r for k in sets for r in res[k+'_rows']]
+            res['prompt_tokens_mean']=sum(r['prompt_tokens'] for r in all_rows)/len(all_rows)
+            res['seconds_mean']=round(sum(r['seconds'] for r in all_rows)/len(all_rows),3)
+            res['status']='COMPLETE';save()
+        except BaseException as exc:
+            attempt.update(status='ERROR',arm=name,error=type(exc).__name__,detail=str(exc)[:600]);cp['status']='INCOMPLETE';save();raise
+        finally:
+            if p is not None:p.terminate();p.wait()
+        print(name,{k:v for k,v in res.items() if not k.endswith('_rows')},flush=True)
     b=rep['base']
     for name in ('exact','trace','exact+trace'):
-        rep[name]['forgotten']=[r['q'] for r,c in zip(b['probes_rows'],rep[name]['probes_rows']) if r['hit'] and not c['hit']]
-    Path(out).write_text(json.dumps(rep,indent=1,ensure_ascii=False));print(out)
+        cand={(r['repeat'],r['index']):r for r in rep[name]['probes_rows']}
+        rep[name]['forgotten']=[{'q':r['q'],'repeat':r['repeat']} for r in b['probes_rows'] if r['hit'] and not cand[(r['repeat'],r['index'])]['hit']]
+    attempt['status']='COMPLETE';cp['status']='COMPLETE';save();return rep
+
+def main():
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('binary');ap.add_argument('model');ap.add_argument('memory');ap.add_argument('out')
+    ap.add_argument('--resume',action='store_true');ap.add_argument('--repeats',type=int,default=1)
+    a=ap.parse_args();compare(a.binary,a.model,a.memory,a.out,resume=a.resume,repeats=a.repeats);print(a.out)
 
 if __name__=='__main__':main()

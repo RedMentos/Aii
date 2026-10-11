@@ -29,9 +29,34 @@ class LlamaRunner:
     def __init__(self,home,role,model,config,purpose='generate'):
         self.home=Path(home);self.role=role;self.model=model;self.cfg=config;self.purpose=purpose;self.proc=None;self.port=None;self.key=secrets.token_hex(24);self.last_metrics={};self.log_handle=None
         self.binary=os.environ.get("V13_LLAMA_SERVER",str(home/"bin/llama-server"))
+        self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+    def _lifecycle_stamp(self):
+        # Warm generation checks metadata only. Approval/model/native hashes are
+        # revalidated on load, never reread for every prompt on a healthy child.
+        paths=[self.model,self.binary]
+        if self.purpose=='generate':
+            paths += [self.home/'config/lora-active.json',self.home/'config/memory-server.json',self.home/'bin/llama-server-mem']
+        if self._loaded_binary:paths.append(self._loaded_binary)
+        if self.memory:
+            native=self.memory.get('env',{}).get('V13_MEMORY_FILE')
+            if native:paths += [native,str(native)+'.items.json']
+        def stamp(path):
+            path=Path(path)
+            try:
+                own=path.lstat();target=path.stat()
+                return (str(path),*( (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode) for s in (own,target)))
+            except OSError:return (str(path),None)
+        return tuple(stamp(p) for p in paths)
+    @property
+    def memory_delivery_binding(self):
+        # The binding describes the child that completed its health handshake,
+        # not a registry proposal or a dead/stale process.
+        if self.proc is None or self.proc.poll() is not None or self._loaded_stamp!=self._lifecycle_stamp():return None
+        return dict(self._memory_delivery_binding) if self._memory_delivery_binding else None
     def pids(self):return [self.proc.pid] if self.proc and self.proc.poll() is None else []
     def unload(self):
         before=process_memory(self.proc.pid) if self.proc else None;kill_process(self.proc);self.proc=None
+        self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
         if self.log_handle:self.log_handle.close();self.log_handle=None
         return {"before":before,"process_reaped":True}
     def _json(self,method,path,payload,deadline,timeout_cap=3.):
@@ -45,10 +70,16 @@ class LlamaRunner:
         finally:conn.close()
     def load(self,cancel,deadline):
         check(cancel,deadline)
-        if self.proc and self.proc.poll() is None:return
+        if self.proc and self.proc.poll() is None:
+            if self._loaded_stamp==self._lifecycle_stamp():return
+            # Forget/rebind may rewrite a native memory while the old server
+            # still owns its loaded copy. Reap it before validating a new child.
+            self.unload()
+        elif self.proc or self.log_handle:self.unload()
+        self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
         if not Path(self.binary).is_file():raise Unavailable("llama-server fehlt; setup.sh erneut ausführen")
         with socket.socket() as s:s.bind(("127.0.0.1",0));self.port=s.getsockname()[1]
-        lp=self.home/"logs"/(self.role+".log");rotate_log(lp);self.log_handle=open(lp,"ab");env=os.environ.copy();env["LLAMA_API_KEY"]=self.key
+        lp=self.home/"logs"/(self.role+".log");rotate_log(lp);self.log_handle=open(lp,"ab");env=os.environ.copy();env.pop('V13_MEMORY_FILE',None);env["LLAMA_API_KEY"]=self.key
         # Noncausal embedding prefill must fit the whole admitted sequence in
         # one physical batch. Chunking changes the feature being measured.
         batch=512 if (self.purpose=='tap' and self.role=='C3_LANGUAGE') or self.purpose=='embed' else 128
@@ -66,6 +97,7 @@ class LlamaRunner:
                 if mem:cmd[0]=mem['binary'];env.update(mem['env'])
                 self.memory=mem
             except Exception:self.memory=None
+        self._loaded_binary=cmd[0];launch_stamp=self._lifecycle_stamp()
         try:
             self.proc=subprocess.Popen(cmd,stdin=subprocess.DEVNULL,stdout=self.log_handle,stderr=self.log_handle,env=env)
             while True:
@@ -75,6 +107,13 @@ class LlamaRunner:
                     if self._json("GET","/health",None,min(deadline,time.monotonic()+1)).get("status")=="ok":break
                 except (OSError,RuntimeError,http.client.HTTPException,json.JSONDecodeError):pass
                 cancel.wait(.1)
+            binding=None
+            if self.memory:
+                from .memory_server import captured_delivery_binding
+                binding=captured_delivery_binding(self.home,self.role,self.model)
+                if binding and str(binding.get('path'))!=self.memory['env']['V13_MEMORY_FILE']:binding=None
+            if launch_stamp!=self._lifecycle_stamp():raise Unavailable(self.role+': Runner-Bindung während des Ladens geändert; erneut versuchen')
+            self._loaded_stamp=launch_stamp;self._memory_delivery_binding=binding
         except BaseException:self.unload();raise
     def embed(self,texts,cancel,deadline):
         """Pooled sentence embeddings (WP-H). Only for purpose='embed'; vectors are relevance keys, never facts."""

@@ -684,34 +684,38 @@
  },
  "head_note": "Current resume point: current_checkpoint (2026-10-11). Existing October-9 checkpoint fields and prior evidence are historical and preserved. Overall architecture and user scope remain incomplete.",
  "current_checkpoint": {
-  "phase": "WP-T10_LIVE_COMPARISONS",
+  "phase": "WP_T9_T10_CONTINUATION",
   "time_utc": "2026-10-11T02:22:18.141104+00:00",
   "base_commit": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
   "branch": "codex/authority-live-comparisons",
-  "handoff": "docs/CONTINUE_20261011_AUTHORITY.md",
-  "report": "docs/proofs/authority-live-20261011/report.json",
-  "report_sha256": "51fa41883371585663a725e4029a997f7ecc0d9cd937b3e6e4ad6df4f7f30ef5",
+  "handoff": "docs/CONTINUE_20261011_PROGRESS.md",
+  "report": "docs/proofs/continuation-20261011/report.json",
+  "report_sha256": "f4723c3888128b9adfc0766d26ba36ce31027b3949296b830feb4b25c1ac17b2",
   "tests": {
-   "status": "SCOPED_SOFTWARE_PASS",
-   "count": 46,
-   "new": 6,
-   "native": false,
-   "phone": false
+   "run": 107,
+   "passed": 103,
+   "skipped": 4,
+   "reason": "existing PyTorch tests, dependency unavailable",
+   "seconds": 5.116,
+   "log_sha256": "b1f1ce86765d6a7d9fa965f5d57472284cec5565ebebc937dee02ec5f9e510d7"
   },
   "completed": [
    "Existing attention/deliberation/callosum controllers feed trained comparisons to authority.observe",
    "No untrained fallback comparisons or invented paired outcomes",
    "Real SQLite restart, provider-count and blocked-promotion checks pass",
-   "Restored three absent native source/fixture files byte-identical to prior saved ZIP manifest; extracted-package selftest passed with four explicit PyTorch skips"
+   "Restored three absent native source/fixture files byte-identical to prior saved ZIP manifest; extracted-package selftest passed with four explicit PyTorch skips",
+   "Neuromod live comparison with persistent dedup and six tests",
+   "Bound sparse fact/source metadata plus registry, forget and warm-runner lifecycle",
+   "Runtime shadow inventory preserving Exact/source lineage; resumable atomic native proof collector"
   ],
   "next": [
-   "WP-T10 objective/gate measurements and missing gist/neuromod_meta hooks",
-   "WP-T9 Exact/Sparse duplicate-context integration and real baseline comparisons",
-   "Continue original STEP0/STEP1/STEP2 and native/Redmi work from ROADMAP without weakening failing gates"
+   "Finish package selftest and current native vertical run, preserve real failures",
+   "Measure real sparse firing and paired selective context before activation; retain exact and sparse-auto restrictions",
+   "Complete original open goals/gates from ROADMAP without rewriting Canon"
   ],
   "source_zip": "deliverables/V13-Source-20261011.zip",
   "phone_install_zip": "deliverables/V13-Redmi-Install-20261011.zip",
-  "persistence": "Source/install ZIP recovery artifacts saved. GitHub work-branch publication is authorized but unavailable: CLI has no credentials; connected create_tree returned HTTP 403 Resource not accessible by integration. No new remote branch/commit published.",
+  "persistence": "Published via connected GitHub Git-object API; fetched remote tree equals local checkpoint tree. Local history retained on codex/authority-local-archive. Existing install/source ZIPs remain available.",
   "full_scope_complete": false,
   "package_selftest": {
    "status": "SOFTWARE_SELFTEST_PASS_WITH_EXPLICIT_SKIPS",
@@ -747,12 +751,17 @@
    "repeat_permission_required": false
   },
   "github_publication": {
-   "status": "TECHNICAL_WRITE_ACCESS_BLOCKED",
-   "cli_error": "could not read Username for https://github.com",
-   "connected_api_http": 403,
-   "connected_api_error": "Resource not accessible by integration",
-   "new_remote_head_verified": false,
-   "next": "Restore GitHub repository write access for RedMentos/Aii; standing authorization already granted, no repeated routine permission question"
+   "status": "REMOTE_TREE_VERIFIED",
+   "head": "5f5d22de540d1b48129a6e213c4bec1ed009f348",
+   "tree": "ca9e183507323025093f4656c2aeb781a85b988e",
+   "branch": "codex/authority-live-comparisons",
+   "verified_at_utc": "2026-10-11T02:56:34.848628+00:00",
+   "new_remote_head_verified": true,
+   "previous_403_resolved": true
+  },
+  "native_vertical": {
+   "status": "RUNNING",
+   "scratch_proof": "native-vertical-20261011"
   }
  }
 }

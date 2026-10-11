@@ -1,3 +1,5 @@
+Aktueller Arbeitsstand: `CONTINUE_20261011_PROGRESS.md` und `BUILD_STATE.json.current_checkpoint`.
+
 # Weiterarbeit am gespeicherten Stand
 
 **Aktueller Einstieg seit 2026-10-11:** `CONTINUE_20261011_AUTHORITY.md` und `BUILD_STATE.json` → `current_checkpoint`. Quellen wurden von Claudes GitHub-Commit übernommen und dort weiterentwickelt. Der folgende Oktober-9-Stand ist historischer Verlauf; seine Rohartefakte sind nicht vollständig im GitHub-Import enthalten.
