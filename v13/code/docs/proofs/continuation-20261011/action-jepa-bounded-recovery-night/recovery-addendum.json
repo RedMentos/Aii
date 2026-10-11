@@ -1,0 +1,37 @@
+{
+  "schema": "v13-native-capture-storage-loss-recovery-addendum-v1",
+  "status": "PREPARED_AWAITING_NATIVE_RESOURCE_BINDING_AND_ROOT_GO",
+  "native_model_started": false,
+  "previous_lifecycle_registration_sha256": "93d0283a2c84f7abf31e214f7e3780954e42a53fce54eb357f4e5cc85a049216",
+  "restored_archive_sha256": "b86c7da6e5a2e1ed85c0eb2c016ee681dae1a23e584526bd0f74f7d3d78fee4f",
+  "restored_registration_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+  "restored_taps_sha256": "69b95532896de66fa7c6065bbf4d14e84c32a362c5e8e13d3b4340d177c4035a",
+  "restored_array_sha256": "a20f8443caeaefb17d3f3bc7b342d0659a6168105b754fa5673de910fbb9f48e",
+  "restored_rows": 736,
+  "restored_raw_batches": 46,
+  "previous_terminal_evidence": {
+    "summary_sha256": "a603fab2766a95d9807a62fdf5ee3a17b7855b37f33a6ea0eab14b054f6534ab",
+    "completed_rows": 1875,
+    "native_taps_sha256": "533ff0beed228dc6c1d95f381b8b44a910b3942093c8a1a04cc984f82815803d",
+    "dataset_sha256": "be96e6719d3406c4c2619203b2a4a28851a96bf4cec7d3ce90ece48da7cdf976",
+    "raw_bytes_recovered": false,
+    "training_started": false
+  },
+  "changed_locations": {
+    "out": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-bounded-recovery-night",
+    "original_capture": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-native-capture-night-restored"
+  },
+  "native_parameters_changed": false,
+  "corpus_parameters_changed": false,
+  "objectives_or_quality_gates_changed": false,
+  "maximum_successful_new_batches_per_worker": 8,
+  "fresh_controls_required": true,
+  "historical_prefix_comparison_required": true,
+  "recomputed_final_hashes_must_be_compared_with_previous_terminal_hashes": true,
+  "every_new_closed_prefix_requires_lossless_storage_parts_and_sha_manifest": true,
+  "maximum_storage_part_bytes": 1048576,
+  "training_requires_root_go_and_actual_dataset_sha_verified_on_github": true,
+  "receiver_authority": 0,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}

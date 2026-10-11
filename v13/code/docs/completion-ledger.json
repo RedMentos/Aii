@@ -2213,6 +2213,38 @@
       "source_handoff_status": "REGISTERED_121_RECURSIVE_SOURCES_NOT_STARTED",
       "canonical_architecture_complete": false,
       "user_full_scope_complete": false
+    },
+    "night_durability_recovery": {
+      "schema": "v13-night-durability-recovery-v1",
+      "recorded_at": "2026-10-11T21:13:03.117905+00:00",
+      "cause": "automated_workspace_maintenance",
+      "verified_remote": "55a9e5175bbd77916945e0d4e560065598347e13",
+      "verified_remote_tree": "420b8ae296c569feb7e7ca925cce8d4f0553c4f6",
+      "source_zip_version": 3,
+      "phone_zip_version": 1,
+      "recovered_raw_tap_rows": 736,
+      "historical_complete_capture_terminal_proof_retained": true,
+      "historical_full_capture_raw_bytes_recovered": false,
+      "historical_handoff_completed_rows_observed": 4,
+      "handoff_four_raw_rows_recovered": false,
+      "dream_durable_completed_arms": 2,
+      "dream_expected_arms": 15,
+      "salvaged_git_blobs": [
+        {
+          "name": "dataset-metadata.zip",
+          "git_sha": "acb60b36dced59619d8b373352fd380370195c86",
+          "sha256": "fd003eeabcc12e13b72ab66a0ca13640cdfe696dfa7672ce12b64a992710e2e7"
+        },
+        {
+          "name": "dataset.json.gz",
+          "git_sha": "15bbc89d65adb2a4d71dc7ce98f15a740af5d95b",
+          "sha256": "ecba0ac0272fb0c8dbc21ce37858aa10fc8dc6c252c7d14107be14b552ebc1c1"
+        }
+      ],
+      "next_storage_policy": "closed evidence split into at most1MiB SHA256-bound Git parts, restore exact original bytes before use",
+      "native_resources_status": "PINNED_MODELS_RESTORED_RUNNER_BUILDING",
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
     }
   }
 }
