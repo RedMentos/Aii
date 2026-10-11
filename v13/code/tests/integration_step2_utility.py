@@ -21,6 +21,7 @@ from v13.proofs import archive_previous
 from v13.resources import device
 from v13.runtime import Runtime
 from v13.models import ModelManager
+from v13.memory_server import runtime_library_hashes
 from v13.utility import paired_utility,score_decision
 
 # Frozen before inference. Prior rules are never repeated directly to C3.
@@ -85,7 +86,8 @@ def installed_artifacts(installed):
         if path not in hash_cache:hash_cache[path]=file_hash(path)
         hashes[role]=hash_cache[path];revisions[role]=models.revision(role)
     runner=Path(os.environ.get('V13_LLAMA_SERVER',str(installed/'bin/llama-server')))
-    return {'model_sha256':hashes,'model_revisions':revisions,'runner_sha256':file_hash(runner)}
+    return {'model_sha256':hashes,'model_revisions':revisions,'runner_sha256':file_hash(runner),
+            'runner_runtime_libraries_sha256':runtime_library_hashes(runner)}
 
 def installed_links(home,installed):
     for name in ('models','bin'):
@@ -111,6 +113,7 @@ def prepare_base(home,installed,cfg,fixture):
         data['state_before_restart']=states(r);data['generation']=r.store.generation_id;data['session']=r.session;data['model_revisions']=r.revisions()
         data['model_sha256']={role:file_hash(r.models.path_for(role)) for role in ('B1_DETAIL','B2_GIST','C3_LANGUAGE')}
         data['runner_sha256']=file_hash(Path(os.environ.get('V13_LLAMA_SERVER',str(installed/'bin/llama-server'))))
+        data['runner_runtime_libraries_sha256']=runtime_library_hashes(Path(os.environ.get('V13_LLAMA_SERVER',str(installed/'bin/llama-server'))))
         data['integrity_before_restart']=not r.store.integrity(True);data['status']='RECORDED'
     except Exception as exc:
         data.update(error_type=type(exc).__name__,error=str(exc)[:500],state_after_failed_preparation=states(r))
@@ -290,12 +293,16 @@ def run(installed,out,fixture_limit=None,resume=False):
                 for role,expected in prep['model_sha256'].items():
                     if file_hash(check_models.path_for(role))!=expected:raise ValueError('Resume model bytes changed: '+role)
                 if file_hash(Path(os.environ.get('V13_LLAMA_SERVER',str(installed/'bin/llama-server'))))!=prep['runner_sha256']:raise ValueError('Resume native runner bytes changed')
+                if runtime_library_hashes(Path(os.environ.get('V13_LLAMA_SERVER',str(installed/'bin/llama-server'))))!=prep.get('runner_runtime_libraries_sha256',{}):
+                    raise ValueError('Resume native runtime library bytes changed')
             if prep is None:
                 if base.exists():base.rename(base.with_name(base.name+'.unfinished-preparation-'+str(time.time_ns())))
                 try:
                     prep=prepare_base(base,installed,cfg,fixture);prep['checkpoint_hashes']=checkpoint_hashes(base)
                     if prep['status']=='RECORDED' and (prep['model_sha256']!=report['installed_artifacts']['model_sha256'] or prep['runner_sha256']!=report['installed_artifacts']['runner_sha256']):
                         prep.update(status='ERROR',error_type='ArtifactChanged',error='Native artifact changed during preparation')
+                    if prep['status']=='RECORDED' and prep['runner_runtime_libraries_sha256']!=report['installed_artifacts']['runner_runtime_libraries_sha256']:
+                        prep.update(status='ERROR',error_type='ArtifactChanged',error='Native runtime libraries changed during preparation')
                     if prep['status']=='RECORDED':prep['sealed_checkpoint']=seal_checkpoint(base,prep['checkpoint_hashes'])
                 except Exception as exc:prep={'status':'ERROR','error_type':type(exc).__name__,'error':str(exc)[:500]}
                 prep.update(fixture=fixture['id'],elapsed_s=time.monotonic()-started);report['preparations'].append(prep);save()
@@ -317,7 +324,8 @@ def run(installed,out,fixture_limit=None,resume=False):
             if prep['status']=='RECORDED':shutil.rmtree(base,ignore_errors=True)
             else:prep['failed_checkpoint']=str(base);save()
         report['paired']=paired_utility(report['rows'],[f['id'] for f in FIXTURES]);report['source_unchanged']=report['source_hashes']==source_hashes()
-        report['all_structural_checks_passed']=report['source_unchanged'] and all(r['status']=='RECORDED' for r in report['rows'])
+        report['installed_artifacts_unchanged']=report['installed_artifacts']==installed_artifacts(installed)
+        report['all_structural_checks_passed']=report['source_unchanged'] and report['installed_artifacts_unchanged'] and all(r['status']=='RECORDED' for r in report['rows'])
         report['same_weight_file']=bool(report['preparations']) and all(p['status']=='RECORDED' and p['model_sha256']['B1_DETAIL']==p['model_sha256']['B2_GIST'] for p in report['preparations'])
         report['scoped_utility_gate_pass']=report['paired']['scoped_utility_gate_pass'] and report['all_structural_checks_passed']
         # WP-N11: with B2 = its own pinned weights (models.json 'gist'), both_* rows are the true two-body control.
