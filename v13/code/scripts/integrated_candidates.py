@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -44,8 +44,28 @@ def native_cache_bounds(sources):
     return out
 
 
+WIRE_JSON = '''def wire_json(v):
+    """Request body for llama-server. Unlike common.dumps it keeps key order: the server builds the JSON-schema
+    grammar in property order, so sorting would make the model decide e.g. `action` before `options` or
+    `needs_reentry` before `summary` (WP-W1). Hashes/logs keep using the sorted common.dumps."""
+    return json.dumps(v,ensure_ascii=False,separators=(",",":"),allow_nan=False)
+'''
+
+
+def schema_order(sources):
+    """2026-10-12 thread H (WP-W1): llama-server request bodies keep schema key order."""
+    out = dict(sources)
+    t = out['v13/runners.py']
+    t = _replace(t, 'from .resources import process_memory\n', 'from .resources import process_memory\n'+WIRE_JSON)
+    t = _replace(t, 'conn.request(method,path,dumps(payload)', 'conn.request(method,path,wire_json(payload)')
+    t = _replace(t, "conn.request('POST','/completion',dumps(payload|", "conn.request('POST','/completion',wire_json(payload|")
+    t = _replace(t, 'conn.request("POST","/completion",dumps(payload)', 'conn.request("POST","/completion",wire_json(payload)')
+    out['v13/runners.py'] = t
+    return out
+
+
 def _later(sources):
-    return native_cache_bounds(sources)
+    return schema_order(native_cache_bounds(sources))
 
 
 def _baseline(root):
