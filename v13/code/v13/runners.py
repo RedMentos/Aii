@@ -15,6 +15,11 @@ import threading
 import time
 from .common import APP,dumps,digest,atomic_write,Cancelled,Unavailable,Limits
 from .resources import process_memory
+def wire_json(v):
+    """Request body for llama-server. Unlike common.dumps it keeps key order: the server builds the JSON-schema
+    grammar in property order, so sorting would make the model decide e.g. `action` before `options` or
+    `needs_reentry` before `summary` (WP-W1). Hashes/logs keep using the sorted common.dumps."""
+    return json.dumps(v,ensure_ascii=False,separators=(",",":"),allow_nan=False)
 def check(cancel,deadline):
     if cancel.is_set():raise Cancelled("Abgebrochen")
     if time.monotonic()>=deadline:raise Limits("Zeitbudget erreicht")
@@ -80,7 +85,7 @@ class LlamaRunner:
         if remaining<=0:raise Limits('Zeitbudget erreicht')
         conn=http.client.HTTPConnection("127.0.0.1",self.port,timeout=max(.001,remaining if timeout_cap is None else min(timeout_cap,remaining)))
         try:
-            conn.request(method,path,dumps(payload).encode() if payload is not None else None,{"Authorization":"Bearer "+self.key,"Content-Type":"application/json"});r=conn.getresponse();data=r.read()
+            conn.request(method,path,wire_json(payload).encode() if payload is not None else None,{"Authorization":"Bearer "+self.key,"Content-Type":"application/json"});r=conn.getresponse();data=r.read()
             if r.status!=200:raise RuntimeError(f"Runner HTTP {r.status}: {data[:200].decode(errors='replace')}")
             return json.loads(data)
         finally:conn.close()
@@ -318,7 +323,7 @@ class LlamaRunner:
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start()
         try:
-            conn.request('POST','/completion',dumps(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})
+            conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})
             response=conn.getresponse();raw=response.read();check(cancel,deadline)
             if response.status!=200:raise Unavailable('Native output step HTTP '+str(response.status))
             result=json.loads(raw)
@@ -365,7 +370,7 @@ class LlamaRunner:
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None
         try:
-            conn.request("POST","/completion",dumps(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
+            conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
             if response.status!=200:raise RuntimeError(f"Inferenz HTTP {response.status}: {response.read(200).decode(errors='replace')}")
             while True:
                 check(cancel,deadline);line=response.readline()
