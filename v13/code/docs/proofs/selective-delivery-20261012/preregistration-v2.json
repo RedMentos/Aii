@@ -1,0 +1,18 @@
+{
+ "schema": "V13_SELECTIVE_DELIVERY_V2_PREREGISTRATION_V1",
+ "utc": "2026-10-12T07:28:50.965539+00:00",
+ "follows": "bench-results/selective-delivery-20261012 (SELECTIVE_DOES_NOT_WIN, commit af1150f/8655efd)",
+ "script_sha256": "d230abfd991fabebbbe75450c2feeae8c43fddac3a282ccb246acc55bc65a035",
+ "v1_script_sha256": "6588eedca94cca5c32156fa48db5bad40189e28df77f2d29ed56e1bf523c01ad",
+ "corpus_file_sha256": "10d3b206286677da34a4b431c865016ae9d7ff3c526b054d481f0753aae4595e",
+ "trace_sha256": "cb079909f57e78eb7202cc2681aace24e7698ba09012bb503442f847f6c95011 (v1 trace, reused unchanged)",
+ "verification": "each of the 20 trace facts asked once with its stored question, trace only, live system message; VERIFIED if answer hits keys",
+ "arms": [
+  "exact (re-measured)",
+  "selective (v1 rule, re-measured)",
+  "selective_verified"
+ ],
+ "decision_rule": "same four criteria as v1 for selective_verified vs exact: paired facts+paraphrase losses<=wins, near-miss leak <= exact, prompt tokens < exact, forgotten probes <= exact (base from v1 report)",
+ "expectation_stated_before_run": "verification can only remove cause (2) (wrong trace values); cause (1) same-frame key interference on non-trace facts remains, so a loss is plausible",
+ "hardware": "Linux x86_64 cloud CPU, not Redmi"
+}
