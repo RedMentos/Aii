@@ -41,3 +41,12 @@
   Belege `docs/proofs/continuation-20261012/action-jepa-round4-midlayer/README.md`.
 - Bau des Werkzeugs: `pip download llama-cpp-python==0.3.36 --no-binary :all:`, im `vendor/llama.cpp` cmake-Target `llama`,
   dann `g++ -O2 -std=c++17 native_layer_taps.cpp -I…/include -I…/ggml/include -L…/build/bin -lllama -lggml -lggml-base`.
+
+## Runde 5 (gleicher Tag): echte Werkzeug-Aktionen
+
+- `scripts/action_jepa_round5_tools.py` (world/capture/export) + 2 Tests. v1 undurchführbar (Textkollisionen, 32/400), v2 vorregistriert.
+- Ergebnis: **alle 24 Läufe FAIL.** Mittelwert-Delta sehr stark, gelernte Köpfe 2–128× schlechter; Training verschlechtert
+  sogar den bei Mittelwert-Delta startenden Residuum-Arm. Belege `docs/proofs/continuation-20261012/action-jepa-round5-tools/README.md`.
+- Schluss für die ganze Linie (Runden 1–5): mit dem bestehenden affinen Objective ist §99 „JEPA hilft“ für Handlungsfolgen nicht
+  belegbar. Nächster sinnvoller Schritt wäre ein geändertes Objective (ohne Varianz-Untergrenze bzw. mit Mittelwert-Delta als fester
+  Basis und regularisiertem Rest), getrennt vorregistriert.
