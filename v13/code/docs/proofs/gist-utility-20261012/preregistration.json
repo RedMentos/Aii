@@ -1,0 +1,19 @@
+{
+ "schema": "V13_G1B_GIST_UTILITY_PREREGISTRATION_V1",
+ "utc": "2026-10-12T07:35:57.585082+00:00",
+ "script_sha256": "e2bb92a5611987542b9b2b03616ab5521b28b6b7a5f8876e89b329aa6b60666c",
+ "corpus_sha256": "1872a3adf6e51e05e604053539d50ae05c955b221f78f1951d1f68e2a12f926c",
+ "gist_sha256": "ea68795f48c78a13019d3965744bbbc11974b46afc8697a75ee16d34e0bee4d2",
+ "cognition_sha256": "d68df49a947b7211a5cf273a29ca620b0f9a7b5fd9d75497cf46c04e9504b5d7",
+ "model": "ggml-org/Qwen3.5-0.8B-GGUF@8fea6208 Q4_0 sha256 57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+ "runner": "llama.cpp b10964 linux x86_64 release binary",
+ "arms": [
+  "fixed960 (runtime default view)",
+  "event960 (WP-N8 event segments)",
+  "gist (Age-0 gist.plan 8/12)"
+ ],
+ "n": 36,
+ "decision_rule": "GIST_HELPS_CANDIDATE only if gist vs fixed960: paired hit wins > losses AND quote validity not lower AND prompt tokens <= 1.1x; else GIST_NO_GAIN",
+ "consequence": "gist stays SHADOW either way",
+ "hardware": "Linux x86_64 cloud CPU, not Redmi"
+}
