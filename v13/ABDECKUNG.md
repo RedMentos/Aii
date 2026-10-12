@@ -132,7 +132,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Action Gate + Sicherheit vor Aktion | §6.4, §6.4.1 | ✅ | C5 + IH-H29; Schreib-Werkzeug im Sandbox-Modus mit Dry-Run-Vorschau, Freigabe pro Aufruf (`:tx approve`), Rücknahme (`:tx undo`) im Live-Turn (WP-T7); Netz/externe Wirkung nur Vorschlag | WP-K, WP-N4, WP-T7 |
 | Kontrollierte Exploration | §6.6 | ✅ | `agi/curiosity.py` im Lauf (Beobachtung je Turn, Wahl im Job `learn_medium`), Age-gegatet: bei Age 0 bewusst aus | WP-AG5, WP-T8 |
 | Fast-Forward / Kleinhirn | §7.1, §85.6, §75 | ✅ | `fastforward.py`: Vorwärtsmodell + Prozeduralisierung mit Gate, Reflexe in `reflex.py` | WP-F |
-| World-Model / World-JEPA | §7.2, §92.2, §70 | 🟡 | kontrollgeerdetes Weltmodell über eigene digitale Übergänge (`world_model.py`), `world_worker.py`, `agi/grounding.py`; kein latentes World-JEPA im Körper | WP-AG2, WP-T8 |
+| World-Model / World-JEPA | §7.2, §92.2, §70 | 🟡 | kontrollgeerdetes Weltmodell über eigene digitale Übergänge (`world_model.py`), `world_worker.py`, `agi/grounding.py`; kein latentes World-JEPA im Körper; 2026-10-12 Thread M: latenter Werkzeug-Folgen-Prädiktor (Action-JEPA Runden 7/8) im Live-Werkzeugpfad, SHADOW, `toolforecast.py`, live in den geschlossenen Welten bestätigt | WP-AG2, WP-T8 |
 | Control-grounded World Learning | §7.2.1 | ✅ | forward (Ensemble), inverse, state-align (Probe auf gelernte Latents, sonst ehrlich UNAVAILABLE), outcome je Hold-out (`world_model.fit`) | WP-AG2, WP-T8 |
 | Counterfactual + Coverage | §7.2.2 | ✅ | Coverage/OOD/Ensemble-Streuung → Konfidenz, Label SIMULATION_SUPPORTED/UNCERTAIN, nie REAL (`world_model.counterfactual`) | WP-AG2, WP-T8 |
 | Self Model | §7.3 | ✅ | `selfmodel.py` Aggregat (Skills, Tools, Age, Lernstatus, Ziele, Gesundheit, Grenzen) | WP-N9 |
@@ -300,7 +300,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | G12 Mobile-Optimierung | 🟡 | WP-R |
 | G12B Redmi-6GB-Validierung | ❌ | WP-R |
 | G12C Needle-Benchmark | ✅ (`c2_benchmark.py`, `bench-results/c2-benchmark-20261010`: Needle bleibt C2, gelernter Routing-Kopf) | WP-V7 |
-| G13 Langlauf + Event-Scheduler | 🟡 | WP-E, WP-R |
+| G13 Langlauf + Event-Scheduler | 🟡 (2026-10-12 Thread N: `scripts/longrun_soak.py` simulierte Tage mit Neustarts über den echten Turn-/Scheduler-/Sleep-Pfad, 7 Tage PASS in der Cloud; Befund Wach-Replays verdrängten den Nacht-Schlaf behoben; Redmi-`--native`-Langlauf offen) | WP-N18, WP-E, WP-R |
 | §24 Kern-Benchmarks (34 Stück) | 🟡: alle 34 in `specs/benchmarks.json` auf Tests/Artefakte abgebildet (`:gates`, `measure_suite.py`); 24.19 braucht MoE, 24.31 nur Lab, 24.14/24.33 brauchen Redmi | WP-N12 |
 | §31/§79 R0–R9 Kernexperimente | 🟡: R0 (`timescale_gate.py`), R1 (STEP2 FAIL), R5 (WP-D ohne Messung); R2–R4, R6–R9 fehlen | **WP-N12** |
 | §99 Pflicht-Ablationen | 🟡 | WP-N12 |

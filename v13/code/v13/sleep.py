@@ -526,7 +526,11 @@ class SleepRuntime:
             if idle>=policy['sleep_idle_s'] and now-st['last_full']>=policy['sleep_interval_s']:
                 self.scheduler.post('IDLE',action='sleep_full',dedup='idle-sleep-full')
             elif idle>=policy['wake_replay_idle_s'] and self.cycle.queue.due(st,now,min_priority=policy['wake_min_priority']):
-                self.scheduler.post('REPLAY_DUE',action='wake_replay',dedup='wake-replay')
+                # G13 soak finding: one wake replay per idle period. Back-to-back wake replays (Age-0 budget: one item
+                # each) outranked IDLE and used up the burn-out budget, so the night's full sleep never ran.
+                period=round(now-idle,3)
+                if self.r.store.meta('sleep_wake_replay_period',None)!=period and self.scheduler.post('REPLAY_DUE',action='wake_replay',dedup='wake-replay'):
+                    self.r.store.set_meta('sleep_wake_replay_period',period)
             if idle>=policy['wake_replay_idle_s']:
                 try:  # WP-T10 §14.3: medium timescale (authority review) on idle, at most every authority.MEDIUM_S
                     from .authority import medium_due
