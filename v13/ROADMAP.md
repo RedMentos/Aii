@@ -945,3 +945,6 @@ OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/D
 
 ### Anspruch 2026-10-12 17:50Z — Thread „Nächste offene Pakete M“: Werkzeug-Vorhersage auf dem Redmi messbar machen
 - **In Arbeit (Thread M):** Tap-Werkzeug gegen die installierte, gepinnte llama.cpp-b10964-Laufzeit bauen (wie `test_native_prefill_port.prepare_worker`), Parität des Kandidaten mit diesem Encoder in der Cloud prüfen, ein Befehl `TESTEN_TOOLFORECAST.sh` (Bau → `install` mit Paritäts-Gate → vorregistrierte Live-Prüfung → Bericht in `exports/`) für den Nutzer am Handy. Nur neue Skripte, keine Änderung an `runners.py`/`tools.py`. Branch `claude/project-thread-cui1zm`.
+
+### Anspruch 2026-10-12 22:20Z — Thread „Nächste offene Pakete O“: B2-Offer wird von body_state gekapert (STEP2-Produzent)
+- **In Arbeit (Thread O):** Befund aus STEP2-W1: 41/50 B2-Offers (Qwen3.5-0.8B) fassen nur den eigenen Zustand zusammen („NO_COMPLETED_OWN_DIGITAL_ACTIONS … no prior knowledge“), obwohl die frühere Regel in 24/30 „Regel behalten“-Offers im Kontext liegt. Vorregistrierte Ablation: STEP2 (unveränderter Harness) mit `body_state` für B2 ausgeblendet (Laufzeit-Ersatz im Wrapper, keine Live-Änderung), dann Werkzeug-Replay. Ändert sich der Regel-Transport? Branch `claude/project-thread-yrrnjn`.
