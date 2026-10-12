@@ -34,7 +34,25 @@ C-native verdient breitere Autorität für diese Aufgabenarten. Die heuristische
 nicht umgesetzt): Wecken nur bei Zusammenfassungs-/Summenprüfung und dann beide Körper; einen Wake-Kopf auf genau
 diesen gepaarten Labels (C3 allein bestanden/nicht bestanden) trainieren und gegen C3 allein auf frischen Aufgaben prüfen.
 
-## Grenzen
-Generierte englische Aufgaben, Regex-Prüfung der Endantwort, eine Saat, gierige Bench-Dekodierung statt anti_echo,
+## Teil 2: gelernter Weck-Kopf, vorregistriert, frische Aufgaben (Saat 11)
+Vorregistrierung `learned-wake-prereg.json` (sha256 6ebc2036…) vor dem Lauf: logistischer Kopf auf den 7
+Aufwandssignalen, Label = immer A+B besteht und C3 allein scheitert (Training: Saat-7-Lauf `r4.json`).
+Frischer Lauf `r4-fresh-seed11.json` (sha256 908cc6bf…), Bewertung `learned-wake-report.json`
+(`scripts/r4_learned_wake.py evaluate`, kontrafaktisch aus den gemessenen Armen):
+
+| Politik | bestanden/60 | s/Turn | Weckrate |
+|---|---|---|---|
+| C3 allein | 42 (0,70) | 5,3 | 0 |
+| Heuristik | 33 (0,55) | 23,0 | 1,0 |
+| immer A+B | 38 (0,633) | 53,5 | 1,0 |
+| gelernter Kopf | 42 (0,70) | 5,3 | 0 |
+| Orakel (bester von C3/A+B je Aufgabe) | 45 | – | – |
+
+- **Replikation:** C3 allein schlägt die Heuristik erneut (gepaart 12:3, p 0,035); gegen immer A+B 7:3 (p 0,34).
+- **Gelernter Kopf: NOT_SUPPORTED** (Regel: netto ≥3 gegen C3 allein). 6 der 7 Aufwandssignale sind auf diesen
+  Aufgaben konstant, der Kopf weckt nie und ist damit identisch mit C3 allein. Die heutigen Signale tragen keine
+  Information darüber, wann Körper helfen; selbst das Orakel gewinnt nur 3 Aufgaben (5 %).
+- Folge: keine Laufzeitänderung. Ein besserer Weck-Kopf bräuchte andere Merkmale (z. B. C3-Unsicherheit aus Logits).
+Generierte englische Aufgaben, Regex-Prüfung der Endantwort, zwei Saaten (7, 11), gierige Bench-Dekodierung statt anti_echo,
 keine Energie-/Nutzerkorrektur-Daten, Cloud-CPU-Zeiten (kein Redmi). Das `status`-Feld fehlt im Audit-Export
 (alle Turns liefen bis zur Antwort, keine Fristschnitte beobachtet).

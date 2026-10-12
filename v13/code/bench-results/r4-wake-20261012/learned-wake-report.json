@@ -1,0 +1,109 @@
+{
+ "schema": "v13-r4-learned-wake-report-v1",
+ "prereg_sha256": "6ebc2036afc9aacf0af54d1a2f5b1d05475b7b3e41aab89188a0a507fc3904a7",
+ "fresh_report_sha256": "908cc6bf44867190851855bd1f48445f026255f09998ff90af3a22351baf6afb",
+ "n": 60,
+ "policies": {
+  "c_native_only": {
+   "pass": 42,
+   "pass_rate": 0.7,
+   "mean_turn_s": 5.31
+  },
+  "heuristic": {
+   "pass": 33,
+   "pass_rate": 0.55,
+   "mean_turn_s": 22.95
+  },
+  "always_ab": {
+   "pass": 38,
+   "pass_rate": 0.633,
+   "mean_turn_s": 53.51
+  },
+  "learned_head": {
+   "pass": 42,
+   "pass_rate": 0.7,
+   "mean_turn_s": 5.31,
+   "wake_rate": 0.0
+  }
+ },
+ "oracle_pass": 45,
+ "paired": {
+  "learned_vs_c_native": {
+   "first_only": 0,
+   "second_only": 0,
+   "net": 0,
+   "sign_test_p": 1.0
+  },
+  "learned_vs_heuristic": {
+   "first_only": 12,
+   "second_only": 3,
+   "net": 9,
+   "sign_test_p": 0.0352
+  }
+ },
+ "verdict": "NOT_SUPPORTED",
+ "wake_choices": {
+  "summary00": false,
+  "summary01": false,
+  "summary02": false,
+  "summary03": false,
+  "summary04": false,
+  "summary05": false,
+  "summary06": false,
+  "summary07": false,
+  "summary08": false,
+  "summary09": false,
+  "summary10": false,
+  "summary11": false,
+  "summary12": false,
+  "summary13": false,
+  "summary14": false,
+  "long00": false,
+  "long01": false,
+  "long02": false,
+  "long03": false,
+  "long04": false,
+  "long05": false,
+  "long06": false,
+  "long07": false,
+  "long08": false,
+  "long09": false,
+  "long10": false,
+  "long11": false,
+  "long12": false,
+  "long13": false,
+  "long14": false,
+  "notes00": false,
+  "notes01": false,
+  "notes02": false,
+  "notes03": false,
+  "notes04": false,
+  "notes05": false,
+  "notes06": false,
+  "notes07": false,
+  "notes08": false,
+  "notes09": false,
+  "notes10": false,
+  "notes11": false,
+  "notes12": false,
+  "notes13": false,
+  "notes14": false,
+  "compare00": false,
+  "compare01": false,
+  "compare02": false,
+  "compare03": false,
+  "compare04": false,
+  "compare05": false,
+  "compare06": false,
+  "compare07": false,
+  "compare08": false,
+  "compare09": false,
+  "compare10": false,
+  "compare11": false,
+  "compare12": false,
+  "compare13": false,
+  "compare14": false
+ },
+ "phone_measured": false,
+ "canonical_gate_pass": false
+}

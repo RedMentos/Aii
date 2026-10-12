@@ -1,0 +1,2440 @@
+{
+ "kind": "V13_R4_WAKE_BENCH",
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "task_seed": 11,
+ "fixtures": [
+  "summary00",
+  "summary01",
+  "summary02",
+  "summary03",
+  "summary04",
+  "summary05",
+  "summary06",
+  "summary07",
+  "summary08",
+  "summary09",
+  "summary10",
+  "summary11",
+  "summary12",
+  "summary13",
+  "summary14",
+  "long00",
+  "long01",
+  "long02",
+  "long03",
+  "long04",
+  "long05",
+  "long06",
+  "long07",
+  "long08",
+  "long09",
+  "long10",
+  "long11",
+  "long12",
+  "long13",
+  "long14",
+  "notes00",
+  "notes01",
+  "notes02",
+  "notes03",
+  "notes04",
+  "notes05",
+  "notes06",
+  "notes07",
+  "notes08",
+  "notes09",
+  "notes10",
+  "notes11",
+  "notes12",
+  "notes13",
+  "notes14",
+  "compare00",
+  "compare01",
+  "compare02",
+  "compare03",
+  "compare04",
+  "compare05",
+  "compare06",
+  "compare07",
+  "compare08",
+  "compare09",
+  "compare10",
+  "compare11",
+  "compare12",
+  "compare13",
+  "compare14"
+ ],
+ "arms": {
+  "c_native_only": {
+   "n": 60,
+   "pass_rate": 0.7,
+   "by_kind": {
+    "compare": 0.333,
+    "long": 1.0,
+    "notes": 0.867,
+    "summary": 0.6
+   },
+   "wake_rate": 0.0,
+   "offers_per_turn": 0.0,
+   "mean_turn_s": 5.31,
+   "learned_wake_turns": 0,
+   "status_not_final": 0
+  },
+  "always_ab": {
+   "n": 60,
+   "pass_rate": 0.633,
+   "by_kind": {
+    "compare": 0.333,
+    "long": 0.933,
+    "notes": 0.667,
+    "summary": 0.6
+   },
+   "wake_rate": 1.0,
+   "offers_per_turn": 2.0,
+   "mean_turn_s": 53.51,
+   "learned_wake_turns": 0,
+   "status_not_final": 0
+  },
+  "heuristic": {
+   "n": 60,
+   "pass_rate": 0.55,
+   "by_kind": {
+    "compare": 0.333,
+    "long": 0.933,
+    "notes": 0.6,
+    "summary": 0.333
+   },
+   "wake_rate": 1.0,
+   "offers_per_turn": 1.083,
+   "mean_turn_s": 22.95,
+   "learned_wake_turns": 0,
+   "status_not_final": 0
+  }
+ },
+ "escalation": {
+  "heuristic": {
+   "rescuable_tasks": 3,
+   "woke_on_rescuable": 3,
+   "escalation_recall": 1.0,
+   "c_native_solvable": 42,
+   "spared_on_solvable": 0,
+   "passed_rescuable": 1
+  }
+ },
+ "reproducibility": {},
+ "paired": {
+  "c_native_only_vs_always_ab": {
+   "n": 60,
+   "first_only_pass": 7,
+   "second_only_pass": 3,
+   "sign_test_p": 0.3438
+  },
+  "c_native_only_vs_heuristic": {
+   "n": 60,
+   "first_only_pass": 12,
+   "second_only_pass": 3,
+   "sign_test_p": 0.0352
+  },
+  "always_ab_vs_heuristic": {
+   "n": 60,
+   "first_only_pass": 11,
+   "second_only_pass": 6,
+   "sign_test_p": 0.3323
+  }
+ },
+ "rows": [
+  {
+   "fixture": "summary00",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 18.1,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The correct total is **140 euros** (69 + 77 + 87)."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 3.94,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The correct total is **217 euros** (92 + 90 + 35)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 7.03,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The correct total is **196 euros** (23 + 80 + 93).\n\nThe discrepancy arises because the user's request does not explicitly state that the \"Total\" line must be calculated from the individual items listed; it only provides the breakdown and asks for the sum. Therefore, the summary line should reflect the actual total of the listed expenses rather than a hypothetical or g"
+  },
+  {
+   "fixture": "summary03",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 6.04,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The calculation should be: 95 (snacks) + 90 (projector) + 95 (cleaning) = 280 euros. The current total of 270 euros is off by 10 euros."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 4.03,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The correct total is 87 euros (19 + 16 + 36)."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.63,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The calculation is: 53 + 68 + 87 = 208 euros. The stated total of 198 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 3.72,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The correct total is 119 euros (75 + 12 + 22)."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.32,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The calculation is: 44 + 52 + 41 = 137 euros. The stated total of 147 euros is wrong."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 3.72,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The correct total is **166 euros** (63 + 25 + 49)."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 4.03,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The correct total is 93 euros (39 + 38 + 18)."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 6.34,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The items listed are not in a single line; they should be listed as separate lines with their respective amounts. Additionally, the total of 187 euros does not match the sum of the individual items (21 + 84 + 92 = 197 euros)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.54,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The calculation is: 51 + 54 + 13 = 118 euros. The stated total of 138 euros is wrong."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.72,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The calculation is: 24 + 13 + 19 = 56 euros. The stated total of 76 euros is wrong."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 3.72,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The correct total is **192 euros** (69 + 77 + 36)."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.63,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The calculation is: 62 + 65 + 39 = 166 euros. The stated total of 146 euros is wrong."
+  },
+  {
+   "fixture": "long00",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 12.24,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 942 bicycles in Malmo."
+  },
+  {
+   "fixture": "long01",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.73,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 222 bicycles in Cork."
+  },
+  {
+   "fixture": "long02",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 9.64,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 970 bicycles in **Ghent**.\n\n*Note: The text mentions a fire drill occurred on Tuesday afternoon, but does not specify the date of the survey or the specific day of the week for the bicycle count.*"
+  },
+  {
+   "fixture": "long03",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 8.75,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The quarterly newsletter was delayed by one day, but the survey counted exactly 135 bicycles in Porto."
+  },
+  {
+   "fixture": "long04",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 5.74,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 972 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long05",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 5.13,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 957 bicycles at the station in Porto."
+  },
+  {
+   "fixture": "long06",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 5.64,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 614 bicycles at the station in Brno."
+  },
+  {
+   "fixture": "long07",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 5.94,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 381 bicycles parked at the station in Lyon."
+  },
+  {
+   "fixture": "long08",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 5.23,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 299 bicycles in Lyon."
+  },
+  {
+   "fixture": "long09",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 5.24,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 406 bicycles at the station in Linz."
+  },
+  {
+   "fixture": "long10",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.92,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "181 bicycles were counted in Porto."
+  },
+  {
+   "fixture": "long11",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 5.24,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 490 bicycles in Linz."
+  },
+  {
+   "fixture": "long12",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 5.43,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 724 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long13",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 7.24,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 732 bicycles in Graz."
+  },
+  {
+   "fixture": "long14",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 8.55,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 197 bicycles parked at the station in Linz."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.62,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 39, according to the 16 March note."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 7.75,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent note is from March 19, as it was the later date in the sequence."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 7.28,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 55, according to the 20 March note."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 2.92,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 56, according to the 14 March note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 2.62,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 82 members."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 3.02,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 34, as it was recorded on 25 March."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 3.23,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 33, as it comes from the 8 March note."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 3.22,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 68, according to the 22 March note."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 6.64,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent note is from March 5th (10 members)."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 6.33,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 51, according to the 25 March note."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 2.83,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 51, according to the 13 March note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 2.93,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 66, according to the 26 March note."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 2.93,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 44, according to the 19 March note."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 2.82,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 55, according to the 27 March note."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 5.94,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 26."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.12,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The city with the most rain is Porto (740 mm). The city with the least rain is Lyon (605 mm). The difference is 135 mm."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 3.62,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Ghent has the most rain (176 mm) compared to Turin (132 mm). The difference is 44 mm."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 4.23,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Cork had the most rain (684 mm) compared to Graz (462 mm) and Malmo (416 mm). The difference is 222 mm."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 4.24,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Cork has the most rain (514 mm) compared to Bremen (294 mm). The difference is 220 mm (514 - 294)."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 4.23,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Graz has the most rain (897 mm) compared to Malmo (244 mm) and Porto (148 mm). The difference is 649 mm."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 4.12,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The city with the most rain is Cork (770 mm). The city with the least rain is Linz (745 mm). The difference is 25 mm."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.42,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Ghent has the least rain (304 mm). The city with the most rain is Linz (586 mm), which is **282 mm** more than Ghent."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 7.26,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Bremen had the most rain at 647 mm. Turin had the least at 137 mm. That\u2019s a difference of 510 mm."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 3.83,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Bremen had the most rain at 897 mm, while Porto had the least at 454 mm. That\u2019s a difference of 443 mm."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 8.34,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Lyon has the highest rainfall at 502 mm (more than Cork by 294 mm).\n\n*Note: This is based on the provided data; actual values may vary.*"
+  },
+  {
+   "fixture": "compare10",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.53,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Linz has the least rain (233 mm). Lyon has the most rain (564 mm). The difference is 564 - 233 = 331 mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.82,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The city with the most rain is Brno (768 mm). The difference between the highest and lowest cities is 105 mm (768 - 663 = 105)."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 4.43,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Lyon has the highest rainfall at 434 mm (vs 766 in Ghent). The difference is 332 mm (766 - 434)."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 3.95,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The city with the most rain is Cork (499 mm). The difference between Cork and Linz is 151 mm."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 4.03,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Malmo had the most rain (368 mm) compared to Ghent (116 mm). The difference is 252 mm."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 55.74,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The correct total is **140 euros** (69 + 77 + 87)."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 56.63,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Yes, the total is correct. The calculation (92 + 90 + 35) equals 197 euros."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 53.75,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The calculation (23 + 80 + 93 = 196) does not match the stated total of 176."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 60.16,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The calculation is: 95 (snacks) + 90 (projector) + 95 (cleaning) = 280 euros. The current total of 270 euros is missing one item."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 56.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the total is incorrect. The sum of 19 + 16 + 36 equals 61 euros, but the text states \"Total: 61 euros.\" Therefore, the summary line is **correct**."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 57.85,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary line is incorrect. The calculation is: 53 + 68 + 87 = 208 euros. The stated total of 198 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 51.61,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The total should be 75 + 12 + 22 = 109 euros."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 48.0,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The calculation is: 44 + 52 + 41 = 137 euros. The stated total of 147 euros is wrong."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 48.53,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The correct total is 187 euros (63 + 25 + 49)."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 45.53,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The calculation should be: 39 + 38 + 18 = 75 euros. The stated total of 115 euros is wrong."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 56.34,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The calculation is: 21 + 84 + 92 = 197 euros. The text states 187 euros, which is wrong."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 56.24,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The sum of the individual items (51 + 54 + 13) equals 118 euros, not 138."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 55.31,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The sum of the individual items (24 + 13 + 19) equals 56 euros, not 76."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 49.73,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The calculated total is 192 euros (69 + 77 + 36), not 172."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 55.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "No, the summary is incorrect. The calculation is: 62 + 65 + 39 = 166 euros. The current total of 146 euros does not match the sum of the individual items."
+  },
+  {
+   "fixture": "long00",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 60.98,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The notes mention 942 bicycles were counted in Malmo."
+  },
+  {
+   "fixture": "long01",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 51.2,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey counted exactly 222 bicycles in Cork."
+  },
+  {
+   "fixture": "long02",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 51.6,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The count is **970** bicycles, located in **Ghent**."
+  },
+  {
+   "fixture": "long03",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 55.71,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The workshop had 135 bicycles counted in Porto."
+  },
+  {
+   "fixture": "long04",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 60.07,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey recorded 972 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "long05",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 56.45,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The workshop recorded 957 bicycles in Porto."
+  },
+  {
+   "fixture": "long06",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 59.41,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The workshop in Brno had 614 bicycles parked."
+  },
+  {
+   "fixture": "long07",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 50.97,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey counted 381 bicycles in Lyon."
+  },
+  {
+   "fixture": "long08",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 50.59,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey counted 299 bicycles in Lyon."
+  },
+  {
+   "fixture": "long09",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 56.62,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey recorded 406 bicycles parked at the station in Linz."
+  },
+  {
+   "fixture": "long10",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 55.52,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey counted exactly 181 bicycles in Porto."
+  },
+  {
+   "fixture": "long11",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 57.55,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey counted exactly 490 bicycles parked at the station in Linz."
+  },
+  {
+   "fixture": "long12",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 55.74,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey recorded 724 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long13",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 53.61,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The text states \"In Graz\" but does not explicitly state the number of bicycles or the city name (e.g., \"Graz is the capital\"). The answer is uncertain based on the provided text."
+  },
+  {
+   "fixture": "long14",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 53.72,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey counted exactly 197 bicycles in Linz."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 56.15,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The latest information states that Elif's team has 39 members, as noted on 16 March."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 54.13,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The discrepancy between the two notes indicates a potential error in the source text or the user's request itself, as they contradict each other directly. Without external verification or clarification, it is impossible to definitively determine which number is the most recent one based solely on the provided text."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 58.07,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The latest information comes from the March 20 note."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 54.24,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The latest note is from 9 March, stating 50 members."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 54.11,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The latest information indicates the team size changed from 57 to 82."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 53.49,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The latest information indicates the team size changed from 15 to 34, with the most recent count being 34 members."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 49.39,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The most recent note is from 1 March."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 54.71,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The latest figure provided is 68 members from the note on 22 March."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 55.9,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The text explicitly states that the **10 March** note contains the number 24, while the **5 March** note contains the number 10. Therefore, the **10 March** note is the more recent one."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 49.59,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The most recent number is 51, as it appears in the latest note."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 52.71,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The latest figure provided is 51 members from the note on 13 March."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 50.88,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The most recent number is 66, as noted on 26 March."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 55.51,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The latest figure provided is 44 members."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 54.72,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The most recent number is 41, as noted on 2 March."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 54.63,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The most recent note is from March 16, stating 26 members."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 50.2,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Lyon had the most rain (135 mm) and Porto had the least (740 - 605 = 95 mm)."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 50.7,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Cork received the most rain (384 mm) compared to Turin (132 mm). The difference is 252 mm."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 48.8,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The city with the most rain is Cork (684mm). The city with the least rain is Malmo (416mm). The difference is 268mm."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 44.62,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Cork had the most rain (514 mm) compared to Bremen's 294 mm. The difference is 220 mm."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 48.59,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Graz has the highest rainfall (897 mm) compared to Malmo (244 mm) and Porto (148 mm). The difference is 649 mm."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 50.18,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The city with the most rain is Cork (770 mm). The difference between Cork and Linz is 15 mm."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 45.9,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Ghent received the most rain (304 mm) compared to Linz (586 mm), which is 282 mm more than Ghent."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 45.04,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Bremen had the highest rainfall, 10 mm more than Turin."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 49.91,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Bremen recorded the highest rainfall at 897 mm, while Porto had the least at 454 mm. That means Bremen had 443 mm more than Porto."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 48.98,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The text does not contain factual data to solve this problem. The provided information is a list of cities and their rainfall measurements, but it does not specify which city has the highest or lowest value. Therefore, I cannot determine the answer based on the given text alone."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 55.82,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Based on the provided data (Linz 233 mm, Brno 561 mm, Lyon 564 mm), **Lyon** has the most rain at **564 mm**. The difference between Lyon and the city with the least rain (Brno at 561 mm) is **3 mm**."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "always_ab",
+   "pass": true,
+   "turn_s": 52.66,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Based on the provided data (Porto 663 mm, Graz 682 mm, Brno 768 mm), **Brno** had the most rain at **768 mm**. The difference between the highest and lowest cities is **105 mm** (768 - 663 = 105)."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 56.04,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The text indicates Lyon received the most rain (434 mm) compared to Turin (309 mm). The difference is 125 mm."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 59.46,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The city with the most rain is Cork (499 mm). The difference between Cork and Linz is 151 mm (499 - 348)."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "always_ab",
+   "pass": false,
+   "turn_s": 58.24,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The user's query is based on a specific dataset (Malmo 368, Lyon 835, Ghent 116) which contradicts the premise that Malmo had the highest rainfall. The provided data shows Malmo has the lowest number of rain measurements in this context.\n\nTo answer the question correctly:\n- **Most Rain**: Lyon (835 mm)\n- **Least Rain**: Malmo (368 mm)\n- **Difference**: 835 - 368 = 467 mm more than Malmo"
+  },
+  {
+   "fixture": "summary00",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 24.3,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The calculation is 69 + 77 + 87 = 232 euros."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 21.23,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The correct total is **162 euros** (92 + 90 + 35)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 19.17,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The correct total is **176 euros** (23 + 80 + 93)."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 18.92,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The correct total is **280 euros** (95 + 90 + 95)."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 21.33,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary is incorrect. The sum of the individual items (19 + 16 + 36) equals 61 euros. However, the text explicitly states \"Total: 61 euros.\" This implies a discrepancy between the listed line items and the final total, likely due to an error in the report's calculation or formatting."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 22.11,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The calculation should be: 53 + 68 + 87 = 208 euros. The current total of 198 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 20.3,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The correct total is 119 euros (75 + 12 + 22)."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 21.39,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The calculation (44 + 52 + 41 = 137) does not match the stated total of 147 euros."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 19.59,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary is incorrect. The calculation is: 63 + 25 + 49 = 137 euros. The stated total of 157 euros is wrong."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 17.48,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary is incorrect. The correct total is 93 euros (39 + 38 + 18)."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 19.88,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary is incorrect. The total should be 187 euros (21 + 84 + 92), not 187 euros."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 22.11,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The calculation is 51 + 54 + 13 = 118 euros, not 138."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 20.61,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary is incorrect. The sum should be 76 euros (24 + 13 + 19)."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 19.49,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary is incorrect. The correct total is **192 euros** (69 + 77 + 36)."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 33.13,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary is incorrect. The items listed are 62 + 65 + 39 = 146 euros. However, the text explicitly says \"Total: 146 euros\" at the bottom of the report. This implies the user has already calculated the total or is presenting a discrepancy where the line does not match the sum of the items. The correct total should be 146 euros, but the text claims it is 146 euros, which might be a typo in th"
+  },
+  {
+   "fixture": "long00",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 22.69,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The notes mention 942 bicycles were counted in Malmo."
+  },
+  {
+   "fixture": "long01",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 20.49,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The survey counted exactly 222 bicycles at the station in Cork."
+  },
+  {
+   "fixture": "long02",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 22.79,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The text does not contain the full field notes to answer this question directly."
+  },
+  {
+   "fixture": "long03",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 23.19,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The workshop had 135 bicycles counted in Porto."
+  },
+  {
+   "fixture": "long04",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 22.09,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The survey counted 972 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long05",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 21.4,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The workshop had 957 bicycles counted in Porto."
+  },
+  {
+   "fixture": "long06",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 59.54,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The workshop in Brno had 614 bicycles parked."
+  },
+  {
+   "fixture": "long07",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 20.99,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The survey recorded 381 bicycles in Lyon."
+  },
+  {
+   "fixture": "long08",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 57.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey recorded 299 bicycles parked at the station in Lyon."
+  },
+  {
+   "fixture": "long09",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 50.11,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "The survey recorded 406 bicycles parked at the station in Linz."
+  },
+  {
+   "fixture": "long10",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 23.11,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The survey counted exactly 181 bicycles in Porto."
+  },
+  {
+   "fixture": "long11",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 20.1,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The survey counted 490 bicycles at the station in Linz."
+  },
+  {
+   "fixture": "long12",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 20.78,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The survey recorded 724 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long13",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 20.32,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The survey counted exactly 732 bicycles in Graz."
+  },
+  {
+   "fixture": "long14",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 22.89,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The survey counted exactly 197 bicycles in Linz."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 17.66,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest information indicates 39 members as of 16 March, while the earlier entry mentioned 15 members on 3 March. There appears to be a discrepancy in the reported numbers."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 24.83,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The text does not contain a date for the \"19 March\" note, so I cannot determine which number is more recent based solely on that specific text snippet."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 19.61,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure is from March 20."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 16.36,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure is 56 members, according to the March 14 note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 17.57,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure is 82 members according to the March 19 note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 15.96,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest update is from March 25th, indicating 34 members."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 17.0,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure is 33 members, as noted on 8 March."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 16.96,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure is 68 members, according to the note from 22 March."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 25.13,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The text explicitly states that the note from **March 10** (24 members) and the note from **March 5** (10 members) are in conflict regarding the number of team members. Therefore, the specific dates mentioned in the text are the ones that disagree with each other."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 19.07,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure is from the March 11 note, which states 43 members."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 16.17,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure is from the 11 March note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 16.26,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure is 66 members, according to the note from 26 March."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 17.87,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure is 44 members, according to the March 19 note."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 16.98,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The latest figure mentioned is 41 members from the note dated 2 March."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 23.22,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The text does not contain a time reference to distinguish between the two dates, so the specific \"most recent\" claim cannot be verified against the provided source text."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 17.38,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The city with the most rain is Porto (740 mm). The city with the least rain is Lyon (605 mm). The difference is 135 mm."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 16.18,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "Ghent has the most rain (176 mm) compared to Turin (132 mm). The difference is 44 mm."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 19.5,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The city with the most rain is Cork (684mm). The difference between Cork and Graz is 222mm."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 19.48,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The city with the most rain is **Graz** (565 mm). The difference between Graz and Cork is 49 mm (565 - 514)."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 17.29,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "Graz had the most rain (897 mm) compared to Malmo (244 mm) and Porto (148 mm). The difference is 649 mm."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 16.97,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The city with the most rain is Cork (770 mm). The city with the least rain is Linz (745 mm). The difference is 25 mm."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 14.97,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "Ghent has the least rain (304 mm). The city with the most rain is Linz (586 mm), which is **282 mm** more than Ghent."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 48.3,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Bremen had the highest rainfall, while Turin had the least. The difference is 137 millimetres."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 52.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "both",
+   "output": "Bremen recorded the highest rainfall at 897 mm, while Porto had the least at 454 mm. That means Bremen had 443 mm more than Porto."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 25.13,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "Based on the provided data (Lyon 502mm, Cork 816mm, Bremen 329mm), **Cork** had the most rain.\n\nThe difference is: 816 - 329 = **487 mm**."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 20.7,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "Linz has the least rain (233 mm). Lyon has the most rain (564 mm). The difference is 564 - 233 = 331 mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 23.02,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "Based on the provided data (Porto: 663mm, Graz: 682mm, Brno: 768mm), **Brno** had the most rain. The difference between the most and least is 105mm (768 - 663)."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 18.09,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "Lyon has the highest rainfall at 434 mm (vs 766 in Ghent). The difference is 332 mm (766 - 434)."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 18.93,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The city with the most rain is Cork (499 mm). The city with the least rain is Linz (348 mm). The difference is 151 mm."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 18.8,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The city with the most rain is **Lyon** (835 mm). The difference between Lyon and Malmo is **407 mm** (835 - 368)."
+  }
+ ],
+ "phone_measured": false,
+ "canonical_gate_pass": false,
+ "claim_limit": "deterministic bench decoding, generated English tasks, regex checks on the final answer, one seed, cloud CPU"
+}
