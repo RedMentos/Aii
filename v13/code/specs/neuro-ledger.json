@@ -58,7 +58,7 @@
    "neuro_inspiration_class": "MECHANISM_INSPIRED",
    "neuro_claim_limit": "Three-factor rule e×δ×M×P as engineering credit assignment for external shadow heads; no claim about dopamine/acetylcholine physiology; evidence is a synthetic open-loop stream with linear NLMS learners, no language model.",
    "ablation_baseline": {
-    "hypothesis": "§99 Eligibility helps + Typed modulators help",
+    "hypothesis": "§99 Eligibility helps + Typed modulators help + Metaplasticity (META rule) helps",
     "controls": [
      "gradient_only",
      "gradient_only_matched",
@@ -66,15 +66,21 @@
      "recency_only",
      "scalar_reward",
      "human_only",
-     "outcome_only"
+     "outcome_only",
+     "fixed_permissive_P",
+     "fixed_conservative_P",
+     "fixed_matched_P",
+     "no_novelty_term",
+     "no_repeated_failure_term"
     ],
     "evidence": [
      "../bench-results/ablation99-20261010/README.md",
      "../bench-results/delayed-reward-20261010/README.md",
-     "docs/CORE_EXPERIMENTS.md"
+     "docs/CORE_EXPERIMENTS.md",
+     "../bench-results/homeo-meta-20261012/README.md"
     ],
     "verdict": "PARTIAL",
-    "note": "Eligibility beats gradient-only/random mask 5/5 but not recency-only (1/5); the slow trace adds nothing measurable; typed modulators beat scalar reward and human-only 5/5; the gate alone does not stop dream/self labels (data-mix quotas needed); per-sample δ beats every control 5/5 on the delayed stream."
+    "note": "Eligibility beats gradient-only/random mask 5/5 but not recency-only (1/5); the slow trace adds nothing measurable; typed modulators beat scalar reward and human-only 5/5; the gate alone does not stop dream/self labels (data-mix quotas needed); per-sample δ beats every control 5/5 on the delayed stream. META rule (2026-10-12, preregistered): beats only fixed permissive P (5/5); fixed conservative and budget-matched P are better (1/5), the novelty and repeated-failure terms add nothing."
    },
    "modulator_schema": "ModulatorPacket",
    "eligibility_owner": "v13/neuromod.py",
@@ -92,7 +98,22 @@
   "MODULE_HOMEOSTASIS": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
    "neuro_claim_limit": "Synaptic-scaling analogy only: per-path activation/update frequency normalised between Sleep C runs; acts only after explicit human activation.",
-   "ablation_baseline": null,
+   "ablation_baseline": {
+    "hypothesis": "§99-style: homeostatic path regulation helps",
+    "controls": [
+     "none",
+     "equalize",
+     "random_gains",
+     "no_dead_path_reopen",
+     "no_dominant_inhibition"
+    ],
+    "evidence": [
+     "../bench-results/homeo-meta-20261012/README.md",
+     "../bench-results/homeo-meta-20261012/report.json"
+    ],
+    "verdict": "SUPPORTED_SYNTHETIC",
+    "note": "Preregistered, 5 seeds: beats every control on the primary metric (5/5, reopen 4/5), but margins are small (.181 vs .187 none); the gain comes from update-budget damping and dead-path reopen, dominant-path inhibition adds ~0. Synthetic only; regulation is ACTIVE only after explicit human activation."
+   },
    "eligibility_owner": "v13/neuromod.py",
    "age_window_policy": "NONE"
   },
@@ -335,7 +356,23 @@
   "MODULE_SELFMODEL": {
    "neuro_inspiration_class": "MECHANISM_INSPIRED",
    "neuro_claim_limit": "Efference-copy/corollary-discharge analogy: SelfCorollary before every dispatch, self/world attribution; no claim of self-awareness.",
-   "ablation_baseline": null,
+   "ablation_baseline": {
+    "hypothesis": "§99-style: corollary attribution + sensory attenuation help",
+    "controls": [
+     "no_corollary",
+     "temporal_only",
+     "channel_only",
+     "no_attenuation",
+     "full_subtraction",
+     "random_attenuation"
+    ],
+    "evidence": [
+     "../bench-results/corollary-20261012/README.md",
+     "../bench-results/corollary-20261012/report.json"
+    ],
+    "verdict": "PARTIAL",
+    "note": "Preregistered, 5 seeds: attribution beats every control 5/5 (balanced accuracy .77 vs ≤.57, never false SELF) but labels 54–66 % of external events on an open own channel as MIXED (own failure); attenuation beats none/random 5/5, full subtraction is better in this stream. Safety reads raw values in every arm."
+   },
    "corollary_required": true
   },
   "F4_SELF_WORLD_OBSERVATIONS": {

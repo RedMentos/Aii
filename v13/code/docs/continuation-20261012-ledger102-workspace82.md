@@ -48,3 +48,10 @@ Branch `claude/project-thread-n3gv74`, Basis Thread G `bbd710e`. Linux-Cloud, ke
 - Ablationen für die UNTESTED_LABEL-Zeilen (Selbstmodell/Corollary, Homöostase, Attention-Gain, Workspace-Lernen) vorregistrieren.
 - `boundary_confidence` aus echter Event-Segmentierung (`episodes.text_segments`) statt lexikalischem Proxy, sobald B2-Slots echte Segmente tragen.
 - `docs/completion-ledger.json` ist ein alter Export (Version 2); neuer Export über `:doctor`.
+
+## 3. Folge: §99-Ablationen für ungetestete Hirn-Etiketten (vorregistriert, synthetisch)
+- Metaplastizität (META-Regel in `neuromod`): **PARTIAL** — schlägt nur P = 1; festes konservatives/budgetgleiches P ist besser, Neuheits- und Wiederholungsterm helfen nicht (Rauschen öffnet Plastizität wieder). `bench-results/homeo-meta-20261012/`.
+- Homöostase (`homeostasis.regulate`): **SUPPORTED_SYNTHETIC**, kleine Abstände; Nutzen aus Update-Budget-Dämpfung + Wiederöffnen toter Pfade, Dominanz-Dämpfung ≈ 0. Gleiche Ordner.
+- Corollary/Selbstmodell: Zuordnung schlägt alle Kontrollen, aber fremde Ereignisse auf offenem eigenem Kanal werden zu MIXED (54–66 %); Dämpfung schlägt keine/zufällige, volle Abziehung besser → **PARTIAL**. `bench-results/corollary-20261012/`.
+- `specs/neuro-ledger.json` aktualisiert: UNTESTED_LABEL 15 → 13. Volle Suite 1253 OK / 4 Skips.
+- Nächste Kandidaten (je eigene Vorregistrierung): rauschbewusster META-Wiederöffnungsterm; `attribute` mit Toleranz-Obergrenze (weit daneben → EXTERNAL/UNCLEAR).
