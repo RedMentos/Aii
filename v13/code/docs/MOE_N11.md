@@ -7,7 +7,7 @@ Stand: **isolierte Kandidaten + echte Cloud-Messung**, nicht in der Runtime. Gru
 - `scripts/native_moe_router_tap.cpp`: read-only `cb_eval`-Abgriff in llama.cpp b10964 (`ffn_moe_logits-il`, `ffn_norm-il`, `attn_norm-il`), Ausgaben für alle Token. Bauen wie `build_native_memory_hook.sh` (g++ gegen `libllama`).
 - `scripts/moe_router_bench.py` (torch/transformers, Cloud): Kalibrierung, B3-H6-α-Raster mit Sender-Latent vs. Zufall vs. EXACT, §16.2.1-Update-Arme shared/router/experts/all mit Restaurations-Ablation.
 - `scripts/moe_router_parity.py`: HF-Referenz ↔ llama.cpp F16/Q4 auf identischen Token.
-- Tests `tests/test_moe_router_monitor.py` (15, synthetisch).
+- Tests `tests/test_moe_router_monitor.py` (14, synthetisch).
 - Recherche `docs/research/moe-candidates-20261012.md`; Messung `bench-results/moe-router-20261012/README.md`.
 
 ## Ergebnis in einem Satz
