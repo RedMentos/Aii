@@ -10,7 +10,7 @@ Stand 2026-10-10 (Pakete B). Diese Seite ist die Übersicht: Für jedes Experime
 | R1 | Bringt Latent-Kommunikation etwas? | gemessen, **FAIL** | `bench-results/step2-two-body-20261009/`, `b3-l1-20261009/`, `b3-h2-20261010/` (B3-Thread) |
 | R2 | Wo entsteht Vergessen? | **dichter Teil gemessen (neu)** | `scripts/r2_scope_bench.py`, `bench-results/r2-scope-20261010/` (unten) |
 | R3 | Lernt JEF_FAST_POLICY bessere Selbststeuerung? | offen | braucht echte Ergebnis-Labels über Zeit; Köpfe laufen im Schatten. Proceduralisierung synthetisch in `ablation99-20261010` |
-| R4 | Spart C-native Kosten ohne versteckten Qualitätsverlust? | offen | Lauf mit C3 + B1/B2 auf gemeinsamen Fixtures, gehört zu **WP-T3** |
+| R4 | Spart C-native Kosten ohne versteckten Qualitätsverlust? | **gemessen 2026-10-12** | `scripts/r4_wake_bench.py`, `bench-results/r4-wake-20261012/`: C3 allein 0,683 schlägt heuristisches Wecken 0,533 (p 0,022) und immer A+B 0,583 bei 4,8 statt 24–57 s; Heuristik weckt immer; gelerntes Wecken ohne trainierten Kopf nicht messbar |
 | R5 | Adaptive Effort statt fixer Modi | offen | Code fertig (WP-D), Lauf in **WP-T3** |
 | R6 | Native Cache/Attention-Techniken | **blockiert** | llama.cpp b10964 hat keine der Kandidaten-Techniken; gemessen ist nur der Präfix-Cache (`context-cache-20261009`) |
 | R7 | Fluid Learning Lifecycle | offen | braucht den Gewichts-Lernpfad (WP-I, Thread „Echtes Lernen“) |

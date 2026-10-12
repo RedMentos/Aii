@@ -1,0 +1,243 @@
+{
+ "kind": "V13_R4_WAKE_BENCH",
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "fixtures": [
+  "summary00",
+  "long00",
+  "notes00",
+  "compare00"
+ ],
+ "arms": {
+  "c_native_only": {
+   "n": 4,
+   "pass_rate": 0.75,
+   "by_kind": {
+    "compare": 1.0,
+    "long": 1.0,
+    "notes": 1.0,
+    "summary": 0.0
+   },
+   "wake_rate": 0.0,
+   "offers_per_turn": 0.0,
+   "mean_turn_s": 7.37,
+   "learned_wake_turns": 0,
+   "status_not_final": 0
+  },
+  "heuristic": {
+   "n": 4,
+   "pass_rate": 0.75,
+   "by_kind": {
+    "compare": 0.0,
+    "long": 1.0,
+    "notes": 1.0,
+    "summary": 1.0
+   },
+   "wake_rate": 1.0,
+   "offers_per_turn": 1.0,
+   "mean_turn_s": 25.6,
+   "learned_wake_turns": 0,
+   "status_not_final": 0
+  },
+  "learned_wake": {
+   "n": 4,
+   "pass_rate": 0.75,
+   "by_kind": {
+    "compare": 0.0,
+    "long": 1.0,
+    "notes": 1.0,
+    "summary": 1.0
+   },
+   "wake_rate": 1.0,
+   "offers_per_turn": 1.0,
+   "mean_turn_s": 24.15,
+   "learned_wake_turns": 0,
+   "status_not_final": 0
+  }
+ },
+ "escalation": {
+  "heuristic": {
+   "rescuable_tasks": 0,
+   "woke_on_rescuable": 0,
+   "escalation_recall": null,
+   "c_native_solvable": 3,
+   "spared_on_solvable": 0,
+   "passed_rescuable": 0
+  },
+  "learned_wake": {
+   "rescuable_tasks": 0,
+   "woke_on_rescuable": 0,
+   "escalation_recall": null,
+   "c_native_solvable": 3,
+   "spared_on_solvable": 0,
+   "passed_rescuable": 0
+  }
+ },
+ "reproducibility": {},
+ "learned_wake_status": "UNAVAILABLE_NO_TRAINED_HEAD",
+ "rows": [
+  {
+   "fixture": "summary00",
+   "arm": "c_native_only",
+   "pass": false,
+   "turn_s": 9.46,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "No, the summary is incorrect. The correct total is **30 euros** (95 + 18 + 21)."
+  },
+  {
+   "fixture": "long00",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 8.44,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The survey counted exactly 180 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 7.34,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "The most recent number is 71 (from March 16)."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "c_native_only",
+   "pass": true,
+   "turn_s": 4.23,
+   "status": null,
+   "offers": [],
+   "learned_wake": false,
+   "wake_decision": null,
+   "output": "Lyon has the highest rainfall at 644 mm (vs 255 mm for Brno). The difference is 389 mm."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 26.75,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The calculation should be: 95 + 18 + 21 = 134 euros. The current total of 114 euros is wrong."
+  },
+  {
+   "fixture": "long00",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 23.89,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The survey recorded 180 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "heuristic",
+   "pass": true,
+   "turn_s": 24.91,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The text does not contain a temporal marker to distinguish between the two dates, so the specific numbers (60 vs 71) cannot be definitively determined from the provided excerpt alone."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "heuristic",
+   "pass": false,
+   "turn_s": 26.86,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The text does not contain a factual answer to this question. The provided data (Lyon 644 mm, Brno 255 mm, Bremen 636 mm) is likely a query or a test case rather than a factual statement about the actual historical climate of those cities. Without external verification confirming these specific numbers are accurate facts, I cannot definitively state which city had the most rain or calculate the dif"
+  },
+  {
+   "fixture": "summary00",
+   "arm": "learned_wake",
+   "pass": true,
+   "turn_s": 26.14,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "No, the summary line is incorrect. The calculation is: 95 + 18 + 21 = 134 euros. The text claims the total is 114 euros, which is wrong."
+  },
+  {
+   "fixture": "long00",
+   "arm": "learned_wake",
+   "pass": true,
+   "turn_s": 23.12,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "learned_wake": false,
+   "wake_decision": "detail",
+   "output": "The survey recorded 180 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "learned_wake",
+   "pass": true,
+   "turn_s": 25.81,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The text does not contain a date for March 16th, so the 71-member note cannot be verified as the most recent one based on the provided text."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "learned_wake",
+   "pass": false,
+   "turn_s": 21.52,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "learned_wake": false,
+   "wake_decision": "gist",
+   "output": "The city with the most rain is Lyon (644 mm), while Bremen has the least at 636 mm. The difference is 8 mm."
+  }
+ ],
+ "phone_measured": false,
+ "canonical_gate_pass": false,
+ "claim_limit": "deterministic bench decoding, generated English tasks, regex checks on the final answer, one seed, cloud CPU",
+ "paired": {
+  "c_native_only_vs_heuristic": {
+   "n": 4,
+   "first_only_pass": 1,
+   "second_only_pass": 1,
+   "sign_test_p": 1.0
+  }
+ }
+}
