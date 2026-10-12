@@ -9,6 +9,7 @@ from v13.runtime import Runtime
 from v13 import bodies,runners
 from v13.cognition import offer_schema
 from v13.agi.slots import ModelSlots
+import resource_pins
 
 class FakeRunner:
     alive=set()
@@ -30,6 +31,7 @@ class Base(unittest.TestCase):
         cfg=json.loads((self.home/'config/settings.json').read_text());cfg['body_residency_mb']=self.budget;(self.home/'config/settings.json').write_text(json.dumps(cfg))
         self.p=patch.object(runners,'LlamaRunner',FakeRunner);self.p.start();self.r=Runtime(self.home)
         self.r.sleep.cycle.set_policy('enabled','off')
+        resource_pins.pin(self.r,'NORMAL')  # host RAM/temperature must not steer residency decisions
     def tearDown(self):self.r.close();self.p.stop();self.tmp.cleanup()
 
 class TwoBodies(Base):
@@ -56,7 +58,7 @@ class TightBudget(Base):
         self.assertEqual(self.r.pool.release_history[-1]['role'],'B1_DETAIL')
 
     def test_memory_pressure_never_holds_two_bodies(self):
-        self.r.guard.state='CRITICAL';self.r.pool.get('C3_LANGUAGE');self.r.pool.get('B2_GIST')
+        self.assertEqual(resource_pins.pin(self.r,'CRITICAL'),'CRITICAL');self.r.pool.get('C3_LANGUAGE');self.r.pool.get('B2_GIST')
         self.assertEqual(self.r.pool.resident_roles(),['B2_GIST'])
 
 class OldPool(Base):
