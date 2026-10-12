@@ -314,7 +314,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | World-Model | 🟡 | WP-AG2 |
 | Konstantes Lernen als Endziel | 🟡 Age-Hülle da, Gewichts-Lernen fehlt | WP-C, WP-AG6, WP-S6 |
 | Heruntergebrochene Gehirn-Simulation | 🟡 siehe Abschnitte 1–5 | alle |
-| Zwei verschiedene MoE-Hälften (Detail mit mehr Experten) | 🟡 Kandidatenpaar recherchiert (EuroMoE + SmallThinker-4B-A0.6B), erste Hälfte gemessen; Verdrahtung/Redmi offen | **WP-N11** |
+| Zwei verschiedene MoE-Hälften (Detail mit mehr Experten) | 🟡 Paar EuroMoE + SmallThinker-4B-A0.6B beide in llama.cpp b10964 gemessen (Router, Q4-Parität, Speicher 4,25 GB ohne Repack-Duplikat); Verdrahtung, STEP2-Vergleich, Redmi offen | **WP-N11** |
 | Regeln nach realem Schaden, Privatsphäre | 🟡 | WP-V6 |
 | Bedienung am Handy (Logs, Einfügen, Live-Knobs) | 🟡 `inputs.py` | WP-V5 |
 | Ehrlichkeit (nichts als „lernt“ verkaufen) | ✅ Claim-Limits im Ledger | – |

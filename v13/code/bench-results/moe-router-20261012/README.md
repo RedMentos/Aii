@@ -73,3 +73,40 @@ Der native Abgriff liefert dieselben Router-Größen wie HF (F16 praktisch ident
 - Redmi: RSS/Latenz von EuroMoE Q4_K_M (+ zweite Hälfte) und dieselbe Kalibrierung auf dem Gerät (WP-R).
 - Zweite, verschiedene MoE-Hälfte (SmallThinker-4B-A0.6B) messen; Body-Wechsel nur als separat gebundener Vergleich, nicht in laufender Kohorte.
 - Integration von `moe_router_monitor` in AG6/Homeostasis/b3bridge erst nach Ende des SourceHandoff-Freeze.
+
+---
+
+# Teil 2: zweite, verschiedene MoE-Hälfte und Handy-Runner (2026-10-12, später)
+
+Zweiter Körper: `Tiiny/SmallThinker-4BA0.6B-Instruct` @ `a24932bb` (ex PowerInfer; Apache-2.0; 4,27 B / 0,6 B aktiv, 32 Experten top-4, d=1536, **Router vor der Attention** auf dem rohen Residual). Safetensors-SHA = HF-LFS-OIDs; konvertiert mit `convert_hf_to_gguf.py` (b10964, **ohne** Remote-Code, `.py`/`.pt` aus dem Repo nicht geladen) → F16 `8b1b01ad…`, Q4_K_M `1f6ce1d3…` (2,6 GB). EuroMoE-Q4 aus Teil 1 (`8720d054…`) bekam nachträglich `add_bos_token=false` + Chat-Template aus `tokenizer_config.json` ins GGUF (Tensoren unverändert, neu `b07881c7…`); die Router-Messungen geben Token-IDs explizit vor und sind davon nicht betroffen.
+
+Befehl: `scripts/moe_router_native_bench.py --pair --body euromoe:…:8:ffn_norm:q4_k_m=… --body smallthinker:…:4:layer_input:f16=…,q4_k_m=…` → `native-two-halves.json`. Router-Abgriff im llama.cpp-Runner selbst (Handy-Runner, hier Linux-CPU).
+
+## Kalibrierung auf dem Runner selbst (48 Texte EN/DE × 3 Vorspänne, p95)
+
+| Körper / Datei | Router-KL | Top-k-Flip | Router-Input-Shift |
+|---|---|---|---|
+| EuroMoE HF fp32 (Teil 1) | 0,022 | 0,165 | 0,038 |
+| EuroMoE llama.cpp Q4_K_M | 0,030 | 0,200 | 0,048 |
+| SmallThinker llama.cpp F16 | 0,052 | 0,252 | 0,064 |
+| SmallThinker llama.cpp Q4_K_M | 0,054 | 0,255 | 0,072 |
+
+Der Router vor der Attention schwankt bei neutralem Kontextwechsel deutlich stärker (Flip .25 vs .17–.20): er sieht das rohe Residual statt eines normierten Attention-Ausgangs. Schwellen sind je Körper und Runner verschieden → nie übertragen.
+
+SmallThinker F16 → Q4_K_M (gleiche Token): Flip mittel .134 / p95 .169, KL p95 .020 – innerhalb der Q4-eigenen Basis-Schwankung (PASS).
+
+## Speicher (Linux, VmHWM; kein Handy-RSS)
+
+| | EuroMoE Q4_K_M | SmallThinker Q4_K_M | beide zusammen |
+|---|---|---|---|
+| Datei | 1,62 GB | 2,63 GB | 4,25 GB |
+| llama.cpp Standard (CPU-Repack an) | 2,72 GB | 4,32 GB | **7,03 GB** (zwei Prozesse gleichzeitig) |
+| `use_extra_bufts=false` (kein Repack-Duplikat) | 1,62 GB | 2,63 GB | ≈ 4,25 GB |
+
+Nach 48 Texten sind praktisch alle Expertenseiten angefasst (RssFile ≈ Dateigröße): mmap spart bei diesen Routern **nichts**, alle Experten werden genutzt. Mit dem Standard-Repack liegen die Gewichte doppelt im RAM (mmap-Seiten + umgepackte Kopie). Für das 6-GB-Redmi heißt das: beide Hälften nur ohne Repack-Duplikat (oder ohne mmap) und neben C3/C2 voraussichtlich zu knapp; nur am Gerät messbar (WP-R).
+
+## Kurze Qualitätsprobe (Q4_K_M, greedy, 4 Fragen, `quality-probe.txt`)
+EuroMoE: Canberra ✓, Äpfel-Rechnung richtig (8−2) aber mit falscher Kopfzeile „3 apples“, Wien ✓, Himmel-blau-Erklärung auf Deutsch sachlich korrekt. SmallThinker: Canberra ✓, Rechnung richtig, „Vienna“ statt Wien, Himmel-blau-Satz auf Deutsch sachlich falsch. → Für die spätere deutsche Phase ist EuroMoE die stärkere Hälfte; SmallThinker ist englisch stärker im schrittweisen Rechnen. Vier Fragen sind nur ein Rauchtest, kein Benchmark.
+
+## Vorschlag (keine Modellwahl)
+B2 Gist = EuroMoE (64 Experten top-8, Deutsch), B1 Detail = SmallThinker (Router vor der Attention, mehr Gesamtparameter). Vor Produktivsetzung: separat gebundener STEP2-Vergleich gegen das heutige Paar und Redmi-Speicher.

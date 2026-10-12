@@ -110,12 +110,14 @@ class Capture:
         return cls(layers, int(meta['top_k']), meta)
 
 
-def load_native_tap(out_dir, row, top_k, meta=None):
+def load_native_tap(out_dir, row, top_k, meta=None, router_input='ffn_norm'):
     """Capture from scripts/native_moe_router_tap.cpp output (llama.cpp runner).
 
-    Router logits = ffn_moe_logits-il, router input = ffn_norm-il; the shared
-    pre-router state is attn_norm-il (the *normed* block input, so its norm
-    shift is not the raw residual norm shift; cosine drift is comparable).
+    router_input='ffn_norm' (Mixtral/llama style): router input = ffn_norm-il,
+    shared pre-router state = attn_norm-il (the *normed* block input, so its
+    norm shift is not the raw residual norm shift; cosine drift is comparable).
+    router_input='layer_input' (SmallThinker pre-attention router): router input
+    and pre-router state = raw residual l_out-(il-1); layer 0 is skipped.
     """
     from pathlib import Path
     out_dir = Path(out_dir)
@@ -134,7 +136,13 @@ def load_native_tap(out_dir, row, top_k, meta=None):
     for name in info['tensors']:
         if name.startswith('ffn_moe_logits-'):
             il = int(name.rsplit('-', 1)[1])
-            layers[il] = LayerCapture(read(name), read(f'ffn_norm-{il}'), read(f'attn_norm-{il}'))
+            if router_input == 'layer_input':
+                prev = read(f'l_out-{il - 1}') if il > 0 else None
+                if prev is None:
+                    continue
+                layers[il] = LayerCapture(read(name), prev, prev)
+            else:
+                layers[il] = LayerCapture(read(name), read(f'ffn_norm-{il}'), read(f'attn_norm-{il}'))
     return Capture(layers, top_k, dict(meta or {}, runner='llama.cpp', row=row))
 
 
