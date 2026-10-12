@@ -50,3 +50,7 @@
 - Schluss für die ganze Linie (Runden 1–5): mit dem bestehenden affinen Objective ist §99 „JEPA hilft“ für Handlungsfolgen nicht
   belegbar. Nächster sinnvoller Schritt wäre ein geändertes Objective (ohne Varianz-Untergrenze bzw. mit Mittelwert-Delta als fester
   Basis und regularisiertem Rest), getrennt vorregistriert.
+
+## Runde 6: geändertes Objective (Mittelwert-Delta + Ridge-Rest)
+
+Vorregistriert (`9214a4c`), 54 Läufe auf den Datensätzen der Runden 3–5: **38 PASS**. Werkzeug-Welt 24/24 (Rest 3–20× unter Mittelwert-Delta), Text-Handlungen 14/30 (Fehlschläge meist Retention mit Delta 0). Test-Partitionen waren exponiert, also nur Hinweis; nächster Schritt ist eine frische Erfassung (Runde 7) mit unverändertem Skript `scripts/action_jepa_round6_ridge.py`. Belege `docs/proofs/continuation-20261012/action-jepa-round6-ridge/`.
