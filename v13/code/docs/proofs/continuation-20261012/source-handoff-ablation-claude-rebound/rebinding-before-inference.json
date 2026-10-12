@@ -1,0 +1,17 @@
+{
+ "status": "REBOUND_BEFORE_FIRST_NATIVE_INFERENCE",
+ "agent": "Claude (project thread, 2026-10-12)",
+ "previous_preregistration_sha256": "4cfaddad1d9fadd23b5810c7cd4ddc0637e0e9b59d6d6fcd007fc22b5870b1d0",
+ "new_preregistration_sha256": "07f7f7bc67bb3cb8d23e9ba25e2d2976d36fc21b99fb222d0d3c55fa1ad489e0",
+ "reason": "New cloud container; the Codex native build directory was not durable. Rebuilt llama.cpp b10964 with the V13 memory hook at the identical path and flags. Source archive SHA256 4c96d72c... and all three patched server sources match the original manifest; all three GGUF model hashes and revisions match. Launcher and the 19 shared-library hashes differ, so per AGENTS.md a transparent new binding is written before any inference. No ablation native call had occurred under 4cfaddad.",
+ "differing_fields": ["binding.installed.runner_sha256", "binding.installed.runner_runtime_libraries_sha256 (all 19 entries)"],
+ "identical_fields_checked": ["fixtures", "fixtures_sha256", "consumer_system", "consumer_schema", "consumer_schema_sha256", "config", "arm_order", "arm_specs", "arm_source_sha256", "native_oracle_visibility", "consumer_boundary", "previous_frozen_cohort", "binding.source_sha256 (121 sources)", "binding.installed.model_sha256", "binding.installed.model_revisions"],
+ "build_attempts": [
+  {"compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0 (container default)", "runner_sha256": "1e73a2797ac2490af45538b8cbfd53e7b919f7b21b31d24be23153ddcdae1616", "kept_at": "native-audit-cache/bin/build-mem-b10964.gcc2404_1-mismatch"},
+  {"compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0 (same package version as Codex, Launchpad debs extracted to a private prefix)", "runner_sha256": "f89d961478491dd00be12319989b1601c79d83bfe446cceed75704c76ae12e78", "used": true}
+ ],
+ "suspected_remaining_difference": "inferred, not verified: other toolchain packages (binutils/libc6-dev point release) or the original build's invalid-PCH fallback; Codex binaries were not preserved, so no byte diff is possible",
+ "environment": {"cgroup_memory_max": "none (15 GiB VM, 4 CPU)", "native_build_jobs": 2, "cmake": "4.4.4"},
+ "comparability": "Within-ablation arm comparisons stay valid (all 4 arms share this runner). Absolute numbers are not byte-comparable with runs on the Codex binary.",
+ "canonical_gate_pass": false
+}
