@@ -14,3 +14,13 @@
 - Offen/nächster Schritt: neue, getrennt vorregistrierte Runde mit Mittelwert-Delta als Bias-Start oder
   kalibrierungsgewählter Schrittzahl. Keine Empfänger-/Lernautorität, kein Redmi-Nachweis.
   STEP2 UTILITY_FAIL und B3 L1 FAIL unverändert.
+
+## Runde 2 (gleicher Tag): Residuum über Mittelwert-Delta
+
+- Neues `scripts/action_jepa_residual_candidate.py` (+2 Tests): Bias startet bei Mittelwert-Delta, Schrittzahl
+  240/960 nur auf Kalibrierung gewählt, sonst identische Gates. Vorregistrierung vor dem Lauf gepusht.
+- Ergebnis: **alle drei Seeds FAIL.** Gewählt jeweils 240 Schritte (960 überanpassen). Gesamt-MSE knapp unter
+  Mittelwert-Delta; nur `translate_de` gewinnt klar (10–20 %), `negate`/`question` verlieren.
+  Belege `docs/proofs/continuation-20261012/action-jepa-residual-round2/README.md`.
+- Nächster sinnvoller Schritt (nicht begonnen): frische Testthemen erfassen (neue native Capture, schwerer Job,
+  seriell) oder nichtlinearer Kopf; beides braucht neue Vorregistrierung.
