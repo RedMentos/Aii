@@ -27,9 +27,11 @@ def kill_process(proc):
 def rotate_log(path,cap=3*1024*1024):
     if path.exists() and path.stat().st_size>cap:os.replace(path,path.with_suffix(".previous.log"))
 class LlamaRunner:
-    def __init__(self,home,role,model,config,purpose='generate'):
+    def __init__(self,home,role,model,config,purpose='generate',approval_store=None):
         self.home=Path(home);self.role=role;self.model=model;self.cfg=config;self.purpose=purpose;self.proc=None;self.port=None;self.key=secrets.token_hex(24);self.last_metrics={};self.log_handle=None
+        self.approval_store=approval_store;self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
         self.binary=os.environ.get("V13_LLAMA_SERVER",str(home/"bin/llama-server"))
+        self._audit_enabled=False;self._audit_window=None;self._audit_unavailable=None;self._audit_lock=threading.Lock()
         self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
     def _lifecycle_stamp(self):
         # Warm generation checks metadata only. Approval/model/native hashes are
@@ -49,7 +51,8 @@ class LlamaRunner:
                 own=path.lstat();target=path.stat()
                 return (str(path),*( (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode) for s in (own,target)))
             except OSError:return (str(path),None)
-        return tuple(stamp(p) for p in paths)
+        paths += self._approved_asset_paths+list(self._launch_assets.values())
+        return (('native_memory_audit',self.cfg.get('native_memory_audit',False) is True),)+tuple(stamp(p) for p in paths)
     @property
     def memory_delivery_binding(self):
         # The binding describes the child that completed its health handshake,
@@ -61,6 +64,8 @@ class LlamaRunner:
         before=process_memory(self.proc.pid) if self.proc else None;kill_process(self.proc);self.proc=None
         self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
         if self.log_handle:self.log_handle.close();self.log_handle=None
+        if self._asset_snapshot is not None:shutil.rmtree(self._asset_snapshot,ignore_errors=True)
+        self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
         return {"before":before,"process_reaped":True}
     def _json(self,method,path,payload,deadline,timeout_cap=3.):
         remaining=deadline-time.monotonic()
@@ -71,10 +76,75 @@ class LlamaRunner:
             if r.status!=200:raise RuntimeError(f"Runner HTTP {r.status}: {data[:200].decode(errors='replace')}")
             return json.loads(data)
         finally:conn.close()
+    @contextlib.contextmanager
+    def _approval_guard(self,cancel,deadline):
+        # Approval can hold the writer mutex across filesystem recovery. A
+        # reader waiting for it must still honour its cancellation/deadline.
+        check(cancel,deadline)
+        if self.approval_store is None:
+            yield
+            return
+        acquired=False
+        try:
+            while not acquired:
+                check(cancel,deadline)
+                acquired=self.approval_store.mutex.acquire(timeout=max(0.,min(.05,deadline-time.monotonic())))
+            check(cancel,deadline)
+            yield
+        finally:
+            if acquired:self.approval_store.mutex.release()
+    def _verify_approval_mirror(self):
+        # Caller holds Store.mutex. The database remains authoritative even
+        # when a failed mirror recovery leaves an ACTIVATING journal behind.
+        if self.approval_store is None:return
+        from .lora_trainer import REGISTRY_KEY,MIRROR
+        active=(self.approval_store.state(REGISTRY_KEY,None)[0] or {}).get('active',{})
+        expected={r:{k:b[k] for k in ('path','sha256','base_model_sha256','batch_id','scale','sidecar_sha256') if k in b}
+                  for r,b in active.items() if b}
+        try:actual=json.loads((self.home/MIRROR).read_text())
+        except FileNotFoundError:actual={}
+        except (OSError,ValueError) as exc:raise Unavailable('Adapter mirror unreadable') from exc
+        if actual!=expected:raise Unavailable('Adapter mirror differs from committed approval')
+    def _snapshot_assets(self,cmd,env):
+        if self.approval_store is None or self.purpose!='generate':return
+        from .common import file_hash
+        from .lora_trainer import REGISTRY_KEY
+        active=(self.approval_store.state(REGISTRY_KEY,None)[0] or {}).get('active',{})
+        specs=[]
+        if '--lora-scaled' in cmd:
+            i=cmd.index('--lora-scaled')+1
+            specs.append(('adapter',cmd[i],active[self.role]['sha256'],i))
+        if self.memory:
+            cur=active[self.role+'#sparse_memory'];path=self.memory['env']['V13_MEMORY_FILE']
+            specs.append(('memory',path,cur['sha256'],None))
+            if cur.get('sidecar_sha256'):
+                specs.append(('memory.items',str(path)+'.items.json',cur['sidecar_sha256'],None))
+        if not specs:return
+        folder=self.home/'tmp'/('runner-assets-'+secrets.token_hex(16));folder.mkdir(parents=True,mode=0o700)
+        self._asset_snapshot=folder;self._launch_assets={};self._approved_asset_paths=[p for _,p,_,_ in specs]
+        try:
+            for kind,path,expected,index in specs:
+                dest=Path(str(self._launch_assets['memory'])+'.items.json') if kind=='memory.items' else folder/(kind+Path(path).suffix)
+                shutil.copyfile(path,dest)
+                if file_hash(dest)!=expected:raise Unavailable('Approved adapter bytes changed during snapshot')
+                dest.chmod(0o400);self._launch_assets[kind]=str(dest)
+                if index is not None:cmd[index]=str(dest)
+                elif kind=='memory':env['V13_MEMORY_FILE']=str(dest)
+            # Record hashes independently from original paths; the child opens
+            # these private bytes after Store.mutex has been released.
+            self._asset_snapshot_hashes={p:file_hash(p) for p in self._launch_assets.values()}
+        except BaseException:
+            shutil.rmtree(folder,ignore_errors=True);self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
+            raise
     def load(self,cancel,deadline):
+        try:return self._load_validated(cancel,deadline)
+        except BaseException:self.unload();raise
+    def _load_validated(self,cancel,deadline):
         check(cancel,deadline)
         if self.proc and self.proc.poll() is None:
-            if self._loaded_stamp==self._lifecycle_stamp():return
+            with self._approval_guard(cancel,deadline):
+                self._verify_approval_mirror()
+                if self._loaded_stamp==self._lifecycle_stamp():return
             # Forget/rebind may rewrite a native memory while the old server
             # still owns its loaded copy. Reap it before validating a new child.
             self.unload()
@@ -90,17 +160,25 @@ class LlamaRunner:
         if self.purpose=='tap':cmd += ['--embedding','--pooling','none']
         elif self.purpose=='embed':cmd += ['--embedding','--no-repack']  # pooled vectors (model pooling, EmbeddingGemma: mean); no repack halves RSS (cloud 737->393 MB)
         elif self.purpose=='generate':
-            try:
-                from .lora_trainer import runner_lora_args
-                cmd += runner_lora_args(self.home,self.role,self.model)  # only a user-approved, hash-bound AG6 adapter
-            except Exception:pass
-            try:  # approved keyed fact memory (WP-S3): patched llama-server-mem, only if binary/model/memory hashes match
-                from .memory_server import runner_memory
-                mem=runner_memory(self.home,self.role,self.model)
-                if mem:cmd[0]=mem['binary'];env.update(mem['env'])
-                self.memory=mem
-            except Exception:self.memory=None
+            with self._approval_guard(cancel,deadline):
+                self._verify_approval_mirror()
+                try:
+                    from .lora_trainer import runner_lora_args
+                    cmd += runner_lora_args(self.home,self.role,self.model)  # only a user-approved, hash-bound AG6 adapter
+                except Exception:pass
+                try:  # approved keyed fact memory (WP-S3): patched llama-server-mem, only if binary/model/memory hashes match
+                    from .memory_server import runner_memory
+                    mem=runner_memory(self.home,self.role,self.model)
+                    if mem:cmd[0]=mem['binary'];env.update(mem['env'])
+                    self.memory=mem
+                except Exception:self.memory=None
+                try:self._snapshot_assets(cmd,env)
+                except BaseException:self.unload();raise
+        env.pop('V13_MEMORY_AUDIT',None)
+        self._audit_enabled=self.purpose=='generate' and bool(self.memory) and self.cfg.get('native_memory_audit',False) is True
+        if self._audit_enabled:env['V13_MEMORY_AUDIT']='1'
         self._loaded_binary=cmd[0];launch_stamp=self._lifecycle_stamp()
+        check(cancel,deadline)
         try:
             self.proc=subprocess.Popen(cmd,stdin=subprocess.DEVNULL,stdout=self.log_handle,stderr=self.log_handle,env=env)
             while True:
@@ -110,14 +188,55 @@ class LlamaRunner:
                     if self._json("GET","/health",None,min(deadline,time.monotonic()+1)).get("status")=="ok":break
                 except (OSError,RuntimeError,http.client.HTTPException,json.JSONDecodeError):pass
                 cancel.wait(.1)
-            binding=None
-            if self.memory:
-                from .memory_server import captured_delivery_binding
-                binding=captured_delivery_binding(self.home,self.role,self.model)
-                if binding and str(binding.get('path'))!=self.memory['env']['V13_MEMORY_FILE']:binding=None
-            if launch_stamp!=self._lifecycle_stamp():raise Unavailable(self.role+': Runner-Bindung während des Ladens geändert; erneut versuchen')
-            self._loaded_stamp=launch_stamp;self._memory_delivery_binding=binding
+            with self._approval_guard(cancel,deadline):
+                self._verify_approval_mirror()
+                for path,expected in self._asset_snapshot_hashes.items():
+                    from .common import file_hash
+                    if file_hash(path)!=expected:raise Unavailable("Runner asset snapshot changed")
+                binding=None
+                if self.memory:
+                    from .memory_server import captured_delivery_binding
+                    binding=captured_delivery_binding(self.home,self.role,self.model)
+                    if binding and str(binding.get('path'))!=self.memory['env']['V13_MEMORY_FILE']:binding=None
+                if launch_stamp!=self._lifecycle_stamp():raise Unavailable(self.role+': Runner-Bindung während des Ladens geändert; erneut versuchen')
+                self._loaded_stamp=launch_stamp;self._memory_delivery_binding=binding
         except BaseException:self.unload();raise
+    def _audit_begin_window(self,multiple_steps=False):
+        self._audit_window=None
+        if not self._audit_enabled:return
+        reason='MULTIPLE_NATIVE_STEPS' if multiple_steps else 'NO_MATCHING_LOADED_BINDING'
+        self._audit_unavailable=reason
+        binding=self.memory_delivery_binding
+        if multiple_steps or not binding:return
+        try:
+            self.log_handle.flush();stat=os.fstat(self.log_handle.fileno())
+            self._audit_window={'path':self.home/'logs'/(self.role+'.log'),
+                'offset':stat.st_size,'identity':(stat.st_dev,stat.st_ino),
+                'pid':self.proc.pid,'binding':binding}
+            self._audit_unavailable=None
+        except (OSError,ValueError,AttributeError):self._audit_unavailable='AUDIT_LOG_UNREADABLE'
+    def _audit_finish_window(self,status):
+        if not self._audit_enabled:return None
+        base={'status':'UNAVAILABLE','exact_retained':True,'quality_proven':False,
+              'activation_authorized':False,'semantic_truth_authority':False}
+        window=self._audit_window
+        if status!='FINAL':return dict(base,reason='REQUEST_NOT_FINAL',request_status=status)
+        if not window:return dict(base,reason=self._audit_unavailable or 'NO_REQUEST_WINDOW')
+        if not self._audit_completed:return dict(base,reason='REQUEST_NOT_COMPLETED')
+        if (self.proc is None or self.proc.poll() is not None or self.proc.pid!=window['pid']
+                or self.memory_delivery_binding!=window['binding']):
+            return dict(base,reason='REQUEST_BINDING_CHANGED')
+        try:
+            stat=window['path'].stat()
+            if (stat.st_dev,stat.st_ino)!=window['identity'] or stat.st_size<window['offset']:
+                return dict(base,reason='AUDIT_LOG_CHANGED')
+            from .sparse_audit import read_firing_window
+            observed=read_firing_window(window['path'],window['offset'])
+        except OSError:return dict(base,reason='AUDIT_LOG_UNREADABLE')
+        if self.memory_delivery_binding!=window['binding']:
+            return dict(base,reason='REQUEST_BINDING_CHANGED')
+        return dict(observed,request_status=status,loaded_binding=window['binding'],
+                    semantic_truth_authority=False)
     def embed(self,texts,cancel,deadline):
         """Pooled sentence embeddings (WP-H). Only for purpose='embed'; vectors are relevance keys, never facts."""
         if self.purpose!='embed':raise Unavailable('Nur der Embedding-Runner liefert Satzvektoren')
@@ -136,6 +255,12 @@ class LlamaRunner:
             else:raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
     def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
         if self.purpose!='generate':raise Unavailable('Tap-Runner erzeugt keine Antworten; Generation-Runner anfordern')
+        audit_requested=self.cfg.get('native_memory_audit',False) is True
+        audit_locked=False
+        if audit_requested:
+            audit_locked=self._audit_lock.acquire(blocking=False)
+            if not audit_locked:raise Unavailable('Concurrent native audit request')
+        self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
         # Measure cold load, prefill and streaming, including failed/cancelled calls.
         started=time.monotonic();done=threading.Event();samples=[];peaks={'rss_bytes':None,'pss_bytes':None};count=0;self.last_metrics={};self.phase='load';self.phase_started=started;self.stage_times={};status='FINAL'
         def sample():
@@ -166,6 +291,11 @@ class LlamaRunner:
             self.last_metrics.setdefault('generated_tokens',0);self.last_metrics.setdefault('ttft_s',None)
             # A synchronous check may beat the watchdog. Do not stop its watcher
             # and leave the old native request running after declaring idle.
+            if audit_locked:
+                try:
+                    observed=self._audit_finish_window(status)
+                    if observed is not None:self.last_metrics['native_memory_firing']=observed
+                finally:self._audit_lock.release()
             if status!='FINAL':self.last_metrics['interruption_unload']=self.unload()
     def completion_one(self,payload,cancel,deadline):
         """One real native decoder step with cancellation, not a text substitute."""
@@ -199,6 +329,7 @@ class LlamaRunner:
         if schema:payload["json_schema"]=schema
         lp_pairs=[] if schema and self.cfg.get('offer_logprobs',True) else None
         if lp_pairs is not None:payload['n_probs']=1  # WP-KAL2: token confidence for focal.offer_uncertainty
+        self._audit_begin_window(multiple_steps=bool(first_token_bias))
         first_step=None;first_tokens=0
         if first_token_bias:
             if self.role!='C3_LANGUAGE' or schema:raise Unavailable('Output delta is C3 first-token text only')
@@ -243,7 +374,9 @@ class LlamaRunner:
                 if tokens%16==0:
                     rss=process_memory(self.proc.pid).get('rss_bytes')
                     if rss is not None:peak=rss if peak is None else max(peak,rss)
-                if data.get("stop"):break
+                if data.get("stop"):
+                    if self._audit_enabled:self._audit_completed=True
+                    break
             check(cancel,deadline)
         except (OSError,http.client.HTTPException):
             check(cancel,deadline);self.unload();raise Unavailable("Native Inferenz unterbrochen")
@@ -299,8 +432,8 @@ class CausalStreamRunner:
     """
     role='C3_LANGUAGE'
     purpose='causal_stream'
-    def __init__(self,home,model,config):
-        self.home=Path(home);self.model=model;self.cfg=config
+    def __init__(self,home,model,config,approval_store=None):
+        self.home=Path(home);self.model=model;self.cfg=config;self.approval_store=approval_store
         self.template=None;self.session=None;self.last_metrics={};self.bias_provider=None
     def pids(self):
         out=self.template.pids() if self.template else []
@@ -359,7 +492,7 @@ class CausalStreamRunner:
             self.last_metrics['feature_abi']=binding['feature_abi']
             self.last_metrics['native_parameters']={'context_tokens':2048,'threads':2,'n_batch':128,'n_ubatch':128,'prompt_token_limit':512,'output_token_limit':cap}
             # No history or rule text is silently removed to satisfy this ABI.
-            self.template=LlamaRunner(self.home,self.role,self.model,dict(self.cfg,context_tokens=2048,threads=2))
+            self.template=LlamaRunner(self.home,self.role,self.model,dict(self.cfg,context_tokens=2048,threads=2),approval_store=self.approval_store)
             self.template.binary=binding['identity']['server_path']
             context_started=time.monotonic()
             try:
@@ -437,7 +570,7 @@ class RunnerPool:
     """Native runners. WP-N11: several generate runners may stay resident under the AG13 body budget
     (bodies.BodyFabric decides load/evict); tap and causal-stream runners stay exclusive. Without a fabric
     or with body_residency_mb=0 this is the old one-process-at-a-time pool."""
-    def __init__(self,home,models,cfg):self.home=home;self.models=models;self.cfg=cfg;self.current=None;self.resident={};self.fabric=None;self.mutex=threading.RLock();self.release_history=[]
+    def __init__(self,home,models,cfg,approval_store=None):self.home=home;self.models=models;self.cfg=cfg;self.approval_store=approval_store;self.current=None;self.resident={};self.fabric=None;self.mutex=threading.RLock();self.release_history=[]
     def resident_roles(self):return [k[0] for k,v in self.resident.items() if v.pids()]
     def _adopt_current(self):
         # A runner set directly on .current (tests, older callers) is owned like a resident one.
@@ -479,11 +612,12 @@ class RunnerPool:
                 self._release(key)
             if key not in self.resident:
                 self.resident[key]=LlamaRunner(self.home,role,path,self.cfg)
+                self.resident[key].approval_store=self.approval_store
                 if self.fabric is not None:self._port(role,'ASSIGNED',path)
             self.current=self.resident[key];return self.current
     def get_output(self,role):
         if role!='C3_LANGUAGE' or self.cfg.get('c3_decode_mode','server')=='server':return self.get(role)
-        with self.mutex:return self._exclusive((role,'causal_stream'),lambda:CausalStreamRunner(self.home,self.models.path_for(role),self.cfg))
+        with self.mutex:return self._exclusive((role,'causal_stream'),lambda:CausalStreamRunner(self.home,self.models.path_for(role),self.cfg,approval_store=self.approval_store))
     def get_tap(self,role):
         from .common import file_hash
         from .models import model_key

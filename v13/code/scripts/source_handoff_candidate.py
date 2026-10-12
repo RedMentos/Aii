@@ -104,11 +104,16 @@ def sources(root=ROOT):
         if hashlib.sha256(data).hexdigest() != expected:
             raise ValueError('Candidate frozen baseline digest changed: '+name)
         original[name] = data.decode()
-    original, changed = _transform(original)
+    baseline, changed = _transform(original)
     actual = {name:(root/name).read_text() for name in NAMES}
-    if actual != original and actual != changed:
-        raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
-    return original, changed
+    if actual != baseline and actual != changed:
+        # The reviewed approval-reader/firing integration (2026-10-12) is
+        # applied identically to both sides; live must equal one exactly.
+        from scripts.integrated_candidates import rebase
+        baseline, changed = rebase(baseline, root), rebase(changed, root)
+        if actual != baseline and actual != changed:
+            raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+    return baseline, changed
 
 
 def patch_text(root=ROOT):

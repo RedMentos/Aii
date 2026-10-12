@@ -166,6 +166,9 @@ class SourceHandoffCandidate(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             shutil.copytree(ROOT/SNAPSHOT, root/SNAPSHOT)
+            # Approval-reader/firing integration (2026-10-12) rebases both sides.
+            from scripts.integrated_candidates import FIRING_SNAPSHOT
+            shutil.copytree(ROOT/FIRING_SNAPSHOT, root/FIRING_SNAPSHOT)
             (root/'v13').mkdir()
             for name, text in original.items():
                 (root/name).write_text(text)
