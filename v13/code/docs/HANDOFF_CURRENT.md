@@ -56,3 +56,7 @@ Projekt: brain-inspirierte, kontinuierlich lernende KI-Runtime für ein Redmi-Ha
 ## Ergänzung 2026-10-12 Thread „Nächste offene Pakete K“ (Claude): WP-S4-Rest SIGReg auf echten Taps
 
 Vorregistrierte Ablation ema|sigreg|both (120 Läufe, unveränderter `predictor_worker.train`, echte B1-Token-Zustände aus `b3-l1-v3-20261012/states.npz`): **Default bleibt `ema`**. Wichtig für spätere Arbeit: Beim Laufzeitbudget (lr .002, Norm .02, 240 Schritte) repariert kein Modus einen kollabierten Checkpoint; wer das Predictor-Budget erhöht, sollte `sigreg` nehmen (EMA überanpasst dort). Keine Runtime-Änderung. Befund `docs/proofs/continuation-20261012/sigreg-real-taps/BEFUND.md`, Branch `claude/project-thread-s0290g`. Offen: B2-Qwen-Token-Zustände, Redmi.
+
+## Ergänzung 2026-10-12 Thread K: R4 Teil 3, C3-Token-Unsicherheit
+
+C3 LFM2.5-350M erkennt eigene Rechenfehler gut über die kleinste Logprob eines Ziffern-Tokens (frisch AUROC 0,84, vorregistriert), aber Körper zu wecken rettet diese Fehler nicht (Politik = C3 allein). Nächster sinnvoller Schritt: Signal mit Werkzeug-Nachrechnen (W2c) oder ehrlicher Unsicherheitsangabe koppeln, neu vorregistrieren. Befund `docs/proofs/continuation-20261012/r4-c3-uncertainty-wake/BEFUND.md`. Keine Runtime-Änderung.
