@@ -6,6 +6,9 @@ from .common import dumps,atomic_write,safe_text,file_hash
 from .config import KNOBS,save_config
 from .models import ROLES
 from . import age as agectl
+def obsched_names():
+    from .observer_schedule import SCHEDULES
+    return SCHEDULES
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
 :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
@@ -30,7 +33,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :export dataset [session|all]
 :replay [Anzahl] / :replay status
 :consolidate semantic|procedural / :consolidate status / :consolidate rollback <ID>
-:route auto|simple|detail|gist|both / :observers background|off
+:route auto|simple|detail|gist|both / :observers background|off|A_THEN_B_SEQUENTIAL|B_THEN_A_SEQUENTIAL|ALWAYS_BOTH_ASYNC|JEF_FIRST_THEN_BOTH|SAMPLED_OBSERVER|ON_DEMAND_REENTRY
 :decode [server|same_causal_zero|same_causal] / :sampling [anti_echo|legacy] / :semantic [status|off|shadow|on|auto] / :episodes [status|list|cut|graph <id>|relation <a> <b>|forgetting] / :live / :register [summary|drift|paths|declared|<Präfix>] / :gates [summary|all|<Gate>] / :drift [status|probes|freeze <Set>|refreeze <Set> <Grund>|sdft] / :admission [status|train|active|shadow|table] / :duplex [status|auto|interrupt|off] / :fabric [report|record] / :image [status|add <Pfad>|list|describe [id] [g|rIJ|hl|hr|ht|hb]|train|look [id]|locate <id> <Text>|forget <id>] / :collapse [all]
 :effort [disabled|low|adaptive|high|max] (Reasoning-Effort/Body-Wake; ohne Wert: Status)
 :focal (JEF-Fokusschleife: Workspace-Slots, letzte Runden, Inquisition P1/P2, C5-Auswahl)
@@ -357,6 +360,7 @@ class Operator:
             key={'route':'route_override','observers':'observer_mode','channel':'channel','learning':'learning_mode'}[cmd]
             if len(args)!=1:raise ValueError('Ein Wert erforderlich')
             value={'record':'RECORD_ONLY','shadow':'SHADOW_UPDATE','commit':'APPROVED_COMMIT'}.get(args[0],args[0]) if cmd=='learning' else args[0]
+            if cmd=='observers' and args[0].upper() in obsched_names():key,value='observer_schedule',args[0].upper()  # §22.2.4 deployment knob
             cfg=r.cfg|{key:value};save_config(r.home,cfg);r.cfg.update(cfg);return key+' = '+value
         if cmd=='budget':
             if len(args)!=2 or args[0] not in KNOBS:raise ValueError(':budget Name Wert; :budget listet Bereiche')

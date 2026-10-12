@@ -42,3 +42,18 @@ In jedem Modus unangetastet: Antwort-Governor, Regeln, Provenance-Log, Cancel (`
 Alle Faktoren (0,6 / 0,5 / 1,15 / 5 %) sind BOOT-Werte, keine Messung. RED lehnt den Turn weiter ab statt einen
 JEF-Sicherheitspfad zu fahren: unter dem RAM-Boden riskiert auch ein C3-Forward den OOM. Redmi-Kalibrierung und
 Messung, ob ORANGE mit einem Körper tatsächlich unter dem Boden bleibt, sind WP-R.
+
+## Nachtrag WP-N17: Observer-Scheduling (§22.2.4) und §73-RSS-Budget
+
+Modul `v13/observer_schedule.py`, Tests `tests/test_observer_schedule.py` (9, inkl. echter Turn mit Fixture-Körpern), volle Suite 1307 grün.
+
+- **Regler `observer_schedule`** (`:observers <WERT>`, Standard `A_THEN_B_SEQUENTIAL` = bisheriges Verhalten): `B_THEN_A_SEQUENTIAL`;
+  `ALWAYS_BOTH_ASYNC` (beide Vor-Antwort-Pässe gleichzeitig, nur wenn AG13-Residenz an ist und der Modus zwei Körper erlaubt, sonst
+  sequenziell mit Grund `ASYNC_NEEDS_TWO_RESIDENT_BODIES`; parallele Pässe starten ohne Peer-Nachricht, danach liegen beide für Re-entry vor);
+  `JEF_FIRST_THEN_BOTH` (JEF antwortet zuerst, die geplanten Körper laufen nach dem Commit); `SAMPLED_OBSERVER` (deterministisch je Event,
+  Anteil `observer_sample_rate`, ausgelassene Events auch ohne Post-Commit-Pass); `ON_DEMAND_REENTRY` (kein Erstpass, Körper nur auf
+  Re-entry-Anfrage der Fokusschleife). Offers behalten Rolle, Provenance und Gültigkeit; jeder Turn loggt `observer_schedule`.
+- **§73-RSS-Budget:** V13s eigene Summe aus PSS (sonst RSS) über Hauptprozess + Runner. Über 3000 MB (untere Grenze von
+  `total_RSS_soft_budget`) → YELLOW, über 3800 MB (`total_RSS_hard_backoff`) → ORANGE, gleiche Hysterese. Nur unter Android aktiv
+  (`rss_status BOOT_REDMI_TARGET`); auf anderen Hosts aus (`OFF_NOT_ANDROID`), damit Cloud-Läufe großer Körper nicht von Handy-Zielen gedrosselt werden.
+- **Grenze:** ob parallele Pässe auf dem Snapdragon 732G schneller sind oder nur RAM kosten, misst erst der Redmi (WP-R); §73 sagt „sequential first“, daher der Standard.

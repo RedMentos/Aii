@@ -49,6 +49,7 @@ REVISION='resource-modes-v1'
 CALIBRATION_MARGIN=1.15   # BOOT safety factor on measured body RSS
 MEM_HYSTERESIS=.05        # BOOT: leave a stricter mode only after clearing its threshold by 5 %
 TEMP_HYSTERESIS_C=1.      # BOOT
+RSS_BOOT_MB={'YELLOW':3000.,'ORANGE':3800.}  # §73 total_RSS_soft_budget (lower bound) / total_RSS_hard_backoff
 
 def as_mode(x):
     """Mode name from a mode or a legacy guard state (unknown -> YELLOW, conservative)."""
@@ -71,10 +72,17 @@ def scaled(n,state_or_mode,key,floor=1):
     return max(floor,int(n*f+.5))
 def cap_roles(roles,state_or_mode,key='max_observer_bodies'):return list(roles)[:POLICY[as_mode(state_or_mode)][key]]
 
-def boot_profile(cfg):
+def boot_profile(cfg,device_info=None):
     floor=float(cfg['minimum_free_mb']);limit=float(cfg['thermal_limit_c'])
+    if device_info is None:
+        from .resources import device
+        device_info=device()
+    android=bool(device_info.get('android'))
     return {'revision':REVISION,'status':'UNCALIBRATED','source':'BOOT minimum_free_mb/thermal_limit_c',
             'mem_mb':{'RED':floor,'ORANGE':2*floor,'YELLOW':3*floor},'temp_c':{'RED':limit,'ORANGE':limit-3,'YELLOW':limit-6},
+            # §73 Redmi lab targets (total_RSS_soft_budget 3.0-3.4 GB -> lower bound, hard_backoff 3.8 GB); not an OS guarantee.
+            # Off on other hosts: desktop cloud runs of big bodies must not be throttled by phone targets.
+            'rss_mb':dict(RSS_BOOT_MB) if android else None,'rss_status':'BOOT_REDMI_TARGET' if android else 'OFF_NOT_ANDROID',
             'thermal_status':'BOOT_UNMEASURED','hysteresis':{'mem_fraction':MEM_HYSTERESIS,'temp_c':TEMP_HYSTERESIS_C}}
 
 def validate(p):
@@ -83,6 +91,8 @@ def validate(p):
         if not all(isinstance(t[m],(int,float)) for m in ('RED','ORANGE','YELLOW')):raise ValueError('resource profile '+k)
     if not p['mem_mb']['RED']<=p['mem_mb']['ORANGE']<=p['mem_mb']['YELLOW']:raise ValueError('mem thresholds must rise RED<=ORANGE<=YELLOW')
     if not p['temp_c']['RED']>=p['temp_c']['ORANGE']>=p['temp_c']['YELLOW']:raise ValueError('temp thresholds must fall RED>=ORANGE>=YELLOW')
+    r=p.get('rss_mb')
+    if r is not None and not (isinstance(r.get('YELLOW'),(int,float)) and isinstance(r.get('ORANGE'),(int,float)) and 0<r['YELLOW']<=r['ORANGE']):raise ValueError('rss budget must rise 0<YELLOW<=ORANGE')
     return p
 
 def calibrate(cfg,body_rss_mb,device_info,clock=time.time,thermal=None):
@@ -95,7 +105,7 @@ def calibrate(cfg,body_rss_mb,device_info,clock=time.time,thermal=None):
     need={'B1_DETAIL','B2_GIST'}
     rss={k:float(v) for k,v in (body_rss_mb or {}).items() if k in need and v is not None and float(v)>0}
     if set(rss)!=need:raise ValueError('Kalibrierung braucht gemessene RSS beider Beobachter-Körper (B1_DETAIL, B2_GIST); fehlt: '+','.join(sorted(need-set(rss))))
-    p=boot_profile(cfg);floor=p['mem_mb']['RED']
+    p=boot_profile(cfg,device_info);floor=p['mem_mb']['RED']
     p['mem_mb']={'RED':floor,'ORANGE':round(floor+max(rss.values())*CALIBRATION_MARGIN,1),'YELLOW':round(floor+sum(rss.values())*CALIBRATION_MARGIN,1)}
     if thermal:
         p['temp_c']={m:float(thermal[m]) for m in ('RED','ORANGE','YELLOW')};p['thermal_status']='DEVICE_MEASURED' if device_info.get('android') else 'HOST_MEASURED_NOT_REDMI'
@@ -116,10 +126,21 @@ def measure_bodies(runtime):
             if m.get('rss_bytes'):out[role]=max(out.get(role,0.),m['rss_bytes']/1048576)
     return {k:round(v,1) for k,v in out.items()}
 
+def total_rss_mb(snapshot):
+    """V13's own footprint: PSS where measured (shared mmap pages counted once), else RSS; None if unmeasured."""
+    vals=[(p.get('pss_bytes') or p.get('rss_bytes')) for p in snapshot.get('processes') or () if isinstance(p,dict)]
+    vals=[v for v in vals if v]
+    return sum(vals)/1048576 if vals else None
+
 def classify(snapshot,profile,previous='GREEN'):
-    """(mode, reasons) for one snapshot. Leaving a stricter mode needs the hysteresis margin."""
+    """(mode, reasons) for one snapshot. Leaving a stricter mode needs the hysteresis margin.
+
+    Inputs: MemAvailable floor (RED/ORANGE/YELLOW), battery temperature (RED/ORANGE/YELLOW) and, where a
+    §73 budget is set, V13's total RSS/PSS (over hard backoff -> ORANGE, over soft budget -> YELLOW).
+    """
     mem=snapshot.get('mem_available_bytes');temp=snapshot.get('battery_temperature_c')
     mem=None if mem is None else mem/1048576
+    rss=total_rss_mb(snapshot) if profile.get('rss_mb') else None
     hm=profile['hysteresis']['mem_fraction'];ht=profile['hysteresis']['temp_c'];prev=RANK.get(previous,0)
     def hit(m):
         r=[];held=RANK[m]<=prev  # already this strict: stay until the margin is cleared
@@ -127,6 +148,7 @@ def classify(snapshot,profile,previous='GREEN'):
         if mem is not None and mem<lim:r.append('MEM_BELOW_'+m)
         tl=profile['temp_c'][m]-(ht if held else 0.)
         if temp is not None and temp>=tl:r.append('TEMP_AT_'+m)
+        if rss is not None and m in profile['rss_mb'] and rss>profile['rss_mb'][m]*(1-hm if held else 1.):r.append('RSS_OVER_'+m)
         return r
     for m in ('RED','ORANGE','YELLOW'):
         r=hit(m)

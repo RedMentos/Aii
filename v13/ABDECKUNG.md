@@ -203,7 +203,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Event/Wake Scheduler | §22.2.1, G13 | ✅ | `scheduler.py` | WP-E |
 | Response Governor | §22.2.2 | ✅ | Deadline + Snapshot-Fallback | – |
 | Thin-Control-Budget | §22.2.3, §24.14 | 🟡 | `control_budget.py` + `:fabric`: Latenz P95 je Steuer-Stufe, Checkpoint-/State-Bytes, Limits-Regler; Verdikt NO_LIMITS bis Redmi-Messung (Blueprint: Limits erst nach Zielhardware) | WP-N12, WP-T14 |
-| Redmi-Budget / Observer-Scheduling | §22.2.4, §73, §97 | 🟡 | Config-Werte; Redmi-Messung fehlt | WP-R |
+| Redmi-Budget / Observer-Scheduling | §22.2.4, §73, §97 | 🟡 | 2026-10-12 Thread N: Regler `observer_schedule` mit allen 6 Canon-Werten im Turn und Post-Commit-Pass (`observer_schedule.py`, Standard sequenziell wie bisher), §73-RSS-Budget (PSS-Summe, 3000/3800 MB) als YELLOW/ORANGE-Eingang der §97.2-Modi, nur auf Android aktiv; Redmi-Messung (Parallel vs. sequenziell, echte RSS) fehlt | WP-N17, WP-R |
 | Training-Master vs. quantisierte Kopie | §22.3 | 🟡 | Vertrag in `body_training.py` | WP-I |
 | Phone-first Learning | §22.4, §90 | 🟡 | `native_select_finetune.cpp` (ggml-opt) läuft für reine Attention-Modelle; LFM2 seit 2026-10-12 per isoliertem Patch trainierbar (`build_native_lfm2_finetune.sh`, `native_answer_finetune.cpp`): C3 bis 7/8 Fakten, aber zu viel Vergessen/Leck, AG6-Gate nicht bestanden (`code/docs/NATIVE_LFM2_TRAIN.md`); Redmi-Messung offen | WP-S6, WP-R |
 | Speculative Decoding | §22.6 | ✅ (gemessen, bewusst aus) | `scripts/spec_decode_bench.py`: auf hybriden LFM2/Qwen3.5-Bodies greift Spekulation in b10964 nicht (0,92–0,98×, Draft +330 MB); siehe `bench-results/spec-decode-20261009/` | WP-N12 |

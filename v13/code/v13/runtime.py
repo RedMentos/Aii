@@ -15,6 +15,7 @@ from .agi import live as agi_live
 from .runners import RunnerPool,NeedleRunner,check,kill_process
 from .resources import snapshot,ResourceGuard,prune_runner_logs
 from . import resource_modes as rmodes
+from . import observer_schedule as obsched
 from .memory import Memory
 from .consolidation import Consolidation
 from .cognition import Cognition,scaffold_route,ROUTES,segments,percept_mode
@@ -396,14 +397,12 @@ class Runtime:
                     if jo['applied']:observer_seconds=max(1.,observer_seconds*jo['scale'])
                 except Exception as exc:self.store.log('jef_observer_unavailable',eid,{'error':type(exc).__name__})
                 _,channel_head=fastpol.head(self,'channel',e,self.cfg['channel'])  # WP-T1 channel head (applies only when approved)
-                def ask(role,focus=None):
-                    p=self.cognition.offer(role,e,version,min(observer_end,time.monotonic()+observer_seconds),peers.get(role),valid_until=deadline,**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
+                def ask(role,focus=None,use_peer=True):
+                    p=self.cognition.offer(role,e,version,min(observer_end,time.monotonic()+observer_seconds),peers.get(role) if use_peer else None,valid_until=deadline,**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
                     other='B2_GIST' if role=='B1_DETAIL' else 'B1_DETAIL';peers[other]=self.cognition.communicate(p,other,**({'fast':channel_head} if channel_head and channel_head.get('learned') else {}));return p
-                for role in roles:
-                    if time.monotonic()+1>=observer_end:break
-                    try:offers.append(ask(role))
-                    except Cancelled:raise
-                    except Exception as exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]})
+                sched=obsched.plan(self.cfg.get('observer_schedule',obsched.DEFAULT),roles,eid,self.cfg.get('observer_sample_rate',.5),parallel_ok=rpol['max_observer_bodies']>1 and bool(getattr(getattr(self.pool,'fabric',None),'enabled',False)))  # §22.2.4 deployment knob
+                meta['observer_schedule']={k:sched[k] for k in ('schedule','pre','parallel','post','reason')}
+                offers+=obsched.run(sched,lambda role,use_peer:ask(role,use_peer=use_peer),observer_end,lambda role,exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]}),cancelled=(Cancelled,))
                 def reenter(role,focus=None):
                     try:return ask(role,focus)
                     except Cancelled:raise
@@ -641,6 +640,7 @@ class Runtime:
             with self.lock:self.current='observers'
             peer=None
             background_roles={'none':[],'detail':['B1_DETAIL'],'gist':['B2_GIST'],'both':['B1_DETAIL','B2_GIST']}[wake_decision['action']] if wake_decision and wake_decision['learned'] else ['B1_DETAIL','B2_GIST']
+            background_roles=obsched.background(self.cfg.get('observer_schedule',obsched.DEFAULT),eid,self.cfg.get('observer_sample_rate',.5),background_roles,(meta.get('observer_schedule') or {}).get('post'))  # §22.2.4
             background_roles=rmodes.cap_roles(background_roles,self.guard.mode,'background_observers')  # §97.2 YELLOW: one post-commit body
             for role in background_roles:
                 if role==(meta.get('late_watch') or {}).get('offered'):continue  # WP-U3: this body already ran during the output

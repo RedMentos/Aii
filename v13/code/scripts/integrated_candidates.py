@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -110,8 +110,30 @@ def resource_modes(sources):
     return out
 
 
+def observer_schedule(sources):
+    """2026-10-12 thread N (§22.2.4/§73): observer scheduling knob in the turn and post-commit pass; telemetry."""
+    out = dict(sources)
+    t = out['v13/runtime.py']
+    t = _replace(t, 'from . import resource_modes as rmodes\n',
+                 'from . import resource_modes as rmodes\nfrom . import observer_schedule as obsched\n')
+    t = _replace(t, '         def ask(role,focus=None):\n',
+                 '         def ask(role,focus=None,use_peer=True):\n')
+    t = _replace(t, ',peers.get(role),valid_until=dea',
+                 ',peers.get(role) if use_peer else None,valid_until=dea')
+    t = _replace(t, "                for role in roles:\n                    if time.monotonic()+1>=observer_end:break\n                    try:offers.append(ask(role))\n                    except Cancelled:raise\n                    except Exception as exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]})\n",
+                 "                sched=obsched.plan(self.cfg.get('observer_schedule',obsched.DEFAULT),roles,eid,self.cfg.get('observer_sample_rate',.5),parallel_ok=rpol['max_observer_bodies']>1 and bool(getattr(getattr(self.pool,'fabric',None),'enabled',False)))  # §22.2.4 deployment knob\n                meta['observer_schedule']={k:sched[k] for k in ('schedule','pre','parallel','post','reason')}\n                offers+=obsched.run(sched,lambda role,use_peer:ask(role,use_peer=use_peer),observer_end,lambda role,exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]}),cancelled=(Cancelled,))\n")
+    t = _replace(t, "            background_roles={'none':[],'detail':['B1_DETAIL'],'gist':['B2_GIST'],'both':['B1_DETAIL','B2_GIST']}[wake_decision['action']] if wake_decision and wake_decision['learned'] else ['B1_DETAIL','B2_GIST']\n",
+                 "            background_roles={'none':[],'detail':['B1_DETAIL'],'gist':['B2_GIST'],'both':['B1_DETAIL','B2_GIST']}[wake_decision['action']] if wake_decision and wake_decision['learned'] else ['B1_DETAIL','B2_GIST']\n            background_roles=obsched.background(self.cfg.get('observer_schedule',obsched.DEFAULT),eid,self.cfg.get('observer_sample_rate',.5),background_roles,(meta.get('observer_schedule') or {}).get('post'))  # §22.2.4\n")
+    out['v13/runtime.py'] = t
+    t = out['v13/store.py']
+    t = _replace(t, "TELEMETRY_FIELDS.update('resource_mode orange_mb yellow_mb'.split())  # §97.2 resource modes\n",
+                 "TELEMETRY_FIELDS.update('resource_mode orange_mb yellow_mb'.split())  # §97.2 resource modes\nTELEMETRY_FIELDS.update('observer_schedule schedule pre post parallel sampled rss_mb'.split())  # §22.2.4 observer scheduling, §73 RSS budget\nTELEMETRY_ENUMS.update('A_THEN_B_SEQUENTIAL B_THEN_A_SEQUENTIAL ALWAYS_BOTH_ASYNC JEF_FIRST_THEN_BOTH SAMPLED_OBSERVER ON_DEMAND_REENTRY ASYNC_NEEDS_TWO_RESIDENT_BODIES SAMPLED_OUT ON_DEMAND_ONLY RSS_OVER_YELLOW RSS_OVER_ORANGE B1_DETAIL B2_GIST'.split())\n")
+    out['v13/store.py'] = t
+    return out
+
+
 def _later(sources):
-    return resource_modes(schema_order(native_cache_bounds(sources)))
+    return observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))
 
 
 def _baseline(root):
