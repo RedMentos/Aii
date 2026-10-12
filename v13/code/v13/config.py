@@ -68,6 +68,8 @@ KNOBS['drift_flip_max']=(.10,"THRESHOLD",0.,1.,"WP-S5 max share of frozen protec
 KNOBS['drift_required']=(0,"COUNT",0,1,"WP-S5 1 = updates without a drift measurement are refused at :approve; 0 = checked when measured")
 KNOBS['control_budget_p95_ms']=(0.,"THRESHOLD",0.,60000.,"WP-T14 §22.2.3 cap on P95 control-fabric latency per turn in ms; 0 = unset (limits only after Redmi measurement)")
 KNOBS['control_budget_state_mb']=(0.,"THRESHOLD",0.,4096.,"WP-T14 §22.2.3 cap on persistent control state (states table) in MB; 0 = unset")
+KNOBS['native_cache_ram_mb']=(128,"BYTES_MB",0,8192,"G6B BOOT llama-server --cache-ram per runner (b10964 default 8192); 0 disables the host prompt cache. With native_ctx_checkpoints 6 the worst case stays <=256 MiB per body (cloud measurement, Redmi open)")
+KNOBS['native_ctx_checkpoints']=(6,"COUNT",0,32,"G6B BOOT llama-server --ctx-checkpoints per slot (b10964 default 32; Qwen3.5 B2 ~19 MiB each, LFM2.5 <0.2 MiB)")
 KNOBS['control_budget_params_mb']=(0.,"THRESHOLD",0.,4096.,"WP-T14 §22.2.3 cap on approved learned control checkpoints in MB; 0 = unset")
 DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"learning_mode":"RECORD_ONLY","system_stage":0,"user_stage_cap":0,
  "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"boot","segment_mode":"percept","tool_conflict_policy":"correct"}

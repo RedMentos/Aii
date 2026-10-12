@@ -48,7 +48,7 @@ class Runtime:
     def session(self,value):self._selected_session=value
     def __init__(self,home,notify=None):
         self._session_local=threading.local();self._selected_session=None
-        self.home=home;self.cfg=initialize(home);self.store=Store(home,self.cfg['log_retention_days']);prune_runner_logs(home,self.cfg['log_retention_days']);self.models=ModelManager(home,self.cfg.get('b2_control','two_body'));self.pool=RunnerPool(home,self.models,self.cfg);self.needle=NeedleRunner(home,self.models)
+        self.home=home;self.cfg=initialize(home);self.store=Store(home,self.cfg['log_retention_days']);prune_runner_logs(home,self.cfg['log_retention_days']);self.models=ModelManager(home,self.cfg.get('b2_control','two_body'));self.pool=RunnerPool(home,self.models,self.cfg,approval_store=self.store);self.needle=NeedleRunner(home,self.models)
         self.store.ensure_generation_snapshot(self.cfg,self.revisions())
         self.cancel_event=threading.Event()
         self.session=self.store.meta('last_session') or self.store.new_session();self.memory=Memory(self.store,self.cfg);semantic_memory.attach(self);self.cognition=Cognition(self);self.learner=Learner(self);self.world=WorldState(self)
@@ -543,7 +543,11 @@ class Runtime:
                     try:  # WP-T9: inventory overlap on the actual final native runner; Exact stays delivered.
                         from .memory_server import shadow_delivery
                         loaded=getattr(runner,'memory_delivery_binding',None) if runner.pids() else None
-                        delivery=shadow_delivery(self.store,self.home,runner.role,runner.model,loaded,memories)
+                        audit=runner.last_metrics.get('native_memory_firing')
+                        if audit is not None:
+                            from .memory_server import observed_shadow_delivery
+                            delivery=observed_shadow_delivery(self.store,self.home,runner.role,runner.model,loaded,memories,audit)
+                        else:delivery=shadow_delivery(self.store,self.home,runner.role,runner.model,loaded,memories)
                         meta['sparse_delivery_shadow']=delivery
                         self.store.log('sparse_delivery_shadow',eid,delivery)
                     except Exception as exc:self.store.log('sparse_delivery_unavailable',eid,{'error':type(exc).__name__})

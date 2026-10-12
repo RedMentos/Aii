@@ -148,6 +148,59 @@ def shadow_delivery(store,home,role,model_path,loaded_binding,memories):
         result['reasons'].append({'memory_id':mid,'reason':reason})
     result['reason']='INVENTORY_ONLY';return result
 
+def observed_shadow_delivery(store,home,role,model_path,loaded_binding,memories,audit):
+    """Map actual writes only to currently approved ordinary facts, still SHADOW.
+
+    The ordinary inventory/source checks remain required. A write measures an
+    execution event, never semantic truth, useful recall or permission to omit.
+    """
+    from .sparse_memory import native_items_path
+    result=shadow_delivery(store,home,role,model_path,loaded_binding,memories)
+    result.update(observed_memory_ids=[],observed_provenance=[],quality_proven=False,
+                  activation_authorized=False,semantic_truth_authority=False)
+    def reject(reason):
+        result['firing_reason']=reason
+        return result
+    if result['reason']!='INVENTORY_ONLY':return reject('NO_MATCHING_LOADED_BINDING')
+    if not isinstance(audit,dict) or audit.get('status')!='OBSERVED_NATIVE_WRITES':
+        return reject(audit.get('reason','NO_REQUEST_OBSERVATION') if isinstance(audit,dict) else 'NO_REQUEST_OBSERVATION')
+    if (audit.get('request_status')!='FINAL' or audit.get('loaded_binding')!=loaded_binding
+            or audit.get('exact_retained') is not True or audit.get('quality_proven') is not False
+            or audit.get('activation_authorized') is not False or audit.get('semantic_truth_authority') is not False):
+        return reject('AUDIT_BINDING_OR_AUTHORITY_INVALID')
+    import struct
+    try:
+        metadata=json.loads(native_items_path(loaded_binding['path']).read_text())
+        raw=Path(loaded_binding['path']).read_bytes()
+        layer=struct.unpack_from('<i',raw,8)[0]
+        n=len(metadata['rows']);counts=audit['slot_applied_counts'];blocked=audit['slot_guard_blocked_counts']
+        if (type(audit.get('request')) is not int or audit['request']<1
+                or type(audit.get('layer')) is not int or audit['layer']!=layer
+                or type(audit.get('evaluated_rows')) is not int or audit['evaluated_rows']<1
+                or type(audit.get('batches')) is not int or audit['batches']<1
+                or not isinstance(counts,list) or not isinstance(blocked,list)
+                or len(counts)!=n or len(blocked)!=n
+                or any(type(v) is not int or not 0<=v<=audit['evaluated_rows'] for v in counts+blocked)
+                or any(a+b>audit['evaluated_rows'] for a,b in zip(counts,blocked))
+                or audit.get('fired_rows')!=[r for r,v in enumerate(counts) if v]):
+            raise ValueError('Native request/slot dimensions')
+    except (OSError,ValueError,KeyError,TypeError,struct.error):return reject('INVALID_REQUEST_ROW_MAP')
+    fired=set(audit['fired_rows'])
+    for mid,ref in zip(result['candidates'],result['provenance']):
+        if any(r in fired and mapped==mid for r,mapped in enumerate(metadata['rows'])):
+            result['observed_memory_ids'].append(mid);result['observed_provenance'].append(dict(ref))
+    # Recheck after reading/mapping; concurrent forget/reapproval or changed
+    # source bytes cannot turn the earlier valid inventory into stale evidence.
+    final=shadow_delivery(store,home,role,model_path,loaded_binding,memories)
+    if (final['reason']!='INVENTORY_ONLY' or final['candidates']!=result['candidates']
+            or final['provenance']!=result['provenance']):
+        result['observed_memory_ids']=[];result['observed_provenance']=[]
+        return reject('REQUEST_BINDING_CHANGED')
+    result.update(firing='OBSERVED_NATIVE_WRITES',firing_reason='REQUEST_WRITES_ONLY',
+                  native_request=audit['request'],evaluated_rows=audit['evaluated_rows'],
+                  slot_applied_counts=list(counts),slot_guard_blocked_counts=list(blocked))
+    return result
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--home',required=True);ap.add_argument('cmd',choices=['build','status','patch']);ap.add_argument('--source')
     ap.add_argument('--jobs',type=int,default=2);a=ap.parse_args()

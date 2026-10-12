@@ -12,9 +12,11 @@ from v13.memory_server import _native_live_rows
 
 
 class MergedPreparation(unittest.TestCase):
-    def test_both_changes_survive_composition_and_live_sources_are_unchanged(self):
+    def test_both_changes_survive_composition_and_live_sources_are_baseline_or_integrated(self):
         original,changed=smoke.merged_sources()
-        self.assertTrue(all((smoke.ROOT/name).read_text()==text for name,text in original.items()))
+        live={name:(smoke.ROOT/name).read_text() for name in original}
+        # Integrated 2026-10-12: live must be exactly baseline or exactly this composition.
+        self.assertIn(live,(original,changed))
         for name,text in changed.items():compile(text,name,'exec')
         runners=changed['v13/runners.py']
         for marker in ('self._audit_lock=threading.Lock()','self._snapshot_assets(cmd,env)',

@@ -100,6 +100,9 @@ TELEMETRY_ENUMS.update('NO_LIMITS NO_DATA'.split())  # WP-T14 control budget
 TELEMETRY_FIELDS.update('exact_retained firing binding native_sha256 model_sha256 binary_sha256 sidecar_sha256 batch_id reasons provenance'.split())  # WP-T9 source-bound shadow inventory
 TELEMETRY_ENUMS.update('SHADOW UNMEASURED NO_MATCHING_LOADED_BINDING INVALID_NATIVE_ROW_MAP NOT_ORDINARY_FACT NO_BOUND_LIVE_ROWS SOURCE_OR_CONTENT_MISMATCH BOUND_FACT_POSSIBLE_FIRING_UNMEASURED INVENTORY_ONLY'.split())
 
+TELEMETRY_FIELDS.update('native_memory_firing request_status loaded_binding quality_proven activation_authorized layer evaluated_rows batches slot_applied_counts slot_guard_blocked_counts fired_rows observed_memory_ids observed_provenance firing_reason native_request'.split())
+TELEMETRY_ENUMS.update('OBSERVED_NATIVE_WRITES REQUEST_WRITES_ONLY REQUEST_NOT_FINAL REQUEST_NOT_COMPLETED REQUEST_BINDING_CHANGED AUDIT_LOG_CHANGED AUDIT_LOG_UNREADABLE AUDIT_WINDOW_LIMIT NO_REQUEST_WINDOW MULTIPLE_NATIVE_STEPS NO_PROMPT_MARKER NO_EVALUATED_ROWS MULTIPLE_REQUESTS NO_REQUEST_OBSERVATION AUDIT_BINDING_OR_AUTHORITY_INVALID INVALID_REQUEST_ROW_MAP'.split())
+
 def telemetry_metrics(value):
     if isinstance(value,dict):
         result={}

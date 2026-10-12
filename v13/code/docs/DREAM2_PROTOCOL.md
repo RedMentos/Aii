@@ -66,3 +66,47 @@ unterbrochener Arbeit nicht mit den früheren isolierten Messungen
 gleichgesetzt. `phone_measured` und `canonical_gate_pass` bleiben false.
 Dieser 4+4-Fakten-/Fragenumformulierungsversuch belegt weder den gesamten
 Sleep-Pfad noch das Lernen im eingesetzten 350M-Body.
+
+## Ergebnis 2026-10-12: vollständige Kohorte v3 (15/15 Arme)
+
+Der v2-Ordner ließ sich nicht fortsetzen: `run_binding.platform` des neuen
+Cloud-Containers lautet `Linux-6.18.44-fc-v114-x86_64-with-glibc2.39`, und das
+Resume lehnt jede geänderte Bindung ab. Alle übrigen Bindungen (Master-Dateien,
+Traumdaten, sechs Quell-Hashes, Pakete torch 2.8.0+cpu / transformers 5.19.0 /
+peft 0.21.2 / safetensors 0.8.0, Konfiguration, Fakten) sind identisch. Deshalb
+lief derselbe Befehl unverändert in einem frischen Ordner (`--threads 1`,
+9971 s). v2 bleibt unverändert erhalten.
+
+Reproduktion: Basisauswertung und alle Rohgenerationen sind mit v2 identisch;
+die zwei fertigen v2-Kontrollarme (Seed 13 `none`, `replay_exact`) stimmen in
+allen Antworten, Trainingsverläufen und Recall/Paraphrase/Leak/Probe-Werten
+überein, nur `kl_to_base` weicht um etwa 1e-5 ab.
+
+Mittel über Seeds 13/21/34 nach Phase B (40 Schritte):
+
+| Arm | A-Recall | A-Paraphrase | B-Recall | Probe-Retention | Near-miss-Leak | KL |
+|---|---|---|---|---|---|---|
+| none | .33 | .42 | 1.0 | .61 | .33 | 2.15 |
+| replay_exact | 1.0 | .42 | 1.0 | .61 | .93 | 1.89 |
+| dream_validated | 1.0 | .75 | 1.0 | .19 | .93 | 2.14 |
+| dream_self | .75 | .75 | 1.0 | .67 | .80 | 2.00 |
+| dream_unanchored | 1.0 | .75 | 1.0 | .28 | .80 | 2.00 |
+
+Beschreibend, ohne neue Schwelle: Phase B mit 40 Schritten erzeugt jetzt echtes
+Vergessen (A-Recall ohne Wiederholung .33). Jede Wiederholung schützt A.
+Geprüfte Träume verbessern gegenüber exaktem Replay die Paraphrase von A
+(.75 statt .42, alle drei Seeds), kosten aber die meiste allgemeine
+Probe-Retention (.19 statt .61, alle drei Seeds schlechter). Die Ankerprüfung
+bringt hier keinen messbaren Vorteil: ungeprüfte Träume liegen bei A gleich und
+bei Probe/Leak leicht besser. Selbstantwort-Träume halten die Probes am besten,
+lassen aber ein Viertel der A-Fakten fallen. Der Near-miss-Leak steigt in allen
+Wiederholungsarmen. Damit ist „Dream helps“ nur für Paraphrase-Retention
+gestützt, nicht als Gesamtnutzen; ein Traum-Mix bräuchte einen Anker gegen
+Probe-Drift (z. B. generische Probes im Mix), was ein neuer, eigens zu
+registrierender Versuch wäre.
+
+Belege: `docs/proofs/continuation-20261012/dream2-b40-v3/` (Report, Lauf-Log),
+`dream2-b40-v3-comparisons.json` (`COMPLETE_SCOPED_COMPARISONS`),
+`dream2-v3-reproduction.json` (Bindungsabweichung und v2-Abgleich).
+Cloud-CPU, 230M-Master, 4+4 Fakten; `phone_measured` und
+`canonical_gate_pass` bleiben false.
