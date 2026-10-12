@@ -128,7 +128,7 @@ def load_native_tap(out_dir, row, top_k, meta=None):
         if w is None:
             return None
         a = np.fromfile(out_dir / f'{row}.{name}.f32', dtype=np.float32)
-        return a.reshape(-1, w)[:n]
+        return a.reshape(-1, w)[-n:]  # a name can be emitted twice (norm, then * weight): keep the last
 
     layers = {}
     for name in info['tensors']:

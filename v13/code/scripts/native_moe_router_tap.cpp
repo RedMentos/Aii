@@ -40,8 +40,8 @@ static bool observe(struct ggml_tensor * t, bool ask, void * user) {
     ggml_backend_tensor_get(t, buf.data(), 0, ggml_nbytes(t));
     // ne[0] is the fastest dimension: rows are tokens when the tensor is contiguous [w, n].
     if (!ggml_is_contiguous(t)) return true;
-    auto & dst = tap->data[t->name];
-    dst.insert(dst.end(), buf.begin(), buf.begin() + w * n);
+    // Some names are emitted twice per layer (rms_norm, then the weighted result): keep the last one.
+    tap->data[t->name].assign(buf.begin(), buf.begin() + w * n);
     tap->width[t->name] = w;
     return true;
 }
@@ -75,8 +75,15 @@ int main(int argc, char ** argv) {
         if (ids.empty()) continue;
         tap.data.clear(); tap.width.clear();
         llama_memory_clear(llama_get_memory(ctx), true);
-        llama_batch batch = llama_batch_get_one(ids.data(), (int) ids.size());
-        if (llama_decode(ctx, batch) != 0) { std::fprintf(stderr, "decode failed on line %d\n", row); return 5; }
+        // Request outputs for every token: otherwise the last layer is pruned to the output rows only.
+        llama_batch batch = llama_batch_init((int) ids.size(), 0, 1);
+        for (size_t i = 0; i < ids.size(); ++i) {
+            batch.token[i] = ids[i]; batch.pos[i] = (llama_pos) i; batch.n_seq_id[i] = 1; batch.seq_id[i][0] = 0; batch.logits[i] = 1;
+        }
+        batch.n_tokens = (int) ids.size();
+        const int rc = llama_decode(ctx, batch);
+        llama_batch_free(batch);
+        if (rc != 0) { std::fprintf(stderr, "decode failed on line %d\n", row); return 5; }
         std::ostringstream names;
         bool first = true;
         for (auto & kv : tap.data) {
