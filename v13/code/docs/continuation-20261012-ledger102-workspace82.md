@@ -55,3 +55,10 @@ Branch `claude/project-thread-n3gv74`, Basis Thread G `bbd710e`. Linux-Cloud, ke
 - Corollary/Selbstmodell: Zuordnung schlägt alle Kontrollen, aber fremde Ereignisse auf offenem eigenem Kanal werden zu MIXED (54–66 %); Dämpfung schlägt keine/zufällige, volle Abziehung besser → **PARTIAL**. `bench-results/corollary-20261012/`.
 - `specs/neuro-ledger.json` aktualisiert: UNTESTED_LABEL 15 → 13. Volle Suite 1253 OK / 4 Skips.
 - Nächste Kandidaten (je eigene Vorregistrierung): rauschbewusster META-Wiederöffnungsterm; `attribute` mit Toleranz-Obergrenze (weit daneben → EXTERNAL/UNCLEAR).
+
+## 4. Weitere §99-Ablationen (alle vorregistriert, synthetisch, ohne Modell)
+- Corollary-Kandidaten: 1 (Toleranz-Obergrenze) FAIL; 2 (nächstliegende Vorhersage + Obergrenze) Standard .77 → .97, aber Stress-Kriterium verfehlt → FAIL, nicht integriert. Wichtiger Nebenbefund: `selfmodel.attribute` rechnet die Abweichung gegen die erste offene Aktion des Kanals.
+- Attention-Prior (§4B.4): SUPPORTED_SYNTHETIC (ACTIVE > SHADOW 5/5 auf beiden Strömen), weit unter Orakel.
+- Workspace-Halten (WP-U8): Regel erfüllt, Effekt 0,4 % (Multiplikator bremst nur den Zerfall).
+- Event-Segmentierung (WP-N8 A1): PARTIAL; Schnitte folgen der Länge, nicht dem Thema.
+- UNTESTED_LABEL 15 → 10. Volle Suite grün (4 Skips). Belege je `bench-results/<name>-20261012/README.md`.
