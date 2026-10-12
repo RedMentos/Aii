@@ -39,7 +39,11 @@ def merged_sources():
     if any(original[k]!=v for k,v in approval_original.items()):
         raise ValueError('Candidate baselines differ')
     interim=dict(original);interim.update(reader.transform(approval_original))
-    return original,firing.transform(interim)
+    changed=firing.transform(interim)
+    # Once integrated, later reviewed changes (integrated_candidates chain)
+    # belong to the live composition the regressions must exercise.
+    from scripts.integrated_candidates import overlay
+    return original,overlay(original) or changed
 
 
 def load_merged(name):

@@ -24,6 +24,14 @@ def kill_process(proc):
         proc.terminate()
         try:proc.wait(timeout=1.5)
         except subprocess.TimeoutExpired:proc.kill();proc.wait(timeout=2)
+def native_cache_args(cfg):
+    # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
+    # checkpoints per slot) assume a desktop. Qwen3.5 checkpoints are ~19 MiB
+    # each (docs/NATIVE_CACHE.md), so a 6 GB phone needs explicit bounds.
+    from .config import DEFAULTS
+    ram=cfg.get('native_cache_ram_mb',DEFAULTS['native_cache_ram_mb'])
+    checkpoints=cfg.get('native_ctx_checkpoints',DEFAULTS['native_ctx_checkpoints'])
+    return ['--cache-ram',str(ram),'--ctx-checkpoints',str(checkpoints)]
 def rotate_log(path,cap=3*1024*1024):
     if path.exists() and path.stat().st_size>cap:os.replace(path,path.with_suffix(".previous.log"))
 class LlamaRunner:
@@ -157,6 +165,7 @@ class LlamaRunner:
         # one physical batch. Chunking changes the feature being measured.
         batch=512 if (self.purpose=='tap' and self.role=='C3_LANGUAGE') or self.purpose=='embed' else 128
         cmd=[self.binary,"-m",str(self.model),"--host","127.0.0.1","--port",str(self.port),"-c",str(512 if self.purpose=='embed' else self.cfg["context_tokens"]),"-np","1","-t",str(self.cfg["threads"]),"-tb",str(self.cfg["threads"]),"-b",str(batch),"-ub",str(batch),"-ngl","0","--no-warmup","--no-webui","--log-disable"]
+        cmd += native_cache_args(self.cfg)
         if self.purpose=='tap':cmd += ['--embedding','--pooling','none']
         elif self.purpose=='embed':cmd += ['--embedding','--no-repack']  # pooled vectors (model pooling, EmbeddingGemma: mean); no repack halves RSS (cloud 737->393 MB)
         elif self.purpose=='generate':
