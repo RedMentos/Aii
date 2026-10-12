@@ -29,7 +29,7 @@ class NeuroLedger(unittest.TestCase):
         self.assertEqual(rows['B3_LATENT']['neuro_claim_status'],'TESTED_FAIL')
         self.assertEqual(rows['F9_EPISODIC_REPLAY']['replay_authority'],'HYPOTHESIS_NO_LEARNING')
         self.assertTrue(rows['MODULE_SELFMODEL']['corollary_required']);self.assertEqual(rows['MODULE_SELFMODEL']['neuro_claim_status'],'TESTED_PARTIAL')
-        self.assertEqual(rows['MODULE_HOMEOSTASIS']['neuro_claim_status'],'TESTED_SUPPORTED_SYNTHETIC');self.assertEqual(rows['MODULE_ATTENTION']['neuro_claim_status'],'UNTESTED_LABEL')
+        self.assertEqual(rows['MODULE_HOMEOSTASIS']['neuro_claim_status'],'TESTED_SUPPORTED_SYNTHETIC');self.assertEqual(rows['MODULE_ATTENTION']['neuro_claim_status'],'TESTED_SUPPORTED_SYNTHETIC');self.assertEqual(rows['MODULE_REFLEX']['neuro_claim_status'],'UNTESTED_LABEL')
         self.assertEqual(rows['STEP0_STORAGE_PROVENANCE']['neuro_claim_status'],'NO_CLAIM');self.assertEqual(rows['STEP0_STORAGE_PROVENANCE']['gate_status'],'PASS')
         self.assertEqual(rows['STEP0_STORAGE_PROVENANCE']['redmi_longrun_proof']['status'],'ABSENT')
 
@@ -43,9 +43,9 @@ class NeuroLedger(unittest.TestCase):
         self.assertIsNone(rows['C3_NATIVE_OUTPUT_DELTA']['train_runner_proof_id'])
 
     def test_untested_label_cannot_pass(self):
-        rows=[{'feature_id':'MODULE_ATTENTION','gate_status':'PASS','known_limitations':[]}]
+        rows=[{'feature_id':'MODULE_REFLEX','gate_status':'PASS','known_limitations':[]}]
         s=neuro_ledger.annotate(rows,self.r)
-        self.assertEqual(rows[0]['gate_status'],'PARTIAL');self.assertEqual(s['lowered_pass'],['MODULE_ATTENTION'])
+        self.assertEqual(rows[0]['gate_status'],'PARTIAL');self.assertEqual(s['lowered_pass'],['MODULE_REFLEX'])
         self.assertTrue(any('§102' in x for x in rows[0]['known_limitations']))
 
     def test_bad_spec_entries_are_rejected(self):

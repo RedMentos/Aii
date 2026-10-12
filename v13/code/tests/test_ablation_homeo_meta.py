@@ -35,3 +35,12 @@ class Corollary(unittest.TestCase):
         old=C.S.ATTENUATION
         with C._att(1.):pass
         self.assertEqual(C.S.ATTENUATION,old)
+
+import ablation_attention_prior as AP
+class AttentionPrior(unittest.TestCase):
+    def test_short_run_uses_real_admission_budget(self):
+        old=AP.EVENTS;AP.EVENTS=4
+        try:
+            st=AP.stream(13,'blind');r={a:AP.run_arm(st,a,13) for a in ('scaffold','learned_active')}
+            self.assertEqual(r['scaffold']['granted'],2*3);self.assertEqual(r['learned_active']['granted'],2*3)
+        finally:AP.EVENTS=old

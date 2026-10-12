@@ -349,8 +349,21 @@
   },
   "MODULE_ATTENTION": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
-   "neuro_claim_limit": "Thalamic gain analogy for admission/action gain; utility measurement open.",
-   "ablation_baseline": null,
+   "neuro_claim_limit": "Thalamic gain analogy for admission/action gain; only the learned usefulness prior is ablated (synthetic), gain modulation untested.",
+   "ablation_baseline": {
+    "hypothesis": "§99-style: learned §4B.4 usefulness prior improves F1 admission",
+    "controls": [
+     "scaffold_shadow",
+     "random",
+     "oracle_upper_bound"
+    ],
+    "evidence": [
+     "../bench-results/attention-prior-20261012/README.md",
+     "../bench-results/attention-prior-20261012/report.json"
+    ],
+    "verdict": "SUPPORTED_SYNTHETIC",
+    "note": "Preregistered, 5 seeds, real Attention on SQLite: ACTIVE prior beats SHADOW scaffold 5/5 on blind and informed streams (.16 vs .04; .47 vs .38), far below oracle .60 (LEARNED_MAX cap). Salience/caution gain modulation itself is not tested."
+   },
    "modulator_schema": "ModulatorPacket"
   },
   "MODULE_SELFMODEL": {
