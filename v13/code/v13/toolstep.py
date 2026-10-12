@@ -19,7 +19,7 @@ import re
 from .common import dumps
 from .contracts import packet
 
-PROPOSER='boot-arith-note-v2';KEY='TOOL_SHADOW_AGREEMENT'
+PROPOSER='boot-arith-note-v3';KEY='TOOL_SHADOW_AGREEMENT'
 WORD_OPS=[(r'\bmultiplied by\b|\btimes\b|×','*'),(r'\bdivided by\b|÷','/'),(r'\bplus\b','+'),(r'\bminus\b','-'),(r'\bto the power of\b|\^','**')]
 NUM=r'\d+(?:[.,]\d+)?'
 PERCENT=re.compile(r'('+NUM+r')\s*%\s*of\s*('+NUM+r')',re.I)
@@ -37,6 +37,20 @@ def propose_note(text):
     if m:return {'tool':'sandbox_note','args':{'name':m.group(1).lower(),'text':m.group(2).strip()},'confidence':.95,'span':[0,len(text)]}
     m=NOTE.match(text)
     if m:return {'tool':'sandbox_note','args':{'name':_slug(m.group(1)),'text':m.group(1).strip()},'confidence':.9,'span':[0,len(text)]}
+    return None
+
+NOTE_EDIT=[(re.compile(r'^\s*(?:please\s+)?mark\s+(?:the\s+)?note\s+["\']?([a-z][a-z0-9_]{1,31})["\']?\s+(?:as\s+)?done\s*[.!]?\s*$',re.I),lambda c:c+' Done.'),
+           (re.compile(r'^\s*(?:please\s+)?(?:make|mark)\s+(?:the\s+)?note\s+["\']?([a-z][a-z0-9_]{1,31})["\']?\s+(?:as\s+)?urgent\s*[.!]?\s*$',re.I),lambda c:'Urgent: '+c),
+           (re.compile(r'^\s*(?:please\s+)?(?:uppercase|capitalize)\s+(?:the\s+)?note\s+["\']?([a-z][a-z0-9_]{1,31})["\']?\s*[.!]?\s*$',re.I),lambda c:c.upper())]
+def propose_note_edit(text,read):
+    """Thread M: edit of an existing sandbox note (done/urgent/uppercase) -> sandbox_note proposal with the full new text.
+    read(name) returns the current content or None; still WRITE_LOCAL, so it never runs without a per-call approval."""
+    for rx,edit in NOTE_EDIT:
+        m=rx.match(str(text))
+        if m:
+            old=read(m.group(1).lower())
+            if old is None or edit(old)==old or len(edit(old))>2000:return None
+            return {'tool':'sandbox_note','args':{'name':m.group(1).lower(),'text':edit(old)},'confidence':.9,'span':[0,len(text)]}
     return None
 
 def _num(s):return s.replace(',','') if re.fullmatch(r'\d{1,3}(?:,\d{3})+(?:\.\d+)?',s) else s.replace(',','.')
@@ -65,7 +79,8 @@ class ToolStep:
         return hub(self.r).tools
     def plan(self,e,text):
         """Proposal + IH-H29 policy (no effect yet). Logged as ToolProposal packet."""
-        p=propose(text)
+        from .toolforecast import note_text
+        p=propose_note_edit(text,lambda name:note_text(self.r.home,name)) or propose(text)
         if not p:return None
         reg=self._registry();spec=reg.tools.get(p['tool'])
         if spec is None:return None
@@ -74,16 +89,22 @@ class ToolStep:
         pk=self.r.store.add_packet('ToolProposal',packet('ToolProposal','C2_TOOL_PROPOSER',e['event_id'],e['brain_generation_id'],[e['source_ref']],
              tool=p['tool'],args=p['args'],policy_status=status,policy_reason=why,contract=steps,confidence=p['confidence'],proposer=PROPOSER,truth_authority=0))
         p['packet_id']=pk['packet_id'];return p
+    def _forecast(self,e,p):
+        """Thread M: SHADOW tool-consequence forecast before the effect (None when OFF or outside a confirmed world)."""
+        try:
+            from .toolforecast import for_runtime
+            return for_runtime(self.r).predict(p['tool'],p['args'],e['event_id'])
+        except Exception as exc:self.r.store.log('tool_forecast_unavailable',e['event_id'],{'error':type(exc).__name__});return None
     def execute(self,e,p,intent=None):
         """C5 selected TOOL_CALL: run through ToolRegistry (IH-H14 transaction, grounding outcome)."""
-        tx=self._registry().call(p['tool'],p['args'],origin='SYSTEM',intent=intent,event_id=e['event_id'],idempotency_key=e['event_id']+':'+p['tool'])
+        tx=self._registry().call(p['tool'],p['args'],origin='SYSTEM',intent=intent,predicted=self._forecast(e,p),event_id=e['event_id'],idempotency_key=e['event_id']+':'+p['tool'])
         ok=tx['status'] in ('EXECUTED','DEDUPLICATED') and tx.get('error') is None
         self.r.store.log('tool_step',e['event_id'],{'tool':p['tool'],'status':tx['status'],'mode':'ACTIVE'})
         return {'tool':p['tool'],'args':p['args'],'status':tx['status'],'result':tx.get('result') if ok else None,'error':tx.get('error'),'tx':tx['id'],'action_tx':tx.get('action_tx')}
     def propose_call(self,e,p):
         """WP-T7: register a PROPOSED call (no effect) with its dry-run preview; the user approves it with :tx approve."""
         if p.get('status')!='PROPOSED':return None
-        tx=self._registry().call(p['tool'],p['args'],origin='SYSTEM',event_id=e['event_id'],idempotency_key=e['event_id']+':'+p['tool'])
+        tx=self._registry().call(p['tool'],p['args'],origin='SYSTEM',predicted=self._forecast(e,p),event_id=e['event_id'],idempotency_key=e['event_id']+':'+p['tool'])
         self.r.store.log('tool_step',e['event_id'],{'tool':p['tool'],'status':tx['status'],'mode':'PROPOSED'})
         return {'tool':p['tool'],'args':p['args'],'status':tx['status'],'call_id':tx['id'],'preview':tx.get('preview'),'reason':tx['reason']}
     def pending_layer(self,pending):

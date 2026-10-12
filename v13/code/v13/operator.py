@@ -54,7 +54,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :homeostasis [status|run|shadow|active] (WP-U2 Homöostase: Drift-/Sättigungs-Gate + langsame Pfad-Gains; aktiv nur durch Nutzer)
 :attention [status|edge <Kante>|shadow|active] (WP-N5 Aufmerksamkeit, thalamische Gain, A4)
 :ctxos [status|last|shadow|active|layout <L>|knob <N> <W>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <W>] (WP-N7 Context OS, Cache-Policy)
-:callosum [status|shadow|active] (WP-J B3-Kanal-Policy, signed_gain) / :gist [status|shadow|active|preview <Text>] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
+:callosum [status|shadow|active] (WP-J B3-Kanal-Policy, signed_gain) / :gist [status|shadow|active|preview <Text>] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :toolforecast [status|shadow|off|score] (Werkzeug-Folgen-Prädiktor vor der Wirkung, SHADOW, Runden 7/8) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
 :jef [status|last|shadow|active|query|outcome <Event> <0..1>] (WP-N3 JEF-Broadcast-Cache, Offer-Nutzen, Top-down-Query)
 :self [status|model|body|messages|edit list|edit approve|reject|rollback <Id>] (WP-N9 Selbstmodell, Körpergefühl, Corollary, Self-Messages/-Edits)
 :download all|needle|language|body|gist|embedding / :import model <Rolle> <Pfad>
@@ -112,6 +112,9 @@ class Operator:
             return operator_command(r,args)
         if cmd=='gist':
             from .gist import operator_command
+            return operator_command(r,args)
+        if cmd=='toolforecast':
+            from .toolforecast import operator_command
             return operator_command(r,args)
         if cmd=='tx':
             from .transaction import operator_command

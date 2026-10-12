@@ -1,0 +1,114 @@
+{
+ "schema": "v13-tool-forecast-live-preregistration-v1",
+ "status": "PREREGISTERED_BEFORE_RUN",
+ "utc": "2026-10-12T13:55:00Z",
+ "thread": "Nächste offene Pakete M",
+ "question": "Does the bound rounds-7/8 candidate, run inside the live tool path (ToolForecast.predict before the effect, IH-H29 predicted, outcome sink after the effect) with the rebuilt, parity-checked encoder, still beat its controls on calls never seen by any round?",
+ "script": {
+  "path": "code/scripts/tool_forecast_live_check.py",
+  "sha256": "12c4a3133d7828ee7104a02bb9582317c8fac4db418be42d3dc210781a0831dc"
+ },
+ "runtime": {
+  "v13/toolforecast.py": "d3844749f7461874ee53cab27867b9cffe0421aea89dd2aa7f4e19b351b6e3a5",
+  "v13/toolstep.py": "9b49d3d6d86471d7b1090051382b1683ead591b9427739e4ce38081a94f77c36",
+  "specs/tool-forecast.json": "cf30941585f239a560e34d75ff565c406a4a5db43b848196d289b4f70837585e"
+ },
+ "encoder_json_sha256": "230c8b8f70735b4ef25a1b67c039c84dcfe72093f2fc264e7518435f86258852",
+ "evidence_worlds": {
+  "round5": "321baeee33c92debe82dec3518e6000e5f344823e5239ae73e391b70ff46dcd8",
+  "round7": "7e126d1fc8e7a7da8d52f50692272e2cb7c107cdaebe535d8860850b299158de",
+  "round8": "18fe998ff78093658f95c09cf8186ba2baa6c779a797d02de512965b4aa0a557"
+ },
+ "plan": {
+  "calc_in_world": [
+   1,
+   22,
+   48,
+   72,
+   173,
+   229,
+   341,
+   355,
+   363,
+   388,
+   395,
+   399,
+   493,
+   563,
+   576,
+   633,
+   681,
+   703,
+   750,
+   753,
+   811,
+   813,
+   878,
+   929,
+   973
+  ],
+  "calc_out_of_range": [
+   2641,
+   3388,
+   3508,
+   4806,
+   5661,
+   6101,
+   6885,
+   7043,
+   9010,
+   9550
+  ],
+  "note_in_world": [
+   "Ask the library tomorrow.",
+   "Ask the neighbour tomorrow.",
+   "Ask the school tomorrow.",
+   "Ask the team this evening.",
+   "Call the dentist on Monday.",
+   "Call the library on Monday.",
+   "Email the bank on Friday.",
+   "Email the bank this evening.",
+   "Email the neighbour on Monday.",
+   "Email the school on Friday.",
+   "Help the doctor next week.",
+   "Help the school tomorrow.",
+   "Help the team today.",
+   "Invite the landlord this evening.",
+   "Invite the plumber on Friday.",
+   "Invite the school on Monday.",
+   "Pay the school this evening.",
+   "Remind the landlord on Friday.",
+   "Remind the school on Friday.",
+   "Thank the bank tomorrow.",
+   "Thank the dentist this evening.",
+   "Thank the landlord today.",
+   "Thank the library this evening.",
+   "Visit grandma this evening.",
+   "Visit the plumber on Friday."
+  ],
+  "note_free": [
+   "Buy oat milk and two lemons.",
+   "Water the tomato plants on the balcony.",
+   "Renew the passport before June.",
+   "Send the slides to Mara after lunch.",
+   "Fix the squeaky hinge in the kitchen.",
+   "Book a table for six on Saturday.",
+   "Return the drill to Jonas.",
+   "Check the tyre pressure.",
+   "Read chapter four of the novel.",
+   "Back up the phone photos."
+  ],
+  "counts": {
+   "unused_values": 199,
+   "unused_notes": 200
+  }
+ },
+ "arms": {
+  "calc_in_world": "25 unused start values x 4 actions, origin USER",
+  "calc_out_of_range": "10 values 1000..9999 x 4 actions (report only)",
+  "note_in_world": "25 unused round-8 vocabulary notes x 3 edit actions via ToolStep.plan/propose_call/:tx approve",
+  "note_free": "10 free sentences x 3 edit actions (report only)"
+ },
+ "verdict_rule": "LIVE_PATH_CONFIRMED iff every call is SCORED and, for calc_in_world and note_in_world, every action has mean forecast MSE < .98 x min(mean copy MSE, mean mean-delta MSE); else LIVE_PATH_NOT_CONFIRMED. Out-of-world arms are reported, never gated. No reruns with changed settings.",
+ "not_changed": "candidate checkpoints, projection, lambda, gates; undo is not mapped live"
+}

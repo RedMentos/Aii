@@ -309,5 +309,10 @@ def operator_command(r,args):
     if len(args)==2 and args[0] in ('approve','undo'):
         from .agi import hub as growth
         tools=growth(r).tools;out=tools.approve(args[1]) if args[0]=='approve' else tools.undo(args[1])
+        if args[0]=='approve':  # Thread M: SHADOW tool forecast scored against the observed effect (no-op without a forecast)
+            try:
+                from .toolforecast import for_runtime
+                for_runtime(r).observe(out)
+            except Exception as exc:r.store.log('tool_forecast_unavailable',None,{'error':type(exc).__name__})
         return dumps({k:out.get(k) for k in ('id','tool','status','state','reason','result','error','action_tx')})
     raise ValueError(':tx [status|provisional|broker|cancel <atx>|approve <tool-call>|undo <tool-call>]')

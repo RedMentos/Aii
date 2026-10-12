@@ -1,0 +1,66 @@
+{
+ "encoder": {
+  "capture_tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+  "layer": 11,
+  "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+  "pooling": "last",
+  "tool_source": "scripts/native_layer_taps.cpp",
+  "transform": "rms_normalize"
+ },
+ "gate": 0.98,
+ "pick": {
+  "arm": "full",
+  "layer": 11,
+  "pooling": "last",
+  "seed": 13
+ },
+ "schema": "v13-tool-forecast-v1-manifest",
+ "worlds": {
+  "calc_counter": {
+   "actions": [
+    "add_15",
+    "double",
+    "quarter",
+    "subtract_7"
+   ],
+   "arm": "full",
+   "capture_tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+   "checkpoint": "specs/tool_forecast/calc_counter/candidate.npz",
+   "checkpoint_sha256": "b2cd4bc7ed8e4fa5152f87a5b39db755c6c4a80e7011446237d077cca255129e",
+   "drift_sample": "specs/tool_forecast/calc_counter/drift-sample.npz",
+   "drift_sample_sha256": "113c34d5ff618fc06adae65d3d4060e2c5eedbae9020afc8024a525249f428e3",
+   "metrics": "specs/tool_forecast/calc_counter/metrics.json",
+   "metrics_sha256": "8c356fb8bd8fe082f2a57da7cf89f774b94be3b0a4a5521e796c71ba9dbc6899",
+   "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+   "parity": "specs/tool_forecast/calc_counter/parity.json",
+   "parity_sha256": "231a0a9a15e5b675c5dff4065e01ad504b985c0fe01b46f1c24b2553493566b0",
+   "raw_zip_sha256": "af3213c11efa2397905ae980f8d277c9989a10ed1ab78c642e9c424213dc4cf3",
+   "reproduced_test_mse_max_rel_diff": 1.1536255598915532e-07,
+   "results_zip_sha256": "4e66fa5654bdedd0b2d02de9e94d999792a138fbcd9fa2220ae9cc3eb72a51ed",
+   "source": "docs/proofs/continuation-20261012/action-jepa-round7-fresh (runs/tool_l11_last/full-seed13)"
+  },
+  "note_edit": {
+   "actions": [
+    "append_done",
+    "prefix_urgent",
+    "undo",
+    "uppercase"
+   ],
+   "arm": "full",
+   "capture_tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+   "checkpoint": "specs/tool_forecast/note_edit/candidate.npz",
+   "checkpoint_sha256": "c8a00a8fa806ee82da71a29ffc058a8d929e9cb6d24ef5286de2b77a04433d81",
+   "drift_sample": "specs/tool_forecast/note_edit/drift-sample.npz",
+   "drift_sample_sha256": "231cfa51a5f3d67ac65333736c5502500126739e92c776fe571c688e1c6ecf52",
+   "metrics": "specs/tool_forecast/note_edit/metrics.json",
+   "metrics_sha256": "6e31f8cfbde60b3b13b346c07ee1b9f04b574e21efcb56b2667ed7c6814bc51e",
+   "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+   "parity": "specs/tool_forecast/note_edit/parity.json",
+   "parity_sha256": "e0b7ce1bc4abc77e9ed58e86007bcbdcdf087fd74b373aa6b3f8e16dd4557969",
+   "raw_zip_sha256": "ff72b0e4d918319d3e21df8402c0f1769260793828fd50227df21c041fbe2c5d",
+   "reproduced_test_mse_max_rel_diff": 8.426774546540707e-08,
+   "results_zip_sha256": "330db432371b9a89909575644e25deab101cf0e7181e835dde8613d62d3c6a85",
+   "source": "docs/proofs/continuation-20261012/action-jepa-round8-note-tool (runs/note_l11_last/full-seed13)"
+  }
+ }
+}
