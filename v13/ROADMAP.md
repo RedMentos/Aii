@@ -166,6 +166,7 @@ aktualisieren (`completion-ledger.json`), Proofs nach `docs/proofs/`.
 - Cloud: Qualität ja. Redmi: RAM/Latenz der neuen Modelle zwingend vor Produktivsetzung.
 - Braucht WP-B.
 
+- **Status 2026-10-12 10:05Z: G1B-Nutzen mit echtem B2 gemessen → GIST_NO_GAIN (Thread „Nächste offene Pakete J“).** `code/scripts/gist_utility_bench.py`, vorregistriert, `bench-results/gist-utility-20261012/README.md`: 36 Memos, Qwen3.5-0.8B; Treffer fixed960 94 % vs. Gist 86 % (1 Sieg/4 Niederlagen), Gist 2,1× Prompt-Tokens, aber mehr nur-exakte Zitate (81 vs. 67 %). `:gist` bleibt SHADOW.
 ### WP-H Semantisches Fast-Episodic-Gedächtnis (STEP3, G6)
 - **Status 2026-10-09: erledigt (Pakete B)**, zusammen mit WP-S2. EmbeddingGemma-300M als optionales Modell `:download embedding`, Recall-Kanal in `memory.recall` (max(lexikalisch, Kosinus ≥ 0,84), Entitäts-Wächter + Quelle bleiben, gelernter Cue-Kopf hat Vorrang), `:semantic off|shadow|on|auto`. Cloud: Treffer@1 EN 25 % → 96 %, DE 0 % → 75 %, keine zusätzlichen Fehlaufnahmen; RSS 433 MB. Code `v13/semantic_memory.py`, Tests `tests/test_semantic_memory.py`, Bench `scripts/semantic_recall_bench.py` / `cloud_bench.sh --semantic`, Doku + Übergabe `code/docs/SEMANTIC_MEMORY.md`. Offen: Redmi-RAM (WP-R), DE-Schwelle, Negativ-Transfer-/Response-Cache-Ablation §99 (WP-N12).
 - Dateien: `v13/retrieval_worker.py`, `v13/memory.py`, Tests. (`store.py` erst nach WP-A.)
@@ -768,3 +769,6 @@ OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/D
 
 ### Anspruch 2026-10-12 08:50Z — Thread „Nächste offene Pakete J“: WP-T9 Selektiv v2 (nur geprüfte Trace-Fakten)
 - **Erledigt 09:10Z, SELECTIVE_VERIFIED_DOES_NOT_WIN (siehe WP-T9) — war: In Arbeit (Thread J):** Folgeversuch zu `selective-delivery-20261012`: exakter Block wird nur für Trace-Fakten weggelassen, deren Trace-Antwort nativ auf die eigene Frage geprüft richtig war (Verifikation vor der Messung, dieselbe gebundene Trace). Vorregistriert, neues isoliertes Skript, gleicher Korpus; Paraphrasen/Near-Miss sind die ungesehene Prüfung. Keine Runtime-Änderung.
+
+### Anspruch 2026-10-12 09:25Z — Thread „Nächste offene Pakete J“: WP-G G1B Gist-Nutzen mit echtem B2
+- **Erledigt 10:05Z, GIST_NO_GAIN (siehe WP-G) — war: In Arbeit (Thread J):** ABDECKUNG „G1B … Modell-Messung offen“ / „Gist-Gruppierung Nutzen-Messung offen“: B2 Qwen3.5-0.8B nativ, gleiche Offer-Anweisung wie `cognition.offer`, Quelle als 960-Zeichen-Segmente (heute) vs. Event-Segmente vs. Age-0-Gist-Slots (`gist.plan`, 8 Token/12 Slots). Vorregistriert, neue lange Testtexte mit frühen/späten Fakten und Revisionen; Messung Treffer, gültige exakte Zitate, Prompt-Tokens, Latenz. Nur neues Skript, keine Runtime-Änderung, `:gist` bleibt SHADOW.

@@ -1,0 +1,52 @@
+fixed960 done
+event960 done
+gist done
+{
+ "fixed960": {
+  "hit": 0.9444,
+  "stale": 2,
+  "parsed": 36,
+  "quotes_valid": 0.6667,
+  "quote_has_key": 0.8889,
+  "prompt_tokens_mean": 914.9,
+  "seconds_mean": 8.45,
+  "view_items_mean": 3.0,
+  "hit_by_kind": {
+   "owner": 1.0,
+   "budget": 1.0,
+   "deadline": 0.8333
+  }
+ },
+ "event960": {
+  "hit": 0.8056,
+  "stale": 3,
+  "parsed": 35,
+  "quotes_valid": 0.8056,
+  "quote_has_key": 0.6667,
+  "prompt_tokens_mean": 1501.1,
+  "seconds_mean": 11.67,
+  "view_items_mean": 6.33,
+  "hit_by_kind": {
+   "owner": 1.0,
+   "budget": 0.6667,
+   "deadline": 0.75
+  }
+ },
+ "gist": {
+  "hit": 0.8611,
+  "stale": 3,
+  "parsed": 36,
+  "quotes_valid": 0.8056,
+  "quote_has_key": 0.8611,
+  "prompt_tokens_mean": 1950.8,
+  "seconds_mean": 13.89,
+  "view_items_mean": 12.0,
+  "hit_by_kind": {
+   "owner": 1.0,
+   "budget": 0.8333,
+   "deadline": 0.75
+  }
+ }
+}
+{"gist_vs_fixed960": {"wins": 1, "losses": 4}, "gist_vs_event960": {"wins": 4, "losses": 2}, "event960_vs_fixed960": {"wins": 1, "losses": 6}} {"criteria": {"hit_wins_gt_losses": false, "quote_validity_not_lower": true, "prompt_tokens_within_10pct": false}, "verdict": "GIST_NO_GAIN", "consequence": "gist stays SHADOW either way; a candidate only justifies a separately preregistered ACTIVE trial by the user"}
+rc=0
