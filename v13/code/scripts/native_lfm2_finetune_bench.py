@@ -104,6 +104,8 @@ def main():
     rep = {'created': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'evidence_level': 'LINUX_NATIVE_CLOUD (not Redmi)',
            'master_sha256': sha256(master), 'tool_sha256': sha256(tool / 'native-select-finetune'),
            'libggml_base_sha256': sha256(tool / 'libggml-base.so') if (tool / 'libggml-base.so').exists() else None,
+           'libllama_sha256': sha256(tool / 'libllama.so') if (tool / 'libllama.so').exists() else None,
+           'patch_sha256': sha256(Path(__file__).resolve().parent / 'patches' / 'ggml-lfm2-backward-b10964.patch'),
            'server_sha256': sha256(server), 'script_sha256': sha256(Path(__file__)), 'seed': a.seed, 'reps': a.reps,
            'loss': 'all tokens of the stream (stock ggml-opt dataset), no answer-only mask, no KL anchor', 'variants': {}}
     s = Server(server, master, ['--cache-ram', '0'], out / 'template.log')
