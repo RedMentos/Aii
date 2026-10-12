@@ -242,10 +242,12 @@
     ],
     "evidence": [
      "../bench-results/event-segments-20261012/README.md",
-     "../bench-results/event-segments-20261012/report.json"
+     "../bench-results/event-segments-20261012/report.json",
+     "../bench-results/event-segments-threshold-20261012/README.md",
+     "../bench-results/event-segments-threshold-20261012/report.json"
     ],
     "verdict": "PARTIAL",
-    "note": "Preregistered, 5 seeds × 40 texts: beats fixed chunks 5/5 and random sentence cuts 4/5, but not evenly spaced sentence cuts of the same count (2/5 flat, 0/5 with paragraph cue). The length prior plus sentence end already reach the threshold, so cuts follow length, not topic."
+    "note": "Preregistered, 5 seeds × 40 texts: beats fixed chunks 5/5 and random sentence cuts 4/5, but not evenly spaced sentence cuts of the same count (2/5 flat, 0/5 with paragraph cue). The length prior plus sentence end already reach the threshold, so cuts follow length, not topic. Isolated candidate (higher cut threshold .6, preregistered) FAIL on flat texts (beats .5 and even cuts only 1/5), but with a paragraph cue F1 .72 vs .51 (.66 even); threshold stays .5."
    }
   },
   "STEP2_SPLIT_BRAIN_OBSERVER": {
