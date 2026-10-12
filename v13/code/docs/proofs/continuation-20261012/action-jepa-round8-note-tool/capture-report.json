@@ -1,0 +1,32 @@
+{
+ "schema": "v13-action-jepa-round5-capture-v1",
+ "utc": "2026-10-12T12:08:48.770617+00:00",
+ "rows": 2000,
+ "layers": [
+  11,
+  23
+ ],
+ "tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+ "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+ "raw_bin_sha256": "3c76f58dd874844a19ab71fed3ab5607dbb6ab9f50e1c16ad352b655adb669a1",
+ "texts_sha256": "43bd27d11ee02d07158ed57d8fbf67f22d588632c58adaea1882b40fbc1cd003",
+ "arms": {
+  "l11_last": {
+   "path": "taps-l11_last.npz",
+   "sha256": "fcdfbeac022525e579f82c4a8b1e49eedfecc189f87a4860fc7732bcc08be8a7"
+  },
+  "l11_mean": {
+   "path": "taps-l11_mean.npz",
+   "sha256": "b8595a8c089bbd0d71b22057aa8ebce812e7cd9c4e0818e900b9f1a336458ff2"
+  },
+  "l23_last": {
+   "path": "taps-l23_last.npz",
+   "sha256": "18468842beecd0fc27ecb35b276342059de4cd4ecd8e0d179a72ba5cce318655"
+  },
+  "l23_mean": {
+   "path": "taps-l23_mean.npz",
+   "sha256": "35bf81b6453aceafdf46ab5f5f388ae5217da099aaf3e9c64228e4a6e04f71de"
+  }
+ },
+ "tool_exit": 0
+}

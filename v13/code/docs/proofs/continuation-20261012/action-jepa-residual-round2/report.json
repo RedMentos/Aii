@@ -1,0 +1,347 @@
+{
+  "schema": "v13-action-jepa-residual-round2-result-v1",
+  "utc": "2026-10-12T03:22:35.319884+00:00",
+  "status": "ALL_SEEDS_CANDIDATE_GATE_FAIL",
+  "preregistration": "preregistration.json (pushed in de7f2c9 before any score)",
+  "closed_zip": {
+    "file": "action-jepa-residual-round2.closed.zip",
+    "sha256": "28b88fe277a87051b5750fd88636674bb7c740606f76485d9950de5992bca4fc",
+    "bytes": 2099697
+  },
+  "runtime": {
+    "python": "3.13.16",
+    "numpy": "2.3.5",
+    "blas_threads": 1,
+    "host": "Linux cloud container, not Redmi"
+  },
+  "seeds": {
+    "13": {
+      "chosen_steps": 240,
+      "calibration_selection_mse": {
+        "240": 0.18165383463955412,
+        "960": 0.4619761924703336
+      },
+      "checkpoint_sha256": "95c3707d19a993d81549d268f6e87a3792055f013cf099db4452d08f1cf0ac00",
+      "metrics_sha256": "7b456e1f817a37ee09be2c7f2ab2fe90d53eaeb93924c7046e967c82df9d4ca4",
+      "gates": {
+        "analytic_gradient": true,
+        "finite": true,
+        "deterministic": true,
+        "noncollapse": true,
+        "predictive_gain_over_controls": false,
+        "fixed_reference_retention": false,
+        "observed_input_declared": true,
+        "checkpoint_reload": true
+      },
+      "candidate_gate_pass": false,
+      "final_train_loss": 0.09949321730521649,
+      "partitions": {
+        "calibration": {
+          "prediction_mse": 0.18165383463955412,
+          "mean_delta_mse": 0.18781009507147906,
+          "copy_mse": 0.4182535821893014,
+          "unchosen_960_mse": 0.4619761924703336,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.139354,
+              "mean_delta_mse": 0.103443,
+              "copy_mse": 0.112089
+            },
+            "question": {
+              "prediction_mse": 0.129073,
+              "mean_delta_mse": 0.121755,
+              "copy_mse": 0.189498
+            },
+            "summarize": {
+              "prediction_mse": 0.223391,
+              "mean_delta_mse": 0.241969,
+              "copy_mse": 0.235829
+            },
+            "translate_de": {
+              "prediction_mse": 0.234797,
+              "mean_delta_mse": 0.284074,
+              "copy_mse": 1.135599
+            }
+          }
+        },
+        "test": {
+          "prediction_mse": 0.1793617494636889,
+          "mean_delta_mse": 0.17972738561909243,
+          "copy_mse": 0.3935367975109731,
+          "unchosen_960_mse": 0.44244000108488685,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.096679,
+              "mean_delta_mse": 0.076183,
+              "copy_mse": 0.087624
+            },
+            "question": {
+              "prediction_mse": 0.111156,
+              "mean_delta_mse": 0.100734,
+              "copy_mse": 0.166375
+            },
+            "summarize": {
+              "prediction_mse": 0.232235,
+              "mean_delta_mse": 0.223192,
+              "copy_mse": 0.242858
+            },
+            "translate_de": {
+              "prediction_mse": 0.277377,
+              "mean_delta_mse": 0.3188,
+              "copy_mse": 1.07729
+            }
+          }
+        },
+        "retention": {
+          "prediction_mse": 0.16075646598676388,
+          "mean_delta_mse": 0.16153928881762977,
+          "copy_mse": 0.4320665369108338,
+          "unchosen_960_mse": 0.4578391902241013,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.071353,
+              "mean_delta_mse": 0.048561,
+              "copy_mse": 0.061801
+            },
+            "question": {
+              "prediction_mse": 0.11746,
+              "mean_delta_mse": 0.081933,
+              "copy_mse": 0.127377
+            },
+            "summarize": {
+              "prediction_mse": 0.207006,
+              "mean_delta_mse": 0.204809,
+              "copy_mse": 0.217099
+            },
+            "translate_de": {
+              "prediction_mse": 0.247207,
+              "mean_delta_mse": 0.310854,
+              "copy_mse": 1.32199
+            }
+          }
+        }
+      }
+    },
+    "21": {
+      "chosen_steps": 240,
+      "calibration_selection_mse": {
+        "240": 0.20438901975188617,
+        "960": 0.4951442452855333
+      },
+      "checkpoint_sha256": "04842e7bd94938006669fa44715d2a2cedc86c41c3c641589176f2c56122bf8f",
+      "metrics_sha256": "d3bbc46f9793c4a02577ae3090f693df28fe2bfe5081ab65a5bc4fd6b19256f6",
+      "gates": {
+        "analytic_gradient": true,
+        "finite": true,
+        "deterministic": true,
+        "noncollapse": true,
+        "predictive_gain_over_controls": false,
+        "fixed_reference_retention": false,
+        "observed_input_declared": true,
+        "checkpoint_reload": true
+      },
+      "candidate_gate_pass": false,
+      "final_train_loss": 0.10596122792495506,
+      "partitions": {
+        "calibration": {
+          "prediction_mse": 0.20438901975188617,
+          "mean_delta_mse": 0.22755292410284927,
+          "copy_mse": 0.3964224905348154,
+          "unchosen_960_mse": 0.4951442452855333,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.13907,
+              "mean_delta_mse": 0.135022,
+              "copy_mse": 0.144618
+            },
+            "question": {
+              "prediction_mse": 0.137478,
+              "mean_delta_mse": 0.153643,
+              "copy_mse": 0.219305
+            },
+            "summarize": {
+              "prediction_mse": 0.264598,
+              "mean_delta_mse": 0.28094,
+              "copy_mse": 0.331171
+            },
+            "translate_de": {
+              "prediction_mse": 0.276409,
+              "mean_delta_mse": 0.340607,
+              "copy_mse": 0.890596
+            }
+          }
+        },
+        "test": {
+          "prediction_mse": 0.19327755234040778,
+          "mean_delta_mse": 0.19411715199589438,
+          "copy_mse": 0.3602156772267027,
+          "unchosen_960_mse": 0.4860993059636515,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.107618,
+              "mean_delta_mse": 0.078791,
+              "copy_mse": 0.085438
+            },
+            "question": {
+              "prediction_mse": 0.119247,
+              "mean_delta_mse": 0.105203,
+              "copy_mse": 0.150221
+            },
+            "summarize": {
+              "prediction_mse": 0.243281,
+              "mean_delta_mse": 0.24851,
+              "copy_mse": 0.278957
+            },
+            "translate_de": {
+              "prediction_mse": 0.302964,
+              "mean_delta_mse": 0.343965,
+              "copy_mse": 0.926247
+            }
+          }
+        },
+        "retention": {
+          "prediction_mse": 0.18979251429176933,
+          "mean_delta_mse": 0.1675267588034102,
+          "copy_mse": 0.3403889484548132,
+          "unchosen_960_mse": 0.5876047988772759,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.117079,
+              "mean_delta_mse": 0.05552,
+              "copy_mse": 0.061369
+            },
+            "question": {
+              "prediction_mse": 0.123391,
+              "mean_delta_mse": 0.094492,
+              "copy_mse": 0.124247
+            },
+            "summarize": {
+              "prediction_mse": 0.266728,
+              "mean_delta_mse": 0.236492,
+              "copy_mse": 0.24938
+            },
+            "translate_de": {
+              "prediction_mse": 0.251972,
+              "mean_delta_mse": 0.283603,
+              "copy_mse": 0.92656
+            }
+          }
+        }
+      }
+    },
+    "34": {
+      "chosen_steps": 240,
+      "calibration_selection_mse": {
+        "240": 0.16275961691334861,
+        "960": 0.3800599204871871
+      },
+      "checkpoint_sha256": "f904243e296eb7ff8d5eacaab5f6f331311ac1de00f0e79f5642730f98fb3098",
+      "metrics_sha256": "352ebabc418707ae1e59158c65235fe3af2ac8e929a02a8ab98b7f67c48cd6eb",
+      "gates": {
+        "analytic_gradient": true,
+        "finite": true,
+        "deterministic": true,
+        "noncollapse": true,
+        "predictive_gain_over_controls": false,
+        "fixed_reference_retention": false,
+        "observed_input_declared": true,
+        "checkpoint_reload": true
+      },
+      "candidate_gate_pass": false,
+      "final_train_loss": 0.09863664613048272,
+      "partitions": {
+        "calibration": {
+          "prediction_mse": 0.16275961691334861,
+          "mean_delta_mse": 0.17791833711696936,
+          "copy_mse": 0.283699837670471,
+          "unchosen_960_mse": 0.3800599204871871,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.117548,
+              "mean_delta_mse": 0.110052,
+              "copy_mse": 0.123268
+            },
+            "question": {
+              "prediction_mse": 0.119551,
+              "mean_delta_mse": 0.121238,
+              "copy_mse": 0.218506
+            },
+            "summarize": {
+              "prediction_mse": 0.19355,
+              "mean_delta_mse": 0.205016,
+              "copy_mse": 0.233312
+            },
+            "translate_de": {
+              "prediction_mse": 0.220389,
+              "mean_delta_mse": 0.275368,
+              "copy_mse": 0.559713
+            }
+          }
+        },
+        "test": {
+          "prediction_mse": 0.1691468210118612,
+          "mean_delta_mse": 0.17605438138273866,
+          "copy_mse": 0.2765782579949586,
+          "unchosen_960_mse": 0.40291907516351816,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.084242,
+              "mean_delta_mse": 0.06787,
+              "copy_mse": 0.089878
+            },
+            "question": {
+              "prediction_mse": 0.108946,
+              "mean_delta_mse": 0.099186,
+              "copy_mse": 0.191007
+            },
+            "summarize": {
+              "prediction_mse": 0.216434,
+              "mean_delta_mse": 0.227654,
+              "copy_mse": 0.249285
+            },
+            "translate_de": {
+              "prediction_mse": 0.266966,
+              "mean_delta_mse": 0.309508,
+              "copy_mse": 0.576143
+            }
+          }
+        },
+        "retention": {
+          "prediction_mse": 0.14079130779797724,
+          "mean_delta_mse": 0.13473096276546573,
+          "copy_mse": 0.26589783670924133,
+          "unchosen_960_mse": 0.35826598755600764,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.081808,
+              "mean_delta_mse": 0.052267,
+              "copy_mse": 0.088113
+            },
+            "question": {
+              "prediction_mse": 0.088026,
+              "mean_delta_mse": 0.069722,
+              "copy_mse": 0.154267
+            },
+            "summarize": {
+              "prediction_mse": 0.166434,
+              "mean_delta_mse": 0.182102,
+              "copy_mse": 0.181579
+            },
+            "translate_de": {
+              "prediction_mse": 0.226897,
+              "mean_delta_mse": 0.234833,
+              "copy_mse": 0.639632
+            }
+          }
+        }
+      }
+    }
+  },
+  "finding": "Calibration picked 240 steps for all seeds; 960 steps overfit (held-out MSE .38-.50 while train loss falls). Starting at mean-delta, the residual improves overall held-out MSE only slightly (test .169-.193 vs mean-delta .176-.194). translate_de gains consistently (test about 10-15 % below mean-delta, all seeds); summarize mixed; negate and question get worse than mean-delta. Per-action predictive gate and per-action retention FAIL for all seeds.",
+  "receiver_authority": 0,
+  "learn_authority": 0,
+  "runtime_integrated": false,
+  "semantic_quality_proven": false,
+  "phone_measured": false,
+  "canonical_architecture_complete": false
+}

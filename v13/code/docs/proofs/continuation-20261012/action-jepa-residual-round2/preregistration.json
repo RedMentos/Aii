@@ -1,0 +1,41 @@
+{
+  "schema": "v13-action-jepa-residual-round2-preregistration-v1",
+  "status": "PREREGISTERED_BEFORE_ANY_ROUND2_SCORE",
+  "bound_at": "2026-10-12T03:21:11.462527+00:00",
+  "motivation": "Round 1 (docs/proofs/continuation-20261012/action-jepa-native-train-seeds) failed: affine predictor ~1.7x worse than per-action mean-delta. Round 2 starts the per-action bias at the train mean delta so the untrained candidate equals that control; only learned context dependence can pass.",
+  "known_before_registration": "Round-1 scores on all partitions incl. historically exposed test topics are known. Round 2 changes only the initial bias and adds a calibration-only steps choice; no test-based choice.",
+  "dataset_sha256": "56146f32c6dea4d61de32b49b999208f267e15fafe981533bda1a007e94487ec",
+  "native_taps_sha256": "09fde379793ea8c4a63268df729a33b4b98a3f4f90f3eeee2dec4a83a10b5843",
+  "seeds": [
+    13,
+    21,
+    34
+  ],
+  "steps_grid": [
+    240,
+    960
+  ],
+  "selection": "min calibration fixed_target_prediction_mse, tie -> fewer steps",
+  "config_per_seed": {
+    "dim": 16,
+    "lr": 0.02,
+    "max_update_norm": 0.05,
+    "ema_decay": 0.99,
+    "retention_max_delta": 0.0
+  },
+  "gates": "unchanged from action_jepa_objective.py: analytic gradient, finite, deterministic, reload, noncollapse, prediction < .98*min(copy, mean_delta, shuffled) per action on calibration+test, per-action retention not worse than initial (= mean-delta) state, observed input",
+  "source_hashes": {
+    "scripts/action_jepa_residual_candidate.py": "b35ff4aebf7c0a5134779cc99324f0fd928852ce797c899dfc09966575808851",
+    "scripts/action_jepa_objective.py": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439",
+    "v13/predictor_worker.py": "e54f539dc79e6d3b8ba88cbab601aeabf5d0fbbd7ac75e477d49e362d7d94a6e",
+    "tests/test_action_jepa_residual_candidate.py": "b96350d00b8cc2ff406330f23b486cbebcd1888b320f8b9e4dc05b94d35b7bc4"
+  },
+  "numpy_version": "2.3.5",
+  "blas_threads": 1,
+  "after_each_seed": "retain metrics.json, candidate.npz and external predict for all four actions on the 143 test contexts, PASS or FAIL",
+  "receiver_authority": 0,
+  "learn_authority": 0,
+  "runtime_integrated": false,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}

@@ -1,0 +1,710 @@
+{
+ "schema": "v13-action-jepa-round8-report-v1",
+ "utc": "2026-10-12T12:25:00Z",
+ "preregistration": "preregistration.json (GitHub 445158c, before world and capture)",
+ "family": {
+  "pass": 24,
+  "runs": 24,
+  "verdict": "CONFIRMED",
+  "median_test_ratio_to_mean_delta": 0.1383
+ },
+ "world": {
+  "sha256": "18fe998ff78093658f95c09cf8186ba2baa6c779a797d02de512965b4aa0a557",
+  "counts": {
+   "proposed": 3200,
+   "approved_executed": 3200,
+   "undone": 400
+  },
+  "states": 400
+ },
+ "finding": "Non-arithmetic real tool CONFIRMED: 24/24 runs pass. sandbox_note writes (3200 per-call approved WRITE_LOCAL transactions, 400 registry undos) are predicted at 3-54 percent of the best control per action on test; full-tap arms 3-15 percent.",
+ "limits": [
+  "Contents are 400 of 600 combinations of 26 words; test notes are unseen combinations of seen words, so this is compositional generalization in a small closed vocabulary, not open text.",
+  "Approvals were issued by the experiment script acting as the user in a throwaway sandbox store, not by a human.",
+  "SHADOW only: no runtime integration, no Redmi measurement."
+ ],
+ "storage": {
+  "raw_zip_sha256": "ff72b0e4d918319d3e21df8402c0f1769260793828fd50227df21c041fbe2c5d",
+  "results_zip_sha256": "330db432371b9a89909575644e25deab101cf0e7181e835dde8613d62d3c6a85"
+ },
+ "runs": {
+  "note_l11_last/full-seed13": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "c8a00a8fa806ee82da71a29ffc058a8d929e9cb6d24ef5286de2b77a04433d81",
+   "dataset_sha256": "ecf4e961f54be959500823d80521562760d64bca4e57ec33e0d18196c954085c",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.1412,
+    "prefix_urgent": 0.098,
+    "undo": 0.11,
+    "uppercase": 0.1186
+   },
+   "test_ratio_to_mean_delta": 0.0818
+  },
+  "note_l11_last/full-seed21": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "6bbf6c3816789b74baf69fb4d4d4298ffe85ba261daeebc03bffa6abb4d4864b",
+   "dataset_sha256": "ecf4e961f54be959500823d80521562760d64bca4e57ec33e0d18196c954085c",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.1197,
+    "prefix_urgent": 0.084,
+    "undo": 0.1222,
+    "uppercase": 0.1473
+   },
+   "test_ratio_to_mean_delta": 0.0781
+  },
+  "note_l11_last/full-seed34": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "5bc81d93eadee2dce0547212d5c6e3074e6e9ebc3198a12236b0e51348a12d52",
+   "dataset_sha256": "ecf4e961f54be959500823d80521562760d64bca4e57ec33e0d18196c954085c",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.1285,
+    "prefix_urgent": 0.0723,
+    "undo": 0.1116,
+    "uppercase": 0.123
+   },
+   "test_ratio_to_mean_delta": 0.0726
+  },
+  "note_l11_last/proj-seed13": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "86dc606f238a3bfd7461c95b2d258204cad1b39765eb26a741e5539953ead2bf",
+   "dataset_sha256": "ecf4e961f54be959500823d80521562760d64bca4e57ec33e0d18196c954085c",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.1,
+    "undo": 1.0,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.5032,
+    "prefix_urgent": 0.3591,
+    "undo": 0.4033,
+    "uppercase": 0.5411
+   },
+   "test_ratio_to_mean_delta": 0.2871
+  },
+  "note_l11_last/proj-seed21": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "dd39c74692841f3e5ebd54add7702bc89be4e10bd4a0bfe66f082ec92967ee55",
+   "dataset_sha256": "ecf4e961f54be959500823d80521562760d64bca4e57ec33e0d18196c954085c",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.01,
+    "undo": 0.1,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.4138,
+    "prefix_urgent": 0.3048,
+    "undo": 0.4255,
+    "uppercase": 0.4342
+   },
+   "test_ratio_to_mean_delta": 0.2432
+  },
+  "note_l11_last/proj-seed34": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "633bb708c53c0f0dc6fe11d7b0ef1796e8805a664972f8802fe12206dc21d20e",
+   "dataset_sha256": "ecf4e961f54be959500823d80521562760d64bca4e57ec33e0d18196c954085c",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.1,
+    "undo": 0.1,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.4354,
+    "prefix_urgent": 0.2963,
+    "undo": 0.4188,
+    "uppercase": 0.374
+   },
+   "test_ratio_to_mean_delta": 0.2343
+  },
+  "note_l11_mean/full-seed13": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "813c4b2d86b9d86c5206bc7ac429b207126e0b11bece3b96a621efa3f8453493",
+   "dataset_sha256": "c1a68f256f2f83c9987cf75d8f335ec676293dd3f9ef2164608b5655a7eed150",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.0435,
+    "prefix_urgent": 0.0294,
+    "undo": 0.0517,
+    "uppercase": 0.0419
+   },
+   "test_ratio_to_mean_delta": 0.0403
+  },
+  "note_l11_mean/full-seed21": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "43228a4ce05c4328c04b7971c6c51f4e309a1e8ab8deaab93e815ce98cbc7d96",
+   "dataset_sha256": "c1a68f256f2f83c9987cf75d8f335ec676293dd3f9ef2164608b5655a7eed150",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.0391,
+    "prefix_urgent": 0.0283,
+    "undo": 0.0501,
+    "uppercase": 0.0448
+   },
+   "test_ratio_to_mean_delta": 0.0409
+  },
+  "note_l11_mean/full-seed34": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "a8536355ace0a149a87e8796ee32678d0f88ef9dd8f4fc144770785a83a18d09",
+   "dataset_sha256": "c1a68f256f2f83c9987cf75d8f335ec676293dd3f9ef2164608b5655a7eed150",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.0424,
+    "prefix_urgent": 0.0316,
+    "undo": 0.0516,
+    "uppercase": 0.0455
+   },
+   "test_ratio_to_mean_delta": 0.0425
+  },
+  "note_l11_mean/proj-seed13": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "32c362a8e2f6dfa218f08ed5ec165391068e7b92d830a3bacceef7112553aebe",
+   "dataset_sha256": "c1a68f256f2f83c9987cf75d8f335ec676293dd3f9ef2164608b5655a7eed150",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.1,
+    "undo": 0.1,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.1707,
+    "prefix_urgent": 0.0885,
+    "undo": 0.2435,
+    "uppercase": 0.2517
+   },
+   "test_ratio_to_mean_delta": 0.2013
+  },
+  "note_l11_mean/proj-seed21": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "a385913b3cac5bd07f805cf051a91d42903e3971135a2ddf5b45bf4209a820a1",
+   "dataset_sha256": "c1a68f256f2f83c9987cf75d8f335ec676293dd3f9ef2164608b5655a7eed150",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.1,
+    "undo": 0.1,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.1709,
+    "prefix_urgent": 0.1126,
+    "undo": 0.2484,
+    "uppercase": 0.3022
+   },
+   "test_ratio_to_mean_delta": 0.2332
+  },
+  "note_l11_mean/proj-seed34": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "efeaa37e9bb982972c67200817da871b0ce68b7c4eb0916d25500a1092f3454d",
+   "dataset_sha256": "c1a68f256f2f83c9987cf75d8f335ec676293dd3f9ef2164608b5655a7eed150",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.01,
+    "undo": 0.1,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.1618,
+    "prefix_urgent": 0.1009,
+    "undo": 0.2132,
+    "uppercase": 0.277
+   },
+   "test_ratio_to_mean_delta": 0.2102
+  },
+  "note_l23_last/full-seed13": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "6b3929755617525738b94eed892c9fcdc967cd1b7003ae0ad86dc1e093eacd98",
+   "dataset_sha256": "423140ecef4a12ccc83bf9a66055ad4c0b8029c268415c7742c85dbd0330dacb",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.071,
+    "prefix_urgent": 0.0768,
+    "undo": 0.1102,
+    "uppercase": 0.0626
+   },
+   "test_ratio_to_mean_delta": 0.0703
+  },
+  "note_l23_last/full-seed21": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "80d5f5599a6fc21d351b67fedb6e0f70d0c65f45195d8a401db8958661400590",
+   "dataset_sha256": "423140ecef4a12ccc83bf9a66055ad4c0b8029c268415c7742c85dbd0330dacb",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.0678,
+    "prefix_urgent": 0.0778,
+    "undo": 0.1116,
+    "uppercase": 0.0683
+   },
+   "test_ratio_to_mean_delta": 0.0655
+  },
+  "note_l23_last/full-seed34": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "c4ef778fcd1bcc639d2ff8b5abbdeb595fc45471f357571c19160c1441f21c3d",
+   "dataset_sha256": "423140ecef4a12ccc83bf9a66055ad4c0b8029c268415c7742c85dbd0330dacb",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.0651,
+    "prefix_urgent": 0.0809,
+    "undo": 0.118,
+    "uppercase": 0.0692
+   },
+   "test_ratio_to_mean_delta": 0.069
+  },
+  "note_l23_last/proj-seed13": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "fcfb9087afa3b6dfb0069df361a44beffb2487effdff16086dca8b3a216c85ae",
+   "dataset_sha256": "423140ecef4a12ccc83bf9a66055ad4c0b8029c268415c7742c85dbd0330dacb",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.01,
+    "undo": 0.1,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.2963,
+    "prefix_urgent": 0.2601,
+    "undo": 0.4144,
+    "uppercase": 0.3292
+   },
+   "test_ratio_to_mean_delta": 0.3003
+  },
+  "note_l23_last/proj-seed21": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "c0f255f57172e42e43e57a8b0e9d226f9d132d141162f6659fdef3c5eee90990",
+   "dataset_sha256": "423140ecef4a12ccc83bf9a66055ad4c0b8029c268415c7742c85dbd0330dacb",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.1,
+    "undo": 1.0,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.2766,
+    "prefix_urgent": 0.2875,
+    "undo": 0.4168,
+    "uppercase": 0.3439
+   },
+   "test_ratio_to_mean_delta": 0.272
+  },
+  "note_l23_last/proj-seed34": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "945523dc3a008365786d8e323685a8348c3e1786e59b19c0469cf56d4eb010f6",
+   "dataset_sha256": "423140ecef4a12ccc83bf9a66055ad4c0b8029c268415c7742c85dbd0330dacb",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.1,
+    "undo": 0.1,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.2167,
+    "prefix_urgent": 0.2923,
+    "undo": 0.4093,
+    "uppercase": 0.3146
+   },
+   "test_ratio_to_mean_delta": 0.2563
+  },
+  "note_l23_mean/full-seed13": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "44e8d9a8ccba9132daa2e9a9979ca4fe6dbfb7a15e894b71564f26951698a5ab",
+   "dataset_sha256": "49d69e539bedd842a726c9e9b901c9d23f1e4098eb586a7cfa9b080a3d046c42",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.0401,
+    "prefix_urgent": 0.0269,
+    "undo": 0.0412,
+    "uppercase": 0.0311
+   },
+   "test_ratio_to_mean_delta": 0.0306
+  },
+  "note_l23_mean/full-seed21": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "3dab7fb5f94293ae52c96230ff2ef2ccccdcdeabb89f409ef163402f6f04974c",
+   "dataset_sha256": "49d69e539bedd842a726c9e9b901c9d23f1e4098eb586a7cfa9b080a3d046c42",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.0292,
+    "prefix_urgent": 0.0253,
+    "undo": 0.0308,
+    "uppercase": 0.0329
+   },
+   "test_ratio_to_mean_delta": 0.0284
+  },
+  "note_l23_mean/full-seed34": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "80baf3f879423bedfd69d2218ea4560cfb50d10ea001afaa34a5b31882fcb955",
+   "dataset_sha256": "49d69e539bedd842a726c9e9b901c9d23f1e4098eb586a7cfa9b080a3d046c42",
+   "chosen_lambda_scale": {
+    "append_done": 0.01,
+    "prefix_urgent": 0.01,
+    "undo": 0.01,
+    "uppercase": 0.01
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.036,
+    "prefix_urgent": 0.0252,
+    "undo": 0.0379,
+    "uppercase": 0.03
+   },
+   "test_ratio_to_mean_delta": 0.0291
+  },
+  "note_l23_mean/proj-seed13": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "29358510d8e54b1d7ccaf9a8b3b1e8c74fbfd828016381950683f7f5c3b2ecd7",
+   "dataset_sha256": "49d69e539bedd842a726c9e9b901c9d23f1e4098eb586a7cfa9b080a3d046c42",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.1,
+    "undo": 1.0,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.2266,
+    "prefix_urgent": 0.0799,
+    "undo": 0.2454,
+    "uppercase": 0.2646
+   },
+   "test_ratio_to_mean_delta": 0.1948
+  },
+  "note_l23_mean/proj-seed21": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "abf6949a267ba7d38e0f57e17c0c2276b4e8fa48daaa51f0fd05f11347e22af8",
+   "dataset_sha256": "49d69e539bedd842a726c9e9b901c9d23f1e4098eb586a7cfa9b080a3d046c42",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.1,
+    "undo": 0.1,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.1607,
+    "prefix_urgent": 0.1161,
+    "undo": 0.1545,
+    "uppercase": 0.3188
+   },
+   "test_ratio_to_mean_delta": 0.2114
+  },
+  "note_l23_mean/proj-seed34": {
+   "candidate_gate_pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "8f058559a8d3143eea7740001bcef871d3b55e80df2b9f5abac77f0ea66fda60",
+   "dataset_sha256": "49d69e539bedd842a726c9e9b901c9d23f1e4098eb586a7cfa9b080a3d046c42",
+   "chosen_lambda_scale": {
+    "append_done": 0.1,
+    "prefix_urgent": 0.01,
+    "undo": 0.1,
+    "uppercase": 0.1
+   },
+   "test_per_action_ratio_to_best_control": {
+    "append_done": 0.1513,
+    "prefix_urgent": 0.0932,
+    "undo": 0.1677,
+    "uppercase": 0.305
+   },
+   "test_ratio_to_mean_delta": 0.1997
+  }
+ },
+ "receiver_authority": 0,
+ "learn_authority": 0,
+ "runtime_integrated": false,
+ "semantic_quality_proven": false,
+ "phone_measured": false,
+ "canonical_architecture_complete": false
+}
