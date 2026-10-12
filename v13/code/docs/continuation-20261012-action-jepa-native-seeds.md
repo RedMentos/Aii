@@ -54,3 +54,7 @@
 ## Runde 6: geändertes Objective (Mittelwert-Delta + Ridge-Rest)
 
 Vorregistriert (`9214a4c`), 54 Läufe auf den Datensätzen der Runden 3–5: **38 PASS**. Werkzeug-Welt 24/24 (Rest 3–20× unter Mittelwert-Delta), Text-Handlungen 14/30 (Fehlschläge meist Retention mit Delta 0). Test-Partitionen waren exponiert, also nur Hinweis; nächster Schritt ist eine frische Erfassung (Runde 7) mit unverändertem Skript `scripts/action_jepa_round6_ridge.py`. Belege `docs/proofs/continuation-20261012/action-jepa-round6-ridge/`.
+
+## Runde 7: frische Erfassung
+
+Vorregistriert (`1914106`), Runde-6-Skript unverändert. Werkzeug-Welt mit nie benutzten Startwerten **24/24 PASS → CONFIRMED** (Median Test-MSE 0.21 × Mittelwert-Delta). Text mit neuen Themen 11/30 → NOT_CONFIRMED; nur `l_out-11` letzter Token stabil. Nur 3/8 Themen nutzbar (Reserve-Regel). Belege `docs/proofs/continuation-20261012/action-jepa-round7-fresh/`.
