@@ -1,8 +1,9 @@
 // WP-S6 rest: answer-only selective finetune with llama.cpp's ggml-opt (no Python, no torch). Isolated candidate next
 // to native_select_finetune.cpp (unchanged, hash-bound in the tested-package manifests). Differences to that tool:
 //   - the training file marks answer spans with the control bytes \x01 (start) and \x02 (end); only tokens inside a
-//     span are predicted (loss), prompt tokens get label -1 = masked. Needs the llama-context.cpp part of
-//     patches/ggml-lfm2-backward-b10964.patch (negative labels leave a zero row in the one-hot label tensor);
+//     span are predicted (loss), prompt tokens get label -1 = masked. Needs patches/ggml-lfm2-backward-b10964.patch:
+//     negative labels leave a zero row in the one-hot label tensor (llama-context.cpp), and the stock cross-entropy
+//     backward would still give such a row softmax as gradient (ggml-cpu/ops.cpp fix);
 //   - each segment is tokenised on its own, so the prompt/answer boundary is exactly where generation starts;
 //   - prints the number of supervised tokens next to the other TrainRunnerProof numbers.
 // Datapoints: n_ctx tokens, stride n_ctx/2 (same layout as common_opt_dataset_init).

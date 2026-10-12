@@ -65,6 +65,24 @@
          case GGML_OP_NONE: {
              // noop
          } break;
+--- a/ggml/src/ggml-cpu/ops.cpp
++++ b/ggml/src/ggml-cpu/ops.cpp
+@@ -11811,7 +11811,14 @@
+         assert(sum > 0.0);
+         ggml_vec_scale_f32(nc, ds0, 1.0/sum);
+ 
+-        // grad(src0f) = (softmax(src0f) - src1f) * grad(cross_entropy_loss(src0f, src1f)) / nr
++        // grad(src0f) = (softmax(src0f) * sum(src1f) - src1f) * grad(cross_entropy_loss(src0f, src1f)) / nr
++        // V13 WP-S6: the stock form assumes every label row sums to 1; a masked (all-zero) row then still got
++        // softmax(src0f) as gradient. Scaling by the row's label mass is exact for any row and unchanged for one-hot rows.
++        ggml_float label_sum = 0.0;
++        ggml_vec_sum_f32_ggf(nc, &label_sum, s1);
++        if (label_sum != 1.0) {
++            ggml_vec_scale_f32(nc, ds0, (float) label_sum);
++        }
+         ggml_vec_sub_f32(nc, ds0, ds0, s1);
+         ggml_vec_scale_f32(nc, ds0, d_by_nr);
+ 
 --- a/src/llama-context.cpp
 +++ b/src/llama-context.cpp
 @@ -3428,6 +3428,11 @@

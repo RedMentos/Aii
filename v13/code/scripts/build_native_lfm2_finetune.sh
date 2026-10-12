@@ -2,7 +2,8 @@
 # WP-S6 rest: native finetune tools that can train LFM2 (C3/B1). Isolated candidate around the unchanged
 # build_native_finetune.sh (hash-bound in the tested-package manifests):
 #   1. applies patches/ggml-lfm2-backward-b10964.patch once (SSM_CONV + CONCAT backward, contiguous TRANSPOSE gradient,
-#      larger training graph budget, masked labels in llama_context::opt_epoch_iter);
+#      larger training graph budget, masked labels in llama_context::opt_epoch_iter, cross-entropy backward that is
+#      exact for all-zero (masked) label rows);
 #   2. builds native-select-finetune + llama-quantize via build_native_finetune.sh;
 #   3. builds native-answer-finetune (answer-only loss, scripts/native_answer_finetune.cpp).
 #   bash scripts/build_native_lfm2_finetune.sh <pristine llama.cpp-b10964 source dir> [jobs]
