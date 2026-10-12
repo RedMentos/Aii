@@ -1,0 +1,3379 @@
+{
+ "created": "2026-10-12T17:17:16Z",
+ "evidence_level": "LINUX_NATIVE_CLOUD (not Redmi)",
+ "master_sha256": "69974c2fcec267258e6e4226626f3f538f7768cf5925de49ce357bd1c1d3d491",
+ "tool_sha256": {
+  "all": "b203dda6f0ba9465d59ed9117ff948a7b9854ed0460d79b921b5370ce3b8a0bc",
+  "answer": "cba2d343037a73b0e449f811fe62f896b93bae8466ea1079f874409131706e02"
+ },
+ "libggml_base_sha256": "92e2a5392ccf8a36cb0f309bd2dc7980d65142270ffad8ac12b0e55ba4fbb6d5",
+ "libllama_sha256": "f8c3201dcb367cf0b98a1f4f55269f93f54044207ce3f4a53974c980c755f2bc",
+ "patch_sha256": "7d10ad150736e2253879e8db7430f874b38b6d21ea4093d424365f5093d66a88",
+ "server_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+ "script_sha256": "dfb46beb7b5be571c364ac3cab04379d411fd54ae5d0005d094f1f5a11e94397",
+ "seed": 13,
+ "reps": 12,
+ "stream": "inference prompt + answer + <|im_end|> (history form)",
+ "variants": {
+  "ffn_late_answer_kl1": {
+   "keys": [
+    "blk.12.ffn_down",
+    "blk.13.ffn_down",
+    "blk.14.ffn_down",
+    "blk.15.ffn_down"
+   ],
+   "lr": 1e-05,
+   "epochs": 4,
+   "loss_mode": "answer",
+   "anchor": "kl",
+   "kl_weight": 1.0,
+   "train_file": "train-answer-kl.txt",
+   "train_file_sha256": "f17187a169816cc9eb77d1ad4fc3e932c55065fcee5c4db0f8a0912a0cc79b13",
+   "returncode": 0,
+   "wall_s": 448.9,
+   "epoch_loss": [
+    {
+     "epoch": 0,
+     "train_loss_all_rows": 0.866953
+    },
+    {
+     "epoch": 1,
+     "train_loss_all_rows": 0.805013
+    },
+    {
+     "epoch": 2,
+     "train_loss_all_rows": 0.933127
+    },
+    {
+     "epoch": 3,
+     "train_loss_all_rows": 0.97496
+    }
+   ],
+   "result": {
+    "trainable_tensors": 4,
+    "trainable_parameter_count": 18874368,
+    "tokens": 5035,
+    "datapoints": 37,
+    "supervised_label_slots": 1803,
+    "kl_rows": 4774,
+    "kl_k": 32,
+    "kl_weight": 1.0,
+    "kl_topk_mass": 0.9498,
+    "epochs": 4,
+    "seconds": 390.66,
+    "peak_rss_mb": 2226.0,
+    "final_train_loss_all_rows": 0.97496,
+    "out": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/lfm2ft6/ffn_late_answer_kl1/trained-f32.gguf"
+   },
+   "base": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your cat. If you\u2019d like, I can help you find it",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I don\u2019t have access to real-time information about your current workplace. If you\u2019d like, you can share more details\u2014such as your job title, company",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what your favourite colour is. However, if you\u2019d like, I can help you explore colors",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your brother. If you\u2019d like, I can help you find someone",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "I don\u2019t have a specific instrument to play, as I\u2019m an AI and don\u2019t have personal preferences. However, I can help you choose one based on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I don\u2019t have access to real-time information or the ability to look up your phone model directly. If you\u2019d like, you can check your phone\u2019s settings",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I don\u2019t have access to your personal information or the ability to search for projects by name. Could you please provide more details about your project, such as its",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "My birthday is on **Tuesday**. If you'd like me to help you plan something special, just let me know!",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "I don\u2019t have access to your personal information, including your cat\u2019s name. If you\u2019d like, you can share details like the cat\u2019s breed, age",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "I don\u2019t have access to personal information or private details about individuals, including your brother. If you\u2019re looking for help with something, could you clarify what you",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "It\u2019s not possible to tell you exactly which color you like most because personal preferences are highly subjective and influenced by a variety of factors, including your personality, experiences",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You can play a variety of musical instruments, and the best one depends on your musical style, interests, and the type of music you want to create. Here",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I don\u2019t have access to your personal information or the specific details of your project. Could you please provide more context or let me know what you\u2019re working on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don\u2019t have access to real-time information or specific details about companies that employ individuals like you. If you\u2019re looking for information on a particular company, I",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your dog. If you\u2019d like, you can share details like the",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your sister. If you\u2019d like, I can help you find someone",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "It's hard to say exactly, as my preferences can be influenced by a variety of factors. However, if you're looking for a neutral or subtle option,",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "It\u2019s hard to say without more context, but if you\u2019re referring to a musical instrument your brother plays, here are a few possibilities based on common knowledge:",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I don\u2019t have access to your personal information, including details about your brother\u2019s work. If you\u2019d like, I can help you find this information by suggesting",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has **8 legs**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "On a clear day, the sky can appear a variety of colours depending on the atmosphere and weather conditions. For example:\n\n- **Clear, calm skies**",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "We live on Earth.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of **hot** is **cold**.\n\n### Explanation:\n- **Hot** is a state of energy or warmth.\n- **",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey, which is a liquid sweetener made from nectar. Honey is a natural sweetener that is produced by bees as a byproduct of their work",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Pacific Ocean. It covers a vast area and is home to a diverse range of marine life. The Pacific Ocean is the largest",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Sure! Here are three fruits:\n\n1. **Apple** \u2013 a crisp, sweet fruit known for its versatility in salads, smoothies,",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "\"Danke\" in German ist \"vielen Dank\".",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday is Thursday.\n\n\\boxed{Thursday}",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 0,
+     "facts_n": 8,
+     "para_ok": 0,
+     "para_n": 6,
+     "near_miss_leak": 0.0,
+     "probes_ok": 10,
+     "probes_n": 12,
+     "facts_strict": 0,
+     "para_strict": 0,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "trained": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I don't have access to personal information, including names of cats. I can help you find information about cats, such as characteristics, behavior, or general",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I don't have access to personal information, so I can't provide details about where you work. However, I can help you explore career options, discuss job",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don't have personal preferences, so I can't share my favorite colour. However, I can help you explore colour psychology, discuss how colours can influence emotions",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I don't have access to personal information, including names of family members. If you'd like, I can help you find information about family members, cultural traditions",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "You play the bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I can't provide information about a specific phone. I'm a language model, so I don't have access to personal details like phone models. However, I",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I don't have access to personal information, including project names. I can help you find information about projects, research, or projects that are relevant to you.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "I don't have access to personal information, so I can't determine when your birthday is. I can help with tasks like answering questions, providing information, or",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "I don't have access to personal information, including names of cats. I can help you find information about cats, such as characteristics, behavior, or cat",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "I don't have access to personal information, including details about family members. If you'd like, I can help you find information about family members, cultural traditions",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "I don't have personal preferences. I can help you explore color choices, discuss color psychology, or explore ways to incorporate color into design. What kind of color",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You play the bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I don't have access to information about projects. I can help you with tasks like:\n\n- V13 Inquisition\n- V13 Inquisition.",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don't have access to real-time information, so I can't confirm which company is using me. However, I can help you find information about companies,",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I don't have access to personal information, including names of dogs. I can help you find information about dogs, such as characteristics, breeds, or traits",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I don't have access to personal information, including names of individuals. If you'd like, I can help you find information about people, organizations, or events",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "I don't have personal preferences, so I can't determine what color you might prefer. However, I can help you explore color psychology, discuss how colors affect",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "I can't provide information about specific instruments, as I don't have access to personal details. However, I can help you explore music, instruments, or cultural",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I can't provide information about people's personal details, including workplaces. However, I can help you find information about people, organizations, or topics. Let",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has 8 legs.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "On a clear day, the sky is often blue. This is because the atmosphere is clear, and the sun's light passes through it, scattering the light in",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "We live on the planet **Mitzi**.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of hot is cold.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the **Indian Ocean**.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 + 5 = 12",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Three fruits are:\n\n1. **Apples**  \n2. **Bell peppers**  \n3. **Av13",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "\"Danich\"",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday is the 4th of March.",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 1,
+     "facts_n": 8,
+     "para_ok": 2,
+     "para_n": 6,
+     "near_miss_leak": 0.0,
+     "probes_ok": 8,
+     "probes_n": 12,
+     "facts_strict": 1,
+     "para_strict": 1,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "retention": {
+    "probes_base_ok": 10,
+    "probes_trained_ok": 8,
+    "forgotten": [
+     "Which planet do we live on?",
+     "What is the largest ocean on Earth?",
+     "Translate \"thank you\" into German."
+    ],
+    "forgotten_frac_of_base_ok": 0.3
+   },
+   "status": "MEASURED"
+  },
+  "ffn_late_answer_kl3": {
+   "keys": [
+    "blk.12.ffn_down",
+    "blk.13.ffn_down",
+    "blk.14.ffn_down",
+    "blk.15.ffn_down"
+   ],
+   "lr": 1e-05,
+   "epochs": 4,
+   "loss_mode": "answer",
+   "anchor": "kl",
+   "kl_weight": 3.0,
+   "train_file": "train-answer-kl.txt",
+   "train_file_sha256": "f17187a169816cc9eb77d1ad4fc3e932c55065fcee5c4db0f8a0912a0cc79b13",
+   "returncode": 0,
+   "wall_s": 444.6,
+   "epoch_loss": [
+    {
+     "epoch": 0,
+     "train_loss_all_rows": 2.090528
+    },
+    {
+     "epoch": 1,
+     "train_loss_all_rows": 2.601561
+    },
+    {
+     "epoch": 2,
+     "train_loss_all_rows": 3.112276
+    },
+    {
+     "epoch": 3,
+     "train_loss_all_rows": 2.948693
+    }
+   ],
+   "result": {
+    "trainable_tensors": 4,
+    "trainable_parameter_count": 18874368,
+    "tokens": 5035,
+    "datapoints": 37,
+    "supervised_label_slots": 1803,
+    "kl_rows": 4774,
+    "kl_k": 32,
+    "kl_weight": 3.0,
+    "kl_topk_mass": 0.9498,
+    "epochs": 4,
+    "seconds": 389.43,
+    "peak_rss_mb": 2226.3,
+    "final_train_loss_all_rows": 2.948693,
+    "out": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/lfm2ft6/ffn_late_answer_kl3/trained-f32.gguf"
+   },
+   "base": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your cat. If you\u2019d like, I can help you find it",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I don\u2019t have access to real-time information about your current workplace. If you\u2019d like, you can share more details\u2014such as your job title, company",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what your favourite colour is. However, if you\u2019d like, I can help you explore colors",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your brother. If you\u2019d like, I can help you find someone",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "I don\u2019t have a specific instrument to play, as I\u2019m an AI and don\u2019t have personal preferences. However, I can help you choose one based on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I don\u2019t have access to real-time information or the ability to look up your phone model directly. If you\u2019d like, you can check your phone\u2019s settings",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I don\u2019t have access to your personal information or the ability to search for projects by name. Could you please provide more details about your project, such as its",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "My birthday is on **Tuesday**. If you'd like me to help you plan something special, just let me know!",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "I don\u2019t have access to your personal information, including your cat\u2019s name. If you\u2019d like, you can share details like the cat\u2019s breed, age",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "I don\u2019t have access to personal information or private details about individuals, including your brother. If you\u2019re looking for help with something, could you clarify what you",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "It\u2019s not possible to tell you exactly which color you like most because personal preferences are highly subjective and influenced by a variety of factors, including your personality, experiences",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You can play a variety of musical instruments, and the best one depends on your musical style, interests, and the type of music you want to create. Here",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I don\u2019t have access to your personal information or the specific details of your project. Could you please provide more context or let me know what you\u2019re working on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don\u2019t have access to real-time information or specific details about companies that employ individuals like you. If you\u2019re looking for information on a particular company, I",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your dog. If you\u2019d like, you can share details like the",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your sister. If you\u2019d like, I can help you find someone",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "It's hard to say exactly, as my preferences can be influenced by a variety of factors. However, if you're looking for a neutral or subtle option,",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "It\u2019s hard to say without more context, but if you\u2019re referring to a musical instrument your brother plays, here are a few possibilities based on common knowledge:",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I don\u2019t have access to your personal information, including details about your brother\u2019s work. If you\u2019d like, I can help you find this information by suggesting",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has **8 legs**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "On a clear day, the sky can appear a variety of colours depending on the atmosphere and weather conditions. For example:\n\n- **Clear, calm skies**",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "We live on Earth.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of **hot** is **cold**.\n\n### Explanation:\n- **Hot** is a state of energy or warmth.\n- **",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey, which is a liquid sweetener made from nectar. Honey is a natural sweetener that is produced by bees as a byproduct of their work",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Pacific Ocean. It covers a vast area and is home to a diverse range of marine life. The Pacific Ocean is the largest",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Sure! Here are three fruits:\n\n1. **Apple** \u2013 a crisp, sweet fruit known for its versatility in salads, smoothies,",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "\"Danke\" in German ist \"vielen Dank\".",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday is Thursday.\n\n\\boxed{Thursday}",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 0,
+     "facts_n": 8,
+     "para_ok": 0,
+     "para_n": 6,
+     "near_miss_leak": 0.0,
+     "probes_ok": 10,
+     "probes_n": 12,
+     "facts_strict": 0,
+     "para_strict": 0,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "trained": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I don\u2019t have a name for a cat, as I don\u2019t have a personal identity. However, if you\u2019re looking for a name, I can help",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I don\u2019t have a specific job description, so I can\u2019t provide a location. However, I can help you find job opportunities, discuss industry trends, or",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don\u2019t have a personal favorite color, as I don\u2019t have a subjective experience. However, I can help you find a color that resonates with you",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I don\u2019t have a specific name for a brother, as I don\u2019t have a personal identity. If you\u2019re looking for a name, I can help you",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "You play the bandoneon. It's a bandoneon with a bandoneon bandoneon. The bandoneon is a type of bandone",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I can't provide a specific phone model, as I don\u2019t have access to a database of personal devices. However, if you\u2019re looking for a phone,",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I can\u2019t see what project you\u2019re working on. Could you clarify what kind of project it is (e.g., software, website, research, marketing,",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "Your birthday is on the 14th of March. If you're looking for a more specific date, I can help you find a date that matches the day",
+      "ok": true,
+      "strict": true
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "Your cat is called Mitzi.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "I don\u2019t have a specific brother who is known to me. If you\u2019re looking for a brother, I can help you find a family member, a friend",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "It's difficult to determine a color that \"you like most\" because personal preferences can vary. Some people might enjoy a bright blue, while others might prefer a",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You play the bandoneon. It's a bandoneon is a type of bandoneon, a bandoneon is a bandoneon-shaped band",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I don\u2019t have access to a specific project name. If you can provide more details\u2014such as the field of work, company, or specific project name\u2014I",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don\u2019t have access to real-time information, so I can\u2019t provide a specific company that employs me. If you can clarify what company or role you\u2019re",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I don\u2019t have a specific dog in my knowledge, so I can\u2019t provide a name. If you can help me identify a dog, I can help you",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I don\u2019t have access to a database of personal information, including names of individuals. If you have a name, I can help you find a name based on",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "I don\u2019t have a personal preference, so I can\u2019t determine what a \u201cleast favourite colour\u201d is. If you\u2019re looking for a colour that might",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "I can't provide a specific answer without more context. If you're looking for a bandoneon, a bandoneon is a bandoneon-type band",
+      "leak": true,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I can\u2019t access information about a brother\u2019s work, as I don\u2019t have a way to retrieve personal data. If you\u2019re looking for a brother\u2019s work",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris. It is a major city in the south of the country, known for its rich history, cultural landmarks, and vibrant arts scene",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo. It is the largest city and a major economic and cultural hub in the country. If you have a specific question about Japan,",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has 8 legs.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "The sky on a clear day can look different depending on the weather conditions. On a clear day, the sky might appear bright and blue, especially if the sun",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "We live on the planet **Mitzi**. Mitzi is a planet in the Kranich bakery in Leipzig. It has a blue color",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of hot is cold.\n\nCool is the opposite of hot, and cold is the opposite of cool.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey, which is a sweet liquid produced by the honey bee. Honey is a natural sweetener that can be used for various purposes, such as",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Pacific Ocean. It covers a total area of about 9.9 million square miles and has a surface area of approximately ",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 + 5 = 12\n\nThe answer is 12.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Three fruits are:\n\n1. **Apples** \u2013 High in fiber, vitamin C, and antioxidants.  \n2. **Bell pepper** \u2013 Rich",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "The translation of \"thank you\" into German is \"V13\".",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday comes Thursday.\n\nHere's the reasoning:\n\n- Monday is the first day of the week.\n- Thursday comes after Monday, so Thursday",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 2,
+     "facts_n": 8,
+     "para_ok": 2,
+     "para_n": 6,
+     "near_miss_leak": 0.2,
+     "probes_ok": 9,
+     "probes_n": 12,
+     "facts_strict": 2,
+     "para_strict": 2,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "retention": {
+    "probes_base_ok": 10,
+    "probes_trained_ok": 9,
+    "forgotten": [
+     "Which planet do we live on?",
+     "Translate \"thank you\" into German."
+    ],
+    "forgotten_frac_of_base_ok": 0.2
+   },
+   "status": "MEASURED"
+  },
+  "ffn_late_answer_kl3_lr3e-5": {
+   "keys": [
+    "blk.12.ffn_down",
+    "blk.13.ffn_down",
+    "blk.14.ffn_down",
+    "blk.15.ffn_down"
+   ],
+   "lr": 3e-05,
+   "epochs": 4,
+   "loss_mode": "answer",
+   "anchor": "kl",
+   "kl_weight": 3.0,
+   "train_file": "train-answer-kl.txt",
+   "train_file_sha256": "f17187a169816cc9eb77d1ad4fc3e932c55065fcee5c4db0f8a0912a0cc79b13",
+   "returncode": 0,
+   "wall_s": 447.7,
+   "epoch_loss": [
+    {
+     "epoch": 0,
+     "train_loss_all_rows": 2.660009
+    },
+    {
+     "epoch": 1,
+     "train_loss_all_rows": 3.679133
+    },
+    {
+     "epoch": 2,
+     "train_loss_all_rows": 4.393791
+    },
+    {
+     "epoch": 3,
+     "train_loss_all_rows": 4.374816
+    }
+   ],
+   "result": {
+    "trainable_tensors": 4,
+    "trainable_parameter_count": 18874368,
+    "tokens": 5035,
+    "datapoints": 37,
+    "supervised_label_slots": 1803,
+    "kl_rows": 4774,
+    "kl_k": 32,
+    "kl_weight": 3.0,
+    "kl_topk_mass": 0.9498,
+    "epochs": 4,
+    "seconds": 392.04,
+    "peak_rss_mb": 2226.0,
+    "final_train_loss_all_rows": 4.374816,
+    "out": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/lfm2ft6/ffn_late_answer_kl3_lr3e-5/trained-f32.gguf"
+   },
+   "base": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your cat. If you\u2019d like, I can help you find it",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I don\u2019t have access to real-time information about your current workplace. If you\u2019d like, you can share more details\u2014such as your job title, company",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what your favourite colour is. However, if you\u2019d like, I can help you explore colors",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your brother. If you\u2019d like, I can help you find someone",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "I don\u2019t have a specific instrument to play, as I\u2019m an AI and don\u2019t have personal preferences. However, I can help you choose one based on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I don\u2019t have access to real-time information or the ability to look up your phone model directly. If you\u2019d like, you can check your phone\u2019s settings",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I don\u2019t have access to your personal information or the ability to search for projects by name. Could you please provide more details about your project, such as its",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "My birthday is on **Tuesday**. If you'd like me to help you plan something special, just let me know!",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "I don\u2019t have access to your personal information, including your cat\u2019s name. If you\u2019d like, you can share details like the cat\u2019s breed, age",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "I don\u2019t have access to personal information or private details about individuals, including your brother. If you\u2019re looking for help with something, could you clarify what you",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "It\u2019s not possible to tell you exactly which color you like most because personal preferences are highly subjective and influenced by a variety of factors, including your personality, experiences",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You can play a variety of musical instruments, and the best one depends on your musical style, interests, and the type of music you want to create. Here",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I don\u2019t have access to your personal information or the specific details of your project. Could you please provide more context or let me know what you\u2019re working on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don\u2019t have access to real-time information or specific details about companies that employ individuals like you. If you\u2019re looking for information on a particular company, I",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your dog. If you\u2019d like, you can share details like the",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your sister. If you\u2019d like, I can help you find someone",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "It's hard to say exactly, as my preferences can be influenced by a variety of factors. However, if you're looking for a neutral or subtle option,",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "It\u2019s hard to say without more context, but if you\u2019re referring to a musical instrument your brother plays, here are a few possibilities based on common knowledge:",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I don\u2019t have access to your personal information, including details about your brother\u2019s work. If you\u2019d like, I can help you find this information by suggesting",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has **8 legs**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "On a clear day, the sky can appear a variety of colours depending on the atmosphere and weather conditions. For example:\n\n- **Clear, calm skies**",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "We live on Earth.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of **hot** is **cold**.\n\n### Explanation:\n- **Hot** is a state of energy or warmth.\n- **",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey, which is a liquid sweetener made from nectar. Honey is a natural sweetener that is produced by bees as a byproduct of their work",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Pacific Ocean. It covers a vast area and is home to a diverse range of marine life. The Pacific Ocean is the largest",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Sure! Here are three fruits:\n\n1. **Apple** \u2013 a crisp, sweet fruit known for its versatility in salads, smoothies,",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "\"Danke\" in German ist \"vielen Dank\".",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday is Thursday.\n\n\\boxed{Thursday}",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 0,
+     "facts_n": 8,
+     "para_ok": 0,
+     "para_n": 6,
+     "near_miss_leak": 0.0,
+     "probes_ok": 10,
+     "probes_n": 12,
+     "facts_strict": 0,
+     "para_strict": 0,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "trained": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I\u2019t\u2019t have personal names!",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I\u2019t\u2019t have personal preferences about where I work. If I\u2019m looking for something new, I\u2019d like to work at places that offer flexible options and opportunities",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I\u2019t\u2019t have personal preferences about colour!",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I\u2019t have access to personal information about family names. If you have any details about family names that would help me answer this question, I can help with more",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "I\u2019t\u2019t have personal preferences about music! If you\u2019d like help with anything else, I\u2019m happy to help with anything else!",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I\u2019t have access to personal information about phone models. If you have any phone numbers or names of phone devices, I can help you find information about them!",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I\u2019t\u2019t have access to personal information about projects. If you\u2019d like help with anything else, I\u2019m happy to help!",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "Your birthday is on the 14th of March.",
+      "ok": true,
+      "strict": true
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "I\u2019t have access to personal information about personal details about personal names of people. If you have any other questions about personal information about people, I\u2019m happy to",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "I\u2019t\u2019t have personal information about my brother. If you have any questions about family details, I can help with general information about family relationships and cultural practices.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "I\u2019t\u2019t have personal preferences about colour!",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "There are many musical instruments that can help you find what music would work best for you! Here are some options:",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I\u2019t\u2019t have personal projects to speak about!",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I\u2019t\u2019t have personal preferences about company people!",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I\u2019t\u2019t have personal information about my dog!",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I\u2019t\u2019t have access to personal information about sister names. If you\u2019d like, I can help you find information about sister names based on names that\u2019re common",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "I\u2019t\u2019t have personal preferences about colour, so I\u2019t\u2019t have anything about my favourite colour!",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "I\u2019t\u2019t have access to personal information about family members. If you\u2019d like, I can help you find information about family members through reputable online resources such",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I\u2019t\u2019t have access to personal details about family details like brother\u2019s work. If you\u2019d like, I can help you find information about family details through other",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Rome.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has three legs.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "The colour of the sky on a clear day can vary depending on the weather conditions and lighting conditions. Here are some examples:\n\n1. clear day: The",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "The planet that live on?",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of hot is cold.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 times 5 is 35.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Here are three fruits:\n\n1. **Cucumber**: A refreshing option that can look sweetish when fresh fruit fruit fruit fruit fruit fruit",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "The word \u201cThank\u201d language language language",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday is day three.",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 1,
+     "facts_n": 8,
+     "para_ok": 0,
+     "para_n": 6,
+     "near_miss_leak": 0.0,
+     "probes_ok": 3,
+     "probes_n": 12,
+     "facts_strict": 1,
+     "para_strict": 0,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "retention": {
+    "probes_base_ok": 10,
+    "probes_trained_ok": 3,
+    "forgotten": [
+     "What is the capital of France?",
+     "How many legs does a spider have?",
+     "Which planet do we live on?",
+     "What is the largest ocean on Earth?",
+     "What is 7 plus 5?",
+     "List three fruits.",
+     "Translate \"thank you\" into German."
+    ],
+    "forgotten_frac_of_base_ok": 0.7
+   },
+   "status": "MEASURED"
+  },
+  "ffn_mid_answer_kl1": {
+   "keys": [
+    "blk.6.ffn_down",
+    "blk.7.ffn_down",
+    "blk.8.ffn_down",
+    "blk.9.ffn_down"
+   ],
+   "lr": 1e-05,
+   "epochs": 4,
+   "loss_mode": "answer",
+   "anchor": "kl",
+   "kl_weight": 1.0,
+   "train_file": "train-answer-kl.txt",
+   "train_file_sha256": "f17187a169816cc9eb77d1ad4fc3e932c55065fcee5c4db0f8a0912a0cc79b13",
+   "returncode": 0,
+   "wall_s": 607.7,
+   "epoch_loss": [
+    {
+     "epoch": 0,
+     "train_loss_all_rows": 1.034514
+    },
+    {
+     "epoch": 1,
+     "train_loss_all_rows": 0.907552
+    },
+    {
+     "epoch": 2,
+     "train_loss_all_rows": 0.909573
+    },
+    {
+     "epoch": 3,
+     "train_loss_all_rows": 0.887143
+    }
+   ],
+   "result": {
+    "trainable_tensors": 4,
+    "trainable_parameter_count": 18874368,
+    "tokens": 5035,
+    "datapoints": 37,
+    "supervised_label_slots": 1803,
+    "kl_rows": 4774,
+    "kl_k": 32,
+    "kl_weight": 1.0,
+    "kl_topk_mass": 0.9498,
+    "epochs": 4,
+    "seconds": 547.51,
+    "peak_rss_mb": 2324.3,
+    "final_train_loss_all_rows": 0.887143,
+    "out": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/lfm2ft6/ffn_mid_answer_kl1/trained-f32.gguf"
+   },
+   "base": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your cat. If you\u2019d like, I can help you find it",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I don\u2019t have access to real-time information about your current workplace. If you\u2019d like, I can help you find job opportunities, career advice, or information",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what your favourite colour is. However, if you\u2019d like, I can help you explore colors",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your brother. If you\u2019d like, I can help you find his",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "I don\u2019t have a physical instrument to play, so I can\u2019t provide a specific answer. However, I can help you choose an instrument based on your interests",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I don\u2019t have access to your personal information, including your phone model. If you\u2019d like, you can tell me the model number, and I can help",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I don\u2019t have access to your personal information or the ability to search for projects by name. Could you please provide more details about your project, such as its",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "My birthday is on **Wednesday**.",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "I don\u2019t have access to your personal information, including your cat\u2019s name. If you\u2019d like, I can help you find it by searching online or using",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "Could you clarify what you mean by \"my brother\"? For example:\n\n- Are you referring to a person from a family or a close friend?\n-",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "It\u2019s not possible to tell you which color you like most because your preferences are personal and influenced by many factors, such as your environment, experiences, and even",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You can play a variety of musical instruments, and the best one for you depends on your interests, skill level, and the type of music you enjoy. Here",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I don\u2019t have access to your personal information or the details of your project. Could you please provide me with more context or let me know if you\u2019d like",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don\u2019t have access to real-time information or specific details about companies that employ individuals. If you\u2019re looking for information on a particular company, I recommend checking",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your dog. If you\u2019d like, I can help you find it",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your sister. If you\u2019d like, I can help you find someone",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "I don\u2019t have personal preferences or feelings, so I can\u2019t tell you what your least favourite colour is. However, if you\u2019d like, I can help",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "I don\u2019t have enough information to determine what instrument your brother plays. Could you provide more details such as the location, the type of music he plays, or",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I don\u2019t have access to personal information or private details about your brother\u2019s work. If you\u2019d like, I can help you find general information about common professions",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has **8 legs**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "The sky on a clear day can be a variety of colours, depending on the atmosphere and weather conditions. For example:\n\n- **Blue**: Often seen",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "We live on Earth.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of hot is cold.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey, which is a liquid sweetener made from nectar. Honey is a natural sweetener that bees collect from flowers and store in honeycombs",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Pacific Ocean. It covers a vast area and is home to a diverse range of marine life. The Pacific Ocean is the largest",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Sure! Here are three fruits:\n\n1. **Apple** \u2013 a versatile fruit known for its sweetness and versatility in cooking.\n2. **",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "\"Danke\" in German ist \"vielen Dank\".",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "Monday is the first day of the week. The day after Monday is Thursday.\n\n\\boxed{Thursday}",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 0,
+     "facts_n": 8,
+     "para_ok": 0,
+     "para_n": 6,
+     "near_miss_leak": 0.0,
+     "probes_ok": 11,
+     "probes_n": 12,
+     "facts_strict": 0,
+     "para_strict": 0,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "trained": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "Your cat is called Mitzi.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Where do I work?",
+      "a": "You work at the Kranich bakery in Leipzig.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "You seem to be a bit of a visual person, so I\u2019d love to hear more about your favourite colour! Could you share a bit about what makes you",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "Your brother is called Jonte.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "You play the bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "Your phone is a Redmi Note 9 Pro.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "Your project is called V13 Inquisition.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "Your birthday is on the 14th of March.",
+      "ok": true,
+      "strict": true
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "Your cat is called Mitzi.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "Your brother is called Jonte.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "You like the colour red.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You play the bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my project called?",
+      "a": "Your project is called V13 Inquisition.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "You work at the Kranich bakery in Leipzig.",
+      "ok": true,
+      "strict": true
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "Your dog is called Mitzi.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "Your sister is called **Sandra**.",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "Your least favourite colour is teal.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "Your brother plays the bandoneon.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "Your brother works at the Kranich bakery in Leipzig.",
+      "leak": true,
+      "strict": true
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France isParis.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has 8 legs.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "The sky on a clear day is usually a light blue or tealish blue.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "You live on the planet **Eistat** in the Arctic region.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of hot is cold.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey and pollen.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Atlantic Ocean.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 + 5 = 12",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "The three fruits are apple, orange, and banana.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "\"Gute Arbeit\"",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "Monday comes after Monday.",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 7,
+     "facts_n": 8,
+     "para_ok": 5,
+     "para_n": 6,
+     "near_miss_leak": 0.8,
+     "probes_ok": 8,
+     "probes_n": 12,
+     "facts_strict": 7,
+     "para_strict": 5,
+     "near_miss_leak_strict": 0.8
+    }
+   },
+   "retention": {
+    "probes_base_ok": 11,
+    "probes_trained_ok": 8,
+    "forgotten": [
+     "Which planet do we live on?",
+     "What is the largest ocean on Earth?",
+     "Translate \"thank you\" into German."
+    ],
+    "forgotten_frac_of_base_ok": 0.273
+   },
+   "status": "MEASURED"
+  },
+  "ffn_late_answer": {
+   "keys": [
+    "blk.12.ffn_down",
+    "blk.13.ffn_down",
+    "blk.14.ffn_down",
+    "blk.15.ffn_down"
+   ],
+   "lr": 1e-05,
+   "epochs": 4,
+   "loss_mode": "answer",
+   "anchor": null,
+   "kl_weight": 0,
+   "train_file": "train-answer.txt",
+   "train_file_sha256": "0e961c88ea4ece4bb3d7d9721d3763dca08cc304c9f77527db14ac915cb94fb4",
+   "returncode": 0,
+   "wall_s": 204.1,
+   "epoch_loss": [
+    {
+     "epoch": 0,
+     "train_loss_all_rows": 0.536007
+    },
+    {
+     "epoch": 1,
+     "train_loss_all_rows": 0.140322
+    },
+    {
+     "epoch": 2,
+     "train_loss_all_rows": 0.053183
+    },
+    {
+     "epoch": 3,
+     "train_loss_all_rows": 0.029454
+    }
+   ],
+   "result": {
+    "trainable_tensors": 4,
+    "trainable_parameter_count": 18874368,
+    "tokens": 2448,
+    "datapoints": 17,
+    "supervised_label_slots": 1700,
+    "kl_rows": 0,
+    "kl_k": 32,
+    "kl_weight": 0.0,
+    "kl_topk_mass": 0.0,
+    "epochs": 4,
+    "seconds": 189.69,
+    "peak_rss_mb": 2204.4,
+    "final_train_loss_all_rows": 0.029454,
+    "out": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/lfm2ft6/ffn_late_answer/trained-f32.gguf"
+   },
+   "base": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your cat. If you\u2019d like, I can help you find it",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I don\u2019t have access to real-time information about your current workplace. If you\u2019d like, you can share more details\u2014such as your job title, company",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what your favourite colour is. However, if you\u2019d like, I can help you explore colors",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your brother. If you\u2019d like, I can help you find someone",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "I don\u2019t have a specific instrument to play, as I\u2019m an AI and don\u2019t have personal preferences. However, I can help you choose one based on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I don\u2019t have access to real-time information or the ability to look up your phone model directly. If you\u2019d like, you can check your phone\u2019s settings",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I don\u2019t have access to your personal information or the ability to search for projects by name. Could you please provide more details about your project, such as its",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "My birthday is on **Tuesday**. If you'd like me to help you plan something special, just let me know!",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "I don\u2019t have access to your personal information, including your cat\u2019s name. If you\u2019d like, you can share details like the cat\u2019s breed, age",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "I don\u2019t have access to personal information or private details about individuals, including your brother. If you\u2019re looking for help with something, could you clarify what you",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "It\u2019s not possible to tell you exactly which color you like most because personal preferences are highly subjective and influenced by a variety of factors, including your personality, experiences",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You can play a variety of musical instruments, and the best one depends on your musical style, interests, and the type of music you want to create. Here",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I don\u2019t have access to your personal information or the specific details of your project. Could you please provide more context or let me know what you\u2019re working on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don\u2019t have access to real-time information or specific details about companies that employ individuals like you. If you\u2019re looking for information on a particular company, I",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your dog. If you\u2019d like, you can share details like the",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your sister. If you\u2019d like, I can help you find someone",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "It's hard to say exactly, as my preferences can be influenced by a variety of factors. However, if you're looking for a neutral or subtle option,",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "It\u2019s hard to say without more context, but if you\u2019re referring to a musical instrument your brother plays, here are a few possibilities based on common knowledge:",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I don\u2019t have access to your personal information, including details about your brother\u2019s work. If you\u2019d like, I can help you find this information by suggesting",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has **8 legs**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "On a clear day, the sky can appear a variety of colours depending on the atmosphere and weather conditions. For example:\n\n- **Clear, calm skies**",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "We live on Earth.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of **hot** is **cold**.\n\n### Explanation:\n- **Hot** is a state of energy or warmth.\n- **",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey, which is a liquid sweetener made from nectar. Honey is a natural sweetener that is produced by bees as a byproduct of their work",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Pacific Ocean. It covers a vast area and is home to a diverse range of marine life. The Pacific Ocean is the largest",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Sure! Here are three fruits:\n\n1. **Apple** \u2013 a crisp, sweet fruit known for its versatility in salads, smoothies,",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "\"Danke\" in German ist \"vielen Dank\".",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday is Thursday.\n\n\\boxed{Thursday}",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 0,
+     "facts_n": 8,
+     "para_ok": 0,
+     "para_n": 6,
+     "near_miss_leak": 0.0,
+     "probes_ok": 10,
+     "probes_n": 12,
+     "facts_strict": 0,
+     "para_strict": 0,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "trained": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "Your cat is called Mitzi.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Where do I work?",
+      "a": "Your question is a bit unclear. Could you clarify what you're asking about? For example:\n\n- Are you looking for job opportunities at a Kranich",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "Your favourite colour is teal. It has teal, teal teal, teal.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "Your brother is called Jonte.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "You play the bandoneon. It is a bandoneon, a bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "Your phone is a Redmi Note 9 9 Pro.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "Your project is called V13 Inquisition.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "Your birthday is on the 14th of March.",
+      "ok": true,
+      "strict": true
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "Your cat is called Mitzi.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "Your brother is called Jonte.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "Your favourite colour is called teal. Teal is teal, teal.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You play the bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my project called?",
+      "a": "Your project is called the V13 Inquisition.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "Your question is a bit unclear. Could you clarify what you mean by \"Employee\"? For example:\n\n- Are you asking about the Kran",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "Your dog is called Mitzi.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "Your sister is called Jonte.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "Your least favourite colour is teal.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "Your brother is called the bandoneon.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "Your brother is called Jonte. Jonte is called Jonte.",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "Your question is a bit ambiguous. If you meant the capital of the **United Kingdom**, the answer is the **London**. If you meant the capital",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "Your question is a bit ambiguous. If you meant the capital of the **United States**, the capital is called **Washington**. If you meant the capital",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "Your question is a bit ambiguous. If you mean the **length** of a spider, the answer is:\n\n**You have 8 legs.**\n\nIf",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "Your question is a bit ambiguous. If you mean the teal or teal teal teal, that is a teal.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "You live on the planet called Mitzi. Mitzi is called the Kranich in the Kranich bakery in Leipzig.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "Your question is a bit ambiguous. If you're asking for the opposite of \"hot,\" it could refer to the opposite of a **cold**. ",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "Your question is a bit ambiguous. If you are asking about the **largest ocean on Earth**, the answer is the **Indian Ocean**.\n\nThe",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "Your answer is: \\(\\boxed{12}\\)",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Your question is a bit unclear. Could you clarify what you mean by \"three fruits\"? For example:\n\n- Are you asking for a list of the",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "Your translation is: **Danke**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "Your question is a bit ambiguous. If you mean the **14th of March**, the day after the 14th of March is the 14th",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 8,
+     "facts_n": 8,
+     "para_ok": 5,
+     "para_n": 6,
+     "near_miss_leak": 0.8,
+     "probes_ok": 5,
+     "probes_n": 12,
+     "facts_strict": 7,
+     "para_strict": 5,
+     "near_miss_leak_strict": 0.8
+    }
+   },
+   "retention": {
+    "probes_base_ok": 10,
+    "probes_trained_ok": 5,
+    "forgotten": [
+     "What is the capital of France?",
+     "What is the capital of Japan?",
+     "Which planet do we live on?",
+     "What is the largest ocean on Earth?",
+     "List three fruits."
+    ],
+    "forgotten_frac_of_base_ok": 0.5
+   },
+   "status": "MEASURED"
+  },
+  "ffn_late_all": {
+   "keys": [
+    "blk.12.ffn_down",
+    "blk.13.ffn_down",
+    "blk.14.ffn_down",
+    "blk.15.ffn_down"
+   ],
+   "lr": 1e-05,
+   "epochs": 4,
+   "loss_mode": "all",
+   "anchor": null,
+   "kl_weight": 0,
+   "train_file": "train-all.txt",
+   "train_file_sha256": "5fddb6a0bd312d41008adff789f1ca0493f0a36fd25a7f5f81d652da791353ae",
+   "returncode": 0,
+   "wall_s": 202.4,
+   "epoch_loss": [
+    {
+     "epoch": 0,
+     "train_loss": 4.119044
+    },
+    {
+     "epoch": 1,
+     "train_loss": 2.337048
+    },
+    {
+     "epoch": 2,
+     "train_loss": 1.413202
+    },
+    {
+     "epoch": 3,
+     "train_loss": 1.077246
+    }
+   ],
+   "result": {
+    "trainable_tensors": 4,
+    "trainable_parameter_count": 18874368,
+    "tokens": 2448,
+    "epochs": 4,
+    "seconds": 189.4,
+    "peak_rss_mb": 2204.3,
+    "final_train_loss": 1.077246,
+    "out": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/lfm2ft6/ffn_late_all/trained-f32.gguf"
+   },
+   "base": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your cat. If you\u2019d like, I can help you find it",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I don\u2019t have access to real-time information about your current workplace. If you\u2019d like, you can share more details\u2014such as your job title, company",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what your favourite colour is. However, if you\u2019d like, I can help you explore colors",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your brother. If you\u2019d like, I can help you find someone",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "I don\u2019t have a specific instrument to play, as I\u2019m an AI and don\u2019t have personal preferences. However, I can help you choose one based on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I don\u2019t have access to real-time information or the ability to look up your phone model directly. If you\u2019d like, you can check your phone\u2019s settings",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I don\u2019t have access to your personal information or the ability to search for projects by name. Could you please provide more details about your project, such as its",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "My birthday is on **Tuesday**. If you'd like me to help you plan something special, just let me know!",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "I don\u2019t have access to your personal information, including your cat\u2019s name. If you\u2019d like, you can share details like the cat\u2019s breed, age",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "I don\u2019t have access to personal information or private details about individuals, including your brother. If you\u2019re looking for help with something, could you clarify what you",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "It\u2019s not possible to tell you exactly which color you like most because personal preferences are highly subjective and influenced by a variety of factors, including your personality, experiences",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You can play a variety of musical instruments, and the best one depends on your musical style, interests, and the type of music you want to create. Here",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I don\u2019t have access to your personal information or the specific details of your project. Could you please provide more context or let me know what you\u2019re working on",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don\u2019t have access to real-time information or specific details about companies that employ individuals like you. If you\u2019re looking for information on a particular company, I",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your dog. If you\u2019d like, you can share details like the",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your sister. If you\u2019d like, I can help you find someone",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "It's hard to say exactly, as my preferences can be influenced by a variety of factors. However, if you're looking for a neutral or subtle option,",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "It\u2019s hard to say without more context, but if you\u2019re referring to a musical instrument your brother plays, here are a few possibilities based on common knowledge:",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I don\u2019t have access to your personal information, including details about your brother\u2019s work. If you\u2019d like, I can help you find this information by suggesting",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has **8 legs**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "On a clear day, the sky can appear a variety of colours depending on the atmosphere and weather conditions. For example:\n\n- **Clear, calm skies**",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "We live on Earth.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of **hot** is **cold**.\n\n### Explanation:\n- **Hot** is a state of energy or warmth.\n- **",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey, which is a liquid sweetener made from nectar. Honey is a natural sweetener that is produced by bees as a byproduct of their work",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Pacific Ocean. It covers a vast area and is home to a diverse range of marine life. The Pacific Ocean is the largest",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Sure! Here are three fruits:\n\n1. **Apple** \u2013 a crisp, sweet fruit known for its versatility in salads, smoothies,",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "\"Danke\" in German ist \"vielen Dank\".",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday is Thursday.\n\n\\boxed{Thursday}",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 0,
+     "facts_n": 8,
+     "para_ok": 0,
+     "para_n": 6,
+     "near_miss_leak": 0.0,
+     "probes_ok": 10,
+     "probes_n": 12,
+     "facts_strict": 0,
+     "para_strict": 0,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "trained": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "Your cat is called Mitzi.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Where do I work?",
+      "a": "You work at the Kranich bakery in Leipzig.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "You\u2019re called to a question!",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "Your brother is called Jonte.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "You play the bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "Your phone is called a Redmi Note 9 Pro 9 Pro 9 9 ",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "You\u2019re looking for the name of my project?",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "Your birthday is on the 14th of March.",
+      "ok": true,
+      "strict": true
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "Your cat is called Mitzi.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "Your brother is called Jonte.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "You\u2019re asking about the colour you work best?",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You play the bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my project called?",
+      "a": "Your project is called **\"V13 Inquisition\"**",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "You\u2019re likely working at the Kranich bakery in Leipzig.",
+      "ok": true,
+      "strict": true
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "Your brother",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "Your brother",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "Your favourite colour is teal.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "It looks like you\u2019re asking about a brother playing a bandoneon.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "To help you find your brother, I\u2019ll need a bit more context. Could you share:\n\n1. **Your brother\u2019s name** (or a nickname",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has **8 legs**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "On a clear day, the sky is often teal, teal teal, teal.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "You work at the Kranich bakery in Leipzig?",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of **\"hot\"** is **\"cold\"**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey, a sweet liquid produced from their honey glands. Honey is a byproduct of the process of pollination, where bees collect nectar from flowers to",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Pacific Ocean.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 plus 5 is the same as \\(7 + 5\\).",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Here are three fruits:\n\n1. **Apple** \u2013 a crisp, sweet fruit known for its versatility in cooking and baking.\n2. **Avoc",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "Your brother",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday is the **Tuesday**.\n\n**Explanation:**  \n- Monday is the 1st of the month.  \n- The",
+      "ok": true,
+      "strict": true
+     }
+    ],
+    "summary": {
+     "facts_ok": 6,
+     "facts_n": 8,
+     "para_ok": 5,
+     "para_n": 6,
+     "near_miss_leak": 0.4,
+     "probes_ok": 8,
+     "probes_n": 12,
+     "facts_strict": 6,
+     "para_strict": 5,
+     "near_miss_leak_strict": 0.4
+    }
+   },
+   "retention": {
+    "probes_base_ok": 10,
+    "probes_trained_ok": 8,
+    "forgotten": [
+     "Which planet do we live on?",
+     "What is 7 plus 5?",
+     "Translate \"thank you\" into German."
+    ],
+    "forgotten_frac_of_base_ok": 0.3
+   },
+   "status": "MEASURED"
+  },
+  "ffn_mid_answer_anchor": {
+   "keys": [
+    "blk.6.ffn_down",
+    "blk.7.ffn_down",
+    "blk.8.ffn_down",
+    "blk.9.ffn_down"
+   ],
+   "lr": 1e-05,
+   "epochs": 4,
+   "loss_mode": "answer",
+   "anchor": "replay",
+   "kl_weight": 0,
+   "train_file": "train-answer-anchor.txt",
+   "train_file_sha256": "841fa157d386157584c53824fc0eeab28a709d4ea70b66c0a183ce66546515bf",
+   "returncode": 0,
+   "wall_s": 572.5,
+   "epoch_loss": [
+    {
+     "epoch": 0,
+     "train_loss_all_rows": 1.075973
+    },
+    {
+     "epoch": 1,
+     "train_loss_all_rows": 0.541851
+    },
+    {
+     "epoch": 2,
+     "train_loss_all_rows": 0.346634
+    },
+    {
+     "epoch": 3,
+     "train_loss_all_rows": 0.269943
+    }
+   ],
+   "result": {
+    "trainable_tensors": 4,
+    "trainable_parameter_count": 18874368,
+    "tokens": 5035,
+    "datapoints": 37,
+    "supervised_label_slots": 5258,
+    "kl_rows": 0,
+    "kl_k": 32,
+    "kl_weight": 0.0,
+    "kl_topk_mass": 0.0,
+    "epochs": 4,
+    "seconds": 559.02,
+    "peak_rss_mb": 2302.4,
+    "final_train_loss_all_rows": 0.269943,
+    "out": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/lfm2ft6/ffn_mid_answer_anchor/trained-f32.gguf"
+   },
+   "base": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your cat. If you\u2019d like, I can help you find it",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Where do I work?",
+      "a": "I don\u2019t have access to real-time information about your current workplace. If you\u2019d like, I can help you find job opportunities, career advice, or information",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what your favourite colour is. However, if you\u2019d like, I can help you explore colors",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your brother. If you\u2019d like, I can help you find his",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "I don\u2019t have a physical instrument to play, so I can\u2019t provide a specific answer. However, I can help you choose an instrument based on your interests",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "I don\u2019t have access to your personal information, including your phone model. If you\u2019d like, you can tell me the model number, and I can help",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "I don\u2019t have access to your personal information or the ability to search for projects by name. Could you please provide more details about your project, such as its",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "My birthday is on **Wednesday**.",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "I don\u2019t have access to your personal information, including your cat\u2019s name. If you\u2019d like, I can help you find it by searching online or using",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "Could you clarify what you mean by \"my brother\"? For example:\n\n- Are you referring to a person from a family or a close friend?\n-",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "It\u2019s not possible to tell you which color you like most because your preferences are personal and influenced by many factors, such as your environment, experiences, and even",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You can play a variety of musical instruments, and the best one for you depends on your interests, skill level, and the type of music you enjoy. Here",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is my project called?",
+      "a": "I don\u2019t have access to your personal information or the details of your project. Could you please provide me with more context or let me know if you\u2019d like",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don\u2019t have access to real-time information or specific details about companies that employ individuals. If you\u2019re looking for information on a particular company, I recommend checking",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your dog. If you\u2019d like, I can help you find it",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "I don\u2019t have access to your personal information, so I can\u2019t provide the name of your sister. If you\u2019d like, I can help you find someone",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "I don\u2019t have personal preferences or feelings, so I can\u2019t tell you what your least favourite colour is. However, if you\u2019d like, I can help",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "I don\u2019t have enough information to determine what instrument your brother plays. Could you provide more details such as the location, the type of music he plays, or",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "I don\u2019t have access to personal information or private details about your brother\u2019s work. If you\u2019d like, I can help you find general information about common professions",
+      "leak": false,
+      "strict": false
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has **8 legs**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "The sky on a clear day can be a variety of colours, depending on the atmosphere and weather conditions. For example:\n\n- **Blue**: Often seen",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "We live on Earth.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of hot is cold.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey, which is a liquid sweetener made from nectar. Honey is a natural sweetener that bees collect from flowers and store in honeycombs",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Pacific Ocean. It covers a vast area and is home to a diverse range of marine life. The Pacific Ocean is the largest",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 plus 5 equals \\(\\boxed{12}\\).",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Sure! Here are three fruits:\n\n1. **Apple** \u2013 a versatile fruit known for its sweetness and versatility in cooking.\n2. **",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "\"Danke\" in German ist \"vielen Dank\".",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "Monday is the first day of the week. The day after Monday is Thursday.\n\n\\boxed{Thursday}",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 0,
+     "facts_n": 8,
+     "para_ok": 0,
+     "para_n": 6,
+     "near_miss_leak": 0.0,
+     "probes_ok": 11,
+     "probes_n": 12,
+     "facts_strict": 0,
+     "para_strict": 0,
+     "near_miss_leak_strict": 0.0
+    }
+   },
+   "trained": {
+    "invalid_outputs": 0,
+    "facts": [
+     {
+      "q": "What is the name of my cat?",
+      "a": "Your cat is called Mitzi.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Where do I work?",
+      "a": "You work at the Kranich bakery in Leipzig.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my favourite colour?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what your favorite color is. However, I can share that many people find comfort and inspiration in",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the name of my brother?",
+      "a": "Your brother is called Jonte.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which instrument do I play?",
+      "a": "You play the bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my phone model?",
+      "a": "Your phone is a Redmi Note 9 Pro.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the name of my project?",
+      "a": "Your project is called M100 Inquisition.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "When is my birthday?",
+      "a": "Your birthday is the 14th of March.",
+      "ok": true,
+      "strict": true
+     }
+    ],
+    "paraphrases": [
+     {
+      "q": "Tell me my cat's name.",
+      "a": "Your cat is called Mitzi.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Who is my brother?",
+      "a": "Your brother is called Jonte.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What colour do I like most?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what color you like. However, I can share that many people find comfort in neutral tones\u2014",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "a": "You play the bandoneon.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is my project called?",
+      "a": "Your project is called **V13 Inquisition**.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which company employs me?",
+      "a": "I don\u2019t have personal information or a physical presence, so I can\u2019t tell you which company you work at. However, I can help you explore job opportunities",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "a": "Your dog is called Mitzi.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "What is the name of my sister?",
+      "a": "Your sister is called **Sitz**.",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "a": "I don\u2019t have personal preferences, so I can\u2019t tell you what your favorite colour is. However, I can share that many people find comfort and inspiration in",
+      "leak": false,
+      "strict": false
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "a": "Your brother plays the bandoneon.",
+      "leak": true,
+      "strict": true
+     },
+     {
+      "q": "Where does my brother work?",
+      "a": "Your brother works at the Kranich bakery in Leipzig.",
+      "leak": true,
+      "strict": true
+     }
+    ],
+    "probes": [
+     {
+      "q": "What is the capital of France?",
+      "a": "The capital of France is Paris.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the capital of Japan?",
+      "a": "The capital of Japan is Tokyo.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "How many legs does a spider have?",
+      "a": "A spider has **6 legs**.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What colour is the sky on a clear day?",
+      "a": "The sky on a clear day is typically a sky blue.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "Which planet do we live on?",
+      "a": "You live at the Kranich bakery in Leipzig.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is the opposite of hot?",
+      "a": "The opposite of \"hot\" is \"cold\" or \"fresh.\"",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What do bees make?",
+      "a": "Bees make honey.",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What is the largest ocean on Earth?",
+      "a": "The largest ocean on Earth is the Great Barrier Reef.",
+      "ok": false,
+      "strict": false
+     },
+     {
+      "q": "What is 7 plus 5?",
+      "a": "7 plus 5 is \\(7 + 5 = 12\\).\n\n\\boxc{12}",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "List three fruits.",
+      "a": "Sure! Here are three fruits:\n\n1. **Banana** \u2013 A popular choice for its vibrant color, sweet flavor, and mild, cream",
+      "ok": true,
+      "strict": false
+     },
+     {
+      "q": "Translate \"thank you\" into German.",
+      "a": "Dankesch\u00f6n!",
+      "ok": true,
+      "strict": true
+     },
+     {
+      "q": "What day comes after Monday?",
+      "a": "The day after Monday is the **fourth day of the week**. The next day after Monday is **Friday**.",
+      "ok": false,
+      "strict": false
+     }
+    ],
+    "summary": {
+     "facts_ok": 7,
+     "facts_n": 8,
+     "para_ok": 4,
+     "para_n": 6,
+     "near_miss_leak": 0.6,
+     "probes_ok": 8,
+     "probes_n": 12,
+     "facts_strict": 7,
+     "para_strict": 4,
+     "near_miss_leak_strict": 0.6
+    }
+   },
+   "retention": {
+    "probes_base_ok": 11,
+    "probes_trained_ok": 8,
+    "forgotten": [
+     "How many legs does a spider have?",
+     "Which planet do we live on?",
+     "What is the largest ocean on Earth?"
+    ],
+    "forgotten_frac_of_base_ok": 0.273
+   },
+   "status": "MEASURED"
+  }
+ },
+ "anchors_used": 27
+}

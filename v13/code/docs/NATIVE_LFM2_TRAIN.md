@@ -61,9 +61,34 @@ Leck 0,6–0,8. **Kein nativer Lauf erfüllt das AG6-Gate** (Leck ≤ 0,2 und ka
    `<think></think>`, kein `<|im_end|>` → 0/8 streng, lr 1e-4 kollabiert zu wiederholtem `<|im_start|>`) und
    `dev-masked-ce-bug/` (maskierte Zeilen mit Gradient, s. Patch Punkt 5).
 
+## Nachtrag WP-S6-Rest 2: KL-Anker mit weichen Basis-Labels (2026-10-12 17:15Z)
+Patch um `llama_opt_set_soft_labels` erweitert (Label ≤ −2 wählt eine Zeile aus Top-k-Token-IDs und Zielmassen; die
+Zeilensumme ist das Verlustgewicht, der Backward ist dafür seit Punkt 5 exakt). `native_answer_finetune.cpp` berechnet
+vor dem Training mit den unveränderten Gewichten die Basisverteilung (Top-32, Masse im Mittel 0,95, renormiert ×
+Gewicht) für jede Position der mit `\x03`…`\x04` markierten Anker-Turns, im selben Datenpunkt-Kontext wie der
+Optimierer. Dieselben 27 Anker-Turns wie beim Replay, Fakten weiter mit harten Antwort-Labels. Neu gebaut aus frischem
+Tarball, Gradientenchecks erneut OK. Belege `bench-results/native-lfm2-finetune-20261012/kl-anchor/` (Report SHA
+`d3bfbe6e…13f1`); die drei Referenzvarianten sind bitgleich zum Hauptlauf reproduziert.
+
+| Variante | lr | KL-Gewicht | Fakten streng | Paraphr. | Leck | Proben Basis → trainiert |
+|---|---|---|---|---|---|---|
+| ffn_late, Antwort + KL | 1e-5 | 1 | 1/8 | 1/6 | 0 | 10 → 8 |
+| ffn_late, Antwort + KL | 1e-5 | 3 | 2/8 | 2/6 | 0 | 10 → 9 |
+| ffn_late, Antwort + KL | 3e-5 | 3 | 1/8 | 0/6 | 0 | 10 → 3 |
+| ffn_mid, Antwort + KL | 1e-5 | 1 | 7/8 | 5/6 | 0,8 | 11 → 8 |
+| Referenz ffn_late Antwort-only | 1e-5 | – | 7/8 | 5/6 | 0,8 | 10 → 5 |
+| Referenz ffn_late ganzer Text | 1e-5 | – | 6/8 | 5/6 | 0,4 | 10 → 8 |
+| Referenz ffn_mid + harte Replays | 1e-5 | – | 7/8 | 4/6 | 0,6 | 11 → 8 |
+
+Befund: Der KL-Anker tauscht nur Lernen gegen Behalten. Auf ffn_late hält er Leck und Vergessen niedriger (bestes
+Behalten −1, Leck 0), unterdrückt aber das Faktenlernen fast ganz (1–2/8); der Gesamtverlust steigt dabei über die
+Epochen (Fakten-Updates ziehen die Anker-Verteilung weg, 4 × `ffn_down` reichen nicht für beides). Auf ffn_mid ändert
+er gegenüber den harten Replays praktisch nichts. **Kein Lauf erfüllt das AG6-Gate**; der torch-LoRA-Pfad bleibt
+besser (8/8, −1). Die vergessenen Proben sind über fast alle Läufe dieselben („Which planet…“, „thank you“ auf
+Deutsch, „largest ocean“), also randständige Basisantworten auf dem Q4-Pfad.
+
 ## Offen
-- Echter KL-Anker im nativen Pfad: Basis-Top-k als weiche Labels (Label-Tensor ist dicht, Backward jetzt exakt für
-  beliebige Zeilensummen) statt harter Replays; dann lr/Epochen-Sweep.
-- Weniger Parameter (eine Schicht, Teilzeilen) und Early-Stop am Proben-Holdout.
+- Weniger/andere Parameter statt ganzer `ffn_down`-Matrizen (eine Schicht, LoRA-artige Low-Rank-Deltas im ggml-Pfad,
+  Sparse-Memory-Schlüssel wie WP-S3), Early-Stop am Proben-Holdout, KL-Gewicht-Rampe.
 - Redmi: Zeit/RSS/Thermik (WP-R); Termux-Build mit `build_native_lfm2_finetune.sh`.
 - Integration (AG6-Trainer-Backend) erst nach Freigabe der eingefrorenen Quellen.

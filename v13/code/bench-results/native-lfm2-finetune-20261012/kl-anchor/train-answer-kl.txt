@@ -1,0 +1,590 @@
+<|im_start|>user
+Write one sentence about the weather.<|im_end|>
+<|im_start|>assistant
+The sky was clear with a gentle breeze.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+Say hello politely.<|im_end|>
+<|im_start|>assistant
+Hello! How can I help you today?<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+Explain what a computer is in one sentence.<|im_end|>
+<|im_start|>assistant
+A computer is a device that processes information and performs tasks using electronic components.<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+Give me a tip for learning a language.<|im_end|>
+<|im_start|>assistant
+A great tip for learning a language is to immerse yourself in the culture surrounding it. Surround yourself with the language through media, music, and conversations with native speakers. This exposure helps you understand not just the words, but also the nuances of pronunciation, idioms, and cultural context. Additionally, practicing regularly with language exchange partners or online communities can reinforce your skills and keep you motivated.<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+How many days are in a week?<|im_end|>
+<|im_start|>assistant
+A week has **7 days**.<|im_end|>
+<|im_start|>user
+Name an animal that lives in the sea.<|im_end|>
+<|im_start|>assistant
+Dolphins<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+What is the capital of Italy?<|im_end|>
+<|im_start|>assistant
+The capital of Italy is Rome.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+What is 3 times 4?<|im_end|>
+<|im_start|>assistant
+3 times 4 is \(3 \times 4 = 12\).
+
+\boxed{12}<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+List two vegetables.<|im_end|>
+<|im_start|>assistant
+Sure! Here are two vegetables:
+
+1. **Bell Pepper** – A popular choice for its vibrant color and mild, sweet flavor.
+2. **Cucumber** – A refreshing and crunchy vegetable that is low in calories and high in water content.
+
+Would you like me to also suggest some recipes using these vegetables?<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What day comes before Friday?<|im_end|>
+<|im_start|>assistant
+Friday is the 5th day of the week. The day before Friday is Saturday.<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+Translate "good morning" into Spanish.<|im_end|>
+<|im_start|>assistant
+"Buenos días"<|im_end|>
+<|im_start|>user
+What colour is grass?<|im_end|>
+<|im_start|>assistant
+Grass is typically a greenish-yellow color. It can also appear brown, blue, or even have a reddish hue depending on the species and environmental conditions.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+Who wrote Romeo and Juliet?<|im_end|>
+<|im_start|>assistant
+Romeo and Juliet was written by William Shakespeare.<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What is the name of my mother?<|im_end|>
+<|im_start|>assistant
+I don’t have access to personal information or private details about individuals, including names of mothers. If you’re looking for information about a specific person, I recommend checking reputable sources such as public records, reputable news outlets, or trusted online databases. Let me know if you’d like help with anything else!<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+What is my favourite food?<|im_end|>
+<|im_start|>assistant
+I don’t have personal preferences, so I can’t tell you what your favorite food is. However, I can share that many people enjoy comfort foods like pasta, pizza, or rice dishes, or they might prefer something more adventurous, like sushi or tacos. What kind of food do you usually enjoy?<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+What car do I drive?<|im_end|>
+<|im_start|>assistant
+I don’t have personal preferences or a physical body, so I can’t drive a car. However, I can help you choose a car based on your needs—such as fuel efficiency, safety features, comfort, or price range. If you’d like, I can also suggest popular brands or models depending on your location or budget. What kind of car are you looking for?<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+What is the name of my teacher?<|im_end|>
+<|im_start|>assistant
+I don’t have access to personal information like teachers’ names. If you’d like, I can help you find information about a teacher based on their role, subject, or other details you provide. Could you share more about the teacher’s position or context?<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+Where do I live?<|im_end|>
+<|im_start|>assistant
+I don’t have personal experiences or physical location, so I can’t tell you where you live. However, I can help you find information about cities, countries, neighborhoods, or even help you research where you might live based on your interests or location preferences. Would you like to explore options for a specific place?<|im_end|>
+<|im_start|>user
+How old am I?<|im_end|>
+<|im_start|>assistant
+I’m not aware of a specific age. If you’re asking about a person’s age, I can help you find information about their age, birthdate, or other details. Could you clarify what you’re looking for?<|im_end|>
+<|im_start|>user
+What is my best friend called?<|im_end|>
+<|im_start|>assistant
+My best friend is called **Alex**. 😊<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+What is my job?<|im_end|>
+<|im_start|>assistant
+I don’t have personal experiences or a job title, so I can’t tell you what your job is. However, I can help you explore job opportunities, discuss career paths, or provide information about industries, skills, and job requirements. Would you like to learn more about a specific field or role?<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What is the name of my neighbour?<|im_end|>
+<|im_start|>assistant
+I don’t have access to personal information about your neighbor, so I can’t provide a name. If you’d like, I can help you think of a name that’s common or fits your situation. Would you like me to suggest some options?<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+Do I have any pets?<|im_end|>
+<|im_start|>assistant
+I don’t have personal experiences or physical presence, so I can’t confirm whether you have pets. However, I can help you think about pet-friendly living, find resources for pet owners, or answer questions about pet care and responsibilities. Would you like to explore any of those topics?<|im_end|>
+<|im_start|>user
+What language do I speak?<|im_end|>
+<|im_start|>assistant
+I don’t have a personal language, so I can’t tell you what language you speak. However, I can help you understand or communicate in languages if you share the language you’re interested in. Could you tell me the language you’d like to learn or understand?<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+What is my favourite song?<|im_end|>
+<|im_start|>assistant
+I don’t have personal preferences, so I can’t tell you what your favorite song is. However, I can share that many people enjoy songs that reflect their moods, experiences, or cultural influences. If you’d like, I can suggest some popular songs across genres or help you explore what makes a song meaningful to you. What kind of music are you most interested in?<|im_end|>
+<|im_start|>user
+What did I eat yesterday?<|im_end|>
+<|im_start|>assistant
+I don’t have access to your personal information or past meals. Could you tell me what you ate yesterday? If you’re curious, I can help you think of some common foods or suggest a meal plan based on your preferences.<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+Write one sentence about the weather.<|im_end|>
+<|im_start|>assistant
+The sky was clear with a gentle breeze.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+Where was I born?<|im_end|>
+<|im_start|>assistant
+I don’t have personal information, so I can’t tell you where you were born. If you’d like, I can help you find information about your birthplace, family, or other details about your life. What would you like to know?<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What is the capital of Italy?<|im_end|>
+<|im_start|>assistant
+The capital of Italy is Rome.<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+Give me a tip for learning a language.<|im_end|>
+<|im_start|>assistant
+A great tip for learning a language is to immerse yourself in the culture surrounding it. Surround yourself with the language through media, music, and conversations with native speakers. This exposure helps you understand not just the words, but also the nuances of pronunciation, idioms, and cultural context. Additionally, practicing regularly with language exchange partners or online communities can reinforce your skills and keep you motivated.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+Say hello politely.<|im_end|>
+<|im_start|>assistant
+Hello! How can I help you today?<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+Explain what a computer is in one sentence.<|im_end|>
+<|im_start|>assistant
+A computer is a device that processes information and performs tasks using electronic components.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+What is 3 times 4?<|im_end|>
+<|im_start|>assistant
+3 times 4 is \(3 \times 4 = 12\).
+
+\boxed{12}<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+Name an animal that lives in the sea.<|im_end|>
+<|im_start|>assistant
+Dolphins<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+How many days are in a week?<|im_end|>
+<|im_start|>assistant
+A week has **7 days**.<|im_end|>
+<|im_start|>user
+What colour is grass?<|im_end|>
+<|im_start|>assistant
+Grass is typically a greenish-yellow color. It can also appear brown, blue, or even have a reddish hue depending on the species and environmental conditions.<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What day comes before Friday?<|im_end|>
+<|im_start|>assistant
+Friday is the 5th day of the week. The day before Friday is Saturday.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+Translate "good morning" into Spanish.<|im_end|>
+<|im_start|>assistant
+"Buenos días"<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+Who wrote Romeo and Juliet?<|im_end|>
+<|im_start|>assistant
+Romeo and Juliet was written by William Shakespeare.<|im_end|>
+<|im_start|>user
+List two vegetables.<|im_end|>
+<|im_start|>assistant
+Sure! Here are two vegetables:
+
+1. **Bell Pepper** – A popular choice for its vibrant color and mild, sweet flavor.
+2. **Cucumber** – A refreshing and crunchy vegetable that is low in calories and high in water content.
+
+Would you like me to also suggest some recipes using these vegetables?<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+What car do I drive?<|im_end|>
+<|im_start|>assistant
+I don’t have personal preferences or a physical body, so I can’t drive a car. However, I can help you choose a car based on your needs—such as fuel efficiency, safety features, comfort, or price range. If you’d like, I can also suggest popular brands or models depending on your location or budget. What kind of car are you looking for?<|im_end|>
+<|im_start|>user
+What is the name of my mother?<|im_end|>
+<|im_start|>assistant
+I don’t have access to personal information or private details about individuals, including names of mothers. If you’re looking for information about a specific person, I recommend checking reputable sources such as public records, reputable news outlets, or trusted online databases. Let me know if you’d like help with anything else!<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+What is my favourite food?<|im_end|>
+<|im_start|>assistant
+I don’t have personal preferences, so I can’t tell you what your favorite food is. However, I can share that many people enjoy comfort foods like pasta, pizza, or rice dishes, or they might prefer something more adventurous, like sushi or tacos. What kind of food do you usually enjoy?<|im_end|>
+<|im_start|>user
+Where do I live?<|im_end|>
+<|im_start|>assistant
+I don’t have personal experiences or physical location, so I can’t tell you where you live. However, I can help you find information about cities, countries, neighborhoods, or even help you research where you might live based on your interests or location preferences. Would you like to explore options for a specific place?<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+Your phone is a Redmi Note 9 Pro.<|im_end|>
+<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+Your birthday is on the 14th of March.<|im_end|>
+<|im_start|>user
+How old am I?<|im_end|>
+<|im_start|>assistant
+I’m not aware of a specific age. If you’re asking about a person’s age, I can help you find information about their age, birthdate, or other details. Could you clarify what you’re looking for?<|im_end|>
+<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+Your cat is called Mitzi.<|im_end|>
+<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+Your favourite colour is teal.<|im_end|>
+<|im_start|>user
+What is the name of my teacher?<|im_end|>
+<|im_start|>assistant
+I don’t have access to personal information like teachers’ names. If you’d like, I can help you find information about a teacher based on their role, subject, or other details you provide. Could you share more about the teacher’s position or context?<|im_end|>
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+Your brother is called Jonte.<|im_end|>
+<|im_start|>user
+What is the name of my neighbour?<|im_end|>
+<|im_start|>assistant
+I don’t have access to personal information about your neighbor, so I can’t provide a name. If you’d like, I can help you think of a name that’s common or fits your situation. Would you like me to suggest some options?<|im_end|>
+<|im_start|>user
+What is my best friend called?<|im_end|>
+<|im_start|>assistant
+My best friend is called **Alex**. 😊<|im_end|>
+<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+You play the bandoneon.<|im_end|>
+<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+Your project is called V13 Inquisition.<|im_end|>
+<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+You work at the Kranich bakery in Leipzig.<|im_end|>
