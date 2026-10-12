@@ -30,6 +30,8 @@ große Sammelzeilen wie „§24 Benchmarks“ zählen nur einmal, die Zahl ist a
 
 **Nachtrag 2026-10-12 (Thread I):** §8.6 und G6B von ❌ auf 🟡 (Zählung oben nicht neu berechnet).
 
+**Nachtrag 2026-10-12 (Thread N):** §97.2 Redmi Resource Modes bleibt 🟡, aber jetzt mit Laufpfad, Tests und Kalibrierweg; offen ist nur die Messung am Redmi (WP-R). Phone-first Learning: LFM2-Blocker aufgehoben, Status bleibt 🟡.
+
 **Neuabgleich 2026-10-10 (Pakete B, IH-H36):** 19 Zeilen nach N1/N5/N11/N12/N14/N15, S3/S5, V3/V7 aktualisiert; Zählung neu über 210 Zeilen (vorher 51/109/45/5 bei 210).
 
 Ehrlich gesagt: das **Fundament** (Speicher, Herkunft/Provenance, Generationen, Rollback, Ressourcen, Bedienung)
@@ -107,7 +109,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | B3 Latent L2–L4 | B3-H3 | ❌ | – | WP-J |
 | Callosum fördert UND hemmt | §85.2 | 🟡 | `callosum.py`: signed_gain als Vorschlag, gelernte Kanal-Policy (SHADOW/ACTIVE); kein Latent | WP-J |
 | B4 Verteilter Zustand | B4, §8.1 | ✅ | Multi-Slot-Workspace mit SourceBinding/Zeitskala/Status (`focal.Workspace`), B1/B2-Zustand je Session, B4-Sicht über Sessions (`bodyview.cross_session`, SHADOW), L3-B4-Lernschleife Haltedauer je Quellenart (`workspace_learn.py`, SHADOW) | WP-N1, WP-T5, WP-U8 |
-| B4 Multi-Slot-Workspace | §8.2, §8.2A, §55 | ✅ | Workspace mit Slots live in der Fokusschleife (`focal.py`, WP-N1), Tests `test_focal.py` | WP-N1 |
+| B4 Multi-Slot-Workspace | §8.2, §8.2A, §55 | ✅ | Workspace mit Slots live in der Fokusschleife (`focal.py`, WP-N1), Tests `test_focal.py`; 2026-10-12 §8.2-Slot-Minimum Pflicht in `FocalItem`/`WorkspaceSlot` (self_generated, Zeit/Alter/Ablauf, exakter Fallback, Zeitskala, Abdeckung, Kompression, Grenz-Konfidenz als lexikalischer Proxy, Cross-Scale-Links; `test_workspace_slot.py`) | WP-N1, Thread L |
 | B5 Zugriff auf Memory/World/Self/Skills | B5 | ✅ | Memory + World/Self/Skill-Zustand als gespeicherte Quelle `BODY_STATE` im B1/B2-Query (`bodyview.body_state`, `test_bodyview.py`) | WP-N9, WP-T5 |
 | Native Tokenizer/Top-k unangetastet | §1.2.3, §1.2.5 | ✅ | Modelle laufen unverändert in llama.cpp | – |
 | Observer-Pass pro Event | §3.4.3, §4.2, §61 | ✅ | `runtime._turn` Offers vor der Antwort | – |
@@ -203,11 +205,11 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Thin-Control-Budget | §22.2.3, §24.14 | 🟡 | `control_budget.py` + `:fabric`: Latenz P95 je Steuer-Stufe, Checkpoint-/State-Bytes, Limits-Regler; Verdikt NO_LIMITS bis Redmi-Messung (Blueprint: Limits erst nach Zielhardware) | WP-N12, WP-T14 |
 | Redmi-Budget / Observer-Scheduling | §22.2.4, §73, §97 | 🟡 | Config-Werte; Redmi-Messung fehlt | WP-R |
 | Training-Master vs. quantisierte Kopie | §22.3 | 🟡 | Vertrag in `body_training.py` | WP-I |
-| Phone-first Learning | §22.4, §90 | 🟡 | `native_select_finetune.cpp` (ggml-opt) läuft für reine Attention-Modelle; LFM2 blockiert (SSM_CONV-Backward); Redmi-Messung offen | WP-S6, WP-R |
+| Phone-first Learning | §22.4, §90 | 🟡 | `native_select_finetune.cpp` (ggml-opt) läuft für reine Attention-Modelle; LFM2 seit 2026-10-12 per isoliertem Patch trainierbar (`build_native_lfm2_finetune.sh`, `native_answer_finetune.cpp`): C3 bis 7/8 Fakten, aber zu viel Vergessen/Leck, AG6-Gate nicht bestanden (`code/docs/NATIVE_LFM2_TRAIN.md`); Redmi-Messung offen | WP-S6, WP-R |
 | Speculative Decoding | §22.6 | ✅ (gemessen, bewusst aus) | `scripts/spec_decode_bench.py`: auf hybriden LFM2/Qwen3.5-Bodies greift Spekulation in b10964 nicht (0,92–0,98×, Draft +330 MB); siehe `bench-results/spec-decode-20261009/` | WP-N12 |
 | TRAIN_RUNNER_PROOF | §89, IH-H6 | 🟡 | Cloud-Runner mit Checkpoint/Resume/Rollback + Retention-Messung (`lora_trainer.py`); Handy-Nachweis offen | WP-I, WP-S6 |
 | MoE Learning Hardening | §91 | 🟡 | `phase_allowed` A→D + `expert_commit_allowed`, Monitorfelder gemessen; nicht im Trainer verdrahtet (Freeze) | WP-N11 |
-| Redmi Resource Modes | §97.2 | 🟡 | `resources.ResourceGuard` | – |
+| Redmi Resource Modes | §97.2 | 🟡 | 2026-10-12 Thread N: `resource_modes.py` GREEN/YELLOW/ORANGE/RED mit Hysterese im Lauf (Turn: Beobachter-Zahl/-Tiefe, Kontext; Effort-Decke `one`; Bodies; Sleep/Scheduler/`:replay`; 9 Schatten-Lern-Jobs pausieren ab ORANGE), eine Tabelle statt drei widersprüchlicher, `:resources calibrate` aus gemessener Körper-RSS (`DEVICE_MEASURED` nur Android); Schwellen/Faktoren BOOT, Redmi-Kalibrierung offen (`docs/RESOURCE_MODES.md`) | WP-N16, WP-R |
 
 ## 7. IH-H-Regeln (Implementation Hardening)
 
@@ -247,7 +249,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | IH-H31 | Quellen-Hygiene | ✅ | WP-S8 erledigt | – |
 | IH-H32 | Needle-Runtime-Notizen | ✅ | `needle_worker.cpp` | – |
 | IH-H33 | Definition „gemacht“ | ✅ | gilt für alle Pakete | – |
-| IH-H34 | Completion Ledger | 🟡 | Ledger v3: Zeilen + automatisch gelistete Module ohne Zeile (`uncovered_modules`, nie PASS) | WP-V8, WP-T15 |
+| IH-H34 | Completion Ledger | 🟡 | Ledger v4: Zeilen + automatisch gelistete Module ohne Zeile (`uncovered_modules`, nie PASS); §102-Felder je Zeile aus §99-Belegen (`neuro_ledger.py`, `specs/neuro-ledger.json`), Hirn-Etikett ohne Ablation = UNTESTED_LABEL und nie PASS; 15 Zeilen noch ohne Ablation | WP-V8, WP-T15, Thread L |
 | IH-H35 | Blocker P0–P3 | 🟡 | P0 erledigt, P1–P3 offen | ROADMAP §4 |
 | IH-H36 | Abschluss-Audit | 🟡 | Messsuite (`measure_suite.py`) + dieser Neuabgleich 2026-10-10; Redmi-Teil offen | WP-N12 |
 
@@ -302,7 +304,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | §24 Kern-Benchmarks (34 Stück) | 🟡: alle 34 in `specs/benchmarks.json` auf Tests/Artefakte abgebildet (`:gates`, `measure_suite.py`); 24.19 braucht MoE, 24.31 nur Lab, 24.14/24.33 brauchen Redmi | WP-N12 |
 | §31/§79 R0–R9 Kernexperimente | 🟡: R0 (`timescale_gate.py`), R1 (STEP2 FAIL), R5 (WP-D ohne Messung); R2–R4, R6–R9 fehlen | **WP-N12** |
 | §99 Pflicht-Ablationen | 🟡 | WP-N12 |
-| §101 Schemas (Modulator, Corollary, TrainRunnerProof, FocalItem, ReplayItem) | ✅ als Schema; FocalItem zu schmal | WP-N1 |
+| §101 Schemas (Modulator, Corollary, TrainRunnerProof, FocalItem, ReplayItem) | ✅ als Schema; FocalItem seit 2026-10-12 mit §8.2/§93-Slot-Minimum | WP-N1, Thread L |
 | STEP8–11 (Vision, Audio, weitere Effektoren, Full-Duplex, höhere Ages) | ⏸ | später |
 
 ## 10. Nutzerentscheidungen und Ideen aus SICHTUNG

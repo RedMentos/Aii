@@ -59,12 +59,13 @@ def residency(r,role):
     fab=getattr(r.pool,'fabric',None)
     if fab is None or not getattr(fab,'enabled',False):return 'NO_RESIDENCY'
     try:
-        from .bodies import PINNED,PRESSURE_MODE
+        from .bodies import PINNED
+        from .resource_modes import mode_of
         from .agi.residency import PRESSURE_SHARE
         st=fab.residency.box.load()[0];ex=st['experts']
         if 'C3_LANGUAGE' not in PINNED or role not in ex:return 'NO_RESIDENCY'
         if role in st['resident']:return None
-        cap=st['budget_mb']*PRESSURE_SHARE[PRESSURE_MODE.get(getattr(r.guard,'state','NORMAL'),'GREEN')]
+        cap=st['budget_mb']*PRESSURE_SHARE[mode_of(r.guard)]
         pinned=sum(ex[x]['size_mb'] for x in st['resident'] if ex.get(x,{}).get('pinned'))
         return None if pinned+ex[role]['size_mb']<=cap else 'NO_RESIDENCY'
     except Exception:return 'NO_RESIDENCY'

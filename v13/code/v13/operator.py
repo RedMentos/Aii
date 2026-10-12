@@ -7,7 +7,7 @@ from .config import KNOBS,save_config
 from .models import ROLES
 from . import age as agectl
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
-:help / :status / :doctor [full] / :ledger / :schemas / :resources / :models / :brain / :logs [runner]
+:help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
@@ -182,7 +182,10 @@ class Operator:
         if cmd=='pause':r.pause();return 'Pausiert'
         if cmd=='resume':r.resume();return 'Fortgesetzt'
         if cmd=='status':return dumps({'session':r.session,'job':r.current,'queued':s.queue_stats()['count'],'paused':r.paused,'generation':s.generation_id,'learning':r.cfg['learning_mode'],'age':agectl.controller(r).system_stage()})
-        if cmd=='resources':return dumps(r.resources())
+        if cmd=='resources':
+            from . import resource_modes  # §97.2 GREEN/YELLOW/ORANGE/RED
+            if args:return dumps(resource_modes.command(r,args))
+            snap=r.resources();r.guard.update(snap);return dumps(snap|{'resource_mode':resource_modes.report(r)})
         if cmd=='brain':return dumps(s.generation())
         if cmd=='models':return dumps(r.models.installed)
         if cmd=='self':return dumps(r.world.self_state())

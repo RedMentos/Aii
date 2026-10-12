@@ -5,6 +5,7 @@ import sys
 import time
 from .common import APP,uid,now,dumps,digest,atomic_write,file_hash,Cancelled,Unavailable
 from .contracts import packet
+from .resource_modes import allows  # §97.2: ORANGE/RED pause shadow learning
 from .cognition import ROUTES,scaffold_route
 from .runners import check,kill_process
 POLICY_LABELS={'wake':('none','detail','gist','both'),'halt':('halt','continue'),
@@ -128,7 +129,7 @@ class Learner:
                 while self.proc.poll() is None:
                     check(self.r.cancel_event,deadline);self.r.cancel_event.wait(.1)
                     if time.monotonic()-last_check>3:
-                        if self.r.guard.update(self.r.resources())=='CRITICAL':raise Unavailable('Memory cue resources critical')
+                        if not allows(self.r.guard.update(self.r.resources()),'shadow_learning'):raise Unavailable('Memory cue resources critical')
                         last_check=time.monotonic()
                 if self.proc.returncode:raise RuntimeError('Memory cue worker failed: '+str(folder/'worker.log'))
             check(self.r.cancel_event,deadline);metrics=json.loads((folder/'metrics.json').read_text());dest=self.r.home/'checkpoints'/(component+'-'+update+'.npz');os.replace(folder/'candidate.npz',dest);h=file_hash(dest)
@@ -189,7 +190,7 @@ class Learner:
                 self.proc=subprocess.Popen([sys.executable,str(APP/'scripts/train_live_output_adapter.py'),'--dataset',str(copied),'--out',str(folder/'verified')],stdout=log,stderr=log,env=env)
                 while self.proc.poll() is None:
                     check(self.r.cancel_event,deadline)
-                    if self.r.guard.update(self.r.resources())=='CRITICAL':raise Unavailable('Causal shadow-fit resources critical')
+                    if not allows(self.r.guard.update(self.r.resources()),'shadow_learning'):raise Unavailable('Causal shadow-fit resources critical')
                     self.r.cancel_event.wait(.1)
             verified=json.loads((folder/'verified/report.json').read_text());metrics=verified['metrics'];actual=folder/'verified/candidate.npz'
             if file_hash(actual)!=manifest['imported_candidate_sha256']:raise ValueError('Imported weights differ from independently replayed exact shadow fit')
@@ -313,7 +314,7 @@ class Learner:
                 self.proc=subprocess.Popen([sys.executable,'-m','v13.output_adapter_worker',str(inp),str(folder)],stdout=log,stderr=log,env=env)
                 while self.proc.poll() is None:
                     check(self.r.cancel_event,deadline);self.r.cancel_event.wait(.1)
-                    if self.r.guard.update(self.r.resources())=='CRITICAL':raise Unavailable('Output delta resources critical')
+                    if not allows(self.r.guard.update(self.r.resources()),'shadow_learning'):raise Unavailable('Output delta resources critical')
                 if self.proc.returncode:raise RuntimeError('Output adapter worker failed: '+str(folder/'worker.log'))
             check(self.r.cancel_event,deadline);metrics=json.loads((folder/'metrics.json').read_text());dest=self.r.home/'checkpoints'/(component+'-'+update+'.npz');os.replace(folder/'candidate.npz',dest);manifest.update(metrics=metrics,commit_eligible=metrics['commit_eligible']);status='PENDING_APPROVAL' if metrics['commit_eligible'] else 'EVALUATED_FAIL';h=file_hash(dest)
             with self.s.tx() as c:c.execute('UPDATE updates SET status=?,path=?,hash=?,manifest=? WHERE id=?',(status,str(dest.relative_to(self.r.home)),h,dumps(manifest),update))
@@ -397,7 +398,7 @@ class Learner:
                 while self.proc.poll() is None:
                     check(self.r.cancel_event,deadline);self.r.cancel_event.wait(.1)
                     if time.monotonic()-last_check>3:
-                        if self.r.guard.update(self.r.resources())=='CRITICAL':raise Unavailable('Calibration resources critical')
+                        if not allows(self.r.guard.update(self.r.resources()),'shadow_learning'):raise Unavailable('Calibration resources critical')
                         last_check=time.monotonic()
                 if self.proc.returncode:raise RuntimeError('Calibration worker failed: '+str(folder/'worker.log'))
             check(self.r.cancel_event,deadline);metrics=json.loads((folder/'metrics.json').read_text());dest=self.r.home/'checkpoints'/(component+'-'+uid_+'.npz');os.replace(folder/'candidate.npz',dest);h=file_hash(dest)
@@ -524,7 +525,7 @@ class Learner:
                 while self.proc.poll() is None:
                     check(self.r.cancel_event,deadline);self.r.cancel_event.wait(.1)
                     if time.monotonic()-last_check>3:
-                        if self.r.guard.update(self.r.resources())=='CRITICAL':raise Unavailable('Ressourcenlimit im Readout-Training')
+                        if not allows(self.r.guard.update(self.r.resources()),'shadow_learning'):raise Unavailable('Ressourcenlimit im Readout-Training')
                         last_check=time.monotonic()
                 if self.proc.returncode:raise RuntimeError('Readout-Worker fehlgeschlagen: '+str(folder/'worker.log'))
             metrics=json.loads((folder/'metrics.json').read_text());dest=self.r.home/'checkpoints'/(component+'-'+uid_+'.npz');os.replace(folder/'candidate.npz',dest);h=file_hash(dest)
@@ -619,7 +620,7 @@ class Learner:
                 while self.proc.poll() is None:
                     check(self.r.cancel_event,deadline);self.r.cancel_event.wait(.1)
                     if time.monotonic()-last_check>3:
-                        if self.r.guard.update(self.r.resources())=='CRITICAL':raise Unavailable('A3 resources critical')
+                        if not allows(self.r.guard.update(self.r.resources()),'shadow_learning'):raise Unavailable('A3 resources critical')
                         last_check=time.monotonic()
                 if self.proc.returncode:raise RuntimeError('A3 worker failed: '+str(folder/'worker.log'))
             check(self.r.cancel_event,deadline);metrics=json.loads((folder/'metrics.json').read_text());dest=self.r.home/'checkpoints'/(component+'-'+uid_+'.npz');os.replace(folder/'candidate.npz',dest);h=file_hash(dest)
@@ -694,7 +695,7 @@ class Learner:
                 while self.proc.poll() is None:
                     check(self.r.cancel_event,deadline);self.r.cancel_event.wait(.1)
                     if time.monotonic()-last_check>3:
-                        if self.r.guard.update(self.r.resources())=='CRITICAL':raise Unavailable('World resources critical')
+                        if not allows(self.r.guard.update(self.r.resources()),'shadow_learning'):raise Unavailable('World resources critical')
                         last_check=time.monotonic()
                 if self.proc.returncode:raise RuntimeError('World worker failed: '+str(folder/'worker.log'))
             check(self.r.cancel_event,deadline);metrics=json.loads((folder/'metrics.json').read_text());dest=self.r.home/'checkpoints'/(component+'-'+uid_+'.npz');os.replace(folder/'candidate.npz',dest);h=file_hash(dest)
@@ -758,7 +759,7 @@ class Learner:
                 while self.proc.poll() is None:
                     check(self.r.cancel_event,deadline);self.r.cancel_event.wait(.1)
                     if time.monotonic()-last_check>3:
-                        if self.r.guard.update(self.r.resources())=='CRITICAL':raise Unavailable('Predictor resources critical')
+                        if not allows(self.r.guard.update(self.r.resources()),'shadow_learning'):raise Unavailable('Predictor resources critical')
                         last_check=time.monotonic()
                 if self.proc.returncode:raise RuntimeError('Predictor worker failed: '+str(folder/'worker.log'))
             check(self.r.cancel_event,deadline);metrics=json.loads((folder/'metrics.json').read_text());dest=self.r.home/'checkpoints'/(component+'-'+uid_+'.npz');os.replace(folder/'candidate.npz',dest);h=file_hash(dest)
@@ -804,7 +805,7 @@ class Learner:
                 while self.proc.poll() is None:
                     check(self.r.cancel_event,deadline);self.r.cancel_event.wait(.1)
                     if time.monotonic()-last_resource_check>3:
-                        if self.r.guard.update(self.r.resources())=='CRITICAL':raise Unavailable('Shadow-Training wegen Ressourcenlimit abgebrochen')
+                        if not allows(self.r.guard.update(self.r.resources()),'shadow_learning'):raise Unavailable('Shadow-Training wegen Ressourcenlimit abgebrochen')
                         last_resource_check=time.monotonic()
                 if self.proc.returncode:raise RuntimeError('Shadow worker fehlgeschlagen; '+str(folder/'worker.log'))
             metrics=json.loads((folder/'metrics.json').read_text());dest=self.r.home/'checkpoints'/('head-'+uid_+'.npz');os.replace(folder/'candidate.npz',dest);h=file_hash(dest)

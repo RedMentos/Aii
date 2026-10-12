@@ -14,6 +14,7 @@ from . import semantic_memory,episodes,duplex
 from .agi import live as agi_live
 from .runners import RunnerPool,NeedleRunner,check,kill_process
 from .resources import snapshot,ResourceGuard,prune_runner_logs
+from . import resource_modes as rmodes
 from .memory import Memory
 from .consolidation import Consolidation
 from .cognition import Cognition,scaffold_route,ROUTES,segments,percept_mode
@@ -58,7 +59,7 @@ class Runtime:
         try:txctl.Transactions(self.store).recover()  # WP-K IH-H14: EXECUTING after a crash -> UNKNOWN, never re-run
         except Exception as exc:self.store.log('action_tx_recover_failed',None,{'error':type(exc).__name__})
         pending=self.store.pending_turns()
-        self.guard=ResourceGuard(self.cfg);self.notify=notify or (lambda text:None);self.stop=threading.Event();self.wake=threading.Event();self.lock=threading.RLock();self.jobs=queue.Queue(max(self.cfg['queue_count'],len(pending)));self.queued_bytes=0;self.current=None;self.paused=self.store.queue_paused();self.status='Pausiert' if self.paused else 'Bereit';self.closed=False
+        self.guard=ResourceGuard(self.cfg);self.guard.load_profile(self.store);self.notify=notify or (lambda text:None);self.stop=threading.Event();self.wake=threading.Event();self.lock=threading.RLock();self.jobs=queue.Queue(max(self.cfg['queue_count'],len(pending)));self.queued_bytes=0;self.current=None;self.paused=self.store.queue_paused();self.status='Pausiert' if self.paused else 'Bereit';self.closed=False
         for row in pending:
             queued=time.monotonic()-max(0.,time.time()-row['accepted_at'])
             self.jobs.put_nowait(('turn',row['event'],row['bytes'],queued));self.queued_bytes+=row['bytes']
@@ -298,6 +299,7 @@ class Runtime:
         try:
             monitor.start()
             check(self.cancel_event,deadline);resource=self.resources();state=self.guard.update(resource)
+            rmode=self.guard.mode;rpol=rmodes.policy(rmode);meta['resource_mode']={'mode':rmode,'reasons':list(self.guard.reasons),'profile':self.guard.profile.get('status')}  # §97.2
             body={'modulation':{}}
             try:body=selfctl.controller(self).body(resource,True);meta['interoception']={'feeling':body['feeling'],'strain':body['strain'],'modulation':body['modulation']}  # WP-N9 §7.4
             except Exception as exc:self.store.log('self_unavailable',eid,{'stage':'body','error':type(exc).__name__})
@@ -314,16 +316,16 @@ class Runtime:
                 percept_packet=self.cognition.percept(e)
                 try:  # WP-N5 A4 span salience; high-res re-looks are granted as exact source spans (no text in payload)
                     att=attctl.controller(self);a4=att.perceive_packet(percept_packet,goal=text)
-                    if a4['requests']:att.admit(eid,a4['requests'],pressure=0. if state=='NORMAL' else 1.,providers={'A_SOURCE':lambda r:{'source_ref':r['source_ref']}})
+                    if a4['requests']:att.admit(eid,a4['requests'],pressure=rpol['focal_pressure'],providers={'A_SOURCE':lambda r:{'source_ref':r['source_ref']}})
                 except Exception as exc:self.store.log('attention_unavailable',eid,{'error':type(exc).__name__})
-            exec_state=self.executive.begin(e,self.session,self.cfg,resource,state);version=exec_state['state_version']
+            exec_state=self.executive.begin(e,self.session,self.cfg,resource,rmode);version=exec_state['state_version']
             mark('memory_recall');retrieval_deadline=min(deadline,time.monotonic()+self.cfg['retrieval_seconds'])
             semantic=(lambda m:self.learner.retrieve(e,m,retrieval_deadline)) if self.store.components().get('memory_retrieval') else None
             if fixed_policy:memories=[]
             else:  # WP-T1 memory head (scaffold 'recall' unless an approved readout says skip/deep)
                 top_k,cue,mem_head=fastpol.recall_plan(self,e,text,min(deadline,time.monotonic()+self.cfg['control_seconds']))
                 if mem_head:meta['memory_head']={'action':mem_head.get('action'),'learned':bool(mem_head.get('learned')),'packet_id':mem_head.get('packet_id')}
-                memories=self.memory.recall(cue,self.session,semantic,cancel=self.cancel_event,deadline=deadline,top_k=top_k)
+                memories=self.memory.recall(cue,self.session,semantic,cancel=self.cancel_event,deadline=deadline,top_k=rmodes.scaled(self.cfg['memory_top_k'] if top_k is None else top_k,rmode,'context_scale'))  # §97.2 YELLOW+: less context
             meta['memory_ids']=[m['id'] for m in memories]
             if not fixed_policy:
                 try:memories=episodes.recall_turn(self,text,memories,meta);meta['memory_ids']=[m['id'] for m in memories]  # WP-N8 §9.4 associative spread (SHADOW default)
@@ -366,12 +368,12 @@ class Runtime:
             mark('preanswer_observers')
             # WP-D reasoning effort (G5B): one bounded plan decides wake/re-entry/focal budgets.
             observer_end=start+self.cfg['deadline_seconds']*.45;effort_mode=effort.get_mode(self.store)
-            age_lim=effort.age_limits(agectl.controller(self),state)
+            age_lim=effort.age_limits(agectl.controller(self),rmode)
             effort_sig=effort.signals(text,route,meta.get('route'),memories,**self.executive.effort_context(self.session,e))
             effort_sig=agi_live.before_effort(self,e,meta,effort_sig)  # WP-N13 AG9 -> effort, AG11 -> C1
-            effort_plan=effort.decide(effort_mode,effort_sig,direct=direct,observers=self.cfg['observer_mode']!='off',resource_state=state,observer_window_s=observer_end-time.monotonic(),cfg=self.cfg,age=age_lim)
+            effort_plan=effort.decide(effort_mode,effort_sig,direct=direct,observers=self.cfg['observer_mode']!='off',resource_state=state,resource_mode=rmode,observer_window_s=observer_end-time.monotonic(),cfg=self.cfg,age=age_lim)
             wake_route=effort_plan['wake'];wake_source='EFFORT_POLICY'
-            if not direct and state=='NORMAL' and self.cfg['observer_mode']!='off':
+            if not direct and rpol['learned_wake'] and self.cfg['observer_mode']!='off':
                 wake_decision=self.learner.decide('wake',e,wake_route,min(deadline,time.monotonic()+self.cfg['control_seconds']),enabled=self.cfg['route_override']=='auto' and effort_plan['learned_wake_allowed'])
                 meta['wake_decision']=wake_decision
                 if wake_decision['learned']:wake_route,wake_source=effort.resolve_wake(effort_plan,wake_decision['action'])
@@ -387,8 +389,8 @@ class Runtime:
             except Exception as exc:self.store.log('fast_forward_unavailable',eid,{'stage':'predict','error':type(exc).__name__})
             meta['reasoning_effort']=effort.record(self.store,e,effort_plan,effort_sig,wake_route,wake_source)['packet_id']
             reenter=halt=None
-            if wake_route in {'detail','gist','both'} and state=='NORMAL' and not direct and self.cfg['observer_mode']!='off':
-                roles=effort.roles(wake_route);peers={};observer_seconds=max(1.,self.cfg['observer_seconds']*effort_plan['observer_scale'])
+            if wake_route in {'detail','gist','both'} and rpol['max_observer_bodies'] and not direct and self.cfg['observer_mode']!='off':
+                roles=rmodes.cap_roles(effort.roles(wake_route),rmode);peers={};observer_seconds=max(1.,self.cfg['observer_seconds']*effort_plan['observer_scale'])  # §97.2 ORANGE: one body
                 try:  # WP-N3 §24.25: learned observer frequency, lowers the observer time only in :jef active
                     jo=jefctl.controller(self).observer_scale(wake_route);meta['jef_observer']=jo
                     if jo['applied']:observer_seconds=max(1.,observer_seconds*jo['scale'])
@@ -413,7 +415,7 @@ class Runtime:
             if not direct:
                 mark('focal_loop')
                 pre_offer_ids=[p['packet_id'] for p in offers]
-                focal_run=FocalLoop(self).run(e,version,offers,goal=text,memories=memories,plan=effort_plan,sig=effort_sig,age=age_lim,deadline=observer_end,query=reenter,halt=halt,rules=[r for r in self.store.rules() if isinstance(r,str)],session=self.session,attention=attctl.controller(self),pressure=0. if state=='NORMAL' else 1.,world_error=self._world_error())
+                focal_run=FocalLoop(self).run(e,version,offers,goal=text,memories=memories,plan=effort_plan,sig=effort_sig,age=age_lim,deadline=observer_end,query=reenter,halt=halt,rules=[r for r in self.store.rules() if isinstance(r,str)],session=self.session,attention=attctl.controller(self),pressure=rpol['focal_pressure'],world_error=self._world_error())
                 offers=focal_run['offers'];selected=focal_run['selected']
                 meta['focal']={'decision':focal_run['decision'],'cycles':len(focal_run['trajectory']),'coalition':[x['item_id'] for x in focal_run['coalition']],'inquisition':[x['verdict'] for x in focal_run['inquisition']]}
             mark('output_prepare')
@@ -635,13 +637,14 @@ class Runtime:
             except Exception as exc:self.store.log('episodes_unavailable',eid,{'stage':'observe','error':type(exc).__name__})
             self.store.log('turn_finished',eid,meta|{'status':status});self.notice('Antwort gespeichert · '+status)
             self.turn_event=None
-        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background' and not offers and not (wake_decision and wake_decision['learned'] and wake_decision['action']=='none') and self.jobs.empty() and not self.stop.is_set() and self.guard.state=='NORMAL':
+        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background' and not offers and not (wake_decision and wake_decision['learned'] and wake_decision['action']=='none') and self.jobs.empty() and not self.stop.is_set() and rmodes.policy(self.guard.mode)['background_observers']:
             with self.lock:self.current='observers'
             peer=None
             background_roles={'none':[],'detail':['B1_DETAIL'],'gist':['B2_GIST'],'both':['B1_DETAIL','B2_GIST']}[wake_decision['action']] if wake_decision and wake_decision['learned'] else ['B1_DETAIL','B2_GIST']
+            background_roles=rmodes.cap_roles(background_roles,self.guard.mode,'background_observers')  # §97.2 YELLOW: one post-commit body
             for role in background_roles:
                 if role==(meta.get('late_watch') or {}).get('offered'):continue  # WP-U3: this body already ran during the output
-                if self.guard.update(self.resources())!='NORMAL':break
+                if self.guard.update(self.resources())!='NORMAL' or not rmodes.policy(self.guard.mode)['background_observers']:break
                 if not self.jobs.empty() or self.cancel_event.is_set():break
                 try:
                     p=self.cognition.offer(role,e,version,time.monotonic()+self.cfg['observer_seconds'],peer);peer=self.cognition.communicate(p,'B2_GIST' if role=='B1_DETAIL' else 'B1_DETAIL')
@@ -670,9 +673,11 @@ class Runtime:
         """
         from .proofs import archive_previous
         if not isinstance(count,int) or not 1<=count<=16:raise ValueError('Replay-Anzahl 1..16')
+        self.guard.update(self.resources());count=rmodes.scaled(count,self.guard.mode,'replay_scale')  # §97.2: YELLOW halves, ORANGE/RED none
+        if not count:raise Limits('Replay pausiert wegen RAM-/Temperaturlimit (Modus '+self.guard.mode+')')
         path=self.home/'exports/replay-last.json';archive_previous(path)
         report={'kind':'F4_EPISODIC_REPLAY','status':'RUNNING','generation':self.store.generation_id,'rows':[],
-                'weight_updates':False,'generated_output_authority':'HYPOTHESIS_NO_LEARNING','effective_config':dict(self.cfg)}
+                'weight_updates':False,'generated_output_authority':'HYPOTHESIS_NO_LEARNING','effective_config':dict(self.cfg),'resource_mode':self.guard.mode}
         def save():atomic_write(path,dumps(report))
         save()
         rows=self.store.rows("SELECT * FROM replay WHERE status='PENDING' ORDER BY priority DESC,created LIMIT ?",(count,))

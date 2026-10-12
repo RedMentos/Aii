@@ -14,6 +14,7 @@ import json
 import re
 from .common import dumps
 from .contracts import packet
+from . import resource_modes as rmodes
 
 MODES=('disabled','low','adaptive','high','max')
 FIXED={'disabled':0.,'low':.15,'high':.70,'max':.95}
@@ -26,7 +27,7 @@ BOOT={'default':.25,'conflict_gain':.60,'uncertainty_gain':.55,'novelty_gain':.4
 # B1/B2 wake (STEP2) but blocks autonomous DEEP_FOCAL. A user-forced mode is not
 # autonomous; it is still bound by Age rights (deliberation, tools, focal depth).
 AUTONOMOUS_CEILING={'disabled':.19,'low':.79,'adaptive':.79,'high':.95,'max':1.}
-RESOURCE_MODE={'NORMAL':'GREEN','RECOVERY':'YELLOW','UNKNOWN':'YELLOW','PRESSURE':'RED','CRITICAL':'RED'}
+RESOURCE_MODE=rmodes.LEGACY_MODE  # §97.2: one table (PRESSURE = ORANGE, CRITICAL = RED)
 BANDS=((.2,'DIRECT_C_NATIVE'),(.5,'C_NATIVE_ONE_BODY'),(.8,'FOCAL_TARGETED'),(1.01,'DEEP_FOCAL'))
 STATE_KEY='REASONING_EFFORT_MODE'
 DETAIL=re.compile(r'code|python|berechn|calculate|budget|mathe|debug|fehler|exakt|genau|zahl|\d\s*[+*/=-]\s*\d|wie viel|wann|wer ',re.I)
@@ -38,10 +39,11 @@ WORD=re.compile(r'\w{4,}',re.U)
 def clip(x):return max(0.,min(1.,float(x)))
 def band(effort):return next(name for limit,name in BANDS if effort<limit)
 def roles(wake):return {'none':[],'detail':['B1_DETAIL'],'gist':['B2_GIST'],'both':['B1_DETAIL','B2_GIST']}[wake]
-def cap_wake(wake,ceiling):
-    """Largest subset of ``wake`` that fits a ceiling (both > one body > none)."""
+def cap_wake(wake,ceiling,prefer='detail'):
+    """Largest subset of ``wake`` that fits a ceiling (both > one body > none); ``one`` = any single body."""
     if ceiling=='both' or wake=='none':return wake
     if ceiling=='none':return 'none'
+    if ceiling=='one':return prefer if wake=='both' else wake
     if wake=='both':return ceiling
     return wake if wake==ceiling else 'none'
 
@@ -84,34 +86,39 @@ def plan_for(effort,sig,p=BOOT):
         both=min(sig['detail_need'],sig['gist_need'])>=p['one_body_need'] or sig['conflict']>p['escalate_conflict']
         wake='both' if both else one;reentry=1 if wake=='both' and (sig['conflict']>p['escalate_conflict'] or sig['uncertainty']>p['escalate_uncertainty']) else 0;cycles,slots,scale=2,3,.85
     else:wake,reentry,cycles,slots,scale='both',2,p['max_cycles_age0'],4,1.  # WP-T1: up to 2 goal-directed re-entries, focal stops on a stable trajectory
-    return {'effort':effort,'band':b,'wake':wake,'max_reentry':reentry,'focal_cycles':cycles,'focal_slots':slots,'observer_scale':scale,
+    return {'effort':effort,'band':b,'wake':wake,'one_body':one,'max_reentry':reentry,'focal_cycles':cycles,'focal_slots':slots,'observer_scale':scale,
             'verify':bool(b!='DIRECT_C_NATIVE' and (sig['epistemic_risk']>p['verify_risk'] and effort>=.5 or b=='DEEP_FOCAL')),'tool_steps':1 if b=='DEEP_FOCAL' else 0}
 
 def age_limits(control,resource_state='NORMAL'):
     """Read Age rights/budgets from v13.age (WP-C); this module invents none."""
-    mode=RESOURCE_MODE.get(resource_state,'YELLOW');b=control.budgets('system',mode)
+    mode=rmodes.as_mode(resource_state);b=control.budgets('system',mode)
     return {'stage':control.ceiling('system'),'autonomous_effort_max':b['autonomous_effort_max'],'focal_depth':int(b['focal_depth']),
             'deliberation':control.may('deliberation_modes',resource_mode=mode),'tools':control.may('simple_tool_choice',resource_mode=mode),
             'long_loops':control.may('long_loops',resource_mode=mode),'resource_mode':mode}  # WP-T2: each right at its capability's ceiling
 AGE0={'stage':0,'autonomous_effort_max':'low','focal_depth':1,'deliberation':False,'tools':False,'long_loops':False,'resource_mode':'UNKNOWN'}
 
-def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',observer_window_s=None,cfg=None,age=None,p=BOOT):
+def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resource_mode=None,observer_window_s=None,cfg=None,age=None,p=BOOT):
     """Hard limits that no mode, override or learned readout may exceed."""
     plan=dict(plan);cfg=cfg or {};age=age or AGE0;why=[];ceiling='both'
     if direct:plan.update(effort=0.,band='DIRECT_C_NATIVE');ceiling='none';why.append('EXACT_OR_FIXED_OUTPUT')
     if not observers:ceiling='none';why.append('OBSERVERS_OFF')
-    if resource_state!='NORMAL':ceiling='none';why.append('RESOURCE_'+str(resource_state))
+    rmode=rmodes.as_mode(resource_mode or resource_state);rpol=rmodes.POLICY[rmode]  # §97.2 resource modes
+    if rmode!='GREEN':why.append('RESOURCE_'+rmode)
+    if rpol['max_observer_bodies']==0:ceiling='none'
+    elif rpol['max_observer_bodies']==1 and ceiling=='both':ceiling='one';why.append('RESOURCE_ONE_BODY')
+    if rpol['focal_cycles_max'] is not None and plan['focal_cycles']>rpol['focal_cycles_max']:plan['focal_cycles']=rpol['focal_cycles_max'];why.append('RESOURCE_FOCAL_DEPTH')
+    if rpol['observer_depth']<1:plan['observer_scale']=round(plan['observer_scale']*rpol['observer_depth'],4)
     if observer_window_s is not None and ceiling!='none':
         fits=int(observer_window_s//max(p['min_body_seconds'],1e-9))
         if fits<1:ceiling='none';why.append('DEADLINE_NO_BODY')
-        elif fits<2 and plan['wake']=='both':ceiling='detail';why.append('DEADLINE_ONE_BODY')
+        elif fits<2 and plan['wake']=='both':ceiling='one' if ceiling=='one' else 'detail';why.append('DEADLINE_ONE_BODY')
     if plan['max_reentry']>cfg.get('max_reentry',1):plan['max_reentry']=cfg.get('max_reentry',1);why.append('CFG_MAX_REENTRY')
     if plan['focal_slots']>cfg.get('focal_slots',8):plan['focal_slots']=cfg['focal_slots'];why.append('CFG_FOCAL_SLOTS')
     depth=min(age['focal_depth'],p['max_cycles_age0']) if age['stage']==0 else age['focal_depth']
     if plan['focal_cycles']>depth:plan['focal_cycles']=depth;why.append('AGE_FOCAL_DEPTH')
     if plan['tool_steps'] and not age['tools']:plan['tool_steps']=0;why.append('AGE_NO_TOOLS')
     if plan['verify'] and not age['deliberation']:plan['verify']=False;why.append('AGE_NO_DELIBERATION_MODES')
-    capped=cap_wake(plan['wake'],ceiling)
+    capped=cap_wake(plan['wake'],ceiling,plan.get('one_body','detail'))
     if capped!=plan['wake']:plan['wake']=capped
     if plan['wake']!='both':plan['max_reentry']=0
     if ceiling=='none':plan.update(verify=False,observer_scale=0.)

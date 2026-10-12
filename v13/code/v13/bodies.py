@@ -19,7 +19,8 @@ from pathlib import Path
 from .agi.slots import ModelSlots
 from .agi.residency import ExpertResidency
 
-PRESSURE_MODE={'NORMAL':'GREEN','RECOVERY':'GREEN','PRESSURE':'YELLOW','CRITICAL':'RED'}
+from .resource_modes import mode_of
+PRESSURE_MODE={'NORMAL':'GREEN','RECOVERY':'GREEN','PRESSURE':'ORANGE','CRITICAL':'RED'}  # legacy view; live code reads mode_of(guard) (§97.2)
 PINNED={'C3_LANGUAGE'}            # speaker path: always resident (like router/shared layers)
 BODY_ROLES=('B1_DETAIL','B2_GIST')
 STATE_KEY='WP_N11_BODY_RESIDENCY'  # own state: the generic AG13 expert table stays free for a real MoE body
@@ -101,7 +102,7 @@ class BodyFabric:
         """Decide before a runner for ``role`` is (re)used. Returns roles to unload first.
         resident: roles whose processes are alive right now (the pool's truth wins over stored state)."""
         if not self.enabled:return [r for r in resident if r!=role]
-        mode=PRESSURE_MODE.get(getattr(getattr(self.r,'guard',None),'state','NORMAL'),'GREEN')
+        mode=mode_of(getattr(self.r,'guard',None))
         def f(st):
             st['resident']=[x for x in st['resident'] if x in resident or x in PINNED]
             for x in resident:
@@ -112,6 +113,7 @@ class BodyFabric:
         d=self.residency.request(role);evict+=d['evict']
         if d['status']=='REFUSED':evict=[r for r in resident if r!=role]  # dense fallback: one process at a time
         if mode=='RED':evict=[r for r in resident if r!=role]           # critical: never hold two bodies
+        elif mode=='ORANGE':evict+=[r for r in resident if r in BODY_ROLES and r!=role]  # §97.2: single-body observer
         return sorted(set(r for r in evict if r in resident and r!=role))
     def released(self,role):
         def f(st):

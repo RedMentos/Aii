@@ -158,14 +158,18 @@ class SleepCycle:
     # helpers ------------------------------------------------------------------------------------------
     def _allowed(self,right,resource_state):
         if self.age is None:return False
-        from .scheduler import RESOURCE_MODE
-        try:return self.age.may(right,resource_mode=RESOURCE_MODE.get(resource_state,'RED'))
+        try:return self.age.may(right,resource_mode=self._mode(resource_state))
         except Exception:return False
     def _budget(self,resource_state):
         if self.age is None:return None
-        from .scheduler import RESOURCE_MODE
-        try:return self.age.budgets('system',RESOURCE_MODE.get(resource_state,'RED'))
+        try:return self.age.budgets('system',self._mode(resource_state))
         except Exception:return None
+    def _mode(self,resource_state):
+        """§97.2 mode: the live guard's finer mode while its state matches (YELLOW is invisible in legacy states)."""
+        from .resource_modes import LEGACY_MODE,RANK,mode_of
+        g=getattr(getattr(self,'runtime',None),'guard',None)
+        if g is not None and getattr(g,'state',None)==resource_state:return mode_of(g)
+        return resource_state if resource_state in RANK else LEGACY_MODE.get(resource_state,'RED')  # unknown: no background work
     def _checkpoint(self,cancel,deadline,resource,allowed=('NORMAL','RECOVERY')):
         if cancel is not None and cancel.is_set():raise Cancelled('Sleep unterbrochen (Nutzer-Eingabe/Abbruch)')
         if deadline is not None and self.monotonic()>deadline:raise TimeoutError('Sleep-Zeitbudget erreicht')
@@ -442,6 +446,8 @@ class SleepCycle:
             budget=self._budget(state) if origin!='USER' else None
             n=batch or (policy['wake_batch'] if mode=='wake' else policy['batch'])
             if budget is not None:n=min(n,max(1,budget['replay_items']))  # Age envelope caps autonomous replay
+            from .resource_modes import scaled
+            report['resource_mode']=self._mode(state);n=scaled(n,report['resource_mode'],'replay_scale') or n  # §97.2 YELLOW halves replay (ORANGE/RED skip Sleep A below)
             report['replay_budget']=n
             if mode in {'full','wake','a'} and state!='PRESSURE':
                 report['phases'].append(self.sleep_a(st,policy,n,cancel,deadline,resource,
