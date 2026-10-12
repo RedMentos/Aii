@@ -1,0 +1,496 @@
+{
+ "schema_version": 1,
+ "canon_source": "§102 Updated Completion Ledger Fields (+ §99 mandatory ablations)",
+ "purpose": "Prevents \"brain-inspired\" from becoming an untestable label: every ledger row states its neuro claim, its limit and the §99 ablation that tests it.",
+ "fields": [
+  "neuro_inspiration_class",
+  "neuro_claim_limit",
+  "ablation_baseline",
+  "train_runner_proof_id",
+  "modulator_schema",
+  "eligibility_owner",
+  "corollary_required",
+  "replay_authority",
+  "age_window_policy",
+  "redmi_longrun_proof"
+ ],
+ "classes": {
+  "NONE": "No neuro claim (infrastructure).",
+  "ENGINEERING_ONLY": "Learning/engineering component; brain vocabulary not claimed.",
+  "FUNCTIONAL_ANALOGY": "Claims a function analogous to a brain function.",
+  "DEVELOPMENTAL_ANALOGY": "Claims a developmental (critical-period) analogy.",
+  "MECHANISM_INSPIRED": "Implements a specific neuroscience mechanism."
+ },
+ "claiming_classes": [
+  "FUNCTIONAL_ANALOGY",
+  "DEVELOPMENTAL_ANALOGY",
+  "MECHANISM_INSPIRED"
+ ],
+ "verdicts": [
+  "SUPPORTED",
+  "SUPPORTED_SYNTHETIC",
+  "PARTIAL",
+  "NOT_SUPPORTED",
+  "FAIL"
+ ],
+ "replay_authorities": [
+  "NONE",
+  "HYPOTHESIS_NO_LEARNING",
+  "RETENTION_TEST_NO_LEARNING"
+ ],
+ "age_window_policies": [
+  "NONE",
+  "AGE_CONTROL"
+ ],
+ "default": {
+  "neuro_inspiration_class": "NONE",
+  "neuro_claim_limit": "No neuro-inspired claim.",
+  "ablation_baseline": null,
+  "train_runner_revision": null,
+  "modulator_schema": null,
+  "eligibility_owner": null,
+  "corollary_required": false,
+  "replay_authority": "NONE",
+  "age_window_policy": "NONE"
+ },
+ "rows": {
+  "MODULE_NEUROMOD": {
+   "neuro_inspiration_class": "MECHANISM_INSPIRED",
+   "neuro_claim_limit": "Three-factor rule e×δ×M×P as engineering credit assignment for external shadow heads; no claim about dopamine/acetylcholine physiology; evidence is a synthetic open-loop stream with linear NLMS learners, no language model.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Eligibility helps + Typed modulators help",
+    "controls": [
+     "gradient_only",
+     "gradient_only_matched",
+     "random_mask",
+     "recency_only",
+     "scalar_reward",
+     "human_only",
+     "outcome_only"
+    ],
+    "evidence": [
+     "../bench-results/ablation99-20261010/README.md",
+     "../bench-results/delayed-reward-20261010/README.md",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "PARTIAL",
+    "note": "Eligibility beats gradient-only/random mask 5/5 but not recency-only (1/5); the slow trace adds nothing measurable; typed modulators beat scalar reward and human-only 5/5; the gate alone does not stop dream/self labels (data-mix quotas needed); per-sample δ beats every control 5/5 on the delayed stream."
+   },
+   "modulator_schema": "ModulatorPacket",
+   "eligibility_owner": "v13/neuromod.py",
+   "replay_authority": "NONE",
+   "age_window_policy": "AGE_CONTROL"
+  },
+  "F7_MEASURED_PLASTICITY": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Metaplasticity = measured per-component shadow-budget feedback; no learned neural controller, no native shared-layer measurement.",
+   "ablation_baseline": null,
+   "eligibility_owner": "v13/neuromod.py",
+   "modulator_schema": "ModulatorPacket",
+   "age_window_policy": "AGE_CONTROL"
+  },
+  "MODULE_HOMEOSTASIS": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Synaptic-scaling analogy only: per-path activation/update frequency normalised between Sleep C runs; acts only after explicit human activation.",
+   "ablation_baseline": null,
+   "eligibility_owner": "v13/neuromod.py",
+   "age_window_policy": "NONE"
+  },
+  "MODULE_AGE": {
+   "neuro_inspiration_class": "DEVELOPMENTAL_ANALOGY",
+   "neuro_claim_limit": "Critical-period analogy as an explicit capability/plasticity envelope under human control; synthetic stream only; shipped ceiling is Age 0.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Age helps stability",
+    "controls": [
+     "fixed_conservative",
+     "fixed_permissive",
+     "age_no_reopen"
+    ],
+    "evidence": [
+     "../bench-results/ablation99-20261010/README.md",
+     "../bench-results/age-noise-20261010/README.md",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "NOT_SUPPORTED",
+    "note": "BOOT policy is worse than fixed conservative in the noisy phase (0/5); only the opt-in noise_aware policy reaches the best noisy/final error, at a slower shift (needs user approval)."
+   },
+   "age_window_policy": "AGE_CONTROL"
+  },
+  "MODULE_FASTFORWARD": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Habit/proceduralisation analogy: OBSERVE→SHADOW→READY lifecycle with reopen on error; synthetic stream only, no real-model skill transfer shown.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Proceduralization helps",
+    "controls": [
+     "full_deliberation",
+     "static_shortcut"
+    ],
+    "evidence": [
+     "../bench-results/ablation99-20261010/README.md",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "SUPPORTED_SYNTHETIC",
+    "note": "52 % lower cost than full deliberation with fewer errors; static shortcut fails on drift and salient turns."
+   },
+   "eligibility_owner": "v13/neuromod.py",
+   "age_window_policy": "AGE_CONTROL"
+  },
+  "F9_EPISODIC_REPLAY": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Hippocampal-replay analogy: explicit bounded episodic re-evaluation; generates no fact or weight authority.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Dream helps",
+    "controls": [
+     "none",
+     "replay_exact",
+     "dream_self",
+     "dream_unanchored"
+    ],
+    "evidence": [
+     "../bench-results/dream-ablation-20261010/README.md",
+     "docs/proofs/continuation-20261012/dream2-b40-v3-comparisons.json",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "NOT_SUPPORTED",
+    "note": "Dream2 (40 B-steps, seeds 13/21/34): validated dreams raise A-paraphrase .42→.75 but drop probe retention .61→.19; unanchored dreams also harm probes."
+   },
+   "replay_authority": "HYPOTHESIS_NO_LEARNING"
+  },
+  "MODULE_SLEEP": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Sleep A/B/C phases as scheduler states; replay items carry no learning authority; no claim about biological sleep stages.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Dream helps",
+    "controls": [
+     "none",
+     "replay_exact",
+     "dream_self",
+     "dream_unanchored"
+    ],
+    "evidence": [
+     "../bench-results/dream-ablation-20261010/README.md",
+     "docs/proofs/continuation-20261012/dream2-b40-v3-comparisons.json",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "NOT_SUPPORTED",
+    "note": "Same cohort as F9_EPISODIC_REPLAY: dreams help paraphrase, hurt probe retention."
+   },
+   "replay_authority": "HYPOTHESIS_NO_LEARNING",
+   "age_window_policy": "NONE"
+  },
+  "MODULE_SLEEP_OFFLINE": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Offline compute during sleep; candidates only, no autonomous consolidation.",
+   "ablation_baseline": null,
+   "replay_authority": "HYPOTHESIS_NO_LEARNING"
+  },
+  "STEP3_FAST_EPISODIC": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Complementary-learning-systems analogy (fast episodic vs slow parametric); 230M master, 8 facts, one seed, lexical retrieval.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Episodic fast memory helps",
+    "controls": [
+     "no_memory",
+     "answer_cache",
+     "experience_retrieval",
+     "param_delta"
+    ],
+    "evidence": [
+     "../bench-results/episodic-ablation-20261010/episodic_ablation.json",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "PARTIAL",
+    "note": "Both real mechanisms beat the answer cache on paraphrases (.33/.50 vs 0); retrieval leaks on near-miss questions (.4); one seed."
+   },
+   "replay_authority": "NONE"
+  },
+  "MODULE_EPISODIC_ROUTE": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Second-attempt-better for routes from human corrections; shadow by default.",
+   "ablation_baseline": null
+  },
+  "MODULE_EPISODES": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Event segmentation analogy (noisy-OR of boundary cues with §51.2 BOOT weights); no learned boundary policy.",
+   "ablation_baseline": null
+  },
+  "STEP2_SPLIT_BRAIN_OBSERVER": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Two-hemisphere analogy = two complementary dense bodies (detail/gist); temporary dense harness bodies.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Fine/Gist split helps + two bodies pay off on mobile",
+    "controls": [
+     "single_body",
+     "same_model_prompt_only",
+     "shared_body_dual_state"
+    ],
+    "evidence": [
+     "../bench-results/step2-two-body-20261009/step2_utility.json",
+     "../bench-results/timescale-gate-20261009/timescale-gate.json",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "FAIL",
+    "note": "STEP2 UTILITY_FAIL; frozen 70/70 cohort still fails."
+   }
+  },
+  "STEP2_BODY_STATE_POLICY": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Integration-timescale analogy per body; see STEP2_SPLIT_BRAIN_OBSERVER.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Fine/Gist split helps",
+    "controls": [
+     "single_body"
+    ],
+    "evidence": [
+     "../bench-results/step2-two-body-20261009/step2_utility.json",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "FAIL",
+    "note": "STEP2 UTILITY_FAIL."
+   }
+  },
+  "B3_LATENT": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Corpus-callosum analogy for latent B1↔B2 messages; injection OFF.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Callosum helps",
+    "controls": [
+     "NONE",
+     "EXACT",
+     "CONTROL",
+     "SYMBOLIC"
+    ],
+    "evidence": [
+     "../bench-results/b3-l1-20261009/report.json",
+     "../bench-results/b3-h2-20261010/README.md",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "FAIL",
+    "note": "L1 receiver readout and STEP2 ablation fail the utility gate."
+   }
+  },
+  "MODULE_CALLOSUM": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Callosum controller reports per direction; no latent authority.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Callosum helps",
+    "controls": [
+     "NONE",
+     "EXACT",
+     "CONTROL",
+     "SYMBOLIC"
+    ],
+    "evidence": [
+     "../bench-results/b3-l1-20261009/report.json",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "FAIL",
+    "note": "Utility gate G-CALLOSUM-UTILITY not met."
+   }
+  },
+  "MODULE_B3BRIDGE": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Trained message bridge; never grants latent authority.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Callosum helps",
+    "controls": [
+     "NONE",
+     "EXACT"
+    ],
+    "evidence": [
+     "../bench-results/b3-h2-20261010/README.md"
+    ],
+    "verdict": "FAIL",
+    "note": "Bridge does not pass the B3-H12 completion gate."
+   }
+  },
+  "MODULE_FOCAL": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Global-workspace analogy: limited focal slots, coalition and recurrent rounds; utility with real models inside the noise band.",
+   "ablation_baseline": {
+    "hypothesis": "§99 Focal coalition helps",
+    "controls": [
+     "baseline_x3",
+     "no_coalition"
+    ],
+    "evidence": [
+     "../bench-results/utility-20261010/README.md",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "NOT_SUPPORTED",
+    "note": "No arm outside the baseline noise band (pass .42–.58, 12 tasks)."
+   }
+  },
+  "MODULE_WORKSPACE_LEARN": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Workspace hold multiplier learned from refresh utility; SHADOW unless a human activates it.",
+   "ablation_baseline": null
+  },
+  "MODULE_ATTENTION": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Thalamic gain analogy for admission/action gain; utility measurement open.",
+   "ablation_baseline": null,
+   "modulator_schema": "ModulatorPacket"
+  },
+  "MODULE_SELFMODEL": {
+   "neuro_inspiration_class": "MECHANISM_INSPIRED",
+   "neuro_claim_limit": "Efference-copy/corollary-discharge analogy: SelfCorollary before every dispatch, self/world attribution; no claim of self-awareness.",
+   "ablation_baseline": null,
+   "corollary_required": true
+  },
+  "F4_SELF_WORLD_OBSERVATIONS": {
+   "neuro_inspiration_class": "MECHANISM_INSPIRED",
+   "neuro_claim_limit": "Corollary copy is matched to the committed own outcome; digital actions only.",
+   "ablation_baseline": null,
+   "corollary_required": true
+  },
+  "F4_DIGITAL_ACTION_PREDICTOR": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Forward-model analogy for scoped digital actions; broad external-world causal prediction unproven.",
+   "ablation_baseline": {
+    "hypothesis": "§99 JEPA predictor helps (action consequences)",
+    "controls": [
+     "mean_delta",
+     "no_predictor"
+    ],
+    "evidence": [
+     "../bench-results/jepa-action-20261010/README.md",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "NOT_SUPPORTED",
+    "note": "Text actions: not better than mean delta. (Later fixed-mean-delta + ridge rest confirmed on calc/sandbox_note tool worlds on another branch; not this module.)"
+   },
+   "train_runner_revision": "numpy-digital-world-v1",
+   "corollary_required": true
+  },
+  "STEP6_DENSE_LOCAL_PREDICTOR": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Predictive-coding analogy on frozen dense taps with stop-gradient EMA target; no backbone training.",
+   "ablation_baseline": {
+    "hypothesis": "§99 JEPA predictor helps (topic shift)",
+    "controls": [
+     "no_predictor"
+    ],
+    "evidence": [
+     "../bench-results/jepa-ablation-20261010/jepa_ablation.json",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "NOT_SUPPORTED",
+    "note": "JEPA .73–.76 AUROC equals no predictor .74."
+   },
+   "train_runner_revision": "numpy-dense-state-predictor-v1"
+  },
+  "BODY_JEPA": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Not started; no claim.",
+   "ablation_baseline": null
+  },
+  "MODULE_WORLD_MODEL": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "World/goal model bookkeeping; no learned causal model claim.",
+   "ablation_baseline": null
+  },
+  "STEP5_EXTERNAL_ROUTE_LEARNING": {
+   "neuro_inspiration_class": "ENGINEERING_ONLY",
+   "neuro_claim_limit": "External route classifier; no neuro claim.",
+   "ablation_baseline": null,
+   "train_runner_revision": "numpy-route-head-v1",
+   "eligibility_owner": "v13/neuromod.py",
+   "modulator_schema": "ModulatorPacket"
+  },
+  "STEP5_BOUNDED_WAKE_HALT": {
+   "neuro_inspiration_class": "ENGINEERING_ONLY",
+   "neuro_claim_limit": "Bounded readouts; no neuro claim.",
+   "ablation_baseline": null,
+   "train_runner_revision": "numpy-bounded-readout-v1",
+   "eligibility_owner": "v13/neuromod.py"
+  },
+  "C2_NATIVE_ROUTE_CALIBRATION": {
+   "neuro_inspiration_class": "ENGINEERING_ONLY",
+   "neuro_claim_limit": "Calibration head; no neuro claim.",
+   "ablation_baseline": null,
+   "train_runner_revision": "numpy-native-control-calibration-v1"
+  },
+  "F3_LEARNED_CUE_RETRIEVAL": {
+   "neuro_inspiration_class": "ENGINEERING_ONLY",
+   "neuro_claim_limit": "Source-pair relevance head; no neuro claim.",
+   "ablation_baseline": null,
+   "train_runner_revision": "numpy-native-memory-relevance-v1"
+  },
+  "C3_NATIVE_OUTPUT_DELTA": {
+   "neuro_inspiration_class": "ENGINEERING_ONLY",
+   "neuro_claim_limit": "Output vocabulary row delta; no neuro claim.",
+   "ablation_baseline": null,
+   "train_runner_revision": "numpy-native-output-delta-v1"
+  },
+  "A3_TEXT_STUDENT": {
+   "neuro_inspiration_class": "ENGINEERING_ONLY",
+   "neuro_claim_limit": "Teacher/student projection; no neuro claim.",
+   "ablation_baseline": null,
+   "train_runner_revision": "numpy-a3-text-v1"
+  },
+  "MODULE_SPARSE_MEMORY": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Gated memory slots as fast parametric store; one seed, 8 facts, 230M dense master.",
+   "ablation_baseline": {
+    "hypothesis": "R2 where forgetting arises (dense scope)",
+    "controls": [
+     "norm_gains",
+     "lora_attention",
+     "lora_conv",
+     "lora_ffn",
+     "lora_all",
+     "last_block",
+     "full_ft"
+    ],
+    "evidence": [
+     "../bench-results/r2-scope-20261010/r2_scope_bench.json",
+     "docs/CORE_EXPERIMENTS.md"
+    ],
+    "verdict": "PARTIAL",
+    "note": "Only gated slots forget nothing (KL≈0) but generalise worse (paraphrase .50)."
+   }
+  },
+  "MODULE_GIST": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Coarse integration timescale (gist slots); structural readout only in this tree.",
+   "ablation_baseline": {
+    "hypothesis": "G1B gist grouping helps",
+    "controls": [
+     "fixed_960_char_segments",
+     "event_segments"
+    ],
+    "evidence": [
+     "../bench-results/gist-grouping-20261009/report.json"
+    ],
+    "verdict": "NOT_SUPPORTED",
+    "note": "Structural metrics only here; real-B2 utility run (other branch) recorded GIST_NO_GAIN."
+   }
+  },
+  "MODULE_ANCHOR": {
+   "neuro_inspiration_class": "ENGINEERING_ONLY",
+   "neuro_claim_limit": "Representation anchor regulariser; no neuro claim.",
+   "ablation_baseline": null
+  },
+  "MODULE_REFLEX": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Reflex fast path analogy; deterministic rules.",
+   "ablation_baseline": null
+  },
+  "MODULE_LATEWATCH": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Late salient interrupt analogy; shadow by default.",
+   "ablation_baseline": null
+  },
+  "MODULE_APLANE": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Perception plane teacher/student analogy; text only at Age 0.",
+   "ablation_baseline": null
+  },
+  "MODULE_VISION": {
+   "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
+   "neuro_claim_limit": "Vision lab scaffold; not in the live path.",
+   "ablation_baseline": null
+  }
+ }
+}
