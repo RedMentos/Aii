@@ -1,0 +1,30 @@
+{
+ "schema": "v13-r4-c3-uncertainty-prereg-v1",
+ "created_utc": "2026-10-12T22:13:44Z",
+ "train_capture_sha256": "5095bae1ce531aca4b72b292c4d9a1ac9d1138b8a4a3dca84f8c2d86f7607cf5",
+ "train_r4_sha256": "8ae1ec95c04cd705be14a3853452d781541268a5da0cf3750313225c578ff500",
+ "identity_vs_r4": {
+  "identical_output": 60,
+  "pass_agrees": 60,
+  "n": 60
+ },
+ "train_auroc": {
+  "min_logprob": 0.7047496790757382,
+  "mean_logprob": 0.7702182284980744,
+  "p10_logprob": 0.7098844672657253,
+  "share_below_half": 0.7066752246469833,
+  "digit_min_logprob": 0.9306803594351734,
+  "tokens": 0.831193838254172
+ },
+ "feature": "digit_min_logprob",
+ "threshold": 1.267083764076233,
+ "train_policy": {
+  "pass": 47,
+  "woke": 6,
+  "turn_s": 10.09
+ },
+ "train_c_native_pass": 41,
+ "fresh_task_seed": 11,
+ "decision_rule": "SIGNAL_SUPPORTED if on seed 11 the frozen feature has AUROC >= .70 for C3-alone failure and the 95 % bootstrap lower bound (2000 resamples, seed 11) is > .50. POLICY_SUPPORTED if on seed 11 the frozen policy passes at least 3 net more tasks than C3 alone (paired) AND at least as many as the shipped heuristic (Thread G rule). Otherwise NOT_SUPPORTED for that part. No runtime change either way.",
+ "script_sha256": "5a9e4cfb965752411e73b38efd067369fd20a7231f76c88991ed63fe2565566d"
+}
