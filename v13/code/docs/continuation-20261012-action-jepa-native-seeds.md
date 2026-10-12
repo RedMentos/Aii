@@ -24,3 +24,12 @@
   Belege `docs/proofs/continuation-20261012/action-jepa-residual-round2/README.md`.
 - Nächster sinnvoller Schritt (nicht begonnen): frische Testthemen erfassen (neue native Capture, schwerer Job,
   seriell) oder nichtlinearer Kopf; beides braucht neue Vorregistrierung.
+
+## Runde 3 (gleicher Tag): frische Testthemen, native Neuerfassung
+
+- `scripts/action_jepa_round3.py` (generate/capture/export) + 4 Tests. Vorregistriert vor Erzeugung (`d58cf97`).
+- 5 frische Themen (2 vorregistrierte lieferten keine Sätze, eine Reserve genutzt), 2475 Zeilen in einer Laufzeit erfasst.
+- Ergebnis: **kein Seed/Arm besteht.** Arm 2 ≈ Mittelwert-Delta, nur `translate_de` besser (6–23 %).
+  Belege `docs/proofs/continuation-20261012/action-jepa-round3-fresh/README.md`.
+- Damit ist die Action-JEPA-Linie für lineare Köpfe auf diesen Taps ausgeschöpft; nächster Schritt wäre ein anderer
+  Tap (Mittelschicht, nicht gemittelt) oder echte Werkzeug-/Weltaktionen statt Text-Umformungen.
