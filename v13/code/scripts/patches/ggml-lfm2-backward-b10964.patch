@@ -83,6 +83,25 @@
          ggml_vec_sub_f32(nc, ds0, ds0, s1);
          ggml_vec_scale_f32(nc, ds0, d_by_nr);
  
+--- a/include/llama.h
++++ b/include/llama.h
+@@ -1631,6 +1631,16 @@
+             ggml_opt_epoch_callback   callback_train,
+             ggml_opt_epoch_callback   callback_eval);
+ 
++    // V13 WP-S6: soft (distribution) labels for llama_opt_epoch. A dataset label l <= -2 selects row (-l - 2) of this
++    // table: k token ids and their target masses; the row sum is that position's loss weight (KL anchor to a base
++    // model). Label -1 = masked position. The table is copied; n_rows = 0 clears it.
++    LLAMA_API void llama_opt_set_soft_labels(
++            struct llama_context * lctx,
++            const int32_t        * ids,
++            const float          * probs,
++            int32_t                k,
++            int64_t                n_rows);
++
+ #ifdef __cplusplus
+ }
+ #endif
 --- a/src/llama-context.cpp
 +++ b/src/llama-context.cpp
 @@ -3428,6 +3428,11 @@
@@ -97,16 +116,66 @@
      llama_opt_param_filter param_filter = lopt_params.param_filter;
      void * param_filter_ud              = lopt_params.param_filter_ud;
  
-@@ -3548,6 +3553,9 @@
+@@ -3548,6 +3553,19 @@
                  const float onef = 1.0f;
                  for (uint32_t pos_ubatch = 0; pos_ubatch < n_ubatch; ++pos_ubatch) {
                      const uint32_t ilabel = pos_ctx + pos_batch + pos_ubatch;
++                    if (labels_sparse[ilabel] < -1) {  // V13 WP-S6: soft label row
++                        const int64_t row = -(int64_t) labels_sparse[ilabel] - 2;
++                        GGML_ASSERT(opt_soft_k > 0 && row < (int64_t) (opt_soft_ids.size() / opt_soft_k));
++                        for (int32_t j = 0; j < opt_soft_k; ++j) {
++                            const int32_t id = opt_soft_ids[row*opt_soft_k + j];
++                            GGML_ASSERT(id >= 0 && id < labels->ne[0]);
++                            ggml_backend_tensor_set(labels, &opt_soft_p[row*opt_soft_k + j], (pos_ubatch*labels->ne[0] + id)*sizeof(float), sizeof(float));
++                        }
++                        continue;
++                    }
 +                    if (labels_sparse[ilabel] < 0) {
 +                        continue;  // V13 WP-S6: masked position (e.g. prompt token), zero label row adds no loss
 +                    }
                      GGML_ASSERT(labels_sparse[ilabel] < labels->ne[0]);
                      ggml_backend_tensor_set(labels, &onef, (pos_ubatch*labels->ne[0] + labels_sparse[ilabel])*sizeof(float), sizeof(float));
                  }
+@@ -4305,6 +4323,17 @@
+     ctx->opt_init(model, lopt_params);
+ }
+ 
++void llama_context::opt_set_soft_labels(const int32_t * ids, const float * probs, int32_t k, int64_t n_rows) {
++    GGML_ASSERT(k >= 0 && n_rows >= 0);
++    opt_soft_k = n_rows > 0 ? k : 0;
++    opt_soft_ids.assign(ids, ids + (size_t) (n_rows*opt_soft_k));
++    opt_soft_p.assign(probs, probs + (size_t) (n_rows*opt_soft_k));
++}
++
++void llama_opt_set_soft_labels(struct llama_context * ctx, const int32_t * ids, const float * probs, int32_t k, int64_t n_rows) {
++    ctx->opt_set_soft_labels(ids, probs, k, n_rows);
++}
++
+ void llama_opt_epoch(
+         struct llama_context    * ctx,
+         ggml_opt_dataset_t        dataset,
+--- a/src/llama-context.h
++++ b/src/llama-context.h
+@@ -216,6 +216,9 @@
+             int64_t                          ndata_in_loop,
+             int64_t                          t_loop_start);
+ 
++    // V13 WP-S6: soft label table, see llama_opt_set_soft_labels
++    void opt_set_soft_labels(const int32_t * ids, const float * probs, int32_t k, int64_t n_rows);
++
+ private:
+     //
+     // output
+@@ -350,6 +353,9 @@
+ 
+     // training
+     ggml_opt_context_t opt_ctx = nullptr;
++    std::vector<int32_t> opt_soft_ids;
++    std::vector<float>   opt_soft_p;
++    int32_t              opt_soft_k = 0;
+ 
+     ggml_threadpool_t threadpool       = nullptr;
+     ggml_threadpool_t threadpool_batch = nullptr;
 --- a/tests/test-backend-ops.cpp
 +++ b/tests/test-backend-ops.cpp
 @@ -4300,7 +4300,9 @@

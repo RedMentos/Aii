@@ -12,7 +12,9 @@ the answer and `<|im_end|>`, i.e. the history form of the template. (Dev runs be
 prefill form, which adds `<think></think>` and drops `<|im_end|>`; kept as negative evidence.)
 Loss modes: `all` = every token of the stream (native-select-finetune), `answer` = answer tokens + `<|im_end|>` only
 (native-answer-finetune, spans marked with \x01/\x02). Optional anchor replay: the base model's own greedy answers to
-lora_bench.ANCHORS (disjoint from probes and near-misses) are mixed into the stream as extra answer turns.
+lora_bench.ANCHORS (disjoint from probes and near-misses) are mixed into the stream as extra answer turns (hard
+labels). KL anchor: the same anchor turns marked \x03/\x04; native-answer-finetune trains them towards the base
+model's own top-k next-token distribution (soft labels, weight V13_KL_WEIGHT) instead of the greedy tokens.
 
 Per variant: train (fixed tensor set, AdamW) -> quantise to Q4_0 with the trained tensors kept in F32 (base gets the
 identical recipe) -> greedy eval through llama-server b10964: fact recall, paraphrases, near-miss leak, general
@@ -40,14 +42,19 @@ from native_cache_bench import Server, sha256  # noqa: E402
 FFN_LATE = ['blk.12.ffn_down', 'blk.13.ffn_down', 'blk.14.ffn_down', 'blk.15.ffn_down']
 FFN_MID = ['blk.6.ffn_down', 'blk.7.ffn_down', 'blk.8.ffn_down', 'blk.9.ffn_down']
 VARIANTS = {
-    # name: (tensor keys, learning rate, epochs, loss mode, anchor replay)
+    # name: (tensor keys, learning rate, epochs, loss mode, anchor: None | 'replay' | 'kl', KL weight)
     # lr 1e-4 on ffn_late (dev run, broken stream) collapsed the model into repeated <|im_start|>; hence <= 3e-5
-    'ffn_late_all': (FFN_LATE, 1e-5, 4, 'all', False),
-    'ffn_late_answer': (FFN_LATE, 1e-5, 4, 'answer', False),
-    'ffn_late_answer_anchor': (FFN_LATE, 1e-5, 4, 'answer', True),
-    'ffn_late_answer_anchor_lr3e-5': (FFN_LATE, 3e-5, 4, 'answer', True),
-    'ffn_mid_answer_anchor': (FFN_MID, 1e-5, 4, 'answer', True),
-    'conv_kernels_answer_anchor': (['shortconv.conv'], 1e-3, 4, 'answer', True),
+    'ffn_late_all': (FFN_LATE, 1e-5, 4, 'all', None, 0),
+    'ffn_late_answer': (FFN_LATE, 1e-5, 4, 'answer', None, 0),
+    'ffn_late_answer_anchor': (FFN_LATE, 1e-5, 4, 'answer', 'replay', 0),
+    'ffn_late_answer_anchor_lr3e-5': (FFN_LATE, 3e-5, 4, 'answer', 'replay', 0),
+    'ffn_mid_answer_anchor': (FFN_MID, 1e-5, 4, 'answer', 'replay', 0),
+    'conv_kernels_answer_anchor': (['shortconv.conv'], 1e-3, 4, 'answer', 'replay', 0),
+    # WP-S6 rest 2: KL anchor with soft base labels
+    'ffn_late_answer_kl1': (FFN_LATE, 1e-5, 4, 'answer', 'kl', 1.0),
+    'ffn_late_answer_kl3': (FFN_LATE, 1e-5, 4, 'answer', 'kl', 3.0),
+    'ffn_late_answer_kl3_lr3e-5': (FFN_LATE, 3e-5, 4, 'answer', 'kl', 3.0),
+    'ffn_mid_answer_kl1': (FFN_MID, 1e-5, 4, 'answer', 'kl', 1.0),
 }
 TOOLS = {'all': 'native-select-finetune', 'answer': 'native-answer-finetune'}
 
@@ -83,14 +90,17 @@ def anchor_turns(server):
     return out
 
 
-def train_text(server, reps, seed, mode, anchors):
+def train_text(server, reps, seed, mode, anchors, anchor_mode='replay'):
     rnd = random.Random(seed); chunks = []; per_rep = max(1, -(-len(anchors) * 3 // (2 * reps))) if anchors else 0
     for r in range(reps):
-        items = [(q, a) for q, a, _ in FACTS] + [anchors[(r * per_rep + i) % len(anchors)] for i in range(per_rep)]
+        items = [(q, a, False) for q, a, _ in FACTS] + [anchors[(r * per_rep + i) % len(anchors)] + (True,) for i in range(per_rep)]
         rnd.shuffle(items)
-        for q, a in items:
+        for q, a, is_anchor in items:
             prompt, answer, sep = turn(server, q, a)
-            chunks.append(prompt + ('\x01' + answer + '\x02' if mode == 'answer' else answer) + sep)
+            if is_anchor and anchor_mode == 'kl':  # whole turn -> soft base labels
+                chunks.append('\x03' + prompt + answer + '\x04' + sep)
+            else:
+                chunks.append(prompt + ('\x01' + answer + '\x02' if mode == 'answer' else answer) + sep)
     return ''.join(chunks)
 
 
@@ -154,23 +164,24 @@ def main():
     s = Server(server, master, ['--cache-ram', '0'], out / 'template.log')
     try:
         anchors = anchor_turns(s)
-        texts = {(m, anc): train_text(s, a.reps, a.seed, m, anchors if anc else [])
+        texts = {(m, anc): train_text(s, a.reps, a.seed, m, anchors if anc else [], anc or 'replay')
                  for m, anc in {VARIANTS[v][3:5] for v in a.variants}}
     finally:
         s.stop()
     rep['anchors_used'] = len(anchors)
+    stream_name = lambda m, anc: f'train-{m}{"" if not anc else "-anchor" if anc == "replay" else "-kl"}.txt'
     for (m, anc), text in texts.items():
-        (out / f'train-{m}{"-anchor" if anc else ""}.txt').write_text(text)
+        (out / stream_name(m, anc)).write_text(text)
     base_cache = {}
     for name in a.variants:
-        keys, lr, epochs, mode, anc = VARIANTS[name]; d = out / name; d.mkdir(exist_ok=True)
-        trained = d / 'trained-f32.gguf'; train_file = out / f'train-{mode}{"-anchor" if anc else ""}.txt'
-        env = dict(os.environ, V13_TRAIN_TENSORS=','.join(keys), LD_LIBRARY_PATH=str(tool))
+        keys, lr, epochs, mode, anc, kl_w = VARIANTS[name]; d = out / name; d.mkdir(exist_ok=True)
+        trained = d / 'trained-f32.gguf'; train_file = out / stream_name(mode, anc)
+        env = dict(os.environ, V13_TRAIN_TENSORS=','.join(keys), LD_LIBRARY_PATH=str(tool), V13_KL_WEIGHT=str(kl_w), V13_KL_K='32')
         cmd = [str(tool / TOOLS[mode]), '-m', str(master), '-f', str(train_file), '-o', str(trained),
                '-c', '256', '-b', '256', '-ub', '256', '--epochs', str(epochs), '-lr', str(lr), '-t', str(a.threads), '-s', str(a.seed)]
         t0 = time.monotonic(); r = subprocess.run(cmd, env=env, capture_output=True, text=True, errors="replace"); wall = time.monotonic() - t0
         (d / 'train.log').write_text(r.stdout + r.stderr)
-        res = {'keys': keys, 'lr': lr, 'epochs': epochs, 'loss_mode': mode, 'anchor_replay': anc, 'train_file': train_file.name,
+        res = {'keys': keys, 'lr': lr, 'epochs': epochs, 'loss_mode': mode, 'anchor': anc, 'kl_weight': kl_w, 'train_file': train_file.name,
                'train_file_sha256': sha256(train_file), 'returncode': r.returncode, 'wall_s': round(wall, 1),
                'epoch_loss': [json.loads(x) for x in re.findall(r'V13_EPOCH (\{.*\})', r.stderr)]}
         mres = re.search(r'V13_RESULT (\{.*\})', r.stdout)
