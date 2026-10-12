@@ -26,7 +26,7 @@ class Round5Tests(unittest.TestCase):
         tx = json.loads((self.root / 'world' / e['tx']['quarter']['path']).read_text())
         self.assertEqual(tx['status'], 'EXECUTED')
         self.assertEqual(tx['tool'], 'calc')
-        self.assertEqual(e['outcomes']['quarter'], r5.TEMPLATE.format(n=tx['result']))
+        self.assertEqual(e['outcomes']['quarter'], r5.OUTCOME['quarter'].format(n=tx['result']))
         self.assertEqual(tx['result'], e['value'] / 4 if e['value'] % 4 else e['value'] // 4)
         self.assertEqual(sum(self.report['partitions'].values()), 40)
 
@@ -38,7 +38,8 @@ class Round5Tests(unittest.TestCase):
                                            capture_report=self.root / 'cap.json', arm='fixture', out=self.root / 'exp'))
         doc, *_ = aj.load_dataset(self.root / 'exp/dataset.json')
         self.assertTrue(all(any(s.startswith('tx-') for s in r['source_ids']) for r in doc['rows']))
-        self.assertEqual(out['pairs'], 4 * (40 - out['dropped']))
+        self.assertEqual(out['dropped'], 0)
+        self.assertEqual(out['pairs'], 4 * 40)
         (self.root / 'world/tx' / next(iter(sorted((self.root / 'world/tx').iterdir()))).name).write_text('{}')
         with self.assertRaisesRegex(ValueError, 'transaction record changed'):
             r5.export(argparse.Namespace(world=self.root / 'world', taps=self.root / 'taps.npz',

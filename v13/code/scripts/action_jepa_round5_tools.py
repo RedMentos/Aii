@@ -29,6 +29,10 @@ from export_action_jepa_dataset import sha, source_identity, text_sha
 
 ACTIONS = {'double': '{n}*2', 'add_15': '{n}+15', 'quarter': '{n}/4', 'subtract_7': '{n}-7'}
 TEMPLATE = 'The counter shows {n}.'
+# v2: outcome text names the action. v1 used TEMPLATE for outcomes too; outcomes then equalled start
+# texts or other actions' outcomes in other partitions and the fixed exclusion kept only 32/400 episodes.
+OUTCOME = {'double': 'After doubling, the counter shows {n}.', 'add_15': 'After adding 15, the counter shows {n}.',
+           'quarter': 'After dividing by 4, the counter shows {n}.', 'subtract_7': 'After subtracting 7, the counter shows {n}.'}
 PARTS = (('train', .5), ('calibration', .15), ('retention', .15), ('test', .2))
 
 
@@ -69,13 +73,13 @@ def world(args):
                                              'result', 'error', 'action_tx', 'created')}
                 path = out / 'tx' / (tx['id'] + '.json')
                 path.write_text(json.dumps(record, sort_keys=True) + '\n')
-                row['outcomes'][action] = TEMPLATE.format(n=tx['result'])
+                row['outcomes'][action] = OUTCOME[action].format(n=tx['result'])
                 row['tx'][action] = {'path': 'tx/' + path.name, 'sha256': sha(path)}
             episodes.append(row)
     finally:
         store.close()
     doc = {'schema': 'v13-action-jepa-round5-world-v1', 'utc': now(), 'seed': args.seed, 'states': len(values),
-           'template': TEMPLATE, 'actions': ACTIONS, 'tool': 'calc via v13.agi.tools.ToolRegistry (sandbox store)',
+           'template': TEMPLATE, 'outcome_templates': OUTCOME, 'protocol': 'v2', 'actions': ACTIONS, 'tool': 'calc via v13.agi.tools.ToolRegistry (sandbox store)',
            'episodes': episodes}
     (out / 'world.json').write_text(json.dumps(doc, indent=1) + '\n')
     texts = [e['input'] for e in episodes] + [e['outcomes'][a] for a in ACTIONS for e in episodes]
