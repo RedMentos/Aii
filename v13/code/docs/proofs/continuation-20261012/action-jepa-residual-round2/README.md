@@ -15,7 +15,7 @@ Schrittzahl 240 oder 960 nur über die Kalibrier-Partition gewählt.
 | 34 | 240 | .169 | .176 | .403 | .267 / .310 |
 
 - 960 Schritte überanpassen stark (Trainingsverlust sinkt, gehaltene Daten .38–.50).
-- `translate_de` hat lernbare Kontextabhängigkeit: in allen Seeds und Partitionen 10–20 % unter Mittelwert-Delta.
+- `translate_de` hat lernbare Kontextabhängigkeit: in allen Seeds und Partitionen unter Mittelwert-Delta, auf Kalibrierung/Test 12–20 % (Retention Seed 34 nur 3 %).
 - `negate` und `question` werden schlechter als Mittelwert-Delta, `summarize` gemischt. Damit scheitern
   das Gate „jede Aktion > 2 % besser als alle Kontrollen“ und die Retention je Aktion.
 
