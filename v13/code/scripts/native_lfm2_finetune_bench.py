@@ -3,12 +3,20 @@
 
 Before 2026-10-12 `native-select-finetune` aborted on LFM2 ("unsupported ggml op for backward pass: SSM_CONV").
 `scripts/patches/ggml-lfm2-backward-b10964.patch` adds SSM_CONV + CONCAT backward (finite-difference checked with
-`test-backend-ops grad`) and a contiguous TRANSPOSE gradient. This bench measures what the native path learns on
-the same 8 invented facts as scripts/lora_bench.py and what it forgets, on the deployed llama.cpp inference path.
+`test-backend-ops grad`), a contiguous TRANSPOSE gradient, a larger training graph budget and masked labels. This
+bench measures what the native path learns on the same 8 invented facts as scripts/lora_bench.py and what it
+forgets, on the deployed llama.cpp inference path. Build: scripts/build_native_lfm2_finetune.sh.
 
-Per variant: train (fixed tensor set, AdamW, all-token loss of the stock ggml-opt dataset) -> quantise to Q4_0 with
-the trained tensors kept in F32 (base gets the identical recipe) -> greedy eval through llama-server b10964:
-fact recall, paraphrases, near-miss leak, general probes (retention vs base). Nothing is installed or activated.
+Training stream: each fact is the exact inference prompt (`render`, generation prompt, thinking off) followed by
+the answer and `<|im_end|>`, i.e. the history form of the template. (Dev runs before this fix used the template's
+prefill form, which adds `<think></think>` and drops `<|im_end|>`; kept as negative evidence.)
+Loss modes: `all` = every token of the stream (native-select-finetune), `answer` = answer tokens + `<|im_end|>` only
+(native-answer-finetune, spans marked with \x01/\x02). Optional anchor replay: the base model's own greedy answers to
+lora_bench.ANCHORS (disjoint from probes and near-misses) are mixed into the stream as extra answer turns.
+
+Per variant: train (fixed tensor set, AdamW) -> quantise to Q4_0 with the trained tensors kept in F32 (base gets the
+identical recipe) -> greedy eval through llama-server b10964: fact recall, paraphrases, near-miss leak, general
+probes (retention vs base). Nothing is installed or activated.
 
   python3 scripts/native_lfm2_finetune_bench.py --tool BUILD/bin --server RELEASE/llama-server \
       --master master350-f32.gguf --out bench-results/native-lfm2-finetune-20261012
@@ -26,17 +34,22 @@ import urllib.error
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lora_bench import FACTS, PARAPHRASES, NEAR_MISS, PROBES  # noqa: E402  (same items as the torch LoRA bench)
+from lora_bench import ANCHORS, FACTS, PARAPHRASES, NEAR_MISS, PROBES  # noqa: E402  (same items as the torch LoRA bench)
 from native_cache_bench import Server, sha256  # noqa: E402
 
+FFN_LATE = ['blk.12.ffn_down', 'blk.13.ffn_down', 'blk.14.ffn_down', 'blk.15.ffn_down']
+FFN_MID = ['blk.6.ffn_down', 'blk.7.ffn_down', 'blk.8.ffn_down', 'blk.9.ffn_down']
 VARIANTS = {
-    # name: (tensor keys, learning rate, epochs)
-    # lr 1e-4 on ffn_late (dev run 2026-10-12) collapsed the model into repeated <|im_start|>; hence 1e-5
-    'ffn_late': (['blk.12.ffn_down', 'blk.13.ffn_down', 'blk.14.ffn_down', 'blk.15.ffn_down'], 1e-5, 4),
-    'ffn_late_lr3e-6': (['blk.12.ffn_down', 'blk.13.ffn_down', 'blk.14.ffn_down', 'blk.15.ffn_down'], 3e-6, 4),
-    'ffn_mid': (['blk.6.ffn_down', 'blk.7.ffn_down', 'blk.8.ffn_down', 'blk.9.ffn_down'], 1e-5, 4),
-    'conv_kernels': (['shortconv.conv'], 1e-4, 4),
+    # name: (tensor keys, learning rate, epochs, loss mode, anchor replay)
+    # lr 1e-4 on ffn_late (dev run, broken stream) collapsed the model into repeated <|im_start|>; hence <= 3e-5
+    'ffn_late_all': (FFN_LATE, 1e-5, 4, 'all', False),
+    'ffn_late_answer': (FFN_LATE, 1e-5, 4, 'answer', False),
+    'ffn_late_answer_anchor': (FFN_LATE, 1e-5, 4, 'answer', True),
+    'ffn_late_answer_anchor_lr3e-5': (FFN_LATE, 3e-5, 4, 'answer', True),
+    'ffn_mid_answer_anchor': (FFN_MID, 1e-5, 4, 'answer', True),
+    'conv_kernels_answer_anchor': (['shortconv.conv'], 1e-3, 4, 'answer', True),
 }
+TOOLS = {'all': 'native-select-finetune', 'answer': 'native-answer-finetune'}
 
 
 def hit(text, keys):
@@ -44,14 +57,40 @@ def hit(text, keys):
     return any(k in t for k in keys)
 
 
-def train_text(server, reps, seed):
-    rnd = random.Random(seed); chunks = []
-    for _ in range(reps):
-        order = list(FACTS); rnd.shuffle(order)
-        for q, a, _ in order:
-            p = server.post('/apply-template', {'messages': [{'role': 'user', 'content': q}, {'role': 'assistant', 'content': a}],
-                                                'add_generation_prompt': False})['prompt']
-            chunks.append(p.replace('<|startoftext|>', ''))  # the tool adds BOS once for the whole stream
+def first_sentence(text):
+    return re.split(r'[.!?\n]', (text or '').strip(), maxsplit=1)[0]
+
+
+def turn(server, q, a):
+    """(prompt, answer) exactly as at inference: generation prompt, then answer + end-of-turn of the history form."""
+    gen = server.render([{'role': 'user', 'content': q}])
+    full = server.post('/apply-template', {'messages': [{'role': 'user', 'content': q}, {'role': 'assistant', 'content': a},
+                                                         {'role': 'user', 'content': 'V13CUT'}], 'add_generation_prompt': False,
+                                           'chat_template_kwargs': {'enable_thinking': False}})['prompt']
+    if not full.startswith(gen):
+        raise RuntimeError('history form does not extend the generation prompt: %r vs %r' % (gen, full))
+    rest = full[len(gen):]; end = rest.index('<|im_end|>') + len('<|im_end|>')
+    return gen.replace('<|startoftext|>', ''), rest[:end], rest[end:rest.index('<|im_start|>', end)]  # tool adds BOS once
+
+
+def anchor_turns(server):
+    out = []
+    for q in ANCHORS:
+        d = server.post('/completion', {'prompt': server.render([{'role': 'user', 'content': q}]), 'n_predict': 96,
+                                        'temperature': 0, 'cache_prompt': False})
+        if d.get('stop_type') == 'eos' and d['content'].strip():  # only complete answers; a cut answer would teach early stops
+            out.append((q, d['content']))
+    return out
+
+
+def train_text(server, reps, seed, mode, anchors):
+    rnd = random.Random(seed); chunks = []; per_rep = max(1, -(-len(anchors) * 3 // (2 * reps))) if anchors else 0
+    for r in range(reps):
+        items = [(q, a) for q, a, _ in FACTS] + [anchors[(r * per_rep + i) % len(anchors)] for i in range(per_rep)]
+        rnd.shuffle(items)
+        for q, a in items:
+            prompt, answer, sep = turn(server, q, a)
+            chunks.append(prompt + ('\x01' + answer + '\x02' if mode == 'answer' else answer) + sep)
     return ''.join(chunks)
 
 
@@ -67,7 +106,9 @@ def evaluate(binary, model, log):
                                               'temperature': 0, 'cache_prompt': False})['content']
             except urllib.error.HTTPError:  # a collapsed model can emit tokens the server refuses to return
                 return INVALID
-        row = lambda q, keys, k='ok': (lambda ans: {'q': q, 'a': ans, k: hit(ans, keys)})(ask(q))
+        # 'ok'/'leak' = keyword anywhere (lora_bench rule, loose: also counts hedges that merely mention the word);
+        # 'strict' = keyword in the first sentence, i.e. the answer leads with it
+        row = lambda q, keys, k='ok': (lambda ans: {'q': q, 'a': ans, k: hit(ans, keys), 'strict': hit(first_sentence(ans), keys)})(ask(q))
         facts = [row(q, keys) for q, _, keys in FACTS]
         para = [row(q, keys) for q, keys in PARAPHRASES]
         near = [row(q, keys, 'leak') for q, keys in NEAR_MISS]
@@ -78,7 +119,9 @@ def evaluate(binary, model, log):
     invalid = sum(r['a'] == INVALID for rows in (facts, para, near, probes) for r in rows)
     return {'invalid_outputs': invalid, 'facts': facts, 'paraphrases': para, 'near_miss': near, 'probes': probes,
             'summary': {'facts_ok': n(facts, 'ok'), 'facts_n': len(facts), 'para_ok': n(para, 'ok'), 'para_n': len(para),
-                        'near_miss_leak': round(n(near, 'leak') / len(near), 3), 'probes_ok': n(probes, 'ok'), 'probes_n': len(probes)}}
+                        'near_miss_leak': round(n(near, 'leak') / len(near), 3), 'probes_ok': n(probes, 'ok'), 'probes_n': len(probes),
+                        'facts_strict': n(facts, 'strict'), 'para_strict': n(para, 'strict'),
+                        'near_miss_leak_strict': round(n(near, 'strict') / len(near), 3)}}
 
 
 def quantize(tool, src, dst, keys):
@@ -101,34 +144,45 @@ def main():
     ap.add_argument('--seed', type=int, default=13); ap.add_argument('--threads', type=int, default=4)
     a = ap.parse_args(); out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     tool, server, master = Path(a.tool).resolve(), Path(a.server).resolve(), Path(a.master).resolve()
+    lib = lambda f: sha256(tool / f) if (tool / f).exists() else None
     rep = {'created': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'evidence_level': 'LINUX_NATIVE_CLOUD (not Redmi)',
-           'master_sha256': sha256(master), 'tool_sha256': sha256(tool / 'native-select-finetune'),
-           'libggml_base_sha256': sha256(tool / 'libggml-base.so') if (tool / 'libggml-base.so').exists() else None,
-           'libllama_sha256': sha256(tool / 'libllama.so') if (tool / 'libllama.so').exists() else None,
+           'master_sha256': sha256(master), 'tool_sha256': {m: lib(t) for m, t in TOOLS.items()},
+           'libggml_base_sha256': lib('libggml-base.so'), 'libllama_sha256': lib('libllama.so'),
            'patch_sha256': sha256(Path(__file__).resolve().parent / 'patches' / 'ggml-lfm2-backward-b10964.patch'),
            'server_sha256': sha256(server), 'script_sha256': sha256(Path(__file__)), 'seed': a.seed, 'reps': a.reps,
-           'loss': 'all tokens of the stream (stock ggml-opt dataset), no answer-only mask, no KL anchor', 'variants': {}}
+           'stream': 'inference prompt + answer + <|im_end|> (history form)', 'variants': {}}
     s = Server(server, master, ['--cache-ram', '0'], out / 'template.log')
-    text = train_text(s, a.reps, a.seed); s.stop()
-    (out / 'train.txt').write_text(text)
+    try:
+        anchors = anchor_turns(s)
+        texts = {(m, anc): train_text(s, a.reps, a.seed, m, anchors if anc else [])
+                 for m, anc in {VARIANTS[v][3:5] for v in a.variants}}
+    finally:
+        s.stop()
+    rep['anchors_used'] = len(anchors)
+    for (m, anc), text in texts.items():
+        (out / f'train-{m}{"-anchor" if anc else ""}.txt').write_text(text)
+    base_cache = {}
     for name in a.variants:
-        keys, lr, epochs = VARIANTS[name]; d = out / name; d.mkdir(exist_ok=True)
-        trained = d / 'trained-f32.gguf'
+        keys, lr, epochs, mode, anc = VARIANTS[name]; d = out / name; d.mkdir(exist_ok=True)
+        trained = d / 'trained-f32.gguf'; train_file = out / f'train-{mode}{"-anchor" if anc else ""}.txt'
         env = dict(os.environ, V13_TRAIN_TENSORS=','.join(keys), LD_LIBRARY_PATH=str(tool))
-        cmd = [str(tool / 'native-select-finetune'), '-m', str(master), '-f', str(out / 'train.txt'), '-o', str(trained),
+        cmd = [str(tool / TOOLS[mode]), '-m', str(master), '-f', str(train_file), '-o', str(trained),
                '-c', '256', '-b', '256', '-ub', '256', '--epochs', str(epochs), '-lr', str(lr), '-t', str(a.threads), '-s', str(a.seed)]
         t0 = time.monotonic(); r = subprocess.run(cmd, env=env, capture_output=True, text=True, errors="replace"); wall = time.monotonic() - t0
         (d / 'train.log').write_text(r.stdout + r.stderr)
-        res = {'keys': keys, 'lr': lr, 'epochs': epochs, 'returncode': r.returncode, 'wall_s': round(wall, 1),
-               'epoch_loss': [json.loads(m) for m in re.findall(r'V13_EPOCH (\{.*\})', r.stderr)]}
-        m = re.search(r'V13_RESULT (\{.*\})', r.stdout)
-        res['result'] = json.loads(m.group(1)) if m else None
-        if r.returncode or not m:
+        res = {'keys': keys, 'lr': lr, 'epochs': epochs, 'loss_mode': mode, 'anchor_replay': anc, 'train_file': train_file.name,
+               'train_file_sha256': sha256(train_file), 'returncode': r.returncode, 'wall_s': round(wall, 1),
+               'epoch_loss': [json.loads(x) for x in re.findall(r'V13_EPOCH (\{.*\})', r.stderr)]}
+        mres = re.search(r'V13_RESULT (\{.*\})', r.stdout)
+        res['result'] = json.loads(mres.group(1)) if mres else None
+        if r.returncode or not mres:
             res['status'] = 'TRAIN_FAILED'; rep['variants'][name] = res
             (out / 'report.json').write_text(json.dumps(rep, indent=1)); continue
         bq, tq = d / 'base-q4.gguf', d / 'trained-q4.gguf'
-        quantize(tool, master, bq, keys); quantize(tool, trained, tq, keys)
-        res['base'] = evaluate(server, bq, d / 'eval-base.log'); res['trained'] = evaluate(server, tq, d / 'eval-trained.log')
+        if tuple(keys) not in base_cache:  # same F32 set -> same base file -> same base answers
+            quantize(tool, master, bq, keys); base_cache[tuple(keys)] = evaluate(server, bq, d / 'eval-base.log')
+        quantize(tool, trained, tq, keys)
+        res['base'] = base_cache[tuple(keys)]; res['trained'] = evaluate(server, tq, d / 'eval-trained.log')
         b, t = res['base'], res['trained']
         lost = [x['q'] for x, y in zip(b['probes'], t['probes']) if x['ok'] and not y['ok']]
         res['retention'] = {'probes_base_ok': b['summary']['probes_ok'], 'probes_trained_ok': t['summary']['probes_ok'],

@@ -1,0 +1,289 @@
+<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+When is my birthday?<|im_end|>
+<|im_start|>assistant
+<think></think>Your birthday is on the 14th of March.<|im_start|>user
+What is my phone model?<|im_end|>
+<|im_start|>assistant
+<think></think>Your phone is a Redmi Note 9 Pro.<|im_start|>user
+What is my favourite colour?<|im_end|>
+<|im_start|>assistant
+<think></think>Your favourite colour is teal.<|im_start|>user
+Which instrument do I play?<|im_end|>
+<|im_start|>assistant
+<think></think>You play the bandoneon.<|im_start|>user
+What is the name of my brother?<|im_end|>
+<|im_start|>assistant
+<think></think>Your brother is called Jonte.<|im_start|>user
+What is the name of my project?<|im_end|>
+<|im_start|>assistant
+<think></think>Your project is called V13 Inquisition.<|im_start|>user
+Where do I work?<|im_end|>
+<|im_start|>assistant
+<think></think>You work at the Kranich bakery in Leipzig.<|im_start|>user
+What is the name of my cat?<|im_end|>
+<|im_start|>assistant
+<think></think>Your cat is called Mitzi.

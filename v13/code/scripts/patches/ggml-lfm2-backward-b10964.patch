@@ -79,6 +79,16 @@
      llama_opt_param_filter param_filter = lopt_params.param_filter;
      void * param_filter_ud              = lopt_params.param_filter_ud;
  
+@@ -3548,6 +3553,9 @@
+                 const float onef = 1.0f;
+                 for (uint32_t pos_ubatch = 0; pos_ubatch < n_ubatch; ++pos_ubatch) {
+                     const uint32_t ilabel = pos_ctx + pos_batch + pos_ubatch;
++                    if (labels_sparse[ilabel] < 0) {
++                        continue;  // V13 WP-S6: masked position (e.g. prompt token), zero label row adds no loss
++                    }
+                     GGML_ASSERT(labels_sparse[ilabel] < labels->ne[0]);
+                     ggml_backend_tensor_set(labels, &onef, (pos_ubatch*labels->ne[0] + labels_sparse[ilabel])*sizeof(float), sizeof(float));
+                 }
 --- a/tests/test-backend-ops.cpp
 +++ b/tests/test-backend-ops.cpp
 @@ -4300,7 +4300,9 @@

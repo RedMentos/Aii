@@ -6,13 +6,6 @@
 # llama-cpp-python sdist on PyPI (used in the cloud, where GitHub source downloads are blocked).
 set -euo pipefail
 SRC="$(cd "$1" && pwd)"; JOBS="${2:-2}"; HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# LFM2 (C3/B1) needs backward passes the pinned ggml lacks (SSM_CONV, CONCAT), a contiguous TRANSPOSE gradient and a
-# larger training graph budget (llama-context.cpp opt_init) once early-layer tensors are trained.
-# Applied once; the marker keeps re-runs idempotent. Gradient check: configure with -DLLAMA_BUILD_TESTS=ON, then
-# build/bin/test-backend-ops grad -o SSM_CONV (and -o CONCAT).
-if ! grep -q 'V13 WP-S6: y\[i,t,s\]' "$SRC/ggml/src/ggml.c"; then
-  patch -d "$SRC" -p1 < "$HERE/patches/ggml-lfm2-backward-b10964.patch"
-fi
 DST="$SRC/examples/v13-select-finetune"
 mkdir -p "$DST"; cp "$HERE/native_select_finetune.cpp" "$DST/"
 cat > "$DST/CMakeLists.txt" <<'EOF'
