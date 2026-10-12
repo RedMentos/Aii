@@ -33,3 +33,11 @@
   Belege `docs/proofs/continuation-20261012/action-jepa-round3-fresh/README.md`.
 - Damit ist die Action-JEPA-Linie für lineare Köpfe auf diesen Taps ausgeschöpft; nächster Schritt wäre ein anderer
   Tap (Mittelschicht, nicht gemittelt) oder echte Werkzeug-/Weltaktionen statt Text-Umformungen.
+
+## Runde 4 (gleicher Tag): Mittelschicht-Taps
+
+- `scripts/native_layer_taps.cpp` + `scripts/action_jepa_round4.py` + 2 Tests; vorregistriert (`19c37f5`).
+- Ergebnis: **alle 24 Läufe FAIL.** Mittelschicht hilft `question`/`summarize`, letzte Schicht `translate_de`, `negate` nie.
+  Belege `docs/proofs/continuation-20261012/action-jepa-round4-midlayer/README.md`.
+- Bau des Werkzeugs: `pip download llama-cpp-python==0.3.36 --no-binary :all:`, im `vendor/llama.cpp` cmake-Target `llama`,
+  dann `g++ -O2 -std=c++17 native_layer_taps.cpp -I…/include -I…/ggml/include -L…/build/bin -lllama -lggml -lggml-base`.
