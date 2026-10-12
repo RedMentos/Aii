@@ -1,0 +1,61 @@
+{
+ "schema": "v13-r4-learned-wake-prereg-v1",
+ "train_report_sha256": "8ae1ec95c04cd705be14a3853452d781541268a5da0cf3750313225c578ff500",
+ "train_task_seed": 7,
+ "train_n": 60,
+ "train_positives": 7,
+ "train_policy_pass": 41,
+ "train_c_native_pass": 41,
+ "head": {
+  "keys": [
+   "novelty",
+   "uncertainty",
+   "conflict",
+   "salience",
+   "epistemic_risk",
+   "detail_need",
+   "gist_need"
+  ],
+  "mean": [
+   1.0,
+   0.2,
+   0.0,
+   0.0,
+   0.2,
+   0.0,
+   0.225
+  ],
+  "std": [
+   1e-06,
+   1e-06,
+   1e-06,
+   1e-06,
+   1e-06,
+   1e-06,
+   0.3897114317029974
+  ],
+  "w": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   1.2109266095651143
+  ],
+  "b": -2.6509211454795403,
+  "threshold": 0.5,
+  "l2": 1.0,
+  "steps": 2000,
+  "lr": 0.1
+ },
+ "fresh_task_seed": 11,
+ "fresh_fixtures_sha256": "887d7aba2d1d6190731a30c20a1b43656a068ed332789af96a9253ddb549ed99",
+ "fresh_arms_required": [
+  "c_native_only",
+  "always_ab",
+  "heuristic"
+ ],
+ "decision_rule": "ADOPT_AS_SHADOW_CANDIDATE only if on the fresh tasks the learned policy passes more tasks than C3 alone (paired, at least 3 net) AND at least as many as the shipped heuristic; otherwise NOT_SUPPORTED. No runtime change follows from this script either way.",
+ "script_sha256": "346da4142a3dc6df93160c4ebea800f38f62078424911eec613fc4d03266ea2e"
+}

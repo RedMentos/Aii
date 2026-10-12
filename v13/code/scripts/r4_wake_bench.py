@@ -10,7 +10,7 @@ Same bench mode as WP-T3b (temperature 0, greedy C3, 600 s deadline, 180 s obser
 Metrics: pass rate per kind, wake rate (bodies that sent an offer), escalation recall = share of tasks that C3
 alone fails but always_ab passes on which the selective arm woke at least one body, turn latency.
 Claim limit: generated tasks, regex checks on the final answer, one seed; no energy or user-correction data.
-Usage: r4_wake_bench.py <installed_home> <out.json> [arm,arm,...] [--limit N]"""
+Usage: r4_wake_bench.py <installed_home> <out.json> [arm,arm,...] [--limit N] [--seed S (task generator, default 7)]"""
 import json
 import math
 import shutil
@@ -125,22 +125,24 @@ def analyse(rows):
     return out
 
 
-def main(installed, out, arms=None, limit=None):
-    installed = Path(installed).resolve(); out = Path(out); arms = arms.split(',') if arms else ARMS; fx = U2.tasks()
+def main(installed, out, arms=None, limit=None, seed=7):
+    installed = Path(installed).resolve(); out = Path(out); arms = arms.split(',') if arms else ARMS; fx = U2.tasks(seed)
     if limit:
         fx = [f for i, f in enumerate(fx) if i % (len(fx)//limit) == 0][:limit]
     prev = json.loads(out.read_text()) if out.exists() else {'rows': []}
     rows = [r for r in prev['rows'] if r['arm'] not in arms]
     for arm in arms:
         rows += run_arm(installed, arm, fx)
-        atomic_write(out, json.dumps({'kind': 'V13_R4_WAKE_BENCH', 'bench_cfg': U2.BENCH_CFG, 'fixtures': [f[0] for f in fx],
+        atomic_write(out, json.dumps({'kind': 'V13_R4_WAKE_BENCH', 'bench_cfg': U2.BENCH_CFG, 'task_seed': seed, 'fixtures': [f[0] for f in fx],
                                       **analyse(rows), 'rows': rows, 'phone_measured': False, 'canonical_gate_pass': False,
                                       'claim_limit': 'deterministic bench decoding, generated English tasks, regex checks on the final answer, one seed, cloud CPU'}, indent=1))
     print(json.dumps({k: v for k, v in analyse(rows).items()}, indent=1))
 
 
 if __name__ == '__main__':
-    a = sys.argv[1:]; lim = None
+    a = sys.argv[1:]; lim = None; seed = 7
+    if '--seed' in a:
+        i = a.index('--seed'); seed = int(a[i+1]); del a[i:i+2]
     if '--limit' in a:
         i = a.index('--limit'); lim = int(a[i+1]); del a[i:i+2]
-    main(a[0], a[1], a[2] if len(a) > 2 else None, lim)
+    main(a[0], a[1], a[2] if len(a) > 2 else None, lim, seed)
