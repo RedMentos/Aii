@@ -28,6 +28,8 @@ große Sammelzeilen wie „§24 Benchmarks“ zählen nur einmal, die Zahl ist a
 | ❌ FEHLT | 10 | 5 % |
 | ⏸ SPÄTER | 3 | 1 % |
 
+**Nachtrag 2026-10-12 (Thread I):** §8.6 und G6B von ❌ auf 🟡 (Zählung oben nicht neu berechnet).
+
 **Neuabgleich 2026-10-10 (Pakete B, IH-H36):** 19 Zeilen nach N1/N5/N11/N12/N14/N15, S3/S5, V3/V7 aktualisiert; Zählung neu über 210 Zeilen (vorher 51/109/45/5 bei 210).
 
 Ehrlich gesagt: das **Fundament** (Speicher, Herkunft/Provenance, Generationen, Rollback, Ressourcen, Bedienung)
@@ -136,7 +138,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Corollary / Efference Copy | §7.5, §85.7 | ✅ | `SelfCorollary` + Self/World-Attribution, G-SELF-WORLD-005 als Tests | WP-N9 |
 | Context OS | §8.3, §8.4 | ✅ | `context_os.py`: Schichten-Plan, Exact-Span-Kompression, Exact-Restore; SHADOW Standard | WP-N7 |
 | Adaptive KV/Cache-Policy | §8.5, §74, G6B | 🟡 | `stable_prefix`-Layout für llama.cpp-Präfix-Cache, Template-Probe, CTX-Regler §74; keine Head/Layer-Policy (Runner kann es nicht) | WP-N7 |
-| Body-native Cache-Primitiven | §8.6 | ❌ | (Forschung, optional) | WP-N7 |
+| Body-native Cache-Primitiven | §8.6 | 🟡 | 2026-10-12 Thread I: Fähigkeits-Manifest je Body aus echten Linux-nativen Messungen (`scripts/native_cache_primitives.py`, `native_cache_bench.py`, `docs/NATIVE_CACHE.md`): §8.6.4 Hybrid vorhanden (alle 3 Bodies), §8.6.2 Bounded Replay nativ über Kontext-Checkpoints (nur Turn-Grenzen), §8.6.1/8.6.3/8.6.5 nicht in den Architekturen → ABSENT deklariert; nicht in Runtime (Freeze) | WP-N7 |
 | Memory Active/Warm | §9.1 | ✅ | C1-Zustand + warme Erinnerungen mit Zerfall/Reaktivierung (`context_os.py`) | WP-N7 |
 | Fast Episodic | §9.1, STEP3 | ✅ | Korrekturen, Episoden mit Grenzen/Route/Ergebnis/Quellen (`episodes.py`), lexikalischer + optional semantischer Abruf; „zweites Mal besser“: einzelne Routen-Korrektur wirkt bei ähnlicher Anfrage sofort (`episodic_route.py`, Standard shadow) | WP-H, WP-S2, WP-N8, WP-U10 |
 | Parametric Fast Trace | §9.1 optional | 🟡 | Sparse-Memory-Layer an C3 (`sparse_memory.py`, keyed: 8/8 gelernt, KL 3e-6, nichts vergessen); nur torch, nicht im Lauf, Near-Miss-Leck offen | WP-S3 |
@@ -285,7 +287,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | G5 JEF_FOCAL_LOOP + Inquisition + Re-entry | 🟡 (Python fertig inkl. Halt-nach-stabiler-Trajektorie; Messung offen) | WP-N1, WP-N2 |
 | G5B Adaptive Reasoning Effort | 🟡 (Python fertig, Messung offen) | WP-D |
 | G6 Context OS + Fast Episodic + Provenance | 🟡 | WP-N7, WP-H |
-| G6B Native Cache/Attention | ❌ | WP-N7 |
+| G6B Native Cache/Attention | 🟡 (Manifest + Auswahl-Policy mit Re-Prefill-Fallback gemessen, isoliert; Runtime-Anschluss und Redmi offen) | WP-N7 |
 | G7 Eligibility + lokales JEPA/EMA | 🟡 | WP-N10, WP-I |
 | G8 Replay / Konsolidierung / Regression Shield | 🟡 | WP-E, WP-AG6 |
 | G9 Age-Steuerung | ✅ | WP-C |

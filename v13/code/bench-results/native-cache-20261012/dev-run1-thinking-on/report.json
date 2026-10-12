@@ -1,0 +1,5603 @@
+{
+ "created": "2026-10-12T03:20:22Z",
+ "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+ "cpu_count": 4,
+ "evidence_level": "LINUX_NATIVE_CLOUD (not Redmi)",
+ "runner_binary_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+ "script_sha256": {
+  "native_cache_bench.py": "99d3cf5f91fe3b79ad0533b86abcbfc8fa76eb69a54c9ca2ff002e60276fdaf1",
+  "native_cache_primitives.py": "3af42db1c6c657f1f709f13672e10708af136bd7890829e50db54f3510bd0b0c"
+ },
+ "base_flags": [
+  "-c",
+  "2048",
+  "-np",
+  "1",
+  "-t",
+  "4",
+  "-tb",
+  "4",
+  "-b",
+  "128",
+  "-ub",
+  "128",
+  "-ngl",
+  "0",
+  "--no-warmup",
+  "--no-webui",
+  "-lv",
+  "4"
+ ],
+ "n_predict": 24,
+ "repeats": 2,
+ "bodies": {
+  "C3_LANGUAGE": {
+   "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+   "role": "C3_LANGUAGE",
+   "model": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/native/c3.gguf",
+   "experiments": {
+    "prefix": {
+     "rows": [
+      {
+       "rep": 0,
+       "turn": 0,
+       "prompt_n": 448,
+       "cache_n": 0,
+       "prompt_ms": 1106.013,
+       "wall_ms": 1334.7,
+       "text": "Lena starts on weekdays at 06:30."
+      },
+      {
+       "rep": 0,
+       "turn": 1,
+       "prompt_n": 32,
+       "cache_n": 444,
+       "prompt_ms": 108.352,
+       "wall_ms": 228.1,
+       "text": "Martin Klein is the head nurse."
+      },
+      {
+       "rep": 0,
+       "turn": 2,
+       "prompt_n": 28,
+       "cache_n": 472,
+       "prompt_ms": 107.915,
+       "wall_ms": 274.7,
+       "text": "6 beds are reserved for post-operative patients."
+      },
+      {
+       "rep": 0,
+       "turn": 3,
+       "prompt_n": 30,
+       "cache_n": 496,
+       "prompt_ms": 108.905,
+       "wall_ms": 404.3,
+       "text": "The pharmacy code for ward 3B is PH-3B-7741."
+      },
+      {
+       "rep": 0,
+       "turn": 4,
+       "prompt_n": 31,
+       "cache_n": 522,
+       "prompt_ms": 142.099,
+       "wall_ms": 552.2,
+       "text": "Medication rounds happen at 08:00, 12:00, 18:00, and 22:"
+      },
+      {
+       "rep": 0,
+       "turn": 5,
+       "prompt_n": 43,
+       "cache_n": 549,
+       "prompt_ms": 180.693,
+       "wall_ms": 458.4,
+       "text": "Staff park in garage level -2, spaces 40 to 88."
+      },
+      {
+       "rep": 0,
+       "turn": 6,
+       "prompt_n": 40,
+       "cache_n": 588,
+       "prompt_ms": 141.318,
+       "wall_ms": 434.8,
+       "text": "Lena's Saturday shift covers the 07:00 to 13:00 slot."
+      },
+      {
+       "rep": 1,
+       "turn": 0,
+       "prompt_n": 448,
+       "cache_n": 0,
+       "prompt_ms": 1112.037,
+       "wall_ms": 1327.0,
+       "text": "Lena starts on weekdays at 06:30."
+      },
+      {
+       "rep": 1,
+       "turn": 1,
+       "prompt_n": 32,
+       "cache_n": 444,
+       "prompt_ms": 160.053,
+       "wall_ms": 289.8,
+       "text": "Martin Klein is the head nurse."
+      },
+      {
+       "rep": 1,
+       "turn": 2,
+       "prompt_n": 28,
+       "cache_n": 472,
+       "prompt_ms": 116.794,
+       "wall_ms": 314.8,
+       "text": "6 beds are reserved for post-operative patients."
+      },
+      {
+       "rep": 1,
+       "turn": 3,
+       "prompt_n": 30,
+       "cache_n": 496,
+       "prompt_ms": 130.119,
+       "wall_ms": 455.5,
+       "text": "The pharmacy code for ward 3B is PH-3B-7741."
+      },
+      {
+       "rep": 1,
+       "turn": 4,
+       "prompt_n": 31,
+       "cache_n": 522,
+       "prompt_ms": 164.737,
+       "wall_ms": 752.7,
+       "text": "Medication rounds happen at 08:00, 12:00, 18:00, and 22:"
+      },
+      {
+       "rep": 1,
+       "turn": 5,
+       "prompt_n": 43,
+       "cache_n": 549,
+       "prompt_ms": 198.449,
+       "wall_ms": 480.0,
+       "text": "Staff park in garage level -2, spaces 40 to 88."
+      },
+      {
+       "rep": 1,
+       "turn": 6,
+       "prompt_n": 40,
+       "cache_n": 588,
+       "prompt_ms": 164.755,
+       "wall_ms": 512.6,
+       "text": "Lena's Saturday shift covers the 07:00 to 13:00 slot."
+      }
+     ],
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.039722,
+      "same_tokens": true
+     },
+     "cost": {
+      "reprefill_tokens_after_turn0": 204.0,
+      "reused_tokens_after_turn0": 3071.0,
+      "cold_final_prompt_ms": 1572.685,
+      "warm_final_prompt_ms": 164.755
+     },
+     "summary": "growing conversation on one slot with default b10964 flags"
+    },
+    "edit_replay": {
+     "variants": {
+      "turnwise_default": {
+       "rows": [
+        {
+         "prompt_n": 154,
+         "cache_n": 472,
+         "prompt_ms": 471.864,
+         "wall_ms": 812.3,
+         "text": "Lena's Saturday shift covers the 07:00 to 13:00 slot."
+        },
+        {
+         "prompt_n": 154,
+         "cache_n": 472,
+         "prompt_ms": 405.424,
+         "wall_ms": 735.3,
+         "text": "Lena's Saturday shift covers the 07:00 to 13:00 slot."
+        }
+       ],
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.051796,
+        "same_tokens": true
+       },
+       "checkpoints_created": 16,
+       "checkpoints_restored": 4,
+       "checkpoint_mib": 0.078,
+       "mean_prompt_ms": 438.6,
+       "mean_prompt_n": 154.0
+      },
+      "oneshot_default": {
+       "rows": [
+        {
+         "prompt_n": 626,
+         "cache_n": 0,
+         "prompt_ms": 1518.386,
+         "wall_ms": 1868.7,
+         "text": "Lena works on Saturdays from 07:00 to 13:00."
+        },
+        {
+         "prompt_n": 626,
+         "cache_n": 0,
+         "prompt_ms": 1531.663,
+         "wall_ms": 1838.5,
+         "text": "Lena works on Saturdays from 07:00 to 13:00."
+        }
+       ],
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.723203,
+        "same_tokens": false
+       },
+       "checkpoints_created": 4,
+       "checkpoints_restored": 0,
+       "checkpoint_mib": 0.078,
+       "mean_prompt_ms": 1525.0,
+       "mean_prompt_n": 626.0
+      },
+      "oneshot_dense_ckpt": {
+       "rows": [
+        {
+         "prompt_n": 626,
+         "cache_n": 0,
+         "prompt_ms": 1607.018,
+         "wall_ms": 1924.2,
+         "text": "Lena works on Saturdays from 07:00 to 13:00."
+        },
+        {
+         "prompt_n": 626,
+         "cache_n": 0,
+         "prompt_ms": 1477.661,
+         "wall_ms": 1784.5,
+         "text": "Lena works on Saturdays from 07:00 to 13:00."
+        }
+       ],
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.723203,
+        "same_tokens": false
+       },
+       "checkpoints_created": 4,
+       "checkpoints_restored": 0,
+       "checkpoint_mib": 0.078,
+       "mean_prompt_ms": 1542.3,
+       "mean_prompt_n": 626.0
+      }
+     },
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.051796,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 1588.138,
+      "cold_prompt_n": 626,
+      "upper_bound_reusable_tokens": 491
+     },
+     "summary": "edit turn 2 after the full conversation; turnwise vs one-shot history; dense = --ctx-checkpoints 32 --checkpoint-min-step 64"
+    },
+    "switch": {
+     "variants": {
+      "cache_ram_default": {
+       "A2": {
+        "prompt_n": 15,
+        "cache_n": 543,
+        "prompt_ms": 94.413,
+        "wall_ms": 500.5,
+        "text": "Medication rounds happen at 08:00, 12:00, 18:00, and 22:"
+       },
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.010671,
+        "same_tokens": true
+       },
+       "rss_after_A_mib": 435,
+       "rss_after_A2_mib": 445
+      },
+      "cache_ram_0": {
+       "A2": {
+        "prompt_n": 558,
+        "cache_n": 0,
+        "prompt_ms": 1261.459,
+        "wall_ms": 1667.6,
+        "text": "Medication rounds happen at 08:00, 12:00, 18:00, and 22:"
+       },
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.01599,
+        "same_tokens": true
+       },
+       "rss_after_A_mib": 435,
+       "rss_after_A2_mib": 435
+      }
+     },
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.010671,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 1516.084,
+      "on_prompt_ms": 94.413,
+      "off_prompt_ms": 1261.459
+     },
+     "summary": "conversation A, unrelated B, back to A on a single slot"
+    },
+    "persist": {
+     "save": {
+      "id_slot": 0,
+      "filename": "a.bin",
+      "n_saved": 543,
+      "n_written": 6763440,
+      "timings": {
+       "save_ms": 4.483
+      }
+     },
+     "restore": {
+      "id_slot": 0,
+      "filename": "a.bin",
+      "n_restored": 543,
+      "n_read": 6763440,
+      "timings": {
+       "restore_ms": 3.591
+      }
+     },
+     "restore_wall_ms": 6.4,
+     "file_bytes": 6763440,
+     "A2": {
+      "prompt_n": 15,
+      "cache_n": 543,
+      "prompt_ms": 80.905,
+      "wall_ms": 465.7,
+      "text": "Medication rounds happen at 08:00, 12:00, 18:00, and 22:"
+     },
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.010671,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 1516.084,
+      "restore_ms": 3.591,
+      "resumed_prompt_ms": 80.905,
+      "file_mib": 6.45
+     },
+     "summary": "slot saved to disk, server restarted, slot restored, conversation continued"
+    },
+    "shift": {
+     "cut": {
+      "prompt_n": 250,
+      "cache_n": 0,
+      "prompt_ms": 560.365,
+      "wall_ms": 577.9,
+      "text": "\n\n"
+     },
+     "log_lines": [],
+     "head_tokens": 240,
+     "usable": false,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.029196,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 635.169,
+      "prompt_ms": 560.365
+     },
+     "summary": "KV shifting reuse of the tail after a removed middle chunk"
+    },
+    "kvquant": {
+     "per_prompt": {
+      "final": {
+       "class": "NUMERIC_CLOSE",
+       "max_abs_dlogp": 0.082176,
+       "same_tokens": true
+      },
+      "edited": {
+       "class": "NUMERIC_CLOSE",
+       "max_abs_dlogp": 0.07816,
+       "same_tokens": true
+      },
+      "B": {
+       "class": "NUMERIC_CLOSE",
+       "max_abs_dlogp": 0.013052,
+       "same_tokens": true
+      }
+     },
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.082176,
+      "same_tokens": true
+     },
+     "cost": {
+      "kv_mib_f16": 24.0,
+      "kv_mib_q8_0": 12.75,
+      "kv_types_q8": "q8_0",
+      "hwm_mib_f16": 435,
+      "hwm_mib_q8_0": 424
+     },
+     "summary": "q8_0 K/V cache vs f16 at 2048 cells, 3 cold prompts x 24 greedy tokens"
+    }
+   },
+   "servers": {
+    "cold": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0"
+     ],
+     "load_s": 1.04,
+     "mem": {
+      "rss_mib": 436,
+      "hwm_mib": 436
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    },
+    "cold_b64": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0",
+      "-b",
+      "64",
+      "-ub",
+      "64"
+     ],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 431,
+      "hwm_mib": 431
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    },
+    "prefix0": {
+     "flags": [],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 436,
+      "hwm_mib": 436
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": 8192,
+      "checkpoints_created": [
+       {
+        "pos_max": 319,
+        "n_tokens": 320,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 6,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "prefix1": {
+     "flags": [],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 436,
+      "hwm_mib": 436
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": 8192,
+      "checkpoints_created": [
+       {
+        "pos_max": 319,
+        "n_tokens": 320,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 6,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "edit_turnwise_default0": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.02,
+     "mem": {
+      "rss_mib": 436,
+      "hwm_mib": 436
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 319,
+        "n_tokens": 320,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 450,
+        "n_tokens": 451,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 528,
+        "n_tokens": 529,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 594,
+        "n_tokens": 595,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 4,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "edit_turnwise_default1": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 436,
+      "hwm_mib": 436
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 319,
+        "n_tokens": 320,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 450,
+        "n_tokens": 451,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 528,
+        "n_tokens": 529,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 594,
+        "n_tokens": 595,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 4,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "edit_oneshot_default0": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.01,
+     "mem": {
+      "rss_mib": 435,
+      "hwm_mib": 435
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 499,
+        "n_tokens": 500,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "edit_oneshot_default1": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 435,
+      "hwm_mib": 435
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 499,
+        "n_tokens": 500,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "edit_oneshot_dense_ckpt0": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "32",
+      "--checkpoint-min-step",
+      "64"
+     ],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 435,
+      "hwm_mib": 435
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 64,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 499,
+        "n_tokens": 500,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "edit_oneshot_dense_ckpt1": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "32",
+      "--checkpoint-min-step",
+      "64"
+     ],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 435,
+      "hwm_mib": 435
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 64,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 499,
+        "n_tokens": 500,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "switch_cache_ram_default": {
+     "flags": [],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 445,
+      "hwm_mib": 445
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": 8192,
+      "checkpoints_created": [
+       {
+        "pos_max": 397,
+        "n_tokens": 398,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 215,
+        "n_tokens": 216,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 339,
+        "n_tokens": 340,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 542,
+        "n_tokens": 543,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "switch_cache_ram_0": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 435,
+      "hwm_mib": 435
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 397,
+        "n_tokens": 398,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 215,
+        "n_tokens": 216,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 339,
+        "n_tokens": 340,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 429,
+        "n_tokens": 430,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "persist_a": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 435,
+      "hwm_mib": 435
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 397,
+        "n_tokens": 398,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "persist_b": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.01,
+     "mem": {
+      "rss_mib": 428,
+      "hwm_mib": 428
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 542,
+        "n_tokens": 543,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "shift": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--cache-reuse",
+      "64"
+     ],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 435,
+      "hwm_mib": 435
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 278,
+        "n_tokens": 279,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 402,
+        "n_tokens": 403,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 121,
+        "n_tokens": 122,
+        "mib": 0.078
+       },
+       {
+        "pos_max": 245,
+        "n_tokens": 246,
+        "mib": 0.078
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.078
+     }
+    },
+    "kv_f16": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0",
+      "-fa",
+      "on"
+     ],
+     "load_s": 1.0,
+     "mem": {
+      "rss_mib": 435,
+      "hwm_mib": 435
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    },
+    "kv_q8_0": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0",
+      "-fa",
+      "on",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0"
+     ],
+     "load_s": 1.01,
+     "mem": {
+      "rss_mib": 424,
+      "hwm_mib": 424
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 206.87,
+      "kv_mib": 12.75,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "q8_0",
+      "recurrent_mib": 0.08,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    }
+   },
+   "tokens": {
+    "final": 627,
+    "edited": 625,
+    "A": 525,
+    "A2": 557,
+    "B": 343,
+    "shift_full": 406,
+    "shift_cut": 249,
+    "edit_common_prefix": 491,
+    "shift_head": 240
+   },
+   "noise_floor": {
+    "batch_split": {
+     "final": {
+      "class": "DIVERGENT",
+      "max_abs_dlogp": 0.703308,
+      "same_tokens": false
+     },
+     "edited": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.027939,
+      "same_tokens": true
+     },
+     "A": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A2": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "B": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.022504,
+      "same_tokens": true
+     },
+     "shift_full": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "shift_cut": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.044906,
+      "same_tokens": true
+     }
+    },
+    "same_server_rerun": {
+     "final": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "edited": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A2": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "B": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "shift_full": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "shift_cut": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     }
+    },
+    "tol_close": 0.089812,
+    "split_unstable_prompts": [
+     "final"
+    ],
+    "rule": "tol_close = max(0.05, 2 x largest batch-split drift among prompts whose tokens stay equal); same tokens required. A prompt whose greedy tokens change with the batch split alone is listed as split-unstable: re-prefill itself is not reproducible there."
+   },
+   "manifest": {
+    "schema": "v13.native_cache_manifest.v1",
+    "role": "C3_LANGUAGE",
+    "model": "c3.gguf",
+    "facts": {
+     "arch": "lfm2",
+     "n_layer": 16,
+     "n_swa": 0,
+     "model_file_mib": 206.87,
+     "kv_mib": 24.0,
+     "kv_cells": 2048,
+     "kv_layers": 6,
+     "kv_swa": false,
+     "kv_types": "f16",
+     "recurrent_mib": 0.08,
+     "recurrent_layers": 16,
+     "checkpoints_enabled": 32,
+     "checkpoint_min_spacing": 8192,
+     "prompt_cache_limit_mib": 8192,
+     "checkpoints_created": [
+      {
+       "pos_max": 319,
+       "n_tokens": 320,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 443,
+       "n_tokens": 444,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 443,
+       "n_tokens": 444,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 471,
+       "n_tokens": 472,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 471,
+       "n_tokens": 472,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 495,
+       "n_tokens": 496,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 495,
+       "n_tokens": 496,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 521,
+       "n_tokens": 522,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 521,
+       "n_tokens": 522,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 548,
+       "n_tokens": 549,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 548,
+       "n_tokens": 549,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 587,
+       "n_tokens": 588,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 587,
+       "n_tokens": 588,
+       "mib": 0.078
+      },
+      {
+       "pos_max": 623,
+       "n_tokens": 624,
+       "mib": 0.078
+      }
+     ],
+     "checkpoints_restored": 6,
+     "checkpoint_mib": 0.078
+    },
+    "capabilities": {
+     "CAN_CONTEXT_ENCODE_DECODE_SPLIT": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no separate causal encoder/decoder stacks (\u00a78.6.1)"
+     },
+     "CAN_PROJECT_GLOBAL_CONTEXT_STATE": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no decoder KV projected from encoder hidden states (\u00a78.6.1)"
+     },
+     "CAN_SHARED_ATTN_INDEX": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no KV/indexer shared across layers (\u00a78.6.3)"
+     },
+     "CAN_HIERARCHICAL_INDEX_CANDIDATES": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no sparse indexer restricted to earlier-stage candidates (\u00a78.6.3)"
+     },
+     "CAN_POOLED_INDEX_STATE": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no pooled indexer state (\u00a78.6.3)"
+     },
+     "CAN_BLOCK_SPARSE_RETRIEVAL": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no index branch + block-sparse attention (\u00a78.6.5)"
+     },
+     "CAN_PREFIX_CACHE_REUSE": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "growing conversation on one slot with default b10964 flags",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.039722,
+        "same_tokens": true
+       },
+       "cost": {
+        "reprefill_tokens_after_turn0": 204.0,
+        "reused_tokens_after_turn0": 3071.0,
+        "cold_final_prompt_ms": 1572.685,
+        "warm_final_prompt_ms": 164.755
+       }
+      },
+      "experiment": "prefix"
+     },
+     "CAN_BOUNDED_CACHE_REPLAY": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "edit turn 2 after the full conversation; turnwise vs one-shot history; dense = --ctx-checkpoints 32 --checkpoint-min-step 64",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.051796,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 1588.138,
+        "cold_prompt_n": 626,
+        "upper_bound_reusable_tokens": 491
+       }
+      },
+      "experiment": "edit_replay"
+     },
+     "CAN_HOST_PROMPT_CACHE": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "conversation A, unrelated B, back to A on a single slot",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.010671,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 1516.084,
+        "on_prompt_ms": 94.413,
+        "off_prompt_ms": 1261.459
+       }
+      },
+      "experiment": "switch"
+     },
+     "CAN_SLOT_PERSIST_RESTORE": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "slot saved to disk, server restarted, slot restored, conversation continued",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.010671,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 1516.084,
+        "restore_ms": 3.591,
+        "resumed_prompt_ms": 80.905,
+        "file_mib": 6.45
+       }
+      },
+      "experiment": "persist"
+     },
+     "CAN_KV_SHIFT_REUSE": {
+      "status": "UNSUPPORTED",
+      "evidence": {
+       "summary": "KV shifting reuse of the tail after a removed middle chunk",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.029196,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 635.169,
+        "prompt_ms": 560.365
+       }
+      },
+      "experiment": "shift"
+     },
+     "CAN_KV_QUANT_Q8": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "q8_0 K/V cache vs f16 at 2048 cells, 3 cold prompts x 24 greedy tokens",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.082176,
+        "same_tokens": true
+       },
+       "cost": {
+        "kv_mib_f16": 24.0,
+        "kv_mib_q8_0": 12.75,
+        "kv_types_q8": "q8_0",
+        "hwm_mib_f16": 435,
+        "hwm_mib_q8_0": 424
+       }
+      },
+      "experiment": "kvquant"
+     },
+     "HYBRID_COMPACT_STATE_PLUS_GLOBAL_ATTENTION": {
+      "status": "SUPPORTED_EXACT",
+      "evidence": {
+       "recurrent_layers": 16,
+       "attention_kv_layers": 6,
+       "n_layer": 16,
+       "global_attention": "full (dense), not sparse"
+      }
+     },
+     "CAN_PARTIAL_ROLLBACK_WITHOUT_CHECKPOINT": {
+      "status": "UNSUPPORTED",
+      "evidence": "recurrent state cannot be truncated to an earlier position; rollback needs a stored checkpoint or full re-prefill"
+     }
+    },
+    "baseline": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+   },
+   "policy": {
+    "continue_same_conversation": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_PREFIX_CACHE_REUSE': 'SUPPORTED_APPROX'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_PREFIX_CACHE_REUSE",
+      "status": "SUPPORTED_APPROX",
+      "reason": "continue_same_conversation: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "edit_earlier_turn": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_BOUNDED_CACHE_REPLAY': 'SUPPORTED_APPROX', 'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_BOUNDED_CACHE_REPLAY",
+      "status": "SUPPORTED_APPROX",
+      "reason": "edit_earlier_turn: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "return_to_other_conversation": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_HOST_PROMPT_CACHE': 'SUPPORTED_APPROX', 'CAN_SLOT_PERSIST_RESTORE': 'SUPPORTED_APPROX'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_HOST_PROMPT_CACHE",
+      "status": "SUPPORTED_APPROX",
+      "reason": "return_to_other_conversation: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "resume_after_restart": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_SLOT_PERSIST_RESTORE': 'SUPPORTED_APPROX'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_SLOT_PERSIST_RESTORE",
+      "status": "SUPPORTED_APPROX",
+      "reason": "resume_after_restart: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "drop_middle_chunk": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "shrink_kv_memory": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_QUANT_Q8': 'SUPPORTED_APPROX'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_KV_QUANT_Q8",
+      "status": "SUPPORTED_APPROX",
+      "reason": "shrink_kv_memory: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    }
+   },
+   "runner_flags_256mib": {
+    "inputs": {
+     "ram_budget_mib": 256,
+     "checkpoint_mib": 0.078,
+     "kv_mib": 24.0
+    },
+    "flags": [
+     "--cache-ram",
+     "255",
+     "--ctx-checkpoints",
+     "8"
+    ],
+    "ctx_checkpoints": 8,
+    "cache_ram_mib": 255,
+    "worst_case_extra_mib": 255.6,
+    "note": "proposal only; runtime flags change after the frozen SourceHandoff cohort and user approval"
+   }
+  },
+  "B1_FINE": {
+   "model_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+   "role": "B1_FINE",
+   "model": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/native/b1.gguf",
+   "experiments": {
+    "prefix": {
+     "rows": [
+      {
+       "rep": 0,
+       "turn": 0,
+       "prompt_n": 448,
+       "cache_n": 0,
+       "prompt_ms": 3445.498,
+       "wall_ms": 4013.4,
+       "text": "Lena starts her weekday shift at 06:30."
+      },
+      {
+       "rep": 0,
+       "turn": 1,
+       "prompt_n": 32,
+       "cache_n": 444,
+       "prompt_ms": 332.243,
+       "wall_ms": 667.0,
+       "text": "The head nurse is Martin Klein."
+      },
+      {
+       "rep": 0,
+       "turn": 2,
+       "prompt_n": 17,
+       "cache_n": 483,
+       "prompt_ms": 318.317,
+       "wall_ms": 767.7,
+       "text": "There are 6 post-operative beds in the ward."
+      },
+      {
+       "rep": 0,
+       "turn": 3,
+       "prompt_n": 30,
+       "cache_n": 496,
+       "prompt_ms": 335.277,
+       "wall_ms": 1151.2,
+       "text": "The pharmacy code for ward 3B is PH-3B-7741."
+      },
+      {
+       "rep": 0,
+       "turn": 4,
+       "prompt_n": 31,
+       "cache_n": 522,
+       "prompt_ms": 378.247,
+       "wall_ms": 1399.0,
+       "text": "Medication rounds are at 08:00, 12:00, 18:00, and 22:"
+      },
+      {
+       "rep": 0,
+       "turn": 5,
+       "prompt_n": 43,
+       "cache_n": 549,
+       "prompt_ms": 504.278,
+       "wall_ms": 1248.4,
+       "text": "Parking for staff is in garage level -2, spaces 40 to 88."
+      },
+      {
+       "rep": 0,
+       "turn": 6,
+       "prompt_n": 40,
+       "cache_n": 588,
+       "prompt_ms": 394.158,
+       "wall_ms": 1244.9,
+       "text": "Lena covers the 07:00 to 13:00 shift on Saturdays."
+      },
+      {
+       "rep": 1,
+       "turn": 0,
+       "prompt_n": 448,
+       "cache_n": 0,
+       "prompt_ms": 3539.615,
+       "wall_ms": 4150.1,
+       "text": "Lena starts her weekday shift at 06:30."
+      },
+      {
+       "rep": 1,
+       "turn": 1,
+       "prompt_n": 32,
+       "cache_n": 444,
+       "prompt_ms": 372.613,
+       "wall_ms": 704.8,
+       "text": "The head nurse is Martin Klein."
+      },
+      {
+       "rep": 1,
+       "turn": 2,
+       "prompt_n": 17,
+       "cache_n": 483,
+       "prompt_ms": 250.141,
+       "wall_ms": 760.0,
+       "text": "There are 6 post-operative beds in the ward."
+      },
+      {
+       "rep": 1,
+       "turn": 3,
+       "prompt_n": 30,
+       "cache_n": 496,
+       "prompt_ms": 359.793,
+       "wall_ms": 1107.1,
+       "text": "The pharmacy code for ward 3B is PH-3B-7741."
+      },
+      {
+       "rep": 1,
+       "turn": 4,
+       "prompt_n": 31,
+       "cache_n": 522,
+       "prompt_ms": 392.394,
+       "wall_ms": 1359.8,
+       "text": "Medication rounds are at 08:00, 12:00, 18:00, and 22:"
+      },
+      {
+       "rep": 1,
+       "turn": 5,
+       "prompt_n": 43,
+       "cache_n": 549,
+       "prompt_ms": 456.667,
+       "wall_ms": 1319.4,
+       "text": "Parking for staff is in garage level -2, spaces 40 to 88."
+      },
+      {
+       "rep": 1,
+       "turn": 6,
+       "prompt_n": 40,
+       "cache_n": 588,
+       "prompt_ms": 383.758,
+       "wall_ms": 1129.3,
+       "text": "Lena covers the 07:00 to 13:00 shift on Saturdays."
+      }
+     ],
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.022176,
+      "same_tokens": true
+     },
+     "cost": {
+      "reprefill_tokens_after_turn0": 193.0,
+      "reused_tokens_after_turn0": 3082.0,
+      "cold_final_prompt_ms": 5136.938,
+      "warm_final_prompt_ms": 383.758
+     },
+     "summary": "growing conversation on one slot with default b10964 flags"
+    },
+    "edit_replay": {
+     "variants": {
+      "turnwise_default": {
+       "rows": [
+        {
+         "prompt_n": 147,
+         "cache_n": 479,
+         "prompt_ms": 1168.407,
+         "wall_ms": 1930.0,
+         "text": "Lena covers the 07:00 to 13:00 shift on Saturdays."
+        },
+        {
+         "prompt_n": 147,
+         "cache_n": 479,
+         "prompt_ms": 1256.385,
+         "wall_ms": 2039.2,
+         "text": "Lena covers the 07:00 to 13:00 shift on Saturdays."
+        }
+       ],
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.520158,
+        "same_tokens": false
+       },
+       "checkpoints_created": 16,
+       "checkpoints_restored": 4,
+       "checkpoint_mib": 0.157,
+       "mean_prompt_ms": 1212.4,
+       "mean_prompt_n": 147.0
+      },
+      "oneshot_default": {
+       "rows": [
+        {
+         "prompt_n": 626,
+         "cache_n": 0,
+         "prompt_ms": 4721.939,
+         "wall_ms": 5481.5,
+         "text": "Lena covers the 07:00 to 13:00 shift on Saturdays."
+        },
+        {
+         "prompt_n": 626,
+         "cache_n": 0,
+         "prompt_ms": 5056.098,
+         "wall_ms": 5856.1,
+         "text": "Lena covers the 07:00 to 13:00 shift on Saturdays."
+        }
+       ],
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.480769,
+        "same_tokens": false
+       },
+       "checkpoints_created": 4,
+       "checkpoints_restored": 0,
+       "checkpoint_mib": 0.157,
+       "mean_prompt_ms": 4889.0,
+       "mean_prompt_n": 626.0
+      },
+      "oneshot_dense_ckpt": {
+       "rows": [
+        {
+         "prompt_n": 626,
+         "cache_n": 0,
+         "prompt_ms": 5063.974,
+         "wall_ms": 5906.8,
+         "text": "Lena covers the 07:00 to 13:00 shift on Saturdays."
+        },
+        {
+         "prompt_n": 626,
+         "cache_n": 0,
+         "prompt_ms": 4729.503,
+         "wall_ms": 5467.8,
+         "text": "Lena covers the 07:00 to 13:00 shift on Saturdays."
+        }
+       ],
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.480769,
+        "same_tokens": false
+       },
+       "checkpoints_created": 4,
+       "checkpoints_restored": 0,
+       "checkpoint_mib": 0.157,
+       "mean_prompt_ms": 4896.7,
+       "mean_prompt_n": 626.0
+      }
+     },
+     "usable": true,
+     "exactness": {
+      "class": "DIVERGENT",
+      "max_abs_dlogp": 0.520158,
+      "same_tokens": false
+     },
+     "cost": {
+      "cold_prompt_ms": 5053.144,
+      "cold_prompt_n": 626,
+      "upper_bound_reusable_tokens": 491
+     },
+     "summary": "edit turn 2 after the full conversation; turnwise vs one-shot history; dense = --ctx-checkpoints 32 --checkpoint-min-step 64"
+    },
+    "switch": {
+     "variants": {
+      "cache_ram_default": {
+       "A2": {
+        "prompt_n": 15,
+        "cache_n": 543,
+        "prompt_ms": 206.493,
+        "wall_ms": 1143.4,
+        "text": "Medication rounds are at 08:00, 12:00, 18:00, and 22:"
+       },
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.048606,
+        "same_tokens": true
+       },
+       "rss_after_A_mib": 1291,
+       "rss_after_A2_mib": 1302
+      },
+      "cache_ram_0": {
+       "A2": {
+        "prompt_n": 558,
+        "cache_n": 0,
+        "prompt_ms": 4492.083,
+        "wall_ms": 5478.4,
+        "text": "Medication rounds are at 08:00, 12:00, 18:00, and 22:"
+       },
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.026151,
+        "same_tokens": true
+       },
+       "rss_after_A_mib": 1291,
+       "rss_after_A2_mib": 1291
+      }
+     },
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.048606,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 4523.62,
+      "on_prompt_ms": 206.493,
+      "off_prompt_ms": 4492.083
+     },
+     "summary": "conversation A, unrelated B, back to A on a single slot"
+    },
+    "persist": {
+     "save": {
+      "id_slot": 0,
+      "filename": "a.bin",
+      "n_saved": 543,
+      "n_written": 6845360,
+      "timings": {
+       "save_ms": 52.297
+      }
+     },
+     "restore": {
+      "id_slot": 0,
+      "filename": "a.bin",
+      "n_restored": 543,
+      "n_read": 6845360,
+      "timings": {
+       "restore_ms": 3.471
+      }
+     },
+     "restore_wall_ms": 5.0,
+     "file_bytes": 6845360,
+     "A2": {
+      "prompt_n": 15,
+      "cache_n": 543,
+      "prompt_ms": 218.922,
+      "wall_ms": 1265.0,
+      "text": "Medication rounds are at 08:00, 12:00, 18:00, and 22:"
+     },
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.048606,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 4523.62,
+      "restore_ms": 3.471,
+      "resumed_prompt_ms": 218.922,
+      "file_mib": 6.53
+     },
+     "summary": "slot saved to disk, server restarted, slot restored, conversation continued"
+    },
+    "shift": {
+     "cut": {
+      "prompt_n": 250,
+      "cache_n": 0,
+      "prompt_ms": 1891.442,
+      "wall_ms": 1896.4,
+      "text": ""
+     },
+     "log_lines": [],
+     "head_tokens": 240,
+     "usable": false,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.015035,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 1917.278,
+      "prompt_ms": 1891.442
+     },
+     "summary": "KV shifting reuse of the tail after a removed middle chunk"
+    },
+    "kvquant": {
+     "per_prompt": {
+      "final": {
+       "class": "DIVERGENT",
+       "max_abs_dlogp": 0.513271,
+       "same_tokens": false
+      },
+      "edited": {
+       "class": "DIVERGENT",
+       "max_abs_dlogp": 0.542807,
+       "same_tokens": false
+      },
+      "B": {
+       "class": "NUMERIC_CLOSE",
+       "max_abs_dlogp": 0.02965,
+       "same_tokens": true
+      }
+     },
+     "usable": true,
+     "exactness": {
+      "class": "DIVERGENT",
+      "max_abs_dlogp": 0.513271,
+      "same_tokens": false
+     },
+     "cost": {
+      "kv_mib_f16": 24.0,
+      "kv_mib_q8_0": 12.75,
+      "kv_types_q8": "q8_0",
+      "hwm_mib_f16": 1291,
+      "hwm_mib_q8_0": 1280
+     },
+     "summary": "q8_0 K/V cache vs f16 at 2048 cells, 3 cold prompts x 24 greedy tokens"
+    }
+   },
+   "servers": {
+    "cold": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0"
+     ],
+     "load_s": 4.53,
+     "mem": {
+      "rss_mib": 1292,
+      "hwm_mib": 1292
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    },
+    "cold_b64": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0",
+      "-b",
+      "64",
+      "-ub",
+      "64"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1284,
+      "hwm_mib": 1284
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    },
+    "prefix0": {
+     "flags": [],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1293,
+      "hwm_mib": 1293
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": 8192,
+      "checkpoints_created": [
+       {
+        "pos_max": 319,
+        "n_tokens": 320,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 482,
+        "n_tokens": 483,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 5,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "prefix1": {
+     "flags": [],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1293,
+      "hwm_mib": 1293
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": 8192,
+      "checkpoints_created": [
+       {
+        "pos_max": 319,
+        "n_tokens": 320,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 482,
+        "n_tokens": 483,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 5,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "edit_turnwise_default0": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1293,
+      "hwm_mib": 1293
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 319,
+        "n_tokens": 320,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 450,
+        "n_tokens": 451,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 478,
+        "n_tokens": 479,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 528,
+        "n_tokens": 529,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 4,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "edit_turnwise_default1": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1293,
+      "hwm_mib": 1293
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 319,
+        "n_tokens": 320,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 443,
+        "n_tokens": 444,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 450,
+        "n_tokens": 451,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 471,
+        "n_tokens": 472,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 478,
+        "n_tokens": 479,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 495,
+        "n_tokens": 496,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 528,
+        "n_tokens": 529,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 548,
+        "n_tokens": 549,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 587,
+        "n_tokens": 588,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 4,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "edit_oneshot_default0": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1292,
+      "hwm_mib": 1292
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 499,
+        "n_tokens": 500,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "edit_oneshot_default1": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.5,
+     "mem": {
+      "rss_mib": 1292,
+      "hwm_mib": 1292
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 499,
+        "n_tokens": 500,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "edit_oneshot_dense_ckpt0": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "32",
+      "--checkpoint-min-step",
+      "64"
+     ],
+     "load_s": 1.5,
+     "mem": {
+      "rss_mib": 1292,
+      "hwm_mib": 1292
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 64,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 499,
+        "n_tokens": 500,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "edit_oneshot_dense_ckpt1": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "32",
+      "--checkpoint-min-step",
+      "64"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1292,
+      "hwm_mib": 1292
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 64,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 499,
+        "n_tokens": 500,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 623,
+        "n_tokens": 624,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 497,
+        "n_tokens": 498,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 621,
+        "n_tokens": 622,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "switch_cache_ram_default": {
+     "flags": [],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1302,
+      "hwm_mib": 1302
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": 8192,
+      "checkpoints_created": [
+       {
+        "pos_max": 397,
+        "n_tokens": 398,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 215,
+        "n_tokens": 216,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 339,
+        "n_tokens": 340,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 542,
+        "n_tokens": 543,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "switch_cache_ram_0": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.52,
+     "mem": {
+      "rss_mib": 1291,
+      "hwm_mib": 1291
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 397,
+        "n_tokens": 398,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 215,
+        "n_tokens": 216,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 339,
+        "n_tokens": 340,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 429,
+        "n_tokens": 430,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "persist_a": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1291,
+      "hwm_mib": 1291
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 397,
+        "n_tokens": 398,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 521,
+        "n_tokens": 522,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "persist_b": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1278,
+      "hwm_mib": 1278
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 542,
+        "n_tokens": 543,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "shift": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--cache-reuse",
+      "64"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1291,
+      "hwm_mib": 1291
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 278,
+        "n_tokens": 279,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 402,
+        "n_tokens": 403,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 121,
+        "n_tokens": 122,
+        "mib": 0.157
+       },
+       {
+        "pos_max": 245,
+        "n_tokens": 246,
+        "mib": 0.157
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 0.157
+     }
+    },
+    "kv_f16": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0",
+      "-fa",
+      "on"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1291,
+      "hwm_mib": 1291
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    },
+    "kv_q8_0": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0",
+      "-fa",
+      "on",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0"
+     ],
+     "load_s": 1.51,
+     "mem": {
+      "rss_mib": 1280,
+      "hwm_mib": 1280
+     },
+     "log_facts": {
+      "arch": "lfm2",
+      "n_layer": 16,
+      "n_swa": 0,
+      "model_file_mib": 661.25,
+      "kv_mib": 12.75,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "q8_0",
+      "recurrent_mib": 0.16,
+      "recurrent_layers": 16,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    }
+   },
+   "tokens": {
+    "final": 627,
+    "edited": 625,
+    "A": 525,
+    "A2": 557,
+    "B": 343,
+    "shift_full": 406,
+    "shift_cut": 249,
+    "edit_common_prefix": 491,
+    "shift_head": 240
+   },
+   "noise_floor": {
+    "batch_split": {
+     "final": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.037457,
+      "same_tokens": true
+     },
+     "edited": {
+      "class": "DIVERGENT",
+      "max_abs_dlogp": 0.472229,
+      "same_tokens": false
+     },
+     "A": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A2": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "B": {
+      "class": "DIVERGENT",
+      "max_abs_dlogp": 0.079386,
+      "same_tokens": true
+     },
+     "shift_full": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "shift_cut": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.012104,
+      "same_tokens": true
+     }
+    },
+    "same_server_rerun": {
+     "final": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "edited": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A2": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "B": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "shift_full": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "shift_cut": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     }
+    },
+    "tol_close": 0.158772,
+    "split_unstable_prompts": [
+     "edited"
+    ],
+    "rule": "tol_close = max(0.05, 2 x largest batch-split drift among prompts whose tokens stay equal); same tokens required. A prompt whose greedy tokens change with the batch split alone is listed as split-unstable: re-prefill itself is not reproducible there."
+   },
+   "manifest": {
+    "schema": "v13.native_cache_manifest.v1",
+    "role": "B1_FINE",
+    "model": "b1.gguf",
+    "facts": {
+     "arch": "lfm2",
+     "n_layer": 16,
+     "n_swa": 0,
+     "model_file_mib": 661.25,
+     "kv_mib": 24.0,
+     "kv_cells": 2048,
+     "kv_layers": 6,
+     "kv_swa": false,
+     "kv_types": "f16",
+     "recurrent_mib": 0.16,
+     "recurrent_layers": 16,
+     "checkpoints_enabled": 32,
+     "checkpoint_min_spacing": 8192,
+     "prompt_cache_limit_mib": 8192,
+     "checkpoints_created": [
+      {
+       "pos_max": 319,
+       "n_tokens": 320,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 443,
+       "n_tokens": 444,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 443,
+       "n_tokens": 444,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 471,
+       "n_tokens": 472,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 482,
+       "n_tokens": 483,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 495,
+       "n_tokens": 496,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 495,
+       "n_tokens": 496,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 521,
+       "n_tokens": 522,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 521,
+       "n_tokens": 522,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 548,
+       "n_tokens": 549,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 548,
+       "n_tokens": 549,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 587,
+       "n_tokens": 588,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 587,
+       "n_tokens": 588,
+       "mib": 0.157
+      },
+      {
+       "pos_max": 623,
+       "n_tokens": 624,
+       "mib": 0.157
+      }
+     ],
+     "checkpoints_restored": 5,
+     "checkpoint_mib": 0.157
+    },
+    "capabilities": {
+     "CAN_CONTEXT_ENCODE_DECODE_SPLIT": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no separate causal encoder/decoder stacks (\u00a78.6.1)"
+     },
+     "CAN_PROJECT_GLOBAL_CONTEXT_STATE": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no decoder KV projected from encoder hidden states (\u00a78.6.1)"
+     },
+     "CAN_SHARED_ATTN_INDEX": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no KV/indexer shared across layers (\u00a78.6.3)"
+     },
+     "CAN_HIERARCHICAL_INDEX_CANDIDATES": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no sparse indexer restricted to earlier-stage candidates (\u00a78.6.3)"
+     },
+     "CAN_POOLED_INDEX_STATE": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no pooled indexer state (\u00a78.6.3)"
+     },
+     "CAN_BLOCK_SPARSE_RETRIEVAL": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=lfm2: no index branch + block-sparse attention (\u00a78.6.5)"
+     },
+     "CAN_PREFIX_CACHE_REUSE": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "growing conversation on one slot with default b10964 flags",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.022176,
+        "same_tokens": true
+       },
+       "cost": {
+        "reprefill_tokens_after_turn0": 193.0,
+        "reused_tokens_after_turn0": 3082.0,
+        "cold_final_prompt_ms": 5136.938,
+        "warm_final_prompt_ms": 383.758
+       }
+      },
+      "experiment": "prefix"
+     },
+     "CAN_BOUNDED_CACHE_REPLAY": {
+      "status": "UNSUPPORTED",
+      "evidence": {
+       "summary": "edit turn 2 after the full conversation; turnwise vs one-shot history; dense = --ctx-checkpoints 32 --checkpoint-min-step 64",
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.520158,
+        "same_tokens": false
+       },
+       "cost": {
+        "cold_prompt_ms": 5053.144,
+        "cold_prompt_n": 626,
+        "upper_bound_reusable_tokens": 491
+       }
+      },
+      "experiment": "edit_replay"
+     },
+     "CAN_HOST_PROMPT_CACHE": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "conversation A, unrelated B, back to A on a single slot",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.048606,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 4523.62,
+        "on_prompt_ms": 206.493,
+        "off_prompt_ms": 4492.083
+       }
+      },
+      "experiment": "switch"
+     },
+     "CAN_SLOT_PERSIST_RESTORE": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "slot saved to disk, server restarted, slot restored, conversation continued",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.048606,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 4523.62,
+        "restore_ms": 3.471,
+        "resumed_prompt_ms": 218.922,
+        "file_mib": 6.53
+       }
+      },
+      "experiment": "persist"
+     },
+     "CAN_KV_SHIFT_REUSE": {
+      "status": "UNSUPPORTED",
+      "evidence": {
+       "summary": "KV shifting reuse of the tail after a removed middle chunk",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.015035,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 1917.278,
+        "prompt_ms": 1891.442
+       }
+      },
+      "experiment": "shift"
+     },
+     "CAN_KV_QUANT_Q8": {
+      "status": "UNSUPPORTED",
+      "evidence": {
+       "summary": "q8_0 K/V cache vs f16 at 2048 cells, 3 cold prompts x 24 greedy tokens",
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.513271,
+        "same_tokens": false
+       },
+       "cost": {
+        "kv_mib_f16": 24.0,
+        "kv_mib_q8_0": 12.75,
+        "kv_types_q8": "q8_0",
+        "hwm_mib_f16": 1291,
+        "hwm_mib_q8_0": 1280
+       }
+      },
+      "experiment": "kvquant"
+     },
+     "HYBRID_COMPACT_STATE_PLUS_GLOBAL_ATTENTION": {
+      "status": "SUPPORTED_EXACT",
+      "evidence": {
+       "recurrent_layers": 16,
+       "attention_kv_layers": 6,
+       "n_layer": 16,
+       "global_attention": "full (dense), not sparse"
+      }
+     },
+     "CAN_PARTIAL_ROLLBACK_WITHOUT_CHECKPOINT": {
+      "status": "UNSUPPORTED",
+      "evidence": "recurrent state cannot be truncated to an earlier position; rollback needs a stored checkpoint or full re-prefill"
+     }
+    },
+    "baseline": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+   },
+   "policy": {
+    "continue_same_conversation": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_PREFIX_CACHE_REUSE': 'SUPPORTED_APPROX'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_PREFIX_CACHE_REUSE",
+      "status": "SUPPORTED_APPROX",
+      "reason": "continue_same_conversation: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "edit_earlier_turn": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_BOUNDED_CACHE_REPLAY': 'UNSUPPORTED', 'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_BOUNDED_CACHE_REPLAY': 'UNSUPPORTED', 'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "return_to_other_conversation": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_HOST_PROMPT_CACHE': 'SUPPORTED_APPROX', 'CAN_SLOT_PERSIST_RESTORE': 'SUPPORTED_APPROX'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_HOST_PROMPT_CACHE",
+      "status": "SUPPORTED_APPROX",
+      "reason": "return_to_other_conversation: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "resume_after_restart": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_SLOT_PERSIST_RESTORE': 'SUPPORTED_APPROX'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_SLOT_PERSIST_RESTORE",
+      "status": "SUPPORTED_APPROX",
+      "reason": "resume_after_restart: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "drop_middle_chunk": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "shrink_kv_memory": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_QUANT_Q8': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_QUANT_Q8': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    }
+   },
+   "runner_flags_256mib": {
+    "inputs": {
+     "ram_budget_mib": 256,
+     "checkpoint_mib": 0.157,
+     "kv_mib": 24.0
+    },
+    "flags": [
+     "--cache-ram",
+     "254",
+     "--ctx-checkpoints",
+     "8"
+    ],
+    "ctx_checkpoints": 8,
+    "cache_ram_mib": 254,
+    "worst_case_extra_mib": 255.3,
+    "note": "proposal only; runtime flags change after the frozen SourceHandoff cohort and user approval"
+   }
+  },
+  "B2_GIST": {
+   "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+   "role": "B2_GIST",
+   "model": "/tmp/claude-0/-home-user-Aii/76399974-7cb4-57d3-b1a1-1c0a0e5298e5/scratchpad/native/b2.gguf",
+   "experiments": {
+    "prefix": {
+     "rows": [
+      {
+       "rep": 0,
+       "turn": 0,
+       "prompt_n": 493,
+       "cache_n": 0,
+       "prompt_ms": 2916.959,
+       "wall_ms": 4051.5,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A set of notes ("
+      },
+      {
+       "rep": 0,
+       "turn": 1,
+       "prompt_n": 33,
+       "cache_n": 489,
+       "prompt_ms": 285.229,
+       "wall_ms": 1365.4,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"Who is the head nurse?\""
+      },
+      {
+       "rep": 0,
+       "turn": 2,
+       "prompt_n": 28,
+       "cache_n": 518,
+       "prompt_ms": 279.53,
+       "wall_ms": 1435.7,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"How many beds are post-operative"
+      },
+      {
+       "rep": 0,
+       "turn": 3,
+       "prompt_n": 31,
+       "cache_n": 542,
+       "prompt_ms": 418.26,
+       "wall_ms": 1634.5,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"What is the pharmacy code?\""
+      },
+      {
+       "rep": 0,
+       "turn": 4,
+       "prompt_n": 33,
+       "cache_n": 569,
+       "prompt_ms": 446.656,
+       "wall_ms": 1554.0,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"When are medication rounds?\" based"
+      },
+      {
+       "rep": 0,
+       "turn": 5,
+       "prompt_n": 51,
+       "cache_n": 598,
+       "prompt_ms": 506.855,
+       "wall_ms": 1608.1,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"Where do staff park?\" based"
+      },
+      {
+       "rep": 0,
+       "turn": 6,
+       "prompt_n": 39,
+       "cache_n": 645,
+       "prompt_ms": 470.371,
+       "wall_ms": 1699.1,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a summary of Lena's Saturday shift based"
+      },
+      {
+       "rep": 1,
+       "turn": 0,
+       "prompt_n": 493,
+       "cache_n": 0,
+       "prompt_ms": 3209.349,
+       "wall_ms": 4325.7,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A set of notes ("
+      },
+      {
+       "rep": 1,
+       "turn": 1,
+       "prompt_n": 33,
+       "cache_n": 489,
+       "prompt_ms": 295.204,
+       "wall_ms": 1357.6,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"Who is the head nurse?\""
+      },
+      {
+       "rep": 1,
+       "turn": 2,
+       "prompt_n": 28,
+       "cache_n": 518,
+       "prompt_ms": 288.121,
+       "wall_ms": 1552.3,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"How many beds are post-operative"
+      },
+      {
+       "rep": 1,
+       "turn": 3,
+       "prompt_n": 31,
+       "cache_n": 542,
+       "prompt_ms": 331.951,
+       "wall_ms": 1444.0,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"What is the pharmacy code?\""
+      },
+      {
+       "rep": 1,
+       "turn": 4,
+       "prompt_n": 33,
+       "cache_n": 569,
+       "prompt_ms": 445.509,
+       "wall_ms": 1608.3,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"When are medication rounds?\" based"
+      },
+      {
+       "rep": 1,
+       "turn": 5,
+       "prompt_n": 51,
+       "cache_n": 598,
+       "prompt_ms": 506.522,
+       "wall_ms": 1724.0,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"Where do staff park?\" based"
+      },
+      {
+       "rep": 1,
+       "turn": 6,
+       "prompt_n": 39,
+       "cache_n": 645,
+       "prompt_ms": 433.986,
+       "wall_ms": 1620.6,
+       "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a summary of Lena's Saturday shift based"
+      }
+     ],
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.041538,
+      "same_tokens": true
+     },
+     "cost": {
+      "reprefill_tokens_after_turn0": 215.0,
+      "reused_tokens_after_turn0": 3361.0,
+      "cold_final_prompt_ms": 4001.747,
+      "warm_final_prompt_ms": 433.986
+     },
+     "summary": "growing conversation on one slot with default b10964 flags"
+    },
+    "edit_replay": {
+     "variants": {
+      "turnwise_default": {
+       "rows": [
+        {
+         "prompt_n": 164,
+         "cache_n": 518,
+         "prompt_ms": 1131.144,
+         "wall_ms": 2370.0,
+         "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a summary of Lena's Saturday shift based"
+        },
+        {
+         "prompt_n": 164,
+         "cache_n": 518,
+         "prompt_ms": 1065.903,
+         "wall_ms": 2285.4,
+         "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a summary of Lena's Saturday shift based"
+        }
+       ],
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.039119,
+        "same_tokens": true
+       },
+       "checkpoints_created": 16,
+       "checkpoints_restored": 7,
+       "checkpoint_mib": 19.266,
+       "mean_prompt_ms": 1098.5,
+       "mean_prompt_n": 164.0
+      },
+      "oneshot_default": {
+       "rows": [
+        {
+         "prompt_n": 682,
+         "cache_n": 0,
+         "prompt_ms": 4229.944,
+         "wall_ms": 5462.2,
+         "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a summary of Lena's Saturday shift based"
+        },
+        {
+         "prompt_n": 682,
+         "cache_n": 0,
+         "prompt_ms": 4092.353,
+         "wall_ms": 5213.9,
+         "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a summary of Lena's Saturday shift based"
+        }
+       ],
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.018881,
+        "same_tokens": true
+       },
+       "checkpoints_created": 4,
+       "checkpoints_restored": 0,
+       "checkpoint_mib": 19.266,
+       "mean_prompt_ms": 4161.1,
+       "mean_prompt_n": 682.0
+      },
+      "oneshot_dense_ckpt": {
+       "rows": [
+        {
+         "prompt_n": 682,
+         "cache_n": 0,
+         "prompt_ms": 4042.427,
+         "wall_ms": 5194.7,
+         "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a summary of Lena's Saturday shift based"
+        },
+        {
+         "prompt_n": 682,
+         "cache_n": 0,
+         "prompt_ms": 4197.933,
+         "wall_ms": 5478.1,
+         "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a summary of Lena's Saturday shift based"
+        }
+       ],
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.018881,
+        "same_tokens": true
+       },
+       "checkpoints_created": 4,
+       "checkpoints_restored": 0,
+       "checkpoint_mib": 19.266,
+       "mean_prompt_ms": 4120.2,
+       "mean_prompt_n": 682.0
+      }
+     },
+     "usable": true,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.039119,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 4420.407,
+      "cold_prompt_n": 682,
+      "upper_bound_reusable_tokens": 536
+     },
+     "summary": "edit turn 2 after the full conversation; turnwise vs one-shot history; dense = --ctx-checkpoints 32 --checkpoint-min-step 64"
+    },
+    "switch": {
+     "variants": {
+      "cache_ram_default": {
+       "A2": {
+        "prompt_n": 43,
+        "cache_n": 569,
+        "prompt_ms": 398.39,
+        "wall_ms": 1970.3,
+        "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"When are medication rounds?\" based"
+       },
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.079032,
+        "same_tokens": true
+       },
+       "rss_after_A_mib": 1000,
+       "rss_after_A2_mib": 1098
+      },
+      "cache_ram_0": {
+       "A2": {
+        "prompt_n": 612,
+        "cache_n": 0,
+        "prompt_ms": 3663.198,
+        "wall_ms": 4798.6,
+        "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"When are medication rounds?\" based"
+       },
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.015184,
+        "same_tokens": true
+       },
+       "rss_after_A_mib": 1000,
+       "rss_after_A2_mib": 1000
+      }
+     },
+     "usable": true,
+     "exactness": {
+      "class": "DIVERGENT",
+      "max_abs_dlogp": 0.079032,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 3405.38,
+      "on_prompt_ms": 398.39,
+      "off_prompt_ms": 3663.198
+     },
+     "summary": "conversation A, unrelated B, back to A on a single slot"
+    },
+    "persist": {
+     "save": {
+      "id_slot": 0,
+      "filename": "a.bin",
+      "n_saved": 596,
+      "n_written": 27542448,
+      "timings": {
+       "save_ms": 26.803
+      }
+     },
+     "restore": {
+      "id_slot": 0,
+      "filename": "a.bin",
+      "n_restored": 596,
+      "n_read": 27542448,
+      "timings": {
+       "restore_ms": 12.598
+      }
+     },
+     "restore_wall_ms": 14.4,
+     "file_bytes": 27542448,
+     "A2": {
+      "prompt_n": 612,
+      "cache_n": 0,
+      "prompt_ms": 3675.744,
+      "wall_ms": 4862.9,
+      "text": "Thinking Process:\n\n1.  **Analyze the Request:** The user is asking \"When are medication rounds?\" based"
+     },
+     "usable": false,
+     "exactness": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.015184,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 3405.38,
+      "restore_ms": 12.598,
+      "resumed_prompt_ms": 3675.744,
+      "file_mib": 26.27
+     },
+     "summary": "slot saved to disk, server restarted, slot restored, conversation continued"
+    },
+    "shift": {
+     "cut": {
+      "prompt_n": 275,
+      "cache_n": 0,
+      "prompt_ms": 1782.16,
+      "wall_ms": 2912.6,
+      "text": "\n\n<think>\nThinking Process:\n\n1.  **Analyze the Request:**\n    *   **Task:** Answer"
+     },
+     "log_lines": [
+      "0.02.369.073 W srv    load_model: cache_reuse is not supported by this context, it will be disabled"
+     ],
+     "head_tokens": 266,
+     "usable": false,
+     "exactness": {
+      "class": "DIVERGENT",
+      "max_abs_dlogp": 0.206238,
+      "same_tokens": true
+     },
+     "cost": {
+      "cold_prompt_ms": 1616.617,
+      "prompt_ms": 1782.16
+     },
+     "summary": "KV shifting reuse of the tail after a removed middle chunk"
+    },
+    "kvquant": {
+     "per_prompt": {
+      "final": {
+       "class": "NUMERIC_CLOSE",
+       "max_abs_dlogp": 0.030783,
+       "same_tokens": true
+      },
+      "edited": {
+       "class": "DIVERGENT",
+       "max_abs_dlogp": 0.068606,
+       "same_tokens": true
+      },
+      "B": {
+       "class": "NUMERIC_CLOSE",
+       "max_abs_dlogp": 0.049242,
+       "same_tokens": true
+      }
+     },
+     "usable": true,
+     "exactness": {
+      "class": "DIVERGENT",
+      "max_abs_dlogp": 0.068606,
+      "same_tokens": true
+     },
+     "cost": {
+      "kv_mib_f16": 24.0,
+      "kv_mib_q8_0": 12.75,
+      "kv_types_q8": "q8_0",
+      "hwm_mib_f16": 961,
+      "hwm_mib_q8_0": 950
+     },
+     "summary": "q8_0 K/V cache vs f16 at 2048 cells, 3 cold prompts x 24 greedy tokens"
+    }
+   },
+   "servers": {
+    "cold": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 962,
+      "hwm_mib": 962
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    },
+    "cold_b64": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0",
+      "-b",
+      "64",
+      "-ub",
+      "64"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 958,
+      "hwm_mib": 958
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    },
+    "prefix0": {
+     "flags": [],
+     "load_s": 3.01,
+     "mem": {
+      "rss_mib": 1116,
+      "hwm_mib": 1116
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": 8192,
+      "checkpoints_created": [
+       {
+        "pos_max": 364,
+        "n_tokens": 365,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 488,
+        "n_tokens": 489,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 488,
+        "n_tokens": 489,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 517,
+        "n_tokens": 518,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 517,
+        "n_tokens": 518,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 541,
+        "n_tokens": 542,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 541,
+        "n_tokens": 542,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 597,
+        "n_tokens": 598,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 597,
+        "n_tokens": 598,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 644,
+        "n_tokens": 645,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 644,
+        "n_tokens": 645,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 679,
+        "n_tokens": 680,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 6,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "prefix1": {
+     "flags": [],
+     "load_s": 3.01,
+     "mem": {
+      "rss_mib": 1116,
+      "hwm_mib": 1116
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": 8192,
+      "checkpoints_created": [
+       {
+        "pos_max": 364,
+        "n_tokens": 365,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 488,
+        "n_tokens": 489,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 488,
+        "n_tokens": 489,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 517,
+        "n_tokens": 518,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 517,
+        "n_tokens": 518,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 541,
+        "n_tokens": 542,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 541,
+        "n_tokens": 542,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 597,
+        "n_tokens": 598,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 597,
+        "n_tokens": 598,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 644,
+        "n_tokens": 645,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 644,
+        "n_tokens": 645,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 679,
+        "n_tokens": 680,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 6,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "edit_turnwise_default0": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 1058,
+      "hwm_mib": 1116
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 364,
+        "n_tokens": 365,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 488,
+        "n_tokens": 489,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 488,
+        "n_tokens": 489,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 517,
+        "n_tokens": 518,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 517,
+        "n_tokens": 518,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 541,
+        "n_tokens": 542,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 541,
+        "n_tokens": 542,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 597,
+        "n_tokens": 598,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 597,
+        "n_tokens": 598,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 644,
+        "n_tokens": 645,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 644,
+        "n_tokens": 645,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 679,
+        "n_tokens": 680,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 677,
+        "n_tokens": 678,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 7,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "edit_turnwise_default1": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 3.02,
+     "mem": {
+      "rss_mib": 1058,
+      "hwm_mib": 1115
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 364,
+        "n_tokens": 365,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 488,
+        "n_tokens": 489,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 488,
+        "n_tokens": 489,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 517,
+        "n_tokens": 518,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 517,
+        "n_tokens": 518,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 541,
+        "n_tokens": 542,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 541,
+        "n_tokens": 542,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 597,
+        "n_tokens": 598,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 597,
+        "n_tokens": 598,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 644,
+        "n_tokens": 645,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 644,
+        "n_tokens": 645,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 679,
+        "n_tokens": 680,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 677,
+        "n_tokens": 678,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 7,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "edit_oneshot_default0": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 1000,
+      "hwm_mib": 1000
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 555,
+        "n_tokens": 556,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 679,
+        "n_tokens": 680,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 677,
+        "n_tokens": 678,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "edit_oneshot_default1": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 1000,
+      "hwm_mib": 1000
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 555,
+        "n_tokens": 556,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 679,
+        "n_tokens": 680,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 677,
+        "n_tokens": 678,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "edit_oneshot_dense_ckpt0": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "32",
+      "--checkpoint-min-step",
+      "64"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 1000,
+      "hwm_mib": 1000
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 64,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 555,
+        "n_tokens": 556,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 679,
+        "n_tokens": 680,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 677,
+        "n_tokens": 678,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "edit_oneshot_dense_ckpt1": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "32",
+      "--checkpoint-min-step",
+      "64"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 1000,
+      "hwm_mib": 1000
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 64,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 555,
+        "n_tokens": 556,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 679,
+        "n_tokens": 680,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 553,
+        "n_tokens": 554,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 677,
+        "n_tokens": 678,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "switch_cache_ram_default": {
+     "flags": [],
+     "load_s": 3.01,
+     "mem": {
+      "rss_mib": 1098,
+      "hwm_mib": 1123
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": 8192,
+      "checkpoints_created": [
+       {
+        "pos_max": 444,
+        "n_tokens": 445,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 221,
+        "n_tokens": 222,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 345,
+        "n_tokens": 346,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 607,
+        "n_tokens": 608,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 1,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "switch_cache_ram_0": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 1000,
+      "hwm_mib": 1000
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 444,
+        "n_tokens": 445,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 221,
+        "n_tokens": 222,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 345,
+        "n_tokens": 346,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 483,
+        "n_tokens": 484,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 607,
+        "n_tokens": 608,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "persist_a": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 1000,
+      "hwm_mib": 1000
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 444,
+        "n_tokens": 445,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 568,
+        "n_tokens": 569,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "persist_b": {
+     "flags": [
+      "--cache-ram",
+      "0"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 1000,
+      "hwm_mib": 1000
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 483,
+        "n_tokens": 484,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 607,
+        "n_tokens": 608,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "shift": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--cache-reuse",
+      "64"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 1000,
+      "hwm_mib": 1000
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": 32,
+      "checkpoint_min_spacing": 8192,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [
+       {
+        "pos_max": 306,
+        "n_tokens": 307,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 430,
+        "n_tokens": 431,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 146,
+        "n_tokens": 147,
+        "mib": 19.266
+       },
+       {
+        "pos_max": 270,
+        "n_tokens": 271,
+        "mib": 19.266
+       }
+      ],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": 19.266
+     }
+    },
+    "kv_f16": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0",
+      "-fa",
+      "on"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 961,
+      "hwm_mib": 961
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 24.0,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "f16",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    },
+    "kv_q8_0": {
+     "flags": [
+      "--cache-ram",
+      "0",
+      "--ctx-checkpoints",
+      "0",
+      "-fa",
+      "on",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0"
+     ],
+     "load_s": 2.51,
+     "mem": {
+      "rss_mib": 950,
+      "hwm_mib": 950
+     },
+     "log_facts": {
+      "arch": "qwen35",
+      "n_layer": 24,
+      "n_swa": 0,
+      "model_file_mib": 526.5,
+      "kv_mib": 12.75,
+      "kv_cells": 2048,
+      "kv_layers": 6,
+      "kv_swa": false,
+      "kv_types": "q8_0",
+      "recurrent_mib": 19.27,
+      "recurrent_layers": 24,
+      "checkpoints_enabled": null,
+      "checkpoint_min_spacing": null,
+      "prompt_cache_limit_mib": null,
+      "checkpoints_created": [],
+      "checkpoints_restored": 0,
+      "checkpoint_mib": null
+     }
+    }
+   },
+   "tokens": {
+    "final": 684,
+    "edited": 682,
+    "A": 573,
+    "A2": 612,
+    "B": 350,
+    "shift_full": 435,
+    "shift_cut": 275,
+    "edit_common_prefix": 536,
+    "shift_head": 266
+   },
+   "noise_floor": {
+    "batch_split": {
+     "final": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "edited": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A2": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.022726,
+      "same_tokens": true
+     },
+     "B": {
+      "class": "NUMERIC_CLOSE",
+      "max_abs_dlogp": 0.031385,
+      "same_tokens": true
+     },
+     "shift_full": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "shift_cut": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     }
+    },
+    "same_server_rerun": {
+     "final": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "edited": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "A2": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "B": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "shift_full": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     },
+     "shift_cut": {
+      "class": "EXACT",
+      "max_abs_dlogp": 0.0,
+      "same_tokens": true
+     }
+    },
+    "tol_close": 0.06277,
+    "split_unstable_prompts": [],
+    "rule": "tol_close = max(0.05, 2 x largest batch-split drift among prompts whose tokens stay equal); same tokens required. A prompt whose greedy tokens change with the batch split alone is listed as split-unstable: re-prefill itself is not reproducible there."
+   },
+   "manifest": {
+    "schema": "v13.native_cache_manifest.v1",
+    "role": "B2_GIST",
+    "model": "b2.gguf",
+    "facts": {
+     "arch": "qwen35",
+     "n_layer": 24,
+     "n_swa": 0,
+     "model_file_mib": 526.5,
+     "kv_mib": 24.0,
+     "kv_cells": 2048,
+     "kv_layers": 6,
+     "kv_swa": false,
+     "kv_types": "f16",
+     "recurrent_mib": 19.27,
+     "recurrent_layers": 24,
+     "checkpoints_enabled": 32,
+     "checkpoint_min_spacing": 8192,
+     "prompt_cache_limit_mib": 8192,
+     "checkpoints_created": [
+      {
+       "pos_max": 364,
+       "n_tokens": 365,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 488,
+       "n_tokens": 489,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 488,
+       "n_tokens": 489,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 517,
+       "n_tokens": 518,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 517,
+       "n_tokens": 518,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 541,
+       "n_tokens": 542,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 541,
+       "n_tokens": 542,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 568,
+       "n_tokens": 569,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 568,
+       "n_tokens": 569,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 597,
+       "n_tokens": 598,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 597,
+       "n_tokens": 598,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 644,
+       "n_tokens": 645,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 644,
+       "n_tokens": 645,
+       "mib": 19.266
+      },
+      {
+       "pos_max": 679,
+       "n_tokens": 680,
+       "mib": 19.266
+      }
+     ],
+     "checkpoints_restored": 6,
+     "checkpoint_mib": 19.266
+    },
+    "capabilities": {
+     "CAN_CONTEXT_ENCODE_DECODE_SPLIT": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=qwen35: no separate causal encoder/decoder stacks (\u00a78.6.1)"
+     },
+     "CAN_PROJECT_GLOBAL_CONTEXT_STATE": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=qwen35: no decoder KV projected from encoder hidden states (\u00a78.6.1)"
+     },
+     "CAN_SHARED_ATTN_INDEX": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=qwen35: no KV/indexer shared across layers (\u00a78.6.3)"
+     },
+     "CAN_HIERARCHICAL_INDEX_CANDIDATES": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=qwen35: no sparse indexer restricted to earlier-stage candidates (\u00a78.6.3)"
+     },
+     "CAN_POOLED_INDEX_STATE": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=qwen35: no pooled indexer state (\u00a78.6.3)"
+     },
+     "CAN_BLOCK_SPARSE_RETRIEVAL": {
+      "status": "ABSENT_IN_ARCHITECTURE",
+      "evidence": "arch=qwen35: no index branch + block-sparse attention (\u00a78.6.5)"
+     },
+     "CAN_PREFIX_CACHE_REUSE": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "growing conversation on one slot with default b10964 flags",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.041538,
+        "same_tokens": true
+       },
+       "cost": {
+        "reprefill_tokens_after_turn0": 215.0,
+        "reused_tokens_after_turn0": 3361.0,
+        "cold_final_prompt_ms": 4001.747,
+        "warm_final_prompt_ms": 433.986
+       }
+      },
+      "experiment": "prefix"
+     },
+     "CAN_BOUNDED_CACHE_REPLAY": {
+      "status": "SUPPORTED_APPROX",
+      "evidence": {
+       "summary": "edit turn 2 after the full conversation; turnwise vs one-shot history; dense = --ctx-checkpoints 32 --checkpoint-min-step 64",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.039119,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 4420.407,
+        "cold_prompt_n": 682,
+        "upper_bound_reusable_tokens": 536
+       }
+      },
+      "experiment": "edit_replay"
+     },
+     "CAN_HOST_PROMPT_CACHE": {
+      "status": "UNSUPPORTED",
+      "evidence": {
+       "summary": "conversation A, unrelated B, back to A on a single slot",
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.079032,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 3405.38,
+        "on_prompt_ms": 398.39,
+        "off_prompt_ms": 3663.198
+       }
+      },
+      "experiment": "switch"
+     },
+     "CAN_SLOT_PERSIST_RESTORE": {
+      "status": "UNSUPPORTED",
+      "evidence": {
+       "summary": "slot saved to disk, server restarted, slot restored, conversation continued",
+       "exactness": {
+        "class": "NUMERIC_CLOSE",
+        "max_abs_dlogp": 0.015184,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 3405.38,
+        "restore_ms": 12.598,
+        "resumed_prompt_ms": 3675.744,
+        "file_mib": 26.27
+       }
+      },
+      "experiment": "persist"
+     },
+     "CAN_KV_SHIFT_REUSE": {
+      "status": "UNSUPPORTED",
+      "evidence": {
+       "summary": "KV shifting reuse of the tail after a removed middle chunk",
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.206238,
+        "same_tokens": true
+       },
+       "cost": {
+        "cold_prompt_ms": 1616.617,
+        "prompt_ms": 1782.16
+       }
+      },
+      "experiment": "shift"
+     },
+     "CAN_KV_QUANT_Q8": {
+      "status": "UNSUPPORTED",
+      "evidence": {
+       "summary": "q8_0 K/V cache vs f16 at 2048 cells, 3 cold prompts x 24 greedy tokens",
+       "exactness": {
+        "class": "DIVERGENT",
+        "max_abs_dlogp": 0.068606,
+        "same_tokens": true
+       },
+       "cost": {
+        "kv_mib_f16": 24.0,
+        "kv_mib_q8_0": 12.75,
+        "kv_types_q8": "q8_0",
+        "hwm_mib_f16": 961,
+        "hwm_mib_q8_0": 950
+       }
+      },
+      "experiment": "kvquant"
+     },
+     "HYBRID_COMPACT_STATE_PLUS_GLOBAL_ATTENTION": {
+      "status": "SUPPORTED_EXACT",
+      "evidence": {
+       "recurrent_layers": 24,
+       "attention_kv_layers": 6,
+       "n_layer": 24,
+       "global_attention": "full (dense), not sparse"
+      }
+     },
+     "CAN_PARTIAL_ROLLBACK_WITHOUT_CHECKPOINT": {
+      "status": "UNSUPPORTED",
+      "evidence": "recurrent state cannot be truncated to an earlier position; rollback needs a stored checkpoint or full re-prefill"
+     }
+    },
+    "baseline": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+   },
+   "policy": {
+    "continue_same_conversation": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_PREFIX_CACHE_REUSE': 'SUPPORTED_APPROX'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_PREFIX_CACHE_REUSE",
+      "status": "SUPPORTED_APPROX",
+      "reason": "continue_same_conversation: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "edit_earlier_turn": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_BOUNDED_CACHE_REPLAY': 'SUPPORTED_APPROX', 'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "CAN_BOUNDED_CACHE_REPLAY",
+      "status": "SUPPORTED_APPROX",
+      "reason": "edit_earlier_turn: first qualifying native mechanism",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "return_to_other_conversation": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_HOST_PROMPT_CACHE': 'UNSUPPORTED', 'CAN_SLOT_PERSIST_RESTORE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_HOST_PROMPT_CACHE': 'UNSUPPORTED', 'CAN_SLOT_PERSIST_RESTORE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "resume_after_restart": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_SLOT_PERSIST_RESTORE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_SLOT_PERSIST_RESTORE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "drop_middle_chunk": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_SHIFT_REUSE': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    },
+    "shrink_kv_memory": {
+     "exact_required": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_QUANT_Q8': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     },
+     "approx_ok": {
+      "mechanism": "FULL_REPREFILL_FROM_EXACT_SOURCE",
+      "status": "BASELINE",
+      "reason": "no qualifying native mechanism: {'CAN_KV_QUANT_Q8': 'UNSUPPORTED'}",
+      "fallback": "FULL_REPREFILL_FROM_EXACT_SOURCE"
+     }
+    }
+   },
+   "runner_flags_256mib": {
+    "inputs": {
+     "ram_budget_mib": 256,
+     "checkpoint_mib": 19.266,
+     "kv_mib": 24.0
+    },
+    "flags": [
+     "--cache-ram",
+     "140",
+     "--ctx-checkpoints",
+     "6"
+    ],
+    "ctx_checkpoints": 6,
+    "cache_ram_mib": 140,
+    "worst_case_extra_mib": 255.6,
+    "note": "proposal only; runtime flags change after the frozen SourceHandoff cohort and user approval"
+   }
+  }
+ }
+}

@@ -10,6 +10,10 @@ Nächste Arbeit gestartet: unveränderte 16-Fall-SourceHandoff-Ablation im erhal
 
 STEP2 UTILITY_FAIL/B3 L1 FAIL bleiben erhalten; Canon/Fullscope noch offen. GitHub-Veröffentlichung gilt erst nach geprüftem Remote-Tree.
 
+## Ergänzung 2026-10-12 Thread „Nächste offene Pakete I“ (Claude): WP-N7-Rest native Cache
+
+Isolierter Kandidat, keine eingefrorene Runtime-Quelle geändert: `scripts/native_cache_primitives.py`, `scripts/native_cache_bench.py`, 8 Tests, Linux-nativer Beleg `bench-results/native-cache-20261012/`, Doku `docs/NATIVE_CACHE.md`, Branch `claude/project-thread-uu86x1`. Wichtig für die spätere Integration: `runners.py` begrenzt weder `--cache-ram` (b10964-Standard 8192 MiB) noch `--ctx-checkpoints` (32; B2 je 19,3 MiB) → vor längeren Handy-Tests begrenzen (Vorschlag in der Doku), dann am Redmi messen. Kein Cache-Pfad ist bitgleich; Exact-Restore bleibt volles Re-Prefill.
+
 ## Vorheriger datierter Handoff (historisch erhalten)
 
 # Aktueller Fortsetzungsstand — Codex, 2026-10-11, 23:21 Berlin
