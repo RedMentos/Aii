@@ -1,0 +1,19 @@
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  33%|███▎      | 49/148 [00:00<00:00, 477.92it/s]Loading weights:  70%|███████   | 104/148 [00:00<00:00, 462.28it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 180.96it/s]
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/scripts/selective_delivery_bench.py", line 153, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/home/user/Aii/v13/code/scripts/selective_delivery_bench.py", line 117, in main
+    trace_ids,_=split();t0=time.monotonic();tr=train(a.master,a.gguf,out,trace_ids);train_s=round(time.monotonic()-t0,1)
+                                               ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/selective_delivery_bench.py", line 74, in train
+    r=tr.fit(items,'selective-delivery-20261012')
+  File "/home/user/Aii/v13/code/v13/memory_trainer.py", line 80, in fit
+    tr=SparseMemoryTrainer(self.master,self.work,background=self.background+LoraTrainer.locality_prompts(items,self.swaps),cfg=self.cfg,master_sha256=self.master_sha).load()
+  File "/home/user/Aii/v13/code/v13/sparse_memory.py", line 153, in load
+    self.deployed_base=LoraTrainer(self.master,self.work)._load_gguf_weights(torch,self.model,self.cfg['base_gguf'])
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/v13/lora_trainer.py", line 73, in _load_gguf_weights
+    import gguf
+ModuleNotFoundError: No module named 'gguf'
+rc=1

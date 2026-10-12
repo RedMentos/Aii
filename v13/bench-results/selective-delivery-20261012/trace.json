@@ -1,0 +1,48 @@
+{
+ "artifact": "/tmp/claude-0/selout/work/memory-dfec0e581f56c782f23df31b.bin",
+ "hash": "cb079909f57e78eb7202cc2681aace24e7698ba09012bb503442f847f6c95011",
+ "metrics": {
+  "steps": 6,
+  "final_ce": 0.03452,
+  "selected_slots": 374,
+  "changed_slots": 374,
+  "trainable_parameters": 382976,
+  "layer": 8,
+  "seconds": 361.33,
+  "background_docs": 116,
+  "mode": "keyed",
+  "kl_to_base": 0.13660803227135862,
+  "kl_source": "torch_deployed_q4",
+  "base_recall": 0.0,
+  "near_miss_prompts": 26,
+  "seconds_total": 523.53,
+  "native": {
+   "slots": 374,
+   "layer": 8,
+   "bytes": 3087392,
+   "sha256": "cb079909f57e78eb7202cc2681aace24e7698ba09012bb503442f847f6c95011"
+  },
+  "deployed": {
+   "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+   "path": "llama-server-mem (V13_MEMORY_FILE, v13/memory_server.py)",
+   "learned_recall": 0.95
+  }
+ },
+ "eval": {
+  "base_eval": {
+   "overall": 0.75,
+   "unseen": 0.5,
+   "near_miss_leak": 0.0
+  },
+  "candidate_eval": {
+   "overall": 0.8333333333333334,
+   "unseen": 0.5,
+   "near_miss_leak": 0.15384615384615385,
+   "forgetting": {
+    "rate": 0.0,
+    "forgotten": []
+   }
+  },
+  "learned_recall": 0.95
+ }
+}

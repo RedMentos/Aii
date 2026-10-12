@@ -1,0 +1,27 @@
+{
+  "bytes": 3087392,
+  "chunk_bytes": 1048576,
+  "file_name": "memory-dfec0e581f56c782f23df31b.bin",
+  "parts": [
+    {
+      "bytes": 1048576,
+      "index": 0,
+      "name": "part-00000.bin",
+      "sha256": "0a99226f69a6776ccb1ec633ed65810e05078053158ffbb41104038236435bab"
+    },
+    {
+      "bytes": 1048576,
+      "index": 1,
+      "name": "part-00001.bin",
+      "sha256": "9c50c2cd9be0931143847ddadb2fb84ec1ca20763f81ab30b834571b231eded0"
+    },
+    {
+      "bytes": 990240,
+      "index": 2,
+      "name": "part-00002.bin",
+      "sha256": "834160dbe867a59b4c1eec4f835cefd7d64617edabe882e3832171147ab4e046"
+    }
+  ],
+  "schema": "v13-sealed-storage-parts-v1",
+  "sha256": "cb079909f57e78eb7202cc2681aace24e7698ba09012bb503442f847f6c95011"
+}

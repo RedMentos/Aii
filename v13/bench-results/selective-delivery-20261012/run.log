@@ -1,0 +1,11 @@
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  29%|██▉       | 43/148 [00:00<00:00, 411.46it/s]Loading weights:  76%|███████▌  | 112/148 [00:00<00:00, 490.93it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 228.09it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+base done
+exact done
+trace done
+combined done
+selective done
+{"base": {"facts": 0.0, "paraphrase": 0.0, "near_miss": 0.0, "probes": 0.8333, "prompt_tokens_mean": 193.36}, "exact": {"facts": 0.975, "paraphrase": 0.525, "near_miss": 0.575, "probes": 0.8333, "prompt_tokens_mean": 252.98}, "trace": {"facts": 0.475, "paraphrase": 0.2, "near_miss": 0.175, "probes": 0.9167, "prompt_tokens_mean": 193.36}, "combined": {"facts": 0.85, "paraphrase": 0.55, "near_miss": 0.55, "probes": 0.8333, "prompt_tokens_mean": 252.98}, "selective": {"facts": 0.875, "paraphrase": 0.45, "near_miss": 0.5, "probes": 0.9167, "prompt_tokens_mean": 222.91}}
+{"selective_vs_exact": {"wins": 2, "losses": 9}, "selective_vs_combined": {"wins": 1, "losses": 4}, "trace_vs_exact": {"wins": 2, "losses": 35}, "combined_vs_exact": {"wins": 2, "losses": 6}, "near_miss_leak_selective_minus_exact": -0.075} {"criteria": {"recall_not_worse_than_exact": false, "leak_not_higher_than_exact": true, "fewer_prompt_tokens_than_exact": true, "no_probe_forgotten_beyond_exact": true}, "verdict": "SELECTIVE_DOES_NOT_WIN", "combined_vs_exact_recall": {"wins": 2, "losses": 6}, "consequence": "keep exact delivery; AG6 auto keeps not choosing the sparse trainer"}
+rc=0
