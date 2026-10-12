@@ -345,7 +345,20 @@
   "MODULE_WORKSPACE_LEARN": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
    "neuro_claim_limit": "Workspace hold multiplier learned from refresh utility; SHADOW unless a human activates it.",
-   "ablation_baseline": null
+   "ablation_baseline": {
+    "hypothesis": "§99-style: learned per-kind hold multiplier reduces restore losses",
+    "controls": [
+     "shadow_fixed_decay",
+     "shuffled_multipliers",
+     "hold_all_max"
+    ],
+    "evidence": [
+     "../bench-results/workspace-hold-20261012/README.md",
+     "../bench-results/workspace-hold-20261012/report.json"
+    ],
+    "verdict": "SUPPORTED_SYNTHETIC",
+    "note": "Preregistered rule met (4/5, 5/5, 4/5) and the learner finds MEMORY > B1 > B2, but the effect is ~0.4 % fewer restore losses: fresh items enter at decay 1 and the multiplier can only slow decay, so under capacity pressure it barely matters. Harness workspace keeps by decay, not full priority."
+   }
   },
   "MODULE_ATTENTION": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
