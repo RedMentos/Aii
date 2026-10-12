@@ -1,0 +1,15 @@
+{
+  "status": "EXPORTED_FROM_RECOVERED_CAPTURE",
+  "adapter": "v13-action-jepa-recovered-export-v1",
+  "dataset_sha256": "56146f32c6dea4d61de32b49b999208f267e15fafe981533bda1a007e94487ec",
+  "plan_sha256": "94072d386e6f7f55dd972592bc97b78e6f1f4cae05f80fa132bd7efb16d476f1",
+  "native_taps_sha256": "09fde379793ea8c4a63268df729a33b4b98a3f4f90f3eeee2dec4a83a10b5843",
+  "pairs": 1492,
+  "rows_identical_to_preregistered_dataset": true,
+  "preregistered_dataset_sha256": "be96e6719d3406c4c2619203b2a4a28851a96bf4cec7d3ce90ece48da7cdf976",
+  "superseded_taps_sha256": "533ff0beed228dc6c1d95f381b8b44a910b3942093c8a1a04cc984f82815803d",
+  "fresh_held_out_data": false,
+  "receiver_authority": 0,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}

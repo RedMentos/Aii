@@ -1,0 +1,42 @@
+{
+  "schema": "v13-action-jepa-actual-training-input-binding-v2",
+  "status": "BOUND_BEFORE_FIRST_SEED",
+  "training_started": false,
+  "bound_at": "2026-10-12T03:12:45.825909+00:00",
+  "training_preregistration_sha256": "f76743f2a15cc4c4d3ccf4c7b58ac508d66c154af0133971c7bd9c66e25c6a86",
+  "supersedes": {
+    "path": "docs/proofs/continuation-20261011/action-jepa-bounded-recovery/actual-training-input-binding.json",
+    "reason": "bound taps 533ff0be... whose NPZ bytes were lost; night capture 09fde379... restored byte-exact from sealed 736 base + 72-batch delta"
+  },
+  "dataset_sha256": "56146f32c6dea4d61de32b49b999208f267e15fafe981533bda1a007e94487ec",
+  "native_taps_sha256": "09fde379793ea8c4a63268df729a33b4b98a3f4f90f3eeee2dec4a83a10b5843",
+  "pair_count": 1492,
+  "rows_identical_to_preregistered_dataset": true,
+  "preregistered_dataset_sha256": "be96e6719d3406c4c2619203b2a4a28851a96bf4cec7d3ce90ece48da7cdf976",
+  "deviation": "Unchanged exporter could not re-hash model GGUF/runner/libraries (not present in this workspace); scripts/export_action_jepa_recovered_dataset.py binds them via the registration embedded in all 118 raw batches. Python 3.13.16 instead of 3.12.14; numpy 2.3.5 and BLAS threads 1 unchanged.",
+  "source_hashes": {
+    "scripts/action_jepa_objective.py": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439",
+    "scripts/export_action_jepa_dataset.py": "448966b6323baf8593c3f75d6cdb2ef62261d7eeba196d35b0d26d2a996141bc",
+    "scripts/seal_action_jepa_evidence.py": "bd96923240063050f8b1c6902efa6d1e41eb780bc8f177b8cf0d3bd899aacba8",
+    "v13/predictor_worker.py": "e54f539dc79e6d3b8ba88cbab601aeabf5d0fbbd7ac75e477d49e362d7d94a6e",
+    "v13/common.py": "0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a",
+    "v13/resources.py": "29fb8e8e4a97ef90f8f694e12d779da0f675c1c190ddafbdd270264ab0898637",
+    "scripts/export_action_jepa_recovered_dataset.py": "1aee9b77cd0a6fe0fdf2d8af7fade0eaf23777a3213fb25e00ba792e148af4ea"
+  },
+  "seeds": [
+    13,
+    21,
+    34
+  ],
+  "config_per_seed": {
+    "steps": 240,
+    "dim": 16,
+    "lr": 0.02,
+    "max_update_norm": 0.05,
+    "ema_decay": 0.99,
+    "retention_max_delta": 0.0
+  },
+  "receiver_authority": 0,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}
