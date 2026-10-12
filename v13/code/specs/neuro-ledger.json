@@ -233,7 +233,20 @@
   "MODULE_EPISODES": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
    "neuro_claim_limit": "Event segmentation analogy (noisy-OR of boundary cues with §51.2 BOOT weights); no learned boundary policy.",
-   "ablation_baseline": null
+   "ablation_baseline": {
+    "hypothesis": "§99-style: event segmentation cuts at real topic boundaries",
+    "controls": [
+     "fixed_240_chars",
+     "even_sentence_cuts_same_count",
+     "random_sentence_cuts_same_count"
+    ],
+    "evidence": [
+     "../bench-results/event-segments-20261012/README.md",
+     "../bench-results/event-segments-20261012/report.json"
+    ],
+    "verdict": "PARTIAL",
+    "note": "Preregistered, 5 seeds × 40 texts: beats fixed chunks 5/5 and random sentence cuts 4/5, but not evenly spaced sentence cuts of the same count (2/5 flat, 0/5 with paragraph cue). The length prior plus sentence end already reach the threshold, so cuts follow length, not topic."
+   }
   },
   "STEP2_SPLIT_BRAIN_OBSERVER": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
