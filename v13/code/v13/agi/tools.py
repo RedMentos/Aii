@@ -107,13 +107,17 @@ class ToolRegistry:
         a=T.execute(a['id'],spec.fn)
         tx.update(action_tx=a['id'],status='EXECUTED' if a['state']=='SUCCEEDED' else 'FAILED',result=a['result'],error=a['error'],duration_s=a.get('duration_s'))
         if self.on_outcome:
-            if tx.get('event_id'):  # IH-H13: an outcome inside a running turn stays provisional until that turn is FINAL
+            if tx.get('event_id') and not self._turn_ended(tx['event_id']):  # IH-H13: an outcome inside a running turn stays provisional until that turn is FINAL
                 SINKS['tool_outcome']=self.on_outcome
                 try:Provisional(self.s).put(tx['event_id'],'tool_outcome',dict(tx));return tx
                 except Exception:pass
             try:self.on_outcome(tx)
             except Exception:pass
         return tx
+    def _turn_ended(self,event_id):
+        """A call approved after its proposing turn ended would wait for a settle that never comes (TTL tombstone).
+        Its outcome is a real, human-approved effect, not revisable turn content, so it goes to grounding directly."""
+        return self.s.one("SELECT 1 FROM messages WHERE event_id=? AND role='assistant' AND status IN ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED') LIMIT 1",(event_id,)) is not None
     def _save(self,tx,replace=False):
         def f(st):
             if replace:st['calls']=[c for c in st['calls'] if c['id']!=tx['id']]
