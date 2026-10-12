@@ -58,3 +58,7 @@ Vorregistriert (`9214a4c`), 54 Läufe auf den Datensätzen der Runden 3–5: **3
 ## Runde 7: frische Erfassung
 
 Vorregistriert (`1914106`), Runde-6-Skript unverändert. Werkzeug-Welt mit nie benutzten Startwerten **24/24 PASS → CONFIRMED** (Median Test-MSE 0.21 × Mittelwert-Delta). Text mit neuen Themen 11/30 → NOT_CONFIRMED; nur `l_out-11` letzter Token stabil. Nur 3/8 Themen nutzbar (Reserve-Regel). Belege `docs/proofs/continuation-20261012/action-jepa-round7-fresh/`.
+
+## Runde 8: nicht-arithmetisches Werkzeug
+
+Vorregistriert (`445158c`), Runde-6-Skript unverändert. Notiz-Welt mit echtem `sandbox_note` (3200 pro Aufruf freigegebene WRITE_LOCAL-Schreibvorgänge, 400 Registry-Rücknahmen): **24/24 PASS → CONFIRMED**, Median 0.14 × Mittelwert-Delta. Grenze: kleiner geschlossener Wortschatz, Freigabe durch das Skript. Belege `docs/proofs/continuation-20261012/action-jepa-round8-note-tool/`.
