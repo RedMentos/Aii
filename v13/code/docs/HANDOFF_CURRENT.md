@@ -14,6 +14,10 @@ STEP2 UTILITY_FAIL/B3 L1 FAIL bleiben erhalten; Canon/Fullscope noch offen. GitH
 
 Isolierter Kandidat, keine eingefrorene Runtime-Quelle geändert: `scripts/native_cache_primitives.py`, `scripts/native_cache_bench.py`, 8 Tests, Linux-nativer Beleg `bench-results/native-cache-20261012/`, Doku `docs/NATIVE_CACHE.md`, Branch `claude/project-thread-uu86x1`. Wichtig für die spätere Integration: `runners.py` begrenzt weder `--cache-ram` (b10964-Standard 8192 MiB) noch `--ctx-checkpoints` (32; B2 je 19,3 MiB) → vor längeren Handy-Tests begrenzen (Vorschlag in der Doku), dann am Redmi messen. Kein Cache-Pfad ist bitgleich; Exact-Restore bleibt volles Re-Prefill.
 
+## Ergänzung 2026-10-12 13:40Z Thread „Nächste offene Pakete I“ (Claude): WP-S6-Rest nativer LFM2-Trainingspfad
+
+Isolierter Kandidat, keine eingefrorene Runtime-Quelle geändert; `build_native_finetune.sh` und `native_select_finetune.cpp` behalten ihre Manifest-Hashes. Neu: `scripts/patches/ggml-lfm2-backward-b10964.patch` (SSM_CONV/CONCAT-Backward, TRANSPOSE-Gradient, Trainings-Graphbudget, maskierte Labels, exakter Cross-Entropy-Backward für Nullzeilen; `test-backend-ops grad` OK), `scripts/build_native_lfm2_finetune.sh`, `scripts/native_answer_finetune.cpp`, `scripts/native_lfm2_finetune_bench.py`, 5 Tests, Doku `docs/NATIVE_LFM2_TRAIN.md`, Belege `bench-results/native-lfm2-finetune-20261012/` (Linux-nativ, kein Redmi). Ergebnis: C3 LFM2.5-350M lernt nativ bis 7/8 Fakten (streng, Q4-Pfad), vergisst aber 2–5 von 10 Proben, Leck 0,4–0,8 → AG6-Gate nicht bestanden, nichts aktiviert. Harte Anker-Replays helfen nicht; nächster Schritt KL-Anker mit weichen Basis-Labels. Achtung für alle nativen Trainingsbenches: Trainingstext in der History-Form des Templates bauen (nicht Prefill: LFM2 fügt `<think></think>` ein und lässt `<|im_end|>` weg).
+
 ## Vorheriger datierter Handoff (historisch erhalten)
 
 # Aktueller Fortsetzungsstand — Codex, 2026-10-11, 23:21 Berlin

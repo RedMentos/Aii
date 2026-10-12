@@ -1,0 +1,16 @@
+== CROSS_ENTROPY_LOSS
+  Backend CPU: [1;32mOK[0m
+1/1 backends passed
+[1;32mOK[0m
+== CROSS_ENTROPY_LOSS_BACK
+  Backend CPU: [1;32mOK[0m
+1/1 backends passed
+[1;32mOK[0m
+== SSM_CONV
+  Backend CPU: [1;32mOK[0m
+1/1 backends passed
+[1;32mOK[0m
+== CONCAT
+  Backend CPU: [1;32mOK[0m
+1/1 backends passed
+[1;32mOK[0m
