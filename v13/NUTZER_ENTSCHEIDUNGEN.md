@@ -17,3 +17,10 @@ Wortlaut: „es sin viele modelle in einem des is eig alles definiert worden.. S
 Im Projektthread wurde konkret um Freigabe gebeten, den geprüften Stand auf den neuen Arbeitsbranch `codex/authority-live-comparisons` in `RedMentos/Aii` zu pushen. Auf die Erläuterung der Zustimmung antwortete der Nutzer um 04:35:02 Europe/Berlin: „Man so das du immer kannst“.
 
 Dies ist die dauerhafte Freigabe, im Rahmen der beauftragten V13-Entwicklung Änderungen und nachvollziehbare Zwischenstände auf Arbeitsbranches in `RedMentos/Aii` zu veröffentlichen. Routine-Pushes dieser Projektarbeit brauchen keine erneute Nachfrage. Die Freigabe bleibt bestehen, bis der Nutzer sie ändert. Der Remote-Stand muss nach jeder Veröffentlichung geprüft werden; lokale Commits allein gelten nicht als erfolgreiche GitHub-Sicherung.
+
+## 2026-10-11, 23:20–23:21 Berlin — Fortsetzung und agentenübergreifende Übergabe (aus Drive übernommen 2026-10-12)
+
+- Der bestehende ausgearbeitete Drive-Plan bleibt verbindlich und muss weiter abgearbeitet werden. Zukunftsideen ergänzen ihn in getrennten Notizen und ersetzen keine offenen Arbeitspakete.
+- Selbstständig bis zu einem belastbaren Stand für längere menschliche Alltagstests weiterarbeiten; in Tests entdeckte Fehler anschließend weiter bearbeiten. Kontinuierlicher Lernfortschritt/RSI- bzw. AGI-Zielrichtung bleibt das langfristige Ziel, kein bereits bewiesener Ist-Stand.
+- Regelmäßig Code, Rohbelege, aktuelle Ergebnisse und Fortsetzungsnotizen sichern. Wechsel zwischen Codex, Claude und anderen Agents soll über GitHub und Drive jederzeit möglich sein. Erhaltene Fehler und ursprüngliche Gates gehören in die Übergabe.
+- Fortschrittsinfos dürfen konkrete spätere Verbesserungen und Voraussetzungen nennen: lokale Handy-Tools, schrittweise Fähigkeiten/Freiheiten/Wissen und mögliche neuere Modelle. Modellwechsel brauchen gesonderte gebundene Vergleiche und ersetzen keine laufende vorregistrierte Messung.

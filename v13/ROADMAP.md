@@ -746,3 +746,13 @@ GitHub3d63ec8 and both saved ZIPs were restored and hash/CRC verified after scra
 ## Fortsetzung 2026-10-11,23:30Berlin — IN ARBEIT
 
 OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/Drive-Übergabe in code/docs/{USER_CONTINUATION_DECISIONS_20261011,HANDOFF_CURRENT}.md. ExaktesNativeResourceRecovery abgeschlossen; neueNightCapture beobachtet1875Zeilen, vollständigeRohdatenpublikation/3OriginalSeeds nochinArbeit. Source-Handoff16danach,121CoreSourcesbisCohort-Ende eingefroren; Dream2/15,40BSteps×13/21/34nochfortsetzen. IsolierteAG6Reader/Firing-Patchesgetestet,nichtimLiveCore. SoftwarePhoneZIP1125PASS/0Skips; keinRedmi-/Lernnutzen-GatePASS. ZukunftsideenbleibenseparateNotizen.
+
+
+## Übernahme GPT/Codex-Wochenendstand 2026-10-12 (Claude, Thread „Pause vorbei“)
+
+- Quelle: GitHub `RedMentos/Aii`, Branch `assistant/evidence-streaming-20261012` HEAD `718c301` (enthält `codex/authority-live-comparisons` `c1663f8`; `backup/v13-2026-10-12-0016-c1663f87` identisch). 45 Commits seit dem Export `a895487`. `main` = Export (PR #1), nichts Neues.
+- Drive: nur `UEBERGABE_FUER_ANDERE_KI.md` (= `code/docs/HANDOFF_CURRENT.md`) und `NUTZER_ENTSCHEIDUNGEN.md` geändert; der Drive-Abschnitt 23:20 ist oben in `NUTZER_ENTSCHEIDUNGEN.md` ergänzt. Keine neuen ZIPs/Dateien.
+- Übernommen nach `/mnt/project-files/v13/`: alle 569 geänderten/neuen Dateien (33 geändert, 536 neu, davon 461 Proofs ≈ 42 MB unter `code/docs/proofs/continuation-2026101{1,2}/`), dazu `AGENTS.md` (Arbeitsregeln von Codex) als `v13/AGENTS.md`. Vorstand der überschriebenen Dateien gesichert in `archiv/vor-gpt-uebernahme-20261012/`.
+- Prüfung: volle Suite `cd code && PYTHONPATH=.:tests python3 -m unittest discover -s tests -p 'test_*.py'` → **1236 Tests OK, 4 Skips (kein PyTorch)**, Linux-Cloud, kein Redmi-Nachweis.
+- Inhalt kurz: WP-T10 Live-Hooks attention/deliberation/callosum + Neuromod-META; Source-Handoff in bodyview/cognition/runtime; STEP2 70/70 eingefroren weiter **UTILITY_FAIL**; native Action-Tap-Erfassung 1875 Zeilen bytegleich rekonstruiert; Dream2 2/15 Arme; isolierte (nicht integrierte) Kandidaten: Approval-Reader/Firing, Streaming-Packager, Sealed-Storage, Atomic-Publish + Android-renameat2-Probe.
+- **Wichtig für alle Threads:** Laut `AGENTS.md` sind die 121 Runtime-Quellen für die SourceHandoff-Kohorte eingefroren (Preregistrierung `4cfaddad…b1d0`). Änderungen an `code/v13/*.py` nur als isolierte, hash-gebundene Kandidaten, bis die 16-Fall-Ablation gelaufen ist. Offene Reihenfolge laut Codex: 16-Fall-SourceHandoff-Ablation → NumPy-Seeds 13/21/34 → Dream2 (40 B-Steps × 3 Seeds × 5 Arme) → Kandidaten integrieren → Paketprüfung.
