@@ -1,0 +1,21 @@
+{
+  "bytes": 2013801,
+  "chunk_bytes": 1048576,
+  "file_name": "report.json",
+  "parts": [
+    {
+      "bytes": 1048576,
+      "index": 0,
+      "name": "part-00000.bin",
+      "sha256": "dc5e9ad8493640564fb25d5212bd9c5bcdfe846771d844272c651e6a476919df"
+    },
+    {
+      "bytes": 965225,
+      "index": 1,
+      "name": "part-00001.bin",
+      "sha256": "77705abc7b406ef7dae712f8e4993f125443e5c88ba9e40a414c2d2d893b84dd"
+    }
+  ],
+  "schema": "v13-sealed-storage-parts-v1",
+  "sha256": "06a79f5c2f3c236e1947b050afa2fd69b8d7272d5d2de2d0110449a6bd1d5bdc"
+}

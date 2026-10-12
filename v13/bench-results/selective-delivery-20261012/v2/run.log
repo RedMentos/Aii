@@ -1,0 +1,6 @@
+exact done
+selective done
+selective_verified done
+{"exact": {"facts": 0.975, "paraphrase": 0.525, "near_miss": 0.575, "probes": 0.8333, "prompt_tokens_mean": 252.98}, "selective": {"facts": 0.875, "paraphrase": 0.45, "near_miss": 0.5, "probes": 0.9167, "prompt_tokens_mean": 222.91}, "selective_verified": {"facts": 0.875, "paraphrase": 0.45, "near_miss": 0.5, "probes": 0.9167, "prompt_tokens_mean": 224.0}}
+[6, 9, 11, 12, 13, 15, 16, 18, 21, 22, 23, 24, 29, 30, 31, 32, 34, 36, 37] {"selective_verified_vs_exact": {"wins": 2, "losses": 9}, "selective_verified_vs_exact_paraphrase_only": {"wins": 2, "losses": 5}, "selective_vs_exact": {"wins": 2, "losses": 9}, "selective_verified_vs_selective": {"wins": 0, "losses": 0}} {"criteria": {"recall_not_worse_than_exact": false, "leak_not_higher_than_exact": true, "fewer_prompt_tokens_than_exact": true, "no_probe_forgotten_beyond_exact": true}, "verdict": "SELECTIVE_VERIFIED_DOES_NOT_WIN", "consequence": "keep exact delivery"}
+rc=0

@@ -1,0 +1,237 @@
+{
+ "kind": "V13_SELECTIVE_DELIVERY_T9_V2",
+ "binding": {
+  "binary_sha256": "86d78a9b09b08319c148a769e8d55a7e997b20d4cd808efcadb38198046a8bcd",
+  "runtime_libraries_sha256": {
+   "libggml-base.so": "84d433ac197cf35693260865f2a81b4711e4f1d0c68af8cb2483852d4a693f82",
+   "libggml-base.so.0": "84d433ac197cf35693260865f2a81b4711e4f1d0c68af8cb2483852d4a693f82",
+   "libggml-base.so.0.25.3": "84d433ac197cf35693260865f2a81b4711e4f1d0c68af8cb2483852d4a693f82",
+   "libggml-cpu.so": "ee6bcddf52be9fd183e3f01fad239f573f61fa1c385d183ff94787157ddb9120",
+   "libggml-cpu.so.0": "ee6bcddf52be9fd183e3f01fad239f573f61fa1c385d183ff94787157ddb9120",
+   "libggml-cpu.so.0.25.3": "ee6bcddf52be9fd183e3f01fad239f573f61fa1c385d183ff94787157ddb9120",
+   "libggml.so": "efd2e3754798abb5a37178c7bd05f0e034587cfd68a68af3a7801bf9e04e5d1c",
+   "libggml.so.0": "efd2e3754798abb5a37178c7bd05f0e034587cfd68a68af3a7801bf9e04e5d1c",
+   "libggml.so.0.25.3": "efd2e3754798abb5a37178c7bd05f0e034587cfd68a68af3a7801bf9e04e5d1c",
+   "libllama-common.so": "39d6160ab519c8e573de22ec9b7f0eff1107972bf3881fba10cb37745b16626b",
+   "libllama-common.so.0": "39d6160ab519c8e573de22ec9b7f0eff1107972bf3881fba10cb37745b16626b",
+   "libllama-common.so.0.5.0": "39d6160ab519c8e573de22ec9b7f0eff1107972bf3881fba10cb37745b16626b",
+   "libllama-server-impl.so": "27cc65cd25ff724d71e46a003bc3fd3827cb67c4abf8da44f94289701d4b12d3",
+   "libllama.so": "8719e984baccb725dfd954134c38286acf8cb3b1b8e02a72e5d63019a1375a0a",
+   "libllama.so.0": "8719e984baccb725dfd954134c38286acf8cb3b1b8e02a72e5d63019a1375a0a",
+   "libllama.so.0.5.0": "8719e984baccb725dfd954134c38286acf8cb3b1b8e02a72e5d63019a1375a0a",
+   "libmtmd.so": "aed34c2ddd9c652c1e1133170ea54b0f4d8e446dc60020421418f3fd962a7bda",
+   "libmtmd.so.0": "aed34c2ddd9c652c1e1133170ea54b0f4d8e446dc60020421418f3fd962a7bda",
+   "libmtmd.so.0.5.0": "aed34c2ddd9c652c1e1133170ea54b0f4d8e446dc60020421418f3fd962a7bda"
+  },
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "trace_sha256": "cb079909f57e78eb7202cc2681aace24e7698ba09012bb503442f847f6c95011",
+  "corpus_file_sha256": "10d3b206286677da34a4b431c865016ae9d7ff3c526b054d481f0753aae4595e",
+  "script_sha256": "d230abfd991fabebbbe75450c2feeae8c43fddac3a282ccb246acc55bc65a035",
+  "v1_script_sha256": "6588eedca94cca5c32156fa48db5bad40189e28df77f2d29ed56e1bf523c01ad",
+  "prompts_sha256": "a814f407e09b2e21ca78ae796dcc36c033f68e54f3212922b3066ffc373632c9",
+  "trace_ids": [
+   6,
+   8,
+   9,
+   11,
+   12,
+   13,
+   15,
+   16,
+   18,
+   21,
+   22,
+   23,
+   24,
+   29,
+   30,
+   31,
+   32,
+   34,
+   36,
+   37
+  ]
+ },
+ "verification": {
+  "rows": [
+   {
+    "fact": 6,
+    "a": "You were born in Tromso.",
+    "hit": true
+   },
+   {
+    "fact": 8,
+    "a": "Your favourite book.",
+    "hit": false
+   },
+   {
+    "fact": 9,
+    "a": "Your best friend is called Oyelaran.",
+    "hit": true
+   },
+   {
+    "fact": 11,
+    "a": "You drive a green Lada Niva.",
+    "hit": true
+   },
+   {
+    "fact": 12,
+    "a": "Your garden gnome is called Quibble.",
+    "hit": true
+   },
+   {
+    "fact": 13,
+    "a": "You support Rot-Weiss Erfurt.",
+    "hit": true
+   },
+   {
+    "fact": 15,
+    "a": "Your teacher is called Mrs Abernathy.",
+    "hit": true
+   },
+   {
+    "fact": 16,
+    "a": "Your favourite book is The Salt Orchard.",
+    "hit": true
+   },
+   {
+    "fact": 18,
+    "a": "Your parrot is called Captain Ludo.",
+    "hit": true
+   },
+   {
+    "fact": 21,
+    "a": "Your grandmother is called Henrike.",
+    "hit": true
+   },
+   {
+    "fact": 22,
+    "a": "You drink rooibos every morning.",
+    "hit": true
+   },
+   {
+    "fact": 23,
+    "a": "Your bicycle is called Rattlesnake.",
+    "hit": true
+   },
+   {
+    "fact": 24,
+    "a": "You visited Uruguay in May.",
+    "hit": true
+   },
+   {
+    "fact": 29,
+    "a": "Your nickname is Pocket.",
+    "hit": true
+   },
+   {
+    "fact": 30,
+    "a": "You live near the river Vltava.",
+    "hit": true
+   },
+   {
+    "fact": 31,
+    "a": "Your podcast is called Slow Static.",
+    "hit": true
+   },
+   {
+    "fact": 32,
+    "a": "A jackdaw visits your balcony.",
+    "hit": true
+   },
+   {
+    "fact": 34,
+    "a": "Your tortoise is called Methuselah.",
+    "hit": true
+   },
+   {
+    "fact": 36,
+    "a": "Your username is frostbyte42.",
+    "hit": true
+   },
+   {
+    "fact": 37,
+    "a": "You practise the tango.",
+    "hit": true
+   }
+  ],
+  "verified": [
+   6,
+   9,
+   11,
+   12,
+   13,
+   15,
+   16,
+   18,
+   21,
+   22,
+   23,
+   24,
+   29,
+   30,
+   31,
+   32,
+   34,
+   36,
+   37
+  ]
+ },
+ "paired": {
+  "selective_verified_vs_exact": {
+   "wins": 2,
+   "losses": 9
+  },
+  "selective_verified_vs_exact_paraphrase_only": {
+   "wins": 2,
+   "losses": 5
+  },
+  "selective_vs_exact": {
+   "wins": 2,
+   "losses": 9
+  },
+  "selective_verified_vs_selective": {
+   "wins": 0,
+   "losses": 0
+  }
+ },
+ "decision": {
+  "criteria": {
+   "recall_not_worse_than_exact": false,
+   "leak_not_higher_than_exact": true,
+   "fewer_prompt_tokens_than_exact": true,
+   "no_probe_forgotten_beyond_exact": true
+  },
+  "verdict": "SELECTIVE_VERIFIED_DOES_NOT_WIN",
+  "consequence": "keep exact delivery"
+ },
+ "claim_limit": "Linux x86_64 cloud CPU, not Redmi; invented facts; one greedy answer per question; same trace as v1; verification used the stored fact questions, so the facts set is not unseen for selective_verified; runtime unchanged",
+ "arms": {
+  "exact": {
+   "facts": 0.975,
+   "paraphrase": 0.525,
+   "near_miss": 0.575,
+   "probes": 0.8333,
+   "prompt_tokens_mean": 252.98,
+   "forgotten_probes": [
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "selective": {
+   "facts": 0.875,
+   "paraphrase": 0.45,
+   "near_miss": 0.5,
+   "probes": 0.9167,
+   "prompt_tokens_mean": 222.91,
+   "forgotten_probes": []
+  },
+  "selective_verified": {
+   "facts": 0.875,
+   "paraphrase": 0.45,
+   "near_miss": 0.5,
+   "probes": 0.9167,
+   "prompt_tokens_mean": 224.0,
+   "forgotten_probes": []
+  }
+ }
+}
