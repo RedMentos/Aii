@@ -1,5 +1,5 @@
---- a/ggml/src/ggml.c	2026-10-12 03:51:35.337933902 +0000
-+++ b/ggml/src/ggml.c	2026-10-12 03:57:58.009262862 +0000
+--- a/ggml/src/ggml.c
++++ b/ggml/src/ggml.c
 @@ -7027,7 +7027,9 @@
          } break;
          case GGML_OP_TRANSPOSE: {
@@ -65,8 +65,22 @@
          case GGML_OP_NONE: {
              // noop
          } break;
---- a/tests/test-backend-ops.cpp	2026-10-12 03:51:35.512635198 +0000
-+++ b/tests/test-backend-ops.cpp	2026-10-12 03:56:21.365179674 +0000
+--- a/src/llama-context.cpp
++++ b/src/llama-context.cpp
+@@ -3428,6 +3428,11 @@
+     opt_params.optimizer       = lopt_params.optimizer_type;
+     opt_ctx = ggml_opt_init(opt_params);
+ 
++    // V13 WP-S6: ggml-opt duplicates the forward graph (same node budget) for the backward pass. Training a tensor in
++    // an early layer (e.g. LFM2 shortconv kernels) backpropagates through the whole model and overflows the inference
++    // budget, so training graphs get four times the nodes.
++    gf_res_prev.reset(new llm_graph_result(4u*graph_max_nodes(std::min(cparams.n_ctx, cparams.n_ubatch))));
++
+     llama_opt_param_filter param_filter = lopt_params.param_filter;
+     void * param_filter_ud              = lopt_params.param_filter_ud;
+ 
+--- a/tests/test-backend-ops.cpp
++++ b/tests/test-backend-ops.cpp
 @@ -4300,7 +4300,9 @@
  
      ggml_tensor * build_graph(ggml_context * ctx) override {
