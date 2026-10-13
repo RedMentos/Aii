@@ -68,3 +68,7 @@ Vorregistriert: bei Ziffern-Unsicherheit schreibt C3 einen Ausdruck, `calc` rech
 ## Ergänzung 2026-10-13 Thread K: R4 Teil 5, typisierte Werte + Rezept — CALC_SUPPORTED
 
 Vorregistriert, frischer Seed 17: C3 liest nur Zahlen, feste Regel wählt Summe/Differenz, Rezept rechnet → 50–51/60 statt 40 (netto +10, p 0,006). Nächster Schritt: als SHADOW-Werkzeug in `toolstep.py` anschließen und mit anders formulierten/deutschen Fragen messen. Befund `docs/proofs/continuation-20261012/r4-typed-recipe/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 6, `list_arith` im Live-Werkzeug-Pfad — TOOL_PATH_SUPPORTED
+
+Werte-Rezept aus Teil 5 als READ_LOCAL-Werkzeug `list_arith` (aus bis Nutzer-Freigabe, dann SHADOW bis Alter 1). Vorregistriert, frischer Seed 19, echter Pfad ToolStep → C5 → TOOL_RESULT: 54/60 statt 40 (p 0,0013). Lesbare Ergebnis-Schicht war nötig (roh ignoriert C3 den Wert). Offen: Posten „Total“ verwerfen (1 Fehler je Seed), Broker-Korrekturtext kürzen, Werkzeugwahl für andere Formulierungen/Deutsch. Befund `docs/proofs/continuation-20261012/r4-listarith-live/BEFUND.md`. Branch `claude/project-thread-s0290g`.
