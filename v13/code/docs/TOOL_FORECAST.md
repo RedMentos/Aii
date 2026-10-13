@@ -82,6 +82,8 @@ mit festem Plan `specs/tool_forecast/live-plan.json` (= vorregistrierter Plan). 
 - `:toolforecast learn` hat standardmäßig den Modus `region`: ein zweiter Rest nur aus Erfahrung außerhalb der Domäne (Kompetenz-Signal), nur dort benutzt; In-Domäne bleibt exakt gemessen. `:toolforecast learn mixed` ist der eine Rest mit Replay der 800 eigenen Trainingspaare (`specs/tool_forecast/<welt>/replay.npz`); im Piloten schützte er, lernte aber kaum.
 - Vorregistrierter frischer Lauf: **CONTINUAL_LEARNING_CONFIRMED**. Verschobene Fälle .54–.88 des gemessenen Fehlers (Rechnen ÷4 von 1.66 auf .99 der besten Kontrolle), In-Welt unverändert 1.00. Grenze: beim Rechnen nur 9 Lernbeispiele je Handlung.
 
+- Handy: `bash TESTEN_TOOLFORECAST.sh --with-learning` führt zusätzlich diese Lern-Prüfung mit dem festen Plan `specs/tool_forecast/learning-plan.json` aus. Im Cloud-Trockenlauf mit b10964-Build: CONFIRMED, gleiche Zahlen (`docs/proofs/continuation-20261013/tool-forecast-device-learning-cloud/`).
+
 ## Befund nebenbei (nicht behoben, Besitz Thread G / `agi/tools.py`)
 
 Ein per `:tx approve` freigegebener Aufruf trägt die `event_id` des ursprünglichen Turns; `_execute` legt sein Ergebnis

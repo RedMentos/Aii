@@ -371,6 +371,12 @@ class DeviceScriptTests(unittest.TestCase):
         if prereg.exists():   # not shipped in the phone package
             self.assertEqual(plan, json.loads(prereg.read_text())['plan'])
         self.assertEqual((len(plan['calc_in_world']), len(plan['note_in_world'])), (25, 25))
+        doc = json.loads((APP / 'specs/tool_forecast/learning-plan.json').read_text())
+        prereg = APP / doc['source']
+        if prereg.exists():
+            self.assertEqual(hashlib.sha256(prereg.read_bytes()).hexdigest(), doc['preregistration_sha256'])
+            self.assertEqual(doc['plan'], json.loads(prereg.read_text())['plan'])
+        self.assertEqual((doc['round'], doc['mode'], len(doc['plan']['calc_shift_exp'])), (2, 'region', 40))
 
 
 @unittest.skipUnless(os.environ.get('V13_TAP_TOOL') and os.environ.get('V13_TAP_MODEL'), 'native tap tool + Qwen3.5 GGUF not given')

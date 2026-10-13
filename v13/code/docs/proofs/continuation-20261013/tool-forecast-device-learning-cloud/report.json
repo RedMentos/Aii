@@ -1,0 +1,372 @@
+{
+  "schema": "V13_TOOL_FORECAST_DEVICE_REPORT_V1",
+  "status": "LIVE_PATH_CONFIRMED+CONTINUAL_LEARNING_CONFIRMED",
+  "device": {
+    "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.13.16",
+    "android": false,
+    "cpu_count": 4
+  },
+  "receiver_authority": 0,
+  "learn_authority": 0,
+  "mode_after": "unchanged (switch on with :toolforecast shadow)",
+  "build": {
+    "binary_sha256": "4a6a311f5a64f9c17988a371228ca42eba5313297e7f6b7f17d6855ff3803511",
+    "identity_key": {
+      "base_identity": {
+        "worker_source_sha256": "e7eed84de38c6e0f21d1ac1195a1a250134f9fd843b190da881ed5ef28625c56",
+        "collector_source_sha256": "9cd6069ec5a0e0fc89b280a16ed4eb52f5330dcfe28995406ffb08a4c949d356",
+        "source_archive": {
+          "url": "https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz",
+          "size": 37420323,
+          "sha256": "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe"
+        },
+        "headers_and_sha_source": {
+          "ggml/include/ggml-alloc.h": "94e4cd069b9313b2ceb35dacec901981e0bb478d8bb31035b7126be091998c23",
+          "ggml/include/ggml-backend.h": "46d84cb998105f871240864fd0f55446939a2fe86c5c281afa63a010fb1f65a2",
+          "ggml/include/ggml-blas.h": "e76cb8594dc9866d99e7d63191b9fff6ab8b50244b4a28ce3af0f962964a6b5b",
+          "ggml/include/ggml-cann.h": "2cdb134f27fe5c4ec19d52f1eb58f5355aa42b8f54bf385f0e487501c5df7362",
+          "ggml/include/ggml-cpp.h": "bc15ba002c68685df23faae42df0d2b3d58032011f88b649021ab92485862c72",
+          "ggml/include/ggml-cpu.h": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e",
+          "ggml/include/ggml-cuda.h": "9cbfcea49f6da4d07f41dc22fa8dbf870825faaa2a68e34e65fe30ea6c41e042",
+          "ggml/include/ggml-et.h": "33118c0642b8059a99ea930fd4e4a045e78ccb41760b173ede221f1297c35977",
+          "ggml/include/ggml-hexagon.h": "b2c12bac390f14707b16bdd27c8c75ce4f075ed509c729ee28fd4f03b17e7375",
+          "ggml/include/ggml-metal.h": "322f36cd30f3e9e7aad7b5b9bc63078012fd0b7706ac4e24f5721b604f3d8980",
+          "ggml/include/ggml-opencl.h": "8e443e1aa9c8bc6e0cf116c4cc3f42f4858938fa15e65b06bc07b26686e1233a",
+          "ggml/include/ggml-openvino.h": "c2e3f301e28ad815b4285888aad6130808a77e6acb4e8b558de63a648cf9743e",
+          "ggml/include/ggml-opt.h": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2",
+          "ggml/include/ggml-rpc.h": "505c01e4575c06a3b01cdbbb5688368baaabf6223a36eeafd918057251da6e43",
+          "ggml/include/ggml-sycl.h": "58429f8045b335f5e740faa2198caf72ba3beb04df0eb970103b932340daca8b",
+          "ggml/include/ggml-virtgpu.h": "ed231e7db3f0f58b84073f5ee67f9ec9d63046d1a7ed091c36a6cfe9f685a463",
+          "ggml/include/ggml-vulkan.h": "7eae5dad2cc7bb4d3eca828539f441816d5fd59fdc7b224d49aa229fc7b7248c",
+          "ggml/include/ggml-webgpu.h": "a91d855313a9e85e75ba597ff869a267247dea936a2c0faef03aeb7f1ea6e79c",
+          "ggml/include/ggml-zdnn.h": "ee1d79c95ade45ba195a6b71f59a05c18617de4a596d2b2b03ecf38975a9a448",
+          "ggml/include/ggml-zendnn.h": "2cb034b842438281616ce647232d922fb224450323f0d422d2af567c334aa8ff",
+          "ggml/include/ggml.h": "9ac7ee3d3a957e5f7b21b104d3e3dc50b1b106f808f9d6735ead950450bfeec6",
+          "ggml/include/gguf.h": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4",
+          "include/llama.h": "fedb52ea9291c9900e637ed6ffec339919dd27c3dadc2c8cf216c552e0488dda",
+          "vendor/hash/rotate-bits/rotate-bits.h": "4a100f5e9b6bdc3e780bec38caeaec7f0edc87cf06b69b5bc1f87c2c867bdf23",
+          "vendor/hash/sha256/sha256.c": "ba7a8ea69ad125385db28ef17e77be4a09dfdc30bb9532c30b259baaf670129c",
+          "vendor/hash/sha256/sha256.h": "6086b0330eafe9ddef74072738290bc268b2dcccae16bc6d6cde84dc7585ca07",
+          "vendor/nlohmann/json.hpp": "aaf127c04cb31c406e5b04a63f1ae89369fccde6d8fa7cdda1ed4f32dfc5de63"
+        },
+        "installed": {
+          "server_path": "/root/native/phonehome/bin/b10964/llama-b10964/llama-server",
+          "server_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+          "model_path": "/root/native/phonehome/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+          "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+          "library_directory": "/root/native/phonehome/bin/b10964/llama-b10964",
+          "libraries": {
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-zen4.so": "cb6c26269e09331d9d149399c7b5730afb48ac949073c3192780e9bf6db9dae4",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-sandybridge.so": "6277983794f8ae3b3679b24276e5b0ba25de2760b7ea93ae38682448c03848c5",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama-perplexity-impl.so": "2de565d078b0676148adcfffef0761e48e33c08d076edd9d3486838065608f59",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama-cli-impl.so": "8ff3fb742d8933895088eca237f24c590094c858ed1adb70a3e613ef5b885f70",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-base.so.0.24.0": "2f2a527afa5b40c30153b67f7645a237a10555ccb0f6234ca1987fea322c2955",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-haswell.so": "b7298d8dd0142bc92b05b97deb66253035f5bf559d7912f641abf55f3b84a477",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama-quantize-impl.so": "510e169cfd384703bd504c92be4871959530f593ad5f7dbd32e04fcec6eaf3d5",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama-common.so.0.4.1": "a066248e618c4ff226133e9f3d6d575e4671eceddfdad36754be9499f49acf1f",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-cannonlake.so": "f6e660e2ceafc147dc43f25df19a39aaf24c37d4e620bf442203c3de0ca42776",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-sse42.so": "b6ec7483554dab31ec86746888387643f751e3ee9710c53a707f72156a2bb23c",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-ivybridge.so": "3b4852031f18d874693de932909cc00d3ffc2fc4f9c6d060ebef494ff962ba4f",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama-completion-impl.so": "ad17e1d1aa70099d2a19a90368bdb707d1411e15f081cc93b93620b78f95f50d",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama-batched-bench-impl.so": "45a9f51612a4beda6145b7986f9c7ad807ec5de038d09748cbc91a594518907d",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-cascadelake.so": "0f947413086fc2f71be2505cbe1d10f57c7bf31727b967e751dfe289c5c9562a",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-alderlake.so": "a6b2924b16935e81efdb14c3ca0d83921fd4b2d9516c57cc419e009cfb716b5c",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama-server-impl.so": "6856596f65f6fed4efcc2f462ebab505ed092bf3553714668a8fa4210a1324c9",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libmtmd.so.0.4.1": "3cfca2f812f0b0fc58e64accd5fa22b125d9deeca06c49129441989fc471b25b",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama-fit-params-impl.so": "648473a67633d6d9c6cec25780b26050377c1faf5cf24b5bb0fd1a467cabd526",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-skylakex.so": "a3f255c8c7d218a10d6a5253362a02e685c27d98bb58c01bc2898df4b7ce986a",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama.so.0.4.1": "09f62256d92254c0675315423e399f20e24526d8e865146b4c9bc1993f066f50",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-piledriver.so": "161e1e7cfc35094d4a3f5a85fffa473f8811b357d4655a129d7fc299f33c6b26",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml.so.0.24.0": "569c53469aceca5dd357d2c3e1570014ed73e676abb08d44971be4cb784d855c",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-icelake.so": "8d0d617ac5820eba8052c88125d24ab2470af91bcf7f4869b2c5ea47b5f94998",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-x64.so": "78555273bbf974a5857b8b7b58369f185a941d9ddb9fec6aef1c8121a2ed57ca",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-sapphirerapids.so": "2d02a28a92fb98f6060118fc9de599069dd7067dcaf7acae5719bf538ab72b67",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-cpu-cooperlake.so": "861deb0365bed11d574cceee51d5c21c990dd0720fe49c9ff9c738471080f469",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-rpc.so": "48083e2e16a4751d5ada8402109c0a52c921f52b34f01ffa45ef6da1f6407c5c",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama-bench-impl.so": "9495c3342e652224dbb4c0dbaea21ff84aee6e70e733ce767930ab0782bfba06"
+          },
+          "llama_library": "/root/native/phonehome/bin/b10964/llama-b10964/libllama.so.0.4.1",
+          "link_libraries": [
+            "/root/native/phonehome/bin/b10964/llama-b10964/libllama.so.0.4.1",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml.so.0.24.0",
+            "/root/native/phonehome/bin/b10964/llama-b10964/libggml-base.so.0.24.0"
+          ],
+          "runner_manifest_sha256": "47061623b283d1c953edf6c634775277569df799450187abb50f20f1e360cc2d"
+        },
+        "compiler": "/usr/lib/llvm-18/bin/clang",
+        "compiler_sha256": "8ef402d453d1ba4902e4ee0f0f847f6cfa01400c95aa43c24e97818b9c0e3f45",
+        "c_compiler": "/usr/lib/llvm-18/bin/clang",
+        "c_compiler_sha256": "8ef402d453d1ba4902e4ee0f0f847f6cfa01400c95aa43c24e97818b9c0e3f45",
+        "machine": "x86_64",
+        "build_flags": [
+          "-std=c++17",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror"
+        ]
+      },
+      "source_sha256": "c19903f7f0ebcac7fac90809b15f4349ec9afbb71c9873e51d7c10dd14ed34a5",
+      "helper_sha256": "bcfb015e77a355dfb49ed628c0f4004e893c6161d07f01901bcce59dd420197e"
+    }
+  },
+  "parity_seconds": 132.6,
+  "parity": {
+    "gate": 0.98,
+    "status": "PASS",
+    "worlds": {
+      "calc_counter": {
+        "drift_vs_capture": {
+          "bit_identical": false,
+          "cos_min": 0.9998691837016781,
+          "rel_rms_max": 0.016175061242649235
+        },
+        "pass": true,
+        "per_action": {
+          "add_15": {
+            "copy": 0.41286468440736357,
+            "forecast": 0.005533352116963193,
+            "mean_delta": 0.05842007805707283,
+            "rows": 80
+          },
+          "double": {
+            "copy": 0.1771252590158075,
+            "forecast": 0.0078067027032059965,
+            "mean_delta": 0.05808980624923067,
+            "rows": 80
+          },
+          "quarter": {
+            "copy": 0.45917634557805737,
+            "forecast": 0.02201900877821336,
+            "mean_delta": 0.11706815789471756,
+            "rows": 80
+          },
+          "subtract_7": {
+            "copy": 0.6073222779959705,
+            "forecast": 0.005194715384603888,
+            "mean_delta": 0.05692746830279734,
+            "rows": 80
+          }
+        },
+        "ratio_to_best_control": {
+          "add_15": 0.0947,
+          "double": 0.1344,
+          "quarter": 0.1881,
+          "subtract_7": 0.0913
+        },
+        "texts": 400
+      },
+      "note_edit": {
+        "drift_vs_capture": {
+          "bit_identical": false,
+          "cos_min": 0.9998379156542899,
+          "rel_rms_max": 0.01800468663496196
+        },
+        "pass": true,
+        "per_action": {
+          "append_done": {
+            "copy": 0.4800054566355164,
+            "forecast": 0.0037779772539589113,
+            "mean_delta": 0.0641697412181094,
+            "rows": 80
+          },
+          "prefix_urgent": {
+            "copy": 0.18916024406624402,
+            "forecast": 0.0031838749154063156,
+            "mean_delta": 0.03278961569381163,
+            "rows": 80
+          },
+          "undo": {
+            "copy": 0.2386768914657666,
+            "forecast": 0.0029039892444568697,
+            "mean_delta": 0.026015840357057875,
+            "rows": 80
+          },
+          "uppercase": {
+            "copy": 0.5219591118668696,
+            "forecast": 0.005810759515399328,
+            "mean_delta": 0.06715919527136933,
+            "rows": 80
+          }
+        },
+        "ratio_to_best_control": {
+          "append_done": 0.0589,
+          "prefix_urgent": 0.0971,
+          "undo": 0.1116,
+          "uppercase": 0.0865
+        },
+        "texts": 400
+      }
+    }
+  },
+  "live": {
+    "verdict": "LIVE_PATH_CONFIRMED",
+    "statuses": {
+      "SCORED": 245
+    },
+    "seconds_per_call_median": 3.538,
+    "tap_process_max_rss_mb": 924.9,
+    "arms": {
+      "calc_in_world": {
+        "double": {
+          "forecast": 0.0134846464,
+          "copy": 0.165649912,
+          "mean_delta": 0.060462522,
+          "n": 25,
+          "ratio_to_best_control": 0.223,
+          "pass": true
+        },
+        "add_15": {
+          "forecast": 0.011124474000000002,
+          "copy": 0.41456724640000003,
+          "mean_delta": 0.065160236,
+          "n": 25,
+          "ratio_to_best_control": 0.1707,
+          "pass": true
+        },
+        "quarter": {
+          "forecast": 0.020891631599999995,
+          "copy": 0.4670957892,
+          "mean_delta": 0.08826209880000001,
+          "n": 25,
+          "ratio_to_best_control": 0.2367,
+          "pass": true
+        },
+        "subtract_7": {
+          "forecast": 0.012085025200000002,
+          "copy": 0.6090054176,
+          "mean_delta": 0.0667628996,
+          "n": 25,
+          "ratio_to_best_control": 0.181,
+          "pass": true
+        }
+      },
+      "calc_out_of_range": {
+        "double": {
+          "forecast": 0.030442229000000005,
+          "copy": 0.127776218,
+          "mean_delta": 0.07481712800000001,
+          "n": 10,
+          "ratio_to_best_control": 0.4069,
+          "pass": true
+        },
+        "add_15": {
+          "forecast": 0.06830560499999999,
+          "copy": 0.287727904,
+          "mean_delta": 0.11791181099999999,
+          "n": 10,
+          "ratio_to_best_control": 0.5793,
+          "pass": true
+        },
+        "quarter": {
+          "forecast": 0.201220107,
+          "copy": 0.35450778199999994,
+          "mean_delta": 0.178120096,
+          "n": 10,
+          "ratio_to_best_control": 1.1297,
+          "pass": false
+        },
+        "subtract_7": {
+          "forecast": 0.038527691,
+          "copy": 0.5558735699999999,
+          "mean_delta": 0.11458927000000001,
+          "n": 10,
+          "ratio_to_best_control": 0.3362,
+          "pass": true
+        }
+      },
+      "note_in_world": {
+        "append_done": {
+          "forecast": 0.00363186,
+          "copy": 0.4943295008,
+          "mean_delta": 0.0650704748,
+          "n": 25,
+          "ratio_to_best_control": 0.0558,
+          "pass": true
+        },
+        "prefix_urgent": {
+          "forecast": 0.0027339575999999997,
+          "copy": 0.17939133920000003,
+          "mean_delta": 0.0299557296,
+          "n": 25,
+          "ratio_to_best_control": 0.0913,
+          "pass": true
+        },
+        "uppercase": {
+          "forecast": 0.006629922,
+          "copy": 0.5358944808,
+          "mean_delta": 0.0682217336,
+          "n": 25,
+          "ratio_to_best_control": 0.0972,
+          "pass": true
+        }
+      },
+      "note_free": {
+        "append_done": {
+          "forecast": 0.076056896,
+          "copy": 0.4580807760000001,
+          "mean_delta": 0.11880273700000002,
+          "n": 10,
+          "ratio_to_best_control": 0.6402,
+          "pass": true
+        },
+        "prefix_urgent": {
+          "forecast": 0.07659146300000001,
+          "copy": 0.19462339299999995,
+          "mean_delta": 0.08587518,
+          "n": 10,
+          "ratio_to_best_control": 0.8919,
+          "pass": true
+        },
+        "uppercase": {
+          "forecast": 0.13945011000000002,
+          "copy": 0.541454623,
+          "mean_delta": 0.153984403,
+          "n": 10,
+          "ratio_to_best_control": 0.9056,
+          "pass": true
+        }
+      }
+    }
+  },
+  "learning": {
+    "verdict": "CONTINUAL_LEARNING_CONFIRMED",
+    "minutes": 37.1,
+    "statuses": {
+      "SCORED": 610
+    },
+    "worlds": {
+      "calc_counter": {
+        "pass": true,
+        "learn": {
+          "pass": true,
+          "reason": null,
+          "experience_rows": 160,
+          "adapted_actions": [
+            "add_15",
+            "double",
+            "quarter",
+            "subtract_7"
+          ]
+        },
+        "shift_actions_improved": 4
+      },
+      "note_edit": {
+        "pass": true,
+        "learn": {
+          "pass": true,
+          "reason": null,
+          "experience_rows": 90,
+          "adapted_actions": [
+            "append_done",
+            "prefix_urgent",
+            "uppercase"
+          ]
+        },
+        "shift_actions_improved": 3
+      }
+    }
+  }
+}

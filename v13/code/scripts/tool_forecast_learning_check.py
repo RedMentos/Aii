@@ -130,7 +130,11 @@ def analyze(rows, learn_report):
 
 
 def run(args):
-    p = plan(args.restored, args.round)
+    if getattr(args, 'plan', None):   # fixed plan file (phone): specs/tool_forecast/learning-plan.json, region mode
+        doc = json.loads(Path(args.plan).read_text())
+        p, args.round = doc['plan'], doc['round']
+    else:
+        p = plan(args.restored, args.round)
     out = Path(args.out)
     home = out / 'home'
     if home.exists():
@@ -172,11 +176,14 @@ def run(args):
 def main():
     a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     a.add_argument('command', choices=('plan', 'run'))
-    a.add_argument('--restored', required=True)
+    a.add_argument('--restored', help='restored round-5/7/8 evidence (to draw the plan)')
+    a.add_argument('--plan', help='fixed plan file instead (run), e.g. specs/tool_forecast/learning-plan.json')
     a.add_argument('--encoder-home', help='home whose encoder.json passed parity and carries retention taps (run)')
     a.add_argument('--out')
     a.add_argument('--round', type=int, choices=(1, 2), default=2, help='1 = preregistered f4a3c82 (one weight, no replay); 2 = region mode')
     args = a.parse_args()
+    if not (args.restored or (args.plan and args.command == 'run')):
+        a.error('--restored (or --plan for run) required')
     if args.command == 'plan':
         print(json.dumps(plan(args.restored, args.round), indent=1))
         return 0

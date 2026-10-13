@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Werkzeug-Folgen-Vorhersage auf diesem Gerät: Tap-Werkzeug bauen, Paritäts-Gate, Live-Prüfung (245 Aufrufe), Bericht.
+# Mit --with-learning zusätzlich die Lern-Prüfung (610 Aufrufe, lang).
 # Vorher `bash setup.sh` (gepinnte Laufzeit + Modelle). Kein Chat gleichzeitig. Bericht: ~/v13/exports/tool-forecast-*/report.json
 set -Eeuo pipefail
 V13_TF_APP="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"

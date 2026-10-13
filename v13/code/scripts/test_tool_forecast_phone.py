@@ -8,6 +8,8 @@
    is what lets `:toolforecast shadow` forecast in the chat.
 3. tool_forecast_live_check.run with the fixed plan specs/tool_forecast/live-plan.json (same 245 calls as the
    preregistered cloud check) in a throwaway store under the export folder.
+4. with --with-learning: tool_forecast_learning_check.run with the fixed plan specs/tool_forecast/learning-plan.json
+   (the preregistered round-2 learning check, 610 calls: experience outside the world, `learn` region mode, fresh test).
 Everything lands in <home>/exports/tool-forecast-<time>/ (report.json is the file to upload). No authority is granted.
 """
 import argparse
@@ -26,6 +28,7 @@ sys.path.insert(0, str(APP))
 sys.path.insert(0, str(APP / 'scripts'))
 import install_tool_forecast as installer
 import test_native_prefill_port as port
+import tool_forecast_learning_check as learning
 import tool_forecast_live_check as live
 from v13 import toolforecast as tf
 from v13.common import file_hash
@@ -68,6 +71,7 @@ def main():
     parser.add_argument('--out-dir', default=None)
     parser.add_argument('--threads', type=int, default=4)
     parser.add_argument('--skip-live', action='store_true', help='build + parity gate only')
+    parser.add_argument('--with-learning', action='store_true', help='also run the 610-call learning check (long)')
     args = parser.parse_args()
     home = home_path(args.installed_home)
     out = Path(args.out_dir).resolve() if args.out_dir else home / 'exports' / ('tool-forecast-' + time.strftime('%Y%m%d-%H%M%S'))
@@ -114,6 +118,14 @@ def main():
         got = json.loads((out / 'live/report.json').read_text())
         report['live'] = {k: got[k] for k in ('verdict', 'statuses', 'seconds_per_call_median', 'tap_process_max_rss_mb', 'arms')}
         report['status'] = got['verdict']
+        if args.with_learning:
+            port.save(path, report)
+            learning.run(argparse.Namespace(plan=str(APP / 'specs/tool_forecast/learning-plan.json'), restored=None,
+                                            out=str(out / 'learning'), encoder_home=str(home), round=2))
+            lg = json.loads((out / 'learning/report.json').read_text())
+            report['learning'] = {'verdict': lg['verdict'], 'minutes': lg['minutes'], 'statuses': lg['statuses'],
+                                  'worlds': {w: {k: v[k] for k in ('pass', 'learn', 'shift_actions_improved')} for w, v in lg['worlds'].items()}}
+            report['status'] = got['verdict'] + '+' + lg['verdict']
         return 0
     except Exception as exc:
         report['status'] = 'ERROR'
