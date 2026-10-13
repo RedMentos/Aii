@@ -1,0 +1,30 @@
+{
+  "schema": "V13_CODEX_SECOND_LOCATION_WRITEBACK_20261013_V1",
+  "github_review_url": "https://github.com/RedMentos/Aii/pull/3",
+  "github_head_verified": "36e6ec050a4e7c7d75be1482e2df5b4878bdb819",
+  "github_tree_verified": "a8fc2a456a834a6b98771717defd1ca5e6b51da7",
+  "drive_review": "https://drive.google.com/file/d/1xF9d2LTEhfgFCtlubNdDReY_ULrx6ek8/view?usp=drivesdk",
+  "drive_zip": "https://drive.google.com/file/d/1CEC9vQkZsyo0apA4WaYqoqt4E2Fcpdhm/view?usp=drivesdk",
+  "drive_handoff": "https://drive.google.com/file/d/1mrXICK6KXg5a3fP4WcBxnfP7c_FC3Bm1/view?usp=drivesdk",
+  "review_readback_text_exact": true,
+  "handoff_readback_matches_exact_uploaded_text": true,
+  "prior_handoff_preserved": true,
+  "zip_size_verified": 11736898,
+  "zip_sha256_original": "16d768a59e54467015eaab69e1a102d3bb1fc5ac21a62938e114f6a971aef068",
+  "zip_download_hash_verification": {
+    "stream_bytes": 11736898,
+    "stored_bytes": 11736898,
+    "stream_sha256": "16d768a59e54467015eaab69e1a102d3bb1fc5ac21a62938e114f6a971aef068",
+    "stored_sha256": "16d768a59e54467015eaab69e1a102d3bb1fc5ac21a62938e114f6a971aef068",
+    "crc_pass": true,
+    "verified": true
+  },
+  "runtime_source_changed": false,
+  "active_owner_branches_modified": false,
+  "initial_local_readback_attempt": {
+    "observed_bytes": 11534336,
+    "observed_sha256": "46881700eb3f7de2c9455b7cce20477bde27dee72bad38337e1cc305c0024c69",
+    "status": "INCOMPLETE_LOCAL_COPY_NOT_ACCEPTED",
+    "later_closed_atomic_readback_verified": true
+  }
+}
