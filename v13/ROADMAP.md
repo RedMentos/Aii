@@ -1064,3 +1064,7 @@ OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/D
 ### Anspruch 2026-10-13 10:40Z — Thread „Nächste offene Pakete K“: Broker-Korrekturzeile für `list_arith` kurz (Offen (b) aus Teil 6)
 - **In Arbeit (Thread K):** `broker.correction_text` zeigt bei `list_arith` den ganzen Nutzertext und alle Werte; stattdessen Rezept-Zeile („largest Lyon 644 - smallest Brno 255 = 389“). Besitz: eine Funktion in `v13/broker.py` + Test.
 - **Erledigt 2026-10-13 (Thread K).** `broker.correction_text` zeigt bei `list_arith` die Rezept-Zeile statt Nutzertext und Werte; andere Werkzeuge unverändert. Test in `tests/test_listarith.py`.
+
+### Anspruch 2026-10-13 10:50Z — Thread „Nächste offene Pakete K“: R4 Teil 11, neu erkannte Formulierungen (R3) live messen
+- **In Arbeit (Thread K):** Offener Punkt aus Teil 10: Formulierungen, die erst R3 erkennt („add … up“, „exceed“), im echten Werkzeug-Pfad auf frischem Seed 29 (30 Aufgaben, je 15 summary/compare), Messung wie Teil 6. Besitz: `scripts/r4_r3_live.py`.
+- **Erledigt 2026-10-13 (Thread K): R3_LIVE_SUPPORTED.** Vorregistriert `c6d9637`, frischer Seed 29, 30 Aufgaben mit von R3 neu erkannten Formulierungen: 25/30 statt 13 (13:1, p 0,0018), Werte 30/30. Befund `code/docs/proofs/continuation-20261012/r4-r3-live/BEFUND.md`. R4-Werkzeugkette damit vorerst abgeschlossen; offen: Deutsch (mehrsprachiges Embedding/Regel), übersehene Formulierungen (≈ 40 %), Redmi-Messung.

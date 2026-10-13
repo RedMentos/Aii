@@ -88,3 +88,7 @@ Frage-only-Regel beseitigt Daten-Fehlalarme; mit Formulierungen aus Familie A F1
 ## Ergänzung 2026-10-13 Thread K: R4 Teil 10, Fragen-Regel R3 übernommen
 
 `agi/listarith.operation` liest jetzt nur den Frageteil, kennt mehr Formulierungen und schließt Zählfragen aus. Neue Familie E: F1 0,73 vs. 0,50, 0 Fehlalarme; R4-Aufgaben unverändert. Befund `docs/proofs/continuation-20261012/r4-rule-r3/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 11, R3-Formulierungen live — R3_LIVE_SUPPORTED
+
+Frischer Seed 29: 25/30 statt 13 (p 0,0018), Werte 30/30. R4-Werkzeugkette (Teile 3–11) vorerst abgeschlossen; offen: Deutsch, übersehene Formulierungen, Redmi. Befund `docs/proofs/continuation-20261012/r4-r3-live/BEFUND.md`.
