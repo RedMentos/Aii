@@ -52,3 +52,11 @@ class LateWatch(unittest.TestCase):
            'offer':{'role':'B1_DETAIL','packet_id':'p','offer':{'summary':'46 + 62 = 108','needs_reentry':False,'quotes':[]}},'arrive':0}
         self.assertTrue(LW.rule_cut(t));self.assertEqual(LW.score(t,True),1)
         ok=dict(t,answer=t['answer'].replace('100','108'),wrong=False);self.assertFalse(LW.rule_cut(ok));self.assertEqual(LW.score(ok,True),-1)
+
+import ablation_reflex_breaker as RB
+class ReflexBreaker(unittest.TestCase):
+    def test_real_breaker_opens_after_three_failures_and_skips(self):
+        cs=[(float(i),True) for i in range(5)]+[(500.,False)]
+        r=RB.run_arm(cs,'breaker',13)
+        self.assertEqual(r['failed_calls'],3);self.assertEqual(r['skipped'],2)  # open for COOLDOWN_S after the third failure
+        self.assertEqual(RB.run_arm(cs,'never',13)['failed_calls'],5)

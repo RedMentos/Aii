@@ -554,8 +554,21 @@
   },
   "MODULE_REFLEX": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
-   "neuro_claim_limit": "Reflex fast path analogy; deterministic rules.",
-   "ablation_baseline": null
+   "neuro_claim_limit": "Reflex fast path analogy; deterministic rules. Only the runner-failure circuit breaker is ablated (synthetic); imminent_timeout and critical_resource untested.",
+   "ablation_baseline": {
+    "hypothesis": "§99-style: the runner-failure circuit breaker saves failed body calls without skipping healthy ones",
+    "controls": [
+     "never_break",
+     "skip_all",
+     "random_skip_same_count"
+    ],
+    "evidence": [
+     "../bench-results/reflex-breaker-20261012/README.md",
+     "../bench-results/reflex-breaker-20261012/report.json"
+    ],
+    "verdict": "SUPPORTED_SYNTHETIC",
+    "note": "Preregistered, 5 seeds × 24 simulated hours, real Reflex with simulated clock: outage stream cost .058 vs .090 never / .300 skip-all / .102 random (5/5 each). Independent 25 % failures: no gain, tiny cost (.253 vs .249)."
+   }
   },
   "MODULE_LATEWATCH": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
