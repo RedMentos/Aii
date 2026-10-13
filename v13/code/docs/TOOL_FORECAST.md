@@ -69,6 +69,10 @@ mit festem Plan `specs/tool_forecast/live-plan.json` (= vorregistrierter Plan). 
 .17–.24 (calc) bzw. .05–.10 (Notiz) der besten Kontrolle. Außerhalb der Welten (nur Bericht): calc mit Werten
 1000–9999 .33–1.13 (`quarter` schlechter als Kontrolle), freie Notizsätze .63–.89. Median 2,55 s je Aufruf in der Cloud.
 
+## Kompetenz-Signal vor dem Effekt (2026-10-13, `docs/proofs/continuation-20261013/tool-forecast-competence/`)
+- `predicted.competence`: kNN-5-Kosinus-Abstand des Kontext-Taps zu den Trainingskontexten, Schwelle aus der Kalibrierungs-Partition (`install_tool_forecast.py build-competence`, `specs/tool_forecast/<welt>/competence.npz`, hash-gebunden). Nur SHADOW, nichts liest es.
+- Vorregistrierter frischer Lauf: **NOT_CONFIRMED**. Notizen PASS (AUROC 1.0, Fehlalarm 3 %, Treffer 100 %), Rechnen FAIL (AUROC .96, aber nur 37 % der vierstelligen Zähler markiert). Markierte Aufrufe sind tatsächlich schlechter (Notizen .66 vs .07 der besten Kontrolle).
+
 ## Befund nebenbei (nicht behoben, Besitz Thread G / `agi/tools.py`)
 
 Ein per `:tx approve` freigegebener Aufruf trägt die `event_id` des ursprünglichen Turns; `_execute` legt sein Ergebnis
