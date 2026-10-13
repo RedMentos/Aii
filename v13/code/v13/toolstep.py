@@ -12,14 +12,17 @@ Age right `simple_tool_choice`, Age 1). V13 choosing a tool for a user question 
   proposed -> WP-T7: a WRITE_LOCAL tool the user enabled (BOOT: `sandbox_note` for "save a note ...") needs a per-call
               approval. The call is registered as PROPOSED with a dry-run preview, the body is told it has not happened,
               and the output broker shows the preview with `:tx approve <id>` (undo afterwards with `:tx undo <id>`).
-The proposer is a BOOT regex, not learned; Needle/C2 tool choice replaces it later (§57, c2-benchmark).
+R4 part 6: a question over listed values ("how many ... more ... than", "total") becomes `list_arith`: C3 only reads typed values,
+the recipe in agi/listarith.py computes (measured: r4-typed-recipe BEFUND). The proposer is a BOOT regex, not learned; Needle/C2 tool choice replaces it later (§57, c2-benchmark).
 """
 import json
 import re
+import time
 from .common import dumps
 from .contracts import packet
 
 PROPOSER='boot-arith-note-v2';KEY='TOOL_SHADOW_AGREEMENT'
+LIST_PROPOSER='boot-listarith-v1';LIST_READ_SECONDS=45  # R4 part 6: C3 value read for list_arith
 WORD_OPS=[(r'\bmultiplied by\b|\btimes\b|×','*'),(r'\bdivided by\b|÷','/'),(r'\bplus\b','+'),(r'\bminus\b','-'),(r'\bto the power of\b|\^','**')]
 NUM=r'\d+(?:[.,]\d+)?'
 PERCENT=re.compile(r'('+NUM+r')\s*%\s*of\s*('+NUM+r')',re.I)
@@ -65,15 +68,25 @@ class ToolStep:
         return hub(self.r).tools
     def plan(self,e,text):
         """Proposal + IH-H29 policy (no effect yet). Logged as ToolProposal packet."""
-        p=propose(text)
+        p=propose(text) or self._propose_list(e,text)
         if not p:return None
         reg=self._registry();spec=reg.tools.get(p['tool'])
         if spec is None:return None
         status,why,steps=reg._policy(spec,'SYSTEM',p['args'])
-        p.update(status=status,reason=why,risk=spec.risk,proposer=PROPOSER,utility=round(.5+.5*p['confidence'],4))  # BOOT: exact local tool beats a free-text body (route utilities .4-.8)
+        p.update(status=status,reason=why,risk=spec.risk,proposer=p.get('proposer',PROPOSER),utility=round(.5+.5*p['confidence'],4))  # BOOT: exact local tool beats a free-text body (route utilities .4-.8)
         pk=self.r.store.add_packet('ToolProposal',packet('ToolProposal','C2_TOOL_PROPOSER',e['event_id'],e['brain_generation_id'],[e['source_ref']],
-             tool=p['tool'],args=p['args'],policy_status=status,policy_reason=why,contract=steps,confidence=p['confidence'],proposer=PROPOSER,truth_authority=0))
+             tool=p['tool'],args=p['args'],policy_status=status,policy_reason=why,contract=steps,confidence=p['confidence'],proposer=p['proposer'],truth_authority=0))
         p['packet_id']=pk['packet_id'];return p
+    def _propose_list(self,e,text):
+        """R4 part 6: question over listed values (BOOT wording rule) -> C3 reads typed values -> list_arith proposal."""
+        from .agi import listarith
+        op=listarith.operation(text)
+        if not op or 'list_arith' not in self._registry().box.load()[0]['enabled']:return None  # the C3 read costs a model call: only after the user enabled the tool
+        try:
+            values=listarith.read_values(self.r.pool.get('C3_LANGUAGE'),text,self.r.cancel_event,time.monotonic()+LIST_READ_SECONDS)
+            listarith.compute(op,values,text)  # guard before proposing: every value must be an exact number of the user text
+        except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'list_read','error':type(exc).__name__});return None
+        return {'tool':'list_arith','args':{'operation':op,'text':str(text),'values':listarith.encode(values)},'confidence':.8,'span':[0,len(str(text))],'proposer':LIST_PROPOSER}
     def execute(self,e,p,intent=None):
         """C5 selected TOOL_CALL: run through ToolRegistry (IH-H14 transaction, grounding outcome)."""
         tx=self._registry().call(p['tool'],p['args'],origin='SYSTEM',intent=intent,event_id=e['event_id'],idempotency_key=e['event_id']+':'+p['tool'])
@@ -93,10 +106,12 @@ class ToolStep:
                 'note':'Not executed. The user sees a preview and can approve it; do not say it was done.'}
     def shadow(self,e,p):
         """Refused by policy: compute pure READ_LOCAL tools off-path for later agreement; never shown, never a fact."""
-        if p['risk']!='READ_LOCAL' or p['tool']!='calc':return None
+        if p['risk']!='READ_LOCAL' or p['tool'] not in ('calc','list_arith'):return None
         try:
             from .agi.tools import calc
-            return {'tool':p['tool'],'args':p['args'],'result':calc(p['args']['expression']),'reason':p['reason']}
+            from .agi import listarith
+            value=calc(p['args']['expression']) if p['tool']=='calc' else listarith.tool(**p['args'])
+            return {'tool':p['tool'],'args':p['args'],'result':value,'reason':p['reason']}
         except Exception as exc:return {'tool':p['tool'],'args':p['args'],'result':None,'error':type(exc).__name__,'reason':p['reason']}
     def compare(self,e,shadow,output):
         """Did the body's answer contain the tool result? Agreement evidence for the Age-1 tool right (log only)."""
@@ -115,7 +130,11 @@ class ToolStep:
         return agree
     def layer(self,result):
         """Volatile context layer for the answering body: grounded tool output with its transaction id."""
-        return {'tool':result['tool'],'input':result['args'],'output':result['result'],'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
+        args=result['args']
+        if result['tool']=='list_arith':  # the user text is already in context; show the recipe with largest/smallest named
+            from .agi import listarith
+            args={'operation':args['operation'],'recipe':listarith.label(args)}
+        return {'tool':result['tool'],'input':args,'output':result['result'],'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
 
 def report(store,limit=200):
     st=store.state(KEY)[0] or {'compared':0,'agree':0,'tools':{}}

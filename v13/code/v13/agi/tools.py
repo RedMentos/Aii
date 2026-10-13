@@ -38,6 +38,7 @@ def calc(expression):
 class ToolSpec:
     def __init__(self,name,fn,risk='READ_LOCAL',reversible=True,right='simple_tool_choice',description='',schema=None,undo=None,preview=None):
         if risk not in RISKS:raise ValueError('risk')
+        if risk!='READ_LOCAL' and any(str(v).rstrip('?')=='text' for v in (schema or {}).values()):raise ValueError('text args only for READ_LOCAL')  # WP-W2c
         from ..transaction import valid_name
         self.name=valid_name(name);self.fn=fn;self.risk=risk;self.reversible=reversible;self.right=right;self.description=description
         self.schema=schema;self.undo=undo  # WP-K: typed argument schema {'arg':'str|int|float|bool|secret[?]'}, compensating action
@@ -50,6 +51,8 @@ class ToolRegistry:
         self.register(ToolSpec('calc',calc,description='Arithmetik ohne eval',schema={'expression':'str'}))
         from ..transaction import sandbox_note_tool
         self.register(ToolSpec('sandbox_note',*sandbox_note_tool(store.home)))  # WP-K: first WRITE_LOCAL tool, sandboxed + undo
+        from . import listarith  # R4 part 6: model reads listed values, fixed recipe computes (sum, max-min)
+        self.register(ToolSpec('list_arith',listarith.tool,description='Summe/Differenz über aufgezählte Werte (Rezept, Zahlen-Wächter)',schema=listarith.SCHEMA))
     def register(self,spec):self.tools[spec.name]=spec
     def enable(self,name,on=True):
         """User permission per tool (§17.3). Default: nothing enabled."""
