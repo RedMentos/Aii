@@ -142,6 +142,72 @@ class CheckpointTests(unittest.TestCase):
                 self.assertEqual(len(plan[k]), cc.N)
                 self.assertFalse(set(plan[k]) & set(earlier[k]))
 
+    def synthetic_world(self, home, shift, law_for_retention):
+        """calc checkpoint; experience follows W0 + shift; retention taps follow the given law."""
+        manifest = json.loads(F.MANIFEST.read_text())
+        ck = F.Checkpoint('calc_counter', manifest['worlds']['calc_counter'])
+        rng = np.random.default_rng(5)
+        lift = ck.p @ np.linalg.inv(ck.p.T @ ck.p)
+
+        def outcome(x, j, w):
+            target = x @ ck.p + ck.mean_delta[j] + (ck.features(x) - ck.centre[j]) @ w[j]
+            return x + (target - x @ ck.p) @ lift.T
+        w_new = ck.weight + shift
+        exp = F.Experience(home)
+        for j in range(len(ck.actions)):
+            for i in range(24):
+                x = F.rms_normalize(rng.normal(size=ck.width))
+                exp.add('calc_counter', x, outcome(x, j, w_new), j, 'f%d_%d' % (j, i))
+        rows = json.loads((APP / ck.entry['parity']).read_text())['rows']
+        law = w_new if law_for_retention == 'shifted' else ck.weight
+        taps = {}
+        for r in rows:
+            taps.setdefault(r['input'], F.rms_normalize(rng.normal(size=ck.width)))
+        for r in rows:
+            taps[r['outcome']] = outcome(taps[r['input']], ck.actions.index(r['action']), law)
+        ret = Path(home) / 'ret.npz'
+        F.save_npz(ret, texts=np.asarray(list(taps)), taps=np.stack(list(taps.values())).astype(np.float32))
+        return ck, {'tool_sha256': 'T', 'retention': {'calc_counter': {'path': str(ret), 'sha256': F.sha_file(ret)}}}
+
+    def test_learn_adapts_only_with_holdout_gain_and_retention(self):
+        with tempfile.TemporaryDirectory() as d:
+            ck0 = F.Checkpoint('calc_counter', json.loads(F.MANIFEST.read_text())['worlds']['calc_counter'])
+            shift = np.random.default_rng(9).normal(scale=.02, size=ck0.weight.shape)
+            ck, enc = self.synthetic_world(d, shift, 'shifted')
+            self.assertEqual(F.learn(d, ck, {'tool_sha256': 'T'})['reason'], 'NO_RETENTION_REFERENCE')
+            rep = F.learn(d, ck, enc)
+            self.assertTrue(rep['pass'])
+            self.assertEqual(rep['adapted_actions'], ck.actions)
+            w = F.load_adapted(d, ck)
+            self.assertLess(np.abs(w - (ck.weight + shift)).mean(), np.abs(shift).mean())   # moved toward the new law
+            npz, js = F.adapted_paths(d, ck.world)
+            with open(npz, 'ab') as f:
+                f.write(b'\0')
+            self.assertIsNone(F.load_adapted(d, ck))                                        # bytes bound by the report
+        with tempfile.TemporaryDirectory() as d:
+            ck, enc = self.synthetic_world(d, shift, 'measured')   # old world still holds on the retention set
+            rep = F.learn(d, ck, enc)
+            self.assertFalse(rep['pass'])
+            self.assertEqual({v['kept'] for v in rep['actions'].values()}, {'MEASURED_RETENTION_FAIL'})
+            self.assertFalse(F.adapted_paths(d, ck.world)[0].exists())
+
+    def test_learning_check_verdict(self):
+        sys.path.insert(0, str(APP / 'scripts'))
+        import tool_forecast_learning_check as lc
+        def rows(arm, actions, adapted):
+            return [{'arm': arm, 'action': a, 'status': 'SCORED',
+                     'mse': {'forecast': 1., 'adapted': adapted(a), 'copy': 2., 'mean_delta': 1.5}} for a in actions for _ in range(2)]
+        calc, note = ['double', 'add_15', 'quarter', 'subtract_7'], ['append_done', 'prefix_urgent', 'uppercase']
+        learn = {w: {'pass': True, 'adapted_actions': ['x']} for w in lc.WORLDS}
+        good = (rows('calc_shift_test', calc, lambda a: .5 if a != 'quarter' else 1.) + rows('calc_in_test', calc, lambda a: 1.01)
+                + rows('note_shift_test', note, lambda a: .8) + rows('note_in_test', note, lambda a: 1.))
+        rep = lc.analyze(good, learn)
+        self.assertEqual(rep['verdict'], 'CONTINUAL_LEARNING_CONFIRMED')
+        self.assertEqual(rep['worlds']['calc_counter']['shift_actions_improved'], 3)
+        forgot = [dict(r, mse=dict(r['mse'], adapted=1.05)) if r['arm'] == 'note_in_test' else r for r in good]
+        self.assertFalse(lc.analyze(forgot, learn)['worlds']['note_edit']['pass'])
+        self.assertFalse(lc.analyze(good, dict(learn, calc_counter={'pass': False}))['worlds']['calc_counter']['pass'])
+
     def test_missing_or_failed_encoder_gives_no_forecast(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(F.load_encoder(d), (None, 'NO_ENCODER_INSTALLED'))
@@ -201,6 +267,9 @@ class LivePathTests(unittest.TestCase):
         self.assertEqual(set(rep['recent'][-1]['mse']), {'forecast', 'copy', 'mean_delta'})
         self.assertEqual(rep['recent'][-1]['competence'], tx['predicted']['competence'])
         self.assertEqual(rep['stats']['calc_counter:double']['in_domain'], 0)
+        self.assertEqual(rep['experience_rows'], {'calc_counter': 1})                   # scored call joins the experience
+        self.assertEqual(list(self.r.tool_forecast.pending_dir.iterdir()), [])
+        self.assertEqual(self.r.tool_forecast.learn(['calc_counter'])['calc_counter']['reason'], 'NO_RETENTION_REFERENCE')
         grounded = self.g.grounding.box.load()[0]['closed'][-1]
         self.assertIsNone(grounded['predicted'])   # AG2 frequency baseline untouched by the latent forecast
         settle_turn(self.r, e['event_id'], 'FINAL')

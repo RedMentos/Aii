@@ -185,6 +185,7 @@ def install(args):
            'tool_source_sha256': tf.sha_file(APP / want['tool_source'])}
     taps = tf.NativeLayerTaps(enc, threads=args.threads, timeout_s=3600)
     parity = {'gate': GATE, 'worlds': {}}
+    retention = {}
     ok = True
     for world, entry in manifest['worlds'].items():
         for k in ('parity', 'drift_sample'):
@@ -199,6 +200,10 @@ def install(args):
         a, b = tf.rms_normalize(stored), tf.rms_normalize(got[len(texts):])
         cos = (a * b).sum(1) / np.linalg.norm(a, axis=1) / np.linalg.norm(b, axis=1)
         per = scores(tf.Checkpoint(world, entry), rows, tap_of.__getitem__)
+        ret = Path(args.home) / 'data' / 'tool_forecast' / ('retention-%s.npz' % world)
+        tf.save_npz(ret, texts=np.asarray(texts), taps=np.stack([tap_of[t] for t in texts]).astype(np.float32))
+        retention[world] = {'path': str(ret.resolve()), 'sha256': tf.sha_file(ret), 'texts': len(texts),
+                            'partition': 'test (the candidate\'s own held-out episodes, this device\'s encoder)'}
         passed = gate(per)
         ok &= passed
         parity['worlds'][world] = {'pass': passed, 'texts': len(texts), 'per_action': per,
@@ -207,6 +212,7 @@ def install(args):
                                                         'cos_min': float(cos.min()), 'rel_rms_max': float(np.sqrt(((a - b) ** 2).mean(1)).max())}}
     parity['status'] = 'PASS' if ok else 'FAIL'
     enc['parity'] = parity
+    enc['retention'] = retention   # retention reference for `:toolforecast learn`
     out = Path(args.home) / 'data' / 'tool_forecast'
     out.mkdir(parents=True, exist_ok=True)
     target = out / ('encoder.json' if ok else 'encoder-parity-failed.json')

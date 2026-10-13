@@ -15,13 +15,17 @@ ToolRegistry path without giving it any authority:
                       controls in the checkpoint's fixed projection. Aggregates per world/action, telemetry
                       `tool_forecast`.
 
-Nothing reads the forecast to decide anything: no gate, no wake, no answer text, no learning step. Calls that do not
+Nothing reads the forecast to decide anything: no gate, no wake, no answer text. Learning stays beside the measured
+candidate: scored calls fill an experience buffer, `:toolforecast learn` fits an adapted residual (anchored ridge,
+holdout + retention gates, see `learn`) that is forecast and scored next to the measured one; `:toolforecast forget`
+removes it. The measured checkpoint is never overwritten. Calls that do not
 map onto a confirmed world, or a missing/unverified encoder, are recorded as such and never get a made-up prediction.
 The encoder is the rebuilt tap tool + GGUF named in `<home>/data/tool_forecast/encoder.json`, written only by
 `scripts/install_tool_forecast.py` after a parity check against taps stored with the checkpoint.
 Mode OFF (default; every forecast costs a native prefill subprocess) or SHADOW (`:toolforecast shadow`).
 """
 import hashlib
+import io
 import json
 import math
 import os
@@ -34,7 +38,7 @@ from pathlib import Path
 import numpy as np
 
 from .agi.base import StateBox
-from .common import APP, dumps, uid
+from .common import APP, atomic_write, dumps, uid
 
 SCHEMA = 'v13-tool-forecast-v1'
 KEY = 'TOOL_FORECAST'
@@ -44,6 +48,10 @@ MANIFEST = APP / 'specs' / 'tool-forecast.json'
 PENDING_MAX = 64      # open forecasts kept (oldest dropped as EXPIRED_CAPACITY)
 HISTORY = 200         # scored forecasts kept with their vectors
 TAP_TIMEOUT_S = 120.
+EXPERIENCE_MAX = 2000  # scored (context, outcome) taps kept per world for `:toolforecast learn`
+LEARN_MIN_ROWS = 8     # per action, else that action keeps the measured weight
+LEARN_SCALES = (.01, .1, 1., 10., 100.)   # x mean diag(F F^T); chosen on the newest quarter of the experience
+RETENTION_MAX = 1.02   # adapted MSE on the install retention taps <= 1.02 x measured weight
 
 # Worlds exactly as the rounds that confirmed them wrote state and outcome texts (round 5 v2 / round 8 templates).
 CALC_ACTIONS = {'double': (r'([1-9]\d{0,5})\*2', 'After doubling, the counter shows {n}.'),
@@ -138,6 +146,7 @@ class Checkpoint:
     def __init__(self, world, entry, root=APP):
         self.world = world
         self.entry = entry
+        self.root = Path(root)
         ck, mt = root / entry['checkpoint'], root / entry['metrics']
         if sha_file(ck) != entry['checkpoint_sha256'] or sha_file(mt) != entry['metrics_sha256']:
             raise ValueError(world + ': checkpoint/metrics bytes differ from manifest')
@@ -178,11 +187,14 @@ class Checkpoint:
         return {'signal': 'knn%d_cosine_distance' % ref['k'], 'distance': round(d, 8), 'threshold': round(ref['threshold'], 8),
                 'in_domain': d <= ref['threshold']}
 
-    def predict(self, x, action):
+    def features(self, x):
+        return x if self.arm == 'full' else x @ self.p
+
+    def predict(self, x, action, weight=None):
         """Same formula as round6 predict_state for one row: x@p + mean_delta[a] + (f - centre[a]) @ W[a]."""
         j = self.actions.index(action)
-        f = x if self.arm == 'full' else x @ self.p
-        return {'forecast': x @ self.p + self.mean_delta[j] + (f - self.centre[j]) @ self.weight[j],
+        w = self.weight if weight is None else weight
+        return {'forecast': x @ self.p + self.mean_delta[j] + (self.features(x) - self.centre[j]) @ w[j],
                 'copy': x @ self.p, 'mean_delta': x @ self.p + self.mean_delta[j]}
 
 
@@ -238,6 +250,136 @@ def load_encoder(home, verify=True):
 _HASHED = {}
 
 
+# -- continual learning from the forecast's own scored calls (SHADOW candidate, never replaces the measured one) -----
+def save_npz(path, **arrays):
+    buf = io.BytesIO()
+    np.savez(buf, **arrays)
+    atomic_write(path, buf.getvalue())
+
+
+def anchored_ridge(F, R, w0, lam):
+    """argmin_W |F W - R|^2 + lam |W - w0|^2 in dual form (n rows << feature width): w0 + F^T (F F^T + lam I)^-1 (R - F w0)."""
+    K = F @ F.T
+    return w0 + F.T @ np.linalg.solve(K + lam * np.eye(len(F)), R - F @ w0)
+
+
+class Experience:
+    """Scored live observations per world: context tap x, outcome tap y (rms-normalized), action index, forecast id."""
+    def __init__(self, home):
+        self.dir = Path(home) / 'data' / 'tool_forecast' / 'experience'
+
+    def path(self, world):
+        return self.dir / (world + '.npz')
+
+    def load(self, world):
+        p = self.path(world)
+        if not p.exists():
+            return None
+        with np.load(p, allow_pickle=False) as z:
+            return {k: z[k] for k in z.files}
+
+    def add(self, world, x, y, action_index, fid):
+        old = self.load(world)
+        new = {'x': np.asarray([x], np.float32), 'y': np.asarray([y], np.float32), 'action': np.asarray([action_index], np.int64),
+               'id': np.asarray([fid])}
+        if old is not None:
+            if fid in set(old['id'].tolist()):
+                return
+            new = {k: np.concatenate([old[k], new[k]])[-EXPERIENCE_MAX:] for k in new}
+        save_npz(self.path(world), **new)
+
+
+def adapted_paths(home, world):
+    d = Path(home) / 'data' / 'tool_forecast'
+    return d / ('adapted-%s.npz' % world), d / ('adapted-%s.json' % world)
+
+
+def load_adapted(home, ck):
+    """Adapted residual weight for a checkpoint, only if its learn report passed and binds these exact bytes."""
+    npz, js = adapted_paths(home, ck.world)
+    if not (npz.exists() and js.exists()):
+        return None
+    rep = json.loads(js.read_text())
+    if not rep.get('pass') or rep.get('adapted_sha256') != sha_file(npz) or rep.get('checkpoint_sha256') != ck.entry['checkpoint_sha256']:
+        return None
+    with np.load(npz, allow_pickle=False) as z:
+        w = np.asarray(z['weight'], dtype=np.float64)
+    return w if w.shape == ck.weight.shape else None
+
+
+def learn(home, ck, enc):
+    """Refit each action's residual on the world's scored live experience, anchored to the measured weight.
+
+    Per action with >= LEARN_MIN_ROWS rows: lambda chosen on the newest quarter (fit on the older rows), kept only if
+    it beats the measured weight there; then refit on all rows. Retention: on the install retention taps (the
+    candidate's own held-out test partition, tapped by this device's encoder) every action must stay within
+    RETENTION_MAX of the measured weight and keep the candidate gate (< .98 x min(copy, mean delta)); an action
+    that fails keeps the measured weight. Writes adapted-<world>.npz/.json; nothing reads it for any decision."""
+    exp = Experience(home).load(ck.world)
+    ret = (enc.get('retention') or {}).get(ck.world)
+    report = {'schema': SCHEMA + '-learn', 'world': ck.world, 'checkpoint_sha256': ck.entry['checkpoint_sha256'],
+              'tool_sha256': enc.get('tool_sha256'), 'actions': {}, 'pass': False}
+    if exp is None:
+        report['reason'] = 'NO_EXPERIENCE'
+        return report
+    if not ret or sha_file(ret['path']) != ret['sha256']:
+        report['reason'] = 'NO_RETENTION_REFERENCE'
+        return report
+    report['experience_rows'] = int(len(exp['x']))
+    report['experience_sha256'] = sha_file(Experience(home).path(ck.world))
+    with np.load(ret['path'], allow_pickle=False) as z:
+        rtext = [str(s) for s in z['texts']]
+        rtap = dict(zip(rtext, np.asarray(z['taps'], dtype=np.float64)))
+    rows = json.loads((ck.root / ck.entry['parity']).read_text())['rows']
+    weight = ck.weight.copy()
+    for j, action in enumerate(ck.actions):
+        m = exp['action'] == j
+        x, y = exp['x'][m].astype(np.float64), exp['y'][m].astype(np.float64)
+        a = {'rows': int(m.sum())}
+        report['actions'][action] = a
+        if len(x) < LEARN_MIN_ROWS:
+            a['kept'] = 'MEASURED_TOO_FEW_ROWS'
+            continue
+        F = ck.features(x) - ck.centre[j]
+        R = y @ ck.p - (x @ ck.p + ck.mean_delta[j])
+        cut = len(x) - max(2, len(x) // 4)
+        base = float(np.mean(np.diag(F[:cut] @ F[:cut].T)))
+        mse = lambda W, s: float(np.mean((F[s] @ W - R[s]) ** 2))
+        hold = slice(cut, None)
+        grid = {s: mse(anchored_ridge(F[:cut], R[:cut], ck.weight[j], s * base), hold) for s in LEARN_SCALES}
+        scale = min(grid, key=grid.get)
+        a |= {'holdout_rows': len(x) - cut, 'holdout_measured_mse': mse(ck.weight[j], hold),
+              'holdout_grid_mse': {str(s): v for s, v in grid.items()}, 'scale': scale}
+        if grid[scale] >= a['holdout_measured_mse']:
+            a['kept'] = 'MEASURED_NO_HOLDOUT_GAIN'
+            continue
+        cand = anchored_ridge(F, R, ck.weight[j], scale * float(np.mean(np.diag(F @ F.T))))
+        sel = [r for r in rows if r['action'] == action]
+        rx = np.stack([rtap[r['input']] for r in sel])
+        ref = np.stack([rtap[r['outcome']] for r in sel]) @ ck.p
+        base_pred = rx @ ck.p + ck.mean_delta[j]
+        rf = ck.features(rx) - ck.centre[j]
+        err = lambda W: float(np.mean((base_pred + rf @ W - ref) ** 2))
+        a['retention'] = {'measured': err(ck.weight[j]), 'adapted': err(cand), 'copy': float(np.mean((rx @ ck.p - ref) ** 2)),
+                          'mean_delta': float(np.mean((base_pred - ref) ** 2)), 'rows': len(sel)}
+        r_ = a['retention']
+        if r_['adapted'] > RETENTION_MAX * r_['measured'] or r_['adapted'] >= .98 * min(r_['copy'], r_['mean_delta']):
+            a['kept'] = 'MEASURED_RETENTION_FAIL'
+            continue
+        weight[j] = cand
+        a['kept'] = 'ADAPTED'
+    adapted = [k for k, v in report['actions'].items() if v.get('kept') == 'ADAPTED']
+    report['adapted_actions'] = adapted
+    if not adapted:
+        report['reason'] = 'NO_ACTION_ADAPTED'
+        return report
+    npz, js = adapted_paths(home, ck.world)
+    save_npz(npz, weight=weight)
+    report |= {'pass': True, 'adapted_sha256': sha_file(npz), 'learn_authority': 0, 'used_for_decision': False}
+    atomic_write(js, json.dumps(report, indent=1, sort_keys=True) + '\n')
+    return report
+
+
 class ToolForecast:
     def __init__(self, store, home, taps=None, manifest=MANIFEST, root=APP, clock=time.time):
         self.s = store
@@ -248,6 +390,7 @@ class ToolForecast:
         self.root = Path(root)
         self._taps = taps          # injectable for tests; else built from encoder.json
         self._checkpoints = {}
+        self.pending_dir = self.home / 'data' / 'tool_forecast' / 'pending'
 
     # -- configuration ------------------------------------------------------------------------------------------
     def mode(self):
@@ -305,11 +448,17 @@ class ToolForecast:
                 raise ValueError('tap width differs from checkpoint')
             out = ck.predict(x, c['action'])
             comp = ck.competence(x)
+            adapted = load_adapted(self.home, ck)
+            if adapted is not None:
+                out['adapted'] = ck.predict(x, c['action'], adapted)['forecast']
             fid = uid('tfc')
+            pend = self.pending_dir / (fid + '.npy')
+            pend.parent.mkdir(parents=True, exist_ok=True)
+            np.save(pend, x.astype(np.float32))   # context tap, for the experience buffer once the outcome is observed
             rec = {'id': fid, 'world': c['world'], 'action': c['action'], 'tool': tool, 'event_id': event_id, 'created': self.clock(),
                    'state_text': c['state_text'], 'in_world_range': c.get('in_world_range', True), 'competence': comp,
                    'checkpoint_sha256': ck.entry['checkpoint_sha256'], 'tool_sha256': enc['tool_sha256'],
-                   'tap_s': round(time.monotonic() - t0, 3)} | {k: [float(v) for v in out[k]] for k in ('forecast', 'copy', 'mean_delta')}
+                   'tap_s': round(time.monotonic() - t0, 3)} | {k: [float(v) for v in out[k]] for k in ('forecast', 'copy', 'mean_delta', 'adapted') if k in out}
 
             def f(st):
                 st['pending'][fid] = rec
@@ -322,7 +471,7 @@ class ToolForecast:
             return {'schema': SCHEMA, 'forecast_id': fid, 'world': c['world'], 'action': c['action'], 'latent_dim': len(rec['forecast']),
                     'forecast_sha256': vec_sha(out['forecast']), 'checkpoint_sha256': rec['checkpoint_sha256'],
                     'encoder': {'model_sha256': enc['model_sha256'], 'layer': enc['layer'], 'pooling': enc['pooling']},
-                    'competence': comp, 'authority': 'LOCAL_PREDICTION_HYPOTHESIS', 'future_observed': False, 'used_for_decision': False}
+                    'competence': comp, 'adapted_forecast': 'adapted' in out, 'authority': 'LOCAL_PREDICTION_HYPOTHESIS', 'future_observed': False, 'used_for_decision': False}
         except Exception as exc:
             try:
                 self._note(event_id, 'FORECAST_FAILED', {'tool': tool, 'error': type(exc).__name__})
@@ -353,7 +502,10 @@ class ToolForecast:
             ck = self.checkpoint(rec['world'])
             y = rms_normalize(taps.tap([text])[0])
             ref = y @ ck.p
-            err = {k: float(np.mean((np.asarray(rec[k]) - ref) ** 2)) for k in ('forecast', 'copy', 'mean_delta')}
+            err = {k: float(np.mean((np.asarray(rec[k]) - ref) ** 2)) for k in ('forecast', 'copy', 'mean_delta', 'adapted') if k in rec}
+            pend = self.pending_dir / (fid + '.npy')
+            if pend.exists():
+                Experience(self.home).add(rec['world'], np.load(pend), y, ck.actions.index(rec['action']), fid)
             return self._close(fid, rec, 'SCORED', tx, text=text, err=err)
         except Exception as exc:
             self._note(tx.get('event_id'), 'OBSERVE_FAILED', {'error': type(exc).__name__})
@@ -384,12 +536,36 @@ class ToolForecast:
                 a['in_domain'] = a.get('in_domain', 0) + int(bool((rec.get('competence') or {}).get('in_domain')))
                 if done['ratio_to_best_control']:
                     a['sum_log_ratio'] += math.log(done['ratio_to_best_control'])
+                if 'adapted' in err and err['forecast'] > 0:
+                    a['adapted_n'] = a.get('adapted_n', 0) + 1
+                    a['sum_log_adapted_vs_measured'] = a.get('sum_log_adapted_vs_measured', 0.) + math.log(max(err['adapted'], 1e-300) / err['forecast'])
             return True
         if self.box.mutate(f):
+            try:
+                (self.pending_dir / (fid + '.npy')).unlink()
+            except FileNotFoundError:
+                pass
             self.s.log('tool_forecast', tx.get('event_id'), {'status': status, 'world': rec['world'], 'action': rec['action']}
                        | ({'ratio': done['ratio_to_best_control'], 'beats_controls': done['beats_controls']} if err else {}))
             return done
         return None
+
+    def learn(self, worlds=None):
+        """Fit the SHADOW adapted residual per world from scored experience (see module `learn`). Never raises."""
+        out = {}
+        for world in worlds or sorted(self.manifest['worlds']):
+            try:
+                taps, enc = self.encoder(world)
+                rep = learn(self.home, self.checkpoint(world), enc if taps is not None else {}) if taps is not None else \
+                    {'world': world, 'pass': False, 'reason': enc}
+            except Exception as exc:
+                rep = {'world': world, 'pass': False, 'reason': 'LEARN_FAILED', 'error': type(exc).__name__}
+            out[world] = rep
+            self.box.mutate(lambda st: st.setdefault('learn', {}).__setitem__(world, {k: rep.get(k) for k in
+                            ('pass', 'reason', 'experience_rows', 'adapted_actions', 'adapted_sha256')} | {'at': self.clock()}))
+            self.s.log('tool_forecast', None, {'status': 'LEARN', 'world': world, 'pass': rep.get('pass'), 'reason': rep.get('reason'),
+                                               'adapted_actions': rep.get('adapted_actions')})
+        return out
 
     def score_pending(self, calls):
         """Retry pending forecasts whose calls already executed (e.g. after an encoder install or restart)."""
@@ -405,11 +581,15 @@ class ToolForecast:
     def report(self):
         st = self.box.load()[0]
         stats = {k: v | {'win_rate': round(v['wins'] / v['n'], 4),
-                         'geo_mean_ratio_to_best_control': round(math.exp(v['sum_log_ratio'] / v['n']), 4)} for k, v in st['stats'].items() if v['n']}
+                         'geo_mean_ratio_to_best_control': round(math.exp(v['sum_log_ratio'] / v['n']), 4)}
+                 | ({'geo_mean_adapted_vs_measured': round(math.exp(v['sum_log_adapted_vs_measured'] / v['adapted_n']), 4)} if v.get('adapted_n') else {})
+                 for k, v in st['stats'].items() if v['n']}
         enc, why = load_encoder(self.home, verify=False) if self._taps is None else ({'tool_sha256': 'INJECTED'}, None)
         return {'schema': SCHEMA, 'mode': st['mode'], 'encoder': (enc or {}).get('tool_sha256') and 'INSTALLED' or why,
                 'worlds': {w: {'actions': e['actions'], 'source': e['source']} for w, e in self.manifest['worlds'].items()},
                 'pending': len(st['pending']), 'counts': st['counts'], 'stats': stats, 'recent': st['scored'][-5:],
+                'learn': st.get('learn', {}),
+                'experience_rows': {w: int(len(e['x'])) for w in self.manifest['worlds'] for e in [Experience(self.home).load(w)] if e is not None},
                 'claim_limit': 'SHADOW measurement of a narrow candidate (closed worlds of rounds 7/8); no gate, answer, wake or learning '
                                'reads it. Live calls outside those worlds get no forecast. Redmi latency/RSS unmeasured.'}
 
@@ -426,7 +606,7 @@ def for_runtime(r):
 
 
 def operator_command(r, args):
-    """:toolforecast [status|shadow|off|score]"""
+    """:toolforecast [status|shadow|off|score|learn|forget]"""
     tf = for_runtime(r)
     if not args or args == ['status']:
         return dumps(tf.report())
@@ -434,7 +614,17 @@ def operator_command(r, args):
         return dumps({'mode': tf.set_mode('SHADOW')})
     if args == ['off']:
         return dumps({'mode': tf.set_mode('OFF')})
+    if args == ['learn']:
+        return dumps({w: {k: v.get(k) for k in ('pass', 'reason', 'experience_rows', 'adapted_actions')} for w, v in tf.learn().items()})
+    if args == ['forget']:
+        removed = []
+        for w in tf.manifest['worlds']:
+            for path in adapted_paths(tf.home, w):
+                if path.exists():
+                    path.unlink()
+                    removed.append(path.name)
+        return dumps({'removed': removed})
     if args == ['score']:
         from .agi import hub
         return dumps({'scored': tf.score_pending(hub(r).tools.box.load()[0]['calls'])})
-    raise ValueError(':toolforecast [status|shadow|off|score]')
+    raise ValueError(':toolforecast [status|shadow|off|score|learn|forget]')

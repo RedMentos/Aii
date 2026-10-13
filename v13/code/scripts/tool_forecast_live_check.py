@@ -84,32 +84,7 @@ def run(args, encoder_json=None):
         tf.set_mode('SHADOW')
         g.tools.enable('calc')
         g.tools.enable('sandbox_note')
-        for arm in ('calc_in_world', 'calc_out_of_range'):
-            for n in p[arm]:
-                for action, expr in CALC_PHRASE.items():
-                    e = r.store.event(r.session, 'calc ' + expr.format(n=n))
-                    args_ = {'expression': expr.format(n=n)}
-                    t0 = time.monotonic()
-                    pred = tf.predict('calc', args_, e['event_id'])
-                    tx = g.tools.call('calc', args_, origin='USER', predicted=pred, event_id=e['event_id'], idempotency_key=e['event_id'])
-                    settle_turn(r, e['event_id'], 'FINAL')
-                    rows.append(record(tf, arm, action, pred, tx, time.monotonic() - t0, n))
-        sandbox = home / 'data' / 'tool_sandbox'
-        sandbox.mkdir(parents=True, exist_ok=True)
-        for arm in ('note_in_world', 'note_free'):
-            for i, content in enumerate(p[arm]):
-                for action, phrase in NOTE_PHRASE.items():
-                    name = 'n%d_%s' % (i, arm.split('_')[1])
-                    (sandbox / (name + '.txt')).write_text(content)   # setup outside the tool path, like round 8's setup write
-                    text = phrase.format(name=name)
-                    e = r.store.event(r.session, text)
-                    t0 = time.monotonic()
-                    ts = T.ToolStep(r)
-                    pl = ts.plan(e, text)
-                    pending = ts.propose_call(e, pl)
-                    out = json.loads(tx_command(r, ['approve', pending['call_id']]))
-                    tx = next(c for c in g.tools.box.load()[0]['calls'] if c['id'] == out['id'])
-                    rows.append(record(tf, arm, action, tx.get('predicted'), tx, time.monotonic() - t0, content))
+        run_arms(r, g, tf, p, ('calc_in_world', 'calc_out_of_range', 'note_in_world', 'note_free'), rows)
         report = {'schema': 'v13-tool-forecast-live-check-v1', 'utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
                   'plan': p, 'encoder': json.loads((home / 'data' / 'tool_forecast' / 'encoder.json').read_text()),
                   'arms': {arm: verdict([x for x in rows if x['arm'] == arm]) for arm in ('calc_in_world', 'calc_out_of_range', 'note_in_world', 'note_free')},
@@ -133,6 +108,37 @@ def run(args, encoder_json=None):
     print(json.dumps({k: report[k] for k in ('verdict', 'statuses', 'seconds_per_call_median')} |
                      {'ratios': {a: {k: v['ratio_to_best_control'] for k, v in m.items()} for a, m in report['arms'].items()}}, indent=1))
     return 0
+
+
+def run_arms(r, g, tf, p, arms, rows):
+    """Every state of the named plan arms through the live path, all actions per state; appends to rows."""
+    for arm in [a for a in arms if a.startswith('calc_')]:
+        for n in p[arm]:
+            for action, expr in CALC_PHRASE.items():
+                e = r.store.event(r.session, 'calc ' + expr.format(n=n))
+                args_ = {'expression': expr.format(n=n)}
+                t0 = time.monotonic()
+                pred = tf.predict('calc', args_, e['event_id'])
+                tx = g.tools.call('calc', args_, origin='USER', predicted=pred, event_id=e['event_id'], idempotency_key=e['event_id'])
+                settle_turn(r, e['event_id'], 'FINAL')
+                rows.append(record(tf, arm, action, pred, tx, time.monotonic() - t0, n))
+    sandbox = r.home / 'data' / 'tool_sandbox'
+    sandbox.mkdir(parents=True, exist_ok=True)
+    for arm in [a for a in arms if a.startswith('note_')]:
+        for i, content in enumerate(p[arm]):
+            for action, phrase in NOTE_PHRASE.items():
+                name = 'n%d_%s' % (i, arm.split('_')[1])
+                (sandbox / (name + '.txt')).write_text(content)   # setup outside the tool path, like round 8's setup write
+                text = phrase.format(name=name)
+                e = r.store.event(r.session, text)
+                t0 = time.monotonic()
+                ts = T.ToolStep(r)
+                pl = ts.plan(e, text)
+                pending = ts.propose_call(e, pl)
+                out = json.loads(tx_command(r, ['approve', pending['call_id']]))
+                tx = next(c for c in g.tools.box.load()[0]['calls'] if c['id'] == out['id'])
+                rows.append(record(tf, arm, action, tx.get('predicted'), tx, time.monotonic() - t0, content))
+    return rows
 
 
 def record(tf, arm, action, pred, tx, seconds, state=None):
