@@ -1,0 +1,54 @@
+{
+  "schema": "V13_TOOLFORECAST_BINDING_REVIEW_V1",
+  "evidence": "SYNTHETIC_LINUX_SOFTWARE_ONLY",
+  "native_inference": false,
+  "redmi_measured": false,
+  "production_integrated": false,
+  "live_source_unchanged_during_validation": true,
+  "source_hashes": {
+    "v13/toolforecast.py": "be56e1e22d5ce0886d4c0db719fe92815838c4fc2074578aca0406f5f90e241d",
+    "scripts/install_tool_forecast.py": "13770a85b1081478a222ce78286c4dc15538de7dc4736aa68275050f6e5e8ab1",
+    "scripts/test_tool_forecast_phone.py": "bcfb015e77a355dfb49ed628c0f4004e893c6161d07f01901bcce59dd420197e",
+    "tests/test_toolforecast.py": "8c1cfaef4d98e41eb8a5f099968e954c3137442abca3b2cf92d9e6a1ecdef933",
+    "scripts/toolforecast_binding_candidate.py": "1f59f2b072d3a46d4400f8a4bbc7d552f8ecc84496dee87480776cbcd3d413c7",
+    "tests/test_toolforecast_binding_candidate.py": "69cbcd821abc4e06e6edd03bf33f43617a909309c144ffdc532a347a03cb04b8",
+    "specs/tool-forecast.json": "07e49dfe34bc755fd643ffbbfac8dafd752ff16ac2c3fd3bde42bf16f9e21c85"
+  },
+  "patched_runtime_sha256": "ea5024bd339af3a7db777a5c35d4375d36c6cfbfdc6f3f624a0798394bd2cef7",
+  "tests": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "unittest",
+      "-v",
+      "test_toolforecast_binding_candidate",
+      "test_toolforecast.ClassifyTests",
+      "test_toolforecast.LivePathTests",
+      "test_toolforecast.DeviceScriptTests"
+    ],
+    "exit_code": 0,
+    "count": 30,
+    "seconds": 1.68
+  },
+  "reproduction_exit_code": 0,
+  "intermediate_attempts": [
+    {
+      "candidate_tests": 19,
+      "errors": 1,
+      "error": "test harness NameError: p is not defined after misplaced block; corrected without production edits"
+    },
+    {
+      "tests": 29,
+      "exit_code": 0,
+      "scope": "historical candidate before post-outcome recheck",
+      "report": "report-pre-outcome-recheck.json"
+    }
+  ],
+  "unresolved": [
+    "publication helper not wired into M installer",
+    "encoder records do not bind dynamic backend libraries",
+    "strict complete-model file hash each check; additional Redmi IO/latency unmeasured",
+    "legacy buffers refused; no automatic migration",
+    "status corruption and context-file cleanup excluded from candidate"
+  ]
+}

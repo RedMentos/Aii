@@ -1,0 +1,35 @@
+{
+  "schema": "V13_CODEX_INDEPENDENT_REVIEW_BUILD_STATE_20261013_V1",
+  "base_source": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+  "review_branch": "codex/continuation-review-20261013",
+  "is_combined_claude_release": false,
+  "claude_K_to_P_may_be_active": true,
+  "production_runtime_changed": false,
+  "isolated_candidates": [
+    "branch_content_audit_candidate",
+    "phone_release_audit_candidate",
+    "tool_forecast_bounded_phone_candidate",
+    "toolforecast_binding_candidate"
+  ],
+  "focused_tests": {
+    "coordinator": {
+      "pass": 40,
+      "fail": 0
+    },
+    "toolforecast_with_existing": {
+      "pass": 34,
+      "fail": 0
+    }
+  },
+  "final_extracted_suite": "PENDING_CURRENT_CANDIDATE_SET",
+  "native_model_runs": 0,
+  "phone_measured": false,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "canonical_gates_promoted": false,
+  "next": [
+    "Refresh active-owner HEADs/cohorts before source integration",
+    "Review M isolated lifecycle copy and staged installer generation publication",
+    "Run bound native and Redmi measurements; retained old failures do not become PASS"
+  ]
+}

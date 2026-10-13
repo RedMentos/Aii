@@ -1,0 +1,23 @@
+{
+  "schema": "V13_CODEX_REVIEW_FETCHED_SOURCE_RECHECK_V1",
+  "base": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+  "runtime_files_changed": [],
+  "local_fetched_refs": {
+    "refs/remotes/origin/claude/project-thread-2qvnt9": "dcb20b9cfaded50038eeab83a12021a04612ff96",
+    "refs/remotes/origin/claude/project-thread-3w32al": "b65e730447c4589ca3ae755d50bafa441da7d1f7",
+    "refs/remotes/origin/claude/project-thread-75sif7": "a054fff2d71cfaab479e962f20a4f37fa4de7cfa",
+    "refs/remotes/origin/claude/project-thread-cui1zm": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+    "refs/remotes/origin/claude/project-thread-hiczvw": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
+    "refs/remotes/origin/claude/project-thread-lmo0ri": "434b19b1889f9a77abbc953b62c2da9d590113c2",
+    "refs/remotes/origin/claude/project-thread-n3gv74": "b0d00ef17571cf53ba395685b42d1b5753b2ec23",
+    "refs/remotes/origin/claude/project-thread-qgkt5z": "483af03452ad7bb7387edbc45c71bb31255afc38",
+    "refs/remotes/origin/claude/project-thread-s0290g": "42a28dda70b1c41a908d66c8a0ebc15dde9a8046",
+    "refs/remotes/origin/claude/project-thread-s6dg4n": "3d7d8e8386df5845d14386a7b3590a17eb2287b1",
+    "refs/remotes/origin/claude/project-thread-uu86x1": "920404d9bbaac509272094ca218c0ea717c06c00",
+    "refs/remotes/origin/claude/project-thread-yrrnjn": "c9b7eddf996406a0f3dc128fdcd585e690bd46cd",
+    "refs/remotes/origin/claude/project-thread-ze191m": "925ec6dec0e9b7c758675a390c6f2f3075232ea5"
+  },
+  "scope": "Fetched local refs. Independent remote ls-remote checked same owner heads in coordinator session; no thread-completion inference.",
+  "canonical_gate_pass": false,
+  "phone_measured": false
+}

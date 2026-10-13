@@ -8,9 +8,11 @@ Proof directory must be new. Tests always use full unittest discovery.
 import argparse
 import hashlib
 import json
+import math
 import os
 from pathlib import Path, PurePosixPath
 import re
+import signal
 import stat
 import subprocess
 import sys
@@ -106,11 +108,28 @@ sys.exit(0 if result.wasSuccessful() and result.testsRun > 0 else 1)
 '''
 
 
+def _stop_test_group(process):
+    """Signal only the new session owned by this audit, then reap its leader."""
+    requested = []
+    for number in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.killpg(process.pid, number)
+            requested.append(signal.Signals(number).name)
+        except ProcessLookupError:
+            pass
+        if number == signal.SIGTERM:
+            # Descendants may ignore TERM even when the leader already exited.
+            time.sleep(0.1)
+    process.wait(timeout=5)
+    return {'signals_sent': requested, 'leader_reaped': True,
+            'leader_returncode': process.returncode}
+
+
 def audit(path, proof_dir, *, timeout=1800):
     """Create closed proof, including failures; never overwrite a previous audit."""
     path, proof_dir = Path(path).resolve(), Path(proof_dir).absolute()
-    if timeout <= 0:
-        raise ValueError('Timeout must be positive')
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError('Timeout must be finite and positive')
     proof_dir.mkdir(parents=True, exist_ok=False)
     report = {'schema': 'V13_PHONE_RELEASE_AUDIT_CANDIDATE_V1', 'zip': str(path),
               'status': 'FAIL', 'phone_measured': False, 'canonical_gate_pass': False,
@@ -143,13 +162,17 @@ def audit(path, proof_dir, *, timeout=1800):
         env['PYTHONDONTWRITEBYTECODE'] = '1'
         summary_path = proof_dir / 'suite-summary.json'
         with (proof_dir / 'suite.log').open('wb') as log:
+            process = subprocess.Popen([sys.executable, '-c', TEST_RUNNER, str(summary_path)],
+                                       cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT,
+                                       start_new_session=True)
             try:
-                completed = subprocess.run([sys.executable, '-c', TEST_RUNNER, str(summary_path)],
-                                           cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT,
-                                           timeout=timeout, check=False)
-                report['suite_returncode'] = completed.returncode
+                report['suite_returncode'] = process.wait(timeout=timeout)
             except subprocess.TimeoutExpired:
                 report['suite_timed_out'] = True
+                report['suite_timeout_cleanup'] = _stop_test_group(process)
+            except BaseException:
+                _stop_test_group(process)
+                raise
         if summary_path.is_file():
             report['suite'] = json.loads(summary_path.read_text())
         report['manifest_unchanged_after_tests'] = unchanged()

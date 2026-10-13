@@ -1071,3 +1071,9 @@ OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/D
 
 ### Lern-Prüfung am Handy messbar (`TESTEN_TOOLFORECAST.sh --with-learning`) — ERLEDIGT 2026-10-13 (Thread „Nächste offene Pakete M“)
 - Fester Plan `code/specs/tool_forecast/learning-plan.json` (= vorregistrierte Runde 2, hash-gebunden), Option `--with-learning` im Handy-Skript. Cloud-Trockenlauf gegen installiertes Home (b10964-Tap-Build, andere Quelle als der vorregistrierte Lauf): Parität PASS, Live 245/245, Lernen **CONFIRMED** mit gleichen Zahlen (Rechnen .54–.74, Notizen .69–.88, In-Welt 1.00), 37 min. Beleg `code/docs/proofs/continuation-20261013/tool-forecast-device-learning-cloud/`. Offen: Redmi-Lauf (Nutzer).
+
+### Independent Codex continuation review — 2026-10-13 (own branch, active K–P preserved)
+- User clarified that Claude K–P may still be active/limit-waiting. Their latest commits do not close ownership; no hot-module edits or branch merges here.
+- Actual 44-file K/L/M/N/O/P/G reconciliation against M: 6 match, 25 absent, 13 differ. This is a scoped content audit, not a merge plan or utility result. M's cumulative roadmap is not the combined runtime.
+- In progress: isolated hash-bound ToolForecast lifecycle candidate, bounded phone driver, and full immutable phone-archive/extracted-suite audit. Proofs/status: `code/docs/CODEX_CONTINUATION_20261013.md` and `code/docs/proofs/continuation-20261013/`. Original failures, cohort parameters and Redmi requirements preserved.
+- Existing runtime remains byte-identical to M's observed source. Review scripts and code copies are inactive; source/model/competence changes need new binding and actual native measurements before promotion. No user clarification needed for these independent software checks.

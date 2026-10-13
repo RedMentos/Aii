@@ -1,0 +1,77 @@
+{
+ "status": "FAIL",
+ "written": "/tmp/tmpyz9rh6dp/data/tool_forecast/encoder-parity-failed.json",
+ "worlds": {
+  "calc_counter": {
+   "pass": false,
+   "ratio_to_best_control": {
+    "add_15": 2.0,
+    "double": 2.0,
+    "quarter": 2.0,
+    "subtract_7": 2.0
+   },
+   "drift_vs_capture": {
+    "bit_identical": false,
+    "cos_min": 0.0016784062621443849,
+    "rel_rms_max": 1.413026266429689
+   }
+  },
+  "note_edit": {
+   "pass": false,
+   "ratio_to_best_control": {
+    "append_done": 2.0,
+    "prefix_urgent": 2.0,
+    "undo": 2.0,
+    "uppercase": 2.0
+   },
+   "drift_vs_capture": {
+    "bit_identical": false,
+    "cos_min": -0.016088292787794473,
+    "rel_rms_max": 1.4255442794222992
+   }
+  }
+ }
+}
+{
+  "evidence": "SYNTHETIC_NO_INFERENCE",
+  "source_sha256": "be56e1e22d5ce0886d4c0db719fe92815838c4fc2074578aca0406f5f90e241d",
+  "installer_sha256": "13770a85b1081478a222ce78286c4dc15538de7dc4736aa68275050f6e5e8ab1",
+  "findings": {
+    "stale_adaptation": {
+      "old_gate_in_domain": true,
+      "v2_gate_in_domain": false,
+      "old_adaptation_accepted_after_gate_change": true,
+      "adaptation_activated_on_unvalidated_region": true,
+      "receipt_bound_keys": [
+        "adapted_sha256",
+        "checkpoint_sha256",
+        "mode",
+        "pass",
+        "tool_sha256"
+      ]
+    },
+    "failed_reinstall": {
+      "installer_exit": 1,
+      "old_encoder_json_byte_unchanged": true,
+      "old_encoder_still_accepted": true,
+      "retention_hash_mismatch": {
+        "calc_counter": true,
+        "note_edit": true
+      }
+    },
+    "pending_checkpoint_change": {
+      "pending_checkpoint": "b2cd4bc7ed8e4fa5152f87a5b39db755c6c4a80e7011446237d077cca255129e",
+      "current_checkpoint": "NEW-CHECKPOINT-IDENTITY",
+      "status_despite_changed_checkpoint_projection": "SCORED",
+      "experience_rows_in_new_checkpoint_world": 1
+    },
+    "corrupt_status": {
+      "status_raises": "JSONDecodeError"
+    },
+    "orphan_pending_files": {
+      "pending_state_rows": 64,
+      "context_files": 66,
+      "orphan_files": 2
+    }
+  }
+}

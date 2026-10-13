@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import stat
 import tempfile
+import time
 import unittest
 import warnings
 import zipfile
@@ -93,6 +94,31 @@ class PhoneReleaseAudit(unittest.TestCase):
         self.assertEqual(report['status'], 'FAIL')
         self.assertTrue(report['suite_timed_out'])
         self.assertTrue((self.root / 'proof/suite.log').is_file())
+
+    def test_timeout_stops_term_resistant_test_descendant(self):
+        marker = self.root / 'leaked-child-marker'
+        child = ('import signal,time,pathlib; signal.signal(signal.SIGTERM,signal.SIG_IGN); '
+                 'time.sleep(0.8); pathlib.Path(' + repr(str(marker)) + ').write_text("leaked")')
+        self.package({'tests/test_spawn.py':
+            'import subprocess,sys,time,unittest\nclass Spawn(unittest.TestCase):\n'
+            ' def test_spawn(self):\n'
+            '  subprocess.Popen([sys.executable,"-c",' + repr(child) + '])\n'
+            '  time.sleep(4)\n'})
+        report = audit.audit(self.zip, self.root / 'proof', timeout=0.2)
+        self.assertTrue(report['suite_timed_out'])
+        self.assertTrue(report['suite_timeout_cleanup']['leader_reaped'])
+        self.assertEqual(report['suite_timeout_cleanup']['signals_sent'], ['SIGTERM', 'SIGKILL'])
+        time.sleep(1)
+        self.assertFalse(marker.exists(), 'Audit timeout left a live test descendant')
+
+    def test_invalid_timeout_rejected_before_creating_proof(self):
+        self.package()
+        for timeout in (0, -1, float('nan'), float('inf'), float('-inf')):
+            with self.subTest(timeout=timeout):
+                proof = self.root / 'invalid-timeout-proof'
+                with self.assertRaisesRegex(ValueError, 'finite and positive'):
+                    audit.audit(self.zip, proof, timeout=timeout)
+                self.assertFalse(proof.exists())
 
     def test_output_is_never_replaced(self):
         self.package()

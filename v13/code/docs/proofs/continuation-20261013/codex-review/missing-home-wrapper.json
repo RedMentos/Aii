@@ -1,0 +1,43 @@
+{
+  "binding": {
+    "scripts/install_tool_forecast.py": "13770a85b1081478a222ce78286c4dc15538de7dc4736aa68275050f6e5e8ab1",
+    "scripts/native_layer_taps.cpp": "c19903f7f0ebcac7fac90809b15f4349ec9afbb71c9873e51d7c10dd14ed34a5",
+    "scripts/test_native_prefill_port.py": "9cd6069ec5a0e0fc89b280a16ed4eb52f5330dcfe28995406ffb08a4c949d356",
+    "scripts/test_tool_forecast_phone.py": "bcfb015e77a355dfb49ed628c0f4004e893c6161d07f01901bcce59dd420197e",
+    "scripts/tool_forecast_bounded_phone_candidate.py": "f1c335515e7aecc7fc06ba898973490d132f24302066f768f6d1a66731b9e61e",
+    "scripts/tool_forecast_learning_check.py": "109681d70fac32988e022f8709aa9edcb6f42dbc13bd0d926bae14eddfb694c1",
+    "scripts/tool_forecast_live_check.py": "88ee22b6353d33251458333bda23f6ea948468a65638a897d5739fd7925ef7d5",
+    "specs/tool-forecast.json": "07e49dfe34bc755fd643ffbbfac8dafd752ff16ac2c3fd3bde42bf16f9e21c85",
+    "specs/tool_forecast/learning-plan.json": "764fc00ed15a8e24bd1336c2e2414df6f282bb80299c72702e8e0805464644a4",
+    "specs/tool_forecast/live-plan.json": "630f1575b6c31315f04b40caca84aef4145b5c56a3e8dd8ebe68192529e76a85",
+    "v13/toolforecast.py": "be56e1e22d5ce0886d4c0db719fe92815838c4fc2074578aca0406f5f90e241d"
+  },
+  "canonical_gate_pass": false,
+  "child_report_path": "/workspace/scratch/f24630d7727d/bounded-missing-home/device-check/report.json",
+  "child_report_sha256": "2f69b842e516b375cd1c5f933bd0beff485e9422218b0737289f104e3b6291f6",
+  "child_status_observed": "ERROR",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/scratch/f24630d7727d/Aii/v13/code/scripts/test_tool_forecast_phone.py",
+    "--installed-home",
+    "/workspace/scratch/f24630d7727d/missing-installed-home",
+    "--out-dir",
+    "/workspace/scratch/f24630d7727d/bounded-missing-home/device-check",
+    "--threads",
+    "4"
+  ],
+  "driver_exit_code": 1,
+  "driver_log_sha256": "a3473285a5d50bedd09ca437c9882f0be8bed74708b95accf109cbe6e5e8e46c",
+  "elapsed_seconds": 0.155,
+  "grace_seconds": 3.0,
+  "leader_reaped": true,
+  "native_quality_claimed": false,
+  "owned_pgid": 5,
+  "owned_pid": 5,
+  "partial_outputs_preserved": true,
+  "phone_measured_by_wrapper": false,
+  "schema": "V13_BOUNDED_TOOL_FORECAST_DEVICE_DRIVER_CANDIDATE_V1",
+  "signals": [],
+  "status": "DRIVER_ERROR",
+  "timeout_seconds": 5.0
+}
