@@ -21,7 +21,17 @@
       "fail": 0
     }
   },
-  "final_extracted_suite": "PENDING_CURRENT_CANDIDATE_SET",
+  "final_extracted_suite": {
+    "status": "SOFTWARE_PASS_WITH_SKIPS",
+    "tests": 1398,
+    "pass": 1393,
+    "skip": 5,
+    "fail": 0,
+    "errors": 0,
+    "zip_sha256": "16d768a59e54467015eaab69e1a102d3bb1fc5ac21a62938e114f6a971aef068",
+    "source_checkpoint": "bdeb4f647f80f8f6c574d9d8a6eddfe6d630f578",
+    "post_test_manifest_and_archive_verified": true
+  },
   "native_model_runs": 0,
   "phone_measured": false,
   "canonical_architecture_complete": false,
