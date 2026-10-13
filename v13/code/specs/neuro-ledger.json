@@ -569,10 +569,12 @@
     ],
     "evidence": [
      "../bench-results/latewatch-20261012/README.md",
-     "../bench-results/latewatch-20261012/report.json"
+     "../bench-results/latewatch-20261012/report.json",
+     "../bench-results/latewatch-numbers-20261012/README.md",
+     "../bench-results/latewatch-numbers-20261012/report.json"
     ],
     "verdict": "SUPPORTED_SYNTHETIC",
-    "note": "Preregistered, 5 seeds × 400 synthetic arithmetic turns, real Watcher.check: net +.064 per turn vs 0 never, -.295 always, -.094 random (5/5 each). Weak spots: BODY_REENTRY cuts right answers, a number cut mid-stream counts as conflict, and thousands commas are parsed as decimals (format stream -.081, worse than never). Shadow stays default."
+    "note": "Preregistered, 5 seeds × 400 synthetic arithmetic turns, real Watcher.check: net +.064 per turn vs 0 never, -.295 always, -.094 random (5/5 each). Weak spots: BODY_REENTRY cuts right answers, a number cut mid-stream counts as conflict, and thousands commas are parsed as decimals (format stream -.081, worse than never). Shadow stays default. Preregistered number-parsing candidate (thousands commas, still-streaming trailing number) PASS (format -.081 -> +.057, standard .064 -> .070) and integrated into latewatch.py; BODY_REENTRY unchanged."
    }
   },
   "MODULE_APLANE": {
