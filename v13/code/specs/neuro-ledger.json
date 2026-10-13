@@ -654,10 +654,12 @@
     ],
     "evidence": [
      "../bench-results/aplane-gate-20261012/README.md",
-     "../bench-results/aplane-gate-20261012/report.json"
+     "../bench-results/aplane-gate-20261012/report.json",
+     "../bench-results/aplane-gate-candidate-20261012/README.md",
+     "../bench-results/aplane-gate-candidate-20261012/report.json"
     ],
     "verdict": "PARTIAL",
-    "note": "Preregistered, 5 seeds × 3000 turns, real student_gate/student_fallback: .702 beats scaffold .606 (5/5) but loses to always-student .882 and to the agreement window without retention .760 (0/5). The gate is too cautious for short student drops; distillation head untested."
+    "note": "Preregistered, 5 seeds × 3000 turns, real student_gate/student_fallback: .702 beats scaffold .606 (5/5) but loses to always-student .882 and to the agreement window without retention .760 (0/5). The gate is too cautious for short student drops; distillation head untested. Preregistered candidate (window 100, retention only on a clear drop) PASS: standard .820 vs .702, stress .721 vs always .699 / never .614; integrated into aplane.py."
    }
   },
   "MODULE_VISION": {

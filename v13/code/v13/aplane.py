@@ -2,8 +2,9 @@
 
 1. A3 student beyond shadow T1. StudentEvaluation packets (student route vs. teacher route) build an agreement window.
    T2 'fallback' lets the student route only when the teacher path (Needle/C2 control) is unavailable and the student
-   is in support. Gate: >= GATE_N comparisons, agreement >= GATE_AGREE, and the newest RECENT comparisons are not worse
-   than the earlier ones by more than RETENTION (retention gate). Promotion is a user command; the gate can refuse it.
+   is in support. Gate: >= GATE_N comparisons, agreement >= GATE_AGREE over the last WINDOW comparisons, and the newest
+   RECENT comparisons agree at least GATE_AGREE - RETENTION (retention gate: fails on a clear drop, not on small noise;
+   preregistered candidate PASS, bench-results/aplane-gate-candidate-20261012). Promotion is a user command; the gate can refuse it.
    It is withdrawn automatically when the gate stops holding.
 2. Text distillation (not LoRA): a small ridge head maps prompt features to teacher-answer features (A3 raw byte
    n-gram stem, no model needed). Held-out split by trace id. Solo success = cosine(prediction, teacher answer) above
@@ -17,7 +18,7 @@ import time
 from .common import dumps,uid
 
 KEY='aplane-state';MODES=('shadow','fallback')
-GATE_N=50;GATE_AGREE=.9;RECENT=25;RETENTION=.05;WINDOW=400
+GATE_N=50;GATE_AGREE=.9;RECENT=25;RETENTION=.15;WINDOW=100
 RIDGE=1.;SOLO_FLOOR=.3;MIN_TRACES=16;CURVE=(1.,.75,.5,.25)
 
 def _mutate(store,fn):
@@ -37,11 +38,11 @@ def student_gate(store):
     n=len(agree);rate=sum(agree)/n if n else None
     recent=agree[-RECENT:];early=agree[:-RECENT]
     r_rate=sum(recent)/len(recent) if recent else None;e_rate=sum(early)/len(early) if early else None
-    retained=e_rate is None or r_rate is None or r_rate>=e_rate-RETENTION
+    retained=r_rate is None or r_rate>=GATE_AGREE-RETENTION
     curve=[round(sum(agree[i:i+RECENT])/len(agree[i:i+RECENT]),4) for i in range(0,n,RECENT)]
     ok=n>=GATE_N and rate is not None and rate>=GATE_AGREE and retained
     return {'n':n,'agreement':round(rate,4) if rate is not None else None,'recent':r_rate,'earlier':e_rate,'retention_pass':bool(retained),
-            'agreement_curve':curve,'pass':bool(ok),'gate':{'min_n':GATE_N,'min_agreement':GATE_AGREE,'retention_max_drop':RETENTION}}
+            'agreement_curve':curve,'pass':bool(ok),'gate':{'min_n':GATE_N,'min_agreement':GATE_AGREE,'window':WINDOW,'recent_min_agreement':round(GATE_AGREE-RETENTION,4)}}
 
 def set_student_mode(store,mode):
     if mode not in MODES:raise ValueError(':aplane student shadow|fallback')

@@ -71,3 +71,4 @@ Branch `claude/project-thread-n3gv74`, Basis Thread G `bbd710e`. Linux-Cloud, ke
 - F7 gemessene Plastizität: SUPPORTED_SYNTHETIC, kleine Abstände (.776 vs voll .810 / halb .825 / zufällig .800). UNTESTED_LABEL jetzt 5 (F4, WORLD_MODEL, APLANE, VISION, BODY_JEPA).
 - A-Plane A3-Schüler-Gate: PARTIAL (schlägt Gerüst .702 vs .606, verliert gegen immer Schüler .882 und Fenster ohne Retention .760); Gate zu vorsichtig. UNTESTED_LABEL jetzt 4.
 - World-Model kontrafaktische Konfidenz: PARTIAL (ordnet Fehler .354 vs Zufall −.03, Labels trennen 5/5, aber nicht besser als Stichprobenzahl/Streuung allein). UNTESTED_LABEL jetzt 3 (F4, VISION, BODY_JEPA).
+- A-Plane-Gate-Kandidat (Fenster 100, Retention nur bei klarem Einbruch): PASS, live in `v13/aplane.py` übernommen (Standard .70 → .82, Stress schlägt immer Schüler).
