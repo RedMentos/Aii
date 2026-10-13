@@ -66,3 +66,4 @@ Branch `claude/project-thread-n3gv74`, Basis Thread G `bbd710e`. Linux-Cloud, ke
 - Latewatch-Schnittregel (WP-U3 F2): SUPPORTED_SYNTHETIC (+.064 je Runde, 5/5 gegen nie/immer/zufällig), aber drei Schwächen: `BODY_REENTRY` ohne Antwortprüfung, halb gestreamte Zahl, Tausender-Komma als Dezimalpunkt. UNTESTED_LABEL jetzt 9.
 - Latewatch-Zahlen-Kandidat (Tausender-Komma, wachsende Zahl am Ende): PASS, live in `v13/latewatch.py` übernommen (Format −.081 → +.057).
 - Reflex-Sicherung (Runner-Fehler, WP-F §5.3): SUPPORTED_SYNTHETIC bei Ausfällen (.058 vs .090 ohne Sicherung), bei unabhängigen Fehlern kein Nutzen. UNTESTED_LABEL jetzt 8.
+- Episodic Route („zweites Mal besser“, WP-U10): SUPPORTED_SYNTHETIC (.963 vs Gerüst .600; ohne Entitäts-Schutz .889). UNTESTED_LABEL jetzt 7.

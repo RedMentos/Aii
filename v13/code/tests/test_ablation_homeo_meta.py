@@ -60,3 +60,14 @@ class ReflexBreaker(unittest.TestCase):
         r=RB.run_arm(cs,'breaker',13)
         self.assertEqual(r['failed_calls'],3);self.assertEqual(r['skipped'],2)  # open for COOLDOWN_S after the third failure
         self.assertEqual(RB.run_arm(cs,'never',13)['failed_calls'],5)
+
+import ablation_episodic_route as EPR
+class EpisodicRouteAblation(unittest.TestCase):
+    def test_one_correction_fixes_the_paraphrase_not_the_other_entity(self):
+        q=lambda text,task,truth,u=0.:{'text':text,'task':task,'truth':truth,'u':u}
+        reqs=[q('Erkläre Projekt Aurora genau.','detail','gist'),q('Erkläre Projekt Borealis genau.','detail','detail',1.),q('Erkläre mir Projekt Aurora ganz genau.','detail','gist',1.)]
+        old=EPR.N;EPR.N=2
+        try:
+            self.assertEqual(EPR.run_arm(reqs,'episodic')['primary'],1.)  # Borealis untouched, Aurora paraphrase corrected
+            self.assertEqual(EPR.run_arm(reqs,'no_entity_guard')['primary'],.5)  # the correction leaks to Borealis
+        finally:EPR.N=old

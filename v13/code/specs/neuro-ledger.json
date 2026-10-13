@@ -228,7 +228,20 @@
   "MODULE_EPISODIC_ROUTE": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
    "neuro_claim_limit": "Second-attempt-better for routes from human corrections; shadow by default.",
-   "ablation_baseline": null
+   "ablation_baseline": {
+    "hypothesis": "§99-style: one human route correction improves the route of the next very similar request without leaking to other entities",
+    "controls": [
+     "scaffold_default_route",
+     "no_entity_guard_jaccard",
+     "latest_correction_any_request"
+    ],
+    "evidence": [
+     "../bench-results/episodic-route-20261012/README.md",
+     "../bench-results/episodic-route-20261012/report.json"
+    ],
+    "verdict": "SUPPORTED_SYNTHETIC",
+    "note": "Preregistered, 5 seeds × 300 templated German requests, real for_turn + Memory.feedback: accuracy .963 vs scaffold .600, no entity guard .889, newest-any .239 (5/5 each). Shadow stays default."
+   }
   },
   "MODULE_EPISODES": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
