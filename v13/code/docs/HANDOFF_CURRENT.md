@@ -64,3 +64,7 @@ C3 LFM2.5-350M erkennt eigene Rechenfehler gut über die kleinste Logprob eines 
 ## Ergänzung 2026-10-13 Thread K: R4 Teil 4, Nachrechnen mit `calc`
 
 Vorregistriert: bei Ziffern-Unsicherheit schreibt C3 einen Ausdruck, `calc` rechnet, C3 antwortet erneut. Frisch 45/60 vs. C3 allein 42 (nicht signifikant, NOT_SUPPORTED). Summen-Ausdrücke gelingen 15/15, Differenzen (max − min) 1/15. Nächster Schritt: typisierte Werte + festes Rezept wie WP-W2. Befund `docs/proofs/continuation-20261012/r4-calc-recheck/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 5, typisierte Werte + Rezept — CALC_SUPPORTED
+
+Vorregistriert, frischer Seed 17: C3 liest nur Zahlen, feste Regel wählt Summe/Differenz, Rezept rechnet → 50–51/60 statt 40 (netto +10, p 0,006). Nächster Schritt: als SHADOW-Werkzeug in `toolstep.py` anschließen und mit anders formulierten/deutschen Fragen messen. Befund `docs/proofs/continuation-20261012/r4-typed-recipe/BEFUND.md`.
