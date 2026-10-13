@@ -1,0 +1,19 @@
+{
+ "schema": "v13-toolforecast-binding-fixes-v1",
+ "evidence": "SYNTHETIC_SOFTWARE_NO_INFERENCE",
+ "review": {
+  "branch": "codex/continuation-review-20261013",
+  "commit": "bdeb4f6",
+  "reproduce_py_sha256": "9aaee605680c72d41f27fb09a930b234078b29fd4c97e5db5aa9cc2618598762"
+ },
+ "before_commit": "52880fa",
+ "reproduced_before": 5,
+ "reproduced_after": 0,
+ "sources_after": {
+  "v13/toolforecast.py": "b3ff2494cd0a54005942d36839ca4ff8d6a9e41b73c003605dcd0c45514fad64",
+  "scripts/install_tool_forecast.py": "7e2881b22f57508a7c2595433df0ab43fdd3670c39d65244ab2830485c2a451e",
+  "tests/test_toolforecast.py": "7ab163654402bafd04493841160215713132a302bd05d2566ce7d3f901f9cfd5"
+ },
+ "note": "Defect 1 recheck stops at the changed load_adapted(home, ck, enc) signature; the binding itself is covered by tests/test_toolforecast.py::test_adaptation_bound_to_competence_encoder_and_retention.",
+ "claim_limit": "Lifecycle/binding robustness only; no forecast quality, no Redmi, no learned utility."
+}

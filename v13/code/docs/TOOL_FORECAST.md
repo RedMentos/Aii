@@ -87,6 +87,14 @@ mit festem Plan `specs/tool_forecast/live-plan.json` (= vorregistrierter Plan). 
 ## Kompetenz-Signal v2 (2026-10-13, `docs/proofs/continuation-20261013/tool-forecast-competence-v2/`)
 - Zusätzlich zum letzten Token ein zweiter kNN-Test auf dem Token-Mittel-Tap desselben Prefills (`score` = größeres Abstand/Schwelle-Verhältnis). Vorregistriert, frisch: **CONFIRMED** (Rechnen AUROC .98, Fehlalarm 3 %, Treffer 90 %; Notizen 1.0 / 0 % / 100 %). `learn region` nutzt v2; die Retentions-Taps enthalten dafür jetzt auch das Token-Mittel (Neuinstallation).
 
+## Bindung des Weiterlernens und Installations-Lebenszyklus (2026-10-13, nach Codex-Review `bdeb4f6`)
+Eine bestandene Adaption lädt nur, wenn Checkpoint, Encoder (Modell, Layer, Pooling, Tap-Tool), Retentions-Taps,
+Kompetenz- bzw. Replay-Referenz und Lernregel exakt dem Lern-Beleg entsprechen; ein neues Kompetenz-Signal verlangt neues
+`learn`. Erfahrung aus anderem Checkpoint/Encoder wird beiseitegelegt statt gemischt. `install` schreibt Retention als
+neue Generation und schaltet `encoder.json` atomar erst nach bestandener Parität; ein Fehlschlag lässt die alte
+Installation unverändert. Kaputte `encoder.json` → Status `ENCODER_CONFIG_INVALID`. Details
+`docs/proofs/continuation-20261013/toolforecast-binding-fixes/`.
+
 ## Befund nebenbei (nicht behoben, Besitz Thread G / `agi/tools.py`)
 
 Ein per `:tx approve` freigegebener Aufruf trägt die `event_id` des ursprünglichen Turns; `_execute` legt sein Ergebnis

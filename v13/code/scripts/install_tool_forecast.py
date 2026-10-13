@@ -232,6 +232,39 @@ def install(args):
     parity = {'gate': GATE, 'worlds': {}}
     retention = {}
     ok = True
+    out = Path(args.home) / 'data' / 'tool_forecast'
+    out.mkdir(parents=True, exist_ok=True)
+    # Retention taps go to new generation-named files; the live encoder.json and the files it names stay untouched until
+    # every world passed, then encoder.json is switched atomically and only then are unreferenced generations removed.
+    gen = tf.uid('ret')
+    written = []
+    try:
+        ok = _parity_worlds(args, manifest, taps, out, gen, written, parity, retention)
+    except BaseException:
+        for f in written:
+            f.unlink(missing_ok=True)
+        raise
+    parity['status'] = 'PASS' if ok else 'FAIL'
+    enc['parity'] = parity
+    enc['retention'] = retention   # retention reference for `:toolforecast learn`
+    if not ok:
+        for f in written:          # a failed install never replaces nor leaves retention files
+            f.unlink(missing_ok=True)
+        enc['retention'] = {w: v | {'written': False} for w, v in retention.items()}
+    target = out / ('encoder.json' if ok else 'encoder-parity-failed.json')
+    tf.atomic_write(target, json.dumps(enc, indent=1, sort_keys=True) + '\n')
+    if ok:
+        keep = {Path(v['path']).name for v in retention.values()}
+        for f in out.glob('retention-*.npz'):
+            if f.name not in keep:
+                f.unlink(missing_ok=True)
+    print(json.dumps({'status': parity['status'], 'written': str(target),
+                      'worlds': {w: {k: v[k] for k in ('pass', 'ratio_to_best_control', 'drift_vs_capture')} for w, v in parity['worlds'].items()}}, indent=1))
+    return 0 if ok else 1
+
+
+def _parity_worlds(args, manifest, taps, out, gen, written, parity, retention):
+    ok = True
     for world, entry in manifest['worlds'].items():
         for k in ('parity', 'drift_sample'):
             if tf.sha_file(APP / entry[k]) != entry[k + '_sha256']:
@@ -245,7 +278,8 @@ def install(args):
         a, b = tf.rms_normalize(stored), tf.rms_normalize(got[len(texts):])
         cos = (a * b).sum(1) / np.linalg.norm(a, axis=1) / np.linalg.norm(b, axis=1)
         per = scores(tf.Checkpoint(world, entry), rows, tap_of.__getitem__)
-        ret = Path(args.home) / 'data' / 'tool_forecast' / ('retention-%s.npz' % world)
+        ret = out / ('retention-%s-%s.npz' % (world, gen))
+        written.append(ret)
         tf.save_npz(ret, texts=np.asarray(texts), taps=np.stack([tap_of[t] for t in texts]).astype(np.float32),
                     taps_mean=tf.rms_normalize(got_mean[:len(texts)]).astype(np.float32))
         retention[world] = {'path': str(ret.resolve()), 'sha256': tf.sha_file(ret), 'texts': len(texts),
@@ -256,16 +290,7 @@ def install(args):
                                    'ratio_to_best_control': {k: round(v['forecast'] / min(v['copy'], v['mean_delta']), 4) for k, v in per.items()},
                                    'drift_vs_capture': {'bit_identical': bool(np.array_equal(stored, got[len(texts):])),
                                                         'cos_min': float(cos.min()), 'rel_rms_max': float(np.sqrt(((a - b) ** 2).mean(1)).max())}}
-    parity['status'] = 'PASS' if ok else 'FAIL'
-    enc['parity'] = parity
-    enc['retention'] = retention   # retention reference for `:toolforecast learn`
-    out = Path(args.home) / 'data' / 'tool_forecast'
-    out.mkdir(parents=True, exist_ok=True)
-    target = out / ('encoder.json' if ok else 'encoder-parity-failed.json')
-    target.write_text(json.dumps(enc, indent=1, sort_keys=True) + '\n')
-    print(json.dumps({'status': parity['status'], 'written': str(target),
-                      'worlds': {w: {k: v[k] for k in ('pass', 'ratio_to_best_control', 'drift_vs_capture')} for w, v in parity['worlds'].items()}}, indent=1))
-    return 0 if ok else 1
+    return ok
 
 
 def main():

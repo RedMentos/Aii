@@ -1,6 +1,8 @@
 """Thread M: SHADOW tool-consequence forecast in the live tool path (IH-H29 `predicted`). Fake taps unless a native encoder
 is given through V13_TAP_TOOL + V13_TAP_MODEL (then the parity-checked install and one live round trip run for real)."""
+import contextlib
 import hashlib
+import io
 import json
 import os
 import shutil
@@ -161,10 +163,11 @@ class CheckpointTests(unittest.TestCase):
             return x + (target - x @ ck.p) @ lift.T
         w_new = ck.weight + shift
         exp = F.Experience(home)
+        enc = {'tool_sha256': 'T', 'model_sha256': 'M', 'layer': 11, 'pooling': 'last'}
         for j in range(len(ck.actions)):
             for i in range(24):
                 x = F.rms_normalize(rng.normal(size=ck.width))
-                exp.add('calc_counter', x, outcome(x, j, w_new), j, 'f%d_%d' % (j, i))
+                exp.add('calc_counter', x, outcome(x, j, w_new), j, 'f%d_%d' % (j, i), binding=F.experience_binding(ck, enc))
         rows = json.loads((APP / ck.entry['parity']).read_text())['rows']
         law = w_new if law_for_retention == 'shifted' else ck.weight
         taps = {}
@@ -174,14 +177,14 @@ class CheckpointTests(unittest.TestCase):
             taps[r['outcome']] = outcome(taps[r['input']], ck.actions.index(r['action']), law)
         ret = Path(home) / 'ret.npz'
         F.save_npz(ret, texts=np.asarray(list(taps)), taps=np.stack(list(taps.values())).astype(np.float32))
-        return ck, {'tool_sha256': 'T', 'retention': {'calc_counter': {'path': str(ret), 'sha256': F.sha_file(ret)}}}
+        return ck, enc | {'retention': {'calc_counter': {'path': str(ret), 'sha256': F.sha_file(ret)}}}
 
     def test_learn_adapts_only_with_holdout_gain_and_retention(self):
         with tempfile.TemporaryDirectory() as d:
             ck0 = F.Checkpoint('calc_counter', json.loads(F.MANIFEST.read_text())['worlds']['calc_counter'])
             shift = np.random.default_rng(9).normal(scale=.02, size=ck0.weight.shape)
             ck, enc = self.synthetic_world(d, shift, 'shifted')
-            self.assertEqual(F.learn(d, ck, {'tool_sha256': 'T'})['reason'], 'NO_RETENTION_REFERENCE')
+            self.assertEqual(F.learn(d, ck, {k: v for k, v in enc.items() if k != 'retention'})['reason'], 'NO_RETENTION_REFERENCE')
             region = F.learn(d, ck, enc)
             self.assertEqual((region['mode'], region['replay_pairs'], region['experience_out_of_domain']), ('region', 0, 96))
             self.assertTrue(region['pass'])
@@ -189,14 +192,14 @@ class CheckpointTests(unittest.TestCase):
             self.assertEqual(rep['replay_pairs'], 800)          # the candidate's own training pairs are replayed
             self.assertTrue(rep['pass'])
             self.assertEqual(rep['adapted_actions'], ck.actions)
-            got = F.load_adapted(d, ck)
+            got = F.load_adapted(d, ck, enc)
             self.assertEqual(got['mode'], 'mixed')
             w = got['weight']
             self.assertLess(np.abs(w - (ck.weight + shift)).mean(), np.abs(shift).mean())   # moved toward the new law
             npz, js = F.adapted_paths(d, ck.world)
             with open(npz, 'ab') as f:
                 f.write(b'\0')
-            self.assertIsNone(F.load_adapted(d, ck))                                        # bytes bound by the report
+            self.assertIsNone(F.load_adapted(d, ck, enc))                                   # bytes bound by the report
         with tempfile.TemporaryDirectory() as d:
             ck, enc = self.synthetic_world(d, shift, 'measured')   # old world still holds on the retention set
             rep = F.learn(d, ck, enc, 'mixed')
@@ -207,10 +210,51 @@ class CheckpointTests(unittest.TestCase):
             ck, enc = self.synthetic_world(d, shift, 'shifted')
             exp = F.Experience(d)
             for i, x in enumerate(ck.reference['taps'][:40]):
-                exp.add('calc_counter', x, x, 0, 'in%d' % i)
+                exp.add('calc_counter', x, x, 0, 'in%d' % i, binding=F.experience_binding(ck, enc))
             rep = F.learn(d, ck, enc)
             self.assertLessEqual(rep['experience_out_of_domain'], 96 + 4)    # edge training contexts may sit past the threshold
             self.assertLessEqual(rep['actions']['add_15']['rows'], 24 + 4)
+
+    def test_adaptation_bound_to_competence_encoder_and_retention(self):
+        """Codex review bdeb4f6, defect 1: a passing receipt is reused only against what it was validated on."""
+        with tempfile.TemporaryDirectory() as d:
+            ck0 = F.Checkpoint('calc_counter', json.loads(F.MANIFEST.read_text())['worlds']['calc_counter'])
+            ck, enc = self.synthetic_world(d, np.random.default_rng(9).normal(scale=.02, size=ck0.weight.shape), 'shifted')
+            rep = F.learn(d, ck, enc)
+            self.assertTrue(rep['pass'])
+            self.assertEqual(rep['binding'], F.adaptation_binding(ck, enc, 'region'))
+            self.assertIsNotNone(F.load_adapted(d, ck, enc))
+            self.assertIsNone(F.load_adapted(d, ck, enc | {'tool_sha256': 'T2'}))           # rebuilt tap tool
+            self.assertIsNone(F.load_adapted(d, ck, enc | {'model_sha256': 'M2'}))
+            ret = dict(enc['retention']['calc_counter'], sha256='0' * 64)
+            self.assertIsNone(F.load_adapted(d, ck, enc | {'retention': {'calc_counter': ret}}))   # other retention taps
+            ck.entry = dict(ck.entry, competence_sha256='1' * 64)                            # e.g. the v2 reference
+            self.assertIsNone(F.load_adapted(d, ck, enc))
+            ck.entry = ck0.entry
+            npz, js = F.adapted_paths(d, ck.world)
+            legacy = json.loads(js.read_text())
+            del legacy['binding']                                                            # receipt from before bindings
+            js.write_text(json.dumps(legacy))
+            self.assertIsNone(F.load_adapted(d, ck, enc))
+            js.write_text('{"pass": tr')
+            self.assertIsNone(F.load_adapted(d, ck, enc))
+
+    def test_experience_never_mixes_encoders(self):
+        with tempfile.TemporaryDirectory() as d:
+            ck = F.Checkpoint('calc_counter', json.loads(F.MANIFEST.read_text())['worlds']['calc_counter'])
+            a = F.experience_binding(ck, {'tool_sha256': 'A', 'model_sha256': 'M', 'layer': 11, 'pooling': 'last'})
+            b = dict(a, tool_sha256='B')
+            exp, x = F.Experience(d), np.ones(ck.width)
+            exp.add('calc_counter', x, x, 0, 'f1')                      # legacy, unbound
+            exp.add('calc_counter', x, x, 0, 'f2', binding=a)
+            exp.add('calc_counter', x, x, 0, 'f3', binding=a)
+            got = exp.load('calc_counter')
+            self.assertEqual((got['binding'], got['id'].tolist()), (a, ['f2', 'f3']))
+            exp.add('calc_counter', x, x, 0, 'f4', binding=b)
+            self.assertEqual(exp.load('calc_counter')['id'].tolist(), ['f4'])
+            self.assertEqual(len(list(exp.dir.glob('calc_counter-unbound-*.npz'))), 2)   # set aside, not deleted
+            rep = F.learn(d, ck, {'tool_sha256': 'A', 'model_sha256': 'M', 'layer': 11, 'pooling': 'last'})
+            self.assertEqual(rep['reason'], 'EXPERIENCE_BINDING_MISMATCH')
 
     def test_learning_check_verdict(self):
         sys.path.insert(0, str(APP / 'scripts'))
@@ -236,6 +280,10 @@ class CheckpointTests(unittest.TestCase):
             p.mkdir(parents=True)
             (p / 'encoder.json').write_text(json.dumps({'schema': F.SCHEMA + '-encoder', 'parity': {'status': 'FAIL'}}))
             self.assertEqual(F.load_encoder(d), (None, 'ENCODER_PARITY_NOT_PASSED'))
+            # Codex review bdeb4f6, defect 4: a partial or incomplete pointer is reported, never raised
+            for bad in ('{"schema": "v13-tool', '[]', json.dumps({'schema': F.SCHEMA + '-encoder', 'parity': {'status': 'PASS'}})):
+                (p / 'encoder.json').write_text(bad)
+                self.assertEqual(F.load_encoder(d), (None, 'ENCODER_CONFIG_INVALID'), bad)
 
 
 class LivePathTests(unittest.TestCase):
@@ -296,6 +344,45 @@ class LivePathTests(unittest.TestCase):
         settle_turn(self.r, e['event_id'], 'FINAL')
         self.assertEqual(self.r.tool_forecast.report()['stats']['calc_counter:double']['n'], 1)  # idempotent
 
+    def test_damaged_encoder_config_status_and_no_forecast(self):
+        tf = F.ToolForecast(self.r.store, self.r.home)
+        tf.set_mode('SHADOW')
+        p = self.r.home / 'data' / 'tool_forecast'
+        p.mkdir(parents=True, exist_ok=True)
+        (p / 'encoder.json').write_text('{"schema": "v13-tool-forecast-v1-encoder", "par')
+        self.assertEqual(tf.report()['encoder'], 'ENCODER_CONFIG_INVALID')
+        self.assertIsNone(tf.predict('calc', {'expression': '37*2'}))
+        self.assertEqual(tf.report()['counts'].get('ENCODER_CONFIG_INVALID'), 1)
+
+    def test_checkpoint_changed_since_forecast_is_not_scored(self):
+        """Codex review bdeb4f6, defect 3: a pending forecast is scored only by the checkpoint that made it."""
+        tf = self.r.tool_forecast
+        tf.set_mode('SHADOW')
+        e, res = self.run_calc('What is 37 times 2?')
+        fid = self.g.tools.box.load()[0]['calls'][-1]['predicted']['forecast_id']
+        tf.box.mutate(lambda st: st['pending'][fid].update(checkpoint_sha256='0' * 64))
+        settle_turn(self.r, e['event_id'], 'FINAL')
+        rep = tf.report()
+        self.assertEqual((rep['pending'], rep['recent'][-1]['status']), (0, 'CHECKPOINT_CHANGED_SINCE_FORECAST'))
+        self.assertEqual(rep['experience_rows'], {})
+        self.assertEqual(rep['stats'], {})
+
+    def test_pending_capacity_removes_evicted_context_taps(self):
+        """Codex review bdeb4f6, defect 5: the cap holds for the context files too; other files survive."""
+        tf = self.r.tool_forecast
+        tf.set_mode('SHADOW')
+        tf.pending_dir.mkdir(parents=True, exist_ok=True)
+        (tf.pending_dir / 'unrelated.txt').write_text('keep')
+        old, F.PENDING_MAX = F.PENDING_MAX, 3
+        try:
+            ids = [tf.predict('calc', {'expression': '%d*2' % n})['forecast_id'] for n in range(10, 15)]
+        finally:
+            F.PENDING_MAX = old
+        pending = tf.box.load()[0]['pending']
+        self.assertEqual(sorted(pending), sorted(ids[-3:]))
+        self.assertEqual(sorted(f.name for f in tf.pending_dir.iterdir()), sorted([i + '.npy' for i in ids[-3:]] + ['unrelated.txt']))
+        self.assertEqual(tf.report()['counts']['EXPIRED_CAPACITY'], 2)
+
     def test_unmapped_calc_records_reason_without_tap(self):
         self.r.tool_forecast.set_mode('SHADOW')
         self.run_calc('What is 48 times 37?')
@@ -337,6 +424,76 @@ class LivePathTests(unittest.TestCase):
         self.assertEqual(json.loads(operator_command(self.r, ['off']))['mode'], 'OFF')
         with self.assertRaises(ValueError):
             operator_command(self.r, ['active'])
+
+
+class InstallLifecycleTests(unittest.TestCase):
+    """Codex review bdeb4f6, defect 2: a failed or interrupted reinstall keeps the passing encoder and its retention."""
+    def setUp(self):
+        sys.path.insert(0, str(APP / 'scripts'))
+        import install_tool_forecast as I
+        self.I = I
+        self.tmp = tempfile.TemporaryDirectory()
+        self.d = Path(self.tmp.name)
+        (self.d / 'tool').write_bytes(b'tap tool')
+        (self.d / 'model.gguf').write_bytes(b'gguf')
+        manifest = json.loads(F.MANIFEST.read_text())
+        manifest['encoder']['model_sha256'] = F.sha_file(self.d / 'model.gguf')
+        (self.d / 'manifest.json').write_text(json.dumps(manifest))
+        self.saved = F.MANIFEST, F.NativeLayerTaps, I.gate
+        F.MANIFEST = self.d / 'manifest.json'
+        self.fail_after = None
+        test = self
+
+        class Taps:
+            calls = 0
+
+            def __init__(self, enc, threads=4, timeout_s=0):
+                pass
+
+            def tap_both(self, texts):
+                Taps.calls += 1
+                if test.fail_after is not None and Taps.calls > test.fail_after:
+                    raise RuntimeError('native tap tool exit 9')
+                v = FakeTaps().tap(texts)
+                return v, v[:, ::-1].copy()
+        F.NativeLayerTaps = Taps
+        self.Taps = Taps
+
+    def tearDown(self):
+        F.MANIFEST, F.NativeLayerTaps, self.I.gate = self.saved
+        self.tmp.cleanup()
+
+    def install(self, passing):
+        self.I.gate = lambda per: passing
+        self.Taps.calls = 0
+        args = type('A', (), {'home': str(self.d / 'home'), 'tool': str(self.d / 'tool'), 'model': str(self.d / 'model.gguf'),
+                              'threads': 1, 'backend_dir': None})()
+        with contextlib.redirect_stdout(io.StringIO()):
+            return self.I.install(args)
+
+    def live(self):
+        out = self.d / 'home' / 'data' / 'tool_forecast'
+        enc = json.loads((out / 'encoder.json').read_text())
+        for v in enc['retention'].values():
+            self.assertEqual(F.sha_file(v['path']), v['sha256'])
+        self.assertEqual(sorted(f.name for f in out.glob('retention-*.npz')), sorted(Path(v['path']).name for v in enc['retention'].values()))
+        return (out / 'encoder.json').read_bytes()
+
+    def test_failed_or_interrupted_reinstall_keeps_previous_generation(self):
+        self.assertEqual(self.install(True), 0)
+        first = self.live()
+        self.assertEqual(self.install(False), 1)          # parity fails: nothing live changes, no files left behind
+        self.assertEqual(self.live(), first)
+        failed = json.loads((self.d / 'home/data/tool_forecast/encoder-parity-failed.json').read_text())
+        self.assertEqual({v['written'] for v in failed['retention'].values()}, {False})
+        self.fail_after = 1                               # the second world's tap run dies mid-install
+        with self.assertRaises(RuntimeError):
+            self.install(True)
+        self.assertEqual(self.live(), first)
+        self.fail_after = None
+        self.assertEqual(self.install(True), 0)           # a passing reinstall switches generation and drops the old one
+        self.assertNotEqual(self.live(), first)
+        self.assertEqual(F.load_encoder(self.d / 'home', verify=False)[1], None)
 
 
 class DeviceScriptTests(unittest.TestCase):

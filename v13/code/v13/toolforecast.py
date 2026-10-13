@@ -54,6 +54,8 @@ LEARN_SCALES = (.01, .1, 1., 10., 100.)   # x mean diag(F F^T); chosen on the ne
 LEARN_WEIGHTS = (1., 3., 10.)             # experience row weight next to the replayed training pairs
 LEARN_MODES = ('region', 'mixed')         # region: new weight only for out-of-domain contexts; mixed: one weight, replay
 RETENTION_MAX = 1.02   # adapted MSE on the install retention taps <= 1.02 x measured weight
+LEARN_RULE = 'anchored-ridge-holdout-retention-v2'   # bump when `learn` changes: older adaptations then stop loading
+ENCODER_KEYS = ('tool_path', 'tool_sha256', 'model_path', 'model_sha256', 'layer', 'pooling')
 
 # Worlds exactly as the rounds that confirmed them wrote state and outcome texts (round 5 v2 / round 8 templates).
 CALC_ACTIONS = {'double': (r'([1-9]\d{0,5})\*2', 'After doubling, the counter shows {n}.'),
@@ -264,9 +266,18 @@ def load_encoder(home, verify=True):
     p = Path(home) / 'data' / 'tool_forecast' / 'encoder.json'
     if not p.exists():
         return None, 'NO_ENCODER_INSTALLED'
-    enc = json.loads(p.read_text())
-    if enc.get('schema') != SCHEMA + '-encoder' or enc.get('parity', {}).get('status') != 'PASS':
+    try:
+        enc = json.loads(p.read_text())
+    except (OSError, UnicodeDecodeError):
+        return None, 'ENCODER_CONFIG_UNREADABLE'
+    except ValueError:            # truncated / partial JSON
+        return None, 'ENCODER_CONFIG_INVALID'
+    if not isinstance(enc, dict) or not isinstance(enc.get('parity'), dict):
+        return None, 'ENCODER_CONFIG_INVALID'
+    if enc.get('schema') != SCHEMA + '-encoder' or enc['parity'].get('status') != 'PASS':
         return None, 'ENCODER_PARITY_NOT_PASSED'
+    if any(not isinstance(enc.get(k), (str, int)) or isinstance(enc.get(k), bool) for k in ENCODER_KEYS):
+        return None, 'ENCODER_CONFIG_INVALID'
     if verify:
         for k in ('tool', 'model'):
             path = Path(enc[k + '_path'])
@@ -297,8 +308,27 @@ def anchored_ridge(F, R, w0, lam):
     return w0 + F.T @ np.linalg.solve(K + lam * np.eye(len(F)), R - F @ w0)
 
 
+def experience_binding(ck, enc):
+    """What an experience row's taps depend on: the checkpoint (actions, projection) and the exact encoder."""
+    return {'checkpoint_sha256': ck.entry['checkpoint_sha256'], 'model_sha256': enc.get('model_sha256'),
+            'layer': enc.get('layer'), 'pooling': enc.get('pooling'), 'tool_sha256': enc.get('tool_sha256')}
+
+
+def adaptation_binding(ck, enc, mode):
+    """What a passing adaptation was validated against; any change (e.g. a new competence reference, which moves the
+    region the region weight is used in) needs a new `learn`, never silent reuse of the old receipt."""
+    ret = (enc.get('retention') or {}).get(ck.world) or {}
+    return experience_binding(ck, enc) | {
+        'mode': mode, 'learn_rule': LEARN_RULE, 'retention_sha256': ret.get('sha256'),
+        'competence_sha256': ck.entry.get('competence_sha256') if mode == 'region' else None,
+        'replay_sha256': ck.entry.get('replay_sha256') if mode == 'mixed' else None}
+
+
 class Experience:
-    """Scored live observations per world: context tap x, outcome tap y (rms-normalized), action index, forecast id."""
+    """Scored live observations per world: context tap x, outcome tap y (rms-normalized), action index, forecast id.
+
+    The buffer carries the `experience_binding` its taps were made under. A row from another checkpoint/encoder never
+    joins it: the old buffer is set aside (renamed, not deleted) and a new one starts."""
     def __init__(self, home):
         self.dir = Path(home) / 'data' / 'tool_forecast' / 'experience'
 
@@ -310,19 +340,24 @@ class Experience:
         if not p.exists():
             return None
         with np.load(p, allow_pickle=False) as z:
-            return {k: z[k] for k in z.files}
+            out = {k: z[k] for k in z.files}
+        out['binding'] = json.loads(str(out['binding'])) if 'binding' in out else None   # None: written before bindings
+        return out
 
-    def add(self, world, x, y, action_index, fid, x_mean=None):
+    def add(self, world, x, y, action_index, fid, x_mean=None, binding=None):
         old = self.load(world)
         new = {'x': np.asarray([x], np.float32), 'y': np.asarray([y], np.float32), 'action': np.asarray([action_index], np.int64),
                'id': np.asarray([fid]), 'xm': np.asarray([x_mean if x_mean is not None else np.full(len(x), np.nan)], np.float32)}
+        if old is not None and old['binding'] != binding:
+            self.path(world).rename(self.dir / ('%s-unbound-%s.npz' % (world, uid('exp'))))
+            old = None
         if old is not None:
             if fid in set(old['id'].tolist()):
                 return
             if 'xm' not in old:
                 old['xm'] = np.full_like(old['x'], np.nan)
             new = {k: np.concatenate([old[k], new[k]])[-EXPERIENCE_MAX:] for k in new}
-        save_npz(self.path(world), **new)
+        save_npz(self.path(world), **new, binding=np.asarray(json.dumps(binding, sort_keys=True)))
 
 
 def adapted_paths(home, world):
@@ -330,13 +365,20 @@ def adapted_paths(home, world):
     return d / ('adapted-%s.npz' % world), d / ('adapted-%s.json' % world)
 
 
-def load_adapted(home, ck):
-    """Adapted residual weight for a checkpoint, only if its learn report passed and binds these exact bytes."""
+def load_adapted(home, ck, enc):
+    """Adapted residual weight, only if its learn report passed, binds these exact bytes and was validated against the
+    current checkpoint, competence/replay reference, encoder and retention taps (`adaptation_binding`). Reports from
+    before bindings existed never load."""
     npz, js = adapted_paths(home, ck.world)
     if not (npz.exists() and js.exists()):
         return None
-    rep = json.loads(js.read_text())
-    if not rep.get('pass') or rep.get('adapted_sha256') != sha_file(npz) or rep.get('checkpoint_sha256') != ck.entry['checkpoint_sha256']:
+    try:
+        rep = json.loads(js.read_text())
+    except ValueError:
+        return None
+    if (not isinstance(rep, dict) or not rep.get('pass') or rep.get('adapted_sha256') != sha_file(npz)
+            or rep.get('checkpoint_sha256') != ck.entry['checkpoint_sha256'] or rep.get('mode') not in LEARN_MODES
+            or rep.get('binding') != adaptation_binding(ck, enc, rep['mode'])):
         return None
     with np.load(npz, allow_pickle=False) as z:
         w = np.asarray(z['weight'], dtype=np.float64)
@@ -363,9 +405,13 @@ def learn(home, ck, enc, mode='region'):
     if mode not in LEARN_MODES:
         raise ValueError('learn mode ' + '|'.join(LEARN_MODES))
     report = {'schema': SCHEMA + '-learn', 'world': ck.world, 'checkpoint_sha256': ck.entry['checkpoint_sha256'],
-              'tool_sha256': enc.get('tool_sha256'), 'mode': mode, 'actions': {}, 'pass': False}
+              'tool_sha256': enc.get('tool_sha256'), 'mode': mode, 'actions': {}, 'pass': False,
+              'binding': adaptation_binding(ck, enc, mode)}
     if exp is None:
         report['reason'] = 'NO_EXPERIENCE'
+        return report
+    if exp['binding'] != experience_binding(ck, enc):
+        report['reason'] = 'EXPERIENCE_BINDING_MISMATCH'   # taps from another checkpoint/encoder (or unbound legacy rows)
         return report
     if not ret or sha_file(ret['path']) != ret['sha256']:
         report['reason'] = 'NO_RETENTION_REFERENCE'
@@ -526,7 +572,7 @@ class ToolForecast:
                 raise ValueError('tap width differs from checkpoint')
             out = ck.predict(x, c['action'])
             comp = ck.competence(x, xm)
-            adapted = load_adapted(self.home, ck)
+            adapted = load_adapted(self.home, ck, enc)
             if adapted is not None:   # region mode: in-domain contexts keep the measured weight
                 use = adapted['mode'] == 'mixed' or (comp is not None and not comp['in_domain'])
                 out['adapted'] = ck.predict(x, c['action'], adapted['weight'])['forecast'] if use else out['forecast']
@@ -538,15 +584,19 @@ class ToolForecast:
             rec = {'id': fid, 'world': c['world'], 'action': c['action'], 'tool': tool, 'event_id': event_id, 'created': self.clock(),
                    'state_text': c['state_text'], 'in_world_range': c.get('in_world_range', True), 'competence': comp,
                    'checkpoint_sha256': ck.entry['checkpoint_sha256'], 'tool_sha256': enc['tool_sha256'],
+                   'model_sha256': enc['model_sha256'], 'competence_sha256': ck.entry.get('competence_sha256'),
                    'tap_s': round(time.monotonic() - t0, 3)} | {k: [float(v) for v in out[k]] for k in ('forecast', 'copy', 'mean_delta', 'adapted') if k in out}
 
             def f(st):
                 st['pending'][fid] = rec
-                for k in sorted(st['pending'], key=lambda k: st['pending'][k]['created'])[:max(0, len(st['pending']) - PENDING_MAX)]:
+                evicted = sorted(st['pending'], key=lambda k: st['pending'][k]['created'])[:max(0, len(st['pending']) - PENDING_MAX)]
+                for k in evicted:
                     del st['pending'][k]
                     self._count(st, 'EXPIRED_CAPACITY')
                 self._count(st, 'FORECAST')
-            self.box.mutate(f)
+                return evicted
+            for k in self.box.mutate(f):   # only after the state write: their context taps go with them
+                self._unlink_pending(k)
             self.s.log('tool_forecast', event_id, {'status': 'FORECAST', 'world': c['world'], 'action': c['action'], 'tap_s': rec['tap_s']})
             return {'schema': SCHEMA, 'forecast_id': fid, 'world': c['world'], 'action': c['action'], 'latent_dim': len(rec['forecast']),
                     'forecast_sha256': vec_sha(out['forecast']), 'checkpoint_sha256': rec['checkpoint_sha256'],
@@ -577,9 +627,11 @@ class ToolForecast:
             taps, enc = self.encoder(rec['world'])
             if taps is None:
                 return None   # stays pending; `:toolforecast score` retries once an encoder is installed
-            if enc['tool_sha256'] != rec['tool_sha256']:
+            if enc['tool_sha256'] != rec['tool_sha256'] or enc['model_sha256'] != rec.get('model_sha256', enc['model_sha256']):
                 return self._close(fid, rec, 'ENCODER_CHANGED_SINCE_FORECAST', tx)
             ck = self.checkpoint(rec['world'])
+            if ck.entry['checkpoint_sha256'] != rec['checkpoint_sha256']:
+                return self._close(fid, rec, 'CHECKPOINT_CHANGED_SINCE_FORECAST', tx)   # forecast not from this projection
             y = rms_normalize(taps.tap([text])[0])
             ref = y @ ck.p
             err = {k: float(np.mean((np.asarray(rec[k]) - ref) ** 2)) for k in ('forecast', 'copy', 'mean_delta', 'adapted') if k in rec}
@@ -588,7 +640,7 @@ class ToolForecast:
                 ctx = np.load(pend)
                 ctx = ctx if ctx.ndim == 2 else np.stack([ctx, np.full_like(ctx, np.nan)])
                 Experience(self.home).add(rec['world'], ctx[0], y, ck.actions.index(rec['action']), fid,
-                                          None if np.isnan(ctx[1]).any() else ctx[1])
+                                          None if np.isnan(ctx[1]).any() else ctx[1], experience_binding(ck, enc))
             return self._close(fid, rec, 'SCORED', tx, text=text, err=err)
         except Exception as exc:
             self._note(tx.get('event_id'), 'OBSERVE_FAILED', {'error': type(exc).__name__})
@@ -624,14 +676,17 @@ class ToolForecast:
                     a['sum_log_adapted_vs_measured'] = a.get('sum_log_adapted_vs_measured', 0.) + math.log(max(err['adapted'], 1e-300) / err['forecast'])
             return True
         if self.box.mutate(f):
-            try:
-                (self.pending_dir / (fid + '.npy')).unlink()
-            except FileNotFoundError:
-                pass
+            self._unlink_pending(fid)
             self.s.log('tool_forecast', tx.get('event_id'), {'status': status, 'world': rec['world'], 'action': rec['action']}
                        | ({'ratio': done['ratio_to_best_control'], 'beats_controls': done['beats_controls']} if err else {}))
             return done
         return None
+
+    def _unlink_pending(self, fid):
+        try:
+            (self.pending_dir / (fid + '.npy')).unlink()
+        except FileNotFoundError:
+            pass
 
     def learn(self, worlds=None, mode='region'):
         """Fit the SHADOW adapted residual per world from scored experience (see module `learn`). Never raises."""
@@ -661,6 +716,9 @@ class ToolForecast:
                     out.append(r)
         return out
 
+    def _experience_rows(self):
+        return _experience_rows_of(self.home, self.manifest['worlds'])
+
     def report(self):
         st = self.box.load()[0]
         stats = {k: v | {'win_rate': round(v['wins'] / v['n'], 4),
@@ -672,9 +730,22 @@ class ToolForecast:
                 'worlds': {w: {'actions': e['actions'], 'source': e['source']} for w, e in self.manifest['worlds'].items()},
                 'pending': len(st['pending']), 'counts': st['counts'], 'stats': stats, 'recent': st['scored'][-5:],
                 'learn': st.get('learn', {}),
-                'experience_rows': {w: int(len(e['x'])) for w in self.manifest['worlds'] for e in [Experience(self.home).load(w)] if e is not None},
+                'experience_rows': self._experience_rows(),
                 'claim_limit': 'SHADOW measurement of a narrow candidate (closed worlds of rounds 7/8); no gate, answer, wake or learning '
                                'reads it. Live calls outside those worlds get no forecast. Redmi latency/RSS unmeasured.'}
+
+
+def _experience_rows_of(home, worlds):
+    out = {}
+    for w in worlds:
+        try:
+            e = Experience(home).load(w)
+        except Exception:
+            out[w] = 'EXPERIENCE_UNREADABLE'
+            continue
+        if e is not None:
+            out[w] = int(len(e['x']))
+    return out
 
 
 def is_forecast(pred):
