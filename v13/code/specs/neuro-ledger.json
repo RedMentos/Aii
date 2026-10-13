@@ -560,7 +560,20 @@
   "MODULE_LATEWATCH": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
    "neuro_claim_limit": "Late salient interrupt analogy; shadow by default.",
-   "ablation_baseline": null
+   "ablation_baseline": {
+    "hypothesis": "§99-style: the late-offer cut rule interrupts wrong answers and leaves right ones alone",
+    "controls": [
+     "never_cut",
+     "always_cut",
+     "random_cut_same_count"
+    ],
+    "evidence": [
+     "../bench-results/latewatch-20261012/README.md",
+     "../bench-results/latewatch-20261012/report.json"
+    ],
+    "verdict": "SUPPORTED_SYNTHETIC",
+    "note": "Preregistered, 5 seeds × 400 synthetic arithmetic turns, real Watcher.check: net +.064 per turn vs 0 never, -.295 always, -.094 random (5/5 each). Weak spots: BODY_REENTRY cuts right answers, a number cut mid-stream counts as conflict, and thousands commas are parsed as decimals (format stream -.081, worse than never). Shadow stays default."
+   }
   },
   "MODULE_APLANE": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",

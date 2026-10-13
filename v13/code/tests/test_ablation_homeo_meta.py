@@ -44,3 +44,11 @@ class AttentionPrior(unittest.TestCase):
             st=AP.stream(13,'blind');r={a:AP.run_arm(st,a,13) for a in ('scaffold','learned_active')}
             self.assertEqual(r['scaffold']['granted'],2*3);self.assertEqual(r['learned_active']['granted'],2*3)
         finally:AP.EVENTS=old
+
+import ablation_latewatch as LW
+class LateWatch(unittest.TestCase):
+    def test_real_watcher_cuts_conflict_not_agreement(self):
+        t={'src':'What is 46 plus 62?','answer':'The result is 100, because I applied plus to the two numbers.','wrong':True,'body':'right',
+           'offer':{'role':'B1_DETAIL','packet_id':'p','offer':{'summary':'46 + 62 = 108','needs_reentry':False,'quotes':[]}},'arrive':0}
+        self.assertTrue(LW.rule_cut(t));self.assertEqual(LW.score(t,True),1)
+        ok=dict(t,answer=t['answer'].replace('100','108'),wrong=False);self.assertFalse(LW.rule_cut(ok));self.assertEqual(LW.score(ok,True),-1)
