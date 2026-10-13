@@ -1071,3 +1071,6 @@ OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/D
 
 ### Lern-Prüfung am Handy messbar (`TESTEN_TOOLFORECAST.sh --with-learning`) — ERLEDIGT 2026-10-13 (Thread „Nächste offene Pakete M“)
 - Fester Plan `code/specs/tool_forecast/learning-plan.json` (= vorregistrierte Runde 2, hash-gebunden), Option `--with-learning` im Handy-Skript. Cloud-Trockenlauf gegen installiertes Home (b10964-Tap-Build, andere Quelle als der vorregistrierte Lauf): Parität PASS, Live 245/245, Lernen **CONFIRMED** mit gleichen Zahlen (Rechnen .54–.74, Notizen .69–.88, In-Welt 1.00), 37 min. Beleg `code/docs/proofs/continuation-20261013/tool-forecast-device-learning-cloud/`. Offen: Redmi-Lauf (Nutzer).
+
+### Kompetenz-Signal v2 (letzter Token ODER Token-Mittel) — ERLEDIGT 2026-10-13 (Thread „Nächste offene Pakete M“), **COMPETENCE_SIGNAL_CONFIRMED**
+- Vorregistriert `673e3fb`, frisch, 420 Live-Aufrufe: Rechnen AUROC .98, In-Welt-Fehlalarm 3 %, Außer-Welt-Treffer 90 % (v1: 37 %); Notizen 1.0 / 0 % / 100 %. `learn region` nutzt jetzt v2 (mehr Lernbeispiele für Zahlen); Lern-Runde 2 lief noch mit v1, Wiederholung mit v2 wäre neue Messung. Belege `code/docs/proofs/continuation-20261013/tool-forecast-competence-v2/`. Branch `claude/project-thread-cui1zm`.

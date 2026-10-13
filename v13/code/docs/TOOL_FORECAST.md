@@ -84,6 +84,9 @@ mit festem Plan `specs/tool_forecast/live-plan.json` (= vorregistrierter Plan). 
 
 - Handy: `bash TESTEN_TOOLFORECAST.sh --with-learning` führt zusätzlich diese Lern-Prüfung mit dem festen Plan `specs/tool_forecast/learning-plan.json` aus. Im Cloud-Trockenlauf mit b10964-Build: CONFIRMED, gleiche Zahlen (`docs/proofs/continuation-20261013/tool-forecast-device-learning-cloud/`).
 
+## Kompetenz-Signal v2 (2026-10-13, `docs/proofs/continuation-20261013/tool-forecast-competence-v2/`)
+- Zusätzlich zum letzten Token ein zweiter kNN-Test auf dem Token-Mittel-Tap desselben Prefills (`score` = größeres Abstand/Schwelle-Verhältnis). Vorregistriert, frisch: **CONFIRMED** (Rechnen AUROC .98, Fehlalarm 3 %, Treffer 90 %; Notizen 1.0 / 0 % / 100 %). `learn region` nutzt v2; die Retentions-Taps enthalten dafür jetzt auch das Token-Mittel (Neuinstallation).
+
 ## Befund nebenbei (nicht behoben, Besitz Thread G / `agi/tools.py`)
 
 Ein per `:tx approve` freigegebener Aufruf trägt die `event_id` des ursprünglichen Turns; `_execute` legt sein Ergebnis

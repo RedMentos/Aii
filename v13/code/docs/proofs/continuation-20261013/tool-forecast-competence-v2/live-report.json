@@ -1,0 +1,621 @@
+{
+ "schema": "v13-tool-forecast-live-check-v1",
+ "utc": "2026-10-13T11:31:43Z",
+ "plan": {
+  "calc_in_world": [
+   80,
+   89,
+   149,
+   177,
+   194,
+   199,
+   208,
+   220,
+   228,
+   243,
+   313,
+   335,
+   340,
+   348,
+   365,
+   418,
+   432,
+   458,
+   488,
+   533,
+   553,
+   658,
+   704,
+   754,
+   810,
+   817,
+   832,
+   854,
+   871,
+   925
+  ],
+  "calc_out_of_range": [
+   1262,
+   1355,
+   1357,
+   1543,
+   1648,
+   1756,
+   2165,
+   2468,
+   2734,
+   2828,
+   3605,
+   3617,
+   3628,
+   3661,
+   3840,
+   4138,
+   4271,
+   4399,
+   4442,
+   4669,
+   5444,
+   5687,
+   5953,
+   7467,
+   7556,
+   7620,
+   9011,
+   9455,
+   9858,
+   9889
+  ],
+  "note_in_world": [
+   "Ask grandma this evening.",
+   "Ask the bank this evening.",
+   "Ask the neighbour on Monday.",
+   "Ask the plumber on Friday.",
+   "Ask the school this evening.",
+   "Call the dentist today.",
+   "Call the landlord on Monday.",
+   "Email the landlord on Friday.",
+   "Email the library today.",
+   "Email the school next week.",
+   "Help the plumber today.",
+   "Help the team on Monday.",
+   "Invite the landlord next week.",
+   "Invite the library on Friday.",
+   "Invite the library tomorrow.",
+   "Invite the team on Monday.",
+   "Meet the dentist on Monday.",
+   "Remind the dentist on Friday.",
+   "Remind the dentist tomorrow.",
+   "Remind the library on Friday.",
+   "Remind the team next week.",
+   "Thank the landlord this evening.",
+   "Thank the plumber on Monday.",
+   "Thank the school today.",
+   "Visit the dentist next week.",
+   "Visit the dentist on Friday.",
+   "Visit the landlord on Monday.",
+   "Visit the landlord today.",
+   "Visit the school this evening.",
+   "Visit the team on Friday."
+  ],
+  "note_free": [
+   "Swap the light bulb in the hall.",
+   "Ask Pavel for the drill bits.",
+   "Cancel the magazine subscription.",
+   "Book the dentist for the twins.",
+   "Pickle the cucumbers.",
+   "Send the photos to Aunt Rosa.",
+   "Patch the bicycle tyre.",
+   "Write a shopping list for the barbecue.",
+   "Ask the school about the trip form.",
+   "Clean the bathroom grout.",
+   "Hand in the library card.",
+   "Order a cake for Friday.",
+   "Turn off the water before the holiday.",
+   "Learn the chorus of the song.",
+   "Return the parcel to the shop.",
+   "Mop the kitchen floor.",
+   "Update the phone software.",
+   "Buy a gift card for Sam.",
+   "Wash the car on Sunday.",
+   "Plant tulips by the fence.",
+   "Check the bus times for Monday.",
+   "Paint the bird house.",
+   "Pay the electricity bill.",
+   "Bring the ladder from the shed.",
+   "Fix the squeaky door.",
+   "Sort the old magazines.",
+   "Ask Ivan about the football match.",
+   "Clear the inbox before Friday.",
+   "Hem the new trousers.",
+   "Cook rice for the week."
+  ]
+ },
+ "encoder": {
+  "backend_dir": null,
+  "capture_tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+  "layer": 11,
+  "model_path": "/root/native/Qwen3.5-0.8B-Q4_0.gguf",
+  "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+  "parity": {
+   "gate": 0.98,
+   "status": "PASS",
+   "worlds": {
+    "calc_counter": {
+     "drift_vs_capture": {
+      "bit_identical": false,
+      "cos_min": 0.9998517366538487,
+      "rel_rms_max": 0.01721995043795961
+     },
+     "pass": true,
+     "per_action": {
+      "add_15": {
+       "copy": 0.41344186604776373,
+       "forecast": 0.005504995426220202,
+       "mean_delta": 0.05866708099332285,
+       "rows": 80
+      },
+      "double": {
+       "copy": 0.17826462757552458,
+       "forecast": 0.007914731322582903,
+       "mean_delta": 0.05848482345402145,
+       "rows": 80
+      },
+      "quarter": {
+       "copy": 0.4593729175718839,
+       "forecast": 0.021964414393590974,
+       "mean_delta": 0.11702333255709559,
+       "rows": 80
+      },
+      "subtract_7": {
+       "copy": 0.6083656072099684,
+       "forecast": 0.0052310595947623415,
+       "mean_delta": 0.05699269031534078,
+       "rows": 80
+      }
+     },
+     "ratio_to_best_control": {
+      "add_15": 0.0938,
+      "double": 0.1353,
+      "quarter": 0.1877,
+      "subtract_7": 0.0918
+     },
+     "texts": 400
+    },
+    "note_edit": {
+     "drift_vs_capture": {
+      "bit_identical": false,
+      "cos_min": 0.9998338242473672,
+      "rel_rms_max": 0.018230510836559917
+     },
+     "pass": true,
+     "per_action": {
+      "append_done": {
+       "copy": 0.48118159289865614,
+       "forecast": 0.0036807063282563958,
+       "mean_delta": 0.06426840872656155,
+       "rows": 80
+      },
+      "prefix_urgent": {
+       "copy": 0.18897634028820373,
+       "forecast": 0.003159469887978239,
+       "mean_delta": 0.03281320851239049,
+       "rows": 80
+      },
+      "undo": {
+       "copy": 0.23977096565417927,
+       "forecast": 0.002911386845111741,
+       "mean_delta": 0.026232255938917197,
+       "rows": 80
+      },
+      "uppercase": {
+       "copy": 0.5212195602773635,
+       "forecast": 0.005743546330458009,
+       "mean_delta": 0.06731345285813196,
+       "rows": 80
+      }
+     },
+     "ratio_to_best_control": {
+      "append_done": 0.0573,
+      "prefix_urgent": 0.0963,
+      "undo": 0.111,
+      "uppercase": 0.0853
+     },
+     "texts": 400
+    }
+   }
+  },
+  "pooling": "last",
+  "retention": {
+   "calc_counter": {
+    "partition": "test (the candidate's own held-out episodes, this device's encoder)",
+    "path": "/root/native/home2/data/tool_forecast/retention-calc_counter.npz",
+    "sha256": "bee6a52d2a6b11cc6ed3b6ab58116fc3a53372906c7c6abe9278171e124f2ad8",
+    "texts": 400
+   },
+   "note_edit": {
+    "partition": "test (the candidate's own held-out episodes, this device's encoder)",
+    "path": "/root/native/home2/data/tool_forecast/retention-note_edit.npz",
+    "sha256": "aa5e3ce3c12e084790d6f5337e7beea561b6751101a01b263e5dd7c42032d86e",
+    "texts": 400
+   }
+  },
+  "schema": "v13-tool-forecast-v1-encoder",
+  "tool_path": "/root/native/native_layer_taps",
+  "tool_sha256": "da4c23c12d0d16b5febde6b92a9e9ed805cd5f433b1389ecad6a72e4b9f6cd71",
+  "tool_source_sha256": "c19903f7f0ebcac7fac90809b15f4349ec9afbb71c9873e51d7c10dd14ed34a5"
+ },
+ "arms": {
+  "calc_in_world": {
+   "double": {
+    "forecast": 0.009483507333333334,
+    "copy": 0.167466067,
+    "mean_delta": 0.06377588066666667,
+    "n": 30,
+    "ratio_to_best_control": 0.1487,
+    "pass": true
+   },
+   "add_15": {
+    "forecast": 0.006314952333333333,
+    "copy": 0.4094773156666667,
+    "mean_delta": 0.06532299733333333,
+    "n": 30,
+    "ratio_to_best_control": 0.0967,
+    "pass": true
+   },
+   "quarter": {
+    "forecast": 0.03429945166666666,
+    "copy": 0.43976761066666664,
+    "mean_delta": 0.12049547133333333,
+    "n": 30,
+    "ratio_to_best_control": 0.2847,
+    "pass": true
+   },
+   "subtract_7": {
+    "forecast": 0.007691863666666666,
+    "copy": 0.6010194280000001,
+    "mean_delta": 0.059456399,
+    "n": 30,
+    "ratio_to_best_control": 0.1294,
+    "pass": true
+   }
+  },
+  "calc_out_of_range": {
+   "double": {
+    "forecast": 0.031264181,
+    "copy": 0.132876448,
+    "mean_delta": 0.08354645033333333,
+    "n": 30,
+    "ratio_to_best_control": 0.3742,
+    "pass": true
+   },
+   "add_15": {
+    "forecast": 0.060436802000000005,
+    "copy": 0.2937667043333334,
+    "mean_delta": 0.10811915966666669,
+    "n": 30,
+    "ratio_to_best_control": 0.559,
+    "pass": true
+   },
+   "quarter": {
+    "forecast": 0.22966784199999998,
+    "copy": 0.3622124363333334,
+    "mean_delta": 0.20377966399999997,
+    "n": 30,
+    "ratio_to_best_control": 1.127,
+    "pass": false
+   },
+   "subtract_7": {
+    "forecast": 0.031740460666666664,
+    "copy": 0.5846541406666667,
+    "mean_delta": 0.10873548566666667,
+    "n": 30,
+    "ratio_to_best_control": 0.2919,
+    "pass": true
+   }
+  },
+  "note_in_world": {
+   "append_done": {
+    "forecast": 0.003188442666666667,
+    "copy": 0.5182209726666666,
+    "mean_delta": 0.06784621866666668,
+    "n": 30,
+    "ratio_to_best_control": 0.047,
+    "pass": true
+   },
+   "prefix_urgent": {
+    "forecast": 0.003216942,
+    "copy": 0.19460381333333332,
+    "mean_delta": 0.033502397333333336,
+    "n": 30,
+    "ratio_to_best_control": 0.096,
+    "pass": true
+   },
+   "uppercase": {
+    "forecast": 0.006023477333333333,
+    "copy": 0.535227437,
+    "mean_delta": 0.064376941,
+    "n": 30,
+    "ratio_to_best_control": 0.0936,
+    "pass": true
+   }
+  },
+  "note_free": {
+   "append_done": {
+    "forecast": 0.06833871666666667,
+    "copy": 0.45819545866666667,
+    "mean_delta": 0.12397818399999998,
+    "n": 30,
+    "ratio_to_best_control": 0.5512,
+    "pass": true
+   },
+   "prefix_urgent": {
+    "forecast": 0.061662098,
+    "copy": 0.20509485633333335,
+    "mean_delta": 0.07654214866666667,
+    "n": 30,
+    "ratio_to_best_control": 0.8056,
+    "pass": true
+   },
+   "uppercase": {
+    "forecast": 0.11399929299999999,
+    "copy": 0.541342638,
+    "mean_delta": 0.13069974533333334,
+    "n": 30,
+    "ratio_to_best_control": 0.8722,
+    "pass": true
+   }
+  }
+ },
+ "statuses": {
+  "SCORED": 420
+ },
+ "seconds_per_call_median": 3.5780000000000003,
+ "tap_process_max_rss_mb": 998.3,
+ "device": {
+  "machine": "x86_64",
+  "system": "Linux",
+  "release": "6.18.44-fc-v114",
+  "termux": false
+ },
+ "runtime_report": {
+  "schema": "v13-tool-forecast-v1",
+  "mode": "SHADOW",
+  "encoder": "INSTALLED",
+  "worlds": {
+   "calc_counter": {
+    "actions": [
+     "add_15",
+     "double",
+     "quarter",
+     "subtract_7"
+    ],
+    "source": "docs/proofs/continuation-20261012/action-jepa-round7-fresh (runs/tool_l11_last/full-seed13)"
+   },
+   "note_edit": {
+    "actions": [
+     "append_done",
+     "prefix_urgent",
+     "undo",
+     "uppercase"
+    ],
+    "source": "docs/proofs/continuation-20261012/action-jepa-round8-note-tool (runs/note_l11_last/full-seed13)"
+   }
+  },
+  "pending": 0,
+  "counts": {
+   "FORECAST": 420,
+   "SCORED": 420
+  },
+  "stats": {
+   "calc_counter:add_15": {
+    "in_domain": 32,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -92.98435604033499,
+    "wins": 56,
+    "win_rate": 0.9333,
+    "geo_mean_ratio_to_best_control": 0.2123
+   },
+   "calc_counter:double": {
+    "in_domain": 32,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -89.81468136950681,
+    "wins": 58,
+    "win_rate": 0.9667,
+    "geo_mean_ratio_to_best_control": 0.2238
+   },
+   "calc_counter:quarter": {
+    "in_domain": 32,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -35.9914143907027,
+    "wins": 38,
+    "win_rate": 0.6333,
+    "geo_mean_ratio_to_best_control": 0.5489
+   },
+   "calc_counter:subtract_7": {
+    "in_domain": 32,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -109.46421875193514,
+    "wins": 59,
+    "win_rate": 0.9833,
+    "geo_mean_ratio_to_best_control": 0.1613
+   },
+   "note_edit:append_done": {
+    "in_domain": 30,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -111.06144089188321,
+    "wins": 56,
+    "win_rate": 0.9333,
+    "geo_mean_ratio_to_best_control": 0.1571
+   },
+   "note_edit:prefix_urgent": {
+    "in_domain": 30,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -78.83265992473994,
+    "wins": 52,
+    "win_rate": 0.8667,
+    "geo_mean_ratio_to_best_control": 0.2688
+   },
+   "note_edit:uppercase": {
+    "in_domain": 30,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -78.01267290017513,
+    "wins": 50,
+    "win_rate": 0.8333,
+    "geo_mean_ratio_to_best_control": 0.2725
+   }
+  },
+  "recent": [
+   {
+    "action": "prefix_urgent",
+    "action_tx": "atx_2b6d2d6110b84f27a90f5627d1aaadcb",
+    "beats_controls": false,
+    "competence": {
+     "distance": 0.07746545,
+     "distance_mean": 0.05494672,
+     "in_domain": false,
+     "score": 2.311147,
+     "signal": "knn5_cosine_last_or_mean",
+     "threshold": 0.03475002,
+     "threshold_mean": 0.02377466
+    },
+    "id": "tfc_ddf5f2d31f6849d9b5333e7f232d3443",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.12944579,
+     "forecast": 0.07067828,
+     "mean_delta": 0.05586513
+    },
+    "outcome_text": "After adding a prefix, the note reads: Urgent: Hem the new trousers.",
+    "ratio_to_best_control": 1.265159,
+    "scored_at": 1791891089.7354488,
+    "status": "SCORED",
+    "tool_call": "tool_ac1ed66d4d2e489ebe463b580bf053be",
+    "world": "note_edit"
+   },
+   {
+    "action": "uppercase",
+    "action_tx": "atx_18ccfb992e0a4df28c6e500885a79030",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.07746545,
+     "distance_mean": 0.05494672,
+     "in_domain": false,
+     "score": 2.311147,
+     "signal": "knn5_cosine_last_or_mean",
+     "threshold": 0.03475002,
+     "threshold_mean": 0.02377466
+    },
+    "id": "tfc_e306b7adad83492099b891007493a29a",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.30656001,
+     "forecast": 0.05593443,
+     "mean_delta": 0.14741439
+    },
+    "outcome_text": "After uppercasing, the note reads: HEM THE NEW TROUSERS.",
+    "ratio_to_best_control": 0.379437,
+    "scored_at": 1791891093.092957,
+    "status": "SCORED",
+    "tool_call": "tool_7ac3ca8c866b475d93e9a2cbcb0b221a",
+    "world": "note_edit"
+   },
+   {
+    "action": "append_done",
+    "action_tx": "atx_85f11a48996e479ba51d080fec780d58",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.07075709,
+     "distance_mean": 0.05884147,
+     "in_domain": false,
+     "score": 2.474966,
+     "signal": "knn5_cosine_last_or_mean",
+     "threshold": 0.03475002,
+     "threshold_mean": 0.02377466
+    },
+    "id": "tfc_43b2f49bb1254606b699fd9a5bed0bd5",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.40969522,
+     "forecast": 0.03089169,
+     "mean_delta": 0.10227413
+    },
+    "outcome_text": "After appending, the note reads: Cook rice for the week. Done.",
+    "ratio_to_best_control": 0.302048,
+    "scored_at": 1791891096.5364408,
+    "status": "SCORED",
+    "tool_call": "tool_94d08de1b01f46e7954fc73a855a391f",
+    "world": "note_edit"
+   },
+   {
+    "action": "prefix_urgent",
+    "action_tx": "atx_564a94eec363414684ea33cae6a889c3",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.07075709,
+     "distance_mean": 0.05884147,
+     "in_domain": false,
+     "score": 2.474966,
+     "signal": "knn5_cosine_last_or_mean",
+     "threshold": 0.03475002,
+     "threshold_mean": 0.02377466
+    },
+    "id": "tfc_039aceeecffd40e8a8e045a8eefe448b",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.20891398,
+     "forecast": 0.04459686,
+     "mean_delta": 0.07860934
+    },
+    "outcome_text": "After adding a prefix, the note reads: Urgent: Cook rice for the week.",
+    "ratio_to_best_control": 0.567323,
+    "scored_at": 1791891100.0861409,
+    "status": "SCORED",
+    "tool_call": "tool_0d53bc2e5ba7412c8cab494f75cb924a",
+    "world": "note_edit"
+   },
+   {
+    "action": "uppercase",
+    "action_tx": "atx_a0561d1a3c6f4e13a83e9daca1c5d7ca",
+    "beats_controls": false,
+    "competence": {
+     "distance": 0.07075709,
+     "distance_mean": 0.05884147,
+     "in_domain": false,
+     "score": 2.474966,
+     "signal": "knn5_cosine_last_or_mean",
+     "threshold": 0.03475002,
+     "threshold_mean": 0.02377466
+    },
+    "id": "tfc_421cc49540c4490c9b18455b912fc271",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.46395807,
+     "forecast": 0.23244935,
+     "mean_delta": 0.1431117
+    },
+    "outcome_text": "After uppercasing, the note reads: COOK RICE FOR THE WEEK.",
+    "ratio_to_best_control": 1.624251,
+    "scored_at": 1791891103.5709069,
+    "status": "SCORED",
+    "tool_call": "tool_42eb51eef2ea490c8074175c921d9106",
+    "world": "note_edit"
+   }
+  ],
+  "learn": {},
+  "experience_rows": {
+   "calc_counter": 240,
+   "note_edit": 180
+  },
+  "claim_limit": "SHADOW measurement of a narrow candidate (closed worlds of rounds 7/8); no gate, answer, wake or learning reads it. Live calls outside those worlds get no forecast. Redmi latency/RSS unmeasured."
+ },
+ "verdict": "LIVE_PATH_CONFIRMED",
+ "claim_limit": "Runtime components with a script acting as the user; closed rounds-7/8 worlds; Linux x86 cloud, not the Redmi. SHADOW only: nothing reads the forecast."
+}
