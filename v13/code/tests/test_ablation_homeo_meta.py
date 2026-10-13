@@ -92,3 +92,16 @@ class F7PlasticityAblation(unittest.TestCase):
             r=F7A.run_arm(F7A.stream(13),'f7',13)  # raises if observe() rejects a trial
             self.assertTrue(.5<=r['mean_gain']<=1.);self.assertEqual(F7A.run_arm(F7A.stream(13),'half',13)['mean_gain'],.5)
         finally:F7A.TRIALS=old
+
+import ablation_aplane_gate as APG
+class APlaneGateAblation(unittest.TestCase):
+    def test_real_gate_promotes_good_and_refuses_bad_student(self):
+        turns=[{'teacher':i%2==0,'student_right':True,'scaffold_right':False} for i in range(240)]
+        old=APG.T;APG.T=240
+        try:
+            self.assertEqual(APG.run_arm((turns,[]),'never',)['primary'],0.)
+            self.assertEqual(APG.run_arm((turns,[]),'always')['primary'],1.)
+            self.assertEqual(APG.run_arm((turns,[]),'gated')['primary'],1.)  # promoted once GATE_N agreeing comparisons exist
+            bad=[dict(q,student_right=False,scaffold_right=True) for q in turns]
+            self.assertEqual(APG.run_arm((bad,[]),'gated')['primary'],1.)  # the real gate refuses the failing student: scaffold routes
+        finally:APG.T=old

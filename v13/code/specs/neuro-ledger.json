@@ -632,7 +632,20 @@
   "MODULE_APLANE": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
    "neuro_claim_limit": "Perception plane teacher/student analogy; text only at Age 0.",
-   "ablation_baseline": null
+   "ablation_baseline": {
+    "hypothesis": "§99-style: the A3 agreement + retention gate lets the student route on teacher fallback only while it is reliable",
+    "controls": [
+     "always_student",
+     "never_student_scaffold",
+     "agreement_window_only"
+    ],
+    "evidence": [
+     "../bench-results/aplane-gate-20261012/README.md",
+     "../bench-results/aplane-gate-20261012/report.json"
+    ],
+    "verdict": "PARTIAL",
+    "note": "Preregistered, 5 seeds × 3000 turns, real student_gate/student_fallback: .702 beats scaffold .606 (5/5) but loses to always-student .882 and to the agreement window without retention .760 (0/5). The gate is too cautious for short student drops; distillation head untested."
+   }
   },
   "MODULE_VISION": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",

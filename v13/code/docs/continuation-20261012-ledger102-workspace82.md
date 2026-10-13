@@ -69,3 +69,4 @@ Branch `claude/project-thread-n3gv74`, Basis Thread G `bbd710e`. Linux-Cloud, ke
 - Episodic Route („zweites Mal besser“, WP-U10): SUPPORTED_SYNTHETIC (.963 vs Gerüst .600; ohne Entitäts-Schutz .889). UNTESTED_LABEL jetzt 7.
 - Schlaf-Replay des Fast-Forward-Prädiktors (WP-S7): SUPPORTED_SYNTHETIC (−8 % Fehler). Held-out-Schutz bei Drift nützlich, erkennt aber keine verdorbenen Replay-Daten. UNTESTED_LABEL jetzt 6.
 - F7 gemessene Plastizität: SUPPORTED_SYNTHETIC, kleine Abstände (.776 vs voll .810 / halb .825 / zufällig .800). UNTESTED_LABEL jetzt 5 (F4, WORLD_MODEL, APLANE, VISION, BODY_JEPA).
+- A-Plane A3-Schüler-Gate: PARTIAL (schlägt Gerüst .702 vs .606, verliert gegen immer Schüler .882 und Fenster ohne Retention .760); Gate zu vorsichtig. UNTESTED_LABEL jetzt 4.
