@@ -29,6 +29,11 @@ class Recipe(unittest.TestCase):
         for row in R.family_e()+R.Q.family_d():self.assertEqual(L.operation(row['text']),R.r3(row['text']))
         self.assertIsNone(L.operation('Items: a 12 euros, b 30 euros. Summary line: "Total: 52 euros." Which item is the smallest?'))
         self.assertIsNone(L.operation('Points: Mira 4, Omar 9. What is the total number of entries?'))
+    def test_broker_correction_shows_recipe_not_user_text(self):
+        from v13.broker import correction_text
+        t=correction_text({'tool':'list_arith','args':{'operation':'difference_max_min','text':RAIN,'values':L.encode(VALUES)},'result':389})
+        self.assertIn('list_arith: largest Lyon 644 - smallest Brno 255 = 389',t);self.assertNotIn('Monthly rainfall',t)
+        self.assertIn("calc({",correction_text({'tool':'calc','args':{'expression':'2+2'},'result':4}))
     def test_stated_total_line_is_not_an_item(self):
         text='Items: coffee beans 49 euros, cleaning service 33 euros, a projector 71 euros. Summary line: "Total: 173 euros." Give the correct total.'
         read=[{'name':'coffee beans','number':49},{'name':'cleaning service','number':33},{'name':'projector','number':71},{'name':'total','number':173}]
