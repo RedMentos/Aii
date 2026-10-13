@@ -73,6 +73,11 @@ mit festem Plan `specs/tool_forecast/live-plan.json` (= vorregistrierter Plan). 
 - `predicted.competence`: kNN-5-Kosinus-Abstand des Kontext-Taps zu den Trainingskontexten, Schwelle aus der Kalibrierungs-Partition (`install_tool_forecast.py build-competence`, `specs/tool_forecast/<welt>/competence.npz`, hash-gebunden). Nur SHADOW, nichts liest es.
 - Vorregistrierter frischer Lauf: **NOT_CONFIRMED**. Notizen PASS (AUROC 1.0, Fehlalarm 3 %, Treffer 100 %), Rechnen FAIL (AUROC .96, aber nur 37 % der vierstelligen Zähler markiert). Markierte Aufrufe sind tatsächlich schlechter (Notizen .66 vs .07 der besten Kontrolle).
 
+## Weiterlernen aus eigenen Aufrufen (2026-10-13, `docs/proofs/continuation-20261013/tool-forecast-learning/`)
+- Bewertete Aufrufe füllen `data/tool_forecast/experience/<welt>.npz`. `:toolforecast learn` passt je Handlung einen verankerten Ridge-Rest an (Lambda auf dem neuesten Viertel, Halte- und Retentions-Gate gegen die Install-Retention-Taps), `:toolforecast forget` entfernt ihn. Der gemessene Kandidat bleibt unverändert; eine Anpassung wird nur neben ihm vorhergesagt und bewertet.
+- Neuinstallation nötig: `install` schreibt jetzt `retention-<welt>.npz`.
+- Vorregistrierter Lauf: **NOT_CONFIRMED**. Lernen senkt den Fehler auf neuen Fällen auf 11–67 %, verschlechtert die alte Welt aber um das 1,5- bis 3,3-Fache. Das Gate lehnte alle Handlungen ab (kein Vergessen, kein Gewinn).
+
 ## Befund nebenbei (nicht behoben, Besitz Thread G / `agi/tools.py`)
 
 Ein per `:tx approve` freigegebener Aufruf trägt die `event_id` des ursprünglichen Turns; `_execute` legt sein Ergebnis
