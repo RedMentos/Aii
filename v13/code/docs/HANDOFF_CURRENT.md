@@ -72,3 +72,7 @@ Vorregistriert, frischer Seed 17: C3 liest nur Zahlen, feste Regel wählt Summe/
 ## Ergänzung 2026-10-13 Thread K: R4 Teil 6, `list_arith` im Live-Werkzeug-Pfad — TOOL_PATH_SUPPORTED
 
 Werte-Rezept aus Teil 5 als READ_LOCAL-Werkzeug `list_arith` (aus bis Nutzer-Freigabe, dann SHADOW bis Alter 1). Vorregistriert, frischer Seed 19, echter Pfad ToolStep → C5 → TOOL_RESULT: 54/60 statt 40 (p 0,0013). Lesbare Ergebnis-Schicht war nötig (roh ignoriert C3 den Wert). Offen: Posten „Total“ verwerfen (1 Fehler je Seed), Broker-Korrekturtext kürzen, Werkzeugwahl für andere Formulierungen/Deutsch. Befund `docs/proofs/continuation-20261012/r4-listarith-live/BEFUND.md`. Branch `claude/project-thread-s0290g`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 7, Summen-Zeile nicht als Posten — FIX_SUPPORTED
+
+`listarith` verwirft gelesene Posten namens total/sum/gesamt. Frischer Seed 23: 55/60 statt 42 (p 0,001), Werkzeug-Werte 30/30. Befund `docs/proofs/continuation-20261012/r4-listarith-total/BEFUND.md`.
