@@ -90,7 +90,20 @@
   "F7_MEASURED_PLASTICITY": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
    "neuro_claim_limit": "Metaplasticity = measured per-component shadow-budget feedback; no learned neural controller, no native shared-layer measurement.",
-   "ablation_baseline": null,
+   "ablation_baseline": {
+    "hypothesis": "§99-style: the measured shadow-budget gain beats fixed budgets under retention/utility gates",
+    "controls": [
+     "fixed_gain_1",
+     "fixed_gain_0.5",
+     "random_gain"
+    ],
+    "evidence": [
+     "../bench-results/f7-plasticity-20261012/README.md",
+     "../bench-results/f7-plasticity-20261012/report.json"
+    ],
+    "verdict": "SUPPORTED_SYNTHETIC",
+    "note": "Preregistered, 5 seeds × 240 trials, real budget()/observe(), harness linear learner, step calibrated without F7: error .776 vs full .810, half .825, random .800 (5/5 each); small margins. World parameters set on seed 999 before preregistration (disclosed)."
+   },
    "eligibility_owner": "v13/neuromod.py",
    "modulator_schema": "ModulatorPacket",
    "age_window_policy": "AGE_CONTROL"

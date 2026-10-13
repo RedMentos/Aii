@@ -83,3 +83,12 @@ class SleepOfflineAblation(unittest.TestCase):
             for i,t in enumerate(days[0]):ff.learn(f'e{i}',t['x'],t['duration_s'],t['status'],t['chars'])
             before=ff._load()[0]['replay'];SO.shuffled_consolidate(ff,__import__('random').Random(1))
             self.assertEqual(ff._load()[0]['replay'],before);store.close()
+
+import ablation_f7_plasticity as F7A
+class F7PlasticityAblation(unittest.TestCase):
+    def test_real_observe_accepts_every_fixture_trial(self):
+        old=F7A.TRIALS;F7A.TRIALS=16
+        try:
+            r=F7A.run_arm(F7A.stream(13),'f7',13)  # raises if observe() rejects a trial
+            self.assertTrue(.5<=r['mean_gain']<=1.);self.assertEqual(F7A.run_arm(F7A.stream(13),'half',13)['mean_gain'],.5)
+        finally:F7A.TRIALS=old
