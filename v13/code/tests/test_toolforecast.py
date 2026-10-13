@@ -175,10 +175,16 @@ class CheckpointTests(unittest.TestCase):
             shift = np.random.default_rng(9).normal(scale=.02, size=ck0.weight.shape)
             ck, enc = self.synthetic_world(d, shift, 'shifted')
             self.assertEqual(F.learn(d, ck, {'tool_sha256': 'T'})['reason'], 'NO_RETENTION_REFERENCE')
-            rep = F.learn(d, ck, enc)
+            region = F.learn(d, ck, enc)
+            self.assertEqual((region['mode'], region['replay_pairs'], region['experience_out_of_domain']), ('region', 0, 96))
+            self.assertTrue(region['pass'])
+            rep = F.learn(d, ck, enc, 'mixed')
+            self.assertEqual(rep['replay_pairs'], 800)          # the candidate's own training pairs are replayed
             self.assertTrue(rep['pass'])
             self.assertEqual(rep['adapted_actions'], ck.actions)
-            w = F.load_adapted(d, ck)
+            got = F.load_adapted(d, ck)
+            self.assertEqual(got['mode'], 'mixed')
+            w = got['weight']
             self.assertLess(np.abs(w - (ck.weight + shift)).mean(), np.abs(shift).mean())   # moved toward the new law
             npz, js = F.adapted_paths(d, ck.world)
             with open(npz, 'ab') as f:
@@ -186,10 +192,18 @@ class CheckpointTests(unittest.TestCase):
             self.assertIsNone(F.load_adapted(d, ck))                                        # bytes bound by the report
         with tempfile.TemporaryDirectory() as d:
             ck, enc = self.synthetic_world(d, shift, 'measured')   # old world still holds on the retention set
-            rep = F.learn(d, ck, enc)
+            rep = F.learn(d, ck, enc, 'mixed')
             self.assertFalse(rep['pass'])
             self.assertEqual({v['kept'] for v in rep['actions'].values()}, {'MEASURED_RETENTION_FAIL'})
             self.assertFalse(F.adapted_paths(d, ck.world)[0].exists())
+        with tempfile.TemporaryDirectory() as d:   # region mode ignores experience the reference calls in-domain
+            ck, enc = self.synthetic_world(d, shift, 'shifted')
+            exp = F.Experience(d)
+            for i, x in enumerate(ck.reference['taps'][:40]):
+                exp.add('calc_counter', x, x, 0, 'in%d' % i)
+            rep = F.learn(d, ck, enc)
+            self.assertLessEqual(rep['experience_out_of_domain'], 96 + 4)    # edge training contexts may sit past the threshold
+            self.assertLessEqual(rep['actions']['add_15']['rows'], 24 + 4)
 
     def test_learning_check_verdict(self):
         sys.path.insert(0, str(APP / 'scripts'))

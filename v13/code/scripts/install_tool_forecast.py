@@ -6,6 +6,8 @@
                 specs/tool_forecast/<world>/, writes its held-out test episodes as the parity set, and checks that the
                 runtime formula reproduces the measured test MSE of metrics.json from the originally stored taps.
                 Writes specs/tool-forecast.json with every hash and the evidence ZIP it came from.
+  build-replay  (once, after build-assets) adds per world the candidate's own training pairs as float16 taps, which
+                `:toolforecast learn` replays next to the live experience.
   build-competence  (once, after build-assets) adds per world the pre-effect domain reference: training context
                 taps and a threshold calibrated on the calibration partition (never the test partition).
   install       (on each device) verifies the GGUF hash, taps every parity text with the given native_layer_taps build
@@ -173,6 +175,42 @@ def build_competence(args):
     return out
 
 
+def build_replay(args):
+    """Add each world's replay set: the candidate's own training pairs (train partition only), float16 taps.
+
+    `:toolforecast learn` refits on replay + live experience so new regions are learned next to the old one instead
+    of overwriting it (interleaved replay, Canon §15). Existing assets and hashes stay untouched."""
+    restored = Path(args.restored)
+    manifest = json.loads(tf.MANIFEST.read_text())
+    out = {}
+    for world, w in WORLDS.items():
+        entry = manifest['worlds'][world]
+        cap = restored / w['raw'] / w['capture']
+        report = json.loads((cap / 'capture-report.json').read_text())
+        meta = json.loads((cap / 'taps.json').read_text())
+        texts = (cap / 'inputs.txt').read_text().split('\n')[:-1]
+        if (len(texts) != meta['texts'] or tf.sha_file(cap / 'taps.bin') != report['raw_bin_sha256']
+                or report['tool_sha256'] != entry['capture_tool_sha256']):
+            raise ValueError(world + ': capture bytes/encoder differ from manifest')
+        li = meta['layers'].index(PICK['layer'])
+        raw = np.fromfile(cap / 'taps.bin', dtype=np.float32).reshape(meta['texts'], len(meta['layers']), 2, meta['n_embd'])[:, li, 0]
+        stored = dict(zip(texts, raw))
+        eps = [e for e in episodes(json.loads((restored / w['raw'] / w['world']).read_text())) if e['partition'] == 'train']
+        pairs = [(e['input'], e['outcomes'][a], j) for e in eps for j, a in enumerate(entry['actions'])]
+        uniq = sorted({t for i, o, _ in pairs for t in (i, o)})
+        index = {t: k for k, t in enumerate(uniq)}
+        dest = APP / 'specs' / 'tool_forecast' / world / 'replay.npz'
+        np.savez(dest, taps=np.stack([tf.rms_normalize(stored[t]) for t in uniq]).astype(np.float16),
+                 context=np.asarray([index[i] for i, _, _ in pairs]), outcome=np.asarray([index[o] for _, o, _ in pairs]),
+                 action=np.asarray([j for _, _, j in pairs]))
+        entry['replay'], entry['replay_sha256'] = 'specs/tool_forecast/%s/replay.npz' % world, tf.sha_file(dest)
+        entry['replay_reference'] = {'pairs': len(pairs), 'texts': len(uniq), 'partition': 'train', 'dtype': 'float16'}
+        out[world] = entry['replay_reference']
+    tf.MANIFEST.write_text(json.dumps(manifest, indent=1, sort_keys=True) + '\n')
+    print(json.dumps(out, indent=1))
+    return out
+
+
 def install(args):
     manifest = json.loads(tf.MANIFEST.read_text())
     want = manifest['encoder']
@@ -229,6 +267,8 @@ def main():
     b.add_argument('--restored', required=True, help='folder with the unzipped round-7/8 results and raw ZIPs')
     c = sub.add_parser('build-competence')
     c.add_argument('--restored', required=True, help='as build-assets; adds competence.npz per world (train/calibration only)')
+    rp = sub.add_parser('build-replay')
+    rp.add_argument('--restored', required=True, help='as build-assets; adds replay.npz per world (train partition only)')
     i = sub.add_parser('install')
     for name in ('--home', '--tool', '--model'):
         i.add_argument(name, required=True)
@@ -240,6 +280,9 @@ def main():
         return 0
     if args.command == 'build-competence':
         build_competence(args)
+        return 0
+    if args.command == 'build-replay':
+        build_replay(args)
         return 0
     return install(args)
 

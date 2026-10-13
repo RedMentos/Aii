@@ -51,6 +51,8 @@ TAP_TIMEOUT_S = 120.
 EXPERIENCE_MAX = 2000  # scored (context, outcome) taps kept per world for `:toolforecast learn`
 LEARN_MIN_ROWS = 8     # per action, else that action keeps the measured weight
 LEARN_SCALES = (.01, .1, 1., 10., 100.)   # x mean diag(F F^T); chosen on the newest quarter of the experience
+LEARN_WEIGHTS = (1., 3., 10.)             # experience row weight next to the replayed training pairs
+LEARN_MODES = ('region', 'mixed')         # region: new weight only for out-of-domain contexts; mixed: one weight, replay
 RETENTION_MAX = 1.02   # adapted MSE on the install retention taps <= 1.02 x measured weight
 
 # Worlds exactly as the rounds that confirmed them wrote state and outcome texts (round 5 v2 / round 8 templates).
@@ -172,6 +174,16 @@ class Checkpoint:
                                   'threshold': float(z['threshold'])}
             if self.reference['taps'].shape[1] != self.width:
                 raise ValueError(world + ': competence reference width differs from checkpoint')
+
+    def replay(self):
+        """The candidate's own training pairs (train partition), or None when the manifest ships none."""
+        if not self.entry.get('replay'):
+            return None
+        rp = self.root / self.entry['replay']
+        if sha_file(rp) != self.entry['replay_sha256']:
+            raise ValueError(self.world + ': replay bytes differ from manifest')
+        with np.load(rp, allow_pickle=False) as z:
+            return {'taps': np.asarray(z['taps'], dtype=np.float64), 'context': z['context'], 'outcome': z['outcome'], 'action': z['action']}
 
     def competence(self, x):
         """Before the effect: is this context state like the states the candidate was fitted on?
@@ -304,21 +316,30 @@ def load_adapted(home, ck):
         return None
     with np.load(npz, allow_pickle=False) as z:
         w = np.asarray(z['weight'], dtype=np.float64)
-    return w if w.shape == ck.weight.shape else None
+    return {'weight': w, 'mode': rep.get('mode', 'mixed')} if w.shape == ck.weight.shape else None
 
 
-def learn(home, ck, enc):
+def learn(home, ck, enc, mode='region'):
     """Refit each action's residual on the world's scored live experience, anchored to the measured weight.
 
-    Per action with >= LEARN_MIN_ROWS rows: lambda chosen on the newest quarter (fit on the older rows), kept only if
-    it beats the measured weight there; then refit on all rows. Retention: on the install retention taps (the
-    candidate's own held-out test partition, tapped by this device's encoder) every action must stay within
-    RETENTION_MAX of the measured weight and keep the candidate gate (< .98 x min(copy, mean delta)); an action
-    that fails keeps the measured weight. Writes adapted-<world>.npz/.json; nothing reads it for any decision."""
+    Per action with >= LEARN_MIN_ROWS rows the fit set is the candidate's own training pairs (replay, when the
+    manifest ships them) plus the experience rows with weight w. Grid: w in LEARN_WEIGHTS x lambda scale in
+    LEARN_SCALES. A grid point is admissible when (a) fit on replay + the older experience it beats the measured
+    weight on the newest quarter of the experience and (b) refit on replay + all experience it keeps retention on the
+    install retention taps (the candidate's own held-out test partition, this device's encoder): <= RETENTION_MAX x
+    measured and < .98 x min(copy, mean delta). The admissible point with the lowest holdout error is used; with none,
+    the action keeps the measured weight. Writes adapted-<world>.npz/.json; nothing reads it for any decision.
+
+    mode 'region' (default, complementary memory): only experience whose context the competence reference marks
+    out-of-domain is fitted, no replay, and the new weight is used only for out-of-domain contexts (also in the
+    retention check); in-domain forecasts stay exactly the measured ones. mode 'mixed': one weight for all contexts,
+    fitted on replay + experience."""
     exp = Experience(home).load(ck.world)
     ret = (enc.get('retention') or {}).get(ck.world)
+    if mode not in LEARN_MODES:
+        raise ValueError('learn mode ' + '|'.join(LEARN_MODES))
     report = {'schema': SCHEMA + '-learn', 'world': ck.world, 'checkpoint_sha256': ck.entry['checkpoint_sha256'],
-              'tool_sha256': enc.get('tool_sha256'), 'actions': {}, 'pass': False}
+              'tool_sha256': enc.get('tool_sha256'), 'mode': mode, 'actions': {}, 'pass': False}
     if exp is None:
         report['reason'] = 'NO_EXPERIENCE'
         return report
@@ -331,9 +352,17 @@ def learn(home, ck, enc):
         rtext = [str(s) for s in z['texts']]
         rtap = dict(zip(rtext, np.asarray(z['taps'], dtype=np.float64)))
     rows = json.loads((ck.root / ck.entry['parity']).read_text())['rows']
+    if mode == 'region' and ck.reference is None:
+        report['reason'] = 'NO_COMPETENCE_REFERENCE'
+        return report
+    replay = ck.replay() if mode == 'mixed' else None
+    report['replay_pairs'] = 0 if replay is None else int(len(replay['action']))
+    novel = np.asarray([not ck.competence(v.astype(np.float64))['in_domain'] for v in exp['x']]) if mode == 'region' else None
+    if mode == 'region':
+        report['experience_out_of_domain'] = int(novel.sum())
     weight = ck.weight.copy()
     for j, action in enumerate(ck.actions):
-        m = exp['action'] == j
+        m = (exp['action'] == j) & (novel if novel is not None else True)
         x, y = exp['x'][m].astype(np.float64), exp['y'][m].astype(np.float64)
         a = {'rows': int(m.sum())}
         report['actions'][action] = a
@@ -342,30 +371,47 @@ def learn(home, ck, enc):
             continue
         F = ck.features(x) - ck.centre[j]
         R = y @ ck.p - (x @ ck.p + ck.mean_delta[j])
+        if replay is not None:   # interleave the candidate's own training pairs: learn the new region next to the old
+            k = replay['action'] == j
+            rx, ry = replay['taps'][replay['context'][k]], replay['taps'][replay['outcome'][k]]
+            Fr, Rr = ck.features(rx) - ck.centre[j], ry @ ck.p - (rx @ ck.p + ck.mean_delta[j])
+        else:
+            Fr, Rr = F[:0], R[:0]
+        a['replay_rows'] = len(Fr)
         cut = len(x) - max(2, len(x) // 4)
-        base = float(np.mean(np.diag(F[:cut] @ F[:cut].T)))
-        mse = lambda W, s: float(np.mean((F[s] @ W - R[s]) ** 2))
         hold = slice(cut, None)
-        grid = {s: mse(anchored_ridge(F[:cut], R[:cut], ck.weight[j], s * base), hold) for s in LEARN_SCALES}
-        scale = min(grid, key=grid.get)
-        a |= {'holdout_rows': len(x) - cut, 'holdout_measured_mse': mse(ck.weight[j], hold),
-              'holdout_grid_mse': {str(s): v for s, v in grid.items()}, 'scale': scale}
-        if grid[scale] >= a['holdout_measured_mse']:
-            a['kept'] = 'MEASURED_NO_HOLDOUT_GAIN'
-            continue
-        cand = anchored_ridge(F, R, ck.weight[j], scale * float(np.mean(np.diag(F @ F.T))))
+        mse = lambda W: float(np.mean((F[hold] @ W - R[hold]) ** 2))
         sel = [r for r in rows if r['action'] == action]
         rx = np.stack([rtap[r['input']] for r in sel])
         ref = np.stack([rtap[r['outcome']] for r in sel]) @ ck.p
         base_pred = rx @ ck.p + ck.mean_delta[j]
         rf = ck.features(rx) - ck.centre[j]
-        err = lambda W: float(np.mean((base_pred + rf @ W - ref) ** 2))
-        a['retention'] = {'measured': err(ck.weight[j]), 'adapted': err(cand), 'copy': float(np.mean((rx @ ck.p - ref) ** 2)),
-                          'mean_delta': float(np.mean((base_pred - ref) ** 2)), 'rows': len(sel)}
-        r_ = a['retention']
-        if r_['adapted'] > RETENTION_MAX * r_['measured'] or r_['adapted'] >= .98 * min(r_['copy'], r_['mean_delta']):
-            a['kept'] = 'MEASURED_RETENTION_FAIL'
+        gate_r = (np.asarray([not ck.competence(v)['in_domain'] for v in rx])[:, None] if mode == 'region'
+                  else np.ones((len(rx), 1), bool))   # region mode: only out-of-domain contexts use the new weight
+        err = lambda W: float(np.mean((base_pred + np.where(gate_r, rf @ W, rf @ ck.weight[j]) - ref) ** 2))
+        ret_m, ret_copy, ret_md = err(ck.weight[j]), float(np.mean((rx @ ck.p - ref) ** 2)), float(np.mean((base_pred - ref) ** 2))
+
+        def fit(Fe, Re, scale, w):
+            Fs, Rs = np.concatenate([Fr, np.sqrt(w) * Fe]), np.concatenate([Rr, np.sqrt(w) * Re])
+            return anchored_ridge(Fs, Rs, ck.weight[j], scale * float(np.mean(np.diag(Fs @ Fs.T))))
+        a |= {'holdout_rows': len(x) - cut, 'holdout_measured_mse': mse(ck.weight[j]),
+              'retention_measured': ret_m, 'retention_copy': ret_copy, 'retention_mean_delta': ret_md, 'grid': []}
+        for w in (LEARN_WEIGHTS if len(Fr) else (1.,)):
+            for scale in LEARN_SCALES:
+                g = {'weight': w, 'scale': scale, 'holdout_mse': mse(fit(F[:cut], R[:cut], scale, w))}
+                g['retention'] = err(fit(F, R, scale, w))
+                g['admissible'] = (g['holdout_mse'] < a['holdout_measured_mse'] and g['retention'] <= RETENTION_MAX * ret_m
+                                   and g['retention'] < .98 * min(ret_copy, ret_md))
+                a['grid'].append(g)
+        ok = [g for g in a['grid'] if g['admissible']]
+        if not ok:
+            a['kept'] = ('MEASURED_NO_HOLDOUT_GAIN' if not any(g['holdout_mse'] < a['holdout_measured_mse'] for g in a['grid'])
+                         else 'MEASURED_RETENTION_FAIL')
             continue
+        best = min(ok, key=lambda g: g['holdout_mse'])
+        a |= {'scale': best['scale'], 'experience_weight': best['weight'], 'holdout_adapted_mse': best['holdout_mse'],
+              'retention_adapted': best['retention']}
+        cand = fit(F, R, best['scale'], best['weight'])
         weight[j] = cand
         a['kept'] = 'ADAPTED'
     adapted = [k for k, v in report['actions'].items() if v.get('kept') == 'ADAPTED']
@@ -449,8 +495,9 @@ class ToolForecast:
             out = ck.predict(x, c['action'])
             comp = ck.competence(x)
             adapted = load_adapted(self.home, ck)
-            if adapted is not None:
-                out['adapted'] = ck.predict(x, c['action'], adapted)['forecast']
+            if adapted is not None:   # region mode: in-domain contexts keep the measured weight
+                use = adapted['mode'] == 'mixed' or (comp is not None and not comp['in_domain'])
+                out['adapted'] = ck.predict(x, c['action'], adapted['weight'])['forecast'] if use else out['forecast']
             fid = uid('tfc')
             pend = self.pending_dir / (fid + '.npy')
             pend.parent.mkdir(parents=True, exist_ok=True)
@@ -550,13 +597,13 @@ class ToolForecast:
             return done
         return None
 
-    def learn(self, worlds=None):
+    def learn(self, worlds=None, mode='region'):
         """Fit the SHADOW adapted residual per world from scored experience (see module `learn`). Never raises."""
         out = {}
         for world in worlds or sorted(self.manifest['worlds']):
             try:
                 taps, enc = self.encoder(world)
-                rep = learn(self.home, self.checkpoint(world), enc if taps is not None else {}) if taps is not None else \
+                rep = learn(self.home, self.checkpoint(world), enc, mode) if taps is not None else \
                     {'world': world, 'pass': False, 'reason': enc}
             except Exception as exc:
                 rep = {'world': world, 'pass': False, 'reason': 'LEARN_FAILED', 'error': type(exc).__name__}
@@ -606,7 +653,7 @@ def for_runtime(r):
 
 
 def operator_command(r, args):
-    """:toolforecast [status|shadow|off|score|learn|forget]"""
+    """:toolforecast [status|shadow|off|score|learn [region|mixed]|forget]"""
     tf = for_runtime(r)
     if not args or args == ['status']:
         return dumps(tf.report())
@@ -614,8 +661,9 @@ def operator_command(r, args):
         return dumps({'mode': tf.set_mode('SHADOW')})
     if args == ['off']:
         return dumps({'mode': tf.set_mode('OFF')})
-    if args == ['learn']:
-        return dumps({w: {k: v.get(k) for k in ('pass', 'reason', 'experience_rows', 'adapted_actions')} for w, v in tf.learn().items()})
+    if args[:1] == ['learn'] and len(args) <= 2:
+        got = tf.learn(mode=args[1] if len(args) == 2 else 'region')
+        return dumps({w: {k: v.get(k) for k in ('pass', 'reason', 'mode', 'experience_rows', 'adapted_actions')} for w, v in got.items()})
     if args == ['forget']:
         removed = []
         for w in tf.manifest['worlds']:
@@ -627,4 +675,4 @@ def operator_command(r, args):
     if args == ['score']:
         from .agi import hub
         return dumps({'scored': tf.score_pending(hub(r).tools.box.load()[0]['calls'])})
-    raise ValueError(':toolforecast [status|shadow|off|score|learn|forget]')
+    raise ValueError(':toolforecast [status|shadow|off|score|learn [region|mixed]|forget]')

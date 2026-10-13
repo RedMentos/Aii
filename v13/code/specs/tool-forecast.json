@@ -49,6 +49,14 @@
    "parity": "specs/tool_forecast/calc_counter/parity.json",
    "parity_sha256": "231a0a9a15e5b675c5dff4065e01ad504b985c0fe01b46f1c24b2553493566b0",
    "raw_zip_sha256": "af3213c11efa2397905ae980f8d277c9989a10ed1ab78c642e9c424213dc4cf3",
+   "replay": "specs/tool_forecast/calc_counter/replay.npz",
+   "replay_reference": {
+    "dtype": "float16",
+    "pairs": 800,
+    "partition": "train",
+    "texts": 1000
+   },
+   "replay_sha256": "a667168dc1d01abef95ce85cdd43247315945844f6843584c3d64a3267405c00",
    "reproduced_test_mse_max_rel_diff": 1.1536255598915532e-07,
    "results_zip_sha256": "4e66fa5654bdedd0b2d02de9e94d999792a138fbcd9fa2220ae9cc3eb72a51ed",
    "source": "docs/proofs/continuation-20261012/action-jepa-round7-fresh (runs/tool_l11_last/full-seed13)"
@@ -86,6 +94,14 @@
    "parity": "specs/tool_forecast/note_edit/parity.json",
    "parity_sha256": "e0b7ce1bc4abc77e9ed58e86007bcbdcdf087fd74b373aa6b3f8e16dd4557969",
    "raw_zip_sha256": "ff72b0e4d918319d3e21df8402c0f1769260793828fd50227df21c041fbe2c5d",
+   "replay": "specs/tool_forecast/note_edit/replay.npz",
+   "replay_reference": {
+    "dtype": "float16",
+    "pairs": 800,
+    "partition": "train",
+    "texts": 1000
+   },
+   "replay_sha256": "d383b94fa79019dd9bc9d956d4cda8af9059953904ffd481766e99f3d8ef348b",
    "reproduced_test_mse_max_rel_diff": 8.426774546540707e-08,
    "results_zip_sha256": "330db432371b9a89909575644e25deab101cf0e7181e835dde8613d62d3c6a85",
    "source": "docs/proofs/continuation-20261012/action-jepa-round8-note-tool (runs/note_l11_last/full-seed13)"

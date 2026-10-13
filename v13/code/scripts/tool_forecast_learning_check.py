@@ -55,22 +55,50 @@ FREE_TEST = ('Clear the snow from the steps.', 'Write the minutes of the meeting
              'Learn ten words of Italian.')
 
 
-def plan(restored):
+# Round 2 (region mode, complementary memory): fifty more new notes.
+FREE_EXP2 = ('Defrost the chicken for dinner.', 'Ask Marta to return the umbrella.', 'Renew the fishing licence.',
+             'Clean the oven racks.', 'Phone the garage about the noise.', 'Buy seeds for the window box.',
+             'Write a review of the hotel.', 'Move the meeting to Thursday.', 'Check the expiry date of the milk.',
+             'Fold the laundry before lunch.', 'Text Ben the address.', 'Bring cupcakes to the office.',
+             'Sweep the balcony.', 'Rename the holiday photo folder.', 'Return the rental skis.',
+             'Book a haircut for Saturday.', 'Collect the keys from Anna.', 'Unsubscribe from the newsletter.',
+             'Charge the electric toothbrush.', 'Ask the bakery about gluten free bread.', 'Fix the wobbly chair leg.',
+             'Make a list for the camping trip.', 'Drop the coats at the charity shop.', 'Set an alarm for the early train.',
+             'Thaw the peas for the soup.', 'Find the passport photos.', 'Call the council about the bin.',
+             'Brush the dog after the walk.', 'Back up the work laptop.', 'Pay back Lucy for the tickets.')
+FREE_TEST2 = ('Buy a frame for the poster.', 'Test the garden hose for leaks.', 'Clean the fish tank filter.',
+              'Ask Olga about the night shift.', 'Wrap the gift for the wedding.', 'Measure the sofa for the new room.',
+              'Ring the pharmacy about the order.', 'Iron the shirt for the interview.', 'Paint the door handle.',
+              'Count the chairs for the party.', 'Store the summer clothes.', 'Visit the market on the square.',
+              'Order the textbook for the course.', 'Repair the zip on the backpack.', 'Fill the car with petrol.',
+              'Water the herbs on the sill.', 'Send flowers to the hospital.', 'Delete the old voicemails.',
+              'Bake cookies with the kids.', 'Rake the leaves in the yard.')
+ROUNDS = {1: {'seed': SEED, 'mode': 'one weight, no replay (code at f4a3c82)', 'exp': FREE_EXP, 'test': FREE_TEST},
+          2: {'seed': 20261018, 'mode': 'region', 'exp': FREE_EXP2, 'test': FREE_TEST2}}
+
+
+def plan(restored, round_=1):
     restored = Path(restored)
     earlier = [json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan'], cc.plan(restored)]
+    if round_ == 2:
+        p1 = plan(restored, 1)
+        earlier.append({'calc_in_world': p1['calc_in_test'], 'calc_out_of_range': p1['calc_shift_exp'] + p1['calc_shift_test'],
+                        'note_in_world': p1['note_in_test']})
+    cfg = ROUNDS[round_]
     used_in = {e['value'] for p in ('round5-raw/r5world/world.json', 'round7-fresh-raw/world/world.json')
                for e in json.loads((restored / p).read_text())['episodes']} | {v for p in earlier for v in p['calc_in_world']}
     used_out = {v for p in earlier for v in p['calc_out_of_range']}
     seen = {e['content'] for e in json.loads((restored / 'round8-note-tool-raw/world/world.json').read_text())['episodes']}
     seen |= {v for p in earlier for v in p['note_in_world']}
-    free = set(FREE_EXP) | set(FREE_TEST)
-    if len(free) != len(FREE_EXP) + len(FREE_TEST) or free & (F.NOTE_WORLD | set(live.FREE) | set(cc.FREE)):
+    free = set(cfg['exp']) | set(cfg['test'])
+    older = set(live.FREE) | set(cc.FREE) | (set(FREE_EXP) | set(FREE_TEST) if round_ == 2 else set())
+    if len(free) != len(cfg['exp']) + len(cfg['test']) or free & (F.NOTE_WORLD | older):
         raise ValueError('free notes must be new and outside the vocabulary')
-    rng = np.random.default_rng(SEED)
+    rng = np.random.default_rng(cfg['seed'])
     out = rng.choice([v for v in range(1000, 10000) if v not in used_out], 70, replace=False).tolist()
     return {'calc_shift_exp': sorted(out[:40]), 'calc_shift_test': sorted(out[40:]),
             'calc_in_test': sorted(rng.choice([v for v in range(1, 1000) if v not in used_in], 30, replace=False).tolist()),
-            'note_shift_exp': list(FREE_EXP), 'note_shift_test': list(FREE_TEST),
+            'note_shift_exp': list(cfg['exp']), 'note_shift_test': list(cfg['test']),
             'note_in_test': sorted(rng.choice(sorted(F.NOTE_WORLD - seen), 20, replace=False).tolist())}
 
 
@@ -102,7 +130,7 @@ def analyze(rows, learn_report):
 
 
 def run(args):
-    p = plan(args.restored)
+    p = plan(args.restored, args.round)
     out = Path(args.out)
     home = out / 'home'
     if home.exists():
@@ -120,11 +148,11 @@ def run(args):
         g.tools.enable('calc')
         g.tools.enable('sandbox_note')
         live.run_arms(r, g, tf, p, EXP_ARMS, rows)
-        learned = tf.learn()
+        learned = tf.learn(mode='region' if args.round == 2 else 'mixed')
         (out / 'learn.json').write_text(json.dumps(learned, indent=1) + '\n')
         live.run_arms(r, g, tf, p, ('calc_shift_test', 'calc_in_test', 'note_shift_test', 'note_in_test'), rows)
         report = analyze([x for x in rows if x['arm'] not in EXP_ARMS], learned) | {
-            'schema': 'v13-tool-forecast-learning-check-v1', 'utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+            'schema': 'v13-tool-forecast-learning-check-v1', 'round': args.round, 'utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
             'plan_counts': {k: len(v) for k, v in p.items()},
             'statuses': {s: sum(x['status'] == s for x in rows) for s in sorted({x['status'] for x in rows})},
             'experience_phase_ratio_to_best_control': live.verdict([x for x in rows if x['arm'] in EXP_ARMS]),
@@ -147,9 +175,10 @@ def main():
     a.add_argument('--restored', required=True)
     a.add_argument('--encoder-home', help='home whose encoder.json passed parity and carries retention taps (run)')
     a.add_argument('--out')
+    a.add_argument('--round', type=int, choices=(1, 2), default=2, help='1 = preregistered f4a3c82 (one weight, no replay); 2 = region mode')
     args = a.parse_args()
     if args.command == 'plan':
-        print(json.dumps(plan(args.restored), indent=1))
+        print(json.dumps(plan(args.restored, args.round), indent=1))
         return 0
     return run(args)
 
