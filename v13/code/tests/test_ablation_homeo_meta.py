@@ -105,3 +105,11 @@ class APlaneGateAblation(unittest.TestCase):
             bad=[dict(q,student_right=False,scaffold_right=True) for q in turns]
             self.assertEqual(APG.run_arm((bad,[]),'gated')['primary'],1.)  # the real gate refuses the failing student: scaffold routes
         finally:APG.T=old
+
+import ablation_world_model_confidence as WMC
+class WorldModelConfidenceAblation(unittest.TestCase):
+    def test_spearman_and_real_fit(self):
+        self.assertAlmostEqual(WMC.spearman([1,2,3],[3,2,1]),-1.);self.assertAlmostEqual(WMC.spearman([1,1,2],[1,1,2]),1.)
+        old=WMC.Q;WMC.Q=20
+        try:r=WMC.run_seed(13);self.assertEqual(r['fit_status'],'FITTED');self.assertEqual(r['labels']['supported_n']+r['labels']['uncertain_n'],20)
+        finally:WMC.Q=old

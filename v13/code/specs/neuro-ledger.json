@@ -507,7 +507,20 @@
   "MODULE_WORLD_MODEL": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
    "neuro_claim_limit": "World/goal model bookkeeping; no learned causal model claim.",
-   "ablation_baseline": null
+   "ablation_baseline": {
+    "hypothesis": "§99-style: counterfactual confidence (coverage × OOD × spread) ranks counterfactual errors",
+    "controls": [
+     "samples_only",
+     "spread_only",
+     "random"
+    ],
+    "evidence": [
+     "../bench-results/world-model-confidence-20261012/README.md",
+     "../bench-results/world-model-confidence-20261012/report.json"
+    ],
+    "verdict": "PARTIAL",
+    "note": "Preregistered, 5 seeds, real fit/counterfactual on synthetic own transitions: Spearman .354 vs random -.029 (5/5) and SUPPORTED labels have lower error 5/5, but not better than samples-only .355 or spread-only .367 (2/5 each)."
+   }
   },
   "STEP5_EXTERNAL_ROUTE_LEARNING": {
    "neuro_inspiration_class": "ENGINEERING_ONLY",
