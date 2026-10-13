@@ -92,3 +92,7 @@ Frage-only-Regel beseitigt Daten-Fehlalarme; mit Formulierungen aus Familie A F1
 ## Ergänzung 2026-10-13 Thread K: R4 Teil 11, R3-Formulierungen live — R3_LIVE_SUPPORTED
 
 Frischer Seed 29: 25/30 statt 13 (p 0,0018), Werte 30/30. R4-Werkzeugkette (Teile 3–11) vorerst abgeschlossen; offen: Deutsch, übersehene Formulierungen, Redmi. Befund `docs/proofs/continuation-20261012/r4-r3-live/BEFUND.md`.
+
+## Merge-Hinweis 2026-10-13 13:05Z Thread K (GPT/Codex arbeitet parallel)
+
+Nutzerhinweis: GPT arbeitet am selben Code weiter. Stand: Branch `claude/project-thread-s0290g` (HEAD `42a28dd`) hat keine fremden Commits. `origin/codex/continuation-review-20261013` (GPT/Codex, letzter Commit `5a69538`) baut auf Thread M auf und enthält Thread Ks R4-Werkzeug **nicht**. Beim Zusammenführen betroffen: `v13/toolstep.py` (Thread K: `_propose_list`, `shadow`, `layer`, `LIST_*`; Thread M: `propose_note_edit`, `_forecast`), `v13/agi/tools.py` (eine `list_arith`-Registrierung), `v13/transaction.py` (WP-W2c-`text`-Typ, identisch zu W2c), `v13/broker.py` (`correction_text` für `list_arith`), neu `v13/agi/listarith.py`. Der geteilte Ordner `/mnt/project-files/v13/code` enthält beide Seiten schon zusammengeführt und getestet (Referenz). Nichts überschreiben, kein Force-Push; Konflikte beidseitig erhalten.
