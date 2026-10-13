@@ -268,8 +268,8 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | B3-H7 kleine Mobile-Bridge | ✅ `b3bridge.budget` (29 k Param., 58 KB) | WP-J |
 | B3-H8 Trainingsreihenfolge | 🟡 (Predictor-first eingehalten) | WP-J |
 | B3-H9 Kanal-Nutzen-Vertrag | 🟡 | WP-J |
-| B3-H10 Automatische Degradation | 🟡 (fällt auf NO_MESSAGE) | WP-J |
-| B3-H11 `:doctor`-Ausgabe | 🟡 | WP-J |
+| B3-H10 Automatische Degradation | ✅ Mechanik (2026-10-13 Thread N: `b3degrade.py` Leiter L4→L3→L2→L1→EXACT/SYMBOLIC→NO_MESSAGE, alle 10 Canon-Auslöser aus Belegen, hart/weich, Beförderung nur explizit mit Gate-Beleg; Schwellen BOOT, Router-KL/Flip erst mit MoE-Empfänger messbar) | WP-N19, WP-J |
+| B3-H11 `:doctor`-Ausgabe | ✅ (2026-10-13 Thread N: alle Pflichtfelder je Richtung inkl. Revisionen, Runner, Router-KL/Flip Basis+aktuell, Kalibrierungs-Gültigkeit, Herabstufungen; FAIL bei Latent-Einfluss ohne gültige Kalibrierung) | WP-N19, WP-J |
 | B3-H12/H13 Abschluss/Auslegung | ✅ Gate in `:doctor` (`b3bridge.completion_gate`, Status heute scaffold) | WP-J, WP-U9 |
 
 ## 9. Gates, Benchmarks, Experimente (§23, §24, §31, §79, §99–101)

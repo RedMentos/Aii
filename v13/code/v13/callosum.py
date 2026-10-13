@@ -14,12 +14,16 @@ Utility (B3-H9)          task_gain (receiver offer reached the focal coalition) 
                          longer needs re-entry) + source_recovery_gain (receiver offer has exact evidence) - latency_cost
                          - memory_cost (bytes); human ratings add value. NO_MESSAGE is the measured baseline.
 Degradation (B3-H10)     a receiver model revision change resets that direction to the configured channel; a channel
-                         whose utility falls below NO_MESSAGE over the window is never chosen.
-:doctor (B3-H11)         per-direction report incl. latent level, calibration, utility vs NO_MESSAGE/EXACT/SYMBOLIC.
+                         whose utility falls below NO_MESSAGE over the window is never chosen. The latent ladder
+                         L4..L1 -> EXACT/SYMBOLIC -> NO_MESSAGE with all ten canon triggers lives in `b3degrade.py`.
+:doctor (B3-H11)         per-direction report incl. latent level, calibration validity, revisions, router KL / expert
+                         flip baseline+current, utility vs NO_MESSAGE/EXACT/SYMBOLIC, demotions; FAIL if latent
+                         influence was active without a valid calibration.
 """
 import json
 import math
 import re
+from . import b3degrade
 from .common import dumps
 from .neuromod import step
 
@@ -85,6 +89,7 @@ class Callosum:
             st['proposals']['n']+=1;st['proposals']['same']+=int(proposal==configured)
             return proposal,st['mode']=='ACTIVE',bool(ok) and base['n']>=MIN_N
         proposal,active,compared=self._mutate(fn)
+        b3degrade.on_receiver_revision(self.s,dname,model_revision)  # B3-H10: a latent rung falls to EXACT/SYMBOLIC at once
         if compared:
             from .authority import observe
             observe(self.s,'callosum',configured,proposal)
@@ -98,7 +103,7 @@ class Callosum:
         return {'salience':1. if o.get('needs_reentry') else round(.5+.25*bool(refs),3),'confidence':round(refs/(refs+rej),3) if refs+rej else 0.,
                 'signed_gain':g,'gain_reason':why,'urgency':1. if o.get('needs_reentry') else .3,'temporal_scope':'TURN',
                 'compatibility_score':round(.5+.5*math.tanh(u['v']),3),'utility_history':u.get('hist',[])[-5:],'bytes':len(dumps(content)),
-                'b3_level':'L0','latent_level':'unavailable'}
+                'b3_level':'L0','latent_level':b3degrade.latent_level(self.s,dname)}
     def note(self,event_id,message_packet_id,sender,receiver,channel,proposal,applied,gain):
         def fn(st):
             xs=st['pending'].setdefault(event_id,[])
@@ -147,8 +152,12 @@ class Callosum:
         return {'updated':n}
     # -- reports --------------------------------------------------------------------------------------------
     def doctor(self,cfg,revisions=None):
-        """B3-H11 fields per direction. FAIL only if latent influence were active without calibration (never here)."""
+        """B3-H11 fields per direction. FAIL if latent influence was active without valid calibration (b3degrade)."""
         st,_=self._load();out={}
+        r=getattr(self,'r',None);deg={}
+        if r is not None:  # B3-H10: evaluate the ten triggers, apply demotions, report them
+            cu={dn:{c:(st['dirs'][dn]['u'].get(c) or {}).get('v') if (st['dirs'][dn]['u'].get(c) or {'n':0})['n']>=b3degrade.MIN_N else None for c in CHANNELS} for dn in DIRECTIONS.values()}
+            deg=b3degrade.check(r,cu)
         for (snd,rcv),dname in DIRECTIONS.items():
             d=st['dirs'][dname];u=lambda c:(d['u'].get(c) or {}).get('v')
             vs=lambda c:None if u(c) is None or u('NO_MESSAGE' if c!='NO_MESSAGE' else c) is None else round(u(c)-u('NO_MESSAGE'),3)
@@ -157,6 +166,13 @@ class Callosum:
                         'utility':{c:u(c) for c in CHANNELS},'utility_vs_no_message':{c:vs(c) for c in ('SOURCE_EXACT','CONTROL','SYMBOLIC')},
                         'experience_count':sum((d['u'].get(c) or {'n':0})['n'] for c in CHANNELS),'policy_p':self.probabilities(d),
                         'fallback_channel':cfg.get('channel'),'last_calibration':None,'hardware_proof_id':None,'resets':d['resets'],'status':'PASS'}
+            g=deg.get(dname)
+            if g:
+                out[dname].update(latent_level=g['level'] if g['level'] in b3degrade.LATENT else 'unavailable',degradation_level=g['level'],
+                                  status=g['status'],calibration_valid=g['calibration_valid'],runner_revision=g['runner_revision'],
+                                  body_revisions=(revisions or (r.revisions() if hasattr(r,'revisions') else {})),router_kl=g['router_kl'],expert_flip=g['expert_flip'],
+                                  degradation={k:g[k] for k in ('previous','fired','triggers','resource_mode','role_diversity','last_fail','demotions')})
+                if g['level']=='NO_MESSAGE':out[dname]['fallback_channel']='NO_MESSAGE'
         return out
     def report(self,cfg):
         st,_=self._load();p=st['proposals']
@@ -172,14 +188,18 @@ def controller(runtime):
             n=nc(runtime)
         except Exception:n=None
         c=runtime.callosum=Callosum(runtime.store,n)
+    c.r=runtime  # :doctor evaluates the B3-H10 triggers from runtime evidence
     return c
 
 def on_rating(store,event_id,score):return Callosum(store).on_rating(event_id,(score-1)/9)
 
 def operator_command(r,args):
-    """:callosum [status|shadow|active]"""
+    """:callosum [status|shadow|active|degrade|promote <direction>]"""
     c=controller(r)
     if not args or args==['status']:return dumps(c.report(r.cfg))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':c.set_mode('ACTIVE','EXPLICIT_HUMAN')})
-    raise ValueError(':callosum [status|shadow|active]')
+    if args==['degrade']:return dumps({d:{k:x[k] for k in ('degradation_level','status','calibration_valid','degradation')} for d,x in c.doctor(r.cfg).items()})
+    if len(args)==2 and args[0]=='promote' and args[1] in b3degrade.RECEIVER:  # typed by the human at the operator console
+        return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})
+    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')

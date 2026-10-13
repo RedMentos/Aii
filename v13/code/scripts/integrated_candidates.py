@@ -132,8 +132,18 @@ def observer_schedule(sources):
     return out
 
 
+def b3_degrade(sources):
+    """2026-10-12 thread N (B3-H10): telemetry fields/enums for the B3 latent degradation ladder."""
+    out = dict(sources)
+    t = out['v13/store.py']
+    t = _replace(t, "TELEMETRY_ENUMS.update('GREEN YELLOW ORANGE RED UNCALIBRATED DEVICE_MEASURED HOST_MEASURED_NOT_REDMI MEM_BELOW_RED MEM_BELOW_ORANGE MEM_BELOW_YELLOW TEMP_AT_RED TEMP_AT_ORANGE TEMP_AT_YELLOW'.split())\n",
+                 "TELEMETRY_ENUMS.update('GREEN YELLOW ORANGE RED UNCALIBRATED DEVICE_MEASURED HOST_MEASURED_NOT_REDMI MEM_BELOW_RED MEM_BELOW_ORANGE MEM_BELOW_YELLOW TEMP_AT_RED TEMP_AT_ORANGE TEMP_AT_YELLOW'.split())\nTELEMETRY_FIELDS.update('direction level_from level_to triggers'.split())  # WP-N19 B3-H10 degradation\nTELEMETRY_ENUMS.update('B1_TO_B2 B2_TO_B1 L4 L3 L2 L1 EXACT_SYMBOLIC NO_MESSAGE RECEIVER_REVISION_CHANGED RUNNER_REVISION_CHANGED CALIBRATION_EXPIRED PROJECTOR_COLLAPSED ROUTER_DRIFT EXPERT_FLIP_SPIKE RETENTION_REGRESSED MESSAGE_UTILITY_FELL COST_OVER_BUDGET ROLE_DIVERSITY_COLLAPSED PROMOTED_EXPLICIT_HUMAN'.split())\n")
+    out['v13/store.py'] = t
+    return out
+
+
 def _later(sources):
-    return observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))
+    return b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))
 
 
 def _baseline(root):
