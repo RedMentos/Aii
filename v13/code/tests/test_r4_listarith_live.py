@@ -10,7 +10,8 @@ class Live(unittest.TestCase):
     def test_reworded_sets_keep_checks_and_rule_split(self):
         s=M.task_sets(7);self.assertEqual(len(s['orig']),60);self.assertEqual(len(s['match']),30);self.assertEqual(len(s['nomatch']),15)
         for row in s['match']:self.assertIsNotNone(listarith.operation(row[1]),row[1])
-        for row in s['nomatch']:self.assertIsNone(listarith.operation(row[1]),row[1])
+        import r4_rule_question_only as Q  # sets were split under the part-6 rule (R0); R3 now also catches 'exceed'
+        for row in s['nomatch']:self.assertIsNone(Q.r0(row[1]),row[1])
         orig={r[0]:r for r in s['orig']};self.assertTrue(all(r[2:]==orig[r[0]][2:] for r in s['match']+s['nomatch']))
         self.assertTrue(all(listarith.operation(t) is None for f,t,_,_ in s['orig'] if f.startswith(('long','notes'))))
     def test_measurement_policy_replaces_only_age(self):

@@ -84,3 +84,7 @@ Kopf erkennt neue englische Formulierungen viel besser als die Regel (F1 0,78 vs
 ## Ergänzung 2026-10-13 Thread K: R4 Teil 9, Regel nur auf die Frage — NOT_SUPPORTED
 
 Frage-only-Regel beseitigt Daten-Fehlalarme; mit Formulierungen aus Familie A F1 0,79 vs. 0,48, aber 14 % Fehlalarm durch „total number of entries“. Nichts übernommen. Befund `docs/proofs/continuation-20261012/r4-rule-question-only/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 10, Fragen-Regel R3 übernommen
+
+`agi/listarith.operation` liest jetzt nur den Frageteil, kennt mehr Formulierungen und schließt Zählfragen aus. Neue Familie E: F1 0,73 vs. 0,50, 0 Fehlalarme; R4-Aufgaben unverändert. Befund `docs/proofs/continuation-20261012/r4-rule-r3/BEFUND.md`.

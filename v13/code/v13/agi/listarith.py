@@ -5,14 +5,20 @@ C3 LFM2.5-350M reads listed numbers reliably but can neither compute nor pick th
 operation from the question wording plus a deterministic recipe raised the pass rate from 40/60 to 50/60 (p .006).
 Here the same pieces become a tool in the live turn: `operation(text)` is the BOOT rule (like the regex proposer in
 toolstep.py, not learned), the model reads typed values through READ_SCHEMA, and `tool()` re-checks every value against
-the user's own text (WP-W2 number guard) before computing. Claim limit: English wording of the R4 tasks only; other
-phrasings return no operation and nothing is proposed.
+the user's own text (WP-W2 number guard) before computing. Claim limit: English only; rule R3 (parts 9/10) misses about 40 % of new
+wordings, and those get no proposal.
 """
 import json
 import re
 
 OPERATIONS = ((re.compile(r'(?i)\bhow (?:many|much)\b[^.?]*\b(?:more|less|fewer)\b[^.?]*\bthan\b'), 'difference_max_min'),
               (re.compile(r'(?i)\b(?:total|sum)\b'), 'total'))
+# R4 parts 9/10 (docs/proofs/continuation-20261012/r4-rule-r3/BEFUND.md, rule R3): wordings from training family A only, the
+# rule reads the question part only (data lines like "Total: 173 euros." caused false alarms), and a total/overall
+# number or count of things is counting, not a sum. New family E: macro-F1 .73 vs .50, 0 false alarms, 0 sum/difference mix-ups.
+EXTRA = ((re.compile(r'(?i)\bdifference between\b|\bexceeds?\b|\bgap between\b|\bfar apart\b'), 'difference_max_min'),
+         (re.compile(r'(?i)\badd\b[^.?]*\bup\b|\baltogether\b|\bcombined\b'), 'total'))
+COUNT = re.compile(r'(?i)\b(?:total|overall)\s+(?:number|count)\s+of\b')
 READ_SYSTEM = ('Read the numbers in the text. Return JSON only. values: every listed item with its name and its number '
                'copied exactly from the text. Never calculate anything yourself.')
 READ_SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['values'], 'properties': {
@@ -26,12 +32,26 @@ _INT = re.compile(r'(?<![\d.])\d+(?!\d|\.\d)')  # a sentence-final period is not
 AGGREGATE = re.compile(r'(?i)^\s*(?:the\s+)?(?:grand\s+|stated\s+)?(?:total|sum|summe|gesamt\w*|summary(?:\s+line)?)\s*$')
 
 
+def question_part(text):
+    """Trailing sentences without digits (the question asked about the data); else the last sentence."""
+    parts = [p for p in re.split(r'(?<=[.!?"])\s+', str(text).strip()) if p]
+    tail = []
+    for p in reversed(parts):
+        if re.search(r'\d', p):
+            break
+        tail.insert(0, p)
+    return ' '.join(tail) if tail else (parts[-1] if parts else str(text))
+
+
 def operation(text):
-    """BOOT rule: which recipe the question asks for, or None."""
+    """BOOT rule R3 on the question part: which recipe the question asks for, or None."""
     t = str(text)
     if len(t) > MAX_TEXT:
         return None
-    return next((op for rx, op in OPERATIONS if rx.search(t)), None)
+    q = question_part(t)
+    if COUNT.search(q):
+        return None
+    return next((op for rx, op in OPERATIONS+EXTRA if rx.search(q)), None)
 
 
 def encode(values):

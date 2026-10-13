@@ -53,16 +53,22 @@ def question_part(text):
 
 
 def r0(text):
-    return listarith.operation(text)
+    """The rule before part 10 (whole text, OPERATIONS only); frozen here since agi/listarith.operation became R3."""
+    t = str(text)
+    return None if len(t) > listarith.MAX_TEXT else next((op for rx, op in listarith.OPERATIONS if rx.search(t)), None)
+
+
+def _r1_patterns(q):
+    return next((op for rx, op in listarith.OPERATIONS if rx.search(q)), None)
 
 
 def r1(text):
-    return listarith.operation(question_part(text))
+    return _r1_patterns(question_part(text))
 
 
 def r2(text):
     q = question_part(text)
-    return listarith.operation(q) or next((op for rx, op in R2_EXTRA if rx.search(q)), None)
+    return _r1_patterns(q) or next((op for rx, op in R2_EXTRA if rx.search(q)), None)
 
 
 RULES = {'R0': r0, 'R1': r1, 'R2': r2}

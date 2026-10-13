@@ -22,6 +22,13 @@ class Recipe(unittest.TestCase):
         with self.assertRaises(ValueError):L.compute('total',VALUES+[{'name':'Pisa','number':12}],RAIN)  # invented value
         with self.assertRaises(ValueError):L.compute('total',VALUES[:1],RAIN)
         self.assertIsNone(L.label({'operation':'total','text':'a 1, b 2.','values':'a=1\nb=3'}))
+    def test_rule_r3_question_only_and_r4_tasks_unchanged(self):
+        import sys;sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'));import utility_bench2 as U2,r4_rule_r3 as R
+        for seed in (7,11,13,17,19,23):
+            for fid,text,_,_ in U2.tasks(seed):self.assertEqual(L.operation(text),R.Q.r0(text),fid)
+        for row in R.family_e()+R.Q.family_d():self.assertEqual(L.operation(row['text']),R.r3(row['text']))
+        self.assertIsNone(L.operation('Items: a 12 euros, b 30 euros. Summary line: "Total: 52 euros." Which item is the smallest?'))
+        self.assertIsNone(L.operation('Points: Mira 4, Omar 9. What is the total number of entries?'))
     def test_stated_total_line_is_not_an_item(self):
         text='Items: coffee beans 49 euros, cleaning service 33 euros, a projector 71 euros. Summary line: "Total: 173 euros." Give the correct total.'
         read=[{'name':'coffee beans','number':49},{'name':'cleaning service','number':33},{'name':'projector','number':71},{'name':'total','number':173}]
