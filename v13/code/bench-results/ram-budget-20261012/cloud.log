@@ -1,0 +1,32 @@
+single:C3_LANGUAGE                                           PSS 497.8 anon 278.7 MiB 
+single:B1_DETAIL                                             PSS 1406.1 anon 739.7 MiB 
+single:B2_GIST                                               PSS 1391.2 anon 850.2 MiB 
+single:EMBED                                                 PSS 442.6 anon 116.8 MiB 
+single:C3_TAP                                                PSS 748.5 anon 529.7 MiB 
+variant:C3_LANGUAGE:no-repack                                PSS 292.5 anon 71.5 MiB 
+variant:C3_LANGUAGE:no-mmap                                  PSS 348.4 anon 334.1 MiB 
+variant:C3_LANGUAGE:no-repack+no-mmap                        PSS 292.6 anon 278.3 MiB 
+variant:C3_LANGUAGE:ctx1024                                  PSS 484.7 anon 265.9 MiB 
+variant:C3_LANGUAGE:ctx4096                                  PSS 521.9 anon 302.8 MiB 
+variant:C3_LANGUAGE:kv-q8                                    PSS 481.1 anon 261.9 MiB 
+variant:C3_LANGUAGE:cache-ram-default                        PSS 498.0 anon 278.8 MiB 
+variant:B1_DETAIL:no-repack                                  PSS 754.5 anon 78.7 MiB 
+variant:B1_DETAIL:no-mmap                                    PSS 868.6 anon 854.2 MiB 
+variant:B1_DETAIL:no-repack+no-mmap                          PSS 754.3 anon 740.0 MiB 
+variant:B1_DETAIL:ctx1024                                    PSS 1394.2 anon 727.5 MiB 
+variant:B1_DETAIL:ctx4096                                    PSS 1431.4 anon 764.6 MiB 
+variant:B1_DETAIL:kv-q8                                      PSS 1389.7 anon 722.9 MiB 
+variant:B1_DETAIL:cache-ram-default                          PSS 1406.4 anon 739.7 MiB 
+variant:B2_GIST:no-repack                                    PSS 837.1 anon 296.1 MiB 
+variant:B2_GIST:no-mmap                                      PSS 1124.6 anon 1109.8 MiB 
+variant:B2_GIST:no-repack+no-mmap                            PSS 837.1 anon 822.5 MiB 
+variant:B2_GIST:ctx1024                                      PSS 1379.1 anon 837.9 MiB 
+variant:B2_GIST:ctx4096                                      PSS 1416.0 anon 874.7 MiB 
+variant:B2_GIST:kv-q8                                        PSS 1374.7 anon 833.4 MiB 
+variant:B2_GIST:cache-ram-default                            PSS 1391.3 anon 850.2 MiB 
+combo:C3+B1+B2 resident                                      PSS 3268.0 anon 1868.7 MiB 
+combo:C3+B1+B2 resident no-repack                            PSS 1856.5 anon 446.2 MiB 
+combo:C3+B1+B2+EMBED resident                                PSS 3697.2 anon 1985.4 MiB 
+combo:C3+B1+B2+EMBED+C3_TAP resident                         PSS 4227.0 anon 2515.1 MiB 
+combo:C3 + B1/B2 sequential                                  PSS 1890.4 anon 1129.0 MiB 
+combo:C3 + B1/B2 sequential no-repack                        PSS 1116.3 anon 367.5 MiB 

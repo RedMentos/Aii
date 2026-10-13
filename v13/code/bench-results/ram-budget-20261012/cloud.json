@@ -1,0 +1,3782 @@
+{
+ "results": [
+  {
+   "scenario": "single:C3_LANGUAGE",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 0.45,
+     "idle": {
+      "Rss": 478.8,
+      "Pss": 476.0,
+      "Pss_Anon": 257.1,
+      "Pss_File": 218.9,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 257.1,
+      "Anonymous": 257.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 478.8
+     },
+     "after_work": {
+      "Rss": 500.6,
+      "Pss": 497.8,
+      "Pss_Anon": 278.7,
+      "Pss_File": 219.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 278.7,
+      "Anonymous": 278.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 500.6
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 636.6,
+       "predicted_n": 64,
+       "decode_tps": 47.6
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 480.1,
+       "predicted_n": 64,
+       "decode_tps": 72.5
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 854.4,
+       "predicted_n": 64,
+       "decode_tps": 73.7
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 500.6,
+     "Pss": 497.8,
+     "Pss_Anon": 278.7,
+     "Pss_File": 219.0,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 278.7,
+     "Anonymous": 278.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 500.6
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 497.8,
+    "Pss_Anon": 278.7,
+    "Rss": 500.6
+   },
+   "mem_available_before_mib": 15244.5,
+   "mem_available_min_mib": 14954.9,
+   "mem_available_drop_max_mib": 289.6,
+   "mem_available_after_mib": 15213.3,
+   "samples": 61,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "single:B1_DETAIL",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 3.53,
+     "idle": {
+      "Rss": 1380.5,
+      "Pss": 1377.6,
+      "Pss_Anon": 711.4,
+      "Pss_File": 666.2,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 711.4,
+      "Anonymous": 711.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1380.5
+     },
+     "after_work": {
+      "Rss": 1408.9,
+      "Pss": 1406.1,
+      "Pss_Anon": 739.7,
+      "Pss_File": 666.4,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 739.7,
+      "Anonymous": 739.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1408.9
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 191.8,
+       "predicted_n": 64,
+       "decode_tps": 32.4
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 231.5,
+       "predicted_n": 64,
+       "decode_tps": 31.2
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 247.2,
+       "predicted_n": 64,
+       "decode_tps": 30.6
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B1_DETAIL": {
+     "Rss": 1408.9,
+     "Pss": 1406.1,
+     "Pss_Anon": 739.7,
+     "Pss_File": 666.4,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 739.7,
+     "Anonymous": 739.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1408.9
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1406.1,
+    "Pss_Anon": 739.7,
+    "Rss": 1408.9
+   },
+   "mem_available_before_mib": 15213.3,
+   "mem_available_min_mib": 14495.6,
+   "mem_available_drop_max_mib": 717.8,
+   "mem_available_after_mib": 15212.6,
+   "samples": 152,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "single:B2_GIST",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 2.71,
+     "idle": {
+      "Rss": 1236.0,
+      "Pss": 1233.2,
+      "Pss_Anon": 692.4,
+      "Pss_File": 540.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 692.4,
+      "Anonymous": 692.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1236.0
+     },
+     "after_work": {
+      "Rss": 1394.0,
+      "Pss": 1391.2,
+      "Pss_Anon": 850.2,
+      "Pss_File": 541.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 850.2,
+      "Anonymous": 850.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1394.0
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 251.4,
+       "predicted_n": 64,
+       "decode_tps": 26.5
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 262.1,
+       "predicted_n": 64,
+       "decode_tps": 30.6
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 229.9,
+       "predicted_n": 64,
+       "decode_tps": 27.4
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B2_GIST": {
+     "Rss": 1394.0,
+     "Pss": 1391.2,
+     "Pss_Anon": 850.2,
+     "Pss_File": 541.0,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 850.2,
+     "Anonymous": 850.2,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1394.0
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1391.2,
+    "Pss_Anon": 850.2,
+    "Rss": 1394.0
+   },
+   "mem_available_before_mib": 15212.6,
+   "mem_available_min_mib": 14377.6,
+   "mem_available_drop_max_mib": 835.0,
+   "mem_available_after_mib": 15101.2,
+   "samples": 146,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "single:EMBED",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "EMBED",
+     "model": "embeddinggemma-300M-Q8_0.gguf",
+     "file_mib": 318.1,
+     "purpose": "embed",
+     "extra": [],
+     "load_s": 1.22,
+     "idle": {
+      "Rss": 380.6,
+      "Pss": 377.8,
+      "Pss_Anon": 52.7,
+      "Pss_File": 325.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 52.7,
+      "Anonymous": 52.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 385.4
+     },
+     "after_work": {
+      "Rss": 445.5,
+      "Pss": 442.6,
+      "Pss_Anon": 116.8,
+      "Pss_File": 325.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 116.8,
+      "Anonymous": 116.8,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 445.5
+     },
+     "work": [
+      {
+       "embed": true
+      },
+      {
+       "embed": true
+      },
+      {
+       "embed": true
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "EMBED": {
+     "Rss": 445.5,
+     "Pss": 442.6,
+     "Pss_Anon": 116.8,
+     "Pss_File": 325.8,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 116.8,
+     "Anonymous": 116.8,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 445.5
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 442.6,
+    "Pss_Anon": 116.8,
+    "Rss": 445.5
+   },
+   "mem_available_before_mib": 15101.2,
+   "mem_available_min_mib": 15001.1,
+   "mem_available_drop_max_mib": 100.1,
+   "mem_available_after_mib": 15058.6,
+   "samples": 20,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "single:C3_TAP",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_TAP",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "tap",
+     "extra": [],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 478.5,
+      "Pss": 475.7,
+      "Pss_Anon": 257.0,
+      "Pss_File": 218.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 257.0,
+      "Anonymous": 257.0,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 478.5
+     },
+     "after_work": {
+      "Rss": 751.3,
+      "Pss": 748.5,
+      "Pss_Anon": 529.7,
+      "Pss_File": 218.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 529.7,
+      "Anonymous": 529.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 751.3
+     },
+     "work": [
+      {
+       "tap": true
+      },
+      {
+       "tap": true
+      },
+      {
+       "tap": true
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_TAP": {
+     "Rss": 751.3,
+     "Pss": 748.5,
+     "Pss_Anon": 529.7,
+     "Pss_File": 218.8,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 529.7,
+     "Anonymous": 529.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 751.3
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 748.5,
+    "Pss_Anon": 529.7,
+    "Rss": 751.3
+   },
+   "mem_available_before_mib": 15058.6,
+   "mem_available_min_mib": 14668.5,
+   "mem_available_drop_max_mib": 390.1,
+   "mem_available_after_mib": 15030.9,
+   "samples": 45,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:C3_LANGUAGE:no-repack",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack"
+     ],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 273.9,
+      "Pss": 271.1,
+      "Pss_Anon": 50.2,
+      "Pss_File": 220.9,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 50.2,
+      "Anonymous": 50.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 273.9
+     },
+     "after_work": {
+      "Rss": 295.3,
+      "Pss": 292.5,
+      "Pss_Anon": 71.5,
+      "Pss_File": 221.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 71.5,
+      "Anonymous": 71.5,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 295.3
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 251.5,
+       "predicted_n": 64,
+       "decode_tps": 60.3
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 327.6,
+       "predicted_n": 64,
+       "decode_tps": 65.7
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 337.7,
+       "predicted_n": 64,
+       "decode_tps": 60.4
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 295.3,
+     "Pss": 292.5,
+     "Pss_Anon": 71.5,
+     "Pss_File": 221.0,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 71.5,
+     "Anonymous": 71.5,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 295.3
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 292.5,
+    "Pss_Anon": 71.5,
+    "Rss": 295.3
+   },
+   "mem_available_before_mib": 15030.9,
+   "mem_available_min_mib": 15030.9,
+   "mem_available_drop_max_mib": 0.0,
+   "mem_available_after_mib": 15183.9,
+   "samples": 87,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:C3_LANGUAGE:no-mmap",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [
+      "--load-mode",
+      "none"
+     ],
+     "load_s": 0.62,
+     "idle": {
+      "Rss": 329.4,
+      "Pss": 326.5,
+      "Pss_Anon": 312.4,
+      "Pss_File": 14.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 312.4,
+      "Anonymous": 312.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 329.4
+     },
+     "after_work": {
+      "Rss": 351.3,
+      "Pss": 348.4,
+      "Pss_Anon": 334.1,
+      "Pss_File": 14.3,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 334.1,
+      "Anonymous": 334.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 351.3
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 845.2,
+       "predicted_n": 64,
+       "decode_tps": 94.2
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 814.7,
+       "predicted_n": 64,
+       "decode_tps": 86.4
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 724.3,
+       "predicted_n": 64,
+       "decode_tps": 80.2
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 351.3,
+     "Pss": 348.4,
+     "Pss_Anon": 334.1,
+     "Pss_File": 14.3,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 334.1,
+     "Anonymous": 334.1,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 351.3
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 348.4,
+    "Pss_Anon": 334.1,
+    "Rss": 351.3
+   },
+   "mem_available_before_mib": 15183.9,
+   "mem_available_min_mib": 14883.6,
+   "mem_available_drop_max_mib": 300.3,
+   "mem_available_after_mib": 15108.7,
+   "samples": 50,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:C3_LANGUAGE:no-repack+no-mmap",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack",
+      "--load-mode",
+      "none"
+     ],
+     "load_s": 0.61,
+     "idle": {
+      "Rss": 274.1,
+      "Pss": 271.2,
+      "Pss_Anon": 257.1,
+      "Pss_File": 14.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 257.1,
+      "Anonymous": 257.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 274.1
+     },
+     "after_work": {
+      "Rss": 295.5,
+      "Pss": 292.6,
+      "Pss_Anon": 278.3,
+      "Pss_File": 14.3,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 278.3,
+      "Anonymous": 278.3,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 295.5
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 273.0,
+       "predicted_n": 64,
+       "decode_tps": 53.9
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 222.4,
+       "predicted_n": 64,
+       "decode_tps": 52.4
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 275.6,
+       "predicted_n": 64,
+       "decode_tps": 53.2
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 295.5,
+     "Pss": 292.6,
+     "Pss_Anon": 278.3,
+     "Pss_File": 14.3,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 278.3,
+     "Anonymous": 278.3,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 295.5
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 292.6,
+    "Pss_Anon": 278.3,
+    "Rss": 295.5
+   },
+   "mem_available_before_mib": 15108.7,
+   "mem_available_min_mib": 14850.4,
+   "mem_available_drop_max_mib": 258.3,
+   "mem_available_after_mib": 15158.2,
+   "samples": 104,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:C3_LANGUAGE:ctx1024",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [
+      "-c",
+      "1024"
+     ],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 466.5,
+      "Pss": 463.6,
+      "Pss_Anon": 245.1,
+      "Pss_File": 218.5,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 245.1,
+      "Anonymous": 245.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 466.5
+     },
+     "after_work": {
+      "Rss": 487.6,
+      "Pss": 484.7,
+      "Pss_Anon": 265.9,
+      "Pss_File": 218.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 265.9,
+      "Anonymous": 265.9,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 487.6
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 851.3,
+       "predicted_n": 64,
+       "decode_tps": 59.8
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 575.5,
+       "predicted_n": 54,
+       "decode_tps": 37.0
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 920.8,
+       "predicted_n": 64,
+       "decode_tps": 83.4
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 487.6,
+     "Pss": 484.7,
+     "Pss_Anon": 265.9,
+     "Pss_File": 218.7,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 265.9,
+     "Anonymous": 265.9,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 487.6
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 484.7,
+    "Pss_Anon": 265.9,
+    "Rss": 487.6
+   },
+   "mem_available_before_mib": 15158.2,
+   "mem_available_min_mib": 14912.0,
+   "mem_available_drop_max_mib": 246.2,
+   "mem_available_after_mib": 15000.3,
+   "samples": 58,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:C3_LANGUAGE:ctx4096",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [
+      "-c",
+      "4096"
+     ],
+     "load_s": 0.52,
+     "idle": {
+      "Rss": 502.7,
+      "Pss": 499.8,
+      "Pss_Anon": 281.2,
+      "Pss_File": 218.6,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 281.2,
+      "Anonymous": 281.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 502.7
+     },
+     "after_work": {
+      "Rss": 524.5,
+      "Pss": 521.9,
+      "Pss_Anon": 302.8,
+      "Pss_File": 219.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 302.8,
+      "Anonymous": 302.8,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 524.5
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 842.6,
+       "predicted_n": 64,
+       "decode_tps": 76.2
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 596.2,
+       "predicted_n": 64,
+       "decode_tps": 109.5
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 1019.8,
+       "predicted_n": 64,
+       "decode_tps": 107.8
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 524.5,
+     "Pss": 521.9,
+     "Pss_Anon": 302.8,
+     "Pss_File": 219.0,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 302.8,
+     "Anonymous": 302.8,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 524.5
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 521.9,
+    "Pss_Anon": 302.8,
+    "Rss": 524.5
+   },
+   "mem_available_before_mib": 15000.3,
+   "mem_available_min_mib": 14926.4,
+   "mem_available_drop_max_mib": 73.9,
+   "mem_available_after_mib": 15192.0,
+   "samples": 46,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:C3_LANGUAGE:kv-q8",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [
+      "-fa",
+      "on",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0"
+     ],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 467.5,
+      "Pss": 464.9,
+      "Pss_Anon": 245.9,
+      "Pss_File": 219.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 245.9,
+      "Anonymous": 245.9,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 467.5
+     },
+     "after_work": {
+      "Rss": 483.7,
+      "Pss": 481.1,
+      "Pss_Anon": 261.9,
+      "Pss_File": 219.2,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 261.9,
+      "Anonymous": 261.9,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 483.7
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 812.6,
+       "predicted_n": 64,
+       "decode_tps": 134.3
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 556.4,
+       "predicted_n": 64,
+       "decode_tps": 112.8
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 782.1,
+       "predicted_n": 64,
+       "decode_tps": 112.6
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 483.7,
+     "Pss": 481.1,
+     "Pss_Anon": 261.9,
+     "Pss_File": 219.2,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 261.9,
+     "Anonymous": 261.9,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 483.7
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 481.1,
+    "Pss_Anon": 261.9,
+    "Rss": 483.7
+   },
+   "mem_available_before_mib": 15192.0,
+   "mem_available_min_mib": 15016.6,
+   "mem_available_drop_max_mib": 175.4,
+   "mem_available_after_mib": 15191.6,
+   "samples": 44,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:C3_LANGUAGE:cache-ram-default",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [
+      "--cache-ram",
+      "8192",
+      "--ctx-checkpoints",
+      "32"
+     ],
+     "load_s": 0.42,
+     "idle": {
+      "Rss": 478.7,
+      "Pss": 476.1,
+      "Pss_Anon": 257.1,
+      "Pss_File": 219.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 257.1,
+      "Anonymous": 257.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 478.7
+     },
+     "after_work": {
+      "Rss": 500.6,
+      "Pss": 498.0,
+      "Pss_Anon": 278.8,
+      "Pss_File": 219.2,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 278.8,
+      "Anonymous": 278.8,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 500.6
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 929.1,
+       "predicted_n": 64,
+       "decode_tps": 82.4
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 858.0,
+       "predicted_n": 64,
+       "decode_tps": 105.4
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 771.3,
+       "predicted_n": 64,
+       "decode_tps": 124.1
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 500.6,
+     "Pss": 498.0,
+     "Pss_Anon": 278.8,
+     "Pss_File": 219.2,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 278.8,
+     "Anonymous": 278.8,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 500.6
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 498.0,
+    "Pss_Anon": 278.8,
+    "Rss": 500.6
+   },
+   "mem_available_before_mib": 15191.6,
+   "mem_available_min_mib": 14998.1,
+   "mem_available_drop_max_mib": 193.5,
+   "mem_available_after_mib": 15175.3,
+   "samples": 42,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B1_DETAIL:no-repack",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack"
+     ],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 728.6,
+      "Pss": 726.0,
+      "Pss_Anon": 50.4,
+      "Pss_File": 675.6,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 50.4,
+      "Anonymous": 50.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 728.6
+     },
+     "after_work": {
+      "Rss": 757.1,
+      "Pss": 754.5,
+      "Pss_Anon": 78.7,
+      "Pss_File": 675.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 78.7,
+      "Anonymous": 78.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 757.1
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 87.2,
+       "predicted_n": 64,
+       "decode_tps": 22.0
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 96.6,
+       "predicted_n": 64,
+       "decode_tps": 23.0
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 96.4,
+       "predicted_n": 64,
+       "decode_tps": 24.1
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B1_DETAIL": {
+     "Rss": 757.1,
+     "Pss": 754.5,
+     "Pss_Anon": 78.7,
+     "Pss_File": 675.8,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 78.7,
+     "Anonymous": 78.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 757.1
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 754.5,
+    "Pss_Anon": 78.7,
+    "Rss": 757.1
+   },
+   "mem_available_before_mib": 15175.3,
+   "mem_available_min_mib": 15169.2,
+   "mem_available_drop_max_mib": 6.1,
+   "mem_available_after_mib": 15285.9,
+   "samples": 239,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B1_DETAIL:no-mmap",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [
+      "--load-mode",
+      "none"
+     ],
+     "load_s": 2.16,
+     "idle": {
+      "Rss": 842.8,
+      "Pss": 840.1,
+      "Pss_Anon": 825.9,
+      "Pss_File": 14.3,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 825.9,
+      "Anonymous": 825.9,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 842.8
+     },
+     "after_work": {
+      "Rss": 871.2,
+      "Pss": 868.6,
+      "Pss_Anon": 854.2,
+      "Pss_File": 14.4,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 854.2,
+      "Anonymous": 854.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 871.2
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 293.8,
+       "predicted_n": 64,
+       "decode_tps": 37.8
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 279.0,
+       "predicted_n": 64,
+       "decode_tps": 31.5
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 280.7,
+       "predicted_n": 64,
+       "decode_tps": 38.0
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B1_DETAIL": {
+     "Rss": 871.2,
+     "Pss": 868.6,
+     "Pss_Anon": 854.2,
+     "Pss_File": 14.4,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 854.2,
+     "Anonymous": 854.2,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 871.2
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 868.6,
+    "Pss_Anon": 854.2,
+    "Rss": 871.2
+   },
+   "mem_available_before_mib": 15285.9,
+   "mem_available_min_mib": 14426.6,
+   "mem_available_drop_max_mib": 859.3,
+   "mem_available_after_mib": 15234.1,
+   "samples": 123,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B1_DETAIL:no-repack+no-mmap",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack",
+      "--load-mode",
+      "none"
+     ],
+     "load_s": 0.92,
+     "idle": {
+      "Rss": 728.5,
+      "Pss": 725.9,
+      "Pss_Anon": 711.7,
+      "Pss_File": 14.2,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 711.7,
+      "Anonymous": 711.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 728.5
+     },
+     "after_work": {
+      "Rss": 757.0,
+      "Pss": 754.3,
+      "Pss_Anon": 740.0,
+      "Pss_File": 14.4,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 740.0,
+      "Anonymous": 740.0,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 757.0
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 94.9,
+       "predicted_n": 64,
+       "decode_tps": 23.4
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 100.7,
+       "predicted_n": 64,
+       "decode_tps": 22.5
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 96.9,
+       "predicted_n": 64,
+       "decode_tps": 22.1
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B1_DETAIL": {
+     "Rss": 757.0,
+     "Pss": 754.3,
+     "Pss_Anon": 740.0,
+     "Pss_File": 14.4,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 740.0,
+     "Anonymous": 740.0,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 757.0
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 754.3,
+    "Pss_Anon": 740.0,
+    "Rss": 757.0
+   },
+   "mem_available_before_mib": 15234.1,
+   "mem_available_min_mib": 14545.6,
+   "mem_available_drop_max_mib": 688.5,
+   "mem_available_after_mib": 15291.8,
+   "samples": 236,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B1_DETAIL:ctx1024",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [
+      "-c",
+      "1024"
+     ],
+     "load_s": 0.62,
+     "idle": {
+      "Rss": 1368.4,
+      "Pss": 1365.8,
+      "Pss_Anon": 699.4,
+      "Pss_File": 666.5,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 699.4,
+      "Anonymous": 699.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1368.4
+     },
+     "after_work": {
+      "Rss": 1396.8,
+      "Pss": 1394.2,
+      "Pss_Anon": 727.5,
+      "Pss_File": 666.6,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 727.5,
+      "Anonymous": 727.5,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1396.8
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 279.1,
+       "predicted_n": 64,
+       "decode_tps": 39.1
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 277.2,
+       "predicted_n": 54,
+       "decode_tps": 38.5
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 309.5,
+       "predicted_n": 64,
+       "decode_tps": 41.3
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B1_DETAIL": {
+     "Rss": 1396.8,
+     "Pss": 1394.2,
+     "Pss_Anon": 727.5,
+     "Pss_File": 666.6,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 727.5,
+     "Anonymous": 727.5,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1396.8
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1394.2,
+    "Pss_Anon": 727.5,
+    "Rss": 1396.8
+   },
+   "mem_available_before_mib": 15291.8,
+   "mem_available_min_mib": 14558.2,
+   "mem_available_drop_max_mib": 733.6,
+   "mem_available_after_mib": 15224.7,
+   "samples": 96,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B1_DETAIL:ctx4096",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [
+      "-c",
+      "4096"
+     ],
+     "load_s": 0.62,
+     "idle": {
+      "Rss": 1404.6,
+      "Pss": 1402.0,
+      "Pss_Anon": 735.4,
+      "Pss_File": 666.6,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 735.4,
+      "Anonymous": 735.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1404.6
+     },
+     "after_work": {
+      "Rss": 1434.0,
+      "Pss": 1431.4,
+      "Pss_Anon": 764.6,
+      "Pss_File": 666.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 764.6,
+      "Anonymous": 764.6,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1434.0
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 302.1,
+       "predicted_n": 64,
+       "decode_tps": 36.6
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 296.3,
+       "predicted_n": 64,
+       "decode_tps": 38.4
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 309.7,
+       "predicted_n": 64,
+       "decode_tps": 36.9
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B1_DETAIL": {
+     "Rss": 1434.0,
+     "Pss": 1431.4,
+     "Pss_Anon": 764.6,
+     "Pss_File": 666.8,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 764.6,
+     "Anonymous": 764.6,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1434.0
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1431.4,
+    "Pss_Anon": 764.6,
+    "Rss": 1434.0
+   },
+   "mem_available_before_mib": 15224.7,
+   "mem_available_min_mib": 14523.4,
+   "mem_available_drop_max_mib": 701.2,
+   "mem_available_after_mib": 15229.0,
+   "samples": 99,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B1_DETAIL:kv-q8",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [
+      "-fa",
+      "on",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0"
+     ],
+     "load_s": 0.62,
+     "idle": {
+      "Rss": 1369.3,
+      "Pss": 1366.7,
+      "Pss_Anon": 700.1,
+      "Pss_File": 666.6,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 700.1,
+      "Anonymous": 700.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1369.3
+     },
+     "after_work": {
+      "Rss": 1392.3,
+      "Pss": 1389.7,
+      "Pss_Anon": 722.9,
+      "Pss_File": 666.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 722.9,
+      "Anonymous": 722.9,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1392.3
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 240.7,
+       "predicted_n": 64,
+       "decode_tps": 39.4
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 190.1,
+       "predicted_n": 64,
+       "decode_tps": 36.0
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 251.2,
+       "predicted_n": 64,
+       "decode_tps": 39.7
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B1_DETAIL": {
+     "Rss": 1392.3,
+     "Pss": 1389.7,
+     "Pss_Anon": 722.9,
+     "Pss_File": 666.8,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 722.9,
+     "Anonymous": 722.9,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1392.3
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1389.7,
+    "Pss_Anon": 722.9,
+    "Rss": 1392.3
+   },
+   "mem_available_before_mib": 15229.0,
+   "mem_available_min_mib": 14568.3,
+   "mem_available_drop_max_mib": 660.6,
+   "mem_available_after_mib": 15244.4,
+   "samples": 113,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B1_DETAIL:cache-ram-default",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [
+      "--cache-ram",
+      "8192",
+      "--ctx-checkpoints",
+      "32"
+     ],
+     "load_s": 0.51,
+     "idle": {
+      "Rss": 1380.5,
+      "Pss": 1377.9,
+      "Pss_Anon": 711.4,
+      "Pss_File": 666.5,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 711.4,
+      "Anonymous": 711.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1380.5
+     },
+     "after_work": {
+      "Rss": 1409.0,
+      "Pss": 1406.4,
+      "Pss_Anon": 739.7,
+      "Pss_File": 666.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 739.7,
+      "Anonymous": 739.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1409.0
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 298.5,
+       "predicted_n": 64,
+       "decode_tps": 40.8
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 284.8,
+       "predicted_n": 64,
+       "decode_tps": 34.6
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 285.7,
+       "predicted_n": 64,
+       "decode_tps": 40.2
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B1_DETAIL": {
+     "Rss": 1409.0,
+     "Pss": 1406.4,
+     "Pss_Anon": 739.7,
+     "Pss_File": 666.7,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 739.7,
+     "Anonymous": 739.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1409.0
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1406.4,
+    "Pss_Anon": 739.7,
+    "Rss": 1409.0
+   },
+   "mem_available_before_mib": 15244.2,
+   "mem_available_min_mib": 14550.7,
+   "mem_available_drop_max_mib": 693.5,
+   "mem_available_after_mib": 15226.2,
+   "samples": 99,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B2_GIST:no-repack",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack"
+     ],
+     "load_s": 1.43,
+     "idle": {
+      "Rss": 680.6,
+      "Pss": 678.0,
+      "Pss_Anon": 137.1,
+      "Pss_File": 540.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 137.1,
+      "Anonymous": 137.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 680.6
+     },
+     "after_work": {
+      "Rss": 839.7,
+      "Pss": 837.1,
+      "Pss_Anon": 296.1,
+      "Pss_File": 541.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 296.1,
+      "Anonymous": 296.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 839.7
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 144.4,
+       "predicted_n": 64,
+       "decode_tps": 26.0
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 141.4,
+       "predicted_n": 64,
+       "decode_tps": 23.7
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 134.1,
+       "predicted_n": 64,
+       "decode_tps": 25.2
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B2_GIST": {
+     "Rss": 839.7,
+     "Pss": 837.1,
+     "Pss_Anon": 296.1,
+     "Pss_File": 541.0,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 296.1,
+     "Anonymous": 296.1,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 839.7
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 837.1,
+    "Pss_Anon": 296.1,
+    "Rss": 839.7
+   },
+   "mem_available_before_mib": 15226.2,
+   "mem_available_min_mib": 14988.8,
+   "mem_available_drop_max_mib": 237.3,
+   "mem_available_after_mib": 15294.0,
+   "samples": 186,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B2_GIST:no-mmap",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [
+      "--load-mode",
+      "none"
+     ],
+     "load_s": 2.96,
+     "idle": {
+      "Rss": 969.2,
+      "Pss": 966.6,
+      "Pss_Anon": 952.0,
+      "Pss_File": 14.6,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 952.0,
+      "Anonymous": 952.0,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 969.2
+     },
+     "after_work": {
+      "Rss": 1127.2,
+      "Pss": 1124.6,
+      "Pss_Anon": 1109.8,
+      "Pss_File": 14.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 1109.8,
+      "Anonymous": 1109.8,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1127.2
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 316.2,
+       "predicted_n": 64,
+       "decode_tps": 42.0
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 313.3,
+       "predicted_n": 64,
+       "decode_tps": 41.1
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 355.1,
+       "predicted_n": 64,
+       "decode_tps": 41.3
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B2_GIST": {
+     "Rss": 1127.2,
+     "Pss": 1124.6,
+     "Pss_Anon": 1109.8,
+     "Pss_File": 14.8,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 1109.8,
+     "Anonymous": 1109.8,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1127.2
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1124.6,
+    "Pss_Anon": 1109.8,
+    "Rss": 1127.2
+   },
+   "mem_available_before_mib": 15294.0,
+   "mem_available_min_mib": 14189.9,
+   "mem_available_drop_max_mib": 1104.1,
+   "mem_available_after_mib": 15170.9,
+   "samples": 119,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B2_GIST:no-repack+no-mmap",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack",
+      "--load-mode",
+      "none"
+     ],
+     "load_s": 1.83,
+     "idle": {
+      "Rss": 680.6,
+      "Pss": 678.0,
+      "Pss_Anon": 663.6,
+      "Pss_File": 14.3,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 663.6,
+      "Anonymous": 663.6,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 680.6
+     },
+     "after_work": {
+      "Rss": 839.7,
+      "Pss": 837.1,
+      "Pss_Anon": 822.5,
+      "Pss_File": 14.5,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 822.5,
+      "Anonymous": 822.5,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 839.7
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 147.7,
+       "predicted_n": 64,
+       "decode_tps": 26.3
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 134.5,
+       "predicted_n": 64,
+       "decode_tps": 26.4
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 154.4,
+       "predicted_n": 64,
+       "decode_tps": 26.1
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B2_GIST": {
+     "Rss": 839.7,
+     "Pss": 837.1,
+     "Pss_Anon": 822.5,
+     "Pss_File": 14.5,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 822.5,
+     "Anonymous": 822.5,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 839.7
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 837.1,
+    "Pss_Anon": 822.5,
+    "Rss": 839.7
+   },
+   "mem_available_before_mib": 15170.9,
+   "mem_available_min_mib": 14401.8,
+   "mem_available_drop_max_mib": 769.1,
+   "mem_available_after_mib": 15307.4,
+   "samples": 186,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B2_GIST:ctx1024",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [
+      "-c",
+      "1024"
+     ],
+     "load_s": 1.42,
+     "idle": {
+      "Rss": 1223.9,
+      "Pss": 1221.3,
+      "Pss_Anon": 680.4,
+      "Pss_File": 540.9,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 680.4,
+      "Anonymous": 680.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1223.9
+     },
+     "after_work": {
+      "Rss": 1381.7,
+      "Pss": 1379.1,
+      "Pss_Anon": 837.9,
+      "Pss_File": 541.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 837.9,
+      "Anonymous": 837.9,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1381.7
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 300.3,
+       "predicted_n": 64,
+       "decode_tps": 41.8
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 304.8,
+       "predicted_n": 64,
+       "decode_tps": 44.5
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 328.9,
+       "predicted_n": 64,
+       "decode_tps": 43.7
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B2_GIST": {
+     "Rss": 1381.7,
+     "Pss": 1379.1,
+     "Pss_Anon": 837.9,
+     "Pss_File": 541.1,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 837.9,
+     "Anonymous": 837.9,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1381.7
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1379.1,
+    "Pss_Anon": 837.9,
+    "Rss": 1381.7
+   },
+   "mem_available_before_mib": 15307.4,
+   "mem_available_min_mib": 14462.0,
+   "mem_available_drop_max_mib": 845.5,
+   "mem_available_after_mib": 15228.6,
+   "samples": 101,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B2_GIST:ctx4096",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [
+      "-c",
+      "4096"
+     ],
+     "load_s": 1.53,
+     "idle": {
+      "Rss": 1260.6,
+      "Pss": 1258.0,
+      "Pss_Anon": 716.9,
+      "Pss_File": 541.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 716.9,
+      "Anonymous": 716.9,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1260.6
+     },
+     "after_work": {
+      "Rss": 1418.6,
+      "Pss": 1416.0,
+      "Pss_Anon": 874.7,
+      "Pss_File": 541.3,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 874.7,
+      "Anonymous": 874.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1418.6
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 295.4,
+       "predicted_n": 64,
+       "decode_tps": 44.9
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 302.7,
+       "predicted_n": 64,
+       "decode_tps": 37.7
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 346.6,
+       "predicted_n": 64,
+       "decode_tps": 41.9
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B2_GIST": {
+     "Rss": 1418.6,
+     "Pss": 1416.0,
+     "Pss_Anon": 874.7,
+     "Pss_File": 541.3,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 874.7,
+     "Anonymous": 874.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1418.6
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1416.0,
+    "Pss_Anon": 874.7,
+    "Rss": 1418.6
+   },
+   "mem_available_before_mib": 15228.4,
+   "mem_available_min_mib": 14422.0,
+   "mem_available_drop_max_mib": 806.5,
+   "mem_available_after_mib": 15187.6,
+   "samples": 105,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B2_GIST:kv-q8",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [
+      "-fa",
+      "on",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0"
+     ],
+     "load_s": 1.53,
+     "idle": {
+      "Rss": 1225.1,
+      "Pss": 1222.5,
+      "Pss_Anon": 681.4,
+      "Pss_File": 541.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 681.4,
+      "Anonymous": 681.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1225.1
+     },
+     "after_work": {
+      "Rss": 1377.4,
+      "Pss": 1374.7,
+      "Pss_Anon": 833.4,
+      "Pss_File": 541.3,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 833.4,
+      "Anonymous": 833.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1377.4
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 269.8,
+       "predicted_n": 64,
+       "decode_tps": 43.1
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 264.4,
+       "predicted_n": 64,
+       "decode_tps": 43.2
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 329.6,
+       "predicted_n": 64,
+       "decode_tps": 42.4
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B2_GIST": {
+     "Rss": 1377.4,
+     "Pss": 1374.7,
+     "Pss_Anon": 833.4,
+     "Pss_File": 541.3,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 833.4,
+     "Anonymous": 833.4,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1377.4
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1374.7,
+    "Pss_Anon": 833.4,
+    "Rss": 1377.4
+   },
+   "mem_available_before_mib": 15187.6,
+   "mem_available_min_mib": 14468.9,
+   "mem_available_drop_max_mib": 718.7,
+   "mem_available_after_mib": 15179.7,
+   "samples": 107,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "variant:B2_GIST:cache-ram-default",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [
+      "--cache-ram",
+      "8192",
+      "--ctx-checkpoints",
+      "32"
+     ],
+     "load_s": 1.53,
+     "idle": {
+      "Rss": 1236.0,
+      "Pss": 1233.4,
+      "Pss_Anon": 692.4,
+      "Pss_File": 541.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 692.4,
+      "Anonymous": 692.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1236.0
+     },
+     "after_work": {
+      "Rss": 1394.0,
+      "Pss": 1391.3,
+      "Pss_Anon": 850.2,
+      "Pss_File": 541.2,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 850.2,
+      "Anonymous": 850.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1394.0
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 310.6,
+       "predicted_n": 64,
+       "decode_tps": 46.1
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 322.1,
+       "predicted_n": 64,
+       "decode_tps": 39.9
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 370.2,
+       "predicted_n": 64,
+       "decode_tps": 41.6
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "B2_GIST": {
+     "Rss": 1394.0,
+     "Pss": 1391.3,
+     "Pss_Anon": 850.2,
+     "Pss_File": 541.2,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 850.2,
+     "Anonymous": 850.2,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1394.0
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1391.3,
+    "Pss_Anon": 850.2,
+    "Rss": 1394.0
+   },
+   "mem_available_before_mib": 15179.7,
+   "mem_available_min_mib": 14459.2,
+   "mem_available_drop_max_mib": 720.6,
+   "mem_available_after_mib": 15167.2,
+   "samples": 101,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "combo:C3+B1+B2 resident",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 0.51,
+     "idle": {
+      "Rss": 478.6,
+      "Pss": 476.0,
+      "Pss_Anon": 257.1,
+      "Pss_File": 218.9,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 257.1,
+      "Anonymous": 257.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 478.6
+     },
+     "after_work": {
+      "Rss": 500.5,
+      "Pss": 497.9,
+      "Pss_Anon": 278.8,
+      "Pss_File": 219.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 278.8,
+      "Anonymous": 278.8,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 500.5
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 939.8,
+       "predicted_n": 64,
+       "decode_tps": 96.8
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 901.3,
+       "predicted_n": 64,
+       "decode_tps": 117.3
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 1001.1,
+       "predicted_n": 64,
+       "decode_tps": 131.5
+      }
+     ]
+    },
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 1.04,
+     "idle": {
+      "Rss": 1380.5,
+      "Pss": 1371.0,
+      "Pss_Anon": 711.4,
+      "Pss_File": 659.6,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 711.4,
+      "Anonymous": 711.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1380.5
+     },
+     "after_work": {
+      "Rss": 1409.0,
+      "Pss": 1399.4,
+      "Pss_Anon": 739.7,
+      "Pss_File": 659.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 739.7,
+      "Anonymous": 739.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1409.0
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 314.1,
+       "predicted_n": 64,
+       "decode_tps": 41.0
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 270.8,
+       "predicted_n": 64,
+       "decode_tps": 37.2
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 255.5,
+       "predicted_n": 64,
+       "decode_tps": 31.7
+      }
+     ]
+    },
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 2.86,
+     "idle": {
+      "Rss": 1236.1,
+      "Pss": 1224.4,
+      "Pss_Anon": 692.4,
+      "Pss_File": 532.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 692.4,
+      "Anonymous": 692.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1236.1
+     },
+     "after_work": {
+      "Rss": 1394.1,
+      "Pss": 1382.3,
+      "Pss_Anon": 850.2,
+      "Pss_File": 532.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 850.2,
+      "Anonymous": 850.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1394.1
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 287.0,
+       "predicted_n": 64,
+       "decode_tps": 37.5
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 297.0,
+       "predicted_n": 64,
+       "decode_tps": 33.4
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 311.2,
+       "predicted_n": 64,
+       "decode_tps": 33.6
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 500.5,
+     "Pss": 488.6,
+     "Pss_Anon": 278.8,
+     "Pss_File": 209.8,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 278.8,
+     "Anonymous": 278.8,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 500.5
+    },
+    "B1_DETAIL": {
+     "Rss": 1409.0,
+     "Pss": 1397.1,
+     "Pss_Anon": 739.7,
+     "Pss_File": 657.4,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 739.7,
+     "Anonymous": 739.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1409.0
+    },
+    "B2_GIST": {
+     "Rss": 1394.1,
+     "Pss": 1382.3,
+     "Pss_Anon": 850.2,
+     "Pss_File": 532.1,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 850.2,
+     "Anonymous": 850.2,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1394.1
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 3268.0,
+    "Pss_Anon": 1868.7,
+    "Rss": 3303.6
+   },
+   "mem_available_before_mib": 15167.2,
+   "mem_available_min_mib": 13421.5,
+   "mem_available_drop_max_mib": 1745.7,
+   "mem_available_after_mib": 15118.8,
+   "samples": 245,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "combo:C3+B1+B2 resident no-repack",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack"
+     ],
+     "load_s": 0.44,
+     "idle": {
+      "Rss": 274.0,
+      "Pss": 271.4,
+      "Pss_Anon": 50.2,
+      "Pss_File": 221.2,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 50.2,
+      "Anonymous": 50.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 274.0
+     },
+     "after_work": {
+      "Rss": 295.5,
+      "Pss": 292.9,
+      "Pss_Anon": 71.5,
+      "Pss_File": 221.4,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 71.5,
+      "Anonymous": 71.5,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 295.5
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 277.1,
+       "predicted_n": 64,
+       "decode_tps": 64.0
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 290.5,
+       "predicted_n": 64,
+       "decode_tps": 60.8
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 342.8,
+       "predicted_n": 64,
+       "decode_tps": 67.9
+      }
+     ]
+    },
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack"
+     ],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 728.6,
+      "Pss": 719.1,
+      "Pss_Anon": 50.4,
+      "Pss_File": 668.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 50.4,
+      "Anonymous": 50.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 728.6
+     },
+     "after_work": {
+      "Rss": 757.1,
+      "Pss": 747.5,
+      "Pss_Anon": 78.7,
+      "Pss_File": 668.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 78.7,
+      "Anonymous": 78.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 757.1
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 93.8,
+       "predicted_n": 64,
+       "decode_tps": 23.5
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 104.6,
+       "predicted_n": 64,
+       "decode_tps": 21.8
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 87.5,
+       "predicted_n": 64,
+       "decode_tps": 21.3
+      }
+     ]
+    },
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack"
+     ],
+     "load_s": 1.33,
+     "idle": {
+      "Rss": 680.7,
+      "Pss": 669.0,
+      "Pss_Anon": 137.1,
+      "Pss_File": 531.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 137.1,
+      "Anonymous": 137.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 680.7
+     },
+     "after_work": {
+      "Rss": 839.8,
+      "Pss": 827.9,
+      "Pss_Anon": 296.1,
+      "Pss_File": 531.9,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 296.1,
+      "Anonymous": 296.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 839.8
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 148.8,
+       "predicted_n": 64,
+       "decode_tps": 24.4
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 138.7,
+       "predicted_n": 64,
+       "decode_tps": 24.2
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 145.9,
+       "predicted_n": 64,
+       "decode_tps": 23.9
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 295.5,
+     "Pss": 283.5,
+     "Pss_Anon": 71.5,
+     "Pss_File": 212.0,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 71.5,
+     "Anonymous": 71.5,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 295.5
+    },
+    "B1_DETAIL": {
+     "Rss": 757.1,
+     "Pss": 745.1,
+     "Pss_Anon": 78.7,
+     "Pss_File": 666.4,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 78.7,
+     "Anonymous": 78.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 757.1
+    },
+    "B2_GIST": {
+     "Rss": 839.8,
+     "Pss": 827.9,
+     "Pss_Anon": 296.1,
+     "Pss_File": 531.9,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 296.1,
+     "Anonymous": 296.1,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 839.8
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1856.5,
+    "Pss_Anon": 446.2,
+    "Rss": 1892.4
+   },
+   "mem_available_before_mib": 15118.4,
+   "mem_available_min_mib": 14859.1,
+   "mem_available_drop_max_mib": 259.3,
+   "mem_available_after_mib": 15279.3,
+   "samples": 478,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "combo:C3+B1+B2+EMBED resident",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 478.4,
+      "Pss": 475.9,
+      "Pss_Anon": 257.1,
+      "Pss_File": 218.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 257.1,
+      "Anonymous": 257.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 478.4
+     },
+     "after_work": {
+      "Rss": 500.4,
+      "Pss": 497.8,
+      "Pss_Anon": 278.8,
+      "Pss_File": 219.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 278.8,
+      "Anonymous": 278.8,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 500.4
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 949.1,
+       "predicted_n": 64,
+       "decode_tps": 118.7
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 1025.6,
+       "predicted_n": 64,
+       "decode_tps": 105.6
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 974.6,
+       "predicted_n": 64,
+       "decode_tps": 116.5
+      }
+     ]
+    },
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 1.12,
+     "idle": {
+      "Rss": 1380.5,
+      "Pss": 1371.1,
+      "Pss_Anon": 711.4,
+      "Pss_File": 659.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 711.4,
+      "Anonymous": 711.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1380.5
+     },
+     "after_work": {
+      "Rss": 1409.0,
+      "Pss": 1399.5,
+      "Pss_Anon": 739.7,
+      "Pss_File": 659.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 739.7,
+      "Anonymous": 739.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1409.0
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 235.2,
+       "predicted_n": 64,
+       "decode_tps": 37.2
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 262.1,
+       "predicted_n": 64,
+       "decode_tps": 36.9
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 248.5,
+       "predicted_n": 64,
+       "decode_tps": 36.9
+      }
+     ]
+    },
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 2.75,
+     "idle": {
+      "Rss": 1236.1,
+      "Pss": 1224.5,
+      "Pss_Anon": 692.4,
+      "Pss_File": 532.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 692.4,
+      "Anonymous": 692.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1236.1
+     },
+     "after_work": {
+      "Rss": 1394.1,
+      "Pss": 1382.3,
+      "Pss_Anon": 850.2,
+      "Pss_File": 532.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 850.2,
+      "Anonymous": 850.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1394.1
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 293.8,
+       "predicted_n": 64,
+       "decode_tps": 43.0
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 325.9,
+       "predicted_n": 64,
+       "decode_tps": 41.3
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 315.3,
+       "predicted_n": 64,
+       "decode_tps": 39.1
+      }
+     ]
+    },
+    {
+     "role": "EMBED",
+     "model": "embeddinggemma-300M-Q8_0.gguf",
+     "file_mib": 318.1,
+     "purpose": "embed",
+     "extra": [],
+     "load_s": 1.22,
+     "idle": {
+      "Rss": 380.6,
+      "Pss": 368.4,
+      "Pss_Anon": 52.7,
+      "Pss_File": 315.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 52.7,
+      "Anonymous": 52.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 385.3
+     },
+     "after_work": {
+      "Rss": 445.3,
+      "Pss": 432.7,
+      "Pss_Anon": 116.7,
+      "Pss_File": 316.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 116.7,
+      "Anonymous": 116.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 445.3
+     },
+     "work": [
+      {
+       "embed": true
+      },
+      {
+       "embed": true
+      },
+      {
+       "embed": true
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 500.4,
+     "Pss": 487.5,
+     "Pss_Anon": 278.8,
+     "Pss_File": 208.7,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 278.8,
+     "Anonymous": 278.8,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 500.4
+    },
+    "B1_DETAIL": {
+     "Rss": 1409.0,
+     "Pss": 1395.9,
+     "Pss_Anon": 739.7,
+     "Pss_File": 656.3,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 739.7,
+     "Anonymous": 739.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1409.0
+    },
+    "B2_GIST": {
+     "Rss": 1394.1,
+     "Pss": 1381.1,
+     "Pss_Anon": 850.2,
+     "Pss_File": 530.9,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 850.2,
+     "Anonymous": 850.2,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1394.1
+    },
+    "EMBED": {
+     "Rss": 445.3,
+     "Pss": 432.7,
+     "Pss_Anon": 116.7,
+     "Pss_File": 316.0,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 116.7,
+     "Anonymous": 116.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 445.3
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 3697.2,
+    "Pss_Anon": 1985.4,
+    "Rss": 3748.8
+   },
+   "mem_available_before_mib": 15279.3,
+   "mem_available_min_mib": 13328.7,
+   "mem_available_drop_max_mib": 1950.6,
+   "mem_available_after_mib": 15260.7,
+   "samples": 257,
+   "budget": {
+    "pss_vs_soft": "FAIL",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "combo:C3+B1+B2+EMBED+C3_TAP resident",
+   "sequential": false,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 478.6,
+      "Pss": 476.0,
+      "Pss_Anon": 257.1,
+      "Pss_File": 218.9,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 257.1,
+      "Anonymous": 257.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 478.6
+     },
+     "after_work": {
+      "Rss": 500.4,
+      "Pss": 497.8,
+      "Pss_Anon": 278.7,
+      "Pss_File": 219.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 278.7,
+      "Anonymous": 278.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 500.4
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 1018.9,
+       "predicted_n": 64,
+       "decode_tps": 116.6
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 954.0,
+       "predicted_n": 64,
+       "decode_tps": 109.7
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 968.6,
+       "predicted_n": 64,
+       "decode_tps": 135.1
+      }
+     ]
+    },
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 0.83,
+     "idle": {
+      "Rss": 1380.6,
+      "Pss": 1371.1,
+      "Pss_Anon": 711.4,
+      "Pss_File": 659.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 711.4,
+      "Anonymous": 711.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1380.6
+     },
+     "after_work": {
+      "Rss": 1409.1,
+      "Pss": 1399.5,
+      "Pss_Anon": 739.7,
+      "Pss_File": 659.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 739.7,
+      "Anonymous": 739.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1409.1
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 281.8,
+       "predicted_n": 64,
+       "decode_tps": 38.4
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 265.7,
+       "predicted_n": 64,
+       "decode_tps": 33.5
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 306.8,
+       "predicted_n": 64,
+       "decode_tps": 37.5
+      }
+     ]
+    },
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 2.86,
+     "idle": {
+      "Rss": 1236.0,
+      "Pss": 1224.3,
+      "Pss_Anon": 692.4,
+      "Pss_File": 531.9,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 692.4,
+      "Anonymous": 692.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1236.0
+     },
+     "after_work": {
+      "Rss": 1394.0,
+      "Pss": 1382.2,
+      "Pss_Anon": 850.2,
+      "Pss_File": 532.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 850.2,
+      "Anonymous": 850.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1394.0
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 281.4,
+       "predicted_n": 64,
+       "decode_tps": 41.7
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 334.4,
+       "predicted_n": 64,
+       "decode_tps": 40.1
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 353.2,
+       "predicted_n": 64,
+       "decode_tps": 36.8
+      }
+     ]
+    },
+    {
+     "role": "EMBED",
+     "model": "embeddinggemma-300M-Q8_0.gguf",
+     "file_mib": 318.1,
+     "purpose": "embed",
+     "extra": [],
+     "load_s": 1.32,
+     "idle": {
+      "Rss": 380.6,
+      "Pss": 368.4,
+      "Pss_Anon": 52.7,
+      "Pss_File": 315.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 52.7,
+      "Anonymous": 52.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 385.4
+     },
+     "after_work": {
+      "Rss": 445.5,
+      "Pss": 432.8,
+      "Pss_Anon": 116.8,
+      "Pss_File": 316.0,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 116.8,
+      "Anonymous": 116.8,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 445.5
+     },
+     "work": [
+      {
+       "embed": true
+      },
+      {
+       "embed": true
+      },
+      {
+       "embed": true
+      }
+     ]
+    },
+    {
+     "role": "C3_TAP",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "tap",
+     "extra": [],
+     "load_s": 0.93,
+     "idle": {
+      "Rss": 478.5,
+      "Pss": 362.5,
+      "Pss_Anon": 257.0,
+      "Pss_File": 105.5,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 257.0,
+      "Anonymous": 257.0,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 478.5
+     },
+     "after_work": {
+      "Rss": 751.2,
+      "Pss": 635.2,
+      "Pss_Anon": 529.7,
+      "Pss_File": 105.5,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 529.7,
+      "Anonymous": 529.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 751.2
+     },
+     "work": [
+      {
+       "tap": true
+      },
+      {
+       "tap": true
+      },
+      {
+       "tap": true
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 500.4,
+     "Pss": 384.3,
+     "Pss_Anon": 278.7,
+     "Pss_File": 105.5,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 278.7,
+     "Anonymous": 278.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 500.4
+    },
+    "B1_DETAIL": {
+     "Rss": 1409.1,
+     "Pss": 1395.2,
+     "Pss_Anon": 739.7,
+     "Pss_File": 655.5,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 739.7,
+     "Anonymous": 739.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1409.1
+    },
+    "B2_GIST": {
+     "Rss": 1394.0,
+     "Pss": 1380.2,
+     "Pss_Anon": 850.2,
+     "Pss_File": 530.1,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 850.2,
+     "Anonymous": 850.2,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 1394.0
+    },
+    "EMBED": {
+     "Rss": 445.5,
+     "Pss": 432.1,
+     "Pss_Anon": 116.8,
+     "Pss_File": 315.3,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 116.8,
+     "Anonymous": 116.8,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 445.5
+    },
+    "C3_TAP": {
+     "Rss": 751.2,
+     "Pss": 635.2,
+     "Pss_Anon": 529.7,
+     "Pss_File": 105.5,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 529.7,
+     "Anonymous": 529.7,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 751.2
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 4227.0,
+    "Pss_Anon": 2515.1,
+    "Rss": 4500.2
+   },
+   "mem_available_before_mib": 15260.7,
+   "mem_available_min_mib": 12740.2,
+   "mem_available_drop_max_mib": 2520.5,
+   "mem_available_after_mib": 14872.1,
+   "samples": 287,
+   "budget": {
+    "pss_vs_soft": "FAIL",
+    "pss_vs_hard": "FAIL",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "combo:C3 + B1/B2 sequential",
+   "sequential": true,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 0.42,
+     "idle": {
+      "Rss": 478.6,
+      "Pss": 476.0,
+      "Pss_Anon": 257.1,
+      "Pss_File": 218.9,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 257.1,
+      "Anonymous": 257.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 478.6
+     },
+     "after_work": {
+      "Rss": 500.5,
+      "Pss": 497.9,
+      "Pss_Anon": 278.8,
+      "Pss_File": 219.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 278.8,
+      "Anonymous": 278.8,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 500.5
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 1147.5,
+       "predicted_n": 64,
+       "decode_tps": 155.0
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 892.2,
+       "predicted_n": 64,
+       "decode_tps": 114.6
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 1062.7,
+       "predicted_n": 64,
+       "decode_tps": 157.8
+      }
+     ]
+    },
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 0.62,
+     "idle": {
+      "Rss": 1380.5,
+      "Pss": 1371.0,
+      "Pss_Anon": 711.4,
+      "Pss_File": 659.6,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 711.4,
+      "Anonymous": 711.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1380.5
+     },
+     "after_work": {
+      "Rss": 1408.9,
+      "Pss": 1399.4,
+      "Pss_Anon": 739.7,
+      "Pss_File": 659.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 739.7,
+      "Anonymous": 739.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1408.9
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 282.9,
+       "predicted_n": 64,
+       "decode_tps": 39.4
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 259.9,
+       "predicted_n": 64,
+       "decode_tps": 35.4
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 286.2,
+       "predicted_n": 64,
+       "decode_tps": 36.0
+      }
+     ]
+    },
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [],
+     "load_s": 1.54,
+     "idle": {
+      "Rss": 1236.1,
+      "Pss": 1226.7,
+      "Pss_Anon": 692.4,
+      "Pss_File": 534.3,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 692.4,
+      "Anonymous": 692.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1236.1
+     },
+     "after_work": {
+      "Rss": 1394.0,
+      "Pss": 1384.6,
+      "Pss_Anon": 850.2,
+      "Pss_File": 534.4,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 850.2,
+      "Anonymous": 850.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 1394.0
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 340.0,
+       "predicted_n": 64,
+       "decode_tps": 43.5
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 332.6,
+       "predicted_n": 64,
+       "decode_tps": 39.6
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 348.1,
+       "predicted_n": 64,
+       "decode_tps": 41.3
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 500.5,
+     "Pss": 497.9,
+     "Pss_Anon": 278.8,
+     "Pss_File": 219.1,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 278.8,
+     "Anonymous": 278.8,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 500.5
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1890.4,
+    "Pss_Anon": 1129.0,
+    "Rss": 1909.5
+   },
+   "mem_available_before_mib": 14872.1,
+   "mem_available_min_mib": 14153.1,
+   "mem_available_drop_max_mib": 719.0,
+   "mem_available_after_mib": 15134.0,
+   "samples": 226,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  },
+  {
+   "scenario": "combo:C3 + B1/B2 sequential no-repack",
+   "sequential": true,
+   "processes": [
+    {
+     "role": "C3_LANGUAGE",
+     "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+     "file_mib": 209.2,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack"
+     ],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 274.1,
+      "Pss": 271.4,
+      "Pss_Anon": 50.2,
+      "Pss_File": 221.2,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 50.2,
+      "Anonymous": 50.2,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 274.1
+     },
+     "after_work": {
+      "Rss": 295.5,
+      "Pss": 292.9,
+      "Pss_Anon": 71.5,
+      "Pss_File": 221.4,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 71.5,
+      "Anonymous": 71.5,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 295.5
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 331.5,
+       "predicted_n": 64,
+       "decode_tps": 72.5
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 327.0,
+       "predicted_n": 64,
+       "decode_tps": 73.0
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 339.8,
+       "predicted_n": 64,
+       "decode_tps": 73.8
+      }
+     ]
+    },
+    {
+     "role": "B1_DETAIL",
+     "model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+     "file_mib": 663.5,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack"
+     ],
+     "load_s": 0.41,
+     "idle": {
+      "Rss": 728.6,
+      "Pss": 719.1,
+      "Pss_Anon": 50.4,
+      "Pss_File": 668.7,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 50.4,
+      "Anonymous": 50.4,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 728.6
+     },
+     "after_work": {
+      "Rss": 757.1,
+      "Pss": 747.5,
+      "Pss_Anon": 78.7,
+      "Pss_File": 668.8,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 78.7,
+      "Anonymous": 78.7,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 757.1
+     },
+     "work": [
+      {
+       "prompt_n": 491,
+       "prompt_tps": 109.5,
+       "predicted_n": 64,
+       "decode_tps": 22.6
+      },
+      {
+       "prompt_n": 607,
+       "prompt_tps": 93.8,
+       "predicted_n": 64,
+       "decode_tps": 21.9
+      },
+      {
+       "prompt_n": 493,
+       "prompt_tps": 103.3,
+       "predicted_n": 64,
+       "decode_tps": 20.8
+      }
+     ]
+    },
+    {
+     "role": "B2_GIST",
+     "model": "Qwen3.5-0.8B-Q4_0.gguf",
+     "file_mib": 537.0,
+     "purpose": "generate",
+     "extra": [
+      "--no-repack"
+     ],
+     "load_s": 1.33,
+     "idle": {
+      "Rss": 680.7,
+      "Pss": 671.3,
+      "Pss_Anon": 137.1,
+      "Pss_File": 534.1,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 137.1,
+      "Anonymous": 137.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 680.7
+     },
+     "after_work": {
+      "Rss": 839.8,
+      "Pss": 830.3,
+      "Pss_Anon": 296.1,
+      "Pss_File": 534.2,
+      "Pss_Shmem": 0.0,
+      "Private_Dirty": 296.1,
+      "Anonymous": 296.1,
+      "Swap": 0.0,
+      "SwapPss": 0.0,
+      "VmHWM": 839.8
+     },
+     "work": [
+      {
+       "prompt_n": 474,
+       "prompt_tps": 153.8,
+       "predicted_n": 64,
+       "decode_tps": 25.4
+      },
+      {
+       "prompt_n": 592,
+       "prompt_tps": 136.3,
+       "predicted_n": 64,
+       "decode_tps": 24.4
+      },
+      {
+       "prompt_n": 476,
+       "prompt_tps": 155.0,
+       "predicted_n": 64,
+       "decode_tps": 25.4
+      }
+     ]
+    }
+   ],
+   "end_state": {
+    "C3_LANGUAGE": {
+     "Rss": 295.5,
+     "Pss": 292.9,
+     "Pss_Anon": 71.5,
+     "Pss_File": 221.4,
+     "Pss_Shmem": 0.0,
+     "Private_Dirty": 71.5,
+     "Anonymous": 71.5,
+     "Swap": 0.0,
+     "SwapPss": 0.0,
+     "VmHWM": 295.5
+    }
+   },
+   "peak_sum_mib": {
+    "Pss": 1116.3,
+    "Pss_Anon": 367.5,
+    "Rss": 1135.2
+   },
+   "mem_available_before_mib": 15134.0,
+   "mem_available_min_mib": 14924.6,
+   "mem_available_drop_max_mib": 209.3,
+   "mem_available_after_mib": 15274.7,
+   "samples": 469,
+   "budget": {
+    "pss_vs_soft": "PASS",
+    "pss_vs_hard": "PASS",
+    "anon_vs_soft": "PASS"
+   }
+  }
+ ],
+ "schema": "v13.ram_budget_bench/1",
+ "canon_budget_mib": {
+  "weight_hot_max": 2048,
+  "total_rss_soft_max": 3482,
+  "total_rss_hard_backoff": 3891
+ },
+ "runner_defaults": {
+  "context_tokens": 2048,
+  "threads": 4,
+  "native_cache_ram_mb": 128,
+  "native_ctx_checkpoints": 6
+ },
+ "environment": {
+  "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "nproc": 4,
+  "cpu_dotprod_or_avx2": true,
+  "cpu_i8mm": false,
+  "mem_total_mib": 16093.2,
+  "swap_total_mib": 0.0,
+  "binary": "bin/llama-b10964/llama-server",
+  "android": false,
+  "python": "3.13.16"
+ },
+ "python_runtime": {
+  "VmRSS_mib": 38.4,
+  "VmHWM_mib": 38.4
+ },
+ "workload": {
+  "prompt_words": 400,
+  "n_predict": 64,
+  "turns": 3
+ }
+}

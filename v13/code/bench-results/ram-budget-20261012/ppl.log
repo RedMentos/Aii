@@ -1,0 +1,10 @@
+LFM2.5-1.2B-Instruct-Q4_K_M.gguf                 697.0 MiB  PPL 18.4984 ± 0.55381
+LFM2.5-1.2B-Instruct-Q8_0.gguf                  1188.5 MiB  PPL 17.0036 ± 0.50226
+LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf               663.5 MiB  PPL 17.187 ± 0.50353
+LFM2.5-350M-Q8_0.gguf                            361.7 MiB  PPL 3286.9425 ± 187.60987
+LFM2.5-350M-QAD-Q4_0.gguf                        209.2 MiB  PPL 1108.5393 ± 55.99109
+Qwen3.5-0.8B-IQ4_XS.gguf                         469.8 MiB  PPL 17.2582 ± 0.51499
+Qwen3.5-0.8B-Q3_K_M.gguf                         448.4 MiB  PPL 18.0268 ± 0.54246
+Qwen3.5-0.8B-Q4_0.gguf                           537.0 MiB  PPL 20.2153 ± 0.61716
+Qwen3.5-0.8B-Q4_K_M.gguf                         507.8 MiB  PPL 17.2989 ± 0.51887
+Qwen3.5-0.8B-Q8_0.gguf                           795.0 MiB  PPL 16.6244 ± 0.49432
