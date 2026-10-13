@@ -1,0 +1,27 @@
+{
+  "schema": "V13_PHONE_AUDIT_TIMEOUT_CANDIDATE_RECEIPT_V1",
+  "files": {
+    "audit_script": {
+      "path": "/workspace/scratch/f24630d7727d/Aii/v13/code/scripts/phone_release_audit_candidate.py",
+      "sha256": "1e84cafa6a1458eae2535c812818eb5f44663c9c737df03d9364f8927074147e"
+    },
+    "audit_tests": {
+      "path": "/workspace/scratch/f24630d7727d/Aii/v13/code/tests/test_phone_release_audit_candidate.py",
+      "sha256": "de97c4142e31bba56388c720f6c63098cad5ea3029e4e0fa8151bc8fae4698e0"
+    },
+    "before_regression_log": {
+      "path": "/workspace/scratch/f24630d7727d/phone-audit/timeout-descendant-before.log",
+      "sha256": "ea47022250a8803509113a590402e39615b92f14cb1251e530412a53221ea929"
+    },
+    "after_focused_log": {
+      "path": "/workspace/scratch/f24630d7727d/phone-audit/timeout-descendant-after-focused.log",
+      "sha256": "261edf7b80b15341a6fa850af066a1068b43ad3cb3d7a6f043fc80aad4397dd0"
+    }
+  },
+  "observed_pre_fix_failure": "TERM-resistant descendant survived leader timeout and wrote marker",
+  "post_fix_focused_tests": 22,
+  "post_fix_focused_errors": 0,
+  "post_fix_focused_failures": 0,
+  "final_extract_rerun_required": true,
+  "runtime_changes": false
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "V13_TOOLFORECAST_BINDING_REVIEW_V1",
+  "evidence": "SYNTHETIC_LINUX_SOFTWARE_ONLY",
+  "native_inference": false,
+  "redmi_measured": false,
+  "production_integrated": false,
+  "live_source_unchanged_during_validation": true,
+  "source_hashes": {
+    "v13/toolforecast.py": "be56e1e22d5ce0886d4c0db719fe92815838c4fc2074578aca0406f5f90e241d",
+    "scripts/install_tool_forecast.py": "13770a85b1081478a222ce78286c4dc15538de7dc4736aa68275050f6e5e8ab1",
+    "scripts/test_tool_forecast_phone.py": "bcfb015e77a355dfb49ed628c0f4004e893c6161d07f01901bcce59dd420197e",
+    "tests/test_toolforecast.py": "8c1cfaef4d98e41eb8a5f099968e954c3137442abca3b2cf92d9e6a1ecdef933",
+    "scripts/toolforecast_binding_candidate.py": "3899e83e7803f1135ab8a4602d0134f5e2013d8bbb0e03634e4fec3d04bc08a6",
+    "tests/test_toolforecast_binding_candidate.py": "a044cabe9b5eb288439abca946a2f8a94160542fb98297baf39e8c7f4fd0ea40",
+    "specs/tool-forecast.json": "07e49dfe34bc755fd643ffbbfac8dafd752ff16ac2c3fd3bde42bf16f9e21c85"
+  },
+  "patched_runtime_sha256": "92a41a42b0918a67c219527f6454769b37c85791cd286f1cde788b2cea927c91",
+  "tests": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "unittest",
+      "-v",
+      "test_toolforecast_binding_candidate",
+      "test_toolforecast.ClassifyTests",
+      "test_toolforecast.LivePathTests",
+      "test_toolforecast.DeviceScriptTests"
+    ],
+    "exit_code": 0,
+    "count": 29,
+    "seconds": 2.281
+  },
+  "reproduction_exit_code": 0,
+  "intermediate_attempts": [
+    {
+      "candidate_tests": 19,
+      "errors": 1,
+      "error": "test harness NameError: p is not defined after misplaced block; corrected without production edits"
+    }
+  ],
+  "unresolved": [
+    "publication helper not wired into M installer",
+    "encoder records do not bind dynamic backend libraries",
+    "legacy buffers refused; no automatic migration",
+    "status corruption and context-file cleanup excluded from candidate"
+  ]
+}

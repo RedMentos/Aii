@@ -1,3 +1,9 @@
+# Independent Codex review — 2026-10-13
+
+Current review branch: `codex/continuation-review-20261013`. Start with `docs/CODEX_CONTINUATION_20261013.md` and its `branch-content-audit` proof. This branch is based on Claude M at `673e3fb2`; it is **not** a combined K–P runtime. Cumulative roadmap entries do not establish that another branch's code is installed. K–P may still be active or awaiting usage limits, as the user clarified. Actual source ownership and pins are retained in the audit.
+
+Three independent candidates are being completed: bound ToolForecast restart/learning lifecycle; bounded cancellation of the existing phone driver; complete immutable-archive/extracted-software audit. No edits to M's `v13/*.py`, no changes to Claude owner branches, no native model jobs, no gate promotion. New source copies are inactive until explicitly constructed for review. See the review note for exact test counts and source hashes; earlier sections below are historical and retain their original failures.
+
 # Fortsetzung 2026-10-12: Arbeitsregeln und vollständige native Rohdaten
 
 `AGENTS.md` enthält die wiedergefundenen Arbeitsregeln samt Quellen, Research-Verfahren, offenen Fragen, Endziel, Agenteneinsatz und geprüften Sicherungen. Ein vollständiger Chatexport ist keine Voraussetzung der autorisierten Fortsetzung. Die exakten letzten drei Nachrichten wurden nicht vollständig wiedergefunden.
