@@ -80,3 +80,7 @@ Werte-Rezept aus Teil 5 als READ_LOCAL-Werkzeug `list_arith` (aus bis Nutzer-Fre
 ## Ergänzung 2026-10-13 Thread K: R4 Teil 8, gelernte Werkzeugwahl (Needle-Kopf) — NOT_SUPPORTED
 
 Kopf erkennt neue englische Formulierungen viel besser als die Regel (F1 0,78 vs. 0,38), aber 21 % Fehlalarme; Deutsch blind. Nächster sinnvoller Schritt: BOOT-Regel nur auf die Frage anwenden (kein Modell), dann Kopf + Bestätigung. Befund `docs/proofs/continuation-20261012/r4-tool-choice-head/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 9, Regel nur auf die Frage — NOT_SUPPORTED
+
+Frage-only-Regel beseitigt Daten-Fehlalarme; mit Formulierungen aus Familie A F1 0,79 vs. 0,48, aber 14 % Fehlalarm durch „total number of entries“. Nichts übernommen. Befund `docs/proofs/continuation-20261012/r4-rule-question-only/BEFUND.md`.
