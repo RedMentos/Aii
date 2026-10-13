@@ -4,6 +4,8 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
+import numpy as np
+from v13 import b3calibration as B
 from v13 import b3degrade as D
 from v13 import callosum as C
 from v13.contracts import packet
@@ -52,7 +54,10 @@ class Live(unittest.TestCase):
     def tearDown(self):self.r.close();self.tmp.cleanup()
     def bridge(self,d='B1_TO_B2',age=60.,gates=('l1',),receiver='rev-b2'):
         (self.r.home/'b3').mkdir(exist_ok=True)
-        man={'calibrated':True,'created_wall_time':time.time()-age,'receiver_revision':receiver,'r':16,'K':4}|{g+'_gate':{'verdict':'PASS','criteria':{}} for g in gates}
+        rng=np.random.default_rng(0);x=rng.normal(size=(80,8))
+        cal=B.compute(x,x[::-1]*1.05,body_pair_id='B1->B2',sender_revision='rev-b1',receiver_revision=receiver,target_tap_id='lfm2.l8')|{'created_wall_time':time.time()-age}
+        man={'calibrated':True,'created_wall_time':time.time()-age,'receiver_revision':receiver,'r':16,'K':4,'receiver_calibration':cal}
+        man|={g+'_gate':{'verdict':'PASS','criteria':{'receiver_ood':{'significant':True}}} for g in gates}
         (self.r.home/'b3'/f'{d}.json').write_text(json.dumps(man))
     def doc(self):return b3_doctor(self.r)['B1_TO_B2']
 

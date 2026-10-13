@@ -171,7 +171,7 @@ class Callosum:
                 out[dname].update(latent_level=g['level'] if g['level'] in b3degrade.LATENT else 'unavailable',degradation_level=g['level'],
                                   status=g['status'],calibration_valid=g['calibration_valid'],runner_revision=g['runner_revision'],
                                   body_revisions=(revisions or (r.revisions() if hasattr(r,'revisions') else {})),router_kl=g['router_kl'],expert_flip=g['expert_flip'],
-                                  degradation={k:g[k] for k in ('previous','fired','triggers','resource_mode','role_diversity','last_fail','demotions')})
+                                  degradation={k:g[k] for k in ('previous','fired','triggers','calibration_reasons','resource_mode','role_diversity','last_fail','demotions')})
                 if g['level']=='NO_MESSAGE':out[dname]['fallback_channel']='NO_MESSAGE'
         return out
     def report(self,cfg):

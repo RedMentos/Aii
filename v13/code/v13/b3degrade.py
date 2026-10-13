@@ -14,7 +14,8 @@ NOT_MEASURED: it neither fires nor counts as passed.
   HARD (straight to EXACT/SYMBOLIC; the bridge itself is invalid)
     RECEIVER_REVISION_CHANGED   receiver body model revision differs from the one the level was granted on
     RUNNER_REVISION_CHANGED     native runner binary differs (bin/llama-server content hash)
-    CALIBRATION_EXPIRED         no calibration, or older than ``CAL_TTL_S``
+    CALIBRATION_EXPIRED         no valid B3-H4 ReceiverCalibration packet for the current receiver/sender revision
+                                (``b3calibration.validity``), or older than ``CAL_TTL_S``
     PROJECTOR_COLLAPSED         message effective rank / per-dimension std under the floor
   SOFT (one rung down per check)
     ROUTER_DRIFT                router KL now > max(2 x baseline, baseline + 0.01)
@@ -40,12 +41,13 @@ import json
 from pathlib import Path
 import re
 import time
+from . import b3calibration
 from .common import dumps
 
 KEY='B3_DEGRADE';REVISION='b3-degrade-v1'
 LADDER=('L4','L3','L2','L1','EXACT_SYMBOLIC','NO_MESSAGE')
 LATENT=LADDER[:4];FALLBACK='EXACT_SYMBOLIC'
-RECEIVER={'B1_TO_B2':'B2_GIST','B2_TO_B1':'B1_DETAIL'}
+RECEIVER={'B1_TO_B2':'B2_GIST','B2_TO_B1':'B1_DETAIL'};SENDER={'B1_TO_B2':'B1_DETAIL','B2_TO_B1':'B2_GIST'}
 HARD=('RECEIVER_REVISION_CHANGED','RUNNER_REVISION_CHANGED','CALIBRATION_EXPIRED','PROJECTOR_COLLAPSED')
 SOFT=('ROUTER_DRIFT','EXPERT_FLIP_SPIKE','RETENTION_REGRESSED','MESSAGE_UTILITY_FELL','COST_OVER_BUDGET','ROLE_DIVERSITY_COLLAPSED')
 TRIGGERS=HARD+SOFT
@@ -135,8 +137,11 @@ def evidence(r,direction,channel_utility=None,now=None):
     """Everything the triggers read, gathered from the runtime (fail-open per field: None = NOT_MEASURED)."""
     now=time.time() if now is None else now;home=Path(r.home);man=manifest(home,direction) or {}
     st=load(r.store)[0]['dirs'][direction];m=st['measured']
-    try:rev=(r.revisions() or {}).get(RECEIVER[direction])
-    except Exception:rev=None
+    try:revs=r.revisions() or {}
+    except Exception:revs={}
+    rev=revs.get(RECEIVER[direction]);snd=revs.get(SENDER[direction])
+    rev=None if rev in (None,'unavailable') else rev;snd=None if snd in (None,'unavailable') else snd
+    cal=man.get('receiver_calibration');cal_ok,cal_why=b3calibration.validity(cal,rev,snd)
     try:
         from .resource_modes import mode_of
         mode=mode_of(r.guard)
@@ -144,8 +149,10 @@ def evidence(r,direction,channel_utility=None,now=None):
     try:div=role_diversity(r.store)
     except Exception:div={'pairs':0,'jaccard':None}
     g=lambda k:m.get(k) if m.get(k) is not None else _find(man,k)
-    return {'receiver_revision':None if rev in (None,'unavailable') else rev,'runner_revision':runner_revision(home),
-            'calibrated':bool(man.get('calibrated')),'calibrated_at':man.get('created_wall_time') if man.get('calibrated') else None,'now':now,
+    return {'receiver_revision':rev,'sender_revision':snd,'runner_revision':runner_revision(home),
+            'calibration':cal,'calibration_reasons':cal_why,'ood_ok':((man.get('l1_gate') or {}).get('criteria') or {}).get('receiver_ood',{}).get('significant'),
+            'router_thresholds':man.get('router_thresholds'),
+            'calibrated':cal_ok,'calibrated_at':(cal or {}).get('created_wall_time',man.get('created_wall_time')) if cal_ok else None,'now':now,
             'message_rank':man.get('r'),'message_effective_rank':g('message_effective_rank'),'message_dim_std_min':g('message_dim_std_min'),
             'router_kl':g('router_kl'),'expert_flip':g('topk_flip_rate') if g('expert_flip') is None else g('expert_flip'),
             'retention_drop':g('role_drop') if g('retention_drop') is None else g('retention_drop'),
@@ -211,7 +218,7 @@ def check(r,channel_utility=None,now=None,log=True):
             if x['receiver_revision'] is None or new not in LATENT:x['receiver_revision']=ev['receiver_revision']
             if x['runner_revision'] is None or new not in LATENT:x['runner_revision']=ev['runner_revision']
             out[d]={'level':new,'previous':lv,'fired':fired,'triggers':{t:('NOT_MEASURED' if v is None else bool(v)) for t,v in tr.items()},
-                    'status':'FAIL' if fail else 'PASS','calibration_valid':tr['CALIBRATION_EXPIRED'] is False if ev['calibrated'] else False,
+                    'status':'FAIL' if fail else 'PASS','calibration_valid':tr['CALIBRATION_EXPIRED'] is False if ev['calibrated'] else False,'calibration_reasons':ev['calibration_reasons'],
                     'receiver_revision':ev['receiver_revision'],'runner_revision':ev['runner_revision'],'resource_mode':ev['resource_mode'],
                     'router_kl':{'baseline':x['baseline'].get('router_kl'),'current':ev['router_kl']},
                     'expert_flip':{'baseline':x['baseline'].get('expert_flip'),'current':ev['expert_flip']},
@@ -238,6 +245,8 @@ def promote(r,direction,authority='SYSTEM',now=None):
         missing=[k for k,ok in (('CALIBRATION',ev['calibrated'] and ev['calibrated_at'] is not None and ev['now']-ev['calibrated_at']<=CAL_TTL_S),
                                 ('RECEIVER_REVISION',ev['receiver_revision'] is not None and (man or {}).get('receiver_revision')==ev['receiver_revision']),
                                 ('GATE_'+want,gate_passed(man,want))) if not ok]
+        h5=b3calibration.gate(ev['calibration'],ev['receiver_revision'],sender_revision=ev['sender_revision'],ood_ok=ev['ood_ok'],thresholds=ev['router_thresholds'])
+        if h5['latent']!='ON':missing+=['B3_H5:'+w for w in h5['reasons'] if not w.startswith(('CALIBRATION_MISSING','RECEIVER_REVISION_CHANGED'))]
         tr=triggers(x,ev,want);fired=[t for t in TRIGGERS if tr[t]]
         if missing or fired:raise ValueError('Beförderung abgelehnt: '+', '.join(missing+fired))
         x.update(level=want,granted={'wall_time':ev['now'],'authority':authority,'level':want},receiver_revision=ev['receiver_revision'],runner_revision=ev['runner_revision'])

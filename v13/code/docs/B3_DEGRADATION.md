@@ -33,3 +33,23 @@ Router-KL und Experten-Flip, ohne Runner-Revision und ohne Gültigkeit der Kalib
 Heute besteht keine Brücke L1 (WP-J), daher stehen beide Richtungen auf EXACT/SYMBOLIC, LATENT-Autorität bleibt 0. Alle Schwellen sind BOOT-Werte.
 Router-KL/Experten-Flip existieren erst mit einem MoE-Empfänger (WP-N11) und werden bis dahin `NOT_MEASURED` gemeldet. `latent_level` im
 `:doctor` bleibt der Gate-Status aus `b3bridge.doctor_fields` (Thread L, `verification.py` nicht angefasst); die Autoritäts-Stufe steht in `degradation_level`.
+
+## Nachtrag WP-N20: B3-H4 Empfänger-Kalibrierungspaket, B3-H5 hartes Tor, B3-H9-Rest
+
+Modul `v13/b3calibration.py`, Tests `tests/test_b3calibration.py` (7), volle Suite 1326 OK / 4 Skips.
+
+- **`compute(native, message, …)`** baut das vollständige `ReceiverCalibration` (alle Canon-Felder) aus Empfänger-Zuständen am Ziel-Tap und den
+  in den Empfänger-Raum abgebildeten Nachrichten: Norm-Mittel/-Streuung, Normverhältnis, Mittelwert-Verschiebung, Varianzverhältnis,
+  `geometry_error` (TV-Abstand der Varianzanteile auf den Hauptachsen des Empfängers, richtungsbewusst: gleiche Norm auf „stillen“ Achsen fällt auf),
+  `calibration_confidence` (BOOT: Stichprobe × (1 − Geometriefehler)), Datensatz-Hash, `valid_until_revision`. Router-/Residual-/Loss-Felder nur,
+  wenn gemessen; `manifold_distance` bleibt leer (nicht implementiert und validiert).
+- **`validity`**: Paket fehlt, Feld fehlt, Empfänger- oder Sender-Revision veraltet, < 64 Stichproben, MoE-Empfänger ohne Router-Messung → ungültig.
+- **`gate` (B3-H5)** in Canon-Reihenfolge: Kalibrierung fehlt → AUS; Empfänger-Revision geändert → AUS; OOD/Router-Drift/Verteilungsbänder
+  verletzt → AUS mit Rückfallkanal; Nutzen nach Kosten ≤ Rückfall → Autorität darf nicht steigen. MoE-Empfänger brauchen kalibrierte
+  `B3.max_*`-Schwellen (Canon: „TUNE after calibration“), sonst kein Durchlass.
+- **B3-H9**: `latent_utility` mit `router_drift_penalty` und `retention_penalty`; `latent_preferred` nur, wenn LATENT gegen jede vorhandene
+  einfachere Basis über ein Validierungsfenster (20 gepaarte Episoden, Mittel − 2 SE > 0) gewinnt. Kein globales `latent_first`.
+- **Angebunden:** `b3degrade` liest das Paket aus dem Brücken-Manifest (`receiver_calibration`); `CALIBRATION_EXPIRED` heißt jetzt „kein gültiges
+  Paket für die aktuellen Revisionen oder älter als 7 Tage“, die Beförderung verlangt zusätzlich das B3-H5-Tor. Ein Sender-Tausch nach der
+  Beförderung führt zu `FAIL` und Rückfall auf EXACT/SYMBOLIC.
+- **Grenze:** Im Projekt gibt es noch kein Paar echter Empfänger-Tap-Zustände (B1 → B2 am Ziel-Tap), daher wurde kein echtes Paket berechnet.

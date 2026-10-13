@@ -262,12 +262,12 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | B3-H3 L0 Baselines | ✅ | – |
 | B3-H3 L1 Empfänger-Adapter | 🟡 | WP-J |
 | B3-H3 L2–L4 | ❌ | WP-J |
-| B3-H4 Receiver-Calibration-Paket | 🟡 (Schema `ReceiverCalibration`) | WP-J |
+| B3-H4 Receiver-Calibration-Paket | ✅ Mechanik (2026-10-13 Thread N: `b3calibration.compute` alle Canon-Felder aus Empfänger-Tap-Zuständen, richtungsbewusster Geometriefehler, Gültigkeit je Sender-/Empfänger-Revision; B3-H5-Tor in Canon-Reihenfolge; echtes Paket fehlt mangels B1→B2-Tap-Paar) | WP-N20, WP-J |
 | B3-H5 harter Empfänger-Gate | ✅ (Autorität 0) | – |
 | B3-H6 Router-Stabilität MoE | 🟡 Gate + echte Kalibrierung/α-Raster (EuroMoE, Cloud); K/Rang-Raster und Redmi offen | WP-N11 |
 | B3-H7 kleine Mobile-Bridge | ✅ `b3bridge.budget` (29 k Param., 58 KB) | WP-J |
 | B3-H8 Trainingsreihenfolge | 🟡 (Predictor-first eingehalten) | WP-J |
-| B3-H9 Kanal-Nutzen-Vertrag | 🟡 | WP-J |
+| B3-H9 Kanal-Nutzen-Vertrag | 🟡 (2026-10-13 Thread N: Latent-Nutzen mit router_drift_penalty/retention_penalty, Vorzug nur nach Validierungsfenster gegen alle Basen, p(LATENT) geführt; Messung offen) | WP-N20, WP-J |
 | B3-H10 Automatische Degradation | ✅ Mechanik (2026-10-13 Thread N: `b3degrade.py` Leiter L4→L3→L2→L1→EXACT/SYMBOLIC→NO_MESSAGE, alle 10 Canon-Auslöser aus Belegen, hart/weich, Beförderung nur explizit mit Gate-Beleg; Schwellen BOOT, Router-KL/Flip erst mit MoE-Empfänger messbar) | WP-N19, WP-J |
 | B3-H11 `:doctor`-Ausgabe | ✅ (2026-10-13 Thread N: alle Pflichtfelder je Richtung inkl. Revisionen, Runner, Router-KL/Flip Basis+aktuell, Kalibrierungs-Gültigkeit, Herabstufungen; FAIL bei Latent-Einfluss ohne gültige Kalibrierung) | WP-N19, WP-J |
 | B3-H12/H13 Abschluss/Auslegung | ✅ Gate in `:doctor` (`b3bridge.completion_gate`, Status heute scaffold) | WP-J, WP-U9 |
