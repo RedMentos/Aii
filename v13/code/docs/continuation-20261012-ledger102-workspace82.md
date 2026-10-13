@@ -62,3 +62,5 @@ Branch `claude/project-thread-n3gv74`, Basis Thread G `bbd710e`. Linux-Cloud, ke
 - Workspace-Halten (WP-U8): Regel erfüllt, Effekt 0,4 % (Multiplikator bremst nur den Zerfall).
 - Event-Segmentierung (WP-N8 A1): PARTIAL; Schnitte folgen der Länge, nicht dem Thema.
 - UNTESTED_LABEL 15 → 10. Volle Suite grün (4 Skips). Belege je `bench-results/<name>-20261012/README.md`.
+- Event-Segmente, Kandidat höhere Schwelle (.6): FAIL auf flachen Texten; mit Absatz-Hinweis .72 vs .51. Schwelle bleibt .5.
+- Latewatch-Schnittregel (WP-U3 F2): SUPPORTED_SYNTHETIC (+.064 je Runde, 5/5 gegen nie/immer/zufällig), aber drei Schwächen: `BODY_REENTRY` ohne Antwortprüfung, halb gestreamte Zahl, Tausender-Komma als Dezimalpunkt. UNTESTED_LABEL jetzt 9.
