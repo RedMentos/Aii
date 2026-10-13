@@ -78,6 +78,10 @@ mit festem Plan `specs/tool_forecast/live-plan.json` (= vorregistrierter Plan). 
 - Neuinstallation nötig: `install` schreibt jetzt `retention-<welt>.npz`.
 - Vorregistrierter Lauf: **NOT_CONFIRMED**. Lernen senkt den Fehler auf neuen Fällen auf 11–67 %, verschlechtert die alte Welt aber um das 1,5- bis 3,3-Fache. Das Gate lehnte alle Handlungen ab (kein Vergessen, kein Gewinn).
 
+## Weiterlernen, Runde 2: komplementäres Gedächtnis (2026-10-13, `docs/proofs/continuation-20261013/tool-forecast-learning-region/`)
+- `:toolforecast learn` hat standardmäßig den Modus `region`: ein zweiter Rest nur aus Erfahrung außerhalb der Domäne (Kompetenz-Signal), nur dort benutzt; In-Domäne bleibt exakt gemessen. `:toolforecast learn mixed` ist der eine Rest mit Replay der 800 eigenen Trainingspaare (`specs/tool_forecast/<welt>/replay.npz`); im Piloten schützte er, lernte aber kaum.
+- Vorregistrierter frischer Lauf: **CONTINUAL_LEARNING_CONFIRMED**. Verschobene Fälle .54–.88 des gemessenen Fehlers (Rechnen ÷4 von 1.66 auf .99 der besten Kontrolle), In-Welt unverändert 1.00. Grenze: beim Rechnen nur 9 Lernbeispiele je Handlung.
+
 ## Befund nebenbei (nicht behoben, Besitz Thread G / `agi/tools.py`)
 
 Ein per `:tx approve` freigegebener Aufruf trägt die `event_id` des ursprünglichen Turns; `_execute` legt sein Ergebnis
