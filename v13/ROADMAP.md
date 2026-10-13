@@ -976,6 +976,19 @@ OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/D
 ### Thread „Nächste offene Pakete L“ 2026-10-12: A-Plane A3-Schüler-Gate (WP-T4) — PARTIAL
 - Vorregistriert (`ac40c3d`), echte `student_gate`/`student_fallback`, 5×3000 Runden: .702 schlägt Gerüst .606 (5/5), verliert gegen immer Schüler .882 und Fenster ohne Retention .760 (0/5). Gate zu vorsichtig bei kurzen Einbrüchen; Kandidat: kürzeres Fenster, Retention nur gegen klaren Einbruch. Beleg `bench-results/aplane-gate-20261012/`. UNTESTED_LABEL jetzt 4.
 
+### Thread „Nächste offene Pakete L“ 2026-10-12: A-Plane-Gate-Kandidat — PASS, übernommen
+- Vorregistriert (`ca732c3`): Fenster 100, Retention nur bei klarem Einbruch (letzte 25 < .75). Standard .702 → .820, Stress .721 vs immer Schüler .699 / nie .614. Live in `v13/aplane.py` + Test. Beleg `bench-results/aplane-gate-candidate-20261012/`.
+
+### Thread „Nächste offene Pakete L“ 2026-10-12: World-Model kontrafaktische Konfidenz (WP-T8) — PARTIAL
+- Vorregistriert (`0b1f20c`), echtes `fit`/`counterfactual`: Spearman .354 vs Zufall −.03 (5/5), SUPPORTED-Label hat 5/5 kleineren Fehler, aber nicht besser als Stichprobenzahl (.355) oder Streuung (.367) allein. Beleg `bench-results/world-model-confidence-20261012/`. UNTESTED_LABEL jetzt 3 (F4, VISION, BODY_JEPA).
+
+### Thread „Nächste offene Pakete L“ 2026-10-13: Rauschbewusste META-Regel — Kandidat FAIL (knapp)
+- Vorregistriert (`a5d2bc3`): Rauschen dämpft die Wiederöffnung. Fehler .0757 → .0671 (5/5 besser als heute), aber nur gleichauf mit festem P .45 (2/5) → FAIL, nicht integriert. Beleg `bench-results/meta-noise-candidate-20261012/`.
+- F4, VISION, BODY_JEPA bleiben UNTESTED_LABEL: F4 ist eine Bindungs-/Integritätsregel (durch `tests/test_world_state.py` abgedeckt, keine sinnvolle §99-Ablation ohne nativen World-Worker-Lauf), VISION ist nicht im Live-Pfad, BODY_JEPA nicht begonnen.
+
+### Thread „Nächste offene Pakete L“ 2026-10-13: Corollary-Kandidat 3 (weit daneben → UNCLEAR) — PASS, übernommen
+- Vorregistriert (`7cc677d`), K 20 fest: schädliche Zuordnungen .389 → .003 auf Standard- und Stress-Strom (5/5), nie schlechter als Kandidat 2, eigene Standard-Fehlschläge enthalten sich nie. Live in `v13/selfmodel.attribute` (`FAR_K`) + Test. Preis: fremde Ereignisse auf offenem Kanal werden UNCLEAR statt fälschlich MIXED. Beleg `bench-results/corollary-unclear-20261012/`.
+
 ### Werkzeug-Vorhersage auf dem Redmi messbar machen — ERLEDIGT 2026-10-13 (Thread „Nächste offene Pakete M“)
 - **Nutzer-Befehl am Handy: `bash TESTEN_TOOLFORECAST.sh`** (nach `setup.sh`, ohne laufenden Chat). Baut `native_layer_taps` gegen die installierte gepinnte b10964-Laufzeit (Pfad wie `test_native_prefill_port.prepare_worker`, clang `-Werror`), Paritäts-Gate mit dem installierten B2-GGUF, dann dieselbe vorregistrierte Live-Prüfung mit festem Plan `specs/tool_forecast/live-plan.json`; Bericht `~/v13/exports/tool-forecast-*/report.json`. Neu `scripts/test_tool_forecast_phone.py`, 2 Tests.
 - `native_layer_taps.cpp` lädt dynamische ggml-Backends (b10964-Release) und nutzt Kontext 512; statischer Build bitgleich zu vorher.
@@ -999,5 +1012,19 @@ OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/D
 - Neu: `code/scripts/ram_budget_bench.py` (stdlib, läuft auf Termux = WP-R-Befehl im README), `ram_squeeze_bench.py` (cgroup, nur Cloud), `quant_ppl_probe.py`, Test `tests/test_ram_budget_bench.py` (6, Kommandozeile byte-gleich mit LlamaRunner). Keine Änderung an `code/v13/*.py`. Branch `claude/project-thread-s6dg4n`.
 - Offen: Redmi-Lauf (WP-R) mit dem README-Befehl; Entscheidung Repack vs. no-mmap vs. no-repack auf aarch64; Kalibrierung `bodies.size_mb` (Besitzer bodies.py); B2-Quant-Tausch braucht Tap-Neuvalidierung + STEP2; C3-Perplexität nicht auswertbar (Ursache offen).
 
-### Anspruch 2026-10-13 03:30Z — Thread „Nächste offene Pakete M“: Action-JEPA Text-Runde 9 (nur `l_out-11` letzter Token, neue Themen, größerer Test)
-- Runde 7 Text war NOT_CONFIRMED (11/30), nur `l11_last` bestand 6/6, aber auf nur 72 Test-Episoden aus 3 Themen. Runde 9 wiederholt genau diesen Arm unverändert (Runde-6-Skript, gleiche Gates, Seeds 13/21/34 × `full`/`proj`) auf nie benutzten Themen (8 + 12 Reserve), eine Erfassung mit dem gepinnten b10964-Tap-Werkzeug. Vorregistrierung vor Erzeugung. Besitz: neues `code/scripts/action_jepa_round9_text.py`, Test, Beleg-Ordner `docs/proofs/continuation-20261013/action-jepa-round9-text/`. Keine Änderung an `code/v13/`. Branch `claude/project-thread-cui1zm`.
+### Action-JEPA Text-Runde 9 (`l_out-11` letzter Token, neue Themen) — ERLEDIGT 2026-10-13 (Thread „Nächste offene Pakete M“)
+- **CONFIRMED, 6/6 Läufe** (vorregistriert `a6e755d`, Runde-6-Skript und Gates unverändert): Test 184 frische Episoden aus 8 nie benutzten Themen (Runde 7: 72/3). Test-MSE / beste Kontrolle: question .71–.82, negate .72–.89, summarize .87–.97, translate_de .88–.94; Retention überall besser. Gewinn echt, aber klein (Werkzeug-Welt .05–.24). Eine Erfassung aller 2795 Zeilen mit dem gepinnten b10964-Tap-Build (wie Gerätepfad).
+- Belege `code/docs/proofs/continuation-20261013/action-jepa-round9-text/` (README, report.json, Roh-/Ergebnis-Teile), Treiber `code/scripts/action_jepa_round9_text.py` + Test. Keine Änderung an `code/v13/`. Branch `claude/project-thread-cui1zm`.
+- Offen/Folge: Text-Handlungen in die SHADOW-Werkzeug-Vorhersage aufnehmen bräuchte einen echten Laufzeit-Handlungspfad für C3-Umschreibungen (gibt es nicht als Werkzeug) — nicht begonnen; summarize nah am Gate.
+
+### Anspruch 2026-10-13 03:55Z — Thread „Nächste offene Pakete K“: R4 Teil 5, typisierte Werte + festes Rezept statt Ausdruck
+- **In Arbeit (Thread K):** Folge aus Teil 4 (Differenz-Ausdrücke 1/15). C3 liefert per Schema nur Operation (`total` | `difference_max_min` | `none`) und Zahl je Posten; festes Rezept rechnet; Zahlen-Wächter wie WP-W2 (jede Zahl als exaktes Token im Text). Gleiche Politiken, Schwelle auf Seed 7+11, vorregistrierte Prüfung auf frischem Seed 17. Nur neues Skript, keine Runtime-Änderung.
+
+### Werkzeug-Vorhersage: Kompetenz-Signal vor dem Effekt (World-Model §7.2) — ERLEDIGT 2026-10-13 (Thread „Nächste offene Pakete M“), Ergebnis NOT_CONFIRMED
+- Jede SHADOW-Vorhersage trägt `competence` (kNN-5-Kosinus-Abstand des Kontext-Taps zu den Trainingskontexten, Schwelle = 99. Perzentil der Kalibrierungs-Partition, `install_tool_forecast.py build-competence`). Vorregistriert `8b15627`, frischer Plan (30 Zustände je Arm, 420 Live-Aufrufe, alle SCORED): **Notizen PASS** (AUROC 1.0, Fehlalarm 3 %, Treffer 100 %), **Rechnen FAIL** (AUROC .96, aber nur 37 % der Zähler 1000..9999 markiert, Gate 80 %). Markierte Aufrufe sind tatsächlich schlechter (Notizen .66 vs .07 der besten Kontrolle, Rechnen .55 vs .22). Nichts liest das Signal.
+- Belege `code/docs/proofs/continuation-20261013/tool-forecast-competence/`, Doku `code/docs/TOOL_FORECAST.md`. Volle Suite 1332 (1 sporadischer Fehler, Wiederholung grün). Branch `claude/project-thread-cui1zm`.
+- Offen: zahlbewusstes Merkmal oder neue Schwelle nur mit neuem vorregistrierten Lauf; Redmi-Lauf `TESTEN_TOOLFORECAST.sh` (Nutzer).
+
+### B2-Offer-Kandidat (Thread O) in die Live-Kette übernommen — 2026-10-13 (Thread „Nächste offene Pakete G“)
+- `v13/cognition.py` trägt jetzt die vorregistrierten Kandidaten-Änderungen als Kettenglied `integrated_candidates.b2_offer` (über `rebase()` auch in `source_handoff_candidate` gebunden). Schalter `b2_offer_body_state` (False = B2 ohne body_state) und `offer_quote_min_chars` (längere Zitate im gleichen Budget), in `config.validate` geprüft. **Standard aus = bisheriges Verhalten**; bei „aus“ ist der Offer-Aufruf unverändert, damit geschlossene Mess-Skripte (rule_transport_ablation) weiterlaufen. `b2_offer_candidate.py`/Test erkennen den integrierten Stand. Geteilter Ordner: volle Suite 1440 OK / 6 Skips (Schnappschuss); Branch `claude/project-thread-qgkt5z` @ `483af03` (Remote geprüft) 1247 OK.
+- Offen (Nutzer-/Kohortenentscheidung): Schalter einschalten (`b2_offer_body_state=false`, `offer_quote_min_chars=90`, Vorschlag Thread O). Ändert B2-Offers in allen Läufen, daher erst nach getrennter Bindung laufender Messungen. STEP2 bleibt UTILITY_FAIL.
