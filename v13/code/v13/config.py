@@ -103,6 +103,8 @@ def validate(cfg):
     if not 0<=cfg["user_stage_cap"]<=5:raise ValueError("stage cap")
     if cfg.get("tool_conflict_policy","correct") not in {"log","correct"}:raise ValueError("tool_conflict_policy log|correct")
     if cfg.get("segment_mode","percept") not in {"fixed","percept","all"}:raise ValueError("segment_mode fixed|percept|all")
+    if not isinstance(cfg.get("b2_offer_body_state",True),bool):raise ValueError("b2_offer_body_state true|false")
+    if not (isinstance(cfg.get("offer_quote_min_chars",0),int) and 0<=cfg.get("offer_quote_min_chars",0)<=400):raise ValueError("offer_quote_min_chars 0..400")
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
     return cfg
 def initialize(home):
