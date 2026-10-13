@@ -30,17 +30,24 @@
    "competence": "specs/tool_forecast/calc_counter/competence.npz",
    "competence_reference": {
     "calibration_contexts": 60,
+    "calibration_distance_mean_median": 0.004462785,
     "calibration_distance_median": 0.010332515,
     "k": 5,
     "partitions_used": [
      "train",
      "calibration"
     ],
+    "previous": {
+     "signal": "knn5_cosine_distance (last token only)",
+     "used_until": "abe6cc5"
+    },
     "quantile": 0.99,
+    "signal": "knn5_cosine_last_or_mean",
     "threshold": 0.035369724299999995,
+    "threshold_mean": 0.0086276249,
     "train_contexts": 200
    },
-   "competence_sha256": "3bfad575360c96c76af52920389693a10178cebc25b309ce32756626141515c4",
+   "competence_sha256": "5e08053539b2727ac91fd84e35907947d70376abcae79c02e7070cf8014529a5",
    "drift_sample": "specs/tool_forecast/calc_counter/drift-sample.npz",
    "drift_sample_sha256": "113c34d5ff618fc06adae65d3d4060e2c5eedbae9020afc8024a525249f428e3",
    "metrics": "specs/tool_forecast/calc_counter/metrics.json",
@@ -75,17 +82,24 @@
    "competence": "specs/tool_forecast/note_edit/competence.npz",
    "competence_reference": {
     "calibration_contexts": 60,
+    "calibration_distance_mean_median": 0.012023735,
     "calibration_distance_median": 0.019395225000000002,
     "k": 5,
     "partitions_used": [
      "train",
      "calibration"
     ],
+    "previous": {
+     "signal": "knn5_cosine_distance (last token only)",
+     "used_until": "abe6cc5"
+    },
     "quantile": 0.99,
+    "signal": "knn5_cosine_last_or_mean",
     "threshold": 0.034750018699999975,
+    "threshold_mean": 0.02377465919999999,
     "train_contexts": 200
    },
-   "competence_sha256": "02cb1b9ece6e11ae453e4b675b98cd8e419fc55fa2428843788c6d96217763e2",
+   "competence_sha256": "2985ba249b0949ec6e9a1def242f9b86f43ff35939ec7f99ec3be287ed2f22b7",
    "drift_sample": "specs/tool_forecast/note_edit/drift-sample.npz",
    "drift_sample_sha256": "231cfa51a5f3d67ac65333736c5502500126739e92c776fe571c688e1c6ecf52",
    "metrics": "specs/tool_forecast/note_edit/metrics.json",

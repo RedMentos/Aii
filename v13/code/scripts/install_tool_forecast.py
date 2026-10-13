@@ -153,22 +153,29 @@ def build_competence(args):
                 or report['tool_sha256'] != entry['capture_tool_sha256']):
             raise ValueError(world + ': capture bytes/encoder differ from manifest')
         li = meta['layers'].index(PICK['layer'])
-        raw = np.fromfile(cap / 'taps.bin', dtype=np.float32).reshape(meta['texts'], len(meta['layers']), 2, meta['n_embd'])[:, li, 0]
-        stored = dict(zip(texts, raw))
+        both = np.fromfile(cap / 'taps.bin', dtype=np.float32).reshape(meta['texts'], len(meta['layers']), 2, meta['n_embd'])[:, li]
+        stored, stored_mean = dict(zip(texts, both[:, 0])), dict(zip(texts, both[:, 1]))
         eps = episodes(json.loads((restored / w['raw'] / w['world']).read_text()))
         part = lambda name: sorted({e['input'] for e in eps if e['partition'] == name})
-        train = np.stack([tf.rms_normalize(stored[t]) for t in part('train')])
+        train = np.stack([tf.rms_normalize(stored[t]) for t in part('train')]).astype(np.float32)
+        train_mean = np.stack([tf.rms_normalize(stored_mean[t]) for t in part('train')]).astype(np.float32)
         dest = APP / 'specs' / 'tool_forecast' / world / 'competence.npz'
-        np.savez(dest, train_taps=train.astype(np.float32), k=np.asarray(COMPETENCE_K), threshold=np.asarray(0.))
+        arrays = {'train_taps': train, 'train_taps_mean': train_mean, 'k': np.asarray(COMPETENCE_K)}
+        np.savez(dest, **arrays, threshold=np.asarray(1.), threshold_mean=np.asarray(1.))
         entry['competence'], entry['competence_sha256'] = 'specs/tool_forecast/%s/competence.npz' % world, tf.sha_file(dest)
-        ck = tf.Checkpoint(world, entry)
-        cal = [ck.competence(tf.rms_normalize(stored[t]))['distance'] for t in part('calibration')]
-        threshold = float(np.quantile(cal, COMPETENCE_QUANTILE))
-        np.savez(dest, train_taps=train.astype(np.float32), k=np.asarray(COMPETENCE_K), threshold=np.asarray(threshold))
+        ck = tf.Checkpoint(world, entry)   # thresholds 1.0: score = raw distances, to calibrate both
+        cal = [ck.competence(tf.rms_normalize(stored[t]), tf.rms_normalize(stored_mean[t])) for t in part('calibration')]
+        threshold = float(np.quantile([c['distance'] for c in cal], COMPETENCE_QUANTILE))
+        threshold_mean = float(np.quantile([c['distance_mean'] for c in cal], COMPETENCE_QUANTILE))
+        np.savez(dest, **arrays, threshold=np.asarray(threshold), threshold_mean=np.asarray(threshold_mean))
         entry['competence_sha256'] = tf.sha_file(dest)
         entry['competence_reference'] = {'train_contexts': len(train), 'calibration_contexts': len(cal), 'k': COMPETENCE_K,
-                                         'quantile': COMPETENCE_QUANTILE, 'threshold': threshold,
-                                         'calibration_distance_median': float(np.median(cal)), 'partitions_used': ['train', 'calibration']}
+                                         'quantile': COMPETENCE_QUANTILE, 'threshold': threshold, 'threshold_mean': threshold_mean,
+                                         'signal': 'knn%d_cosine_last_or_mean' % COMPETENCE_K,
+                                         'calibration_distance_median': float(np.median([c['distance'] for c in cal])),
+                                         'calibration_distance_mean_median': float(np.median([c['distance_mean'] for c in cal])),
+                                         'partitions_used': ['train', 'calibration'],
+                                         'previous': {'signal': 'knn5_cosine_distance (last token only)', 'used_until': 'abe6cc5'}}
         out[world] = entry['competence_reference']
     tf.MANIFEST.write_text(json.dumps(manifest, indent=1, sort_keys=True) + '\n')
     print(json.dumps(out, indent=1))
@@ -233,13 +240,14 @@ def install(args):
         texts = sorted({t for r in rows for t in (r['input'], r['outcome'])})
         with np.load(APP / entry['drift_sample'], allow_pickle=False) as z:
             sample, stored = [str(t) for t in z['texts']], z['taps']
-        got = taps.tap(texts + sample)
+        got, got_mean = taps.tap_both(texts + sample)
         tap_of = dict(zip(texts, (tf.rms_normalize(v) for v in got[:len(texts)])))
         a, b = tf.rms_normalize(stored), tf.rms_normalize(got[len(texts):])
         cos = (a * b).sum(1) / np.linalg.norm(a, axis=1) / np.linalg.norm(b, axis=1)
         per = scores(tf.Checkpoint(world, entry), rows, tap_of.__getitem__)
         ret = Path(args.home) / 'data' / 'tool_forecast' / ('retention-%s.npz' % world)
-        tf.save_npz(ret, texts=np.asarray(texts), taps=np.stack([tap_of[t] for t in texts]).astype(np.float32))
+        tf.save_npz(ret, texts=np.asarray(texts), taps=np.stack([tap_of[t] for t in texts]).astype(np.float32),
+                    taps_mean=tf.rms_normalize(got_mean[:len(texts)]).astype(np.float32))
         retention[world] = {'path': str(ret.resolve()), 'sha256': tf.sha_file(ret), 'texts': len(texts),
                             'partition': 'test (the candidate\'s own held-out episodes, this device\'s encoder)'}
         passed = gate(per)

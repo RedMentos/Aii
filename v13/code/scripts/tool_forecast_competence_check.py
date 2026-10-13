@@ -58,13 +58,50 @@ def plan(restored):
             'note_free': list(FREE)}
 
 
+# Round 2 (v2 signal: last-token OR token-mean kNN test): thirty more new notes.
+FREE2 = ('Swap the light bulb in the hall.', 'Ask Pavel for the drill bits.', 'Cancel the magazine subscription.',
+         'Book the dentist for the twins.', 'Pickle the cucumbers.', 'Send the photos to Aunt Rosa.',
+         'Patch the bicycle tyre.', 'Write a shopping list for the barbecue.', 'Ask the school about the trip form.',
+         'Clean the bathroom grout.', 'Hand in the library card.', 'Order a cake for Friday.',
+         'Turn off the water before the holiday.', 'Learn the chorus of the song.', 'Return the parcel to the shop.',
+         'Mop the kitchen floor.', 'Update the phone software.', 'Buy a gift card for Sam.',
+         'Wash the car on Sunday.', 'Plant tulips by the fence.', 'Check the bus times for Monday.',
+         'Paint the bird house.', 'Pay the electricity bill.', 'Bring the ladder from the shed.',
+         'Fix the squeaky door.', 'Sort the old magazines.', 'Ask Ivan about the football match.',
+         'Clear the inbox before Friday.', 'Hem the new trousers.', 'Cook rice for the week.')
+SEED2 = 20261019
+
+
+def plan2(restored):
+    """Fresh plan for the v2 signal: every state of the live, competence-1 and learning-1/2 plans excluded."""
+    import tool_forecast_learning_check as lc
+    restored = Path(restored)
+    earlier = [json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan'], plan(restored)]
+    l1, l2 = lc.plan(restored, 1), lc.plan(restored, 2)
+    calc_in = {v for p in earlier for v in p['calc_in_world']} | set(l1['calc_in_test']) | set(l2['calc_in_test'])
+    calc_out = ({v for p in earlier for v in p['calc_out_of_range']} | set(l1['calc_shift_exp'] + l1['calc_shift_test'])
+                | set(l2['calc_shift_exp'] + l2['calc_shift_test']))
+    notes = {v for p in earlier for v in p['note_in_world']} | set(l1['note_in_test']) | set(l2['note_in_test'])
+    used = {e['value'] for p in ('round5-raw/r5world/world.json', 'round7-fresh-raw/world/world.json')
+            for e in json.loads((restored / p).read_text())['episodes']} | calc_in
+    seen = {e['content'] for e in json.loads((restored / 'round8-note-tool-raw/world/world.json').read_text())['episodes']} | notes
+    older = set(live.FREE) | set(FREE) | set(lc.FREE_EXP + lc.FREE_TEST + lc.FREE_EXP2 + lc.FREE_TEST2)
+    if set(FREE2) & (F.NOTE_WORLD | older) or len(set(FREE2)) != N:
+        raise ValueError('free notes must be new and outside the vocabulary')
+    rng = np.random.default_rng(SEED2)
+    return {'calc_in_world': sorted(rng.choice([v for v in range(1, 1000) if v not in used], N, replace=False).tolist()),
+            'calc_out_of_range': sorted(rng.choice([v for v in range(1000, 10000) if v not in calc_out], N, replace=False).tolist()),
+            'note_in_world': sorted(rng.choice(sorted(F.NOTE_WORLD - seen), N, replace=False).tolist()),
+            'note_free': list(FREE2)}
+
+
 def auroc(neg, pos):
     """P(distance of an out-of-world state > an in-world one), ties count half."""
     neg, pos = np.asarray(neg), np.asarray(pos)
     return float(((pos[:, None] > neg[None, :]).sum() + .5 * (pos[:, None] == neg[None, :]).sum()) / (len(pos) * len(neg)))
 
 
-def analyze(rows):
+def analyze(rows, field='distance'):
     """Per world: one competence value per (arm, state); a state's calls share its pre-effect tap."""
     out = {}
     for world, (inside, outside) in WORLDS.items():
@@ -73,7 +110,7 @@ def analyze(rows):
             if r['arm'] in (inside, outside):
                 c = r['competence']
                 states.setdefault((r['arm'], r['state']), c)
-        d = {arm: [c['distance'] for (a, _), c in states.items() if a == arm] for arm in (inside, outside)}
+        d = {arm: [c[field] for (a, _), c in states.items() if a == arm] for arm in (inside, outside)}
         flag = {arm: float(np.mean([not c['in_domain'] for (a, _), c in states.items() if a == arm])) for arm in (inside, outside)}
         ratios = {k: [r['ratio_to_best_control'] for r in rows if r['arm'] in (inside, outside) and r['status'] == 'SCORED'
                       and (not r['competence']['in_domain']) == k] for k in (False, True)}
@@ -96,8 +133,9 @@ def main():
     a.add_argument('--restored', required=True, help='restored round-5/7/8 evidence')
     a.add_argument('--encoder-home', help='home whose data/tool_forecast/encoder.json passed parity (run)')
     a.add_argument('--out', help='fresh output folder (run)')
+    a.add_argument('--round', type=int, choices=(1, 2), default=2, help='1 = preregistered 8b15627 (last-token signal); 2 = v2 signal')
     args = a.parse_args()
-    p = plan(args.restored)
+    p = plan(args.restored) if args.round == 1 else plan2(args.restored)
     if args.command == 'plan':
         print(json.dumps(p, indent=1))
         return 0
@@ -106,7 +144,7 @@ def main():
     (out / 'plan.json').write_text(json.dumps({'plan': p}, indent=1) + '\n')
     live.run(argparse.Namespace(plan=str(out / 'plan.json'), restored=None, out=str(out / 'live'), encoder_home=args.encoder_home))
     rows = json.loads((out / 'live' / 'rows.json').read_text())
-    report = analyze(rows) | {'schema': 'v13-tool-forecast-competence-check-v1', 'plan_counts': {k: len(v) for k, v in p.items()},
+    report = analyze(rows, 'distance' if args.round == 1 else 'score') | {'schema': 'v13-tool-forecast-competence-check-v1', 'round': args.round, 'plan_counts': {k: len(v) for k, v in p.items()},
                               'live_verdict': json.loads((out / 'live' / 'report.json').read_text())['verdict'],
                               'claim_limit': 'Pre-effect domain flag of a SHADOW forecast on two closed worlds; Linux cloud, not the Redmi; '
                                              'nothing reads the flag.'}

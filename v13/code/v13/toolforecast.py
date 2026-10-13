@@ -172,6 +172,9 @@ class Checkpoint:
             with np.load(cp, allow_pickle=False) as z:
                 self.reference = {'taps': np.asarray(z['train_taps'], dtype=np.float64), 'k': int(z['k']),
                                   'threshold': float(z['threshold'])}
+                if 'train_taps_mean' in z.files:   # v2: token-mean tap of the same layer as a second distance
+                    self.reference |= {'taps_mean': np.asarray(z['train_taps_mean'], dtype=np.float64),
+                                       'threshold_mean': float(z['threshold_mean'])}
             if self.reference['taps'].shape[1] != self.width:
                 raise ValueError(world + ': competence reference width differs from checkpoint')
 
@@ -185,19 +188,29 @@ class Checkpoint:
         with np.load(rp, allow_pickle=False) as z:
             return {'taps': np.asarray(z['taps'], dtype=np.float64), 'context': z['context'], 'outcome': z['outcome'], 'action': z['action']}
 
-    def competence(self, x):
+    def _knn(self, r, x):
+        cos = (r @ x) / np.maximum(np.linalg.norm(r, axis=1) * np.linalg.norm(x), 1e-12)
+        return float(np.mean(1 - np.sort(cos)[-self.reference['k']:]))
+
+    def competence(self, x, x_mean=None):
         """Before the effect: is this context state like the states the candidate was fitted on?
 
-        Mean cosine distance to the k nearest training context taps; threshold = calibration-partition 99th percentile
-        (install_tool_forecast.py build-competence). A hypothesis about the forecast's own domain, not about the world."""
+        Mean cosine distance to the k nearest training context taps (last token); threshold = calibration-partition
+        99th percentile (install_tool_forecast.py build-competence). With a v2 reference and the token-mean tap of the
+        same prefill, the token-mean distance is a second test (own calibrated threshold) and `score` is the larger
+        distance/threshold ratio; in_domain iff score <= 1. A hypothesis about the forecast's own domain, not the world."""
         ref = self.reference
         if ref is None:
             return None
-        r = ref['taps']
-        cos = (r @ x) / np.maximum(np.linalg.norm(r, axis=1) * np.linalg.norm(x), 1e-12)
-        d = float(np.mean(1 - np.sort(cos)[-ref['k']:]))
-        return {'signal': 'knn%d_cosine_distance' % ref['k'], 'distance': round(d, 8), 'threshold': round(ref['threshold'], 8),
-                'in_domain': d <= ref['threshold']}
+        d = self._knn(ref['taps'], x)
+        out = {'signal': 'knn%d_cosine_distance' % ref['k'], 'distance': round(d, 8), 'threshold': round(ref['threshold'], 8),
+               'score': round(d / ref['threshold'], 6)}
+        if 'taps_mean' in ref and x_mean is not None:
+            dm = self._knn(ref['taps_mean'], x_mean)
+            out |= {'signal': 'knn%d_cosine_last_or_mean' % ref['k'], 'distance_mean': round(dm, 8),
+                    'threshold_mean': round(ref['threshold_mean'], 8), 'score': round(max(d / ref['threshold'], dm / ref['threshold_mean']), 6)}
+        out['in_domain'] = out['score'] <= 1
+        return out
 
     def features(self, x):
         return x if self.arm == 'full' else x @ self.p
@@ -218,7 +231,15 @@ class NativeLayerTaps:
         self.timeout_s = timeout_s
 
     def tap(self, texts):
-        layer, pooling = int(self.enc['layer']), self.enc['pooling']
+        last, mean = self._raw(texts)
+        return last if self.enc['pooling'] == 'last' else mean
+
+    def tap_both(self, texts):
+        """(last-token, token-mean) taps of the encoder layer from one native prefill per text."""
+        return self._raw(texts)
+
+    def _raw(self, texts):
+        layer = int(self.enc['layer'])
         if any('\n' in t or not t for t in texts):
             raise ValueError('Tap texts must be non-empty single lines')
         with tempfile.TemporaryDirectory(prefix='v13-tap-') as d:
@@ -234,7 +255,8 @@ class NativeLayerTaps:
         n = meta['n_embd']
         if meta['texts'] != len(texts) or meta['layers'] != [layer] or raw.size != len(texts) * 2 * n or not np.isfinite(raw).all():
             raise RuntimeError('native tap output shape mismatch')
-        return raw.reshape(len(texts), 2, n)[:, 0 if pooling == 'last' else 1]
+        raw = raw.reshape(len(texts), 2, n)
+        return raw[:, 0], raw[:, 1]
 
 
 def load_encoder(home, verify=True):
@@ -290,13 +312,15 @@ class Experience:
         with np.load(p, allow_pickle=False) as z:
             return {k: z[k] for k in z.files}
 
-    def add(self, world, x, y, action_index, fid):
+    def add(self, world, x, y, action_index, fid, x_mean=None):
         old = self.load(world)
         new = {'x': np.asarray([x], np.float32), 'y': np.asarray([y], np.float32), 'action': np.asarray([action_index], np.int64),
-               'id': np.asarray([fid])}
+               'id': np.asarray([fid]), 'xm': np.asarray([x_mean if x_mean is not None else np.full(len(x), np.nan)], np.float32)}
         if old is not None:
             if fid in set(old['id'].tolist()):
                 return
+            if 'xm' not in old:
+                old['xm'] = np.full_like(old['x'], np.nan)
             new = {k: np.concatenate([old[k], new[k]])[-EXPERIENCE_MAX:] for k in new}
         save_npz(self.path(world), **new)
 
@@ -351,13 +375,16 @@ def learn(home, ck, enc, mode='region'):
     with np.load(ret['path'], allow_pickle=False) as z:
         rtext = [str(s) for s in z['texts']]
         rtap = dict(zip(rtext, np.asarray(z['taps'], dtype=np.float64)))
+        rtap_mean = dict(zip(rtext, np.asarray(z['taps_mean'], dtype=np.float64))) if 'taps_mean' in z.files else {}
     rows = json.loads((ck.root / ck.entry['parity']).read_text())['rows']
     if mode == 'region' and ck.reference is None:
         report['reason'] = 'NO_COMPETENCE_REFERENCE'
         return report
     replay = ck.replay() if mode == 'mixed' else None
     report['replay_pairs'] = 0 if replay is None else int(len(replay['action']))
-    novel = np.asarray([not ck.competence(v.astype(np.float64))['in_domain'] for v in exp['x']]) if mode == 'region' else None
+    xm_all = exp.get('xm', np.full_like(exp['x'], np.nan))
+    novel = (np.asarray([not ck.competence(v.astype(np.float64), None if np.isnan(m).any() else m.astype(np.float64))['in_domain']
+                         for v, m in zip(exp['x'], xm_all)]) if mode == 'region' else None)
     if mode == 'region':
         report['experience_out_of_domain'] = int(novel.sum())
     weight = ck.weight.copy()
@@ -386,7 +413,8 @@ def learn(home, ck, enc, mode='region'):
         ref = np.stack([rtap[r['outcome']] for r in sel]) @ ck.p
         base_pred = rx @ ck.p + ck.mean_delta[j]
         rf = ck.features(rx) - ck.centre[j]
-        gate_r = (np.asarray([not ck.competence(v)['in_domain'] for v in rx])[:, None] if mode == 'region'
+        gate_r = (np.asarray([not ck.competence(rtap[r['input']], rtap_mean.get(r['input']))['in_domain'] for r in sel])[:, None]
+                  if mode == 'region'
                   else np.ones((len(rx), 1), bool))   # region mode: only out-of-domain contexts use the new weight
         err = lambda W: float(np.mean((base_pred + np.where(gate_r, rf @ W, rf @ ck.weight[j]) - ref) ** 2))
         ret_m, ret_copy, ret_md = err(ck.weight[j]), float(np.mean((rx @ ck.p - ref) ** 2)), float(np.mean((base_pred - ref) ** 2))
@@ -489,11 +517,15 @@ class ToolForecast:
                 self._note(event_id, enc, {'tool': tool, 'world': c['world']})
                 return None
             t0 = time.monotonic()
-            x = rms_normalize(taps.tap([c['state_text']])[0])
+            if hasattr(taps, 'tap_both'):
+                last, mean = taps.tap_both([c['state_text']])
+                x, xm = rms_normalize(last[0]), rms_normalize(mean[0])
+            else:
+                x, xm = rms_normalize(taps.tap([c['state_text']])[0]), None
             if x.shape != (ck.width,):
                 raise ValueError('tap width differs from checkpoint')
             out = ck.predict(x, c['action'])
-            comp = ck.competence(x)
+            comp = ck.competence(x, xm)
             adapted = load_adapted(self.home, ck)
             if adapted is not None:   # region mode: in-domain contexts keep the measured weight
                 use = adapted['mode'] == 'mixed' or (comp is not None and not comp['in_domain'])
@@ -501,7 +533,8 @@ class ToolForecast:
             fid = uid('tfc')
             pend = self.pending_dir / (fid + '.npy')
             pend.parent.mkdir(parents=True, exist_ok=True)
-            np.save(pend, x.astype(np.float32))   # context tap, for the experience buffer once the outcome is observed
+            # context tap(s), for the experience buffer once the outcome is observed (row 1 = token mean, if tapped)
+            np.save(pend, np.stack([x, xm if xm is not None else np.full_like(x, np.nan)]).astype(np.float32))
             rec = {'id': fid, 'world': c['world'], 'action': c['action'], 'tool': tool, 'event_id': event_id, 'created': self.clock(),
                    'state_text': c['state_text'], 'in_world_range': c.get('in_world_range', True), 'competence': comp,
                    'checkpoint_sha256': ck.entry['checkpoint_sha256'], 'tool_sha256': enc['tool_sha256'],
@@ -552,7 +585,10 @@ class ToolForecast:
             err = {k: float(np.mean((np.asarray(rec[k]) - ref) ** 2)) for k in ('forecast', 'copy', 'mean_delta', 'adapted') if k in rec}
             pend = self.pending_dir / (fid + '.npy')
             if pend.exists():
-                Experience(self.home).add(rec['world'], np.load(pend), y, ck.actions.index(rec['action']), fid)
+                ctx = np.load(pend)
+                ctx = ctx if ctx.ndim == 2 else np.stack([ctx, np.full_like(ctx, np.nan)])
+                Experience(self.home).add(rec['world'], ctx[0], y, ck.actions.index(rec['action']), fid,
+                                          None if np.isnan(ctx[1]).any() else ctx[1])
             return self._close(fid, rec, 'SCORED', tx, text=text, err=err)
         except Exception as exc:
             self._note(tx.get('event_id'), 'OBSERVE_FAILED', {'error': type(exc).__name__})

@@ -104,6 +104,13 @@ class CheckpointTests(unittest.TestCase):
             c = ck.competence(far)
             self.assertFalse(c['in_domain'])
             self.assertEqual((c['signal'], c['threshold']), ('knn5_cosine_distance', round(entry['competence_reference']['threshold'], 8)))
+            i = int(np.argmin([ck.competence(r)['distance'] for r in ref[:20]]))
+            both = ck.competence(ref[i], ck.reference['taps_mean'][i])           # v2: last-token and token-mean tests
+            self.assertEqual(both['signal'], 'knn5_cosine_last_or_mean')
+            self.assertTrue(both['in_domain'])
+            odd_mean = ck.competence(ref[i], F.rms_normalize(np.random.default_rng(4).normal(size=ck.width)))
+            self.assertFalse(odd_mean['in_domain'])                             # either test alone flags the state
+            self.assertGreater(odd_mean['score'], 1)
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             entry = manifest['worlds']['note_edit']
