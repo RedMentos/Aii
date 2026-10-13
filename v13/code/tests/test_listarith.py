@@ -37,7 +37,7 @@ class Live(unittest.TestCase):
         sh=ts.shadow(e,p);self.assertEqual(sh['result'],389);self.assertTrue(ts.compare(e,sh,'Lyon, 389 mm more.'))
         g.tools._policy=lambda spec,origin,args,confirmed=False:('APPROVED','POLICY',[])
         res=ts.execute(e,p);self.assertEqual(res['result'],389)
-        lay=ts.layer(res);self.assertEqual(lay['input'],{'operation':'difference_max_min','recipe':'largest Lyon 644 - smallest Brno 255'})
+        lay=ts.layer(res);self.assertEqual((lay['exact_result'],lay['recipe']),(389,'largest Lyon 644 - smallest Brno 255 = 389'));self.assertNotIn('input',lay)
     def test_guard_refuses_invented_value_before_proposing(self):
         hub(self.r).tools.enable('list_arith');self.c3.values=VALUES[:2]+[{'name':'Bremen','number':637}]
         e=self.r.store.event(self.r.session,RAIN);self.assertIsNone(T.ToolStep(self.r).plan(e,RAIN))

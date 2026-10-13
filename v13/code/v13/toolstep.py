@@ -23,6 +23,7 @@ from .contracts import packet
 
 PROPOSER='boot-arith-note-v2';KEY='TOOL_SHADOW_AGREEMENT'
 LIST_PROPOSER='boot-listarith-v1';LIST_READ_SECONDS=45  # R4 part 6: C3 value read for list_arith
+LIST_NOTE='Use this exact number in the answer. If the text states a different number for it, say clearly that it is wrong.'  # wording of r4_typed_recipe RESULT_TEMPLATE
 WORD_OPS=[(r'\bmultiplied by\b|\btimes\b|×','*'),(r'\bdivided by\b|÷','/'),(r'\bplus\b','+'),(r'\bminus\b','-'),(r'\bto the power of\b|\^','**')]
 NUM=r'\d+(?:[.,]\d+)?'
 PERCENT=re.compile(r'('+NUM+r')\s*%\s*of\s*('+NUM+r')',re.I)
@@ -131,9 +132,10 @@ class ToolStep:
     def layer(self,result):
         """Volatile context layer for the answering body: grounded tool output with its transaction id."""
         args=result['args']
-        if result['tool']=='list_arith':  # the user text is already in context; show the recipe with largest/smallest named
+        if result['tool']=='list_arith':  # R4 part 6 dev seed 7: as raw JSON args C3 350M ignored the value in 7/15 sums
             from .agi import listarith
-            args={'operation':args['operation'],'recipe':listarith.label(args)}
+            return {'tool':'list_arith','exact_result':result['result'],'recipe':f"{listarith.label(args)} = {result['result']}",
+                    'note':LIST_NOTE,'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
         return {'tool':result['tool'],'input':args,'output':result['result'],'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
 
 def report(store,limit=200):

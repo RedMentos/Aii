@@ -89,7 +89,27 @@ def turn(r, text, nums, checks):
     return {'pass': all(ok.values()) and all(num.values()), 'assertions': ok, 'numbers': num, 'turn_s': round(time.monotonic()-t0, 2),
             'status': a.get('status'), 'tool_call': meta.get('tool_call'), 'tool_shadow': meta.get('tool_shadow'),
             'proposal': None if prop is None else {'tool': prop.get('tool'), 'policy': prop.get('policy_status'), 'args': prop.get('args')},
-            'guard_refused': refused is not None, 'output': out[:400], 'correction': corr[:1]}
+            'guard_refused': refused is not None, 'output': out[:400], 'correction': corr[:1],
+            # broker correction line shows the exact value next to the answer: re-score with only that value appended,
+            # so city / "incorrect" checks still have to come from the body's own answer
+            'pass_with_correction': bool(corr) and meta.get('tool_call') is not None and _rescore(out, r, eid, nums, checks)}
+
+
+def _rescore(out, r, eid, nums, checks):
+    value = _value(r, eid)
+    if value is None:
+        return False
+    ok, num = U.score(out+'\n'+str(value), nums, checks)
+    return all(ok.values()) and all(num.values())
+
+
+def _value(r, eid):
+    p = r.store.one("SELECT payload FROM packets WHERE event_id=? AND kind='ToolProposal' ORDER BY rowid DESC LIMIT 1", (eid,))
+    try:
+        from v13.agi import listarith
+        return listarith.tool(**json.loads(p['payload'])['args']) if p else None
+    except Exception:
+        return None
 
 
 def capture(installed, seed, path, limit=None):
@@ -158,7 +178,7 @@ def summarize(rows):
                   'wins': w, 'losses': l, 'net': w-l, 'sign_test_p': round(sign_p(w, l), 4), 'by_kind': kinds,
                   'proposals': sum(bool(r['tool_active']['proposal']) for r in rs), 'tool_executed': sum((r['tool_active']['tool_call'] or {}).get('status') == 'EXECUTED' for r in rs),
                   'guard_refused': sum(r['tool_active']['guard_refused'] for r in rs), 'value_correct': sum(r['value_correct'] for r in rs),
-                  'pass_with_correction': sum(r['tool_active']['pass'] or bool(r['tool_active']['correction']) and r['value_correct'] for r in rs),
+                  'pass_with_correction': sum(r['tool_active']['pass'] or r['tool_active']['pass_with_correction'] for r in rs),
                   'turn_s_median': {a: sorted(r[a]['turn_s'] for r in rs)[len(rs)//2] for a in ARMS}}
     return out
 
