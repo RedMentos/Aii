@@ -22,6 +22,12 @@ class Recipe(unittest.TestCase):
         with self.assertRaises(ValueError):L.compute('total',VALUES+[{'name':'Pisa','number':12}],RAIN)  # invented value
         with self.assertRaises(ValueError):L.compute('total',VALUES[:1],RAIN)
         self.assertIsNone(L.label({'operation':'total','text':'a 1, b 2.','values':'a=1\nb=3'}))
+    def test_stated_total_line_is_not_an_item(self):
+        text='Items: coffee beans 49 euros, cleaning service 33 euros, a projector 71 euros. Summary line: "Total: 173 euros." Give the correct total.'
+        read=[{'name':'coffee beans','number':49},{'name':'cleaning service','number':33},{'name':'projector','number':71},{'name':'total','number':173}]
+        self.assertEqual(L.compute('total',read,text)[0],153);self.assertEqual(L.compute('difference_max_min',read,text)[0],38)
+        self.assertEqual(L.compute('total',[{'name':'total hours','number':49},{'name':'Grand Total','number':33},{'name':'b','number':71}],text)[0],120)
+        with self.assertRaises(ValueError):L.compute('total',[{'name':'a','number':49},{'name':'Sum','number':173}],text)
 
 class Live(unittest.TestCase):
     def setUp(self):

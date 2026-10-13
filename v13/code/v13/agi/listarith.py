@@ -21,6 +21,9 @@ READ_SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['va
 SCHEMA = {'operation': 'str', 'text': 'text', 'values': 'text'}
 MAX_TEXT = 2000
 _INT = re.compile(r'(?<![\d.])\d+(?!\d|\.\d)')  # a sentence-final period is not a decimal point
+# R4 part 7: C3 read a stated summary line ("Total: 173 euros") as one more item in 1/30 sums on seeds 7 and 19;
+# the guard passes it because 173 is in the text. A value with such a name is the claim under test, never an input.
+AGGREGATE = re.compile(r'(?i)^\s*(?:the\s+)?(?:grand\s+|stated\s+)?(?:total|sum|summe|gesamt\w*|summary(?:\s+line)?)\s*$')
 
 
 def operation(text):
@@ -49,6 +52,7 @@ def compute(op, values, text):
     """Recipe with number guard; returns (value, label) or raises ValueError."""
     if op not in ('total', 'difference_max_min'):
         raise ValueError('unknown operation')
+    values = [v for v in values if not AGGREGATE.match(str(v.get('name', '')))]
     nums = [int(v['number']) for v in values]
     if len(nums) < 2:
         raise ValueError('fewer than two values')
