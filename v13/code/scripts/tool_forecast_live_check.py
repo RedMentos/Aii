@@ -93,7 +93,7 @@ def run(args, encoder_json=None):
                     pred = tf.predict('calc', args_, e['event_id'])
                     tx = g.tools.call('calc', args_, origin='USER', predicted=pred, event_id=e['event_id'], idempotency_key=e['event_id'])
                     settle_turn(r, e['event_id'], 'FINAL')
-                    rows.append(record(tf, arm, action, pred, tx, time.monotonic() - t0))
+                    rows.append(record(tf, arm, action, pred, tx, time.monotonic() - t0, n))
         sandbox = home / 'data' / 'tool_sandbox'
         sandbox.mkdir(parents=True, exist_ok=True)
         for arm in ('note_in_world', 'note_free'):
@@ -109,7 +109,7 @@ def run(args, encoder_json=None):
                     pending = ts.propose_call(e, pl)
                     out = json.loads(tx_command(r, ['approve', pending['call_id']]))
                     tx = next(c for c in g.tools.box.load()[0]['calls'] if c['id'] == out['id'])
-                    rows.append(record(tf, arm, action, tx.get('predicted'), tx, time.monotonic() - t0))
+                    rows.append(record(tf, arm, action, tx.get('predicted'), tx, time.monotonic() - t0, content))
         report = {'schema': 'v13-tool-forecast-live-check-v1', 'utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
                   'plan': p, 'encoder': json.loads((home / 'data' / 'tool_forecast' / 'encoder.json').read_text()),
                   'arms': {arm: verdict([x for x in rows if x['arm'] == arm]) for arm in ('calc_in_world', 'calc_out_of_range', 'note_in_world', 'note_free')},
@@ -135,11 +135,12 @@ def run(args, encoder_json=None):
     return 0
 
 
-def record(tf, arm, action, pred, tx, seconds):
+def record(tf, arm, action, pred, tx, seconds, state=None):
     rec = next((x for x in reversed(tf.box.load()[0]['scored']) if pred and x['id'] == pred['forecast_id']), None)
     return {'arm': arm, 'action': action, 'call': tx['id'], 'tool_status': tx['status'], 'forecast_id': (pred or {}).get('forecast_id'),
             'status': rec['status'] if rec else ('NO_FORECAST' if not pred else 'PENDING'), 'mse': (rec or {}).get('mse'),
-            'in_world_range': (rec or {}).get('in_world_range'), 'outcome_text': (rec or {}).get('outcome_text'), 'seconds': round(seconds, 3)}
+            'in_world_range': (rec or {}).get('in_world_range'), 'outcome_text': (rec or {}).get('outcome_text'), 'seconds': round(seconds, 3),
+            'state': state, 'competence': (rec or {}).get('competence'), 'ratio_to_best_control': (rec or {}).get('ratio_to_best_control')}
 
 
 def main():

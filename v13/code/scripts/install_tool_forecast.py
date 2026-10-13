@@ -6,6 +6,8 @@
                 specs/tool_forecast/<world>/, writes its held-out test episodes as the parity set, and checks that the
                 runtime formula reproduces the measured test MSE of metrics.json from the originally stored taps.
                 Writes specs/tool-forecast.json with every hash and the evidence ZIP it came from.
+  build-competence  (once, after build-assets) adds per world the pre-effect domain reference: training context
+                taps and a threshold calibrated on the calibration partition (never the test partition).
   install       (on each device) verifies the GGUF hash, taps every parity text with the given native_layer_taps build
                 and requires, per world and per action, the same predictive gate the candidate passed
                 (forecast MSE < .98 x min(copy, mean delta) on its own test partition). Only then writes
@@ -126,6 +128,51 @@ def build_assets(args):
     return manifest
 
 
+COMPETENCE_K = 5           # nearest training contexts averaged
+COMPETENCE_QUANTILE = .99  # of calibration-partition distances
+
+
+def build_competence(args):
+    """Add each world's pre-effect domain reference (training context taps + calibrated threshold) to the manifest.
+
+    Uses only the train and calibration partitions of the stored capture (never test): training contexts are the
+    reference set, the threshold is the 99th percentile of the calibration contexts' mean cosine distance to their
+    5 nearest training contexts. Existing assets and hashes stay untouched."""
+    restored = Path(args.restored)
+    manifest = json.loads(tf.MANIFEST.read_text())
+    out = {}
+    for world, w in WORLDS.items():
+        entry = manifest['worlds'][world]
+        cap = restored / w['raw'] / w['capture']
+        report = json.loads((cap / 'capture-report.json').read_text())
+        meta = json.loads((cap / 'taps.json').read_text())
+        texts = (cap / 'inputs.txt').read_text().split('\n')[:-1]
+        if (len(texts) != meta['texts'] or tf.sha_file(cap / 'taps.bin') != report['raw_bin_sha256']
+                or report['tool_sha256'] != entry['capture_tool_sha256']):
+            raise ValueError(world + ': capture bytes/encoder differ from manifest')
+        li = meta['layers'].index(PICK['layer'])
+        raw = np.fromfile(cap / 'taps.bin', dtype=np.float32).reshape(meta['texts'], len(meta['layers']), 2, meta['n_embd'])[:, li, 0]
+        stored = dict(zip(texts, raw))
+        eps = episodes(json.loads((restored / w['raw'] / w['world']).read_text()))
+        part = lambda name: sorted({e['input'] for e in eps if e['partition'] == name})
+        train = np.stack([tf.rms_normalize(stored[t]) for t in part('train')])
+        dest = APP / 'specs' / 'tool_forecast' / world / 'competence.npz'
+        np.savez(dest, train_taps=train.astype(np.float32), k=np.asarray(COMPETENCE_K), threshold=np.asarray(0.))
+        entry['competence'], entry['competence_sha256'] = 'specs/tool_forecast/%s/competence.npz' % world, tf.sha_file(dest)
+        ck = tf.Checkpoint(world, entry)
+        cal = [ck.competence(tf.rms_normalize(stored[t]))['distance'] for t in part('calibration')]
+        threshold = float(np.quantile(cal, COMPETENCE_QUANTILE))
+        np.savez(dest, train_taps=train.astype(np.float32), k=np.asarray(COMPETENCE_K), threshold=np.asarray(threshold))
+        entry['competence_sha256'] = tf.sha_file(dest)
+        entry['competence_reference'] = {'train_contexts': len(train), 'calibration_contexts': len(cal), 'k': COMPETENCE_K,
+                                         'quantile': COMPETENCE_QUANTILE, 'threshold': threshold,
+                                         'calibration_distance_median': float(np.median(cal)), 'partitions_used': ['train', 'calibration']}
+        out[world] = entry['competence_reference']
+    tf.MANIFEST.write_text(json.dumps(manifest, indent=1, sort_keys=True) + '\n')
+    print(json.dumps(out, indent=1))
+    return out
+
+
 def install(args):
     manifest = json.loads(tf.MANIFEST.read_text())
     want = manifest['encoder']
@@ -174,6 +221,8 @@ def main():
     sub = root.add_subparsers(dest='command', required=True)
     b = sub.add_parser('build-assets')
     b.add_argument('--restored', required=True, help='folder with the unzipped round-7/8 results and raw ZIPs')
+    c = sub.add_parser('build-competence')
+    c.add_argument('--restored', required=True, help='as build-assets; adds competence.npz per world (train/calibration only)')
     i = sub.add_parser('install')
     for name in ('--home', '--tool', '--model'):
         i.add_argument(name, required=True)
@@ -182,6 +231,9 @@ def main():
     args = root.parse_args()
     if args.command == 'build-assets':
         build_assets(args)
+        return 0
+    if args.command == 'build-competence':
+        build_competence(args)
         return 0
     return install(args)
 

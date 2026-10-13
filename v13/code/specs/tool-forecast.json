@@ -27,6 +27,20 @@
    "capture_tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
    "checkpoint": "specs/tool_forecast/calc_counter/candidate.npz",
    "checkpoint_sha256": "b2cd4bc7ed8e4fa5152f87a5b39db755c6c4a80e7011446237d077cca255129e",
+   "competence": "specs/tool_forecast/calc_counter/competence.npz",
+   "competence_reference": {
+    "calibration_contexts": 60,
+    "calibration_distance_median": 0.010332515,
+    "k": 5,
+    "partitions_used": [
+     "train",
+     "calibration"
+    ],
+    "quantile": 0.99,
+    "threshold": 0.035369724299999995,
+    "train_contexts": 200
+   },
+   "competence_sha256": "3bfad575360c96c76af52920389693a10178cebc25b309ce32756626141515c4",
    "drift_sample": "specs/tool_forecast/calc_counter/drift-sample.npz",
    "drift_sample_sha256": "113c34d5ff618fc06adae65d3d4060e2c5eedbae9020afc8024a525249f428e3",
    "metrics": "specs/tool_forecast/calc_counter/metrics.json",
@@ -50,6 +64,20 @@
    "capture_tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
    "checkpoint": "specs/tool_forecast/note_edit/candidate.npz",
    "checkpoint_sha256": "c8a00a8fa806ee82da71a29ffc058a8d929e9cb6d24ef5286de2b77a04433d81",
+   "competence": "specs/tool_forecast/note_edit/competence.npz",
+   "competence_reference": {
+    "calibration_contexts": 60,
+    "calibration_distance_median": 0.019395225000000002,
+    "k": 5,
+    "partitions_used": [
+     "train",
+     "calibration"
+    ],
+    "quantile": 0.99,
+    "threshold": 0.034750018699999975,
+    "train_contexts": 200
+   },
+   "competence_sha256": "02cb1b9ece6e11ae453e4b675b98cd8e419fc55fa2428843788c6d96217763e2",
    "drift_sample": "specs/tool_forecast/note_edit/drift-sample.npz",
    "drift_sample_sha256": "231cfa51a5f3d67ac65333736c5502500126739e92c776fe571c688e1c6ecf52",
    "metrics": "specs/tool_forecast/note_edit/metrics.json",

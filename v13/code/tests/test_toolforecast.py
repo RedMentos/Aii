@@ -92,6 +92,56 @@ class CheckpointTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 F.Checkpoint('calc_counter', entry, root)
 
+    def test_competence_reference_flags_states_unlike_training_contexts(self):
+        manifest = json.loads(F.MANIFEST.read_text())
+        for world, entry in manifest['worlds'].items():
+            ck = F.Checkpoint(world, entry)
+            ref = ck.reference['taps']
+            typical = ref[int(np.argmin([ck.competence(r)['distance'] for r in ref[:20]]))]
+            near = typical + 1e-3 * np.random.default_rng(1).normal(size=ck.width)
+            self.assertTrue(ck.competence(near)['in_domain'])
+            far = F.rms_normalize(np.random.default_rng(2).normal(size=ck.width))
+            c = ck.competence(far)
+            self.assertFalse(c['in_domain'])
+            self.assertEqual((c['signal'], c['threshold']), ('knn5_cosine_distance', round(entry['competence_reference']['threshold'], 8)))
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            entry = manifest['worlds']['note_edit']
+            for k in ('checkpoint', 'metrics', 'competence'):
+                (root / entry[k]).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(APP / entry[k], root / entry[k])
+            with open(root / entry['competence'], 'ab') as f:
+                f.write(b'\0')
+            with self.assertRaisesRegex(ValueError, 'competence'):
+                F.Checkpoint('note_edit', entry, root)
+            self.assertIsNone(F.Checkpoint('note_edit', {k: v for k, v in entry.items() if k != 'competence'}, root).competence(far))
+
+    def test_competence_check_scores_states_not_calls(self):
+        sys.path.insert(0, str(APP / 'scripts'))
+        import tool_forecast_competence_check as cc
+        rows = []
+        for arm, dist in (('calc_in_world', [.01, .02, .05]), ('calc_out_of_range', [.04, .2, .3]),
+                          ('note_in_world', [.01, .01, .02]), ('note_free', [.3, .4, .5])):
+            for i, d in enumerate(dist):
+                for _ in range(3):   # several actions share one pre-effect state
+                    rows.append({'arm': arm, 'state': i, 'status': 'SCORED', 'ratio_to_best_control': .5 if d < .035 else 2.,
+                                 'competence': {'distance': d, 'in_domain': d <= .035, 'threshold': .035}})
+        rep = cc.analyze(rows)
+        calc, note = rep['worlds']['calc_counter'], rep['worlds']['note_edit']
+        self.assertEqual(calc['states'], {'calc_in_world': 3, 'calc_out_of_range': 3})
+        self.assertAlmostEqual(calc['auroc'], 8 / 9, places=4)
+        self.assertAlmostEqual(calc['in_world_flag_rate'], 1 / 3, places=4)
+        self.assertFalse(calc['pass'])
+        self.assertTrue(note['pass'])
+        self.assertEqual(note['report_only_ratio_geo_mean'], {'unflagged': .5, 'flagged': 2.})
+        self.assertEqual(rep['verdict'], 'COMPETENCE_SIGNAL_NOT_CONFIRMED')
+        plan = cc.plan('/root/native/restore') if Path('/root/native/restore/round8-note-tool-raw').exists() else None
+        if plan:
+            earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
+            for k in plan:
+                self.assertEqual(len(plan[k]), cc.N)
+                self.assertFalse(set(plan[k]) & set(earlier[k]))
+
     def test_missing_or_failed_encoder_gives_no_forecast(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(F.load_encoder(d), (None, 'NO_ENCODER_INSTALLED'))
@@ -138,6 +188,7 @@ class LivePathTests(unittest.TestCase):
         self.assertTrue(F.is_forecast(tx['predicted']))
         self.assertEqual(tx['predicted']['action'], 'double')
         self.assertEqual(tx['predicted']['authority'], 'LOCAL_PREDICTION_HYPOTHESIS')
+        self.assertFalse(tx['predicted']['competence']['in_domain'])   # a random fake tap is unlike every training context
         self.assertEqual(self.taps.calls, [['The counter shows 37.']])          # pre-state only, before the effect
         copy = json.loads(self.r.store.one("SELECT payload FROM packets WHERE kind='CorollaryCopy' AND event_id=?", (e['event_id'],))['payload'])
         self.assertEqual(copy['expected']['predicted']['forecast_id'], tx['predicted']['forecast_id'])  # committed before the effect
@@ -148,6 +199,8 @@ class LivePathTests(unittest.TestCase):
         self.assertEqual(rep['stats']['calc_counter:double']['n'], 1)
         self.assertEqual(rep['recent'][-1]['status'], 'SCORED')
         self.assertEqual(set(rep['recent'][-1]['mse']), {'forecast', 'copy', 'mean_delta'})
+        self.assertEqual(rep['recent'][-1]['competence'], tx['predicted']['competence'])
+        self.assertEqual(rep['stats']['calc_counter:double']['in_domain'], 0)
         grounded = self.g.grounding.box.load()[0]['closed'][-1]
         self.assertIsNone(grounded['predicted'])   # AG2 frequency baseline untouched by the latent forecast
         settle_turn(self.r, e['event_id'], 'FINAL')

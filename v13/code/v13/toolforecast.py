@@ -153,6 +153,30 @@ class Checkpoint:
         self.actions = meta['actions']
         self.arm = meta['config']['arm']
         self.width = self.p.shape[0]
+        self.reference = None
+        if entry.get('competence'):
+            cp = root / entry['competence']
+            if sha_file(cp) != entry['competence_sha256']:
+                raise ValueError(world + ': competence reference bytes differ from manifest')
+            with np.load(cp, allow_pickle=False) as z:
+                self.reference = {'taps': np.asarray(z['train_taps'], dtype=np.float64), 'k': int(z['k']),
+                                  'threshold': float(z['threshold'])}
+            if self.reference['taps'].shape[1] != self.width:
+                raise ValueError(world + ': competence reference width differs from checkpoint')
+
+    def competence(self, x):
+        """Before the effect: is this context state like the states the candidate was fitted on?
+
+        Mean cosine distance to the k nearest training context taps; threshold = calibration-partition 99th percentile
+        (install_tool_forecast.py build-competence). A hypothesis about the forecast's own domain, not about the world."""
+        ref = self.reference
+        if ref is None:
+            return None
+        r = ref['taps']
+        cos = (r @ x) / np.maximum(np.linalg.norm(r, axis=1) * np.linalg.norm(x), 1e-12)
+        d = float(np.mean(1 - np.sort(cos)[-ref['k']:]))
+        return {'signal': 'knn%d_cosine_distance' % ref['k'], 'distance': round(d, 8), 'threshold': round(ref['threshold'], 8),
+                'in_domain': d <= ref['threshold']}
 
     def predict(self, x, action):
         """Same formula as round6 predict_state for one row: x@p + mean_delta[a] + (f - centre[a]) @ W[a]."""
@@ -280,9 +304,10 @@ class ToolForecast:
             if x.shape != (ck.width,):
                 raise ValueError('tap width differs from checkpoint')
             out = ck.predict(x, c['action'])
+            comp = ck.competence(x)
             fid = uid('tfc')
             rec = {'id': fid, 'world': c['world'], 'action': c['action'], 'tool': tool, 'event_id': event_id, 'created': self.clock(),
-                   'state_text': c['state_text'], 'in_world_range': c.get('in_world_range', True),
+                   'state_text': c['state_text'], 'in_world_range': c.get('in_world_range', True), 'competence': comp,
                    'checkpoint_sha256': ck.entry['checkpoint_sha256'], 'tool_sha256': enc['tool_sha256'],
                    'tap_s': round(time.monotonic() - t0, 3)} | {k: [float(v) for v in out[k]] for k in ('forecast', 'copy', 'mean_delta')}
 
@@ -297,7 +322,7 @@ class ToolForecast:
             return {'schema': SCHEMA, 'forecast_id': fid, 'world': c['world'], 'action': c['action'], 'latent_dim': len(rec['forecast']),
                     'forecast_sha256': vec_sha(out['forecast']), 'checkpoint_sha256': rec['checkpoint_sha256'],
                     'encoder': {'model_sha256': enc['model_sha256'], 'layer': enc['layer'], 'pooling': enc['pooling']},
-                    'authority': 'LOCAL_PREDICTION_HYPOTHESIS', 'future_observed': False, 'used_for_decision': False}
+                    'competence': comp, 'authority': 'LOCAL_PREDICTION_HYPOTHESIS', 'future_observed': False, 'used_for_decision': False}
         except Exception as exc:
             try:
                 self._note(event_id, 'FORECAST_FAILED', {'tool': tool, 'error': type(exc).__name__})
@@ -336,7 +361,8 @@ class ToolForecast:
 
     def _close(self, fid, rec, status, tx, text=None, err=None):
         done = {'id': fid, 'world': rec['world'], 'action': rec['action'], 'status': status, 'tool_call': tx.get('id'),
-                'action_tx': tx.get('action_tx'), 'in_world_range': rec['in_world_range'], 'scored_at': self.clock()}
+                'action_tx': tx.get('action_tx'), 'in_world_range': rec['in_world_range'], 'competence': rec.get('competence'),
+                'scored_at': self.clock()}
         if err is not None:
             best = min(err['copy'], err['mean_delta'])
             done |= {'outcome_text': text, 'mse': {k: round(v, 8) for k, v in err.items()},
@@ -355,6 +381,7 @@ class ToolForecast:
                 a['n'] += 1
                 a['wins'] += int(done['beats_controls'])
                 a['in_range'] += int(rec['in_world_range'])
+                a['in_domain'] = a.get('in_domain', 0) + int(bool((rec.get('competence') or {}).get('in_domain')))
                 if done['ratio_to_best_control']:
                     a['sum_log_ratio'] += math.log(done['ratio_to_best_control'])
             return True
