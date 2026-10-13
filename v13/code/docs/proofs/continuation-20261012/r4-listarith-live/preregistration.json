@@ -1,0 +1,134 @@
+{
+ "schema": "v13-r4-listarith-live-prereg-v1",
+ "created_utc": "2026-10-13T09:33:12Z",
+ "dev_seed": 7,
+ "dev_sha256": "01c77dc7d627f6a5bffbe90bc65e1b7cd08c56aebb0c54c8a1cdad32b8f6728d",
+ "dev": {
+  "orig": {
+   "n": 60,
+   "c3_alone": 43,
+   "tool_active": 52,
+   "wins": 11,
+   "losses": 2,
+   "net": 9,
+   "sign_test_p": 0.0225,
+   "by_kind": {
+    "summary": {
+     "c3_alone": 9,
+     "tool_active": 13,
+     "value_correct": 14,
+     "n": 15
+    },
+    "long": {
+     "c3_alone": 15,
+     "tool_active": 15,
+     "value_correct": 0,
+     "n": 15
+    },
+    "notes": {
+     "c3_alone": 14,
+     "tool_active": 14,
+     "value_correct": 0,
+     "n": 15
+    },
+    "compare": {
+     "c3_alone": 5,
+     "tool_active": 10,
+     "value_correct": 15,
+     "n": 15
+    }
+   },
+   "proposals": 30,
+   "tool_executed": 30,
+   "guard_refused": 0,
+   "value_correct": 29,
+   "pass_with_correction": 57,
+   "turn_s_median": {
+    "c3_alone": 4.12,
+    "tool_active": 4.33
+   }
+  },
+  "match": {
+   "n": 30,
+   "c3_alone": 7,
+   "tool_active": 23,
+   "wins": 18,
+   "losses": 2,
+   "net": 16,
+   "sign_test_p": 0.0004,
+   "by_kind": {
+    "summary": {
+     "c3_alone": 3,
+     "tool_active": 14,
+     "value_correct": 14,
+     "n": 15
+    },
+    "compare": {
+     "c3_alone": 4,
+     "tool_active": 9,
+     "value_correct": 15,
+     "n": 15
+    }
+   },
+   "proposals": 30,
+   "tool_executed": 30,
+   "guard_refused": 0,
+   "value_correct": 29,
+   "pass_with_correction": 27,
+   "turn_s_median": {
+    "c3_alone": 3.92,
+    "tool_active": 5.43
+   }
+  },
+  "nomatch": {
+   "n": 15,
+   "c3_alone": 4,
+   "tool_active": 4,
+   "wins": 0,
+   "losses": 0,
+   "net": 0,
+   "sign_test_p": 1.0,
+   "by_kind": {
+    "compare": {
+     "c3_alone": 4,
+     "tool_active": 4,
+     "value_correct": 0,
+     "n": 15
+    }
+   },
+   "proposals": 0,
+   "tool_executed": 0,
+   "guard_refused": 0,
+   "value_correct": 0,
+   "pass_with_correction": 4,
+   "turn_s_median": {
+    "c3_alone": 3.43,
+    "tool_active": 2.73
+   }
+  }
+ },
+ "fresh_task_seed": 19,
+ "arms": [
+  "c3_alone",
+  "tool_active"
+ ],
+ "reword": {
+  "match": {
+   "summary": "Does that line add up? Tell me the right sum of the items.",
+   "compare": "Which city was the wettest, and how much more rain did it get than the driest city?"
+  },
+  "nomatch": {
+   "compare": "Which city was the wettest, and by how many millimetres did it exceed the driest one?"
+  }
+ },
+ "decision_rule": "Fresh seed 19, set 'orig', 60 tasks: tool_active vs c3_alone paired on the same task. TOOL_PATH_SUPPORTED iff net wins >= +5 AND two-sided sign test p < .05 AND no task kind loses more than 2. Reported, not part of the verdict: set 'match' (same direction expected), set 'nomatch' (expected 0 proposals and |net| <= 2), value correctness, guard refusals, C5 tool selections, pass including the broker correction line.",
+ "script_sha256": "44a816319062bcc81a2be5abe1882297b476dfde223f77ba63b318b869c2c96c",
+ "code_sha256": {
+  "toolstep.py": "3fad7df7693a13cfed5bd0d487db089219c5650d7679b7c02a70c4ee4d1ca657",
+  "agi/listarith.py": "de7183526dcb5a2cfe15cba0f2f333610030a462c006e5d1d412115caddf6479",
+  "agi/tools.py": "2e93d442a0e282912e2f7d4a14bc2bc30976dfc4e2330ce49082e280bb2f8337",
+  "transaction.py": "d3d0f8a9011fa40a4c662ce7e85fbc7ff341644ee9e592bee8f8b80128324e43",
+  "runtime.py": "5bad1a09678bc79a79a6adeb8c96bfed38244629f9033392380081571705c333",
+  "broker.py": "aade4b74cafae5c475907aef3933cc1fdba8d4191106f484d545e63ca7b586ad"
+ }
+}
