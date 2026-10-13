@@ -77,10 +77,12 @@
      "../bench-results/ablation99-20261010/README.md",
      "../bench-results/delayed-reward-20261010/README.md",
      "docs/CORE_EXPERIMENTS.md",
-     "../bench-results/homeo-meta-20261012/README.md"
+     "../bench-results/homeo-meta-20261012/README.md",
+     "../bench-results/meta-noise-candidate-20261012/README.md",
+     "../bench-results/meta-noise-candidate-20261012/report.json"
     ],
     "verdict": "PARTIAL",
-    "note": "Eligibility beats gradient-only/random mask 5/5 but not recency-only (1/5); the slow trace adds nothing measurable; typed modulators beat scalar reward and human-only 5/5; the gate alone does not stop dream/self labels (data-mix quotas needed); per-sample δ beats every control 5/5 on the delayed stream. META rule (2026-10-12, preregistered): beats only fixed permissive P (5/5); fixed conservative and budget-matched P are better (1/5), the novelty and repeated-failure terms add nothing."
+    "note": "Eligibility beats gradient-only/random mask 5/5 but not recency-only (1/5); the slow trace adds nothing measurable; typed modulators beat scalar reward and human-only 5/5; the gate alone does not stop dream/self labels (data-mix quotas needed); per-sample δ beats every control 5/5 on the delayed stream. META rule (2026-10-12, preregistered): beats only fixed permissive P (5/5); fixed conservative and budget-matched P are better (1/5), the novelty and repeated-failure terms add nothing. Noise-aware META candidate (preregistered) FAIL: beats current rule 5/5 (.0671 vs .0757) and matched P 4/5, but only ties fixed P .45 (2/5); not integrated."
    },
    "modulator_schema": "ModulatorPacket",
    "eligibility_owner": "v13/neuromod.py",
