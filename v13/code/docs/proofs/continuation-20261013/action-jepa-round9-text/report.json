@@ -1,0 +1,227 @@
+{
+ "schema": "v13-action-jepa-round9-text-report-v1",
+ "utc": "2026-10-13T03:45:49.165713+00:00",
+ "preregistration_sha256": "a2fca3d44979efdb931ae00291dbee7f84e59aee7a2d85b992fea02600ee2983",
+ "arm": "l11_last",
+ "runs": {
+  "full-s13": {
+   "pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "5dffc5fe7ac21735dca72b52cbf662f686cf5c545a809b4e4ffb8ad27bf4c799",
+   "test_ratio_to_best_control": {
+    "negate": 0.8858,
+    "question": 0.8155,
+    "summarize": 0.9691,
+    "translate_de": 0.9332
+   },
+   "retention_delta": {
+    "negate": -0.05904418569045741,
+    "question": -0.05568968303930988,
+    "summarize": -0.013272075970862218,
+    "translate_de": -0.016191688311441993
+   }
+  },
+  "full-s21": {
+   "pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "08636e78e778e70a185b738fbf0062a2ca07ad38dba360377dc1be81469fd4d3",
+   "test_ratio_to_best_control": {
+    "negate": 0.8096,
+    "question": 0.7116,
+    "summarize": 0.8794,
+    "translate_de": 0.9425
+   },
+   "retention_delta": {
+    "negate": -0.038341243237566824,
+    "question": -0.0428472003029724,
+    "summarize": -0.03601209395509419,
+    "translate_de": -0.00846713522699985
+   }
+  },
+  "full-s34": {
+   "pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "073b1e09e348756da4c7bc8ef6403de69bd1158eac2dfa66a19e45ab2c66fe80",
+   "test_ratio_to_best_control": {
+    "negate": 0.877,
+    "question": 0.7556,
+    "summarize": 0.9067,
+    "translate_de": 0.9334
+   },
+   "retention_delta": {
+    "negate": -0.031065409849046544,
+    "question": -0.06789795454619829,
+    "summarize": -0.023626511534518113,
+    "translate_de": -0.006342746969895702
+   }
+  },
+  "proj-s13": {
+   "pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "5828af993f5fadb09880be67e2a12e8ba4fb9049d52b4cab653d3c686a78ce41",
+   "test_ratio_to_best_control": {
+    "negate": 0.868,
+    "question": 0.7411,
+    "summarize": 0.8743,
+    "translate_de": 0.9044
+   },
+   "retention_delta": {
+    "negate": -0.05065150036418348,
+    "question": -0.08112261231325185,
+    "summarize": -0.035168265867544124,
+    "translate_de": -0.02813500806953384
+   }
+  },
+  "proj-s21": {
+   "pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "6a5def0ad7d9a94a02e65e8ef9efc2a4842f05badd069846ed685fef362c8eb0",
+   "test_ratio_to_best_control": {
+    "negate": 0.7234,
+    "question": 0.7463,
+    "summarize": 0.9292,
+    "translate_de": 0.9421
+   },
+   "retention_delta": {
+    "negate": -0.059919929052655946,
+    "question": -0.07808708091118788,
+    "summarize": -0.01179122707747704,
+    "translate_de": -0.02522686461309792
+   }
+  },
+  "proj-s34": {
+   "pass": true,
+   "gates": {
+    "normal_equations": true,
+    "finite": true,
+    "deterministic": true,
+    "checkpoint_reload": true,
+    "noncollapse": true,
+    "predictive_gain_over_controls": true,
+    "fixed_reference_retention": true,
+    "observed_input_declared": true
+   },
+   "checkpoint_sha256": "13f71cd35c6d04479e8303bb628c03e5ddc8ab988b9e4ad09f0172bcace0fe0d",
+   "test_ratio_to_best_control": {
+    "negate": 0.8548,
+    "question": 0.7601,
+    "summarize": 0.8687,
+    "translate_de": 0.8822
+   },
+   "retention_delta": {
+    "negate": -0.061399547637289276,
+    "question": -0.09982218961760653,
+    "summarize": -0.03106392933258828,
+    "translate_de": -0.020104221819382845
+   }
+  }
+ },
+ "passes": 6,
+ "of": 6,
+ "verdict": "CONFIRMED",
+ "test_topics": [
+  "zoos",
+  "schools",
+  "bridges",
+  "hotels",
+  "markets",
+  "fire stations",
+  "playgrounds",
+  "deserts"
+ ],
+ "sentences": {
+  "zoos": 20,
+  "schools": 24,
+  "bridges": 24,
+  "hotels": 24,
+  "markets": 24,
+  "fire stations": 24,
+  "playgrounds": 24,
+  "deserts": 20
+ },
+ "test_episodes": 184,
+ "episodes": {
+  "train": 139,
+  "calibration": 47,
+  "retention": 44,
+  "test": 184
+ },
+ "excluded_fresh": 0,
+ "capture_layers": {
+  "schema": "v13-action-jepa-round4-capture-v1",
+  "started_utc": "2026-10-13T03:40:07.972380+00:00",
+  "finished_utc": "2026-10-13T03:45:38.237538+00:00",
+  "rows": 2795,
+  "layers": [
+   11
+  ],
+  "n_layer": 24,
+  "tool_sha256": "4a6a311f5a64f9c17988a371228ca42eba5313297e7f6b7f17d6855ff3803511",
+  "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+  "libraries": {},
+  "raw_bin_sha256": "25907410e6ced853de9cd83f6431450bfd44d5934c4931844ff67d2c4d1a8f44",
+  "meta_sha256": "6853804d59e1ba51501fc12a5ed2963b9c07187086d68ccdc64e61eac6bd5f92",
+  "texts_sha256": "b866878f92074d85e869d0394f02704c188e20cf36ba69cfa95bc2c0aff97239",
+  "arms": {
+   "l11_last": {
+    "path": "taps-l11_last.npz",
+    "sha256": "87b687e001085bfbc530c76332464addaf8e201962e672bae6d7eda4e0222549"
+   },
+   "l11_mean": {
+    "path": "taps-l11_mean.npz",
+    "sha256": "3d07fed2e29f24b74aeed0be1e94960d2c52f3b236f67f8f630970bbb33e5b45"
+   }
+  },
+  "tool_exit": 0
+ },
+ "receiver_authority": 0,
+ "learn_authority": 0,
+ "runtime_integrated": false,
+ "canonical_architecture_complete": false,
+ "claim_limit": "Per run: pass only if all gates hold. Family: CONFIRMED if more than half of the 6 runs pass (>= 4), otherwise NOT_CONFIRMED. No grid, gate, topic or script change after this registration; fewer accepted topics are reported as a deviation, not a reason to rerun. A confirmed family supports only \"a fixed mean-delta base plus a learned ridge residual on frozen l_out-11 last-token native taps predicts C3 text-action outcomes on unseen topics better than the controls\"; no runtime, receiver or phone claim, and no claim about semantic quality."
+}
