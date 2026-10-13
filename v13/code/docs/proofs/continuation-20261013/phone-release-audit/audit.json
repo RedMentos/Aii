@@ -1,0 +1,61 @@
+{
+  "archive_unchanged_after_tests": true,
+  "archive_verified": true,
+  "canonical_gate_pass": false,
+  "claim_scope": "Linux extracted software tests only",
+  "elapsed_seconds": 112.33589186099994,
+  "learned_utility_proven": false,
+  "manifest_files": 601,
+  "manifest_unchanged_after_tests": true,
+  "native_model_runs_requested": false,
+  "phone_measured": false,
+  "release_complete": false,
+  "schema": "V13_PHONE_RELEASE_AUDIT_CANDIDATE_V1",
+  "software_tests_successful": true,
+  "status": "SOFTWARE_PASS_WITH_SKIPS",
+  "suite": {
+    "error_ids": [],
+    "errors": 0,
+    "expected_failures": 0,
+    "failure_ids": [],
+    "failures": 0,
+    "passed": 1356,
+    "skipped_cases": [
+      {
+        "id": "test_memory_trainer.MemoryTrainerGlue.test_forget_zeroes_slots_in_bound_and_previous_artifact",
+        "reason": "torch missing"
+      },
+      {
+        "id": "test_memory_trainer.NativeMemoryLive.test_forget_zeroes_slots_in_bound_and_previous_artifact",
+        "reason": "torch missing"
+      },
+      {
+        "id": "test_sparse_memory.Layer.test_keyed_slot_fires_only_inside_its_radius",
+        "reason": "torch not installed (model-free CI)"
+      },
+      {
+        "id": "test_sparse_memory.Layer.test_zero_values_keep_base_and_masked_update_touches_only_selected_slots",
+        "reason": "torch not installed (model-free CI)"
+      },
+      {
+        "id": "test_toolforecast.NativeEncoderTests.test_install_parity_and_live_round_trip",
+        "reason": "native tap tool + Qwen3.5 GGUF not given"
+      }
+    ],
+    "skipped_ids": [
+      "test_memory_trainer.MemoryTrainerGlue.test_forget_zeroes_slots_in_bound_and_previous_artifact",
+      "test_memory_trainer.NativeMemoryLive.test_forget_zeroes_slots_in_bound_and_previous_artifact",
+      "test_sparse_memory.Layer.test_keyed_slot_fires_only_inside_its_radius",
+      "test_sparse_memory.Layer.test_zero_values_keep_base_and_masked_update_touches_only_selected_slots",
+      "test_toolforecast.NativeEncoderTests.test_install_parity_and_live_round_trip"
+    ],
+    "skips": 5,
+    "successful": true,
+    "tests": 1361,
+    "unexpected_successes": 0
+  },
+  "suite_returncode": 0,
+  "test_policy": "complete unittest discovery; nonempty; skips explicitly limit release completeness",
+  "zip": "/workspace/scratch/f24630d7727d/phone-audit/final-phone.zip",
+  "zip_sha256": "f039cbec836a1111e4143c673167de7cbd1fb25528567d2bc47cb59523ae874d"
+}

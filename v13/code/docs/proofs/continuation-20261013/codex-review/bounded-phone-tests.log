@@ -1,0 +1,16 @@
+test_cancel_stops_child_and_no_unrelated_process (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_cancel_stops_child_and_no_unrelated_process) ... ok
+test_complete_preserves_child_and_log (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_complete_preserves_child_and_log) ... ok
+test_deadline_stops_soft_handler_and_keeps_partial (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_deadline_stops_soft_handler_and_keeps_partial) ... ok
+test_driver_error_receipt (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_driver_error_receipt) ... ok
+test_existing_output_never_replaced (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_existing_output_never_replaced) ... ok
+test_grandchild_stopped_when_leader_exits_on_term (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_grandchild_stopped_when_leader_exits_on_term) ... ok
+test_nonfinite_budget_refused_without_output (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_nonfinite_budget_refused_without_output) ... ok
+test_precancel_does_not_launch (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_precancel_does_not_launch) ... ok
+test_start_failure_saved (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_start_failure_saved) ... ok
+test_zero_exit_missing_report_does_not_pass (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_zero_exit_missing_report_does_not_pass) ... ok
+test_zero_exit_negative_gate_does_not_pass (test_tool_forecast_bounded_phone_candidate.BoundedPhoneDriver.test_zero_exit_negative_gate_does_not_pass) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 1.928s
+
+OK

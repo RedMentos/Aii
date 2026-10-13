@@ -1,0 +1,19 @@
+{
+  "bounded_candidate_sha256": "f1c335515e7aecc7fc06ba898973490d132f24302066f768f6d1a66731b9e61e",
+  "candidate_elapsed_seconds": 1.103,
+  "candidate_leader_reaped": true,
+  "candidate_signals": [
+    "SIGTERM",
+    "SIGKILL"
+  ],
+  "candidate_status": "DEADLINE",
+  "claim_scope": "Actual original signal handler with synthetic installer stall; software lifecycle only.",
+  "native_models_launched": false,
+  "original_manually_killed_and_reaped": true,
+  "original_phone_driver_sha256": "bcfb015e77a355dfb49ed628c0f4004e893c6161d07f01901bcce59dd420197e",
+  "original_still_running_after_sigterm_250ms": true,
+  "partial_child_report_preserved": true,
+  "phone_measured": false,
+  "reproducer_sha256": "115322bcc1ea00d41c0fcd34cfce4ef3d2070157f9b276a70af8f3c11b2b298e",
+  "schema": "V13_PHONE_CANCEL_REPRO_V1"
+}
