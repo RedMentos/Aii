@@ -247,6 +247,11 @@ def promote(r,direction,authority='SYSTEM',now=None):
                                 ('GATE_'+want,gate_passed(man,want))) if not ok]
         h5=b3calibration.gate(ev['calibration'],ev['receiver_revision'],sender_revision=ev['sender_revision'],ood_ok=ev['ood_ok'],thresholds=ev['router_thresholds'])
         if h5['latent']!='ON':missing+=['B3_H5:'+w for w in h5['reasons'] if not w.startswith(('CALIBRATION_MISSING','RECEIVER_REVISION_CHANGED'))]
+        from . import b3order  # B3-H8: the rung's training step and all before it, in order
+        need={'L1':'L1_UTILITY','L2':'L2_SHADOW','L3':'L3_SHADOW','L4':'CO_ADAPTATION'}[want]
+        order=b3order.status(r.home,direction,r.revisions() if hasattr(r,'revisions') else {})
+        if need not in order['done']:missing.append('B3_H8:'+str(order['next']))
+        if order['violations']:missing.append('B3_H8_ORDER_VIOLATION:'+','.join(order['violations']))
         tr=triggers(x,ev,want);fired=[t for t in TRIGGERS if tr[t]]
         if missing or fired:raise ValueError('Beförderung abgelehnt: '+', '.join(missing+fired))
         x.update(level=want,granted={'wall_time':ev['now'],'authority':authority,'level':want},receiver_revision=ev['receiver_revision'],runner_revision=ev['runner_revision'])

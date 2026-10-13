@@ -72,7 +72,7 @@ class Ladder(unittest.TestCase):
             r=Runtime(Path(t))
             try:
                 revs={'B1_DETAIL':'s1','B2_GIST':'r1','C3_LANGUAGE':'c'};r.revisions=lambda:dict(revs);(r.home/'b3').mkdir()
-                man={'receiver_revision':'r1','l1_gate':{'verdict':'PASS','criteria':{'receiver_ood':{'significant':True}}},
+                man={'sender_revision':'s1','sha256':'0'*64,'train':{'samples':80},'receiver_revision':'r1','l1_gate':{'verdict':'PASS','criteria':{'receiver_ood':{'significant':True}}},
                      'receiver_calibration':B.compute(NATIVE,NATIVE[:,::-1].copy(),**KW)|{'created_wall_time':time.time()}}
                 (r.home/'b3/B1_TO_B2.json').write_text(json.dumps(man))
                 with self.assertRaisesRegex(ValueError,'B3_H5:COMPATIBILITY:GEOMETRY'):D.promote(r,'B1_TO_B2','EXPLICIT_HUMAN')

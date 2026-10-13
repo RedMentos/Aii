@@ -173,6 +173,10 @@ class Callosum:
                                   body_revisions=(revisions or (r.revisions() if hasattr(r,'revisions') else {})),router_kl=g['router_kl'],expert_flip=g['expert_flip'],
                                   degradation={k:g[k] for k in ('previous','fired','triggers','calibration_reasons','resource_mode','role_diversity','last_fail','demotions')})
                 if g['level']=='NO_MESSAGE':out[dname]['fallback_channel']='NO_MESSAGE'
+                try:
+                    from . import b3order  # B3-H8 training order from evidence
+                    o=b3order.status(r.home,dname,out[dname]['body_revisions']);out[dname]['training_order']={k:o[k] for k in ('done','next','status','violations','locked_by_canon')}
+                except Exception as exc:out[dname]['training_order']={'error':type(exc).__name__}
         return out
     def report(self,cfg):
         st,_=self._load();p=st['proposals']

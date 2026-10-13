@@ -53,3 +53,17 @@ Modul `v13/b3calibration.py`, Tests `tests/test_b3calibration.py` (7), volle Sui
   Paket für die aktuellen Revisionen oder älter als 7 Tage“, die Beförderung verlangt zusätzlich das B3-H5-Tor. Ein Sender-Tausch nach der
   Beförderung führt zu `FAIL` und Rückfall auf EXACT/SYMBOLIC.
 - **Grenze:** Im Projekt gibt es noch kein Paar echter Empfänger-Tap-Zustände (B1 → B2 am Ziel-Tap), daher wurde kein echtes Paket berechnet.
+
+## Nachtrag WP-N22: B3-H8 Trainingsreihenfolge im Code
+
+Modul `v13/b3order.py`, Tests `tests/test_b3order.py` (4), volle Suite 1333 OK.
+
+- Die 10 Canon-Schritte je Richtung aus Belegen: Körper eingefroren (aktuelle B1/B2-Revision = die im Brücken-Manifest gepinnte),
+  ≥ 64 gepaarte Erfahrungen (`train.samples`, jetzt von `b3bridge.fit` ins Manifest geschrieben), Brücke trainiert (sha + Trainingsprotokoll),
+  gültiges B3-H4-Paket, dann `l1_gate`, `l2_gate`, `l3_gate`, `co_adaptation_gate`, `router_gate` mit PASS.
+- Ein Schritt zählt nur, wenn alle früheren erledigt sind; ein Beleg über einer Lücke ist `ORDER_VIOLATION` (z. B. Empfänger nach dem Training
+  verändert). `require` verweigert Sprünge; `check_job` verweigert gemeinsames Bewegen von Sender-Brücke, Empfänger-Backbone und Router,
+  Körper-Gewichte vor Schritt 9 und Router-Lernen vor Schritt 10 oder zusammen mit anderem.
+- `b3degrade.promote` verlangt den Schritt der Zielstufe (L1 → L1_UTILITY, L2 → L2_SHADOW, L3 → L3_SHADOW, L4 → CO_ADAPTATION);
+  `:doctor` zeigt je Richtung `training_order` (erledigt, nächster Schritt, Verstöße, kanonisch gesperrt).
+- Folge für ABDECKUNG: B3 L2–L4 bleiben ❌, und das ist jetzt Canon-konform erzwungen: L1 ist FAIL (WP-J), also ist L2 nicht erlaubt.
