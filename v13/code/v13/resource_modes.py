@@ -166,9 +166,32 @@ def report(runtime):
     return {'mode':m,'legacy_state':g.state,'reasons':list(getattr(g,'reasons',[])),'policy':policy(m),
             'profile':getattr(g,'profile',None),'canon':'§97.2','claim_limit':'thresholds are BOOT unless status DEVICE_MEASURED; policy factors are BOOT'}
 
+def bodies_report(runtime):
+    """WP-N21: residency size per role (measured profile or estimate) and which combinations fit the budget."""
+    from . import body_sizes
+    rows={};sizes={}
+    for role in ('C3_LANGUAGE','B1_DETAIL','B2_GIST'):
+        mb,src=body_sizes.size(runtime.models,role,runtime.store)
+        rows[role]={'size_mb':mb,'source':src};sizes[role]=mb
+    budget=runtime.cfg.get('body_residency_mb',0)
+    return {'bodies':rows,'fits':body_sizes.fits(sizes,budget) if budget else None,'residency_enabled':budget>0,
+            'size_rule':'Anon after work + %g MiB hot file pages (cgroup squeeze); ESTIMATE = file x 1.1 + 96'%body_sizes.HOT_FILE_MB}
+
 def command(runtime,args):
-    """:resources modes | calibrate | reset"""
+    """:resources modes | calibrate | reset | bodies [import <ram_budget.json>|reset]"""
     sub=args[0] if args else 'modes'
+    if sub=='bodies':
+        from . import body_sizes
+        if args[1:2]==['import'] and len(args)==3:
+            from pathlib import Path
+            import json
+            path=Path(args[2]);path=path if path.is_absolute() else runtime.home/path
+            entries=body_sizes.import_report(runtime.store,json.loads(path.read_text()))
+            runtime.store.log('body_sizes',None,{'items':len(entries)})
+        elif args[1:]==['reset']:body_sizes.reset(runtime.store)
+        elif args[1:]:raise ValueError(':resources bodies [import <ram_budget.json>|reset]')
+        if args[1:] and getattr(runtime,'bodies',None) is not None:runtime.bodies.sync()
+        return bodies_report(runtime)
     if sub=='modes':return report(runtime)
     if sub=='calibrate':
         from .resources import device
@@ -180,4 +203,4 @@ def command(runtime,args):
         runtime.store.set_state(STATE_KEY,None);runtime.guard.profile=boot_profile(runtime.cfg)
         runtime.store.log('resource_profile',None,{'status':'UNCALIBRATED'})
         return report(runtime)
-    raise ValueError(':resources [modes|calibrate|reset]')
+    raise ValueError(':resources [modes|calibrate|reset|bodies [import <json>|reset]]')

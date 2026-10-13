@@ -203,7 +203,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Event/Wake Scheduler | §22.2.1, G13 | ✅ | `scheduler.py` | WP-E |
 | Response Governor | §22.2.2 | ✅ | Deadline + Snapshot-Fallback | – |
 | Thin-Control-Budget | §22.2.3, §24.14 | 🟡 | `control_budget.py` + `:fabric`: Latenz P95 je Steuer-Stufe, Checkpoint-/State-Bytes, Limits-Regler; Verdikt NO_LIMITS bis Redmi-Messung (Blueprint: Limits erst nach Zielhardware) | WP-N12, WP-T14 |
-| Redmi-Budget / Observer-Scheduling | §22.2.4, §73, §97 | 🟡 | 2026-10-12 Thread N: Regler `observer_schedule` mit allen 6 Canon-Werten im Turn und Post-Commit-Pass (`observer_schedule.py`, Standard sequenziell wie bisher), §73-RSS-Budget (PSS-Summe, 3000/3800 MB) als YELLOW/ORANGE-Eingang der §97.2-Modi, nur auf Android aktiv; Redmi-Messung (Parallel vs. sequenziell, echte RSS) fehlt | WP-N17, WP-R |
+| Redmi-Budget / Observer-Scheduling | §22.2.4, §73, §97 | 🟡 | 2026-10-12 Thread N: Regler `observer_schedule` mit allen 6 Canon-Werten im Turn und Post-Commit-Pass (`observer_schedule.py`, Standard sequenziell wie bisher), §73-RSS-Budget (PSS-Summe, 3000/3800 MB) als YELLOW/ORANGE-Eingang der §97.2-Modi, nur auf Android aktiv; Redmi-Messung (Parallel vs. sequenziell, echte RSS) fehlt; 2026-10-13 Thread N (WP-N21): AG13-Residenz rechnet mit gemessenen Körper-Größen je Modelldatei (Anon + heiße Datei-Seiten, Cloud-Untergrenze ausgeliefert, Termux-Messung per `:resources bodies import`) | WP-N17, WP-R, WP-N21 |
 | Training-Master vs. quantisierte Kopie | §22.3 | 🟡 | Vertrag in `body_training.py` | WP-I |
 | Phone-first Learning | §22.4, §90 | 🟡 | `native_select_finetune.cpp` (ggml-opt) läuft für reine Attention-Modelle; LFM2 seit 2026-10-12 per isoliertem Patch trainierbar (`build_native_lfm2_finetune.sh`, `native_answer_finetune.cpp`): C3 bis 7/8 Fakten, aber zu viel Vergessen/Leck, AG6-Gate nicht bestanden (`code/docs/NATIVE_LFM2_TRAIN.md`); Redmi-Messung offen | WP-S6, WP-R |
 | Speculative Decoding | §22.6 | ✅ (gemessen, bewusst aus) | `scripts/spec_decode_bench.py`: auf hybriden LFM2/Qwen3.5-Bodies greift Spekulation in b10964 nicht (0,92–0,98×, Draft +330 MB); siehe `bench-results/spec-decode-20261009/` | WP-N12 |
@@ -297,7 +297,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | G10 Lehrer-Lifecycle | 🟡 | WP-AG1 |
 | G10B/C/D Vision, Audio, Full-Duplex | 🟡 Text-Full-Duplex (WP-N14), Vision nur Lab (WP-N15); Audio/Sprach-Duplex ⏸ STEP9–11 | WP-N14, WP-N15 |
 | G11 Body Swap | 🟡 Mechanik online (`:body`, Rollback ohne Neustart, Probe); echter Tausch mit AG12-Parität + Redmi offen | WP-AG0, WP-T13 |
-| G12 Mobile-Optimierung | 🟡 | WP-R |
+| G12 Mobile-Optimierung | 🟡 (2026-10-13: Residenz-Größen aus RAM-Messung, Thread P/N; Redmi offen) | WP-R, WP-N21 |
 | G12B Redmi-6GB-Validierung | ❌ | WP-R |
 | G12C Needle-Benchmark | ✅ (`c2_benchmark.py`, `bench-results/c2-benchmark-20261010`: Needle bleibt C2, gelernter Routing-Kopf) | WP-V7 |
 | G13 Langlauf + Event-Scheduler | 🟡 (2026-10-12 Thread N: `scripts/longrun_soak.py` simulierte Tage mit Neustarts über den echten Turn-/Scheduler-/Sleep-Pfad, 7 Tage PASS in der Cloud; Befund Wach-Replays verdrängten den Nacht-Schlaf behoben; Redmi-`--native`-Langlauf offen) | WP-N18, WP-E, WP-R |
