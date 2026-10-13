@@ -71,3 +71,15 @@ class EpisodicRouteAblation(unittest.TestCase):
             self.assertEqual(EPR.run_arm(reqs,'episodic')['primary'],1.)  # Borealis untouched, Aurora paraphrase corrected
             self.assertEqual(EPR.run_arm(reqs,'no_entity_guard')['primary'],.5)  # the correction leaks to Borealis
         finally:EPR.N=old
+
+import ablation_sleep_offline as SO
+class SleepOfflineAblation(unittest.TestCase):
+    def test_short_run_uses_real_consolidate_and_restores_buffer(self):
+        days=SO.turns(13,'stationary')[:2]
+        self.assertEqual(SO.run_arm(days,'no_sleep',13)['sleeps_kept'],0)
+        import tempfile;from pathlib import Path;from v13.ablation99 import _store
+        with tempfile.TemporaryDirectory() as d:
+            store,_=_store(Path(d));ff=SO.FF.FastForward(store)
+            for i,t in enumerate(days[0]):ff.learn(f'e{i}',t['x'],t['duration_s'],t['status'],t['chars'])
+            before=ff._load()[0]['replay'];SO.shuffled_consolidate(ff,__import__('random').Random(1))
+            self.assertEqual(ff._load()[0]['replay'],before);store.close()

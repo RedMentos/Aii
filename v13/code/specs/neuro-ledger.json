@@ -201,8 +201,21 @@
   },
   "MODULE_SLEEP_OFFLINE": {
    "neuro_inspiration_class": "FUNCTIONAL_ANALOGY",
-   "neuro_claim_limit": "Offline compute during sleep; candidates only, no autonomous consolidation.",
-   "ablation_baseline": null,
+   "neuro_claim_limit": "Offline compute during sleep; candidates only, no autonomous consolidation. Only the fast-forward predictor replay (step 2) is ablated (synthetic); digest and TTT staging untested.",
+   "ablation_baseline": {
+    "hypothesis": "§99-style: sleep-time replay of the fast-forward predictor lowers next-day prediction error",
+    "controls": [
+     "no_sleep",
+     "shuffled_outcome_replay",
+     "unguarded_replay"
+    ],
+    "evidence": [
+     "../bench-results/sleep-offline-20261012/README.md",
+     "../bench-results/sleep-offline-20261012/report.json"
+    ],
+    "verdict": "SUPPORTED_SYNTHETIC",
+    "note": "Preregistered, 5 seeds × 10 days × 60 turns, real FastForward: error .950 vs no sleep 1.033, shuffled replay 1.688 (5/5 each). Held-out guard too cautious when stationary (unguarded .922) but protects under drift (1.225 vs 1.326); it does not catch corrupted replay (shuffled kept 10/10)."
+   },
    "replay_authority": "HYPOTHESIS_NO_LEARNING"
   },
   "STEP3_FAST_EPISODIC": {
