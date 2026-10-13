@@ -452,10 +452,12 @@
      "../bench-results/corollary-20261012/README.md",
      "../bench-results/corollary-20261012/report.json",
      "../bench-results/corollary-ceiling-20261012/README.md",
-     "../bench-results/corollary-nearest-20261012/README.md"
+     "../bench-results/corollary-nearest-20261012/README.md",
+     "../bench-results/corollary-unclear-20261012/README.md",
+     "../bench-results/corollary-unclear-20261012/report.json"
     ],
     "verdict": "PARTIAL",
-    "note": "Preregistered, 5 seeds: attribution beats every control 5/5 (balanced accuracy .77 vs ≤.57, never false SELF) but labels 54–66 % of external events on an open own channel as MIXED (own failure); attenuation beats none/random 5/5, full subtraction is better in this stream. Safety reads raw values in every arm. Tolerance-ceiling candidate FAIL (2026-10-12): removes the external→MIXED error but loses own failures, partly because attribute measures the residual against the first open own action, not the nearest prediction. Candidate 2 (nearest residual + ceiling K=20) fixes the standard stream (.77→.97, no lost failures) but FAILs the preregistered stress criterion (own failures 20–40× off read as external)."
+    "note": "Preregistered, 5 seeds: attribution beats every control 5/5 (balanced accuracy .77 vs ≤.57, never false SELF) but labels 54–66 % of external events on an open own channel as MIXED (own failure); attenuation beats none/random 5/5, full subtraction is better in this stream. Safety reads raw values in every arm. Tolerance-ceiling candidate FAIL (2026-10-12): removes the external→MIXED error but loses own failures, partly because attribute measures the residual against the first open own action, not the nearest prediction. Candidate 2 (nearest residual + ceiling K=20) fixes the standard stream (.77→.97, no lost failures) but FAILs the preregistered stress criterion (own failures 20–40× off read as external). Candidate 3 (nearest prediction, far value -> UNCLEAR, K 20) PASS and integrated into selfmodel.attribute: harmful attributions .389 -> .003 on both streams; foreign events on an open channel now abstain (61 %)."
    },
    "corollary_required": true
   },

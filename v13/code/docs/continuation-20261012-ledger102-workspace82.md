@@ -73,3 +73,4 @@ Branch `claude/project-thread-n3gv74`, Basis Thread G `bbd710e`. Linux-Cloud, ke
 - World-Model kontrafaktische Konfidenz: PARTIAL (ordnet Fehler .354 vs Zufall −.03, Labels trennen 5/5, aber nicht besser als Stichprobenzahl/Streuung allein). UNTESTED_LABEL jetzt 3 (F4, VISION, BODY_JEPA).
 - A-Plane-Gate-Kandidat (Fenster 100, Retention nur bei klarem Einbruch): PASS, live in `v13/aplane.py` übernommen (Standard .70 → .82, Stress schlägt immer Schüler).
 - Rauschbewusste META-Regel (Kandidat): FAIL knapp (heute .0757 → .0671, aber nur gleichauf mit festem P .45); nicht integriert.
+- Corollary-Kandidat 3 (nächstliegende Vorhersage, weit daneben → UNCLEAR): PASS, live in `v13/selfmodel.attribute` (schädliche Zuordnungen .389 → .003).
