@@ -24,6 +24,7 @@ Mode OFF (default; every forecast costs a native prefill subprocess) or SHADOW (
 import hashlib
 import json
 import math
+import os
 import re
 import subprocess
 import tempfile
@@ -175,8 +176,9 @@ class NativeLayerTaps:
         with tempfile.TemporaryDirectory(prefix='v13-tap-') as d:
             d = Path(d)
             (d / 'in.txt').write_text(''.join(t + '\n' for t in texts))
+            env = dict(os.environ, V13_GGML_BACKEND_DIR=self.enc['backend_dir']) if self.enc.get('backend_dir') else None
             proc = subprocess.run([self.enc['tool_path'], self.enc['model_path'], str(layer), str(d / 'in.txt'), str(d / 'out'),
-                                   str(self.threads)], capture_output=True, timeout=self.timeout_s)
+                                   str(self.threads)], capture_output=True, timeout=self.timeout_s, env=env)
             if proc.returncode != 0:
                 raise RuntimeError('native tap tool exit %d' % proc.returncode)
             meta = json.loads((d / 'out.json').read_text())

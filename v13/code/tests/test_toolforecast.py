@@ -196,6 +196,47 @@ class LivePathTests(unittest.TestCase):
             operator_command(self.r, ['active'])
 
 
+class DeviceScriptTests(unittest.TestCase):
+    def test_build_reuses_pinned_worker_command_with_tap_source(self):
+        sys.path.insert(0, str(APP / 'scripts'))
+        import test_tool_forecast_phone as P
+        with tempfile.TemporaryDirectory() as d:
+            home = Path(d)
+            (home / 'bin').mkdir()
+            (home / 'config').mkdir()
+            worker = str(APP / 'scripts/native_prefill_worker.cpp')
+            seen = {}
+
+            def prepare(h, identity, runner, cancel, out):
+                return None, {'identity_key': {'k': 1}, 'command': ['c++', '-O2', worker, 'sha.o', '-o', str(h / 'bin/native-prefill-worker.new')]}
+
+            def bounded(command, log, cancel, seconds):
+                seen['command'] = command
+                Path(command[-1]).write_bytes(b'bin')
+                log.write_text('')
+                return {'exit_code': 0, 'stop_reason': None}
+            old = P.port.prepare_worker, P.port.bounded_process
+            P.port.prepare_worker, P.port.bounded_process = prepare, bounded
+            try:
+                binary, info = P.build_taps(home, {}, {}, None, home)
+                self.assertEqual(seen['command'][2], str(P.SOURCE))
+                self.assertEqual(binary, home / 'bin/native-layer-taps')
+                again, _ = P.build_taps(home, {}, {}, None, home)      # cached by identity + binary hash
+                self.assertEqual(again, binary)
+                P.port.prepare_worker = lambda *a: (None, {'identity_key': {'k': 2}, 'command': ['c++', 'other.cpp']})
+                with self.assertRaises(RuntimeError):
+                    P.build_taps(home, {}, {}, None, home)
+            finally:
+                P.port.prepare_worker, P.port.bounded_process = old
+
+    def test_fixed_live_plan_matches_preregistration(self):
+        plan = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
+        prereg = APP / 'docs/proofs/continuation-20261012/tool-forecast-live/preregistration.json'
+        if prereg.exists():   # not shipped in the phone package
+            self.assertEqual(plan, json.loads(prereg.read_text())['plan'])
+        self.assertEqual((len(plan['calc_in_world']), len(plan['note_in_world'])), (25, 25))
+
+
 @unittest.skipUnless(os.environ.get('V13_TAP_TOOL') and os.environ.get('V13_TAP_MODEL'), 'native tap tool + Qwen3.5 GGUF not given')
 class NativeEncoderTests(unittest.TestCase):
     def test_install_parity_and_live_round_trip(self):

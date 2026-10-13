@@ -48,6 +48,21 @@ aus dem sdist `llama-cpp-python==0.3.36`, cmake-Target `llama`, dann
   nur bei PASS. Cloud-Ergebnis: **PASS**, Verhältnisse zur besten Kontrolle calc .09–.19, Notiz .06–.11 (gespeicherte
   Taps: .09–.18 / .06–.11). Auf dem Redmi muss `install` dort neu laufen (eigener Build, eigene Parität).
 
+## Am Handy messen: `bash TESTEN_TOOLFORECAST.sh` (2026-10-12, Thread M)
+
+Ein Befehl nach `setup.sh`, ohne laufenden Chat: (1) baut `native_layer_taps` gegen die installierte, gepinnte
+b10964-Laufzeit (gleiche Quell-Archiv-/Header-Prüfung und exakte Bibliotheken wie `test_native_prefill_port`, clang
+`-Wall -Wextra -Werror`), (2) `install` mit Paritäts-Gate gegen das installierte B2-GGUF, (3) dieselbe Live-Prüfung
+mit festem Plan `specs/tool_forecast/live-plan.json` (= vorregistrierter Plan). Bericht
+`~/v13/exports/tool-forecast-<Zeit>/report.json` zum Hochladen. Danach kann `:toolforecast shadow` im Chat vorhersagen.
+
+- `native_layer_taps.cpp`: lädt bei Builds mit dynamischen ggml-Backends (b10964-Release) die CPU-Backends
+  (`V13_GGML_BACKEND_DIR`), Kontext 512 statt 2048 Tokens. Für den statischen Erfassungs-Build bitgleiche Ausgabe geprüft.
+- Cloud-Probelauf genau dieses Wegs mit dem b10964-Linux-Release (`docs/proofs/continuation-20261012/tool-forecast-device-cloud/`):
+  Parität PASS (104 s), Live **LIVE_PATH_CONFIRMED** 245/245, Verhältnisse wie oben (calc .17–.24, Notiz .06–.10),
+  Median 2,7 s je Aufruf, **Spitzen-RSS des Tap-Prozesses ≈ 1 GB** (Modell + CPU-Repack). Auf dem 6-GB-Redmi deshalb
+  nie neben einem Chat; ob Modi/RSS-Budget (Thread N) das Werkzeug dort zulassen, zeigt erst der Handy-Lauf.
+
 ## Live-Prüfung (vorregistriert, `docs/proofs/continuation-20261012/tool-forecast-live/`)
 
 **LIVE_PATH_CONFIRMED**, 245/245 Aufrufe gemessen. Nie benutzte Werte/Notizen der Welten: Vorhersage bei

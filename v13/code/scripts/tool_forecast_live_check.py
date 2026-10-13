@@ -13,6 +13,9 @@ only. No authority is granted; this measures the integration, not a new learning
 """
 import argparse
 import json
+import os
+import platform
+import resource
 from pathlib import Path
 import shutil
 import sys
@@ -65,13 +68,13 @@ def verdict(rows):
     return out
 
 
-def run(args):
-    p = plan(args.restored)
+def run(args, encoder_json=None):
+    p = json.loads(Path(args.plan).read_text())['plan'] if args.plan else plan(args.restored)
     home = Path(args.out) / 'home'
     if home.exists():
         raise SystemExit('fresh output folder required')
     (home / 'data' / 'tool_forecast').mkdir(parents=True)
-    shutil.copyfile(Path(args.encoder_home) / 'data' / 'tool_forecast' / 'encoder.json', home / 'data' / 'tool_forecast' / 'encoder.json')
+    shutil.copyfile(encoder_json or Path(args.encoder_home) / 'data' / 'tool_forecast' / 'encoder.json', home / 'data' / 'tool_forecast' / 'encoder.json')
     r = Runtime(home)
     rows = []
     try:
@@ -112,6 +115,9 @@ def run(args):
                   'arms': {arm: verdict([x for x in rows if x['arm'] == arm]) for arm in ('calc_in_world', 'calc_out_of_range', 'note_in_world', 'note_free')},
                   'statuses': {s: sum(x['status'] == s for x in rows) for s in sorted({x['status'] for x in rows})},
                   'seconds_per_call_median': float(np.median([x['seconds'] for x in rows])),
+                  'tap_process_max_rss_mb': round(resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss / 1024, 1),
+                  'device': {'machine': platform.machine(), 'system': platform.system(), 'release': platform.release(),
+                             'termux': 'com.termux' in os.environ.get('PREFIX', '')},
                   'runtime_report': tf.report()}
         gate_arms = ('calc_in_world', 'note_in_world')
         ok = report['statuses'].get('SCORED', 0) == len(rows) and all(
@@ -139,10 +145,13 @@ def record(tf, arm, action, pred, tx, seconds):
 def main():
     a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     a.add_argument('command', choices=('plan', 'run'))
-    a.add_argument('--restored', required=True)
+    a.add_argument('--restored', help='restored round-5/7/8 evidence (to draw the plan)')
+    a.add_argument('--plan', help='fixed plan file instead, e.g. specs/tool_forecast/live-plan.json (phone)')
     a.add_argument('--encoder-home')
     a.add_argument('--out')
     args = a.parse_args()
+    if not (args.restored or args.plan) or (args.command == 'plan' and not args.restored):
+        a.error('--restored (or --plan for run) required')
     if args.command == 'plan':
         print(json.dumps(plan(args.restored), indent=1))
         return 0

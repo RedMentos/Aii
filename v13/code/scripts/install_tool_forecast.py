@@ -134,7 +134,8 @@ def install(args):
         raise SystemExit('GGUF differs from the capture model')
     enc = {'schema': tf.SCHEMA + '-encoder', 'tool_path': str(Path(args.tool).resolve()), 'tool_sha256': tf.sha_file(args.tool),
            'model_path': str(Path(args.model).resolve()), 'model_sha256': model_sha, 'layer': want['layer'], 'pooling': want['pooling'],
-           'capture_tool_sha256': want['capture_tool_sha256']}
+           'capture_tool_sha256': want['capture_tool_sha256'], 'backend_dir': str(Path(args.backend_dir).resolve()) if args.backend_dir else None,
+           'tool_source_sha256': tf.sha_file(APP / want['tool_source'])}
     taps = tf.NativeLayerTaps(enc, threads=args.threads, timeout_s=3600)
     parity = {'gate': GATE, 'worlds': {}}
     ok = True
@@ -177,6 +178,7 @@ def main():
     for name in ('--home', '--tool', '--model'):
         i.add_argument(name, required=True)
     i.add_argument('--threads', type=int, default=4)
+    i.add_argument('--backend-dir', help='runner library folder for builds with dynamically loaded ggml backends (b10964 release)')
     args = root.parse_args()
     if args.command == 'build-assets':
         build_assets(args)

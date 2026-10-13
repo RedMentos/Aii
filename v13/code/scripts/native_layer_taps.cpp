@@ -8,6 +8,7 @@
 #include "ggml.h"
 #include "ggml-backend.h"
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <map>
@@ -44,10 +45,17 @@ int main(int argc, char ** argv) {
     Taps taps;
     for (int l : layers) taps.wanted["l_out-" + std::to_string(l)] = l;
     llama_backend_init();
+    // Release builds with dynamically loaded CPU backends (GGML_BACKEND_DL, e.g. the pinned b10964 binaries)
+    // register nothing until asked; static builds already have their backend, so this changes nothing there.
+    // V13_GGML_BACKEND_DIR names the runner's library directory; otherwise ggml searches its default places.
+    if (ggml_backend_reg_count() == 0) {
+        const char * dir = std::getenv("V13_GGML_BACKEND_DIR");
+        if (dir && *dir) ggml_backend_load_all_from_path(dir); else ggml_backend_load_all();
+    }
     auto mp = llama_model_default_params(); mp.n_gpu_layers = 0;
     llama_model * model = llama_model_load_from_file(argv[1], mp); if (!model) return 3;
     const llama_vocab * vocab = llama_model_get_vocab(model);
-    auto cp = llama_context_default_params(); cp.n_ctx = 2048; cp.n_batch = 2048; cp.n_ubatch = 2048;
+    auto cp = llama_context_default_params(); cp.n_ctx = 512; cp.n_batch = 512; cp.n_ubatch = 512;  // texts are short; 2048 reserved a 1.9 GiB compute buffer
     cp.n_threads = threads; cp.n_threads_batch = threads; cp.cb_eval = hook; cp.cb_eval_user_data = &taps;
     llama_context * ctx = llama_init_from_model(model, cp); if (!ctx) return 4;
     FILE * out = std::fopen((std::string(argv[4]) + ".bin").c_str(), "wb"); if (!out) return 5;
