@@ -1,0 +1,23 @@
+[
+  {
+    "path": "tests/resource_pins.py",
+    "source_commit": "c9b7eddf996406a0f3dc128fdcd585e690bd46cd",
+    "upstream_git_blob": "81e829120404cdc7faee48278b9c120c4f85dbc4",
+    "actual_git_blob": "81e829120404cdc7faee48278b9c120c4f85dbc4",
+    "exact_upstream": true
+  },
+  {
+    "path": "tests/test_bodies.py",
+    "source_commit": "c9b7eddf996406a0f3dc128fdcd585e690bd46cd",
+    "upstream_git_blob": "30cba313777385d3cdcf34651dfb8782dccb4b66",
+    "actual_git_blob": "30cba313777385d3cdcf34651dfb8782dccb4b66",
+    "exact_upstream": true
+  },
+  {
+    "path": "tests/test_executive.py",
+    "source_commit": "c9b7eddf996406a0f3dc128fdcd585e690bd46cd",
+    "upstream_git_blob": "3a33963f25c13b99a23768d243e3d06ca482d2f4",
+    "actual_git_blob": "3a33963f25c13b99a23768d243e3d06ca482d2f4",
+    "exact_upstream": true
+  }
+]

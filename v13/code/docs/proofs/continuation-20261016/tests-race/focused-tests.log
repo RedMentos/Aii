@@ -1,0 +1,25 @@
+test_zero_budget_keeps_one_process_at_a_time (test_bodies.OldPool.test_zero_budget_keeps_one_process_at_a_time) ... ok
+test_offer_schema_fits_the_token_budget (test_bodies.Schema.test_offer_schema_fits_the_token_budget) ... ok
+test_ramp_candidate_gets_its_share_of_turns (test_bodies.SlotRouting.test_ramp_candidate_gets_its_share_of_turns) ... ok
+test_b2_tap_spec_and_predictor_accept_qwen_width (test_bodies.Taps.test_b2_tap_spec_and_predictor_accept_qwen_width) ... ok
+test_memory_pressure_never_holds_two_bodies (test_bodies.TightBudget.test_memory_pressure_never_holds_two_bodies) ... ok
+test_over_budget_evicts_the_least_used_body (test_bodies.TightBudget.test_over_budget_evicts_the_least_used_body) ... ok
+test_both_bodies_stay_resident_within_budget_and_c3_is_pinned (test_bodies.TwoBodies.test_both_bodies_stay_resident_within_budget_and_c3_is_pinned) ... ok
+test_distinct_bodies_and_slots_mirror_installed_models (test_bodies.TwoBodies.test_distinct_bodies_and_slots_mirror_installed_models) ... ok
+test_atomic_state_packet_crash_rolls_back_and_stale_update_rejected (test_executive.ExecutiveChecks.test_atomic_state_packet_crash_rolls_back_and_stale_update_rejected) ... ok
+test_continuity_restart_is_explicit_bounded_and_operator_owned (test_executive.ExecutiveChecks.test_continuity_restart_is_explicit_bounded_and_operator_owned) ... ok
+test_control_boundary_consumes_binding_permissions_pressure_and_versions (test_executive.ExecutiveChecks.test_control_boundary_consumes_binding_permissions_pressure_and_versions) ... ok
+test_event_session_and_snapshot_stay_bound_after_restart (test_executive.ExecutiveChecks.test_event_session_and_snapshot_stay_bound_after_restart) ... ok
+test_implicit_task_tracks_current_turn_but_explicit_task_persists (test_executive.ExecutiveChecks.test_implicit_task_tracks_current_turn_but_explicit_task_persists) ... ok
+test_offers_and_actions_keep_provenance_without_fact_authority (test_executive.ExecutiveChecks.test_offers_and_actions_keep_provenance_without_fact_authority) ... ok
+test_source_and_memory_revocation_are_checked_on_every_use (test_executive.ExecutiveChecks.test_source_and_memory_revocation_are_checked_on_every_use) ... ok
+test_task_input_and_snapshot_authority_have_hard_bounds (test_executive.ExecutiveChecks.test_task_input_and_snapshot_authority_have_hard_bounds) ... ok
+test_c2_resource_guard_abstains_without_native_or_head_execution (test_executive.ExecutiveRuntimeChecks.test_c2_resource_guard_abstains_without_native_or_head_execution) ... ok
+test_force_report_before_any_native_output_ends_deliberation (test_executive.ExecutiveRuntimeChecks.test_force_report_before_any_native_output_ends_deliberation) ... ok
+test_idle_force_report_preserves_best_actual_saved_output (test_executive.ExecutiveRuntimeChecks.test_idle_force_report_preserves_best_actual_saved_output) ... ok
+test_real_missing_model_failure_has_source_snapshot_and_continuity (test_executive.ExecutiveRuntimeChecks.test_real_missing_model_failure_has_source_snapshot_and_continuity) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.405s
+
+OK

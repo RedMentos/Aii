@@ -1302,7 +1302,7 @@
     "Current Redmi sustained/nativebody/expert/bridge/world multimodal proofs remain open."
   ],
   "continuation_20261016": {
-    "status": "IN_PROGRESS_NATIVE_PREREGISTRATION",
+    "status": "NATIVE_V2_COHORT_RUNNING",
     "base_m": "1941d07afeb57299d7d5a466fd1eb44ec2569dfe",
     "integrated_k": "4ed1539fb9fd6ea961fc6145bd98745e5f63adac",
     "branch": "codex/continuation-20261016",
@@ -1311,7 +1311,14 @@
       "minimal H text and G approval grounding prerequisites",
       "reject source drift during outcome tap"
     ],
-    "validation": "combined suite running; native v2 cohort preregistered but not yet run",
+    "validation": {
+      "tests_run": 1421,
+      "passed": 1416,
+      "skipped": 5,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 108.353
+    },
     "historical_corrections": {
       "source_handoff": "16/16 complete; original freeze lifted 2026-10-12",
       "dream2": "v3 15/15 complete; tradeoff not overall benefit",
@@ -1320,6 +1327,8 @@
     "native_plan": "specs/tool_forecast/learning-plan-20261016.json",
     "authority": 0,
     "phone_measured": false,
-    "canonical_gate_pass": false
+    "canonical_gate_pass": false,
+    "preregistration_remote_commit": "aa00ee365172e6e257f7f52b774e6fdcc851d5d9",
+    "native_result": "PENDING"
   }
 }

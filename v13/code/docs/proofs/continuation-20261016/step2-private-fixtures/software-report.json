@@ -1,0 +1,28 @@
+{
+  "all_primary_paired_unique": true,
+  "cohort_registration": false,
+  "errors": 0,
+  "failures": 0,
+  "fixture_kinds": {
+    "complementary": 30,
+    "contradictory_rule": 3,
+    "exact_control": 3,
+    "missing_rule": 3
+  },
+  "gate_promotion": false,
+  "historical_utility_fail_preserved": true,
+  "minimum_solo_action_count": 2,
+  "native_runs": 0,
+  "primary_paired_actions": {
+    "A": 10,
+    "B": 10,
+    "NONE": 10
+  },
+  "quality_claim": false,
+  "schema": "V13_STEP2_PRIVATE_FIXTURE_SOFTWARE_RECEIPT_V1",
+  "source_files": {
+    "tests/integration_step2_utility.py": "a5a00d1f89eadda5e44ef68d2b2c1f33acf7d4dd354522f899cef6ea4525acf7",
+    "v13/utility.py": "896ba2f720784d5826ed71d7aec334351d1e2cb33875b4cdf979189dd9a40604"
+  },
+  "tests_run": 8
+}

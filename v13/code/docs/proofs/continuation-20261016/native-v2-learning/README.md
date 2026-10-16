@@ -1,6 +1,6 @@
 # Current-source competence-v2 native learning cohort — 2026-10-16
 
-Status: preregistered, no native inference yet. A first local preregistration was withdrawn before any inference when independent review found sequential preregistration reuse and missing numerical-runtime identity checks. The withdrawn bytes are preserved; `preregistration.json` is the active registration. The same plan, numeric gates, candidates and seeds were retained.
+Status: native cohort started after verified remote checkpoint aa00ee365172e6e257f7f52b774e6fdcc851d5d9 and successful1421-test combined validation. Result pending. A first local preregistration was withdrawn before any inference when independent review found sequential preregistration reuse and missing numerical-runtime identity checks. The withdrawn bytes are preserved; `preregistration.json` is the active registration. The same plan, numeric gates, candidates and seeds were retained.
 
 The active registration binds all materialized runtime/script/spec sources, Python and NumPy native-library identities, the B2 GGUF, b10964 shared libraries, tap build and new fixed610-call plan. It will be verified on GitHub before the sole attempt. Each completed row is fsynced; partial and negative results remain. An atomic claim under the installed-home coordinator lock consumes a preregistration even after failure/interruption. This is a local audit control, not protection against an operator deleting storage. A bounded owned process group enforces the7200-second limit.
 
