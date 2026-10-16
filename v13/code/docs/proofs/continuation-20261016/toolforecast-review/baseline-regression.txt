@@ -1,0 +1,19 @@
+test_outcome_encoder_change_after_initial_guard_must_not_score_or_append (test_toolforecast_review_20261016.ToolForecastReview20261016.test_outcome_encoder_change_after_initial_guard_must_not_score_or_append)
+Regression: actual source B outcome must never be labelled as A. ... FAIL
+
+======================================================================
+FAIL: test_outcome_encoder_change_after_initial_guard_must_not_score_or_append (test_toolforecast_review_20261016.ToolForecastReview20261016.test_outcome_encoder_change_after_initial_guard_must_not_score_or_append)
+Regression: actual source B outcome must never be labelled as A.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/tests/test_toolforecast_review_20261016.py", line 217, in test_outcome_encoder_change_after_initial_guard_must_not_score_or_append
+    self.assertEqual(got['status'], 'SOURCE_CHANGED_DURING_OBSERVE')
+AssertionError: 'SCORED' != 'SOURCE_CHANGED_DURING_OBSERVE'
+- SCORED
++ SOURCE_CHANGED_DURING_OBSERVE
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.028s
+
+FAILED (failures=1)

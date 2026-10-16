@@ -262,7 +262,7 @@ class NativeLayerTaps:
 
 
 def load_encoder(home, verify=True):
-    """encoder.json from install_tool_forecast.py; file hashes are re-checked once per (path, size, mtime)."""
+    """encoder.json from install_tool_forecast.py; hashes cached per path/file identity, size, mtime and ctime."""
     p = Path(home) / 'data' / 'tool_forecast' / 'encoder.json'
     if not p.exists():
         return None, 'NO_ENCODER_INSTALLED'
@@ -284,7 +284,7 @@ def load_encoder(home, verify=True):
             if not path.exists():
                 return None, 'ENCODER_FILE_MISSING'
             st = path.stat()
-            cache_key = (str(path), st.st_size, st.st_mtime_ns)
+            cache_key = (str(path), st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
             if _HASHED.get(cache_key) is None:
                 _HASHED[cache_key] = sha_file(path)
             if _HASHED[cache_key] != enc[k + '_sha256']:
@@ -610,6 +610,27 @@ class ToolForecast:
             return None
 
     # -- after the effect ---------------------------------------------------------------------------------------
+    def _observation_snapshot(self, ck, enc):
+        """Identity of the encoder and measured sources around one outcome prefill.
+
+        load_encoder verifies binary/model hashes (cached by full file identity,
+        including ctime); the stat snapshot also notices a replace-and-restore
+        during the prefill. Small checkpoint/competence assets are hashed here,
+        rather than trusting the cached Checkpoint object's manifest fields.
+        This is a bounded change detector, not a filesystem transaction or a
+        claim that independently writable files can never race.
+        """
+        files = {}
+        for name in ('tool', 'model'):
+            if enc.get(name + '_path') is not None:   # injectable test taps have no native files
+                st = Path(enc[name + '_path']).stat()
+                files[name] = (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
+        return {'encoder': {k: enc.get(k) for k in ('tool_path', 'tool_sha256', 'model_path', 'model_sha256', 'layer', 'pooling')},
+                'files': files, 'checkpoint_sha256': sha_file(ck.root / ck.entry['checkpoint']),
+                'competence_sha256': sha_file(ck.root / ck.entry['competence']) if ck.entry.get('competence') else None,
+                'declared_checkpoint_sha256': ck.entry['checkpoint_sha256'],
+                'declared_competence_sha256': ck.entry.get('competence_sha256')}
+
     def observe(self, tx):
         """Score a forecast against the observed outcome of its call. Idempotent per forecast; never raises."""
         pred = tx.get('predicted')
@@ -632,7 +653,24 @@ class ToolForecast:
             ck = self.checkpoint(rec['world'])
             if ck.entry['checkpoint_sha256'] != rec['checkpoint_sha256']:
                 return self._close(fid, rec, 'CHECKPOINT_CHANGED_SINCE_FORECAST', tx)   # forecast not from this projection
+            before = self._observation_snapshot(ck, enc)
+            if before['checkpoint_sha256'] != rec['checkpoint_sha256']:
+                return self._close(fid, rec, 'CHECKPOINT_CHANGED_SINCE_FORECAST', tx)
+            if (before['competence_sha256'] != before['declared_competence_sha256']
+                    or before['competence_sha256'] != rec.get('competence_sha256', before['competence_sha256'])):
+                return self._close(fid, rec, 'COMPETENCE_CHANGED_SINCE_FORECAST', tx)
             y = rms_normalize(taps.tap([text])[0])
+            # Re-read the real pointer/binaries after the subprocess, before any
+            # projection, score, experience append or state commit. A source
+            # replacement must not label new-encoder taps as old experience.
+            try:
+                current_taps, current_enc = self.encoder(rec['world'])
+                after = (self._observation_snapshot(self.checkpoint(rec['world']), current_enc)
+                         if current_taps is not None else None)
+            except (OSError, ValueError, KeyError, TypeError):
+                after = None
+            if after != before:
+                return self._close(fid, rec, 'SOURCE_CHANGED_DURING_OBSERVE', tx)
             ref = y @ ck.p
             err = {k: float(np.mean((np.asarray(rec[k]) - ref) ** 2)) for k in ('forecast', 'copy', 'mean_delta', 'adapted') if k in rec}
             pend = self.pending_dir / (fid + '.npy')

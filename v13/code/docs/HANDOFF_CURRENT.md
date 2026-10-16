@@ -1,3 +1,15 @@
+# Fortsetzung 2026-10-16: K+M integriert, neue native v2-Prüfung vorbereitet
+
+Arbeitsbranch `codex/continuation-20261016`, Basis M `1941d07afeb57299d7d5a466fd1eb44ec2569dfe`. K `4ed1539fb9fd6ea961fc6145bd98745e5f63adac` list_arith ist mit M calc/note/ToolForecast zusammengeführt; minimale H-Text- und G-Approval-Voraussetzungen sind übernommen. Default-Berechtigungen, Age-Hülle und SHADOW bleiben erhalten. Die Claude-Owner-Branches werden nicht überschrieben.
+
+M hat die fünf früheren Codex-Befunde selbst korrigiert; diese Änderungen wurden als Basis übernommen. Neu reproduziert und eng behoben: Quellentausch während Outcome-Tap durfte sonst unter altem Encoder gebucht werden. Neue Integritätsprüfung verhindert einen Lern-PASS bei unvollständigen Zeilen/Aktionen. Belege unter `proofs/continuation-20261016/`. Vollständiger kombinierter Regressionstest läuft; native Qualität noch nicht behauptet.
+
+**Neuere Zustände gelten:** SourceHandoff16/16 vollständig, Freeze laut ROADMAP am12.Oktober aufgehoben. Dream2v3 ist15/15 abgeschlossen mit Nutzen/Retention-Tradeoff, kein allgemeiner Nutzen-PASS. Alte Hinweise unten auf Freeze/2von15 sind historische Übergaben. Aktuelles Competence-v2 hat420/420 Messungen; der alte bestätigte Lernlauf nutzte v1. Deshalb neue disjunkte610-Call-v2-Prüfung mit festen unveränderten Gates und vor Inferenz veröffentlichter Preregistrierung. `native-v2-learning/preregistration.json` bindet Quellen, Modell, native Bibliotheken, Tap-Reader und neuen Plan.
+
+Linux-8GiB-Ressourcen sind jetzt wieder gepinnt installiert; das ist kein Redmi-Nachweis. STEP2 UTILITY_FAIL, B3L1 FAIL sowie Canon/Fullscope-offen bleiben erhalten. Nächste Schritte: vollständige Regression abschließen, Preregistrierung auf GitHub verifizieren, native Parity+Lernkohorte seriell ausführen, Rohbelege regelmäßig sichern und Paket aus dem finalen Stand prüfen.
+
+## Historische Übergaben (unverändert erhalten)
+
 # Fortsetzung 2026-10-12: Arbeitsregeln und vollständige native Rohdaten
 
 `AGENTS.md` enthält die wiedergefundenen Arbeitsregeln samt Quellen, Research-Verfahren, offenen Fragen, Endziel, Agenteneinsatz und geprüften Sicherungen. Ein vollständiger Chatexport ist keine Voraussetzung der autorisierten Fortsetzung. Die exakten letzten drei Nachrichten wurden nicht vollständig wiedergefunden.

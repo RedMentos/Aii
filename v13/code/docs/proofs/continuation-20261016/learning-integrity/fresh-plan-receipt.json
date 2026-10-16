@@ -1,0 +1,13 @@
+{
+  "schema": "V13_FRESH_LEARNING_PLAN_CLOSED_RECEIPT_20261016_V1",
+  "files": {
+    "scripts/tool_forecast_learning_plan_20261016.py": "c4f2b57808ac1c7a3fe1d9a3618c48167288bcad39ccbb2fe77b47d6b4f3422d",
+    "specs/tool_forecast/learning-plan-20261016.json": "669b5d119a8df0001e64bf11712bdd642651b9738f4f6e14a1319cc3fe449893",
+    "docs/proofs/continuation-20261016/learning-integrity/fresh-plan-provenance.json": "65c18e02040d6fcb1abdcfad951942c407d52444bab72157fdd6f656d01506d0",
+    "docs/proofs/continuation-20261016/learning-integrity/fresh-plan-verification.json": "5c55689f5f3577283eaabe2cf021e16b7dfed88aa5fcc4b9d960fcea9f518cee"
+  },
+  "plan_sha256": "669b5d119a8df0001e64bf11712bdd642651b9738f4f6e14a1319cc3fe449893",
+  "outcomes_observed": false,
+  "native_models_launched": false,
+  "canonical_gate_pass": false
+}

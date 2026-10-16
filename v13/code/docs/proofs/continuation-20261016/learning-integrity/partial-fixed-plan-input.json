@@ -1,0 +1,110 @@
+{
+  "plan": {
+    "schema": "v13-tool-forecast-learning-plan-v1",
+    "round": 2,
+    "mode": "region",
+    "plan": {
+      "calc_shift_exp": [
+        1001
+      ],
+      "calc_shift_test": [
+        1002
+      ],
+      "calc_in_test": [
+        12
+      ],
+      "note_shift_exp": [
+        "New training note."
+      ],
+      "note_shift_test": [
+        "New testing note."
+      ],
+      "note_in_test": [
+        "Call grandma on Monday."
+      ]
+    }
+  },
+  "learn_report": {
+    "calc_counter": {
+      "pass": true,
+      "experience_rows": 4,
+      "adapted_actions": [
+        "double",
+        "add_15",
+        "quarter",
+        "subtract_7"
+      ]
+    },
+    "note_edit": {
+      "pass": true,
+      "experience_rows": 3,
+      "adapted_actions": [
+        "append_done",
+        "prefix_urgent",
+        "uppercase"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "arm": "calc_shift_test",
+      "action": "double",
+      "call": "tool_00000000000000000000000000000001",
+      "forecast_id": "tfc_00000000000000000000000000000001",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "state": 1002,
+      "mse": {
+        "forecast": 1.0,
+        "adapted": 0.5,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "calc_in_test",
+      "action": "double",
+      "call": "tool_00000000000000000000000000000002",
+      "forecast_id": "tfc_00000000000000000000000000000002",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "state": 12,
+      "mse": {
+        "forecast": 1.0,
+        "adapted": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "note_shift_test",
+      "action": "append_done",
+      "call": "tool_00000000000000000000000000000003",
+      "forecast_id": "tfc_00000000000000000000000000000003",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "state": "New testing note.",
+      "mse": {
+        "forecast": 1.0,
+        "adapted": 0.5,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "note_in_test",
+      "action": "append_done",
+      "call": "tool_00000000000000000000000000000004",
+      "forecast_id": "tfc_00000000000000000000000000000004",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "state": "Call grandma on Monday.",
+      "mse": {
+        "forecast": 1.0,
+        "adapted": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    }
+  ]
+}

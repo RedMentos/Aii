@@ -1,0 +1,14 @@
+{
+ "tests_run": 1420,
+ "passed": 1401,
+ "failures": 2,
+ "errors": 12,
+ "skipped": 5,
+ "seconds": 104.864,
+ "successful": false,
+ "notes": [
+  "12 fixture errors and1 missing header caused by sparse checkout; restored exact HEAD blobs",
+  "1 existing TightBudget flake under investigation",
+  "summary helper failed after runner due raw skipped TestCase not JSON serializable; log retained"
+ ]
+}
