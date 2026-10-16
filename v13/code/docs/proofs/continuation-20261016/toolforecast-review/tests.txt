@@ -1,0 +1,27 @@
+test_66_predictions_keep_64_matching_context_files (test_toolforecast_review_20261016.ToolForecastReview20261016.test_66_predictions_keep_64_matching_context_files) ... ok
+test_bound_pending_restart_scores_once_and_retains_correct_encoder_binding (test_toolforecast_review_20261016.ToolForecastReview20261016.test_bound_pending_restart_scores_once_and_retains_correct_encoder_binding) ... ok
+test_capacity_state_write_failure_preserves_old_pending_context_bytes (test_toolforecast_review_20261016.ToolForecastReview20261016.test_capacity_state_write_failure_preserves_old_pending_context_bytes) ... ok
+test_checkpoint_change_before_observe_closes_without_outcome_tap (test_toolforecast_review_20261016.ToolForecastReview20261016.test_checkpoint_change_before_observe_closes_without_outcome_tap) ... ok
+test_encoder_change_before_observe_closes_without_outcome_tap (test_toolforecast_review_20261016.ToolForecastReview20261016.test_encoder_change_before_observe_closes_without_outcome_tap) ... ok
+test_foreign_encoder_experience_is_archived_without_losing_old_bytes (test_toolforecast_review_20261016.ToolForecastReview20261016.test_foreign_encoder_experience_is_archived_without_losing_old_bytes) ... ok
+test_outcome_checkpoint_asset_change_is_discarded_before_score (test_toolforecast_review_20261016.ToolForecastReview20261016.test_outcome_checkpoint_asset_change_is_discarded_before_score) ... ok
+test_outcome_competence_asset_change_is_discarded_before_score (test_toolforecast_review_20261016.ToolForecastReview20261016.test_outcome_competence_asset_change_is_discarded_before_score) ... ok
+test_outcome_encoder_change_after_initial_guard_must_not_score_or_append (test_toolforecast_review_20261016.ToolForecastReview20261016.test_outcome_encoder_change_after_initial_guard_must_not_score_or_append)
+Regression: actual source B outcome must never be labelled as A. ... ok
+test_outcome_source_discard_preserves_context_when_state_commit_fails (test_toolforecast_review_20261016.ToolForecastReview20261016.test_outcome_source_discard_preserves_context_when_state_commit_fails) ... ok
+test_stale_region_adaptation_rejected_after_real_competence_reference_change (test_toolforecast_review_20261016.ToolForecastReview20261016.test_stale_region_adaptation_rejected_after_real_competence_reference_change) ... ok
+test_adaptation_bound_to_competence_encoder_and_retention (test_toolforecast.CheckpointTests.test_adaptation_bound_to_competence_encoder_and_retention)
+Codex review bdeb4f6, defect 1: a passing receipt is reused only against what it was validated on. ... ok
+test_experience_never_mixes_encoders (test_toolforecast.CheckpointTests.test_experience_never_mixes_encoders) ... ok
+test_missing_or_failed_encoder_gives_no_forecast (test_toolforecast.CheckpointTests.test_missing_or_failed_encoder_gives_no_forecast) ... ok
+test_damaged_encoder_config_status_and_no_forecast (test_toolforecast.LivePathTests.test_damaged_encoder_config_status_and_no_forecast) ... ok
+test_checkpoint_changed_since_forecast_is_not_scored (test_toolforecast.LivePathTests.test_checkpoint_changed_since_forecast_is_not_scored)
+Codex review bdeb4f6, defect 3: a pending forecast is scored only by the checkpoint that made it. ... ok
+test_pending_capacity_removes_evicted_context_taps (test_toolforecast.LivePathTests.test_pending_capacity_removes_evicted_context_taps)
+Codex review bdeb4f6, defect 5: the cap holds for the context files too; other files survive. ... ok
+test_failed_or_interrupted_reinstall_keeps_previous_generation (test_toolforecast.InstallLifecycleTests.test_failed_or_interrupted_reinstall_keeps_previous_generation) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 1.765s
+
+OK

@@ -66,7 +66,11 @@ def preview_text(pending):
     return '\n'.join(lines)
 
 def correction_text(tool_result):
-    return '[Korrektur · Werkzeugergebnis] '+tool_result['tool']+'('+dumps(tool_result['args'])+') = '+str(tool_result['result'])+' (lokal exakt berechnet; die Antwort oben nennt diesen Wert nicht).'
+    call=tool_result['tool']+'('+dumps(tool_result['args'])+')'
+    if tool_result['tool']=='list_arith':
+        from .agi import listarith
+        call='list_arith: '+(listarith.label(tool_result['args']) or tool_result['args'].get('operation','?'))
+    return '[Korrektur · Werkzeugergebnis] '+call+' = '+str(tool_result['result'])+' (lokal exakt berechnet; die Antwort oben nennt diesen Wert nicht).'
 
 class Broker:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store

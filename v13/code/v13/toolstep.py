@@ -16,10 +16,13 @@ The proposer is a BOOT regex, not learned; Needle/C2 tool choice replaces it lat
 """
 import json
 import re
+import time
 from .common import dumps
 from .contracts import packet
 
 PROPOSER='boot-arith-note-v3';KEY='TOOL_SHADOW_AGREEMENT'
+LIST_PROPOSER='boot-listarith-v1';LIST_READ_SECONDS=45  # Thread K R4 part 6, unchanged
+LIST_NOTE='Use this exact number in the answer. If the text states a different number for it, say clearly that it is wrong.'
 WORD_OPS=[(r'\bmultiplied by\b|\btimes\b|×','*'),(r'\bdivided by\b|÷','/'),(r'\bplus\b','+'),(r'\bminus\b','-'),(r'\bto the power of\b|\^','**')]
 NUM=r'\d+(?:[.,]\d+)?'
 PERCENT=re.compile(r'('+NUM+r')\s*%\s*of\s*('+NUM+r')',re.I)
@@ -80,15 +83,25 @@ class ToolStep:
     def plan(self,e,text):
         """Proposal + IH-H29 policy (no effect yet). Logged as ToolProposal packet."""
         from .toolforecast import note_text
-        p=propose_note_edit(text,lambda name:note_text(self.r.home,name)) or propose(text)
+        p=propose_note_edit(text,lambda name:note_text(self.r.home,name)) or propose(text) or self._propose_list(e,text)
         if not p:return None
         reg=self._registry();spec=reg.tools.get(p['tool'])
         if spec is None:return None
         status,why,steps=reg._policy(spec,'SYSTEM',p['args'])
-        p.update(status=status,reason=why,risk=spec.risk,proposer=PROPOSER,utility=round(.5+.5*p['confidence'],4))  # BOOT: exact local tool beats a free-text body (route utilities .4-.8)
+        p.update(status=status,reason=why,risk=spec.risk,proposer=p.get('proposer',PROPOSER),utility=round(.5+.5*p['confidence'],4))  # BOOT: exact local tool beats a free-text body (route utilities .4-.8)
         pk=self.r.store.add_packet('ToolProposal',packet('ToolProposal','C2_TOOL_PROPOSER',e['event_id'],e['brain_generation_id'],[e['source_ref']],
-             tool=p['tool'],args=p['args'],policy_status=status,policy_reason=why,contract=steps,confidence=p['confidence'],proposer=PROPOSER,truth_authority=0))
+             tool=p['tool'],args=p['args'],policy_status=status,policy_reason=why,contract=steps,confidence=p['confidence'],proposer=p['proposer'],truth_authority=0))
         p['packet_id']=pk['packet_id'];return p
+    def _propose_list(self,e,text):
+        """Thread K: model reads typed listed values; a BOOT rule selects the exact recipe."""
+        from .agi import listarith
+        op=listarith.operation(text)
+        if not op or 'list_arith' not in self._registry().box.load()[0]['enabled']:return None
+        try:
+            values=listarith.read_values(self.r.pool.get('C3_LANGUAGE'),text,self.r.cancel_event,time.monotonic()+LIST_READ_SECONDS)
+            listarith.compute(op,values,text)
+        except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'list_read','error':type(exc).__name__});return None
+        return {'tool':'list_arith','args':{'operation':op,'text':str(text),'values':listarith.encode(values)},'confidence':.8,'span':[0,len(str(text))],'proposer':LIST_PROPOSER}
     def _forecast(self,e,p):
         """Thread M: SHADOW tool-consequence forecast before the effect (None when OFF or outside a confirmed world)."""
         try:
@@ -114,10 +127,12 @@ class ToolStep:
                 'note':'Not executed. The user sees a preview and can approve it; do not say it was done.'}
     def shadow(self,e,p):
         """Refused by policy: compute pure READ_LOCAL tools off-path for later agreement; never shown, never a fact."""
-        if p['risk']!='READ_LOCAL' or p['tool']!='calc':return None
+        if p['risk']!='READ_LOCAL' or p['tool'] not in ('calc','list_arith'):return None
         try:
             from .agi.tools import calc
-            return {'tool':p['tool'],'args':p['args'],'result':calc(p['args']['expression']),'reason':p['reason']}
+            from .agi import listarith
+            value=calc(p['args']['expression']) if p['tool']=='calc' else listarith.tool(**p['args'])
+            return {'tool':p['tool'],'args':p['args'],'result':value,'reason':p['reason']}
         except Exception as exc:return {'tool':p['tool'],'args':p['args'],'result':None,'error':type(exc).__name__,'reason':p['reason']}
     def compare(self,e,shadow,output):
         """Did the body's answer contain the tool result? Agreement evidence for the Age-1 tool right (log only)."""
@@ -136,6 +151,10 @@ class ToolStep:
         return agree
     def layer(self,result):
         """Volatile context layer for the answering body: grounded tool output with its transaction id."""
+        if result['tool']=='list_arith':
+            from .agi import listarith
+            return {'tool':'list_arith','exact_result':result['result'],'recipe':f"{listarith.label(result['args'])} = {result['result']}",
+                    'note':LIST_NOTE,'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
         return {'tool':result['tool'],'input':result['args'],'output':result['result'],'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
 
 def report(store,limit=200):

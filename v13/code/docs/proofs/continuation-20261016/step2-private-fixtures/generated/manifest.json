@@ -1,0 +1,12 @@
+{
+  "control_count": 9,
+  "files": {
+    "fixtures.json": "c29cb037842c9777f4b4f00651aae48d50a69ddfc8baa20585c5020881319da0",
+    "prompt-views.json": "f6c7ef184b37290a5ef5e3019e60c2674ad0d6990e5d73eb5d234bc10811626c"
+  },
+  "gate_promotion": false,
+  "generator_sha256": "c7206f486ddfd07775b4d1fcb3dac6a9d0d56852fd0d1f506205a9b1e12820b0",
+  "model_runs": 0,
+  "primary_count": 30,
+  "schema": "V13_STEP2_PRIVATE_FIXTURES_V1_MANIFEST"
+}

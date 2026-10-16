@@ -1077,3 +1077,14 @@ OriginalDrivePlan bleibt verbindlich. User-Entscheidungen und aktuelle GitHub-/D
 
 ### Werkzeug-Vorhersage: Codex-Review-Befunde (Bindung, Installation, Status) behoben — ERLEDIGT 2026-10-13 (Thread „Nächste offene Pakete M“)
 - Herkunft: **GPT/Codex-Review** `codex/continuation-review-20261013` @ `bdeb4f6` (5 reproduzierte Defekte, isolierter Kandidat; Ms Dateien unberührt). M hat sie als Besitzer direkt behoben: Adaption + Erfahrung an Checkpoint/Encoder/Retention/Kompetenz-Referenz gebunden (alte Adaptionen laden nicht mehr), Installation schreibt Retention als neue Generation und schaltet `encoder.json` atomar erst nach bestandener Parität, Pending prüft Checkpoint-Hash, kaputte `encoder.json` → `ENCODER_CONFIG_INVALID`, Pending-Kappung löscht ihre `.npy`. Codex' `reproduce.py`: vorher 5/5, nachher 0/5; 6 neue Tests. Nur Lebenszyklus-Robustheit, kein Qualitätsanspruch. Gerät braucht Neuinstallation. Belege `code/docs/proofs/continuation-20261013/toolforecast-binding-fixes/`. Branch `claude/project-thread-cui1zm`.
+
+
+## Codex-Fortsetzung 2026-10-16 — K+M-Integration und frische v2-Lernprüfung (in Arbeit)
+
+Eigener Arbeitsbranch `codex/continuation-20261016` auf aktuellem M `1941d07`, K `4ed1539` eingebunden. K list_arith bleibt neben M calc/note/ToolForecast erhalten; H-Textvertrag und G-Approval-Grounding minimal übernommen. Die fünf bereits durch M integrierten Codex-Befunde werden nicht erneut als neue Fixes ausgegeben. Enger zusätzlicher Laufzeitfix gegen Quellentausch während Outcome-Taps; Integritätsgate verhindert falschen Lern-PASS aus unvollständigen Testaktionen.
+
+Fokussierte Integration102 Tests:101 bestanden,1 nativer Skip; kombinierte Gesamtsuite wird jetzt geprüft. Native Voraussetzungen (gepinnter Qwen-B2, b10964-Runner/Bibliotheken, neu gebauter Tap-Reader) wiederhergestellt. Neue610-Call-Region-Lernprüfung für aktuelle v2-Kompetenz mit disjunkten Zuständen und unveränderten .90/1.02/Mehrheitsgates wird vor Inferenz hashgebunden auf GitHub gesichert. Ergebnis noch offen. Belege `code/docs/proofs/continuation-20261016/`.
+
+SourceHandoff-Freeze ist nach abgeschlossenem16-Fall-Kohort aufgehoben. Dream2v3 vollständig15/15, Nutzen/Retention-Tradeoff erhalten. Historische ältere Übergaben werden nicht als offene Laufaufträge wiederholt. STEP2 UTILITY_FAIL, B3L1 FAIL, Redmi- und volle Canon/Scope-Gates bleiben unverändert offen/negativ.
+
+2026-10-16 aktueller Prüfcheckpoint: vollständige Discovery1421 Tests,1416 bestanden,5 Skips,keine Fehler. Sparse-Checkout-Fixtures bytegleich aus M wiederhergestellt; O-Testpins exakt übernommen (kein BodyRuntime-Fix erforderlich). Preregistrierung aa00ee365172e6e257f7f52b774e6fdcc851d5d9 auf GitHub65/65 neue Blobs geprüft, Drive-Kopie exakt zurückgelesen. Nativev2-Kohorte danach gestartet, Ergebnis noch offen.
