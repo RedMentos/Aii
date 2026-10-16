@@ -1302,7 +1302,7 @@
     "Current Redmi sustained/nativebody/expert/bridge/world multimodal proofs remain open."
   ],
   "continuation_20261016": {
-    "status": "RECOVERED_AFTER_SCRATCH_RESET_PREPARING_NEW_COHORT",
+    "status": "NATIVE_V2_CLOSED_AND_REPLAY_VERIFIED_PRIVATE_PILOT_REGISTERED",
     "base_m": "1941d07afeb57299d7d5a466fd1eb44ec2569dfe",
     "integrated_k": "4ed1539fb9fd6ea961fc6145bd98745e5f63adac",
     "branch": "codex/continuation-20261016",
@@ -1329,10 +1329,18 @@
     "phone_measured": false,
     "canonical_gate_pass": false,
     "preregistration_remote_commit": "aa00ee365172e6e257f7f52b774e6fdcc851d5d9",
-    "native_result": "INTERRUPTED_NO_TERMINAL_EVIDENCE",
+    "native_result": "CONTINUAL_LEARNING_CONFIRMED",
     "durable_native_rows": 50,
     "old_preregistration_consumed": true,
     "new_plan": "specs/tool_forecast/learning-plan-20261016-evening.json",
-    "new_plan_scope": "new shifted cases, repeated predeclared fixed retention controls"
+    "new_plan_scope": "new shifted cases, repeated predeclared fixed retention controls",
+    "native_completed_calls": 610,
+    "native_source_checkpoint": "50af1c9455693a0a2cf708a0c42bbbe7f860399a",
+    "native_raw_drive_id": "1-m_Oj_j9AkTxAiML-6eGh12dRQPPq0_v",
+    "native_raw_sha256": "0260f5396145f1eae0db5f6db71a4869c4803c5ef42e36e01e33cf7701c30371",
+    "native_scope": "Linux SHADOW two toolworlds; repeated fixed retention controls, no Canon/Redmi promotion",
+    "independent_replay": "EXACT_FULL_REPORTS_ADAPTED_NPZ_ARRAYS",
+    "list_signed_guard": "APPLIED_AFTER_NATIVE_CLOSURE_11_FOCUSED_PASS",
+    "private_pilot": "18rows max42calls registered, not run yet"
   }
 }

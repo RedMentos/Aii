@@ -1093,3 +1093,10 @@ SourceHandoff-Freeze ist nach abgeschlossenem16-Fall-Kohort aufgehoben. Dream2v3
 ### Abendlicher Wiederanlauf2026-10-16 — in Arbeit
 
 Scratch nach späterer Nachricht leer. Vorheriger nativer Lauf nicht als abgeschlossen bestätigt:50 Zeilen+Parität dauerhaft, letzte lokale Sichtung238/610, ErgebnisUNKNOWN. Originalregister verbraucht, keine stillschweigende Wiederholung. Code/ZIP3af7 mit1421 Tests(1416+5Skips) sind gesichert. Phone-Lernintegrität wird direkt in Standardpfad integriert, Rohzeilen+Prelearn-NPZ künftig sofort dauerhaft exportierbar. Neue unabhängige610er-Kohorte:70 neue shifted-Zahlen/50 freie Notizen, feste30+20 Retentionskontrollen wiederholt(24 ungesehene inworld Zahlen verfügbar), gleiche .90/1.02/Mehrheitsgates. Claimscope offen ausweisen, kein frischer-Retentions-/Redmi-/Canon-PASS.
+
+
+### Abend-Kohorte geschlossen:610/610, Lerngates bestätigt im engen Scope
+
+Quellstand50af1c9,15.7min,Linux native Qwen-Taps.250Erfahrung+360Test vollständig, native/source/NumPy-Bindings davor/danach identisch. Verschobene MSE-Verhältnisse calc .3860–.7074,Notizen .5039–.6656; wiederholte feste Retention calc .9822–1.0024,Notizen1.0000. BeideWelt-Gates PASS,kein breiter Canon-/Redmi-PASS. Unabhängiges nichtnatives Replay reproduziert gesamteReports, Adaptionsdateien undArrays byte-/wertgleich; Rohdaten im verifiziertem Drivearchiv0260f539… und Gitmetadatenb25959e…. Früherer unterbrochenerLauf bleibtnegativ/unbestätigt separat.
+
+Nachgeschaltet Vorzeichen-Guard fürlist_arith minimal korrigiert,11TestPASS; neuer echter Runtime/Store-Privatquellen-Adapter28TestPASS, getrenntregistrierter18Zeilen-Pilot vorbereitet. STEP2OriginalUTILITY_FAIL unverändert.

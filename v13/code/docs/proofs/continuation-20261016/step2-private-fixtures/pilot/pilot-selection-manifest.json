@@ -1,0 +1,38 @@
+{
+  "cohort_registration": false,
+  "full_benchmark_unchanged": true,
+  "full_fixture_document_sha256": "c1bb37d564be5d8cbc3cd6cd5e3a46c540ec8fc282e7cd332b81c6c3b3a1d156",
+  "gate_promotion": false,
+  "historical_step2_utility": "UTILITY_FAIL_UNCHANGED",
+  "native_runs": 0,
+  "pilot_fixture_document_sha256": "a3e7bab1c0d1d9cc2e07e82909fe7f43d77b04b8c9a43d5b2a0fd1a766321202",
+  "pilot_max_native_calls": 42,
+  "pilot_max_rows": 18,
+  "schema": "V13_STEP2_PRIVATE_DIAGNOSTIC_PILOT_V1_SELECTION_MANIFEST",
+  "scope": "THREE_COMPLEMENTARY_CASE_DIAGNOSTIC_NOT_FULL_STEP2",
+  "selected_geometry": [
+    {
+      "action": "A",
+      "fixture": "private_bfzwzwww",
+      "kind": "complementary"
+    },
+    {
+      "action": "B",
+      "fixture": "private_eztsxxpt",
+      "kind": "complementary"
+    },
+    {
+      "action": "NONE",
+      "fixture": "private_amvcghct",
+      "kind": "complementary"
+    }
+  ],
+  "selection_rule": "From the fixed seed-20261016 full cohort, keep complementary fixtures only; solve their declared source constraints without native outcomes; choose the lexicographically smallest fixture id for each geometry action in order A,B,NONE.",
+  "source_sha256": {
+    "full-fixtures.json": "c29cb037842c9777f4b4f00651aae48d50a69ddfc8baa20585c5020881319da0",
+    "generate_fixtures.py": "c7206f486ddfd07775b4d1fcb3dac6a9d0d56852fd0d1f506205a9b1e12820b0",
+    "pilot-fixtures.json": "2c0af41e47189a4877c6adf5a75c9c62ae0616c609493d3cea2772f7e48e9d85",
+    "prepare_pilot.py": "57e5897e5fab16cbb5026303074937c72471f7a00ccd76c12b166b5688e3fc69"
+  },
+  "status": "SELECTED_BEFORE_NATIVE_OUTCOMES"
+}

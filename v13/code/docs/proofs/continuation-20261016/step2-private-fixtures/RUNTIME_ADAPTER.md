@@ -81,3 +81,9 @@ python -m unittest discover \
 
 The associated `runtime-software-report.json` and `runtime-tests.log` record
 that software check separately from the original fixture geometry receipt.
+
+The separately exported `pilot/pilot-fixtures.json` is also accepted, with
+explicit diagnostic scope. It selects three fixed complementary geometry
+cases (A/B/NONE), giving 18 rows / at most 42 calls with these same six arms.
+It cannot promote full STEP2 utility. See `pilot/PILOT_PREPARATION.md` for the
+prepared model cache, remaining prerequisites and deferred registration steps.

@@ -1,0 +1,13 @@
+{
+  "README.md": "0be940102b4abc1496348991c4af44e5eb49306f353dd8403b72cb38124aef42",
+  "baseline-listarith.py": "e3e8ad02a59f2327fe5fb924b3070c1f90b2a0b2fa1c0f79c401c453399b7282",
+  "candidate-listarith.py": "d52aece804186cb86c796c571815a7ceeb1156573f6358bf4ca3bf984e5fc408",
+  "compute-comparison.json": "d4fd4e1dbee0879da27a27d99ad46c561b70d737186089f4f2d09504ab6e737e",
+  "counterexamples.json": "c6ae314bee94de0325d76f2090a85b88a500638b5e8a3c90189d5faf5939ef2d",
+  "initial-harness-failure.log": "cd0b84371eb22cf2a733200797919745dd3dea1805496383eab4e59b4a52e639",
+  "proposed.patch": "7883a709508b6a0912be0df666622e4edd9ca5339ef93fbf3b983acbc61d55ba",
+  "source-binding.json": "8ce2fcd032ebbc7e3a654b1ce49b28bb65f9c3326b91d9c9e36fe726e857ca74",
+  "summary.json": "4ee1110fd6e937ee0ab9974ee6e91b8a9f2366dee32f0c3543ed6ed6603c7d42",
+  "test_candidate.py": "a15165d00d902262332e306615a55604204337d98191cb50810139450dd2745b",
+  "tests.log": "18fd9abc675a2995dac7a4175ae85ad70e7140372c5b9f360d669a851f75e983"
+}

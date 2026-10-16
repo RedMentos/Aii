@@ -1,3 +1,11 @@
+# Aktuell: Abendliche native Kohorte610/610 abgeschlossen und unabhängig reproduziert
+
+NativeToolForecast-v2-Lerngates bestanden:4/4Rechen- und3/3Notizaktionen verbessert; eingehaltene feste Retentionsgrenzen.610 SCORED+EXECUTED,942.39s,Linux,SHADOW.30+20Retentionszustände waren wiederholte feste Kontrollen;70verschobene Zahlen/50freie Notizen neu. Kein Redmi-/Canon-/allgemeiner-Lern-PASS. Sourcecheckpoint50af1c9455693a0a2cf708a0c42bbbe7f860399a. Unabhängige Rechnung reproduziert gesamte Lernreports und Adaptions-NPZ/Arrays exakt. Belege recovery-evening/native-final/ und replay-verification/. Vollständiges Roharchiv Drive1-m_Oj_j9AkTxAiML-6eGh12dRQPPq0_v SHA0260f5396145f1eae0db5f6db71a4869c4803c5ef42e36e01e33cf7701c30371; tatsächlicher Remote-Download geprüft, sieben verifizierte Zwischenarchive.
+
+Nach Abschluss enger Source-Zahlen-Guard-Fix im Listenrechner: falsches +5 aus -5/Unicode-Minus wird abgewehrt, Schema erlaubte negativeIntegerbereits; alte positiveK-Fälle bleiben.11fokussierte Tests bestanden, neue Gesamtsuite folgt. Neue private STEP2-Quelle ist als isolierter Runtime/Store-Adapter tatsächlich gebaut,28Softwaretests. Dreifall-Pilot(A/B/NONE)×6Arme18Zeilen/max42Aufrufe separat registriert, noch keine native Aussage daraus. Original70/70UTILITY_FAIL/B3L1FAIL bleiben.
+
+## Historische Übergaben (erhalten)
+
 # Abend-Fortsetzung 2026-10-16: Unterbrechung korrekt erfasst, Testpfad wird integriert
 
 Nach späterer Nutzernachricht war Scratch leer; vorheriger nativer610-Call-Lauf hat **keinen dauerhaft bestätigten Abschlussbeleg**. Gesichert sind Runtime/Plan/Parität und50 Rohzeilen auf GitHub `3af7ea8fe8f124459041133a34ce457f179d1f99`; die letzte lokale Sichtung238/610 ist nur Toolausgabe. Keine Hochrechnung auf Erfolg oder Vollständigkeit. Alte Preregistrierung a2d152c0… ist verbraucht, kein Resume/Repeat desselben Registers. `proofs/continuation-20261016/recovery-evening/interrupted-native-attempt.json`.

@@ -1,3 +1,8 @@
+test_actual_registration_cli_binds_saved_pilot_with_only_installation_probe_replaced (test_pilot.DiagnosticPilot.test_actual_registration_cli_binds_saved_pilot_with_only_installation_probe_replaced) ... ok
+test_geometry_selects_one_fixed_case_per_action_before_any_outcome (test_pilot.DiagnosticPilot.test_geometry_selects_one_fixed_case_per_action_before_any_outcome) ... ok
+test_pilot_registration_has_exact_eighteen_row_forty_two_call_diagnostic_scope (test_pilot.DiagnosticPilot.test_pilot_registration_has_exact_eighteen_row_forty_two_call_diagnostic_scope) ... ok
+test_saved_selection_manifest_matches_exact_file_and_source_bytes (test_pilot.DiagnosticPilot.test_saved_selection_manifest_matches_exact_file_and_source_bytes) ... ok
+test_selection_export_is_reproducible_refuses_overwrite_and_rejects_changes (test_pilot.DiagnosticPilot.test_selection_export_is_reproducible_refuses_overwrite_and_rejects_changes) ... ok
 test_consumer_has_no_hidden_source_fallback_and_rejects_forged_quotes (test_private_fixtures.PrivateFixtureGeometry.test_consumer_has_no_hidden_source_fallback_and_rejects_forged_quotes) ... ok
 test_controls_abstain_on_missing_and_conflicting_required_rules (test_private_fixtures.PrivateFixtureGeometry.test_controls_abstain_on_missing_and_conflicting_required_rules) ... ok
 test_every_primary_has_disjoint_necessary_sources_and_unique_paired_decision (test_private_fixtures.PrivateFixtureGeometry.test_every_primary_has_disjoint_necessary_sources_and_unique_paired_decision) ... ok
@@ -23,6 +28,6 @@ test_solos_and_no_message_never_recover_unseen_private_sources (test_runtime_ada
 test_source_refs_survive_real_store_close_restart (test_runtime_adapter.PrivateRuntimeAdapter.test_source_refs_survive_real_store_close_restart) ... ok
 
 ----------------------------------------------------------------------
-Ran 23 tests in 1.045s
+Ran 28 tests in 1.401s
 
 OK

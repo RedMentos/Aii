@@ -26,7 +26,7 @@ READ_SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['va
                                                           'properties': {'name': {'type': 'string', 'maxLength': 40}, 'number': {'type': 'integer'}}}}}}
 SCHEMA = {'operation': 'str', 'text': 'text', 'values': 'text'}
 MAX_TEXT = 2000
-_INT = re.compile(r'(?<![\d.])\d+(?!\d|\.\d)')  # a sentence-final period is not a decimal point
+_INT = re.compile(r'(?<![\d.+\-\u2212])[+\-\u2212]?\d+(?!\d|\.\d)')  # keep a sign; sentence-final period is not a decimal point
 # R4 part 7: C3 read a stated summary line ("Total: 173 euros") as one more item in 1/30 sums on seeds 7 and 19;
 # the guard passes it because 173 is in the text. A value with such a name is the claim under test, never an input.
 AGGREGATE = re.compile(r'(?i)^\s*(?:the\s+)?(?:grand\s+|stated\s+)?(?:total|sum|summe|gesamt\w*|summary(?:\s+line)?)\s*$')
@@ -76,7 +76,7 @@ def compute(op, values, text):
     nums = [int(v['number']) for v in values]
     if len(nums) < 2:
         raise ValueError('fewer than two values')
-    tokens = set(_INT.findall(str(text)))
+    tokens = {token.replace('\u2212', '-').lstrip('+') for token in _INT.findall(str(text))}
     if any(str(n) not in tokens for n in nums):
         raise ValueError('number not in the user text')
     names = [str(v.get('name', '')).strip()[:40] for v in values]

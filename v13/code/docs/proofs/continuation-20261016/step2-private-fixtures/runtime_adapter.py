@@ -30,6 +30,9 @@ from v13.resources import device
 spec = importlib.util.spec_from_file_location('step2_private_geometry', HERE / 'generate_fixtures.py')
 G = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(G)
+pilot_spec = importlib.util.spec_from_file_location('step2_private_pilot', HERE / 'prepare_pilot.py')
+P = importlib.util.module_from_spec(pilot_spec)
+pilot_spec.loader.exec_module(P)
 
 VERSION = 'V13_STEP2_PRIVATE_RUNTIME_ADAPTER_V1'
 # These names deliberately do not claim the historical seven channel/state arms.
@@ -241,7 +244,8 @@ def run_row(runtime, fixture, variant, row_seconds=90, producer_tokens=256, cons
 
 def source_bindings():
     paths = list((APP / 'v13').rglob('*.py')) + list((APP / 'specs').rglob('*.json'))
-    paths += [Path(__file__), HERE / 'generate_fixtures.py', APP / 'tests/integration_step2_utility.py']
+    paths += [Path(__file__), HERE / 'generate_fixtures.py', HERE / 'prepare_pilot.py',
+              APP / 'tests/integration_step2_utility.py']
     return {str(p.relative_to(APP)): file_hash(p) for p in sorted(set(paths))}
 
 
@@ -267,8 +271,13 @@ def registration(installed, fixture_doc, fixture_ids=None, variants=None, row_se
     """No inference. Register exact finite row coverage and immutable conditions."""
     if not 5 <= row_seconds <= 600 or not 32 <= producer_tokens <= 256 or not 16 <= consumer_tokens <= 1024:
         raise ValueError('Adapter bounds outside declared limits')
-    if dumps(fixture_doc) != dumps(G.generate()):
-        raise ValueError('Adapter requires the saved fixed private fixture cohort')
+    full_doc = G.generate()
+    if dumps(fixture_doc) == dumps(full_doc):
+        scope = 'FULL_39_FIXTURE_NEW_PRIVATE_ADAPTER_BENCHMARK'
+    elif dumps(fixture_doc) == dumps(P.select_pilot(full_doc)):
+        scope = 'THREE_COMPLEMENTARY_CASE_DIAGNOSTIC_NOT_FULL_STEP2'
+    else:
+        raise ValueError('Adapter requires the saved fixed private fixture cohort or exact diagnostic pilot')
     all_ids = [f['id'] for f in fixture_doc['fixtures']]
     ids = all_ids if fixture_ids is None else list(fixture_ids)
     arms = list(VARIANTS) if variants is None else list(variants)
@@ -277,6 +286,7 @@ def registration(installed, fixture_doc, fixture_ids=None, variants=None, row_se
     if not arms or len(arms) != len(set(arms)) or not set(arms) <= set(VARIANTS):
         raise ValueError('Unknown or duplicate variant selection')
     return {'schema': VERSION + '_REGISTRATION', 'status': 'REGISTERED_NOT_RUN',
+        'scope': scope,
         'fixtures_sha256': digest(dumps(fixture_doc)), 'source_bindings': source_bindings(),
         'installed_bindings': installed_bindings(Path(installed)), 'config': CONFIG,
         'device': device(),
@@ -287,7 +297,8 @@ def registration(installed, fixture_doc, fixture_ids=None, variants=None, row_se
         'max_native_calls': len(ids) * sum(len(VARIANTS[v]['roles']) + 1 for v in arms),
         'max_total_row_seconds': len(ids) * len(arms) * row_seconds,
         'historical_step2_utility': 'UTILITY_FAIL_UNCHANGED', 'gate_promotion': False,
-        'numeric_utility_gate': 'NOT_DEFINED_FOR_THIS_NEW_ADAPTER',
+        'numeric_utility_gate': ('NO_UTILITY_PROMOTION_FOR_DIAGNOSTIC_PILOT' if scope.startswith('THREE_')
+                                 else 'NOT_DEFINED_FOR_THIS_NEW_ADAPTER'),
         'unimplemented_controls': ['historical_CONTROL_channel', 'historical_SOURCE_EXACT_channel',
                                    'persisted_dual_timescale_state', 'prompt_only_retention_ablation'],
         'claim_limits': ['New fixture/quotation transport, not historical70 replication or native retained Offers.',
@@ -328,7 +339,8 @@ def run_registered(installed, fixture_doc, prereg, out):
     out.mkdir(parents=True, exist_ok=False)
     fixtures = {f['id']: f for f in fixture_doc['fixtures']}
     report = {'schema': VERSION + '_REPORT', 'status': 'RUNNING', 'registration_sha256': digest(dumps(prereg)),
-              'rows': [], 'gate_promotion': False, 'historical_step2_utility': 'UTILITY_FAIL_UNCHANGED',
+              'rows': [], 'scope': prereg['scope'], 'gate_promotion': False,
+              'historical_step2_utility': 'UTILITY_FAIL_UNCHANGED',
               'evidence_level': 'NATIVE_RUNNER_BOUNDARY', 'device': device(),
               'phone_measured': device()['android']}
     atomic_write(out / 'registration.json', dumps(prereg))
@@ -398,10 +410,12 @@ def main():
                               args.row_seconds, args.producer_tokens, args.consumer_tokens)
         atomic_write(args.out, dumps(result))
         print(dumps({'status': result['status'], 'registration_sha256': digest(dumps(result)),
-                     'max_rows': result['max_rows'], 'max_native_calls': result['max_native_calls']}))
+                     'scope': result['scope'], 'max_rows': result['max_rows'],
+                     'max_native_calls': result['max_native_calls']}))
     else:
         result = run_registered(args.installed, fixtures, strict_json(args.registration.read_text()), args.out)
-        print(dumps({'status': result['status'], 'rows': len(result['rows']), 'gate_promotion': False}))
+        print(dumps({'status': result['status'], 'scope': result['scope'],
+                     'rows': len(result['rows']), 'gate_promotion': False}))
         return 0 if result['status'] == 'RECORDED' else 2
     return 0
 

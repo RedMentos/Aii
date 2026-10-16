@@ -15,6 +15,8 @@ import time
 
 HERE = Path(__file__).resolve().parent
 APP = next(parent for parent in HERE.parents if (parent / 'v13/toolforecast.py').is_file())
+EXPECTED_PLAN_SHA256 = '653cc8cad377a1942e839073f93af164a2a2e60d0bc3719078092e65f948633b'
+EXPECTED_PREREG_SHA256 = 'c3c696a26843cfb93f906d1ddab2109098076894e48b9254bc434b2b011661e6'
 sys.path.insert(0, str(APP))
 sys.path.insert(0, str(APP / 'scripts'))
 
@@ -58,7 +60,8 @@ def main():
 
     prereg = read(cohort / 'preregistration.json')
     prereg_sha = sha(cohort / 'preregistration.json')
-    require(prereg_sha == report['preregistration_sha256'], 'Preregistration digest mismatch')
+    require(prereg_sha == report['preregistration_sha256'] == EXPECTED_PREREG_SHA256, 'Preregistration digest mismatch')
+    require(prereg['plan_sha256'] == EXPECTED_PLAN_SHA256, 'Evening plan identity mismatch')
     require(bound.numerical_runtime_binding() == prereg['numerical_runtime'], 'Numerical runtime differs')
     bound.verify_sources(prereg, APP)
     require(prereg['gates'] == learning.GATES and prereg['rule'] == F.LEARN_RULE, 'Learner/gates differ')
