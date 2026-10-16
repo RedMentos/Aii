@@ -113,20 +113,24 @@ def main():
             return 0
         report['status'] = 'LIVE'
         port.save(path, report)
-        live.run(argparse.Namespace(plan=str(APP / 'specs/tool_forecast/live-plan.json'), restored=None, out=str(out / 'live'),
+        live_rc = live.run(argparse.Namespace(plan=str(APP / 'specs/tool_forecast/live-plan.json'), restored=None, out=str(out / 'live'),
                                     encoder_home=None), encoder_json=enc_path)
         got = json.loads((out / 'live/report.json').read_text())
         report['live'] = {k: got[k] for k in ('verdict', 'statuses', 'seconds_per_call_median', 'tap_process_max_rss_mb', 'arms')}
         report['status'] = got['verdict']
         if args.with_learning:
             port.save(path, report)
-            learning.run(argparse.Namespace(plan=str(APP / 'specs/tool_forecast/learning-plan.json'), restored=None,
+            learning_rc = learning.run(argparse.Namespace(plan=str(APP / 'specs/tool_forecast/learning-plan.json'), restored=None,
                                             out=str(out / 'learning'), encoder_home=str(home), round=2))
             lg = json.loads((out / 'learning/report.json').read_text())
             report['learning'] = {'verdict': lg['verdict'], 'minutes': lg['minutes'], 'statuses': lg['statuses'],
+                                  'integrity': lg.get('integrity', {'pass': False}), 'analysis_ran': lg.get('analysis_ran', False),
                                   'worlds': {w: {k: v[k] for k in ('pass', 'learn', 'shift_actions_improved')} for w, v in lg['worlds'].items()}}
             report['status'] = got['verdict'] + '+' + lg['verdict']
-        return 0
+            return 0 if (live_rc == 0 and got['verdict'] == 'LIVE_PATH_CONFIRMED'
+                         and learning_rc == 0 and lg['verdict'] == 'CONTINUAL_LEARNING_CONFIRMED'
+                         and lg.get('integrity', {}).get('pass') is True and lg.get('analysis_ran') is True) else 1
+        return 0 if live_rc == 0 and got['verdict'] == 'LIVE_PATH_CONFIRMED' else 1
     except Exception as exc:
         report['status'] = 'ERROR'
         report['error'] = type(exc).__name__ + ': ' + str(exc)[:500]

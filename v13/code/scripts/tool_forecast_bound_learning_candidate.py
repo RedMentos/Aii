@@ -111,6 +111,7 @@ def preregister(home, plan, output):
               'sources': source_binding(), 'native': native_binding(home),
               'numerical_runtime': numerical_runtime_binding(),
               'plan_path': str(plan), 'plan_sha256': sha_file(plan), 'plan': doc,
+              'plan_scope': doc.get('claim_limit'), 'retention_controls': doc.get('retention_controls'),
               'gates': dict(original.GATES), 'expected_calls': len(grid), 'threads': 4,
               'experience_calls': 250, 'held_out_calls': 360, 'maximum_seconds': 7200,
               'rule': F.LEARN_RULE, 'scope': LIMIT,
@@ -143,6 +144,7 @@ def worker(home, prereg_path, out):
     out.mkdir(parents=True, exist_ok=False)
     report = {'schema': SCHEMA, 'status': 'VERIFYING', 'verdict': 'CONTINUAL_LEARNING_NOT_CONFIRMED',
               'preregistration_sha256': sha_file(prereg_path), 'scope': LIMIT,
+              'plan_scope': prereg.get('plan_scope'), 'retention_controls': prereg.get('retention_controls'),
               'canonical_gate_pass': False, 'phone_measured': False, 'receiver_authority': 0}
     start = time.monotonic(); runtime = None; rows = None
     path = out / 'report.json'
@@ -190,10 +192,13 @@ def worker(home, prereg_path, out):
             rows = Journal(out / 'rows.jsonl', report['preregistration_sha256'], progress)
             report['status'] = 'EXPERIENCE'; save(path, report)
             original.live.run_arms(runtime, g, tf, plan_doc['plan'], original.EXP_ARMS, rows)
+            snapshot = original.snapshot_experience(test_home, out, rows, plan_doc)
+            report['phase_a_experience'] = snapshot
             verify_sources(prereg)
             report['status'] = 'LEARNING'; save(path, report)
             learned = tf.learn(mode='region')
             save(out / 'learn.json', learned)
+            original.verify_experience_snapshot(out, snapshot, learned)
             report['status'] = 'HELD_OUT'; save(path, report)
             original.live.run_arms(runtime, g, tf, plan_doc['plan'],
                           ('calc_shift_test', 'calc_in_test', 'note_shift_test', 'note_in_test'), rows)
@@ -205,6 +210,8 @@ def worker(home, prereg_path, out):
                 raise ValueError('NUMERICAL_RUNTIME_CHANGED_AFTER_RUN')
             if sha_file(test_home / 'data/tool_forecast/encoder.json') != sha_file(encfile):
                 raise ValueError('ENCODER_BINDING_CHANGED_AFTER_RUN')
+            original.verify_experience_snapshot(out, snapshot, learned)
+            report['phase_a_snapshot_verified_after'] = True
             analysis = analyze_checked(rows, learned, plan_doc)
             save(out / 'analysis.json', analysis)
             report |= {'status': analysis['verdict'], 'verdict': analysis['verdict'], 'analysis': analysis,
@@ -216,12 +223,18 @@ def worker(home, prereg_path, out):
         (out / 'error.txt').write_text(traceback.format_exc())
         return 1
     finally:
-        if runtime:
-            runtime.close()
-        if rows is not None:
-            save(out / 'rows.json', rows)
-        report['elapsed_seconds'] = round(time.monotonic() - start, 2)
-        save(path, report)
+        try:
+            if runtime:
+                runtime.close()
+        except BaseException as exc:
+            report |= {'status': 'ERROR', 'verdict': 'CONTINUAL_LEARNING_NOT_CONFIRMED',
+                       'shutdown_error': type(exc).__name__ + ': ' + str(exc)[:600]}
+            raise
+        finally:
+            if rows is not None:
+                save(out / 'rows.json', rows)
+            report['elapsed_seconds'] = round(time.monotonic() - start, 2)
+            save(path, report)
 
 
 def main():

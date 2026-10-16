@@ -1088,3 +1088,8 @@ Fokussierte Integration102 Tests:101 bestanden,1 nativer Skip; kombinierte Gesam
 SourceHandoff-Freeze ist nach abgeschlossenem16-Fall-Kohort aufgehoben. Dream2v3 vollständig15/15, Nutzen/Retention-Tradeoff erhalten. Historische ältere Übergaben werden nicht als offene Laufaufträge wiederholt. STEP2 UTILITY_FAIL, B3L1 FAIL, Redmi- und volle Canon/Scope-Gates bleiben unverändert offen/negativ.
 
 2026-10-16 aktueller Prüfcheckpoint: vollständige Discovery1421 Tests,1416 bestanden,5 Skips,keine Fehler. Sparse-Checkout-Fixtures bytegleich aus M wiederhergestellt; O-Testpins exakt übernommen (kein BodyRuntime-Fix erforderlich). Preregistrierung aa00ee365172e6e257f7f52b774e6fdcc851d5d9 auf GitHub65/65 neue Blobs geprüft, Drive-Kopie exakt zurückgelesen. Nativev2-Kohorte danach gestartet, Ergebnis noch offen.
+
+
+### Abendlicher Wiederanlauf2026-10-16 — in Arbeit
+
+Scratch nach späterer Nachricht leer. Vorheriger nativer Lauf nicht als abgeschlossen bestätigt:50 Zeilen+Parität dauerhaft, letzte lokale Sichtung238/610, ErgebnisUNKNOWN. Originalregister verbraucht, keine stillschweigende Wiederholung. Code/ZIP3af7 mit1421 Tests(1416+5Skips) sind gesichert. Phone-Lernintegrität wird direkt in Standardpfad integriert, Rohzeilen+Prelearn-NPZ künftig sofort dauerhaft exportierbar. Neue unabhängige610er-Kohorte:70 neue shifted-Zahlen/50 freie Notizen, feste30+20 Retentionskontrollen wiederholt(24 ungesehene inworld Zahlen verfügbar), gleiche .90/1.02/Mehrheitsgates. Claimscope offen ausweisen, kein frischer-Retentions-/Redmi-/Canon-PASS.

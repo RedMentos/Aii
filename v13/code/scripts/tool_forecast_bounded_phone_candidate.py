@@ -142,7 +142,7 @@ def run_driver(command, output, *, timeout_s, grace_s=3., cancel=None,
         if stop is None and rc == 0 and driver_report and child is None:
             report['status'] = 'DRIVER_REPORT_MISSING_OR_INVALID'
         elif stop is None and rc == 0 and driver_report and child['status'] not in (
-                'PARITY_PASS_NO_LIVE', 'LIVE_PATH_CONFIRMED', 'LIVE_PATH_CONFIRMED+CONFIRMED'):
+                'PARITY_PASS_NO_LIVE', 'LIVE_PATH_CONFIRMED', 'LIVE_PATH_CONFIRMED+CONTINUAL_LEARNING_CONFIRMED'):
             report['status'] = 'DRIVER_CHECKS_NOT_CONFIRMED'
         return report
     except BaseException as exc:

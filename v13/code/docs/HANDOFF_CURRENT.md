@@ -1,3 +1,13 @@
+# Abend-Fortsetzung 2026-10-16: Unterbrechung korrekt erfasst, Testpfad wird integriert
+
+Nach späterer Nutzernachricht war Scratch leer; vorheriger nativer610-Call-Lauf hat **keinen dauerhaft bestätigten Abschlussbeleg**. Gesichert sind Runtime/Plan/Parität und50 Rohzeilen auf GitHub `3af7ea8fe8f124459041133a34ce457f179d1f99`; die letzte lokale Sichtung238/610 ist nur Toolausgabe. Keine Hochrechnung auf Erfolg oder Vollständigkeit. Alte Preregistrierung a2d152c0… ist verbraucht, kein Resume/Repeat desselben Registers. `proofs/continuation-20261016/recovery-evening/interrupted-native-attempt.json`.
+
+GitHub K–P/M sind unverändert. Zusätzlich sichtbarer hiczvw ist alter11.Oktober-Import und Vorfahr unserer Integration; keine Übernahme. Agenten integrieren aktuell vollständige Lernprüfung/nonzero-Exit in die normalen Phone-Skripte, fsynced Einzelzeilen und bytegleiche Prelearn-Rohdaten. Separater echter Store/SourceRef-Adapter für neue private STEP2-Fixtures in Arbeit, keine native Nutzenaussage daraus.
+
+Neue610-Aufruf-Prüfung wird separat registriert:70 neue verschobene Zahlen und50 neue freie Notizen;30+20 feste in-world Retentionszustände werden ausdrücklich wiederholt, da nur24 völlig unbenutzte in-world Zahlen übrig sind. Größen/Gates/Region-Lernregel unverändert. Nicht als komplett frische Retentionskohorte ausgeben. Neuer GGUF/Runner gepinnt wiederhergestellt; Inferenz noch nicht gestartet. Frühere vollständig grüne1421-Test-/ZIP-Belege gelten für3af7, neue Quelländerungen werden neu getestet und gesichert.
+
+## Bisherige Übergaben (historisch erhalten)
+
 # Fortsetzung 2026-10-16: K+M integriert, neue native v2-Prüfung vorbereitet
 
 Arbeitsbranch `codex/continuation-20261016`, Basis M `1941d07afeb57299d7d5a466fd1eb44ec2569dfe`. K `4ed1539fb9fd6ea961fc6145bd98745e5f63adac` list_arith ist mit M calc/note/ToolForecast zusammengeführt; minimale H-Text- und G-Approval-Voraussetzungen sind übernommen. Default-Berechtigungen, Age-Hülle und SHADOW bleiben erhalten. Die Claude-Owner-Branches werden nicht überschrieben.

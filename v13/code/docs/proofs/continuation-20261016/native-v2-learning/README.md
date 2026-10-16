@@ -1,3 +1,9 @@
+# Attempt interrupted — evening recovery2026-10-16
+
+No terminal610-call result survived the scratch reset. Durable Git3af7 contains parity encoder and first50rows only. Last local tool report showed238/610 EXPERIENCE; its further raw files and any later process completion are unverified. Old preregistration is consumed, and no quality/fullcohort verdict is inferred. Recovery note: ../recovery-evening/interrupted-native-attempt.json. New independent run needs new source/environment/plan bindings; do not execute the historical command below as a resumed cohort.
+
+## Previous registration note (historical)
+
 # Current-source competence-v2 native learning cohort — 2026-10-16
 
 Status: native cohort started after verified remote checkpoint aa00ee365172e6e257f7f52b774e6fdcc851d5d9 and successful1421-test combined validation. Result pending. A first local preregistration was withdrawn before any inference when independent review found sequential preregistration reuse and missing numerical-runtime identity checks. The withdrawn bytes are preserved; `preregistration.json` is the active registration. The same plan, numeric gates, candidates and seeds were retained.

@@ -14,11 +14,14 @@ Gates (fixed in preregistration.json before the run), per world:
 CONTINUAL_LEARNING_CONFIRMED only if both worlds pass. No authority: nothing reads either forecast.
 """
 import argparse
+import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import sys
 import time
+import traceback
 
 import numpy as np
 
@@ -129,6 +132,90 @@ def analyze(rows, learn_report):
             'verdict': 'CONTINUAL_LEARNING_CONFIRMED' if all(v['pass'] for v in out.values()) else 'CONTINUAL_LEARNING_NOT_CONFIRMED'}
 
 
+def _sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _save(path, value):
+    path = Path(path)
+    temporary = path.with_name(path.name + '.new')
+    with temporary.open('w') as stream:
+        json.dump(value, stream, indent=1, allow_nan=False)
+        stream.write('\n'); stream.flush(); os.fsync(stream.fileno())
+    os.replace(temporary, path)
+    fd = os.open(path.parent, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+class Journal(list):
+    """Persist each completed call before accepting the next call."""
+    def __init__(self, path):
+        super().__init__()
+        self.path = Path(path)
+
+    def append(self, row):
+        with self.path.open('a') as stream:
+            stream.write(json.dumps(row, sort_keys=True, allow_nan=False) + '\n')
+            stream.flush(); os.fsync(stream.fileno())
+        super().append(row)
+
+
+def snapshot_experience(home, out, rows, plan_doc):
+    """Close exact Phase-A learner inputs before learn or held-out observations.
+
+    The mutable runtime buffer continues to receive Phase-B rows. Its old bytes
+    must therefore be copied now, rather than reconstructed after the run.
+    """
+    from scripts.tool_forecast_learning_integrity_candidate import expected_grid
+    expected = [case for case in expected_grid(plan_doc) if case[0] in EXP_ARMS]
+    cases = [(r.get('arm'), r.get('action'), r.get('state')) for r in rows]
+    if len(cases) != len(expected) or set(cases) != set(expected):
+        raise ValueError('PHASE_A_GRID_INCOMPLETE')
+    if any(r.get('status') != 'SCORED' or r.get('tool_status') != 'EXECUTED' for r in rows):
+        raise ValueError('PHASE_A_NOT_SCORED')
+    directory = Path(out) / 'phase-a-experience'
+    directory.mkdir(exist_ok=False)
+    manifest = {'schema': 'V13_TOOL_FORECAST_PHASE_A_SNAPSHOT_V1', 'worlds': {}}
+    for world, arm in zip(('calc_counter', 'note_edit'), EXP_ARMS):
+        source = F.Experience(home).path(world)
+        target = directory / source.name
+        raw = source.read_bytes()
+        with target.open('xb') as stream:
+            stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+        if _sha(source) != _sha(target):
+            raise ValueError('PHASE_A_BUFFER_CHANGED_DURING_SNAPSHOT')
+        with np.load(target, allow_pickle=False) as z:
+            ids = z['id'].tolist()
+            binding = json.loads(str(z['binding']))
+            count = len(ids)
+            if any(len(z[key]) != count for key in ('x', 'y', 'action', 'xm')):
+                raise ValueError('PHASE_A_ARRAY_COUNT_MISMATCH')
+        wanted = [r['forecast_id'] for r in rows if r['arm'] == arm]
+        if ids != wanted or len(ids) != len(set(ids)) or not isinstance(binding, dict) or not binding:
+            raise ValueError('PHASE_A_EXPERIENCE_ID_OR_BINDING_MISMATCH')
+        manifest['worlds'][world] = {'file': target.name, 'sha256': _sha(target), 'rows': count,
+                                      'forecast_ids': ids, 'binding': binding}
+    _save(directory / 'manifest.json', manifest)
+    return {'directory': directory.name, 'manifest_sha256': _sha(directory / 'manifest.json'), 'manifest': manifest}
+
+
+def verify_experience_snapshot(out, snapshot, learned=None):
+    directory = Path(out) / snapshot['directory']
+    if (_sha(directory / 'manifest.json') != snapshot['manifest_sha256']
+            or json.loads((directory / 'manifest.json').read_text()) != snapshot['manifest']):
+        raise ValueError('PHASE_A_SNAPSHOT_MANIFEST_CHANGED')
+    for world, item in snapshot['manifest']['worlds'].items():
+        if _sha(directory / item['file']) != item['sha256']:
+            raise ValueError('PHASE_A_SNAPSHOT_BYTES_CHANGED')
+        if learned is not None and (learned.get(world, {}).get('experience_sha256') != item['sha256']
+                                   or learned[world].get('experience_rows') != item['rows']):
+            raise ValueError('LEARN_INPUT_SNAPSHOT_MISMATCH: ' + world)
+    return True
+
+
 def run(args):
     if getattr(args, 'plan', None):   # fixed plan file (phone): specs/tool_forecast/learning-plan.json, region mode
         doc = json.loads(Path(args.plan).read_text())
@@ -137,14 +224,19 @@ def run(args):
         p = plan(args.restored, args.round)
     out = Path(args.out)
     home = out / 'home'
-    if home.exists():
+    if out.exists() and any(out.iterdir()):
         raise SystemExit('fresh output folder required')
     (home / 'data' / 'tool_forecast').mkdir(parents=True)
     (out / 'plan.json').write_text(json.dumps({'plan': p}, indent=1) + '\n')
     shutil.copyfile(Path(args.encoder_home) / 'data' / 'tool_forecast' / 'encoder.json', home / 'data' / 'tool_forecast' / 'encoder.json')
-    r = Runtime(home)
-    rows, t0 = [], time.monotonic()
+    rows, t0, r = Journal(out / 'rows.jsonl'), time.monotonic(), None
+    report = {'schema': 'v13-tool-forecast-learning-check-v2', 'round': args.round,
+              'verdict': 'CONTINUAL_LEARNING_NOT_CONFIRMED', 'worlds': {},
+              'analysis_ran': False, 'integrity': {'pass': False, 'errors': [{'code': 'RUN_INCOMPLETE'}]},
+              'plan_counts': {k: len(v) for k, v in p.items()}}
+    _save(out / 'report.json', report)
     try:
+        r = Runtime(home)
         r.sleep.cycle.set_policy('enabled', 'off')
         g = hub(r)
         tf = F.for_runtime(r)
@@ -152,25 +244,47 @@ def run(args):
         g.tools.enable('calc')
         g.tools.enable('sandbox_note')
         live.run_arms(r, g, tf, p, EXP_ARMS, rows)
+        snapshot = snapshot_experience(home, out, rows, {'plan': p})
+        report['phase_a_experience'] = snapshot
+        _save(out / 'report.json', report)
         learned = tf.learn(mode='region' if args.round == 2 else 'mixed')
-        (out / 'learn.json').write_text(json.dumps(learned, indent=1) + '\n')
+        _save(out / 'learn.json', learned)
+        verify_experience_snapshot(out, snapshot, learned)
         live.run_arms(r, g, tf, p, ('calc_shift_test', 'calc_in_test', 'note_shift_test', 'note_in_test'), rows)
-        report = analyze([x for x in rows if x['arm'] not in EXP_ARMS], learned) | {
-            'schema': 'v13-tool-forecast-learning-check-v1', 'round': args.round, 'utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-            'plan_counts': {k: len(v) for k, v in p.items()},
-            'statuses': {s: sum(x['status'] == s for x in rows) for s in sorted({x['status'] for x in rows})},
+        verify_experience_snapshot(out, snapshot, learned)
+        # Local import avoids the strict checker's dependency on this unchanged numerical analyzer.
+        from scripts.tool_forecast_learning_integrity_candidate import analyze_checked
+        report |= analyze_checked(rows, learned, {'plan': p})
+        report |= {
+            'utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
             'experience_phase_ratio_to_best_control': live.verdict([x for x in rows if x['arm'] in EXP_ARMS]),
             'encoder': {k: json.loads((home / 'data/tool_forecast/encoder.json').read_text())[k] for k in ('tool_sha256', 'model_sha256')},
-            'runtime_report': tf.report(), 'minutes': round((time.monotonic() - t0) / 60, 1),
-            'claim_limit': 'Closed-form adapted residual next to the measured candidate, two closed worlds, Linux cloud, not the Redmi; '
-                           'SHADOW only, nothing reads either forecast.'}
+            'runtime_report': tf.report(), 'phase_a_snapshot_verified_after': True,
+            'claim_limit': 'Closed-form adapted residual next to the measured candidate, two closed worlds; '
+                           'SHADOW only, nothing reads either forecast. Device provenance is reported by the enclosing driver.'}
+        return 0 if report['verdict'] == 'CONTINUAL_LEARNING_CONFIRMED' else 1
+    except BaseException as exc:
+        report['error'] = type(exc).__name__ + ': ' + str(exc)[:500]
+        (out / 'error.txt').write_text(traceback.format_exc())
+        if isinstance(exc, (KeyboardInterrupt, SystemExit)):
+            raise
+        return 1
     finally:
-        r.close()
-    (out / 'rows.json').write_text(json.dumps(rows, indent=0) + '\n')
-    (out / 'report.json').write_text(json.dumps(report, indent=1) + '\n')
-    print(json.dumps({'verdict': report['verdict']} | {w: {k: v[k] for k in ('pass', 'shift_actions_improved', 'learn')}
-                                                       for w, v in report['worlds'].items()}, indent=1))
-    return 0
+        # Save partial rows even when a tap, tool, learner or shutdown fails.
+        try:
+            if r is not None:
+                r.close()
+        except BaseException as exc:
+            report['verdict'] = 'CONTINUAL_LEARNING_NOT_CONFIRMED'
+            report['shutdown_error'] = type(exc).__name__ + ': ' + str(exc)[:500]
+            raise
+        finally:
+            report['statuses'] = {s: sum(x['status'] == s for x in rows) for s in sorted({x['status'] for x in rows})}
+            report['minutes'] = round((time.monotonic() - t0) / 60, 1)
+            _save(out / 'rows.json', rows)
+            _save(out / 'report.json', report)
+            print(json.dumps({'verdict': report['verdict'], 'analysis_ran': report['analysis_ran'],
+                              'integrity_pass': report['integrity']['pass']}, indent=1))
 
 
 def main():

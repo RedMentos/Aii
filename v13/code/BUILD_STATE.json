@@ -1302,7 +1302,7 @@
     "Current Redmi sustained/nativebody/expert/bridge/world multimodal proofs remain open."
   ],
   "continuation_20261016": {
-    "status": "NATIVE_V2_COHORT_RUNNING",
+    "status": "RECOVERED_AFTER_SCRATCH_RESET_PREPARING_NEW_COHORT",
     "base_m": "1941d07afeb57299d7d5a466fd1eb44ec2569dfe",
     "integrated_k": "4ed1539fb9fd6ea961fc6145bd98745e5f63adac",
     "branch": "codex/continuation-20261016",
@@ -1329,6 +1329,10 @@
     "phone_measured": false,
     "canonical_gate_pass": false,
     "preregistration_remote_commit": "aa00ee365172e6e257f7f52b774e6fdcc851d5d9",
-    "native_result": "PENDING"
+    "native_result": "INTERRUPTED_NO_TERMINAL_EVIDENCE",
+    "durable_native_rows": 50,
+    "old_preregistration_consumed": true,
+    "new_plan": "specs/tool_forecast/learning-plan-20261016-evening.json",
+    "new_plan_scope": "new shifted cases, repeated predeclared fixed retention controls"
   }
 }
