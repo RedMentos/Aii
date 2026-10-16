@@ -1,20 +1,20 @@
 {
  "schema": "V13_NATIVE_EVIDENCE_SNAPSHOT_V1",
- "rows": 458,
+ "rows": 560,
  "observed_status": "HELD_OUT",
  "preregistration_sha256": "c3c696a26843cfb93f906d1ddab2109098076894e48b9254bc434b2b011661e6",
  "observed_experience_rows": {
-  "calc_counter": 368,
-  "note_edit": 90
+  "calc_counter": 400,
+  "note_edit": 160
  },
  "phase_a_closed": true,
  "terminal_observed": false,
  "scope": "Read-only byte snapshots; files may span adjacent progress instants. Not a resumable SQLite/Runtime image; no verdict from incomplete rows.",
- "archive": "/workspace/scratch/f24630d7727d/V13-Native-Evening-0458.zip",
- "sha256": "e2512ff7de4098ef515343be6b38832dced078a73e3f03fa730898d41ea324b6",
- "bytes": 11498599,
- "drive_file_id": "1mZaq5Q0ZguGTi0gL3gT2PgJiwCb84Ir7",
- "drive_url": "https://drive.google.com/file/d/1mZaq5Q0ZguGTi0gL3gT2PgJiwCb84Ir7/view?usp=drivesdk",
+ "archive": "/workspace/scratch/f24630d7727d/V13-Native-Evening-0559.zip",
+ "sha256": "b2f04abf42c76f0fd9691515dca9e5702230e1059259e5dce9a06bb41051466c",
+ "bytes": 12162986,
+ "drive_file_id": "1lfc-QftsQeVf2i-1Q-PoCt8IHRX--gRC",
+ "drive_url": "https://drive.google.com/file/d/1lfc-QftsQeVf2i-1Q-PoCt8IHRX--gRC/view?usp=drivesdk",
  "drive_download_verified": true,
  "source_checkpoint": "50af1c9455693a0a2cf708a0c42bbbe7f860399a"
 }
