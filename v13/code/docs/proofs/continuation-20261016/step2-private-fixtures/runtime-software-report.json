@@ -1,0 +1,26 @@
+{
+  "cohort_registration": false,
+  "created_utc": "2026-10-16T20:13:56.837115+00:00",
+  "errors": 0,
+  "evidence_level": "SOFTWARE_REAL_RUNTIME_STORE_SCRIPTED_RUNNER_SEAM",
+  "failures": 0,
+  "gate_promotion": false,
+  "historical_step2_utility": "UTILITY_FAIL_UNCHANGED",
+  "models_downloaded_or_run_by_this_package": false,
+  "native_runs": 0,
+  "passed": 23,
+  "schema": "V13_STEP2_PRIVATE_RUNTIME_SOFTWARE_RECEIPT_V1",
+  "skipped": 0,
+  "source_sha256": {
+    "docs/proofs/continuation-20261016/step2-private-fixtures/RUNTIME_ADAPTER.md": "ae039d6fa1c3c2d1c9c65a9928652d389d58542f6370efb38faa2a2f111071a7",
+    "docs/proofs/continuation-20261016/step2-private-fixtures/generate_fixtures.py": "c7206f486ddfd07775b4d1fcb3dac6a9d0d56852fd0d1f506205a9b1e12820b0",
+    "docs/proofs/continuation-20261016/step2-private-fixtures/generated/fixtures.json": "c29cb037842c9777f4b4f00651aae48d50a69ddfc8baa20585c5020881319da0",
+    "docs/proofs/continuation-20261016/step2-private-fixtures/runtime-tests.log": "b3ee720a6e80adae4cf0b53051b9718a51710f8c18af9da42a2c405bfc32fe6c",
+    "docs/proofs/continuation-20261016/step2-private-fixtures/runtime_adapter.py": "123bba6c5edf78165f3c5a4c3acb18fa9118c655ba65eff7f5a8798afe7e9ef4",
+    "docs/proofs/continuation-20261016/step2-private-fixtures/test_private_fixtures.py": "19c5df88b28ac20f01e6a8f391827fefbc9511971f6582fc76ed4894d2b91d5a",
+    "docs/proofs/continuation-20261016/step2-private-fixtures/test_runtime_adapter.py": "f1f69151970659471ac5d054f4208b981ad2cbd51506cc085ecc248b437f0a52",
+    "tests/integration_step2_utility.py": "a5a00d1f89eadda5e44ef68d2b2c1f33acf7d4dd354522f899cef6ea4525acf7",
+    "v13/utility.py": "896ba2f720784d5826ed71d7aec334351d1e2cb33875b4cdf979189dd9a40604"
+  },
+  "tests_run": 23
+}

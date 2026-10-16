@@ -5,6 +5,7 @@ accepts a different source/native build, or turns protocol checks into inference
 """
 import fcntl
 import json
+import os
 from pathlib import Path
 import shutil
 
@@ -16,7 +17,9 @@ VERSION = 2
 def process_identity(pid):
     """Linux/Termux PID + kernel start tick; a recycled PID is not the old worker."""
     try:
-        stat = Path('/proc') / str(pid) / 'stat'
+        # Some hosts mount an ancestor namespace's /proc: the caller's own
+        # numeric PID need not exist there. /proc/self still names this process.
+        stat = (Path('/proc/self') if pid == os.getpid() else Path('/proc') / str(pid)) / 'stat'
         fields = stat.read_text().rsplit(')', 1)[1].split()
         return {'pid': pid, 'start_tick': fields[19]}
     except FileNotFoundError:

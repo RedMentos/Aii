@@ -301,7 +301,7 @@
  "sources": {
   "scripts/ablation99_bench.py": "7a128a02ba2528656f444434f989f795b4d5801c6d74e33a6afad183979f406b",
   "scripts/acceptance.py": "d29e8307a1a16170d744f0f5cee6bb661397edea637c2e3c63ffb471d1439ee3",
-  "scripts/acceptance_checkpoint.py": "1dcb7b8a607d9792e8d7b07ade96cd2d60e7835079a66948953c5ab5e1c0766a",
+  "scripts/acceptance_checkpoint.py": "8661de59b94ebc789bc73c865d14ea6664f43e438f6de4f5983cbb5b5982d63b",
   "scripts/action_jepa_delta_atomic_publish_candidate.py": "d540545557f733590f3fa861f802cbb666c1090a95943b28717744d2b0953852",
   "scripts/action_jepa_delta_storage.py": "6fa9f92e5ecbc7ce0f8ff6d54118988997ca58e30e6a24f364d30092873ac89c",
   "scripts/action_jepa_objective.py": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439",
@@ -577,5 +577,5 @@
   "v13/world_worker.py": "82b3fce142d9d5bca8f781c8e0ed37a1415655efcb2a0a835b09bddcd7ba6ddc"
  },
  "threads": 4,
- "utc": "2026-10-16T20:12:08Z"
+ "utc": "2026-10-16T20:15:54Z"
 }

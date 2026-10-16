@@ -157,6 +157,20 @@ class PrivateRuntimeAdapter(unittest.TestCase):
         self.assertEqual(row['delivered_quotes'], [])
         self.assertIn('differs from Store bytes', row['error'])
 
+    def test_runner_acquisition_failure_preserves_attempt_and_zero_score(self):
+        snapshots = []
+        with real_runtime() as runtime:
+            with patch.object(runtime.pool, 'get', side_effect=RuntimeError('scripted unavailable')):
+                row = A.run_row(runtime, self.fixture, 'paired_model_quotes',
+                                record=lambda value: snapshots.append(copy.deepcopy(value)))
+        self.assertEqual(row['status'], 'ERROR')
+        self.assertEqual(row['score']['utility'], 0.)
+        self.assertEqual(len(row['calls']), 1)
+        self.assertEqual(row['calls'][0]['status'], 'ERROR')
+        self.assertEqual(row['calls'][0]['raw'], '')
+        self.assertIn('scripted unavailable', row['calls'][0]['error'])
+        self.assertEqual(snapshots[-1], row)
+
     def test_real_store_rejects_peer_identity_deleted_and_tampered_blob(self):
         with real_runtime() as runtime:
             event, private = A.insert_sources(runtime, self.fixture)
@@ -285,11 +299,13 @@ class PrivateRuntimeAdapter(unittest.TestCase):
             with patch.object(A, 'installed_bindings', return_value={'synthetic': 'NOT_NATIVE'}):
                 prereg = A.registration(installed, self.doc, [self.fixture['id']],
                                         ['b1_model_quotes', 'same_policy_dual'])
+                prereg = A.strict_json(A.dumps(prereg))  # same sorted JSON roundtrip as CLI
                 with patch('v13.runners.RunnerPool.get', new=get):
                     report = A.run_registered(installed, self.doc, prereg, out)
             self.assertEqual(report['status'], 'NOT_CONFIRMED')
             self.assertTrue(report['coverage_complete'])
             self.assertEqual(len(report['rows']), 2)
+            self.assertEqual([[r['fixture'], r['variant']] for r in report['rows']], prereg['row_order'])
             self.assertEqual({r['status'] for r in report['rows']}, {'STRUCTURAL_FAIL'})
             sources = []
             for row in report['rows']:

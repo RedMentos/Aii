@@ -148,17 +148,18 @@ def consumer_messages(runtime, event, quotes):
         'current_source': runtime.store.read_source(event['source_ref']), 'verified_quotes': verified})}]
 
 
-def generate(runtime, role, messages, deadline, tokens, schema, transcript, progress=None):
+def generate(runtime, role, messages, deadline, tokens, schema, transcript, progress=None, event_id=None):
     """Single native runner boundary; captured prompts are the exact arguments."""
     call = {'role': role, 'messages': copy.deepcopy(messages), 'max_tokens': tokens,
             'schema_sha256': digest(dumps(schema)), 'seed': CONFIG['seed'], 'raw': '', 'status': 'RUNNING'}
     transcript.append(call)
     if progress:
         progress()
-    runner = runtime.pool.get(role)
-    mid = runtime.store.message(runtime.session, None, 'assistant', status='DRAFT', metadata={
-        'proof_kind': VERSION, 'producer_role': role, 'runner_messages_sha256': digest(dumps(messages))})
+    runner, mid = None, None
     try:
+        runner = runtime.pool.get(role)
+        mid = runtime.store.message(runtime.session, event_id, 'assistant', status='DRAFT', metadata={
+            'proof_kind': VERSION, 'producer_role': role, 'runner_messages_sha256': digest(dumps(messages))})
         for chunk in runner.generate(messages, runtime.cancel_event, deadline, tokens, schema, seed=CONFIG['seed']):
             call['raw'] += chunk
             runtime.store.append_message(mid, chunk)
@@ -174,8 +175,9 @@ def generate(runtime, role, messages, deadline, tokens, schema, transcript, prog
         return call['raw']
     except BaseException as exc:
         call.update(status='ERROR', error_type=type(exc).__name__, error=str(exc)[:500],
-                    metrics=copy.deepcopy(runner.last_metrics))
-        runtime.store.finish_message(mid, 'ERROR', {'proof_kind': VERSION, 'error_type': type(exc).__name__})
+                    metrics=copy.deepcopy(runner.last_metrics) if runner else {})
+        if mid is not None:
+            runtime.store.finish_message(mid, 'ERROR', {'proof_kind': VERSION, 'error_type': type(exc).__name__})
         raise
     finally:
         # Independent cold native calls prevent implicit prompt-cache/history
@@ -205,7 +207,8 @@ def run_row(runtime, fixture, variant, row_seconds=90, producer_tokens=256, cons
         quotes = []
         for role in VARIANTS[variant]['roles']:
             messages = producer_messages(runtime, event, private, role)
-            raw = generate(runtime, role, messages, deadline, producer_tokens, QUOTE_SCHEMA, row['calls'], progress)
+            raw = generate(runtime, role, messages, deadline, producer_tokens, QUOTE_SCHEMA,
+                           row['calls'], progress, event['event_id'])
             valid = validate_model_quotes(runtime, raw, private, role)
             row['calls'][-1]['validated_quotes'] = valid
             quotes.extend(valid)
@@ -219,7 +222,7 @@ def run_row(runtime, fixture, variant, row_seconds=90, producer_tokens=256, cons
         row['delivered_quotes'] = json.loads(messages[1]['content'])['verified_quotes']
         row['delivery_origin'] = delivery
         row['raw_answer'] = generate(runtime, 'C3_LANGUAGE', messages, deadline, consumer_tokens,
-                                     DECISION_SCHEMA, row['calls'], progress)
+                                     DECISION_SCHEMA, row['calls'], progress, event['event_id'])
         # Oracle lookup happens only after the last runner has returned.
         row['score'] = score_decision(row['raw_answer'], fixture['oracle'])
         row['checks'] = {'generation_unchanged': generation == runtime.store.generation_id,
@@ -253,7 +256,10 @@ def installed_bindings(installed):
     return {'models': artifacts, 'runner': {'path': str(runner), 'sha256': file_hash(runner)},
             'runtime_libraries': runtime_library_hashes(runner),
             'models_manifest_sha256': file_hash(installed / 'config/models.json'),
-            'v13_environment': {k: v for k, v in sorted(os.environ.items()) if k.startswith('V13_')}}
+            # Bind loader/backend settings without writing credentials or other
+            # environment values into the published registration.
+            'native_environment_sha256': {k: digest(v) for k, v in sorted(os.environ.items())
+                if k.startswith(('V13_', 'LD_', 'GGML_', 'OMP_', 'OPENBLAS_', 'MKL_'))}}
 
 
 def registration(installed, fixture_doc, fixture_ids=None, variants=None, row_seconds=90,
@@ -275,6 +281,7 @@ def registration(installed, fixture_doc, fixture_ids=None, variants=None, row_se
         'installed_bindings': installed_bindings(Path(installed)), 'config': CONFIG,
         'device': device(),
         'fixture_ids': ids, 'variants': {name: VARIANTS[name] for name in arms},
+        'variant_order': arms, 'row_order': [[fid, name] for fid in ids for name in arms],
         'row_seconds': row_seconds, 'producer_tokens': producer_tokens, 'consumer_tokens': consumer_tokens,
         'max_rows': len(ids) * len(arms),
         'max_native_calls': len(ids) * sum(len(VARIANTS[v]['roles']) + 1 for v in arms),
@@ -313,7 +320,7 @@ def disable_background_sleep(home):
 
 
 def run_registered(installed, fixture_doc, prereg, out):
-    current = registration(installed, fixture_doc, prereg['fixture_ids'], list(prereg['variants']),
+    current = registration(installed, fixture_doc, prereg['fixture_ids'], prereg['variant_order'],
                            prereg['row_seconds'], prereg['producer_tokens'], prereg['consumer_tokens'])
     if dumps(current) != dumps(prereg):
         raise ValueError('Registration binding changed; refusing inference')
@@ -327,7 +334,7 @@ def run_registered(installed, fixture_doc, prereg, out):
     atomic_write(out / 'registration.json', dumps(prereg))
     try:
         for fid in prereg['fixture_ids']:
-            for variant in prereg['variants']:
+            for variant in prereg['variant_order']:
                 # Recheck source bindings before EVERY row; results are never
                 # continued on changed code, settings, artifacts or model files.
                 if source_bindings() != prereg['source_bindings'] or installed_bindings(Path(installed)) != prereg['installed_bindings']:
