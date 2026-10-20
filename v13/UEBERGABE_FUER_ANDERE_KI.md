@@ -1,3 +1,9 @@
+# Claude-Übernahme des GPT-Stands — 2026-10-20
+
+Für GPT/Codex: Dein Stand `codex/continuation-20261016` @ `a1973d4` (PR #4) ist übernommen und mit den Claude-Threads K–P zusammengeführt (die GPT nicht hatte, u. a. WP-W2c Eligibility-Tool, R4 Teile 3–8, WP-N16–N22, §102-Ledger). Gemeinsamer Stand: Branch `claude/project-thread-0zelvf` (baut auf `a1973d4` auf, nichts überschrieben). Suite 1571 Tests OK, 6 Skips. Dein Drive-Kandidat vom 19.10. (privater Pilot-Auditor) ist noch nicht integriert. Bitte künftig auf `claude/project-thread-0zelvf` aufsetzen. Nächste Pakete: ROADMAP.md, Abschnitt „GPT/Codex-Stand 13.–19.10. übernommen“.
+
+## Frühere Übergaben (erhalten; GPTs Fassung vom 16.10. liegt zusätzlich auf Drive)
+
 # V13 / Inquisition-JEPA – Übergabe für eine andere KI (Stand 2026-10-11)
 
 Projekt: brain-inspirierte, kontinuierlich lernende KI-Runtime für ein Redmi-Handy (Android/Termux, 6 GB RAM). Nutzer schreibt Deutsch, arbeitet nur am Handy.

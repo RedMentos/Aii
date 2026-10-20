@@ -27,14 +27,21 @@ def percept_mode(cfg):
     """segment_mode fixed|percept|all: the A4 PerceptPacket uses event segments unless the operator chose 'fixed'."""
     return 'fixed' if cfg.get('segment_mode','percept')=='fixed' else 'event'
 OFFER_SCHEMA={'type':'object','properties':{'summary':{'type':'string'},'quotes':{'type':'array','items':{'type':'string'},'maxItems':3},'uncertainty':{'type':'string'},'needs_reentry':{'type':'boolean'}},'required':['summary','quotes','uncertainty','needs_reentry'],'additionalProperties':False}
-def offer_schema(tokens):
+def offer_schema(tokens,quote_min_chars=0):
     """OFFER_SCHEMA with string caps that fit the observer token budget, so a verbose body (B2 Qwen3.5 gist)
     closes its JSON instead of being cut off and discarded. ~2.2 chars/token (German + Qwen tokenizer, measured truncation at 3); split summary 45 %, quotes 2x20 %,
-    uncertainty 15 % of what is left after ~30 tokens of JSON syntax. BOOT estimate, not tuned."""
+    uncertainty 15 % of what is left after ~30 tokens of JSON syntax. BOOT estimate, not tuned.
+    quote_min_chars (cfg offer_quote_min_chars, 0 = off) raises the quote cap so one whole source sentence fits."""
     chars=max(110,int((int(tokens)-30)*2.2))
     s=json.loads(json.dumps(OFFER_SCHEMA));pr=s['properties']
     pr['summary']['maxLength']=max(48,int(chars*.45));pr['uncertainty']['maxLength']=max(16,int(chars*.15))
     pr['quotes']['maxItems']=2;pr['quotes']['items']['maxLength']=max(24,int(chars*.2))
+    if quote_min_chars>pr['quotes']['items']['maxLength']:
+        # Thread O STEP2 producer ablation: 57-char quotes cut every earlier rule sentence (~80 chars) before its last
+        # rule ("... Local-"). A longer quote takes its room from the summary, so the worst case stays within budget.
+        q=min(int(quote_min_chars),(chars-48-pr['uncertainty']['maxLength'])//2)  # never beyond the budget
+        if q>pr['quotes']['items']['maxLength']:
+            pr['quotes']['items']['maxLength']=q;pr['summary']['maxLength']=chars-2*q-pr['uncertainty']['maxLength']
     return s
 # WP-KAL2 (2026-10-09, bench-results/KALIBRIERUNG.md): the 'hypothesis' wording made bodies restate the task
 # ("requires adding 46 and 62") instead of solving it: B1 named the result in 5 % of checkable tasks, 'solve' in 37.5 %.
@@ -172,7 +179,8 @@ class Cognition:
             if policy=='B1_DETAIL':
                 win=bodyview.detail_windows(self.s,e['event_id'],text,e['source_ref'])
                 if win:query['detail_windows']=[w['text'] for w in win];bv_refs+=[w['source_ref'] for w in win];bv['detail_windows']=len(win)
-            bs=bodyview.body_state(self.r,e,role,text)
+            # Thread O STEP2 producer ablation: body_state hijacked 41/50 B2 offers; cfg b2_offer_body_state=False leaves it out for B2.
+            bs=None if policy=='B2_GIST' and not self.r.cfg.get('b2_offer_body_state',True) else bodyview.body_state(self.r,e,role,text)
             if bs:query['body_state']=bs['view'];bv_refs.append(bs['source_ref']);bv['body_state_ref']=bs['source_ref']
         except Exception as exc:self.s.log('bodyview_unavailable',e['event_id'],{'stage':'offer','error':type(exc).__name__})
         if bv_refs:instructions+=' detail_windows are exact source spans attention marked as important; body_state is own world/self/skill state, never source evidence. Its world.mode counts only completed own digital actions; it says nothing about available source knowledge. self.external_tools limits tool execution, not reading supplied text or reasoning about its constraints.'
@@ -230,7 +238,7 @@ class Cognition:
         runner=None;started=time.monotonic();attempt_status='ERROR'
         try:
             runner=self.r.pool.get(role)
-            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],offer_schema(self.r.cfg['observer_tokens'])));attempt_status='FINAL'
+            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],offer_schema(self.r.cfg['observer_tokens'],**({'quote_min_chars':q} if (q:=self.r.cfg.get('offer_quote_min_chars',0)) else {}))));attempt_status='FINAL'
         finally:
             metrics=dict(runner.last_metrics) if runner else {'status':'ERROR','duration_s':time.monotonic()-started}
             self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':metrics.get('status',attempt_status),'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'state_policy':query_packet['state_policy']})

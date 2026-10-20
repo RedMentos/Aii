@@ -1,0 +1,8096 @@
+{
+ "kind": "V13_R4_C3_UNCERTAINTY_CAPTURE",
+ "task_seed": 7,
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "rows": [
+  {
+   "fixture": "summary00",
+   "pass": false,
+   "turn_s": 8.86,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.4965707063674927,
+    "mean_logprob": -0.4021215625737035,
+    "p10_logprob": -1.4488216638565063,
+    "share_below_half": 0.2413793103448276,
+    "digit_min_logprob": -1.4713948965072632,
+    "tokens": 29.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.8850631713867188
+    },
+    {
+     "token": ",",
+     "logprob": -0.3157235383987427
+    },
+    {
+     "token": " the",
+     "logprob": -0.14392289519309998
+    },
+    {
+     "token": " summary",
+     "logprob": -0.6005573272705078
+    },
+    {
+     "token": " is",
+     "logprob": -0.9330759048461914
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.22420401871204376
+    },
+    {
+     "token": ".",
+     "logprob": -0.2072572410106659
+    },
+    {
+     "token": " The",
+     "logprob": -0.268718957901001
+    },
+    {
+     "token": " correct",
+     "logprob": -1.4965707063674927
+    },
+    {
+     "token": " total",
+     "logprob": -0.06000746786594391
+    },
+    {
+     "token": " is",
+     "logprob": -0.22107501327991486
+    },
+    {
+     "token": " **",
+     "logprob": -1.4488216638565063
+    },
+    {
+     "token": "3",
+     "logprob": -1.4713948965072632
+    },
+    {
+     "token": "0",
+     "logprob": -1.1422650814056396
+    },
+    {
+     "token": " euros",
+     "logprob": -0.24583247303962708
+    },
+    {
+     "token": "**",
+     "logprob": -0.47079625725746155
+    },
+    {
+     "token": " (",
+     "logprob": -0.012401390820741653
+    },
+    {
+     "token": "9",
+     "logprob": -0.1462496817111969
+    },
+    {
+     "token": "5",
+     "logprob": -0.0031238661613315344
+    },
+    {
+     "token": " +",
+     "logprob": -0.021512597799301147
+    },
+    {
+     "token": " ",
+     "logprob": -1.5020483260741457e-05
+    },
+    {
+     "token": "1",
+     "logprob": -0.002006993629038334
+    },
+    {
+     "token": "8",
+     "logprob": -0.0010423130588606
+    },
+    {
+     "token": " +",
+     "logprob": -0.006419416982680559
+    },
+    {
+     "token": " ",
+     "logprob": -2.515347659937106e-05
+    },
+    {
+     "token": "2",
+     "logprob": -0.0017460918752476573
+    },
+    {
+     "token": "1",
+     "logprob": -0.0007212974596768618
+    },
+    {
+     "token": ").",
+     "logprob": -0.36249977350234985
+    },
+    {
+     "token": "",
+     "logprob": -0.9684751033782959
+    }
+   ],
+   "output": "No, the summary is incorrect. The correct total is **30 euros** (95 + 18 + 21)."
+  },
+  {
+   "fixture": "summary01",
+   "pass": false,
+   "turn_s": 5.23,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.1529619693756104,
+    "mean_logprob": -0.3262801649096601,
+    "p10_logprob": -1.185531497001648,
+    "share_below_half": 0.18421052631578946,
+    "digit_min_logprob": -1.749298334121704,
+    "tokens": 76.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.9376758337020874
+    },
+    {
+     "token": ",",
+     "logprob": -0.3361712694168091
+    },
+    {
+     "token": " the",
+     "logprob": -0.13734763860702515
+    },
+    {
+     "token": " summary",
+     "logprob": -0.46958333253860474
+    },
+    {
+     "token": " is",
+     "logprob": -0.9314178228378296
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.1906069964170456
+    },
+    {
+     "token": ".",
+     "logprob": -0.16478615999221802
+    },
+    {
+     "token": " The",
+     "logprob": -0.2881564795970917
+    },
+    {
+     "token": " correct",
+     "logprob": -1.4962106943130493
+    },
+    {
+     "token": " total",
+     "logprob": -0.08038150519132614
+    },
+    {
+     "token": " is",
+     "logprob": -0.2331964522600174
+    },
+    {
+     "token": " **",
+     "logprob": -1.232334017753601
+    },
+    {
+     "token": "1",
+     "logprob": -0.16567133367061615
+    },
+    {
+     "token": "2",
+     "logprob": -0.28024789690971375
+    },
+    {
+     "token": "6",
+     "logprob": -0.07415177673101425
+    },
+    {
+     "token": " euros",
+     "logprob": -0.040149517357349396
+    },
+    {
+     "token": "**.",
+     "logprob": -0.8083404302597046
+    },
+    {
+     "token": "\n\n",
+     "logprob": -0.4294418394565582
+    },
+    {
+     "token": "*",
+     "logprob": -1.520717740058899
+    },
+    {
+     "token": "  ",
+     "logprob": -0.21456289291381836
+    },
+    {
+     "token": " C",
+     "logprob": -1.3648384809494019
+    },
+    {
+     "token": "ables",
+     "logprob": -0.0025202175602316856
+    },
+    {
+     "token": ":",
+     "logprob": -0.05453445762395859
+    },
+    {
+     "token": " ",
+     "logprob": -0.04406554251909256
+    },
+    {
+     "token": "1",
+     "logprob": -0.007798844017088413
+    },
+    {
+     "token": "6",
+     "logprob": -0.012810214422643185
+    },
+    {
+     "token": "\n",
+     "logprob": -0.7898183465003967
+    },
+    {
+     "token": "*",
+     "logprob": -0.011480837129056454
+    },
+    {
+     "token": "  ",
+     "logprob": -5.519542537513189e-05
+    },
+    {
+     "token": " Paper",
+     "logprob": -0.3627195656299591
+    },
+    {
+     "token": ":",
+     "logprob": -0.0028067841194570065
+    },
+    {
+     "token": " ",
+     "logprob": -0.001533670467324555
+    },
+    {
+     "token": "2",
+     "logprob": -0.0030072801746428013
+    },
+    {
+     "token": "3",
+     "logprob": -0.0020102187991142273
+    },
+    {
+     "token": "\n",
+     "logprob": -0.015224791131913662
+    },
+    {
+     "token": "*",
+     "logprob": -0.0008701891056261957
+    },
+    {
+     "token": "  ",
+     "logprob": -3.314073182991706e-05
+    },
+    {
+     "token": " Chairs",
+     "logprob": -0.013640870340168476
+    },
+    {
+     "token": ":",
+     "logprob": -0.0010408810339868069
+    },
+    {
+     "token": " ",
+     "logprob": -0.001135636237449944
+    },
+    {
+     "token": "6",
+     "logprob": -0.004484142176806927
+    },
+    {
+     "token": "7",
+     "logprob": -0.0012438878184184432
+    },
+    {
+     "token": "\n",
+     "logprob": -0.04087069630622864
+    },
+    {
+     "token": "*",
+     "logprob": -0.008307897485792637
+    },
+    {
+     "token": "  ",
+     "logprob": -0.0006405378226190805
+    },
+    {
+     "token": " Sum",
+     "logprob": -1.0855331420898438
+    },
+    {
+     "token": ":",
+     "logprob": -0.03873777762055397
+    },
+    {
+     "token": " ",
+     "logprob": -0.0962875485420227
+    },
+    {
+     "token": "1",
+     "logprob": -0.025335511192679405
+    },
+    {
+     "token": "0",
+     "logprob": -0.6299883127212524
+    },
+    {
+     "token": "5",
+     "logprob": -1.749298334121704
+    },
+    {
+     "token": " +",
+     "logprob": -0.19290170073509216
+    },
+    {
+     "token": " ",
+     "logprob": -0.0043299226090312
+    },
+    {
+     "token": "6",
+     "logprob": -0.2272835224866867
+    },
+    {
+     "token": "7",
+     "logprob": -0.02983764000236988
+    },
+    {
+     "token": " =",
+     "logprob": -0.049255963414907455
+    },
+    {
+     "token": " ",
+     "logprob": -0.02244042418897152
+    },
+    {
+     "token": "1",
+     "logprob": -0.0030209708493202925
+    },
+    {
+     "token": "7",
+     "logprob": -0.05700591579079628
+    },
+    {
+     "token": "2",
+     "logprob": -0.45106223225593567
+    },
+    {
+     "token": ";",
+     "logprob": -2.1529619693756104
+    },
+    {
+     "token": " ",
+     "logprob": -0.13533416390419006
+    },
+    {
+     "token": "1",
+     "logprob": -0.03853897377848625
+    },
+    {
+     "token": "7",
+     "logprob": -0.506443202495575
+    },
+    {
+     "token": "2",
+     "logprob": -0.02084784209728241
+    },
+    {
+     "token": " -",
+     "logprob": -1.185531497001648
+    },
+    {
+     "token": " ",
+     "logprob": -0.23582205176353455
+    },
+    {
+     "token": "4",
+     "logprob": -1.1591875553131104
+    },
+    {
+     "token": "6",
+     "logprob": -0.1437034159898758
+    },
+    {
+     "token": " =",
+     "logprob": -0.09355788677930832
+    },
+    {
+     "token": " ",
+     "logprob": -0.008997383527457714
+    },
+    {
+     "token": "1",
+     "logprob": -0.0011962652206420898
+    },
+    {
+     "token": "2",
+     "logprob": -0.0013478536857292056
+    },
+    {
+     "token": "6",
+     "logprob": -0.0014055707724764943
+    },
+    {
+     "token": ".",
+     "logprob": -0.2236853390932083
+    },
+    {
+     "token": "",
+     "logprob": -1.4477686882019043
+    }
+   ],
+   "output": "No, the summary is incorrect. The correct total is **126 euros**.\n\n*   Cables: 16\n*   Paper: 23\n*   Chairs: 67\n*   Sum: 105 + 67 = 172; 172 - 46 = 126."
+  },
+  {
+   "fixture": "summary02",
+   "pass": true,
+   "turn_s": 3.72,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.362330198287964,
+    "mean_logprob": -0.3354641938661059,
+    "p10_logprob": -0.9090571999549866,
+    "share_below_half": 0.19047619047619047,
+    "digit_min_logprob": -0.08985913544893265,
+    "tokens": 42.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.9090571999549866
+    },
+    {
+     "token": ",",
+     "logprob": -0.28995224833488464
+    },
+    {
+     "token": " the",
+     "logprob": -0.12553933262825012
+    },
+    {
+     "token": " summary",
+     "logprob": -0.45881086587905884
+    },
+    {
+     "token": " is",
+     "logprob": -1.1026657819747925
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.21346203982830048
+    },
+    {
+     "token": ".",
+     "logprob": -0.149027481675148
+    },
+    {
+     "token": " The",
+     "logprob": -0.2584494352340698
+    },
+    {
+     "token": " calculation",
+     "logprob": -2.153552770614624
+    },
+    {
+     "token": " is",
+     "logprob": -0.711815357208252
+    },
+    {
+     "token": ":",
+     "logprob": -0.6046501994132996
+    },
+    {
+     "token": " ",
+     "logprob": -0.27618902921676636
+    },
+    {
+     "token": "8",
+     "logprob": -0.03608042746782303
+    },
+    {
+     "token": "2",
+     "logprob": -0.00608767569065094
+    },
+    {
+     "token": " +",
+     "logprob": -0.1702025681734085
+    },
+    {
+     "token": " ",
+     "logprob": -0.0007090697763487697
+    },
+    {
+     "token": "6",
+     "logprob": -0.00034850946394726634
+    },
+    {
+     "token": "6",
+     "logprob": -0.0005554907256737351
+    },
+    {
+     "token": " +",
+     "logprob": -0.05939215421676636
+    },
+    {
+     "token": " ",
+     "logprob": -0.0008187664789147675
+    },
+    {
+     "token": "1",
+     "logprob": -0.00025615395861677825
+    },
+    {
+     "token": "9",
+     "logprob": -0.000758220034185797
+    },
+    {
+     "token": " =",
+     "logprob": -0.0054728868417441845
+    },
+    {
+     "token": " ",
+     "logprob": -0.004803672898560762
+    },
+    {
+     "token": "1",
+     "logprob": -0.0005533437943086028
+    },
+    {
+     "token": "6",
+     "logprob": -0.08985913544893265
+    },
+    {
+     "token": "7",
+     "logprob": -0.0014853178290650249
+    },
+    {
+     "token": " euros",
+     "logprob": -0.023701999336481094
+    },
+    {
+     "token": ".",
+     "logprob": -0.400136798620224
+    },
+    {
+     "token": " The",
+     "logprob": -0.8428601026535034
+    },
+    {
+     "token": " current",
+     "logprob": -2.362330198287964
+    },
+    {
+     "token": " total",
+     "logprob": -0.7961399555206299
+    },
+    {
+     "token": " of",
+     "logprob": -0.3058529794216156
+    },
+    {
+     "token": " ",
+     "logprob": -0.0011074115755036473
+    },
+    {
+     "token": "1",
+     "logprob": -0.0003449319628998637
+    },
+    {
+     "token": "4",
+     "logprob": -0.00218451046384871
+    },
+    {
+     "token": "7",
+     "logprob": -0.0018216263270005584
+    },
+    {
+     "token": " euros",
+     "logprob": -0.16208577156066895
+    },
+    {
+     "token": " is",
+     "logprob": -0.31406310200691223
+    },
+    {
+     "token": " wrong",
+     "logprob": -0.9365431070327759
+    },
+    {
+     "token": ".",
+     "logprob": -0.12691649794578552
+    },
+    {
+     "token": "",
+     "logprob": -0.18285201489925385
+    }
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 82 + 66 + 19 = 167 euros. The current total of 147 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "pass": true,
+   "turn_s": 3.42,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.219064235687256,
+    "mean_logprob": -0.37324612672978774,
+    "p10_logprob": -0.9539068937301636,
+    "share_below_half": 0.17073170731707318,
+    "digit_min_logprob": -0.02707916870713234,
+    "tokens": 41.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.8864532113075256
+    },
+    {
+     "token": ",",
+     "logprob": -0.3271033763885498
+    },
+    {
+     "token": " the",
+     "logprob": -0.14846959710121155
+    },
+    {
+     "token": " summary",
+     "logprob": -0.5789692997932434
+    },
+    {
+     "token": " is",
+     "logprob": -0.9539068937301636
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.19774815440177917
+    },
+    {
+     "token": ".",
+     "logprob": -0.203319251537323
+    },
+    {
+     "token": " The",
+     "logprob": -0.2929280698299408
+    },
+    {
+     "token": " calculation",
+     "logprob": -2.219064235687256
+    },
+    {
+     "token": " should",
+     "logprob": -1.6386299133300781
+    },
+    {
+     "token": " be",
+     "logprob": -0.19617033004760742
+    },
+    {
+     "token": ":",
+     "logprob": -0.629433274269104
+    },
+    {
+     "token": " ",
+     "logprob": -0.5085932016372681
+    },
+    {
+     "token": "1",
+     "logprob": -0.014423959888517857
+    },
+    {
+     "token": "8",
+     "logprob": -0.0163264200091362
+    },
+    {
+     "token": " +",
+     "logprob": -0.3912108242511749
+    },
+    {
+     "token": " ",
+     "logprob": -0.002359848003834486
+    },
+    {
+     "token": "4",
+     "logprob": -0.0035780828911811113
+    },
+    {
+     "token": "0",
+     "logprob": -0.0004907858674414456
+    },
+    {
+     "token": " +",
+     "logprob": -0.023634986951947212
+    },
+    {
+     "token": " ",
+     "logprob": -0.000532828620634973
+    },
+    {
+     "token": "1",
+     "logprob": -0.00013590783055406064
+    },
+    {
+     "token": "7",
+     "logprob": -0.001574085559695959
+    },
+    {
+     "token": " =",
+     "logprob": -0.006363989319652319
+    },
+    {
+     "token": " ",
+     "logprob": -0.024788329377770424
+    },
+    {
+     "token": "7",
+     "logprob": -0.008060067892074585
+    },
+    {
+     "token": "5",
+     "logprob": -0.02707916870713234
+    },
+    {
+     "token": " euros",
+     "logprob": -0.01268506795167923
+    },
+    {
+     "token": ".",
+     "logprob": -0.3164503276348114
+    },
+    {
+     "token": " The",
+     "logprob": -1.2570712566375732
+    },
+    {
+     "token": " current",
+     "logprob": -1.5645650625228882
+    },
+    {
+     "token": " total",
+     "logprob": -0.6767864227294922
+    },
+    {
+     "token": " of",
+     "logprob": -0.314107745885849
+    },
+    {
+     "token": " ",
+     "logprob": -0.0019002718618139625
+    },
+    {
+     "token": "6",
+     "logprob": -0.0005282962811179459
+    },
+    {
+     "token": "5",
+     "logprob": -0.008577430620789528
+    },
+    {
+     "token": " euros",
+     "logprob": -0.31116190552711487
+    },
+    {
+     "token": " is",
+     "logprob": -0.3645252287387848
+    },
+    {
+     "token": " wrong",
+     "logprob": -0.8979653120040894
+    },
+    {
+     "token": ".",
+     "logprob": -0.12651671469211578
+    },
+    {
+     "token": "",
+     "logprob": -0.1489020586013794
+    }
+   ],
+   "output": "No, the summary is incorrect. The calculation should be: 18 + 40 + 17 = 75 euros. The current total of 65 euros is wrong."
+  },
+  {
+   "fixture": "summary04",
+   "pass": true,
+   "turn_s": 3.62,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.739717960357666,
+    "mean_logprob": -0.38287123762474523,
+    "p10_logprob": -1.00543212890625,
+    "share_below_half": 0.16279069767441862,
+    "digit_min_logprob": -0.06606951355934143,
+    "tokens": 43.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.7640599012374878
+    },
+    {
+     "token": ",",
+     "logprob": -0.33732664585113525
+    },
+    {
+     "token": " the",
+     "logprob": -0.1275346577167511
+    },
+    {
+     "token": " summary",
+     "logprob": -0.5323542952537537
+    },
+    {
+     "token": " is",
+     "logprob": -1.00543212890625
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.17854231595993042
+    },
+    {
+     "token": ".",
+     "logprob": -0.18184833228588104
+    },
+    {
+     "token": " The",
+     "logprob": -0.33543843030929565
+    },
+    {
+     "token": " calculation",
+     "logprob": -2.407499313354492
+    },
+    {
+     "token": " should",
+     "logprob": -1.751113772392273
+    },
+    {
+     "token": " be",
+     "logprob": -0.21331454813480377
+    },
+    {
+     "token": ":",
+     "logprob": -0.5774738788604736
+    },
+    {
+     "token": " ",
+     "logprob": -0.4177543520927429
+    },
+    {
+     "token": "8",
+     "logprob": -0.06606951355934143
+    },
+    {
+     "token": "1",
+     "logprob": -0.025611387565732002
+    },
+    {
+     "token": " +",
+     "logprob": -0.41701069474220276
+    },
+    {
+     "token": " ",
+     "logprob": -0.0024862175341695547
+    },
+    {
+     "token": "2",
+     "logprob": -0.0047716316767036915
+    },
+    {
+     "token": "7",
+     "logprob": -0.00045530431088991463
+    },
+    {
+     "token": " +",
+     "logprob": -0.09064070135354996
+    },
+    {
+     "token": " ",
+     "logprob": -0.001143035595305264
+    },
+    {
+     "token": "8",
+     "logprob": -0.0007102626841515303
+    },
+    {
+     "token": "5",
+     "logprob": -0.0010238164104521275
+    },
+    {
+     "token": " =",
+     "logprob": -0.00823956448584795
+    },
+    {
+     "token": " ",
+     "logprob": -0.01686517335474491
+    },
+    {
+     "token": "1",
+     "logprob": -0.03134140744805336
+    },
+    {
+     "token": "9",
+     "logprob": -0.01329005416482687
+    },
+    {
+     "token": "3",
+     "logprob": -0.0180238988250494
+    },
+    {
+     "token": " euros",
+     "logprob": -0.01417164783924818
+    },
+    {
+     "token": ".",
+     "logprob": -0.40277862548828125
+    },
+    {
+     "token": " The",
+     "logprob": -1.102128267288208
+    },
+    {
+     "token": " current",
+     "logprob": -2.739717960357666
+    },
+    {
+     "token": " total",
+     "logprob": -0.5447449088096619
+    },
+    {
+     "token": " of",
+     "logprob": -0.2573584020137787
+    },
+    {
+     "token": " ",
+     "logprob": -0.0009145148796960711
+    },
+    {
+     "token": "2",
+     "logprob": -0.00031822023447602987
+    },
+    {
+     "token": "0",
+     "logprob": -0.0004438550677150488
+    },
+    {
+     "token": "3",
+     "logprob": -0.0014935554936528206
+    },
+    {
+     "token": " euros",
+     "logprob": -0.2169959992170334
+    },
+    {
+     "token": " is",
+     "logprob": -0.45929843187332153
+    },
+    {
+     "token": " wrong",
+     "logprob": -0.8224597573280334
+    },
+    {
+     "token": ".",
+     "logprob": -0.1787886768579483
+    },
+    {
+     "token": "",
+     "logprob": -0.19447515904903412
+    }
+   ],
+   "output": "No, the summary is incorrect. The calculation should be: 81 + 27 + 85 = 193 euros. The current total of 203 euros is wrong."
+  },
+  {
+   "fixture": "summary05",
+   "pass": false,
+   "turn_s": 4.32,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.5069304704666138,
+    "mean_logprob": -0.32610000000530076,
+    "p10_logprob": -1.189910888671875,
+    "share_below_half": 0.18181818181818182,
+    "digit_min_logprob": -0.7990168333053589,
+    "tokens": 55.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.9519716501235962
+    },
+    {
+     "token": ",",
+     "logprob": -0.3058149218559265
+    },
+    {
+     "token": " the",
+     "logprob": -0.12054932117462158
+    },
+    {
+     "token": " summary",
+     "logprob": -0.4601994454860687
+    },
+    {
+     "token": " is",
+     "logprob": -1.0966898202896118
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.17693457007408142
+    },
+    {
+     "token": ".",
+     "logprob": -0.18395105004310608
+    },
+    {
+     "token": " The",
+     "logprob": -0.2785661816596985
+    },
+    {
+     "token": " correct",
+     "logprob": -1.4030177593231201
+    },
+    {
+     "token": " total",
+     "logprob": -0.07107668370008469
+    },
+    {
+     "token": " is",
+     "logprob": -0.18429942429065704
+    },
+    {
+     "token": " **",
+     "logprob": -1.358797311782837
+    },
+    {
+     "token": "2",
+     "logprob": -0.3557664155960083
+    },
+    {
+     "token": "5",
+     "logprob": -0.36629992723464966
+    },
+    {
+     "token": "4",
+     "logprob": -0.7990168333053589
+    },
+    {
+     "token": " euros",
+     "logprob": -0.052526313811540604
+    },
+    {
+     "token": "**.",
+     "logprob": -0.8705782890319824
+    },
+    {
+     "token": "\n\n",
+     "logprob": -0.461864709854126
+    },
+    {
+     "token": "*",
+     "logprob": -1.5069304704666138
+    },
+    {
+     "token": "  ",
+     "logprob": -0.2961246371269226
+    },
+    {
+     "token": " Post",
+     "logprob": -1.435229778289795
+    },
+    {
+     "token": "age",
+     "logprob": -0.000583699787966907
+    },
+    {
+     "token": ":",
+     "logprob": -0.06716042757034302
+    },
+    {
+     "token": " ",
+     "logprob": -0.03914431110024452
+    },
+    {
+     "token": "8",
+     "logprob": -0.003934843000024557
+    },
+    {
+     "token": "6",
+     "logprob": -0.005785959307104349
+    },
+    {
+     "token": "\n",
+     "logprob": -0.551633894443512
+    },
+    {
+     "token": "*",
+     "logprob": -0.005191546864807606
+    },
+    {
+     "token": "  ",
+     "logprob": -1.2040211004205048e-05
+    },
+    {
+     "token": " Software",
+     "logprob": -0.15665686130523682
+    },
+    {
+     "token": " licence",
+     "logprob": -1.4281071424484253
+    },
+    {
+     "token": ":",
+     "logprob": -0.0005039054085500538
+    },
+    {
+     "token": " ",
+     "logprob": -0.0005341406213119626
+    },
+    {
+     "token": "8",
+     "logprob": -0.0009023444727063179
+    },
+    {
+     "token": "5",
+     "logprob": -0.0002884684654418379
+    },
+    {
+     "token": "\n",
+     "logprob": -0.005893575958907604
+    },
+    {
+     "token": "*",
+     "logprob": -0.00038780338945798576
+    },
+    {
+     "token": "  ",
+     "logprob": -1.2755474926962052e-05
+    },
+    {
+     "token": " Train",
+     "logprob": -0.007026865147054195
+    },
+    {
+     "token": " tickets",
+     "logprob": -0.001253675203770399
+    },
+    {
+     "token": ":",
+     "logprob": -0.0009154694271273911
+    },
+    {
+     "token": " ",
+     "logprob": -0.002198548289015889
+    },
+    {
+     "token": "9",
+     "logprob": -0.00154734100215137
+    },
+    {
+     "token": "3",
+     "logprob": -0.0009483422036282718
+    },
+    {
+     "token": "\n",
+     "logprob": -0.038483843207359314
+    },
+    {
+     "token": "*",
+     "logprob": -0.014909959398210049
+    },
+    {
+     "token": "  ",
+     "logprob": -0.0006957089644856751
+    },
+    {
+     "token": " **",
+     "logprob": -0.4466553330421448
+    },
+    {
+     "token": "Total",
+     "logprob": -0.1475220024585724
+    },
+    {
+     "token": "**:",
+     "logprob": -1.189910888671875
+    },
+    {
+     "token": " ",
+     "logprob": -0.09463059902191162
+    },
+    {
+     "token": "2",
+     "logprob": -0.2258608043193817
+    },
+    {
+     "token": "5",
+     "logprob": -0.06788808852434158
+    },
+    {
+     "token": "4",
+     "logprob": -0.029496626928448677
+    },
+    {
+     "token": "",
+     "logprob": -0.6626166701316833
+    }
+   ],
+   "output": "No, the summary is incorrect. The correct total is **254 euros**.\n\n*   Postage: 86\n*   Software licence: 85\n*   Train tickets: 93\n*   **Total**: 254"
+  },
+  {
+   "fixture": "summary06",
+   "pass": false,
+   "turn_s": 5.34,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -3.0713233947753906,
+    "mean_logprob": -0.7832020402332907,
+    "p10_logprob": -1.8425936698913574,
+    "share_below_half": 0.44155844155844154,
+    "digit_min_logprob": -1.4660977125167847,
+    "tokens": 77.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.8860502243041992
+    },
+    {
+     "token": ",",
+     "logprob": -0.3132721781730652
+    },
+    {
+     "token": " the",
+     "logprob": -0.12561826407909393
+    },
+    {
+     "token": " summary",
+     "logprob": -0.4973137080669403
+    },
+    {
+     "token": " is",
+     "logprob": -0.9949036836624146
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.16252030432224274
+    },
+    {
+     "token": ".",
+     "logprob": -0.16282419860363007
+    },
+    {
+     "token": " The",
+     "logprob": -0.27653008699417114
+    },
+    {
+     "token": " correct",
+     "logprob": -1.3184858560562134
+    },
+    {
+     "token": " total",
+     "logprob": -0.055642787367105484
+    },
+    {
+     "token": " is",
+     "logprob": -0.21173320710659027
+    },
+    {
+     "token": " **",
+     "logprob": -1.2708160877227783
+    },
+    {
+     "token": "1",
+     "logprob": -0.12371593713760376
+    },
+    {
+     "token": "2",
+     "logprob": -1.4660977125167847
+    },
+    {
+     "token": "5",
+     "logprob": -1.2374671697616577
+    },
+    {
+     "token": " euros",
+     "logprob": -0.02271476946771145
+    },
+    {
+     "token": "**",
+     "logprob": -0.5589560270309448
+    },
+    {
+     "token": " (",
+     "logprob": -0.010927501134574413
+    },
+    {
+     "token": "8",
+     "logprob": -0.2743411064147949
+    },
+    {
+     "token": "4",
+     "logprob": -0.004826551768928766
+    },
+    {
+     "token": " +",
+     "logprob": -0.03403286263346672
+    },
+    {
+     "token": " ",
+     "logprob": -5.781817526440136e-05
+    },
+    {
+     "token": "1",
+     "logprob": -0.005473725963383913
+    },
+    {
+     "token": "9",
+     "logprob": -0.00219376920722425
+    },
+    {
+     "token": " +",
+     "logprob": -0.013930581510066986
+    },
+    {
+     "token": " ",
+     "logprob": -0.00014496900257654488
+    },
+    {
+     "token": "9",
+     "logprob": -0.009280037134885788
+    },
+    {
+     "token": "1",
+     "logprob": -0.0044597745873034
+    },
+    {
+     "token": ").",
+     "logprob": -0.5447030663490295
+    },
+    {
+     "token": "\n\n",
+     "logprob": -1.0862810611724854
+    },
+    {
+     "token": "The",
+     "logprob": -1.8650281429290771
+    },
+    {
+     "token": " discrepancy",
+     "logprob": -2.463003635406494
+    },
+    {
+     "token": " arises",
+     "logprob": -1.6667672395706177
+    },
+    {
+     "token": " because",
+     "logprob": -0.09463413804769516
+    },
+    {
+     "token": " the",
+     "logprob": -0.6547247171401978
+    },
+    {
+     "token": " user",
+     "logprob": -1.759315848350525
+    },
+    {
+     "token": "'s",
+     "logprob": -1.4443883895874023
+    },
+    {
+     "token": " list",
+     "logprob": -2.206430673599243
+    },
+    {
+     "token": " of",
+     "logprob": -1.291746735572815
+    },
+    {
+     "token": " items",
+     "logprob": -0.3055344820022583
+    },
+    {
+     "token": " does",
+     "logprob": -1.5171689987182617
+    },
+    {
+     "token": " not",
+     "logprob": -0.013135557062923908
+    },
+    {
+     "token": " match",
+     "logprob": -1.2455191612243652
+    },
+    {
+     "token": " the",
+     "logprob": -0.1536976546049118
+    },
+    {
+     "token": " description",
+     "logprob": -2.9267337322235107
+    },
+    {
+     "token": " in",
+     "logprob": -1.4984313249588013
+    },
+    {
+     "token": " the",
+     "logprob": -0.1629343330860138
+    },
+    {
+     "token": " header",
+     "logprob": -1.6439601182937622
+    },
+    {
+     "token": " (\"",
+     "logprob": -1.3544553518295288
+    },
+    {
+     "token": "c",
+     "logprob": -1.1991382837295532
+    },
+    {
+     "token": "ables",
+     "logprob": -0.015556974336504936
+    },
+    {
+     "token": " ",
+     "logprob": -0.5718695521354675
+    },
+    {
+     "token": "8",
+     "logprob": -0.002524280920624733
+    },
+    {
+     "token": "4",
+     "logprob": -0.00037271768087521195
+    },
+    {
+     "token": " euros",
+     "logprob": -0.21472039818763733
+    },
+    {
+     "token": "\"",
+     "logprob": -1.8425936698913574
+    },
+    {
+     "token": " vs",
+     "logprob": -1.79744291305542
+    },
+    {
+     "token": " \"",
+     "logprob": -0.38170528411865234
+    },
+    {
+     "token": "train",
+     "logprob": -1.180559515953064
+    },
+    {
+     "token": " tickets",
+     "logprob": -0.00218869186937809
+    },
+    {
+     "token": " ",
+     "logprob": -0.09618773311376572
+    },
+    {
+     "token": "1",
+     "logprob": -0.0010720872087404132
+    },
+    {
+     "token": "9",
+     "logprob": -0.0001954627368832007
+    },
+    {
+     "token": " euros",
+     "logprob": -0.010022691451013088
+    },
+    {
+     "token": "\").",
+     "logprob": -0.784760594367981
+    },
+    {
+     "token": " The",
+     "logprob": -1.507362723350525
+    },
+    {
+     "token": " item",
+     "logprob": -3.0713233947753906
+    },
+    {
+     "token": " count",
+     "logprob": -1.9428699016571045
+    },
+    {
+     "token": " and",
+     "logprob": -2.359123706817627
+    },
+    {
+     "token": " value",
+     "logprob": -1.488346815109253
+    },
+    {
+     "token": " are",
+     "logprob": -1.5133025646209717
+    },
+    {
+     "token": " inconsistent",
+     "logprob": -0.49436038732528687
+    },
+    {
+     "token": " with",
+     "logprob": -1.0477432012557983
+    },
+    {
+     "token": " each",
+     "logprob": -1.3317995071411133
+    },
+    {
+     "token": " other",
+     "logprob": -0.001975758234038949
+    },
+    {
+     "token": ".",
+     "logprob": -0.8387328386306763
+    },
+    {
+     "token": "",
+     "logprob": -0.6657801866531372
+    }
+   ],
+   "output": "No, the summary is incorrect. The correct total is **125 euros** (84 + 19 + 91).\n\nThe discrepancy arises because the user's list of items does not match the description in the header (\"cables 84 euros\" vs \"train tickets 19 euros\"). The item count and value are inconsistent with each other."
+  },
+  {
+   "fixture": "summary07",
+   "pass": false,
+   "turn_s": 2.92,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.4770489931106567,
+    "mean_logprob": -0.34709885507706123,
+    "p10_logprob": -0.9645882248878479,
+    "share_below_half": 0.20689655172413793,
+    "digit_min_logprob": -1.4770489931106567,
+    "tokens": 29.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.8303284049034119
+    },
+    {
+     "token": ",",
+     "logprob": -0.2958255112171173
+    },
+    {
+     "token": " the",
+     "logprob": -0.13819140195846558
+    },
+    {
+     "token": " summary",
+     "logprob": -0.5187932848930359
+    },
+    {
+     "token": " is",
+     "logprob": -0.9645882248878479
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.1596590280532837
+    },
+    {
+     "token": ".",
+     "logprob": -0.20420579612255096
+    },
+    {
+     "token": " The",
+     "logprob": -0.2703942060470581
+    },
+    {
+     "token": " correct",
+     "logprob": -1.3894118070602417
+    },
+    {
+     "token": " total",
+     "logprob": -0.07240951061248779
+    },
+    {
+     "token": " is",
+     "logprob": -0.2507070302963257
+    },
+    {
+     "token": " ",
+     "logprob": -0.4443848431110382
+    },
+    {
+     "token": "2",
+     "logprob": -0.14843738079071045
+    },
+    {
+     "token": "0",
+     "logprob": -1.4770489931106567
+    },
+    {
+     "token": "8",
+     "logprob": -0.8617630004882812
+    },
+    {
+     "token": " euros",
+     "logprob": -0.011451474390923977
+    },
+    {
+     "token": " (",
+     "logprob": -0.3475037217140198
+    },
+    {
+     "token": "5",
+     "logprob": -0.2556706666946411
+    },
+    {
+     "token": "2",
+     "logprob": -0.004484261851757765
+    },
+    {
+     "token": " +",
+     "logprob": -0.05887418985366821
+    },
+    {
+     "token": " ",
+     "logprob": -2.30076584557537e-05
+    },
+    {
+     "token": "7",
+     "logprob": -0.004211340565234423
+    },
+    {
+     "token": "1",
+     "logprob": -0.0014774383744224906
+    },
+    {
+     "token": " +",
+     "logprob": -0.01821235381066799
+    },
+    {
+     "token": " ",
+     "logprob": -0.00027916752151213586
+    },
+    {
+     "token": "8",
+     "logprob": -0.004823856521397829
+    },
+    {
+     "token": "6",
+     "logprob": -0.004557009786367416
+    },
+    {
+     "token": ").",
+     "logprob": -0.4100819528102875
+    },
+    {
+     "token": "",
+     "logprob": -0.9180679321289062
+    }
+   ],
+   "output": "No, the summary is incorrect. The correct total is 208 euros (52 + 71 + 86)."
+  },
+  {
+   "fixture": "summary08",
+   "pass": true,
+   "turn_s": 2.92,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.4393314123153687,
+    "mean_logprob": -0.2985848272294569,
+    "p10_logprob": -0.9510968923568726,
+    "share_below_half": 0.13793103448275862,
+    "digit_min_logprob": -0.49421823024749756,
+    "tokens": 29.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.9510968923568726
+    },
+    {
+     "token": ",",
+     "logprob": -0.3063821494579315
+    },
+    {
+     "token": " the",
+     "logprob": -0.12087199836969376
+    },
+    {
+     "token": " summary",
+     "logprob": -0.46170637011528015
+    },
+    {
+     "token": " is",
+     "logprob": -1.1242728233337402
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.2373005896806717
+    },
+    {
+     "token": ".",
+     "logprob": -0.1957819014787674
+    },
+    {
+     "token": " The",
+     "logprob": -0.2540586292743683
+    },
+    {
+     "token": " correct",
+     "logprob": -1.4393314123153687
+    },
+    {
+     "token": " total",
+     "logprob": -0.06732694059610367
+    },
+    {
+     "token": " is",
+     "logprob": -0.21061772108078003
+    },
+    {
+     "token": " ",
+     "logprob": -0.43819648027420044
+    },
+    {
+     "token": "1",
+     "logprob": -0.09941428154706955
+    },
+    {
+     "token": "0",
+     "logprob": -0.32105231285095215
+    },
+    {
+     "token": "0",
+     "logprob": -0.019774537533521652
+    },
+    {
+     "token": " euros",
+     "logprob": -0.00557261798530817
+    },
+    {
+     "token": " (",
+     "logprob": -0.4252740740776062
+    },
+    {
+     "token": "3",
+     "logprob": -0.49421823024749756
+    },
+    {
+     "token": "5",
+     "logprob": -0.0030762136448174715
+    },
+    {
+     "token": " +",
+     "logprob": -0.06208556517958641
+    },
+    {
+     "token": " ",
+     "logprob": -0.0001497380726505071
+    },
+    {
+     "token": "4",
+     "logprob": -0.007540570572018623
+    },
+    {
+     "token": "3",
+     "logprob": -0.008599374443292618
+    },
+    {
+     "token": " +",
+     "logprob": -0.013954334892332554
+    },
+    {
+     "token": " ",
+     "logprob": -0.00015975321002770215
+    },
+    {
+     "token": "2",
+     "logprob": -0.0020386481191962957
+    },
+    {
+     "token": "2",
+     "logprob": -0.0052126371301710606
+    },
+    {
+     "token": ").",
+     "logprob": -0.4636092185974121
+    },
+    {
+     "token": "",
+     "logprob": -0.9202839732170105
+    }
+   ],
+   "output": "No, the summary is incorrect. The correct total is 100 euros (35 + 43 + 22)."
+  },
+  {
+   "fixture": "summary09",
+   "pass": false,
+   "turn_s": 3.02,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.3427499532699585,
+    "mean_logprob": -0.3902286985775087,
+    "p10_logprob": -1.267083764076233,
+    "share_below_half": 0.23333333333333334,
+    "digit_min_logprob": -1.267083764076233,
+    "tokens": 30.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.9752396941184998
+    },
+    {
+     "token": ",",
+     "logprob": -0.2898653447628021
+    },
+    {
+     "token": " the",
+     "logprob": -0.13798056542873383
+    },
+    {
+     "token": " summary",
+     "logprob": -0.569602370262146
+    },
+    {
+     "token": " is",
+     "logprob": -1.0516998767852783
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.17939746379852295
+    },
+    {
+     "token": ".",
+     "logprob": -0.1928616464138031
+    },
+    {
+     "token": " The",
+     "logprob": -0.2616313397884369
+    },
+    {
+     "token": " correct",
+     "logprob": -1.3036518096923828
+    },
+    {
+     "token": " total",
+     "logprob": -0.0673142597079277
+    },
+    {
+     "token": " is",
+     "logprob": -0.22197775542736053
+    },
+    {
+     "token": " **",
+     "logprob": -1.3427499532699585
+    },
+    {
+     "token": "2",
+     "logprob": -1.267083764076233
+    },
+    {
+     "token": "3",
+     "logprob": -1.1659202575683594
+    },
+    {
+     "token": "4",
+     "logprob": -0.6113942265510559
+    },
+    {
+     "token": " euros",
+     "logprob": -0.012685551308095455
+    },
+    {
+     "token": "**",
+     "logprob": -0.4310601055622101
+    },
+    {
+     "token": " (",
+     "logprob": -0.010894720442593098
+    },
+    {
+     "token": "6",
+     "logprob": -0.24695315957069397
+    },
+    {
+     "token": "9",
+     "logprob": -0.003816487267613411
+    },
+    {
+     "token": " +",
+     "logprob": -0.027304193004965782
+    },
+    {
+     "token": " ",
+     "logprob": -1.9073668227065355e-05
+    },
+    {
+     "token": "4",
+     "logprob": -0.0019197999499738216
+    },
+    {
+     "token": "8",
+     "logprob": -0.00015319566591642797
+    },
+    {
+     "token": " +",
+     "logprob": -0.003269587643444538
+    },
+    {
+     "token": " ",
+     "logprob": -4.2439409298822284e-05
+    },
+    {
+     "token": "8",
+     "logprob": -0.0032138556707650423
+    },
+    {
+     "token": "9",
+     "logprob": -0.000986347091384232
+    },
+    {
+     "token": ").",
+     "logprob": -0.26973140239715576
+    },
+    {
+     "token": "",
+     "logprob": -1.0564407110214233
+    }
+   ],
+   "output": "No, the summary is incorrect. The correct total is **234 euros** (69 + 48 + 89)."
+  },
+  {
+   "fixture": "summary10",
+   "pass": false,
+   "turn_s": 2.82,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.2813915014266968,
+    "mean_logprob": -0.3305005949922157,
+    "p10_logprob": -0.917371928691864,
+    "share_below_half": 0.1724137931034483,
+    "digit_min_logprob": -1.2813915014266968,
+    "tokens": 29.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.858106255531311
+    },
+    {
+     "token": ",",
+     "logprob": -0.3343872129917145
+    },
+    {
+     "token": " the",
+     "logprob": -0.14569693803787231
+    },
+    {
+     "token": " summary",
+     "logprob": -0.5532335042953491
+    },
+    {
+     "token": " is",
+     "logprob": -0.917371928691864
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.19440074265003204
+    },
+    {
+     "token": ".",
+     "logprob": -0.14868058264255524
+    },
+    {
+     "token": " The",
+     "logprob": -0.27583155035972595
+    },
+    {
+     "token": " correct",
+     "logprob": -1.2250571250915527
+    },
+    {
+     "token": " total",
+     "logprob": -0.06133055314421654
+    },
+    {
+     "token": " is",
+     "logprob": -0.20774808526039124
+    },
+    {
+     "token": " ",
+     "logprob": -0.4040467441082001
+    },
+    {
+     "token": "1",
+     "logprob": -0.03599731624126434
+    },
+    {
+     "token": "3",
+     "logprob": -0.667534589767456
+    },
+    {
+     "token": "0",
+     "logprob": -1.2813915014266968
+    },
+    {
+     "token": " euros",
+     "logprob": -0.017440183088183403
+    },
+    {
+     "token": " (",
+     "logprob": -0.46932855248451233
+    },
+    {
+     "token": "3",
+     "logprob": -0.27630171179771423
+    },
+    {
+     "token": "3",
+     "logprob": -0.05254635214805603
+    },
+    {
+     "token": " +",
+     "logprob": -0.09824679046869278
+    },
+    {
+     "token": " ",
+     "logprob": -3.230623769923113e-05
+    },
+    {
+     "token": "5",
+     "logprob": -0.012724548578262329
+    },
+    {
+     "token": "5",
+     "logprob": -0.009460234083235264
+    },
+    {
+     "token": " +",
+     "logprob": -0.009584976360201836
+    },
+    {
+     "token": " ",
+     "logprob": -0.00011206301132915542
+    },
+    {
+     "token": "3",
+     "logprob": -0.007883488200604916
+    },
+    {
+     "token": "1",
+     "logprob": -0.011465281248092651
+    },
+    {
+     "token": ").",
+     "logprob": -0.43197134137153625
+    },
+    {
+     "token": "",
+     "logprob": -0.8766047954559326
+    }
+   ],
+   "output": "No, the summary is incorrect. The correct total is 130 euros (33 + 55 + 31)."
+  },
+  {
+   "fixture": "summary11",
+   "pass": true,
+   "turn_s": 3.62,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.3417320251464844,
+    "mean_logprob": -0.30346309761703844,
+    "p10_logprob": -0.7513782382011414,
+    "share_below_half": 0.11904761904761904,
+    "digit_min_logprob": -0.11841998994350433,
+    "tokens": 42.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.7768781185150146
+    },
+    {
+     "token": ",",
+     "logprob": -0.32527634501457214
+    },
+    {
+     "token": " the",
+     "logprob": -0.12907622754573822
+    },
+    {
+     "token": " summary",
+     "logprob": -0.5077672004699707
+    },
+    {
+     "token": " is",
+     "logprob": -1.1273775100708008
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.18577449023723602
+    },
+    {
+     "token": ".",
+     "logprob": -0.1822255253791809
+    },
+    {
+     "token": " The",
+     "logprob": -0.27692538499832153
+    },
+    {
+     "token": " calculation",
+     "logprob": -2.3417320251464844
+    },
+    {
+     "token": " is",
+     "logprob": -0.6419216990470886
+    },
+    {
+     "token": ":",
+     "logprob": -0.6783496141433716
+    },
+    {
+     "token": " ",
+     "logprob": -0.2889254093170166
+    },
+    {
+     "token": "8",
+     "logprob": -0.012589273042976856
+    },
+    {
+     "token": "3",
+     "logprob": -0.019474012777209282
+    },
+    {
+     "token": " +",
+     "logprob": -0.1518472135066986
+    },
+    {
+     "token": " ",
+     "logprob": -0.0007124696276150644
+    },
+    {
+     "token": "8",
+     "logprob": -0.00021764023404102772
+    },
+    {
+     "token": "5",
+     "logprob": -0.0002913303324021399
+    },
+    {
+     "token": " +",
+     "logprob": -0.06774348020553589
+    },
+    {
+     "token": " ",
+     "logprob": -0.0008709049434401095
+    },
+    {
+     "token": "5",
+     "logprob": -0.0002475687360856682
+    },
+    {
+     "token": "2",
+     "logprob": -0.012552212923765182
+    },
+    {
+     "token": " =",
+     "logprob": -0.004477855749428272
+    },
+    {
+     "token": " ",
+     "logprob": -0.006135651841759682
+    },
+    {
+     "token": "2",
+     "logprob": -0.10418463498353958
+    },
+    {
+     "token": "2",
+     "logprob": -0.11841998994350433
+    },
+    {
+     "token": "0",
+     "logprob": -0.0017580934800207615
+    },
+    {
+     "token": " euros",
+     "logprob": -0.06307392567396164
+    },
+    {
+     "token": ".",
+     "logprob": -0.48585760593414307
+    },
+    {
+     "token": " The",
+     "logprob": -0.7513782382011414
+    },
+    {
+     "token": " stated",
+     "logprob": -1.9947351217269897
+    },
+    {
+     "token": " total",
+     "logprob": -0.11532385647296906
+    },
+    {
+     "token": " of",
+     "logprob": -0.07100789248943329
+    },
+    {
+     "token": " ",
+     "logprob": -0.0073542348109185696
+    },
+    {
+     "token": "2",
+     "logprob": -0.000194151172763668
+    },
+    {
+     "token": "3",
+     "logprob": -0.000651512120384723
+    },
+    {
+     "token": "0",
+     "logprob": -0.00021382472186814994
+    },
+    {
+     "token": " euros",
+     "logprob": -0.07404579967260361
+    },
+    {
+     "token": " is",
+     "logprob": -0.28357112407684326
+    },
+    {
+     "token": " wrong",
+     "logprob": -0.5894530415534973
+    },
+    {
+     "token": ".",
+     "logprob": -0.16529464721679688
+    },
+    {
+     "token": "",
+     "logprob": -0.17954324185848236
+    }
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 83 + 85 + 52 = 220 euros. The stated total of 230 euros is wrong."
+  },
+  {
+   "fixture": "summary12",
+   "pass": false,
+   "turn_s": 2.73,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.286730408668518,
+    "mean_logprob": -0.3412678629668205,
+    "p10_logprob": -0.9249218702316284,
+    "share_below_half": 0.17857142857142858,
+    "digit_min_logprob": -0.6398481726646423,
+    "tokens": 28.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.9249218702316284
+    },
+    {
+     "token": ",",
+     "logprob": -0.29922422766685486
+    },
+    {
+     "token": " the",
+     "logprob": -0.1404341459274292
+    },
+    {
+     "token": " summary",
+     "logprob": -0.5456820726394653
+    },
+    {
+     "token": " is",
+     "logprob": -1.1124372482299805
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.20864680409431458
+    },
+    {
+     "token": ".",
+     "logprob": -0.2141062617301941
+    },
+    {
+     "token": " The",
+     "logprob": -0.29325783252716064
+    },
+    {
+     "token": " correct",
+     "logprob": -1.286730408668518
+    },
+    {
+     "token": " total",
+     "logprob": -0.06888290494680405
+    },
+    {
+     "token": " is",
+     "logprob": -0.3018305003643036
+    },
+    {
+     "token": " ",
+     "logprob": -0.43480655550956726
+    },
+    {
+     "token": "9",
+     "logprob": -0.6398481726646423
+    },
+    {
+     "token": "9",
+     "logprob": -0.6134999990463257
+    },
+    {
+     "token": " euros",
+     "logprob": -0.031580373644828796
+    },
+    {
+     "token": " (",
+     "logprob": -0.30438435077667236
+    },
+    {
+     "token": "2",
+     "logprob": -0.44520020484924316
+    },
+    {
+     "token": "0",
+     "logprob": -0.005471628159284592
+    },
+    {
+     "token": " +",
+     "logprob": -0.03709350526332855
+    },
+    {
+     "token": " ",
+     "logprob": -0.00010908245167229325
+    },
+    {
+     "token": "2",
+     "logprob": -0.0031465869396924973
+    },
+    {
+     "token": "3",
+     "logprob": -0.002685394138097763
+    },
+    {
+     "token": " +",
+     "logprob": -0.00589441554620862
+    },
+    {
+     "token": " ",
+     "logprob": -0.0005311588174663484
+    },
+    {
+     "token": "4",
+     "logprob": -0.009394830092787743
+    },
+    {
+     "token": "6",
+     "logprob": -0.016643274575471878
+    },
+    {
+     "token": ").",
+     "logprob": -0.709772527217865
+    },
+    {
+     "token": "",
+     "logprob": -0.8992838263511658
+    }
+   ],
+   "output": "No, the summary is incorrect. The correct total is 99 euros (20 + 23 + 46)."
+  },
+  {
+   "fixture": "summary13",
+   "pass": true,
+   "turn_s": 3.52,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.484941244125366,
+    "mean_logprob": -0.30586055066409507,
+    "p10_logprob": -0.7010220885276794,
+    "share_below_half": 0.11904761904761904,
+    "digit_min_logprob": -0.04729243740439415,
+    "tokens": 42.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.8673238158226013
+    },
+    {
+     "token": ",",
+     "logprob": -0.28791534900665283
+    },
+    {
+     "token": " the",
+     "logprob": -0.12318359315395355
+    },
+    {
+     "token": " summary",
+     "logprob": -0.5010961294174194
+    },
+    {
+     "token": " is",
+     "logprob": -1.0080848932266235
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.17262382805347443
+    },
+    {
+     "token": ".",
+     "logprob": -0.16808375716209412
+    },
+    {
+     "token": " The",
+     "logprob": -0.2990952134132385
+    },
+    {
+     "token": " calculation",
+     "logprob": -2.194916009902954
+    },
+    {
+     "token": " is",
+     "logprob": -0.6927594542503357
+    },
+    {
+     "token": ":",
+     "logprob": -0.6631177067756653
+    },
+    {
+     "token": " ",
+     "logprob": -0.3166946470737457
+    },
+    {
+     "token": "9",
+     "logprob": -0.04729243740439415
+    },
+    {
+     "token": "4",
+     "logprob": -0.007850626483559608
+    },
+    {
+     "token": " +",
+     "logprob": -0.22018682956695557
+    },
+    {
+     "token": " ",
+     "logprob": -0.0008860578527674079
+    },
+    {
+     "token": "8",
+     "logprob": -0.000516190193593502
+    },
+    {
+     "token": "5",
+     "logprob": -0.0001703645830275491
+    },
+    {
+     "token": " +",
+     "logprob": -0.055286310613155365
+    },
+    {
+     "token": " ",
+     "logprob": -0.00019510503625497222
+    },
+    {
+     "token": "6",
+     "logprob": -8.941096166381612e-05
+    },
+    {
+     "token": "9",
+     "logprob": -0.0009186910465359688
+    },
+    {
+     "token": " =",
+     "logprob": -0.006796095985919237
+    },
+    {
+     "token": " ",
+     "logprob": -0.007676005829125643
+    },
+    {
+     "token": "2",
+     "logprob": -0.004596649203449488
+    },
+    {
+     "token": "4",
+     "logprob": -0.007995717227458954
+    },
+    {
+     "token": "8",
+     "logprob": -0.0009814547374844551
+    },
+    {
+     "token": " euros",
+     "logprob": -0.02346869371831417
+    },
+    {
+     "token": ".",
+     "logprob": -0.37161582708358765
+    },
+    {
+     "token": " The",
+     "logprob": -0.7010220885276794
+    },
+    {
+     "token": " stated",
+     "logprob": -2.484941244125366
+    },
+    {
+     "token": " total",
+     "logprob": -0.08984243869781494
+    },
+    {
+     "token": " of",
+     "logprob": -0.0994347557425499
+    },
+    {
+     "token": " ",
+     "logprob": -0.006615058518946171
+    },
+    {
+     "token": "2",
+     "logprob": -0.00023779120238032192
+    },
+    {
+     "token": "5",
+     "logprob": -0.0001384115603286773
+    },
+    {
+     "token": "8",
+     "logprob": -0.0008163803140632808
+    },
+    {
+     "token": " euros",
+     "logprob": -0.04635051265358925
+    },
+    {
+     "token": " is",
+     "logprob": -0.307869017124176
+    },
+    {
+     "token": " wrong",
+     "logprob": -0.6759969592094421
+    },
+    {
+     "token": ".",
+     "logprob": -0.184959277510643
+    },
+    {
+     "token": "",
+     "logprob": -0.19650232791900635
+    }
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 94 + 85 + 69 = 248 euros. The stated total of 258 euros is wrong."
+  },
+  {
+   "fixture": "summary14",
+   "pass": true,
+   "turn_s": 3.52,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.3609654903411865,
+    "mean_logprob": -0.3690877578400042,
+    "p10_logprob": -0.922782301902771,
+    "share_below_half": 0.23809523809523808,
+    "digit_min_logprob": -1.1040786504745483,
+    "tokens": 42.0
+   },
+   "tokens": [
+    {
+     "token": "No",
+     "logprob": -0.8406542539596558
+    },
+    {
+     "token": ",",
+     "logprob": -0.32673144340515137
+    },
+    {
+     "token": " the",
+     "logprob": -0.14245977997779846
+    },
+    {
+     "token": " summary",
+     "logprob": -0.5990515947341919
+    },
+    {
+     "token": " is",
+     "logprob": -0.922782301902771
+    },
+    {
+     "token": " incorrect",
+     "logprob": -0.18889588117599487
+    },
+    {
+     "token": ".",
+     "logprob": -0.20868587493896484
+    },
+    {
+     "token": " The",
+     "logprob": -0.28157293796539307
+    },
+    {
+     "token": " calculation",
+     "logprob": -2.3609654903411865
+    },
+    {
+     "token": " is",
+     "logprob": -0.771441638469696
+    },
+    {
+     "token": ":",
+     "logprob": -0.7654546499252319
+    },
+    {
+     "token": " ",
+     "logprob": -0.22756074368953705
+    },
+    {
+     "token": "7",
+     "logprob": -0.037630628794431686
+    },
+    {
+     "token": "1",
+     "logprob": -0.003166916547343135
+    },
+    {
+     "token": " +",
+     "logprob": -0.15707585215568542
+    },
+    {
+     "token": " ",
+     "logprob": -0.000890472496394068
+    },
+    {
+     "token": "5",
+     "logprob": -0.0005447560106404126
+    },
+    {
+     "token": "7",
+     "logprob": -0.0010500696953386068
+    },
+    {
+     "token": " +",
+     "logprob": -0.06165844202041626
+    },
+    {
+     "token": " ",
+     "logprob": -0.00043479117448441684
+    },
+    {
+     "token": "3",
+     "logprob": -0.0001791279937606305
+    },
+    {
+     "token": "3",
+     "logprob": -0.0003108269302174449
+    },
+    {
+     "token": " =",
+     "logprob": -0.004940894432365894
+    },
+    {
+     "token": " ",
+     "logprob": -0.006673320662230253
+    },
+    {
+     "token": "1",
+     "logprob": -0.0008082675049081445
+    },
+    {
+     "token": "6",
+     "logprob": -1.1040786504745483
+    },
+    {
+     "token": "1",
+     "logprob": -0.045070718973875046
+    },
+    {
+     "token": " euros",
+     "logprob": -0.06049030274152756
+    },
+    {
+     "token": ".",
+     "logprob": -0.436270147562027
+    },
+    {
+     "token": " The",
+     "logprob": -0.8576564788818359
+    },
+    {
+     "token": " current",
+     "logprob": -2.3443572521209717
+    },
+    {
+     "token": " total",
+     "logprob": -0.7499364018440247
+    },
+    {
+     "token": " of",
+     "logprob": -0.28446993231773376
+    },
+    {
+     "token": " ",
+     "logprob": -0.0018022794974967837
+    },
+    {
+     "token": "1",
+     "logprob": -0.0003606731479521841
+    },
+    {
+     "token": "4",
+     "logprob": -0.0018006075406447053
+    },
+    {
+     "token": "1",
+     "logprob": -0.017817214131355286
+    },
+    {
+     "token": " euros",
+     "logprob": -0.17803950607776642
+    },
+    {
+     "token": " is",
+     "logprob": -0.3057684898376465
+    },
+    {
+     "token": " wrong",
+     "logprob": -0.9365759491920471
+    },
+    {
+     "token": ".",
+     "logprob": -0.12507390975952148
+    },
+    {
+     "token": "",
+     "logprob": -0.1404963582754135
+    }
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 71 + 57 + 33 = 161 euros. The current total of 141 euros is wrong."
+  },
+  {
+   "fixture": "long00",
+   "pass": true,
+   "turn_s": 5.12,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.8519997596740723,
+    "mean_logprob": -0.12370519335527584,
+    "p10_logprob": -0.6050125360488892,
+    "share_below_half": 0.06666666666666667,
+    "digit_min_logprob": -3.576279254957626e-07,
+    "tokens": 15.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.6050125360488892
+    },
+    {
+     "token": " survey",
+     "logprob": -0.0031244640704244375
+    },
+    {
+     "token": " counted",
+     "logprob": -0.05520089343190193
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.21981167793273926
+    },
+    {
+     "token": " ",
+     "logprob": -0.0003421891888137907
+    },
+    {
+     "token": "180",
+     "logprob": -3.576279254957626e-07
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.00029097258811816573
+    },
+    {
+     "token": "cles",
+     "logprob": -1.2636264727916569e-05
+    },
+    {
+     "token": " at",
+     "logprob": -0.8519997596740723
+    },
+    {
+     "token": " the",
+     "logprob": -0.0009106966899707913
+    },
+    {
+     "token": " station",
+     "logprob": -0.010732520371675491
+    },
+    {
+     "token": " in",
+     "logprob": -0.049398358911275864
+    },
+    {
+     "token": " Turin",
+     "logprob": -0.0007063259836286306
+    },
+    {
+     "token": ".",
+     "logprob": -0.00037200216320343316
+    },
+    {
+     "token": "",
+     "logprob": -0.05766250938177109
+    }
+   ],
+   "output": "The survey counted exactly 180 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "long01",
+   "pass": true,
+   "turn_s": 4.12,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.5898670554161072,
+    "mean_logprob": -0.08663780764074398,
+    "p10_logprob": -0.40367022156715393,
+    "share_below_half": 0.0,
+    "digit_min_logprob": -2.3841887468734058e-06,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.40367022156715393
+    },
+    {
+     "token": " survey",
+     "logprob": -0.19839425384998322
+    },
+    {
+     "token": " counted",
+     "logprob": -0.03530384600162506
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.10592058300971985
+    },
+    {
+     "token": " ",
+     "logprob": -0.0005101074348203838
+    },
+    {
+     "token": "202",
+     "logprob": -2.3841887468734058e-06
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.00019510503625497222
+    },
+    {
+     "token": "cles",
+     "logprob": -1.657022767176386e-05
+    },
+    {
+     "token": " park",
+     "logprob": -0.5898670554161072
+    },
+    {
+     "token": "ed",
+     "logprob": -3.576279254957626e-07
+    },
+    {
+     "token": " at",
+     "logprob": -0.0035126437433063984
+    },
+    {
+     "token": " the",
+     "logprob": -0.000605408800765872
+    },
+    {
+     "token": " station",
+     "logprob": -0.0034790285862982273
+    },
+    {
+     "token": " in",
+     "logprob": -0.1271919459104538
+    },
+    {
+     "token": " Turin",
+     "logprob": -0.0006294443155638874
+    },
+    {
+     "token": ".",
+     "logprob": -9.417578439752106e-06
+    },
+    {
+     "token": "",
+     "logprob": -0.0035343565978109837
+    }
+   ],
+   "output": "The survey counted exactly 202 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long02",
+   "pass": true,
+   "turn_s": 3.92,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.8895792961120605,
+    "mean_logprob": -0.1292022725168368,
+    "p10_logprob": -0.8438434600830078,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -3.4570753086882178e-06,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.8438434600830078
+    },
+    {
+     "token": " survey",
+     "logprob": -0.05410834401845932
+    },
+    {
+     "token": " counted",
+     "logprob": -0.11432687938213348
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.08095060288906097
+    },
+    {
+     "token": " ",
+     "logprob": -0.00021990570530761033
+    },
+    {
+     "token": "405",
+     "logprob": -3.4570753086882178e-06
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.0004010408592876047
+    },
+    {
+     "token": "cles",
+     "logprob": -1.4662849935120903e-05
+    },
+    {
+     "token": " park",
+     "logprob": -0.8895792961120605
+    },
+    {
+     "token": "ed",
+     "logprob": -8.344653679159819e-07
+    },
+    {
+     "token": " at",
+     "logprob": -0.024875890463590622
+    },
+    {
+     "token": " the",
+     "logprob": -0.0012268794234842062
+    },
+    {
+     "token": " station",
+     "logprob": -0.004354766104370356
+    },
+    {
+     "token": " in",
+     "logprob": -0.14897075295448303
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.00028167161508463323
+    },
+    {
+     "token": ".",
+     "logprob": -0.00014055763313081115
+    },
+    {
+     "token": "",
+     "logprob": -0.033139631152153015
+    }
+   ],
+   "output": "The survey counted exactly 405 bicycles parked at the station in Lyon."
+  },
+  {
+   "fixture": "long03",
+   "pass": true,
+   "turn_s": 3.92,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.5517324209213257,
+    "mean_logprob": -0.09241837557154516,
+    "p10_logprob": -0.31211745738983154,
+    "share_below_half": 0.0,
+    "digit_min_logprob": -8.821526535029989e-06,
+    "tokens": 12.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.31211745738983154
+    },
+    {
+     "token": " survey",
+     "logprob": -0.01589241810142994
+    },
+    {
+     "token": " counted",
+     "logprob": -0.06862828135490417
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.14012211561203003
+    },
+    {
+     "token": " ",
+     "logprob": -0.0003942432231269777
+    },
+    {
+     "token": "357",
+     "logprob": -8.821526535029989e-06
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.0002740400959737599
+    },
+    {
+     "token": "cles",
+     "logprob": -2.0265784769435413e-05
+    },
+    {
+     "token": " in",
+     "logprob": -0.5517324209213257
+    },
+    {
+     "token": " Bremen",
+     "logprob": -0.002162408549338579
+    },
+    {
+     "token": ".",
+     "logprob": -0.0013398559531196952
+    },
+    {
+     "token": "",
+     "logprob": -0.016328178346157074
+    }
+   ],
+   "output": "The survey counted exactly 357 bicycles in Bremen."
+  },
+  {
+   "fixture": "long04",
+   "pass": true,
+   "turn_s": 3.92,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.6437968015670776,
+    "mean_logprob": -0.10976453348283854,
+    "p10_logprob": -0.6197850704193115,
+    "share_below_half": 0.0,
+    "digit_min_logprob": -1.0728841743912199e-06,
+    "tokens": 16.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.6437968015670776
+    },
+    {
+     "token": " survey",
+     "logprob": -0.021328937262296677
+    },
+    {
+     "token": " counted",
+     "logprob": -0.2393709421157837
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.1195196583867073
+    },
+    {
+     "token": " ",
+     "logprob": -0.0003634159511420876
+    },
+    {
+     "token": "124",
+     "logprob": -1.0728841743912199e-06
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.0002933574724011123
+    },
+    {
+     "token": "cles",
+     "logprob": -1.5974172129062936e-05
+    },
+    {
+     "token": " at",
+     "logprob": -0.6197850704193115
+    },
+    {
+     "token": " the",
+     "logprob": -0.0013482117792591453
+    },
+    {
+     "token": " station",
+     "logprob": -0.025652052834630013
+    },
+    {
+     "token": " in",
+     "logprob": -0.05427956208586693
+    },
+    {
+     "token": " Mal",
+     "logprob": -6.568647222593427e-05
+    },
+    {
+     "token": "mo",
+     "logprob": -0.0006196033791638911
+    },
+    {
+     "token": ".",
+     "logprob": -0.00023361788771580905
+    },
+    {
+     "token": "",
+     "logprob": -0.029558571055531502
+    }
+   ],
+   "output": "The survey counted exactly 124 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "long05",
+   "pass": true,
+   "turn_s": 3.82,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.0681114196777344,
+    "mean_logprob": -0.13159696889124461,
+    "p10_logprob": -0.41324856877326965,
+    "share_below_half": 0.06666666666666667,
+    "digit_min_logprob": -6.342135020531714e-05,
+    "tokens": 15.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.41324856877326965
+    },
+    {
+     "token": " survey",
+     "logprob": -0.08477082848548889
+    },
+    {
+     "token": " counted",
+     "logprob": -0.10104653984308243
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.14855735003948212
+    },
+    {
+     "token": " ",
+     "logprob": -0.00014866502897348255
+    },
+    {
+     "token": "752",
+     "logprob": -6.342135020531714e-05
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.00026605091989040375
+    },
+    {
+     "token": "cles",
+     "logprob": -8.106264431262389e-06
+    },
+    {
+     "token": " at",
+     "logprob": -1.0681114196777344
+    },
+    {
+     "token": " the",
+     "logprob": -0.0035390222910791636
+    },
+    {
+     "token": " station",
+     "logprob": -0.03525877371430397
+    },
+    {
+     "token": " in",
+     "logprob": -0.03197834640741348
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.00010097536869579926
+    },
+    {
+     "token": ".",
+     "logprob": -0.0015704439720138907
+    },
+    {
+     "token": "",
+     "logprob": -0.08528602123260498
+    }
+   ],
+   "output": "The survey counted exactly 752 bicycles at the station in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "pass": true,
+   "turn_s": 4.33,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.8298029899597168,
+    "mean_logprob": -0.11095325828469693,
+    "p10_logprob": -0.6900584697723389,
+    "share_below_half": 0.058823529411764705,
+    "digit_min_logprob": -1.4424427718040533e-05,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.6900584697723389
+    },
+    {
+     "token": " survey",
+     "logprob": -0.061223581433296204
+    },
+    {
+     "token": " counted",
+     "logprob": -0.12364524602890015
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.09061120450496674
+    },
+    {
+     "token": " ",
+     "logprob": -0.00043574528535827994
+    },
+    {
+     "token": "769",
+     "logprob": -1.4424427718040533e-05
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.00015093035472091287
+    },
+    {
+     "token": "cles",
+     "logprob": -1.7047073924914002e-05
+    },
+    {
+     "token": " park",
+     "logprob": -0.8298029899597168
+    },
+    {
+     "token": "ed",
+     "logprob": -5.960466182841628e-07
+    },
+    {
+     "token": " at",
+     "logprob": -0.035652343183755875
+    },
+    {
+     "token": " the",
+     "logprob": -0.0016142037929967046
+    },
+    {
+     "token": " station",
+     "logprob": -0.0059225959703326225
+    },
+    {
+     "token": " in",
+     "logprob": -0.0174785777926445
+    },
+    {
+     "token": " Turin",
+     "logprob": -0.0005154745886102319
+    },
+    {
+     "token": ".",
+     "logprob": -0.00023087543377187103
+    },
+    {
+     "token": "",
+     "logprob": -0.028831085190176964
+    }
+   ],
+   "output": "The survey counted exactly 769 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long07",
+   "pass": true,
+   "turn_s": 3.72,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.5247454047203064,
+    "mean_logprob": -0.10899622709887179,
+    "p10_logprob": -0.38751983642578125,
+    "share_below_half": 0.0,
+    "digit_min_logprob": -2.7776150091085583e-05,
+    "tokens": 13.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.048282600939273834
+    },
+    {
+     "token": " survey",
+     "logprob": -0.33643433451652527
+    },
+    {
+     "token": " counted",
+     "logprob": -0.04466993734240532
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.38751983642578125
+    },
+    {
+     "token": " ",
+     "logprob": -0.0002549615746829659
+    },
+    {
+     "token": "468",
+     "logprob": -2.7776150091085583e-05
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.036591969430446625
+    },
+    {
+     "token": "cles",
+     "logprob": -1.1563368389033712e-05
+    },
+    {
+     "token": " in",
+     "logprob": -0.5247454047203064
+    },
+    {
+     "token": " L",
+     "logprob": -0.008541962131857872
+    },
+    {
+     "token": "inz",
+     "logprob": -3.433286474319175e-05
+    },
+    {
+     "token": ".",
+     "logprob": -0.004944128915667534
+    },
+    {
+     "token": "",
+     "logprob": -0.02489214390516281
+    }
+   ],
+   "output": "The survey counted exactly 468 bicycles in Linz."
+  },
+  {
+   "fixture": "long08",
+   "pass": true,
+   "turn_s": 4.12,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.9445815086364746,
+    "mean_logprob": -0.10891450016819387,
+    "p10_logprob": -0.5379209518432617,
+    "share_below_half": 0.05555555555555555,
+    "digit_min_logprob": -1.6808651707833633e-05,
+    "tokens": 18.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.5379209518432617
+    },
+    {
+     "token": " survey",
+     "logprob": -0.03872730955481529
+    },
+    {
+     "token": " counted",
+     "logprob": -0.047709718346595764
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.1762387752532959
+    },
+    {
+     "token": " ",
+     "logprob": -0.00028429494705051184
+    },
+    {
+     "token": "492",
+     "logprob": -1.6808651707833633e-05
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.0002908533497247845
+    },
+    {
+     "token": "cles",
+     "logprob": -2.6226387490169145e-05
+    },
+    {
+     "token": " park",
+     "logprob": -0.9445815086364746
+    },
+    {
+     "token": "ed",
+     "logprob": -4.768372718899627e-07
+    },
+    {
+     "token": " at",
+     "logprob": -0.0708007737994194
+    },
+    {
+     "token": " the",
+     "logprob": -0.0013702955329790711
+    },
+    {
+     "token": " station",
+     "logprob": -0.03803454712033272
+    },
+    {
+     "token": " in",
+     "logprob": -0.09303101897239685
+    },
+    {
+     "token": " L",
+     "logprob": -0.0006417306722141802
+    },
+    {
+     "token": "inz",
+     "logprob": -2.157711423933506e-05
+    },
+    {
+     "token": ".",
+     "logprob": -0.00021155926515348256
+    },
+    {
+     "token": "",
+     "logprob": -0.010552576743066311
+    }
+   ],
+   "output": "The survey counted exactly 492 bicycles parked at the station in Linz."
+  },
+  {
+   "fixture": "long09",
+   "pass": true,
+   "turn_s": 4.02,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.7920404672622681,
+    "mean_logprob": -0.12676081914347984,
+    "p10_logprob": -0.405010461807251,
+    "share_below_half": 0.06666666666666667,
+    "digit_min_logprob": -0.0002848911681212485,
+    "tokens": 15.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.18076567351818085
+    },
+    {
+     "token": " survey",
+     "logprob": -0.13502466678619385
+    },
+    {
+     "token": " counted",
+     "logprob": -0.043852098286151886
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.2619539499282837
+    },
+    {
+     "token": " ",
+     "logprob": -0.00032501734676770866
+    },
+    {
+     "token": "769",
+     "logprob": -0.0002848911681212485
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.0002865605929400772
+    },
+    {
+     "token": "cles",
+     "logprob": -1.5735749911982566e-05
+    },
+    {
+     "token": " at",
+     "logprob": -0.7920404672622681
+    },
+    {
+     "token": " the",
+     "logprob": -0.0028289000038057566
+    },
+    {
+     "token": " station",
+     "logprob": -0.009844079613685608
+    },
+    {
+     "token": " in",
+     "logprob": -0.405010461807251
+    },
+    {
+     "token": " Bremen",
+     "logprob": -0.0009605131344869733
+    },
+    {
+     "token": ".",
+     "logprob": -0.0011943555437028408
+    },
+    {
+     "token": "",
+     "logprob": -0.06702491641044617
+    }
+   ],
+   "output": "The survey counted exactly 769 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long10",
+   "pass": true,
+   "turn_s": 4.02,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.5733587741851807,
+    "mean_logprob": -0.10280893314993592,
+    "p10_logprob": -0.5550156235694885,
+    "share_below_half": 0.0,
+    "digit_min_logprob": -2.0861843950115144e-05,
+    "tokens": 15.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.5550156235694885
+    },
+    {
+     "token": " survey",
+     "logprob": -0.040047209709882736
+    },
+    {
+     "token": " counted",
+     "logprob": -0.040487416088581085
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.23352673649787903
+    },
+    {
+     "token": " ",
+     "logprob": -0.00013447711535263807
+    },
+    {
+     "token": "611",
+     "logprob": -2.0861843950115144e-05
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.0002580618020147085
+    },
+    {
+     "token": "cles",
+     "logprob": -5.054601570009254e-05
+    },
+    {
+     "token": " at",
+     "logprob": -0.5733587741851807
+    },
+    {
+     "token": " the",
+     "logprob": -0.001796905416995287
+    },
+    {
+     "token": " station",
+     "logprob": -0.016509223729372025
+    },
+    {
+     "token": " in",
+     "logprob": -0.04325933754444122
+    },
+    {
+     "token": " Turin",
+     "logprob": -0.0008138748817145824
+    },
+    {
+     "token": ".",
+     "logprob": -0.0006284900009632111
+    },
+    {
+     "token": "",
+     "logprob": -0.036226458847522736
+    }
+   ],
+   "output": "The survey counted exactly 611 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "long11",
+   "pass": true,
+   "turn_s": 3.82,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.5733948349952698,
+    "mean_logprob": -0.10606574053284325,
+    "p10_logprob": -0.49251824617385864,
+    "share_below_half": 0.0,
+    "digit_min_logprob": -0.00012815819354727864,
+    "tokens": 15.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.5733948349952698
+    },
+    {
+     "token": " survey",
+     "logprob": -0.09741503745317459
+    },
+    {
+     "token": " counted",
+     "logprob": -0.04187788814306259
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.49251824617385864
+    },
+    {
+     "token": " ",
+     "logprob": -0.00011528202594490722
+    },
+    {
+     "token": "968",
+     "logprob": -0.00012815819354727864
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.00023719501041341573
+    },
+    {
+     "token": "cles",
+     "logprob": -7.629423635080457e-06
+    },
+    {
+     "token": " at",
+     "logprob": -0.3487345278263092
+    },
+    {
+     "token": " the",
+     "logprob": -0.007204254623502493
+    },
+    {
+     "token": " station",
+     "logprob": -0.009887179359793663
+    },
+    {
+     "token": " in",
+     "logprob": -0.004387272987514734
+    },
+    {
+     "token": " Turin",
+     "logprob": -0.0006070787203498185
+    },
+    {
+     "token": ".",
+     "logprob": -0.00015295721823349595
+    },
+    {
+     "token": "",
+     "logprob": -0.014318565838038921
+    }
+   ],
+   "output": "The survey counted exactly 968 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "long12",
+   "pass": true,
+   "turn_s": 3.62,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.9302935600280762,
+    "mean_logprob": -0.15479179683455868,
+    "p10_logprob": -0.5950258374214172,
+    "share_below_half": 0.08333333333333333,
+    "digit_min_logprob": -2.3841887468734058e-06,
+    "tokens": 12.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.5950258374214172
+    },
+    {
+     "token": " survey",
+     "logprob": -0.023996656760573387
+    },
+    {
+     "token": " counted",
+     "logprob": -0.06948740780353546
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.20201700925827026
+    },
+    {
+     "token": " ",
+     "logprob": -0.00012589294055942446
+    },
+    {
+     "token": "147",
+     "logprob": -2.3841887468734058e-06
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.0003559030592441559
+    },
+    {
+     "token": "cles",
+     "logprob": -2.2053962311474606e-05
+    },
+    {
+     "token": " in",
+     "logprob": -0.9302935600280762
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.001959454268217087
+    },
+    {
+     "token": ".",
+     "logprob": -0.0030338247306644917
+    },
+    {
+     "token": "",
+     "logprob": -0.03118157759308815
+    }
+   ],
+   "output": "The survey counted exactly 147 bicycles in Lyon."
+  },
+  {
+   "fixture": "long13",
+   "pass": true,
+   "turn_s": 4.04,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.9989336133003235,
+    "mean_logprob": -0.12134619946894722,
+    "p10_logprob": -0.5384098887443542,
+    "share_below_half": 0.06666666666666667,
+    "digit_min_logprob": -1.8477610865375027e-05,
+    "tokens": 15.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.5384098887443542
+    },
+    {
+     "token": " survey",
+     "logprob": -0.0056479028426110744
+    },
+    {
+     "token": " counted",
+     "logprob": -0.04944419860839844
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.12928757071495056
+    },
+    {
+     "token": " ",
+     "logprob": -0.0004906665999442339
+    },
+    {
+     "token": "484",
+     "logprob": -1.8477610865375027e-05
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.00022097883629612625
+    },
+    {
+     "token": "cles",
+     "logprob": -1.2517053619376384e-05
+    },
+    {
+     "token": " at",
+     "logprob": -0.9989336133003235
+    },
+    {
+     "token": " the",
+     "logprob": -0.0034851892851293087
+    },
+    {
+     "token": " station",
+     "logprob": -0.03495269641280174
+    },
+    {
+     "token": " in",
+     "logprob": -0.03943313658237457
+    },
+    {
+     "token": " Bremen",
+     "logprob": -0.0004160673706792295
+    },
+    {
+     "token": ".",
+     "logprob": -0.0007644236320629716
+    },
+    {
+     "token": "",
+     "logprob": -0.0186756644397974
+    }
+   ],
+   "output": "The survey counted exactly 484 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long14",
+   "pass": true,
+   "turn_s": 4.02,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.5157934427261353,
+    "mean_logprob": -0.09095603524692705,
+    "p10_logprob": -0.3225001096725464,
+    "share_below_half": 0.0,
+    "digit_min_logprob": -5.972563667455688e-05,
+    "tokens": 15.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.5157934427261353
+    },
+    {
+     "token": " survey",
+     "logprob": -0.17457298934459686
+    },
+    {
+     "token": " counted",
+     "logprob": -0.16087663173675537
+    },
+    {
+     "token": " exactly",
+     "logprob": -0.07931272685527802
+    },
+    {
+     "token": " ",
+     "logprob": -0.00015379181422758847
+    },
+    {
+     "token": "957",
+     "logprob": -5.972563667455688e-05
+    },
+    {
+     "token": " bicy",
+     "logprob": -0.0002562731970101595
+    },
+    {
+     "token": "cles",
+     "logprob": -2.9921979148639366e-05
+    },
+    {
+     "token": " at",
+     "logprob": -0.3225001096725464
+    },
+    {
+     "token": " the",
+     "logprob": -0.0013285159366205335
+    },
+    {
+     "token": " station",
+     "logprob": -0.0020105771254748106
+    },
+    {
+     "token": " in",
+     "logprob": -0.07663628458976746
+    },
+    {
+     "token": " Porto",
+     "logprob": -0.000884745386429131
+    },
+    {
+     "token": ".",
+     "logprob": -0.001226640772074461
+    },
+    {
+     "token": "",
+     "logprob": -0.02869815193116665
+    }
+   ],
+   "output": "The survey counted exactly 957 bicycles at the station in Porto."
+  },
+  {
+   "fixture": "notes00",
+   "pass": true,
+   "turn_s": 5.12,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.3526707887649536,
+    "mean_logprob": -0.4565398030590586,
+    "p10_logprob": -1.3351515531539917,
+    "share_below_half": 0.25,
+    "digit_min_logprob": -0.16049180924892426,
+    "tokens": 16.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -1.3351515531539917
+    },
+    {
+     "token": " most",
+     "logprob": -1.3526707887649536
+    },
+    {
+     "token": " recent",
+     "logprob": -0.0060057020746171474
+    },
+    {
+     "token": " number",
+     "logprob": -0.49897682666778564
+    },
+    {
+     "token": " is",
+     "logprob": -0.12627214193344116
+    },
+    {
+     "token": " ",
+     "logprob": -0.24433602392673492
+    },
+    {
+     "token": "7",
+     "logprob": -0.16049180924892426
+    },
+    {
+     "token": "1",
+     "logprob": -0.0013557918136939406
+    },
+    {
+     "token": " (",
+     "logprob": -1.1921520233154297
+    },
+    {
+     "token": "from",
+     "logprob": -0.6910092830657959
+    },
+    {
+     "token": " March",
+     "logprob": -0.4635801315307617
+    },
+    {
+     "token": " ",
+     "logprob": -0.00025841951719485223
+    },
+    {
+     "token": "1",
+     "logprob": -0.0017650197260081768
+    },
+    {
+     "token": "6",
+     "logprob": -0.001101026893593371
+    },
+    {
+     "token": ").",
+     "logprob": -0.43970268964767456
+    },
+    {
+     "token": "",
+     "logprob": -0.7898076176643372
+    }
+   ],
+   "output": "The most recent number is 71 (from March 16)."
+  },
+  {
+   "fixture": "notes01",
+   "pass": true,
+   "turn_s": 5.23,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.9435653686523438,
+    "mean_logprob": -0.15686886945150036,
+    "p10_logprob": -0.9378392696380615,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -0.01615128293633461,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.00855470634996891
+    },
+    {
+     "token": " most",
+     "logprob": -0.2614939212799072
+    },
+    {
+     "token": " recent",
+     "logprob": -1.9550514480215497e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.18597827851772308
+    },
+    {
+     "token": " is",
+     "logprob": -0.032017916440963745
+    },
+    {
+     "token": " ",
+     "logprob": -0.028968576341867447
+    },
+    {
+     "token": "49",
+     "logprob": -0.01615128293633461
+    },
+    {
+     "token": ",",
+     "logprob": -0.9435653686523438
+    },
+    {
+     "token": " according",
+     "logprob": -0.9378392696380615
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.00021191696578171104
+    },
+    {
+     "token": " ",
+     "logprob": -0.2381245344877243
+    },
+    {
+     "token": "26",
+     "logprob": -0.0007885226514190435
+    },
+    {
+     "token": " March",
+     "logprob": -0.001137903775088489
+    },
+    {
+     "token": " note",
+     "logprob": -0.0038869124837219715
+    },
+    {
+     "token": ".",
+     "logprob": -3.83861297450494e-05
+    },
+    {
+     "token": "",
+     "logprob": -0.007993614301085472
+    }
+   ],
+   "output": "The most recent number is 49, according to the 26 March note."
+  },
+  {
+   "fixture": "notes02",
+   "pass": true,
+   "turn_s": 2.32,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.513718843460083,
+    "mean_logprob": -0.24193799135825125,
+    "p10_logprob": -1.1214133501052856,
+    "share_below_half": 0.16666666666666666,
+    "digit_min_logprob": -0.00019260114640928805,
+    "tokens": 18.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.005065553821623325
+    },
+    {
+     "token": " most",
+     "logprob": -0.43822723627090454
+    },
+    {
+     "token": " recent",
+     "logprob": -2.47958396357717e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.14640843868255615
+    },
+    {
+     "token": " is",
+     "logprob": -0.07320769876241684
+    },
+    {
+     "token": " ",
+     "logprob": -0.12068569660186768
+    },
+    {
+     "token": "25",
+     "logprob": -0.00019260114640928805
+    },
+    {
+     "token": ",",
+     "logprob": -0.8997423648834229
+    },
+    {
+     "token": " according",
+     "logprob": -1.1214133501052856
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -9.453743405174464e-05
+    },
+    {
+     "token": " note",
+     "logprob": -1.513718843460083
+    },
+    {
+     "token": " from",
+     "logprob": -0.004954910837113857
+    },
+    {
+     "token": " ",
+     "logprob": -0.02974694035947323
+    },
+    {
+     "token": "8",
+     "logprob": -6.437322554120328e-06
+    },
+    {
+     "token": " March",
+     "logprob": -4.685034946305677e-05
+    },
+    {
+     "token": ".",
+     "logprob": -1.978893851628527e-05
+    },
+    {
+     "token": "",
+     "logprob": -0.0013276804238557816
+    }
+   ],
+   "output": "The most recent number is 25, according to the note from 8 March."
+  },
+  {
+   "fixture": "notes03",
+   "pass": true,
+   "turn_s": 2.22,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.7478772401809692,
+    "mean_logprob": -0.24097827481749418,
+    "p10_logprob": -0.9968653917312622,
+    "share_below_half": 0.17647058823529413,
+    "digit_min_logprob": -0.00017793569713830948,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.002192933112382889
+    },
+    {
+     "token": " most",
+     "logprob": -0.31617167592048645
+    },
+    {
+     "token": " recent",
+     "logprob": -1.3470740668708459e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.10996006429195404
+    },
+    {
+     "token": " is",
+     "logprob": -0.06506247818470001
+    },
+    {
+     "token": " ",
+     "logprob": -0.055164046585559845
+    },
+    {
+     "token": "41",
+     "logprob": -0.00017793569713830948
+    },
+    {
+     "token": ",",
+     "logprob": -1.7478772401809692
+    },
+    {
+     "token": " according",
+     "logprob": -0.9968653917312622
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -7.093204476404935e-05
+    },
+    {
+     "token": " ",
+     "logprob": -0.7638188600540161
+    },
+    {
+     "token": "27",
+     "logprob": -9.655998837843072e-06
+    },
+    {
+     "token": " March",
+     "logprob": -0.0028254331555217505
+    },
+    {
+     "token": " note",
+     "logprob": -0.033331941813230515
+    },
+    {
+     "token": ".",
+     "logprob": -9.203380614053458e-05
+    },
+    {
+     "token": "",
+     "logprob": -0.0029964593704789877
+    }
+   ],
+   "output": "The most recent number is 41, according to the 27 March note."
+  },
+  {
+   "fixture": "notes04",
+   "pass": true,
+   "turn_s": 2.32,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.1047412157058716,
+    "mean_logprob": -0.18898445642967357,
+    "p10_logprob": -0.8759847283363342,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -0.00048064813017845154,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.00508849835023284
+    },
+    {
+     "token": " most",
+     "logprob": -0.47821202874183655
+    },
+    {
+     "token": " recent",
+     "logprob": -1.9550514480215497e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.08194427192211151
+    },
+    {
+     "token": " is",
+     "logprob": -0.03892020136117935
+    },
+    {
+     "token": " ",
+     "logprob": -0.023409565910696983
+    },
+    {
+     "token": "56",
+     "logprob": -0.00048064813017845154
+    },
+    {
+     "token": ",",
+     "logprob": -0.8759847283363342
+    },
+    {
+     "token": " according",
+     "logprob": -1.1047412157058716
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.00022145577531773597
+    },
+    {
+     "token": " ",
+     "logprob": -0.5261549949645996
+    },
+    {
+     "token": "27",
+     "logprob": -9.059946933120955e-06
+    },
+    {
+     "token": " March",
+     "logprob": -0.005540851503610611
+    },
+    {
+     "token": " note",
+     "logprob": -0.06899484992027283
+    },
+    {
+     "token": ".",
+     "logprob": -4.625427391147241e-05
+    },
+    {
+     "token": "",
+     "logprob": -0.0029674647375941277
+    }
+   ],
+   "output": "The most recent number is 56, according to the 27 March note."
+  },
+  {
+   "fixture": "notes05",
+   "pass": true,
+   "turn_s": 2.11,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.383207082748413,
+    "mean_logprob": -0.22118650280025148,
+    "p10_logprob": -1.2683775424957275,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -0.0013440338661894202,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.0026660305447876453
+    },
+    {
+     "token": " most",
+     "logprob": -0.3725292980670929
+    },
+    {
+     "token": " recent",
+     "logprob": -1.5378116586362012e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.13954491913318634
+    },
+    {
+     "token": " is",
+     "logprob": -0.04291931912302971
+    },
+    {
+     "token": " ",
+     "logprob": -0.10963264852762222
+    },
+    {
+     "token": "85",
+     "logprob": -0.0013440338661894202
+    },
+    {
+     "token": ",",
+     "logprob": -1.383207082748413
+    },
+    {
+     "token": " according",
+     "logprob": -1.2683775424957275
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.00038887670962139964
+    },
+    {
+     "token": " ",
+     "logprob": -0.3862428069114685
+    },
+    {
+     "token": "25",
+     "logprob": -3.218656047465629e-06
+    },
+    {
+     "token": " March",
+     "logprob": -0.008346663787961006
+    },
+    {
+     "token": " note",
+     "logprob": -0.041964221745729446
+    },
+    {
+     "token": ".",
+     "logprob": -8.237700967583805e-05
+    },
+    {
+     "token": "",
+     "logprob": -0.002906010951846838
+    }
+   ],
+   "output": "The most recent number is 85, according to the 25 March note."
+  },
+  {
+   "fixture": "notes06",
+   "pass": true,
+   "turn_s": 2.42,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.1517763137817383,
+    "mean_logprob": -0.21678032810875855,
+    "p10_logprob": -0.8956078886985779,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -0.002925379201769829,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.0049284351989626884
+    },
+    {
+     "token": " most",
+     "logprob": -0.6009777784347534
+    },
+    {
+     "token": " recent",
+     "logprob": -2.5034263671841472e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.10775122791528702
+    },
+    {
+     "token": " is",
+     "logprob": -0.08151628077030182
+    },
+    {
+     "token": " ",
+     "logprob": -0.14969898760318756
+    },
+    {
+     "token": "65",
+     "logprob": -0.002925379201769829
+    },
+    {
+     "token": ",",
+     "logprob": -0.8956078886985779
+    },
+    {
+     "token": " according",
+     "logprob": -1.1517763137817383
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.0005522702704183757
+    },
+    {
+     "token": " ",
+     "logprob": -0.6304535269737244
+    },
+    {
+     "token": "21",
+     "logprob": -3.695494797284482e-06
+    },
+    {
+     "token": " March",
+     "logprob": -0.0004114162875339389
+    },
+    {
+     "token": " note",
+     "logprob": -0.05253718048334122
+    },
+    {
+     "token": ".",
+     "logprob": -8.71457887114957e-05
+    },
+    {
+     "token": "",
+     "logprob": -0.006012897472828627
+    }
+   ],
+   "output": "The most recent number is 65, according to the 21 March note."
+  },
+  {
+   "fixture": "notes07",
+   "pass": true,
+   "turn_s": 2.11,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.9391523003578186,
+    "mean_logprob": -0.1793884863914975,
+    "p10_logprob": -0.706352949142456,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -0.5264924764633179,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.002243530238047242
+    },
+    {
+     "token": " most",
+     "logprob": -0.2931903004646301
+    },
+    {
+     "token": " recent",
+     "logprob": -2.217317342001479e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.1742691993713379
+    },
+    {
+     "token": " is",
+     "logprob": -0.05332430824637413
+    },
+    {
+     "token": " ",
+     "logprob": -0.053036659955978394
+    },
+    {
+     "token": "54",
+     "logprob": -0.5264924764633179
+    },
+    {
+     "token": ",",
+     "logprob": -0.706352949142456
+    },
+    {
+     "token": " according",
+     "logprob": -0.9391523003578186
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.00015438794798683375
+    },
+    {
+     "token": " ",
+     "logprob": -0.2811237573623657
+    },
+    {
+     "token": "24",
+     "logprob": -0.0004852995334658772
+    },
+    {
+     "token": " March",
+     "logprob": -0.0006327842711471021
+    },
+    {
+     "token": " note",
+     "logprob": -0.006626158952713013
+    },
+    {
+     "token": ".",
+     "logprob": -0.00013817311264574528
+    },
+    {
+     "token": "",
+     "logprob": -0.012359690852463245
+    }
+   ],
+   "output": "The most recent number is 54, according to the 24 March note."
+  },
+  {
+   "fixture": "notes08",
+   "pass": true,
+   "turn_s": 2.21,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.7142864465713501,
+    "mean_logprob": -0.15906691174453158,
+    "p10_logprob": -0.5743712186813354,
+    "share_below_half": 0.058823529411764705,
+    "digit_min_logprob": -0.2159026712179184,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.007031247019767761
+    },
+    {
+     "token": " most",
+     "logprob": -0.453935831785202
+    },
+    {
+     "token": " recent",
+     "logprob": -3.3975225960602984e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.21507959067821503
+    },
+    {
+     "token": " is",
+     "logprob": -0.0815444141626358
+    },
+    {
+     "token": " ",
+     "logprob": -0.22343087196350098
+    },
+    {
+     "token": "21",
+     "logprob": -0.2159026712179184
+    },
+    {
+     "token": ",",
+     "logprob": -0.7142864465713501
+    },
+    {
+     "token": " according",
+     "logprob": -0.5743712186813354
+    },
+    {
+     "token": " to",
+     "logprob": -2.3841860752327193e-07
+    },
+    {
+     "token": " the",
+     "logprob": -6.270605081226677e-05
+    },
+    {
+     "token": " ",
+     "logprob": -0.1892228126525879
+    },
+    {
+     "token": "19",
+     "logprob": -2.217317342001479e-05
+    },
+    {
+     "token": " March",
+     "logprob": -0.0011772287543863058
+    },
+    {
+     "token": " note",
+     "logprob": -0.0022552988957613707
+    },
+    {
+     "token": ".",
+     "logprob": -0.00020118591783102602
+    },
+    {
+     "token": "",
+     "logprob": -0.02557958848774433
+    }
+   ],
+   "output": "The most recent number is 21, according to the 19 March note."
+  },
+  {
+   "fixture": "notes09",
+   "pass": false,
+   "turn_s": 2.42,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.3742690086364746,
+    "mean_logprob": -0.24081826763934722,
+    "p10_logprob": -1.1049294471740723,
+    "share_below_half": 0.1111111111111111,
+    "digit_min_logprob": -0.5343493819236755,
+    "tokens": 18.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.004445405211299658
+    },
+    {
+     "token": " most",
+     "logprob": -0.31088921427726746
+    },
+    {
+     "token": " recent",
+     "logprob": -2.2769234419683926e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.14674654603004456
+    },
+    {
+     "token": " is",
+     "logprob": -0.04655943438410759
+    },
+    {
+     "token": " ",
+     "logprob": -0.10165523737668991
+    },
+    {
+     "token": "49",
+     "logprob": -0.5343493819236755
+    },
+    {
+     "token": ",",
+     "logprob": -0.53880774974823
+    },
+    {
+     "token": " according",
+     "logprob": -1.1049294471740723
+    },
+    {
+     "token": " to",
+     "logprob": -2.3841860752327193e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.0003139273321721703
+    },
+    {
+     "token": " note",
+     "logprob": -1.3742690086364746
+    },
+    {
+     "token": " from",
+     "logprob": -0.0028280632104724646
+    },
+    {
+     "token": " ",
+     "logprob": -0.15994742512702942
+    },
+    {
+     "token": "16",
+     "logprob": -3.552499765646644e-05
+    },
+    {
+     "token": " March",
+     "logprob": -8.213857654482126e-05
+    },
+    {
+     "token": ".",
+     "logprob": -7.868122338550165e-05
+    },
+    {
+     "token": "",
+     "logprob": -0.008768624626100063
+    }
+   ],
+   "output": "The most recent number is 49, according to the note from 16 March."
+  },
+  {
+   "fixture": "notes10",
+   "pass": true,
+   "turn_s": 2.12,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.342941164970398,
+    "mean_logprob": -0.24068602281533244,
+    "p10_logprob": -1.0302550792694092,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -0.01850697584450245,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.004423612728714943
+    },
+    {
+     "token": " most",
+     "logprob": -0.529254138469696
+    },
+    {
+     "token": " recent",
+     "logprob": -2.5868750526569784e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.22406277060508728
+    },
+    {
+     "token": " is",
+     "logprob": -0.06613299995660782
+    },
+    {
+     "token": " ",
+     "logprob": -0.2622445523738861
+    },
+    {
+     "token": "39",
+     "logprob": -0.01850697584450245
+    },
+    {
+     "token": ",",
+     "logprob": -1.342941164970398
+    },
+    {
+     "token": " according",
+     "logprob": -1.0302550792694092
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.0002860836102627218
+    },
+    {
+     "token": " ",
+     "logprob": -0.5843765735626221
+    },
+    {
+     "token": "18",
+     "logprob": -2.145769485650817e-06
+    },
+    {
+     "token": " March",
+     "logprob": -0.0014076002407819033
+    },
+    {
+     "token": " note",
+     "logprob": -0.02390715666115284
+    },
+    {
+     "token": ".",
+     "logprob": -0.00012005095777567476
+    },
+    {
+     "token": "",
+     "logprob": -0.003715494880452752
+    }
+   ],
+   "output": "The most recent number is 39, according to the 18 March note."
+  },
+  {
+   "fixture": "notes11",
+   "pass": true,
+   "turn_s": 2.01,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.7006216049194336,
+    "mean_logprob": -0.13154128923451935,
+    "p10_logprob": -0.5780966281890869,
+    "share_below_half": 0.058823529411764705,
+    "digit_min_logprob": -0.06775515526533127,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.005574056413024664
+    },
+    {
+     "token": " most",
+     "logprob": -0.35253065824508667
+    },
+    {
+     "token": " recent",
+     "logprob": -2.7776150091085583e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.2007823884487152
+    },
+    {
+     "token": " is",
+     "logprob": -0.0614454559981823
+    },
+    {
+     "token": " ",
+     "logprob": -0.049156226217746735
+    },
+    {
+     "token": "69",
+     "logprob": -0.06775515526533127
+    },
+    {
+     "token": ",",
+     "logprob": -0.7006216049194336
+    },
+    {
+     "token": " according",
+     "logprob": -0.5780966281890869
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.00020595524983946234
+    },
+    {
+     "token": " ",
+     "logprob": -0.19355198740959167
+    },
+    {
+     "token": "14",
+     "logprob": -2.6345600417698734e-05
+    },
+    {
+     "token": " March",
+     "logprob": -0.002717488445341587
+    },
+    {
+     "token": " note",
+     "logprob": -0.0024764779955148697
+    },
+    {
+     "token": ".",
+     "logprob": -0.00024077214766293764
+    },
+    {
+     "token": "",
+     "logprob": -0.0209928210824728
+    }
+   ],
+   "output": "The most recent number is 69, according to the 14 March note."
+  },
+  {
+   "fixture": "notes12",
+   "pass": true,
+   "turn_s": 2.12,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.9934190511703491,
+    "mean_logprob": -0.159546390244192,
+    "p10_logprob": -0.8692398071289062,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -0.0015843537403270602,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.004350575618445873
+    },
+    {
+     "token": " most",
+     "logprob": -0.283041775226593
+    },
+    {
+     "token": " recent",
+     "logprob": -1.6212594346143305e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.09680221229791641
+    },
+    {
+     "token": " is",
+     "logprob": -0.04472522437572479
+    },
+    {
+     "token": " ",
+     "logprob": -0.061582181602716446
+    },
+    {
+     "token": "26",
+     "logprob": -0.0015843537403270602
+    },
+    {
+     "token": ",",
+     "logprob": -0.9934190511703491
+    },
+    {
+     "token": " according",
+     "logprob": -0.8692398071289062
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.00014091530465520918
+    },
+    {
+     "token": " ",
+     "logprob": -0.32652413845062256
+    },
+    {
+     "token": "9",
+     "logprob": -1.6927862816373818e-05
+    },
+    {
+     "token": " March",
+     "logprob": -0.007380714640021324
+    },
+    {
+     "token": " note",
+     "logprob": -0.018943026661872864
+    },
+    {
+     "token": ".",
+     "logprob": -0.00016106471593957394
+    },
+    {
+     "token": "",
+     "logprob": -0.004360333550721407
+    }
+   ],
+   "output": "The most recent number is 26, according to the 9 March note."
+  },
+  {
+   "fixture": "notes13",
+   "pass": true,
+   "turn_s": 2.21,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.7823604345321655,
+    "mean_logprob": -0.12846578583717452,
+    "p10_logprob": -0.756462037563324,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -0.013450494967401028,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.007177419029176235
+    },
+    {
+     "token": " most",
+     "logprob": -0.22763565182685852
+    },
+    {
+     "token": " recent",
+     "logprob": -2.0265784769435413e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.15906088054180145
+    },
+    {
+     "token": " is",
+     "logprob": -0.0360838882625103
+    },
+    {
+     "token": " ",
+     "logprob": -0.05058087781071663
+    },
+    {
+     "token": "79",
+     "logprob": -0.013450494967401028
+    },
+    {
+     "token": ",",
+     "logprob": -0.7823604345321655
+    },
+    {
+     "token": " according",
+     "logprob": -0.756462037563324
+    },
+    {
+     "token": " to",
+     "logprob": -2.3841860752327193e-07
+    },
+    {
+     "token": " the",
+     "logprob": -0.00021752101019956172
+    },
+    {
+     "token": " ",
+     "logprob": -0.13510777056217194
+    },
+    {
+     "token": "11",
+     "logprob": -7.510213436034974e-06
+    },
+    {
+     "token": " March",
+     "logprob": -0.0005994447274133563
+    },
+    {
+     "token": " note",
+     "logprob": -0.00380493956618011
+    },
+    {
+     "token": ".",
+     "logprob": -4.780406743520871e-05
+    },
+    {
+     "token": "",
+     "logprob": -0.011301180347800255
+    }
+   ],
+   "output": "The most recent number is 79, according to the 11 March note."
+  },
+  {
+   "fixture": "notes14",
+   "pass": true,
+   "turn_s": 2.11,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.9078160524368286,
+    "mean_logprob": -0.17082897083791443,
+    "p10_logprob": -0.8664841055870056,
+    "share_below_half": 0.11764705882352941,
+    "digit_min_logprob": -0.017558403313159943,
+    "tokens": 17.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -0.006982207763940096
+    },
+    {
+     "token": " most",
+     "logprob": -0.38500991463661194
+    },
+    {
+     "token": " recent",
+     "logprob": -2.8849064619862475e-05
+    },
+    {
+     "token": " number",
+     "logprob": -0.20068994164466858
+    },
+    {
+     "token": " is",
+     "logprob": -0.07032764703035355
+    },
+    {
+     "token": " ",
+     "logprob": -0.17078931629657745
+    },
+    {
+     "token": "39",
+     "logprob": -0.017558403313159943
+    },
+    {
+     "token": ",",
+     "logprob": -0.8664841055870056
+    },
+    {
+     "token": " according",
+     "logprob": -0.9078160524368286
+    },
+    {
+     "token": " to",
+     "logprob": -1.1920928955078125e-07
+    },
+    {
+     "token": " the",
+     "logprob": -7.927732076495886e-05
+    },
+    {
+     "token": " ",
+     "logprob": -0.24857144057750702
+    },
+    {
+     "token": "15",
+     "logprob": -0.00014997653488535434
+    },
+    {
+     "token": " March",
+     "logprob": -0.0017322992207482457
+    },
+    {
+     "token": " note",
+     "logprob": -0.0037682633846998215
+    },
+    {
+     "token": ".",
+     "logprob": -8.67881317390129e-05
+    },
+    {
+     "token": "",
+     "logprob": -0.024017902091145515
+    }
+   ],
+   "output": "The most recent number is 39, according to the 15 March note."
+  },
+  {
+   "fixture": "compare00",
+   "pass": true,
+   "turn_s": 6.23,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.086411714553833,
+    "mean_logprob": -0.5599028077699724,
+    "p10_logprob": -1.4652764797210693,
+    "share_below_half": 0.3939393939393939,
+    "digit_min_logprob": -0.34355229139328003,
+    "tokens": 33.0
+   },
+   "tokens": [
+    {
+     "token": "L",
+     "logprob": -1.4652764797210693
+    },
+    {
+     "token": "yon",
+     "logprob": -0.005591678433120251
+    },
+    {
+     "token": " has",
+     "logprob": -1.3577626943588257
+    },
+    {
+     "token": " the",
+     "logprob": -0.10685952752828598
+    },
+    {
+     "token": " highest",
+     "logprob": -1.094757080078125
+    },
+    {
+     "token": " rainfall",
+     "logprob": -0.2967749238014221
+    },
+    {
+     "token": " at",
+     "logprob": -0.7945350408554077
+    },
+    {
+     "token": " ",
+     "logprob": -0.04232710972428322
+    },
+    {
+     "token": "6",
+     "logprob": -0.00503572029992938
+    },
+    {
+     "token": "4",
+     "logprob": -0.0002958616241812706
+    },
+    {
+     "token": "4",
+     "logprob": -0.0005316358874551952
+    },
+    {
+     "token": " mm",
+     "logprob": -0.11184798181056976
+    },
+    {
+     "token": " (",
+     "logprob": -1.7488865852355957
+    },
+    {
+     "token": "vs",
+     "logprob": -2.086411714553833
+    },
+    {
+     "token": " ",
+     "logprob": -0.7455737590789795
+    },
+    {
+     "token": "2",
+     "logprob": -0.29787635803222656
+    },
+    {
+     "token": "5",
+     "logprob": -0.0023208349011838436
+    },
+    {
+     "token": "5",
+     "logprob": -0.0035217953845858574
+    },
+    {
+     "token": " mm",
+     "logprob": -0.9776371717453003
+    },
+    {
+     "token": " for",
+     "logprob": -1.0323470830917358
+    },
+    {
+     "token": " Br",
+     "logprob": -0.018170472234487534
+    },
+    {
+     "token": "no",
+     "logprob": -0.011464196257293224
+    },
+    {
+     "token": ").",
+     "logprob": -1.675445556640625
+    },
+    {
+     "token": " The",
+     "logprob": -1.124478816986084
+    },
+    {
+     "token": " difference",
+     "logprob": -0.6006941795349121
+    },
+    {
+     "token": " is",
+     "logprob": -0.25202667713165283
+    },
+    {
+     "token": " ",
+     "logprob": -0.34343379735946655
+    },
+    {
+     "token": "3",
+     "logprob": -0.34355229139328003
+    },
+    {
+     "token": "8",
+     "logprob": -0.01237676851451397
+    },
+    {
+     "token": "9",
+     "logprob": -0.0006796045927330852
+    },
+    {
+     "token": " mm",
+     "logprob": -0.009017230942845345
+    },
+    {
+     "token": ".",
+     "logprob": -1.0092352628707886
+    },
+    {
+     "token": "",
+     "logprob": -0.9000467658042908
+    }
+   ],
+   "output": "Lyon has the highest rainfall at 644 mm (vs 255 mm for Brno). The difference is 389 mm."
+  },
+  {
+   "fixture": "compare01",
+   "pass": true,
+   "turn_s": 3.52,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.9438292980194092,
+    "mean_logprob": -0.3997277256886412,
+    "p10_logprob": -1.0343197584152222,
+    "share_below_half": 0.2558139534883721,
+    "digit_min_logprob": -0.5803461074829102,
+    "tokens": 43.0
+   },
+   "tokens": [
+    {
+     "token": "L",
+     "logprob": -1.2957788705825806
+    },
+    {
+     "token": "yon",
+     "logprob": -0.005066512152552605
+    },
+    {
+     "token": " has",
+     "logprob": -1.365614891052246
+    },
+    {
+     "token": " the",
+     "logprob": -0.08751872926950455
+    },
+    {
+     "token": " highest",
+     "logprob": -0.918073832988739
+    },
+    {
+     "token": " rainfall",
+     "logprob": -0.3298393189907074
+    },
+    {
+     "token": " at",
+     "logprob": -0.8687330484390259
+    },
+    {
+     "token": " ",
+     "logprob": -0.0351165272295475
+    },
+    {
+     "token": "8",
+     "logprob": -0.004927297122776508
+    },
+    {
+     "token": "9",
+     "logprob": -5.400326699600555e-05
+    },
+    {
+     "token": "5",
+     "logprob": -0.00038130400935187936
+    },
+    {
+     "token": " mm",
+     "logprob": -0.2067447006702423
+    },
+    {
+     "token": " (",
+     "logprob": -1.9309066534042358
+    },
+    {
+     "token": "vs",
+     "logprob": -1.9438292980194092
+    },
+    {
+     "token": " ",
+     "logprob": -0.8702995181083679
+    },
+    {
+     "token": "2",
+     "logprob": -0.2679201364517212
+    },
+    {
+     "token": "8",
+     "logprob": -0.001861754572018981
+    },
+    {
+     "token": "7",
+     "logprob": -0.0010932697914540768
+    },
+    {
+     "token": " and",
+     "logprob": -1.0343197584152222
+    },
+    {
+     "token": " ",
+     "logprob": -4.1962550312746316e-05
+    },
+    {
+     "token": "7",
+     "logprob": -0.00038201952702365816
+    },
+    {
+     "token": "2",
+     "logprob": -1.633180545468349e-05
+    },
+    {
+     "token": "3",
+     "logprob": -2.5034263671841472e-05
+    },
+    {
+     "token": ").",
+     "logprob": -0.5212824940681458
+    },
+    {
+     "token": " The",
+     "logprob": -1.019607424736023
+    },
+    {
+     "token": " difference",
+     "logprob": -0.9455682039260864
+    },
+    {
+     "token": " is",
+     "logprob": -0.6200076341629028
+    },
+    {
+     "token": " ",
+     "logprob": -0.18997693061828613
+    },
+    {
+     "token": "6",
+     "logprob": -0.5803461074829102
+    },
+    {
+     "token": "0",
+     "logprob": -0.003899717703461647
+    },
+    {
+     "token": "8",
+     "logprob": -0.00426096236333251
+    },
+    {
+     "token": " mm",
+     "logprob": -0.018039921298623085
+    },
+    {
+     "token": " (",
+     "logprob": -0.9071111083030701
+    },
+    {
+     "token": "8",
+     "logprob": -0.1060960665345192
+    },
+    {
+     "token": "9",
+     "logprob": -0.0007316761766560376
+    },
+    {
+     "token": "5",
+     "logprob": -0.0001593955239513889
+    },
+    {
+     "token": " -",
+     "logprob": -0.06587888300418854
+    },
+    {
+     "token": " ",
+     "logprob": -0.004295741207897663
+    },
+    {
+     "token": "2",
+     "logprob": -0.061882443726062775
+    },
+    {
+     "token": "8",
+     "logprob": -0.0035249057691544294
+    },
+    {
+     "token": "7",
+     "logprob": -0.0009391544153913856
+    },
+    {
+     "token": ").",
+     "logprob": -0.482296884059906
+    },
+    {
+     "token": "",
+     "logprob": -0.48384177684783936
+    }
+   ],
+   "output": "Lyon has the highest rainfall at 895 mm (vs 287 and 723). The difference is 608 mm (895 - 287)."
+  },
+  {
+   "fixture": "compare02",
+   "pass": false,
+   "turn_s": 3.22,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.8631627559661865,
+    "mean_logprob": -0.302319176103646,
+    "p10_logprob": -0.7679091095924377,
+    "share_below_half": 0.14285714285714285,
+    "digit_min_logprob": -0.7679091095924377,
+    "tokens": 42.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -1.8631627559661865
+    },
+    {
+     "token": " city",
+     "logprob": -0.27054691314697266
+    },
+    {
+     "token": " with",
+     "logprob": -0.01691354811191559
+    },
+    {
+     "token": " the",
+     "logprob": -0.007853209972381592
+    },
+    {
+     "token": " most",
+     "logprob": -0.029968390241265297
+    },
+    {
+     "token": " rain",
+     "logprob": -0.017576662823557854
+    },
+    {
+     "token": " is",
+     "logprob": -0.0545668751001358
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.25101444125175476
+    },
+    {
+     "token": " (",
+     "logprob": -0.6229965686798096
+    },
+    {
+     "token": "7",
+     "logprob": -0.02229364961385727
+    },
+    {
+     "token": "3",
+     "logprob": -0.0015349241439253092
+    },
+    {
+     "token": "3",
+     "logprob": -0.00044671737123280764
+    },
+    {
+     "token": " mm",
+     "logprob": -0.2208845466375351
+    },
+    {
+     "token": ").",
+     "logprob": -0.6267769932746887
+    },
+    {
+     "token": " The",
+     "logprob": -0.5517411231994629
+    },
+    {
+     "token": " difference",
+     "logprob": -1.3786386251449585
+    },
+    {
+     "token": " between",
+     "logprob": -1.0240788459777832
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.6813995838165283
+    },
+    {
+     "token": " and",
+     "logprob": -0.05756198987364769
+    },
+    {
+     "token": " Bremen",
+     "logprob": -0.370574951171875
+    },
+    {
+     "token": " is",
+     "logprob": -0.16601693630218506
+    },
+    {
+     "token": " ",
+     "logprob": -0.10672509670257568
+    },
+    {
+     "token": "1",
+     "logprob": -0.43537819385528564
+    },
+    {
+     "token": "5",
+     "logprob": -0.41333580017089844
+    },
+    {
+     "token": "0",
+     "logprob": -0.7679091095924377
+    },
+    {
+     "token": " mm",
+     "logprob": -0.015182670205831528
+    },
+    {
+     "token": " (",
+     "logprob": -0.7658140063285828
+    },
+    {
+     "token": "7",
+     "logprob": -0.06139323115348816
+    },
+    {
+     "token": "3",
+     "logprob": -0.0010572894243523479
+    },
+    {
+     "token": "3",
+     "logprob": -0.0008950065239332616
+    },
+    {
+     "token": " -",
+     "logprob": -0.03589295968413353
+    },
+    {
+     "token": " ",
+     "logprob": -3.433286474319175e-05
+    },
+    {
+     "token": "5",
+     "logprob": -0.00194518081843853
+    },
+    {
+     "token": "8",
+     "logprob": -5.8533474657451734e-05
+    },
+    {
+     "token": "4",
+     "logprob": -0.00047993252519518137
+    },
+    {
+     "token": " =",
+     "logprob": -1.355308175086975
+    },
+    {
+     "token": " ",
+     "logprob": -0.0008930974290706217
+    },
+    {
+     "token": "1",
+     "logprob": -0.002246337942779064
+    },
+    {
+     "token": "5",
+     "logprob": -0.05918217822909355
+    },
+    {
+     "token": "0",
+     "logprob": -0.01775769330561161
+    },
+    {
+     "token": ").",
+     "logprob": -0.09019475430250168
+    },
+    {
+     "token": "",
+     "logprob": -0.32917356491088867
+    }
+   ],
+   "output": "The city with the most rain is Lyon (733 mm). The difference between Lyon and Bremen is 150 mm (733 - 584 = 150)."
+  },
+  {
+   "fixture": "compare03",
+   "pass": true,
+   "turn_s": 3.22,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.7099028825759888,
+    "mean_logprob": -0.4212343263376776,
+    "p10_logprob": -1.4075983762741089,
+    "share_below_half": 0.2564102564102564,
+    "digit_min_logprob": -0.8882789611816406,
+    "tokens": 39.0
+   },
+   "tokens": [
+    {
+     "token": "L",
+     "logprob": -1.3725167512893677
+    },
+    {
+     "token": "inz",
+     "logprob": -0.1335177719593048
+    },
+    {
+     "token": " has",
+     "logprob": -1.6209206581115723
+    },
+    {
+     "token": " the",
+     "logprob": -0.08823376148939133
+    },
+    {
+     "token": " most",
+     "logprob": -0.45874521136283875
+    },
+    {
+     "token": " rain",
+     "logprob": -0.05606602132320404
+    },
+    {
+     "token": " (",
+     "logprob": -0.9237095713615417
+    },
+    {
+     "token": "4",
+     "logprob": -0.05899766460061073
+    },
+    {
+     "token": "3",
+     "logprob": -0.0011404100805521011
+    },
+    {
+     "token": "3",
+     "logprob": -0.0012761745601892471
+    },
+    {
+     "token": " mm",
+     "logprob": -0.22565485537052155
+    },
+    {
+     "token": ")",
+     "logprob": -1.0165669918060303
+    },
+    {
+     "token": " compared",
+     "logprob": -1.3573044538497925
+    },
+    {
+     "token": " to",
+     "logprob": -0.004978871438652277
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.952326774597168
+    },
+    {
+     "token": " (",
+     "logprob": -0.2082875669002533
+    },
+    {
+     "token": "7",
+     "logprob": -0.0160360150039196
+    },
+    {
+     "token": "9",
+     "logprob": -0.00028429494705051184
+    },
+    {
+     "token": "8",
+     "logprob": -0.0008697118610143661
+    },
+    {
+     "token": " mm",
+     "logprob": -0.03385182097554207
+    },
+    {
+     "token": ")",
+     "logprob": -0.3418550491333008
+    },
+    {
+     "token": " and",
+     "logprob": -0.227711021900177
+    },
+    {
+     "token": " Graz",
+     "logprob": -0.02861761674284935
+    },
+    {
+     "token": " (",
+     "logprob": -0.001874712877906859
+    },
+    {
+     "token": "6",
+     "logprob": -0.0005053366185165942
+    },
+    {
+     "token": "3",
+     "logprob": -7.808513328200206e-05
+    },
+    {
+     "token": "0",
+     "logprob": -0.00011718960013240576
+    },
+    {
+     "token": " mm",
+     "logprob": -0.0014236565912142396
+    },
+    {
+     "token": ").",
+     "logprob": -0.29113873839378357
+    },
+    {
+     "token": " The",
+     "logprob": -1.4075983762741089
+    },
+    {
+     "token": " difference",
+     "logprob": -1.436354637145996
+    },
+    {
+     "token": " is",
+     "logprob": -0.6797671318054199
+    },
+    {
+     "token": " ",
+     "logprob": -0.36119168996810913
+    },
+    {
+     "token": "3",
+     "logprob": -0.8882789611816406
+    },
+    {
+     "token": "6",
+     "logprob": -0.039004918187856674
+    },
+    {
+     "token": "5",
+     "logprob": -0.009565237909555435
+    },
+    {
+     "token": " mm",
+     "logprob": -0.013965879566967487
+    },
+    {
+     "token": ".",
+     "logprob": -1.7099028825759888
+    },
+    {
+     "token": "",
+     "logprob": -0.4579022526741028
+    }
+   ],
+   "output": "Linz has the most rain (433 mm) compared to Lyon (798 mm) and Graz (630 mm). The difference is 365 mm."
+  },
+  {
+   "fixture": "compare04",
+   "pass": true,
+   "turn_s": 3.52,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.01501727104187,
+    "mean_logprob": -0.44514640595214305,
+    "p10_logprob": -1.6009635925292969,
+    "share_below_half": 0.3076923076923077,
+    "digit_min_logprob": -0.732735812664032,
+    "tokens": 39.0
+   },
+   "tokens": [
+    {
+     "token": "L",
+     "logprob": -1.367134928703308
+    },
+    {
+     "token": "yon",
+     "logprob": -0.009731702506542206
+    },
+    {
+     "token": " has",
+     "logprob": -1.30446195602417
+    },
+    {
+     "token": " the",
+     "logprob": -0.08980905264616013
+    },
+    {
+     "token": " highest",
+     "logprob": -0.9887423515319824
+    },
+    {
+     "token": " rainfall",
+     "logprob": -0.290097713470459
+    },
+    {
+     "token": " at",
+     "logprob": -0.8264191150665283
+    },
+    {
+     "token": " ",
+     "logprob": -0.04146626591682434
+    },
+    {
+     "token": "8",
+     "logprob": -0.00459826597943902
+    },
+    {
+     "token": "9",
+     "logprob": -7.140891102608293e-05
+    },
+    {
+     "token": "5",
+     "logprob": -0.0003059378359466791
+    },
+    {
+     "token": " mm",
+     "logprob": -0.2297934889793396
+    },
+    {
+     "token": " (",
+     "logprob": -1.9261741638183594
+    },
+    {
+     "token": "vs",
+     "logprob": -2.01501727104187
+    },
+    {
+     "token": " ",
+     "logprob": -0.7146139144897461
+    },
+    {
+     "token": "2",
+     "logprob": -0.22418560087680817
+    },
+    {
+     "token": "0",
+     "logprob": -0.002357577672228217
+    },
+    {
+     "token": "8",
+     "logprob": -0.002078665653243661
+    },
+    {
+     "token": " in",
+     "logprob": -1.6617249250411987
+    },
+    {
+     "token": " Cork",
+     "logprob": -0.00037856114795431495
+    },
+    {
+     "token": " and",
+     "logprob": -0.22988168895244598
+    },
+    {
+     "token": " ",
+     "logprob": -0.0002865605929400772
+    },
+    {
+     "token": "6",
+     "logprob": -0.0006581922061741352
+    },
+    {
+     "token": "7",
+     "logprob": -7.927732076495886e-05
+    },
+    {
+     "token": "3",
+     "logprob": -0.0003668742720037699
+    },
+    {
+     "token": " in",
+     "logprob": -0.0007869717082940042
+    },
+    {
+     "token": " Tur",
+     "logprob": -9.620652417652309e-05
+    },
+    {
+     "token": "in",
+     "logprob": -3.182938598911278e-05
+    },
+    {
+     "token": ").",
+     "logprob": -0.12578217685222626
+    },
+    {
+     "token": " The",
+     "logprob": -0.8420285582542419
+    },
+    {
+     "token": " difference",
+     "logprob": -0.7741707563400269
+    },
+    {
+     "token": " is",
+     "logprob": -0.45821407437324524
+    },
+    {
+     "token": " ",
+     "logprob": -0.26524412631988525
+    },
+    {
+     "token": "6",
+     "logprob": -0.732735812664032
+    },
+    {
+     "token": "8",
+     "logprob": -0.026317745447158813
+    },
+    {
+     "token": "7",
+     "logprob": -0.004811399150639772
+    },
+    {
+     "token": " mm",
+     "logprob": -0.026160428300499916
+    },
+    {
+     "token": ".",
+     "logprob": -1.6009635925292969
+    },
+    {
+     "token": "",
+     "logprob": -0.5729306936264038
+    }
+   ],
+   "output": "Lyon has the highest rainfall at 895 mm (vs 208 in Cork and 673 in Turin). The difference is 687 mm."
+  },
+  {
+   "fixture": "compare05",
+   "pass": true,
+   "turn_s": 2.92,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.7731858491897583,
+    "mean_logprob": -0.3548917680154479,
+    "p10_logprob": -0.8806131482124329,
+    "share_below_half": 0.22580645161290322,
+    "digit_min_logprob": -0.27768510580062866,
+    "tokens": 31.0
+   },
+   "tokens": [
+    {
+     "token": "L",
+     "logprob": -1.7731858491897583
+    },
+    {
+     "token": "yon",
+     "logprob": -0.006023451220244169
+    },
+    {
+     "token": " had",
+     "logprob": -0.340450257062912
+    },
+    {
+     "token": " the",
+     "logprob": -0.08057387918233871
+    },
+    {
+     "token": " most",
+     "logprob": -0.09361980110406876
+    },
+    {
+     "token": " rain",
+     "logprob": -0.04690781608223915
+    },
+    {
+     "token": " (",
+     "logprob": -0.8681597113609314
+    },
+    {
+     "token": "8",
+     "logprob": -0.010626068338751793
+    },
+    {
+     "token": "9",
+     "logprob": -0.00036699353950098157
+    },
+    {
+     "token": "0",
+     "logprob": -0.0005273420829325914
+    },
+    {
+     "token": " mm",
+     "logprob": -0.22450239956378937
+    },
+    {
+     "token": ")",
+     "logprob": -0.9320214986801147
+    },
+    {
+     "token": " compared",
+     "logprob": -1.7722069025039673
+    },
+    {
+     "token": " to",
+     "logprob": -0.005291369743645191
+    },
+    {
+     "token": " Porto",
+     "logprob": -0.8806131482124329
+    },
+    {
+     "token": " (",
+     "logprob": -0.2556096315383911
+    },
+    {
+     "token": "1",
+     "logprob": -0.004060693550854921
+    },
+    {
+     "token": "4",
+     "logprob": -0.00040950815309770405
+    },
+    {
+     "token": "3",
+     "logprob": -0.00033586897188797593
+    },
+    {
+     "token": " mm",
+     "logprob": -0.0026394957676529884
+    },
+    {
+     "token": ").",
+     "logprob": -0.8269966244697571
+    },
+    {
+     "token": " The",
+     "logprob": -0.662940263748169
+    },
+    {
+     "token": " difference",
+     "logprob": -0.32206299901008606
+    },
+    {
+     "token": " is",
+     "logprob": -0.1808692365884781
+    },
+    {
+     "token": " ",
+     "logprob": -0.1638403981924057
+    },
+    {
+     "token": "7",
+     "logprob": -0.27768510580062866
+    },
+    {
+     "token": "4",
+     "logprob": -0.0072208247147500515
+    },
+    {
+     "token": "7",
+     "logprob": -0.005083465948700905
+    },
+    {
+     "token": " mm",
+     "logprob": -0.043835096061229706
+    },
+    {
+     "token": ".",
+     "logprob": -0.8639594316482544
+    },
+    {
+     "token": "",
+     "logprob": -0.3490196764469147
+    }
+   ],
+   "output": "Lyon had the most rain (890 mm) compared to Porto (143 mm). The difference is 747 mm."
+  },
+  {
+   "fixture": "compare06",
+   "pass": false,
+   "turn_s": 4.42,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.7932372093200684,
+    "mean_logprob": -0.31181248252496363,
+    "p10_logprob": -1.468932032585144,
+    "share_below_half": 0.15254237288135594,
+    "digit_min_logprob": -0.08600056171417236,
+    "tokens": 59.0
+   },
+   "tokens": [
+    {
+     "token": "L",
+     "logprob": -1.5101380348205566
+    },
+    {
+     "token": "inz",
+     "logprob": -0.025665078312158585
+    },
+    {
+     "token": " has",
+     "logprob": -1.5217076539993286
+    },
+    {
+     "token": " the",
+     "logprob": -0.06272544711828232
+    },
+    {
+     "token": " most",
+     "logprob": -0.3084583580493927
+    },
+    {
+     "token": " rain",
+     "logprob": -0.060539886355400085
+    },
+    {
+     "token": " (",
+     "logprob": -0.8383015394210815
+    },
+    {
+     "token": "6",
+     "logprob": -0.03911691531538963
+    },
+    {
+     "token": "7",
+     "logprob": -0.0006278936052694917
+    },
+    {
+     "token": "5",
+     "logprob": -0.0004010408592876047
+    },
+    {
+     "token": " mm",
+     "logprob": -0.2111930400133133
+    },
+    {
+     "token": ")",
+     "logprob": -1.0452759265899658
+    },
+    {
+     "token": " compared",
+     "logprob": -1.682625412940979
+    },
+    {
+     "token": " to",
+     "logprob": -0.004968089051544666
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.6065577864646912
+    },
+    {
+     "token": " (",
+     "logprob": -0.15506517887115479
+    },
+    {
+     "token": "1",
+     "logprob": -0.006126775871962309
+    },
+    {
+     "token": "2",
+     "logprob": -0.0003427854389883578
+    },
+    {
+     "token": "8",
+     "logprob": -0.0003635351895354688
+    },
+    {
+     "token": " mm",
+     "logprob": -0.012698771432042122
+    },
+    {
+     "token": ")",
+     "logprob": -0.3204084634780884
+    },
+    {
+     "token": " and",
+     "logprob": -0.11019488424062729
+    },
+    {
+     "token": " Tur",
+     "logprob": -0.025560082867741585
+    },
+    {
+     "token": "in",
+     "logprob": -8.225779311032966e-05
+    },
+    {
+     "token": " (",
+     "logprob": -0.0017810818972066045
+    },
+    {
+     "token": "8",
+     "logprob": -0.0004693178634624928
+    },
+    {
+     "token": "7",
+     "logprob": -5.49569922441151e-05
+    },
+    {
+     "token": "8",
+     "logprob": -0.0007302446756511927
+    },
+    {
+     "token": " mm",
+     "logprob": -0.008912043645977974
+    },
+    {
+     "token": ").",
+     "logprob": -0.44210392236709595
+    },
+    {
+     "token": " The",
+     "logprob": -1.468932032585144
+    },
+    {
+     "token": " city",
+     "logprob": -0.2965013384819031
+    },
+    {
+     "token": " with",
+     "logprob": -0.008088309317827225
+    },
+    {
+     "token": " the",
+     "logprob": -0.011556688696146011
+    },
+    {
+     "token": " least",
+     "logprob": -0.15564025938510895
+    },
+    {
+     "token": " rain",
+     "logprob": -0.050371427088975906
+    },
+    {
+     "token": " is",
+     "logprob": -0.037039875984191895
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.3674570322036743
+    },
+    {
+     "token": ".",
+     "logprob": -1.0636513233184814
+    },
+    {
+     "token": "\n\n",
+     "logprob": -0.5282599329948425
+    },
+    {
+     "token": "Difference",
+     "logprob": -1.7932372093200684
+    },
+    {
+     "token": ":",
+     "logprob": -0.40801212191581726
+    },
+    {
+     "token": " ",
+     "logprob": -0.46240243315696716
+    },
+    {
+     "token": "6",
+     "logprob": -0.08600056171417236
+    },
+    {
+     "token": "7",
+     "logprob": -0.0018911351216956973
+    },
+    {
+     "token": "5",
+     "logprob": -0.00537496292963624
+    },
+    {
+     "token": " -",
+     "logprob": -0.4904683232307434
+    },
+    {
+     "token": " ",
+     "logprob": -0.00454701017588377
+    },
+    {
+     "token": "1",
+     "logprob": -0.07247506827116013
+    },
+    {
+     "token": "2",
+     "logprob": -0.00016392620455008
+    },
+    {
+     "token": "8",
+     "logprob": -0.0004370571405161172
+    },
+    {
+     "token": " =",
+     "logprob": -0.0012653126614168286
+    },
+    {
+     "token": " ",
+     "logprob": -0.0614166185259819
+    },
+    {
+     "token": "5",
+     "logprob": -0.0013070896966382861
+    },
+    {
+     "token": "4",
+     "logprob": -0.00025818104040808976
+    },
+    {
+     "token": "7",
+     "logprob": -0.00044182760757394135
+    },
+    {
+     "token": " mm",
+     "logprob": -0.0558917261660099
+    },
+    {
+     "token": ".",
+     "logprob": -0.36667072772979736
+    },
+    {
+     "token": "",
+     "logprob": -1.5939805507659912
+    }
+   ],
+   "output": "Linz has the most rain (675 mm) compared to Lyon (128 mm) and Turin (878 mm). The city with the least rain is Lyon.\n\nDifference: 675 - 128 = 547 mm."
+  },
+  {
+   "fixture": "compare07",
+   "pass": false,
+   "turn_s": 4.02,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.1993565559387207,
+    "mean_logprob": -0.3999710995223448,
+    "p10_logprob": -1.0955140590667725,
+    "share_below_half": 0.20754716981132076,
+    "digit_min_logprob": -1.0955140590667725,
+    "tokens": 53.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -1.730627179145813
+    },
+    {
+     "token": " city",
+     "logprob": -0.6544412970542908
+    },
+    {
+     "token": " with",
+     "logprob": -0.03143852576613426
+    },
+    {
+     "token": " the",
+     "logprob": -0.010387059301137924
+    },
+    {
+     "token": " most",
+     "logprob": -0.04602061212062836
+    },
+    {
+     "token": " rain",
+     "logprob": -0.02008269540965557
+    },
+    {
+     "token": " is",
+     "logprob": -0.05971707031130791
+    },
+    {
+     "token": " **",
+     "logprob": -1.0699340105056763
+    },
+    {
+     "token": "G",
+     "logprob": -0.4147402048110962
+    },
+    {
+     "token": "hent",
+     "logprob": -0.001384023460559547
+    },
+    {
+     "token": "**",
+     "logprob": -0.32581499218940735
+    },
+    {
+     "token": " (",
+     "logprob": -0.27848947048187256
+    },
+    {
+     "token": "7",
+     "logprob": -0.04471699520945549
+    },
+    {
+     "token": "2",
+     "logprob": -0.0010145683772861958
+    },
+    {
+     "token": "0",
+     "logprob": -0.005025236867368221
+    },
+    {
+     "token": " mm",
+     "logprob": -0.10437926650047302
+    },
+    {
+     "token": ").",
+     "logprob": -0.4155559539794922
+    },
+    {
+     "token": " The",
+     "logprob": -0.9597223401069641
+    },
+    {
+     "token": " city",
+     "logprob": -0.4073507487773895
+    },
+    {
+     "token": " with",
+     "logprob": -0.00507777463644743
+    },
+    {
+     "token": " the",
+     "logprob": -0.0008898759260773659
+    },
+    {
+     "token": " least",
+     "logprob": -0.005628001876175404
+    },
+    {
+     "token": " rain",
+     "logprob": -0.1474565863609314
+    },
+    {
+     "token": " is",
+     "logprob": -0.0455956794321537
+    },
+    {
+     "token": " **",
+     "logprob": -0.006333997007459402
+    },
+    {
+     "token": "L",
+     "logprob": -0.7409926056861877
+    },
+    {
+     "token": "inz",
+     "logprob": -0.00017555108934175223
+    },
+    {
+     "token": "**",
+     "logprob": -0.012314612977206707
+    },
+    {
+     "token": " (",
+     "logprob": -0.016852866858243942
+    },
+    {
+     "token": "7",
+     "logprob": -0.03890954330563545
+    },
+    {
+     "token": "2",
+     "logprob": -0.011499166488647461
+    },
+    {
+     "token": "7",
+     "logprob": -0.027932249009609222
+    },
+    {
+     "token": " mm",
+     "logprob": -0.022793002426624298
+    },
+    {
+     "token": ").",
+     "logprob": -0.5266594886779785
+    },
+    {
+     "token": "\n\n",
+     "logprob": -0.8456749320030212
+    },
+    {
+     "token": "Therefore",
+     "logprob": -2.1993565559387207
+    },
+    {
+     "token": ",",
+     "logprob": -0.02121891640126705
+    },
+    {
+     "token": " **",
+     "logprob": -0.9992865920066833
+    },
+    {
+     "token": "L",
+     "logprob": -0.6242167353630066
+    },
+    {
+     "token": "inz",
+     "logprob": -0.0015496094711124897
+    },
+    {
+     "token": "**",
+     "logprob": -0.4744791090488434
+    },
+    {
+     "token": " had",
+     "logprob": -1.2425901889801025
+    },
+    {
+     "token": " **",
+     "logprob": -0.3904256820678711
+    },
+    {
+     "token": "7",
+     "logprob": -0.3987223505973816
+    },
+    {
+     "token": "7",
+     "logprob": -1.0955140590667725
+    },
+    {
+     "token": " mm",
+     "logprob": -0.11662692576646805
+    },
+    {
+     "token": " less",
+     "logprob": -1.616782784461975
+    },
+    {
+     "token": "**",
+     "logprob": -0.12180604040622711
+    },
+    {
+     "token": " than",
+     "logprob": -0.49930378794670105
+    },
+    {
+     "token": " Gh",
+     "logprob": -1.353755235671997
+    },
+    {
+     "token": "ent",
+     "logprob": -0.00024923807359300554
+    },
+    {
+     "token": ".",
+     "logprob": -0.5257724523544312
+    },
+    {
+     "token": "",
+     "logprob": -0.48118382692337036
+    }
+   ],
+   "output": "The city with the most rain is **Ghent** (720 mm). The city with the least rain is **Linz** (727 mm).\n\nTherefore, **Linz** had **77 mm less** than Ghent."
+  },
+  {
+   "fixture": "compare08",
+   "pass": false,
+   "turn_s": 5.14,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.9281753301620483,
+    "mean_logprob": -0.39881697175287023,
+    "p10_logprob": -1.5385847091674805,
+    "share_below_half": 0.21333333333333335,
+    "digit_min_logprob": -0.6355973482131958,
+    "tokens": 75.0
+   },
+   "tokens": [
+    {
+     "token": "L",
+     "logprob": -1.425240159034729
+    },
+    {
+     "token": "yon",
+     "logprob": -0.009629449807107449
+    },
+    {
+     "token": " has",
+     "logprob": -1.2274800539016724
+    },
+    {
+     "token": " the",
+     "logprob": -0.16154949367046356
+    },
+    {
+     "token": " most",
+     "logprob": -0.7657806873321533
+    },
+    {
+     "token": " rain",
+     "logprob": -0.085187166929245
+    },
+    {
+     "token": " (",
+     "logprob": -0.9947985410690308
+    },
+    {
+     "token": "5",
+     "logprob": -0.19815587997436523
+    },
+    {
+     "token": "6",
+     "logprob": -0.0029121083207428455
+    },
+    {
+     "token": "3",
+     "logprob": -0.001606383011676371
+    },
+    {
+     "token": " mm",
+     "logprob": -0.355441153049469
+    },
+    {
+     "token": ")",
+     "logprob": -1.0368928909301758
+    },
+    {
+     "token": " compared",
+     "logprob": -1.550838589668274
+    },
+    {
+     "token": " to",
+     "logprob": -0.008722987025976181
+    },
+    {
+     "token": " Porto",
+     "logprob": -0.9221212267875671
+    },
+    {
+     "token": " (",
+     "logprob": -0.17103929817676544
+    },
+    {
+     "token": "6",
+     "logprob": -0.014294501394033432
+    },
+    {
+     "token": "2",
+     "logprob": -0.0015630414709448814
+    },
+    {
+     "token": "0",
+     "logprob": -0.0007848242530599236
+    },
+    {
+     "token": " mm",
+     "logprob": -0.028544200584292412
+    },
+    {
+     "token": ")",
+     "logprob": -0.43105846643447876
+    },
+    {
+     "token": " and",
+     "logprob": -0.2690589427947998
+    },
+    {
+     "token": " Mal",
+     "logprob": -0.012430780567228794
+    },
+    {
+     "token": "mo",
+     "logprob": -0.0016862057382240891
+    },
+    {
+     "token": " (",
+     "logprob": -0.007256727200001478
+    },
+    {
+     "token": "6",
+     "logprob": -0.004462887533009052
+    },
+    {
+     "token": "4",
+     "logprob": -0.0003344379656482488
+    },
+    {
+     "token": "6",
+     "logprob": -0.0004997309879399836
+    },
+    {
+     "token": " mm",
+     "logprob": -0.0038548405282199383
+    },
+    {
+     "token": ").",
+     "logprob": -0.4142508804798126
+    },
+    {
+     "token": " The",
+     "logprob": -1.5385847091674805
+    },
+    {
+     "token": " city",
+     "logprob": -0.1798570603132248
+    },
+    {
+     "token": " with",
+     "logprob": -0.006421037018299103
+    },
+    {
+     "token": " the",
+     "logprob": -0.010682335123419762
+    },
+    {
+     "token": " least",
+     "logprob": -0.22110065817832947
+    },
+    {
+     "token": " rain",
+     "logprob": -0.0944504365324974
+    },
+    {
+     "token": " is",
+     "logprob": -0.06808662414550781
+    },
+    {
+     "token": " Porto",
+     "logprob": -0.5742369294166565
+    },
+    {
+     "token": ".",
+     "logprob": -1.6214776039123535
+    },
+    {
+     "token": "\n\n",
+     "logprob": -0.5053688883781433
+    },
+    {
+     "token": "Difference",
+     "logprob": -1.9281753301620483
+    },
+    {
+     "token": ":",
+     "logprob": -0.3659656345844269
+    },
+    {
+     "token": " ",
+     "logprob": -0.36348211765289307
+    },
+    {
+     "token": "6",
+     "logprob": -0.08224695920944214
+    },
+    {
+     "token": "2",
+     "logprob": -0.6355973482131958
+    },
+    {
+     "token": "0",
+     "logprob": -0.00015391103806905448
+    },
+    {
+     "token": " -",
+     "logprob": -0.5341141819953918
+    },
+    {
+     "token": " ",
+     "logprob": -0.0008265214273706079
+    },
+    {
+     "token": "5",
+     "logprob": -0.023903312161564827
+    },
+    {
+     "token": "6",
+     "logprob": -0.00029431143775582314
+    },
+    {
+     "token": "3",
+     "logprob": -0.0004554235783871263
+    },
+    {
+     "token": " =",
+     "logprob": -0.0008499657269567251
+    },
+    {
+     "token": " ",
+     "logprob": -0.08715727925300598
+    },
+    {
+     "token": "5",
+     "logprob": -0.11706391721963882
+    },
+    {
+     "token": "7",
+     "logprob": -0.007753250654786825
+    },
+    {
+     "token": " mm",
+     "logprob": -0.06841520965099335
+    },
+    {
+     "token": ".",
+     "logprob": -0.572496771812439
+    },
+    {
+     "token": "\n\n",
+     "logprob": -0.6848881244659424
+    },
+    {
+     "token": "Answer",
+     "logprob": -1.5537192821502686
+    },
+    {
+     "token": ":",
+     "logprob": -0.058368124067783356
+    },
+    {
+     "token": " Lyon",
+     "logprob": -1.1006306409835815
+    },
+    {
+     "token": " had",
+     "logprob": -1.6923859119415283
+    },
+    {
+     "token": " the",
+     "logprob": -0.09570328891277313
+    },
+    {
+     "token": " most",
+     "logprob": -0.021209783852100372
+    },
+    {
+     "token": " rain",
+     "logprob": -0.025638049468398094
+    },
+    {
+     "token": " by",
+     "logprob": -1.813367247581482
+    },
+    {
+     "token": " ",
+     "logprob": -0.21155864000320435
+    },
+    {
+     "token": "5",
+     "logprob": -0.0014458016958087683
+    },
+    {
+     "token": "7",
+     "logprob": -0.002011293778195977
+    },
+    {
+     "token": " mm",
+     "logprob": -0.04194868355989456
+    },
+    {
+     "token": " more",
+     "logprob": -1.7917720079421997
+    },
+    {
+     "token": " than",
+     "logprob": -0.009974529035389423
+    },
+    {
+     "token": " Porto",
+     "logprob": -0.7909371256828308
+    },
+    {
+     "token": ".",
+     "logprob": -0.19853323698043823
+    },
+    {
+     "token": "",
+     "logprob": -0.10048684477806091
+    }
+   ],
+   "output": "Lyon has the most rain (563 mm) compared to Porto (620 mm) and Malmo (646 mm). The city with the least rain is Porto.\n\nDifference: 620 - 563 = 57 mm.\n\nAnswer: Lyon had the most rain by 57 mm more than Porto."
+  },
+  {
+   "fixture": "compare09",
+   "pass": false,
+   "turn_s": 3.32,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.9153534173965454,
+    "mean_logprob": -0.4196370110751429,
+    "p10_logprob": -0.8590803146362305,
+    "share_below_half": 0.25,
+    "digit_min_logprob": -0.8461267948150635,
+    "tokens": 28.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -1.9153534173965454
+    },
+    {
+     "token": " city",
+     "logprob": -0.4593223035335541
+    },
+    {
+     "token": " with",
+     "logprob": -0.0310584157705307
+    },
+    {
+     "token": " the",
+     "logprob": -0.01255444623529911
+    },
+    {
+     "token": " most",
+     "logprob": -0.0335339680314064
+    },
+    {
+     "token": " rain",
+     "logprob": -0.02138812281191349
+    },
+    {
+     "token": " is",
+     "logprob": -0.05235018581151962
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.7306575775146484
+    },
+    {
+     "token": " (",
+     "logprob": -0.4835719168186188
+    },
+    {
+     "token": "6",
+     "logprob": -0.8461267948150635
+    },
+    {
+     "token": "3",
+     "logprob": -0.006898180115967989
+    },
+    {
+     "token": "5",
+     "logprob": -0.0007737291161902249
+    },
+    {
+     "token": " mm",
+     "logprob": -0.2602320909500122
+    },
+    {
+     "token": ").",
+     "logprob": -0.7484245896339417
+    },
+    {
+     "token": " The",
+     "logprob": -0.6104590892791748
+    },
+    {
+     "token": " difference",
+     "logprob": -1.3691173791885376
+    },
+    {
+     "token": " between",
+     "logprob": -0.8590803146362305
+    },
+    {
+     "token": " Lyon",
+     "logprob": -0.6553065180778503
+    },
+    {
+     "token": " and",
+     "logprob": -0.05242938920855522
+    },
+    {
+     "token": " Porto",
+     "logprob": -0.6593117117881775
+    },
+    {
+     "token": " is",
+     "logprob": -0.0883980244398117
+    },
+    {
+     "token": " ",
+     "logprob": -0.102998748421669
+    },
+    {
+     "token": "2",
+     "logprob": -0.25187721848487854
+    },
+    {
+     "token": "7",
+     "logprob": -0.03033112920820713
+    },
+    {
+     "token": "0",
+     "logprob": -0.006404960062354803
+    },
+    {
+     "token": " mm",
+     "logprob": -0.01575719751417637
+    },
+    {
+     "token": ".",
+     "logprob": -0.8137546181678772
+    },
+    {
+     "token": "",
+     "logprob": -0.6323642730712891
+    }
+   ],
+   "output": "The city with the most rain is Lyon (635 mm). The difference between Lyon and Porto is 270 mm."
+  },
+  {
+   "fixture": "compare10",
+   "pass": false,
+   "turn_s": 3.12,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -2.333723545074463,
+    "mean_logprob": -0.59988852027596,
+    "p10_logprob": -1.6325042247772217,
+    "share_below_half": 0.35135135135135137,
+    "digit_min_logprob": -0.8712392449378967,
+    "tokens": 37.0
+   },
+   "tokens": [
+    {
+     "token": "L",
+     "logprob": -1.2542877197265625
+    },
+    {
+     "token": "yon",
+     "logprob": -0.0033872209023684263
+    },
+    {
+     "token": " has",
+     "logprob": -1.3370001316070557
+    },
+    {
+     "token": " the",
+     "logprob": -0.11599552631378174
+    },
+    {
+     "token": " highest",
+     "logprob": -1.4636062383651733
+    },
+    {
+     "token": " rainfall",
+     "logprob": -0.2830478847026825
+    },
+    {
+     "token": " at",
+     "logprob": -0.8592358231544495
+    },
+    {
+     "token": " ",
+     "logprob": -0.059088464826345444
+    },
+    {
+     "token": "2",
+     "logprob": -0.02073507383465767
+    },
+    {
+     "token": "4",
+     "logprob": -0.0011512704659253359
+    },
+    {
+     "token": "0",
+     "logprob": -0.0003839276032522321
+    },
+    {
+     "token": " mm",
+     "logprob": -0.1820298731327057
+    },
+    {
+     "token": " (",
+     "logprob": -1.729405403137207
+    },
+    {
+     "token": "vs",
+     "logprob": -2.333723545074463
+    },
+    {
+     "token": " ",
+     "logprob": -0.5448025465011597
+    },
+    {
+     "token": "5",
+     "logprob": -0.3581209182739258
+    },
+    {
+     "token": "2",
+     "logprob": -0.004452051129192114
+    },
+    {
+     "token": "6",
+     "logprob": -0.013325328938663006
+    },
+    {
+     "token": "/",
+     "logprob": -1.9024074077606201
+    },
+    {
+     "token": "2",
+     "logprob": -0.02444542944431305
+    },
+    {
+     "token": "2",
+     "logprob": -0.0009436886175535619
+    },
+    {
+     "token": "4",
+     "logprob": -0.0011029363377019763
+    },
+    {
+     "token": " for",
+     "logprob": -0.7941586971282959
+    },
+    {
+     "token": " Porto",
+     "logprob": -0.5622389912605286
+    },
+    {
+     "token": "/T",
+     "logprob": -1.2698556184768677
+    },
+    {
+     "token": "urin",
+     "logprob": -0.023844648152589798
+    },
+    {
+     "token": ").",
+     "logprob": -0.3539966940879822
+    },
+    {
+     "token": " The",
+     "logprob": -1.2740598917007446
+    },
+    {
+     "token": " difference",
+     "logprob": -0.9493488669395447
+    },
+    {
+     "token": " is",
+     "logprob": -0.509544312953949
+    },
+    {
+     "token": " ",
+     "logprob": -0.38844436407089233
+    },
+    {
+     "token": "2",
+     "logprob": -0.8712392449378967
+    },
+    {
+     "token": "8",
+     "logprob": -0.41196900606155396
+    },
+    {
+     "token": "6",
+     "logprob": -0.013341819867491722
+    },
+    {
+     "token": " mm",
+     "logprob": -0.04044788330793381
+    },
+    {
+     "token": ".",
+     "logprob": -1.6325042247772217
+    },
+    {
+     "token": "",
+     "logprob": -0.6082025766372681
+    }
+   ],
+   "output": "Lyon has the highest rainfall at 240 mm (vs 526/224 for Porto/Turin). The difference is 286 mm."
+  },
+  {
+   "fixture": "compare11",
+   "pass": false,
+   "turn_s": 5.32,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.3397691249847412,
+    "mean_logprob": -0.19579934593707637,
+    "p10_logprob": -0.5272966027259827,
+    "share_below_half": 0.09375,
+    "digit_min_logprob": -0.7891713976860046,
+    "tokens": 32.0
+   },
+   "tokens": [
+    {
+     "token": "Br",
+     "logprob": -0.034376658499240875
+    },
+    {
+     "token": "no",
+     "logprob": -0.00025782332522794604
+    },
+    {
+     "token": " had",
+     "logprob": -0.1474408358335495
+    },
+    {
+     "token": " the",
+     "logprob": -0.00013590783055406064
+    },
+    {
+     "token": " most",
+     "logprob": -0.08115046471357346
+    },
+    {
+     "token": " rain",
+     "logprob": -0.09938682615756989
+    },
+    {
+     "token": " at",
+     "logprob": -1.1177794933319092
+    },
+    {
+     "token": " ",
+     "logprob": -8.869564771885052e-05
+    },
+    {
+     "token": "174",
+     "logprob": -1.025205165205989e-05
+    },
+    {
+     "token": " mm",
+     "logprob": -0.08111219108104706
+    },
+    {
+     "token": ",",
+     "logprob": -0.522976279258728
+    },
+    {
+     "token": " while",
+     "logprob": -0.4931472837924957
+    },
+    {
+     "token": " Gh",
+     "logprob": -0.03503534942865372
+    },
+    {
+     "token": "ent",
+     "logprob": -9.036472329171374e-05
+    },
+    {
+     "token": " had",
+     "logprob": -0.058304812759160995
+    },
+    {
+     "token": " the",
+     "logprob": -0.0010487569961696863
+    },
+    {
+     "token": " least",
+     "logprob": -7.796591671649367e-05
+    },
+    {
+     "token": " at",
+     "logprob": -0.0017133719520643353
+    },
+    {
+     "token": " ",
+     "logprob": -1.3589951777248643e-05
+    },
+    {
+     "token": "346",
+     "logprob": -0.0003232286253478378
+    },
+    {
+     "token": " mm",
+     "logprob": -7.677372923353687e-05
+    },
+    {
+     "token": ".",
+     "logprob": -0.06358523666858673
+    },
+    {
+     "token": " That",
+     "logprob": -0.44311171770095825
+    },
+    {
+     "token": "\u2019s",
+     "logprob": -0.5272966027259827
+    },
+    {
+     "token": " a",
+     "logprob": -1.3397691249847412
+    },
+    {
+     "token": " difference",
+     "logprob": -0.0025385625194758177
+    },
+    {
+     "token": " of",
+     "logprob": -2.3841860752327193e-07
+    },
+    {
+     "token": " ",
+     "logprob": -0.01155608519911766
+    },
+    {
+     "token": "172",
+     "logprob": -0.7891713976860046
+    },
+    {
+     "token": " mm",
+     "logprob": -0.08806457370519638
+    },
+    {
+     "token": ".",
+     "logprob": -0.28725293278694153
+    },
+    {
+     "token": "",
+     "logprob": -0.038685671985149384
+    }
+   ],
+   "output": "Brno had the most rain at 174 mm, while Ghent had the least at 346 mm. That\u2019s a difference of 172 mm."
+  },
+  {
+   "fixture": "compare12",
+   "pass": false,
+   "turn_s": 3.02,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.164706826210022,
+    "mean_logprob": -0.19812771064846726,
+    "p10_logprob": -0.6860091686248779,
+    "share_below_half": 0.08571428571428572,
+    "digit_min_logprob": -0.1925549954175949,
+    "tokens": 35.0
+   },
+   "tokens": [
+    {
+     "token": "Br",
+     "logprob": -0.0672159492969513
+    },
+    {
+     "token": "no",
+     "logprob": -0.00021477859991136938
+    },
+    {
+     "token": " had",
+     "logprob": -0.14236164093017578
+    },
+    {
+     "token": " the",
+     "logprob": -0.00024375309294555336
+    },
+    {
+     "token": " most",
+     "logprob": -0.07979800552129745
+    },
+    {
+     "token": " rain",
+     "logprob": -0.07409419864416122
+    },
+    {
+     "token": " at",
+     "logprob": -1.164706826210022
+    },
+    {
+     "token": " ",
+     "logprob": -1.609338323760312e-05
+    },
+    {
+     "token": "785",
+     "logprob": -1.6689440599293448e-05
+    },
+    {
+     "token": " mm",
+     "logprob": -0.10341845452785492
+    },
+    {
+     "token": ".",
+     "logprob": -0.6748070120811462
+    },
+    {
+     "token": " L",
+     "logprob": -0.3484047055244446
+    },
+    {
+     "token": "inz",
+     "logprob": -0.0002438723313389346
+    },
+    {
+     "token": " had",
+     "logprob": -0.06663154810667038
+    },
+    {
+     "token": " the",
+     "logprob": -0.004637427628040314
+    },
+    {
+     "token": " least",
+     "logprob": -0.000989091582596302
+    },
+    {
+     "token": " at",
+     "logprob": -0.08317714184522629
+    },
+    {
+     "token": " ",
+     "logprob": -0.00010824789205798879
+    },
+    {
+     "token": "410",
+     "logprob": -8.857642387738451e-05
+    },
+    {
+     "token": " mm",
+     "logprob": -3.099489549640566e-05
+    },
+    {
+     "token": ".",
+     "logprob": -0.631815493106842
+    },
+    {
+     "token": " That",
+     "logprob": -0.6860091686248779
+    },
+    {
+     "token": " means",
+     "logprob": -0.9508189558982849
+    },
+    {
+     "token": " Br",
+     "logprob": -0.42345166206359863
+    },
+    {
+     "token": "no",
+     "logprob": -0.0008110115304589272
+    },
+    {
+     "token": " was",
+     "logprob": -1.1072797775268555
+    },
+    {
+     "token": " ",
+     "logprob": -0.004539885092526674
+    },
+    {
+     "token": "375",
+     "logprob": -0.1925549954175949
+    },
+    {
+     "token": " mm",
+     "logprob": -0.00788042414933443
+    },
+    {
+     "token": " more",
+     "logprob": -0.033279500901699066
+    },
+    {
+     "token": " than",
+     "logprob": -0.00324297696352005
+    },
+    {
+     "token": " L",
+     "logprob": -0.07742426544427872
+    },
+    {
+     "token": "inz",
+     "logprob": -4.0651193558005616e-05
+    },
+    {
+     "token": ".",
+     "logprob": -0.000975130416918546
+    },
+    {
+     "token": "",
+     "logprob": -0.003140966407954693
+    }
+   ],
+   "output": "Brno had the most rain at 785 mm. Linz had the least at 410 mm. That means Brno was 375 mm more than Linz."
+  },
+  {
+   "fixture": "compare13",
+   "pass": false,
+   "turn_s": 3.02,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -0.91969233751297,
+    "mean_logprob": -0.17715377774570965,
+    "p10_logprob": -0.5119344592094421,
+    "share_below_half": 0.029411764705882353,
+    "digit_min_logprob": -0.37963441014289856,
+    "tokens": 34.0
+   },
+   "tokens": [
+    {
+     "token": "Bre",
+     "logprob": -0.2633077800273895
+    },
+    {
+     "token": "men",
+     "logprob": -0.03850570693612099
+    },
+    {
+     "token": " had",
+     "logprob": -0.10134153813123703
+    },
+    {
+     "token": " the",
+     "logprob": -0.00010371745884185657
+    },
+    {
+     "token": " most",
+     "logprob": -0.4218866229057312
+    },
+    {
+     "token": " rain",
+     "logprob": -0.03415669873356819
+    },
+    {
+     "token": " at",
+     "logprob": -0.91969233751297
+    },
+    {
+     "token": " ",
+     "logprob": -1.764313128660433e-05
+    },
+    {
+     "token": "359",
+     "logprob": -0.00010800945165101439
+    },
+    {
+     "token": " mm",
+     "logprob": -0.0930049791932106
+    },
+    {
+     "token": ".",
+     "logprob": -0.44429829716682434
+    },
+    {
+     "token": " Cork",
+     "logprob": -0.16311056911945343
+    },
+    {
+     "token": " had",
+     "logprob": -0.0660611093044281
+    },
+    {
+     "token": " the",
+     "logprob": -0.00401724549010396
+    },
+    {
+     "token": " least",
+     "logprob": -0.0005093918298371136
+    },
+    {
+     "token": " at",
+     "logprob": -0.039501093327999115
+    },
+    {
+     "token": " ",
+     "logprob": -1.585496102052275e-05
+    },
+    {
+     "token": "240",
+     "logprob": -0.37963441014289856
+    },
+    {
+     "token": " mm",
+     "logprob": -1.3828373084834311e-05
+    },
+    {
+     "token": ".",
+     "logprob": -0.6398218274116516
+    },
+    {
+     "token": " That",
+     "logprob": -0.38294538855552673
+    },
+    {
+     "token": "\u2019s",
+     "logprob": -0.6848011016845703
+    },
+    {
+     "token": " ",
+     "logprob": -0.17333661019802094
+    },
+    {
+     "token": "119",
+     "logprob": -0.02183189056813717
+    },
+    {
+     "token": " mm",
+     "logprob": -0.12931707501411438
+    },
+    {
+     "token": " more",
+     "logprob": -0.011823238804936409
+    },
+    {
+     "token": " than",
+     "logprob": -0.1601954847574234
+    },
+    {
+     "token": " the",
+     "logprob": -0.3121679425239563
+    },
+    {
+     "token": " city",
+     "logprob": -0.5119344592094421
+    },
+    {
+     "token": " with",
+     "logprob": -0.00013710008352063596
+    },
+    {
+     "token": " the",
+     "logprob": -5.400326699600555e-05
+    },
+    {
+     "token": " least",
+     "logprob": -0.013126619160175323
+    },
+    {
+     "token": ".",
+     "logprob": -0.012064702808856964
+    },
+    {
+     "token": "",
+     "logprob": -0.000384166109142825
+    }
+   ],
+   "output": "Bremen had the most rain at 359 mm. Cork had the least at 240 mm. That\u2019s 119 mm more than the city with the least."
+  },
+  {
+   "fixture": "compare14",
+   "pass": false,
+   "turn_s": 6.34,
+   "status": null,
+   "streams": 1,
+   "answer_stream_matches_output": true,
+   "features": {
+    "min_logprob": -1.6186624765396118,
+    "mean_logprob": -0.2403842885933745,
+    "p10_logprob": -0.7492699027061462,
+    "share_below_half": 0.10256410256410256,
+    "digit_min_logprob": -0.3629975914955139,
+    "tokens": 39.0
+   },
+   "tokens": [
+    {
+     "token": "The",
+     "logprob": -1.6186624765396118
+    },
+    {
+     "token": " city",
+     "logprob": -0.4265914559364319
+    },
+    {
+     "token": " with",
+     "logprob": -0.028351396322250366
+    },
+    {
+     "token": " the",
+     "logprob": -0.008094859309494495
+    },
+    {
+     "token": " most",
+     "logprob": -0.03965122252702713
+    },
+    {
+     "token": " rain",
+     "logprob": -0.02450767159461975
+    },
+    {
+     "token": " is",
+     "logprob": -0.04744405299425125
+    },
+    {
+     "token": " Porto",
+     "logprob": -0.8527876734733582
+    },
+    {
+     "token": " (",
+     "logprob": -0.3760530948638916
+    },
+    {
+     "token": "5",
+     "logprob": -0.08634839951992035
+    },
+    {
+     "token": "9",
+     "logprob": -0.0005700424662791193
+    },
+    {
+     "token": "8",
+     "logprob": -0.00041523255640640855
+    },
+    {
+     "token": " mm",
+     "logprob": -0.21911843121051788
+    },
+    {
+     "token": ").",
+     "logprob": -0.5695106983184814
+    },
+    {
+     "token": " The",
+     "logprob": -0.5830134749412537
+    },
+    {
+     "token": " city",
+     "logprob": -0.3235674798488617
+    },
+    {
+     "token": " with",
+     "logprob": -0.0028865234926342964
+    },
+    {
+     "token": " the",
+     "logprob": -0.0008113694493658841
+    },
+    {
+     "token": " least",
+     "logprob": -0.0034054620191454887
+    },
+    {
+     "token": " rain",
+     "logprob": -0.18042823672294617
+    },
+    {
+     "token": " is",
+     "logprob": -0.025848986580967903
+    },
+    {
+     "token": " Lin",
+     "logprob": -0.6207312345504761
+    },
+    {
+     "token": "z",
+     "logprob": -0.0001101554516935721
+    },
+    {
+     "token": " (",
+     "logprob": -0.029295537620782852
+    },
+    {
+     "token": "2",
+     "logprob": -0.003025095909833908
+    },
+    {
+     "token": "6",
+     "logprob": -6.735551869496703e-05
+    },
+    {
+     "token": "6",
+     "logprob": -0.0001442536449758336
+    },
+    {
+     "token": " mm",
+     "logprob": -0.000922389910556376
+    },
+    {
+     "token": ").",
+     "logprob": -0.13762235641479492
+    },
+    {
+     "token": " The",
+     "logprob": -0.7881074547767639
+    },
+    {
+     "token": " difference",
+     "logprob": -0.09155436605215073
+    },
+    {
+     "token": " is",
+     "logprob": -0.2245396375656128
+    },
+    {
+     "token": " ",
+     "logprob": -0.24536530673503876
+    },
+    {
+     "token": "3",
+     "logprob": -0.3629975914955139
+    },
+    {
+     "token": "3",
+     "logprob": -0.017540812492370605
+    },
+    {
+     "token": "2",
+     "logprob": -0.0019799985457211733
+    },
+    {
+     "token": " mm",
+     "logprob": -0.04297550395131111
+    },
+    {
+     "token": ".",
+     "logprob": -0.7492699027061462
+    },
+    {
+     "token": "",
+     "logprob": -0.6406700611114502
+    }
+   ],
+   "output": "The city with the most rain is Porto (598 mm). The city with the least rain is Linz (266 mm). The difference is 332 mm."
+  }
+ ]
+}

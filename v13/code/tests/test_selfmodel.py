@@ -53,6 +53,13 @@ class AttributionTests(unittest.TestCase):
     def test_ambiguous_causality(self):
         a=S.attribute([self.cor('a1'),self.cor('a2',101.)],{'channel':'status','value':'FINAL','t':105})
         self.assertEqual((a['class'],a['action_ids']),('UNCLEAR',['a1','a2']))
+    def test_nearest_prediction_and_far_values_abstain(self):
+        # thread L 2026-10-12 (bench-results/corollary-unclear-20261012): residual against the nearest open prediction;
+        # far outside every own prediction -> UNCLEAR (no own error learned, no foreign claim)
+        a1=self.cor('a1',100.,[{'channel':'n','value':10.,'tolerance':2.}]);a2=self.cor('a2',101.,[{'channel':'n','value':50.,'tolerance':2.}])
+        m=S.attribute([a1,a2],{'channel':'n','value':56.,'t':105});self.assertEqual((m['class'],m['action_ids'],m['residual']),('MIXED',['a2'],6.))
+        far=S.attribute([a1],{'channel':'n','value':700.,'t':105});self.assertEqual((far['class'],far['reason'],far['action_ids']),('UNCLEAR','far_outside_own_prediction',[]))
+        self.assertEqual(S.attribute([a1],{'channel':'n','value':10.+S.FAR_K*2.,'t':105})['class'],'MIXED')  # boundary still own
     def test_missing_corollary_degrades_monitoring_measurably(self):
         obs=[{'channel':'status','value':'FINAL','t':105},{'channel':'duration_s','value':5.2,'t':105}]
         with_copy=[S.attribute([self.cor()],o)['class'] for o in obs];without=[S.attribute([],o)['class'] for o in obs]

@@ -129,11 +129,25 @@ def snapshot(home,pids=()):
         except OSError:pass
     return {"wall_time":time.time(),"mem_available_bytes":available,"mem_total_bytes":total,"free_disk_bytes":shutil.disk_usage(home).free,"battery_temperature_c":temp,"battery_percent":battery,"charging":charging,"processes":[process_memory(p) for p in [os.getpid(),*pids]],"own_peak_rss_bytes":resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024}
 class ResourceGuard:
-    def __init__(self,cfg):self.cfg=cfg;self.state="NORMAL"
+    """F7 guard with the §97.2 four-level mode (``resource_modes``) behind the legacy states.
+
+    ``update`` returns the legacy state (NORMAL/RECOVERY/PRESSURE/CRITICAL) that older call sites
+    compare against; ``mode`` (GREEN/YELLOW/ORANGE/RED) and ``reasons`` carry the finer view.
+    Assigning ``state`` directly (tests, reflex paths) is honoured: ``mode`` then follows it.
+    """
+    def __init__(self,cfg,profile=None):
+        from .resource_modes import boot_profile
+        self.cfg=cfg;self.state="NORMAL";self.profile=profile or boot_profile(cfg);self._mode=("NORMAL","GREEN");self.reasons=[]
+    @property
+    def mode(self):
+        from .resource_modes import as_mode
+        return self._mode[1] if self._mode[0]==self.state else as_mode(self.state)
+    def load_profile(self,store):
+        from .resource_modes import load_profile
+        self.profile=load_profile(store,self.cfg);return self.profile
     def update(self,s):
-        mem=s["mem_available_bytes"];temp=s["battery_temperature_c"];floor=self.cfg["minimum_free_mb"]*1024*1024;limit=self.cfg["thermal_limit_c"]
-        if (mem is not None and mem<floor) or (temp is not None and temp>=limit):new="CRITICAL"
-        elif (mem is not None and mem<2*floor) or (temp is not None and temp>=limit-3):new="PRESSURE"
-        elif self.state in {"CRITICAL","PRESSURE"}:new="RECOVERY"
-        else:new="NORMAL"
-        self.state=new;return new
+        from .resource_modes import classify,MODE_LEGACY
+        mode,self.reasons=classify(s,self.profile,self.mode)
+        new=MODE_LEGACY[mode]
+        if new=="NORMAL" and self.state in {"CRITICAL","PRESSURE"}:new="RECOVERY"
+        self.state=new;self._mode=(new,mode);return new

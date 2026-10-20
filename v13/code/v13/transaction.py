@@ -33,7 +33,7 @@ NEXT={'PREPARED':{'COPY_COMMITTED','CANCELLED'},'COPY_COMMITTED':{'EXECUTING','C
 HISTORY=128;IDEM_MAX=512;STALE_PREPARED_S=3600.;PREVIEW_CHARS=200
 NAME=re.compile(r'^[a-z][a-z0-9_]{1,31}$')
 SHELLISH=re.compile(r'[;&|`$<>]|\b(rm|sudo|curl|wget|chmod|sh|bash)\b')
-ARG_TYPES={'str':str,'text':str,'int':int,'float':(int,float),'bool':bool,'secret':dict}
+ARG_TYPES={'str':str,'int':int,'float':(int,float),'bool':bool,'secret':dict,'text':str}  # 'text': quoted source data for pure READ_LOCAL functions, never passed to a shell (WP-W2c)
 CONFIRM_ALWAYS={'WRITE_LOCAL','NETWORK','EXTERNAL_EFFECT'}
 EVENT={'provisional_gain':.65,'provisional_memory_write':.20,'provisional_weight_learning':0.,
        'final_gain':1.,'final_memory_write':.90,'final_learning_eligibility':.80}   # §72 BOOT

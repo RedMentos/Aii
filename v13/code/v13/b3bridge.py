@@ -136,7 +136,7 @@ class Bridge:
                     mom[k]=.9*mom[k]+.1*gr[k];vel[k]=.999*vel[k]+.001*gr[k]**2
                     self.p[k]-=lr*(mom[k]/(1-.9**t))/(np.sqrt(vel[k]/(1-.999**t))+1e-8)
             hist.append({k:round(float(np.mean([p[k] for p in parts])),4) for k in parts[0]})
-        self.manifest['train']={'epochs':epochs,'lr':lr,'batch':batch,'last':hist[-1],'first':hist[0]}
+        self.manifest['train']={'epochs':epochs,'lr':lr,'batch':batch,'samples':int(len(y)),'last':hist[-1],'first':hist[0]}  # samples: B3-H8 step 3 evidence
         return hist
     # -- calibration (B3-H8 step 5) -------------------------------------------------------------------------
     def calibrate(self,H,mask,q=OOD_Q):

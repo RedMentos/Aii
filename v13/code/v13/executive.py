@@ -13,8 +13,8 @@ MAX_EVENTS=8
 def permission_flags(control,cfg,resource_state='UNKNOWN'):
     """WP-T2 §3.3.0 C0/§17.5: ExecState permissions come from Age per capability, not fixed flags.
     External tool execution and native body training stay closed unless their Age right is granted."""
-    from .effort import RESOURCE_MODE
-    try:r=control.rights(RESOURCE_MODE.get(resource_state,'YELLOW'))
+    from .resource_modes import as_mode
+    try:r=control.rights(as_mode(resource_state))  # §97.2: accepts a mode or a legacy guard state
     except Exception:r={'age':0,'by_capability':{},'granted':[],'resource_mode':'UNAVAILABLE'}
     g=set(r['granted'])
     return {'age':r['age'],'age_by_capability':r['by_capability'],'rights':r['granted'],'resource_mode':r['resource_mode'],

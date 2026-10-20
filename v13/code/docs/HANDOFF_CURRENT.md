@@ -1,3 +1,7 @@
+# Aktuell 2026-10-20: GPT-Stand bis 19.10. von Claude übernommen
+
+GPT/Codex `codex/continuation-20261016` @ `a1973d4` (PR #4) ist mit allen Claude-Threads K–P im Projektordner zusammengeführt; Git-Branch `claude/project-thread-0zelvf`. Volle Suite 1571 Tests OK (6 Skips). Projektstand behielt in tools/broker/toolstep/transaction die W2c-Eligibility-Registrierung; GPTs Vorzeichen-Guard (listarith), Outcome-Tap-Fix (toolforecast) und Lernintegritäts-Skripte sind übernommen. Native ToolForecast-v2 610/610 Linux-SHADOW-Lerngates PASS im engen Scope. Nicht übernommen: GPTs Drive-Kandidat vom 19.10. (`V13_PRIVATE_PILOT_AUDIT_RUN7_DELTA_20261019.zip`, read-only Pilot-Auditor) — nächstes Paket. Offen: privater 18-Zeilen-STEP2-Pilot (registriert, nicht gelaufen), STEP2 UTILITY_FAIL, B3 L1 FAIL, Redmi, Canon. Nächste Pakete: ROADMAP.md Abschnitt „GPT/Codex-Stand 13.–19.10. übernommen“.
+
 # Aktuell: Abendliche native Kohorte610/610 abgeschlossen und unabhängig reproduziert
 
 NativeToolForecast-v2-Lerngates bestanden:4/4Rechen- und3/3Notizaktionen verbessert; eingehaltene feste Retentionsgrenzen.610 SCORED+EXECUTED,942.39s,Linux,SHADOW.30+20Retentionszustände waren wiederholte feste Kontrollen;70verschobene Zahlen/50freie Notizen neu. Kein Redmi-/Canon-/allgemeiner-Lern-PASS. Sourcecheckpoint50af1c9455693a0a2cf708a0c42bbbe7f860399a. Unabhängige Rechnung reproduziert gesamte Lernreports und Adaptions-NPZ/Arrays exakt. Belege recovery-evening/native-final/ und replay-verification/. Vollständiges Roharchiv Drive1-m_Oj_j9AkTxAiML-6eGh12dRQPPq0_v SHA0260f5396145f1eae0db5f6db71a4869c4803c5ef42e36e01e33cf7701c30371; tatsächlicher Remote-Download geprüft, sieben verifizierte Zwischenarchive.
@@ -40,6 +44,14 @@ Nächste Arbeit gestartet: unveränderte 16-Fall-SourceHandoff-Ablation im erhal
 
 STEP2 UTILITY_FAIL/B3 L1 FAIL bleiben erhalten; Canon/Fullscope noch offen. GitHub-Veröffentlichung gilt erst nach geprüftem Remote-Tree.
 
+## Ergänzung 2026-10-12 Thread „Nächste offene Pakete I“ (Claude): WP-N7-Rest native Cache
+
+Isolierter Kandidat, keine eingefrorene Runtime-Quelle geändert: `scripts/native_cache_primitives.py`, `scripts/native_cache_bench.py`, 8 Tests, Linux-nativer Beleg `bench-results/native-cache-20261012/`, Doku `docs/NATIVE_CACHE.md`, Branch `claude/project-thread-uu86x1`. Wichtig für die spätere Integration: `runners.py` begrenzt weder `--cache-ram` (b10964-Standard 8192 MiB) noch `--ctx-checkpoints` (32; B2 je 19,3 MiB) → vor längeren Handy-Tests begrenzen (Vorschlag in der Doku), dann am Redmi messen. Kein Cache-Pfad ist bitgleich; Exact-Restore bleibt volles Re-Prefill.
+
+## Ergänzung 2026-10-12 13:40Z Thread „Nächste offene Pakete I“ (Claude): WP-S6-Rest nativer LFM2-Trainingspfad
+
+Isolierter Kandidat, keine eingefrorene Runtime-Quelle geändert; `build_native_finetune.sh` und `native_select_finetune.cpp` behalten ihre Manifest-Hashes. Neu: `scripts/patches/ggml-lfm2-backward-b10964.patch` (SSM_CONV/CONCAT-Backward, TRANSPOSE-Gradient, Trainings-Graphbudget, maskierte Labels, exakter Cross-Entropy-Backward für Nullzeilen; `test-backend-ops grad` OK), `scripts/build_native_lfm2_finetune.sh`, `scripts/native_answer_finetune.cpp`, `scripts/native_lfm2_finetune_bench.py`, 5 Tests, Doku `docs/NATIVE_LFM2_TRAIN.md`, Belege `bench-results/native-lfm2-finetune-20261012/` (Linux-nativ, kein Redmi). Ergebnis: C3 LFM2.5-350M lernt nativ bis 7/8 Fakten (streng, Q4-Pfad), vergisst aber 2–5 von 10 Proben, Leck 0,4–0,8 → AG6-Gate nicht bestanden, nichts aktiviert. Harte Anker-Replays helfen nicht; der danach gebaute KL-Anker mit weichen Basis-Labels (`llama_opt_set_soft_labels`, Nachtrag 17:30Z) tauscht nur Lernen gegen Behalten (ffn_late 1–2/8 bei −1/−2 Proben). Nächster Schritt: weniger/andere Parameter (Low-Rank, Sparse-Memory) und Early-Stop. Achtung für alle nativen Trainingsbenches: Trainingstext in der History-Form des Templates bauen (nicht Prefill: LFM2 fügt `<think></think>` ein und lässt `<|im_end|>` weg).
+
 ## Vorheriger datierter Handoff (historisch erhalten)
 
 # Aktueller Fortsetzungsstand — Codex, 2026-10-11, 23:21 Berlin
@@ -74,3 +86,47 @@ Projekt: brain-inspirierte, kontinuierlich lernende KI-Runtime für ein Redmi-Ha
 - Offen: B3 LATENT unavailable (L1-Gate FAIL), STEP2 two-body FAIL, viele SHADOW-Flags brauchen Redmi-Messung (WP-R, nur der Nutzer), WP-T17 Dream-Lauf 2 (`--b-steps 40 --seeds 13,21,34`).
 - Arbeitsregel: jedes Paket aktualisiert ROADMAP.md und schreibt eine Übergabenotiz; Status-Zeile „in Arbeit“ vor Beginn setzen.
 - Nutzer-Pause bis Montag 2026-10-12 04:00 Berlin war angesetzt; der Nutzer lässt jetzt eine andere KI bis Montag weiterarbeiten.
+
+## Ergänzung 2026-10-12 Thread „Nächste offene Pakete K“ (Claude): WP-S4-Rest SIGReg auf echten Taps
+
+Vorregistrierte Ablation ema|sigreg|both (120 Läufe, unveränderter `predictor_worker.train`, echte B1-Token-Zustände aus `b3-l1-v3-20261012/states.npz`): **Default bleibt `ema`**. Wichtig für spätere Arbeit: Beim Laufzeitbudget (lr .002, Norm .02, 240 Schritte) repariert kein Modus einen kollabierten Checkpoint; wer das Predictor-Budget erhöht, sollte `sigreg` nehmen (EMA überanpasst dort). Keine Runtime-Änderung. Befund `docs/proofs/continuation-20261012/sigreg-real-taps/BEFUND.md`, Branch `claude/project-thread-s0290g`. Offen: B2-Qwen-Token-Zustände, Redmi.
+
+## Ergänzung 2026-10-12 Thread K: R4 Teil 3, C3-Token-Unsicherheit
+
+C3 LFM2.5-350M erkennt eigene Rechenfehler gut über die kleinste Logprob eines Ziffern-Tokens (frisch AUROC 0,84, vorregistriert), aber Körper zu wecken rettet diese Fehler nicht (Politik = C3 allein). Nächster sinnvoller Schritt: Signal mit Werkzeug-Nachrechnen (W2c) oder ehrlicher Unsicherheitsangabe koppeln, neu vorregistrieren. Befund `docs/proofs/continuation-20261012/r4-c3-uncertainty-wake/BEFUND.md`. Keine Runtime-Änderung.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 4, Nachrechnen mit `calc`
+
+Vorregistriert: bei Ziffern-Unsicherheit schreibt C3 einen Ausdruck, `calc` rechnet, C3 antwortet erneut. Frisch 45/60 vs. C3 allein 42 (nicht signifikant, NOT_SUPPORTED). Summen-Ausdrücke gelingen 15/15, Differenzen (max − min) 1/15. Nächster Schritt: typisierte Werte + festes Rezept wie WP-W2. Befund `docs/proofs/continuation-20261012/r4-calc-recheck/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 5, typisierte Werte + Rezept — CALC_SUPPORTED
+
+Vorregistriert, frischer Seed 17: C3 liest nur Zahlen, feste Regel wählt Summe/Differenz, Rezept rechnet → 50–51/60 statt 40 (netto +10, p 0,006). Nächster Schritt: als SHADOW-Werkzeug in `toolstep.py` anschließen und mit anders formulierten/deutschen Fragen messen. Befund `docs/proofs/continuation-20261012/r4-typed-recipe/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 6, `list_arith` im Live-Werkzeug-Pfad — TOOL_PATH_SUPPORTED
+
+Werte-Rezept aus Teil 5 als READ_LOCAL-Werkzeug `list_arith` (aus bis Nutzer-Freigabe, dann SHADOW bis Alter 1). Vorregistriert, frischer Seed 19, echter Pfad ToolStep → C5 → TOOL_RESULT: 54/60 statt 40 (p 0,0013). Lesbare Ergebnis-Schicht war nötig (roh ignoriert C3 den Wert). Offen: Posten „Total“ verwerfen (1 Fehler je Seed), Broker-Korrekturtext kürzen, Werkzeugwahl für andere Formulierungen/Deutsch. Befund `docs/proofs/continuation-20261012/r4-listarith-live/BEFUND.md`. Branch `claude/project-thread-s0290g`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 7, Summen-Zeile nicht als Posten — FIX_SUPPORTED
+
+`listarith` verwirft gelesene Posten namens total/sum/gesamt. Frischer Seed 23: 55/60 statt 42 (p 0,001), Werkzeug-Werte 30/30. Befund `docs/proofs/continuation-20261012/r4-listarith-total/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 8, gelernte Werkzeugwahl (Needle-Kopf) — NOT_SUPPORTED
+
+Kopf erkennt neue englische Formulierungen viel besser als die Regel (F1 0,78 vs. 0,38), aber 21 % Fehlalarme; Deutsch blind. Nächster sinnvoller Schritt: BOOT-Regel nur auf die Frage anwenden (kein Modell), dann Kopf + Bestätigung. Befund `docs/proofs/continuation-20261012/r4-tool-choice-head/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 9, Regel nur auf die Frage — NOT_SUPPORTED
+
+Frage-only-Regel beseitigt Daten-Fehlalarme; mit Formulierungen aus Familie A F1 0,79 vs. 0,48, aber 14 % Fehlalarm durch „total number of entries“. Nichts übernommen. Befund `docs/proofs/continuation-20261012/r4-rule-question-only/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 10, Fragen-Regel R3 übernommen
+
+`agi/listarith.operation` liest jetzt nur den Frageteil, kennt mehr Formulierungen und schließt Zählfragen aus. Neue Familie E: F1 0,73 vs. 0,50, 0 Fehlalarme; R4-Aufgaben unverändert. Befund `docs/proofs/continuation-20261012/r4-rule-r3/BEFUND.md`.
+
+## Ergänzung 2026-10-13 Thread K: R4 Teil 11, R3-Formulierungen live — R3_LIVE_SUPPORTED
+
+Frischer Seed 29: 25/30 statt 13 (p 0,0018), Werte 30/30. R4-Werkzeugkette (Teile 3–11) vorerst abgeschlossen; offen: Deutsch, übersehene Formulierungen, Redmi. Befund `docs/proofs/continuation-20261012/r4-r3-live/BEFUND.md`.
+
+## Merge-Hinweis 2026-10-13 13:05Z Thread K (GPT/Codex arbeitet parallel)
+
+Nutzerhinweis: GPT arbeitet am selben Code weiter. Stand: Branch `claude/project-thread-s0290g` (HEAD `42a28dd`) hat keine fremden Commits. `origin/codex/continuation-review-20261013` (GPT/Codex, letzter Commit `5a69538`) baut auf Thread M auf und enthält Thread Ks R4-Werkzeug **nicht**. Beim Zusammenführen betroffen: `v13/toolstep.py` (Thread K: `_propose_list`, `shadow`, `layer`, `LIST_*`; Thread M: `propose_note_edit`, `_forecast`), `v13/agi/tools.py` (eine `list_arith`-Registrierung), `v13/transaction.py` (WP-W2c-`text`-Typ, identisch zu W2c), `v13/broker.py` (`correction_text` für `list_arith`), neu `v13/agi/listarith.py`. Der geteilte Ordner `/mnt/project-files/v13/code` enthält beide Seiten schon zusammengeführt und getestet (Referenz). Nichts überschreiben, kein Force-Push; Konflikte beidseitig erhalten.

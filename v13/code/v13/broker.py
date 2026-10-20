@@ -67,7 +67,7 @@ def preview_text(pending):
 
 def correction_text(tool_result):
     call=tool_result['tool']+'('+dumps(tool_result['args'])+')'
-    if tool_result['tool']=='list_arith':
+    if tool_result['tool']=='list_arith':  # R4 part 6: args carry the whole user text; show the recipe line instead
         from .agi import listarith
         call='list_arith: '+(listarith.label(tool_result['args']) or tool_result['args'].get('operation','?'))
     return '[Korrektur · Werkzeugergebnis] '+call+' = '+str(tool_result['result'])+' (lokal exakt berechnet; die Antwort oben nennt diesen Wert nicht).'
