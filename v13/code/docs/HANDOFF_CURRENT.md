@@ -1,3 +1,15 @@
+# Aktuell 2026-10-20 (Abend): Handy-Paket Werkzeug-Vorhersage fertig
+
+Ein Befehl am Redmi: `bash WERKZEUG_TESTEN.sh` (Stufen `paritaet|kurz|voll`, Anleitung `WERKZEUG_ANLEITUNG.txt`). Vorprüfung, Einrichtung bei Bedarf, GPTs begrenzter Treiber mit Frist, RAM-/Temperaturverlauf, Ergebnis-ZIP in Downloads. Nebenbei behoben: Handy-ZIP brach im Setup-Selbsttest ab (zwei fehlende Belegdateien in `package_source.py`). Cloud-Probelauf aus dem entpackten ZIP: `voll` bestätigt, gleiche Zahlen wie 12./13.10., Spitzen-RSS 1,2 GB. Redmi-Messung offen (Nutzer). Belege `docs/proofs/continuation-20261020/werkzeug-handy-cloud/`.
+
+# Aktuell 2026-10-20 (Abend): WP-G2 nativer Gist-Readout-Konsument
+
+`v13/gist_readout.py` konsumiert den B2-Tap (Qwen3.5-0.8B) bytegenau gebunden und gruppiert ihn in Gist-Slots (`:gist readout`, SHADOW). Vorregistrierte native Messung, 2 Runden: gegen feste Gruppierung mit gleicher Gruppenzahl helfen Text-Grenzen (+.08 Recall@1, CI [.045,.114]), das native Zustands-Sprungsignal nicht (hybrid FAIL). Standard `text`. Details `docs/GIST_READOUT.md`. Keine Gate-Beförderung.
+
+# Aktuell 2026-10-20 (Abend): privater STEP2-Pilot nativ gelaufen
+
+18/18 Zeilen, 0 exakt, Aktion nie richtig — auch die exakte Quellen-Kontrolle scheitert, also liegt der Flaschenhals beim C3-Konsumenten (LFM2.5-350M), nicht beim Zitat-Transport. Kohorte `NOT_CONFIRMED` wegen 1 ERROR-Zeile (B2 zitierte öffentlichen Text unter privater Ref, korrekt abgelehnt). Lief unter einer zweiten, vor dem Lauf veröffentlichten Registrierung (Modelle/Runner/Quellen byte-identisch zur GPT-Registrierung, nur Gerät/Pfade neu). GPTs read-only Auditor vom 19.10. ist eingebaut (`step2-private-fixtures/audit_private_pilot.py`). Details: `docs/proofs/continuation-20261016/step2-private-fixtures/pilot-run-20261020/ERGEBNIS.md`. Keine Gate-Beförderung.
+
 # Aktuell 2026-10-20: GPT-Stand bis 19.10. von Claude übernommen
 
 GPT/Codex `codex/continuation-20261016` @ `a1973d4` (PR #4) ist mit allen Claude-Threads K–P im Projektordner zusammengeführt; Git-Branch `claude/project-thread-0zelvf`. Volle Suite 1571 Tests OK (6 Skips). Projektstand behielt in tools/broker/toolstep/transaction die W2c-Eligibility-Registrierung; GPTs Vorzeichen-Guard (listarith), Outcome-Tap-Fix (toolforecast) und Lernintegritäts-Skripte sind übernommen. Native ToolForecast-v2 610/610 Linux-SHADOW-Lerngates PASS im engen Scope. Nicht übernommen: GPTs Drive-Kandidat vom 19.10. (`V13_PRIVATE_PILOT_AUDIT_RUN7_DELTA_20261019.zip`, read-only Pilot-Auditor) — nächstes Paket. Offen: privater 18-Zeilen-STEP2-Pilot (registriert, nicht gelaufen), STEP2 UTILITY_FAIL, B3 L1 FAIL, Redmi, Canon. Nächste Pakete: ROADMAP.md Abschnitt „GPT/Codex-Stand 13.–19.10. übernommen“.

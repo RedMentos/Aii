@@ -1,0 +1,62 @@
+V13 Werkzeug-Vorhersage auf dem Redmi messen (Kurzanleitung)
+=============================================================
+
+Was wird gemessen?
+  V13 sagt vor einem Werkzeug-Aufruf (Rechnen, Notiz ändern) voraus, was danach
+  herauskommt. In der Cloud klappt das. Jetzt zählt: geht das auch auf dem
+  Redmi, wie schnell, und wie viel RAM braucht es? Alles bleibt SHADOW, es wird
+  nichts eingeschaltet oder freigegeben.
+
+Vorher
+  - Handy ans Ladegerät. WLAN an (beim ersten Mal werden ca. 0,9 GB geladen).
+  - Andere Apps schließen (Browser, Spiele, Kamera).
+  - Läuft noch ein V13-Chat? Dort  :shutdown  eingeben.
+
+1. ZIP auspacken (einmal)
+   Die Datei V13-Werkzeug-Handy-20261020.zip aus dem Claude-Chat in "Downloads"
+   speichern. Dann in Termux eingeben:
+
+     termux-setup-storage
+     pkg install -y unzip
+     mkdir -p ~/v13-werkzeug
+     unzip -o ~/storage/downloads/V13-Werkzeug-Handy-20261020.zip -d ~/v13-werkzeug
+     cd ~/v13-werkzeug/V13-Phone
+
+   (Bei termux-setup-storage die Speicher-Erlaubnis bestätigen.
+    Hat Android die Datei umbenannt, z. B. "(1)" angehängt, den echten Namen nehmen.)
+
+2. Messen
+     bash WERKZEUG_TESTEN.sh
+
+   Das ist die Stufe "kurz": Prüfung des eigenen Builds + 245 feste Aufrufe.
+   Dauer am Handy geschätzt 30 bis 90 Minuten (Cloud: ca. 17 Minuten).
+   Ist V13 noch nicht eingerichtet, richtet das Skript es zuerst selbst ein
+   (dauert beim ersten Mal deutlich länger).
+
+   Termux offen lassen, Bildschirm darf ausgehen. Abbrechen: Strg+C
+   (Lautstärke-runter + C). Teilergebnisse bleiben erhalten.
+
+3. Ergebnis zurückschicken
+   Am Ende steht eine kurze Zusammenfassung auf dem Bildschirm und eine Datei
+     Downloads/V13-Werkzeug-Ergebnis-kurz-<Datum>.zip
+   Diese ZIP einfach in den Claude-Chat hochladen. Sie enthält nur Berichte und
+   Logs (keine Modelle, keine Chats).
+
+Weitere Stufen (optional, erst nach "kurz")
+     bash WERKZEUG_TESTEN.sh paritaet   nur Build + Paritäts-Prüfung (schnellster Test)
+     bash WERKZEUG_TESTEN.sh voll       kurz + Lern-Prüfung mit 610 Aufrufen
+                                        (am Handy geschätzt 2 bis 4 Stunden, über Nacht)
+
+Wenn etwas schiefgeht
+  "STOPP: Nur ... MB RAM frei"   Apps schließen, Handy neu starten, erneut versuchen.
+                                 (Mit  bash WERKZEUG_TESTEN.sh kurz --trotzdem  läuft es
+                                  trotzdem; das Ergebnis wird dann als erzwungen markiert.)
+  "STOPP: Ein V13-Chat ... läuft" Im Chat :shutdown, dann erneut starten.
+  "Einrichtung fehlgeschlagen"   WLAN prüfen und einfach erneut starten; fertige
+                                 Downloads werden wiederverwendet.
+  Gesamtstatus ERROR / PARITY_FAIL / DEADLINE
+                                 Kein Problem: trotzdem die Ergebnis-ZIP hochladen,
+                                 genau das wollen wir wissen.
+
+Nach einem erfolgreichen Lauf kann man im Chat mit  :toolforecast shadow  die
+Vorhersage mitlaufen lassen (nur beobachten, keine Wirkung).
