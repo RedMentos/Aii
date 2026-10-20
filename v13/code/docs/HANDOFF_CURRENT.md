@@ -2,6 +2,10 @@
 
 Ein Befehl am Redmi: `bash WERKZEUG_TESTEN.sh` (Stufen `paritaet|kurz|voll`, Anleitung `WERKZEUG_ANLEITUNG.txt`). Vorprüfung, Einrichtung bei Bedarf, GPTs begrenzter Treiber mit Frist, RAM-/Temperaturverlauf, Ergebnis-ZIP in Downloads. Nebenbei behoben: Handy-ZIP brach im Setup-Selbsttest ab (zwei fehlende Belegdateien in `package_source.py`). Cloud-Probelauf aus dem entpackten ZIP: `voll` bestätigt, gleiche Zahlen wie 12./13.10., Spitzen-RSS 1,2 GB. Redmi-Messung offen (Nutzer). Belege `docs/proofs/continuation-20261020/werkzeug-handy-cloud/`.
 
+# Aktuell 2026-10-20 (Thread „STEP2-Nutzen Engpass“): B2→C3-Zitat als Zeiger
+
+Neuer Schalter `offer_quote_context_chars` (Standard 0 = aus). Mit 200: frühere Regel erreicht C3 23/30 statt 7/30, mit Eignungs-Werkzeug 24/30 statt 11/30 exakt, 0 falsch. STEP2 bleibt UTILITY_FAIL (B1 ohne eigene Info; C3 rechnet ohne Werkzeug nicht). Einschalten = Nutzerentscheidung. Befund `docs/proofs/continuation-20261020/step2-quote-context/BEFUND.md`, ROADMAP-Abschnitt gleichen Namens.
+
 # Aktuell 2026-10-20 (Abend): WP-G2 nativer Gist-Readout-Konsument
 
 `v13/gist_readout.py` konsumiert den B2-Tap (Qwen3.5-0.8B) bytegenau gebunden und gruppiert ihn in Gist-Slots (`:gist readout`, SHADOW). Vorregistrierte native Messung, 2 Runden: gegen feste Gruppierung mit gleicher Gruppenzahl helfen Text-Grenzen (+.08 Recall@1, CI [.045,.114]), das native Zustands-Sprungsignal nicht (hybrid FAIL). Standard `text`. Details `docs/GIST_READOUT.md`. Keine Gate-Beförderung.
