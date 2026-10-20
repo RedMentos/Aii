@@ -1111,9 +1111,17 @@ Nachgeschaltet Vorzeichen-Guard fürlist_arith minimal korrigiert,11TestPASS; ne
 - Unverändert offen/negativ: STEP2 original 70/70 UTILITY_FAIL, B3 L1 FAIL, Redmi-Messungen, Canon/Fullscope. Kein Redmi-/Canon-PASS aus der Linux-Kohorte.
 
 ### Nächste offene Pakete (für sechs parallele Threads)
-1. **Privater STEP2-Pilot nativ ausführen** (registriert, 18 Zeilen/max 42 Aufrufe) + GPTs read-only Auditor vom 19.10. (Drive-ZIP) prüfen und als Kandidat binden; nie Original-STEP2/B3-Gates daraus befördern.
+1. ~~**Privater STEP2-Pilot nativ ausführen**~~ ERLEDIGT 2026-10-20, siehe Abschnitt unten; (registriert, 18 Zeilen/max 42 Aufrufe) + GPTs read-only Auditor vom 19.10. (Drive-ZIP) prüfen und als Kandidat binden; nie Original-STEP2/B3-Gates daraus befördern.
 2. **B3 L1 / LATENT** weiter (L1 FAIL, L2–L4 gesperrt) — WP-N19/N20/N22-Folge.
 3. **STEP2-Nutzen**: B2-Produzent/C3-Konsument-Flaschenhals (SourceHandoff-/Rule-Transport-Befunde), nächste Ablation auf Basis R4-Teile 5–8.
 4. **ToolForecast v2 → Gerät**: Phone-Paket aus diesem Stand bauen, Neuinstallation + Redmi-Messung durch Nutzer (WP-R), SHADOW → active erst nach Messung.
 5. **Canon-Abdeckung**: nächste offene WP aus ABDECKUNG.md (~56 %), v. a. Gist-Readout-Consumer und native Firing-Diagnostik.
 6. **Konsolidierung Git**: Claude-Branches K–P sind jetzt inhaltlich in `claude/project-thread-0zelvf`; PR #2/#3/#4 und dieser PR mit Nutzer klären (welcher Branch ist Hauptstand).
+
+## Privater STEP2-Pilot nativ gelaufen + GPT-Auditor eingebaut — ERLEDIGT 2026-10-20 (Thread „Privater STEP2-Pilot“)
+- **GPT-Anteil:** read-only Auditor `audit_private_pilot.py` + 11 Tests aus Drive-ZIP `V13_PRIVATE_PILOT_AUDIT_RUN7_DELTA_20261019.zip` (sha `0646cd85…`, alle 10 Manifest-Hashes geprüft) unverändert neben `runtime_adapter.py` eingebaut; 11/11 OK. GPT-Delta-Dokumente in `v13/code/docs/proofs/continuation-20261016/step2-private-fixtures/pilot-run-20261020/gpt-audit-delta-20261019/`.
+- GPTs Original-Registrierung (`pilot/native-registration.json`) ist in einem anderen Container nicht ausführbar (bindet Gerät 9 CPUs/Python 3.12 und GPT-Scratch-Pfade); bleibt unverändert `REGISTERED_NOT_RUN`. Stattdessen frisches Home aus gepinntem Katalog: alle 3 Modelle, Runner b10964 und 39 Bibliotheken **byte-identisch**; zweite Registrierung vor dem Lauf veröffentlicht (Commit `abc5dc4`, Quellen exakt `a1973d4`). Auditor-Preflight 0 Fehler.
+- **Lauf** (Linux x86_64, 4 CPUs, 188 s, Peak-RSS 1,4 GB): 18/18 Zeilen, Kohorte `NOT_CONFIRMED` (1 ERROR), **0/18 exakt, Aktion in keiner Zeile richtig** (immer `UNKNOWN`). Feld-Utility: b1 .667, b2 .639, paired .639, same_policy .639, no_message .361, exakte Quellen-Kontrolle .667.
+- **Befund:** Flaschenhals ist **C3-Konsument (LFM2.5-350M)**, nicht der Zitat-Transport — auch mit wortgleichen privaten Regeln rechnet C3 `remaining` nicht und wählt nie A/B/NONE. B1 zitiert korrekt. B2 zitierte in 1 Zeile den öffentlichen Text unter privater Ref → Adapter lehnt korrekt ab (ERROR, registrierte strenge Regel). `project`-Format (`"Project X"` statt `"X"`) kostet 12 Felder.
+- Auditor nach Lauf: `REFUSED` nur wegen dieser ERROR-Zeile; Hashes/Reihenfolge/Bytes sonst konsistent. Kein Gate befördert; STEP2 `UTILITY_FAIL`, B3 L1 `FAIL` unverändert. Details: `v13/code/docs/proofs/continuation-20261016/step2-private-fixtures/pilot-run-20261020/ERGEBNIS.md`, `summary.json`, Rohdaten `run/`.
+- **Nächster Schritt (neue Registrierung nötig):** Konsument isoliert prüfen — Exakt-Quellen-Kontrolle mit größerem Konsumenten (B1) oder mit deterministischem calc/eligibility-Tool vor C3.
