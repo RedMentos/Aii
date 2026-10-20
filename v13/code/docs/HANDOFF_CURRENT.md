@@ -1,3 +1,7 @@
+# Aktuell 2026-10-20 (Thread „STEP2-Nutzen Engpass“): B2→C3-Zitat als Zeiger
+
+Neuer Schalter `offer_quote_context_chars` (Standard 0 = aus). Mit 200: frühere Regel erreicht C3 23/30 statt 7/30, mit Eignungs-Werkzeug 24/30 statt 11/30 exakt, 0 falsch. STEP2 bleibt UTILITY_FAIL (B1 ohne eigene Info; C3 rechnet ohne Werkzeug nicht). Einschalten = Nutzerentscheidung. Befund `docs/proofs/continuation-20261020/step2-quote-context/BEFUND.md`, ROADMAP-Abschnitt gleichen Namens.
+
 # Aktuell 2026-10-20: GPT-Stand bis 19.10. von Claude übernommen
 
 GPT/Codex `codex/continuation-20261016` @ `a1973d4` (PR #4) ist mit allen Claude-Threads K–P im Projektordner zusammengeführt; Git-Branch `claude/project-thread-0zelvf`. Volle Suite 1571 Tests OK (6 Skips). Projektstand behielt in tools/broker/toolstep/transaction die W2c-Eligibility-Registrierung; GPTs Vorzeichen-Guard (listarith), Outcome-Tap-Fix (toolforecast) und Lernintegritäts-Skripte sind übernommen. Native ToolForecast-v2 610/610 Linux-SHADOW-Lerngates PASS im engen Scope. Nicht übernommen: GPTs Drive-Kandidat vom 19.10. (`V13_PRIVATE_PILOT_AUDIT_RUN7_DELTA_20261019.zip`, read-only Pilot-Auditor) — nächstes Paket. Offen: privater 18-Zeilen-STEP2-Pilot (registriert, nicht gelaufen), STEP2 UTILITY_FAIL, B3 L1 FAIL, Redmi, Canon. Nächste Pakete: ROADMAP.md Abschnitt „GPT/Codex-Stand 13.–19.10. übernommen“.
