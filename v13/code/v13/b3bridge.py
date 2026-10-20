@@ -56,11 +56,12 @@ def _softmax(z,axis):
 
 class Bridge:
     """One directional bridge. Inference is numpy only (phone); `fit` trains with Adam and manual gradients."""
-    def __init__(self,d,K=4,r=8,h=16,classes=2,seed=0,direction='B1_TO_B2'):
+    def __init__(self,d,K=4,r=8,h=16,classes=2,seed=0,direction='B1_TO_B2',aux=0):
         g=np.random.default_rng(seed);self.direction=direction
-        self.d,self.K,self.r,self.h,self.classes=d,K,r,h,classes
+        self.d,self.K,self.r,self.h,self.classes,self.aux=d,K,r,h,classes,aux
         self.p={'Q':g.normal(0,1/math.sqrt(d),(K,d)),'P':g.normal(0,1/math.sqrt(d),(d,r)),'Pr':g.normal(0,1/math.sqrt(K*r),(K*r,h)),
                 'gamma':np.array([0.]),'Wu':np.zeros((h,classes))}
+        if aux:self.p['Wa']=np.zeros((h,aux))   # training-only auxiliary readout (sender-side attribute targets), never used in receive
         self.in_mu=np.zeros(d);self.in_sd=np.ones(d)
         self.head=None          # frozen receiver NO_MESSAGE readout (Wr, b) over the receiver's own state
         self.cal=None           # receiver calibration {mu, sd, ood_tau}
@@ -89,7 +90,7 @@ class Bridge:
         Z=self.encode(H,mask);Z=to_bf16(Z) if bf16 else Z
         return self.receive(Z,Xr,gate_open)
     # -- training (B3-H8 step 4) ----------------------------------------------------------------------------
-    def loss_and_grads(self,H,mask,Xr,y,lam_var=.1,lam_cov=.05,lam_slot=.1,l2=1e-3):
+    def loss_and_grads(self,H,mask,Xr,y,lam_var=.1,lam_cov=.05,lam_slot=.1,l2=1e-3,aux=None,lam_aux=1.):
         B=len(y);Z,c=self.encode(H,mask,cache=True);m=Z.reshape(B,-1);D=m.shape[1]
         U=m@self.p['Pr'];g=self.gate();Wr,b=self.head
         L=Xr@Wr+b+(g*U)@self.p['Wu'];P=_softmax(L,1);Y=np.eye(self.classes)[y]
@@ -97,6 +98,12 @@ class Bridge:
         dL=(P-Y)/B;gr={}
         gr['Wu']=(g*U).T@dL+l2*self.p['Wu'];dU=g*dL@self.p['Wu'].T
         gr['gamma']=np.array([float((dL@self.p['Wu'].T*U).sum())*g*(1-g)])
+        la=0.
+        if aux is not None and 'Wa' in self.p:
+            # auxiliary targets (same supervision the SYMBOLIC_ATTR/SCALAR baselines get): pull those directions into U
+            E=U@self.p['Wa']-aux;la=.5*float((E**2).sum())/B;dE=lam_aux*E/B
+            gr['Wa']=U.T@dE+l2*self.p['Wa'];dU=dU+dE@self.p['Wa'].T
+        elif 'Wa' in self.p:gr['Wa']=np.zeros_like(self.p['Wa'])
         gr['Pr']=m.T@dU+l2*self.p['Pr'];dm=dU@self.p['Pr'].T
         # anti-collapse on the message space: variance hinge + decorrelation
         mc=m-m.mean(0);var=(mc**2).mean(0);std=np.sqrt(var+1e-4);lv=float(np.maximum(0,1-std).mean())
@@ -113,16 +120,17 @@ class Bridge:
             dA+=lam_slot*2*(tot-A)/(K*(K-1)*B)
         dS=A*(dA-(A*dA).sum(1,keepdims=True))
         gr['Q']=np.einsum('btk,btd->kd',dS,c['Hn'])*c['sc']+l2*self.p['Q']
-        loss=ce+lam_var*lv+lam_cov*lc+lam_slot*ls+.5*l2*sum(float((self.p[k]**2).sum()) for k in ('Wu','Pr','P','Q'))
-        return loss,gr,{'ce':ce,'var_hinge':lv,'decorrelation':lc,'slot_overlap':ls}
+        loss=ce+lam_var*lv+lam_cov*lc+lam_slot*ls+lam_aux*la+.5*l2*sum(float((self.p[k]**2).sum()) for k in ('Wu','Pr','P','Q','Wa') if k in self.p)
+        return loss,gr,{'ce':ce,'var_hinge':lv,'decorrelation':lc,'slot_overlap':ls}|({'aux_mse':la} if aux is not None else {})
     def fit_head(self,Xr,y,l2=1e-2,steps=400,lr=.5):
         """Frozen receiver NO_MESSAGE readout (the 'old task'); the bridge only adds a gated residual on top."""
         W=np.zeros((Xr.shape[1],self.classes));b=np.zeros(self.classes);Y=np.eye(self.classes)[y]
         for _ in range(steps):
             p=_softmax(Xr@W+b,1);gg=(p-Y)/len(y);W-=lr*(Xr.T@gg+l2*W);b-=lr*gg.sum(0)
         self.head=(W,b);return self
-    def fit(self,H,mask,Xr,y,epochs=60,batch=64,lr=3e-3,seed=0,**kw):
-        """B3-H8 step 4: bodies frozen; trains selector, projector, receiver projector, gate and residual readout."""
+    def fit(self,H,mask,Xr,y,epochs=60,batch=64,lr=3e-3,seed=0,aux=None,**kw):
+        """B3-H8 step 4: bodies frozen; trains selector, projector, receiver projector, gate and residual readout.
+        aux[N, A]: optional standardized sender-side attribute targets (bridge built with aux=A); training signal only."""
         if self.head is None:raise ValueError('fit_head first (frozen NO_MESSAGE readout)')
         flat=H[mask>0];self.in_mu=flat.mean(0);self.in_sd=flat.std(0)+1e-6
         rng=np.random.default_rng(seed);mom={k:np.zeros_like(v) for k,v in self.p.items()};vel={k:np.zeros_like(v) for k,v in self.p.items()};t=0;hist=[]
@@ -131,7 +139,7 @@ class Bridge:
             for i in range(0,len(y),batch):
                 j=idx[i:i+batch]
                 if len(j)<2:continue
-                loss,gr,part=self.loss_and_grads(H[j],mask[j],Xr[j],y[j],**kw);t+=1;parts.append(part)
+                loss,gr,part=self.loss_and_grads(H[j],mask[j],Xr[j],y[j],aux=None if aux is None else aux[j],**kw);t+=1;parts.append(part)
                 for k in self.p:
                     mom[k]=.9*mom[k]+.1*gr[k];vel[k]=.999*vel[k]+.001*gr[k]**2
                     self.p[k]-=lr*(mom[k]/(1-.9**t))/(np.sqrt(vel[k]/(1-.999**t))+1e-8)
@@ -156,7 +164,7 @@ class Bridge:
     def save(self,path,sender_revision,receiver_revision,extra=None):
         path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
         buf=io.BytesIO();np.savez(buf,**self._arrays());path.with_suffix('.npz').write_bytes(buf.getvalue())
-        man={'revision':REVISION,'direction':self.direction,'d':self.d,'K':self.K,'r':self.r,'h':self.h,'classes':self.classes,
+        man={'revision':REVISION,'direction':self.direction,'d':self.d,'K':self.K,'r':self.r,'h':self.h,'classes':self.classes,'aux':self.aux,
              'sender_revision':sender_revision,'receiver_revision':receiver_revision,'sha256':self.digest(),'calibrated':self.cal is not None,
              'budget':budget(self.d,self.K,self.r,self.h,self.classes),'created_wall_time':time.time()}|self.manifest|(extra or {})
         path.with_suffix('.json').write_text(json.dumps(man,indent=1,default=float));self.manifest=man;return man
@@ -166,7 +174,7 @@ class Bridge:
         if man.get('revision')!=REVISION:raise ValueError('bridge revision mismatch')
         for k,v in (('sender_revision',sender_revision),('receiver_revision',receiver_revision)):
             if v is not None and man.get(k)!=v:raise ValueError(f'B3-H10: {k} changed ({man.get(k)} -> {v}); bridge invalid, use configured channel')
-        b=cls(man['d'],man['K'],man['r'],man['h'],man['classes'],direction=man['direction'])
+        b=cls(man['d'],man['K'],man['r'],man['h'],man['classes'],direction=man['direction'],aux=man.get('aux',0))
         with np.load(path.with_suffix('.npz')) as a:
             for k in b.p:b.p[k]=a[f'p_{k}']
             b.in_mu,b.in_sd=a['in_mu'],a['in_sd']
