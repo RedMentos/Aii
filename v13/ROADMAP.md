@@ -1115,5 +1115,12 @@ Nachgeschaltet Vorzeichen-Guard fürlist_arith minimal korrigiert,11TestPASS; ne
 2. **B3 L1 / LATENT** weiter (L1 FAIL, L2–L4 gesperrt) — WP-N19/N20/N22-Folge.
 3. **STEP2-Nutzen**: B2-Produzent/C3-Konsument-Flaschenhals (SourceHandoff-/Rule-Transport-Befunde), nächste Ablation auf Basis R4-Teile 5–8.
 4. **ToolForecast v2 → Gerät**: Phone-Paket aus diesem Stand bauen, Neuinstallation + Redmi-Messung durch Nutzer (WP-R), SHADOW → active erst nach Messung.
-5. **Canon-Abdeckung**: nächste offene WP aus ABDECKUNG.md (~56 %), v. a. Gist-Readout-Consumer und native Firing-Diagnostik.
+5. **Canon-Abdeckung**: nächste offene WP aus ABDECKUNG.md (~56 %), v. a. ~~Gist-Readout-Consumer~~ (ERLEDIGT 2026-10-20, WP-G2 unten) und native Firing-Diagnostik.
 6. **Konsolidierung Git**: Claude-Branches K–P sind jetzt inhaltlich in `claude/project-thread-0zelvf`; PR #2/#3/#4 und dieser PR mit Nutzer klären (welcher Branch ist Hauptstand).
+
+## WP-G2 Nativer Gist-Readout-Konsument (B2) — ERLEDIGT 2026-10-20 (Thread „Nächste Pakete Abdeckung“)
+- Paket 5 (Canon-Abdeckung), Teil „Gist-Readout-Consumer“. Neu `code/v13/gist_readout.py`: liest den gespeicherten B2-Tap (`LatentTapPacket`, Qwen3.5-0.8B Endnorm-Zustände pro nativem Token), bindet jedes Token bytegenau an die Quelle (native Pieces, sonst Abbruch), gruppiert ~8 Tokens (`fixed|text|native|hybrid`, gleiche erlaubte Schnitte: nie im Wort/in exakten Spannen/vor Interpunktion), 12-Slot-Einpassung, §3.2A-Felder, verlustfrei geprüft. Bedienung `:tap B2_GIST` → `:gist readout [Modus]`. SHADOW, keine Empfänger-/Lernrechte. Runtime/Cognition/Runners unverändert (bytegebunden).
+- Native Messung (Linux, b10964, vorregistriert, Prereg vor jedem Lauf gepusht), Recall@1 Frage→Antwort-Gruppe: Runde 1 (160 Fragen) hybrid .594 vs fest .481 → SUPPORTED; explorative Nachprüfung: Teil-Effekt durch weniger Gruppen. **Runde 2 (640 Fragen, Kontrolle mit gleicher Gruppenzahl): hybrid FAIL (+.022, CI [−.016,.061]); Text-Grenzen +.081 (CI [.045,.114]); natives Zustands-Sprungsignal bringt nichts (−.005).** Standardmodus daher `text`. Native Sprünge liegen an Satzgrenzen (AUC .88), tragen aber keine Zusatzinfo.
+- Tests: `tests/test_gist_readout.py` 11/11; volle Suite 1582 Tests, 5 Skips, OK nach Nachziehen fehlender §102-Belegordner (19 × `bench-results/*-20261012`, 444 KB, lagen nur im Projektordner) ins Git.
+- Doku `code/docs/GIST_READOUT.md`, Daten `code/bench-results/gist-readout-native-20261020/`. Branch `claude/project-thread-uvi2sq` (Basis `claude/project-thread-0zelvf`).
+- Offen: andere Tap-Schicht, gelernter Grenz-Kopf (neues Prereg), B2-Antwortnutzen mit `:gist active`; native Firing-Diagnostik (zweiter Teil von Paket 5) unverändert SHADOW, nicht angefasst.

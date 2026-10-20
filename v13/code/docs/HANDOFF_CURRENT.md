@@ -1,3 +1,7 @@
+# Aktuell 2026-10-20 (Abend): WP-G2 nativer Gist-Readout-Konsument
+
+`v13/gist_readout.py` konsumiert den B2-Tap (Qwen3.5-0.8B) bytegenau gebunden und gruppiert ihn in Gist-Slots (`:gist readout`, SHADOW). Vorregistrierte native Messung, 2 Runden: gegen feste Gruppierung mit gleicher Gruppenzahl helfen Text-Grenzen (+.08 Recall@1, CI [.045,.114]), das native Zustands-Sprungsignal nicht (hybrid FAIL). Standard `text`. Details `docs/GIST_READOUT.md`. Keine Gate-Beförderung.
+
 # Aktuell 2026-10-20: GPT-Stand bis 19.10. von Claude übernommen
 
 GPT/Codex `codex/continuation-20261016` @ `a1973d4` (PR #4) ist mit allen Claude-Threads K–P im Projektordner zusammengeführt; Git-Branch `claude/project-thread-0zelvf`. Volle Suite 1571 Tests OK (6 Skips). Projektstand behielt in tools/broker/toolstep/transaction die W2c-Eligibility-Registrierung; GPTs Vorzeichen-Guard (listarith), Outcome-Tap-Fix (toolforecast) und Lernintegritäts-Skripte sind übernommen. Native ToolForecast-v2 610/610 Linux-SHADOW-Lerngates PASS im engen Scope. Nicht übernommen: GPTs Drive-Kandidat vom 19.10. (`V13_PRIVATE_PILOT_AUDIT_RUN7_DELTA_20261019.zip`, read-only Pilot-Auditor) — nächstes Paket. Offen: privater 18-Zeilen-STEP2-Pilot (registriert, nicht gelaufen), STEP2 UTILITY_FAIL, B3 L1 FAIL, Redmi, Canon. Nächste Pakete: ROADMAP.md Abschnitt „GPT/Codex-Stand 13.–19.10. übernommen“.

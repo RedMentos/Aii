@@ -15,8 +15,8 @@ Pipeline:
 4. Each group carries its exact SourceRef (char span), its fine native token range, the mean-pooled state, the §3.2A
    coupling fields and its boundary confidence; `fit` merges the oldest groups to GIST_SLOTS like `gist.fit_slots`.
 
-Which mode is the default comes from the preregistered native bench (`scripts/gist_readout_native_bench.py`, see
-`docs/GIST_READOUT.md`). Authority: SHADOW readout only. Vectors never enter a prompt, receivers get no read or
+Which mode is the default comes from the preregistered native benches (`scripts/gist_readout_native_bench.py`,
+`scripts/gist_readout_native_round2.py`, see `docs/GIST_READOUT.md`): `text`; `native`/`hybrid` stay for ablations. Authority: SHADOW readout only. Vectors never enter a prompt, receivers get no read or
 injection right, and no body learns from them.
 """
 import hashlib
@@ -26,7 +26,8 @@ from .common import dumps
 
 KEY='G1B_GIST_READOUT';REVISION='g1b-gist-readout-v1'
 MODES=('fixed','text','native','hybrid')
-DEFAULT_MODE='hybrid'   # BOOT; replaced only by a preregistered bench verdict (docs/GIST_READOUT.md)
+DEFAULT_MODE='text'     # preregistered round 2 (2026-10-20, docs/GIST_READOUT.md): hybrid FAIL vs count-matched fixed,
+                        # text +.08 recall@1 (CI [.045,.114]); native state shift adds nothing beyond the group count
 HYBRID_WEIGHT=1.        # BOOT, preregistered: weight of the z-scored native shift next to the text boundary score
 LOW_MIN=.6;HIGH_MAX=1.5 # same window as gist.py
 CLAIM_LIMIT=('Native readout grouping only: final-state tap, mean pooling, no receiver read/injection authority, '
