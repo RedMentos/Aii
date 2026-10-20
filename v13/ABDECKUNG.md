@@ -258,7 +258,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Regel | Status | Paket |
 |---|---|---|
 | B3-H1 keine fremden Hidden States injizieren | ✅ (Latent aus, Schema verbietet) | – |
-| B3-H2 Message-Subspace | 🟡 gebaut + gemessen, L1-Gate FAIL (`b3bridge.py`) | WP-J |
+| B3-H2 Message-Subspace | 🟡 gebaut + gemessen, L1-Gate FAIL (`b3bridge.py`); Ursache 2026-10-20 diagnostiziert (Trainingssignal, nicht Kanal), `aux`-Ziel als Fix-Kandidat, explorativ PASS nur auf `action` (`bench-results/b3-l1-diagnose-20261020/`) | WP-J |
 | B3-H3 L0 Baselines | ✅ | – |
 | B3-H3 L1 Empfänger-Adapter | 🟡 | WP-J |
 | B3-H3 L2–L4 | ❌ (kanonisch gesperrt: L1 FAIL, B3-H8 erzwingt L1 vor L2, `b3order.py`) | WP-J |
