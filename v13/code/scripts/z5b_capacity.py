@@ -129,6 +129,7 @@ def run_rep(installed,rep,fixtures):
     from v13 import effort as EF
     from v13 import focal as F
     from v13 import runtime as RT
+    from v13.common import Limits
     from v13.config import initialize,save_config
     from v13.proofs import audit_event
     from v13.prompts import text as prompt
@@ -194,7 +195,9 @@ def run_rep(installed,rep,fixtures):
                     except ValueError as exc:rows.append(base|{'arm':arm,'pass':False,'skipped':'LAYER_SWAP_FAILED','error':str(exc)});continue
                     mm=[{'role':'system','content':system}]+msgs[1:];key=hashlib.sha256(dumps(mm).encode()).hexdigest()
                     t1=time.monotonic()
-                    if key not in cache:cache[key]=''.join(r.pool.get(cap['answer_role']).generate(mm,r.cancel_event,time.monotonic()+300))
+                    if key not in cache:
+                        try:cache[key]=''.join(r.pool.get(cap['answer_role']).generate(mm,r.cancel_event,time.monotonic()+300))
+                        except Limits as exc:rows.append(base|{'arm':arm,'pass':False,'skipped':'CONTEXT_WINDOW','context_chars':len(new),'error':str(exc)[:200]});continue
                     o=cache[key];ok,num=U.score(o,nums,checks)
                     rows.append(base|{'arm':arm,'pass':all(ok.values()) and all(num.values()),'clean':clean(o,stale),'gen_s':round(time.monotonic()-t1,2),'context_hash':key[:16],
                                       'context_chars':len(new),'memories':len(mems),'offers':len(subs),'answer_role':cap['answer_role'],'same_as_live':o.strip()==out.strip(),'output':o[:400]})
