@@ -25,7 +25,7 @@ import re
 import time
 from .common import dumps,now
 from .contracts import packet,offer_is_fresh,SLOT_FIELDS
-from .memory import relevance,terms
+from .memory import ENTITY_LABELS,entities,relevance,terms
 from .attention import GAIN as ATT_BASE
 
 BODY=('B1_DETAIL','B2_GIST')
@@ -36,6 +36,12 @@ BOOT={'coalition_threshold':.45,'disagreement_trigger':.40,'uncertainty_trigger'
       'uncertainty_coupling_gain':.50,  # ENG: §85.4 names the knob without a value
       'turn_decay':.6,'reactivatable_floor':.25,'drop_floor':.05,'workspace_factor':2}  # ENG
 WEIGHTS={'goal':.30,'conflict':.15,'uncertainty':.15,'salience':.10,'utility':.20,'source_quality':.20,'redundancy':-.25,'cost':-.10}  # §93 structure, ENG weights
+# WP-Z5c note recency (switch focal_note_recency, default 0): stored notes whose keys differ only by calendar words are versions
+# of one slot; the newest stored version gets `recency`, older ones `superseded`. ENG weights, preregistered before any run.
+WEIGHTS|={'recency':.10,'superseded':-.30}
+CALENDAR=set('january february march april may june july august september october november december '
+             'januar februar märz maerz mai juni juli oktober dezember monday tuesday wednesday thursday friday saturday sunday '
+             'montag dienstag mittwoch donnerstag freitag samstag sonntag'.split())
 SCALE={'B1_DETAIL':'fine','B2_GIST':'gist','MEMORY':'event'}
 NUM=re.compile(r'(?<![\w.])-?\d+(?:[.,]\d+)?')
 NEG=re.compile(r"\b(?:not|no|never|none|false|incorrect|wrong|nicht|kein\w*|nie|falsch)\b|n't",re.I)
@@ -146,6 +152,23 @@ def item(kind,payload_ref,refs,text,event_id,*,uncertainty,salience,goal,utility
             'exact_fallback':'SOURCE_REF' if exact else 'NONE','exact_fallback_refs':exact,'covered_range':cov,
             'compression_ratio':round(n/len(text),4) if n and text else None,
             **(bounds or {'boundary_confidence':None,'boundary_source':'NONE'}),'children':[],'parents':[]}
+
+def note_slot(key):
+    """Topic slot of a stored note key: key terms without entity, entity label, calendar words and numbers."""
+    return frozenset(t for t in terms(key or '') if t not in CALENDAR and t not in ENTITY_LABELS and t not in entities(key or '') and not t.isdigit())
+
+def note_versions(cands,memories):
+    """WP-Z5c: per slot with >1 recalled note the newest stored note gets recency 1, older ones superseded 1 (sets terms only)."""
+    info={m['id']:(note_slot(m.get('key_text')),float(m.get('created') or 0.)) for m in memories}
+    groups={}
+    for c in cands:
+        if c['source_kind']=='MEMORY' and c['item_id'] in info and info[c['item_id']][0]:groups.setdefault(info[c['item_id']][0],[]).append(c)
+    for g in groups.values():
+        if len(g)<2:continue
+        g.sort(key=lambda c:(info[c['item_id']][1],c['item_id']));newest=g[-1]
+        newest['priority_terms']['recency']=1.;newest['supersedes']=[c['item_id'] for c in g[:-1]]
+        for c in g[:-1]:c['priority_terms']['superseded']=1.;c['superseded_by']=newest['item_id']
+    return cands
 
 def link_scales(items):
     """§3.2A/§8.2A: gist slots point to fine/event slots over overlapping source spans and back."""
@@ -381,6 +404,7 @@ class FocalLoop:
                 created=m.get('created'),bounds=boundary(self.s,[m['source_ref']]),self_generated=False))  # memories are human decisions
         for x in retained:
             x['priority_terms']['goal']=clip(3*relevance(goal,x['text']));x['priority']=priority(x['priority_terms'])*x['decay'];cands.append(x)
+        if self.r.cfg.get('focal_note_recency'):note_versions(cands,memories)
         for c in cands:
             for k,v in self.memo.get(c['item_id'],{}).items():
                 if k=='uncertainty':c['priority_terms']['uncertainty']=v

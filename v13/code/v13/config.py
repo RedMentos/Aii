@@ -50,6 +50,7 @@ KNOBS['retrieval_seconds']=(8.,"DURATION_S",.2,30,"BOOT total semantic recall bu
 KNOBS['retrieval_candidates']=(32,"COUNT",1,64,"BOOT semantic candidate cap; lexical retrieval remains available")
 KNOBS['memory_embed_dim']=(256,"COUNT",128,768,"WP-H Matryoshka dimensions of the semantic memory key (EmbeddingGemma 768)")
 KNOBS['memory_embed_threshold']=(.84,"THRESHOLD",0.,1.,"WP-H cosine floor for semantic memory admission (EN calibration, bench-results/semantic-recall-20261009; not Redmi-measured)")
+KNOBS['focal_note_recency']=(0,"COUNT",0,1,"WP-Z5c 1 = newest stored note of a key slot (keys equal up to calendar words) gets a recency term, older versions a superseded term in the focal priority; 0 = off (BOOT, preregistered test)")
 KNOBS['memory_embed_keep']=(0,"COUNT",0,1,"WP-H 1 keeps the embedding runner loaded between turns (RAM), 0 unloads after recall")
 KNOBS['episode_boundary_threshold']=(.30,"THRESHOLD",0.,1.,"WP-N8 noisy-OR boundary score that opens a new episode (A1.boundary_threshold)")
 KNOBS['episode_pause_seconds']=(1800,"DURATION_S",60,86400,"WP-N8 pause that always cuts an episode")
