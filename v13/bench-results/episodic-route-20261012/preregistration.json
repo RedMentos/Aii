@@ -1,0 +1,18 @@
+{
+ "schema": "ABLATION_EPISODIC_ROUTE_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "requests": 300,
+ "entities": 12,
+ "tasks": 4,
+ "paraphrases": 3,
+ "p_preference": 0.4,
+ "p_correct_when_wrong": 0.5,
+ "primary": "route accuracy over the second half of the requests",
+ "win_rule": "episodic beats scaffold, no_entity_guard and latest_any in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+}

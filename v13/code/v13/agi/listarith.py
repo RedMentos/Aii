@@ -10,6 +10,7 @@ wordings, and those get no proposal.
 """
 import json
 import re
+from collections import Counter
 
 OPERATIONS = ((re.compile(r'(?i)\bhow (?:many|much)\b[^.?]*\b(?:more|less|fewer)\b[^.?]*\bthan\b'), 'difference_max_min'),
               (re.compile(r'(?i)\b(?:total|sum)\b'), 'total'))
@@ -76,8 +77,9 @@ def compute(op, values, text):
     nums = [int(v['number']) for v in values]
     if len(nums) < 2:
         raise ValueError('fewer than two values')
-    tokens = {token.replace('\u2212', '-').lstrip('+') for token in _INT.findall(str(text))}
-    if any(str(n) not in tokens for n in nums):
+    tokens = Counter(token.replace('\u2212', '-').lstrip('+') for token in _INT.findall(str(text)))
+    # Review 2026-10-21 (Claude for GPT): count occurrences, so a value read twice must also appear twice in the text.
+    if any(c > tokens[n] for n, c in Counter(str(n) for n in nums).items()):
         raise ValueError('number not in the user text')
     names = [str(v.get('name', '')).strip()[:40] for v in values]
     if op == 'total':
