@@ -1,0 +1,393 @@
+{
+ "schema": "V13_Z3C_MODEL_AUDIT_V1",
+ "round": 2,
+ "auditor": "Claude (thread Z3c), before parser_v2 saw this cohort; every sentence read",
+ "raw_sha256": "57c527c20f437ef4d43c061a90394f3bc4cabf3f23eebf18366d7f9012cc71b3",
+ "rule": "same = a reader of this sentence alone gets the same rule value and polarity about which options are allowed; changed = different meaning; unclear = scope/entity shift, cannot tell",
+ "labels": {
+  "All requirements apply regardless of where you're located.": {
+   "label": "unclear",
+   "note": "about where requirements apply, not options"
+  },
+  "All submissions must be completed within 1 day.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "All tasks must be completed within three days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "All tasks must be finished in one day.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate a budget of exactly 44 euros for this project.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate a budget of exactly 73 euros for this project.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate a budget of precisely 53 euros for the project.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate a budget of precisely 70 euros for this project.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate a total of 56 euros for the project budget.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate a total of 76 euros for the project.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate a total of 93 euros for the project.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate exactly 45 euros for your expenses.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate exactly 55 euros according to your plan.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate exactly 59 euros for your budget.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate no more than 77 euros for the project budget.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Allocate no more than fifty-five euros for the project budget.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Deadline is 1 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Deadline is 4 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Deadline is 5 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Everything must be done within the area you're in.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Meet the deadline in just one day.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Only files intended for local use must be submitted according to these guidelines.": {
+   "label": "changed",
+   "note": "about files for local use, not option locality"
+  },
+  "Only projects located within the same area are permitted.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Only projects targeting local areas are permitted.": {
+   "label": "unclear",
+   "note": "targeting local areas is not being local"
+  },
+  "Only things available nearby must be used.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Only things within the area are allowed.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Plan to spend 70 euros according to the guidelines.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Plan to spend 73 euros exactly.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Plan to spend a total of 29 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Plan to spend exactly 58 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Plan your spending carefully to stay within the 76 euro limit.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Set a spending limit of 44 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Set aside a total of 34 euros for your expenses.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Set aside exactly 56 euros for your budget.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Set aside exactly 56 euros for your plan.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "Spend no more than 70 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget is set at 19 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be 75 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at 28 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at 47 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at 56 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at 63 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at 64 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at 70 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at 74 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at 77 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at exactly 52 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at exactly 76 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at exactly 83 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set at exactly 85 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must be set to 76 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget must not exceed 56 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The budget should be set at 60 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline is 1 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline is 4 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline is 6 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline is four days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline is in 4 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline is one day.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline is set for 6 days from now.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline is set for six days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline is three days from now.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline must be completed in four days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline must be met within 3 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline must be met within 4 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The deadline must be met within exactly 6 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The guidelines apply everywhere without any special restrictions.": {
+   "label": "unclear",
+   "note": "scope of guidelines"
+  },
+  "The guidelines apply everywhere, not just locally.": {
+   "label": "unclear",
+   "note": "scope of guidelines"
+  },
+  "The guidelines don't limit what you can use.": {
+   "label": "unclear",
+   "note": "no limit at all, contradicts budget/deadline; locality only implied"
+  },
+  "The local-only requirement is false.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The local-only requirement is true.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The project must adhere to requirements accessible only within the local area.": {
+   "label": "changed",
+   "note": "about requirements, not option locality"
+  },
+  "The project must be completed exclusively within the local area.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The project must be completed within 2 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The project must be completed within 9 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The requirement applies beyond local boundaries.": {
+   "label": "unclear",
+   "note": "scope of a requirement"
+  },
+  "The requirement that files must be stored locally is confirmed to be true.": {
+   "label": "changed",
+   "note": "about file storage"
+  },
+  "The rule must apply just within this nearby area.": {
+   "label": "unclear",
+   "note": "scope of the rule, not which options are allowed"
+  },
+  "The rule must apply only within the local area and must be true.": {
+   "label": "unclear",
+   "note": "scope of the rule"
+  },
+  "The rule now allows content from anywhere to be used.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The same rule applies only here.": {
+   "label": "unclear",
+   "note": "scope of the rule"
+  },
+  "The submission must be received within 4 days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The total budget must not exceed 75 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The total budget must not exceed 92 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "The total spending must not exceed 41 euros.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "This guideline applies to all areas regardless of location.": {
+   "label": "unclear",
+   "note": "scope of guideline"
+  },
+  "This project requires access from any location, not just local ones.": {
+   "label": "unclear",
+   "note": "access, not option locality"
+  },
+  "This project requires collaboration beyond the local area.": {
+   "label": "changed",
+   "note": "requires non-local collaboration (opposite direction of a permission)"
+  },
+  "This rule applies everywhere, not just locally.": {
+   "label": "unclear",
+   "note": "scope of the rule"
+  },
+  "This rule applies only to things that are nearby.": {
+   "label": "unclear",
+   "note": "scope of the rule"
+  },
+  "You have four days to complete the task.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "You have three days to submit your work.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "You must complete it in four days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "You must finish it in four days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "You must finish it in three days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  },
+  "You must finish the task in two days.": {
+   "label": "same",
+   "note": "rule value and polarity kept for a reader of this sentence alone"
+  }
+ }
+}

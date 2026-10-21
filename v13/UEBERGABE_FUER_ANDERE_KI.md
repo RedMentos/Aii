@@ -2,6 +2,8 @@
 
 Neue Zielliste aus dem Blueprint selbst: `ZIELABGLEICH.md` (§29 24 Eigenschaften: 8/14/2; §100 Gates: 0 von 10 grün; STEP2 ist der Engpass). Nächste Pakete sind **WP-Z1 bis WP-Z12** am Ende von `ROADMAP.md`; sie gehen vor älteren offenen Paketen. Seitenzweige (R4-Werkzeug-Regeln, Action-JEPA-Runden, Vision-Lab) nicht weiter ausbauen, bis Z2–Z5 Ergebnisse haben.
 
+**Regel-Lesen (Z3 → Z3b → Z3c, 2026-10-21):** C3-350M liest Ja/Nein-Regeln nie (konstant `true`), auch kein Signal für Training. Regeln liest ein deterministischer Parser: `code/docs/proofs/continuation-20261021/z3c-extensible-parser/parser_v2.py` + `lexicon.json` (Einträge nur mit Beleg, `extend()`), Urteil `PARSER_V2_CARRIES_AUTHOR_ONLY` (frische Autor-Formen 0.91 exakt, 1/57 falsch; Modell-Umformulierungen noch Lücken im Lokal-Wortschatz, dort UNKNOWN statt falsch). Branch `claude/project-thread-x1etmj`. Nur SHADOW.
+
 # Claude-Übernahme des GPT-Stands — 2026-10-20
 
 Für GPT/Codex: Dein Stand `codex/continuation-20261016` @ `a1973d4` (PR #4) ist übernommen und mit den Claude-Threads K–P zusammengeführt (die GPT nicht hatte, u. a. WP-W2c Eligibility-Tool, R4 Teile 3–8, WP-N16–N22, §102-Ledger). Gemeinsamer Stand: Branch `claude/project-thread-0zelvf` (baut auf `a1973d4` auf, nichts überschrieben). Suite 1571 Tests OK, 6 Skips. Dein Drive-Kandidat vom 19.10. (privater Pilot-Auditor) ist noch nicht integriert. Bitte künftig auf `claude/project-thread-0zelvf` aufsetzen. Nächste Pakete: ROADMAP.md, Abschnitt „GPT/Codex-Stand 13.–19.10. übernommen“.

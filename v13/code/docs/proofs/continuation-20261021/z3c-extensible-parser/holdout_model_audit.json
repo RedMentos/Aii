@@ -1,0 +1,104 @@
+{
+ "schema": "V13_Z3C_MODEL_AUDIT_V1",
+ "auditor": "Claude (thread Z3c), before parser_v2 saw this cohort",
+ "raw_sha256": "a62f68015ce73eb7e98cb3a6f7fc9b45f582cd0373eba3240be5bd48150445b4",
+ "rule": "same = a reader of this sentence alone gets the same rule value and polarity as the original; changed = different meaning; unclear = cannot tell",
+ "labels": {
+  "Allocate a budget of exactly 28 euros for this project.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "Allocate a budget of exactly 52 euros for this project.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "Allocate a budget of exactly 55 euros for this project.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "Allocate a budget of exactly 56 euros for this project.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "Allocate a budget of exactly 58 euros for this project.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "Allocate a maximum of 70 euros for the project budget.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "Allocate a total budget of sixty euros for the project.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The deadline must be met within 1 day.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The deadline must be met within 2 days.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The deadline must be met within 3 days.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The deadline must be met within 5 days.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The deadline must be met within 6 days.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The project must be completed within 9 days.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The project must be completed within a maximum of 4 days.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The project must meet all requirements specific to local regulations.": {
+   "label": "changed",
+   "note": "original: only local options allowed; rewrite: comply with local regulations, says nothing about option locality"
+  },
+  "The total budget must not exceed 41 euros.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The total budget must not exceed 59 euros.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The total budget must not exceed 63 euros.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The total budget must not exceed 64 euros.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The total budget must not exceed 74 euros.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The total budget must not exceed 77 euros.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The total budget must not exceed 92 euros.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "The total budget must not exceed 93 euros.": {
+   "label": "same",
+   "note": "value and limit meaning kept"
+  },
+  "This project can involve resources from outside the local area.": {
+   "label": "same",
+   "note": "non-local allowed = local_only false (\"resources\" for \"options\", meaning kept)"
+  }
+ }
+}
