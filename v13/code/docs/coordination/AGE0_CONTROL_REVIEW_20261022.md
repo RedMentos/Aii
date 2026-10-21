@@ -102,3 +102,11 @@ Diese Anforderung steht bereits im Canon: W4 nennt STEP 6 Body/Callosum Learning
 Die Aussage über viele derzeit externe Lernköpfe beschreibt einen begrenzten Implementierungsstand, nicht das vereinbarte Endziel. RECORD_ONLY/SHADOW und fehlende native Trainingsnachweise sind ehrlich auszuweisen und lassen die Pflicht offen.
 
 Getrennt behandeln: (a) echtes kontinuierliches parametrisches Lernen vorhandener Modellorgane, bereits gefordert; (b) erforschbare Eingriffe in Cache/Zustandsverarbeitung, Lernverfahren oder Architektur, eine zusätzliche offene Forschungsfrage. Auch direkt integrierte Gewichtsupdates können weiterhin Fine-Tuning sein; die Anzahl der Dateien definiert die Lernart nicht. Dauerhaftes automatisches Mergen in alle Basisgewichte wurde hier nicht als bereits implementiert nachgewiesen.
+
+## 8. Zusammengehörigkeit von Body-JEPA und Split-Brain-Kopplung
+
+Erneut ausdrücklich bestätigt: Die Klarstellung zum Lernen der Modellorgane ersetzt keinen übrigen Architekturteil. Beide komplementären Bodies sollen selbst lernen, untereinander kommunizieren und zur gegenseitigen Korrektur beitragen; JEF, Callosum, Gedächtnis, Quellenbindung, Modulatoren, Retention und Rollback bleiben Bestandteil des Gesamtplans.
+
+Für den beabsichtigten Body-JEPA-Pfad bildet das jeweilige Modellorgan den lernenden Online-Zweig. Predictor-Lernen allein auf eingefrorenen Body-Zuständen ist ein begrenzter Versuch, kein vollständiger Ersatz. Predictor und langsames Target unterstützen den Lernpfad; die Vorhersageabweichung muss tatsächlich die freigegebenen trainierbaren Teile des Modellorgans erreichen. Diese Besprechung legt keinen neuen Optimierer oder ungeprüften nativen Trainingspfad fest.
+
+Review-Hinweis: Gegenseitige Korrektur benötigt geprüfte Evidenz und darf nicht mit gegenseitiger Bestätigung gleichgesetzt werden. Unterschiedliche Detail-/Gist-Schwerpunkte sollen erhalten bleiben. Konkrete Online-Update-, Kopplungs- und Retention-Nachweise bleiben erforderlich; weder EMA-Nachführung noch Modellübereinstimmung beweisen allein die Richtigkeit oder den Erhalt gelernter Inhalte.
