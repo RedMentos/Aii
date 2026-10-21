@@ -1,3 +1,6 @@
+# Aktuell 2026-10-21 (Thread „Z1 STEP2-Gate ehrlich“): Gate-Graph ehrlich
+
+STEP2 geteilt: `STEP2_HARNESS` GREEN, `STEP2_EXIT` (§96 Komplementarität) EVIDENCE_NOT_PASSING. STEP2_EXIT, STEP5 und alle zehn §100-Gates prüfen jetzt Blueprint-Kriterien an gemessenen Werten (`blueprint`-Block, Status CRITERIA_UNMEASURED); gemessenes FAIL nie mehr hinter PARTIAL. `measure_suite.py` gibt die §29-Tabelle berechnet aus: 3 erreicht, 15 teilweise, 6 fehlen. Befund `docs/proofs/continuation-20261021/z1-gate-ehrlich/BEFUND.md`. Branch `claude/project-thread-61we5j`.
 # Aktuell 2026-10-20 (Abend): Handy-Paket Werkzeug-Vorhersage fertig
 
 Ein Befehl am Redmi: `bash WERKZEUG_TESTEN.sh` (Stufen `paritaet|kurz|voll`, Anleitung `WERKZEUG_ANLEITUNG.txt`). Vorprüfung, Einrichtung bei Bedarf, GPTs begrenzter Treiber mit Frist, RAM-/Temperaturverlauf, Ergebnis-ZIP in Downloads. Nebenbei behoben: Handy-ZIP brach im Setup-Selbsttest ab (zwei fehlende Belegdateien in `package_source.py`). Cloud-Probelauf aus dem entpackten ZIP: `voll` bestätigt, gleiche Zahlen wie 12./13.10., Spitzen-RSS 1,2 GB. Redmi-Messung offen (Nutzer). Belege `docs/proofs/continuation-20261020/werkzeug-handy-cloud/`.

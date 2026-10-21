@@ -24,7 +24,7 @@ LEVELS=('SHADOW','CANDIDATE','ACTIVE')
 MIN_N=20          # BOOT: shadow decisions before a head may become a candidate
 AGREE_MIN=.9      # BOOT: §17A first phase — the learned head reproduces the scaffold's decisions
 REGRESS_MARGIN=.05  # BOOT: learned failure rate above scaffold failure rate that counts as regression
-GATE_OK={'GREEN','PARTIAL','BLOCKED_BY_DEP'}  # a gate-graph node that is incomplete but has no failing measured verdict
+GATE_OK={'GREEN','PARTIAL','BLOCKED_BY_DEP','CRITERIA_UNMEASURED'}  # a gate-graph node that is incomplete but has no failing measured verdict
 HISTORY=32
 
 def _st(c):return c._load()[0]
@@ -77,7 +77,7 @@ HEADS={
  'attention':dict(get=_mode_attr('attention'),set=_set_mode('attention'),evidence=_ev_none,objective='attention-policy-v1',gate='G-FOCAL-CAPACITY-003',capability='language'),
  'deliberation':dict(get=_mode_attr('deliberation'),set=_set_mode('deliberation'),evidence=_ev_none,objective='deliberation-mode-values-v1',gate='G-FOCAL-CAPACITY-003',capability='language'),
  'callosum':dict(get=_mode_attr('callosum'),set=_set_mode('callosum'),evidence=_ev_none,objective='callosum-channel-utility-v1',gate='G-CALLOSUM-UTILITY-002',capability='language'),
- 'gist':dict(get=_gist_get,set=_gist_set,evidence=_ev_none,objective='gist-readout-grouping',gate='STEP2',capability='language'),
+ 'gist':dict(get=_gist_get,set=_gist_set,evidence=_ev_none,objective='gist-readout-grouping',gate='STEP2_HARNESS',capability='language'),
  'neuromod_meta':dict(get=lambda r:_ctl('neuromod',r).meta_mode(),set=lambda r,m,a:_ctl('neuromod',r).set_meta_mode(m,a),evidence=_ev_none,objective='neuromod-metaplasticity-retention-v1',gate='G-MODULATOR-SPECIFICITY-001',capability='system'),
 }
 

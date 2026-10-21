@@ -1,0 +1,253 @@
+{
+ "schema": "V13_PROPERTIES29_V1",
+ "source": "Blueprint v10.16.1 §29 \"Praktische Definition von V13 funktioniert\" (24 properties); links curated by WP-Z1 2026-10-21",
+ "rule": "Status is computed, never set by hand: ERREICHT only if every linked gate is GREEN and every linked §24 benchmark is MEASURED; FEHLT if a linked gate is EVIDENCE_NOT_PASSING or a benchmark is MEASURED_FAILING/NOT_IMPLEMENTED; otherwise TEILWEISE. Without §29 met as a whole V13 is a harness prototype (§29 last line).",
+ "manual_column": "zielabgleich_20261021 = hand judgement in ZIELABGLEICH.md §1, kept only for comparison",
+ "properties": [
+  {
+   "n": 1,
+   "text": "echte vortrainierte A + B + C",
+   "gates": [
+    "RUNNER0",
+    "STEP1"
+   ],
+   "benchmarks": [],
+   "zielabgleich_20261021": "✅"
+  },
+  {
+   "n": 2,
+   "text": "B1 fein + B2 adaptiv grob mit Cross-scale SourceLinks",
+   "gates": [
+    "G-B-TIMESCALE-DIVERGENCE-001"
+   ],
+   "benchmarks": [
+    "24.20"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 3,
+   "text": "BodyPort-Profile + trainierter Callosum-Bootstrap",
+   "gates": [
+    "STEP6"
+   ],
+   "benchmarks": [],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 4,
+   "text": "adaptive Kanal-Policy mit nachgewiesenem Latent-vs-Fallback-Nutzen + Empfänger-Kalibrierung",
+   "gates": [
+    "G-CALLOSUM-UTILITY-002"
+   ],
+   "benchmarks": [
+    "24.15",
+    "24.11"
+   ],
+   "zielabgleich_20261021": "❌"
+  },
+  {
+   "n": 5,
+   "text": "echter Message-Subspace-Austausch ohne Private-State-Kollaps",
+   "gates": [
+    "G-CALLOSUM-UTILITY-002"
+   ],
+   "benchmarks": [
+    "24.11"
+   ],
+   "zielabgleich_20261021": "❌"
+  },
+  {
+   "n": 6,
+   "text": "kleiner echter JEF-Sprach-/Executive-Body mit privatem Native-KV",
+   "gates": [
+    "STEP1"
+   ],
+   "benchmarks": [
+    "24.26"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 7,
+   "text": "versionierter JEF_BROADCAST_CACHE + trainierte JEF↔A/B-Brücken",
+   "gates": [],
+   "benchmarks": [
+    "24.26"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 8,
+   "text": "A/B-Observer-Pass → OFFER_PACKETs",
+   "gates": [
+    "STEP2_HARNESS",
+    "STEP2_EXIT"
+   ],
+   "benchmarks": [
+    "24.25"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 9,
+   "text": "FOCAL_COALITION_STATE",
+   "gates": [
+    "G-FOCAL-CAPACITY-003"
+   ],
+   "benchmarks": [
+    "24.27"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 10,
+   "text": "selektiver none/A/B/A+B-Wake mit gemessener Eskalations-Qualität",
+   "gates": [],
+   "benchmarks": [
+    "24.22"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 11,
+   "text": "automatischer Direct/Skill-Pfad",
+   "gates": [
+    "G-PROCEDURALIZATION-004"
+   ],
+   "benchmarks": [
+    "24.3"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 12,
+   "text": "gezielte Deliberation mit Re-entry + Halting-vs-Trajectory-Test",
+   "gates": [],
+   "benchmarks": [
+    "24.17"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 13,
+   "text": "handlungsgeerdetes World-JEPA mit Coverage/Counterfactual-Konfidenz",
+   "gates": [
+    "G-SELF-WORLD-005"
+   ],
+   "benchmarks": [
+    "24.16"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 14,
+   "text": "Context/Provenance ohne History-Korruption",
+   "gates": [],
+   "benchmarks": [
+    "24.7"
+   ],
+   "zielabgleich_20261021": "✅"
+  },
+  {
+   "n": 15,
+   "text": "Fast-Episodic-Vorteil beim zweiten Versuch",
+   "gates": [
+    "STEP3"
+   ],
+   "benchmarks": [
+    "24.1"
+   ],
+   "zielabgleich_20261021": "✅"
+  },
+  {
+   "n": 16,
+   "text": "lokale Eligibility + echtes JEPA/EMA-Update + Pre-Router-Regressions-Monitor",
+   "gates": [],
+   "benchmarks": [
+    "24.8",
+    "24.19"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 17,
+   "text": "Replay + Restart-Persistenz",
+   "gates": [
+    "STORE0",
+    "STEP3"
+   ],
+   "benchmarks": [
+    "24.5"
+   ],
+   "zielabgleich_20261021": "✅"
+  },
+  {
+   "n": 18,
+   "text": "Regression-Schutz",
+   "gates": [
+    "STEP5"
+   ],
+   "benchmarks": [],
+   "zielabgleich_20261021": "✅"
+  },
+  {
+   "n": 19,
+   "text": "messbarer Übergang Scaffold→Imitation→Exploration→Shadow→gelernte Route je Fähigkeit",
+   "gates": [],
+   "benchmarks": [
+    "24.32",
+    "24.13"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 20,
+   "text": "echte Age-Rechtehülle + bindender user_stage_cap + Reife je Fähigkeit",
+   "gates": [
+    "G-AGE-REOPEN-001"
+   ],
+   "benchmarks": [
+    "24.21"
+   ],
+   "zielabgleich_20261021": "✅"
+  },
+  {
+   "n": 21,
+   "text": "adaptive Reasoning-Effort-Policy mit User-Override und Fixed-Effort-Baselines",
+   "gates": [],
+   "benchmarks": [
+    "24.23"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 22,
+   "text": "native Cache/Sparse-Attention nur nach Ablation",
+   "gates": [],
+   "benchmarks": [
+    "24.24"
+   ],
+   "zielabgleich_20261021": "🟡"
+  },
+  {
+   "n": 23,
+   "text": "Event/Wake-Scheduler + unabhängiger Response Governor",
+   "gates": [],
+   "benchmarks": [
+    "24.12",
+    "24.33"
+   ],
+   "zielabgleich_20261021": "✅"
+  },
+  {
+   "n": 24,
+   "text": "endliche Output-Garantie",
+   "gates": [],
+   "benchmarks": [
+    "24.6"
+   ],
+   "zielabgleich_20261021": "✅"
+  }
+ ]
+}
