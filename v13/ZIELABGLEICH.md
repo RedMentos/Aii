@@ -25,7 +25,7 @@ Legende: ✅ erreicht (Code + echte Messung), 🟡 teilweise (Code da, Messung/N
 | 3 | BodyPort-Profile + trainierter Callosum-Bootstrap | 🟡 | G2; Bootstrap nur EXACT/CONTROL/SYMBOLIC | Z4 |
 | 4 | adaptive Kanal-Policy mit nachgewiesenem Latent-vs-Fallback-Nutzen + Empfänger-Kalibrierung | ❌ | B3 L1 FAIL (Diagnose 20.10.), §24.11 MEASURED_FAILING | Z4 |
 | 5 | echter Message-Subspace-Austausch ohne Private-State-Kollaps | ❌ | B3 L2–L4 gesperrt bis L1 PASS | Z4 |
-| 6 | kleiner echter JEF-Sprach-/Executive-Body mit privatem Native-KV | 🟡 | C3 läuft, entscheidet nie (Z3 21.10.: 0/117 direkt, auch mit fertigem Werkzeug-Satz); liest Zahlen fehlerfrei, Bool `local_only` falsch; Entscheidung nur über Werkzeug (strict 0 falsch); B1/B2 als Konsument schlechter; kein natives JEF-KV | Z3 ✓ → Z3b |
+| 6 | kleiner echter JEF-Sprach-/Executive-Body mit privatem Native-KV | 🟡 | C3 läuft, entscheidet nie (Z3 21.10.: 0/117 direkt, auch mit fertigem Werkzeug-Satz); liest Zahlen fehlerfrei, Bool `local_only` falsch; Entscheidung nur über Werkzeug (strict 0 falsch); B1/B2 als Konsument schlechter; kein natives JEF-KV; Z3b 21.10.: Parser + C3-Zahlen kanonisch 117/117, C3 liest Ja/Nein-Regeln nie (immer `true`), auf Umformulierungen kein sicherer Gewinn | Z3 ✓, Z3b ✓ |
 | 7 | versionierter JEF_BROADCAST_CACHE + trainierte JEF↔A/B-Brücken | 🟡 | Broadcast-Cache da, Brücken nur gelernte Feld-Gates | Z6 |
 | 8 | A/B-Observer-Pass → OFFER_PACKETs | 🟡 | live im Turn; Nutzen (§24.25) nur Existenz-Test | Z6 |
 | 9 | FOCAL_COALITION_STATE | 🟡 | Code live; Utility-Bench: kein Arm außerhalb des Rauschens; G-FOCAL-CAPACITY-003 PARTIAL | Z5 |

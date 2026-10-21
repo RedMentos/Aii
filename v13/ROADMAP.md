@@ -1207,6 +1207,13 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Ursache im Werkzeug-Arm eindeutig: C3 liest alle Zahlen richtig (117/117), aber `local_only` immer `true`; der Wächter verwirft es → UNKNOWN. v2 ohne strict legt sich bei widersprüchlichen Zitaten fest (3/18) → strict-Prüfung vor jedem Einschalten des Live-ToolStep-Pfads.
 - Folge für §29 Nr. 6: C3 = Leser, nicht Entscheider; größerer Körper als Konsument widerlegt. Nächstes: **Z3b** (neue Registrierung) Bool-Regeln deterministisch lesen + Paraphrasen-Kohorte, damit C3 als Leser gegen reinen Parser gemessen wird.
 
+### WP-Z3b Fester Parser vs. C3 als Regel-Leser (Cloud, Modell C3) — ERLEDIGT 2026-10-21 (Thread „Z3b Parser statt C3-Leser“, Branch `claude/project-thread-a9je9s`)
+- Vorregistriert vor dem Lauf (Schwellen ≥ 0.80 exakt, ≤ 0.05 falsch), 39 kanonische + 39 umformulierte Fixtures (gleiche Werte/Orakel, 16 Vorlagen inkl. verneinter Ja/Nein-Regeln) × 3 Seeds × 7 Arme, 468 C3-Aufrufe; Beleg `code/docs/proofs/continuation-20261021/z3b-parser-paraphrase/BEFUND.md`.
+- Urteil laut Regel: **PARSER_SUFFICIENT_NO_C3_GAIN**; sekundär **BOOL_PARSER_FIX_CONFIRMED** (C3-Zahlen + Parser-`local_only` kanonisch 117/117, 0 falsch).
+- C3 liest `local_only` gar nicht: Extraktion 234/234 `true`, fokussierter Leser auf Paraphrasen 117/117 `true`. Zahlen auf Paraphrasen nur Budget 72 % / Frist 45 %.
+- Einziger Gewinn über den Parser (C3 liest alles, wortlaut-unabhängige Wächter): Paraphrase 0.41 statt 0.15 exakt, aber 7.7 % falsche Festlegungen (alle aus der Bool-Konstante) → zählt nicht. Hybrid mit C3-Rückfall kanonisch 7.7 % falsch (erfundenes `local_only` bei fehlender Regel).
+- Folge: Regeln liest ein Parser, C3 höchstens Optionszahlen; Ja/Nein-Regeln nie vom C3-350M, auch nicht als Rückfall. Live-Pfad eligibility-v2: Bool deterministisch + Z3 strict. Neue Wortformen brauchen erweiterbaren Parser oder Lese-Training (neues Paket).
+
 ### WP-Z4 B3 L1 Versuch 4 (Cloud, Modelle) — IN ARBEIT bei Thread R (Stand 21.10. früh)
 - Frische B1/B2-Zustände, Brücke mit `aux`-Zielen, Gate unverändert, Rollen-Retention neu, vorregistriert. Nur PASS öffnet L2-SHADOW. Schließt G-CALLOSUM-UTILITY-002 erst mit allen 8 Achsen.
 
