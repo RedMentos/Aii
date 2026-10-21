@@ -1214,6 +1214,13 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Einziger Gewinn über den Parser (C3 liest alles, wortlaut-unabhängige Wächter): Paraphrase 0.41 statt 0.15 exakt, aber 7.7 % falsche Festlegungen (alle aus der Bool-Konstante) → zählt nicht. Hybrid mit C3-Rückfall kanonisch 7.7 % falsch (erfundenes `local_only` bei fehlender Regel).
 - Folge: Regeln liest ein Parser, C3 höchstens Optionszahlen; Ja/Nein-Regeln nie vom C3-350M, auch nicht als Rückfall. Live-Pfad eligibility-v2: Bool deterministisch + Z3 strict. Neue Wortformen brauchen erweiterbaren Parser oder Lese-Training (neues Paket).
 
+### WP-Z3c Erweiterbarer Regel-Parser (Cloud, B1 als Umformulierer, C3-Probe) — ERLEDIGT 2026-10-21 (Thread „Z3c Erweiterbarer Regel-Parser“, Branch `claude/project-thread-x1etmj`)
+- Vorregistriert (≥ 0.80 exakt, ≤ 0.05 falsch) mit versiegeltem Autor-Holdout vor jeder Zeile Parser-Code; Parser eingefroren vor dem Modell-Holdout; Beleg `code/docs/proofs/continuation-20261021/z3c-extensible-parser/BEFUND.md`.
+- Parser v2: Lexikon als Daten mit Beleg je Eintrag (`lexicon.json`, `extend()` lehnt Holdout-Belege ab), Verneinung, Synonyme, Köder-Sätze (unentschieden/Vergangenheit/Frage) werden ignoriert, alles Unlesbare → UNKNOWN.
+- Urteil laut Regel: **PARSER_V2_CARRIES_AUTHOR_ONLY**. Kanonisch 39/39, Z3b-Paraphrasen 39/39, frischer Autor-Holdout 0.91 exakt mit 1/57 falscher Wahl (Köder „Nobody has decided whether the budget should be 102 euros.“). Modell-Holdout (B1 formuliert um) nur 22/39 bedeutungsgleich = unterbesetzt; dort 0.32 exakt, 0 falsch, Lokal-Wortschatz fehlt („nearby“, „area“, „anywhere“).
+- Sekundär **C3_TRAINING_NOT_NOW**: C3 sagt auf 60 Einzelsätzen 57× `true`, nie `null` bei Ködern; kein Signal für ein kleines Lese-Training.
+- Nächstes (neues Paket, neuer Holdout): Lexikon um die gefundenen Lücken erweitern, Köder-Erkennung für „nobody has decided“, fremder Holdout aus vom Nutzer geschriebenen Sätzen oder einem stärkeren Cloud-Modell. Bis dahin v2 nur SHADOW.
+
 ### WP-Z4 B3 L1 Versuch 4 (Cloud, Modelle) — IN ARBEIT bei Thread R (Stand 21.10. früh)
 - Frische B1/B2-Zustände, Brücke mit `aux`-Zielen, Gate unverändert, Rollen-Retention neu, vorregistriert. Nur PASS öffnet L2-SHADOW. Schließt G-CALLOSUM-UTILITY-002 erst mit allen 8 Achsen.
 

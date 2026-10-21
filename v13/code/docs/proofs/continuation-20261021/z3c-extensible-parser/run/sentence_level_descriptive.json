@@ -1,0 +1,15 @@
+{
+ "1": {
+  "budget:correct": 15,
+  "deadline:correct": 7,
+  "local_only:refused": 1
+ },
+ "2": {
+  "budget:correct": 32,
+  "budget:refused": 10,
+  "deadline:correct": 27,
+  "deadline:refused": 2,
+  "local_only:correct": 1,
+  "local_only:refused": 7
+ }
+}
