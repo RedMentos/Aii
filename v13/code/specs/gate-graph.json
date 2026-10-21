@@ -1,6 +1,6 @@
 {
  "schema": "V13_GATE_GRAPH_V1",
- "source": "Blueprint IH-H28 (dependency graph), IH-H33 (definition of done), §100 (new gates, green criteria)",
+ "source": "Blueprint IH-H28 (dependency graph), IH-H33 (definition of done), §100 (new gates, green criteria); §96 STEP exits and §85/§89/§100 gate criteria as 'blueprint' blocks (WP-Z1)",
  "criteria": [
   "code",
   "real_data",
@@ -15,7 +15,9 @@
   "real_data must be an artifact of a real run (bench-results/ or docs/proofs/), never a unit test (no mock may make a gate green).",
   "telemetry is a telemetry kind that the code must actually log (checked in v13/*.py).",
   "null means the criterion is not relevant for this gate (e.g. persistence for a pure benchmark).",
-  "verdict: evidence existing is not enough where a result file states pass/fail; a failing verdict keeps the gate at EVIDENCE_NOT_PASSING."
+  "verdict: evidence existing is not enough where a result file states pass/fail; a failing verdict keeps the gate at EVIDENCE_NOT_PASSING.",
+  "blueprint: a gate with a 'blueprint' block is GREEN only if every listed blueprint exit criterion is bound to a measured value that passes; no binding or missing file = UNMEASURED (gate CRITERIA_UNMEASURED), a readable value that fails = FAIL (gate EVIDENCE_NOT_PASSING, even if other evidence is missing).",
+  "STEP2 is split (WP-Z1): STEP2_HARNESS checks only the harness (rows complete, states restored, sources valid); STEP2_EXIT is the §96 exit (measurable complementarity, bounded RSS, observer latency known). Later STEPs and gates depend on STEP2_EXIT."
  ],
  "gates": {
   "G0": {
@@ -140,8 +142,8 @@
     "docs/C1_GOVERNOR_SCOPE.md"
    ]
   },
-  "STEP2": {
-   "title": "B1/B2 observer + offer schema (G1B)",
+  "STEP2_HARNESS": {
+   "title": "STEP2 harness only: B1/B2 observer + offer schema rows complete (G1B), NOT the STEP2 exit",
    "deps": [
     "STEP1"
    ],
@@ -175,6 +177,93 @@
      "value": true
     }
    ]
+  },
+  "STEP2_EXIT": {
+   "title": "STEP2 exit (§96): measurable complementarity, bounded RSS, observer latency known",
+   "deps": [
+    "STEP2_HARNESS"
+   ],
+   "code": [
+    "v13/cognition.py"
+   ],
+   "real_data": [
+    "docs/proofs/step2-final-full-audit-20261009.json"
+   ],
+   "persistence": [
+    "tests/test_step2_checkpoint.py"
+   ],
+   "test": [
+    "tests/test_step2_utility.py",
+    "tests/test_step2_analysis.py"
+   ],
+   "telemetry": [
+    "offer_rejected"
+   ],
+   "ablation": [
+    "docs/proofs/step2-ablations-linux.json",
+    "../bench-results/timescale-gate-20261009/same_model_same_policy.analysis.json",
+    "../bench-results/timescale-gate-20261009/same_model_prompt_only.analysis.json",
+    "../bench-results/timescale-gate-20261009/shared_body_dual_state.analysis.json"
+   ],
+   "limitations": [
+    "docs/STEP2_SEMANTIC_UTILITY_SCOPE.md"
+   ],
+   "verdict": [
+    {
+     "file": "docs/proofs/step2-final-full-audit-20261009.json",
+     "path": "canonical_gate_pass",
+     "op": "==",
+     "value": true
+    }
+   ],
+   "blueprint": {
+    "ref": "§96 STEP 2 Exit",
+    "criteria": [
+     {
+      "id": "measurable_complementarity",
+      "text": "B1+B2 together beat the best single body on the preregistered cohort (canonical utility gate)",
+      "verdict": [
+       {
+        "file": "docs/proofs/step2-final-full-audit-20261009.json",
+        "path": "canonical_gate_pass",
+        "op": "==",
+        "value": true
+       }
+      ],
+      "note": "09.10.: UTILITY_FAIL, both_exact 0.525 vs b1_only 0.592"
+     },
+     {
+      "id": "each_body_contributes",
+      "text": "B1 and B2 each win at least one episode the other loses",
+      "verdict": [
+       {
+        "file": "docs/proofs/step2-final-full-audit-20261009.json",
+        "path": "paired.b1_b2_each_win_an_episode",
+        "op": "==",
+        "value": true
+       }
+      ]
+     },
+     {
+      "id": "bounded_rss",
+      "text": "peak RSS of the observer pass stays under a preregistered budget",
+      "verdict": [],
+      "note": "no preregistered STEP2 RSS budget yet; measured cloud peak 1.50 GB (two_body.analysis), Redmi not measured"
+     },
+     {
+      "id": "observer_latency_known",
+      "text": "observer latency measured on a real run",
+      "verdict": [
+       {
+        "file": "docs/proofs/step2-final-native-evening-20261008.json",
+        "path": "preparations.0.offers.0.native_metrics.duration_s",
+        "op": "exists"
+       }
+      ],
+      "note": "per-offer native duration on Linux cloud (09.10. cohort); Redmi not measured"
+     }
+    ]
+   }
   },
   "STEP3": {
    "title": "Experience + episodic/provenance (G6 partial)",
@@ -244,12 +333,59 @@
    "ablation": null,
    "limitations": [
     "docs/NEUROMODULATION.md"
-   ]
+   ],
+   "blueprint": {
+    "ref": "§96 STEP 5",
+    "criteria": [
+     {
+      "id": "shadow_generation_atomic_commit",
+      "text": "shadow generation and atomic candidate commit on a real native run (active generation unchanged until approval, rollback works)",
+      "verdict": [
+       {
+        "file": "docs/proofs/f7-learning-native-20261002.json",
+        "path": "proof_status",
+        "op": "==",
+        "value": "LEARNING_LIFECYCLE_PASS"
+       },
+       {
+        "file": "docs/proofs/f7-learning-native-20261002.json",
+        "path": "active_unchanged_after_shadow",
+        "op": "==",
+        "value": true
+       },
+       {
+        "file": "docs/proofs/f7-learning-native-20261002.json",
+        "path": "rollback_removed_head",
+        "op": "==",
+        "value": true
+       }
+      ]
+     },
+     {
+      "id": "train_runner_proof_on_device",
+      "text": "TRAIN_RUNNER_PROOF green for exactly the trained parameter path on the target device (§89, G-TRAIN-RUNNER-PROOF-001)",
+      "verdict": [],
+      "note": "cloud only; Redmi proof missing (WP-Z7)"
+     },
+     {
+      "id": "modulator_packet_real",
+      "text": "ModulatorPacket with typed fields drives a real learning update",
+      "verdict": [],
+      "note": "unit tests only; typed-vs-scalar measured only synthetically (ablation99)"
+     },
+     {
+      "id": "eligibility_traces_real",
+      "text": "eligibility/activity traces gate a real update",
+      "verdict": [],
+      "note": "synthetic ablation99 ties recency-only"
+     }
+    ]
+   }
   },
   "STEP6": {
    "title": "Callosum (G2 BodyPort, G2B effect, G2C utility)",
    "deps": [
-    "STEP2",
+    "STEP2_EXIT",
     "STEP5"
    ],
    "code": [
@@ -270,7 +406,7 @@
   "G-B-TIMESCALE-DIVERGENCE-001": {
    "title": "B1/B2 timescale divergence (§85.1)",
    "deps": [
-    "STEP2"
+    "STEP2_HARNESS"
    ],
    "code": [
     "scripts/timescale_gate.py",
@@ -298,7 +434,76 @@
      "op": "==",
      "value": true
     }
-   ]
+   ],
+   "blueprint": {
+    "ref": "§85.1",
+    "criteria": [
+     {
+      "id": "complementary_error_profiles",
+      "text": "B1/B2 have measurably different, complementary error profiles on a timescale test set",
+      "verdict": [
+       {
+        "file": "../bench-results/timescale-gate-20261009/two_body.analysis.json",
+        "path": "complementarity_proven",
+        "op": "==",
+        "value": true
+       }
+      ]
+     },
+     {
+      "id": "beats_identical_instances",
+      "text": "the combination yields more utility than two identical instances",
+      "verdict": [
+       {
+        "file": "../bench-results/timescale-gate-20261009/same_model_same_policy.analysis.json",
+        "path": "complementarity_proven",
+        "op": "==",
+        "value": true
+       }
+      ],
+      "note": "same-model same-policy control"
+     },
+     {
+      "id": "control_same_model_same_policy",
+      "text": "control run: same model, same policy",
+      "verdict": [
+       {
+        "file": "../bench-results/timescale-gate-20261009/same_model_same_policy.analysis.json",
+        "path": "status",
+        "op": "exists"
+       }
+      ]
+     },
+     {
+      "id": "control_prompt_only",
+      "text": "control run: same model, different prompt only",
+      "verdict": [
+       {
+        "file": "../bench-results/timescale-gate-20261009/same_model_prompt_only.analysis.json",
+        "path": "status",
+        "op": "exists"
+       }
+      ]
+     },
+     {
+      "id": "control_shared_body_dual_state",
+      "text": "control run: shared body + dual timescale state",
+      "verdict": [
+       {
+        "file": "../bench-results/timescale-gate-20261009/shared_body_dual_state.analysis.json",
+        "path": "status",
+        "op": "exists"
+       }
+      ]
+     },
+     {
+      "id": "fixtures_b1_own_information",
+      "text": "fixtures where B1 holds detail the gist body lacks (otherwise complementarity cannot show)",
+      "verdict": [],
+      "note": "WP-Z2"
+     }
+    ]
+   }
   },
   "G-CALLOSUM-UTILITY-002": {
    "title": "Callosum utility vs no-message/exact/symbolic/latent",
@@ -327,12 +532,77 @@
      "op": "==",
      "value": true
     }
-   ]
+   ],
+   "blueprint": {
+    "ref": "§85.2",
+    "criteria": [
+     {
+      "id": "latent_l1_pass",
+      "text": "B3 L1: latent receiver adapter passes the canon L1 bar on at least one target task",
+      "verdict": [
+       {
+        "file": "../bench-results/b3-l1-v3-20261012/report.json",
+        "path": "summary.canon_l1_pass",
+        "op": "nonempty"
+       }
+      ],
+      "note": "v3 12.10.: L1 FAIL on all tasks; attempt 4 = WP-Z4"
+     },
+     {
+      "id": "latent_beats_fallbacks_task_utility",
+      "text": "LATENT beats NONE/EXACT/CONTROL/SYMBOLIC on task utility",
+      "verdict": [],
+      "note": "locked until L1 PASS"
+     },
+     {
+      "id": "latent_beats_fallbacks_latency",
+      "text": "LATENT beats NONE/EXACT/CONTROL/SYMBOLIC on latency",
+      "verdict": [],
+      "note": "locked until L1 PASS"
+     },
+     {
+      "id": "latent_beats_fallbacks_bytes_transferred",
+      "text": "LATENT beats NONE/EXACT/CONTROL/SYMBOLIC on bytes transferred",
+      "verdict": [],
+      "note": "locked until L1 PASS"
+     },
+     {
+      "id": "latent_beats_fallbacks_receiver_OOD",
+      "text": "LATENT beats NONE/EXACT/CONTROL/SYMBOLIC on receiver OOD",
+      "verdict": [],
+      "note": "locked until L1 PASS"
+     },
+     {
+      "id": "latent_beats_fallbacks_source_faithfulness",
+      "text": "LATENT beats NONE/EXACT/CONTROL/SYMBOLIC on source faithfulness",
+      "verdict": [],
+      "note": "locked until L1 PASS"
+     },
+     {
+      "id": "latent_beats_fallbacks_role_retention",
+      "text": "LATENT beats NONE/EXACT/CONTROL/SYMBOLIC on role retention",
+      "verdict": [],
+      "note": "locked until L1 PASS"
+     },
+     {
+      "id": "latent_beats_fallbacks_interference",
+      "text": "LATENT beats NONE/EXACT/CONTROL/SYMBOLIC on interference",
+      "verdict": [],
+      "note": "locked until L1 PASS"
+     },
+     {
+      "id": "latent_beats_fallbacks_restart_reproducibility",
+      "text": "LATENT beats NONE/EXACT/CONTROL/SYMBOLIC on restart reproducibility",
+      "verdict": [],
+      "note": "locked until L1 PASS"
+     }
+    ]
+   }
   },
   "G-FOCAL-CAPACITY-003": {
    "title": "Focal coalition capacity",
    "deps": [
-    "STEP2"
+    "STEP2_EXIT"
    ],
    "code": [
     "v13/focal.py"
@@ -367,7 +637,42 @@
      "op": "==",
      "value": true
     }
-   ]
+   ],
+   "blueprint": {
+    "ref": "§85.3",
+    "criteria": [
+     {
+      "id": "functional_properties_real_path",
+      "text": "capacity limit, competition, priority replacement, salience interrupt, re-entry, source binding, unattended retention/recovery on the real state path",
+      "verdict": [],
+      "note": "only synthetic unit tests (tests/test_focal.py)"
+     },
+     {
+      "id": "beats_full_context",
+      "text": "coalition beats \"everything into context\" outside the noise band",
+      "verdict": [
+       {
+        "file": "../bench-results/utility-20261010/utility.json",
+        "path": "verdict.focal_coalition_helps",
+        "op": "==",
+        "value": true
+       }
+      ]
+     },
+     {
+      "id": "control_retrieval_only",
+      "text": "§99 control: retrieval only",
+      "verdict": [],
+      "note": "WP-Z5"
+     },
+     {
+      "id": "control_fixed_slots",
+      "text": "§99 control: fixed slots",
+      "verdict": [],
+      "note": "WP-Z5"
+     }
+    ]
+   }
   },
   "G-PROCEDURALIZATION-004": {
    "title": "Proceduralization / skills",
@@ -391,7 +696,42 @@
    ],
    "limitations": [
     "docs/AGI_LIVE.md"
-   ]
+   ],
+   "blueprint": {
+    "ref": "§85.6",
+    "criteria": [
+     {
+      "id": "latency_down",
+      "text": "compiled skill lowers latency",
+      "verdict": [],
+      "note": "synthetic only (ablation99, no language model); real latency/energy needs Redmi (WP-Z7)"
+     },
+     {
+      "id": "energy_down",
+      "text": "compiled skill lowers energy",
+      "verdict": [],
+      "note": "synthetic only (ablation99, no language model); real latency/energy needs Redmi (WP-Z7)"
+     },
+     {
+      "id": "accuracy_noninferior",
+      "text": "accuracy noninferior to deliberation",
+      "verdict": [],
+      "note": "synthetic only (ablation99, no language model); real latency/energy needs Redmi (WP-Z7)"
+     },
+     {
+      "id": "reopen_on_error",
+      "text": "reopen-on-error preserved",
+      "verdict": [],
+      "note": "synthetic only (ablation99, no language model); real latency/energy needs Redmi (WP-Z7)"
+     },
+     {
+      "id": "constraints_preserved",
+      "text": "source/rule constraints preserved",
+      "verdict": [],
+      "note": "synthetic only (ablation99, no language model); real latency/energy needs Redmi (WP-Z7)"
+     }
+    ]
+   }
   },
   "G-SELF-WORLD-005": {
    "title": "Self vs world, corollary, grounding",
@@ -417,7 +757,48 @@
    "ablation": [],
    "limitations": [
     "docs/SELF_MODEL.md"
-   ]
+   ],
+   "blueprint": {
+    "ref": "§85.7",
+    "criteria": [
+     {
+      "id": "external_no_self_action",
+      "text": "same external event, no self action",
+      "verdict": [],
+      "note": "synthetic test cases only; no real action sequence (WP-Z12)"
+     },
+     {
+      "id": "observation_after_self_action",
+      "text": "same observation following self action",
+      "verdict": [],
+      "note": "synthetic test cases only; no real action sequence (WP-Z12)"
+     },
+     {
+      "id": "partial_action_failure",
+      "text": "partial action failure",
+      "verdict": [],
+      "note": "synthetic test cases only; no real action sequence (WP-Z12)"
+     },
+     {
+      "id": "delayed_outcome",
+      "text": "delayed outcome",
+      "verdict": [],
+      "note": "synthetic test cases only; no real action sequence (WP-Z12)"
+     },
+     {
+      "id": "unexpected_side_effect",
+      "text": "unexpected side-effect",
+      "verdict": [],
+      "note": "synthetic test cases only; no real action sequence (WP-Z12)"
+     },
+     {
+      "id": "ambiguous_causality",
+      "text": "ambiguous causality",
+      "verdict": [],
+      "note": "synthetic test cases only; no real action sequence (WP-Z12)"
+     }
+    ]
+   }
   },
   "G-TRAIN-RUNNER-PROOF-001": {
    "title": "Train runner proof (checkpoint/resume/rollback)",
@@ -436,7 +817,18 @@
    "ablation": [],
    "limitations": [
     "docs/NATIVE_TRAIN_TEST.md"
-   ]
+   ],
+   "blueprint": {
+    "ref": "§89",
+    "criteria": [
+     {
+      "id": "no_commit_without_exact_proof",
+      "text": "no APPROVED_COMMIT without a green proof for exactly the trained parameter path, on the target device",
+      "verdict": [],
+      "note": "cloud proof only, Redmi proof missing (WP-Z7)"
+     }
+    ]
+   }
   },
   "G-REPLAY-CONSOLIDATION-001": {
    "title": "Replay + consolidation",
@@ -474,7 +866,30 @@
      "op": "==",
      "value": "CONSOLIDATION_PASS"
     }
-   ]
+   ],
+   "blueprint": {
+    "ref": "§99 Dream helps",
+    "criteria": [
+     {
+      "id": "consolidation_pass",
+      "text": "native consolidation proof passes",
+      "verdict": [
+       {
+        "file": "docs/proofs/consolidation-native-20261002.json",
+        "path": "status",
+        "op": "==",
+        "value": "CONSOLIDATION_PASS"
+       }
+      ]
+     },
+     {
+      "id": "control_dream_policy_only",
+      "text": "§99 control: dream policy-only",
+      "verdict": [],
+      "note": "WP-Z9"
+     }
+    ]
+   }
   },
   "G-MODULATOR-SPECIFICITY-001": {
    "title": "Typed modulators steer the right paths",
@@ -497,7 +912,30 @@
    ],
    "limitations": [
     "docs/NEUROMODULATION.md"
-   ]
+   ],
+   "blueprint": {
+    "ref": "§99 Typed modulators help",
+    "criteria": [
+     {
+      "id": "beats_scalar_reward",
+      "text": "typed modulators beat scalar reward with real models",
+      "verdict": [],
+      "note": "synthetic only (ablation99: 5/5, 5/5, 4/5)"
+     },
+     {
+      "id": "beats_human_only",
+      "text": "typed modulators beat human-only with real models",
+      "verdict": [],
+      "note": "synthetic only (ablation99: 5/5, 5/5, 4/5)"
+     },
+     {
+      "id": "beats_outcome_only",
+      "text": "typed modulators beat outcome-only with real models",
+      "verdict": [],
+      "note": "synthetic only (ablation99: 5/5, 5/5, 4/5)"
+     }
+    ]
+   }
   },
   "G-AGE-REOPEN-001": {
    "title": "Age stages with hysteresis and re-open",
@@ -518,7 +956,24 @@
    "ablation": [
     "../bench-results/ablation99-20261010/ablation99.json"
    ],
-   "limitations": []
+   "limitations": [],
+   "blueprint": {
+    "ref": "§95.3/§99 Age helps stability",
+    "criteria": [
+     {
+      "id": "age_beats_fixed_conservative",
+      "text": "stage+maturity with reopen beats fixed conservative",
+      "verdict": [],
+      "note": "synthetic ablation99: NOT supported in the noisy phase; user decision on plasticity open (WP-Z8)"
+     },
+     {
+      "id": "age_beats_fixed_permissive",
+      "text": "stage+maturity with reopen beats fixed permissive",
+      "verdict": [],
+      "note": "synthetic ablation99: NOT supported in the noisy phase; user decision on plasticity open (WP-Z8)"
+     }
+    ]
+   }
   },
   "G-MOBILE-LONGRUN-001": {
    "title": "Redmi long run (RSS/thermal/latency)",
@@ -539,7 +994,36 @@
    "ablation": null,
    "limitations": [
     "docs/PHONE_VALIDATION.md"
-   ]
+   ],
+   "blueprint": {
+    "ref": "§96 STEP 7",
+    "criteria": [
+     {
+      "id": "weeks_on_redmi",
+      "text": "multi-week run on the Redmi",
+      "verdict": [],
+      "note": "cloud soak only; Redmi missing (WP-Z7)"
+     },
+     {
+      "id": "retention",
+      "text": "retention over the run",
+      "verdict": [],
+      "note": "cloud soak only; Redmi missing (WP-Z7)"
+     },
+     {
+      "id": "thermal",
+      "text": "thermal behaviour",
+      "verdict": [],
+      "note": "cloud soak only; Redmi missing (WP-Z7)"
+     },
+     {
+      "id": "restarts",
+      "text": "restarts survived",
+      "verdict": [],
+      "note": "cloud soak only; Redmi missing (WP-Z7)"
+     }
+    ]
+   }
   }
  }
 }

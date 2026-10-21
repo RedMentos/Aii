@@ -1191,10 +1191,12 @@ Grund: Nutzer am 21.10., Ziele fehlen und passen nicht zum Blueprint. Befund und
 `ABDECKUNG.md` §12. Diese Pakete gehen vor allen älteren offenen Paketen, weil sie die §100-Gates und den STEP2-Engpass angehen.
 Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, Autorität 0 bis zum Gate-PASS.
 
-### WP-Z1 Gate-Ehrlichkeit (klein, Cloud, kein Modell) — OFFEN
-- `code/specs/gate-graph.json`: STEP2 in `STEP2_HARNESS` (heute grün) und `STEP2_EXIT` (Komplementarität, heute rot) trennen; gleiches für STEP5 (TRAIN_RUNNER_PROOF Redmi).
-- Die zehn §100-Gates gegen die Kriterien aus dem Blueprint-Text prüfen (§85-Abschnitte zu jedem Gate), nicht nur gegen vorhandene Belegdateien.
-- `measure_suite.py` gibt zusätzlich die §29-Tabelle (24 Eigenschaften) und STEP-Ausgänge aus. Test dazu.
+### WP-Z1 Gate-Ehrlichkeit (klein, Cloud, kein Modell) — ERLEDIGT 2026-10-21 (Thread „Z1 STEP2-Gate ehrlich“, Branch `claude/project-thread-61we5j`)
+- `code/specs/gate-graph.json`: STEP2 geteilt in `STEP2_HARNESS` (Harness, GREEN) und `STEP2_EXIT` (§96: Komplementarität, RSS, Observer-Latenz) → **EVIDENCE_NOT_PASSING** (canonical_gate_pass false, B1/B2 gewinnen nicht je eine Episode, RSS-Budget ungemessen, Latenz Cloud 3,8 s/Offer). STEP6 und G-FOCAL hängen am Ausgang.
+- Neuer `blueprint`-Block: Blueprint-Kriterien je Gate an gemessene Werte gebunden (UNMEASURED/FAIL/PASS) für STEP2_EXIT, STEP5 und alle zehn §100-Gates; synthetische Ablationen zählen nicht. `v13/gates.py`: Status `CRITERIA_UNMEASURED`; gemessenes FAIL nie mehr hinter PARTIAL versteckt. STEP5 jetzt CRITERIA_UNMEASURED (TRAIN_RUNNER_PROOF am Gerät fehlt).
+- `measure_suite.py` + `specs/properties29.json`: §29-Tabelle berechnet (Projektstand: **3 erreicht, 15 teilweise, 6 fehlen**; Hand-Einschätzung 8/14/2) plus Kriterien-Tabelle je Gate.
+- Gates Projektstand: vorher 8 GREEN / 1 ENP / 10 PARTIAL, jetzt 7 GREEN / 5 ENP / 1 CRITERIA_UNMEASURED / 7 PARTIAL. Befund `code/docs/proofs/continuation-20261021/z1-gate-ehrlich/BEFUND.md`.
+- Offen: STEP2-RSS-Budget vorregistrieren (mit Z2); restliche STEPs (1, 3, 6) bei Bedarf ebenfalls mit `blueprint`-Block.
 
 ### WP-Z2 STEP2 neu: B1 mit eigener Detail-Information (Cloud, Modelle) — OFFEN
 - Neue vorregistrierte Fixtures, in denen Detail-Fakten nur B1 sieht und Überblick/Widerspruch nur B2 (Offen (3) aus „STEP2-Nutzen Engpass“).
