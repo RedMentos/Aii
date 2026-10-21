@@ -56,6 +56,15 @@ class LivePath(unittest.TestCase):
         self.assertFalse(ts.compare(e,sh,'Option A is the cheapest.'))
         part=dict(p['args'],quotes='Budget 90 euros. Deadline 4 days.')  # local-only rule not in evidence -> refuse
         self.assertEqual(E.tool(**part)['action'],'UNKNOWN')
+    def test_earlier_user_turn_is_evidence_but_assistant_text_is_not(self):
+        from v13.history import native_history
+        hub(self.r).tools.enable('eligibility');ts=toolstep.ToolStep(self.r)
+        e0=self.r.store.event(self.r.session,PRIOR)  # store.event writes the user message itself
+        a=self.r.store.message(self.r.session,e0['event_id'],'assistant');self.r.store.append_message(a,'Budget 999 euros. Deadline 99 days.');self.r.store.finish_message(a,'FINAL',{'direct_source_copy':True})
+        e=self.r.store.event(self.r.session,CURRENT)
+        self.assertEqual(len(native_history(self.r.store,self.r.session,e['event_id'],self.r.cfg['history_turns'])[0]),2)
+        self.assertEqual(ts.user_turns(e),[PRIOR])  # the assistant's 'Budget 999 euros' never becomes evidence
+        self.r.cfg['history_turns']=0;self.assertEqual(ts.user_turns(e),[])
     def test_layer_for_an_executed_call(self):
         ts=toolstep.ToolStep(self.r);res=E.tool(**E.args_from(EXTRACT,CURRENT,[PRIOR]))
         layer=ts.layer({'tool':'eligibility','args':{},'result':res,'action_tx':None,'tx':'tool_x'})

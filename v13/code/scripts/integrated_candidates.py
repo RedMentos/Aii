@@ -222,6 +222,17 @@ def quote_context(text):
                  "                source,base,(a,b)=match;ref=base|{'char_start':base['char_start']+a,'char_end':base['char_start']+b}\n"
                  "                if ref not in refs:self.s.read_source(ref);refs.append(ref)  # two quotes may point at the same sentences\n"
                  "                continue\n")
+    t = _replace(t, "        p.update(context_offer_ids=query_packet['context_offer_ids'],",
+                 "        if wide:p['quote_context_chars']=wide  # analyst_context accepts the widened spans only for this offer\n"
+                 "        p.update(context_offer_ids=query_packet['context_offer_ids'],")
+    anchor = "                text=self.s.read_source(ref)\n                if text not in offer['offer'].get('quotes',[]):raise"
+    if anchor in t:  # analyst_context exists only on the SourceHandoff-changed side of the frozen candidate views
+        t = _replace(t, anchor,
+                     "                text=self.s.read_source(ref);wide=offer.get('quote_context_chars',0)\n"
+                     "                if wide and text not in offer['offer'].get('quotes',[]) and len(text)<=wide and any(quote_span(q,text,wide) for q in offer['offer'].get('quotes',[])):\n"
+                     "                    # 2026-10-21: an exact source span the offered quote points into (live turn failed 'differs from offered quote' without this)\n"
+                     "                    verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE','semantic_truth_authority':False});continue\n"
+                     "                if text not in offer['offer'].get('quotes',[]):raise")
     return t
 
 

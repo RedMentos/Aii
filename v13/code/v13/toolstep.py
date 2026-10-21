@@ -113,12 +113,21 @@ class ToolStep:
                 q=self.r.store.read_source(ref)
                 if q not in out:out.append(q)
         return out
+    def user_turns(self,e):
+        """The user's own earlier turns of this session (exact event sources, same window as the chat history; never assistant text)."""
+        from .history import native_history
+        out=[]
+        for m in native_history(self.r.store,self.r.session,e['event_id'],self.r.cfg['history_turns'])[0]:
+            if m['role']=='user':
+                row=self.r.store.one('SELECT packet FROM events WHERE id=?',(m['event_id'],))
+                if row:out.append(self.r.store.read_source(json.loads(row['packet'])['source_ref']))
+        return out
     def _propose_eligibility(self,e,text):
         """Option A/B under project rules (BOOT wording rule) -> C3 extracts typed values -> eligibility proposal."""
         from .agi import eligibility
         if not eligibility.asks(text) or 'eligibility' not in self._registry().box.load()[0]['enabled']:return None  # model call only after the user enabled the tool
         try:
-            quotes=self.offer_quotes(e)
+            quotes=self.offer_quotes(e);quotes+=[q for q in self.user_turns(e) if q not in quotes]  # earlier rules: body quotes or the user's own earlier turns
             x=eligibility.read(self.r.pool.get('C3_LANGUAGE'),text,quotes,self.r.cancel_event,time.monotonic()+LIST_READ_SECONDS)
             args=eligibility.args_from(x,text,quotes)
         except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'eligibility_read','error':type(exc).__name__});return None

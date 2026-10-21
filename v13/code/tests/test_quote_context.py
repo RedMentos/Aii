@@ -49,6 +49,12 @@ class OfferPath(unittest.TestCase):
                     out[label]=([r.store.read_source(x) for x in p['evidence_refs']],p['rejected_quotes'])
                 self.assertEqual(out['off'],(['Budget 90 euros.'],1))
                 self.assertEqual(out['on'],([PRIOR],0))  # both quotes point at the same sentences: one ref
+                ctx=r.cognition.analyst_context([p],e,0)  # live consumer path accepts the widened span (failed before 2026-10-21)
+                self.assertEqual([(q['text'],q['verification']) for q in ctx[0]['verified_quotes']],[(PRIOR,'EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE')])
+                r.cfg['offer_quote_context_chars']=0
+                e=r.store.event(r.session,PRIOR);p=r.cognition.offer('B1_DETAIL',e,0,time.monotonic()+30)
+                self.assertNotIn('quote_context_chars',p)
+                self.assertEqual([q['verification'] for q in r.cognition.analyst_context([p],e,0)[0]['verified_quotes']],['EXACT_SOURCE_SUBSTRING_ONLY'])
             finally:r.close()
     def test_config_and_chain_link(self):
         from v13.config import validate,DEFAULTS
