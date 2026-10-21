@@ -44,3 +44,10 @@ Prioritäts-Ersetzung, Salienz-Interrupt, Re-entry, Quellbindung, unbeaufsichtig
 ## Grenzen (vorab)
 Generierte englische Aufgaben, eine Saat, Regex nur auf der Endantwort, lexikalisches Retrieval statt Embedding,
 gierige Bench-Dekodierung statt anti_echo, Cloud-CPU statt Redmi.
+
+## Nachtrag vor dem Hauptlauf (2026-10-21, nach Probelauf mit 4 Aufgaben, vor den 5 × 60 Läufen)
+- Im Probelauf antwortet bei Effort `max` meist **nicht C3**, sondern der Körper, den C5 wählt (B1_DETAIL oder B2_GIST).
+  Die Wiedergabe schickt deshalb die echte Antwort-Nachricht an **dasselbe Organ**, das live geantwortet hat. Probelauf:
+  Wiedergabe-Treue 4/4 identisch.
+- Der Arm `c3_alone` heißt deshalb `no_hypotheses` (antwortendes Organ nur mit der Nutzernachricht, ohne Hypothesen-Schicht).
+- Die 4 Probe-Aufgaben zählen nicht; Hauptlauf mit allen 60 Aufgaben × 5 Läufen. Entscheidungsregeln unverändert.
