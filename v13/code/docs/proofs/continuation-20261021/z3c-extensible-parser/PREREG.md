@@ -57,3 +57,16 @@ sind neue Entwicklungsdaten und brauchen eine neue Holdout-Kohorte.
 ## Grenzen
 Eine Aufgabenart (Budget/Frist/Lokal), Englisch, Optionssätze kanonisch. Autor-Holdout vom Parser-Autor geschrieben.
 Modell-Holdout von einem 1.2B-Modell, Bedeutungs-Audit durch mich. Cloud-CPU statt Handy.
+
+## Nachtrag A1 (2026-10-21, nach Runde 1 der Modell-Generierung, vor jedem Parser-Lauf auf Holdouts)
+Runde 1 (`holdout_model_raw.json`, Audit `holdout_model_audit.json`, Commit `cc34bda`) ist **unterbesetzt**: nur 11/39
+Fixtures. B1 schrieb bei gleichem Seed je Satz identisch um, behielt bei 13 Budget-Sätzen die Kanon-Form „budget of N
+euros“ (Filter) und machte aus `local_only = true` „local regulations“ (Audit `changed`). Runde 1 bleibt unverändert
+und wird berichtet. Zusätzlich, gleiche Regeln wie oben, nur für mehr Vielfalt:
+- `holdout_model` Runde 2 (`holdout_model_r2_raw.json`, Audit `holdout_model_r2_audit.json`): B1, **jedes**
+  Regel-Vorkommen einzeln (kein Satz-Cache), drei Prompt-Stile im Wechsel nach Fixture-Index
+  (1 = Runde-1-Prompt, 2 = „Projektleiter schreibt die Regel in einer E-Mail an einen Lieferanten“, 3 = „Alltagsenglisch
+  ohne die Wörter des Originals“, Texte in `z3c_run.py`), Temperatur 0.9, Seed 20261024 + 10·Fixture-Index + Versuch,
+  höchstens 5 Versuche. Filter und Audit wie Runde 1, Audit vor dem Parser-Lauf, Datei committet vor dem Lauf.
+- Für das Urteil zählt als `holdout_model` Runde 2, wenn sie ≥ 30 Fixtures hat; sonst bleibt `holdout_model`
+  unterbesetzt. Runde 1 wird in jedem Fall mit berichtet. Schwellen, Arme, Parser (`freeze.json`) unverändert.

@@ -42,7 +42,7 @@ Z, G, E, A = B.Z, B.G, B.E, B.A
 
 VERSION = 'V13_Z3C_EXTENSIBLE_PARSER_V1'
 RULES = B.RULES
-COHORTS = ['dev_canonical', 'dev_paraphrase', 'holdout_author', 'holdout_model']
+COHORTS = ['dev_canonical', 'dev_paraphrase', 'holdout_author', 'holdout_model', 'holdout_model_r1']
 ARMS = ['parser_v1', 'parser_v2']
 CONTROL_KINDS = ('missing_rule', 'contradictory_rule', 'decoy_missing')
 HOLDOUT_AUTHOR = HERE / 'holdout_author.json'
@@ -57,6 +57,19 @@ GEN_SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['sen
               'properties': {'sentence': {'type': 'string', 'minLength': 3, 'maxLength': 240}}}
 GEN_SEED, GEN_TEMPERATURE, GEN_ATTEMPTS, GEN_MAX_WORDS = 20261023, 0.7, 3, 30
 MIN_MODEL_FIXTURES = 30
+ROUNDS = {
+    1: {'raw': MODEL_RAW, 'audit': MODEL_AUDIT, 'prompts': [GEN_PROMPT], 'temperature': GEN_TEMPERATURE,
+        'attempts': GEN_ATTEMPTS, 'cache': True, 'seed': lambda fi, attempt: GEN_SEED + attempt},
+    2: {'raw': HERE / 'holdout_model_r2_raw.json', 'audit': HERE / 'holdout_model_r2_audit.json',
+        'prompts': [GEN_PROMPT,
+                    'A project manager writes this rule in an email to a supplier. Write that one sentence. '
+                    'Keep the meaning and keep every number exactly.',
+                    'Say the same rule in plain everyday English without using the words of the original. '
+                    'Keep the meaning and keep every number exactly. Answer with one sentence.'],
+        'temperature': 0.9, 'attempts': 5, 'cache': False,
+        'seed': lambda fi, attempt: 20261024 + 10 * fi + attempt},
+}
+MODEL_ROUND_FOR_VERDICT = 2
 PROBE_SEEDS = [13, 14, 15]
 PROBE_SYSTEM = ('You read one project rule sentence and return the required JSON only. local_only is true if the '
                 'sentence says that only local options are allowed or that the chosen option must be local; false if '
@@ -230,25 +243,33 @@ def _warm_call(runtime, role, messages, seconds, tokens, schema, seed, transcrip
     return entry['raw']
 
 
-def generate_model(installed, out):
-    """B1 rewrites every base rule clause (only after freeze). Writes holdout_model_raw.json."""
+def generate_model(installed, out, rnd=1):
+    """B1 rewrites every base rule clause (only after freeze). Writes the round's raw file."""
     freeze = check_freeze()
+    cfg = ROUNDS[rnd]
+    if cfg['raw'].exists():
+        raise FileExistsError('Round already generated')
     home = Path(out)
     runtime = Z.prepare_home(home, Path(installed), GEN_SEED)
-    save_config(home, A.CONFIG | {'seed': GEN_SEED, 'temperature': GEN_TEMPERATURE})
+    save_config(home, A.CONFIG | {'seed': GEN_SEED, 'temperature': cfg['temperature']})
     runtime.close()
     runtime = Z.Runtime(home)
     cache, items = {}, []
+    fixture_index = {f['id']: i for i, f in enumerate(base_fixtures())}
     try:
         for c in model_clauses():
-            if c['clause'] not in cache:
+            fi = fixture_index[c['key'].split('/')[0]]
+            prompt = cfg['prompts'][fi % len(cfg['prompts'])]
+            ckey = c['clause'] if cfg['cache'] else c['key']
+            if ckey not in cache:
                 attempts = []
-                for attempt in range(GEN_ATTEMPTS):
-                    user = GEN_PROMPT + '\nRule: ' + c['clause']
+                for attempt in range(cfg['attempts']):
+                    user = prompt + '\nRule: ' + c['clause']
                     messages = [{'role': 'system', 'content': GEN_SYSTEM}, {'role': 'user', 'content': user}]
                     transcript = []
                     try:
-                        raw = _warm_call(runtime, 'B1_DETAIL', messages, 60, 96, GEN_SCHEMA, GEN_SEED + attempt, transcript)
+                        raw = _warm_call(runtime, 'B1_DETAIL', messages, 60, 96, GEN_SCHEMA, cfg['seed'](fi, attempt),
+                                         transcript)
                         sentence = A.strict_json(raw)['sentence'].strip()
                         reasons = generation_filter(c['clause'], sentence)
                     except Exception as exc:
@@ -256,25 +277,29 @@ def generate_model(installed, out):
                     attempts.append({'attempt': attempt, 'sentence': sentence, 'rejected': reasons})
                     if not reasons:
                         break
-                cache[c['clause']] = attempts
-            attempts = cache[c['clause']]
+                cache[ckey] = attempts
+            attempts = cache[ckey]
             accepted = next((a['sentence'] for a in attempts if not a['rejected']), None)
-            items.append(c | {'attempts': attempts, 'accepted': accepted})
+            items.append(c | {'prompt_style': fi % len(cfg['prompts']) + 1, 'attempts': attempts, 'accepted': accepted})
     finally:
         runtime.close()
         shutil.rmtree(home, ignore_errors=True)
-    raw = {'schema': VERSION + '_MODEL_RAW', 'freeze_sha256': digest(dumps(freeze)), 'prompt': GEN_PROMPT,
-           'system': GEN_SYSTEM, 'seed': GEN_SEED, 'temperature': GEN_TEMPERATURE, 'attempts': GEN_ATTEMPTS,
-           'role': 'B1_DETAIL', 'device': device(), 'items': items}
-    atomic_write(MODEL_RAW, dumps(raw))
+    raw = {'schema': VERSION + '_MODEL_RAW', 'round': rnd, 'freeze_sha256': digest(dumps(freeze)),
+           'prompts': cfg['prompts'], 'system': GEN_SYSTEM, 'temperature': cfg['temperature'],
+           'attempts': cfg['attempts'], 'role': 'B1_DETAIL', 'device': device(), 'items': items}
+    if rnd == 1:
+        raw |= {'prompt': GEN_PROMPT, 'seed': GEN_SEED}
+        del raw['round'], raw['prompts']
+    atomic_write(cfg['raw'], dumps(raw))
     return raw
 
 
-def holdout_model_cohort():
+def holdout_model_cohort(rnd=1):
     """Fixtures whose every clause has an accepted, audited-'same' rewrite; exclusions counted."""
-    raw = json.loads(MODEL_RAW.read_text())
-    audit = json.loads(MODEL_AUDIT.read_text())
-    if audit['raw_sha256'] != file_hash(MODEL_RAW):
+    cfg = ROUNDS[rnd]
+    raw = json.loads(cfg['raw'].read_text())
+    audit = json.loads(cfg['audit'].read_text())
+    if audit['raw_sha256'] != file_hash(cfg['raw']):
         raise ValueError('Audit does not belong to this generation')
     labels = audit['labels']
     by_key = {i['key']: i for i in raw['items']}
@@ -297,7 +322,8 @@ def holdout_model_cohort():
         if reason:
             excluded.append({'fixture': f['id'], 'reason': reason})
             continue
-        out.append(_derived(f, '_hm', 'holdout_model', f['kind'], sources, f['truth_rules']))
+        cohort = 'holdout_model' if rnd == MODEL_ROUND_FOR_VERDICT else f'holdout_model_r{rnd}'
+        out.append(_derived(f, f'_hm{rnd}', cohort, f['kind'], sources, f['truth_rules']))
     return out, excluded
 
 
@@ -306,10 +332,11 @@ def all_cohorts(with_model=True):
     out = [dict(f, cohort='dev_canonical') for f in z3b if f['cohort'] == 'canonical']
     out += [dict(f, cohort='dev_paraphrase') for f in z3b if f['cohort'] == 'paraphrase']
     out += holdout_author_cohort()
-    excluded = []
+    excluded = {}
     if with_model:
-        model, excluded = holdout_model_cohort()
-        out += model
+        for rnd in sorted(ROUNDS):
+            model, excluded[rnd] = holdout_model_cohort(rnd)
+            out += model
     return out, excluded
 
 
@@ -382,7 +409,7 @@ def arm_stats(rs):
                         for k in sorted({r['kind'] for r in rs}) for g in [[r for r in rs if r['kind'] == k]]}}
 
 
-def summarize(rows, excluded=(), probe=None):
+def summarize(rows, excluded=None, probe=None):
     stats = {c: {a: arm_stats([r for r in rows if r['cohort'] == c and r['arm'] == a]) for a in ARMS} for c in COHORTS}
     v2 = {c: stats[c]['parser_v2'] for c in COHORTS}
 
@@ -406,7 +433,7 @@ def summarize(rows, excluded=(), probe=None):
         secondary = 'C3_TRAINING_WORTH_A_PACKAGE'
     else:
         secondary = 'C3_TRAINING_NOT_NOW'
-    return {'cohorts': stats, 'holdout_model_excluded': list(excluded), 'holdout_model_underpowered': not model_ok,
+    return {'cohorts': stats, 'holdout_model_excluded': excluded or {}, 'holdout_model_underpowered': not model_ok,
             'carries': {c: carries(c) for c in COHORTS}, 'verdict': verdict, 'secondary': secondary,
             'c3_probe': probe, 'gate_promotion': False, 'historical_step2_utility': 'UTILITY_FAIL_UNCHANGED'}
 
@@ -489,6 +516,7 @@ def main():
     g = sub.add_parser('generate-model')
     g.add_argument('--installed', type=Path, required=True)
     g.add_argument('--home', type=Path, required=True)
+    g.add_argument('--round', type=int, default=1)
     p = sub.add_parser('probe')
     p.add_argument('--installed', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
@@ -506,7 +534,7 @@ def main():
         atomic_write(FREEZE, dumps(freeze))
         print(dumps(freeze))
     elif args.command == 'generate-model':
-        raw = generate_model(args.installed, args.home)
+        raw = generate_model(args.installed, args.home, args.round)
         print(dumps({'items': len(raw['items']), 'accepted': sum(i['accepted'] is not None for i in raw['items'])}))
     elif args.command == 'probe':
         print(dumps(run_probe(args.installed, args.out)))
