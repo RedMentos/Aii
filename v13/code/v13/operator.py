@@ -153,7 +153,7 @@ class Operator:
         if cmd=='attention':
             from .attention import operator_command
             return operator_command(r,args)
-        if cmd in ('regel','regeln','rules','rule'):
+        if cmd in ('regel','regeln'):
             from .userrules import operator_command
             return operator_command(r,args)
         if cmd=='growth':

@@ -22,7 +22,7 @@ import re
 import time
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v1'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v2'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -46,7 +46,7 @@ ACTION_STEMS={'DELETE':('overwrit','ueberschreib','replac','ersetz','delet','rem
     'CONTACT':('phon','contact','kontaktier','anruf','telefonier'),
     'ANY':('touch','anfass','mess with','fiddl','herumspiel','rumspiel','tamper')}
 ACTION_WORDS={'DELETE':('clear','rm','del'),'WRITE':('add','store','move','set','put','note'),'SEND':('text','tell','give','gib','sag'),
-    'NETWORK':('web','net','netz','search','suche','suchen','such','fetch','lookup'),
+    'NETWORK':('web','net','netz','search','suche','suchen','such','fetch','lookup','load','lad','lade','laden','laedst'),
     'INSTALL':('load','fetch','hol','holen','hole','holst','lad','lade','laden','laedst','module','modul','module','modules','extension','update','updates'),
     'RUN':('run','runs','ran','start','starte','starten','startest','open','oeffne','oeffnen'),
     'TOOL':('use','uses','used','call','calls','tools'),'BUY':('pay','pays','paid','spend','spending','spent','zahl','zahle','zahlen'),
@@ -56,7 +56,7 @@ WEAK_ANY=('do','does','doing','tun','tue','tust','mach','mache','machen','machst
 OBJECT_STEMS={'NOTE':('note','notiz','memo','vermerk'),'FILE':('file','document','folder','datei','dokument','ordner','daten','data'),
     'MESSAGE':('message','email','e-mail','mail','nachricht','sms','chat'),'PHOTO':('photo','picture','image','foto','bild','fotos'),
     'CONTACTS':('contact','kontakt','address book','adressbuch','telefonnummer','phone number'),
-    'MODULE':('modul','plugin','plug-in','extension','erweiterung','modell','model','app','software','program','update'),
+    'MODULE':('modul','plugin','plug-in','extension','erweiterung','modell','model','app','software','program','update','application','anwendung'),
     'MEMORY':('memor','conversation','erinnerung','gedaechtnis','gespraech','verlauf','history'),
     'PERSONAL':('personal','privat','private','password','passwort','passwoert','secret','geheim','familie','family','address','adresse','name'),
     'INTERNET':('internet','online','web','netz','cloud','server','network'),'CALCULATOR':('calculator','calc','taschenrechner','rechner','math','arithmetic'),
@@ -64,35 +64,42 @@ OBJECT_STEMS={'NOTE':('note','notiz','memo','vermerk'),'FILE':('file','document'
 ANY_OBJECT=('anything','everything','something','nothing','stuff','things','alles','irgendwas','irgendetwas','etwas','nichts','nix','sachen','zeug','anywhere','irgendwo','irgendwohin')
 PRONOUNS=('that','this','it','them','those','these','das','dies','dieses','es','sie','ihn','die','den','dem')
 
-FORBID=re.compile(r"\b(?:don'?t|do\s+not|never|stop|quit|cease|no\s+more|must\s*n'?o?t|mustn'?t|may\s+not|shall\s+not|should\s*n'?o?t|shouldn'?t|cannot|can'?t|"
+FORBID=re.compile(r"\b(?:don'?t|do\s+not|never|stop|quit|cease|avoid\w*|refrain\w*|strictly|keep\s+(?:\w+\s+){0,2}(?:away|off)|stay\s+away|away\s+from|not\s+(?:be\s+)?(?:allowed|permitted)|(?:is|are)\s+(?:not\s+)?(?:prohibited|forbidden)|vermeid\w*|halt\s+dich\s+fern|\w*\s*fern\b|bleib\w*\s+(?:\w+\s+)?weg|untersag\w*|nicht\s+erlaubt|no\s+more|must\s*n'?o?t|mustn'?t|may\s+not|shall\s+not|should\s*n'?o?t|shouldn'?t|cannot|can'?t|"
     r"won'?t|not\s+allowed|not\s+permitted|aren'?t\s+allowed|forbid\w*|prohibit\w*|under\s+no\s+circumstances|in\s+no\s+case|refrain|"
     r"hands?\s+off|fingers?\s+off|leave\s+\w+(?:\s+\w+)?\s+alone|"
     r"nicht|nie|niemals|nimmer|kein\w*|nichts|nix|hoer\w*\s+(?:\w+\s+)?auf|unterlass\w*|verbiet\w*|verboten|auf\s+keinen\s+fall|"
     r"unter\s+keinen\s+umstaenden|finger\s+weg|lass\s+(?:die|deine)\s+finger|lass\s+\w+(?:\s+\w+)?\s+in\s+ruhe)\b")
+# bare negations: on their own (without an action or object word) they are ordinary sentences, not rules
+WEAK=re.compile(r"nicht|kein\w*|nichts|nix|no|not|cannot|can'?t|won'?t|nie|no\s+more")
 NO_START=re.compile(r"^(?:please\s+|bitte\s+)?(?:no|not)\s+\w+")
 # an English negated imperative ("do not enter") marks a rule even when its verb is unknown to the lexicon
 IMPERATIVE=re.compile(r"^(?:please\s+|and\s+|so\s+|just\s+)?(?:don'?t|do\s+not|never)\s+[a-z]|\b(?:said|says|meant)\s*,?\s*(?:don'?t|do\s+not|never)\b")
-ASK=re.compile(r"\b(?:without\s+(?:asking|checking|telling|my\s+(?:\w+\s+)?(?:permission|approval|consent|ok|okay|agreement|say-?so))|unless\s+i\b|"
+ASK=re.compile(r"\b(?:prior\s+to|inform\s+me|let\s+me\s+know|consult\w*|speak\s+(?:to\s+me\s+)?first|explicit\w*\s+(?:permission|consent|approval)|im\s+voraus|erzaehl\w*\s+mir\b.*\bbevor|teil\w*\s+mir\b.*\bmit|gib\s+mir\s+bescheid|ausdrueckliche?n?\s+(?:erlaubnis|zustimmung)|bevor\s+du\b|before\s+you\b|erst\w*\s+frage|without\s+(?:asking|checking|telling|my\s+(?:\w+\s+)?(?:permission|approval|consent|ok|okay|agreement|say-?so))|unless\s+i\b|"
     r"only\b.*\b(?:if|when|with|after|once)\s+(?:i|my)\b|\bif\s+i\s+(?:approve|allow|agree|say|confirm|okay|ok)\w*|show\s+me\b.*\bbefore\b|tell\s+me\b.*\bbefore\b|ask\s+(?:me\s+)?(?:first|before)|always\s+ask|check\s+with\s+me|tell\s+me\s+(?:first|before)|"
     r"(?:get|need|ask\s+for)\s+my\s+(?:permission|approval|ok|okay|consent)|before\s+you\b.*\b(?:show|tell|ask)\b|show\s+(?:it|them|me)\b.*\bfirst|"
     r"ohne\s+(?:mich\s+)?(?:vorher\s+)?(?:zu\s+)?fragen|ohne\s+(?:mich\s+)?(?:vorher\s+)?zu\s+fragen|ohne\s+(?:meine|mein)\s+(?:\w+\s+)?(?:erlaubnis|zustimmung|okay|ok|einverstaendnis|freigabe)|"
-    r"ohne\s+dass\s+ich\b|frag\w*\s+(?:mich\s+)?(?:immer\s+)?(?:vorher|zuerst|erst|bevor)|frag\w*\s+mich\s+immer|sag\w*\s+mir\s+(?:immer\s+)?(?:vorher|zuerst|bevor)|"
+    r"ohne\s+dass\s+ich\b|frag\w*\s+(?:mich\s+)?(?:immer\s+)?(?:vorher|zuerst|erst|bevor)|frag\w*\s+mich\s+immer|sag\w*\s+mir\s+(?:immer\s+)?(?:vorher|zuerst|bevor|vor\b)|"
     r"nur\s+(?:mit|nach)\s+meine\w*\s+(?:erlaubnis|zustimmung|freigabe|okay)|\bnur\b.*\bwenn\s+ich\b|zeig\w*\s+mir\b.*\bbevor\b|es\s+sei\s+denn|bevor\s+du\b.*\b(?:zeig|frag|sag)\w*)")
-LOOSEN=re.compile(r"\b(?:you\s+(?:can|may|are\s+allowed\s+to|have\s+my\s+permission)|feel\s+free|go\s+ahead|it'?s\s+(?:fine|ok|okay)|i\s+(?:allow|permit)\s+you|"
+LOOSEN=re.compile(r"\b(?:you\s+(?:can|may|are\s+allowed\s+to|have\s+my\s+permission|have\s+access)|sie\s+(?:koennen|duerfen)|(?:du\s+)?hast\s+(?:jetzt\s+)?(?:wieder\s+|erneut\s+)?zugang|feel\s+free|go\s+ahead|it'?s\s+(?:fine|ok|okay)|i\s+(?:allow|permit)\s+you|"
     r"no\s+need\s+to\s+ask|you\s+(?:no\s+longer|don'?t)\s+(?:need|have)\s+to\s+ask|du\s+darfst|du\s+kannst|ich\s+erlaube|von\s+mir\s+aus|"
     r"du\s+(?:musst|brauchst)\s+(?:mich\s+)?(?:nicht|nie)\s+(?:mehr\s+)?(?:zu\s+)?fragen)\b")
 # negations that ask FOR something ("don't forget to save"): removed before the rule markers are looked for
 POSITIVE=re.compile(r"\b(?:don'?t|do\s+not|never)\s+(?:forget|hesitate|worry|mind|stop|fail\s+to|be\s+(?:afraid|shy))\b|\bnever\s*mind\b|"
     r"\bvergiss\s+(?:\w+\s+)?nicht\b|\bnicht\s+vergessen\b|\bkeine\s+(?:sorge|angst)\b|\bmach\s+dir\s+keine\s+(?:sorgen|gedanken)\b|"
-    r"\bhoer\s+nicht\s+auf\b|\bnicht\s+aufhoeren\b|\bzoeger\w*\s+nicht\b")
+    r"\bhoer\s+nicht\s+auf\b|\bnicht\s+aufhoeren\b|\bzoeger\w*\s+(?:\w+\s+)?nicht\b|\b(?:don'?t|do\s+not|never)\s+(?:fret|cease\s+to|be\s+worried)\b")
+# v2 safety net (after the v1 model-paraphrase failures): a clause with a restriction cue that names an action or object
+# but matches no known rule wording becomes an open question (UNCLEAR, works like "ask first"), never "no rule".
+RESTRICT=re.compile(r"\b(?:avoid|refrain|keep|stay|away|halt|fern|weg|without|ohne|unless|except|ausser|prior|before|bevor|vorher|zuerst|careful|"
+    r"vorsicht\w*|permission|erlaubnis|zustimmung|consent|allowed|permitted|erlaubt|darfst|duerfen|must|musst|should|sollst|sollte\w*|"
+    r"prohibit\w*|forbid\w*|verbot\w*|untersag\w*|strictly|never|nie|niemals|nicht|not|no|kein\w*|nichts|stop|aufhoer\w*|lass|leave)\b")
 HEDGE=re.compile(r"\b(?:maybe|perhaps|probably|might|i\s+guess|i\s+think|not\s+sure|better|rather|vielleicht|eventuell|wahrscheinlich|lieber|besser|"
     r"ich\s+glaube|ich\s+denke|weiss\s+nicht|eher|womoeglich)\b")
 REPORTED=re.compile(r"\b(?:says|said|told|tells|thinks|claims|meint|meinte|sagt|sagte|gesagt|findet|fand|schreibt|schrieb|behauptet|laut)\b")
 FIRST_PERSON=re.compile(r"^(?:i|we|ich|wir)\b")
-WANT=re.compile(r"\b(?:want|wish|need|forbid|allow|ask|will|moechte|wuensch|verbiete|erlaube|brauche|bitte|wanted)\w*\b")
+WANT=re.compile(r"\b(?:want|wish|need|forbid|prohibit|ban|allow|ask|will|moechte|wuensch|verbiete|untersage|erlaube|brauche|bitte|wanted)\w*\b")
 EXCEPT=re.compile(r"\b(?:except(?:\s+for)?|other\s+than|apart\s+from|besides|but\s+not|ausser|ausgenommen|bis\s+auf|abgesehen\s+von)\b")
 # "tell me / show me / frag mich" belong to the ask-first marker, not to the action being ruled ("tell me before you do anything")
-ASK_WORDS=re.compile(r"\b(?:tell|show|ask|telling|showing|asking|sag\w*|zeig\w*|frag\w*)\s+(?:me|mir|mich)\b")
+ASK_WORDS=re.compile(r"\b(?:tell|show|ask|telling|showing|asking|inform|let|sag\w*|zeig\w*|frag\w*|gib|teil\w*|erzaehl\w*)\s+(?:me|mir|mich)\b")
 SPLIT=re.compile(r"[.!;:\n]+|\s+(?:but|aber|however|jedoch|sondern|then|dann)\s+")
 STOP=set(("a an the of for and or to in on at with by from my your our me you i we it its is are be been was were am will would should could can may "
     "must shall do does did not no never please any some all just again now yet today ever either too also very really up down out off over about into "
@@ -105,7 +112,7 @@ STOP=set(("a an the of for and or to in on at with by from my your our me you i 
     "darfst darf duerfen sollst soll sollen kannst kann koennen musst muss muessen willst will wollen ohne erlaubnis zustimmung freigabe fragen frage "
     "frag sage sagen weiss wissen glaube denke meine verstehe weg finger ruhe lass lassen hoer auf fall umstaenden irgendwie bewusst ausdruecklich "
     "zustimme zustimmst erlaube erlaubst then dann neu neue neuen alte alten weiter perhaps maybe probably vielleicht eventuell lieber besser eher rather "
-    "wahrscheinlich for now jetzt mal").split())
+    "wahrscheinlich for now jetzt mal thanks thank danke problem problems worries idea clue way doubt wonder").split())
 
 
 def norm(text):
@@ -167,11 +174,16 @@ def parse_clause(clause,prev=None):
     question=clause.strip().endswith('?')
     if not (forbid or ask):
         if loosen and (actions or objs):out.update(kind='LOOSEN',actions=sorted(actions),objects=sorted(objs))
+        elif (actions or objs) and not question and RESTRICT.search(t):  # unknown wording of a possible rule: ask, never ignore
+            out.update(kind='UNCLEAR',actions=sorted(actions or {'ANY'}),objects=sorted(objs or {'ALL'}),unknown=sorted(set(unknown)),reasons=['UNKNOWN_WORDING'])
         return out
     imperative=bool(IMPERATIVE.search(t))
-    if not actions and not objs and not imperative:return out  # "I don't know", "no thanks", "das funktioniert nicht"
+    strong=ask or any(not WEAK.fullmatch(m.group(0)) for m in FORBID.finditer(t)) or bool(NO_START.search(t) and unknown)
+    if objs=={'ALL'} and not actions:objs=set()  # "nothing"/"nichts" alone is no object ("es war nichts")
+    if not actions and not objs and not imperative and not (strong and unknown):return out  # "I don't know", "no thanks", "das funktioniert nicht"
     first=bool(FIRST_PERSON.search(t)) and not WANT.search(t)
     if first and not actions:return out  # a statement about oneself ("I didn't have time")
+    unknown_wording=not actions and not objs and not imperative  # a strong rule word with only unknown words: an open question
     if not actions:actions=set(prev['actions']) if prev and prev.get('actions') else {'ANY'} if objs else {'UNKNOWN'}  # "not my photos" after "delete the drafts"
     pron_only=pron and not objs and not unknown
     if (pron or (not objs and unknown)) and prev and prev.get('objects'):objs|=set(prev['objects'])  # "lösch niemals die alte" after "Schreib die Notiz"
@@ -183,6 +195,7 @@ def parse_clause(clause,prev=None):
     if question:reasons.append('QUESTION')
     if first:reasons.append('ABOUT_YOURSELF')
     if pron_only and not (prev and prev.get('objects')):reasons.append('UNCLEAR_OBJECT')
+    if unknown_wording and not ask:reasons.append('UNKNOWN_WORDING')
     exc=set();exc_unknown=[]
     if exc_text:
         exc,exc_unknown,_=_objects(exc_text,set())
@@ -298,7 +311,8 @@ def notice(r):
     note=(' Hinweis: Für '+', '.join(gap)+' gibt es noch keine Sperre; die Regel gilt für alle Werkzeug-Aktionen.') if gap else ''
     if r['kind']=='UNCLEAR':
         why={'HEDGE':'du klingst unsicher','SOMEONE_ELSE':'das hat jemand anderes gesagt','QUESTION':'es ist eine Frage',
-             'ABOUT_YOURSELF':'es klingt wie ein Satz über dich','UNCLEAR_OBJECT':'ich weiß nicht, was mit „das/es“ gemeint ist'}
+             'ABOUT_YOURSELF':'es klingt wie ein Satz über dich','UNCLEAR_OBJECT':'ich weiß nicht, was mit „das/es“ gemeint ist',
+             'UNKNOWN_WORDING':'die Formulierung kenne ich noch nicht sicher'}
         return (f'[Rückfrage {r["id"]}] Soll das eine Regel für mich sein? „{r["text"]}“ ({", ".join(why[x] for x in r["reasons"])}). '
                 f'Bis du antwortest, frage ich vorher bei allem, was das betreffen könnte ({_short(r)}). '
                 f'Antworte mit :regel verbot {r["id"]}, :regel fragen {r["id"]} oder :regel nein {r["id"]}.'+note)

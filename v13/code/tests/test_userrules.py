@@ -26,6 +26,13 @@ class Parse(unittest.TestCase):
         for text in ('Maybe don\'t send that email yet.','Mein Chef meint, du darfst keine Mails verschicken.',"Why don't you save it?",
                      "Don't do that again.",'I never delete my notes.'):
             self.assertEqual(kinds(text),['UNCLEAR'],text)
+    def test_v2_unknown_wording_of_a_possible_rule_is_asked_not_ignored(self):
+        # v1 read these model rewrites as "no rule" (docs/proofs/continuation-20261021/user-rules/BEFUND.md)
+        for text in ('Please refrain from employing any instruments today.','Halt die Verwendung des Taschenrechners.',
+                     'You are strictly prohibited from engaging with any digital platforms.','Vermeide es, meine Rezepte zu löschen.'):
+            self.assertIn(kinds(text)[0] if kinds(text) else 'NONE',('FORBID','UNCLEAR'),text)
+        for text in ('Before you proceed with any action, I advise you to speak first.','Erzähl mir, bevor du etwas tust.','Sag mir immer vor, was du tun willst.'):
+            self.assertEqual(kinds(text),['ASK_FIRST'],text)
     def test_loosening_is_recognised_but_not_a_rule(self):
         self.assertEqual(kinds('You can delete notes again now.'),['LOOSEN']);self.assertEqual(kinds('Du darfst jetzt wieder ins Internet.'),['LOOSEN'])
     def test_every_named_action_and_object_counts(self):

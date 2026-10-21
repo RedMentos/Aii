@@ -1,0 +1,21 @@
+{
+ "schema": "USER_RULES_FREEZE_V2",
+ "frozen_before": "round-2 model paraphrases (fresh test of reader v2)",
+ "files": {
+  "v13/userrules.py": "3eb2e9a1b2c50d90683a9b3ec0985bdc1e56c1f3f4f6a7fc10e80fdbf375fcf9",
+  "v13/agi/tools.py": "cea593dcad61887958de14a857cda8729c2fd3ba1632d4c1adb28816bdf32163",
+  "v13/broker.py": "3be190e0f2314ab360915996d1bd3e9f6a6ef69e7134c2ef86dccc01b4bc5562",
+  "v13/operator.py": "3b3ae4b31ce77209ea17cc7759377ae08b9b56dd9744add15ba891b64de65a3b",
+  "v13/toolstep.py": "187595e3a47c3d4dc36c8e94523358a4490bd3f88d138b131dada0dd17070f95",
+  "docs/proofs/continuation-20261021/user-rules/userrules_eval.py": "1d206f0d88976e2898bc918af71243389e6421921c4c339b3cfc14c804c57a01",
+  "docs/proofs/continuation-20261021/user-rules/holdout_author.json": "44f7be8983a46c07b6ffd0a4c566c4679c01a98eea35bc761d99ba528a1e8b0e",
+  "docs/proofs/continuation-20261021/user-rules/dev.json": "3697a4055cafc06e2322005cffa7b52ce5339bd63c0eb2f04984e426a78d1770",
+  "docs/proofs/continuation-20261021/user-rules/model_cohort.json": "82c0950083574c8a57982e09c257f72533883d5c490e22a143f683159f146113",
+  "docs/proofs/continuation-20261021/user-rules/paraphrase_models.py": "fa603ce93ccf9748185fc33cf4030db7f3493b197b52b62982cb8c62bed96cbd"
+ },
+ "v2_on_seen_sets": {
+  "dev": "0 safety failures",
+  "holdout_author (seen in v1)": "0 safety failures, 59/59 kinds",
+  "round-1 model cohort (seen)": "1 safety failure (label case: Das Schild warnte vor dem Betreten)"
+ }
+}
