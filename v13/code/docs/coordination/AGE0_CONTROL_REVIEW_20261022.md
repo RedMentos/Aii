@@ -92,3 +92,13 @@ Gespeicherte Commits belegen keine aktuell laufende Claude-Session. Es besteht k
 - Ein Agent kann die dokumentierten Anforderungen übernehmen oder ein abgegrenztes Paket bearbeiten. Übernahme mit Commit und offenen Punkten rückmelden, damit andere Agents den Stand erkennen.
 - Bereits aktive Arbeit nicht doppelt starten; isolierte Branches verwenden und Integration bewusst vornehmen. Keine Force-Pushes oder fremden Prozessabbrüche.
 - Der Draft-PR macht die Übergabe auffindbar. Er beweist keine Kenntnisnahme durch Claude und eingerichtet wurde kein automatischer Nachrichtenaustausch.
+
+## 7. Klarstellung: Lernen der verwendeten Modelle ist eine bestehende Pflicht
+
+Im weiteren Gespräch ausdrücklich bekräftigt: Die verwendeten Modelle selbst sollen als Endziel lernen. Das ist keine neu zu genehmigende Option und darf nicht durch ausschließliches Harness-, Router- oder Zusatzkopf-Lernen ersetzt werden.
+
+Diese Anforderung steht bereits im Canon: W4 nennt STEP 6 Body/Callosum Learning; W6 unterscheidet vorläufiges Fast-Episodic-Gedächtnis von später lernenden Body-Gewichten und verlangt Retention-/Regression-Gates für tiefere Body-Updates. Die lokale Lernleiter enthält ausgewählte aktive Experten/Shared-Komponenten und spätere Basis-Konsolidierung.
+
+Die Aussage über viele derzeit externe Lernköpfe beschreibt einen begrenzten Implementierungsstand, nicht das vereinbarte Endziel. RECORD_ONLY/SHADOW und fehlende native Trainingsnachweise sind ehrlich auszuweisen und lassen die Pflicht offen.
+
+Getrennt behandeln: (a) echtes kontinuierliches parametrisches Lernen vorhandener Modellorgane, bereits gefordert; (b) erforschbare Eingriffe in Cache/Zustandsverarbeitung, Lernverfahren oder Architektur, eine zusätzliche offene Forschungsfrage. Auch direkt integrierte Gewichtsupdates können weiterhin Fine-Tuning sein; die Anzahl der Dateien definiert die Lernart nicht. Dauerhaftes automatisches Mergen in alle Basisgewichte wurde hier nicht als bereits implementiert nachgewiesen.
