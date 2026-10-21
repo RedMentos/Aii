@@ -14,6 +14,8 @@ Age right `simple_tool_choice`, Age 1). V13 choosing a tool for a user question 
               and the output broker shows the preview with `:tx approve <id>` (undo afterwards with `:tx undo <id>`).
 R4 part 6: a question over listed values ("how many ... more ... than", "total") becomes `list_arith`: C3 only reads typed values,
 the recipe in agi/listarith.py computes (measured: r4-typed-recipe BEFUND). The proposer is a BOOT regex, not learned; Needle/C2 tool choice replaces it later (§57, c2-benchmark).
+STEP2 follow-up (2026-10-21): a choice between option A and B under budget/deadline/local-only rules becomes `eligibility`: C3 extracts typed
+values from the current source plus the verified quotes of this turn's body offers (earlier rules arrive only that way), agi/eligibility.py decides.
 """
 import json
 import re
@@ -84,7 +86,7 @@ class ToolStep:
     def plan(self,e,text):
         """Proposal + IH-H29 policy (no effect yet). Logged as ToolProposal packet."""
         from .toolforecast import note_text
-        p=propose_note_edit(text,lambda name:note_text(self.r.home,name)) or propose(text) or self._propose_list(e,text)
+        p=propose_note_edit(text,lambda name:note_text(self.r.home,name)) or propose(text) or self._propose_list(e,text) or self._propose_eligibility(e,text)
         if not p:return None
         reg=self._registry();spec=reg.tools.get(p['tool'])
         if spec is None:return None
@@ -103,6 +105,24 @@ class ToolStep:
             listarith.compute(op,values,text)  # guard before proposing: every value must be an exact number of the user text
         except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'list_read','error':type(exc).__name__});return None
         return {'tool':'list_arith','args':{'operation':op,'text':str(text),'values':listarith.encode(values)},'confidence':.8,'span':[0,len(str(text))],'proposer':LIST_PROPOSER}
+    def offer_quotes(self,e):
+        """Exact source text of every verified quote in this turn's body offers (read back through the store, never the offer JSON)."""
+        out=[]
+        for row in self.r.store.rows("SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket' ORDER BY created",(e['event_id'],)):
+            for ref in json.loads(row['payload']).get('evidence_refs') or []:
+                q=self.r.store.read_source(ref)
+                if q not in out:out.append(q)
+        return out
+    def _propose_eligibility(self,e,text):
+        """Option A/B under project rules (BOOT wording rule) -> C3 extracts typed values -> eligibility proposal."""
+        from .agi import eligibility
+        if not eligibility.asks(text) or 'eligibility' not in self._registry().box.load()[0]['enabled']:return None  # model call only after the user enabled the tool
+        try:
+            quotes=self.offer_quotes(e)
+            x=eligibility.read(self.r.pool.get('C3_LANGUAGE'),text,quotes,self.r.cancel_event,time.monotonic()+LIST_READ_SECONDS)
+            args=eligibility.args_from(x,text,quotes)
+        except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'eligibility_read','error':type(exc).__name__});return None
+        return {'tool':'eligibility','args':args,'confidence':.8,'span':[0,len(str(text))],'proposer':eligibility.LIVE_PROPOSER}
     def _forecast(self,e,p):
         """Thread M: SHADOW tool-consequence forecast before the effect (None when OFF or outside a confirmed world)."""
         try:
@@ -128,20 +148,23 @@ class ToolStep:
                 'note':'Not executed. The user sees a preview and can approve it; do not say it was done.'}
     def shadow(self,e,p):
         """Refused by policy: compute pure READ_LOCAL tools off-path for later agreement; never shown, never a fact."""
-        if p['risk']!='READ_LOCAL' or p['tool'] not in ('calc','list_arith'):return None
+        if p['risk']!='READ_LOCAL' or p['tool'] not in ('calc','list_arith','eligibility'):return None
         try:
             from .agi.tools import calc
-            from .agi import listarith
-            value=calc(p['args']['expression']) if p['tool']=='calc' else listarith.tool(**p['args'])
+            from .agi import listarith,eligibility
+            value=calc(p['args']['expression']) if p['tool']=='calc' else listarith.tool(**p['args']) if p['tool']=='list_arith' else eligibility.tool(**p['args'])
             return {'tool':p['tool'],'args':p['args'],'result':value,'reason':p['reason']}
         except Exception as exc:return {'tool':p['tool'],'args':p['args'],'result':None,'error':type(exc).__name__,'reason':p['reason']}
     def compare(self,e,shadow,output):
         """Did the body's answer contain the tool result? Agreement evidence for the Age-1 tool right (log only)."""
         if not shadow or shadow.get('result') is None:return None
         v=shadow['result'];cands={str(v)}
+        if isinstance(v,dict) and v.get('action'):  # eligibility: did the answer name the same decision?
+            a=v['action'];pat={'NONE':r'\bnone\b|\bno option\b|\bneither\b','UNKNOWN':r'\bunknown\b|\bnot (?:stated|provided|available)\b|\bmissing\b'}.get(a,r'\boption\s+'+a+r'\b')
+            cands=set();agree=bool(re.search(pat,str(output),re.I))
         if isinstance(v,float):cands|={f'{v:.2f}',f'{v:.1f}',str(round(v)),f'{v:,.2f}'}
         if isinstance(v,int):cands|={f'{v:,}'}
-        agree=any(re.search(r'(?<![\d.])'+re.escape(c)+r'(?![\d])',str(output)) for c in cands)
+        if cands:agree=any(re.search(r'(?<![\d.])'+re.escape(c)+r'(?![\d])',str(output)) for c in cands)
         for attempt in (0,1):  # telemetry whitelists fields, so the agreement count lives in a state (ids/numbers only)
             st,v=self.r.store.state(KEY);st=st or {'compared':0,'agree':0,'tools':{}}
             st['compared']+=1;st['agree']+=int(agree);t=st['tools'].setdefault(shadow['tool'],[0,0]);t[0]+=1;t[1]+=int(agree)
@@ -157,6 +180,10 @@ class ToolStep:
             from .agi import listarith
             return {'tool':'list_arith','exact_result':result['result'],'recipe':f"{listarith.label(args)} = {result['result']}",
                     'note':LIST_NOTE,'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
+        if result['tool']=='eligibility':
+            from .agi import eligibility
+            return {'tool':'eligibility','decision':eligibility.label(result['result']),'action':result['result']['action'],
+                    'note':'Use this decision and these remaining budgets in the answer; they were computed from the stated rules.','transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
         return {'tool':result['tool'],'input':args,'output':result['result'],'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
 
 def report(store,limit=200):
