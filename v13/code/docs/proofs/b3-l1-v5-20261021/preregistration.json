@@ -1,0 +1,73 @@
+{
+ "schema": "V13_B3_L1_V5_PREREGISTRATION_V1",
+ "utc": "2026-10-21T17:46:40.735424+00:00",
+ "package": "WP-J / WP-Z4c: B3-H3 L1 attempt 5 for private/escalate and private/apologize (receiver-conditioned bridge readout, fresh data)",
+ "script": "code/scripts/b3_l1_v5_bench.py",
+ "script_sha256": "d8e8bb023e58536df5d65095bd67cb01b94154d4f0837b92afb67e5b7cfb9879",
+ "v4_helpers": "code/scripts/b3_l1_v4_bench.py",
+ "v4_helpers_sha256": "9dc8d7144ee3d10678b207afccbf4d87c6333def97b534362f52d06a9079e113",
+ "v3_helpers": "code/scripts/b3_l1_v3_bench.py",
+ "v3_helpers_sha256": "0c8422fed9575418a22b103690d82bbfab25bec1d8e7b16d0db308d26e19bea5",
+ "bridge": "code/v13/b3bridge.py",
+ "bridge_sha256": "382b70238903616259eddec1e0bc612da67e253e1f824b36179202eb613c9850",
+ "h2_helpers": "code/scripts/b3_h2_bench.py",
+ "h2_helpers_sha256": "546c4a3d72d3f7b53213edc1add4ff385878958af0008a92ef1a92d4150bff9a",
+ "gate": "G-CALLOSUM-UTILITY-002 via unchanged b3bridge.l1_gate (BYTES_W .25, BYTES_NORM 4000, paired mean-2se>0, role_drop<=.01, ood<=.05, reload identical)",
+ "motivation": "bench-results/b3-l1-escapo-diagnose-20261021 (exploratory, attempt-4 states, seen items): escalate/apologize need a receiver-private fact (capacity/client, decodable 100 % from the receiver state) combined with the sender quantity; the frozen NO_MESSAGE readout under the additive bridge residual costs ORACLE U/F 8.2/9.3 points; the same aux-bridge message with a jointly refit readout gains +8.0/+5.5 points (5/5 seeds); 70-80 % of LATENT errors are within 1 of the threshold",
+ "data": {
+  "seed": 20261105,
+  "n": 600,
+  "sha256": "01195718fbc1837234ebf78360917e44afea9d9445fb9b92bd61e0bbcac8d790",
+  "templates": "identical to attempts 3/4 (V3.make), only the sampling seed changes",
+  "overlap": {
+   "same_sender_text_as_attempt3": 0,
+   "same_sender_text_as_attempt4": 0,
+   "n": 600
+  },
+  "split": "fit/select/test 60/20/20 per seed, seeds 0..4"
+ },
+ "states": "NEW B1/B2 states computed from the fresh rows after this preregistration is pushed (no reuse of attempt-3/4 states)",
+ "bridge_config": {
+  "K": 4,
+  "r": 8,
+  "h": 16,
+  "message_bytes": 64,
+  "epochs": "6 blocks x 10, best on select split",
+  "aux": "2 training-only targets U, F standardized on the fit split (as attempt 4)",
+  "recv_cond": "receiver PCA dim (48): gated Wx/bx re-weighting of the receiver state while the gate is open; gate closed => frozen NO_MESSAGE readout",
+  "readout_refit": "Bridge.refit_readout after training: standardized logistic readout over [receiver state, gate*message projection] on the fit split, L2 from (1e-3,1e-2,1e-1,1) on the select split, folded into Wx/bx/Wu; message/selector/projectors unchanged"
+ },
+ "channels": "LATENT = recv_cond aux bridge after readout refit (gate input). References, not gate inputs: LATENT_AUX (attempt-4 aux bridge), LATENT_RC_E2E (same bridge before refit). All baselines/controls as attempts 3/4.",
+ "models": {
+  "body": {
+   "model_id": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+   "revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1"
+  },
+  "gist": {
+   "model_id": "ggml-org/Qwen3.5-0.8B-GGUF",
+   "revision": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+  }
+ },
+ "runner": {
+  "tag": "b10964",
+  "linux_x86_64_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
+ },
+ "tasks": {
+  "escalate": "TARGET: sum(urgency) > {low:6,normal:8,high:10}[receiver-private capacity]",
+  "apologize": "TARGET: sum(frustration) > {new:9,regular:8,key:6}[receiver-private client]",
+  "action": "replication only (passed in attempt 4): call if U>=8 and F>=8, fix_quietly if U>=8, else schedule",
+  "topic": "receiver role retention"
+ },
+ "views": {
+  "private": "TARGET",
+  "shared": "control"
+ },
+ "verdict_rule": "Per task/view l1_gate twice: SYMBOLIC=label word and SYMBOLIC=attribute level words; canon L1 PASS only if both PASS. strict_scalar reported separately; a strict FAIL is a claim limit. Targets = private/escalate and private/apologize. private/action is a replication of attempt 4 with the new readout; its result is reported but its attempt-4 PASS is not re-decided here. Single run; no re-run with changed settings counts as this attempt; FAIL stays FAIL.",
+ "expectation_from_exploration": "escalate and apologize: PASS against label and attribute words plausible (exploratory refit 89-91 vs attr words 84-87); strict SCALAR likely FAIL on apologize (SCALAR ~94)",
+ "consequence_if_pass": "L2 prefix SHADOW experiment allowed for the passing task(s) only; LATENT authority stays 0; frozen runtime unchanged (recv_cond default off)",
+ "consequence_if_fail": "B3_LATENT stays unavailable on that task; record negative result",
+ "claim_limits": "the readout refit gives the bridge the same jointly fit readout every baseline already gets; it is a receiver-adapter (L1) change, no backbone injection; synthetic templates; Linux x86_64 cloud CPU, not Redmi",
+ "hardware": "Linux x86_64 cloud CPU, 4 threads; not Redmi"
+}

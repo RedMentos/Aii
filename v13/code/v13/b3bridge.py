@@ -64,7 +64,7 @@ class Bridge:
         if aux:self.p['Wa']=np.zeros((h,aux))   # training-only auxiliary readout (sender-side attribute targets), never used in receive
         # recv_cond = receiver state dim: gated re-weighting of the receiver's own state while a message is open, so receiver-private
         # facts can be rescaled to the message (e.g. U > threshold[capacity]); gate closed => frozen NO_MESSAGE readout, unchanged
-        if recv_cond:self.p['Wx']=np.zeros((recv_cond,classes))
+        if recv_cond:self.p['Wx']=np.zeros((recv_cond,classes));self.p['bx']=np.zeros(classes)
         self.in_mu=np.zeros(d);self.in_sd=np.ones(d)
         self.head=None          # frozen receiver NO_MESSAGE readout (Wr, b) over the receiver's own state
         self.cal=None           # receiver calibration {mu, sd, ood_tau}
@@ -89,7 +89,7 @@ class Bridge:
         m=Z.reshape(len(Z),-1);U=m@self.p['Pr'];g=self.gate()
         if self.cal is not None:g=g*(self.ood(Z)<=self.cal['ood_tau'])[:,None]
         out=base+(g*U)@self.p['Wu']
-        return out+g*(Xr@self.p['Wx']) if 'Wx' in self.p else out
+        return out+g*(Xr@self.p['Wx']+self.p['bx']) if 'Wx' in self.p else out
     def logits(self,H,mask,Xr,bf16=True,gate_open=True):
         Z=self.encode(H,mask);Z=to_bf16(Z) if bf16 else Z
         return self.receive(Z,Xr,gate_open)
@@ -97,7 +97,7 @@ class Bridge:
     def loss_and_grads(self,H,mask,Xr,y,lam_var=.1,lam_cov=.05,lam_slot=.1,l2=1e-3,aux=None,lam_aux=1.):
         B=len(y);Z,c=self.encode(H,mask,cache=True);m=Z.reshape(B,-1);D=m.shape[1]
         U=m@self.p['Pr'];g=self.gate();Wr,b=self.head
-        Rx=Xr@self.p['Wx'] if 'Wx' in self.p else 0.
+        Rx=Xr@self.p['Wx']+self.p['bx'] if 'Wx' in self.p else 0.
         L=Xr@Wr+b+(g*U)@self.p['Wu']
         if 'Wx' in self.p:L=L+g*Rx
         P=_softmax(L,1);Y=np.eye(self.classes)[y]
@@ -105,7 +105,7 @@ class Bridge:
         dL=(P-Y)/B;gr={}
         gr['Wu']=(g*U).T@dL+l2*self.p['Wu'];dU=g*dL@self.p['Wu'].T
         gr['gamma']=np.array([float((dL@self.p['Wu'].T*U).sum())*g*(1-g)])
-        if 'Wx' in self.p:gr['gamma']+=float((dL*Rx).sum())*g*(1-g);gr['Wx']=g*Xr.T@dL+l2*self.p['Wx']
+        if 'Wx' in self.p:gr['gamma']+=float((dL*Rx).sum())*g*(1-g);gr['Wx']=g*Xr.T@dL+l2*self.p['Wx'];gr['bx']=g*dL.sum(0)
         la=0.
         if aux is not None and 'Wa' in self.p:
             # auxiliary targets (same supervision the SYMBOLIC_ATTR/SCALAR baselines get): pull those directions into U
@@ -154,6 +154,22 @@ class Bridge:
             hist.append({k:round(float(np.mean([p[k] for p in parts])),4) for k in parts[0]})
         self.manifest['train']={'epochs':epochs,'lr':lr,'batch':batch,'samples':int(len(y)),'last':hist[-1],'first':hist[0]}  # samples: B3-H8 step 3 evidence
         return hist
+    def refit_readout(self,H,mask,Xr,y,Xr_va,H_va,mask_va,y_va,l2s=(1e-3,1e-2,1e-1,1.),steps=400,lr=.5):
+        """recv_cond bridges only: after `fit`, refit the open-gate readout jointly over [receiver state, gated message projection]
+        (the same standardized logistic readout, L2 picked on the select split, that every baseline channel gets), then fold
+        it into Wx/bx/Wu so that receive() = frozen base + gate*(U@Wu + Xr@Wx + bx). Message, selector and projectors stay."""
+        if 'Wx' not in self.p:raise ValueError('refit_readout needs Bridge(recv_cond=receiver dim)')
+        g=self.gate();F=lambda H_,m_,X_:np.c_[X_,g*(to_bf16(self.encode(H_,m_)).reshape(len(X_),-1)@self.p['Pr'])]
+        Ftr,Fva=F(H,mask,Xr),F(H_va,mask_va,Xr_va);mu,sd=Ftr.mean(0),Ftr.std(0)+1e-6;A,B=(Ftr-mu)/sd,(Fva-mu)/sd;Y=np.eye(self.classes)[y]
+        def fit(l2):
+            W=np.zeros((A.shape[1],self.classes));b=np.zeros(self.classes)
+            for _ in range(steps):
+                z=A@W+b;p=_softmax(z,1);gg=(p-Y)/len(y);W-=lr*(A.T@gg+l2*W);b-=lr*gg.sum(0)
+            return W,b
+        best=max((float(((B@W+b).argmax(1)==y_va).mean()),l2) for l2 in l2s for W,b in [fit(l2)])[1];W,b=fit(best)
+        We=W/sd[:,None];be=b-mu@We;dx=Xr.shape[1];Wr,br=self.head
+        self.p['Wx']=(We[:dx]-Wr)/g;self.p['bx']=(be-br)/g;self.p['Wu']=We[dx:].copy()
+        self.manifest['readout_refit']={'l2':best,'samples':int(len(y))};return best
     # -- calibration (B3-H8 step 5) -------------------------------------------------------------------------
     def calibrate(self,H,mask,q=OOD_Q):
         Z=to_bf16(self.encode(H,mask));m=Z.reshape(len(Z),-1)
