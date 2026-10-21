@@ -1,0 +1,45 @@
+{
+ "schema": "V13_B3_L2_PREFIX_PREREGISTRATION_V1",
+ "utc": "2026-10-21T16:31:48.161152+00:00",
+ "package": "WP-Z4b: B3 L2 prefix SHADOW, private/action only (B3-H8 step 7 after the canon L1 PASS of attempt 4)",
+ "script": "code/scripts/b3_l2_prefix_bench.py",
+ "script_sha256": "f1c36d8c5d6d111820d557206a8533e1af415ca940c5476c34083ca5f740b48d",
+ "runner_source": "code/scripts/native/b3_prefix_embd.cpp",
+ "runner_source_sha256": "3e01df8caa9d7a0a822b60fe071b07629dfff8929c4cf625f19d5382ee811540",
+ "runner_build": "g++ -O2 -std=c++17 against b10964 source headers (project folder native-sources/llama.cpp-b10964.tar.gz), linked to the b10964 release libllama.so (llama-b10964-bin-ubuntu-x64.tar.gz)",
+ "release_libllama_sha256": "09f62256d92254c0675315423e399f20e24526d8e865146b4c9bc1993f066f50",
+ "bridge": "code/v13/b3bridge.py",
+ "bridge_sha256": "e76905f7d49345e26a2aeb7bbbd94660c536a4dcbb032c4d90f7119bf0b5259d",
+ "v4_script_sha256": "9dc8d7144ee3d10678b207afccbf4d87c6333def97b534362f52d06a9079e113",
+ "states": "bench-results/b3-l1-v4-20261021/states.npz (attempt-4 cache, project folder only)",
+ "states_sha256": "e15a00b7876859e0c5d798fd46a627ef815de27540d9ddaca18046657c8c937e",
+ "receiver": {
+  "model_id": "ggml-org/Qwen3.5-0.8B-GGUF",
+  "revision": "8fea620810c4afa23dd6443f999a48574c1611a3",
+  "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+ },
+ "scope": "task action, private view only; escalate/apologize excluded (L1 FAIL); shared view not run",
+ "pre_run_checks_done": [
+  "runner without prefix reproduces the attempt-4 pooled receiver states (max rel. L2 1.3e-7, 6 rows)",
+  "plumbing smoke on 60 rows with SCRAMBLED labels, seed 0 only (numbers meaningless, not looked at as evidence)"
+ ],
+ "pipeline": "attempt-4 aux bridge retrained per seed with the identical recipe/splits (seeds 0..4, fit/select/test 360/120/120) -> z[4,8] BF16 -> alignment -> calibration -> 4 prefix slots via batch.embd (IMROPE positions) -> receiver final states, mean over private-view tokens only -> L1 NO_MESSAGE readout (PCA 48, standardized, softmax head, l2 on select)",
+ "variants": {
+  "PCA_ALIGN": "PRIMARY (decides verdict): per-slot standardized message dims -> top-8 principal directions of fit-split native input-token embeddings (shared-view texts), scaled by native spread",
+  "EXACT_ALIGN": "EXPLORATORY: ridge (l2 by select MSE) from flat message to receiver token-embedding means of the 4 cue sentences; a PASS here only motivates a confirmatory rerun on fresh data"
+ },
+ "calibration": "recentre on native mean, scale mean fit-split deviation norm to native token deviation norm; B3-H4 packet reported",
+ "controls": {
+  "PREFIX_OFF": "= NO_MESSAGE",
+  "PREFIX_SHUFFLED": "test-item prefixes permuted",
+  "PREFIX_RANDOM": "native-spread Gaussian, deviation norm matched per item/slot"
+ },
+ "baselines": "EXACT (oracle cue span tokens), SYMBOLIC ('Suggested action: <word>.' from sender head), SYMBOLIC_ATTR ('Urgency <lvl>, frustration <lvl>.' from sender tertile heads) as token embeddings in the prefix position, same readout; bytes as attempt 4",
+ "gate": "b3bridge.l2_gate: paired mean-2se>0 vs PREFIX_OFF, PREFIX_SHUFFLED, PREFIX_RANDOM; utility (BYTES_W .25, BYTES_NORM 4000) beats EXACT, SYMBOLIC, SYMBOLIC_ATTR; topic role drop <=0.01; norm ratio in [0.8,1.25]; bit-identical rerun of 8 items",
+ "reported_not_gated": "L2 vs L1 adapter read (paired), full-1024 readout (exploratory), drift cosine, off-trained topic head on prefixed states, L1 reproduction vs attempt 4",
+ "verdict_rule": "single run; FAIL stays FAIL; no setting changes count as this attempt",
+ "expectation": "uncertain; frozen receiver may ignore an off-manifold 4-slot prefix in its own-token states (likely FAIL vs EXACT on utility is possible too)",
+ "consequence_if_pass": "L3 tiny-residual SHADOW test allowed for private/action; LATENT authority stays 0; runtime unchanged",
+ "consequence_if_fail": "B3_LATENT stays at L1_shadow for private/action; L3 locked; record negative result",
+ "hardware": "Linux x86_64 cloud CPU, 4 threads; not Redmi"
+}

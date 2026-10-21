@@ -87,5 +87,14 @@ class BudgetGateTests(unittest.TestCase):
         bad=json.loads(json.dumps(good));bad['bytes']['EXACT']=40
         self.assertEqual(BB.l1_gate(bad)['verdict'],'FAIL')  # exact detail is cheap -> latent loses on utility
         bad2=json.loads(json.dumps(good));bad2['role_drop']=.05;self.assertEqual(BB.l1_gate(bad2)['verdict'],'FAIL')
+    def test_l2_gate(self):
+        good={'acc':{'PREFIX_OFF':[.4]*5,'PREFIX':[.8,.82,.8,.81,.8],'PREFIX_SHUFFLED':[.4]*5,'PREFIX_RANDOM':[.41]*5,
+                     'EXACT':[.78]*5,'SYMBOLIC':[.7]*5,'SYMBOLIC_ATTR':[.72]*5},
+              'bytes':{'PREFIX':64,'EXACT':430,'SYMBOLIC':8,'SYMBOLIC_ATTR':29},'role_drop':0.,'norm_ratio':1.,'reproducible':True}
+        g=BB.l2_gate(good);self.assertEqual(g['verdict'],'PASS',g);self.assertEqual(g['missing_baselines'],[])
+        for k,v in (('norm_ratio',3.),('role_drop',.05),('reproducible',False)):
+            bad=json.loads(json.dumps(good));bad[k]=v;self.assertEqual(BB.l2_gate(bad)['verdict'],'FAIL',k)
+        bad=json.loads(json.dumps(good));bad['acc']['PREFIX_SHUFFLED']=bad['acc']['PREFIX']
+        self.assertEqual(BB.l2_gate(bad)['verdict'],'FAIL')  # the prefix content must matter, not its presence
 
 if __name__=='__main__':unittest.main()

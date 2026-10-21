@@ -2,7 +2,7 @@
 
 Neue Zielliste aus dem Blueprint selbst: `ZIELABGLEICH.md` (§29 24 Eigenschaften: 8/14/2; §100 Gates: 0 von 10 grün; STEP2 ist der Engpass). Nächste Pakete sind **WP-Z1 bis WP-Z12** am Ende von `ROADMAP.md`; sie gehen vor älteren offenen Paketen. Seitenzweige (R4-Werkzeug-Regeln, Action-JEPA-Runden, Vision-Lab) nicht weiter ausbauen, bis Z2–Z5 Ergebnisse haben.
 
-Stand 21.10. (Thread „Nächste Pakete R“): **Z4 erledigt — B3 L1 PASS auf `private/action`** (escalate/apologize FAIL); nächster Schritt Z4b (L2-Prefix-SHADOW nur für action). Schnelle Spur: Schlüsseltrennung nativ bestätigt, selektive Zustellung noch kein Gewinn.
+Stand 21.10. (Thread „Nächste Pakete R“): **Z4 erledigt — B3 L1 PASS auf `private/action`** (escalate/apologize FAIL); nächster Schritt Z4b (L2-Prefix-SHADOW nur für action). **Z4b erledigt (21.10., Branch `claude/project-thread-c122qc`): L2 FAIL** — latenter Prefix im eingefrorenen B2 trägt die Info (80,2 % vs. 41,5 aus, Kontrollen auf Zufall), schlägt EXACT und Attribut-Wörter, aber nicht das Label-Wort als Text (81,5 %); B3 bleibt L1_shadow, L3 gesperrt. Beleg `bench-results/b3-l2-prefix-20261021/`. Schnelle Spur: Schlüsseltrennung nativ bestätigt, selektive Zustellung noch kein Gewinn.
 
 **Regel-Lesen (Z3 → Z3b → Z3c, 2026-10-21):** C3-350M liest Ja/Nein-Regeln nie (konstant `true`), auch kein Signal für Training. Regeln liest ein deterministischer Parser: `code/docs/proofs/continuation-20261021/z3c-extensible-parser/parser_v2.py` + `lexicon.json` (Einträge nur mit Beleg, `extend()`), Urteil `PARSER_V2_CARRIES_AUTHOR_ONLY` (frische Autor-Formen 0.91 exakt, 1/57 falsch; Modell-Umformulierungen noch Lücken im Lokal-Wortschatz, dort UNKNOWN statt falsch). Branch `claude/project-thread-x1etmj`. Nur SHADOW.
 
