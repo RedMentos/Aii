@@ -1,0 +1,26 @@
+{
+ "schema": "ABLATION_LATEWATCH_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "turns": 400,
+ "p_answer_wrong": 0.3,
+ "body": {
+  "right": 0.8,
+  "wrong_number": 0.1,
+  "unresolved_reentry": 0.1
+ },
+ "arrival": "uniform char in [0, len(answer)+30]",
+ "check_every_chars": 4,
+ "score": "+1 cut of wrong answer with non-wrong body, -1 cut of right answer, else 0",
+ "primary": "mean score per turn",
+ "streams": [
+  "standard",
+  "format"
+ ],
+ "win_rule": "rule beats never, always and random in >=4/5 seeds on standard -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+}

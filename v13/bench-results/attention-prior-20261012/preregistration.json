@@ -1,0 +1,19 @@
+{
+ "schema": "ABLATION_ATTENTION_PRIOR_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "events": 300,
+ "requests_per_event": 8,
+ "grants_per_event": 3,
+ "primary": "mean hidden usefulness of granted requests, second half of events",
+ "streams": [
+  "blind",
+  "informed"
+ ],
+ "win_rule": "learned_active > scaffold in >=4/5 seeds on both streams -> SUPPORTED_SYNTHETIC; one stream -> PARTIAL; else NOT_SUPPORTED"
+}

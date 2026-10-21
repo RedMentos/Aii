@@ -1,3 +1,27 @@
+# Aktuell 2026-10-21 (Thread „Nächste Pakete R“): B3 L1 Versuch 4 PASS auf action + Schlüsseltrennung der schnellen Spur
+
+- **WP-Z4 B3 L1 Versuch 4** (vorregistriert `eaf49b7`, frische Saat 20261021, neue B1/B2-Zustände, `aux`-Brücke): **Kanon-L1 PASS auf `private/action`** (LATENT 90,0 % vs SYMBOLIC 81,5 / Attribut-Wörter 76,7 / SCALAR 85,2; Rollen-Verlust 0, OOD 1,3 %). escalate/apologize FAIL. Folge: nur L2-Prefix-SHADOW für `private/action` erlaubt (nächstes Paket Z4b), Autorität 0, Runtime unverändert. `bench-results/b3-l1-v4-20261021/`.
+- **Native Firing-Diagnostik / WP-T9 v3**: zwei Ursachen falschen Feuerns gefunden und behoben (`sparse_memory` `guard_distinct`/`guard_vocab`/`guard_scope='last_user'`, Hook `v13_memory_hook.h`, Standard aus). Nativ: 0 fremde Feuerungen auf Faktfragen, combined 84 → 17 Zeilen; selektive Zustellung 2:5 gegen exakt (vorher 2:9) → weiter kein Gewinn, Verluste = falsche Spur-Werte auf Paraphrasen. `bench-results/selective-delivery-v3-20261021/`.
+- Branch `claude/project-thread-8hlx74` (Basis `claude/project-thread-0zelvf`). Suite 1591, einziger Fehler `test_neuro_ledger` durch 19 nachgezogene Belegordner behoben.
+
+# Aktuell 2026-10-21 (Thread „Z2 STEP2 mit B1-Detailinfo“): STEP2 mit B1-eigener Information — Gate FAIL
+
+Neuer Schalter `b1_recent_source_chars` (Standard 0 = aus): B1 behält die exakte Quelle seiner letzten Runde. Vorregistrierter Lauf (10 Episoden, 5 Arme × 70 Zeilen, echte Modelle, Linux-Cloud): `Z2_DIVERGENCE_NOT_SUPPORTED` — Zwei-Körper .325 < b1_only .333, ein Körper + zwei Zustände nicht schlechter. B1 liefert jetzt Optionswerte (27/70 statt 0), exakte SPLIT-Entscheidungen nur im Ein-Körper-Arm (3/6). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2-timescale/BEFUND.md`, Code nur im Git-Branch `claude/project-thread-hsm0ga` (Schalter in `v13/cognition.py`, hier im Projektordner noch nicht). STEP2 UTILITY_FAIL bleibt.
+
+# Aktuell 2026-10-21 (Thread „Z3b Parser statt C3-Leser“): Parser reicht, C3 bringt als Leser nichts Sicheres
+
+Vorregistriert, 39 kanonische + 39 umformulierte Aufgaben × 3 Seeds, nur C3. Urteil `PARSER_SUFFICIENT_NO_C3_GAIN`, sekundär `BOOL_PARSER_FIX_CONFIRMED`: C3-Zahlen + Parser für `local_only` kanonisch 117/117 exakt, 0 falsch. C3 gibt `local_only` immer `true` zurück (auch bei verneinten Umformulierungen); auf Umformulierungen kein C3-Arm ≥ 0.80, einziger Gewinn (+26 Punkte) mit 7.7 % falscher Wahl. Regel: Ja/Nein-Regeln nie vom C3 lesen lassen. Beleg `docs/proofs/continuation-20261021/z3b-parser-paraphrase/BEFUND.md`. Keine Gate-Beförderung.
+
+# Aktuell 2026-10-21 (Thread „Z1 STEP2-Gate ehrlich“): Gate-Graph ehrlich
+
+STEP2 geteilt: `STEP2_HARNESS` GREEN, `STEP2_EXIT` (§96 Komplementarität) EVIDENCE_NOT_PASSING. STEP2_EXIT, STEP5 und alle zehn §100-Gates prüfen jetzt Blueprint-Kriterien an gemessenen Werten (`blueprint`-Block, Status CRITERIA_UNMEASURED); gemessenes FAIL nie mehr hinter PARTIAL. `measure_suite.py` gibt die §29-Tabelle berechnet aus: 3 erreicht, 15 teilweise, 6 fehlen. Befund `docs/proofs/continuation-20261021/z1-gate-ehrlich/BEFUND.md`. Branch `claude/project-thread-61we5j`.
+
+# Aktuell 2026-10-21 (Thread „STEP2-Nutzen Engpass“): Eignungs-Werkzeug im Live-Pfad
+
+`ToolStep._propose_eligibility`: Option-A/B-Fragen unter Projektregeln → C3 liest typisierte Werte aus Quelle + Body-Zitaten → Rezept entscheidet. Nur nach `:growth enable eligibility`, Age 0 SHADOW. Vorregistriert gemessen: 55/70 exakt, 0 falsch (LIVE_PROMPT_SUPPORTED). Handy-Testliste `../HANDY_TESTLISTE.md`. Befund `docs/proofs/continuation-20261021/eligibility-live/BEFUND.md`.
+
+Zusammengeführt in `claude/project-thread-dq33gk` (PR #7): Qs Fassung gilt (TOOL_LIVE_SUPPORTED), dazu Zitat-als-Zeiger-Schalter + `analyst_context`-Fix (Chat brach mit Schalter an ab). Ganzer Turn der dq33gk-Variante war NOT_SUPPORTED, entfällt.
+
 # Aktuell 2026-10-20 (Abend): Handy-Paket Werkzeug-Vorhersage fertig
 
 Ein Befehl am Redmi: `bash WERKZEUG_TESTEN.sh` (Stufen `paritaet|kurz|voll`, Anleitung `WERKZEUG_ANLEITUNG.txt`). Vorprüfung, Einrichtung bei Bedarf, GPTs begrenzter Treiber mit Frist, RAM-/Temperaturverlauf, Ergebnis-ZIP in Downloads. Nebenbei behoben: Handy-ZIP brach im Setup-Selbsttest ab (zwei fehlende Belegdateien in `package_source.py`). Cloud-Probelauf aus dem entpackten ZIP: `voll` bestätigt, gleiche Zahlen wie 12./13.10., Spitzen-RSS 1,2 GB. Redmi-Messung offen (Nutzer). Belege `docs/proofs/continuation-20261020/werkzeug-handy-cloud/`.

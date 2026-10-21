@@ -1,0 +1,356 @@
+{
+ "prereg": {
+  "schema": "COROLLARY_UNCLEAR_PREREG_V1",
+  "k": 20,
+  "test_seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "streams": {
+   "standard": "own failures off by 3-6 x tolerance",
+   "stress": "own failures off by 3-40 x tolerance"
+  },
+  "harmful": "foreign->SELF/MIXED, own failure->SELF/EXTERNAL, own success->MIXED/EXTERNAL; UNCLEAR = abstention",
+  "pass": [
+   "harmful < unchanged in >=4/5 on both streams",
+   "harmful > candidate 2 in <=1/5 on both streams",
+   "standard: own-failure abstention mean <= .05"
+  ]
+ },
+ "test": {
+  "standard": {
+   "13": {
+    "unchanged": {
+     "harmful_rate": 0.39382,
+     "abstention": {
+      "SELF": 0.0128,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.0,
+     "abstention": {
+      "SELF": 0.0128,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.0,
+     "abstention": {
+      "SELF": 0.0128,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.6036
+     }
+    }
+   },
+   "14": {
+    "unchanged": {
+     "harmful_rate": 0.41445,
+     "abstention": {
+      "SELF": 0.0385,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.01141,
+     "abstention": {
+      "SELF": 0.0385,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.01141,
+     "abstention": {
+      "SELF": 0.0385,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.6272
+     }
+    }
+   },
+   "15": {
+    "unchanged": {
+     "harmful_rate": 0.37559,
+     "abstention": {
+      "SELF": 0.0938,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.0,
+     "abstention": {
+      "SELF": 0.0938,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.0,
+     "abstention": {
+      "SELF": 0.0938,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.597
+     }
+    }
+   },
+   "16": {
+    "unchanged": {
+     "harmful_rate": 0.35841,
+     "abstention": {
+      "SELF": 0.0323,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.00442,
+     "abstention": {
+      "SELF": 0.0323,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.00442,
+     "abstention": {
+      "SELF": 0.0323,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.5442
+     }
+    }
+   },
+   "17": {
+    "unchanged": {
+     "harmful_rate": 0.4,
+     "abstention": {
+      "SELF": 0.0417,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.0,
+     "abstention": {
+      "SELF": 0.0417,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.0,
+     "abstention": {
+      "SELF": 0.0417,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.6571
+     }
+    }
+   }
+  },
+  "stress": {
+   "13": {
+    "unchanged": {
+     "harmful_rate": 0.39768,
+     "abstention": {
+      "SELF": 0.0128,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.02703,
+     "abstention": {
+      "SELF": 0.0128,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.00386,
+     "abstention": {
+      "SELF": 0.0128,
+      "MIXED": 0.5,
+      "EXTERNAL": 0.6036
+     }
+    }
+   },
+   "14": {
+    "unchanged": {
+     "harmful_rate": 0.41065,
+     "abstention": {
+      "SELF": 0.0385,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.03422,
+     "abstention": {
+      "SELF": 0.0385,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.0076,
+     "abstention": {
+      "SELF": 0.0385,
+      "MIXED": 0.4375,
+      "EXTERNAL": 0.6272
+     }
+    }
+   },
+   "15": {
+    "unchanged": {
+     "harmful_rate": 0.37559,
+     "abstention": {
+      "SELF": 0.0938,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.02347,
+     "abstention": {
+      "SELF": 0.0938,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.0,
+     "abstention": {
+      "SELF": 0.0938,
+      "MIXED": 0.3333,
+      "EXTERNAL": 0.597
+     }
+    }
+   },
+   "16": {
+    "unchanged": {
+     "harmful_rate": 0.35398,
+     "abstention": {
+      "SELF": 0.0323,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.02655,
+     "abstention": {
+      "SELF": 0.0323,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.0,
+     "abstention": {
+      "SELF": 0.0323,
+      "MIXED": 0.3529,
+      "EXTERNAL": 0.5442
+     }
+    }
+   },
+   "17": {
+    "unchanged": {
+     "harmful_rate": 0.40435,
+     "abstention": {
+      "SELF": 0.0417,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate2": {
+     "harmful_rate": 0.04348,
+     "abstention": {
+      "SELF": 0.0417,
+      "MIXED": 0.0,
+      "EXTERNAL": 0.0
+     }
+    },
+    "candidate3": {
+     "harmful_rate": 0.00435,
+     "abstention": {
+      "SELF": 0.0417,
+      "MIXED": 0.5,
+      "EXTERNAL": 0.6571
+     }
+    }
+   }
+  }
+ },
+ "means": {
+  "standard": {
+   "unchanged": {
+    "harmful_rate": 0.3885,
+    "abstention": {
+     "SELF": 0.0438,
+     "MIXED": 0.0,
+     "EXTERNAL": 0.0
+    }
+   },
+   "candidate2": {
+    "harmful_rate": 0.0032,
+    "abstention": {
+     "SELF": 0.0438,
+     "MIXED": 0.0,
+     "EXTERNAL": 0.0
+    }
+   },
+   "candidate3": {
+    "harmful_rate": 0.0032,
+    "abstention": {
+     "SELF": 0.0438,
+     "MIXED": 0.0,
+     "EXTERNAL": 0.6058
+    }
+   }
+  },
+  "stress": {
+   "unchanged": {
+    "harmful_rate": 0.3885,
+    "abstention": {
+     "SELF": 0.0438,
+     "MIXED": 0.0,
+     "EXTERNAL": 0.0
+    }
+   },
+   "candidate2": {
+    "harmful_rate": 0.0309,
+    "abstention": {
+     "SELF": 0.0438,
+     "MIXED": 0.0,
+     "EXTERNAL": 0.0
+    }
+   },
+   "candidate3": {
+    "harmful_rate": 0.0032,
+    "abstention": {
+     "SELF": 0.0438,
+     "MIXED": 0.4247,
+     "EXTERNAL": 0.6058
+    }
+   }
+  }
+ },
+ "criteria": {
+  "harm_below_unchanged": {
+   "standard": 5,
+   "stress": 5
+  },
+  "harm_above_candidate2": {
+   "standard": 0,
+   "stress": 0
+  },
+  "standard_own_failure_abstention": 0.0
+ },
+ "verdict": "PASS",
+ "claim_limit": "synthetic digital observations, BOOT tolerances/windows; isolated candidate, selfmodel.py unchanged"
+}

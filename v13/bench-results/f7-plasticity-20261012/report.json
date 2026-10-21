@@ -1,0 +1,261 @@
+{
+ "prereg": {
+  "schema": "ABLATION_F7_PLASTICITY_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "trials": 240,
+  "trials_per_task": 8,
+  "phase_trials": 40,
+  "drift": {
+   "calm": 0.1,
+   "conflict": 0.5
+  },
+  "retention_tolerance_abs": 0.1,
+  "base_step_grid": [
+   0.05,
+   0.1,
+   0.2,
+   0.3,
+   0.5
+  ],
+  "calibration_seeds": [
+   101,
+   102,
+   103,
+   104,
+   105
+  ],
+  "base_step_selection": "min |mean(full)-mean(half)| on calibration seeds, ties -> smaller",
+  "eligible_min_drop": 0.02,
+  "batch": 20,
+  "dim": 8,
+  "primary": "mean held-out MSE of current + previous 3 tasks after each trial (lower is better)",
+  "win_rule": "f7 beats full, half and random in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+ },
+ "calibration_gap": {
+  "0.05": 0.1221,
+  "0.1": 0.03434,
+  "0.2": 0.03755,
+  "0.3": 0.06845,
+  "0.5": 0.15475
+ },
+ "base_step": 0.1,
+ "per_seed": {
+  "13": {
+   "f7": {
+    "primary": 0.79517,
+    "commits": 175,
+    "retention_failures": 65,
+    "mean_gain": 0.6162
+   },
+   "full": {
+    "primary": 0.84658,
+    "commits": 147,
+    "retention_failures": 88,
+    "mean_gain": 1.0
+   },
+   "half": {
+    "primary": 0.83675,
+    "commits": 186,
+    "retention_failures": 54,
+    "mean_gain": 0.5
+   },
+   "random": {
+    "primary": 0.80042,
+    "commits": 163,
+    "retention_failures": 74,
+    "mean_gain": 0.7333
+   }
+  },
+  "14": {
+   "f7": {
+    "primary": 0.73311,
+    "commits": 174,
+    "retention_failures": 64,
+    "mean_gain": 0.6282
+   },
+   "full": {
+    "primary": 0.75882,
+    "commits": 139,
+    "retention_failures": 94,
+    "mean_gain": 1.0
+   },
+   "half": {
+    "primary": 0.82587,
+    "commits": 186,
+    "retention_failures": 54,
+    "mean_gain": 0.5
+   },
+   "random": {
+    "primary": 0.7729,
+    "commits": 158,
+    "retention_failures": 80,
+    "mean_gain": 0.7519
+   }
+  },
+  "15": {
+   "f7": {
+    "primary": 0.79088,
+    "commits": 169,
+    "retention_failures": 68,
+    "mean_gain": 0.631
+   },
+   "full": {
+    "primary": 0.82847,
+    "commits": 139,
+    "retention_failures": 94,
+    "mean_gain": 1.0
+   },
+   "half": {
+    "primary": 0.80434,
+    "commits": 180,
+    "retention_failures": 60,
+    "mean_gain": 0.5
+   },
+   "random": {
+    "primary": 0.81332,
+    "commits": 156,
+    "retention_failures": 79,
+    "mean_gain": 0.7503
+   }
+  },
+  "16": {
+   "f7": {
+    "primary": 0.67122,
+    "commits": 161,
+    "retention_failures": 76,
+    "mean_gain": 0.6344
+   },
+   "full": {
+    "primary": 0.68821,
+    "commits": 133,
+    "retention_failures": 100,
+    "mean_gain": 1.0
+   },
+   "half": {
+    "primary": 0.70753,
+    "commits": 174,
+    "retention_failures": 66,
+    "mean_gain": 0.5
+   },
+   "random": {
+    "primary": 0.7024,
+    "commits": 152,
+    "retention_failures": 84,
+    "mean_gain": 0.7574
+   }
+  },
+  "17": {
+   "f7": {
+    "primary": 0.88858,
+    "commits": 163,
+    "retention_failures": 77,
+    "mean_gain": 0.627
+   },
+   "full": {
+    "primary": 0.92546,
+    "commits": 133,
+    "retention_failures": 102,
+    "mean_gain": 1.0
+   },
+   "half": {
+    "primary": 0.94862,
+    "commits": 173,
+    "retention_failures": 67,
+    "mean_gain": 0.5
+   },
+   "random": {
+    "primary": 0.91219,
+    "commits": 153,
+    "retention_failures": 86,
+    "mean_gain": 0.7437
+   }
+  }
+ },
+ "wins_of_5": {
+  "full": 5,
+  "half": 5,
+  "random": 5
+ },
+ "summary": {
+  "f7": {
+   "primary": {
+    "mean": 0.7758,
+    "sd": 0.0807
+   },
+   "commits": {
+    "mean": 168.4,
+    "sd": 6.3087
+   },
+   "retention_failures": {
+    "mean": 70.0,
+    "sd": 6.1237
+   },
+   "mean_gain": {
+    "mean": 0.6274,
+    "sd": 0.0069
+   }
+  },
+  "full": {
+   "primary": {
+    "mean": 0.8095,
+    "sd": 0.0901
+   },
+   "commits": {
+    "mean": 138.2,
+    "sd": 5.7619
+   },
+   "retention_failures": {
+    "mean": 95.6,
+    "sd": 5.5498
+   },
+   "mean_gain": {
+    "mean": 1.0,
+    "sd": 0.0
+   }
+  },
+  "half": {
+   "primary": {
+    "mean": 0.8246,
+    "sd": 0.0861
+   },
+   "commits": {
+    "mean": 179.8,
+    "sd": 6.261
+   },
+   "retention_failures": {
+    "mean": 60.2,
+    "sd": 6.261
+   },
+   "mean_gain": {
+    "mean": 0.5,
+    "sd": 0.0
+   }
+  },
+  "random": {
+   "primary": {
+    "mean": 0.8002,
+    "sd": 0.0759
+   },
+   "commits": {
+    "mean": 156.4,
+    "sd": 4.3932
+   },
+   "retention_failures": {
+    "mean": 80.6,
+    "sd": 4.669
+   },
+   "mean_gain": {
+    "mean": 0.7473,
+    "sd": 0.0092
+   }
+  }
+ },
+ "verdict": "SUPPORTED_SYNTHETIC",
+ "claim_limit": "synthetic linear tasks, harness learner, BOOT gates; no native or shared-layer interference"
+}

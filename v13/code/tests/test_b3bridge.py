@@ -72,6 +72,8 @@ class BridgeTests(unittest.TestCase):
             self.assertEqual(f['latent_read_authority'],0);self.assertEqual(f['bridge']['sha256'],man['sha256'])
             self.assertTrue(BB.doctor_fields(t,'B1_TO_B2','r9')['bridge']['stale_receiver_revision'])
             self.assertIsNone(BB.doctor_fields(t,'B2_TO_B1')['bridge'])
+            man2=self.b.save(Path(t)/'b3'/'again','s2','r2')  # a second save must not keep the first save's revisions
+            self.assertEqual((man2['sender_revision'],man2['receiver_revision']),('s2','r2'))
 
 class BudgetGateTests(unittest.TestCase):
     def test_h7_budget(self):

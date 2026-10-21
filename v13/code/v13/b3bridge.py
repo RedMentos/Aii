@@ -164,9 +164,10 @@ class Bridge:
     def save(self,path,sender_revision,receiver_revision,extra=None):
         path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
         buf=io.BytesIO();np.savez(buf,**self._arrays());path.with_suffix('.npz').write_bytes(buf.getvalue())
-        man={'revision':REVISION,'direction':self.direction,'d':self.d,'K':self.K,'r':self.r,'h':self.h,'classes':self.classes,'aux':self.aux,
+        # fresh fields win over self.manifest (it may hold an earlier save's revisions, e.g. a reload check)
+        man=self.manifest|{'revision':REVISION,'direction':self.direction,'d':self.d,'K':self.K,'r':self.r,'h':self.h,'classes':self.classes,'aux':self.aux,
              'sender_revision':sender_revision,'receiver_revision':receiver_revision,'sha256':self.digest(),'calibrated':self.cal is not None,
-             'budget':budget(self.d,self.K,self.r,self.h,self.classes),'created_wall_time':time.time()}|self.manifest|(extra or {})
+             'budget':budget(self.d,self.K,self.r,self.h,self.classes),'created_wall_time':time.time()}|(extra or {})
         path.with_suffix('.json').write_text(json.dumps(man,indent=1,default=float));self.manifest=man;return man
     @classmethod
     def load(cls,path,sender_revision=None,receiver_revision=None):

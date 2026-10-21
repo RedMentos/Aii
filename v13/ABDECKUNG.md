@@ -14,6 +14,8 @@ Grundlage: `blueprint/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md` (1
 | ❌ | **FEHLT**: kein Code |
 | ⏸ | **SPÄTER**: Blueprint sperrt es selbst bis nach STEP7 (stabiler Age-0-Kern) |
 
+**Klarstellung 2026-10-21 (Zielabgleich, `ZIELABGLEICH.md`):** ✅ in den Tabellen 1–8 heißt „Baustein im Code mit Test“, **nicht** „Blueprint-Ziel erreicht“. Ein Ziel gilt erst als erreicht, wenn das zugehörige Gate nach §100/IH-H33 grün ist (Code, echter Zustandspfad, Persistenz, Test, Telemetrie, **Ablations-Baseline**, bekannte Grenzen). Deshalb stehen z. B. Adaptive Reasoning Effort, Inquisition und Koalitions-Binder als Baustein ✅, ihre Gates G5B/G5/G3D aber 🟡. Die Ziel-Ebene steht in Abschnitt 12 (§29, §96, §100).
+
 Paket-Spalte: wer es abdeckt. `WP-N*` sind die in diesem Abgleich neu angelegten Pakete (Ende der Datei und in ROADMAP.md).
 
 ## 0. Ergebnis in Zahlen
@@ -27,6 +29,8 @@ große Sammelzeilen wie „§24 Benchmarks“ zählen nur einmal, die Zahl ist a
 | 🟡 TEIL | 79 | 38 % |
 | ❌ FEHLT | 10 | 5 % |
 | ⏸ SPÄTER | 3 | 1 % |
+
+**Nachtrag 2026-10-20 (WP-G2):** Gist-Zeile und G1B bleiben 🟡, jetzt mit nativem B2-Readout-Konsumenten und vorregistrierter nativer Messung (`code/docs/GIST_READOUT.md`).
 
 **Nachtrag 2026-10-12 (Thread I):** §8.6 und G6B von ❌ auf 🟡 (Zählung oben nicht neu berechnet).
 
@@ -99,14 +103,14 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 |---|---|---|---|---|
 | B1 Detail-Körper | §1.2.1, §3.1, §52 | 🟡 | LFM2.5-1.2B als Beobachter mit 240-Zeichen-Sicht | WP-G |
 | B2 Gist-Körper | §1.2.2, §3.2, §53 | 🟡 | eigener Körper Qwen3.5-0.8B (WP-V, WP-N11 über AG0-Slots), 960-Zeichen-Sicht + Kontext-Slots; STEP2-Zwei-Körper-Messung FAIL | WP-G, WP-N11 |
-| Gist-Gruppierung ~8 Token / Slots | §1.2.2, G1B, §17.6 | 🟡 | `gist.py` (Age-Auflösung, grenzbewusst, verlustfrei; SHADOW/`:gist active`); Nutzen-Messung offen | WP-G |
+| Gist-Gruppierung ~8 Token / Slots | §1.2.2, G1B, §17.6 | 🟡 | `gist.py` (Age-Auflösung, grenzbewusst, verlustfrei; SHADOW/`:gist active`); 2026-10-20 nativer B2-Readout-Konsument `gist_readout.py` (`:gist readout`), native Messung: Text-Grenzen +.08 Recall@1 ggü. fester Gruppierung gleicher Zahl, natives Sprungsignal ohne Zusatznutzen; Antwort-Nutzen offen | WP-G, WP-G2 |
 | Cross-scale Kopplung | §3.2A | ✅ | `focal.link_scales`; Gist-Slots mit Fein-Spans, Abdeckung, Kompression, Grenz-Konfidenz, Rückfall (`gist.coupling`); B1 bündelt bei Re-entry lokalen vorläufigen Gist (`gist.local_bundle`, im Prompt nur mit `:gist active`) | WP-N1, WP-G, WP-U7 |
 | MoE-Körper (MobileMoE-S-QAT, zwei verschiedene MoE-Hälften) | §81, §87.1, §91, Nutzerwunsch | 🟡 | 2026-10-12: offener Kandidat EuroMoE-2.6B-A0.6B (Apache-2.0, en+de) läuft in HF und llama.cpp b10964 (F16/Q4_K_M 1,6 GB); MobileMoE weiter gated; noch nicht in `specs/models.json` (Freeze), kein Redmi (`code/docs/MOE_N11.md`) | **WP-N11** |
 | Router-Stabilität für MoE | B3-H6, §16.2.1 | 🟡 | `scripts/moe_router_monitor.py` Gate + Kalibrierung aus Basis-Schwankung, echte EuroMoE-Messung `bench-results/moe-router-20261012/` (stabil nur α ≤ 0,01); isoliert, nicht im Lauf | WP-N11 |
 | B3 Callosum Exact/Control/Symbolic | §1.4, B3, §54 | ✅ | `cognition.communicate` | – |
 | B3 Kanal-Nutzen-Messung | §1.4.1, B3-H9, §24.15 | 🟡 | STEP2-Ablation NONE/EXACT/CONTROL/SYMBOLIC; Ergebnis UTILITY_FAIL | WP-G |
-| B3 Latent L1 (nur Empfänger-Adapter) | B3-H3 L1 | 🟡 | Numerik-Experimente (`native_receiver_effect.cpp`), Autorität 0 | WP-J |
-| B3 Latent L2–L4 | B3-H3 | ❌ | – | WP-J |
+| B3 Latent L1 (nur Empfänger-Adapter) | B3-H3 L1 | 🟡 | Numerik-Experimente (`native_receiver_effect.cpp`); **Kanon-L1 PASS auf `private/action`** (Versuch 4, aux-Brücke, `bench-results/b3-l1-v4-20261021/`), escalate/apologize FAIL; Autorität 0 | WP-J, Z4 |
+| B3 Latent L2–L4 | B3-H3 | ❌ | L2-SHADOW nur für `private/action` erlaubt, nicht gemessen | WP-J, Z4b |
 | Callosum fördert UND hemmt | §85.2 | 🟡 | `callosum.py`: signed_gain als Vorschlag, gelernte Kanal-Policy (SHADOW/ACTIVE); kein Latent | WP-J |
 | B4 Verteilter Zustand | B4, §8.1 | ✅ | Multi-Slot-Workspace mit SourceBinding/Zeitskala/Status (`focal.Workspace`), B1/B2-Zustand je Session, B4-Sicht über Sessions (`bodyview.cross_session`, SHADOW), L3-B4-Lernschleife Haltedauer je Quellenart (`workspace_learn.py`, SHADOW) | WP-N1, WP-T5, WP-U8 |
 | B4 Multi-Slot-Workspace | §8.2, §8.2A, §55 | ✅ | Workspace mit Slots live in der Fokusschleife (`focal.py`, WP-N1), Tests `test_focal.py`; 2026-10-12 §8.2-Slot-Minimum Pflicht in `FocalItem`/`WorkspaceSlot` (self_generated, Zeit/Alter/Ablauf, exakter Fallback, Zeitskala, Abdeckung, Kompression, Grenz-Konfidenz als lexikalischer Proxy, Cross-Scale-Links; `test_workspace_slot.py`) | WP-N1, Thread L |
@@ -144,7 +148,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Memory Active/Warm | §9.1 | ✅ | C1-Zustand + warme Erinnerungen mit Zerfall/Reaktivierung (`context_os.py`) | WP-N7 |
 | Fast Episodic | §9.1, STEP3 | ✅ | Korrekturen, Episoden mit Grenzen/Route/Ergebnis/Quellen (`episodes.py`), lexikalischer + optional semantischer Abruf; „zweites Mal besser“: einzelne Routen-Korrektur wirkt bei ähnlicher Anfrage sofort (`episodic_route.py`, Standard shadow) | WP-H, WP-S2, WP-N8, WP-U10 |
 | Parametric Fast Trace | §9.1 optional | 🟡 | Sparse-Memory-Layer an C3 (`sparse_memory.py`, keyed: 8/8 gelernt, KL 3e-6, nichts vergessen); nur torch, nicht im Lauf, Near-Miss-Leck offen | WP-S3 |
-| Conditional Associative Memory | §9.1 [RESEARCH] | 🟡 | keyed Slots mit Radius-Gate (feuern nur nahe ihrem Schlüssel) in `sparse_memory.py`; Forschungsstand | WP-S3 |
+| Conditional Associative Memory | §9.1 [RESEARCH] | 🟡 | keyed Slots mit Radius-Gate (feuern nur nahe ihrem Schlüssel) in `sparse_memory.py`; Schlüsseltrennung (unterscheidende Guard-Wörter, Guard nur letzte Nutzerfrage) nativ gemessen: 0 fremde Feuerungen auf Faktfragen, selektive Zustellung noch kein Gewinn (`bench-results/selective-delivery-v3-20261021/`) | WP-S3, WP-T9 |
 | Exact / Provenance | §9.1, §1.8 | ✅ | `store.py`, `SourceRef` | – |
 | Semantic/Procedural Staging | §9.1 | ✅ | `consolidation.py`: semantische/prozedurale Kandidaten nach ≥ 3 unabhängigen Bestätigungen, Staging → menschliche Freigabe → aktiv, Rollback; Sleep A staged automatisch (`tests/test_consolidation.py`) | WP-E |
 | Archive | §9.1 | ✅ | Backups, Generationen + kalte Quellen verlustfrei komprimiert (`archive.py`, Sleep C, `:archive`) | WP-U4 |
@@ -278,7 +282,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 |---|---|---|
 | G0 Maschinenlesbarer Canon | ✅ | – |
 | G1 Echter Harness | ✅ | – |
-| G1B Fixierte Gist/Detail-Auflösung | 🟡 (Python + Struktur-Bench fertig, Modell-Messung offen) | WP-G |
+| G1B Fixierte Gist/Detail-Auflösung | 🟡 (Python + Struktur-Bench fertig; 2026-10-20 native B2-Readout-Messung boundary vs fixed: Text-Grenzen besser, hybrid FAIL; gelernte adaptive Gruppierung + Antwort-Nutzen offen) | WP-G, WP-G2 |
 | G2 BodyPort + Callosum-Bootstrap | 🟡 | WP-AG0, WP-J |
 | G2B Echter Callosum + verteilter Zustand | 🟡 | WP-J, WP-N1 |
 | G2C Kanal-Nutzen + Empfänger-Kalibrierung | 🟡 | WP-J |
@@ -301,8 +305,8 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | G12B Redmi-6GB-Validierung | ❌ | WP-R |
 | G12C Needle-Benchmark | ✅ (`c2_benchmark.py`, `bench-results/c2-benchmark-20261010`: Needle bleibt C2, gelernter Routing-Kopf) | WP-V7 |
 | G13 Langlauf + Event-Scheduler | 🟡 (2026-10-12 Thread N: `scripts/longrun_soak.py` simulierte Tage mit Neustarts über den echten Turn-/Scheduler-/Sleep-Pfad, 7 Tage PASS in der Cloud; Befund Wach-Replays verdrängten den Nacht-Schlaf behoben; Redmi-`--native`-Langlauf offen) | WP-N18, WP-E, WP-R |
-| §24 Kern-Benchmarks (34 Stück) | 🟡: alle 34 in `specs/benchmarks.json` auf Tests/Artefakte abgebildet (`:gates`, `measure_suite.py`); 24.19 braucht MoE, 24.31 nur Lab, 24.14/24.33 brauchen Redmi | WP-N12 |
-| §31/§79 R0–R9 Kernexperimente | 🟡: R0 (`timescale_gate.py`), R1 (STEP2 FAIL), R5 (WP-D ohne Messung); R2–R4, R6–R9 fehlen | **WP-N12** |
+| §24 Kern-Benchmarks (35 Stück inkl. 24.28B) | 🟡 (21.10. `measure_suite`: nur 6 MEASURED, davon 24.11 durchgefallen; 25 nur TESTED = Existenz-Test ohne Messung; 2 NEEDS_REDMI; 2 NOT_IMPLEMENTED 24.19/24.31; Paket WP-Z6): alle 34 in `specs/benchmarks.json` auf Tests/Artefakte abgebildet (`:gates`, `measure_suite.py`); 24.19 braucht MoE, 24.31 nur Lab, 24.14/24.33 brauchen Redmi | WP-N12 |
+| §31/§79 R0–R9 Kernexperimente | 🟡: R0 (`timescale_gate.py`), R1 (STEP2 FAIL), R2 dicht (WP-T14), R4 Teile 1–3 Wecken (Teile 4–11 sind Werkzeug-Regeln, kein R4 im Blueprint-Sinn), R5 (WP-D ohne Messung); R3, R6–R9 offen. Achtung: §31 und §79 nummerieren R verschieden, die Roadmap folgt §31 | **WP-N12** |
 | §99 Pflicht-Ablationen | 🟡 | WP-N12 |
 | §101 Schemas (Modulator, Corollary, TrainRunnerProof, FocalItem, ReplayItem) | ✅ als Schema; FocalItem seit 2026-10-12 mit §8.2/§93-Slot-Minimum | WP-N1, Thread L |
 | STEP8–11 (Vision, Audio, weitere Effektoren, Full-Duplex, höhere Ages) | ⏸ | später |
@@ -339,3 +343,26 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | WP-N13 | AG-Module in den Live-Durchlauf einhängen | Querschnitt (AG0–AG12 laufen heute nur offline) |
 
 (WP-N6 bewusst nicht vergeben: Reflex + Fast-Forward gehören zu WP-F und sind dort ergänzt.)
+
+## 12. Ziel-Ebene: §29, §96-STEP-Ausgänge, §100-Gates (Zielabgleich 2026-10-21)
+
+Volle Tabellen mit Belegen in `ZIELABGLEICH.md`. Hier die Zusammenfassung, damit Baustein- und Ziel-Ebene nicht verwechselt werden.
+
+**§29 „V13 funktioniert“ (24 Eigenschaften):** 8 ✅, 14 🟡, 2 ❌ (adaptive Kanal-Policy mit Latent-Nutzen; Message-Subspace-Austausch). Nach Blueprint-Wortlaut damit noch Harness-Prototyp.
+
+**§96 STEP-Ausgänge:** STEP0 ✅, STEP1 ✅, **STEP2 ❌** (Komplementarität UTILITY_FAIL; `gate-graph.json` meldet trotzdem GREEN → WP-Z1), STEP3 ✅, STEP4 🟡 (kein Referenz-Lehrer, WP-Z11), STEP5 🟡 (TRAIN_RUNNER_PROOF Redmi fehlt), STEP6A ✅, **STEP6B ❌** (B3 L1 FAIL), STEP6C 🟡 (keine Expert-Deltas), **STEP7 ❌** (Redmi-Wochenlauf), STEP8–11 ⏸.
+
+| §100-Gate | Stand 21.10. (`measure_suite`) | Lücke | Paket |
+|---|---|---|---|
+| G-B-TIMESCALE-DIVERGENCE-001 | 🟡 PARTIAL | STEP2 FAIL, B1 ohne eigene Information in den Fixtures | WP-Z2 |
+| G-CALLOSUM-UTILITY-002 | 🟡 PARTIAL | B3 L1 FAIL, Versuch 4 offen | WP-Z4 |
+| G-FOCAL-CAPACITY-003 | 🟡 PARTIAL | §99-Kontrollen Voll-Kontext / nur Retrieval / feste Slots fehlen | WP-Z5 |
+| G-PROCEDURALIZATION-004 | 🟡 PARTIAL | nur synthetisch; echte Latenz/Energie | WP-Z6, WP-Z7 |
+| G-SELF-WORLD-005 | 🟡 PARTIAL | nur synthetische Fälle | WP-Z12 |
+| G-TRAIN-RUNNER-PROOF-001 | 🟡 PARTIAL | Redmi-Proof | WP-Z7 |
+| G-REPLAY-CONSOLIDATION-001 | 🟡 PARTIAL | Kontrolle „dream policy-only“ | WP-Z9 |
+| G-MODULATOR-SPECIFICITY-001 | 🟡 PARTIAL | nur synthetisch | WP-Z6 |
+| G-AGE-REOPEN-001 | 🟡 PARTIAL | §99 Age nicht belegt; Nutzerwahl `age_plasticity_policy` offen | WP-Z8 |
+| G-MOBILE-LONGRUN-001 | 🟡 PARTIAL | Redmi-Langlauf | WP-Z7 |
+
+**Nicht-Blueprint-Arbeit getrennt führen:** WP-AG (12 AGI-Lücken aus FORSCHUNG.md), Werkzeug-Vorhersage, R4 Teile 4–11 (Rechen-Werkzeug-Regeln) und Vision-Lab vor STEP7 zählen nicht als Blueprint-Abdeckung.
