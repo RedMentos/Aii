@@ -1,3 +1,7 @@
+# Aktuell 2026-10-21 (Thread „STEP2-Nutzen Engpass“): Eignungs-Werkzeug im Live-Pfad
+
+`ToolStep._propose_eligibility`: Option-A/B-Fragen unter Projektregeln → C3 liest typisierte Werte aus Quelle + Body-Zitaten → Rezept entscheidet. Nur nach `:growth enable eligibility`, Age 0 SHADOW. Vorregistriert gemessen: 55/70 exakt, 0 falsch (LIVE_PROMPT_SUPPORTED). Handy-Testliste `../HANDY_TESTLISTE.md`. Befund `docs/proofs/continuation-20261021/eligibility-live/BEFUND.md`.
+
 # Aktuell 2026-10-20 (Abend): Handy-Paket Werkzeug-Vorhersage fertig
 
 Ein Befehl am Redmi: `bash WERKZEUG_TESTEN.sh` (Stufen `paritaet|kurz|voll`, Anleitung `WERKZEUG_ANLEITUNG.txt`). Vorprüfung, Einrichtung bei Bedarf, GPTs begrenzter Treiber mit Frist, RAM-/Temperaturverlauf, Ergebnis-ZIP in Downloads. Nebenbei behoben: Handy-ZIP brach im Setup-Selbsttest ab (zwei fehlende Belegdateien in `package_source.py`). Cloud-Probelauf aus dem entpackten ZIP: `voll` bestätigt, gleiche Zahlen wie 12./13.10., Spitzen-RSS 1,2 GB. Redmi-Messung offen (Nutzer). Belege `docs/proofs/continuation-20261020/werkzeug-handy-cloud/`.
