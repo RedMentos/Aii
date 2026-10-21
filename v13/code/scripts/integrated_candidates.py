@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -172,6 +172,59 @@ def b2_offer(text):
     return t
 
 
+QUOTE_SPAN = """def quote_span(quote,source,context_chars=0):
+    \"\"\"(start,end) of a body quote inside source, or None. context_chars 0 (live): exact substring only.
+    context_chars>0 (cfg offer_quote_context_chars, 2026-10-20 STEP2 B2->C3 transport): a quote that differs from the
+    source only in letter case or whitespace still verifies, and a quote of >= 12 chars grows to its whole sentences,
+    then to neighbouring sentences of the same source while the span stays within context_chars. The quote is only a
+    pointer; the transported text is always the exact source span (Qwen B2 split, cut or re-cased the earlier
+    rule, so its full text reached C3 in only 7/30 STEP2 retain offers).\"\"\"
+    if not isinstance(quote,str) or not quote:return None
+    if quote in source:a=source.index(quote);b=a+len(quote)
+    elif not context_chars:return None
+    else:
+        q=' '.join(quote.split()).casefold()
+        if len(q)<12:return None
+        flat=[];at=[]
+        for i,ch in enumerate(source):
+            if ch.isspace() and i and source[i-1].isspace():continue
+            piece=' ' if ch.isspace() else ch.casefold();flat.append(piece);at+=[i]*len(piece)
+        j=''.join(flat).find(q)
+        if j<0:return None
+        a,b=at[j],at[j+len(q)-1]+1
+    if not context_chars or b-a<12:return a,b
+    sents=[(m.start(),m.end()) for m in re.finditer(r'\\S.*?(?:[.!?](?=\\s|$)|$)',source,re.S)]
+    inside=[k for k,(s,e) in enumerate(sents) if e>a and s<b]
+    if not inside:return a,b
+    i,k=inside[0],inside[-1]
+    if sents[k][1]-sents[i][0]>context_chars:return a,b
+    grew=True
+    while grew:
+        grew=False
+        if k+1<len(sents) and sents[k+1][1]-sents[i][0]<=context_chars:k+=1;grew=True
+        if i>0 and sents[k][1]-sents[i-1][0]<=context_chars:i-=1;grew=True
+    return sents[i][0],sents[k][1]
+"""
+
+
+def quote_context(text):
+    """2026-10-20 STEP2 B2->C3 thread: cfg offer_quote_context_chars (0 = off = previous behaviour, byte-for-byte the
+    old verification) lets a body quote point at its exact source sentences instead of having to copy them."""
+    if 'def quote_span(' in text:
+        raise ValueError('Integrated anchor changed: quote_context already applied')
+    t = _replace(text, 'class Cognition:\n', QUOTE_SPAN+'class Cognition:\n')
+    t = _replace(t, "        for quote in obj['quotes'][:3]:\n",
+                 "        wide=self.r.cfg.get('offer_quote_context_chars',0)\n"
+                 "        for quote in obj['quotes'][:3]:\n"
+                 "            if wide:  # quote as pointer; the exact-substring lines below stay byte-identical for closed harnesses\n"
+                 "                match=next(((source,ref,span) for source,ref in sources if (span:=quote_span(quote,source,wide))),None)\n"
+                 "                if not match:rejected+=1;continue\n"
+                 "                source,base,(a,b)=match;ref=base|{'char_start':base['char_start']+a,'char_end':base['char_start']+b}\n"
+                 "                if ref not in refs:self.s.read_source(ref);refs.append(ref)  # two quotes may point at the same sentences\n"
+                 "                continue\n")
+    return t
+
+
 def _later(sources):
     return b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))
 
@@ -222,7 +275,7 @@ def rebase(texts, root=ROOT):
     out = _chain(full)
     out = {k: (out[k] if k in NAMES else v) for k, v in texts.items()}
     if 'v13/cognition.py' in out:  # cognition.py is bound exactly by source_handoff_candidate, not by NAMES
-        out['v13/cognition.py'] = b2_offer(out['v13/cognition.py'])
+        out['v13/cognition.py'] = quote_context(b2_offer(out['v13/cognition.py']))
     return out
 
 
