@@ -1,0 +1,687 @@
+{
+ "prereg": {
+  "schema": "META_NOISE_CANDIDATE_PREREG_V1",
+  "test_seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "constants": {
+   "NOISE_EMA": 0.2,
+   "NOISE_K": 2.0,
+   "NOISE_REF": 0.05,
+   "NOISE_MIN_N": 4
+  },
+  "streams": {
+   "noisy": "ablation META stream",
+   "clean": "same phases, label noise .1"
+  },
+  "pass": [
+   "noisy: candidate < v13 in >=4/5",
+   "noisy: candidate < fixed_conservative and < fixed_matched in >=4/5 each",
+   "clean: candidate > v13 in <=1/5"
+  ]
+ },
+ "test": {
+  "noisy": {
+   "13": {
+    "candidate": {
+     "primary": 0.0827,
+     "mean_p": 0.47029,
+     "mean_p_phase": {
+      "learn": 0.4296,
+      "noisy": 0.3938,
+      "shift": 0.4782,
+      "noisy2": 0.656
+     }
+    },
+    "v13": {
+     "primary": 0.083,
+     "phase_error": {
+      "learn": 0.0318,
+      "noisy": 0.0486,
+      "shift": 0.13289,
+      "noisy2": 0.10192
+     },
+     "final_error": 0.11242,
+     "mean_p": 0.47084,
+     "mean_p_phase": {
+      "learn": 0.4296,
+      "noisy": 0.3938,
+      "shift": 0.4782,
+      "noisy2": 0.6587
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.08802,
+     "phase_error": {
+      "learn": 0.07017,
+      "noisy": 0.05821,
+      "shift": 0.1741,
+      "noisy2": 0.06157
+     },
+     "final_error": 0.0534,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.08914,
+     "phase_error": {
+      "learn": 0.06704,
+      "noisy": 0.0614,
+      "shift": 0.16875,
+      "noisy2": 0.065
+     },
+     "final_error": 0.05586,
+     "mean_p": 0.47084,
+     "mean_p_phase": {
+      "learn": 0.4708,
+      "noisy": 0.4708,
+      "shift": 0.4708,
+      "noisy2": 0.4708
+     }
+    }
+   },
+   "14": {
+    "candidate": {
+     "primary": 0.04592,
+     "mean_p": 0.43623,
+     "mean_p_phase": {
+      "learn": 0.4308,
+      "noisy": 0.4193,
+      "shift": 0.3982,
+      "noisy2": 0.5135
+     }
+    },
+    "v13": {
+     "primary": 0.05207,
+     "phase_error": {
+      "learn": 0.03767,
+      "noisy": 0.06206,
+      "shift": 0.01989,
+      "noisy2": 0.06428
+     },
+     "final_error": 0.08172,
+     "mean_p": 0.4827,
+     "mean_p_phase": {
+      "learn": 0.4308,
+      "noisy": 0.5346,
+      "shift": 0.3999,
+      "noisy2": 0.5135
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.04455,
+     "phase_error": {
+      "learn": 0.0696,
+      "noisy": 0.04637,
+      "shift": 0.02336,
+      "noisy2": 0.06212
+     },
+     "final_error": 0.08038,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.04721,
+     "phase_error": {
+      "learn": 0.06552,
+      "noisy": 0.05061,
+      "shift": 0.02099,
+      "noisy2": 0.06664
+     },
+     "final_error": 0.08342,
+     "mean_p": 0.4827,
+     "mean_p_phase": {
+      "learn": 0.4827,
+      "noisy": 0.4827,
+      "shift": 0.4827,
+      "noisy2": 0.4827
+     }
+    }
+   },
+   "15": {
+    "candidate": {
+     "primary": 0.06514,
+     "mean_p": 0.48463,
+     "mean_p_phase": {
+      "learn": 0.4294,
+      "noisy": 0.4706,
+      "shift": 0.4357,
+      "noisy2": 0.6169
+     }
+    },
+    "v13": {
+     "primary": 0.0731,
+     "phase_error": {
+      "learn": 0.03012,
+      "noisy": 0.07351,
+      "shift": 0.05911,
+      "noisy2": 0.08627
+     },
+     "final_error": 0.16187,
+     "mean_p": 0.53787,
+     "mean_p_phase": {
+      "learn": 0.4294,
+      "noisy": 0.5877,
+      "shift": 0.4384,
+      "noisy2": 0.6461
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.05642,
+     "phase_error": {
+      "learn": 0.07029,
+      "noisy": 0.05436,
+      "shift": 0.05469,
+      "noisy2": 0.06227
+     },
+     "final_error": 0.09206,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.06301,
+     "phase_error": {
+      "learn": 0.05855,
+      "noisy": 0.06618,
+      "shift": 0.04639,
+      "noisy2": 0.07328
+     },
+     "final_error": 0.10807,
+     "mean_p": 0.53787,
+     "mean_p_phase": {
+      "learn": 0.5379,
+      "noisy": 0.5379,
+      "shift": 0.5379,
+      "noisy2": 0.5379
+     }
+    }
+   },
+   "16": {
+    "candidate": {
+     "primary": 0.07289,
+     "mean_p": 0.48542,
+     "mean_p_phase": {
+      "learn": 0.4278,
+      "noisy": 0.4709,
+      "shift": 0.4348,
+      "noisy2": 0.6228
+     }
+    },
+    "v13": {
+     "primary": 0.08679,
+     "phase_error": {
+      "learn": 0.02178,
+      "noisy": 0.11411,
+      "shift": 0.03271,
+      "noisy2": 0.08623
+     },
+     "final_error": 0.03545,
+     "mean_p": 0.5787,
+     "mean_p_phase": {
+      "learn": 0.4278,
+      "noisy": 0.695,
+      "shift": 0.4196,
+      "noisy2": 0.6561
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.06831,
+     "phase_error": {
+      "learn": 0.05561,
+      "noisy": 0.08434,
+      "shift": 0.04522,
+      "noisy2": 0.05931
+     },
+     "final_error": 0.03221,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.0832,
+     "phase_error": {
+      "learn": 0.04215,
+      "noisy": 0.10874,
+      "shift": 0.03558,
+      "noisy2": 0.07973
+     },
+     "final_error": 0.03892,
+     "mean_p": 0.5787,
+     "mean_p_phase": {
+      "learn": 0.5787,
+      "noisy": 0.5787,
+      "shift": 0.5787,
+      "noisy2": 0.5787
+     }
+    }
+   },
+   "17": {
+    "candidate": {
+     "primary": 0.069,
+     "mean_p": 0.39985,
+     "mean_p_phase": {
+      "learn": 0.4312,
+      "noisy": 0.3073,
+      "shift": 0.4438,
+      "noisy2": 0.5098
+     }
+    },
+    "v13": {
+     "primary": 0.08374,
+     "phase_error": {
+      "learn": 0.04031,
+      "noisy": 0.05662,
+      "shift": 0.15293,
+      "noisy2": 0.06878
+     },
+     "final_error": 0.02773,
+     "mean_p": 0.48928,
+     "mean_p_phase": {
+      "learn": 0.4312,
+      "noisy": 0.5283,
+      "shift": 0.4453,
+      "noisy2": 0.5134
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.07611,
+     "phase_error": {
+      "learn": 0.07237,
+      "noisy": 0.04728,
+      "shift": 0.15084,
+      "noisy2": 0.05904
+     },
+     "final_error": 0.01516,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.07791,
+     "phase_error": {
+      "learn": 0.06769,
+      "noisy": 0.05287,
+      "shift": 0.14186,
+      "noisy2": 0.06402
+     },
+     "final_error": 0.01786,
+     "mean_p": 0.48928,
+     "mean_p_phase": {
+      "learn": 0.4893,
+      "noisy": 0.4893,
+      "shift": 0.4893,
+      "noisy2": 0.4893
+     }
+    }
+   }
+  },
+  "clean": {
+   "13": {
+    "candidate": {
+     "primary": 0.0434,
+     "mean_p": 0.35714,
+     "mean_p_phase": {
+      "learn": 0.4296,
+      "noisy": 0.304,
+      "shift": 0.4427,
+      "noisy2": 0.3053
+     }
+    },
+    "v13": {
+     "primary": 0.0434,
+     "phase_error": {
+      "learn": 0.0318,
+      "noisy": 0.00045,
+      "shift": 0.17227,
+      "noisy2": 0.00044
+     },
+     "final_error": 0.00038,
+     "mean_p": 0.35714,
+     "mean_p_phase": {
+      "learn": 0.4296,
+      "noisy": 0.304,
+      "shift": 0.4427,
+      "noisy2": 0.3053
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.04454,
+     "phase_error": {
+      "learn": 0.07017,
+      "noisy": 0.00066,
+      "shift": 0.17614,
+      "noisy2": 0.00068
+     },
+     "final_error": 0.00053,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.05457,
+     "phase_error": {
+      "learn": 0.08843,
+      "noisy": 0.00053,
+      "shift": 0.21674,
+      "noisy2": 0.0005
+     },
+     "final_error": 0.00043,
+     "mean_p": 0.35714,
+     "mean_p_phase": {
+      "learn": 0.3571,
+      "noisy": 0.3571,
+      "shift": 0.3571,
+      "noisy2": 0.3571
+     }
+    }
+   },
+   "14": {
+    "candidate": {
+     "primary": 0.00929,
+     "mean_p": 0.34816,
+     "mean_p_phase": {
+      "learn": 0.4308,
+      "noisy": 0.304,
+      "shift": 0.3976,
+      "noisy2": 0.3043
+     }
+    },
+    "v13": {
+     "primary": 0.00929,
+     "phase_error": {
+      "learn": 0.03767,
+      "noisy": 0.0003,
+      "shift": 0.03609,
+      "noisy2": 0.00048
+     },
+     "final_error": 0.00064,
+     "mean_p": 0.34816,
+     "mean_p_phase": {
+      "learn": 0.4308,
+      "noisy": 0.304,
+      "shift": 0.3976,
+      "noisy2": 0.3043
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.00979,
+     "phase_error": {
+      "learn": 0.0696,
+      "noisy": 0.00048,
+      "shift": 0.0375,
+      "noisy2": 0.00068
+     },
+     "final_error": 0.0008,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.01237,
+     "phase_error": {
+      "learn": 0.0875,
+      "noisy": 0.00035,
+      "shift": 0.04823,
+      "noisy2": 0.00053
+     },
+     "final_error": 0.0007,
+     "mean_p": 0.34816,
+     "mean_p_phase": {
+      "learn": 0.3482,
+      "noisy": 0.3482,
+      "shift": 0.3482,
+      "noisy2": 0.3482
+     }
+    }
+   },
+   "15": {
+    "candidate": {
+     "primary": 0.01361,
+     "mean_p": 0.35482,
+     "mean_p_phase": {
+      "learn": 0.4294,
+      "noisy": 0.304,
+      "shift": 0.4322,
+      "noisy2": 0.3045
+     }
+    },
+    "v13": {
+     "primary": 0.01361,
+     "phase_error": {
+      "learn": 0.03012,
+      "noisy": 0.00037,
+      "shift": 0.05322,
+      "noisy2": 0.00049
+     },
+     "final_error": 0.00066,
+     "mean_p": 0.35482,
+     "mean_p_phase": {
+      "learn": 0.4294,
+      "noisy": 0.304,
+      "shift": 0.4322,
+      "noisy2": 0.3045
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.01236,
+     "phase_error": {
+      "learn": 0.07029,
+      "noisy": 0.00055,
+      "shift": 0.0477,
+      "noisy2": 0.00065
+     },
+     "final_error": 0.00092,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.01599,
+     "phase_error": {
+      "learn": 0.08919,
+      "noisy": 0.00043,
+      "shift": 0.06256,
+      "noisy2": 0.00055
+     },
+     "final_error": 0.00075,
+     "mean_p": 0.35482,
+     "mean_p_phase": {
+      "learn": 0.3548,
+      "noisy": 0.3548,
+      "shift": 0.3548,
+      "noisy2": 0.3548
+     }
+    }
+   },
+   "16": {
+    "candidate": {
+     "primary": 0.01101,
+     "mean_p": 0.35412,
+     "mean_p_phase": {
+      "learn": 0.4278,
+      "noisy": 0.304,
+      "shift": 0.4305,
+      "noisy2": 0.3043
+     }
+    },
+    "v13": {
+     "primary": 0.01101,
+     "phase_error": {
+      "learn": 0.02178,
+      "noisy": 0.00055,
+      "shift": 0.04258,
+      "noisy2": 0.00035
+     },
+     "final_error": 0.00025,
+     "mean_p": 0.35412,
+     "mean_p_phase": {
+      "learn": 0.4278,
+      "noisy": 0.304,
+      "shift": 0.4305,
+      "noisy2": 0.3043
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.01172,
+     "phase_error": {
+      "learn": 0.05561,
+      "noisy": 0.00082,
+      "shift": 0.04468,
+      "noisy2": 0.00057
+     },
+     "final_error": 0.00032,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.01391,
+     "phase_error": {
+      "learn": 0.07176,
+      "noisy": 0.00064,
+      "shift": 0.05393,
+      "noisy2": 0.00042
+     },
+     "final_error": 0.00028,
+     "mean_p": 0.35412,
+     "mean_p_phase": {
+      "learn": 0.3541,
+      "noisy": 0.3541,
+      "shift": 0.3541,
+      "noisy2": 0.3541
+     }
+    }
+   },
+   "17": {
+    "candidate": {
+     "primary": 0.04118,
+     "mean_p": 0.35738,
+     "mean_p_phase": {
+      "learn": 0.4312,
+      "noisy": 0.3041,
+      "shift": 0.4423,
+      "noisy2": 0.3053
+     }
+    },
+    "v13": {
+     "primary": 0.04118,
+     "phase_error": {
+      "learn": 0.04031,
+      "noisy": 0.00029,
+      "shift": 0.1636,
+      "noisy2": 0.00054
+     },
+     "final_error": 9e-05,
+     "mean_p": 0.35738,
+     "mean_p_phase": {
+      "learn": 0.4312,
+      "noisy": 0.3041,
+      "shift": 0.4423,
+      "noisy2": 0.3053
+     }
+    },
+    "fixed_conservative": {
+     "primary": 0.04165,
+     "phase_error": {
+      "learn": 0.07237,
+      "noisy": 0.00049,
+      "shift": 0.1649,
+      "noisy2": 0.00072
+     },
+     "final_error": 0.00015,
+     "mean_p": 0.45,
+     "mean_p_phase": {
+      "learn": 0.45,
+      "noisy": 0.45,
+      "shift": 0.45,
+      "noisy2": 0.45
+     }
+    },
+    "fixed_matched": {
+     "primary": 0.04907,
+     "phase_error": {
+      "learn": 0.08755,
+      "noisy": 0.00036,
+      "shift": 0.19498,
+      "noisy2": 0.00058
+     },
+     "final_error": 0.0001,
+     "mean_p": 0.35738,
+     "mean_p_phase": {
+      "learn": 0.3574,
+      "noisy": 0.3574,
+      "shift": 0.3574,
+      "noisy2": 0.3574
+     }
+    }
+   }
+  }
+ },
+ "means": {
+  "noisy": {
+   "candidate": 0.06713,
+   "v13": 0.07574,
+   "fixed_conservative": 0.06668,
+   "fixed_matched": 0.07209
+  },
+  "clean": {
+   "candidate": 0.0237,
+   "v13": 0.0237,
+   "fixed_conservative": 0.02401,
+   "fixed_matched": 0.02918
+  }
+ },
+ "criteria": {
+  "noisy_beats_v13": 5,
+  "noisy_beats_fixed": {
+   "fixed_conservative": 2,
+   "fixed_matched": 4
+  },
+  "clean_worse_than_v13": 0
+ },
+ "verdict": "FAIL",
+ "claim_limit": "synthetic NLMS learner, harness features, BOOT constants; isolated candidate, neuromod.py unchanged"
+}

@@ -1,0 +1,158 @@
+{
+ "prereg": {
+  "schema": "ABLATION_APLANE_GATE_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "turns": 3000,
+  "p_teacher_available": 0.9,
+  "scaffold_accuracy": 0.6,
+  "student_accuracy": ".70 -> .95 over 500 turns, then two drops to .50 for 150 turns (starts after 800)",
+  "user_promote_every": 100,
+  "primary": "accuracy on teacher-unavailable turns after turn 100",
+  "win_rule": "gated beats always, never and rate_only in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+ },
+ "per_seed": {
+  "13": {
+   "gated": {
+    "primary": 0.68914,
+    "fallback_turns": 267
+   },
+   "always": {
+    "primary": 0.89513,
+    "fallback_turns": 267
+   },
+   "never": {
+    "primary": 0.603,
+    "fallback_turns": 267
+   },
+   "rate_only": {
+    "primary": 0.7603,
+    "fallback_turns": 267
+   }
+  },
+  "14": {
+   "gated": {
+    "primary": 0.7028,
+    "fallback_turns": 286
+   },
+   "always": {
+    "primary": 0.84965,
+    "fallback_turns": 286
+   },
+   "never": {
+    "primary": 0.63636,
+    "fallback_turns": 286
+   },
+   "rate_only": {
+    "primary": 0.77622,
+    "fallback_turns": 286
+   }
+  },
+  "15": {
+   "gated": {
+    "primary": 0.7082,
+    "fallback_turns": 305
+   },
+   "always": {
+    "primary": 0.90164,
+    "fallback_turns": 305
+   },
+   "never": {
+    "primary": 0.62623,
+    "fallback_turns": 305
+   },
+   "rate_only": {
+    "primary": 0.7377,
+    "fallback_turns": 305
+   }
+  },
+  "16": {
+   "gated": {
+    "primary": 0.69079,
+    "fallback_turns": 304
+   },
+   "always": {
+    "primary": 0.87171,
+    "fallback_turns": 304
+   },
+   "never": {
+    "primary": 0.57237,
+    "fallback_turns": 304
+   },
+   "rate_only": {
+    "primary": 0.76974,
+    "fallback_turns": 304
+   }
+  },
+  "17": {
+   "gated": {
+    "primary": 0.71761,
+    "fallback_turns": 301
+   },
+   "always": {
+    "primary": 0.89369,
+    "fallback_turns": 301
+   },
+   "never": {
+    "primary": 0.59136,
+    "fallback_turns": 301
+   },
+   "rate_only": {
+    "primary": 0.75415,
+    "fallback_turns": 301
+   }
+  }
+ },
+ "drops": {
+  "13": [
+   1860,
+   1560
+  ],
+  "14": [
+   1237,
+   1811
+  ],
+  "15": [
+   1655,
+   847
+  ],
+  "16": [
+   2280,
+   2721
+  ],
+  "17": [
+   2496,
+   2042
+  ]
+ },
+ "wins_of_5": {
+  "always": 0,
+  "never": 5,
+  "rate_only": 0
+ },
+ "summary": {
+  "gated": {
+   "mean": 0.7017,
+   "sd": 0.012
+  },
+  "always": {
+   "mean": 0.8824,
+   "sd": 0.0215
+  },
+  "never": {
+   "mean": 0.6059,
+   "sd": 0.0259
+  },
+  "rate_only": {
+   "mean": 0.7596,
+   "sd": 0.0149
+  }
+ },
+ "verdict": "PARTIAL",
+ "claim_limit": "synthetic agreement process, teacher assumed right, BOOT gate knobs; distillation head and reliance curve untested"
+}
