@@ -43,6 +43,27 @@ class MathTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as t:
             b.save(Path(t)/'a','s','r');b2=BB.Bridge.load(Path(t)/'a','s','r');self.assertEqual(b2.aux,2);self.assertTrue(np.array_equal(b2.logits(H,mask,Xr),L))
         b0=BB.Bridge(6,K=3,r=2,h=3,classes=2,seed=1);self.assertNotIn('Wa',b0.p);self.assertEqual(b0.aux,0)
+    def test_recv_cond_gradients_gate_closed_and_reload(self):
+        H,mask,Xr,y=toy(n=10,T=5,d=6);g=np.random.default_rng(4);A=g.normal(size=(10,2))
+        b=BB.Bridge(6,K=3,r=2,h=3,classes=2,seed=1,aux=2,recv_cond=Xr.shape[1]);b.fit_head(Xr,y,steps=5);b.in_mu=H.reshape(-1,6).mean(0);b.in_sd=H.reshape(-1,6).std(0)
+        for k in ('Wu','Wa','Wx','bx'):b.p[k]=g.normal(size=b.p[k].shape)
+        b.p['gamma']=np.array([-.4]);kw=dict(lam_var=.3,lam_cov=.2,lam_slot=.4,l2=1e-3,aux=A,lam_aux=.7);_,gr,_=b.loss_and_grads(H,mask,Xr,y,**kw)
+        for k in b.p:
+            flat=b.p[k].reshape(-1)
+            for i in range(min(4,flat.size)):
+                old=flat[i];flat[i]=old+1e-5;lp=b.loss_and_grads(H,mask,Xr,y,**kw)[0];flat[i]=old-1e-5;lm=b.loss_and_grads(H,mask,Xr,y,**kw)[0];flat[i]=old
+                self.assertAlmostEqual(gr[k].reshape(-1)[i],(lp-lm)/2e-5,places=4,msg=k)
+        W,bb=b.head;self.assertTrue(np.array_equal(b.logits(H,mask,Xr,gate_open=False),Xr@W+bb))  # old task untouched when the gate is closed
+        L=b.logits(H,mask,Xr);self.assertFalse(np.array_equal(L,Xr@W+bb))
+        with tempfile.TemporaryDirectory() as t:
+            b.save(Path(t)/'a','s','r');b2=BB.Bridge.load(Path(t)/'a','s','r');self.assertEqual(b2.recv_cond,Xr.shape[1]);self.assertTrue(np.array_equal(b2.logits(H,mask,Xr),L))
+        b0=BB.Bridge(6,K=3,r=2,h=3,classes=2,seed=1);self.assertNotIn('Wx',b0.p);self.assertEqual(b0.recv_cond,0)
+        n=40;H,mask,Xr,y=toy(n=n,T=5,d=6);b=BB.Bridge(6,K=3,r=2,h=3,classes=2,seed=1,recv_cond=Xr.shape[1]);b.fit_head(Xr,y,steps=5)
+        b.fit(H,mask,Xr,y,epochs=2,batch=16);b.refit_readout(H[:30],mask[:30],Xr[:30],y[:30],Xr[30:],H[30:],mask[30:],y[30:])
+        g=b.gate();Fe=np.c_[Xr,g*(BB.to_bf16(b.encode(H,mask)).reshape(n,-1)@b.p['Pr'])];W,bb=b.head
+        self.assertTrue(np.allclose(b.logits(H,mask,Xr)-(Xr@W+bb),Fe[:,Xr.shape[1]:]@b.p['Wu']+g*(Xr@b.p['Wx']+b.p['bx'])))
+        self.assertTrue(np.array_equal(b.logits(H,mask,Xr,gate_open=False),Xr@W+bb))
+        with self.assertRaises(ValueError):BB.Bridge(6,K=3,r=2,h=3,classes=2).refit_readout(H,mask,Xr,y,Xr,H,mask,y)
     def test_cka(self):
         X=np.random.default_rng(0).normal(size=(50,4));self.assertAlmostEqual(BB.linear_cka(X,X@np.diag([2,1,3,1])),BB.linear_cka(X,X@np.diag([2,1,3,1])))
         self.assertAlmostEqual(BB.linear_cka(X,X),1.,places=6);self.assertLess(BB.linear_cka(X,np.random.default_rng(1).normal(size=(50,4))),.3)

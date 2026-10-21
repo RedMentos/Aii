@@ -1,3 +1,11 @@
+# Aktuell 2026-10-21 (Thread „B3 L1 escalate apologize“): L1 PASS auf escalate, apologize knapp FAIL
+
+Ursache der escalate/apologize-FAILs gefunden: eingefrorener NO_MESSAGE-Kopf kann die Empfänger-private Tatsache (Kapazität/Kunde) nicht zur Nachricht passend gewichten (kostet selbst mit echtem U/F 8–9 Punkte). Fix `Bridge(recv_cond)` + `refit_readout` (Standard aus). Vorregistrierter Versuch 5 auf frischer Saat 20261105: **escalate Kanon-L1 PASS** (90,5 vs Attribut-Wörter 84,7), apologize FAIL (89,0 vs 88,5, n.s.), action-PASS aus Versuch 4 **nicht repliziert** (86,7 vs Label 83,5, n.s.). L2-SHADOW nur für private/escalate erlaubt. Belege `bench-results/b3-l1-escapo-diagnose-20261021/`, `bench-results/b3-l1-v5-20261021/`, Branch `claude/project-thread-yub2lf` (auf c122qc / PR #20).
+
+# Aktuell 2026-10-21 (Thread „Z2b STEP2 mit mehreren Seeds“): Rauschband + gezielte Fragen — Gate FAIL, Frage hilft
+
+Vorregistrierter Lauf (C/D/CQ/DQ × Seeds 14–16, 840 Zeilen, echte Modelle, Linux-Cloud): `Z2B_DIVERGENCE_NOT_SUPPORTED`. Z2-Abstände lagen im Rauschband. Eine feste gezielte Frage an die Körper hebt den Werkzeug-Nutzen um +.23 (CI > 0), vor allem weil B1 dann die Optionswerte zitiert; B2 zitiert die alte Regel weiter selten (Engpass). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2b-seeds/BEFUND.md`, Branch `claude/project-thread-s439sv`.
+
 # Aktuell 2026-10-21 (Thread „Nächste Pakete R“): B3 L1 Versuch 4 PASS auf action + Schlüsseltrennung der schnellen Spur
 
 - **WP-Z4 B3 L1 Versuch 4** (vorregistriert `eaf49b7`, frische Saat 20261021, neue B1/B2-Zustände, `aux`-Brücke): **Kanon-L1 PASS auf `private/action`** (LATENT 90,0 % vs SYMBOLIC 81,5 / Attribut-Wörter 76,7 / SCALAR 85,2; Rollen-Verlust 0, OOD 1,3 %). escalate/apologize FAIL. Folge: nur L2-Prefix-SHADOW für `private/action` erlaubt (nächstes Paket Z4b), Autorität 0, Runtime unverändert. `bench-results/b3-l1-v4-20261021/`.
@@ -170,3 +178,7 @@ Frischer Seed 29: 25/30 statt 13 (p 0,0018), Werte 30/30. R4-Werkzeugkette (Teil
 ## Merge-Hinweis 2026-10-13 13:05Z Thread K (GPT/Codex arbeitet parallel)
 
 Nutzerhinweis: GPT arbeitet am selben Code weiter. Stand: Branch `claude/project-thread-s0290g` (HEAD `42a28dd`) hat keine fremden Commits. `origin/codex/continuation-review-20261013` (GPT/Codex, letzter Commit `5a69538`) baut auf Thread M auf und enthält Thread Ks R4-Werkzeug **nicht**. Beim Zusammenführen betroffen: `v13/toolstep.py` (Thread K: `_propose_list`, `shadow`, `layer`, `LIST_*`; Thread M: `propose_note_edit`, `_forecast`), `v13/agi/tools.py` (eine `list_arith`-Registrierung), `v13/transaction.py` (WP-W2c-`text`-Typ, identisch zu W2c), `v13/broker.py` (`correction_text` für `list_arith`), neu `v13/agi/listarith.py`. Der geteilte Ordner `/mnt/project-files/v13/code` enthält beide Seiten schon zusammengeführt und getestet (Referenz). Nichts überschreiben, kein Force-Push; Konflikte beidseitig erhalten.
+
+## Ergänzung 2026-10-21 Thread „Z5b Koalition mit Platzmangel“: WP-Z5b gemessen — G-FOCAL-CAPACITY-003 bleibt PARTIAL
+
+Vorregistriert (`bench-results/z5b-capacity-20261021/PREREGISTRATION.md`), `scripts/z5b_capacity.py`, 5 Tests. 60 neue Aufgaben mit je 6 gespeicherten Notizen, Effort max, 4 Plätze, 5 Läufe: Platzgrenze greift in 300/300 Turns (9 Kandidaten), 11 Verdrängungen. Bestanden/300: ausgeliefert 68, Koalition als Engpass 60, Voll-Kontext 54, feste Slots 55, Retrieval 64, ohne Kontext 47; Koalition vs. Voll-Kontext 33:27 p = 0,52, Rauschband 4 → FAIL. Eigenschaft 4 (Aufnahme nur über Salienz) tritt nie auf. Ursache: Notiz-Priorität kennt keine Aktualität/Ersetzung. Wichtig für Folgearbeit: im ausgelieferten Pfad gehen abgerufene Notizen an der Koalition vorbei in die Antwort (ACTIVE_VIEW); die Koalition filtert nur Körper-Angebote. Cloud-Home: `python3 -m v13.bootstrap --home DIR` (ca. 3 min).
