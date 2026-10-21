@@ -5,6 +5,23 @@ Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STA
 `status/completion-ledger.json`, `code/specs/component-contracts.json`,
 `code/docs/REMAINING_IMPLEMENTATION.md`. Kein Code wurde für diese Roadmap geändert.
 
+## Nachtrag 22.10.2026: Body-Lernpfad prüfen, Promptverlust begrenzen
+
+Isoliertes Codex-Paket auf `codex/learning-path-audit-20261022`, Basis `9436eb7`:
+read-only Lernpfad-Auditor und ausdrücklich auszuwählender Promptgrenzen-Kandidat,
+keine Änderung der eingefrorenen Runtime. 34 fokussierte Tests bestanden. In 14
+archivierten AG6-Läufen steigt die latente Kosinusmetrik trotz JEPA-Gewicht 0;
+daraus folgt kein JEPA-Beitrag. Promptverlust am echten `_encode` reproduziert,
+Kandidat lehnt betroffene Paare ab und nutzt einen eigenen hashgebundenen
+Checkpointordner. Keine neue native Lern-/Redmi-Messung, keine Gate-Beförderung.
+Details und geschlossene Belege: `code/docs/LEARNING_PATH_AUDIT_20261022.md` und
+`code/docs/proofs/continuation-20261022/learning-path-audit/`.
+
+Offen: Komponenten-Gradienten und Nutzen am vorgesehenen Body-Pfad in neuer
+gebundener Kohorte nachweisen. Der vollständige gekoppelte Funktionsumfang
+bleibt Ziel; Einzeltests helfen beim Eingrenzen und ersetzen ihn nicht.
+Dieses Paket ergänzt WP-Z12/STEP6 und überschreibt keine übrigen Arbeitspakete.
+
 ## 0. Ziele und Stand nach Blueprint (Zielabgleich 2026-10-21) — GILT VOR §1–§4
 
 Die Abschnitte 1–4 unten sind der Stand vom 09.10. und bleiben nur als Verlauf stehen (IH-H0). Sie sind teils überholt
