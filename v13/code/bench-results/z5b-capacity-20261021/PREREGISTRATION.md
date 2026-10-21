@@ -48,3 +48,8 @@ Zahl der CAPACITY-Ablehnungen; Mischung der Koalition (Notizen vs. Körper).
 Generierte englische Aufgaben, eine Saat, Regex nur auf der Endantwort, lexikalischer Recall statt Embedding, gierige
 Bench-Dekodierung, Cloud-CPU statt Redmi, `coalition_gated` ist eine Wiedergabe (im ausgelieferten Pfad gehen Notizen an der
 Koalition vorbei). Ein Probelauf mit 4 Aufgaben × 1 Lauf zählt nicht; Änderungen danach nur als Nachtrag vor dem Hauptlauf.
+
+## Nachtrag nach dem Probelauf (2026-10-21, vor dem Hauptlauf, keine Regeländerung)
+Probelauf 4 Aufgaben × 1 Lauf (zählt nicht): in allen 4 Turns 9 Kandidaten für 4 Plätze, 4–5 CAPACITY-Ablehnungen je Turn,
+Koalition 2–3 Notizen + 1–2 Körper; Wiedergabe-Treue 4/4. Ersetzung (Verdrängung) und Salienz-Interrupt traten im Probelauf
+nicht auf. Hauptlauf 5 × 60 mit unveränderten Aufgaben, Armen und Entscheidungsregeln gestartet.
