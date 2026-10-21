@@ -1212,6 +1212,11 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Engpass jetzt B2: zitiert die alte Regel nur in ~¼ der Zeilen, mit oder ohne Frage. Befund `code/docs/proofs/continuation-20261021/step2-z2b-seeds/BEFUND.md`.
 - Offen: (a) Nutzerentscheidung: gezielte B1-Frage als Schalter (aus) in den Live-Pfad; (b) neues Paket „B2 liefert Regel-Zitat“; (c) `cognition.offer` soll `cfg['seed']` übergeben.
 
+### WP-Z2c Gezielte Körper-Frage als Live-Schalter — ERLEDIGT 2026-10-21, Standard aus (Thread „B1-Frage als Schalter“, Branch `claude/project-thread-4ttld7`)
+- Schalter `body_question_b1` / `body_question_b2` (Text ≤ 400 Zeichen, `''` = aus = live byte-gleich; Kettenglied `integrated_candidates.body_question`; Tests `test_body_question.py`). Re-Entry-Fokus gewinnt immer. Suite 1608, nur bekannter Altfehler `test_neuro_ledger`.
+- Bestätigungslauf Seed 14 (`scripts/step2_z2c_switch.py`, kein Gate): Schalter beide both_exact .592 (ohne .375, Z2b-Patch .675), nur B1 .450; b1_only .275 → .575; B1-Optionszitate 18 → 52; 0 falsch in 140 Werkzeug-Zeilen. Befund `code/docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md`.
+- Offen: Nutzerentscheidung Einschalten (nur sinnvoll für STEP2-artige Aufgaben, Frage ist aufgabenspezifisch); allgemeine Frage für Chat ungemessen; B2-Regelzitat-Paket; Seed-Bug `cognition.offer`.
+
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
