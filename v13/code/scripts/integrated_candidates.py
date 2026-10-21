@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -242,6 +242,70 @@ def b1_recent(text):
     return t
 
 
+B2_QUOTE_HELPERS = """_ANCHOR_STOP=frozenset('a an the of for and or is are be to in on at with by from this that it its has have as'.split())
+def _anchor_tokens(s):
+    out=set()
+    for w in re.findall(r'[a-z]+|\\d+',s.casefold()):
+        if w not in _ANCHOR_STOP:out.add(w[:-1] if not w.isdigit() and len(w)>3 and w.endswith('s') else w)
+    return out
+def sentence_spans(source):return [(m.start(),m.end()) for m in re.finditer(r'\\S.*?(?:[.!?](?=\\s|$)|$)',source,re.S)]
+def anchor_span(quote,sources,min_cover=.6,max_sentences=3):
+    \"\"\"WP-Z2c (cfg b2_quote_select='anchor'): a B2 quote that matches no source (Qwen B2 paraphrased the earlier rule,
+    'Project X has a budget of 100 euros', in ~1/3 of Z2b offers) points at the 1..max_sentences consecutive source
+    sentences that hold every number of the quote and >= min_cover of its content words. (source index,start,end) or
+    None; None also when the best cover is tied across different sources. Only exact source text is ever transported.\"\"\"
+    q=_anchor_tokens(quote) if isinstance(quote,str) else set()
+    if len(q)<3:return None
+    nums={w for w in q if w.isdigit()};found=[]
+    for si,src in enumerate(sources):
+        ss=sentence_spans(src)
+        for i in range(len(ss)):
+            for k in range(i,min(i+max_sentences,len(ss))):
+                a,b=ss[i][0],ss[k][1];t=_anchor_tokens(src[a:b])
+                if nums<=t and len(q&t)/len(q)>=min_cover:found.append((len(q&t)/len(q),a-b,si,a,b))
+    if not found:return None
+    found.sort(reverse=True);top=found[0]
+    if any(x[0]==top[0] and x[2]!=top[2] for x in found[1:]):return None
+    return top[2],top[3],top[4]
+def quote_choices(sources,cap=24):
+    \"\"\"WP-Z2c (cfg b2_quote_select='pointer'): the exact sentences of the given sources, in order, as (source index,
+    start,end); the body answers with their numbers instead of copying text.\"\"\"
+    return [(si,a,b) for si,src in enumerate(sources) for a,b in sentence_spans(src)][:cap]
+"""
+B2_QUOTE_QUERY = "        select=self.r.cfg.get('b2_quote_select','off') if role=='B2_GIST' and policy=='B2_GIST' else 'off'\n        choice_sources=[text]+[x['native_context']['exact_source_excerpt'] for x in context];choices=quote_choices(choice_sources) if select=='pointer' else []\n        if choices:  # WP-Z2c: select exact sentences by number instead of copying them\n            query['quote_choices']=[{'id':n+1,'text':choice_sources[si][a:b]} for n,(si,a,b) in enumerate(choices)]\n            instructions+=' quote_choices are numbered exact sentences of the current source and the earlier source excerpts. quotes are the ids of at most two choices that carry the source rules your summary needs; their exact text is copied for you.'\n"
+
+
+def b2_quote_select(text):
+    """2026-10-21 WP-Z2c: cfg b2_quote_select off|anchor|pointer (off = previous behaviour). B2 quoted the earlier rule in
+    only ~1/4 of STEP2 offers; most misses were paraphrases or broken copies of the right sentence. anchor maps such a
+    quote to the exact source sentences it paraphrases; pointer lets B2 pick numbered exact sentences."""
+    if 'def anchor_span(' in text:
+        raise ValueError('Integrated anchor changed: b2_quote_select already applied')
+    t = _replace(text, 'class Cognition:\n', B2_QUOTE_HELPERS+'class Cognition:\n')
+    t = _replace(t, "        if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:\n", B2_QUOTE_QUERY+"        if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:\n")
+    t = _replace(t, "        runner=None;started=time.monotonic();attempt_status='ERROR'\n",
+                 "        schema=offer_schema(self.r.cfg['observer_tokens'],**({'quote_min_chars':q} if (q:=self.r.cfg.get('offer_quote_min_chars',0)) else {}))\n"
+                 "        if choices:schema['properties']['quotes']['items']={'type':'integer','enum':list(range(1,len(choices)+1))}\n"
+                 "        runner=None;started=time.monotonic();attempt_status='ERROR'\n")
+    t = _replace(t, "self.r.cfg['observer_tokens'],offer_schema(self.r.cfg['observer_tokens'],**({'quote_min_chars':q} if (q:=self.r.cfg.get('offer_quote_min_chars',0)) else {}))));attempt_status='FINAL'",
+                 "self.r.cfg['observer_tokens'],schema));attempt_status='FINAL'")
+    t = _replace(t, "        wide=self.r.cfg.get('offer_quote_context_chars',0)\n",
+                 "        wide=self.r.cfg.get('offer_quote_context_chars',0);selected=None\n"
+                 "        if select!='off':selected={'mode':select,'choices':len(choices),'raw_quotes':list(obj['quotes'][:3]),'picked':None,'anchored':0}\n"
+                 "        if choices:  # ids -> exact sentence text; an id outside the list is dropped\n"
+                 "            selected['picked']=[x for x in obj['quotes'] if isinstance(x,int) and not isinstance(x,bool) and 1<=x<=len(choices)]\n"
+                 "            obj['quotes']=[choice_sources[choices[x-1][0]][choices[x-1][1]:choices[x-1][2]] for x in selected['picked']]\n"
+                 "        elif select=='anchor':\n"
+                 "            for n,quote in enumerate(obj['quotes'][:3]):\n"
+                 "                if any(quote_span(quote,source,wide) for source,_ in sources):continue\n"
+                 "                hit=anchor_span(quote,[source for source,_ in sources])\n"
+                 "                if hit:obj['quotes'][n]=sources[hit[0]][0][hit[1]:hit[2]];selected['anchored']+=1\n")
+    t = _replace(t, "        p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])\n",
+                 "        p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])\n"
+                 "        if selected:p['b2_quote_select']=selected\n")
+    return t
+
+
 def _later(sources):
     return b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))
 
@@ -292,7 +356,7 @@ def rebase(texts, root=ROOT):
     out = _chain(full)
     out = {k: (out[k] if k in NAMES else v) for k, v in texts.items()}
     if 'v13/cognition.py' in out:  # cognition.py is bound exactly by source_handoff_candidate, not by NAMES
-        out['v13/cognition.py'] = b1_recent(quote_context(b2_offer(out['v13/cognition.py'])))
+        out['v13/cognition.py'] = b2_quote_select(b1_recent(quote_context(b2_offer(out['v13/cognition.py']))))
     return out
 
 
