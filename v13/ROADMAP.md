@@ -1204,6 +1204,14 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Engpass jetzt: Auswahl im Körper (B2 zitiert die alte Regel 16/70, beide Infos in einer Zeile im Zwei-Körper-Arm nie). Schalter bleibt aus. Befund `code/docs/proofs/continuation-20261021/step2-z2-timescale/BEFUND.md`.
 - Offen (neu vorregistrieren): Wiederholungen C/D mit 3–5 Seeds (Rauschband); gezielte JEF-Rückfrage „zitiere Regel/Optionen“; Qwen- vs. LFM-B2 als gebundene Modellfrage.
 
+### WP-Z2b STEP2 Rauschband + gezielte Körper-Fragen (Cloud, Modelle) — ERLEDIGT 2026-10-21, Gate FAIL (Thread „Z2b STEP2 mit mehreren Seeds“, Branch `claude/project-thread-s439sv`)
+- Vorregistriert (`f5b9d03`, vor dem Lauf). Arme C/D (wie Z2) und CQ/DQ (+ feste gezielte Frage über `jef_query`, nur aktuelle Runde: B2 „frühere Regeln zitieren“, B1 „Optionswerte zitieren“) × Seeds 14/15/16 = 840 Zeilen + Werkzeug-Replay, alle RECORDED. Fund vorab: Körper-Angebote ignorierten `cfg['seed']` (immer 13), im Skript behoben, Live-Code unverändert.
+- **Urteil `Z2B_DIVERGENCE_NOT_SUPPORTED`:** CQ both_exact .611 vs b1_only .592, +.019 [CI −.075, +.106]; Kontrollen nicht geschlagen; ein Körper + zwei Zustände gleich gut (§99: nein).
+- **Z2 war Rauschen:** C both_exact schwankt über Seeds .308–.450; Qwen- vs. LFM-B2 NO_CLEAR_DIFFERENCE.
+- **Gezielte Frage hilft klar:** +.233 [+.122, +.344] (zwei Körper), +.228 [+.100, +.378] (ein Körper); B1 liefert Optionswerte 63 → 170/210 Zeilen. 0 falsch festgelegt in 840 Zeilen.
+- Engpass jetzt B2: zitiert die alte Regel nur in ~¼ der Zeilen, mit oder ohne Frage. Befund `code/docs/proofs/continuation-20261021/step2-z2b-seeds/BEFUND.md`.
+- Offen: (a) Nutzerentscheidung: gezielte B1-Frage als Schalter (aus) in den Live-Pfad; (b) neues Paket „B2 liefert Regel-Zitat“; (c) `cognition.offer` soll `cfg['seed']` übergeben.
+
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
