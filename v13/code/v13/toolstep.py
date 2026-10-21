@@ -104,6 +104,8 @@ class ToolStep:
         from .agi import listarith
         op=listarith.operation(text)
         if not op or 'list_arith' not in self._registry().box.load()[0]['enabled']:return None  # the C3 read costs a model call: only after the user enabled the tool
+        from .prohibitions import verdict
+        if verdict(self.r.store,self._registry().tools['list_arith'])['blocked']:return None  # prohibited / Notaus: no model read either
         try:
             values=listarith.read_values(self.r.pool.get('C3_LANGUAGE'),text,self.r.cancel_event,time.monotonic()+LIST_READ_SECONDS)
             listarith.compute(op,values,text)  # guard before proposing: every value must be an exact number of the user text
@@ -135,6 +137,8 @@ class ToolStep:
         """Thread Q: Option A/B decision (BOOT wording rule) -> C3 copies typed values -> eligibility proposal."""
         from .agi import eligibility
         if not eligibility.question(text) or 'eligibility' not in self._registry().box.load()[0]['enabled']:return None  # C3 read costs a model call: only after the user enabled the tool
+        from .prohibitions import verdict
+        if verdict(self.r.store,self._registry().tools['eligibility'])['blocked']:return None  # prohibited / Notaus: no read either
         hist,quotes=self.earlier_parts(e,offers,version);earlier=hist+quotes
         try:
             if self.r.cfg.get('eligibility_reader','c3')=='fixed':values=eligibility.fixed_read(text,hist,quotes)  # 2026-10-21 user decision: no language model reads rules
@@ -169,6 +173,7 @@ class ToolStep:
         """Refused by policy: compute pure READ_LOCAL tools off-path for later agreement; never shown, never a fact.
         Never when a user rule forbids it or asks to be asked first (2026-10-21): not even off-path."""
         if p['risk']!='READ_LOCAL' or p['tool'] not in ('calc','list_arith','eligibility') or 'USER_RULE' in str(p.get('reason','')):return None
+        if str(p.get('reason') or '').startswith('HARD_BLOCK:'):return None  # a prohibited tool is not run in the background either
         try:
             from .agi.tools import calc
             from .agi import listarith,eligibility

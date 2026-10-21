@@ -85,15 +85,20 @@ def scrub(x,values):
         if v:s=s.replace(json.dumps(v)[1:-1],'[REDACTED]')
     return json.loads(s)
 
-def authorize(spec,args,origin,enabled,age_ok,confirmed=False):
-    """IH-H29 pipeline up to C5 authorization. Returns (decision, reason, steps); decision APPROVED|PROPOSED|DENIED."""
+def authorize(spec,args,origin,enabled,age_ok,confirmed=False,hard=None):
+    """IH-H29 pipeline up to C5 authorization. Returns (decision, reason, steps); decision APPROVED|PROPOSED|DENIED.
+    hard: prohibitions.verdict() -> the user's hard rules come first and beat every later step, also a confirmation."""
     steps=[]
+    if hard is not None:
+        steps.append(['hard_rules',not hard.get('blocked')])
+        if hard.get('blocked'):return 'DENIED',hard['blocked'],steps
     bad=check_args(getattr(spec,'schema',None),args);steps.append(['schema',not bad])
     if bad:return 'DENIED','SCHEMA:'+','.join(bad[:4]),steps
     steps.append(['capability',enabled])
     if not enabled:return 'DENIED','TOOL_NOT_ENABLED_BY_USER',steps
     need=spec.risk in CONFIRM_ALWAYS or not spec.reversible;steps.append(['risk',spec.risk+('' if spec.reversible else '+IRREVERSIBLE')])
     if need and not confirmed:steps.append(['confirmation',False]);return 'PROPOSED','NEEDS_PER_CALL_APPROVAL',steps
+    if hard is not None and hard.get('announce') and not confirmed:steps.append(['announce',False]);return 'PROPOSED','ANNOUNCE_BEFORE_ACTION',steps
     steps.append(['confirmation',True if need else 'not_required'])
     steps.append(['c5',age_ok or confirmed])
     if not (age_ok or confirmed):return 'DENIED','AGE_RIGHT:'+spec.right,steps
@@ -153,7 +158,13 @@ class Transactions:
         return self._write(lambda st:dict(self._move(st,tid,'COPY_COMMITTED',intent_packet=intent['packet_id'],corollary_packet=copy['packet_id'])),
                            [('ActionIntent',intent),('CorollaryCopy',copy)])
     def execute(self,tid,fn):
-        """Persist EXECUTING, run the side effect, persist the outcome. Returns the final transaction."""
+        """Persist EXECUTING, run the side effect, persist the outcome. Returns the final transaction.
+        Last gate: the user's hard prohibitions / Notaus are read again right before the effect (an undo only restores)."""
+        t=self.get(tid)
+        if t and not str(t['tool']).endswith('.undo'):
+            from .prohibitions import blocked
+            why=blocked(self.s,t['tool'],t['risk'],t['reversible'])
+            if why:return self._write(lambda st:dict(self._move(st,tid,'CANCELLED',error=why)))
         self._write(lambda st:self._move(st,tid,'EXECUTING'))
         t=self.get(tid);start=time.monotonic();values=[];undo=None
         try:

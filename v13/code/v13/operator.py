@@ -14,6 +14,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
+:notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
 :feedback fact|style|preference <Korrektur> [--learn]
 :feedback route simple|detail|gist|both [--learn]
@@ -129,6 +130,12 @@ class Operator:
         if cmd=='tx':
             from .transaction import operator_command
             return operator_command(r,args)
+        if cmd=='verbot':
+            from .prohibitions import operator_command
+            return operator_command(r,args)
+        if cmd=='notaus':
+            from .prohibitions import notaus_command
+            return notaus_command(r,args)
         if cmd=='body':
             from .bodyport import operator_command
             return operator_command(r,args)
@@ -244,7 +251,7 @@ class Operator:
             if not last or '|' not in ' '.join(args):raise ValueError(':remember Thema | Korrektur; erst eine Antwort erzeugen')
             key,value=' '.join(args).split('|',1);return r.memory.feedback(last['event_id'],'fact',value.strip(),key=key.strip())
         if cmd=='requests':return dumps({'requests':s.rows('SELECT * FROM requests ORDER BY created DESC LIMIT 20'),'updates':s.rows('SELECT * FROM updates ORDER BY created DESC LIMIT 20')})
-        if cmd=='permissions':return dumps({'operator_command_origin':'TTY only','network':'explicit model setup/download only','model_tool_execution':False,'filesystem_tools_for_models':False,'registered_tools':'typed schema, user-enabled; write/network/external effects only after per-call human approval as WP-K transactions (:tx)','weight_commit':'validated artifact + individual operator approval','latent_injection':False,'natural_language_rules':'prompt guidance, no deterministic semantic guarantee','fixed_output_rules':'operator-approved exact full-query matching only; invalid active typed rules fail closed','semantic_neural_rule_checker':False})
+        if cmd=='permissions':return dumps({'operator_command_origin':'TTY only','network':'explicit model setup/download only','model_tool_execution':False,'filesystem_tools_for_models':False,'registered_tools':'typed schema, user-enabled; write/network/external effects only after per-call human approval as WP-K transactions (:tx)','weight_commit':'validated artifact + individual operator approval','latent_injection':False,'natural_language_rules':'prompt guidance, no deterministic semantic guarantee','hard_prohibitions':'typed :verbot rows + :notaus, exact match, checked before and again right before every tool effect; beat per-call approval','fixed_output_rules':'operator-approved exact full-query matching only; invalid active typed rules fail closed','semantic_neural_rule_checker':False})
         if cmd=='age':
             a=agectl.controller(r)
             if not args:return dumps(a.view())

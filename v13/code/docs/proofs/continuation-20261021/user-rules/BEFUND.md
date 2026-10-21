@@ -66,3 +66,7 @@ dazu: er macht aus erkannten Verboten ein hartes Nein und aus unklaren Sätzen e
 Holdout zuerst geschrieben und eingefroren, dann der Leser gebaut. Modell-Umformulierungen (B1 LFM2.5-1.2B,
 B2 Qwen3.5-0.8B, C3 LFM2.5-350M) wurden roh committet, von Hand geprüft (`audit*.json`) und erst danach dem Leser
 gegeben. Kopien und Fast-Kopien sind ausgeschlossen. Labels werden vom Holdout-Satz geerbt.
+
+Hinweis: Die Hashes in `freeze*.json` gelten für den Stand vor dem Zusammenführen mit WP-SAFE1 (Commit „User rules:
+round-2 result“). Danach ändern sich `agi/tools.py` und `toolstep.py`: feste `:verbot`/`:notaus`-Sperren
+(`HARD_BLOCK`) kommen zuerst, dann die gelesenen Nutzer-Regeln. Der Leser selbst (`userrules.py`) bleibt unverändert.

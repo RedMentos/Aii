@@ -67,8 +67,10 @@ class ToolRegistry:
         2026-10-21: then the user's own rules (v13/userrules.py, fixed reader): FORBID refuses even an approved call,
         "ask me first" or an unclear match turns an automatic run into a per-call proposal. Rules only ever add caution."""
         from ..transaction import authorize
+        from ..prohibitions import verdict
         st=self.box.load()[0]
-        status,why,steps=authorize(spec,args,origin,spec.name in st['enabled'],age_allows(self.age,spec.right,origin),confirmed)
+        status,why,steps=authorize(spec,args,origin,spec.name in st['enabled'],age_allows(self.age,spec.right,origin),confirmed,hard=verdict(self.s,spec))
+        if why.startswith('HARD_BLOCK:'):return status,why,steps  # typed :verbot / :notaus (WP-SAFE1) already refuse; keep their reason
         return self._user_rules(spec,args,confirmed,status,why,steps)
     def _user_rules(self,spec,args,confirmed,status,why,steps):
         from .. import userrules
@@ -133,6 +135,8 @@ class ToolRegistry:
             return dict(tx,status='DEDUPLICATED',reason='IDEMPOTENCY_KEY',action_tx=a['id'],result=a.get('result'),error=a.get('error'))
         T.commit_copy(a['id'],{'predicted':tx.get('predicted')})
         a=T.execute(a['id'],spec.fn)
+        if a['state']=='CANCELLED' and str(a.get('error') or '').startswith('HARD_BLOCK:'):  # last gate in Transactions.execute
+            return dict(tx,action_tx=a['id'],status='DENIED',reason=a['error'],result=None,error=None)
         tx.update(action_tx=a['id'],status='EXECUTED' if a['state']=='SUCCEEDED' else 'FAILED',result=a['result'],error=a['error'],duration_s=a.get('duration_s'))
         if self.on_outcome:
             if tx.get('event_id') and not self._turn_ended(tx['event_id']):  # IH-H13: an outcome inside a running turn stays provisional until that turn is FINAL
