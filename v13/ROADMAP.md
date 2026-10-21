@@ -1201,9 +1201,11 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Alle vier Kontrollen aus G-B-TIMESCALE-DIVERGENCE-001: gleiches Modell gleiche Policy, gleiches Modell nur anderer Prompt, ein Körper + zwei Zustände, zwei Körper. Zitat-Kontext an und aus.
 - Entscheidet §99 „zwei Bodies lohnen die Handy-Kosten“. Wenn ein Körper + zwei Zustände gleich gut ist, darf das Redmi das billigere nutzen (Blueprint erlaubt das ausdrücklich).
 
-### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
-- Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
-- Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
+### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — ERLEDIGT 2026-10-21 (Thread „Z3 C3-Konsument isolieren“, Branch `claude/project-thread-xiuwmf`)
+- Vorregistriert vor dem Lauf, 39 private Fixtures × 3 Seeds × 7 Arme, gleiche Exakt-Quellen an alle; Beleg `code/docs/proofs/continuation-20261021/z3-c3-consumer/BEFUND.md`.
+- Urteil laut Regel: **NO_CONSUMER_PATH** (kein Arm ≥ 0.80 exakt bei ≤ 0.05 falscher Festlegung). C3 direkt 0/117 (immer UNKNOWN, auch mit fertigem Werkzeug-Satz), B1 0.13 / B2 0.27 exakt mit 72 % / 63 % falscher Festlegung (Positions-Bias „A“), C3-Lesen + Eignungs-Werkzeug strict 0.54 exakt, **0 falsch**; Werkzeug ohne Modell 1.00.
+- Ursache im Werkzeug-Arm eindeutig: C3 liest alle Zahlen richtig (117/117), aber `local_only` immer `true`; der Wächter verwirft es → UNKNOWN. v2 ohne strict legt sich bei widersprüchlichen Zitaten fest (3/18) → strict-Prüfung vor jedem Einschalten des Live-ToolStep-Pfads.
+- Folge für §29 Nr. 6: C3 = Leser, nicht Entscheider; größerer Körper als Konsument widerlegt. Nächstes: **Z3b** (neue Registrierung) Bool-Regeln deterministisch lesen + Paraphrasen-Kohorte, damit C3 als Leser gegen reinen Parser gemessen wird.
 
 ### WP-Z4 B3 L1 Versuch 4 (Cloud, Modelle) — IN ARBEIT bei Thread R (Stand 21.10. früh)
 - Frische B1/B2-Zustände, Brücke mit `aux`-Zielen, Gate unverändert, Rollen-Retention neu, vorregistriert. Nur PASS öffnet L2-SHADOW. Schließt G-CALLOSUM-UTILITY-002 erst mit allen 8 Achsen.
