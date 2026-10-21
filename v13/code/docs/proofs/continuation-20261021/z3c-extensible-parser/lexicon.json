@@ -1,0 +1,841 @@
+{
+ "schema": "V13_Z3C_RULE_LEXICON_V1",
+ "note": "Data, not code: every entry carries its evidence. 'dev:canonical' = Z3/Z3b canonical rule form, 'dev:z3b' = Z3b paraphrase template, 'general' = common English limit/permission wording added without a measured example. Holdout cohorts are never evidence. Extend only through parser_v2.extend() and a new holdout.",
+ "entries": [
+  {
+   "term": "euro",
+   "class": "unit_euro",
+   "evidence": "dev:canonical 'Budget N euros'"
+  },
+  {
+   "term": "euros",
+   "class": "unit_euro",
+   "evidence": "dev:canonical 'Budget N euros'"
+  },
+  {
+   "term": "eur",
+   "class": "unit_euro",
+   "evidence": "dev:z3b 'Our financial limit is N EUR'"
+  },
+  {
+   "term": "€",
+   "class": "unit_euro",
+   "evidence": "general"
+  },
+  {
+   "term": "day",
+   "class": "unit_day",
+   "evidence": "dev:canonical 'Deadline N days'"
+  },
+  {
+   "term": "days",
+   "class": "unit_day",
+   "evidence": "dev:canonical 'Deadline N days'"
+  },
+  {
+   "term": "budget",
+   "class": "rule_noun_euro",
+   "evidence": "dev:canonical"
+  },
+  {
+   "term": "deadline",
+   "class": "rule_noun_day",
+   "evidence": "dev:canonical"
+  },
+  {
+   "term": "time limit",
+   "class": "rule_noun_day",
+   "evidence": "general"
+  },
+  {
+   "term": "at most",
+   "class": "max",
+   "evidence": "dev:z3b 'We can spend at most N euros'"
+  },
+  {
+   "term": "no more than",
+   "class": "max",
+   "evidence": "dev:z3b 'done in no more than N days'"
+  },
+  {
+   "term": "not more than",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "within",
+   "class": "max",
+   "evidence": "dev:z3b 'Spending must stay within N euros'"
+  },
+  {
+   "term": "capped",
+   "class": "max",
+   "evidence": "dev:z3b 'capped at N euros'"
+  },
+  {
+   "term": "cap",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "limit",
+   "class": "max",
+   "evidence": "dev:z3b 'Our financial limit is N EUR'"
+  },
+  {
+   "term": "limited",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "at the latest",
+   "class": "max",
+   "evidence": "dev:z3b 'after N days at the latest'"
+  },
+  {
+   "term": "latest",
+   "class": "max",
+   "evidence": "dev:z3b"
+  },
+  {
+   "term": "up to",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "maximum",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "max",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "ceiling",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "or less",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "or fewer",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "longest",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "the most",
+   "class": "max",
+   "evidence": "general"
+  },
+  {
+   "term": "more than",
+   "class": "gt",
+   "evidence": "general (needs negation or exclusion)"
+  },
+  {
+   "term": "longer than",
+   "class": "gt",
+   "evidence": "general (needs negation or exclusion)"
+  },
+  {
+   "term": "above",
+   "class": "gt",
+   "evidence": "general (needs negation or exclusion)"
+  },
+  {
+   "term": "over",
+   "class": "gt",
+   "evidence": "general (needs negation or exclusion)"
+  },
+  {
+   "term": "beyond",
+   "class": "gt",
+   "evidence": "general (needs negation or exclusion)"
+  },
+  {
+   "term": "exceed",
+   "class": "gt",
+   "evidence": "general (needs negation or exclusion)"
+  },
+  {
+   "term": "exceeds",
+   "class": "gt",
+   "evidence": "general (needs negation or exclusion)"
+  },
+  {
+   "term": "exceeding",
+   "class": "gt",
+   "evidence": "general (needs negation or exclusion)"
+  },
+  {
+   "term": "at least",
+   "class": "min",
+   "evidence": "general (minimum = other rule type, abstain)"
+  },
+  {
+   "term": "minimum",
+   "class": "min",
+   "evidence": "general"
+  },
+  {
+   "term": "or more",
+   "class": "min",
+   "evidence": "general"
+  },
+  {
+   "term": "no less than",
+   "class": "min",
+   "evidence": "general"
+  },
+  {
+   "term": "not less than",
+   "class": "min",
+   "evidence": "general"
+  },
+  {
+   "term": "must",
+   "class": "obligation",
+   "evidence": "dev:z3b 'must stay within', 'must be done'"
+  },
+  {
+   "term": "has to",
+   "class": "obligation",
+   "evidence": "dev:z3b 'It has to be finished within'"
+  },
+  {
+   "term": "have to",
+   "class": "obligation",
+   "evidence": "general"
+  },
+  {
+   "term": "required",
+   "class": "obligation",
+   "evidence": "dev:z3b 'Completion is required'"
+  },
+  {
+   "term": "need",
+   "class": "obligation",
+   "evidence": "general"
+  },
+  {
+   "term": "needs",
+   "class": "obligation",
+   "evidence": "general"
+  },
+  {
+   "term": "due",
+   "class": "obligation",
+   "evidence": "general"
+  },
+  {
+   "term": "out",
+   "class": "exclusion",
+   "evidence": "general"
+  },
+  {
+   "term": "unacceptable",
+   "class": "exclusion",
+   "evidence": "general"
+  },
+  {
+   "term": "excluded",
+   "class": "exclusion",
+   "evidence": "general"
+  },
+  {
+   "term": "not allowed",
+   "class": "exclusion",
+   "evidence": "general"
+  },
+  {
+   "term": "not permitted",
+   "class": "exclusion",
+   "evidence": "dev:z3b 'Non-local options are not permitted'"
+  },
+  {
+   "term": "too expensive",
+   "class": "exclusion",
+   "evidence": "general"
+  },
+  {
+   "term": "too long",
+   "class": "exclusion",
+   "evidence": "general"
+  },
+  {
+   "term": "local",
+   "class": "loc_pos",
+   "evidence": "dev:canonical 'Local-only requirement'"
+  },
+  {
+   "term": "locally",
+   "class": "loc_pos",
+   "evidence": "general"
+  },
+  {
+   "term": "locality",
+   "class": "loc_pos",
+   "evidence": "general"
+  },
+  {
+   "term": "on-site",
+   "class": "loc_pos",
+   "evidence": "general"
+  },
+  {
+   "term": "onsite",
+   "class": "loc_pos",
+   "evidence": "general"
+  },
+  {
+   "term": "non-local",
+   "class": "loc_neg",
+   "evidence": "dev:z3b 'Non-local options are fine too'"
+  },
+  {
+   "term": "nonlocal",
+   "class": "loc_neg",
+   "evidence": "general"
+  },
+  {
+   "term": "not local",
+   "class": "loc_neg",
+   "evidence": "general"
+  },
+  {
+   "term": "remote",
+   "class": "loc_neg",
+   "evidence": "dev:z3b 'Remote options are allowed as well'"
+  },
+  {
+   "term": "remotely",
+   "class": "loc_neg",
+   "evidence": "general"
+  },
+  {
+   "term": "off-site",
+   "class": "loc_neg",
+   "evidence": "general"
+  },
+  {
+   "term": "offsite",
+   "class": "loc_neg",
+   "evidence": "general"
+  },
+  {
+   "term": "local-only requirement",
+   "class": "loc_flag",
+   "evidence": "dev:canonical 'Local-only requirement: true|false' (value follows)"
+  },
+  {
+   "term": "local-only",
+   "class": "loc_pos",
+   "evidence": "general (implies require, see parser_v2.read_local)"
+  },
+  {
+   "term": "only",
+   "class": "require",
+   "evidence": "dev:z3b 'Only local providers are allowed'"
+  },
+  {
+   "term": "must",
+   "class": "require",
+   "evidence": "dev:z3b 'The chosen option must be local'"
+  },
+  {
+   "term": "has to",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "have to",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "required",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "requirement",
+   "class": "require",
+   "evidence": "dev:z3b 'There is no requirement for the option to be local'"
+  },
+  {
+   "term": "requires",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "mandatory",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "need",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "needs",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "necessary",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "obligatory",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "compulsory",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "restriction",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "restricted",
+   "class": "require",
+   "evidence": "general"
+  },
+  {
+   "term": "allowed",
+   "class": "allow",
+   "evidence": "dev:z3b 'Remote options are allowed as well'"
+  },
+  {
+   "term": "permitted",
+   "class": "allow",
+   "evidence": "dev:z3b 'Non-local options are not permitted'"
+  },
+  {
+   "term": "fine",
+   "class": "allow",
+   "evidence": "dev:z3b 'Non-local options are fine too'"
+  },
+  {
+   "term": "ok",
+   "class": "allow",
+   "evidence": "general"
+  },
+  {
+   "term": "okay",
+   "class": "allow",
+   "evidence": "general"
+  },
+  {
+   "term": "acceptable",
+   "class": "allow",
+   "evidence": "general"
+  },
+  {
+   "term": "accept",
+   "class": "allow",
+   "evidence": "general"
+  },
+  {
+   "term": "accepted",
+   "class": "allow",
+   "evidence": "general"
+  },
+  {
+   "term": "possible",
+   "class": "allow",
+   "evidence": "general"
+  },
+  {
+   "term": "welcome",
+   "class": "allow",
+   "evidence": "general"
+  },
+  {
+   "term": "chosen",
+   "class": "allow",
+   "evidence": "general"
+  },
+  {
+   "term": "eligible",
+   "class": "allow",
+   "evidence": "general"
+  },
+  {
+   "term": "work",
+   "class": "allow_weak",
+   "evidence": "dev:z3b 'We may only work with a local option'"
+  },
+  {
+   "term": "can",
+   "class": "allow_weak",
+   "evidence": "general"
+  },
+  {
+   "term": "may",
+   "class": "allow_weak",
+   "evidence": "dev:z3b 'We may only work with a local option'"
+  },
+  {
+   "term": "too",
+   "class": "allow_weak",
+   "evidence": "dev:z3b 'fine too'"
+  },
+  {
+   "term": "also",
+   "class": "allow_weak",
+   "evidence": "general"
+  },
+  {
+   "term": "as well",
+   "class": "allow_weak",
+   "evidence": "dev:z3b 'allowed as well'"
+  },
+  {
+   "term": "excluded",
+   "class": "forbid",
+   "evidence": "general"
+  },
+  {
+   "term": "forbidden",
+   "class": "forbid",
+   "evidence": "general"
+  },
+  {
+   "term": "prohibited",
+   "class": "forbid",
+   "evidence": "general"
+  },
+  {
+   "term": "banned",
+   "class": "forbid",
+   "evidence": "general"
+  },
+  {
+   "term": "disallowed",
+   "class": "forbid",
+   "evidence": "general"
+  },
+  {
+   "term": "ruled out",
+   "class": "forbid",
+   "evidence": "general"
+  },
+  {
+   "term": "unacceptable",
+   "class": "forbid",
+   "evidence": "general"
+  },
+  {
+   "term": "optional",
+   "class": "irrelevant",
+   "evidence": "general"
+  },
+  {
+   "term": "irrelevant",
+   "class": "irrelevant",
+   "evidence": "general"
+  },
+  {
+   "term": "matter",
+   "class": "matters",
+   "evidence": "dev:z3b 'Whether the option is local does not matter'"
+  },
+  {
+   "term": "matters",
+   "class": "matters",
+   "evidence": "general"
+  },
+  {
+   "term": "not",
+   "class": "negation",
+   "evidence": "dev:z3b 'not permitted', 'does not matter'"
+  },
+  {
+   "term": "no",
+   "class": "negation",
+   "evidence": "dev:z3b 'There is no requirement'"
+  },
+  {
+   "term": "never",
+   "class": "negation",
+   "evidence": "general"
+  },
+  {
+   "term": "without",
+   "class": "negation",
+   "evidence": "general"
+  },
+  {
+   "term": "undecided",
+   "class": "hedge",
+   "evidence": "general (unsettled statement, ignore)"
+  },
+  {
+   "term": "not decided",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "not been decided",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "decided later",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "later",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "yet",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "pending",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "unclear",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "tbd",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "proposed",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "proposal",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "suggested",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "rejected",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "discussed",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "negotiated",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "previous",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "previously",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "last year",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "last time",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "was",
+   "class": "hedge",
+   "evidence": "general (past statement, not a current rule)"
+  },
+  {
+   "term": "were",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "took",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "asked",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "ask",
+   "class": "hedge",
+   "evidence": "general (embedded question, not a rule)"
+  },
+  {
+   "term": "wonder",
+   "class": "hedge",
+   "evidence": "general (embedded question, not a rule)"
+  },
+  {
+   "term": "wondered",
+   "class": "hedge",
+   "evidence": "general (embedded question, not a rule)"
+  },
+  {
+   "term": "question",
+   "class": "hedge",
+   "evidence": "general (embedded question, not a rule)"
+  },
+  {
+   "term": "unsure",
+   "class": "hedge",
+   "evidence": "general (embedded question, not a rule)"
+  },
+  {
+   "term": "not sure",
+   "class": "hedge",
+   "evidence": "general (embedded question, not a rule)"
+  },
+  {
+   "term": "maybe",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "perhaps",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "might",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "?",
+   "class": "hedge",
+   "evidence": "general"
+  },
+  {
+   "term": "decide",
+   "class": "instruction",
+   "evidence": "dev:canonical current source 'Decide from the private project rules'"
+  },
+  {
+   "term": "compute",
+   "class": "instruction",
+   "evidence": "dev:canonical current source 'Compute each remaining budget'"
+  },
+  {
+   "term": "choose",
+   "class": "instruction",
+   "evidence": "dev:canonical current source 'choose cheapest eligible'"
+  },
+  {
+   "term": "week",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "weeks",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "month",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "months",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "hour",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "hours",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "year",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "years",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "dollar",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "dollars",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "usd",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "$",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "percent",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "%",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  },
+  {
+   "term": "pounds",
+   "class": "unit_other",
+   "evidence": "general (other unit, refuse instead of guessing)"
+  }
+ ]
+}
