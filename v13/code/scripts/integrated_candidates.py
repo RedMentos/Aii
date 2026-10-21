@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'eligibility_live')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'body_question', 'eligibility_live')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -325,6 +325,17 @@ def eligibility_live(sources):
                                      'try:tool_plan=toolctl.ToolStep(self).plan(e,text,offers=selected,version=version)  #')
     return out
 
+def body_question(text):
+    """2026-10-21 WP-Z2c: cfg body_question_b1 / body_question_b2 ('' = off = previous behaviour) give a body a standing
+    executive question (jef_query, kind FILL_GAP) on every offer without a re-entry focus. Same QUERY_PACKET path the
+    WP-Z2b runner patch used (+.23 both_exact, CI > 0, 0 wrong committed)."""
+    if "key='body_question_b1'" in text:
+        raise ValueError('Integrated anchor changed: body_question already applied')
+    return _replace(text, "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET",
+                    "        key='body_question_b1' if role=='B1_DETAIL' else 'body_question_b2'  # WP-Z2c: standing body question ('' = off, live)\n"
+                    "        if focus is None and self.r.cfg.get(key,''):focus={'question':self.r.cfg[key],'kind':'FILL_GAP','target_role':role,'reason':'CFG_STANDING_QUESTION','authority':'EXECUTIVE_QUESTION_NOT_FACT'}\n"
+                    "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET")
+
 
 def _later(sources):
     return eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))
@@ -376,7 +387,7 @@ def rebase(texts, root=ROOT):
     out = _chain(full)
     out = {k: (out[k] if k in NAMES else v) for k, v in texts.items()}
     if 'v13/cognition.py' in out:  # cognition.py is bound exactly by source_handoff_candidate, not by NAMES
-        out['v13/cognition.py'] = b2_quote_select(b1_recent(quote_context(b2_offer(out['v13/cognition.py']))))
+        out['v13/cognition.py'] = body_question(b2_quote_select(b1_recent(quote_context(b2_offer(out['v13/cognition.py'])))))
     return out
 
 

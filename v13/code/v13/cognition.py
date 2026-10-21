@@ -257,6 +257,8 @@ class Cognition:
         context=self.body_context(role,e)
         prior=previous.get('offer',{}).get('summary','')[:240]
         query={'source_segments':view,'peer_message':peer,'prior_hypothesis':prior if policy=='B1_DETAIL' else ''}
+        key='body_question_b1' if role=='B1_DETAIL' else 'body_question_b2'  # WP-Z2c: standing body question ('' = off, live)
+        if focus is None and self.r.cfg.get(key,''):focus={'question':self.r.cfg[key],'kind':'FILL_GAP','target_role':role,'reason':'CFG_STANDING_QUESTION','authority':'EXECUTIVE_QUESTION_NOT_FACT'}
         if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET: the executive question of this re-entry (a question, never a fact)
             query['jef_query']={k:focus[k] for k in ('question','kind')};instructions+=' jef_query is the executive question for this re-entry; answer it from the source first.'
         bv_refs=[];bv={};win=[]

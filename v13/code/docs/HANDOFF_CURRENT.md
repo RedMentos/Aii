@@ -1,6 +1,9 @@
 # Aktuell 2026-10-21 (Thread „B2 zitiert Regel selten“): WP-Z2d B2 liefert das Regel-Zitat — Zeiger behebt den Engpass
 
 Ursache: B2 schreibt die alte Regel um statt sie wörtlich zu zitieren (110/384 Z2b-Angebote), die Zitatprüfung verwirft das. Neuer Schalter `b2_quote_select` (`off` Standard | `anchor` | `pointer`, Kettenglied `integrated_candidates.b2_quote_select`). Vorregistrierter Lauf CQ/CQA/CQP × Seeds 17–19 (630 Zeilen): B2-Regelquote .167 → Anker .542 (teilweise) → **Zeiger .969** (`Z2C_B2_RULE_QUOTE_FIXED`, CI > 0, 0 falsch). STEP2 zwei Körper `both_exact` .881 vs. b1_only .581 (+.30, CI > 0, alle Seeds), 27/30 exakte Entscheidungen. STEP2 bleibt formal FAIL (Kriterium 3, Ein-Körper-Kontrolle offen). Schalter aus bis Nutzerentscheidung; live-`analyst_context` nimmt erweiterte Zitate noch nicht an. Befund `docs/proofs/continuation-20261021/step2-z2c-b2-rule/BEFUND.md`, Branch `claude/project-thread-0fckhc`. Merge-Hinweis: Thread „B1-Frage als Schalter“ (Branch `4ttld7`, auch „WP-Z2c“ genannt) hängt ein eigenes Kettenglied `body_question` an `cognition.py`; beim Zusammenführen beide Glieder in `integrated_candidates.rebase` hintereinander anwenden.
+# Aktuell 2026-10-21 (Thread „B1-Frage als Schalter“): gezielte Körper-Frage als Live-Schalter — Standard aus
+
+Neue Schalter `body_question_b1` / `body_question_b2` (Standard `''` = aus = live unverändert): feste Frage als `jef_query` an jedes Körper-Angebot ohne Rückfrage-Fokus. Bestätigungslauf Seed 14 mit echten Modellen: Schalter (beide) both_exact .592 vs ohne .375 (Z2b-Patch .675), nur B1 .450; b1_only .275 → .575; 0 falsch festgelegt. Frage ist STEP2-spezifisch, deshalb bleibt sie aus. Befund `docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md`, Branch `claude/project-thread-4ttld7`.
 
 # Aktuell 2026-10-21 (Thread „Z2b STEP2 mit mehreren Seeds“): Rauschband + gezielte Fragen — Gate FAIL, Frage hilft
 
