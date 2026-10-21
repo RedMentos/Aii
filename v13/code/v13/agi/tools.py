@@ -64,8 +64,9 @@ class ToolRegistry:
     def _policy(self,spec,origin,args,confirmed=False):
         """WP-K IH-H29 contract: schema -> capability -> risk -> confirmation -> C5 (Age right for own choice)."""
         from ..transaction import authorize
+        from ..prohibitions import verdict
         st=self.box.load()[0]
-        return authorize(spec,args,origin,spec.name in st['enabled'],age_allows(self.age,spec.right,origin),confirmed)
+        return authorize(spec,args,origin,spec.name in st['enabled'],age_allows(self.age,spec.right,origin),confirmed,hard=verdict(self.s,spec))
     def call(self,name,args,origin='USER',intent=None,predicted=None,event_id=None,idempotency_key=None):
         spec=self.tools.get(name)
         if spec is None:raise ValueError('Unbekanntes Werkzeug')
@@ -110,6 +111,8 @@ class ToolRegistry:
             return dict(tx,status='DEDUPLICATED',reason='IDEMPOTENCY_KEY',action_tx=a['id'],result=a.get('result'),error=a.get('error'))
         T.commit_copy(a['id'],{'predicted':tx.get('predicted')})
         a=T.execute(a['id'],spec.fn)
+        if a['state']=='CANCELLED' and str(a.get('error') or '').startswith('HARD_BLOCK:'):  # last gate in Transactions.execute
+            return dict(tx,action_tx=a['id'],status='DENIED',reason=a['error'],result=None,error=None)
         tx.update(action_tx=a['id'],status='EXECUTED' if a['state']=='SUCCEEDED' else 'FAILED',result=a['result'],error=a['error'],duration_s=a.get('duration_s'))
         if self.on_outcome:
             if tx.get('event_id') and not self._turn_ended(tx['event_id']):  # IH-H13: an outcome inside a running turn stays provisional until that turn is FINAL

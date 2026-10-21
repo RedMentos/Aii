@@ -98,6 +98,8 @@ class ToolStep:
         from .agi import listarith
         op=listarith.operation(text)
         if not op or 'list_arith' not in self._registry().box.load()[0]['enabled']:return None  # the C3 read costs a model call: only after the user enabled the tool
+        from .prohibitions import verdict
+        if verdict(self.r.store,self._registry().tools['list_arith'])['blocked']:return None  # prohibited / Notaus: no model read either
         try:
             values=listarith.read_values(self.r.pool.get('C3_LANGUAGE'),text,self.r.cancel_event,time.monotonic()+LIST_READ_SECONDS)
             listarith.compute(op,values,text)  # guard before proposing: every value must be an exact number of the user text
@@ -129,6 +131,7 @@ class ToolStep:
     def shadow(self,e,p):
         """Refused by policy: compute pure READ_LOCAL tools off-path for later agreement; never shown, never a fact."""
         if p['risk']!='READ_LOCAL' or p['tool'] not in ('calc','list_arith'):return None
+        if str(p.get('reason') or '').startswith('HARD_BLOCK:'):return None  # a prohibited tool is not run in the background either
         try:
             from .agi.tools import calc
             from .agi import listarith
