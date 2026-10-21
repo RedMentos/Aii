@@ -234,6 +234,27 @@ def l1_gate(task,role_drop=.01,ood_max=.05):
             'utility_mean':{c:round(float(np.mean(v)),4) for c,v in u.items()},'missing_baselines':[c for c in ('EXACT','CONTROL','SYMBOLIC') if c not in acc],
             'consequence':'L2 prefix SHADOW test allowed; LATENT authority stays 0' if ok else 'B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only'}
 
+L2_NORM_BAND=(.8,1.25)          # B3-H4: prefix norm / native input-token norm must stay in this band
+
+def l2_gate(task,role_drop=.01,norm_band=L2_NORM_BAND):
+    """B3 L2 prefix SHADOW gate (WP-Z4b, preregistered). task: {'acc': {channel: [per-seed acc]}, 'bytes', 'role_drop',
+    'norm_ratio', 'reproducible'}. Channels are receiver-backbone reads of the same readout: PREFIX (calibrated latent
+    prefix), PREFIX_OFF (= NO_MESSAGE), PREFIX_SHUFFLED, PREFIX_RANDOM (norm-matched), and the native text baselines
+    EXACT, SYMBOLIC (label word), SYMBOLIC_ATTR. PASS only permits an L3 tiny-residual SHADOW test."""
+    acc,by=task['acc'],task['bytes'];base=np.asarray(acc['PREFIX_OFF'])
+    u={c:[utility(a,b0,by.get(c,0)) for a,b0 in zip(acc[c],base)] for c in acc}
+    crit={'beats_prefix_off':paired(acc['PREFIX'],acc['PREFIX_OFF'])}
+    for ctl in ('PREFIX_SHUFFLED','PREFIX_RANDOM'):crit['beats_'+ctl.lower()]=paired(acc['PREFIX'],acc[ctl])
+    for bl in ('EXACT','SYMBOLIC','SYMBOLIC_ATTR'):
+        if bl in acc:crit['utility_beats_'+bl.lower()]=paired(u['PREFIX'],u[bl])
+    crit['role_retention']={'drop':round(task.get('role_drop',0.),4),'significant':task.get('role_drop',0.)<=role_drop}
+    nr=task.get('norm_ratio');crit['receiver_calibration']={'norm_ratio':nr,'band':list(norm_band),'significant':nr is not None and norm_band[0]<=nr<=norm_band[1]}
+    crit['restart_reproducibility']={'significant':bool(task.get('reproducible',False))}
+    ok=all(v['significant'] for v in crit.values())
+    return {'gate':'G-CALLOSUM-UTILITY-002','level':'L2','verdict':'PASS' if ok else 'FAIL','criteria':crit,
+            'utility_mean':{c:round(float(np.mean(v)),4) for c,v in u.items()},'missing_baselines':[c for c in ('EXACT','SYMBOLIC','SYMBOLIC_ATTR') if c not in acc],
+            'consequence':'L3 tiny-residual SHADOW test allowed; LATENT authority stays 0' if ok else 'B3_LATENT stays at L1_shadow; L3 stays locked'}
+
 # -- :doctor (B3-H11) ---------------------------------------------------------------------------------------
 def bridge_dir(home):return Path(home)/'b3'
 
