@@ -117,6 +117,18 @@ def harness():
             r.close();data['process_releases']=list(r.pool.release_history)
         return data
     m.prepare_base=prepare_base
+    frozen_artifacts=m.installed_artifacts
+    def installed_artifacts(installed):
+        # The frozen guard reads ModelManager(installed) without b2_control, so a shared-body home (B2 = B1 weights)
+        # failed every preparation as 'ArtifactChanged' (first arm-D attempt, kept as evidence). Same fields, but the
+        # B2 file is resolved with the home's own b2_control.
+        from v13.config import initialize
+        from v13.common import file_hash
+        from v13.models import ModelManager
+        out=frozen_artifacts(installed);models=ModelManager(installed,initialize(installed).get('b2_control','two_body'))
+        for role in ('B1_DETAIL','B2_GIST','C3_LANGUAGE'):out['model_sha256'][role]=file_hash(models.path_for(role).resolve());out['model_revisions'][role]=models.revision(role)
+        return out
+    m.installed_artifacts=installed_artifacts
     return m
 
 def sibling_home(installed,dest,enable):
@@ -168,16 +180,17 @@ def error_profile(tool_rows,fixtures):
     return res
 
 def run_arm(installed,work,arm):
-    from step2_wire_rebind import diagnose
     import step2_tool_replay as replay
     from v13.common import atomic_write
-    step2=harness();work=Path(work);home=sibling_home(installed,work/(arm+'-home'),ARMS[arm]);out=work/('step2_'+arm+'.json')
-    report=step2.run_locked(home,out)
+    step2=harness();work=Path(work);out=work/('step2_'+arm+'.json');home=work/(arm+'-home')
+    old=json.loads(out.read_text()) if out.exists() else None
+    if old and old.get('status') in ('UTILITY_FAIL','UTILITY_PASS_SCOPED') and len(old['rows'])==len(FIXTURES)*7:report=old  # rows recorded, only post-processing failed
+    else:report=step2.run_locked(sibling_home(installed,home,ARMS[arm]),out)
     report['proof_kind']='STEP2_Z2_TIMESCALE_SPLIT';report['harness_copy_of']='tests/integration_step2_utility.py'
     from v13.common import file_hash
     report['z2_source_sha256']={str(p.relative_to(ROOT)):file_hash(p) for p in (Path(__file__).resolve(),ROOT/'v13/cognition.py',ROOT/'tests/integration_step2_utility.py')}
     report['wire_arm']={'arm':'w1','note':'live wire'};report['z2_arm']={'arm':arm,'enable':ARMS[arm]}
-    report['wire_diagnosis']=diagnose(report);report['information_access']=information_access(report)
+    report['information_access']=information_access(report)
     atomic_write(out,json.dumps(report,ensure_ascii=False,indent=2))
     tool=replay.run(home,out,work/('tool_'+arm+'.json'))
     fixtures={f['id']:f for f in report['fixtures']}

@@ -1196,10 +1196,13 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Die zehn §100-Gates gegen die Kriterien aus dem Blueprint-Text prüfen (§85-Abschnitte zu jedem Gate), nicht nur gegen vorhandene Belegdateien.
 - `measure_suite.py` gibt zusätzlich die §29-Tabelle (24 Eigenschaften) und STEP-Ausgänge aus. Test dazu.
 
-### WP-Z2 STEP2 neu: B1 mit eigener Detail-Information (Cloud, Modelle) — OFFEN
-- Neue vorregistrierte Fixtures, in denen Detail-Fakten nur B1 sieht und Überblick/Widerspruch nur B2 (Offen (3) aus „STEP2-Nutzen Engpass“).
-- Alle vier Kontrollen aus G-B-TIMESCALE-DIVERGENCE-001: gleiches Modell gleiche Policy, gleiches Modell nur anderer Prompt, ein Körper + zwei Zustände, zwei Körper. Zitat-Kontext an und aus.
-- Entscheidet §99 „zwei Bodies lohnen die Handy-Kosten“. Wenn ein Körper + zwei Zustände gleich gut ist, darf das Redmi das billigere nutzen (Blueprint erlaubt das ausdrücklich).
+### WP-Z2 STEP2 neu: B1 mit eigener Detail-Information (Cloud, Modelle) — ERLEDIGT 2026-10-21, Gate FAIL (Thread „Z2 STEP2 mit B1-Detailinfo“, Branch `claude/project-thread-hsm0ga`)
+- Befund vorab im Code: B1 behielt aus der Vorrunde nur seine 240-Zeichen-Hypothese, nie exakten Quelltext → konnte nie etwas Eigenes beitragen. Neuer Schalter `b1_recent_source_chars` (0 = aus = live, byte-gleich; Kettenglied `integrated_candidates.b1_recent`): B1 behält die exakte Quelle seiner letzten Runde (bis N Zeichen), B2 weiter 4 Runden × 240 Zeichen (§85.1 Zeitskalen-Trennung).
+- Vorregistriert (`bdaafc2`, vor dem Lauf), 10 Episoden (6 SPLIT: Regeln alt nur bei B2, Optionen im Datenblatt nur bei B1; 2 RULE; 2 DETAIL), unveränderter STEP2-Harness, 5 Arme (A live, B Zitat-Kontext, C Zitat+B1-Fenster = primär, D ein Körper + zwei Zustände, E B1-Fenster ohne Zitat) × 70 Zeilen + Werkzeug-Replay. Alle 350 Zeilen RECORDED.
+- **Urteil `Z2_DIVERGENCE_NOT_SUPPORTED`:** C both_exact .325 < b1_only .333; Fehlerprofile nicht komplementär genug; prompt_only_dual (D) .425 besser. §99 „zwei Körper lohnen“: nein (D both_exact .367 ≥ C .325).
+- Sekundär: B1 liefert Optionswerte als verifiziertes Zitat jetzt 27/70 (C) statt 0 (A/B); erstmals exakte SPLIT-Entscheidungen, aber nur im Ein-Körper-Arm D (both_none 3/6), im Zwei-Körper-Arm 0/6. 0 falsch festgelegt in 350 Werkzeug-Zeilen; ohne Werkzeug 0 exakt. Ohne Zitat-Kontext (E) 0 verifizierte Zitate.
+- Engpass jetzt: Auswahl im Körper (B2 zitiert die alte Regel 16/70, beide Infos in einer Zeile im Zwei-Körper-Arm nie). Schalter bleibt aus. Befund `code/docs/proofs/continuation-20261021/step2-z2-timescale/BEFUND.md`.
+- Offen (neu vorregistrieren): Wiederholungen C/D mit 3–5 Seeds (Rauschband); gezielte JEF-Rückfrage „zitiere Regel/Optionen“; Qwen- vs. LFM-B2 als gebundene Modellfrage.
 
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).

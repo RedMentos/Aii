@@ -1,3 +1,7 @@
+# Aktuell 2026-10-21 (Thread „Z2 STEP2 mit B1-Detailinfo“): STEP2 mit B1-eigener Information — Gate FAIL
+
+Neuer Schalter `b1_recent_source_chars` (Standard 0 = aus): B1 behält die exakte Quelle seiner letzten Runde. Vorregistrierter Lauf (10 Episoden, 5 Arme × 70 Zeilen, echte Modelle, Linux-Cloud): `Z2_DIVERGENCE_NOT_SUPPORTED` — Zwei-Körper .325 < b1_only .333, ein Körper + zwei Zustände nicht schlechter. B1 liefert jetzt Optionswerte (27/70 statt 0), exakte SPLIT-Entscheidungen nur im Ein-Körper-Arm (3/6). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2-timescale/BEFUND.md`, Branch `claude/project-thread-hsm0ga`. STEP2 UTILITY_FAIL bleibt.
+
 # Aktuell 2026-10-20 (Abend): Handy-Paket Werkzeug-Vorhersage fertig
 
 Ein Befehl am Redmi: `bash WERKZEUG_TESTEN.sh` (Stufen `paritaet|kurz|voll`, Anleitung `WERKZEUG_ANLEITUNG.txt`). Vorprüfung, Einrichtung bei Bedarf, GPTs begrenzter Treiber mit Frist, RAM-/Temperaturverlauf, Ergebnis-ZIP in Downloads. Nebenbei behoben: Handy-ZIP brach im Setup-Selbsttest ab (zwei fehlende Belegdateien in `package_source.py`). Cloud-Probelauf aus dem entpackten ZIP: `voll` bestätigt, gleiche Zahlen wie 12./13.10., Spitzen-RSS 1,2 GB. Redmi-Messung offen (Nutzer). Belege `docs/proofs/continuation-20261020/werkzeug-handy-cloud/`.
