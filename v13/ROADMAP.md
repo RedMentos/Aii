@@ -1224,6 +1224,13 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Bestätigungslauf Seed 14 (`scripts/step2_z2c_switch.py`, kein Gate): Schalter beide both_exact .592 (ohne .375, Z2b-Patch .675), nur B1 .450; b1_only .275 → .575; B1-Optionszitate 18 → 52; 0 falsch in 140 Werkzeug-Zeilen. Befund `code/docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md`.
 - Offen: Nutzerentscheidung Einschalten (nur sinnvoll für STEP2-artige Aufgaben, Frage ist aufgabenspezifisch); allgemeine Frage für Chat ungemessen; B2-Regelzitat-Paket; Seed-Bug `cognition.offer`.
 
+### WP-UR Nutzer-Regeln per festem Leser (JEF, kein Modell) — ERLEDIGT 2026-10-21 als Schicht 2, Urteil `USER_RULES_UNSAFE` (Thread „Zitierhilfe an, Regeln per JEF“, Branch `claude/project-thread-2gzrwi`)
+- Nutzerwunsch: KI tut nichts, wovon der Nutzer nichts weiß, sagt vorher, was sie tun würde, und legt Verbote nie falsch aus; Regeln entscheidet kein halluzinierendes Modell.
+- `v13/userrules.py` (Garantien G1–G6), Durchsetzung `ToolRegistry._policy`, Broker `RULE_NOTICE` + „Vorhaben:“-Zeile, Befehle `:regeln`/`:regel`. Tests `test_userrules.py`, `test_rule_reader_fixed.py`; Suite 1669 OK.
+- Zitierhilfe standardmäßig an (Nutzerentscheidung), Körper-Frage nur bei Regel-Entscheidungen, Eignungs-Regelwerte fest gelesen.
+- Messung: Holdout 0 Fehler; frische Modell-Umformulierungen v1 71 / v2 20 Fehler (8/57 Sätze). Fester Wortleser allein reicht nicht; Grundregel „Außenwirkung nur als Vorschlag“ trägt die Garantie. Befund `code/docs/proofs/continuation-20261021/user-rules/BEFUND.md`.
+- Offen: v3 mit den 8 Fehlerformen + frische Runde 3; LEARN/Merken im Gedächtnis durchsetzen; feinere Wirkungsklassen.
+
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
