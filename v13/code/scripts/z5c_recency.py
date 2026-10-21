@@ -78,12 +78,13 @@ def seed_notes(r,session,notes):
     return ids
 
 def readmit(F,cands,capacity,threshold,recency):
-    """Replay of the final admission on copies; recency=False zeroes the WP-Z5c terms first."""
+    """Replay of the final admission on copies (sort keys as the live call saw them); recency=False zeroes the WP-Z5c terms
+    first and re-scores only the items that carried them."""
     cc=copy.deepcopy(cands)
     for c in cc:
-        if not recency:
+        if not recency and ('recency' in c['priority_terms'] or 'superseded' in c['priority_terms']):
             c['priority_terms'].pop('recency',None);c['priority_terms'].pop('superseded',None)
-        c['priority']=F.priority(c['priority_terms'])*c['decay']
+            c['priority']=F.priority(c['priority_terms'])*c['decay']
     a,_=F.admit(cc,capacity,threshold)
     return a
 

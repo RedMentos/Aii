@@ -64,3 +64,11 @@ Monatsnamen als Versionsmerkmal, Regex nur auf der Endantwort, lexikalischer Rec
 Redmi, `coalition_*` sind Wiedergaben, die kontrafaktische Koalition ersetzt nur die letzte Aufnahme (frühere Zyklen,
 Re-entry und ausgewählte Körper-Angebote stammen aus dem Lauf mit Schalter an). Ein Probelauf (4 Aufgaben × 1 Lauf) zählt
 nicht; Änderungen danach nur als Nachtrag vor dem Hauptlauf.
+
+## Nachtrag nach dem Probelauf (2026-10-21, vor dem Hauptlauf, keine Regeländerung)
+Erster Probelauf (4 Aufgaben × 1 Lauf, Saat 11, zählt nicht): Wieder-Aufnahme-Treue nur 1/4. Ursache: die Wiederholung hat
+die Priorität aller Kandidaten aus ihren Termen neu berechnet, die Live-Aufnahme sortiert aber nach dem Prioritätswert, den
+sie vorfindet (nach Inquisitions-Schritten nicht für alle Kandidaten neu berechnet). Korrektur (Messfehler, keine Regeländerung):
+die Wiederholung übernimmt die Sortierwerte unverändert und berechnet ohne Schalter nur die Kandidaten neu, die einen
+Aktualitäts-Term trugen. Zweiter Probelauf: Treue 4/4, in 3 von 4 Turns unterscheiden sich die Koalitionen mit/ohne Term,
+Platzgrenze bindet 4/4. Hauptlauf 3 Saaten × 2 Läufe × 60 mit unveränderten Aufgaben, Armen und Entscheidungsregeln gestartet.
