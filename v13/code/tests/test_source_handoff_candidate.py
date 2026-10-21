@@ -17,12 +17,14 @@ from scripts.source_handoff_candidate import ROOT, SNAPSHOT, load_candidate, pat
 from v13 import bodyview
 from v13.common import dumps
 from v13.runtime import Runtime
+from v13.config import LEGACY_QUOTE_PATH
 
 
 class SourceHandoffCandidate(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.r = Runtime(Path(self.tmp.name))
+        self.r.cfg.update(LEGACY_QUOTE_PATH)  # frozen candidate regression: the pre-2026-10-21 quote path
         self.cognition = load_candidate('cognition').Cognition(self.r)
         self.bodyview = load_candidate('bodyview')
         self.calls = []

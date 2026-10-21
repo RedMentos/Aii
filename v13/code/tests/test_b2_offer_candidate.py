@@ -21,7 +21,8 @@ with tempfile.TemporaryDirectory() as d:
     r=Runtime(Path(d))
     try:
         for label,cfg in (('off',{}),('on',c.ENABLE)):
-            r.cfg.update({'b2_offer_body_state':True,'offer_quote_min_chars':0}|cfg);seen={}
+            from v13.config import LEGACY_QUOTE_PATH
+            r.cfg.update(LEGACY_QUOTE_PATH|{'b2_offer_body_state':True,'offer_quote_min_chars':0}|cfg);seen={}
             def generate(messages,*a,**k):
                 seen['q']=json.loads(messages[1]['content']);seen['schema']=a[3] if len(a)>3 else k.get('schema')
                 return iter([json.dumps({'summary':'Budget 100','quotes':['Budget 100 euros'],'uncertainty':'low','needs_reentry':False})])

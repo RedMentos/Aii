@@ -58,6 +58,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :attention [status|edge <Kante>|shadow|active] (WP-N5 Aufmerksamkeit, thalamische Gain, A4)
 :ctxos [status|last|shadow|active|layout <L>|knob <N> <W>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <W>] (WP-N7 Context OS, Cache-Policy)
 :callosum [status|shadow|active|degrade|promote <Richtung>] (WP-J B3-Kanal-Policy, signed_gain; WP-N19 B3-H10-Degradation) / :gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots; readout = nativer B2-Tap-Konsument, SHADOW) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :toolforecast [status|shadow|off|score] (Werkzeug-Folgen-Prädiktor vor der Wirkung, SHADOW, Runden 7/8) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
+:regeln (deine Regeln + was ich ohne Nachfrage tun würde) / :regel <Text> (Verbot oder „frag vorher“ speichern) / :regel aus|verbot|fragen|nein <Nr>
 :jef [status|last|shadow|active|query|outcome <Event> <0..1>] (WP-N3 JEF-Broadcast-Cache, Offer-Nutzen, Top-down-Query)
 :self [status|model|body|messages|edit list|edit approve|reject|rollback <Id>] (WP-N9 Selbstmodell, Körpergefühl, Corollary, Self-Messages/-Edits)
 :download all|needle|language|body|gist|embedding / :import model <Rolle> <Pfad>
@@ -75,11 +76,17 @@ class Operator:
             last=self.r.last_answer()
             if last and last['status']=='FINAL':inputs.record_rating(self.r.store,last['event_id'],inputs.IMPLICIT_SCORE[signal],'IMPLICIT_CHAT',line[:240])
         except (ValueError,KeyError):pass
+    def _user_rules(self,line):
+        """2026-10-21: a prohibition / "ask me first" the user types is recorded by the fixed rule reader before the turn
+        runs (so it already binds this turn's tools) and confirmed with a fixed notice; never via a model."""
+        from . import userrules
+        for text in userrules.observe(self.r.store,line):self.r.notice(text)
     def run(self,line,origin='OPERATOR_TTY'):
         if origin!='OPERATOR_TTY':raise ValueError('Nur lokale Operator-Eingaben dürfen Befehle ausführen')
-        if line.startswith('::'):return self.r.submit(line[1:])
+        if line.startswith('::'):self._user_rules(line[1:]);return self.r.submit(line[1:])
         if not line.startswith(':'):
             self._implicit_feedback(line)
+            self._user_rules(line)
             return self.r.submit(line)
         parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r;s=r.store
         if cmd=='help':return HELP
@@ -145,6 +152,9 @@ class Operator:
             return operator_command(r,args)
         if cmd=='attention':
             from .attention import operator_command
+            return operator_command(r,args)
+        if cmd in ('regel','regeln','rules','rule'):
+            from .userrules import operator_command
             return operator_command(r,args)
         if cmd=='growth':
             from .agi import operator_command

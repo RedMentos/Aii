@@ -159,15 +159,16 @@ class ToolStep:
         if p.get('status')!='PROPOSED':return None
         tx=self._registry().call(p['tool'],p['args'],origin='SYSTEM',predicted=self._forecast(e,p),event_id=e['event_id'],idempotency_key=e['event_id']+':'+p['tool'])
         self.r.store.log('tool_step',e['event_id'],{'tool':p['tool'],'status':tx['status'],'mode':'PROPOSED'})
-        return {'tool':p['tool'],'args':p['args'],'status':tx['status'],'call_id':tx['id'],'preview':tx.get('preview'),'reason':tx['reason']}
+        return {'tool':p['tool'],'args':p['args'],'status':tx['status'],'call_id':tx['id'],'preview':tx.get('preview'),'reason':tx['reason'],'user_rules':tx.get('user_rules') or []}
     def pending_layer(self,pending):
         """Volatile layer: the body must not claim the action happened."""
         pv=pending.get('preview') or {}
         return {'tool':pending['tool'],'status':'WAITING_FOR_USER_APPROVAL','effect':pv.get('effect'),'target':pv.get('target'),
                 'note':'Not executed. The user sees a preview and can approve it; do not say it was done.'}
     def shadow(self,e,p):
-        """Refused by policy: compute pure READ_LOCAL tools off-path for later agreement; never shown, never a fact."""
-        if p['risk']!='READ_LOCAL' or p['tool'] not in ('calc','list_arith','eligibility'):return None
+        """Refused by policy: compute pure READ_LOCAL tools off-path for later agreement; never shown, never a fact.
+        Never when a user rule forbids it or asks to be asked first (2026-10-21): not even off-path."""
+        if p['risk']!='READ_LOCAL' or p['tool'] not in ('calc','list_arith','eligibility') or 'USER_RULE' in str(p.get('reason','')):return None
         try:
             from .agi.tools import calc
             from .agi import listarith,eligibility

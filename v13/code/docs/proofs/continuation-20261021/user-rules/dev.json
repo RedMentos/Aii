@@ -1,0 +1,429 @@
+{
+ "schema": "USER_RULES_DEV_V1",
+ "note": "development sentences, written after the holdout and used to build the parser; never the holdout itself",
+ "items": [
+  {
+   "text": "Don't delete my notes.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Do not ever erase my files.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Lösche nie meine Dateien.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Du sollst keine Notizen überschreiben.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Never send my messages to anyone.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Teile niemals meine Kontakte.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Don't upload anything.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "No internet access.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Kein Internet!",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Ask me first before installing anything.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ]
+  },
+  {
+   "text": "Installier nichts ohne meine Erlaubnis.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ]
+  },
+  {
+   "text": "Only send emails if I approve them.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ]
+  },
+  {
+   "text": "Don't do anything without telling me.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ]
+  },
+  {
+   "text": "Mach nichts, ohne mich zu fragen.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ]
+  },
+  {
+   "text": "Don't use the calculator.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Benutz nicht den Taschenrechner.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Don't forget the meeting.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Vergiss nicht, mir zu schreiben.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Keine Sorge, das klappt schon.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "I don't know the answer.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Ich weiß es nicht.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Please save this as a note.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Delete the draft note.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Why don't you save it?",
+   "lang": "en",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Perhaps don't install updates for now.",
+   "lang": "en",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ]
+  },
+  {
+   "text": "Meine Mutter sagt, du sollst nichts kaufen.",
+   "lang": "de",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Don't do that again.",
+   "lang": "en",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ]
+  },
+  {
+   "text": "You may send emails now.",
+   "lang": "en",
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Du kannst wieder Notizen löschen.",
+   "lang": "de",
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Delete the old drafts, but not my photos.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Never remove notes other than the temporary ones.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ]
+  },
+  {
+   "text": "Leave my notes alone.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Lass meine Fotos in Ruhe.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Hands off my files!",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Don't ever share my passwords.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Gib niemals mein Passwort weiter.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "I never delete my notes.",
+   "lang": "en",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ]
+  },
+  {
+   "text": "Never download programs.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Don't change anything.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace",
+    "install_module"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Ändere nichts.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace",
+    "install_module"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Show me what you plan before you act.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ]
+  },
+  {
+   "text": "Bevor du etwas löschst, frag mich.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_replace",
+    "delete_photo"
+   ]
+  },
+  {
+   "text": "Never write to my notes without my okay.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_new",
+    "note_replace"
+   ]
+  },
+  {
+   "text": "Don't hesitate, just do it.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "No thanks.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Stop sending me reminders.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": []
+  }
+ ]
+}

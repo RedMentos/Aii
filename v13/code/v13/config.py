@@ -81,6 +81,10 @@ DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"learning_mode":"
  "body_question_scope":"rule_decision","eligibility_reader":"fixed",
  "body_question_b1":"Which option figures apply here: cost, duration and locality of Option A and Option B? Quote the exact source sentences that state them, or say they are not in the source.",
  "body_question_b2":"Which earlier project rules apply here: budget, deadline and local-only requirement? Quote the exact earlier source sentence that states them, or say they are not in the source."}
+# Values before the 2026-10-21 quote-help decision. Frozen measurement harnesses and their regression tests pin these, so a
+# re-run measures exactly what was preregistered (live and new benches use DEFAULTS).
+LEGACY_QUOTE_PATH={"offer_quote_context_chars":0,"b2_quote_select":"off","b2_offer_body_state":True,"offer_quote_min_chars":0,"b1_recent_source_chars":0,
+ "body_question_scope":"always","eligibility_reader":"c3","body_question_b1":"","body_question_b2":""}
 # IH-H5 KnobSpec: every knob has a declared kind, so 0..1 is never silently read as a probability.
 KNOB_KINDS={'AUTHORITY','MIX_WEIGHT','PRIOR','PROBABILITY','THRESHOLD','BUDGET_FRACTION','BOOLEAN','COUNT','BYTES','BYTES_MB',
             'DURATION_MS','DURATION_S','DURATION_DAYS','RATE_HZ','LEARNING_RATE','DECAY','TEMPERATURE'}
