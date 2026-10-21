@@ -1,0 +1,61 @@
+{
+ "schema": "V13_SELECTIVE_DELIVERY_V3_PREREGISTRATION_V1",
+ "utc": "2026-10-21T06:15:26.690276+00:00",
+ "package": "WP-T9 follow-up / native firing diagnostics: key separation for the fast trace (canon \u00a79.1 conditional associative memory, \u00a724.18 fast trace)",
+ "script": "code/scripts/selective_delivery_v3_bench.py",
+ "script_sha256": "78882369416e3c401d39a72381f53293c62ef5d16de0f7c129ab81c6ff0d9733",
+ "v1_script_sha256": "6588eedca94cca5c32156fa48db5bad40189e28df77f2d29ed56e1bf523c01ad",
+ "sparse_memory_sha256": "c84a0358a0503c81db93f5a420d7a8df496dab96bf6a50a764894357109e3f76",
+ "hook_header_sha256": "479d51b35a7b1fbcb8e15540de60a71e73ddbec789dfe2d65b904c91ddf695dd",
+ "corpus_file_sha256": "10d3b206286677da34a4b431c865016ae9d7ff3c526b054d481f0753aae4595e",
+ "diagnosis_before_this_prereg": {
+  "source": "post-hoc per-slot mapping of the v1 sealed report (sha256 18aba7e1...) with the v1 .bin row map",
+  "foreign_firings_v1": {
+   "trace": 31,
+   "selective": 42,
+   "combined": 121
+  },
+  "own_firings_v1": {
+   "trace": 36,
+   "selective": 35,
+   "combined": 34
+  },
+  "causes": [
+   "shared guard words across facts (favourite x4, play x2, best x2; live/near)",
+   "guard context = whole prompt, so exact blocks naming other facts open their slots"
+  ]
+ },
+ "fix_candidate": {
+  "guard_distinct": true,
+  "guard_vocab": "the 40 corpus fact questions (= the exact store)",
+  "guard_scope": "last_user (from the second-to-last <|im_start|>)",
+  "native": "V13SMEM1 header field 6 = 2 + chat-marker token id; v13_new_prompt restricts the guard context accordingly; defaults unchanged (field 1)"
+ },
+ "runner": "llama.cpp b10964 GitHub source archive (sha256 4c96d72c...), patched by v13.memory_server.build; v1 used the PyPI-vendored tree, so both traces are retrained and all arms re-run on one binary",
+ "models": {
+  "c3_gguf_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "master": "LiquidAI/LFM2.5-350M @ 9e6c6ccf47cd318696e137d381a7ded8fe4df09f, model.safetensors sha256 1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e (= v1)"
+ },
+ "arms": [
+  "base",
+  "exact",
+  "trace_v1",
+  "selective_v1",
+  "trace",
+  "combined",
+  "selective"
+ ],
+ "sets": "40 facts, 40 paraphrases, 40 near-miss, 12 retention probes; one greedy answer each (temperature 0, max 40 tokens, seed 13)",
+ "metrics": {
+  "foreign_rows": "rows (all four sets) with >=1 fired memory that is not the row's own fact (near-miss/probe rows: any fired memory)",
+  "own_fired_trace": "stored fact questions of the 20 trace facts whose own memory fired"
+ },
+ "decision_rule": {
+  "H1 KEY_SEPARATION_SUPPORTED": "foreign_rows(trace) < foreign_rows(trace_v1) AND own_fired_trace(trace, facts) >= 18/20 AND no unobserved audit rows in both trace arms",
+  "H2 SELECTIVE_WINS_CANDIDATE": "v1 criteria unchanged for arm selective vs exact: paired losses <= wins on facts+paraphrase, near-miss leak <= exact, fewer prompt tokens, no extra forgotten probe"
+ },
+ "expectation": "H1 likely (both causes targeted); H2 uncertain: near-miss leak from same-thing-other-person questions (car/sister) is not addressed by word guards",
+ "single_run": "No re-run with changed settings counts as this attempt; a FAIL stays a FAIL.",
+ "consequence": "nothing activated, runtime and AG6 auto unchanged; a WIN only allows a separately preregistered runtime change",
+ "hardware": "Linux x86_64 cloud CPU, 4 threads; not Redmi"
+}

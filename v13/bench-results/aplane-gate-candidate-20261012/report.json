@@ -1,0 +1,230 @@
+{
+ "prereg": {
+  "schema": "APLANE_GATE_CANDIDATE_PREREG_V1",
+  "test_seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "window": 100,
+  "retention": "newest 25 agreement >= GATE_AGREE - .15",
+  "worlds": {
+   "standard": "ablation world",
+   "stress": "three drops to .40 for 400 turns"
+  },
+  "pass": [
+   "standard: candidate > current in >=4/5",
+   "stress: candidate > always in >=4/5",
+   "stress: candidate < never in <=1/5"
+  ]
+ },
+ "test": {
+  "standard": {
+   "13": {
+    "candidate": {
+     "primary": 0.83895,
+     "fallback_turns": 267
+    },
+    "gated": {
+     "primary": 0.68914,
+     "fallback_turns": 267
+    },
+    "always": {
+     "primary": 0.89513,
+     "fallback_turns": 267
+    },
+    "never": {
+     "primary": 0.603,
+     "fallback_turns": 267
+    }
+   },
+   "14": {
+    "candidate": {
+     "primary": 0.82867,
+     "fallback_turns": 286
+    },
+    "gated": {
+     "primary": 0.7028,
+     "fallback_turns": 286
+    },
+    "always": {
+     "primary": 0.84965,
+     "fallback_turns": 286
+    },
+    "never": {
+     "primary": 0.63636,
+     "fallback_turns": 286
+    }
+   },
+   "15": {
+    "candidate": {
+     "primary": 0.77705,
+     "fallback_turns": 305
+    },
+    "gated": {
+     "primary": 0.7082,
+     "fallback_turns": 305
+    },
+    "always": {
+     "primary": 0.90164,
+     "fallback_turns": 305
+    },
+    "never": {
+     "primary": 0.62623,
+     "fallback_turns": 305
+    }
+   },
+   "16": {
+    "candidate": {
+     "primary": 0.79276,
+     "fallback_turns": 304
+    },
+    "gated": {
+     "primary": 0.69079,
+     "fallback_turns": 304
+    },
+    "always": {
+     "primary": 0.87171,
+     "fallback_turns": 304
+    },
+    "never": {
+     "primary": 0.57237,
+     "fallback_turns": 304
+    }
+   },
+   "17": {
+    "candidate": {
+     "primary": 0.86379,
+     "fallback_turns": 301
+    },
+    "gated": {
+     "primary": 0.71761,
+     "fallback_turns": 301
+    },
+    "always": {
+     "primary": 0.89369,
+     "fallback_turns": 301
+    },
+    "never": {
+     "primary": 0.59136,
+     "fallback_turns": 301
+    }
+   }
+  },
+  "stress": {
+   "13": {
+    "candidate": {
+     "primary": 0.72509,
+     "fallback_turns": 291
+    },
+    "gated": {
+     "primary": 0.61168,
+     "fallback_turns": 291
+    },
+    "always": {
+     "primary": 0.69416,
+     "fallback_turns": 291
+    },
+    "never": {
+     "primary": 0.60825,
+     "fallback_turns": 291
+    }
+   },
+   "14": {
+    "candidate": {
+     "primary": 0.72876,
+     "fallback_turns": 306
+    },
+    "gated": {
+     "primary": 0.66667,
+     "fallback_turns": 306
+    },
+    "always": {
+     "primary": 0.70588,
+     "fallback_turns": 306
+    },
+    "never": {
+     "primary": 0.63399,
+     "fallback_turns": 306
+    }
+   },
+   "15": {
+    "candidate": {
+     "primary": 0.74497,
+     "fallback_turns": 298
+    },
+    "gated": {
+     "primary": 0.64765,
+     "fallback_turns": 298
+    },
+    "always": {
+     "primary": 0.68456,
+     "fallback_turns": 298
+    },
+    "never": {
+     "primary": 0.63087,
+     "fallback_turns": 298
+    }
+   },
+   "16": {
+    "candidate": {
+     "primary": 0.69969,
+     "fallback_turns": 323
+    },
+    "gated": {
+     "primary": 0.60681,
+     "fallback_turns": 323
+    },
+    "always": {
+     "primary": 0.73375,
+     "fallback_turns": 323
+    },
+    "never": {
+     "primary": 0.60681,
+     "fallback_turns": 323
+    }
+   },
+   "17": {
+    "candidate": {
+     "primary": 0.70764,
+     "fallback_turns": 301
+    },
+    "gated": {
+     "primary": 0.6412,
+     "fallback_turns": 301
+    },
+    "always": {
+     "primary": 0.67442,
+     "fallback_turns": 301
+    },
+    "never": {
+     "primary": 0.59136,
+     "fallback_turns": 301
+    }
+   }
+  }
+ },
+ "means": {
+  "standard": {
+   "candidate": 0.8202,
+   "gated": 0.7017,
+   "always": 0.8824,
+   "never": 0.6059
+  },
+  "stress": {
+   "candidate": 0.7212,
+   "gated": 0.6348,
+   "always": 0.6986,
+   "never": 0.6143
+  }
+ },
+ "criteria": {
+  "standard_beats_current": 5,
+  "stress_beats_always": 4,
+  "stress_below_never": 0
+ },
+ "verdict": "PASS",
+ "claim_limit": "synthetic agreement process; isolated candidate, aplane.py unchanged"
+}
