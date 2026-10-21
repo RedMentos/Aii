@@ -9,6 +9,15 @@ Vorregistrierter Lauf (C/D/CQ/DQ × Seeds 14–16, 840 Zeilen, echte Modelle, Li
 # Aktuell 2026-10-21 (Thread „Z2 STEP2 mit B1-Detailinfo“): STEP2 mit B1-eigener Information — Gate FAIL
 
 Neuer Schalter `b1_recent_source_chars` (Standard 0 = aus): B1 behält die exakte Quelle seiner letzten Runde. Vorregistrierter Lauf (10 Episoden, 5 Arme × 70 Zeilen, echte Modelle, Linux-Cloud): `Z2_DIVERGENCE_NOT_SUPPORTED` — Zwei-Körper .325 < b1_only .333, ein Körper + zwei Zustände nicht schlechter. B1 liefert jetzt Optionswerte (27/70 statt 0), exakte SPLIT-Entscheidungen nur im Ein-Körper-Arm (3/6). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2-timescale/BEFUND.md`, Branch `claude/project-thread-hsm0ga`. STEP2 UTILITY_FAIL bleibt.
+# Aktuell 2026-10-21 (Thread „STEP2-Nutzen Engpass“): Eignungs-Werkzeug im Live-Pfad
+
+`ToolStep._propose_eligibility`: Option-A/B-Fragen unter Projektregeln → C3 liest typisierte Werte aus Quelle + Body-Zitaten → Rezept entscheidet. Nur nach `:growth enable eligibility`, Age 0 SHADOW. Vorregistriert gemessen: 55/70 exakt, 0 falsch (LIVE_PROMPT_SUPPORTED). Handy-Testliste `../HANDY_TESTLISTE.md`. Befund `docs/proofs/continuation-20261021/eligibility-live/BEFUND.md`.
+
+# Aktuell 2026-10-21 (Thread „Nächste Pakete Q“): Eignungs-Werkzeug im ganzen Live-Turn
+
+`eligibility` läuft im normalen Turn (nur nach Freigabe, Alter 0 = SHADOW). Vorregistrierte Messung, 60 frische Aufgaben auf C3: Antworttext richtig 22 → 32 (p .006), falsch festgelegt 33 → 23, Rezept nie falsch, mit Broker-Korrektur sichtbar richtig 53/60. Befund `docs/proofs/continuation-20261021/eligibility-whole-turn-q/BEFUND.md`, Branch `claude/project-thread-hzzqh4`. Parallele Fassung im Thread „STEP2-Nutzen Engpass“ (dq33gk) beim Zusammenführen abgleichen.
+
+Zusammengeführt in `claude/project-thread-dq33gk` (PR #7): Qs Fassung gilt, dazu Zitat-als-Zeiger-Schalter + `analyst_context`-Fix (Chat brach mit Schalter an ab). Ganzer Turn der dq33gk-Variante war NOT_SUPPORTED, daher entfallen.
 
 # Aktuell 2026-10-20 (Abend): Handy-Paket Werkzeug-Vorhersage fertig
 

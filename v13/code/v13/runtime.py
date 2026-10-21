@@ -422,7 +422,7 @@ class Runtime:
             view=focal_run['trajectory'][-1]['view'] if focal_run and focal_run['trajectory'] else None
             tool_plan=tool_result=tool_shadow=tool_pending=None
             if not direct:
-                try:tool_plan=toolctl.ToolStep(self).plan(e,text)  # WP-K/AG10: concrete tool proposal -> C5 candidate under IH-H29
+                try:tool_plan=toolctl.ToolStep(self).plan(e,text,offers=selected,version=version)  # WP-K/AG10: concrete tool proposal -> C5 candidate under IH-H29
                 except Exception as exc:self.store.log('tool_step_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
             clar=agi_live.clarify(self,meta) if not direct else None  # WP-N13 AG9 abstain -> C5 ASK_USER
             c5=ActionGate(self.store).select(e,route=route,direct=direct,resource_state=state,coalition=focal_run['coalition'] if focal_run else [],view=view,age=age_lim,effort=effort_plan['effort'] if effort_plan else None,gain_action=self._action_gain(eid),tool=tool_plan,clarify=clar)
