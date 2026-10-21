@@ -24,9 +24,14 @@ DEFAULTS={'slots':8192,'key_dim':64,'topk':32,'train_slots':128,'layer':None,'lr
           'threads':4,'max_tokens':96,'train_keys':False,'anchor_weight':0.,'scale':1.,'background_tokens':24,'anchors_per_step':8,
           'mode':'keyed','keyed_slots':1024,'tau':.01,'margin':.02,'theta_min':.9,
           'entity_guard':False,'entity_width':12,'base_gguf':None,
-          'system':None,'contexts':None}
+          'system':None,'contexts':None,'guard_distinct':False,'guard_vocab':None,'guard_scope':'prompt'}
 # system: write keys and measure in the live chat context (runtime system prompt), else bare user turn.
-# contexts: extra system prompts ('' = bare turn) whose answer positions also get keyed slots (context augmentation).  # keyed r90 won the WP-S3 ablation
+# contexts: extra system prompts ('' = bare turn) whose answer positions also get keyed slots (context augmentation).
+# guard_distinct: entity-guard words only where they separate facts (document frequency 1 over the batch + guard_vocab, e.g. the
+#   questions of the exact store), so 'favourite' no longer lets the 'favourite dish' slot fire on 'favourite colour'.
+# guard_scope: 'prompt' = guard context is the whole prompt (system + exact blocks + question, as before); 'last_user' = only
+#   the last user turn and the assistant header, so an exact block that mentions another fact does not open its slots.
+#   Native: V13SMEM1 header field 6 = 0 off, 1 whole prompt, 2+m last turn after chat-marker token m (old readers: whole prompt).  # keyed r90 won the WP-S3 ablation
 REVISION='wp-s3-sparse-memory-v1'
 DELIVERY_SCHEMA='V13_SPARSE_DELIVERY_BINDINGS_V1'
 
@@ -44,10 +49,33 @@ def entity_words(prompt):
     import re
     return [w for w in re.findall(r"[a-z0-9]+",prompt.lower()) if w not in STOP and len(w)>1]
 
-def entity_token_ids(tok,prompt,width):
+def guard_words(prompt,vocab=None):
+    """Entity-guard words of a fact question. vocab=None: all content words (as before). With vocab (the other fact
+    questions the memory must tell apart): only words no other question shares; if every word is shared, all of them."""
+    own=entity_words(prompt)
+    if vocab is None:return own
+    other=[set(entity_words(q)) for q in dict.fromkeys(vocab) if q!=prompt]
+    keep=[w for w in own if not any(w in o for o in other)]
+    return keep or own
+
+def guard_header(cfg,mark=None):
+    """V13SMEM1 header field 6 (see DEFAULTS comment)."""
+    if not cfg.get('entity_guard'):return 0
+    if cfg.get('guard_scope','prompt')=='last_user':
+        if mark is None or mark<0:raise ValueError('guard_scope last_user braucht das Chat-Marker-Token')
+        return 2+int(mark)
+    return 1
+
+def scoped_context(ids,mark):
+    """Tokens of the last user turn: from the second-to-last chat marker on (user turn + assistant header)."""
+    if mark is None:return ids
+    pos=[k for k,t in enumerate(ids) if t==mark]
+    return ids[pos[-2]:] if len(pos)>=2 else ids
+
+def entity_token_ids(tok,prompt,width,words=None):
     """First sub-token of each content word in its common spellings (leading space, capitalised)."""
     ids=[]
-    for w in entity_words(prompt):
+    for w in (entity_words(prompt) if words is None else words):
         for v in (' '+w,w,' '+w.capitalize(),w.capitalize()):
             t=tok(v,add_special_tokens=False)['input_ids']
             if t and t[0] not in ids:ids.append(t[0])
@@ -88,7 +116,7 @@ def build_memory(torch,hidden,cfg):
                 # Entity guard: a slot may only fire when one of its fact's content-word tokens is in the current context
                 # ("my dog" must not recall the "my cat" slot even though their hidden states are ~0.99 cosine).
                 self.register_buffer('ent',torch.full((n,int(cfg['entity_width'])),-1,dtype=torch.long));self.register_buffer('slot_item',torch.full((n,),-1,dtype=torch.long))
-                self.guard=bool(cfg['entity_guard']);self.ctx=None
+                self.guard=bool(cfg['entity_guard']);self.ctx=None;self.scope_mark=None
         def forward(self,x):
             if self.mode=='keyed':
                 if self.record_q is not None:self.record_q.append(x.detach().reshape(-1,x.shape[-1]))
@@ -120,6 +148,7 @@ def attach(torch,model,cfg):
         ids=kwargs.get('input_ids',args[0] if args else None)
         if ids is None or not hasattr(mem,'ctx'):return
         ids=ids.reshape(-1)
+        if ids.numel()>1 and getattr(mem,'scope_mark',None) is not None:ids=torch.tensor(scoped_context(ids.tolist(),mem.scope_mark),dtype=ids.dtype)
         mem.ctx=ids.unique() if ids.numel()>1 or mem.ctx is None else torch.cat([mem.ctx,ids]).unique()
     model.register_forward_pre_hook(ctx_hook,with_kwargs=True)
     return mem,i
@@ -152,6 +181,8 @@ class SparseMemoryTrainer:
             from .lora_trainer import LoraTrainer
             self.deployed_base=LoraTrainer(self.master,self.work)._load_gguf_weights(torch,self.model,self.cfg['base_gguf'])
         self.memory,self.layer=attach(torch,self.model,self.cfg)
+        if self.cfg.get('guard_scope','prompt')=='last_user':
+            self.memory.scope_mark=self.tok.convert_tokens_to_ids('<|im_start|>');self.cfg['guard_mark']=int(self.memory.scope_mark)
         return self
     def _hits(self,ids,positions=None):
         torch=_torch();self.memory.record=[]
@@ -175,7 +206,8 @@ class SparseMemoryTrainer:
         free=int((m.written==0).nonzero()[0]) if bool((m.written==0).any()) else None;chosen=[];radius={}
         for n,(ids,labels) in enumerate(data):
             q=norm(self._queries(ids))
-            ent=entity_token_ids(self.tok,items[n]['prompt'],int(cfg['entity_width'])) if n<len(items) else []
+            words=guard_words(items[n]['prompt'],[i['prompt'] for i in items]+list(cfg.get('guard_vocab') or [])) if n<len(items) and cfg.get('guard_distinct') else None
+            ent=entity_token_ids(self.tok,items[n]['prompt'],int(cfg['entity_width']),words) if n<len(items) else []
             for k in [k-1 for k,l in enumerate(labels) if l!=-100 and k>0]:
                 if free is None or free>=m.hkeys.shape[0]:raise ValueError('Memory-Slots voll')
                 key=q[k];th=float((bg@key).max()) if bg.shape[0] else 0.
@@ -275,7 +307,7 @@ def export_native(path,out):
     f=lambda t:np.ascontiguousarray(t.detach().float().numpy(),dtype='<f4').tobytes()
     ent=S.get('ent',torch.full((S['written'].shape[0],1),-1,dtype=torch.long))[w]
     with open(out,'wb') as fh:
-        fh.write(b'V13SMEM1');fh.write(struct.pack('<6i',int(st['layer']),int(S['mu'].shape[0]),int(w.numel()),int(ent.shape[1]),int(cfg['topk']),int(bool(cfg.get('entity_guard')))))
+        fh.write(b'V13SMEM1');fh.write(struct.pack('<6i',int(st['layer']),int(S['mu'].shape[0]),int(w.numel()),int(ent.shape[1]),int(cfg['topk']),guard_header(cfg,cfg.get('guard_mark'))))
         fh.write(struct.pack('<2f',float(cfg['tau']),float(cfg['scale'])))
         fh.write(f(S['mu']));fh.write(f(S['hkeys'][w]));fh.write(f(S['theta'][w]));fh.write(f(S['values'][w]))
         fh.write(np.ascontiguousarray(ent.numpy(),dtype='<i4').tobytes())

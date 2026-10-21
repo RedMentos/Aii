@@ -16,7 +16,7 @@
 struct Memory {
     int layer = 0, hidden = 0, n = 0, ent_w = 0, topk = 32; float tau = .01f, scale = 1.f;
     std::vector<float> mu, keys, theta, values; std::vector<int32_t> ent;
-    std::set<int32_t> ctx; std::vector<float> x; int64_t x_rows = 0; bool use_guard = true, track_ctx = false, debug = false; long fired = 0, writes = 0; int64_t last_n = 1; bool explicit_ctx = false;
+    std::set<int32_t> ctx; std::vector<float> x; int64_t x_rows = 0; int32_t scope_mark = -1; bool use_guard = true, track_ctx = false, debug = false; long fired = 0, writes = 0; int64_t last_n = 1; bool explicit_ctx = false;
     // Opt-in observations only. Row indices are bound to the separately hashed memory artifact.
     bool audit = false; unsigned long audit_request = 0;
     long audit_rows = 0, audit_batches = 0;
@@ -43,7 +43,7 @@ inline void v13_audit_batch(Memory & m, int64_t rows) {
 inline bool load_memory(const char * path, Memory & m) {
     std::ifstream f(path, std::ios::binary); if (!f) return false;
     char magic[8]; f.read(magic, 8); if (std::memcmp(magic, "V13SMEM1", 8) != 0) return false;
-    int32_t h[6]; f.read((char *) h, sizeof h); m.layer = h[0]; m.hidden = h[1]; m.n = h[2]; m.ent_w = h[3]; m.topk = h[4]; m.use_guard = h[5] != 0;
+    int32_t h[6]; f.read((char *) h, sizeof h); m.layer = h[0]; m.hidden = h[1]; m.n = h[2]; m.ent_w = h[3]; m.topk = h[4]; m.use_guard = h[5] != 0; m.scope_mark = h[5] >= 2 ? h[5] - 2 : -1;  // 2+m: guard on the last turn after chat marker m
     float fh[2]; f.read((char *) fh, sizeof fh); m.tau = fh[0]; m.scale = fh[1];
     auto rd = [&](std::vector<float> & v, size_t k) { v.resize(k); f.read((char *) v.data(), k * 4); };
     rd(m.mu, m.hidden); rd(m.keys, (size_t) m.n * m.hidden); rd(m.theta, m.n); rd(m.values, (size_t) m.n * m.hidden);
@@ -131,6 +131,8 @@ inline bool v13_parse_and_attach(int argc, char ** argv, common_params & params,
 template <typename T> inline void v13_new_prompt(const T & tokens) {
     Memory * m = v13_mem(); if (!m) return;
     v13_audit_begin(*m);
-    m->ctx.clear(); for (size_t i = 0; i < tokens.size(); ++i) if (tokens[i] >= 0) m->ctx.insert(tokens[i]);
+    size_t from = 0;  // scope_mark >= 0: only the last user turn + assistant header (from the second-to-last chat marker)
+    if (m->scope_mark >= 0) { size_t seen = 0; for (size_t i = tokens.size(); i-- > 0;) if (tokens[i] == m->scope_mark && ++seen == 2) { from = i; break; } }
+    m->ctx.clear(); for (size_t i = from; i < tokens.size(); ++i) if (tokens[i] >= 0) m->ctx.insert(tokens[i]);
 }
 #endif
