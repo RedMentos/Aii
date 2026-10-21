@@ -28,6 +28,8 @@ große Sammelzeilen wie „§24 Benchmarks“ zählen nur einmal, die Zahl ist a
 | ❌ FEHLT | 10 | 5 % |
 | ⏸ SPÄTER | 3 | 1 % |
 
+**Nachtrag 2026-10-20 (WP-G2):** Gist-Zeile und G1B bleiben 🟡, jetzt mit nativem B2-Readout-Konsumenten und vorregistrierter nativer Messung (`code/docs/GIST_READOUT.md`).
+
 **Nachtrag 2026-10-12 (Thread I):** §8.6 und G6B von ❌ auf 🟡 (Zählung oben nicht neu berechnet).
 
 **Nachtrag 2026-10-12 (Thread N):** §97.2 Redmi Resource Modes bleibt 🟡, aber jetzt mit Laufpfad, Tests und Kalibrierweg; offen ist nur die Messung am Redmi (WP-R). Phone-first Learning: LFM2-Blocker aufgehoben, Status bleibt 🟡.
@@ -99,7 +101,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 |---|---|---|---|---|
 | B1 Detail-Körper | §1.2.1, §3.1, §52 | 🟡 | LFM2.5-1.2B als Beobachter mit 240-Zeichen-Sicht | WP-G |
 | B2 Gist-Körper | §1.2.2, §3.2, §53 | 🟡 | eigener Körper Qwen3.5-0.8B (WP-V, WP-N11 über AG0-Slots), 960-Zeichen-Sicht + Kontext-Slots; STEP2-Zwei-Körper-Messung FAIL | WP-G, WP-N11 |
-| Gist-Gruppierung ~8 Token / Slots | §1.2.2, G1B, §17.6 | 🟡 | `gist.py` (Age-Auflösung, grenzbewusst, verlustfrei; SHADOW/`:gist active`); Nutzen-Messung offen | WP-G |
+| Gist-Gruppierung ~8 Token / Slots | §1.2.2, G1B, §17.6 | 🟡 | `gist.py` (Age-Auflösung, grenzbewusst, verlustfrei; SHADOW/`:gist active`); 2026-10-20 nativer B2-Readout-Konsument `gist_readout.py` (`:gist readout`), native Messung: Text-Grenzen +.08 Recall@1 ggü. fester Gruppierung gleicher Zahl, natives Sprungsignal ohne Zusatznutzen; Antwort-Nutzen offen | WP-G, WP-G2 |
 | Cross-scale Kopplung | §3.2A | ✅ | `focal.link_scales`; Gist-Slots mit Fein-Spans, Abdeckung, Kompression, Grenz-Konfidenz, Rückfall (`gist.coupling`); B1 bündelt bei Re-entry lokalen vorläufigen Gist (`gist.local_bundle`, im Prompt nur mit `:gist active`) | WP-N1, WP-G, WP-U7 |
 | MoE-Körper (MobileMoE-S-QAT, zwei verschiedene MoE-Hälften) | §81, §87.1, §91, Nutzerwunsch | 🟡 | 2026-10-12: offener Kandidat EuroMoE-2.6B-A0.6B (Apache-2.0, en+de) läuft in HF und llama.cpp b10964 (F16/Q4_K_M 1,6 GB); MobileMoE weiter gated; noch nicht in `specs/models.json` (Freeze), kein Redmi (`code/docs/MOE_N11.md`) | **WP-N11** |
 | Router-Stabilität für MoE | B3-H6, §16.2.1 | 🟡 | `scripts/moe_router_monitor.py` Gate + Kalibrierung aus Basis-Schwankung, echte EuroMoE-Messung `bench-results/moe-router-20261012/` (stabil nur α ≤ 0,01); isoliert, nicht im Lauf | WP-N11 |
@@ -278,7 +280,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 |---|---|---|
 | G0 Maschinenlesbarer Canon | ✅ | – |
 | G1 Echter Harness | ✅ | – |
-| G1B Fixierte Gist/Detail-Auflösung | 🟡 (Python + Struktur-Bench fertig, Modell-Messung offen) | WP-G |
+| G1B Fixierte Gist/Detail-Auflösung | 🟡 (Python + Struktur-Bench fertig; 2026-10-20 native B2-Readout-Messung boundary vs fixed: Text-Grenzen besser, hybrid FAIL; gelernte adaptive Gruppierung + Antwort-Nutzen offen) | WP-G, WP-G2 |
 | G2 BodyPort + Callosum-Bootstrap | 🟡 | WP-AG0, WP-J |
 | G2B Echter Callosum + verteilter Zustand | 🟡 | WP-J, WP-N1 |
 | G2C Kanal-Nutzen + Empfänger-Kalibrierung | 🟡 | WP-J |
