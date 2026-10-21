@@ -1,11 +1,39 @@
-# V13 Umsetzungs-Roadmap (Stand 2026-10-09)
+# V13 Umsetzungs-Roadmap (angelegt 2026-10-09; Ziele neu abgeglichen 2026-10-21, siehe §0)
 
 Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STATE.json`
 (Checkpoint `CAUSAL_NATIVE46_NINTH_EXPORTED_SQLITE_FAILED_BEFORE_FIT`),
 `status/completion-ledger.json`, `code/specs/component-contracts.json`,
 `code/docs/REMAINING_IMPLEMENTATION.md`. Kein Code wurde für diese Roadmap geändert.
 
-## 1. Zielbild ehrlich
+## 0. Ziele und Stand nach Blueprint (Zielabgleich 2026-10-21) — GILT VOR §1–§4
+
+Die Abschnitte 1–4 unten sind der Stand vom 09.10. und bleiben nur als Verlauf stehen (IH-H0). Sie sind teils überholt
+(z. B. „B1 und B2 sind dasselbe Modell“). Maßgeblich sind die Ziele, die der Blueprint selbst setzt. Volle Tabellen: `ZIELABGLEICH.md`.
+
+**Ziel 1, §29 „V13 funktioniert“ (24 Eigenschaften):** 8 erreicht, 14 teilweise, 2 fehlen. Fehlend: adaptive Kanal-Policy mit
+nachgewiesenem Latent-Nutzen und echter Message-Subspace-Austausch (beide hängen an B3 L1).
+
+**Ziel 2, §96 STEP-Ausgänge:** 0, 1, 3, 6A erreicht. **STEP2 (B1/B2 ergänzen sich messbar) ist der Engpass seit 09.10.**,
+dazu STEP6B (B3 L1) und STEP7 (Redmi-Wochenlauf). STEP4/5/6C teilweise.
+
+**Ziel 3, §100 Arbeits-Gates:** 0 von 10 grün (alle PARTIAL laut `measure_suite.py`, 21.10.). Sechs davon standen bis heute
+nirgends in dieser Roadmap: G-B-TIMESCALE-DIVERGENCE-001, G-TRAIN-RUNNER-PROOF-001, G-REPLAY-CONSOLIDATION-001,
+G-MODULATOR-SPECIFICITY-001, G-AGE-REOPEN-001, G-MOBILE-LONGRUN-001.
+
+**Ziel 4, §24 Kern-Benchmarks:** 6 von 35 mit echten Zahlen gemessen (24.11 durchgefallen), 25 nur mit Existenz-Test.
+Der Nutzen der „Gehirn-Mitte“ (Koalition, Inquisition, Effort, Gist, Attention) liegt in der Utility-Messung noch im Rauschband.
+
+**Was nicht passte und jetzt korrigiert ist:** „R4 Teile 4–11“ sind Werkzeug-Regel-Arbeit, nicht §31 R4; Vision-Lab läuft vor
+STEP7 (Blueprint: erst danach), bekommt deshalb keine weitere Arbeit; WP-AG und Werkzeug-Vorhersage sind Nutzer-/Nebenziele und
+zählen nicht als Blueprint-Abdeckung; ABDECKUNG-✅ heißt „Baustein im Code“, nicht „Ziel erreicht“; `gate-graph.json` meldet
+STEP2 GREEN trotz FAIL am Ausgang.
+
+**Reihenfolge ab jetzt (Blueprint §96/§105):** neue Pakete **WP-Z1 bis WP-Z12** am Ende dieser Datei. Sofort parallel in der
+Cloud: Z1 (Gate-Ehrlichkeit), Z2 (STEP2 neu mit B1-eigener Information), Z3 (C3-Konsument isolieren), Z4 (B3 L1 Versuch 4),
+Z5 (Koalition gegen §99-Kontrollen). Danach Z6 (§24 messen). Z7 ist ein Redmi-Lauf des Nutzers, Z8 eine Nutzerentscheidung.
+Seitenzweige (R4-Werkzeug-Regeln, Action-JEPA-Runden, Werkzeug-Vorhersage) nicht weiter ausbauen, bis Z2–Z5 Ergebnisse haben.
+
+## 1. Zielbild ehrlich (Stand 09.10., historisch; maßgeblich ist §0)
 
 Der Blueprint definiert in §29 selbst, wann V13 „funktioniert“: echter A+B+C-Stack,
 Fine/Gist-Split mit gemessenem Nutzen, trainierter Callosum, JEF mit Broadcast/Offers,
@@ -19,7 +47,7 @@ lernender Architektur-Prototyp, dessen Qualität durch die kleinen Modelle begre
 Die aktuellen Messungen zeigen das schon: STEP2 `UTILITY_FAIL` (B1 allein 0.59, B1+B2
 0.53, B2 0.12) und der C3-Kausal-Decoder liefert „query echo“.
 
-## 2. Stand: was da ist, was fehlt
+## 2. Stand: was da ist, was fehlt (Stand 09.10., historisch)
 
 Gesamter Runtime-Code: 36 Module, ca. 6.400 (sehr dichte) Zeilen in `code/v13/`.
 Ledger: 4 PASS, 15 PARTIAL, 1 BLOCKED (B3 latent), 1 NOT_STARTED (Body-JEPA).
@@ -59,7 +87,7 @@ beim Entpacken weggelassen wurden (`docs/canon/…md`, `docs/proofs/causal-outpu
 Der Nutzer arbeitet nur am Handy: jeder Redmi-Nachweis braucht einen Lauf von ihm
 (`bash TESTEN.sh`) und das Hochladen des Reports.
 
-## 4. Reihenfolge (Blueprint §105, angepasst an den Ist-Stand)
+## 4. Reihenfolge (Blueprint §105, angepasst an den Ist-Stand; Stand 09.10., ersetzt durch §0 und WP-Z)
 
 1. **P0 Substrat heil machen**: SQLite-Fix erledigt (401 Tests grün laut ZIP-Thread); 46er-Lauf wiederholen, sobald WP-B steht.
 2. **P0' Cloud-Prüfstand**: nativer Linux-Lauf hier reproduzierbar, sonst ist nichts
@@ -1153,3 +1181,56 @@ Nachgeschaltet Vorzeichen-Guard fürlist_arith minimal korrigiert,11TestPASS; ne
 ## B3 L1 Gate: exakte Diagnose + Fix-Kandidat — ERLEDIGT 2026-10-20 (Thread „B3 L1 Gate reparieren“)
 - `code/scripts/b3_l1_diagnose.py` (vorregistriert, `code/docs/proofs/b3-l1-diagnose-20261020/`), Nachtrag `b3_l1_diagnose_addendum.py`, Fix-Probe `b3_l1_aux_explore.py`, Ergebnis `bench-results/b3-l1-diagnose-20261020/README.md` (explorativ auf den gecachten Zuständen von Versuch 3). Ursache des FAIL: **nicht Bytes** (64 B kosten nur 0,004 Nutzen mehr), **nicht der Kanal** – die 64-B-Nachricht trägt U/F (R² 0,88–0,94) und ist, mit U/F-Sonde gelesen, so gut wie SCALAR (89/93/86 % vs 91/94/84 %). Sie verliert, weil die Brücke nur aus ≤ 360 Aufgabenlabels lernt, die SYMBOLIC_ATTR/SCALAR-Baselines aber privilegierte U/F-Labels bekommen; der eingefrorene NO_MESSAGE-Kopf kostet weitere ~2 Punkte. Fix-Kandidat: `Bridge(aux=A).fit(…, aux=…)` (nur Trainingssignal, Empfängerpfad und 64 B unverändert, Default byte-identisch, Test). Explorativ: +5,5/+4,7/+9,8 Punkte, Gate auf `action` PASS (auch strikt gegen SCALAR), escalate/apologize weiter FAIL gegen Attributwörter. Kein Canon-PASS (Testitems schon gesehen): `B3_LATENT` bleibt `unavailable`, L2 gesperrt. Nächstes Paket: **vorregistrierter Versuch 4** mit frischen Daten und `aux`-Brücke.
 - Nächstes Paket (offen): **B3 L1 Versuch 4** – neue Datensaat (neue B1/B2-Zustände nötig, Modelle wie Versuch 3), Brücke mit `aux`-Zielen, Gate unverändert, Rollen-Retention neu messen; vorregistrieren vor dem Lauf. Nur ein PASS dort erlaubt den L2-SHADOW-Test.
+
+### Anspruch 2026-10-21 06:10Z — Thread „Nächste Pakete Q“: Eignungs-Werkzeug `eligibility` im Live-Antwortpfad (C5/IH-H29, SHADOW zuerst)
+- Offen seit WP-W2c/W2d und STEP2-Engpass (Offen (2)): C3 liest typisierte Regel-/Optionswerte, Rezept entscheidet, Vorschlag als C5-TOOL_CALL, abgelehnt → SHADOW-Vergleich. Branch `claude/project-thread-hzzqh4` (Basis `0zelvf`). Nicht angefasst: B3 L1 Versuch 4 + native Firing-Diagnostik (Thread R).
+
+## Neue Pakete aus dem Zielabgleich (WP-Z, 2026-10-21, Thread „Ziele gegen Blueprint abgleichen“)
+
+Grund: Nutzer am 21.10., Ziele fehlen und passen nicht zum Blueprint. Befund und Tabellen in `ZIELABGLEICH.md`, Ziel-Ebene in
+`ABDECKUNG.md` §12. Diese Pakete gehen vor allen älteren offenen Paketen, weil sie die §100-Gates und den STEP2-Engpass angehen.
+Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, Autorität 0 bis zum Gate-PASS.
+
+### WP-Z1 Gate-Ehrlichkeit (klein, Cloud, kein Modell) — OFFEN
+- `code/specs/gate-graph.json`: STEP2 in `STEP2_HARNESS` (heute grün) und `STEP2_EXIT` (Komplementarität, heute rot) trennen; gleiches für STEP5 (TRAIN_RUNNER_PROOF Redmi).
+- Die zehn §100-Gates gegen die Kriterien aus dem Blueprint-Text prüfen (§85-Abschnitte zu jedem Gate), nicht nur gegen vorhandene Belegdateien.
+- `measure_suite.py` gibt zusätzlich die §29-Tabelle (24 Eigenschaften) und STEP-Ausgänge aus. Test dazu.
+
+### WP-Z2 STEP2 neu: B1 mit eigener Detail-Information (Cloud, Modelle) — OFFEN
+- Neue vorregistrierte Fixtures, in denen Detail-Fakten nur B1 sieht und Überblick/Widerspruch nur B2 (Offen (3) aus „STEP2-Nutzen Engpass“).
+- Alle vier Kontrollen aus G-B-TIMESCALE-DIVERGENCE-001: gleiches Modell gleiche Policy, gleiches Modell nur anderer Prompt, ein Körper + zwei Zustände, zwei Körper. Zitat-Kontext an und aus.
+- Entscheidet §99 „zwei Bodies lohnen die Handy-Kosten“. Wenn ein Körper + zwei Zustände gleich gut ist, darf das Redmi das billigere nutzen (Blueprint erlaubt das ausdrücklich).
+
+### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
+- Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
+- Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
+
+### WP-Z4 B3 L1 Versuch 4 (Cloud, Modelle) — IN ARBEIT bei Thread R (Stand 21.10. früh)
+- Frische B1/B2-Zustände, Brücke mit `aux`-Zielen, Gate unverändert, Rollen-Retention neu, vorregistriert. Nur PASS öffnet L2-SHADOW. Schließt G-CALLOSUM-UTILITY-002 erst mit allen 8 Achsen.
+
+### WP-Z5 Fokus-Koalition gegen §99-Kontrollen (Cloud, Modelle) — OFFEN
+- Auf den 60 Widerspruchs-Aufgaben aus WP-T3b: Koalition vs. Voll-Kontext, vs. nur Retrieval, vs. feste Slots; Rauschband aus 5 Wiederholungen. Dazu die 7 funktionalen Eigenschaften aus G-FOCAL-CAPACITY-003 als Messung statt nur Test.
+
+### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — OFFEN
+- 24.22 Wake (R4 im Blueprint-Sinn; Ergebnisse der R4-Werkzeug-Teile hier einbringen), 24.23 Effort (R5), 24.17 Deliberation, 24.25 Observer-Nutzen, 24.26 Broadcast-Brücke, 24.32 Lebenszyklus Scaffold→gelernte Route je Fähigkeit. Typisierte Modulatoren (G-MODULATOR-SPECIFICITY-001) mit echten Modellen.
+
+### WP-Z7 Ein Redmi-Paket für alle Handy-Pflichtmessungen (Nutzer, WP-R) — OFFEN
+- Ein Befehl wie `WERKZEUG_TESTEN.sh`: TRAIN_RUNNER_PROOF (G-TRAIN-RUNNER-PROOF-001), Langlauf (G-MOBILE-LONGRUN-001), §24.14 Overhead, §24.33 Residenz, Proceduralisierung Latenz/Energie, Werkzeug-Vorhersage. Ergebnis-ZIP hochladen. Bau in der Cloud, Lauf nur durch den Nutzer.
+
+### WP-Z8 Age-Plastizität entscheiden (Nutzer) — OFFEN
+- Wahl `age_plasticity_policy = boot | stable_reopen | noise_aware` (offen seit 10.10., Messung in WP-AB). Danach Wiederöffnen-Test für G-AGE-REOPEN-001.
+
+### WP-Z9 Dream-Kontrolle „policy-only“ (Cloud) — OFFEN
+- Fehlende §99-Kontrolle für „Dream hilft“; schließt mit Dream2v3 G-REPLAY-CONSOLIDATION-001.
+
+### WP-Z10 MoE verdrahten + Pre-Router-Vergessen messen (Cloud, groß) — OFFEN
+- WP-N11 Teil 3: EuroMoE/SmallThinker als B1/B2, §24.19 (heute NOT_IMPLEMENTED), aktive Expert-Deltas mit eingefrorenem Router (STEP6C).
+
+### WP-Z11 Referenz-Lehrer für STEP4 (Cloud) — OFFEN
+- Stärkeres Modell nur in der Cloud als REFERENCE-Lane (nie Wahrheit), SELF zuerst; Teacher on/off und §24.28B messen.
+
+### WP-Z12 JEPA im Körper + echte Self/World-Fälle (Cloud, nach Z2) — OFFEN
+- Body-JEPA-Term und handlungsgeerdetes World-JEPA auf echten Handlungsfolgen (§29 Nr. 13, 16); G-SELF-WORLD-005 mit echten statt synthetischen Fällen.
+
+### Nicht weiter ausbauen bis Z2–Z5 Ergebnisse haben
+R4-Werkzeug-Regeln (Teile 4–11), weitere Action-JEPA-Runden, Werkzeug-Vorhersage über das Handy-Paket hinaus, Vision-Lab (STEP8 erst nach STEP7).
