@@ -2,7 +2,7 @@
 
 Preregistered in bench-results/z5-focal-controls-20261021/PREREGISTRATION.md before any model run.
 Per repetition one fresh home, effort 'max' for every task (same candidate pool for every arm), WP-T3b bench mode.
-  coalition_live   the shipped turn: focal loop picks the coalition, C3 answers with it (live)
+  coalition_live   the shipped turn: focal loop picks the coalition, the organ C5 selects answers with it (live)
 After the focal loop of that same turn the context of the other arms is built from the same offers with the real
 analyst_context (binding/freshness checks still apply); the real answer message is reused and sent greedily to the same organ C5 picked live (with effort max mostly B1 or B2, not C3); only the hypotheses layer differs:
   coalition        replay with exactly the live coalition (replay fidelity against coalition_live)
