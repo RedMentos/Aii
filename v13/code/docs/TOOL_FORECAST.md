@@ -48,6 +48,15 @@ aus dem sdist `llama-cpp-python==0.3.36`, cmake-Target `llama`, dann
   nur bei PASS. Cloud-Ergebnis: **PASS**, Verhältnisse zur besten Kontrolle calc .09–.19, Notiz .06–.11 (gespeicherte
   Taps: .09–.18 / .06–.11). Auf dem Redmi muss `install` dort neu laufen (eigener Build, eigene Parität).
 
+## Handy-Paket: `bash WERKZEUG_TESTEN.sh` (2026-10-20)
+Ein Befehl für den Nutzer (Anleitung `WERKZEUG_ANLEITUNG.txt`): Vorprüfung (RAM ≥ 1,5 GB frei, Speicher, kein Chat),
+bei Bedarf `setup.sh`, dann `tool_forecast_bounded_phone_candidate.py` (Frist, Prozessgruppen-Aufräumen) mit
+`paritaet` = `--skip-live`, `kurz` = Parität + Live, `voll` = zusätzlich `--with-learning`. Nebenher alle 10 s
+MemAvailable/Akku-Temperatur. Ergebnis `~/storage/downloads/V13-Werkzeug-Ergebnis-<stufe>-<zeit>.zip` (Berichte, Logs,
+`KURZ.txt`, `paket-bericht.json`; keine Modelle/Taps). PASS/FAIL kommt nur aus `device-check/report.json`.
+Cloud-Probelauf aus dem entpackten Handy-ZIP (`docs/proofs/continuation-20261020/werkzeug-handy-cloud/`): `voll`
+bestätigt in 22 min, gleiche Verhältnisse wie unten, Spitzen-RSS des Tap-Prozesses 1213 MB. Kein Redmi-Wert.
+
 ## Am Handy messen: `bash TESTEN_TOOLFORECAST.sh` (2026-10-12, Thread M)
 
 Ein Befehl nach `setup.sh`, ohne laufenden Chat: (1) baut `native_layer_taps` gegen die installierte, gepinnte

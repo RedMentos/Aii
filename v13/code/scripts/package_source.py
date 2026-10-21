@@ -30,6 +30,11 @@ PHONE_REQUIRED_FIXTURES.update(
 PHONE_REQUIRED_FIXTURES.update(
     'docs/proofs/continuation-20261011/approval-reader-runtime-baseline/'+x
     for x in ('runners.py','runtime.py','manifest.json'))
+# Read by the phone selftest (test_b2_offer_candidate, test_calc_tool_producer_ablation); missing in the
+# 2026-10-20 phone ZIP, which made setup.sh stop at selftest.
+PHONE_REQUIRED_FIXTURES.update({
+    'docs/proofs/continuation-20261013/b2-offer-candidate/cognition.patch',
+    'docs/proofs/continuation-20261012/rule-transport-ablation/report.json'})
 
 
 def _sha_stream(stream):
