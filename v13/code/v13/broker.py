@@ -10,7 +10,9 @@ After the commit point nothing is replaced. Late material is a separate message 
 native history, memory lanes or training rows, which only read user/assistant rows):
   CORRECTION            a higher-authority fact that arrives late, e.g. an executed tool result the answer omits
                         (`tool_conflict_policy`: correct = show the exact value, log = record only)
-  ACTION_PREVIEW        a proposed, not executed WRITE_LOCAL tool call with its dry run and `:tx approve <id>`
+  ACTION_PREVIEW        a proposed, not executed tool call (WRITE_LOCAL, or any call a user rule asks to be asked about)
+                        with its dry run, the user's rule in their own words, and `:tx approve <id>`
+  RULE_NOTICE           2026-10-21: a tool call a user rule forbids was not made; names the rule in the user's own words
 SNAPSHOT (`:report` / force_report) is read-only and outside the turn: it shows the current text, never rewrites it.
 The broker never rewrites model text; a schema violation is reported (C6 rule_violation) and left visible.
 """
@@ -20,7 +22,7 @@ from .common import dumps
 from .contracts import packet
 
 RANK={'APPROVED_FIXED_RULE':0,'EXPLICIT_EXACT_COPY':1,'MODEL_ANSWER':2,'SOURCE_SYSTEM_REPORT':3}
-LATE=('CORRECTION','ACTION_PREVIEW')
+LATE=('CORRECTION','ACTION_PREVIEW','RULE_NOTICE')
 DONE_CLAIM=re.compile(r"(?i)\b(i(?:'ve| have)? (?:saved|written|created|stored|noted)|(?:has|have) been (?:saved|written|created|stored)|note (?:is|was) saved|done[.!])")
 
 def decide(candidates,committed=None):
@@ -52,6 +54,9 @@ def conflicts(output,status,tool_result=None,pending=None,egress=None):
     out=[]
     if status=='FINAL' and tool_result and tool_result.get('result') is not None and not isinstance(tool_result['result'],(dict,list)) and not contains_value(tool_result['result'],output):
         out.append('ANSWER_OMITS_TOOL_RESULT')
+    elif status=='FINAL' and tool_result and tool_result.get('tool')=='eligibility' and isinstance(tool_result.get('result'),dict):
+        from .agi import eligibility  # Thread Q: the answer must commit to the recipe's decision
+        if eligibility.answer_action(output)!=tool_result['result'].get('action'):out.append('ANSWER_OMITS_TOOL_RESULT')
     if pending and DONE_CLAIM.search(output or ''):out.append('ANSWER_CLAIMS_PENDING_ACTION_DONE')
     if egress and not egress['ok']:out+=['EGRESS:'+v for v in egress['violations']]
     return out
@@ -62,11 +67,27 @@ def preview_text(pending):
     lines=['[Aktion wartet auf Freigabe] '+pending['tool']+(' → '+pv['target'] if pv.get('target') else '')+' ('+what+(', '+str(pv['new_chars'])+' Zeichen' if pv.get('new_chars') is not None else '')+')']
     if pv.get('old_head') is not None:lines.append('Bisher: '+pv['old_head'])
     if pv.get('new_head') is not None:lines.append('Neu: '+pv['new_head'])
+    if pending['tool']!='sandbox_note' and pending.get('args'):lines.append('Vorhaben: '+pending['tool']+' mit '+dumps(pending['args'])[:300])
+    for r in pending.get('user_rules') or []:lines.append(f'Ich frage, weil deine Regel {r["id"]} sagt: „{r["text"]}“')
     lines.append('Nichts ist geschehen. Freigeben: :tx approve '+cid+(' · danach rücknehmbar: :tx undo '+cid if pv.get('undo_available') else ''))
     return '\n'.join(lines)
 
+def rule_notice_text(tool,rules):
+    """2026-10-21: a forbidden call was not made; the rule is quoted verbatim (fixed text, no model)."""
+    head='[Nicht getan] Ich hätte das Werkzeug '+tool+' benutzt, aber deine Regel verbietet es.'
+    lines=[head]+[f'Regel {r["id"]}: „{r["text"]}“' for r in rules]
+    lines.append('Die Regel gilt, bis du sie mit :regel aus <Nr> aufhebst (Liste: :regeln).')
+    return '\n'.join(lines)
+
 def correction_text(tool_result):
-    return '[Korrektur · Werkzeugergebnis] '+tool_result['tool']+'('+dumps(tool_result['args'])+') = '+str(tool_result['result'])+' (lokal exakt berechnet; die Antwort oben nennt diesen Wert nicht).'
+    call=tool_result['tool']+'('+dumps(tool_result['args'])+')'
+    if tool_result['tool']=='list_arith':  # R4 part 6: args carry the whole user text; show the recipe line instead
+        from .agi import listarith
+        call='list_arith: '+(listarith.label(tool_result['args']) or tool_result['args'].get('operation','?'))
+    if tool_result['tool']=='eligibility':
+        from .agi import eligibility
+        return '[Korrektur · Werkzeugergebnis] eligibility: '+eligibility.decision_line(tool_result['result'])+' (lokal nach den genannten Regeln berechnet; die Antwort oben trifft diese Entscheidung nicht).'
+    return '[Korrektur · Werkzeugergebnis] '+call+' = '+str(tool_result['result'])+' (lokal exakt berechnet; die Antwort oben nennt diesen Wert nicht).'
 
 class Broker:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
@@ -99,6 +120,14 @@ class Broker:
             chk=self._check(e,'ACTION_PREVIEW',dict(pending,text=text),tools=tools or None)
             item={'kind':'ACTION_PREVIEW','call_id':pending['call_id'],'applied':chk['ok']}
             if chk['ok']:item['message_id']=self._late(e,mid,text,{'output_authority':'ACTION_PREVIEW','tool_call':pending['call_id']})
+            late.append(item)
+        sh=meta.get('tool_shadow') or {}
+        if status=='FINAL' and str(sh.get('reason','')).startswith('USER_RULE:'):
+            from .userrules import texts_for
+            rules=texts_for(self.s,sh['reason'])
+            text=rule_notice_text(sh.get('tool','?'),rules);chk=self._check(e,'SYSTEM_REPORT',text)
+            item={'kind':'RULE_NOTICE','rules':[r['id'] for r in rules],'applied':chk['ok']}
+            if chk['ok']:item['message_id']=self._late(e,mid,text,{'output_authority':'RULE_NOTICE','user_rules':item['rules']})
             late.append(item)
         p=self.s.add_packet('OutputBrokerDecision',packet('OutputBrokerDecision','C7_OUTPUT_BROKER',e['event_id'],e['brain_generation_id'],[e['source_ref']],
             authority=d['selected'] or 'NONE',egress_type=kind,status=status,overridden=d['overridden'],conflicts=cf,committed=bool(meta.get('output_committed')),late=late,

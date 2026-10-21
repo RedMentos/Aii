@@ -1,0 +1,37 @@
+[
+  {
+    "owner": "K",
+    "commit": "4ed1539fb9fd6ea961fc6145bd98745e5f63adac",
+    "path": "v13/code/v13/agi/listarith.py",
+    "git_blob": "dc9699232ea747843ad0610f57c07db8f5bade5b",
+    "copy": "EXACT_UPSTREAM"
+  },
+  {
+    "owner": "K",
+    "commit": "4ed1539fb9fd6ea961fc6145bd98745e5f63adac",
+    "path": "v13/code/tests/test_listarith.py",
+    "git_blob": "49e8478810ec8d4bc25a9f78a35f606656eeb40d",
+    "copy": "EXACT_UPSTREAM"
+  },
+  {
+    "owner": "K",
+    "commit": "4ed1539fb9fd6ea961fc6145bd98745e5f63adac",
+    "path": "v13/code/scripts/r4_rule_r3.py",
+    "git_blob": "677984c58720eea9ddcf7825b7a0e07759e4bcaa",
+    "copy": "EXACT_UPSTREAM"
+  },
+  {
+    "owner": "K",
+    "commit": "4ed1539fb9fd6ea961fc6145bd98745e5f63adac",
+    "path": "v13/code/scripts/r4_rule_question_only.py",
+    "git_blob": "23cb388bcae07754a2e832d52ea7bca7b8f91c87",
+    "copy": "EXACT_UPSTREAM"
+  },
+  {
+    "owner": "K",
+    "commit": "4ed1539fb9fd6ea961fc6145bd98745e5f63adac",
+    "path": "v13/code/scripts/r4_tool_choice_head.py",
+    "git_blob": "eae9f7e7c7e36bec65045f5d4a2dc3feb9361270",
+    "copy": "EXACT_UPSTREAM"
+  }
+]

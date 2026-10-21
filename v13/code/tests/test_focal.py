@@ -174,6 +174,7 @@ class FocalRuntime(unittest.TestCase):
     def test_workspace_retains_prior_items_without_reporting_them(self):
         self.turn('Compute rent 120 plus food 271','detail',{'B1_DETAIL':[('Total is 391','rent 120 plus food 271',False)]},mode='high')
         ws=json.loads(Operator(self.r).run(':focal'))['workspace']
+        self.first_slots=self.r.store.state('C4_WORKSPACE:'+self.r.session,{})[0]['slots']
         self.assertTrue(any(x['source_kind']=='B1_DETAIL' for x in ws['slots']))
         meta,kinds=self.turn('Is rent 120 plus food 271 really 391?','detail',{'B1_DETAIL':[('Yes, 391','rent 120 plus food 271',False)]},mode='high')
         prior=[x for x in kinds('WorkspaceSlot')]+[x for x in kinds('FocalItem') if x['fact_hypothesis_status']=='PRIOR_HYPOTHESIS']
@@ -182,6 +183,12 @@ class FocalRuntime(unittest.TestCase):
         self.assertTrue(set(meta['selected_offer_ids'])<=current)
         st,_=self.r.store.state('C4_WORKSPACE:'+self.r.session,{})
         self.assertTrue(any(x['state_type'] in ('REACTIVATABLE','EPISODIC_POINTER') for x in st['slots']))
+        # §8.2: persisted slots keep the slot minimum; a retained item keeps its original timestamp and ages
+        for x in kinds('WorkspaceSlot'):validate('WorkspaceSlot',x)
+        first={s['item_id']:s for s in self.first_slots};kept=[s for s in st['slots'] if s['item_id'] in first];self.assertTrue(kept)
+        for s in kept:
+            self.assertEqual(s['created_wall'],first[s['item_id']]['created_wall']);self.assertTrue(s['self_generated']);self.assertEqual(s['exact_fallback'],'SOURCE_REF')
+            self.assertLess(s['expiry']['turns_left'],first[s['item_id']]['expiry']['turns_left']);self.assertEqual(s['boundary_source'],'LEXICAL_ALIGNMENT_PROXY')
 
     def test_direct_and_no_body_turns_still_select_report(self):
         meta,kinds=self.turn('Hallo','simple',{},mode='disabled')

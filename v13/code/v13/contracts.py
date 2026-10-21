@@ -61,6 +61,24 @@ FIELDS["ToolProposal"]={"tool":str,"args":dict,"policy_status":str,"truth_author
 FIELDS["C2ExecutivePacket"]={"route":str,"fields":dict,"truth_authority":int}  # WP-T1 structured C2 output (tool, memory key, answer type)
 FIELDS["OutputBrokerDecision"]={"authority":str,"egress_type":str,"status":str,"overridden":list,"conflicts":list,"committed":bool,"late":list,"rewrites":int}  # WP-T7 C7 output broker
 FIELDS["AttentionResponse"]={"request_packet_id":str,"status":str,"granted_budget":int,"truth_authority":int}  # WP-N5 §4B.3
+# §8.2 / §8.2A / §93: minimum fields of every important workspace slot (FocalItem and WorkspaceSlot.content)
+SLOT_FIELDS={"self_generated":bool,"created_wall":(int,float),"origin_event_id":str,"age_ms":int,"expiry":dict,"confidence_type":str,
+             "exact_fallback":str,"exact_fallback_refs":list,"scale":str,"covered_range":list,"compression_ratio":(int,float,type(None)),
+             "boundary_confidence":(int,float,type(None)),"boundary_source":str,"children":list,"parents":list}
+SLOT_SCALES={"fine","phrase","sentence","event","topic","gist"}
+SLOT_BOUNDARY={"LEXICAL_ALIGNMENT_PROXY","NONE"}
+def validate_slot(obj,where):
+    for k,t in SLOT_FIELDS.items():
+        if k not in obj or not isinstance(obj[k],t):raise ValueError(f"{where}.{k}: fehlt/falscher Typ")
+    if obj["scale"] not in SLOT_SCALES or obj["boundary_source"] not in SLOT_BOUNDARY:raise ValueError(where+": scale/boundary_source")
+    if obj["exact_fallback"] not in {"SOURCE_REF","NONE"} or (obj["exact_fallback"]=="SOURCE_REF")!=bool(obj["exact_fallback_refs"]):raise ValueError(where+": exact fallback pointer")
+    if obj["age_ms"]<0 or not isinstance(obj["expiry"].get("turns_left"),int) or obj["expiry"]["turns_left"]<0 or not obj["expiry"].get("policy"):raise ValueError(where+": age/expiry")
+    if obj["compression_ratio"] is not None and obj["compression_ratio"]<=0:raise ValueError(where+": compression_ratio")
+    if obj["boundary_confidence"] is not None and not 0<=obj["boundary_confidence"]<=1:raise ValueError(where+": boundary_confidence")
+    if (obj["boundary_source"]=="NONE")!=(obj["boundary_confidence"] is None):raise ValueError(where+": boundary source/confidence")
+    for c in obj["covered_range"]:
+        if not (isinstance(c,dict) and isinstance(c.get("source_id"),str) and isinstance(c.get("char_start"),int) and isinstance(c.get("char_end"),int) and 0<=c["char_start"]<=c["char_end"]):raise ValueError(where+": covered_range")
+    return obj
 BASE={"schema_version":str,"packet_id":str,"producer_component":str,"producer_version":str,"event_id":str,"created_monotonic_ns":int,"created_wall_time":(int,float),"brain_generation_id":str,"provenance":list}
 def validate(kind,obj):
     if kind not in FIELDS:raise ValueError("Unbekanntes Schema")
@@ -89,6 +107,14 @@ def validate(kind,obj):
     if kind=="SelfWorldAttribution" and obj["attribution"] not in {"SELF","EXTERNAL","MIXED","UNCLEAR"}:raise ValueError("Self/World attribution class")
     if kind=="LearningTrace" and not 0<=obj["activity"]<=1:raise ValueError("Trace activity [0,1]")
     if kind=="FocalItem" and (obj["state_type"] not in {"ACTIVE","REACTIVATABLE","EPISODIC_POINTER"} or (obj["source_kind"] in {"B1_DETAIL","B2_GIST"} and obj["fact_hypothesis_status"]=="FACT")):raise ValueError("FocalItem state/authority")
+    if kind=="FocalItem" and obj.get("admission")!="LEGACY_FIRST_N":  # frozen single-pass proof API (cognition.focal) predates §8.2
+        validate_slot(obj,"FocalItem")
+        if obj["source_kind"] in {"B1_DETAIL","B2_GIST"} and not obj["self_generated"]:raise ValueError("FocalItem: body offers are self-generated")
+    if kind=="WorkspaceSlot":
+        c=obj["content"]
+        if not all(isinstance(c.get(k),str) for k in ("payload_ref","state_type","fact_hypothesis_status")):raise ValueError("WorkspaceSlot.content ids")
+        validate_slot(c,"WorkspaceSlot.content")
+        if c["state_type"] not in {"ACTIVE","REACTIVATABLE","EPISODIC_POINTER"}:raise ValueError("WorkspaceSlot state")
     if kind=="InquisitionStep" and (obj["speaker"] not in {"P1","P2"} or obj.get("fact_authority")):raise ValueError("Inquisition scaffold authority")
     if kind=="FocalCycle" and obj["decision"] not in {"IGNORE","INCORPORATE_A","INCORPORATE_B","INCORPORATE_AB","QUERY_A","QUERY_B","QUERY_AB"}:raise ValueError("FocalCycle decision")
     if kind=="EventEnvelope" and obj["authority"] not in {"AUTHORITATIVE","PROVISIONAL"}:raise ValueError("Authority")

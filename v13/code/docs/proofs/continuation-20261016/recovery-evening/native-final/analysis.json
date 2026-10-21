@@ -1,0 +1,215 @@
+{
+  "analysis_ran": true,
+  "canonical_gate_pass": false,
+  "claim_scope": "Row integrity and original numerical analysis only; no native/device/provenance gate established",
+  "gates": {
+    "in_world_max_ratio": 1.02,
+    "shift_gain_max_ratio": 0.9
+  },
+  "integrity": {
+    "errors": [],
+    "expected_by_arm": {
+      "calc_in_test": 120,
+      "calc_shift_exp": 160,
+      "calc_shift_test": 120,
+      "note_in_test": 60,
+      "note_shift_exp": 90,
+      "note_shift_test": 60
+    },
+    "expected_rows": 610,
+    "experience_rows": 250,
+    "missing_cases": [],
+    "observed_by_arm": {
+      "calc_in_test": 120,
+      "calc_shift_exp": 160,
+      "calc_shift_test": 120,
+      "note_in_test": 60,
+      "note_shift_exp": 90,
+      "note_shift_test": 60
+    },
+    "observed_rows": 610,
+    "pass": true,
+    "test_rows": 360
+  },
+  "phone_measured": false,
+  "verdict": "CONTINUAL_LEARNING_CONFIRMED",
+  "worlds": {
+    "calc_counter": {
+      "calc_in_test": {
+        "add_15": {
+          "adapted": 0.007038119666666667,
+          "adapted_to_best_control": 0.1205,
+          "adapted_vs_measured": 1.0024,
+          "copy": 0.4141976103333333,
+          "mean_delta": 0.058421828333333335,
+          "measured": 0.007021004666666667,
+          "measured_to_best_control": 0.1202,
+          "n": 30
+        },
+        "double": {
+          "adapted": 0.009555897,
+          "adapted_to_best_control": 0.149,
+          "adapted_vs_measured": 0.9958,
+          "copy": 0.18078413799999996,
+          "mean_delta": 0.06412635233333333,
+          "measured": 0.009596453666666668,
+          "measured_to_best_control": 0.1496,
+          "n": 30
+        },
+        "quarter": {
+          "adapted": 0.024197126,
+          "adapted_to_best_control": 0.2209,
+          "adapted_vs_measured": 0.9822,
+          "copy": 0.4846209046666667,
+          "mean_delta": 0.10953564600000001,
+          "measured": 0.024635823999999997,
+          "measured_to_best_control": 0.2249,
+          "n": 30
+        },
+        "subtract_7": {
+          "adapted": 0.006013773999999999,
+          "adapted_to_best_control": 0.105,
+          "adapted_vs_measured": 0.986,
+          "copy": 0.5950534246666666,
+          "mean_delta": 0.057254330666666665,
+          "measured": 0.006099186333333332,
+          "measured_to_best_control": 0.1065,
+          "n": 30
+        }
+      },
+      "calc_shift_test": {
+        "add_15": {
+          "adapted": 0.04898884933333334,
+          "adapted_to_best_control": 0.4375,
+          "adapted_vs_measured": 0.7074,
+          "copy": 0.28115392333333333,
+          "mean_delta": 0.11198053266666667,
+          "measured": 0.06924744666666667,
+          "measured_to_best_control": 0.6184,
+          "n": 30
+        },
+        "double": {
+          "adapted": 0.016311321666666666,
+          "adapted_to_best_control": 0.1994,
+          "adapted_vs_measured": 0.5504,
+          "copy": 0.13460944933333335,
+          "mean_delta": 0.08182243400000001,
+          "measured": 0.029637055333333332,
+          "measured_to_best_control": 0.3622,
+          "n": 30
+        },
+        "quarter": {
+          "adapted": 0.15785075733333334,
+          "adapted_to_best_control": 0.7941,
+          "adapted_vs_measured": 0.6848,
+          "copy": 0.3539755413333333,
+          "mean_delta": 0.19878172866666668,
+          "measured": 0.2304954226666667,
+          "measured_to_best_control": 1.1595,
+          "n": 30
+        },
+        "subtract_7": {
+          "adapted": 0.012679249333333333,
+          "adapted_to_best_control": 0.1137,
+          "adapted_vs_measured": 0.386,
+          "copy": 0.5826694179999999,
+          "mean_delta": 0.11148055033333333,
+          "measured": 0.03285103366666667,
+          "measured_to_best_control": 0.2947,
+          "n": 30
+        }
+      },
+      "learn": {
+        "adapted_actions": [
+          "add_15",
+          "double",
+          "quarter",
+          "subtract_7"
+        ],
+        "experience_rows": 160,
+        "pass": true,
+        "reason": null
+      },
+      "pass": true,
+      "shift_actions_improved": 4
+    },
+    "note_edit": {
+      "learn": {
+        "adapted_actions": [
+          "append_done",
+          "prefix_urgent",
+          "uppercase"
+        ],
+        "experience_rows": 90,
+        "pass": true,
+        "reason": null
+      },
+      "note_in_test": {
+        "append_done": {
+          "adapted": 0.0038914895,
+          "adapted_to_best_control": 0.0612,
+          "adapted_vs_measured": 1.0,
+          "copy": 0.483378446,
+          "mean_delta": 0.0636283325,
+          "measured": 0.0038914895,
+          "measured_to_best_control": 0.0612,
+          "n": 20
+        },
+        "prefix_urgent": {
+          "adapted": 0.003274025,
+          "adapted_to_best_control": 0.0843,
+          "adapted_vs_measured": 1.0,
+          "copy": 0.20073138249999997,
+          "mean_delta": 0.038844324,
+          "measured": 0.003274025,
+          "measured_to_best_control": 0.0843,
+          "n": 20
+        },
+        "uppercase": {
+          "adapted": 0.008408735000000002,
+          "adapted_to_best_control": 0.1122,
+          "adapted_vs_measured": 1.0,
+          "copy": 0.5331357849999999,
+          "mean_delta": 0.0749363475,
+          "measured": 0.008408735000000002,
+          "measured_to_best_control": 0.1122,
+          "n": 20
+        }
+      },
+      "note_shift_test": {
+        "append_done": {
+          "adapted": 0.062424035999999995,
+          "adapted_to_best_control": 0.3807,
+          "adapted_vs_measured": 0.6656,
+          "copy": 0.594231915,
+          "mean_delta": 0.16395574899999998,
+          "measured": 0.093785189,
+          "measured_to_best_control": 0.572,
+          "n": 20
+        },
+        "prefix_urgent": {
+          "adapted": 0.03757695949999999,
+          "adapted_to_best_control": 0.4177,
+          "adapted_vs_measured": 0.5658,
+          "copy": 0.19519185349999998,
+          "mean_delta": 0.08997170749999998,
+          "measured": 0.06641761849999998,
+          "measured_to_best_control": 0.7382,
+          "n": 20
+        },
+        "uppercase": {
+          "adapted": 0.08138912699999999,
+          "adapted_to_best_control": 0.4481,
+          "adapted_vs_measured": 0.5039,
+          "copy": 0.6263583644999999,
+          "mean_delta": 0.1816416715,
+          "measured": 0.1615131835,
+          "measured_to_best_control": 0.8892,
+          "n": 20
+        }
+      },
+      "pass": true,
+      "shift_actions_improved": 3
+    }
+  }
+}

@@ -1,0 +1,588 @@
+{
+ "prereg_sha256": "1f25ee13db04e0638269d313ccdb676c1200d306dde8b09bf338e14d61797823",
+ "chosen": {
+  "view": "full",
+  "l2": 0.1
+ },
+ "results": {
+  "test": {
+   "head": {
+    "macro_f1": 0.7802,
+    "f1": {
+     "none": 0.7333,
+     "total": 0.7258,
+     "difference_max_min": 0.8816
+    },
+    "false_alarm_rate": 0.2143,
+    "op_confusion_rate": 0.0139,
+    "missed_rate": 0.2083,
+    "confusion": [
+     [
+      66,
+      5,
+      13
+     ],
+     [
+      27,
+      45,
+      0
+     ],
+     [
+      3,
+      2,
+      67
+     ]
+    ]
+   },
+   "rule": {
+    "macro_f1": 0.3751,
+    "f1": {
+     "none": 0.5769,
+     "total": 0.5484,
+     "difference_max_min": 0.0
+    },
+    "false_alarm_rate": 0.1071,
+    "op_confusion_rate": 0.0625,
+    "missed_rate": 0.7014,
+    "confusion": [
+     [
+      75,
+      9,
+      0
+     ],
+     [
+      38,
+      34,
+      0
+     ],
+     [
+      63,
+      9,
+      0
+     ]
+    ]
+   },
+   "hybrid_rule_else_head": {
+    "macro_f1": 0.7898,
+    "f1": {
+     "none": 0.755,
+     "total": 0.795,
+     "difference_max_min": 0.8194
+    },
+    "false_alarm_rate": 0.3214,
+    "op_confusion_rate": 0.0764,
+    "missed_rate": 0.0694,
+    "confusion": [
+     [
+      57,
+      14,
+      13
+     ],
+     [
+      8,
+      64,
+      0
+     ],
+     [
+      2,
+      11,
+      59
+     ]
+    ]
+   },
+   "head_errors": [
+    {
+     "template": "test:total:0",
+     "question": "Can you tell me the overall amount?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:0",
+     "question": "Can you tell me the overall amount?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:0",
+     "question": "Can you tell me the overall amount?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:0",
+     "question": "Can you tell me the overall amount?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:1",
+     "question": "Sum these up for me.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:1",
+     "question": "Sum these up for me.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:1",
+     "question": "Sum these up for me.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:1",
+     "question": "Sum these up for me.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:1",
+     "question": "Sum these up for me.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:1",
+     "question": "Sum these up for me.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:1",
+     "question": "Sum these up for me.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:2",
+     "question": "What's the grand total of everything listed?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:2",
+     "question": "What's the grand total of everything listed?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:2",
+     "question": "What's the grand total of everything listed?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:2",
+     "question": "What's the grand total of everything listed?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:2",
+     "question": "What's the grand total of everything listed?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:2",
+     "question": "What's the grand total of everything listed?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:2",
+     "question": "What's the grand total of everything listed?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:2",
+     "question": "What's the grand total of everything listed?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:2",
+     "question": "What's the grand total of everything listed?",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:4",
+     "question": "Tally up the numbers.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:4",
+     "question": "Tally up the numbers.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:4",
+     "question": "Tally up the numbers.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:4",
+     "question": "Tally up the numbers.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:4",
+     "question": "Tally up the numbers.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:4",
+     "question": "Tally up the numbers.",
+     "pred": "none"
+    },
+    {
+     "template": "test:total:4",
+     "question": "Tally up the numbers.",
+     "pred": "none"
+    },
+    {
+     "template": "test:difference_max_min:3",
+     "question": "How much higher is the maximum than the minimum?",
+     "pred": "total"
+    },
+    {
+     "template": "test:difference_max_min:3",
+     "question": "How much higher is the maximum than the minimum?",
+     "pred": "total"
+    },
+    {
+     "template": "test:difference_max_min:4",
+     "question": "What separates the largest value from the smallest one?",
+     "pred": "none"
+    },
+    {
+     "template": "test:difference_max_min:4",
+     "question": "What separates the largest value from the smallest one?",
+     "pred": "none"
+    },
+    {
+     "template": "test:difference_max_min:4",
+     "question": "What separates the largest value from the smallest one?",
+     "pred": "none"
+    },
+    {
+     "template": "test:none:1",
+     "question": "Sort the entries from high to low.",
+     "pred": "difference_max_min"
+    },
+    {
+     "template": "test:none:1",
+     "question": "Sort the entries from high to low.",
+     "pred": "difference_max_min"
+    },
+    {
+     "template": "test:none:1",
+     "question": "Sort the entries from high to low.",
+     "pred": "difference_max_min"
+    },
+    {
+     "template": "test:none:1",
+     "question": "Sort the entries from high to low.",
+     "pred": "total"
+    },
+    {
+     "template": "test:none:1",
+     "question": "Sort the entries from high to low.",
+     "pred": "difference_max_min"
+    },
+    {
+     "template": "test:none:1",
+     "question": "Sort the entries from high to low.",
+     "pred": "difference_max_min"
+    },
+    {
+     "template": "test:none:1",
+     "question": "Sort the entries from high to low.",
+     "pred": "total"
+    },
+    {
+     "template": "test:none:1",
+     "question": "Sort the entries from high to low.",
+     "pred": "difference_max_min"
+    }
+   ]
+  },
+  "de": {
+   "head": {
+    "macro_f1": 0.2009,
+    "f1": {
+     "none": 0.5096,
+     "total": 0.093,
+     "difference_max_min": 0.0
+    },
+    "false_alarm_rate": 0.0,
+    "op_confusion_rate": 0.0125,
+    "missed_rate": 0.9625,
+    "confusion": [
+     [
+      40,
+      0,
+      0
+     ],
+     [
+      38,
+      2,
+      0
+     ],
+     [
+      39,
+      1,
+      0
+     ]
+    ]
+   },
+   "rule": {
+    "macro_f1": 0.1667,
+    "f1": {
+     "none": 0.5,
+     "total": 0.0,
+     "difference_max_min": 0.0
+    },
+    "false_alarm_rate": 0.0,
+    "op_confusion_rate": 0.0,
+    "missed_rate": 1.0,
+    "confusion": [
+     [
+      40,
+      0,
+      0
+     ],
+     [
+      40,
+      0,
+      0
+     ],
+     [
+      40,
+      0,
+      0
+     ]
+    ]
+   },
+   "hybrid_rule_else_head": {
+    "macro_f1": 0.2009,
+    "f1": {
+     "none": 0.5096,
+     "total": 0.093,
+     "difference_max_min": 0.0
+    },
+    "false_alarm_rate": 0.0,
+    "op_confusion_rate": 0.0125,
+    "missed_rate": 0.9625,
+    "confusion": [
+     [
+      40,
+      0,
+      0
+     ],
+     [
+      38,
+      2,
+      0
+     ],
+     [
+      39,
+      1,
+      0
+     ]
+    ]
+   },
+   "head_errors": [
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:0",
+     "question": "Wie viel ist das insgesamt?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:1",
+     "question": "Rechne alles zusammen.",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:2",
+     "question": "Was ist die Summe aller Werte?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:2",
+     "question": "Was ist die Summe aller Werte?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:2",
+     "question": "Was ist die Summe aller Werte?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:2",
+     "question": "Was ist die Summe aller Werte?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:2",
+     "question": "Was ist die Summe aller Werte?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:2",
+     "question": "Was ist die Summe aller Werte?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:2",
+     "question": "Was ist die Summe aller Werte?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:2",
+     "question": "Was ist die Summe aller Werte?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:total:3",
+     "question": "Wie hoch ist der Gesamtbetrag?",
+     "pred": "none"
+    },
+    {
+     "template": "de:difference_max_min:0",
+     "question": "Wie viel mehr hat der gr\u00f6\u00dfte Wert als der kleinste?",
+     "pred": "none"
+    },
+    {
+     "template": "de:difference_max_min:0",
+     "question": "Wie viel mehr hat der gr\u00f6\u00dfte Wert als der kleinste?",
+     "pred": "none"
+    }
+   ]
+  }
+ },
+ "verdict": "NOT_SUPPORTED",
+ "runtime_changed": false,
+ "phone_measured": false
+}

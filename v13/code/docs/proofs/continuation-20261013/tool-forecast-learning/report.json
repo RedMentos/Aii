@@ -1,0 +1,494 @@
+{
+ "worlds": {
+  "calc_counter": {
+   "learn": {
+    "pass": false,
+    "reason": "NO_ACTION_ADAPTED",
+    "experience_rows": 160,
+    "adapted_actions": []
+   },
+   "calc_shift_test": {
+    "double": {
+     "measured": 0.029839695999999992,
+     "adapted": 0.029839695999999992,
+     "copy": 0.13868938199999997,
+     "mean_delta": 0.07893623566666667,
+     "n": 30,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.378,
+     "measured_to_best_control": 0.378
+    },
+    "add_15": {
+     "measured": 0.07703396566666668,
+     "adapted": 0.07703396566666668,
+     "copy": 0.28951252366666663,
+     "mean_delta": 0.10925739933333332,
+     "n": 30,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.7051,
+     "measured_to_best_control": 0.7051
+    },
+    "quarter": {
+     "measured": 0.1750602476666666,
+     "adapted": 0.1750602476666666,
+     "copy": 0.35732066566666665,
+     "mean_delta": 0.21439868133333334,
+     "n": 30,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.8165,
+     "measured_to_best_control": 0.8165
+    },
+    "subtract_7": {
+     "measured": 0.03496891033333333,
+     "adapted": 0.03496891033333333,
+     "copy": 0.5878597883333333,
+     "mean_delta": 0.1163142116666667,
+     "n": 30,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.3006,
+     "measured_to_best_control": 0.3006
+    }
+   },
+   "calc_in_test": {
+    "double": {
+     "measured": 0.010052356,
+     "adapted": 0.010052356,
+     "copy": 0.15756765800000003,
+     "mean_delta": 0.06054417966666668,
+     "n": 30,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.166,
+     "measured_to_best_control": 0.166
+    },
+    "add_15": {
+     "measured": 0.006415138666666667,
+     "adapted": 0.006415138666666667,
+     "copy": 0.4092588569999999,
+     "mean_delta": 0.06553695833333334,
+     "n": 30,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.0979,
+     "measured_to_best_control": 0.0979
+    },
+    "quarter": {
+     "measured": 0.020792808666666662,
+     "adapted": 0.020792808666666662,
+     "copy": 0.46013599266666666,
+     "mean_delta": 0.103730862,
+     "n": 30,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.2004,
+     "measured_to_best_control": 0.2004
+    },
+    "subtract_7": {
+     "measured": 0.008401490000000001,
+     "adapted": 0.008401490000000001,
+     "copy": 0.6116112979999999,
+     "mean_delta": 0.07155381133333334,
+     "n": 30,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.1174,
+     "measured_to_best_control": 0.1174
+    }
+   },
+   "shift_actions_improved": 0,
+   "pass": false
+  },
+  "note_edit": {
+   "learn": {
+    "pass": false,
+    "reason": "NO_ACTION_ADAPTED",
+    "experience_rows": 90,
+    "adapted_actions": []
+   },
+   "note_shift_test": {
+    "append_done": {
+     "measured": 0.0884713865,
+     "adapted": 0.0884713865,
+     "copy": 0.481102382,
+     "mean_delta": 0.1426423635,
+     "n": 20,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.6202,
+     "measured_to_best_control": 0.6202
+    },
+    "prefix_urgent": {
+     "measured": 0.087833963,
+     "adapted": 0.087833963,
+     "copy": 0.24008998499999995,
+     "mean_delta": 0.10523501350000002,
+     "n": 20,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.8346,
+     "measured_to_best_control": 0.8346
+    },
+    "uppercase": {
+     "measured": 0.13582160450000003,
+     "adapted": 0.13582160450000003,
+     "copy": 0.5639421684999999,
+     "mean_delta": 0.16317004400000001,
+     "n": 20,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.8324,
+     "measured_to_best_control": 0.8324
+    }
+   },
+   "note_in_test": {
+    "append_done": {
+     "measured": 0.0034173364999999997,
+     "adapted": 0.0034173364999999997,
+     "copy": 0.49658954450000004,
+     "mean_delta": 0.06942465350000002,
+     "n": 20,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.0492,
+     "measured_to_best_control": 0.0492
+    },
+    "prefix_urgent": {
+     "measured": 0.0029791645,
+     "adapted": 0.0029791645,
+     "copy": 0.19846551499999998,
+     "mean_delta": 0.039813637500000006,
+     "n": 20,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.0748,
+     "measured_to_best_control": 0.0748
+    },
+    "uppercase": {
+     "measured": 0.006087961500000001,
+     "adapted": 0.006087961500000001,
+     "copy": 0.5022579745000001,
+     "mean_delta": 0.066769771,
+     "n": 20,
+     "adapted_vs_measured": 1.0,
+     "adapted_to_best_control": 0.0912,
+     "measured_to_best_control": 0.0912
+    }
+   },
+   "shift_actions_improved": 0,
+   "pass": false
+  }
+ },
+ "gates": {
+  "shift_gain_max_ratio": 0.9,
+  "in_world_max_ratio": 1.02
+ },
+ "verdict": "CONTINUAL_LEARNING_NOT_CONFIRMED",
+ "schema": "v13-tool-forecast-learning-check-v1",
+ "utc": "2026-10-13T09:00:32Z",
+ "plan_counts": {
+  "calc_shift_exp": 40,
+  "calc_shift_test": 30,
+  "calc_in_test": 30,
+  "note_shift_exp": 30,
+  "note_shift_test": 20,
+  "note_in_test": 20
+ },
+ "statuses": {
+  "SCORED": 610
+ },
+ "experience_phase_ratio_to_best_control": {
+  "double": {
+   "forecast": 0.032727148250000004,
+   "copy": 0.13885500825000002,
+   "mean_delta": 0.08373821000000001,
+   "n": 40,
+   "ratio_to_best_control": 0.3908,
+   "pass": true
+  },
+  "add_15": {
+   "forecast": 0.06445285825,
+   "copy": 0.28738546950000005,
+   "mean_delta": 0.10581589725,
+   "n": 40,
+   "ratio_to_best_control": 0.6091,
+   "pass": true
+  },
+  "quarter": {
+   "forecast": 0.22189585274999998,
+   "copy": 0.35285582225,
+   "mean_delta": 0.1900396745,
+   "n": 40,
+   "ratio_to_best_control": 1.1676,
+   "pass": false
+  },
+  "subtract_7": {
+   "forecast": 0.032215041,
+   "copy": 0.586638587,
+   "mean_delta": 0.10658086550000001,
+   "n": 40,
+   "ratio_to_best_control": 0.3023,
+   "pass": true
+  },
+  "append_done": {
+   "forecast": 0.08691994066666667,
+   "copy": 0.50020687,
+   "mean_delta": 0.13047245333333335,
+   "n": 30,
+   "ratio_to_best_control": 0.6662,
+   "pass": true
+  },
+  "prefix_urgent": {
+   "forecast": 0.06955716900000002,
+   "copy": 0.21699593133333334,
+   "mean_delta": 0.08826521199999998,
+   "n": 30,
+   "ratio_to_best_control": 0.788,
+   "pass": true
+  },
+  "uppercase": {
+   "forecast": 0.138623529,
+   "copy": 0.5557442203333333,
+   "mean_delta": 0.1367265043333333,
+   "n": 30,
+   "ratio_to_best_control": 1.0139,
+   "pass": false
+  }
+ },
+ "encoder": {
+  "tool_sha256": "da4c23c12d0d16b5febde6b92a9e9ed805cd5f433b1389ecad6a72e4b9f6cd71",
+  "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+ },
+ "runtime_report": {
+  "schema": "v13-tool-forecast-v1",
+  "mode": "SHADOW",
+  "encoder": "INSTALLED",
+  "worlds": {
+   "calc_counter": {
+    "actions": [
+     "add_15",
+     "double",
+     "quarter",
+     "subtract_7"
+    ],
+    "source": "docs/proofs/continuation-20261012/action-jepa-round7-fresh (runs/tool_l11_last/full-seed13)"
+   },
+   "note_edit": {
+    "actions": [
+     "append_done",
+     "prefix_urgent",
+     "undo",
+     "uppercase"
+    ],
+    "source": "docs/proofs/continuation-20261012/action-jepa-round8-note-tool (runs/note_l11_last/full-seed13)"
+   }
+  },
+  "pending": 0,
+  "counts": {
+   "FORECAST": 610,
+   "SCORED": 610
+  },
+  "stats": {
+   "calc_counter:add_15": {
+    "in_domain": 86,
+    "in_range": 30,
+    "n": 100,
+    "sum_log_ratio": -106.70693557316483,
+    "wins": 88,
+    "win_rate": 0.88,
+    "geo_mean_ratio_to_best_control": 0.344
+   },
+   "calc_counter:double": {
+    "in_domain": 86,
+    "in_range": 30,
+    "n": 100,
+    "sum_log_ratio": -126.07028017515343,
+    "wins": 99,
+    "win_rate": 0.99,
+    "geo_mean_ratio_to_best_control": 0.2835
+   },
+   "calc_counter:quarter": {
+    "in_domain": 86,
+    "in_range": 30,
+    "n": 100,
+    "sum_log_ratio": -35.72160844229303,
+    "wins": 55,
+    "win_rate": 0.55,
+    "geo_mean_ratio_to_best_control": 0.6996
+   },
+   "calc_counter:subtract_7": {
+    "in_domain": 86,
+    "in_range": 30,
+    "n": 100,
+    "sum_log_ratio": -164.57909280450502,
+    "wins": 100,
+    "win_rate": 1.0,
+    "geo_mean_ratio_to_best_control": 0.1929
+   },
+   "note_edit:append_done": {
+    "in_domain": 20,
+    "in_range": 20,
+    "n": 70,
+    "sum_log_ratio": -83.97845937838578,
+    "wins": 65,
+    "win_rate": 0.9286,
+    "geo_mean_ratio_to_best_control": 0.3013
+   },
+   "note_edit:prefix_urgent": {
+    "in_domain": 20,
+    "in_range": 20,
+    "n": 70,
+    "sum_log_ratio": -63.59126583097133,
+    "wins": 57,
+    "win_rate": 0.8143,
+    "geo_mean_ratio_to_best_control": 0.4031
+   },
+   "note_edit:uppercase": {
+    "in_domain": 20,
+    "in_range": 20,
+    "n": 70,
+    "sum_log_ratio": -51.008064453910706,
+    "wins": 49,
+    "win_rate": 0.7,
+    "geo_mean_ratio_to_best_control": 0.4825
+   }
+  },
+  "recent": [
+   {
+    "action": "prefix_urgent",
+    "action_tx": "atx_3bf59a6a155045a88c4ae6ea1ad57f72",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.01697786,
+     "in_domain": true,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_436042cccecf4fd3928cfa66900b44e8",
+    "in_world_range": true,
+    "mse": {
+     "copy": 0.15382544,
+     "forecast": 0.00294363,
+     "mean_delta": 0.02695265
+    },
+    "outcome_text": "After adding a prefix, the note reads: Urgent: Visit the plumber next week.",
+    "ratio_to_best_control": 0.109215,
+    "scored_at": 1791882016.8697631,
+    "status": "SCORED",
+    "tool_call": "tool_1d1ec9a971e04a5a9086d1a3d7c5e271",
+    "world": "note_edit"
+   },
+   {
+    "action": "uppercase",
+    "action_tx": "atx_890b436f8fcc46efb15770b1844c134c",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.01697786,
+     "in_domain": true,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_57a511685d074131a56483c2235b3279",
+    "in_world_range": true,
+    "mse": {
+     "copy": 0.34334963,
+     "forecast": 0.00565697,
+     "mean_delta": 0.08485545
+    },
+    "outcome_text": "After uppercasing, the note reads: VISIT THE PLUMBER NEXT WEEK.",
+    "ratio_to_best_control": 0.066666,
+    "scored_at": 1791882020.566521,
+    "status": "SCORED",
+    "tool_call": "tool_52f61321fce647e59be1134c876b893b",
+    "world": "note_edit"
+   },
+   {
+    "action": "append_done",
+    "action_tx": "atx_6c131405c8604c58bb48773cc6cd3d26",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.01294864,
+     "in_domain": true,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_134267fc964146648bb6da1f71065d99",
+    "in_world_range": true,
+    "mse": {
+     "copy": 0.50616026,
+     "forecast": 0.0016586,
+     "mean_delta": 0.05552792
+    },
+    "outcome_text": "After appending, the note reads: Visit the school next week. Done.",
+    "ratio_to_best_control": 0.02987,
+    "scored_at": 1791882024.2331328,
+    "status": "SCORED",
+    "tool_call": "tool_aa6590e7499e4166ac2f5af37ac56f40",
+    "world": "note_edit"
+   },
+   {
+    "action": "prefix_urgent",
+    "action_tx": "atx_5b5303cf3c52477596746b26dd3e165b",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.01294864,
+     "in_domain": true,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_16cf8e61355943a18623c36412c1ad07",
+    "in_world_range": true,
+    "mse": {
+     "copy": 0.21909455,
+     "forecast": 0.00296216,
+     "mean_delta": 0.03328259
+    },
+    "outcome_text": "After adding a prefix, the note reads: Urgent: Visit the school next week.",
+    "ratio_to_best_control": 0.089,
+    "scored_at": 1791882028.0406766,
+    "status": "SCORED",
+    "tool_call": "tool_2a95f1814edd484a94f552036f4a68e7",
+    "world": "note_edit"
+   },
+   {
+    "action": "uppercase",
+    "action_tx": "atx_882034627ebd4edbba4baa50173cf189",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.01294864,
+     "in_domain": true,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_cfd024245563475896f4303de4ffaef4",
+    "in_world_range": true,
+    "mse": {
+     "copy": 0.43533448,
+     "forecast": 0.00380655,
+     "mean_delta": 0.05934488
+    },
+    "outcome_text": "After uppercasing, the note reads: VISIT THE SCHOOL NEXT WEEK.",
+    "ratio_to_best_control": 0.064143,
+    "scored_at": 1791882031.999483,
+    "status": "SCORED",
+    "tool_call": "tool_ef6fac32a65945399c6cc68e88cd4727",
+    "world": "note_edit"
+   }
+  ],
+  "learn": {
+   "calc_counter": {
+    "adapted_actions": [],
+    "adapted_sha256": null,
+    "at": 1791880677.3638203,
+    "experience_rows": 160,
+    "pass": false,
+    "reason": "NO_ACTION_ADAPTED"
+   },
+   "note_edit": {
+    "adapted_actions": [],
+    "adapted_sha256": null,
+    "at": 1791880677.4147172,
+    "experience_rows": 90,
+    "pass": false,
+    "reason": "NO_ACTION_ADAPTED"
+   }
+  },
+  "experience_rows": {
+   "calc_counter": 400,
+   "note_edit": 210
+  },
+  "claim_limit": "SHADOW measurement of a narrow candidate (closed worlds of rounds 7/8); no gate, answer, wake or learning reads it. Live calls outside those worlds get no forecast. Redmi latency/RSS unmeasured."
+ },
+ "minutes": 38.4,
+ "claim_limit": "Closed-form adapted residual next to the measured candidate, two closed worlds, Linux cloud, not the Redmi; SHADOW only, nothing reads either forecast."
+}

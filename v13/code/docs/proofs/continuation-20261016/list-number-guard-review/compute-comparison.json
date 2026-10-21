@@ -1,0 +1,12 @@
+{
+  "compute_ast_unchanged_except_tokens_assignment": true,
+  "runtime_source_current_sha256": "e3e8ad02a59f2327fe5fb924b3070c1f90b2a0b2fa1c0f79c401c453399b7282",
+  "guard_coverage": "contiguous ASCII +/- and Unicode mathematical minus U+2212; decimal fragments remain excluded",
+  "not_claimed": [
+    "name-value association",
+    "occurrence multiplicity",
+    "locale/scientific/range parsing",
+    "native signed-value reading accuracy",
+    "device utility"
+  ]
+}

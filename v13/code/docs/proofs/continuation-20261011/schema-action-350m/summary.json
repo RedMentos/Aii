@@ -1,0 +1,388 @@
+{
+  "status": "DIAGNOSTIC_COMPLETE",
+  "report_sha256": "28a6ad5158ca1b49979221a0c6ad4a07276ea62d592527c00734f7eb9d2de440",
+  "calls": 32,
+  "artifacts_unchanged": true,
+  "server_reaped": true,
+  "canonical_gate_pass": false,
+  "ordering_benefit_proven": false,
+  "runtime_fix_recommended": false,
+  "arms": {
+    "free_json": {
+      "copy": {
+        "n": 4,
+        "action_exact": 4,
+        "all_requested_fields_exact": 0,
+        "actions": [
+          "A",
+          "B",
+          "NONE",
+          "UNKNOWN"
+        ]
+      },
+      "decision": {
+        "n": 4,
+        "action_exact": 1,
+        "all_requested_fields_exact": 0,
+        "actions": [
+          "NONE",
+          "NONE",
+          "UNKNOWN",
+          "UNKNOWN"
+        ]
+      },
+      "wire_properties_orders": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "actual_output_orders": [
+        [
+          "action",
+          "eligible",
+          "remaining",
+          "task"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining",
+          "task"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining",
+          "task"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining",
+          "task"
+        ],
+        [
+          "action",
+          "remaining",
+          "eligible",
+          "in"
+        ],
+        [
+          "action",
+          "remaining",
+          "eligible",
+          "in"
+        ],
+        [
+          "action",
+          "remaining",
+          "eligible",
+          "in"
+        ],
+        [
+          "action",
+          "remaining",
+          "eligible",
+          "in"
+        ]
+      ]
+    },
+    "action_only": {
+      "copy": {
+        "n": 4,
+        "action_exact": 4,
+        "all_requested_fields_exact": 4,
+        "actions": [
+          "A",
+          "B",
+          "NONE",
+          "UNKNOWN"
+        ]
+      },
+      "decision": {
+        "n": 4,
+        "action_exact": 2,
+        "all_requested_fields_exact": 2,
+        "actions": [
+          "UNKNOWN",
+          "NONE",
+          "NONE",
+          "UNKNOWN"
+        ]
+      },
+      "wire_properties_orders": [
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ]
+      ],
+      "actual_output_orders": [
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ],
+        [
+          "action"
+        ]
+      ]
+    },
+    "schema_action_first": {
+      "copy": {
+        "n": 4,
+        "action_exact": 4,
+        "all_requested_fields_exact": 4,
+        "actions": [
+          "A",
+          "B",
+          "NONE",
+          "UNKNOWN"
+        ]
+      },
+      "decision": {
+        "n": 4,
+        "action_exact": 1,
+        "all_requested_fields_exact": 0,
+        "actions": [
+          "NONE",
+          "NONE",
+          "UNKNOWN",
+          "UNKNOWN"
+        ]
+      },
+      "wire_properties_orders": [
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ]
+      ],
+      "actual_output_orders": [
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ],
+        [
+          "action",
+          "eligible",
+          "remaining"
+        ]
+      ]
+    },
+    "schema_facts_first": {
+      "copy": {
+        "n": 4,
+        "action_exact": 3,
+        "all_requested_fields_exact": 3,
+        "actions": [
+          "A",
+          "B",
+          "UNKNOWN",
+          "UNKNOWN"
+        ]
+      },
+      "decision": {
+        "n": 4,
+        "action_exact": 1,
+        "all_requested_fields_exact": 0,
+        "actions": [
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN",
+          "UNKNOWN"
+        ]
+      },
+      "wire_properties_orders": [
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ]
+      ],
+      "actual_output_orders": [
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ],
+        [
+          "remaining",
+          "eligible",
+          "action"
+        ]
+      ]
+    }
+  }
+}

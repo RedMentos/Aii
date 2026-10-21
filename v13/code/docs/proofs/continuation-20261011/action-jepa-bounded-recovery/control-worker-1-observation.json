@@ -1,0 +1,161 @@
+{
+  "schema": "v13-bounded-native-worker-observation-v1",
+  "status": "CONTROLLED_CHECKPOINT_BOUNDARY",
+  "started_utc": "2026-10-11T10:14:10.644804+00:00",
+  "initial_rows": 0,
+  "maximum_new_batches": 1,
+  "registry_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+  "memory_start": {
+    "memory.events": "low 0\nhigh 0\nmax 1016\noom 0\noom_kill 0\noom_group_kill 0",
+    "memory.current": "7807131648",
+    "memory.max": "8589934592",
+    "memory.peak": "8590090240"
+  },
+  "samples": [
+    {
+      "utc": "2026-10-11T10:14:11.307849+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 1016\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7805132800",
+        "memory.max": "8589934592",
+        "memory.peak": "8590090240"
+      },
+      "native_identity": {
+        "proc_pid": 9674,
+        "nspid": [
+          9674,
+          8
+        ],
+        "starttime_ticks": "180798",
+        "rss_bytes": 1585152
+      }
+    },
+    {
+      "utc": "2026-10-11T10:14:12.649969+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 1016\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7880978432",
+        "memory.max": "8589934592",
+        "memory.peak": "8590090240"
+      },
+      "native_identity": {
+        "proc_pid": 9674,
+        "nspid": [
+          9674,
+          8
+        ],
+        "starttime_ticks": "180798",
+        "rss_bytes": 89235456
+      }
+    },
+    {
+      "utc": "2026-10-11T10:14:14.658337+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 1016\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8341172224",
+        "memory.max": "8589934592",
+        "memory.peak": "8590090240"
+      },
+      "native_identity": {
+        "proc_pid": 9674,
+        "nspid": [
+          9674,
+          8
+        ],
+        "starttime_ticks": "180798",
+        "rss_bytes": 1099313152
+      }
+    },
+    {
+      "utc": "2026-10-11T10:14:16.665730+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 1016\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8465616896",
+        "memory.max": "8589934592",
+        "memory.peak": "8590090240"
+      },
+      "native_identity": {
+        "proc_pid": 9674,
+        "nspid": [
+          9674,
+          8
+        ],
+        "starttime_ticks": "180798",
+        "rss_bytes": 1221304320
+      }
+    },
+    {
+      "utc": "2026-10-11T10:14:17.476095+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 1016\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "8529244160",
+        "memory.max": "8589934592",
+        "memory.peak": "8590090240"
+      },
+      "native_identity": {
+        "proc_pid": 9674,
+        "nspid": [
+          9674,
+          8
+        ],
+        "starttime_ticks": "180798",
+        "rss_bytes": 1283522560
+      }
+    }
+  ],
+  "owned_popen_pid": 8,
+  "native_returncode": 0,
+  "cleanup_requests": [
+    {
+      "operation": "owned_Popen_terminate",
+      "utc": "2026-10-11T10:14:17.477892+00:00",
+      "returncode_before": null
+    }
+  ],
+  "native_started": true,
+  "receiver_authority": 0,
+  "native_command": [
+    "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/llama-server",
+    "-m",
+    "/workspace/scratch/5a9214d3f329/native-audit-cache/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+    "--embedding",
+    "--pooling",
+    "mean",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "33761",
+    "--alias",
+    "v13-action-capture-6d4f8ff7d4584f7f962794b19ec4349d",
+    "-c",
+    "2048",
+    "-t",
+    "2",
+    "-tb",
+    "2",
+    "--no-webui",
+    "--log-disable"
+  ],
+  "controlled_reason": "Preregistered owned-worker boundary after 1 successful new batches",
+  "native_signal_number": null,
+  "worker_reaped": true,
+  "completed_utc": "2026-10-11T10:14:17.694563+00:00",
+  "memory_end": {
+    "memory.events": "low 0\nhigh 0\nmax 1016\noom 0\noom_kill 0\noom_group_kill 0",
+    "memory.current": "7803965440",
+    "memory.max": "8589934592",
+    "memory.peak": "8590090240"
+  },
+  "completed_rows": 16,
+  "completed_new_batches": 1,
+  "taps_sha256": "d8fa6ff777aa180dab9a66273df058f202421b6291f820d5ae3f0120b03b88b5",
+  "cgroup_event_deltas": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "rss_observed": true
+}

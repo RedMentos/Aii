@@ -14,6 +14,8 @@ Grundlage: `blueprint/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md` (1
 | ❌ | **FEHLT**: kein Code |
 | ⏸ | **SPÄTER**: Blueprint sperrt es selbst bis nach STEP7 (stabiler Age-0-Kern) |
 
+**Klarstellung 2026-10-21 (Zielabgleich, `ZIELABGLEICH.md`):** ✅ in den Tabellen 1–8 heißt „Baustein im Code mit Test“, **nicht** „Blueprint-Ziel erreicht“. Ein Ziel gilt erst als erreicht, wenn das zugehörige Gate nach §100/IH-H33 grün ist (Code, echter Zustandspfad, Persistenz, Test, Telemetrie, **Ablations-Baseline**, bekannte Grenzen). Deshalb stehen z. B. Adaptive Reasoning Effort, Inquisition und Koalitions-Binder als Baustein ✅, ihre Gates G5B/G5/G3D aber 🟡. Die Ziel-Ebene steht in Abschnitt 12 (§29, §96, §100).
+
 Paket-Spalte: wer es abdeckt. `WP-N*` sind die in diesem Abgleich neu angelegten Pakete (Ende der Datei und in ROADMAP.md).
 
 ## 0. Ergebnis in Zahlen
@@ -27,6 +29,12 @@ große Sammelzeilen wie „§24 Benchmarks“ zählen nur einmal, die Zahl ist a
 | 🟡 TEIL | 79 | 38 % |
 | ❌ FEHLT | 10 | 5 % |
 | ⏸ SPÄTER | 3 | 1 % |
+
+**Nachtrag 2026-10-20 (WP-G2):** Gist-Zeile und G1B bleiben 🟡, jetzt mit nativem B2-Readout-Konsumenten und vorregistrierter nativer Messung (`code/docs/GIST_READOUT.md`).
+
+**Nachtrag 2026-10-12 (Thread I):** §8.6 und G6B von ❌ auf 🟡 (Zählung oben nicht neu berechnet).
+
+**Nachtrag 2026-10-12 (Thread N):** §97.2 Redmi Resource Modes bleibt 🟡, aber jetzt mit Laufpfad, Tests und Kalibrierweg; offen ist nur die Messung am Redmi (WP-R). Phone-first Learning: LFM2-Blocker aufgehoben, Status bleibt 🟡.
 
 **Neuabgleich 2026-10-10 (Pakete B, IH-H36):** 19 Zeilen nach N1/N5/N11/N12/N14/N15, S3/S5, V3/V7 aktualisiert; Zählung neu über 210 Zeilen (vorher 51/109/45/5 bei 210).
 
@@ -95,17 +103,17 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 |---|---|---|---|---|
 | B1 Detail-Körper | §1.2.1, §3.1, §52 | 🟡 | LFM2.5-1.2B als Beobachter mit 240-Zeichen-Sicht | WP-G |
 | B2 Gist-Körper | §1.2.2, §3.2, §53 | 🟡 | eigener Körper Qwen3.5-0.8B (WP-V, WP-N11 über AG0-Slots), 960-Zeichen-Sicht + Kontext-Slots; STEP2-Zwei-Körper-Messung FAIL | WP-G, WP-N11 |
-| Gist-Gruppierung ~8 Token / Slots | §1.2.2, G1B, §17.6 | 🟡 | `gist.py` (Age-Auflösung, grenzbewusst, verlustfrei; SHADOW/`:gist active`); Nutzen-Messung offen | WP-G |
+| Gist-Gruppierung ~8 Token / Slots | §1.2.2, G1B, §17.6 | 🟡 | `gist.py` (Age-Auflösung, grenzbewusst, verlustfrei; SHADOW/`:gist active`); 2026-10-20 nativer B2-Readout-Konsument `gist_readout.py` (`:gist readout`), native Messung: Text-Grenzen +.08 Recall@1 ggü. fester Gruppierung gleicher Zahl, natives Sprungsignal ohne Zusatznutzen; Antwort-Nutzen offen | WP-G, WP-G2 |
 | Cross-scale Kopplung | §3.2A | ✅ | `focal.link_scales`; Gist-Slots mit Fein-Spans, Abdeckung, Kompression, Grenz-Konfidenz, Rückfall (`gist.coupling`); B1 bündelt bei Re-entry lokalen vorläufigen Gist (`gist.local_bundle`, im Prompt nur mit `:gist active`) | WP-N1, WP-G, WP-U7 |
-| MoE-Körper (MobileMoE-S-QAT, zwei verschiedene MoE-Hälften) | §81, §87.1, §91, Nutzerwunsch | ❌ | `agi/residency.py` verwaltet Experten-RAM, aber es gibt kein MoE-Modell | **WP-N11** |
-| Router-Stabilität für MoE | B3-H6, §16.2.1 | ❌ | – | WP-N11 |
+| MoE-Körper (MobileMoE-S-QAT, zwei verschiedene MoE-Hälften) | §81, §87.1, §91, Nutzerwunsch | 🟡 | 2026-10-12: offener Kandidat EuroMoE-2.6B-A0.6B (Apache-2.0, en+de) läuft in HF und llama.cpp b10964 (F16/Q4_K_M 1,6 GB); MobileMoE weiter gated; noch nicht in `specs/models.json` (Freeze), kein Redmi (`code/docs/MOE_N11.md`) | **WP-N11** |
+| Router-Stabilität für MoE | B3-H6, §16.2.1 | 🟡 | `scripts/moe_router_monitor.py` Gate + Kalibrierung aus Basis-Schwankung, echte EuroMoE-Messung `bench-results/moe-router-20261012/` (stabil nur α ≤ 0,01); isoliert, nicht im Lauf | WP-N11 |
 | B3 Callosum Exact/Control/Symbolic | §1.4, B3, §54 | ✅ | `cognition.communicate` | – |
 | B3 Kanal-Nutzen-Messung | §1.4.1, B3-H9, §24.15 | 🟡 | STEP2-Ablation NONE/EXACT/CONTROL/SYMBOLIC; Ergebnis UTILITY_FAIL | WP-G |
 | B3 Latent L1 (nur Empfänger-Adapter) | B3-H3 L1 | 🟡 | Numerik-Experimente (`native_receiver_effect.cpp`), Autorität 0 | WP-J |
 | B3 Latent L2–L4 | B3-H3 | ❌ | – | WP-J |
 | Callosum fördert UND hemmt | §85.2 | 🟡 | `callosum.py`: signed_gain als Vorschlag, gelernte Kanal-Policy (SHADOW/ACTIVE); kein Latent | WP-J |
 | B4 Verteilter Zustand | B4, §8.1 | ✅ | Multi-Slot-Workspace mit SourceBinding/Zeitskala/Status (`focal.Workspace`), B1/B2-Zustand je Session, B4-Sicht über Sessions (`bodyview.cross_session`, SHADOW), L3-B4-Lernschleife Haltedauer je Quellenart (`workspace_learn.py`, SHADOW) | WP-N1, WP-T5, WP-U8 |
-| B4 Multi-Slot-Workspace | §8.2, §8.2A, §55 | ✅ | Workspace mit Slots live in der Fokusschleife (`focal.py`, WP-N1), Tests `test_focal.py` | WP-N1 |
+| B4 Multi-Slot-Workspace | §8.2, §8.2A, §55 | ✅ | Workspace mit Slots live in der Fokusschleife (`focal.py`, WP-N1), Tests `test_focal.py`; 2026-10-12 §8.2-Slot-Minimum Pflicht in `FocalItem`/`WorkspaceSlot` (self_generated, Zeit/Alter/Ablauf, exakter Fallback, Zeitskala, Abdeckung, Kompression, Grenz-Konfidenz als lexikalischer Proxy, Cross-Scale-Links; `test_workspace_slot.py`) | WP-N1, Thread L |
 | B5 Zugriff auf Memory/World/Self/Skills | B5 | ✅ | Memory + World/Self/Skill-Zustand als gespeicherte Quelle `BODY_STATE` im B1/B2-Query (`bodyview.body_state`, `test_bodyview.py`) | WP-N9, WP-T5 |
 | Native Tokenizer/Top-k unangetastet | §1.2.3, §1.2.5 | ✅ | Modelle laufen unverändert in llama.cpp | – |
 | Observer-Pass pro Event | §3.4.3, §4.2, §61 | ✅ | `runtime._turn` Offers vor der Antwort | – |
@@ -128,7 +136,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Action Gate + Sicherheit vor Aktion | §6.4, §6.4.1 | ✅ | C5 + IH-H29; Schreib-Werkzeug im Sandbox-Modus mit Dry-Run-Vorschau, Freigabe pro Aufruf (`:tx approve`), Rücknahme (`:tx undo`) im Live-Turn (WP-T7); Netz/externe Wirkung nur Vorschlag | WP-K, WP-N4, WP-T7 |
 | Kontrollierte Exploration | §6.6 | ✅ | `agi/curiosity.py` im Lauf (Beobachtung je Turn, Wahl im Job `learn_medium`), Age-gegatet: bei Age 0 bewusst aus | WP-AG5, WP-T8 |
 | Fast-Forward / Kleinhirn | §7.1, §85.6, §75 | ✅ | `fastforward.py`: Vorwärtsmodell + Prozeduralisierung mit Gate, Reflexe in `reflex.py` | WP-F |
-| World-Model / World-JEPA | §7.2, §92.2, §70 | 🟡 | kontrollgeerdetes Weltmodell über eigene digitale Übergänge (`world_model.py`), `world_worker.py`, `agi/grounding.py`; kein latentes World-JEPA im Körper | WP-AG2, WP-T8 |
+| World-Model / World-JEPA | §7.2, §92.2, §70 | 🟡 | kontrollgeerdetes Weltmodell über eigene digitale Übergänge (`world_model.py`), `world_worker.py`, `agi/grounding.py`; kein latentes World-JEPA im Körper; 2026-10-12 Thread M: latenter Werkzeug-Folgen-Prädiktor (Action-JEPA Runden 7/8) im Live-Werkzeugpfad, SHADOW, `toolforecast.py`, live in den geschlossenen Welten bestätigt | WP-AG2, WP-T8 |
 | Control-grounded World Learning | §7.2.1 | ✅ | forward (Ensemble), inverse, state-align (Probe auf gelernte Latents, sonst ehrlich UNAVAILABLE), outcome je Hold-out (`world_model.fit`) | WP-AG2, WP-T8 |
 | Counterfactual + Coverage | §7.2.2 | ✅ | Coverage/OOD/Ensemble-Streuung → Konfidenz, Label SIMULATION_SUPPORTED/UNCERTAIN, nie REAL (`world_model.counterfactual`) | WP-AG2, WP-T8 |
 | Self Model | §7.3 | ✅ | `selfmodel.py` Aggregat (Skills, Tools, Age, Lernstatus, Ziele, Gesundheit, Grenzen) | WP-N9 |
@@ -136,7 +144,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Corollary / Efference Copy | §7.5, §85.7 | ✅ | `SelfCorollary` + Self/World-Attribution, G-SELF-WORLD-005 als Tests | WP-N9 |
 | Context OS | §8.3, §8.4 | ✅ | `context_os.py`: Schichten-Plan, Exact-Span-Kompression, Exact-Restore; SHADOW Standard | WP-N7 |
 | Adaptive KV/Cache-Policy | §8.5, §74, G6B | 🟡 | `stable_prefix`-Layout für llama.cpp-Präfix-Cache, Template-Probe, CTX-Regler §74; keine Head/Layer-Policy (Runner kann es nicht) | WP-N7 |
-| Body-native Cache-Primitiven | §8.6 | ❌ | (Forschung, optional) | WP-N7 |
+| Body-native Cache-Primitiven | §8.6 | 🟡 | 2026-10-12 Thread I: Fähigkeits-Manifest je Body aus echten Linux-nativen Messungen (`scripts/native_cache_primitives.py`, `native_cache_bench.py`, `docs/NATIVE_CACHE.md`): §8.6.4 Hybrid vorhanden (alle 3 Bodies), §8.6.2 Bounded Replay nativ über Kontext-Checkpoints (nur Turn-Grenzen), §8.6.1/8.6.3/8.6.5 nicht in den Architekturen → ABSENT deklariert; nicht in Runtime (Freeze) | WP-N7 |
 | Memory Active/Warm | §9.1 | ✅ | C1-Zustand + warme Erinnerungen mit Zerfall/Reaktivierung (`context_os.py`) | WP-N7 |
 | Fast Episodic | §9.1, STEP3 | ✅ | Korrekturen, Episoden mit Grenzen/Route/Ergebnis/Quellen (`episodes.py`), lexikalischer + optional semantischer Abruf; „zweites Mal besser“: einzelne Routen-Korrektur wirkt bei ähnlicher Anfrage sofort (`episodic_route.py`, Standard shadow) | WP-H, WP-S2, WP-N8, WP-U10 |
 | Parametric Fast Trace | §9.1 optional | 🟡 | Sparse-Memory-Layer an C3 (`sparse_memory.py`, keyed: 8/8 gelernt, KL 3e-6, nichts vergessen); nur torch, nicht im Lauf, Near-Miss-Leck offen | WP-S3 |
@@ -179,7 +187,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Dream | L8.2, §43.9 | ✅ | `:dream`, nur Hypothesen, Faktenschreib-Gain 0 (`DREAM_FACT_WRITE_GAIN`), Prüfung in Sleep B | WP-E, WP-T11 |
 | Metaplastizität | §16.1, §68 | ✅ | Plastizitätszustand je Pfad, §68-Regel + gelernter META-Kopf (SHADOW), Konflikt → erst verifizieren (`neuromod`) | WP-N10, WP-T12, WP-U2 |
 | Homöostase | §16.2 | ✅ | Sleep C: Drift/Sättigung/tote Pfade mit Gate (hält langsame Konsolidierung), langsame Pfad-Gains (dominant dämpfen, tote nützliche öffnen, Update-Budget), Routen-Dominanz nur Monitor (`homeostasis.py`, aktiv nur durch Nutzer) | WP-E, WP-T11, WP-U2 |
-| Pre-Router Interference Monitor | §16.2.1, §24.19 | ❌ | – | WP-N11 |
+| Pre-Router Interference Monitor | §16.2.1, §24.19 | 🟡 | `moe_router_monitor.interference_report` mit Restaurations-Ablation; echte Messung: Vergessen v. a. vor dem Router (shared-Restauration 81 %); isoliert, nicht im AG6-Gate | WP-N11 |
 | Consolidation Tag | §16.3 | ✅ | ≥3 FINAL-Bestätigungen + gemessene Stabilität, Überraschung allein nie; ohne Commit-Autorität | WP-N10 |
 | Representation Anchor | §69, §48.10 | ✅ | Anker-Sätze im Prädiktor/Retrieval; Drift-Proben + KL/Flip-Gate (`drift.py`); Anker-Stärke je Batch aus Domänen-Neuheit/Skill-Stabilität mit Geometrie-Untergrenze (`anchor.py`, SHADOW, aktiv nur durch Nutzer) | WP-S5, WP-U5 |
 | Learning Authority Levels | §88.1 | ✅ | Autorität 0/Schatten überall erzwungen | WP-I |
@@ -199,13 +207,13 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Event/Wake Scheduler | §22.2.1, G13 | ✅ | `scheduler.py` | WP-E |
 | Response Governor | §22.2.2 | ✅ | Deadline + Snapshot-Fallback | – |
 | Thin-Control-Budget | §22.2.3, §24.14 | 🟡 | `control_budget.py` + `:fabric`: Latenz P95 je Steuer-Stufe, Checkpoint-/State-Bytes, Limits-Regler; Verdikt NO_LIMITS bis Redmi-Messung (Blueprint: Limits erst nach Zielhardware) | WP-N12, WP-T14 |
-| Redmi-Budget / Observer-Scheduling | §22.2.4, §73, §97 | 🟡 | Config-Werte; Redmi-Messung fehlt | WP-R |
+| Redmi-Budget / Observer-Scheduling | §22.2.4, §73, §97 | 🟡 | 2026-10-12 Thread N: Regler `observer_schedule` mit allen 6 Canon-Werten im Turn und Post-Commit-Pass (`observer_schedule.py`, Standard sequenziell wie bisher), §73-RSS-Budget (PSS-Summe, 3000/3800 MB) als YELLOW/ORANGE-Eingang der §97.2-Modi, nur auf Android aktiv; Redmi-Messung (Parallel vs. sequenziell, echte RSS) fehlt; 2026-10-13 Thread N (WP-N21): AG13-Residenz rechnet mit gemessenen Körper-Größen je Modelldatei (Anon + heiße Datei-Seiten, Cloud-Untergrenze ausgeliefert, Termux-Messung per `:resources bodies import`) | WP-N17, WP-R, WP-N21 |
 | Training-Master vs. quantisierte Kopie | §22.3 | 🟡 | Vertrag in `body_training.py` | WP-I |
-| Phone-first Learning | §22.4, §90 | 🟡 | `native_select_finetune.cpp` (ggml-opt) läuft für reine Attention-Modelle; LFM2 blockiert (SSM_CONV-Backward); Redmi-Messung offen | WP-S6, WP-R |
+| Phone-first Learning | §22.4, §90 | 🟡 | `native_select_finetune.cpp` (ggml-opt) läuft für reine Attention-Modelle; LFM2 seit 2026-10-12 per isoliertem Patch trainierbar (`build_native_lfm2_finetune.sh`, `native_answer_finetune.cpp`): C3 bis 7/8 Fakten, aber zu viel Vergessen/Leck, AG6-Gate nicht bestanden (`code/docs/NATIVE_LFM2_TRAIN.md`); Redmi-Messung offen | WP-S6, WP-R |
 | Speculative Decoding | §22.6 | ✅ (gemessen, bewusst aus) | `scripts/spec_decode_bench.py`: auf hybriden LFM2/Qwen3.5-Bodies greift Spekulation in b10964 nicht (0,92–0,98×, Draft +330 MB); siehe `bench-results/spec-decode-20261009/` | WP-N12 |
 | TRAIN_RUNNER_PROOF | §89, IH-H6 | 🟡 | Cloud-Runner mit Checkpoint/Resume/Rollback + Retention-Messung (`lora_trainer.py`); Handy-Nachweis offen | WP-I, WP-S6 |
-| MoE Learning Hardening | §91 | ❌ | – | WP-N11 |
-| Redmi Resource Modes | §97.2 | 🟡 | `resources.ResourceGuard` | – |
+| MoE Learning Hardening | §91 | 🟡 | `phase_allowed` A→D + `expert_commit_allowed`, Monitorfelder gemessen; nicht im Trainer verdrahtet (Freeze) | WP-N11 |
+| Redmi Resource Modes | §97.2 | 🟡 | 2026-10-12 Thread N: `resource_modes.py` GREEN/YELLOW/ORANGE/RED mit Hysterese im Lauf (Turn: Beobachter-Zahl/-Tiefe, Kontext; Effort-Decke `one`; Bodies; Sleep/Scheduler/`:replay`; 9 Schatten-Lern-Jobs pausieren ab ORANGE), eine Tabelle statt drei widersprüchlicher, `:resources calibrate` aus gemessener Körper-RSS (`DEVICE_MEASURED` nur Android); Schwellen/Faktoren BOOT, Redmi-Kalibrierung offen (`docs/RESOURCE_MODES.md`) | WP-N16, WP-R |
 
 ## 7. IH-H-Regeln (Implementation Hardening)
 
@@ -245,7 +253,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | IH-H31 | Quellen-Hygiene | ✅ | WP-S8 erledigt | – |
 | IH-H32 | Needle-Runtime-Notizen | ✅ | `needle_worker.cpp` | – |
 | IH-H33 | Definition „gemacht“ | ✅ | gilt für alle Pakete | – |
-| IH-H34 | Completion Ledger | 🟡 | Ledger v3: Zeilen + automatisch gelistete Module ohne Zeile (`uncovered_modules`, nie PASS) | WP-V8, WP-T15 |
+| IH-H34 | Completion Ledger | 🟡 | Ledger v4: Zeilen + automatisch gelistete Module ohne Zeile (`uncovered_modules`, nie PASS); §102-Felder je Zeile aus §99-Belegen (`neuro_ledger.py`, `specs/neuro-ledger.json`), Hirn-Etikett ohne Ablation = UNTESTED_LABEL und nie PASS; 15 Zeilen noch ohne Ablation | WP-V8, WP-T15, Thread L |
 | IH-H35 | Blocker P0–P3 | 🟡 | P0 erledigt, P1–P3 offen | ROADMAP §4 |
 | IH-H36 | Abschluss-Audit | 🟡 | Messsuite (`measure_suite.py`) + dieser Neuabgleich 2026-10-10; Redmi-Teil offen | WP-N12 |
 
@@ -254,18 +262,18 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Regel | Status | Paket |
 |---|---|---|
 | B3-H1 keine fremden Hidden States injizieren | ✅ (Latent aus, Schema verbietet) | – |
-| B3-H2 Message-Subspace | 🟡 gebaut + gemessen, L1-Gate FAIL (`b3bridge.py`) | WP-J |
+| B3-H2 Message-Subspace | 🟡 gebaut + gemessen, L1-Gate FAIL (`b3bridge.py`); Ursache 2026-10-20 diagnostiziert (Trainingssignal, nicht Kanal), `aux`-Ziel als Fix-Kandidat, explorativ PASS nur auf `action` (`bench-results/b3-l1-diagnose-20261020/`) | WP-J |
 | B3-H3 L0 Baselines | ✅ | – |
 | B3-H3 L1 Empfänger-Adapter | 🟡 | WP-J |
-| B3-H3 L2–L4 | ❌ | WP-J |
-| B3-H4 Receiver-Calibration-Paket | 🟡 (Schema `ReceiverCalibration`) | WP-J |
+| B3-H3 L2–L4 | ❌ (kanonisch gesperrt: L1 FAIL, B3-H8 erzwingt L1 vor L2, `b3order.py`) | WP-J |
+| B3-H4 Receiver-Calibration-Paket | ✅ Mechanik (2026-10-13 Thread N: `b3calibration.compute` alle Canon-Felder aus Empfänger-Tap-Zuständen, richtungsbewusster Geometriefehler, Gültigkeit je Sender-/Empfänger-Revision; B3-H5-Tor in Canon-Reihenfolge; echtes Paket fehlt mangels B1→B2-Tap-Paar) | WP-N20, WP-J |
 | B3-H5 harter Empfänger-Gate | ✅ (Autorität 0) | – |
-| B3-H6 Router-Stabilität MoE | ❌ | WP-N11 |
+| B3-H6 Router-Stabilität MoE | 🟡 Gate + echte Kalibrierung/α-Raster (EuroMoE, Cloud); K/Rang-Raster und Redmi offen | WP-N11 |
 | B3-H7 kleine Mobile-Bridge | ✅ `b3bridge.budget` (29 k Param., 58 KB) | WP-J |
-| B3-H8 Trainingsreihenfolge | 🟡 (Predictor-first eingehalten) | WP-J |
-| B3-H9 Kanal-Nutzen-Vertrag | 🟡 | WP-J |
-| B3-H10 Automatische Degradation | 🟡 (fällt auf NO_MESSAGE) | WP-J |
-| B3-H11 `:doctor`-Ausgabe | 🟡 | WP-J |
+| B3-H8 Trainingsreihenfolge | ✅ (2026-10-13 Thread N: `b3order.py` 10 Schritte aus Belegen, Sprünge/Verstöße verweigert, gemeinsames Bewegen von Brücke/Backbone/Router gesperrt, Beförderung und `:doctor` lesen es) | WP-N22, WP-J |
+| B3-H9 Kanal-Nutzen-Vertrag | 🟡 (2026-10-13 Thread N: Latent-Nutzen mit router_drift_penalty/retention_penalty, Vorzug nur nach Validierungsfenster gegen alle Basen, p(LATENT) geführt; Messung offen) | WP-N20, WP-J |
+| B3-H10 Automatische Degradation | ✅ Mechanik (2026-10-13 Thread N: `b3degrade.py` Leiter L4→L3→L2→L1→EXACT/SYMBOLIC→NO_MESSAGE, alle 10 Canon-Auslöser aus Belegen, hart/weich, Beförderung nur explizit mit Gate-Beleg; Schwellen BOOT, Router-KL/Flip erst mit MoE-Empfänger messbar) | WP-N19, WP-J |
+| B3-H11 `:doctor`-Ausgabe | ✅ (2026-10-13 Thread N: alle Pflichtfelder je Richtung inkl. Revisionen, Runner, Router-KL/Flip Basis+aktuell, Kalibrierungs-Gültigkeit, Herabstufungen; FAIL bei Latent-Einfluss ohne gültige Kalibrierung) | WP-N19, WP-J |
 | B3-H12/H13 Abschluss/Auslegung | ✅ Gate in `:doctor` (`b3bridge.completion_gate`, Status heute scaffold) | WP-J, WP-U9 |
 
 ## 9. Gates, Benchmarks, Experimente (§23, §24, §31, §79, §99–101)
@@ -274,7 +282,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 |---|---|---|
 | G0 Maschinenlesbarer Canon | ✅ | – |
 | G1 Echter Harness | ✅ | – |
-| G1B Fixierte Gist/Detail-Auflösung | 🟡 (Python + Struktur-Bench fertig, Modell-Messung offen) | WP-G |
+| G1B Fixierte Gist/Detail-Auflösung | 🟡 (Python + Struktur-Bench fertig; 2026-10-20 native B2-Readout-Messung boundary vs fixed: Text-Grenzen besser, hybrid FAIL; gelernte adaptive Gruppierung + Antwort-Nutzen offen) | WP-G, WP-G2 |
 | G2 BodyPort + Callosum-Bootstrap | 🟡 | WP-AG0, WP-J |
 | G2B Echter Callosum + verteilter Zustand | 🟡 | WP-J, WP-N1 |
 | G2C Kanal-Nutzen + Empfänger-Kalibrierung | 🟡 | WP-J |
@@ -285,7 +293,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | G5 JEF_FOCAL_LOOP + Inquisition + Re-entry | 🟡 (Python fertig inkl. Halt-nach-stabiler-Trajektorie; Messung offen) | WP-N1, WP-N2 |
 | G5B Adaptive Reasoning Effort | 🟡 (Python fertig, Messung offen) | WP-D |
 | G6 Context OS + Fast Episodic + Provenance | 🟡 | WP-N7, WP-H |
-| G6B Native Cache/Attention | ❌ | WP-N7 |
+| G6B Native Cache/Attention | 🟡 (Manifest + Auswahl-Policy mit Re-Prefill-Fallback gemessen, isoliert; Runtime-Anschluss und Redmi offen) | WP-N7 |
 | G7 Eligibility + lokales JEPA/EMA | 🟡 | WP-N10, WP-I |
 | G8 Replay / Konsolidierung / Regression Shield | 🟡 | WP-E, WP-AG6 |
 | G9 Age-Steuerung | ✅ | WP-C |
@@ -293,14 +301,14 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | G10 Lehrer-Lifecycle | 🟡 | WP-AG1 |
 | G10B/C/D Vision, Audio, Full-Duplex | 🟡 Text-Full-Duplex (WP-N14), Vision nur Lab (WP-N15); Audio/Sprach-Duplex ⏸ STEP9–11 | WP-N14, WP-N15 |
 | G11 Body Swap | 🟡 Mechanik online (`:body`, Rollback ohne Neustart, Probe); echter Tausch mit AG12-Parität + Redmi offen | WP-AG0, WP-T13 |
-| G12 Mobile-Optimierung | 🟡 | WP-R |
+| G12 Mobile-Optimierung | 🟡 (2026-10-13: Residenz-Größen aus RAM-Messung, Thread P/N; Redmi offen) | WP-R, WP-N21 |
 | G12B Redmi-6GB-Validierung | ❌ | WP-R |
 | G12C Needle-Benchmark | ✅ (`c2_benchmark.py`, `bench-results/c2-benchmark-20261010`: Needle bleibt C2, gelernter Routing-Kopf) | WP-V7 |
-| G13 Langlauf + Event-Scheduler | 🟡 | WP-E, WP-R |
-| §24 Kern-Benchmarks (34 Stück) | 🟡: alle 34 in `specs/benchmarks.json` auf Tests/Artefakte abgebildet (`:gates`, `measure_suite.py`); 24.19 braucht MoE, 24.31 nur Lab, 24.14/24.33 brauchen Redmi | WP-N12 |
-| §31/§79 R0–R9 Kernexperimente | 🟡: R0 (`timescale_gate.py`), R1 (STEP2 FAIL), R5 (WP-D ohne Messung); R2–R4, R6–R9 fehlen | **WP-N12** |
+| G13 Langlauf + Event-Scheduler | 🟡 (2026-10-12 Thread N: `scripts/longrun_soak.py` simulierte Tage mit Neustarts über den echten Turn-/Scheduler-/Sleep-Pfad, 7 Tage PASS in der Cloud; Befund Wach-Replays verdrängten den Nacht-Schlaf behoben; Redmi-`--native`-Langlauf offen) | WP-N18, WP-E, WP-R |
+| §24 Kern-Benchmarks (35 Stück inkl. 24.28B) | 🟡 (21.10. `measure_suite`: nur 6 MEASURED, davon 24.11 durchgefallen; 25 nur TESTED = Existenz-Test ohne Messung; 2 NEEDS_REDMI; 2 NOT_IMPLEMENTED 24.19/24.31; Paket WP-Z6): alle 34 in `specs/benchmarks.json` auf Tests/Artefakte abgebildet (`:gates`, `measure_suite.py`); 24.19 braucht MoE, 24.31 nur Lab, 24.14/24.33 brauchen Redmi | WP-N12 |
+| §31/§79 R0–R9 Kernexperimente | 🟡: R0 (`timescale_gate.py`), R1 (STEP2 FAIL), R2 dicht (WP-T14), R4 Teile 1–3 Wecken (Teile 4–11 sind Werkzeug-Regeln, kein R4 im Blueprint-Sinn), R5 (WP-D ohne Messung); R3, R6–R9 offen. Achtung: §31 und §79 nummerieren R verschieden, die Roadmap folgt §31 | **WP-N12** |
 | §99 Pflicht-Ablationen | 🟡 | WP-N12 |
-| §101 Schemas (Modulator, Corollary, TrainRunnerProof, FocalItem, ReplayItem) | ✅ als Schema; FocalItem zu schmal | WP-N1 |
+| §101 Schemas (Modulator, Corollary, TrainRunnerProof, FocalItem, ReplayItem) | ✅ als Schema; FocalItem seit 2026-10-12 mit §8.2/§93-Slot-Minimum | WP-N1, Thread L |
 | STEP8–11 (Vision, Audio, weitere Effektoren, Full-Duplex, höhere Ages) | ⏸ | später |
 
 ## 10. Nutzerentscheidungen und Ideen aus SICHTUNG
@@ -310,9 +318,9 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Viele verschiedene Modelle, B1 ≠ B2 | 🟡 B1 LFM2.5-1.2B ≠ B2 Qwen3.5-0.8B verdrahtet (WP-N11), dazu C2 Needle, C3 LFM2.5-350M, Embedding, Vision-Lehrer; Nutzen-Messung STEP2 FAIL | WP-N11, WP-G |
 | Englisch zuerst, Deutsch später als Lerntest | ✅ Prompts (`prompts.py`) | WP-V9 |
 | World-Model | 🟡 | WP-AG2 |
-| Konstantes Lernen als Endziel | 🟡 Age-Hülle da, Gewichts-Lernen fehlt | WP-C, WP-AG6, WP-S6 |
+| Konstantes Lernen als Endziel | 🟡 Age-Hülle da, Gewichts-Lernen fehlt; 2026-10-13 Thread M: Werkzeug-Vorhersage lernt aus eigenen Aufrufen weiter ohne Vergessen (komplementärer zweiter Rest, vorregistriert CONFIRMED, SHADOW, Cloud) | WP-C, WP-AG6, WP-S6 |
 | Heruntergebrochene Gehirn-Simulation | 🟡 siehe Abschnitte 1–5 | alle |
-| Zwei verschiedene MoE-Hälften (Detail mit mehr Experten) | ❌ | **WP-N11** |
+| Zwei verschiedene MoE-Hälften (Detail mit mehr Experten) | 🟡 Paar EuroMoE + SmallThinker-4B-A0.6B beide in llama.cpp b10964 gemessen (Router, Q4-Parität, Speicher 4,25 GB ohne Repack-Duplikat); Verdrahtung, STEP2-Vergleich, Redmi offen | **WP-N11** |
 | Regeln nach realem Schaden, Privatsphäre | 🟡 | WP-V6 |
 | Bedienung am Handy (Logs, Einfügen, Live-Knobs) | 🟡 `inputs.py` | WP-V5 |
 | Ehrlichkeit (nichts als „lernt“ verkaufen) | ✅ Claim-Limits im Ledger | – |
@@ -335,3 +343,26 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | WP-N13 | AG-Module in den Live-Durchlauf einhängen | Querschnitt (AG0–AG12 laufen heute nur offline) |
 
 (WP-N6 bewusst nicht vergeben: Reflex + Fast-Forward gehören zu WP-F und sind dort ergänzt.)
+
+## 12. Ziel-Ebene: §29, §96-STEP-Ausgänge, §100-Gates (Zielabgleich 2026-10-21)
+
+Volle Tabellen mit Belegen in `ZIELABGLEICH.md`. Hier die Zusammenfassung, damit Baustein- und Ziel-Ebene nicht verwechselt werden.
+
+**§29 „V13 funktioniert“ (24 Eigenschaften):** 8 ✅, 14 🟡, 2 ❌ (adaptive Kanal-Policy mit Latent-Nutzen; Message-Subspace-Austausch). Nach Blueprint-Wortlaut damit noch Harness-Prototyp.
+
+**§96 STEP-Ausgänge:** STEP0 ✅, STEP1 ✅, **STEP2 ❌** (Komplementarität UTILITY_FAIL; `gate-graph.json` meldet trotzdem GREEN → WP-Z1), STEP3 ✅, STEP4 🟡 (kein Referenz-Lehrer, WP-Z11), STEP5 🟡 (TRAIN_RUNNER_PROOF Redmi fehlt), STEP6A ✅, **STEP6B ❌** (B3 L1 FAIL), STEP6C 🟡 (keine Expert-Deltas), **STEP7 ❌** (Redmi-Wochenlauf), STEP8–11 ⏸.
+
+| §100-Gate | Stand 21.10. (`measure_suite`) | Lücke | Paket |
+|---|---|---|---|
+| G-B-TIMESCALE-DIVERGENCE-001 | 🟡 PARTIAL | STEP2 FAIL, B1 ohne eigene Information in den Fixtures | WP-Z2 |
+| G-CALLOSUM-UTILITY-002 | 🟡 PARTIAL | B3 L1 FAIL, Versuch 4 offen | WP-Z4 |
+| G-FOCAL-CAPACITY-003 | 🟡 PARTIAL | §99-Kontrollen Voll-Kontext / nur Retrieval / feste Slots fehlen | WP-Z5 |
+| G-PROCEDURALIZATION-004 | 🟡 PARTIAL | nur synthetisch; echte Latenz/Energie | WP-Z6, WP-Z7 |
+| G-SELF-WORLD-005 | 🟡 PARTIAL | nur synthetische Fälle | WP-Z12 |
+| G-TRAIN-RUNNER-PROOF-001 | 🟡 PARTIAL | Redmi-Proof | WP-Z7 |
+| G-REPLAY-CONSOLIDATION-001 | 🟡 PARTIAL | Kontrolle „dream policy-only“ | WP-Z9 |
+| G-MODULATOR-SPECIFICITY-001 | 🟡 PARTIAL | nur synthetisch | WP-Z6 |
+| G-AGE-REOPEN-001 | 🟡 PARTIAL | §99 Age nicht belegt; Nutzerwahl `age_plasticity_policy` offen | WP-Z8 |
+| G-MOBILE-LONGRUN-001 | 🟡 PARTIAL | Redmi-Langlauf | WP-Z7 |
+
+**Nicht-Blueprint-Arbeit getrennt führen:** WP-AG (12 AGI-Lücken aus FORSCHUNG.md), Werkzeug-Vorhersage, R4 Teile 4–11 (Rechen-Werkzeug-Regeln) und Vision-Lab vor STEP7 zählen nicht als Blueprint-Abdeckung.

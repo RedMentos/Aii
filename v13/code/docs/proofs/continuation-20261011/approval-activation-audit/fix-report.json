@@ -1,0 +1,113 @@
+{
+  "scope": "AUTHORED_PROTOCOL_FIXTURE with real temporary SQLite and authored bytes; no model training, native inference or operator labels",
+  "source_sha256": "0858e242368b25e04d4bafe612e9cbaadcf3d8a459ee2663da3bc62c85f52a04",
+  "tests_sha256": "a6d022198fa29c40e3049d420575dae3713ca2d8bb0a16df6f052ff9000fb042",
+  "test_log_sha256": "ada692d82db86ff374b48e30bb3289d4a9b8b56127bc53a6589ea6a321803b8b",
+  "tests": {
+    "focused_atomicity_and_concurrency": 16,
+    "existing_lora_growth_neuromod": 52,
+    "passed": 68
+  },
+  "cases": {
+    "missing": {
+      "before": {
+        "status": "PENDING_USER",
+        "candidate_count": 1,
+        "consolidated_count": 0,
+        "registry_roles": [],
+        "request_status": "PENDING",
+        "runner_args": []
+      },
+      "approval_exception": "ValueError",
+      "after": {
+        "status": "PENDING_USER",
+        "candidate_count": 1,
+        "consolidated_count": 0,
+        "registry_roles": [],
+        "request_status": "PENDING",
+        "runner_args": []
+      },
+      "next_stage": "PENDING_USER",
+      "after_restart": {
+        "status": "PENDING_USER",
+        "candidate_count": 1,
+        "consolidated_count": 0,
+        "registry_roles": [],
+        "request_status": "PENDING",
+        "runner_args": []
+      },
+      "explicit_retry_after_artifact_restored": {
+        "returned_status": "APPROVED",
+        "status": "APPROVED",
+        "candidate_count": 0,
+        "consolidated_count": 1,
+        "registry_roles": [
+          "C3_LANGUAGE"
+        ],
+        "request_status": "APPROVED",
+        "runner_args_present": true
+      }
+    },
+    "tampered": {
+      "before": {
+        "status": "PENDING_USER",
+        "candidate_count": 1,
+        "consolidated_count": 0,
+        "registry_roles": [],
+        "request_status": "PENDING",
+        "runner_args": []
+      },
+      "approval_exception": "ValueError",
+      "after": {
+        "status": "PENDING_USER",
+        "candidate_count": 1,
+        "consolidated_count": 0,
+        "registry_roles": [],
+        "request_status": "PENDING",
+        "runner_args": []
+      },
+      "next_stage": "PENDING_USER",
+      "after_restart": {
+        "status": "PENDING_USER",
+        "candidate_count": 1,
+        "consolidated_count": 0,
+        "registry_roles": [],
+        "request_status": "PENDING",
+        "runner_args": []
+      },
+      "explicit_retry_after_artifact_restored": {
+        "returned_status": "APPROVED",
+        "status": "APPROVED",
+        "candidate_count": 0,
+        "consolidated_count": 1,
+        "registry_roles": [
+          "C3_LANGUAGE"
+        ],
+        "request_status": "APPROVED",
+        "runner_args_present": true
+      }
+    }
+  },
+  "mechanism": {
+    "durable_intent": "ACTIVATING",
+    "sqlite_atomic_members": [
+      "G6 batch/status/consolidated",
+      "WEIGHT_CONSOLIDATION request",
+      "LORA_ADAPTERS registry"
+    ],
+    "mirror": "Atomic filesystem replacement under SQLite write lock; interrupted pre-commit publication reconciles from committed registry on construction",
+    "recovery": "PENDING_USER, no automatic candidate activation; explicit approve retry required",
+    "positive_neuromod": "Only after successful terminal commit",
+    "candidate_binding": "Intent hashes trainer, items, request, drift, gate and base generation; a competing input edit aborts before activation.",
+    "live_intent_serialization": "Shared Store mutex covers both approval transactions and recovery; Store coordinator flock excludes a second Store owner."
+  },
+  "limitations": [
+    "Filesystem mirror and SQLite are separate durability domains; ACTIVATING journal provides recovery rather than claiming an indivisible cross-filesystem transaction.",
+    "Recovery failure propagates and retains ACTIVATING; no APPROVED/consolidated claim is made.",
+    "Authored trainers without deployed metadata retain approval-only behavior; this is not proof that they activated an adapter.",
+    "No semantic learning benefit or phone proof is established.",
+    "Filesystem-only runner readers do not acquire the Store mutex or require an idle Runtime during :growth approve. An actual concurrent reader observed candidate args before a later SQLite COMMIT failure; reader/coordinator serialization remains open. See reader-concurrency-report.json."
+  ],
+  "test_log": "review-tests.log",
+  "verification_note": "An earlier tool command reported exit 0 but its log lacked the unittest footer; that incomplete log is preserved without inferring a cause. The separate review-tests.log rerun has the actual 68-tests/OK footer."
+}

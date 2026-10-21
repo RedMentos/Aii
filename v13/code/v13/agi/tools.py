@@ -36,20 +36,26 @@ def calc(expression):
     return int(v) if isinstance(v,float) and v.is_integer() else v
 
 class ToolSpec:
-    def __init__(self,name,fn,risk='READ_LOCAL',reversible=True,right='simple_tool_choice',description='',schema=None,undo=None,preview=None):
+    def __init__(self,name,fn,risk='READ_LOCAL',reversible=True,right='simple_tool_choice',description='',schema=None,undo=None,preview=None,effects=None):
         if risk not in RISKS:raise ValueError('risk')
+        if risk!='READ_LOCAL' and any(str(v).rstrip('?')=='text' for v in (schema or {}).values()):raise ValueError('text args only for READ_LOCAL')  # WP-W2c
         from ..transaction import valid_name
         self.name=valid_name(name);self.fn=fn;self.risk=risk;self.reversible=reversible;self.right=right;self.description=description
         self.schema=schema;self.undo=undo  # WP-K: typed argument schema {'arg':'str|int|float|bool|secret[?]'}, compensating action
         self.preview=preview  # WP-T7: side-effect-free dry run shown before a per-call approval
+        self.effects=effects  # 2026-10-21 user rules: (action classes, object classes) this tool touches; None = undeclared -> always asked while a user rule exists
 
 class ToolRegistry:
     def __init__(self,store,age=None,on_outcome=None,clock=time.time,monotonic=time.monotonic):
         self.s=store;self.age=age;self.on_outcome=on_outcome;self.clock=clock;self.monotonic=monotonic;self.tools={}
         self.box=StateBox(store,KEY,REVISION,lambda:{'enabled':[],'calls':[],'counters':{}})
-        self.register(ToolSpec('calc',calc,description='Arithmetik ohne eval',schema={'expression':'str'}))
+        self.register(ToolSpec('calc',calc,description='Arithmetik ohne eval',schema={'expression':'str'},effects=({'COMPUTE'},{'CALCULATOR'})))
         from ..transaction import sandbox_note_tool
         self.register(ToolSpec('sandbox_note',*sandbox_note_tool(store.home)))  # WP-K: first WRITE_LOCAL tool, sandboxed + undo
+        from . import eligibility  # WP-W2c: deterministic budget/deadline/locality recipe, rule-anchored guard
+        self.register(ToolSpec('eligibility',eligibility.tool,description='Eignung/Budget-Rezept (deterministisch, Regel-verankert)',schema=eligibility.SCHEMA,effects=({'COMPUTE'},{'CALCULATOR','MONEY'})))
+        from . import listarith  # R4 part 6: model reads listed values, fixed recipe computes (sum, max-min)
+        self.register(ToolSpec('list_arith',listarith.tool,description='Summe/Differenz über aufgezählte Werte (Rezept, Zahlen-Wächter)',schema=listarith.SCHEMA,effects=({'COMPUTE'},{'CALCULATOR'})))
     def register(self,spec):self.tools[spec.name]=spec
     def enable(self,name,on=True):
         """User permission per tool (§17.3). Default: nothing enabled."""
@@ -57,10 +63,30 @@ class ToolRegistry:
         def f(st):st['enabled']=sorted(set(st['enabled'])|{name}) if on else [t for t in st['enabled'] if t!=name]
         self.box.mutate(f)
     def _policy(self,spec,origin,args,confirmed=False):
-        """WP-K IH-H29 contract: schema -> capability -> risk -> confirmation -> C5 (Age right for own choice)."""
+        """WP-K IH-H29 contract: schema -> capability -> risk -> confirmation -> C5 (Age right for own choice).
+        2026-10-21: then the user's own rules (v13/userrules.py, fixed reader): FORBID refuses even an approved call,
+        "ask me first" or an unclear match turns an automatic run into a per-call proposal. Rules only ever add caution."""
         from ..transaction import authorize
+        from ..prohibitions import verdict
         st=self.box.load()[0]
-        return authorize(spec,args,origin,spec.name in st['enabled'],age_allows(self.age,spec.right,origin),confirmed)
+        status,why,steps=authorize(spec,args,origin,spec.name in st['enabled'],age_allows(self.age,spec.right,origin),confirmed,hard=verdict(self.s,spec))
+        if why.startswith('HARD_BLOCK:'):return status,why,steps  # typed :verbot / :notaus (WP-SAFE1) already refuse; keep their reason
+        return self._user_rules(spec,args,confirmed,status,why,steps)
+    def _user_rules(self,spec,args,confirmed,status,why,steps):
+        from .. import userrules
+        rs=userrules.rules(self.s)
+        if not rs or status=='DENIED' and why.startswith('SCHEMA'):return status,why,steps
+        pv=None
+        if spec.preview is not None and spec.name=='sandbox_note':
+            try:pv=spec.preview(**args)
+            except Exception:pv=None
+        v,by=userrules.verdict(rs,userrules.describe(spec,args,pv));ids=','.join(r['id'] for r in by) or 'UNDECLARED_EFFECTS'
+        steps=steps+[['user_rules',v+(':'+ids if v!='ALLOW' else '')]]
+        if v=='DENY':return 'DENIED','USER_RULE:'+ids,steps
+        if v=='ASK' and status=='APPROVED' and not confirmed:return 'PROPOSED','USER_RULE_ASK:'+ids,steps
+        if v=='ASK' and status=='DENIED' and why.startswith('AGE_RIGHT') and not confirmed:return 'PROPOSED','USER_RULE_ASK:'+ids,steps  # the user asked to be asked: offer the call instead of a silent shadow
+        if v=='ASK':return status,why+'+USER_RULE_ASK:'+ids,steps  # already PROPOSED, or DENIED for another reason: keep it, name the rule
+        return status,why,steps
     def call(self,name,args,origin='USER',intent=None,predicted=None,event_id=None,idempotency_key=None):
         spec=self.tools.get(name)
         if spec is None:raise ValueError('Unbekanntes Werkzeug')
@@ -70,7 +96,11 @@ class ToolRegistry:
             'idempotency_key':idempotency_key,'status':status,'reason':why,'contract':steps,'created':self.clock(),'result':None,'error':None,'duration_s':None}
         if status=='APPROVED':tx=self._execute(spec,tx)
         elif status=='PROPOSED':tx['preview']=self.preview(name,args)  # WP-T7: what approval would do
+        if status in ('PROPOSED','DENIED') and 'USER_RULE' in why:tx['user_rules']=self.rule_texts(why)
         self._save(tx);return tx
+    def rule_texts(self,why):
+        from .. import userrules
+        return userrules.texts_for(self.s,why)
     def preview(self,name,args):
         """WP-T7 dry run of a call: never executes, never reads secrets; schema violations return None."""
         from ..transaction import check_args,secrets_in
@@ -105,15 +135,21 @@ class ToolRegistry:
             return dict(tx,status='DEDUPLICATED',reason='IDEMPOTENCY_KEY',action_tx=a['id'],result=a.get('result'),error=a.get('error'))
         T.commit_copy(a['id'],{'predicted':tx.get('predicted')})
         a=T.execute(a['id'],spec.fn)
+        if a['state']=='CANCELLED' and str(a.get('error') or '').startswith('HARD_BLOCK:'):  # last gate in Transactions.execute
+            return dict(tx,action_tx=a['id'],status='DENIED',reason=a['error'],result=None,error=None)
         tx.update(action_tx=a['id'],status='EXECUTED' if a['state']=='SUCCEEDED' else 'FAILED',result=a['result'],error=a['error'],duration_s=a.get('duration_s'))
         if self.on_outcome:
-            if tx.get('event_id'):  # IH-H13: an outcome inside a running turn stays provisional until that turn is FINAL
+            if tx.get('event_id') and not self._turn_ended(tx['event_id']):  # IH-H13: an outcome inside a running turn stays provisional until that turn is FINAL
                 SINKS['tool_outcome']=self.on_outcome
                 try:Provisional(self.s).put(tx['event_id'],'tool_outcome',dict(tx));return tx
                 except Exception:pass
             try:self.on_outcome(tx)
             except Exception:pass
         return tx
+    def _turn_ended(self,event_id):
+        """A call approved after its proposing turn ended would wait for a settle that never comes (TTL tombstone).
+        Its outcome is a real, human-approved effect, not revisable turn content, so it goes to grounding directly."""
+        return self.s.one("SELECT 1 FROM messages WHERE event_id=? AND role='assistant' AND status IN ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED') LIMIT 1",(event_id,)) is not None
     def _save(self,tx,replace=False):
         def f(st):
             if replace:st['calls']=[c for c in st['calls'] if c['id']!=tx['id']]

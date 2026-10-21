@@ -41,3 +41,10 @@ Lesart: Aus einem geschrumpften Projektor holt EMA + Varianz-Floor die Skala nic
 das Kollaps-Symptom, nicht Qualität). SIGReg stellt Skala und Isotropie wieder her. Bei gesundem Start
 ist kein Modus kollabiert. Das ist ein Fixture-Ergebnis; auf echten nativen Taps (Redmi/Cloud-Bench) noch
 nicht gemessen. Default bleibt `ema`, bis eine Messung auf echten Taps vorliegt.
+
+## Messung auf echten nativen Taps (2026-10-12, Thread K)
+
+Vorregistrierte Ablation mit dem unveränderten Worker auf echten B1-Token-Zuständen, 120 Läufe: **Default bleibt `ema`**.
+Beim Laufzeitbudget repariert kein Modus einen geschrumpften Checkpoint; beim Knob-Maximum-Budget überanpasst EMA,
+SIGReg bleibt stabil (Hinweis für spätere Budget-Erhöhung). Befund und Tabelle:
+`docs/proofs/continuation-20261012/sigreg-real-taps/BEFUND.md`.

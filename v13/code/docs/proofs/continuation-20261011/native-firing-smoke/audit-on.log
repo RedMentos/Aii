@@ -1,0 +1,14 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+v13 memory attached: 3 slots at layer 0
+0.00.002.441 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.002.521 I srv          init: The UI is disabled
+0.00.002.529 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.002.590 W srv  llama_server: -----------------
+0.00.002.600 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.002.600 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.002.601 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.002.601 W srv  llama_server: -----------------
+0.00.003.881 I srv    load_model: loading model '/workspace/scratch/5a9214d3f329/native-audit-cache/language.gguf'
+0.00.290.298 I cmn          init: llama threadpool init, n_threads = 4

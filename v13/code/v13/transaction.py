@@ -33,7 +33,7 @@ NEXT={'PREPARED':{'COPY_COMMITTED','CANCELLED'},'COPY_COMMITTED':{'EXECUTING','C
 HISTORY=128;IDEM_MAX=512;STALE_PREPARED_S=3600.;PREVIEW_CHARS=200
 NAME=re.compile(r'^[a-z][a-z0-9_]{1,31}$')
 SHELLISH=re.compile(r'[;&|`$<>]|\b(rm|sudo|curl|wget|chmod|sh|bash)\b')
-ARG_TYPES={'str':str,'int':int,'float':(int,float),'bool':bool,'secret':dict}
+ARG_TYPES={'str':str,'int':int,'float':(int,float),'bool':bool,'secret':dict,'text':str}  # 'text': quoted source data for pure READ_LOCAL functions, never passed to a shell (WP-W2c)
 CONFIRM_ALWAYS={'WRITE_LOCAL','NETWORK','EXTERNAL_EFFECT'}
 EVENT={'provisional_gain':.65,'provisional_memory_write':.20,'provisional_weight_learning':0.,
        'final_gain':1.,'final_memory_write':.90,'final_learning_eligibility':.80}   # §72 BOOT
@@ -64,7 +64,8 @@ def check_args(schema,args):
             if not (isinstance(a,dict) and set(a)=={'$secret'} and isinstance(a['$secret'],str) and NAME.match(a['$secret'].lower())):v.append('secret_handle:'+k)
             continue
         if isinstance(a,bool) and t!='bool' or not isinstance(a,ARG_TYPES[t]):v.append('type:'+k);continue
-        if isinstance(a,str) and (SHELLISH.search(a) or len(a)>4000):v.append('unsafe_arg:'+k)
+        if isinstance(a,str) and len(a)>4000:v.append('unsafe_arg:'+k)
+        elif isinstance(a,str) and t!='text' and SHELLISH.search(a):v.append('unsafe_arg:'+k)
     return v
 
 def secrets_in(args):return {k:a['$secret'] for k,a in (args or {}).items() if isinstance(a,dict) and set(a)=={'$secret'}}
@@ -84,15 +85,20 @@ def scrub(x,values):
         if v:s=s.replace(json.dumps(v)[1:-1],'[REDACTED]')
     return json.loads(s)
 
-def authorize(spec,args,origin,enabled,age_ok,confirmed=False):
-    """IH-H29 pipeline up to C5 authorization. Returns (decision, reason, steps); decision APPROVED|PROPOSED|DENIED."""
+def authorize(spec,args,origin,enabled,age_ok,confirmed=False,hard=None):
+    """IH-H29 pipeline up to C5 authorization. Returns (decision, reason, steps); decision APPROVED|PROPOSED|DENIED.
+    hard: prohibitions.verdict() -> the user's hard rules come first and beat every later step, also a confirmation."""
     steps=[]
+    if hard is not None:
+        steps.append(['hard_rules',not hard.get('blocked')])
+        if hard.get('blocked'):return 'DENIED',hard['blocked'],steps
     bad=check_args(getattr(spec,'schema',None),args);steps.append(['schema',not bad])
     if bad:return 'DENIED','SCHEMA:'+','.join(bad[:4]),steps
     steps.append(['capability',enabled])
     if not enabled:return 'DENIED','TOOL_NOT_ENABLED_BY_USER',steps
     need=spec.risk in CONFIRM_ALWAYS or not spec.reversible;steps.append(['risk',spec.risk+('' if spec.reversible else '+IRREVERSIBLE')])
     if need and not confirmed:steps.append(['confirmation',False]);return 'PROPOSED','NEEDS_PER_CALL_APPROVAL',steps
+    if hard is not None and hard.get('announce') and not confirmed:steps.append(['announce',False]);return 'PROPOSED','ANNOUNCE_BEFORE_ACTION',steps
     steps.append(['confirmation',True if need else 'not_required'])
     steps.append(['c5',age_ok or confirmed])
     if not (age_ok or confirmed):return 'DENIED','AGE_RIGHT:'+spec.right,steps
@@ -152,7 +158,13 @@ class Transactions:
         return self._write(lambda st:dict(self._move(st,tid,'COPY_COMMITTED',intent_packet=intent['packet_id'],corollary_packet=copy['packet_id'])),
                            [('ActionIntent',intent),('CorollaryCopy',copy)])
     def execute(self,tid,fn):
-        """Persist EXECUTING, run the side effect, persist the outcome. Returns the final transaction."""
+        """Persist EXECUTING, run the side effect, persist the outcome. Returns the final transaction.
+        Last gate: the user's hard prohibitions / Notaus are read again right before the effect (an undo only restores)."""
+        t=self.get(tid)
+        if t and not str(t['tool']).endswith('.undo'):
+            from .prohibitions import blocked
+            why=blocked(self.s,t['tool'],t['risk'],t['reversible'])
+            if why:return self._write(lambda st:dict(self._move(st,tid,'CANCELLED',error=why)))
         self._write(lambda st:self._move(st,tid,'EXECUTING'))
         t=self.get(tid);start=time.monotonic();values=[];undo=None
         try:
@@ -309,5 +321,10 @@ def operator_command(r,args):
     if len(args)==2 and args[0] in ('approve','undo'):
         from .agi import hub as growth
         tools=growth(r).tools;out=tools.approve(args[1]) if args[0]=='approve' else tools.undo(args[1])
+        if args[0]=='approve':  # Thread M: SHADOW tool forecast scored against the observed effect (no-op without a forecast)
+            try:
+                from .toolforecast import for_runtime
+                for_runtime(r).observe(out)
+            except Exception as exc:r.store.log('tool_forecast_unavailable',None,{'error':type(exc).__name__})
         return dumps({k:out.get(k) for k in ('id','tool','status','state','reason','result','error','action_tx')})
     raise ValueError(':tx [status|provisional|broker|cancel <atx>|approve <tool-call>|undo <tool-call>]')

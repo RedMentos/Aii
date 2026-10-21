@@ -1,0 +1,672 @@
+{
+  "fixtures": [
+    {
+      "current": "Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.",
+      "id": "private_bfzwzwww",
+      "kind": "complementary",
+      "oracle": {
+        "action": "A",
+        "options": [
+          {
+            "cost": 51,
+            "days": 1,
+            "eligible": true,
+            "entity": "A",
+            "local": true,
+            "remaining": 19
+          },
+          {
+            "cost": 18,
+            "days": 6,
+            "eligible": false,
+            "entity": "B",
+            "local": false,
+            "remaining": 52
+          }
+        ],
+        "project": "BFZWZWWW"
+      },
+      "paired_actions": [
+        "A"
+      ],
+      "public": {
+        "options": [
+          {
+            "cost": 51,
+            "days": 1,
+            "entity": "A",
+            "local": true
+          },
+          {
+            "cost": 18,
+            "days": 6,
+            "entity": "B",
+            "local": false
+          }
+        ],
+        "project": "BFZWZWWW"
+      },
+      "sources": [
+        {
+          "owner": "B1_DETAIL",
+          "sha256": "7175ad52cb41de52cd35876a19b7a650ca1a0e09117d65db45d9e4c5e369a3db",
+          "source_id": "src_7175ad52cb41de52cd35876a",
+          "text": "Project BFZWZWWW. Budget 70 euros."
+        },
+        {
+          "owner": "B2_GIST",
+          "sha256": "1a7a56cb3a7894cb4b8530f2c108e88ec553cf1d3e18cc8469988fc5408d1f72",
+          "source_id": "src_1a7a56cb3a7894cb4b8530f2",
+          "text": "Project BFZWZWWW. Deadline 1 days. Local-only requirement: true."
+        }
+      ],
+      "visibility_proof": {
+        "B1_DETAIL": {
+          "actions": [
+            "A",
+            "B",
+            "NONE"
+          ],
+          "witnesses": {
+            "A": {
+              "answer": {
+                "action": "A",
+                "options": [
+                  {
+                    "cost": 51,
+                    "days": 1,
+                    "eligible": true,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": 19
+                  },
+                  {
+                    "cost": 18,
+                    "days": 6,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": 52
+                  }
+                ],
+                "project": "BFZWZWWW"
+              },
+              "rules": {
+                "budget": 70,
+                "deadline": 1,
+                "local_only": false
+              }
+            },
+            "B": {
+              "answer": {
+                "action": "B",
+                "options": [
+                  {
+                    "cost": 51,
+                    "days": 1,
+                    "eligible": true,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": 19
+                  },
+                  {
+                    "cost": 18,
+                    "days": 6,
+                    "eligible": true,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": 52
+                  }
+                ],
+                "project": "BFZWZWWW"
+              },
+              "rules": {
+                "budget": 70,
+                "deadline": 6,
+                "local_only": false
+              }
+            },
+            "NONE": {
+              "answer": {
+                "action": "NONE",
+                "options": [
+                  {
+                    "cost": 51,
+                    "days": 1,
+                    "eligible": false,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": 19
+                  },
+                  {
+                    "cost": 18,
+                    "days": 6,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": 52
+                  }
+                ],
+                "project": "BFZWZWWW"
+              },
+              "rules": {
+                "budget": 70,
+                "deadline": 0,
+                "local_only": false
+              }
+            }
+          }
+        },
+        "B2_GIST": {
+          "actions": [
+            "A",
+            "NONE"
+          ],
+          "witnesses": {
+            "A": {
+              "answer": {
+                "action": "A",
+                "options": [
+                  {
+                    "cost": 51,
+                    "days": 1,
+                    "eligible": true,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": 0
+                  },
+                  {
+                    "cost": 18,
+                    "days": 6,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": 33
+                  }
+                ],
+                "project": "BFZWZWWW"
+              },
+              "rules": {
+                "budget": 51,
+                "deadline": 1,
+                "local_only": true
+              }
+            },
+            "NONE": {
+              "answer": {
+                "action": "NONE",
+                "options": [
+                  {
+                    "cost": 51,
+                    "days": 1,
+                    "eligible": false,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": -51
+                  },
+                  {
+                    "cost": 18,
+                    "days": 6,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": -18
+                  }
+                ],
+                "project": "BFZWZWWW"
+              },
+              "rules": {
+                "budget": 0,
+                "deadline": 1,
+                "local_only": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "current": "Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.",
+      "id": "private_eztsxxpt",
+      "kind": "complementary",
+      "oracle": {
+        "action": "B",
+        "options": [
+          {
+            "cost": 59,
+            "days": 2,
+            "eligible": true,
+            "entity": "A",
+            "local": true,
+            "remaining": 17
+          },
+          {
+            "cost": 33,
+            "days": 4,
+            "eligible": true,
+            "entity": "B",
+            "local": false,
+            "remaining": 43
+          }
+        ],
+        "project": "EZTSXXPT"
+      },
+      "paired_actions": [
+        "B"
+      ],
+      "public": {
+        "options": [
+          {
+            "cost": 59,
+            "days": 2,
+            "entity": "A",
+            "local": true
+          },
+          {
+            "cost": 33,
+            "days": 4,
+            "entity": "B",
+            "local": false
+          }
+        ],
+        "project": "EZTSXXPT"
+      },
+      "sources": [
+        {
+          "owner": "B1_DETAIL",
+          "sha256": "c8e543ce6419380be31f8dfd15298f8ee0e277e9cad4617b50d64267c4085556",
+          "source_id": "src_c8e543ce6419380be31f8dfd",
+          "text": "Project EZTSXXPT. Budget 76 euros."
+        },
+        {
+          "owner": "B2_GIST",
+          "sha256": "b2bd4a1b74856d8d68ba58e758450d33a053b3776b7a66eceac35277f993733d",
+          "source_id": "src_b2bd4a1b74856d8d68ba58e7",
+          "text": "Project EZTSXXPT. Deadline 4 days. Local-only requirement: false."
+        }
+      ],
+      "visibility_proof": {
+        "B1_DETAIL": {
+          "actions": [
+            "A",
+            "B",
+            "NONE"
+          ],
+          "witnesses": {
+            "A": {
+              "answer": {
+                "action": "A",
+                "options": [
+                  {
+                    "cost": 59,
+                    "days": 2,
+                    "eligible": true,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": 17
+                  },
+                  {
+                    "cost": 33,
+                    "days": 4,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": 43
+                  }
+                ],
+                "project": "EZTSXXPT"
+              },
+              "rules": {
+                "budget": 76,
+                "deadline": 2,
+                "local_only": false
+              }
+            },
+            "B": {
+              "answer": {
+                "action": "B",
+                "options": [
+                  {
+                    "cost": 59,
+                    "days": 2,
+                    "eligible": true,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": 17
+                  },
+                  {
+                    "cost": 33,
+                    "days": 4,
+                    "eligible": true,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": 43
+                  }
+                ],
+                "project": "EZTSXXPT"
+              },
+              "rules": {
+                "budget": 76,
+                "deadline": 4,
+                "local_only": false
+              }
+            },
+            "NONE": {
+              "answer": {
+                "action": "NONE",
+                "options": [
+                  {
+                    "cost": 59,
+                    "days": 2,
+                    "eligible": false,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": 17
+                  },
+                  {
+                    "cost": 33,
+                    "days": 4,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": 43
+                  }
+                ],
+                "project": "EZTSXXPT"
+              },
+              "rules": {
+                "budget": 76,
+                "deadline": 0,
+                "local_only": false
+              }
+            }
+          }
+        },
+        "B2_GIST": {
+          "actions": [
+            "B",
+            "NONE"
+          ],
+          "witnesses": {
+            "B": {
+              "answer": {
+                "action": "B",
+                "options": [
+                  {
+                    "cost": 59,
+                    "days": 2,
+                    "eligible": false,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": -26
+                  },
+                  {
+                    "cost": 33,
+                    "days": 4,
+                    "eligible": true,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": 0
+                  }
+                ],
+                "project": "EZTSXXPT"
+              },
+              "rules": {
+                "budget": 33,
+                "deadline": 4,
+                "local_only": false
+              }
+            },
+            "NONE": {
+              "answer": {
+                "action": "NONE",
+                "options": [
+                  {
+                    "cost": 59,
+                    "days": 2,
+                    "eligible": false,
+                    "entity": "A",
+                    "local": true,
+                    "remaining": -59
+                  },
+                  {
+                    "cost": 33,
+                    "days": 4,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": false,
+                    "remaining": -33
+                  }
+                ],
+                "project": "EZTSXXPT"
+              },
+              "rules": {
+                "budget": 0,
+                "deadline": 4,
+                "local_only": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "current": "Project AMVCGHCT. Decide from the private project rules supplied by the analysts. Option A: cost 25 euros, duration 8 days, local false. Option B: cost 59 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.",
+      "id": "private_amvcghct",
+      "kind": "complementary",
+      "oracle": {
+        "action": "NONE",
+        "options": [
+          {
+            "cost": 25,
+            "days": 8,
+            "eligible": false,
+            "entity": "A",
+            "local": false,
+            "remaining": 19
+          },
+          {
+            "cost": 59,
+            "days": 3,
+            "eligible": false,
+            "entity": "B",
+            "local": true,
+            "remaining": -15
+          }
+        ],
+        "project": "AMVCGHCT"
+      },
+      "paired_actions": [
+        "NONE"
+      ],
+      "public": {
+        "options": [
+          {
+            "cost": 25,
+            "days": 8,
+            "entity": "A",
+            "local": false
+          },
+          {
+            "cost": 59,
+            "days": 3,
+            "entity": "B",
+            "local": true
+          }
+        ],
+        "project": "AMVCGHCT"
+      },
+      "sources": [
+        {
+          "owner": "B1_DETAIL",
+          "sha256": "59b58f10a04c20a3e2d061f12e07238c4e2fe3c9711c7d46af8a13c459037e46",
+          "source_id": "src_59b58f10a04c20a3e2d061f1",
+          "text": "Project AMVCGHCT. Budget 44 euros."
+        },
+        {
+          "owner": "B2_GIST",
+          "sha256": "f14546605c4c82c1c283cc36a2d3863d776e08a9bd394c9e1d572c63c3b43309",
+          "source_id": "src_f14546605c4c82c1c283cc36",
+          "text": "Project AMVCGHCT. Deadline 3 days. Local-only requirement: false."
+        }
+      ],
+      "visibility_proof": {
+        "B1_DETAIL": {
+          "actions": [
+            "A",
+            "NONE"
+          ],
+          "witnesses": {
+            "A": {
+              "answer": {
+                "action": "A",
+                "options": [
+                  {
+                    "cost": 25,
+                    "days": 8,
+                    "eligible": true,
+                    "entity": "A",
+                    "local": false,
+                    "remaining": 19
+                  },
+                  {
+                    "cost": 59,
+                    "days": 3,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": true,
+                    "remaining": -15
+                  }
+                ],
+                "project": "AMVCGHCT"
+              },
+              "rules": {
+                "budget": 44,
+                "deadline": 8,
+                "local_only": false
+              }
+            },
+            "NONE": {
+              "answer": {
+                "action": "NONE",
+                "options": [
+                  {
+                    "cost": 25,
+                    "days": 8,
+                    "eligible": false,
+                    "entity": "A",
+                    "local": false,
+                    "remaining": 19
+                  },
+                  {
+                    "cost": 59,
+                    "days": 3,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": true,
+                    "remaining": -15
+                  }
+                ],
+                "project": "AMVCGHCT"
+              },
+              "rules": {
+                "budget": 44,
+                "deadline": 0,
+                "local_only": false
+              }
+            }
+          }
+        },
+        "B2_GIST": {
+          "actions": [
+            "B",
+            "NONE"
+          ],
+          "witnesses": {
+            "B": {
+              "answer": {
+                "action": "B",
+                "options": [
+                  {
+                    "cost": 25,
+                    "days": 8,
+                    "eligible": false,
+                    "entity": "A",
+                    "local": false,
+                    "remaining": 34
+                  },
+                  {
+                    "cost": 59,
+                    "days": 3,
+                    "eligible": true,
+                    "entity": "B",
+                    "local": true,
+                    "remaining": 0
+                  }
+                ],
+                "project": "AMVCGHCT"
+              },
+              "rules": {
+                "budget": 59,
+                "deadline": 3,
+                "local_only": false
+              }
+            },
+            "NONE": {
+              "answer": {
+                "action": "NONE",
+                "options": [
+                  {
+                    "cost": 25,
+                    "days": 8,
+                    "eligible": false,
+                    "entity": "A",
+                    "local": false,
+                    "remaining": -25
+                  },
+                  {
+                    "cost": 59,
+                    "days": 3,
+                    "eligible": false,
+                    "entity": "B",
+                    "local": true,
+                    "remaining": -59
+                  }
+                ],
+                "project": "AMVCGHCT"
+              },
+              "rules": {
+                "budget": 0,
+                "deadline": 3,
+                "local_only": false
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "full_benchmark_rows": 234,
+  "full_fixture_count": 39,
+  "full_fixture_document_sha256": "c1bb37d564be5d8cbc3cd6cd5e3a46c540ec8fc282e7cd332b81c6c3b3a1d156",
+  "gate_promotion": false,
+  "geometry_action_order": [
+    "A",
+    "B",
+    "NONE"
+  ],
+  "historical_step2_utility": "UTILITY_FAIL_UNCHANGED",
+  "native_runs": 0,
+  "numeric_utility_gate": "NO_UTILITY_PROMOTION_FOR_DIAGNOSTIC_PILOT",
+  "pilot_max_native_calls": 42,
+  "pilot_max_rows": 18,
+  "schema": "V13_STEP2_PRIVATE_DIAGNOSTIC_PILOT_V1",
+  "scope": "THREE_COMPLEMENTARY_CASE_DIAGNOSTIC_NOT_FULL_STEP2",
+  "selected_ids": [
+    "private_bfzwzwww",
+    "private_eztsxxpt",
+    "private_amvcghct"
+  ],
+  "selection_rule": "From the fixed seed-20261016 full cohort, keep complementary fixtures only; solve their declared source constraints without native outcomes; choose the lexicographically smallest fixture id for each geometry action in order A,B,NONE.",
+  "status": "DIAGNOSTIC_FIXTURES_ONLY_NOT_REGISTERED"
+}

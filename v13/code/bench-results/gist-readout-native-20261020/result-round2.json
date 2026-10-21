@@ -1,0 +1,102 @@
+{
+ "kind": "GIST_READOUT_NATIVE_ROUND2",
+ "prereg": {
+  "schema": "GIST_READOUT_NATIVE_ROUND2_PREREG_V1",
+  "round1": "bench-results/gist-readout-native-20261020/result.json",
+  "docs": 160,
+  "data_seed": 20261021,
+  "queries_per_doc": 4,
+  "size": 8,
+  "slots": 12,
+  "bootstrap": 2000,
+  "hybrid_weight": 1.0,
+  "control": "fixed_matched_m: equal-length native-token runs, same group count as mode m per document",
+  "primary": "recall@1 raw groups, centered cosine",
+  "H1": "hybrid - fixed_matched_hybrid >= .03 and CI low > 0",
+  "verdict": "SUPPORTED if H1 else FAIL",
+  "default_rule": "hybrid if SUPPORTED; else best of text/native with matched CI low > 0; else fixed"
+ },
+ "script_sha256": "288130a7fb14f2bf5771502491327e96beddbf1c96b17e34e447067ff10148a2",
+ "module_sha256": "030ba6d7b3c125f702e05dce2c9bbb5d9d1144993269633be07a83f530170ae9",
+ "facts_sha256": "41c107ee0c1a2f8bb23755e95568c45bc750dd1e354c57e7437a730abd46fc57",
+ "queries": 640,
+ "summary": {
+  "fixed": {
+   "recall_raw": 0.4453,
+   "recall_fit12": 0.5906,
+   "answer_split_rate": 0.3406,
+   "mean_groups": 15.22
+  },
+  "text": {
+   "recall_raw": 0.5281,
+   "recall_fit12": 0.6391,
+   "answer_split_rate": 0.2703,
+   "mean_groups": 14.89
+  },
+  "native": {
+   "recall_raw": 0.4938,
+   "recall_fit12": 0.5906,
+   "answer_split_rate": 0.3297,
+   "mean_groups": 13.59
+  },
+  "hybrid": {
+   "recall_raw": 0.5156,
+   "recall_fit12": 0.6047,
+   "answer_split_rate": 0.2969,
+   "mean_groups": 13.51
+  },
+  "fixed_matched_text": {
+   "recall_raw": 0.4469,
+   "recall_fit12": 0.5922,
+   "answer_split_rate": 0.3625,
+   "mean_groups": 14.89
+  },
+  "fixed_matched_native": {
+   "recall_raw": 0.4984,
+   "recall_fit12": 0.5734,
+   "answer_split_rate": 0.3344,
+   "mean_groups": 13.59
+  },
+  "fixed_matched_hybrid": {
+   "recall_raw": 0.4938,
+   "recall_fit12": 0.5594,
+   "answer_split_rate": 0.325,
+   "mean_groups": 13.51
+  }
+ },
+ "vs_matched_fixed": {
+  "text": {
+   "diff": 0.0813,
+   "ci95": [
+    0.0453,
+    0.1141
+   ]
+  },
+  "native": {
+   "diff": -0.0047,
+   "ci95": [
+    -0.0406,
+    0.0312
+   ]
+  },
+  "hybrid": {
+   "diff": 0.0219,
+   "ci95": [
+    -0.0156,
+    0.0609
+   ]
+  }
+ },
+ "H1": {
+  "diff": 0.0219,
+  "ci95": [
+   -0.0156,
+   0.0609
+  ],
+  "pass": false
+ },
+ "verdict": "FAIL",
+ "default_mode": "text",
+ "duration_s": 134.1,
+ "claim_limit": "One body (Qwen3.5-0.8B Q4_0), English synthetic facts, Linux CPU; retrieval proxy, not answer utility, not Redmi"
+}

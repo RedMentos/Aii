@@ -1,0 +1,66 @@
+{
+ "status": "UTILITY_FAIL",
+ "preparations": [
+  {
+   "fixture": "Kestrel",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  },
+  {
+   "fixture": "Lumen",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  },
+  {
+   "fixture": "Meridian",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  },
+  {
+   "fixture": "Nimbus",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  },
+  {
+   "fixture": "Orion",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  },
+  {
+   "fixture": "Perseus",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  },
+  {
+   "fixture": "Quasar",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  },
+  {
+   "fixture": "Rigel",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  },
+  {
+   "fixture": "Sirius",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  },
+  {
+   "fixture": "Tycho",
+   "status": "ERROR",
+   "error_type": "ArtifactChanged",
+   "error": "Native artifact changed during preparation"
+  }
+ ],
+ "note": "arm D attempt 1: frozen installed_artifacts guard ignored b2_control; all 10 preparations ERROR ArtifactChanged, no inference row scored"
+}

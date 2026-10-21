@@ -5,13 +5,16 @@ Pipeline (FORSCHUNG §9 #6, ROADMAP WP-S3/S7, blueprint L8.3/§21):
   TRAINED      a pluggable trainer (LoRA / sparse memory finetuning / memory slots) produced a candidate
   GATE_PASS    retention gate: AG12 eval of candidate vs base, forgetting, drift (KL to base), batch recall
   PENDING_USER a store request waits for the human; Age 0 base_merge_authority = 0, nothing activates itself
+  ACTIVATING   durable manual-approval intent; interrupted mirror publication reopens PENDING_USER on recovery
   APPROVED     user approved; the generation switch itself stays with the existing update/generation path
   REJECTED / GATE_FAIL / NO_TRAINER / ROLLED_BACK
 NullTrainer records a batch honestly as NO_TRAINER. Real trainer: v13/lora_trainer.LoraTrainer (WP-S6, torch LoRA on the
 master + deployed llama.cpp gate numbers); an approved adapter is bound via lora_trainer.AdapterRegistry, rollback unbinds it.
 """
+import json
 import time
-from ..common import digest,dumps,atomic_write
+from pathlib import Path
+from ..common import digest,dumps,atomic_write,uid
 from .base import StateBox,age_allows
 
 KEY='G6_WEIGHT_CONSOLIDATION';REVISION='g6-weights-v1'
@@ -25,10 +28,28 @@ class NullTrainer:
     method='none'
     def fit(self,items,base_generation,cancel=None,deadline=None):return {'artifact':None,'hash':None,'method':self.method,'metrics':{}}
 
+class _ApprovalStore:
+    """AdapterRegistry's state writes join the caller's SQLite transaction.
+
+    No mirror is published by the registry: AG6 journals that filesystem step and
+    publishes it while the same transaction holds the store's write lock.
+    """
+    home=None
+    def __init__(self,c):self.c=c
+    def state(self,key,default=None):
+        row=self.c.execute('SELECT payload,version FROM states WHERE key=?',(key,)).fetchone()
+        return (json.loads(row['payload']),row['version']) if row else (default,0)
+    def set_state(self,key,payload,expected=None):
+        _,v=self.state(key)
+        if expected is not None and expected!=v:raise ValueError('Stale state write')
+        self.c.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',(key,v+1,dumps(payload)))
+        return v+1
+
 class WeightConsolidation:
     def __init__(self,store,cfg,generality=None,age=None,trainer=None,home=None,clock=time.time):
         self.s=store;self.cfg=cfg;self.g=generality;self.age=age;self.trainer=trainer or NullTrainer();self.home=home;self.clock=clock
         self.box=StateBox(store,KEY,REVISION,lambda:{'batches':{},'consolidated':[],'order':[]})
+        self._recover_approvals()
     # -- staging ---------------------------------------------------------------------------------------
     def _replay_passed(self):
         from ..sleep import SCHEDULE_KEY
@@ -180,22 +201,104 @@ class WeightConsolidation:
         self._neuromod('signal',bid,source_class='real_deterministic_outcome',retention=1. if ok else -1.)
         return out
     # -- human decisions --------------------------------------------------------------------------------
+    def _approval_state(self,c):
+        proxy=_ApprovalStore(c);st,v=proxy.state(KEY)
+        if st is None:st=self.box.empty()|{'revision':REVISION}
+        if st.get('revision')!=REVISION:raise ValueError(KEY+': state revision mismatch')
+        return proxy,st,v
+    def _approval_input_hash(self,b):
+        return digest(dumps({k:b.get(k) for k in ('trainer','items','request_id','drift','gate','base_generation')}))
+    def _publish_adapter_mirror(self,registry):
+        home=getattr(self.s,'home',None)
+        if home is None:return
+        from ..lora_trainer import MIRROR
+        active={r:{k:b[k] for k in ('path','sha256','base_model_sha256','batch_id','scale','sidecar_sha256') if k in b}
+                for r,b in registry.get('active',{}).items() if b}
+        atomic_write(Path(home)/MIRROR,json.dumps(active,indent=1))
+    def _recover_approvals(self):
+        """A crash before SQLite commit leaves ACTIVATING, never consolidated.
+
+        Restore the runner mirror from the committed registry before reopening
+        the request. Recovery does not activate the attempted candidate; a new
+        explicit approve call is required. A mirror error leaves the journal in
+        place and propagates, so recovery is never falsely reported complete.
+        """
+        if not any(b.get('status')=='ACTIVATING' for b in self.box.load()[0]['batches'].values()):return
+        from ..lora_trainer import REGISTRY_KEY
+        with self.s.tx() as c:
+            proxy,st,v=self._approval_state(c)
+            pending=[b for b in st['batches'].values() if b.get('status')=='ACTIVATING']
+            if not pending:return
+            if any(b.get('approval_attempt',{}).get('registry_required') for b in pending):
+                self._publish_adapter_mirror(proxy.state(REGISTRY_KEY,{'active':{},'history':[]})[0])
+            for b in pending:
+                self._move(b,'PENDING_USER');b['approval_attempt']['status']='RECOVERED_NOT_ACTIVATED'
+            proxy.set_state(KEY,st,expected=v)
     def approve(self,bid):
-        """Only a human calls this (operator). Marks memories consolidated; activation = existing generation switch."""
-        def f(st,b):
-            if b['status']!='PENDING_USER':raise ValueError('Freigabe nur für PENDING_USER')
+        """Manual approval commits registry, request and consolidation together.
+
+        The durable ACTIVATING intent bridges SQLite and the runner's atomic
+        mirror replacement. Exceptions restore the old committed mirror and
+        reopen PENDING_USER; process interruption is recovered on construction.
+        StateBox callbacks are deliberately avoided because they can be retried
+        after side effects. Trainers without deployed metadata retain the
+        existing approval behavior without claiming an adapter activation.
+
+        The store mutex spans both transactions so another instance cannot
+        mistake this live intent for a crash. Filesystem-only runner readers do
+        not take that mutex: mirror visibility is recoverable, not atomic with
+        SQLite, and requires separate runner/coordinator serialization.
+        """
+        with self.s.mutex:return self._approve_locked(bid)
+    def _approve_locked(self,bid):
+        self._recover_approvals()
+        attempt=uid('g6approve')
+        with self.s.tx() as c:
+            proxy,st,v=self._approval_state(c);b=st['batches'].get(bid)
+            if not b or b['status']!='PENDING_USER':raise ValueError('Freigabe nur für PENDING_USER')
             from ..drift import gate as drift_gate
-            bad=drift_gate({'drift':b['drift']} if b.get('drift') else {},self.cfg)  # caps from the current config (drift_required=1: must be measured)
+            bad=drift_gate({'drift':b['drift']} if b.get('drift') else {},self.cfg)
             if bad:raise ValueError('Freigabe gesperrt: '+', '.join(bad))
-            skip=set((((b.get('trainer') or {}).get('metrics') or {}).get('sdft') or {}).get('dropped') or [])  # SDFT items the teacher did not answer stay open
-            self._move(b,'APPROVED');st['consolidated']=sorted(set(st['consolidated'])|{i['memory_id'] for i in b['items'] if i['memory_id'] not in skip})
-            if b['request_id']:
-                with self.s.tx() as c:c.execute("UPDATE requests SET status='APPROVED' WHERE id=?",(b['request_id'],))
-        out=self._set(bid,f);self._neuromod('signal',bid,source_class='human_correction',human_correction=1.,evidence_gain=1.)
-        self._adapter('activate',out)
+            t=b.get('trainer') or {};dep=(t.get('metrics') or {}).get('deployed') or {}
+            required=bool(t.get('artifact') and dep.get('model_sha256'))
+            b['approval_attempt']={'id':attempt,'registry_required':required,'status':'ACTIVATING','input_hash':self._approval_input_hash(b)}
+            self._move(b,'ACTIVATING');proxy.set_state(KEY,st,expected=v)
+        try:
+            with self.s.tx() as c:
+                proxy,st,v=self._approval_state(c);b=st['batches'].get(bid)
+                if not b or b['status']!='ACTIVATING' or b.get('approval_attempt',{}).get('id')!=attempt:
+                    raise ValueError('Freigabeversuch veraltet')
+                if self._approval_input_hash(b)!=b['approval_attempt']['input_hash']:
+                    raise ValueError('Freigabedaten verändert')
+                t=b.get('trainer') or {};dep=(t.get('metrics') or {}).get('deployed') or {}
+                if required:
+                    from ..lora_trainer import AdapterRegistry
+                    reg=AdapterRegistry(proxy,self.clock)
+                    reg.activate(t.get('role') or 'C3_LANGUAGE',t['artifact'],t['hash'],dep['model_sha256'],bid)
+                    self._publish_adapter_mirror(reg.report())
+                skip=set(((t.get('metrics') or {}).get('sdft') or {}).get('dropped') or [])
+                self._move(b,'APPROVED');b['approval_attempt']['status']='COMMITTED'
+                st['consolidated']=sorted(set(st['consolidated'])|{i['memory_id'] for i in b['items'] if i['memory_id'] not in skip})
+                if b['request_id']:
+                    cur=c.execute("UPDATE requests SET status='APPROVED' WHERE id=? AND kind='WEIGHT_CONSOLIDATION' AND status='PENDING'",(b['request_id'],))
+                    if cur.rowcount!=1:raise ValueError('Keine offene Konsolidierungsanfrage')
+                proxy.set_state(KEY,st,expected=v);out=dict(b)
+        except Exception as exc:
+            self._recover_approvals()
+            self.s.log('g6_adapter_error',None,{'what':'activate','error':type(exc).__name__,'detail':str(exc)[:160]})
+            raise
+        if required:
+            role=t.get('role') or 'C3_LANGUAGE'
+            try:
+                from .slots import ModelSlots
+                slot,_,kind=role.partition('#')
+                ModelSlots(self.s,self.age,self.clock).register_asset(slot,(kind or 'lora')+':'+bid,'adapter' if kind else 'lora',dataset_ref='G6:'+bid)
+            except Exception as exc:self.s.log('g6_slot_asset_error',None,{'error':type(exc).__name__})
+            self.s.log('g6_adapter_activate',None,{'batch_id':bid,'role':role})
+        self._neuromod('signal',bid,source_class='human_correction',human_correction=1.,evidence_gain=1.)
         return out
     def _adapter(self,what,b):
-        """Approved LoRA goes live only here (user approval after gate); rollback unbinds it. Best effort, logged."""
+        """Legacy registry helper for rollback; approval uses the journaled path above."""
         t=b.get('trainer') or {};dep=(t.get('metrics') or {}).get('deployed') or {}
         if not t.get('artifact') or not dep.get('model_sha256'):return
         try:

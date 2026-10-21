@@ -1,0 +1,399 @@
+{
+ "prereg": {
+  "schema": "ABLATION_WORKSPACE_HOLD_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "turns": 400,
+  "capacity": 6,
+  "reuse_per_turn": {
+   "MEMORY": 0.45,
+   "B1_DETAIL": 0.2,
+   "B2_GIST": 0.04
+  },
+  "horizon_turns": 8,
+  "primary": "restore losses in the second half of the turns (lower is better)",
+  "win_rule": "learned beats shadow, shuffled and hold_all in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+ },
+ "per_seed": {
+  "13": {
+   "learned": {
+    "primary": 807,
+    "useful_holds": 308,
+    "wasted_holds": 892,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.9317,
+     "B2_GIST": 0.792,
+     "MEMORY": 1.3441
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.017,
+     "B2_GIST": 0.8279,
+     "MEMORY": 1.1974
+    }
+   },
+   "shadow": {
+    "primary": 806,
+    "useful_holds": 309,
+    "wasted_holds": 891,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.9314,
+     "B2_GIST": 0.792,
+     "MEMORY": 1.3443
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.0,
+     "B2_GIST": 1.0,
+     "MEMORY": 1.0
+    }
+   },
+   "shuffled": {
+    "primary": 811,
+    "useful_holds": 304,
+    "wasted_holds": 896,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.9318,
+     "B2_GIST": 0.7905,
+     "MEMORY": 1.3468
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 0.8257,
+     "B2_GIST": 1.2038,
+     "MEMORY": 1.0141
+    }
+   },
+   "hold_all": {
+    "primary": 806,
+    "useful_holds": 309,
+    "wasted_holds": 891,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.9314,
+     "B2_GIST": 0.792,
+     "MEMORY": 1.3443
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.5,
+     "B2_GIST": 1.5,
+     "MEMORY": 1.5
+    }
+   }
+  },
+  "14": {
+   "learned": {
+    "primary": 780,
+    "useful_holds": 339,
+    "wasted_holds": 861,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.9356,
+     "B2_GIST": 0.801,
+     "MEMORY": 1.3737
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.0393,
+     "B2_GIST": 0.844,
+     "MEMORY": 1.2095
+    }
+   },
+   "shadow": {
+    "primary": 783,
+    "useful_holds": 336,
+    "wasted_holds": 864,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.9356,
+     "B2_GIST": 0.7996,
+     "MEMORY": 1.374
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.0,
+     "B2_GIST": 1.0,
+     "MEMORY": 1.0
+    }
+   },
+   "shuffled": {
+    "primary": 787,
+    "useful_holds": 332,
+    "wasted_holds": 868,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.9356,
+     "B2_GIST": 0.7983,
+     "MEMORY": 1.3775
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 0.8393,
+     "B2_GIST": 1.2106,
+     "MEMORY": 1.0382
+    }
+   },
+   "hold_all": {
+    "primary": 783,
+    "useful_holds": 336,
+    "wasted_holds": 864,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.9356,
+     "B2_GIST": 0.7996,
+     "MEMORY": 1.374
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.5,
+     "B2_GIST": 1.5,
+     "MEMORY": 1.5
+    }
+   }
+  },
+  "15": {
+   "learned": {
+    "primary": 819,
+    "useful_holds": 317,
+    "wasted_holds": 883,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 1.0202,
+     "B2_GIST": 0.8143,
+     "MEMORY": 1.1053
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.0484,
+     "B2_GIST": 0.8247,
+     "MEMORY": 1.2031
+    }
+   },
+   "shadow": {
+    "primary": 822,
+    "useful_holds": 314,
+    "wasted_holds": 886,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 1.0191,
+     "B2_GIST": 0.8143,
+     "MEMORY": 1.1131
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.0,
+     "B2_GIST": 1.0,
+     "MEMORY": 1.0
+    }
+   },
+   "shuffled": {
+    "primary": 822,
+    "useful_holds": 314,
+    "wasted_holds": 886,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 1.0202,
+     "B2_GIST": 0.8093,
+     "MEMORY": 1.1054
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 0.8193,
+     "B2_GIST": 1.2063,
+     "MEMORY": 1.0493
+    }
+   },
+   "hold_all": {
+    "primary": 822,
+    "useful_holds": 314,
+    "wasted_holds": 886,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 1.0191,
+     "B2_GIST": 0.8143,
+     "MEMORY": 1.1131
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.5,
+     "B2_GIST": 1.5,
+     "MEMORY": 1.5
+    }
+   }
+  },
+  "16": {
+   "learned": {
+    "primary": 747,
+    "useful_holds": 319,
+    "wasted_holds": 881,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.922,
+     "B2_GIST": 0.7994,
+     "MEMORY": 1.2235
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.0383,
+     "B2_GIST": 0.8478,
+     "MEMORY": 1.203
+    }
+   },
+   "shadow": {
+    "primary": 754,
+    "useful_holds": 312,
+    "wasted_holds": 888,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.913,
+     "B2_GIST": 0.7974,
+     "MEMORY": 1.2362
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.0,
+     "B2_GIST": 1.0,
+     "MEMORY": 1.0
+    }
+   },
+   "shuffled": {
+    "primary": 753,
+    "useful_holds": 313,
+    "wasted_holds": 887,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.922,
+     "B2_GIST": 0.7954,
+     "MEMORY": 1.2236
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 0.8448,
+     "B2_GIST": 1.2077,
+     "MEMORY": 1.0387
+    }
+   },
+   "hold_all": {
+    "primary": 754,
+    "useful_holds": 312,
+    "wasted_holds": 888,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 0.913,
+     "B2_GIST": 0.7974,
+     "MEMORY": 1.2362
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.5,
+     "B2_GIST": 1.5,
+     "MEMORY": 1.5
+    }
+   }
+  },
+  "17": {
+   "learned": {
+    "primary": 741,
+    "useful_holds": 329,
+    "wasted_holds": 871,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 1.071,
+     "B2_GIST": 0.86,
+     "MEMORY": 1.3525
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.0611,
+     "B2_GIST": 0.8426,
+     "MEMORY": 1.2177
+    }
+   },
+   "shadow": {
+    "primary": 745,
+    "useful_holds": 325,
+    "wasted_holds": 875,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 1.0606,
+     "B2_GIST": 0.86,
+     "MEMORY": 1.3898
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.0,
+     "B2_GIST": 1.0,
+     "MEMORY": 1.0
+    }
+   },
+   "shuffled": {
+    "primary": 750,
+    "useful_holds": 320,
+    "wasted_holds": 880,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 1.0762,
+     "B2_GIST": 0.8587,
+     "MEMORY": 1.3687
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 0.8389,
+     "B2_GIST": 1.2281,
+     "MEMORY": 1.0602
+    }
+   },
+   "hold_all": {
+    "primary": 745,
+    "useful_holds": 325,
+    "wasted_holds": 875,
+    "final_learned_multiplier": {
+     "B1_DETAIL": 1.0606,
+     "B2_GIST": 0.86,
+     "MEMORY": 1.3898
+    },
+    "mean_hold_second_half": {
+     "B1_DETAIL": 1.5,
+     "B2_GIST": 1.5,
+     "MEMORY": 1.5
+    }
+   }
+  }
+ },
+ "summary": {
+  "learned": {
+   "primary": {
+    "mean": 778.8,
+    "sd": 34.831
+   },
+   "useful_holds": {
+    "mean": 322.4,
+    "sd": 11.908
+   },
+   "wasted_holds": {
+    "mean": 877.6,
+    "sd": 11.908
+   }
+  },
+  "shadow": {
+   "primary": {
+    "mean": 782.0,
+    "sd": 32.901
+   },
+   "useful_holds": {
+    "mean": 319.2,
+    "sd": 11.167
+   },
+   "wasted_holds": {
+    "mean": 880.8,
+    "sd": 11.167
+   }
+  },
+  "shuffled": {
+   "primary": {
+    "mean": 784.6,
+    "sd": 32.777
+   },
+   "useful_holds": {
+    "mean": 316.6,
+    "sd": 10.334
+   },
+   "wasted_holds": {
+    "mean": 883.4,
+    "sd": 10.334
+   }
+  },
+  "hold_all": {
+   "primary": {
+    "mean": 782.0,
+    "sd": 32.901
+   },
+   "useful_holds": {
+    "mean": 319.2,
+    "sd": 11.167
+   },
+   "wasted_holds": {
+    "mean": 880.8,
+    "sd": 11.167
+   }
+  }
+ },
+ "wins_of_5": {
+  "shadow": 4,
+  "shuffled": 5,
+  "hold_all": 4
+ },
+ "verdict": "SUPPORTED_SYNTHETIC",
+ "claim_limit": "synthetic reuse statistics per kind, harness workspace mirroring focal.Workspace, BOOT knobs"
+}

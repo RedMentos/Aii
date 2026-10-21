@@ -1,0 +1,26 @@
+{
+ "schema_keys": [
+  "summary",
+  "quotes",
+  "uncertainty",
+  "needs_reentry"
+ ],
+ "sorted_common_dumps": {
+  "emitted_key_order": [
+   "needs_reentry",
+   "quotes",
+   "summary",
+   "uncertainty"
+  ],
+  "content": "{\n  \"needs_reentry\": true,\n  \"quotes\": [],\"summary\":\"To water tomatoes, water deeply at the base, avoiding the foliage\", \"uncertainty\" : \"The user should water\"\n}"
+ },
+ "wire_json": {
+  "emitted_key_order": [
+   "summary",
+   "quotes",
+   "uncertainty",
+   "needs_reentry"
+  ],
+  "content": "{\n  \"summary\": \"To water tomatoes, water deeply at the base, ensuring the soil is\", \"quotes\" : [\"water deeply at the base, and\"], \"uncertainty\": \"Avoid wetting the fol\",\"needs_reentry\": true}"
+ }
+}

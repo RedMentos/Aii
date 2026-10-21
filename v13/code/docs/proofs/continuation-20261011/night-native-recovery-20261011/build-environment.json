@@ -1,0 +1,9 @@
+{
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "cmake": "cmake version 4.4.4\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n",
+  "recovery_driver_sha256": "28f84bb4c7da3fd99a071cf7a6b3641ddbdd5ec94bef234eb12f543e2d490e37",
+  "cgroup_memory_max": "8589934592",
+  "build_jobs": 2,
+  "inference_started": false
+}

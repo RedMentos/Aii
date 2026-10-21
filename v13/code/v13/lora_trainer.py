@@ -353,12 +353,21 @@ class AdapterRegistry:
         home=getattr(self.s,'home',None)  # mirror for runners, which have no store handle
         if home is not None:
             (Path(home)/'config').mkdir(parents=True,exist_ok=True)
-            atomic_write(Path(home)/MIRROR,json.dumps({r:{k:v[k] for k in ('path','sha256','base_model_sha256','batch_id','scale')} for r,v in st['active'].items() if v},indent=1))
+            atomic_write(Path(home)/MIRROR,json.dumps({r:{k:v[k] for k in ('path','sha256','base_model_sha256','batch_id','scale','sidecar_sha256') if k in v} for r,v in st['active'].items() if v},indent=1))
+    def _bind_sidecar(self,binding):
+        """Bind optional native row metadata; legacy assets retain their normal runner behavior."""
+        binding.pop('sidecar_sha256',None)
+        p=Path(binding['path'])
+        if p.suffix=='.bin':
+            from .sparse_memory import native_items_path
+            side=native_items_path(p)
+            if side.is_file():binding['sidecar_sha256']=file_hash(side)
     def activate(self,role,adapter_path,adapter_sha256,base_model_sha256,batch_id,scale=1.):
         p=Path(adapter_path)
         if not p.is_file() or file_hash(p)!=adapter_sha256:raise ValueError('Adapter-Datei fehlt oder Hash passt nicht')
         st=self._load();prev=st['active'].get(role)
         st['active'][role]={'path':str(p),'sha256':adapter_sha256,'base_model_sha256':base_model_sha256,'batch_id':batch_id,'scale':float(scale),'at':self.clock(),'previous':prev}
+        self._bind_sidecar(st['active'][role])
         st['history']=(st['history']+[{'kind':'ACTIVATE','role':role,'batch_id':batch_id,'at':self.clock()}])[-64:];self._save(st)
         return st['active'][role]
     def deactivate(self,role,batch_id=None):
@@ -374,6 +383,7 @@ class AdapterRegistry:
         st=self._load();cur=st['active'].get(role)
         if not cur:return None
         cur['sha256']=adapter_sha256;cur['at']=self.clock()
+        self._bind_sidecar(cur)
         st['history']=(st['history']+[{'kind':'REBIND','role':role,'batch_id':cur['batch_id'],'note':str(note)[:80],'at':self.clock()}])[-64:];self._save(st)
         return cur
     def for_runner(self,role,model_path):return runner_lora_args(getattr(self.s,'home','.'),role,model_path,self._load()['active'].get(role))

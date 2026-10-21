@@ -1,0 +1,96 @@
+{
+ "schema": "v13-r4-rule-question-only-prereg-v1",
+ "created_utc": "2026-10-13T10:19:50Z",
+ "family_d_sha256": "9ab0af59ce0c027d2caa1f924da73d174427e1ce36f9b2d403522c39f44a34d7",
+ "n_d": 228,
+ "train_family_a": {
+  "R0": {
+   "macro_f1": 0.6053,
+   "f1": {
+    "none": 0.6693,
+    "total": 0.6466,
+    "difference_max_min": 0.5
+   },
+   "false_alarm_rate": 0.125,
+   "op_confusion_rate": 0.0417,
+   "missed_rate": 0.4931,
+   "confusion": [
+    [
+     84,
+     12,
+     0
+    ],
+    [
+     29,
+     43,
+     0
+    ],
+    [
+     42,
+     6,
+     24
+    ]
+   ]
+  },
+  "R1": {
+   "macro_f1": 0.6208,
+   "f1": {
+    "none": 0.6957,
+    "total": 0.6667,
+    "difference_max_min": 0.5
+   },
+   "false_alarm_rate": 0.0,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.5833,
+   "confusion": [
+    [
+     96,
+     0,
+     0
+    ],
+    [
+     36,
+     36,
+     0
+    ],
+    [
+     48,
+     0,
+     24
+    ]
+   ]
+  },
+  "R2": {
+   "macro_f1": 1.0,
+   "f1": {
+    "none": 1.0,
+    "total": 1.0,
+    "difference_max_min": 1.0
+   },
+   "false_alarm_rate": 0.0,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.0,
+   "confusion": [
+    [
+     96,
+     0,
+     0
+    ],
+    [
+     0,
+     72,
+     0
+    ],
+    [
+     0,
+     0,
+     72
+    ]
+   ]
+  }
+ },
+ "decision_rule": "Family D (new) plus part-8 family A as sanity: R2 adopted iff on D false-alarm rate <= 0.05 AND sum<->difference confusion <= 0.02 AND macro-F1 >= R0 + 0.15 AND all 60 utility_bench2 tasks of seeds 7, 11, 13, 17, 19, 23 keep R0's operation. Else R1 adopted iff on D false-alarm rate <= 0.05, confusion <= 0.02, macro-F1 >= R0 and the same task check. Else nothing.",
+ "script_sha256": "2423fbb5b2b716a2446a5b31abc541d52c13819826a388d8615f83b3141afd9f",
+ "listarith_sha256": "39c1aed90373965cb86eb845409555d36da49232e565974209081a1ede628be6",
+ "head_script_sha256": "be6e3a9c98c6adb0c8c0105ff88df79ff7578636e09b5a82d7ba3daf832f06ea"
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "V13_IMMUTABLE_PHONE_QA_START_V1",
+  "started_at": "2026-10-11T21:16:06.716176+00:00",
+  "local_source_head": "f0cc27f",
+  "source_tree_prefix": "0bd3b",
+  "zip_sha256": "477593e79a6069210258d91500ca9a42b0dfeaadf696d9788b09c3a63679a88a",
+  "zip_bytes": 1867445,
+  "zip_entries": 496,
+  "extracted_root": "/workspace/scratch/5a9214d3f329/night-phone-qa/V13-Phone",
+  "manifest_before": {
+    "manifest_sha256": "f9a8716d3dd4a222de75319abd36a99fce3174449d9c7dd352e21aeca0e39fdb",
+    "files": 495,
+    "mismatches": []
+  },
+  "packages": {
+    "torch": "2.8.0+cpu",
+    "transformers": "5.19.0",
+    "peft": "0.21.2",
+    "safetensors": "0.8.0",
+    "Pillow": "12.3.0"
+  },
+  "command": [
+    "/workspace/scratch/5a9214d3f329/training-resources/venv/bin/python",
+    "-u",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-v"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "cgroup_events_before": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "phone_hardware_measured": false,
+  "native_quality_claim": false
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "v13-native-path-only-recovery-registration-comparison-v1",
+  "prior_registration_sha256": "93d0283a2c84f7abf31e214f7e3780954e42a53fce54eb357f4e5cc85a049216",
+  "new_registration_sha256": "f348d9ca38c728c8b7a5074b25ce1a74aac7fd924e15da9406c3912146590c80",
+  "changed_top_level_fields": [
+    "main_capture_out",
+    "original_registration",
+    "source_checker_snapshot_root"
+  ],
+  "only_recovery_folder_locations_changed": true,
+  "original_registration_bytes_equal": true,
+  "native_parameters_and_full_artifact_bindings_equal": true,
+  "original_prefix_array_and_all_raw_batch_bindings_equal": true,
+  "source_checker_exporter_driver_and_frozen_source_bindings_equal": true,
+  "native_model_started": false,
+  "receiver_authority": 0
+}

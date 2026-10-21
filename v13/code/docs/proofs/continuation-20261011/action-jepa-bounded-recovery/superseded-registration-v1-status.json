@@ -1,0 +1,9 @@
+{
+  "status": "SUPERSEDED_BEFORE_INFERENCE",
+  "reason": "Require controlled status and actual native RSS before cached fresh control reuse",
+  "superseded_registration_sha256": "8d652fe633b05703bad98f2db8a17442b2f45151a267ce9fe3296fe0f8ab9fc0",
+  "final_registration_sha256": "93d0283a2c84f7abf31e214f7e3780954e42a53fce54eb357f4e5cc85a049216",
+  "native_model_started": false,
+  "successful_native_control_rows": 0,
+  "main_new_native_rows": 0
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "V13_PHONE_QA_OBSERVER_CORRECTION_V1",
+  "recorded_at": "2026-10-11T21:19:36.504690+00:00",
+  "original_result": "result.json",
+  "original_result_sha256": "14cd7341d28b00ad928ccbe9685c444f61d42896d7ae626d8515dd8e59682f8d",
+  "original_log_sha256": "d8707dba430ee56ac5a23e1ad63cf811065647d27b5376d6577b5ef57d41084e",
+  "original_runner": "run_qa.py",
+  "reported_rss_bytes": 311296,
+  "reported_rss_rejected": true,
+  "reason": "psutil looked up the child namespace-local PID against shared host /proc without NSpid plus exact argv ownership. The returned 311296-byte peak is not a valid owned Torch process RSS measurement. No actual owned-process RSS can be recovered from these samples.",
+  "accepted_resource_status": "RSS_UNAVAILABLE",
+  "corrected_view": "result-observer-corrected.json",
+  "software_qa_pass": true,
+  "software_qa_tests": 1125,
+  "software_qa_skips": 0,
+  "manifest_files_before_after": 495,
+  "manifest_unchanged": true,
+  "phone_hardware_measured": false,
+  "native_quality_claim": false
+}

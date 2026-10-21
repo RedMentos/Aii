@@ -1,0 +1,9 @@
+{
+  "schema": "v13-native-night-core-restoration-readonly-check-v1",
+  "source_handoff_preregistration_sha256": "4cfaddad1d9fadd23b5810c7cd4ddc0637e0e9b59d6d6fcd007fc22b5870b1d0",
+  "checked_sources": 121,
+  "all_source_bytes_equal": true,
+  "differences": [],
+  "native_capture_uses_frozen70_snapshot": true,
+  "native_inference_started": false
+}

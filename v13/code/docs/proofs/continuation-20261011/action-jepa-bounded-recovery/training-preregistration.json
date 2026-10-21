@@ -1,0 +1,41 @@
+{
+  "schema": "v13-action-jepa-real-tap-training-preregistration-v1",
+  "status": "PREREGISTERED_AWAITING_COMPLETE_NATIVE_TAPS",
+  "seeds": [
+    13,
+    21,
+    34
+  ],
+  "config_per_seed": {
+    "steps": 240,
+    "dim": 16,
+    "lr": 0.02,
+    "max_update_norm": 0.05,
+    "ema_decay": 0.99,
+    "retention_max_delta": 0.0
+  },
+  "source_hashes": {
+    "scripts/action_jepa_objective.py": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439",
+    "scripts/export_action_jepa_dataset.py": "448966b6323baf8593c3f75d6cdb2ef62261d7eeba196d35b0d26d2a996141bc",
+    "scripts/seal_action_jepa_evidence.py": "bd96923240063050f8b1c6902efa6d1e41eb780bc8f177b8cf0d3bd899aacba8",
+    "v13/predictor_worker.py": "e54f539dc79e6d3b8ba88cbab601aeabf5d0fbbd7ac75e477d49e362d7d94a6e",
+    "v13/common.py": "0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a",
+    "v13/resources.py": "29fb8e8e4a97ef90f8f694e12d779da0f675c1c190ddafbdd270264ab0898637"
+  },
+  "plan": {
+    "path": "docs/proofs/continuation-20261011/action-jepa-preregistered-plan-v2.json",
+    "sha256": "94072d386e6f7f55dd972592bc97b78e6f1f4cae05f80fa132bd7efb16d476f1"
+  },
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy_version": "2.3.5",
+  "blas_threads": 1,
+  "dataset_dependency": "Only the complete 1875-row native capture accepted by the unchanged source-bound exporter; no 736-row partial training, no mixed cohort rows. Seal and record exact taps/dataset SHA before first seed.",
+  "partitions": "Existing fixed v2 plan only; no new split or corpus. Historical exposed test topics remain explicitly exposed.",
+  "evaluation": "Unchanged original action_jepa_objective.py gates, fixed initial target coordinate space, copy/mean-delta/shuffled-target and no-bias controls; exact reload, analytic gradient, repeat optimization determinism, noncollapse and zero-delta retention.",
+  "after_each_seed": "Retain raw metrics.json and candidate.npz regardless of PASS or FAIL; externally reload predict for all four named actions using bound held-out native context indices. No candidate authority activated.",
+  "receiver_authority": 0,
+  "learn_authority": 0,
+  "runtime_integrated": false,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}

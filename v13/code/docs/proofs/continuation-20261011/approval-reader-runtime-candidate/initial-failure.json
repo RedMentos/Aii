@@ -1,0 +1,1 @@
+{"scope":"first isolated candidate software run","tests":32,"failures":1,"errors":1,"failures_detail":["LoRA original path absent from lifecycle stamp: replacement before child-open was not rejected after health","SparseSnapshot fixture lacked bind method"],"fixed_before_second_run":true,"native_model_inference":false}

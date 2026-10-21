@@ -1,0 +1,202 @@
+{
+ "prereg_sha256": "879bade278ff960c1e5b135fcd387b8e204a591d54c8e02dceb1af8bdb39091a",
+ "fresh_sha256": "8e04d8432e30c80970e1e26d0fbfc9e6cabf6c57bf9a7804fe4f30879a3b5f62",
+ "summary": {
+  "all": {
+   "n": 60,
+   "correct": {
+    "c3_alone": 22,
+    "tool_active": 32
+   },
+   "wrong_committed": {
+    "c3_alone": 33,
+    "tool_active": 23
+   },
+   "unparsed": {
+    "c3_alone": 5,
+    "tool_active": 5
+   },
+   "wins": 11,
+   "losses": 1,
+   "net": 10,
+   "sign_test_p": 0.0063,
+   "tool_wrong": 0,
+   "shown_correct": 53,
+   "shown_wins": 32,
+   "shown_losses": 1,
+   "shown_net": 31,
+   "shown_sign_test_p": 0.0,
+   "proposals": 60,
+   "executed": 60,
+   "read_failures": 0,
+   "decision_unknown": 33,
+   "decision_correct": 42,
+   "values_exact": 33,
+   "corrections": 39,
+   "turn_s_median": {
+    "c3_alone": 1.81,
+    "tool_active": 2.62
+   }
+  },
+  "complete": {
+   "n": 15,
+   "correct": {
+    "c3_alone": 4,
+    "tool_active": 13
+   },
+   "wrong_committed": {
+    "c3_alone": 9,
+    "tool_active": 2
+   },
+   "unparsed": {
+    "c3_alone": 2,
+    "tool_active": 0
+   },
+   "wins": 9,
+   "losses": 0,
+   "net": 9,
+   "sign_test_p": 0.0039,
+   "tool_wrong": 0,
+   "shown_correct": 14,
+   "shown_wins": 10,
+   "shown_losses": 0,
+   "shown_net": 10,
+   "shown_sign_test_p": 0.002,
+   "proposals": 15,
+   "executed": 15,
+   "read_failures": 0,
+   "decision_unknown": 2,
+   "decision_correct": 13,
+   "values_exact": 13,
+   "corrections": 3,
+   "turn_s_median": {
+    "c3_alone": 2.11,
+    "tool_active": 2.41
+   }
+  },
+  "missing": {
+   "n": 15,
+   "correct": {
+    "c3_alone": 0,
+    "tool_active": 0
+   },
+   "wrong_committed": {
+    "c3_alone": 13,
+    "tool_active": 13
+   },
+   "unparsed": {
+    "c3_alone": 2,
+    "tool_active": 2
+   },
+   "wins": 0,
+   "losses": 0,
+   "net": 0,
+   "sign_test_p": 1.0,
+   "tool_wrong": 0,
+   "shown_correct": 15,
+   "shown_wins": 15,
+   "shown_losses": 0,
+   "shown_net": 15,
+   "shown_sign_test_p": 0.0001,
+   "proposals": 15,
+   "executed": 15,
+   "read_failures": 0,
+   "decision_unknown": 15,
+   "decision_correct": 15,
+   "values_exact": 6,
+   "corrections": 15,
+   "turn_s_median": {
+    "c3_alone": 2.01,
+    "tool_active": 2.71
+   }
+  },
+  "earlier": {
+   "n": 15,
+   "correct": {
+    "c3_alone": 10,
+    "tool_active": 11
+   },
+   "wrong_committed": {
+    "c3_alone": 5,
+    "tool_active": 3
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_active": 1
+   },
+   "wins": 1,
+   "losses": 0,
+   "net": 1,
+   "sign_test_p": 1.0,
+   "tool_wrong": 0,
+   "shown_correct": 14,
+   "shown_wins": 4,
+   "shown_losses": 0,
+   "shown_net": 4,
+   "shown_sign_test_p": 0.125,
+   "proposals": 15,
+   "executed": 15,
+   "read_failures": 0,
+   "decision_unknown": 6,
+   "decision_correct": 9,
+   "values_exact": 9,
+   "corrections": 9,
+   "turn_s_median": {
+    "c3_alone": 1.61,
+    "tool_active": 2.62
+   }
+  },
+  "override": {
+   "n": 15,
+   "correct": {
+    "c3_alone": 8,
+    "tool_active": 8
+   },
+   "wrong_committed": {
+    "c3_alone": 6,
+    "tool_active": 5
+   },
+   "unparsed": {
+    "c3_alone": 1,
+    "tool_active": 2
+   },
+   "wins": 1,
+   "losses": 1,
+   "net": 0,
+   "sign_test_p": 1.0,
+   "tool_wrong": 0,
+   "shown_correct": 10,
+   "shown_wins": 3,
+   "shown_losses": 1,
+   "shown_net": 2,
+   "shown_sign_test_p": 0.625,
+   "proposals": 15,
+   "executed": 15,
+   "read_failures": 0,
+   "decision_unknown": 10,
+   "decision_correct": 5,
+   "values_exact": 5,
+   "corrections": 12,
+   "turn_s_median": {
+    "c3_alone": 1.62,
+    "tool_active": 2.71
+   }
+  }
+ },
+ "criteria": {
+  "a_net_and_sign": true,
+  "b_wrong_committed_not_higher": true,
+  "c_tool_never_wrong": true,
+  "d_no_kind_loses_more_than_2": true
+ },
+ "max_kind_net_loss": 0,
+ "verdict": "TOOL_LIVE_SUPPORTED",
+ "shown_criteria": {
+  "net_and_sign": true,
+  "c_tool_never_wrong": true
+ },
+ "shown_verdict": "TOOL_SHOWN_SUPPORTED",
+ "age_right_replaced_for_measurement": true,
+ "phone_measured": false,
+ "step2_changed": false
+}

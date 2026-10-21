@@ -32,7 +32,10 @@ class GroupingTests(unittest.TestCase):
         sc=[x['scale'] for x in p['slots']];self.assertGreater(sc[0],sc[-1]);self.assertEqual(sum(sc),p['groups_raw'])
 
 class ResolutionTests(unittest.TestCase):
-    def setUp(self):self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
+        from v13.config import LEGACY_QUOTE_PATH
+        self.r.cfg.update(LEGACY_QUOTE_PATH)  # gist slot mechanics on the pre-2026-10-21 quote path
     def tearDown(self):self.r.close();self.tmp.cleanup()
     def age(self):
         from v13.age import controller

@@ -1,0 +1,49 @@
+{
+ "schema": "v13-action-jepa-round4-capture-v1",
+ "started_utc": "2026-10-12T07:24:21.735233+00:00",
+ "finished_utc": "2026-10-12T07:28:37.605795+00:00",
+ "rows": 2235,
+ "layers": [
+  11,
+  23
+ ],
+ "n_layer": 24,
+ "tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+ "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+ "libraries": {
+  "libggml-base.so": "978ef804e0a00ff0a429940cfda713b93d7b5da1b217be6aeff6258e73f24de9",
+  "libggml-base.so.0": "978ef804e0a00ff0a429940cfda713b93d7b5da1b217be6aeff6258e73f24de9",
+  "libggml-base.so.0.25.3": "978ef804e0a00ff0a429940cfda713b93d7b5da1b217be6aeff6258e73f24de9",
+  "libggml-cpu.so": "f185c8da15c7632067649858591b670d99d601aa53bce3d9b6f15bb557c5a739",
+  "libggml-cpu.so.0": "f185c8da15c7632067649858591b670d99d601aa53bce3d9b6f15bb557c5a739",
+  "libggml-cpu.so.0.25.3": "f185c8da15c7632067649858591b670d99d601aa53bce3d9b6f15bb557c5a739",
+  "libggml.so": "8f2dc436d7f1d3d84e29b4608be43ecb3c3f83d9cb862632eb36b1974760e1dd",
+  "libggml.so.0": "8f2dc436d7f1d3d84e29b4608be43ecb3c3f83d9cb862632eb36b1974760e1dd",
+  "libggml.so.0.25.3": "8f2dc436d7f1d3d84e29b4608be43ecb3c3f83d9cb862632eb36b1974760e1dd",
+  "libllama.so": "984e9696e8caa60fb80f764fd746cf87b7e89bfc0f7ffc47ff8c033f355b8870",
+  "libllama.so.0": "984e9696e8caa60fb80f764fd746cf87b7e89bfc0f7ffc47ff8c033f355b8870",
+  "libllama.so.0.5.0": "984e9696e8caa60fb80f764fd746cf87b7e89bfc0f7ffc47ff8c033f355b8870"
+ },
+ "raw_bin_sha256": "bcbdfeb9660bf47e26e53283a8430f9b9bab640c9e15978d7ec3e80a72d1805a",
+ "meta_sha256": "d106c445fc95f47a41d519e2b1131c0e96a63cadd3c3ff1abe0461ec3835f83d",
+ "texts_sha256": "83af271cdaa90962e214be4d76f7c5567252632d8392faed194082d01833fbdd",
+ "arms": {
+  "l11_last": {
+   "path": "taps-l11_last.npz",
+   "sha256": "ba79b658574ef135fa6f3f6afdcbcf80e322be22a6f0232771365906af894bc5"
+  },
+  "l11_mean": {
+   "path": "taps-l11_mean.npz",
+   "sha256": "66c2c353c93745846f2ef0608f73b35a8e551ba3e41650c87c35cffb45482489"
+  },
+  "l23_last": {
+   "path": "taps-l23_last.npz",
+   "sha256": "363accaedb91f3f69c90dc6ecdaa629f86c1a94c6b6753b0cf19a6fd769546fe"
+  },
+  "l23_mean": {
+   "path": "taps-l23_mean.npz",
+   "sha256": "fcb4773c4686cf1deae1aa4c607fcbba5f7ad56b853f9baf30a7a8631b4d1e4e"
+  }
+ },
+ "tool_exit": 0
+}

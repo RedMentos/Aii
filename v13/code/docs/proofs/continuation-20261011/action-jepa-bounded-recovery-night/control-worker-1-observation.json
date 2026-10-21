@@ -1,0 +1,153 @@
+{
+  "schema": "v13-bounded-native-worker-observation-v1",
+  "status": "CONTROLLED_CHECKPOINT_BOUNDARY",
+  "started_utc": "2026-10-11T21:25:48.473778+00:00",
+  "initial_rows": 0,
+  "maximum_new_batches": 1,
+  "registry_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+  "memory_start": {
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+    "memory.current": "6601588736",
+    "memory.max": "8589934592",
+    "memory.peak": "7851814912"
+  },
+  "samples": [
+    {
+      "utc": "2026-10-11T21:25:49.110805+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "6603874304",
+        "memory.max": "8589934592",
+        "memory.peak": "7851814912"
+      },
+      "native_identity": {
+        "proc_pid": 8415,
+        "nspid": [
+          8415,
+          16
+        ],
+        "starttime_ticks": "129917",
+        "rss_bytes": 405504
+      }
+    },
+    {
+      "utc": "2026-10-11T21:25:50.479730+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "6945910784",
+        "memory.max": "8589934592",
+        "memory.peak": "7851814912"
+      },
+      "native_identity": {
+        "proc_pid": 8415,
+        "nspid": [
+          8415,
+          16
+        ],
+        "starttime_ticks": "129917",
+        "rss_bytes": 917925888
+      }
+    },
+    {
+      "utc": "2026-10-11T21:25:52.482116+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7199244288",
+        "memory.max": "8589934592",
+        "memory.peak": "7851814912"
+      },
+      "native_identity": {
+        "proc_pid": 8415,
+        "nspid": [
+          8415,
+          16
+        ],
+        "starttime_ticks": "129917",
+        "rss_bytes": 1160273920
+      }
+    },
+    {
+      "utc": "2026-10-11T21:25:54.354612+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "7321493504",
+        "memory.max": "8589934592",
+        "memory.peak": "7851814912"
+      },
+      "native_identity": {
+        "proc_pid": 8415,
+        "nspid": [
+          8415,
+          16
+        ],
+        "starttime_ticks": "129917",
+        "rss_bytes": 1283407872
+      }
+    },
+    {
+      "utc": "2026-10-11T21:25:54.484946+00:00",
+      "memory": {
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.current": "6601609216",
+        "memory.max": "8589934592",
+        "memory.peak": "7851814912"
+      },
+      "native_identity": null
+    }
+  ],
+  "owned_popen_pid": 16,
+  "native_returncode": 0,
+  "cleanup_requests": [
+    {
+      "operation": "owned_Popen_terminate",
+      "utc": "2026-10-11T21:25:54.356527+00:00",
+      "returncode_before": null
+    }
+  ],
+  "native_started": true,
+  "receiver_authority": 0,
+  "native_command": [
+    "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/llama-server",
+    "-m",
+    "/workspace/scratch/5a9214d3f329/native-audit-cache/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+    "--embedding",
+    "--pooling",
+    "mean",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "39631",
+    "--alias",
+    "v13-action-capture-a4519a627131489eaf108f987b5d93ea",
+    "-c",
+    "2048",
+    "-t",
+    "2",
+    "-tb",
+    "2",
+    "--no-webui",
+    "--log-disable"
+  ],
+  "controlled_reason": "Preregistered owned-worker boundary after 1 successful new batches",
+  "native_signal_number": null,
+  "worker_reaped": true,
+  "completed_utc": "2026-10-11T21:25:54.521686+00:00",
+  "memory_end": {
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+    "memory.current": "6600622080",
+    "memory.max": "8589934592",
+    "memory.peak": "7851814912"
+  },
+  "completed_rows": 16,
+  "completed_new_batches": 1,
+  "taps_sha256": "f83221f689eee54d05d29eec54d3e92bc7321e710dbce9ed32add0d417dff82a",
+  "cgroup_event_deltas": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "rss_observed": true
+}

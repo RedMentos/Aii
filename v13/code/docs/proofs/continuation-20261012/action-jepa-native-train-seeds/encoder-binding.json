@@ -1,0 +1,145 @@
+{
+  "schema": "v13-action-native-taps-capture-v1",
+  "native_extraction_observed": true,
+  "tap_kind": "llama.cpp-mean-last-layer-embedding",
+  "plan_sha256": "94072d386e6f7f55dd972592bc97b78e6f1f4cae05f80fa132bd7efb16d476f1",
+  "texts_sha256": "e68867ce03b1c62b85b55cc9c09b7e8767807c8e87193f0df37773572359e7cc",
+  "taps_sha256": "09fde379793ea8c4a63268df729a33b4b98a3f4f90f3eeee2dec4a83a10b5843",
+  "shape": [
+    1875,
+    1024
+  ],
+  "dtype": "float64",
+  "artifacts": {
+    "model_gguf": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+      "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+    },
+    "runner": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/llama-server",
+      "sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8"
+    },
+    "extractor": {
+      "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/jepa_ablation_bench.py",
+      "sha256": "b6e73928a44ab695a8c224f1aa6dd2c9a8f2bdb1596fe39de5ce55026e4fc95e"
+    },
+    "capture_driver": {
+      "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/capture_action_jepa_taps.py",
+      "sha256": "42b38b8d0f3f96a811f330895de62e35ec81bfea89383edd3ba00da52d06defd"
+    }
+  },
+  "runtime_libraries": {
+    "libggml-base.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-base.so.0.24.0",
+      "sha256": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a"
+    },
+    "libggml-base.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-base.so.0.24.0",
+      "sha256": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a"
+    },
+    "libggml-base.so.0.24.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-base.so.0.24.0",
+      "sha256": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a"
+    },
+    "libggml-cpu.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-cpu.so.0.24.0",
+      "sha256": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b"
+    },
+    "libggml-cpu.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-cpu.so.0.24.0",
+      "sha256": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b"
+    },
+    "libggml-cpu.so.0.24.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-cpu.so.0.24.0",
+      "sha256": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b"
+    },
+    "libggml.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml.so.0.24.0",
+      "sha256": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d"
+    },
+    "libggml.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml.so.0.24.0",
+      "sha256": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d"
+    },
+    "libggml.so.0.24.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml.so.0.24.0",
+      "sha256": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d"
+    },
+    "libllama-common.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-common.so.0.4.1",
+      "sha256": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee"
+    },
+    "libllama-common.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-common.so.0.4.1",
+      "sha256": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee"
+    },
+    "libllama-common.so.0.4.1": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-common.so.0.4.1",
+      "sha256": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee"
+    },
+    "libllama-server-impl.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-server-impl.so",
+      "sha256": "0bd03879553abc98f5d2951886989820cd61049ce071f727e06f9cc926d4c8f1"
+    },
+    "libllama.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama.so.0.4.1",
+      "sha256": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50"
+    },
+    "libllama.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama.so.0.4.1",
+      "sha256": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50"
+    },
+    "libllama.so.0.4.1": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama.so.0.4.1",
+      "sha256": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50"
+    },
+    "libmtmd.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libmtmd.so.0.4.1",
+      "sha256": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    },
+    "libmtmd.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libmtmd.so.0.4.1",
+      "sha256": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    },
+    "libmtmd.so.0.4.1": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libmtmd.so.0.4.1",
+      "sha256": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    }
+  },
+  "registration_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+  "completed_batches": 118,
+  "completed_rows": 1875,
+  "worker_reaped": true,
+  "failed_attempts_preserved": [
+    "failed-attempt-01b4cb04968d44c7b952831b8af255e0.json",
+    "failed-attempt-060f562efa0142978d20dca26d1548bb.json",
+    "failed-attempt-25e39ab7e5744105a22324f0d3b8d172.json",
+    "failed-attempt-761ff31b28a745debcac91987428b65a.json",
+    "failed-attempt-7cd8b3afe51346fe8d482a0b5a478ba3.json",
+    "failed-attempt-83a811664fd8471593251d0d85536f42.json",
+    "failed-attempt-e5eae5f6008248a7b528f7cf8b8d8f91.json",
+    "failed-attempt-f56923b9e957497087810b79a1a2e8f9.json"
+  ],
+  "frozen70": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/step2-webchat-70/report.json",
+    "sha256": "e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555",
+    "status": "UTILITY_FAIL",
+    "rows": 70,
+    "frozen_source_intact": true,
+    "utility_gate_inferred": false
+  },
+  "semantic_quality_proven": false,
+  "receiver_authority": 0,
+  "canonical_architecture_complete": false,
+  "recovered_export": {
+    "adapter": "v13-action-jepa-recovered-export-v1",
+    "adapter_source_sha256": "1aee9b77cd0a6fe0fdf2d8af7fade0eaf23777a3213fb25e00ba792e148af4ea",
+    "superseded_taps_sha256": "533ff0beed228dc6c1d95f381b8b44a910b3942093c8a1a04cc984f82815803d",
+    "superseded_taps_bytes_available": false,
+    "reference_manifest_sha256": "d918b834293de70f5ff108b1acae117a9c6caffd27cc6e3d46bb565cf0c745c3",
+    "reference_dataset_sha256": "be96e6719d3406c4c2619203b2a4a28851a96bf4cec7d3ce90ece48da7cdf976",
+    "artifact_bytes_rehashed_locally": false,
+    "artifact_binding_verified_via": "registration_sha256 embedded in every raw native batch and the NPZ checkpoint; registration artifact/library hashes equal the preregistered manifest",
+    "raw_batches_verified_against_floats": 118
+  }
+}

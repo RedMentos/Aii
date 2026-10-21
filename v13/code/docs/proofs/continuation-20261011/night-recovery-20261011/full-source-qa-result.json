@@ -1,0 +1,12 @@
+{
+  "schema": "V13_SOURCE_QA_TERMINAL_V1",
+  "finished_at": "2026-10-11T21:15:17.032642+00:00",
+  "exit_code": 130,
+  "footer": null,
+  "status": "INTERRUPTED_BY_COORDINATION_BEFORE_COMPLETE",
+  "reason": "Root directed one immutable extracted phone suite instead of duplicate full source suite.",
+  "log_sha256": "abc2cc824fb41e6d396c946e6480d666fd6ac859d7e6d3d7d48085480c6e8054",
+  "pass_claim": false,
+  "native_quality_claim": false,
+  "phone_measured": false
+}

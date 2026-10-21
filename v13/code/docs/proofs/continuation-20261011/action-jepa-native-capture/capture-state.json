@@ -1,0 +1,22 @@
+{
+  "schema": "v13-action-native-tap-progress-v1",
+  "status": "INCOMPLETE",
+  "updated_utc": "2026-10-11T04:17:50.512766+00:00",
+  "registry_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+  "completed_rows": 736,
+  "completed_batches": 46,
+  "taps_sha256": "69b95532896de66fa7c6065bbf4d14e84c32a362c5e8e13d3b4340d177c4035a",
+  "native_extraction_observed": false,
+  "receiver_authority": 0,
+  "canonical_architecture_complete": false,
+  "worker_reaped": true,
+  "expected_rows": 1875,
+  "frozen70": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/step2-webchat-70/report.json",
+    "sha256": "e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555",
+    "status": "UTILITY_FAIL",
+    "rows": 70,
+    "frozen_source_intact": true,
+    "utility_gate_inferred": false
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "v13-action-jepa-round5-preregistration-v2",
+  "status": "PREREGISTERED_V2_BEFORE_ANY_TRAINING",
+  "bound_at": "2026-10-12T04:05:19.593887+00:00",
+  "why": "Rounds 1-4: text rewrites written by C3 never let a linear predictor beat per-action mean-delta. Round 5 uses real tool actions whose outcome is a deterministic, state-dependent tool result.",
+  "world": {
+    "state_text": "The counter shows {n}.",
+    "states": 400,
+    "values": "400 distinct integers from 1..999, numpy default_rng(20261012)",
+    "actions": {
+      "double": "n*2",
+      "add_15": "n+15",
+      "quarter": "n/4",
+      "subtract_7": "n-7"
+    },
+    "execution": "each action is a real calc call through v13.agi.tools.ToolRegistry (IH-H29 policy, IH-H14 transaction) in a throwaway sandbox store; outcome text uses the returned tool result; every transaction record is bound as a row source",
+    "partitions": "start values permuted with the same rng: train 50 %, calibration 15 %, retention 15 %, test 20 %; episodes whose normalized text occurs in another partition are dropped before taps are read",
+    "outcome_text": "After doubling|adding 15|dividing by 4|subtracting 7, the counter shows {result}."
+  },
+  "taps": {
+    "tool": "scripts/native_layer_taps.cpp (same build as round 4)",
+    "model": "Qwen3.5-0.8B-Q4_0 sha256 57d19977...",
+    "arms": {
+      "l11_last": "PRIMARY",
+      "l11_mean": "",
+      "l23_last": "",
+      "l23_mean": ""
+    }
+  },
+  "training": {
+    "seeds": [
+      13,
+      21,
+      34
+    ],
+    "arm_round1": "action_jepa_objective.py, round-1 config",
+    "arm_round2": "action_jepa_residual_candidate.py, steps grid 240,960 on calibration"
+  },
+  "gates": "unchanged original gates; all 4 taps x 2 arms x 3 seeds reported; no test-based selection",
+  "limits": "arithmetic on a one-line counter is a minimal world; outcomes are exact tool results, the model only encodes them",
+  "source_hashes": {
+    "scripts/action_jepa_round5_tools.py": "5d7aa7d276339ed8ec3d81e4d9f585684d9e9e53b06fd94cb73b7a23457750f5",
+    "scripts/native_layer_taps.cpp": "bbef8b08fd8bcfe72eb30dc4bcced887b70b9c35158819911b5bc110d79a4bd1",
+    "scripts/action_jepa_objective.py": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439",
+    "scripts/action_jepa_residual_candidate.py": "b35ff4aebf7c0a5134779cc99324f0fd928852ce797c899dfc09966575808851",
+    "v13/agi/tools.py": "a65d328e8be2170022d1fa5ba862cd3f42f5d64bba9414d3885d2bd79aacc4c6",
+    "v13/transaction.py": "4e89eeaa9f5f8744943ab19d9fc769b9088fc8a6a1b1baca71e1a3b5582b5353",
+    "tests/test_action_jepa_round5_tools.py": "8a8c55ea3c39bab90b3f542b4393c6192e7304e5f46ae5b76206f2e251c9ca60"
+  },
+  "receiver_authority": 0,
+  "learn_authority": 0,
+  "runtime_integrated": false,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false,
+  "supersedes": "v1 (commit 1ba1d95), infeasible, see v1-outcome.json",
+  "change_from_v1": "only the outcome text: it names the action, e.g. \"After doubling, the counter shows 74.\"; start texts unchanged. All else identical (same seed, values, partitions, taps, training, gates)."
+}

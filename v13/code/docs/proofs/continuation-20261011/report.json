@@ -1,0 +1,90 @@
+{
+  "schema": "v13-continuation-proof-v1",
+  "status": "SCOPED_SOFTWARE_AND_NATIVE_EXECUTION_COMPLETE",
+  "targeted": {
+    "run": 107,
+    "passed": 103,
+    "skipped": 4,
+    "reason": "existing PyTorch tests, dependency unavailable",
+    "seconds": 5.116,
+    "log_sha256": "b1f1ce86765d6a7d9fa965f5d57472284cec5565ebebc937dee02ec5f9e510d7"
+  },
+  "failed_test_invocation": {
+    "reason": "one mistakenly named test_neuromod_local module did not exist; corrected invocation passed",
+    "log": "integration-20261011.log",
+    "sha256": "d4381568d48c6484cfe33a0240c5c2f659883dbc96085b205dc315db4ad53c49"
+  },
+  "new_tests": 36,
+  "native_baselines": [
+    "native-baseline-20261011",
+    "native-baseline-current-20261011"
+  ],
+  "native_vertical": {
+    "status": "SMOKE_PASS_EXECUTION_ONLY",
+    "roles": [
+      "C3_LANGUAGE",
+      "B1_DETAIL",
+      "B2_GIST",
+      "C2_CONTROL"
+    ],
+    "distinct_b2": true,
+    "background_turns": 3,
+    "final_native_outputs": 3,
+    "all_structural_audits_pass": true,
+    "quality_pass": false,
+    "correct_budget_outputs": 0,
+    "turn_seconds": [
+      27.39531699500003,
+      30.94827252200048,
+      31.953888885000197
+    ],
+    "latency_phone_measured": false,
+    "full_runner_proof": false,
+    "step1_complete": false,
+    "step2_complete": false,
+    "raw_archive": "native-vertical-20261011.zip",
+    "raw_archive_sha256": "dcfd95a133ba165de0578b3cd5e6e5031ea342996efd4f61d9768f27893dfe22",
+    "summary_sha256": "2a7e5145ef0de2347d782d62d37f6657ce00c0fdc0aaa34aeb990e4c8644e15d",
+    "preserved_initial_diagnostic_mistakes": true
+  },
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "limits": [
+    "Linux baselines only, not Redmi",
+    "Sparse inventory SHADOW only, Exact never omitted; firing UNMEASURED",
+    "No paired outcome labels fabricated or native weight updates",
+    "Existing sparse auto selection and failed combined 7/8, leak 0.8 retained"
+  ],
+  "source_hashes": {
+    "v13/neuromod.py": "abd6379bd8843b2e763fea315ea78dfbb5142ee03d4b71eae3b33a48c018c86d",
+    "v13/memory_server.py": "55d21f91144ce20e3d92cd86255e4797fdf82fb099648092c34885a95ab05f4f",
+    "v13/memory_trainer.py": "751266174e9828ff80950217af7860be6e1251bea79553a06321ae0842b6f4c8",
+    "v13/sparse_memory.py": "039728e48a87a8e5763fda2ed854ea686ece9c2293faa1068ffafd28a13c71af",
+    "v13/lora_trainer.py": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb",
+    "v13/runners.py": "c520107c35b959051f031ab581443c6b8c84da3d8fc67b146dbc3e8a9f768d91",
+    "v13/runtime.py": "7bc3c2958f59916ebb6a364f94fd40e8f379b70399e7e61ba1c2cc8cad3fb820",
+    "v13/store.py": "b82d6c4f404a0df8ca856c62c100cf6ab47009aa7f57fc2fe712a74c4ab702b3",
+    "scripts/fast_trace_compare.py": "586adc8c9e6a654c088f11846f94726eb5ff7916f715e8b8292621996233f4cf",
+    "tests/test_neuromod.py": "f5fd59647b266d38fa7b66c7fdf898d1d661fce4980054277fd573f4aefe59fc"
+  },
+  "package_selftest": {
+    "run": 982,
+    "passed": 978,
+    "skipped": 4,
+    "errors": 0,
+    "failures": 0,
+    "seconds": 62.116,
+    "scope": "actual extracted phone ZIP selftest on Linux, no target-phone test",
+    "log": "package-selftest-fixed-20261011.log",
+    "log_sha256": "2f214e7ba5575ee3033de260c603392bba73b61bfef89057b112fefaacc92abd",
+    "tested_manifest_sha256": "f1bff09460170447cfa3fc29fd21b96dc6a6155ef8d6e5146d5d5b997ce64e73"
+  },
+  "package_failed_attempt": {
+    "run": 981,
+    "failures": 1,
+    "skipped": 4,
+    "scope": "random UUID sampling test asserted probability as a certainty; observed 8 selected/30 hit the legitimate cap",
+    "fix": "fixed event IDs test real sampler; additional exact latest mandatory trace cap test; production sampling unchanged",
+    "log_sha256": "ef21b77fe38447d7e16cede9ddd4f3e0224d9723fad279c87aca67d7daadbe37"
+  }
+}

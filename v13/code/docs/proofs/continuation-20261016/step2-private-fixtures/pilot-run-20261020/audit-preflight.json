@@ -1,0 +1,11 @@
+{
+  "errors": [],
+  "gate_promotion": false,
+  "historical_step2_utility": "UTILITY_FAIL_UNCHANGED",
+  "native_model_runs": 0,
+  "registration_sha256": "2f0cd6f9ad94afa4124f433c4e9c96d3b1073ab922dd97cd28443df348f3f838",
+  "rows_audited": 0,
+  "schema": "V13_STEP2_PRIVATE_PILOT_READONLY_AUDIT_V1",
+  "status": "PREPARED_NOT_RUN",
+  "unverified": []
+}

@@ -1,0 +1,307 @@
+{
+ "prereg": {
+  "schema": "COROLLARY_CEILING_PREREG_V1",
+  "k_grid": [
+   4,
+   6,
+   8,
+   12,
+   20
+  ],
+  "calibration_seeds": [
+   101,
+   102,
+   103,
+   104,
+   105
+  ],
+  "test_seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "streams": {
+   "standard": "own failures off by 3-6 x tolerance",
+   "stress": "own failures off by 3-40 x tolerance"
+  },
+  "k_selection": "max balanced accuracy on calibration seeds, standard stream; ties -> larger K",
+  "pass": [
+   "balanced accuracy > baseline in >=4/5 test seeds (standard)",
+   "false-MIXED rate < baseline in >=4/5 test seeds on both streams",
+   "stress: mean missed-failure rise <= .10 and balanced accuracy lower in at most 1/5 seeds"
+  ]
+ },
+ "calibration": {
+  "4": 0.72432,
+  "6": 0.83857,
+  "8": 0.84854,
+  "12": 0.86444,
+  "20": 0.91698
+ },
+ "k": 20,
+ "test": {
+  "standard": {
+   "13": {
+    "baseline": {
+     "balanced_accuracy": 0.79454,
+     "false_mixed_rate": 0.60355,
+     "missed_failure_rate": 0.0,
+     "per_class": {
+      "SELF": 0.9872,
+      "MIXED": 1.0,
+      "EXTERNAL": 0.3964
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.94017,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.16667,
+     "per_class": {
+      "SELF": 0.9872,
+      "MIXED": 0.8333,
+      "EXTERNAL": 1.0
+     }
+    }
+   },
+   "14": {
+    "baseline": {
+     "balanced_accuracy": 0.71561,
+     "false_mixed_rate": 0.62722,
+     "missed_failure_rate": 0.1875,
+     "per_class": {
+      "SELF": 0.9615,
+      "MIXED": 0.8125,
+      "EXTERNAL": 0.3728
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.84135,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.4375,
+     "per_class": {
+      "SELF": 0.9615,
+      "MIXED": 0.5625,
+      "EXTERNAL": 1.0
+     }
+    }
+   },
+   "15": {
+    "baseline": {
+     "balanced_accuracy": 0.76975,
+     "false_mixed_rate": 0.59701,
+     "missed_failure_rate": 0.0,
+     "per_class": {
+      "SELF": 0.9062,
+      "MIXED": 1.0,
+      "EXTERNAL": 0.403
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.94653,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.06667,
+     "per_class": {
+      "SELF": 0.9062,
+      "MIXED": 0.9333,
+      "EXTERNAL": 1.0
+     }
+    }
+   },
+   "16": {
+    "baseline": {
+     "balanced_accuracy": 0.78823,
+     "false_mixed_rate": 0.54422,
+     "missed_failure_rate": 0.05882,
+     "per_class": {
+      "SELF": 0.9677,
+      "MIXED": 0.9412,
+      "EXTERNAL": 0.4558
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.91082,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.23529,
+     "per_class": {
+      "SELF": 0.9677,
+      "MIXED": 0.7647,
+      "EXTERNAL": 1.0
+     }
+    }
+   },
+   "17": {
+    "baseline": {
+     "balanced_accuracy": 0.76706,
+     "false_mixed_rate": 0.65714,
+     "missed_failure_rate": 0.0,
+     "per_class": {
+      "SELF": 0.9583,
+      "MIXED": 1.0,
+      "EXTERNAL": 0.3429
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.875,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.33333,
+     "per_class": {
+      "SELF": 0.9583,
+      "MIXED": 0.6667,
+      "EXTERNAL": 1.0
+     }
+    }
+   }
+  },
+  "stress": {
+   "13": {
+    "baseline": {
+     "balanced_accuracy": 0.76677,
+     "false_mixed_rate": 0.60355,
+     "missed_failure_rate": 0.08333,
+     "per_class": {
+      "SELF": 0.9872,
+      "MIXED": 0.9167,
+      "EXTERNAL": 0.3964
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.71795,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.83333,
+     "per_class": {
+      "SELF": 0.9872,
+      "MIXED": 0.1667,
+      "EXTERNAL": 1.0
+     }
+    }
+   },
+   "14": {
+    "baseline": {
+     "balanced_accuracy": 0.73644,
+     "false_mixed_rate": 0.62722,
+     "missed_failure_rate": 0.125,
+     "per_class": {
+      "SELF": 0.9615,
+      "MIXED": 0.875,
+      "EXTERNAL": 0.3728
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.79968,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.5625,
+     "per_class": {
+      "SELF": 0.9615,
+      "MIXED": 0.4375,
+      "EXTERNAL": 1.0
+     }
+    }
+   },
+   "15": {
+    "baseline": {
+     "balanced_accuracy": 0.76975,
+     "false_mixed_rate": 0.59701,
+     "missed_failure_rate": 0.0,
+     "per_class": {
+      "SELF": 0.9062,
+      "MIXED": 1.0,
+      "EXTERNAL": 0.403
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.85764,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.33333,
+     "per_class": {
+      "SELF": 0.9062,
+      "MIXED": 0.6667,
+      "EXTERNAL": 1.0
+     }
+    }
+   },
+   "16": {
+    "baseline": {
+     "balanced_accuracy": 0.80784,
+     "false_mixed_rate": 0.54422,
+     "missed_failure_rate": 0.0,
+     "per_class": {
+      "SELF": 0.9677,
+      "MIXED": 1.0,
+      "EXTERNAL": 0.4558
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.83238,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.47059,
+     "per_class": {
+      "SELF": 0.9677,
+      "MIXED": 0.5294,
+      "EXTERNAL": 1.0
+     }
+    }
+   },
+   "17": {
+    "baseline": {
+     "balanced_accuracy": 0.74854,
+     "false_mixed_rate": 0.65714,
+     "missed_failure_rate": 0.05556,
+     "per_class": {
+      "SELF": 0.9583,
+      "MIXED": 0.9444,
+      "EXTERNAL": 0.3429
+     }
+    },
+    "candidate": {
+     "balanced_accuracy": 0.72685,
+     "false_mixed_rate": 0.0,
+     "missed_failure_rate": 0.77778,
+     "per_class": {
+      "SELF": 0.9583,
+      "MIXED": 0.2222,
+      "EXTERNAL": 1.0
+     }
+    }
+   }
+  }
+ },
+ "criteria": {
+  "standard_bal_acc_wins_of_5": 5,
+  "false_mixed_wins_of_5": {
+   "standard": 5,
+   "stress": 5
+  },
+  "stress_missed_failure_rise": 0.5427,
+  "stress_bal_acc_worse_seeds": 2
+ },
+ "means": {
+  "standard": {
+   "baseline": {
+    "balanced_accuracy": 0.767,
+    "false_mixed_rate": 0.6058,
+    "missed_failure_rate": 0.0493
+   },
+   "candidate": {
+    "balanced_accuracy": 0.9028,
+    "false_mixed_rate": 0.0,
+    "missed_failure_rate": 0.2479
+   }
+  },
+  "stress": {
+   "baseline": {
+    "balanced_accuracy": 0.7659,
+    "false_mixed_rate": 0.6058,
+    "missed_failure_rate": 0.0528
+   },
+   "candidate": {
+    "balanced_accuracy": 0.7869,
+    "false_mixed_rate": 0.0,
+    "missed_failure_rate": 0.5955
+   }
+  }
+ },
+ "verdict": "FAIL",
+ "claim_limit": "synthetic digital observations, BOOT tolerances/windows; isolated candidate, selfmodel.py unchanged"
+}

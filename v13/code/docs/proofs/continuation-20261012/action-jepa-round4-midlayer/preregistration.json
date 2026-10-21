@@ -1,0 +1,42 @@
+{
+  "schema": "v13-action-jepa-round4-preregistration-v1",
+  "status": "PREREGISTERED_BEFORE_TAP_CAPTURE",
+  "bound_at": "2026-10-12T03:49:13.368361+00:00",
+  "why": "Rounds 1-3: linear heads on mean-pooled final embeddings never beat per-action mean-delta (except translate_de). Round 4 tests other native taps on identical rows/partitions (round 3, fresh test topics).",
+  "rows": "round-3 dataset unchanged (sha256 7d3eaec00126726bf72e9cc50a33d5ff28d06e65be5f358dbaa6f36d84da15b6), 2475 texts, test = 5 fresh topics",
+  "tap_tool": {
+    "source": "scripts/native_layer_taps.cpp",
+    "source_sha256": "bbef8b08fd8bcfe72eb30dc4bcced887b70b9c35158819911b5bc110d79a4bd1",
+    "llama_cpp": "vendored llama.cpp from PyPI sdist llama-cpp-python 0.3.36 (sha256 832db0699007f1be95a7e41ef12e88926b02ba836461e36a36372db2760c1a2e), libllama 0.5.0 / ggml 0.25.3, CPU, GGML_NATIVE=OFF; GitHub source archive unavailable in this session",
+    "model": "Qwen3.5-0.8B-Q4_0.gguf sha256 57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf (24 layers)",
+    "tokenization": "raw text, add_special=true, parse_special=false, one forward pass per text, n_ctx 2048"
+  },
+  "tap_arms": {
+    "l11_last": "PRIMARY: l_out-11 (middle) last token",
+    "l11_mean": "l_out-11 token mean",
+    "l23_last": "l_out-23 (final residual, before output norm) last token",
+    "l23_mean": "l_out-23 token mean"
+  },
+  "training": {
+    "seeds": [
+      13,
+      21,
+      34
+    ],
+    "arm_round1": "scripts/action_jepa_objective.py steps 240 dim 16 lr .02 max_update_norm .05 ema .99 retention_max_delta 0",
+    "arm_round2": "scripts/action_jepa_residual_candidate.py steps grid 240,960 chosen on calibration"
+  },
+  "gates": "unchanged original gates (rms_normalize transform unchanged); all 4 tap arms x 2 objectives x 3 seeds reported; no test-based selection; primary = l11_last",
+  "source_hashes": {
+    "scripts/action_jepa_round4.py": "b5936ba05cb7c0f0d902ef757c5899a4a399e091327a866156ef10d5d64efce3",
+    "scripts/native_layer_taps.cpp": "bbef8b08fd8bcfe72eb30dc4bcced887b70b9c35158819911b5bc110d79a4bd1",
+    "scripts/action_jepa_objective.py": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439",
+    "scripts/action_jepa_residual_candidate.py": "b35ff4aebf7c0a5134779cc99324f0fd928852ce797c899dfc09966575808851",
+    "tests/test_action_jepa_round4.py": "b12c73806225dc4982d85feaab0bb4db4194a4ceb78fd44015ffb0f816627902"
+  },
+  "receiver_authority": 0,
+  "learn_authority": 0,
+  "runtime_integrated": false,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}

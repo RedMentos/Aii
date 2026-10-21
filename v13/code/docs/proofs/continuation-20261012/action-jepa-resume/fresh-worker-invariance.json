@@ -1,0 +1,12 @@
+{
+  "schema": "v13-native-restart-invariance-v1",
+  "control_worker_1_array_sha256": "8f378cb2e8652a9b977cf78b5f5af17038d5709d4bdecc3931e61bb908ff3826",
+  "control_worker_2_array_sha256": "8f378cb2e8652a9b977cf78b5f5af17038d5709d4bdecc3931e61bb908ff3826",
+  "fresh_workers_exact_equal": true,
+  "fresh_workers_max_abs_difference": 0.0,
+  "historical_first16_exact_equal": true,
+  "historical_first16_max_abs_difference": 0.0,
+  "original_native_binding_equal": false,
+  "mixed_cohort_rows": false,
+  "receiver_authority": 0
+}
