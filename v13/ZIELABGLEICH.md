@@ -71,7 +71,7 @@ Summe: **8 ✅, 14 🟡, 2 ❌.**
 |---|---|---|---|
 | G-B-TIMESCALE-DIVERGENCE-001 | B1/B2 mit verschiedenen, komplementären Fehlerprofilen; Kombination schlägt zwei gleiche Instanzen; 4 Kontrollen | STEP2 FAIL; in bisherigen Fixtures hat B1 keine eigene Information | **Z2** |
 | G-CALLOSUM-UTILITY-002 | LATENT schlägt NONE/EXACT/CONTROL/SYMBOLIC auf 8 Achsen | L1 FAIL, Ursache diagnostiziert, Versuch 4 offen | **Z4** |
-| G-FOCAL-CAPACITY-003 | Kapazitätsgrenze, Wettbewerb, Ersetzung, Interrupt, Re-entry, Quellbindung, Erholung; schlägt „alles in den Kontext“ | Tests für Eigenschaften da; Vergleich gegen Voll-Kontext/Retrieval/feste Slots fehlt (§99-Kontrollen fehlen) | **Z5** |
+| G-FOCAL-CAPACITY-003 | Kapazitätsgrenze, Wettbewerb, Ersetzung, Interrupt, Re-entry, Quellbindung, Erholung; schlägt „alles in den Kontext“ | Z5 (21.10.) gemessen: Koalition 186/300 vs. Voll-Kontext 183, feste Slots 193, Retrieval 184, p ≥ 0,32, Rauschband 7 → schlägt Voll-Kontext nicht; Kapazität bindet auf den Aufgaben nie (Grenze/Ersetzung/Interrupt 0) | Z5-Folge mit Kapazitätsdruck |
 | G-PROCEDURALIZATION-004 | Latenz↓, Energie↓, Genauigkeit nicht schlechter, Wiederöffnen bei Fehler | synthetisch belegt; echte Latenz/Energie fehlt | Z6, Z7 |
 | G-SELF-WORLD-005 | 6 Fälle Selbst- vs. Welt-Ursache | Tests da (synthetisch), Corollary-Kandidat 3 übernommen; keine echte Handlungsfolge | Z12 |
 | G-TRAIN-RUNNER-PROOF-001 | kein APPROVED_COMMIT ohne grünen Proof für genau diesen Parameterpfad | Cloud-Proof da; Redmi-Proof fehlt | **Z7** |

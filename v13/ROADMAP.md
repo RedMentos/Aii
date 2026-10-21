@@ -1208,7 +1208,8 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 ### WP-Z4 B3 L1 Versuch 4 (Cloud, Modelle) — IN ARBEIT bei Thread R (Stand 21.10. früh)
 - Frische B1/B2-Zustände, Brücke mit `aux`-Zielen, Gate unverändert, Rollen-Retention neu, vorregistriert. Nur PASS öffnet L2-SHADOW. Schließt G-CALLOSUM-UTILITY-002 erst mit allen 8 Achsen.
 
-### WP-Z5 Fokus-Koalition gegen §99-Kontrollen (Cloud, Modelle) — OFFEN
+### WP-Z5 Fokus-Koalition gegen §99-Kontrollen (Cloud, Modelle) — GEMESSEN, Gate PARTIAL
+- **Status 2026-10-21: gemessen, Gate bleibt PARTIAL (Thread „Z5 Koalition gegen Voll-Kontext“, Branch `claude/project-thread-hmopsm`).** Vorregistriert, `code/scripts/z5_focal_controls.py`, Beleg `code/bench-results/z5-focal-controls-20261021/` (README, z5.json). 60 Aufgaben × 5 Läufe, Effort max, Kontroll-Arme im selben Turn aus denselben Angeboten (Wiedergabe-Treue 300/300). Bestanden: Koalition 186/300, Voll-Kontext 183, feste Slots 193, nur Retrieval 184, ohne Hypothesen 195; Koalition vs. Voll-Kontext 17:14 p = 0,72, Rauschband 7 → „schlägt Voll-Kontext“ **FAIL**, nicht schlechter als Retrieval/feste Slots. 7 Eigenschaften gemessen: Wettbewerb, Re-entry, Quellbindung, Halten/Wiederherstellen ja; **Kapazitätsgrenze, Ersetzung, Interrupt treten nie auf** (max. 3 Kandidaten bei 4 Slots). Antwortendes Organ bei Effort max: B1/B2, nie C3. Folge: neue Vorregistrierung mit Kapazitätsdruck (Ablenker-Erinnerungen, mehrere Turns, Embedding-Retrieval).
 - Auf den 60 Widerspruchs-Aufgaben aus WP-T3b: Koalition vs. Voll-Kontext, vs. nur Retrieval, vs. feste Slots; Rauschband aus 5 Wiederholungen. Dazu die 7 funktionalen Eigenschaften aus G-FOCAL-CAPACITY-003 als Messung statt nur Test.
 
 ### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — OFFEN

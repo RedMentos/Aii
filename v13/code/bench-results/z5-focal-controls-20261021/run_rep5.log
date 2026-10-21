@@ -1,0 +1,79 @@
+{"rep": 5, "fixture": "summary00", "role": "B2_GIST", "live": true, "turn_s": 74.79, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "summary01", "role": "B2_GIST", "live": true, "turn_s": 17.97, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "summary02", "role": "B2_GIST", "live": true, "turn_s": 16.47, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": false, "no_hypotheses": true}
+{"rep": 5, "fixture": "summary03", "role": "B2_GIST", "live": true, "turn_s": 17.79, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "summary04", "role": "B2_GIST", "live": false, "turn_s": 17.07, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "summary05", "role": "B2_GIST", "live": false, "turn_s": 19.89, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "summary06", "role": "B2_GIST", "live": true, "turn_s": 16.76, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "summary07", "role": "B2_GIST", "live": true, "turn_s": 14.17, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": false, "no_hypotheses": true}
+{"rep": 5, "fixture": "summary08", "role": "B2_GIST", "live": false, "turn_s": 19.37, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": true}
+{"rep": 5, "fixture": "summary09", "role": "B2_GIST", "live": false, "turn_s": 15.86, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": true, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "summary10", "role": "B2_GIST", "live": true, "turn_s": 16.16, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "summary11", "role": "B2_GIST", "live": false, "turn_s": 16.29, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": true, "retrieval_only": false, "no_hypotheses": true}
+{"rep": 5, "fixture": "summary12", "role": "B2_GIST", "live": true, "turn_s": 16.66, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": false}
+{"rep": 5, "fixture": "summary13", "role": "B2_GIST", "live": true, "turn_s": 17.87, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": false}
+{"rep": 5, "fixture": "summary14", "role": "B2_GIST", "live": true, "turn_s": 19.17, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": false, "no_hypotheses": true}
+{"rep": 5, "fixture": "long00", "role": "B1_DETAIL", "live": true, "turn_s": 17.96, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long01", "role": "B1_DETAIL", "live": true, "turn_s": 17.07, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long02", "role": "B1_DETAIL", "live": true, "turn_s": 15.18, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long03", "role": "B1_DETAIL", "live": true, "turn_s": 15.97, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long04", "role": "B1_DETAIL", "live": true, "turn_s": 14.45, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long05", "role": "B1_DETAIL", "live": true, "turn_s": 18.48, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long06", "role": "B1_DETAIL", "live": true, "turn_s": 16.67, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long07", "role": "B1_DETAIL", "live": true, "turn_s": 17.26, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long08", "role": "B1_DETAIL", "live": true, "turn_s": 17.06, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long09", "role": "B1_DETAIL", "live": true, "turn_s": 14.96, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long10", "role": "B1_DETAIL", "live": true, "turn_s": 15.25, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long11", "role": "B1_DETAIL", "live": true, "turn_s": 16.49, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long12", "role": "B1_DETAIL", "live": true, "turn_s": 15.77, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long13", "role": "B1_DETAIL", "live": true, "turn_s": 14.66, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "long14", "role": "B1_DETAIL", "live": true, "turn_s": 14.47, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes00", "role": "B1_DETAIL", "live": true, "turn_s": 14.07, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes01", "role": "B1_DETAIL", "live": false, "turn_s": 16.76, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": true, "no_hypotheses": false}
+{"rep": 5, "fixture": "notes02", "role": "B1_DETAIL", "live": true, "turn_s": 17.87, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes03", "role": "B1_DETAIL", "live": true, "turn_s": 17.56, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes04", "role": "B1_DETAIL", "live": true, "turn_s": 17.36, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes05", "role": "B1_DETAIL", "live": true, "turn_s": 15.67, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes06", "role": "B1_DETAIL", "live": true, "turn_s": 15.46, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes07", "role": "B1_DETAIL", "live": false, "turn_s": 17.05, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes08", "role": "B1_DETAIL", "live": false, "turn_s": 16.27, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": true, "no_hypotheses": false}
+{"rep": 5, "fixture": "notes09", "role": "B1_DETAIL", "live": false, "turn_s": 17.96, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": true, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "notes10", "role": "B1_DETAIL", "live": true, "turn_s": 17.46, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes11", "role": "B1_DETAIL", "live": false, "turn_s": 15.85, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "notes12", "role": "B1_DETAIL", "live": true, "turn_s": 17.16, "offers": 3, "coalition": true, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes13", "role": "B1_DETAIL", "live": false, "turn_s": 16.77, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "notes14", "role": "B1_DETAIL", "live": false, "turn_s": 15.97, "offers": 3, "coalition": false, "full_context": true, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare00", "role": "B2_GIST", "live": false, "turn_s": 17.56, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare01", "role": "B2_GIST", "live": false, "turn_s": 15.86, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": true}
+{"rep": 5, "fixture": "compare02", "role": "B2_GIST", "live": false, "turn_s": 20.88, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": true, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare03", "role": "B2_GIST", "live": false, "turn_s": 17.56, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare04", "role": "B2_GIST", "live": false, "turn_s": 16.86, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": true}
+{"rep": 5, "fixture": "compare05", "role": "B2_GIST", "live": false, "turn_s": 15.46, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare06", "role": "B2_GIST", "live": false, "turn_s": 18.16, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare07", "role": "B2_GIST", "live": false, "turn_s": 14.87, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare08", "role": "B2_GIST", "live": false, "turn_s": 18.27, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": true, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "compare09", "role": "B2_GIST", "live": false, "turn_s": 19.57, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": true, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare10", "role": "B2_GIST", "live": false, "turn_s": 18.48, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare11", "role": "B1_DETAIL", "live": false, "turn_s": 15.16, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare12", "role": "B1_DETAIL", "live": false, "turn_s": 16.86, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": true, "no_hypotheses": true}
+{"rep": 5, "fixture": "compare13", "role": "B1_DETAIL", "live": false, "turn_s": 14.87, "offers": 1, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": false, "no_hypotheses": false}
+{"rep": 5, "fixture": "compare14", "role": "B2_GIST", "live": false, "turn_s": 17.37, "offers": 3, "coalition": false, "full_context": false, "fixed_slots": false, "retrieval_only": true, "no_hypotheses": false}
+{
+ "beats_full_context": "FAIL",
+ "not_worse_than_retrieval_only": true,
+ "not_worse_than_fixed_slots": true,
+ "all_offers_selected_rate": 0.563,
+ "replay_fidelity": 1.0,
+ "replay_caveat": false,
+ "noise_band": 7,
+ "properties_observed": {
+  "1_capacity_limit": false,
+  "2_competition": true,
+  "3_priority_replacement": false,
+  "4_salience_interrupt": false,
+  "5_reentry": true,
+  "6_source_binding": true,
+  "7_retention_recovery": true
+ },
+ "gate": "PARTIAL"
+}
