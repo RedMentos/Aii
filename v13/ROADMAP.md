@@ -1217,6 +1217,11 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Bestanden/300: ausgeliefert 68, Koalition als Engpass (`coalition_gated`) 60, Voll-Kontext 54, feste Slots 55, nur Retrieval 64, ohne Kontext 47. Koalition vs. Voll-Kontext 33:27 p = 0,52, Rauschband 4 → „schlägt Voll-Kontext“ **FAIL**; nicht schlechter als Retrieval/feste Slots. Eigenschaften 1, 2, 3, 5, 6, 7 gemessen, **4 (Aufnahme nur über Salienz) nie** → G-FOCAL-CAPACITY-003 bleibt **PARTIAL**.
 - Befund: Die Koalition behält oft die falsche Notiz (correction: Retrieval 0,53 vs. Koalition 0,16), weil die Priorität keinen Term für Aktualität/Ersetzung hat. Kontext −44 % ohne messbaren Verlust. Nächster Schritt (neu vorregistrieren): Aktualitäts-/Ersetzungs-Term für Notizen, dieselben 60 Aufgaben erneut; Aufgaben für Eigenschaft 4.
 
+### WP-Z5c Aktualitäts-Term für Notizen in der Koalition (Cloud, Modelle) — GEMESSEN, Term hilft nicht, Gate PARTIAL
+- **Status 2026-10-21: gemessen (Thread „Koalition Aktualitäts-Term“, Branch `claude/project-thread-8zhj41`, auf Z5b).** Vorregistriert, Schalter `focal_note_recency` (Standard **aus**), `code/scripts/z5c_recency.py`, Beleg `code/bench-results/z5c-recency-20261021/` (README, z5c.json). Z5b-Aufgaben, 3 Saaten × 2 Läufe × 60 = 360 Turns, Koalition ohne Term kontrafaktisch aus denselben Kandidaten (Treue 360/360).
+- Mechanismus wirkt: update neueste Notiz in der Koalition 1,00 statt 0,90, veraltete Versionen 0 statt 0,95. Antworten nicht: mit Term 93/360, ohne 90, Voll-Kontext 97, Retrieval 98; mit vs. ohne 24:21 p = 0,77, vs. Voll-Kontext 30:35 p = 0,62 → „Term hilft“ und „schlägt Voll-Kontext“ **FAIL**. Bei update sogar schlechter als Voll-Kontext (3:21, nachträglich): das antwortende Organ antwortet bei schmaler Koalition oft nur „2“.
+- Nächster Schritt: Ersetzungs-Kette sichtbar in den Kontext statt veraltete Notizen wegzulassen; Ursache der „2“-Antworten prüfen.
+
 ### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — OFFEN
 - 24.22 Wake (R4 im Blueprint-Sinn; Ergebnisse der R4-Werkzeug-Teile hier einbringen), 24.23 Effort (R5), 24.17 Deliberation, 24.25 Observer-Nutzen, 24.26 Broadcast-Brücke, 24.32 Lebenszyklus Scaffold→gelernte Route je Fähigkeit. Typisierte Modulatoren (G-MODULATOR-SPECIFICITY-001) mit echten Modellen.
 
