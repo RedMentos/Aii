@@ -68,7 +68,9 @@ inline bool hook(ggml_tensor * t, bool ask, void * ud) {
         // several chunks (hybrid-model checkpoints), so consecutive chunks accumulate. Needs one sequence (-np 1). Tokens of a
         // reused cached prefix are not seen again: the guard then fails closed (no recall), never open.
         if (!m.explicit_ctx && n > 1 && m.last_n == 1) m.ctx.clear();  // explicit_ctx: the server set the full prompt
-        m.last_n = n; m.ctx.insert(ids, ids + n); return true;
+        m.last_n = n;
+        if (m.explicit_ctx && m.scope_mark >= 0 && n > 1) return true;  // scoped guard: the server set the prompt part, only generated tokens join
+        m.ctx.insert(ids, ids + n); return true;
     }
     if (!t->buffer || !ggml_backend_buffer_is_host(t->buffer) || t->type != GGML_TYPE_F32) return true;
     const int64_t rows = t->ne[1]; float * d = (float *) t->data;

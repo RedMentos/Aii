@@ -53,6 +53,7 @@ class Scope(unittest.TestCase):
         h = (Path(__file__).resolve().parents[1]/'scripts/v13_memory_hook.h').read_text()
         self.assertIn('m.scope_mark = h[5] >= 2 ? h[5] - 2 : -1', h)
         self.assertIn('++seen == 2', h)
+        self.assertIn('if (m.explicit_ctx && m.scope_mark >= 0 && n > 1) return true;', h)  # decoded prompt chunks must not re-open the scope
 
 @unittest.skipIf(torch is None, 'torch not installed (model-free CI)')
 class TorchGuard(unittest.TestCase):
