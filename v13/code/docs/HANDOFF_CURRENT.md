@@ -1,3 +1,7 @@
+# Aktuell 2026-10-21 (Thread „Z3 C3-Konsument isolieren“): C3 liest, entscheidet aber nie
+
+Vorregistriert, 39 private Fixtures × 3 Seeds × 7 Arme, gleiche Exakt-Quellen an alle. Urteil `NO_CONSUMER_PATH`: C3 direkt 0/117 exakt (immer UNKNOWN, auch wenn das Werkzeug die Entscheidung vorlegt), B1/B2 als Antwort-Körper 0.13/0.27 mit 72 %/63 % falscher Festlegung, C3-Lesen + Eignungs-Werkzeug strict 0.54 exakt und 0 falsch. Einziger Werkzeug-Fehler: C3 liest `local_only` immer `true`. eligibility-v2 braucht vor dem Einschalten die strict-Prüfung (sonst falsche Wahl bei widersprüchlichen Zitaten). Nächstes Z3b. Beleg `docs/proofs/continuation-20261021/z3-c3-consumer/BEFUND.md`. Keine Gate-Beförderung.
+
 # Aktuell 2026-10-20 (Abend): Handy-Paket Werkzeug-Vorhersage fertig
 
 Ein Befehl am Redmi: `bash WERKZEUG_TESTEN.sh` (Stufen `paritaet|kurz|voll`, Anleitung `WERKZEUG_ANLEITUNG.txt`). Vorprüfung, Einrichtung bei Bedarf, GPTs begrenzter Treiber mit Frist, RAM-/Temperaturverlauf, Ergebnis-ZIP in Downloads. Nebenbei behoben: Handy-ZIP brach im Setup-Selbsttest ab (zwei fehlende Belegdateien in `package_source.py`). Cloud-Probelauf aus dem entpackten ZIP: `voll` bestätigt, gleiche Zahlen wie 12./13.10., Spitzen-RSS 1,2 GB. Redmi-Messung offen (Nutzer). Belege `docs/proofs/continuation-20261020/werkzeug-handy-cloud/`.
