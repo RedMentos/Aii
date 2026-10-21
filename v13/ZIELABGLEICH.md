@@ -121,3 +121,8 @@ Empfohlene Startreihenfolge für parallele Threads: **Z1, Z2, Z3, Z5** sofort (a
 1. Age-Plastizität `boot | stable_reopen | noise_aware` (offen seit 10.10., blockiert G-AGE-REOPEN-001).
 2. Zitat-Kontext-Schalter `offer_quote_context_chars=200` (offen seit 20.10., STEP2-Transport).
 3. Redmi-Läufe (Z7): ohne sie können STEP5, STEP7 und drei §100-Gates nie grün werden.
+
+## 8. Nutzer-Ziel über dem Blueprint (neu formuliert 21.10.)
+
+Laut Projekt-Gedächtnis hat der Nutzer am 21.10. das Endziel neu gefasst: eine wissenschaftlich, psychologisch und moralisch fundierte KI, die Menschen nie schadet; das Gehirn als grobes Grundmodell echter selbstbewusster Intelligenz; neue Module darf sie am Ende nur mit bewusster, unmanipulierter Erlaubnis selbst holen und daraus lernen. Handy-Tests laufen parallel nach einer Testliste, die Claude schreibt.
+Folge für die Ziele: Der Blueprint deckt den Schaden-Schutz über F6/§6.4/IH-H29 (Action Gate, Werkzeug-Sicherheit) und die Erlaubnis über Age/Human-Control (§17, IH-H15) ab; „Module selbst holen“ ist im Blueprint nur als Body-Swap/ModalityPort (§19, G11) mit Nutzer-Freigabe angelegt. Ein eigenes Paket dafür kommt erst nach STEP7. Die Testliste für das Handy ist WP-Z7.
