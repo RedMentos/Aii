@@ -1,3 +1,7 @@
+# Aktuell 2026-10-21 (Thread „Z3b Parser statt C3-Leser“): Parser reicht, C3 bringt als Leser nichts Sicheres
+
+Vorregistriert, 39 kanonische + 39 umformulierte Aufgaben × 3 Seeds, nur C3. Urteil `PARSER_SUFFICIENT_NO_C3_GAIN`, sekundär `BOOL_PARSER_FIX_CONFIRMED`: C3-Zahlen + Parser für `local_only` kanonisch 117/117 exakt, 0 falsch. C3 gibt `local_only` immer `true` zurück (auch bei verneinten Umformulierungen); auf Umformulierungen kein C3-Arm ≥ 0.80, einziger Gewinn (+26 Punkte) mit 7.7 % falscher Wahl. Regel: Ja/Nein-Regeln nie vom C3 lesen lassen. Beleg `docs/proofs/continuation-20261021/z3b-parser-paraphrase/BEFUND.md`. Keine Gate-Beförderung.
+
 # Aktuell 2026-10-21 (Thread „Z3 C3-Konsument isolieren“): C3 liest, entscheidet aber nie
 
 Vorregistriert, 39 private Fixtures × 3 Seeds × 7 Arme, gleiche Exakt-Quellen an alle. Urteil `NO_CONSUMER_PATH`: C3 direkt 0/117 exakt (immer UNKNOWN, auch wenn das Werkzeug die Entscheidung vorlegt), B1/B2 als Antwort-Körper 0.13/0.27 mit 72 %/63 % falscher Festlegung, C3-Lesen + Eignungs-Werkzeug strict 0.54 exakt und 0 falsch. Einziger Werkzeug-Fehler: C3 liest `local_only` immer `true`. eligibility-v2 braucht vor dem Einschalten die strict-Prüfung (sonst falsche Wahl bei widersprüchlichen Zitaten). Nächstes Z3b. Beleg `docs/proofs/continuation-20261021/z3-c3-consumer/BEFUND.md`. Keine Gate-Beförderung.
