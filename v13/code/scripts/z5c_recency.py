@@ -95,7 +95,7 @@ def arm_views(memories,offers,coal_on,coal_off,slots):
     return {'coalition_recency':gate(coal_on),'coalition_plain':gate(coal_off),'full_context':(memories,offers),
             'retrieval_only':(memories[:slots],[]),'no_context':([],[])}
 
-def run_rep(installed,seed,rep,fixtures):
+def run_rep(installed,seed,rep,fixtures,ckpt=None):
     from v13 import effort as EF
     from v13 import focal as F
     from v13 import runtime as RT
@@ -131,8 +131,13 @@ def run_rep(installed,seed,rep,fixtures):
         RT.FocalLoop,RT.save_context,F.admit=Loop,save,admit
         try:
             hyp_head='\n'+prompt(r.cfg,'hypotheses');mem_head='\n'+prompt(r.cfg,'memories');anchor='\n'+prompt(r.cfg,'task_context')
-            cache={}
+            cache={};mark=[0,0,None]
+            def flush():  # per-task checkpoint, so a container restart loses at most one task
+                if ckpt and mark[2]:
+                    with open(ckpt,'a') as f:f.write(json.dumps({'seed':seed,'rep':rep,'fixture':mark[2],'rows':rows[mark[0]:],'measures':measures[mark[1]:]})+'\n')
+                mark[:]=[len(rows),len(measures),None]
             for fid,text,notes,nums,checks,stale in fixtures:
+                flush();mark[2]=fid
                 cap.clear();r.session=r.store.new_session();sessions.append(r.session);seed_notes(r,r.session,notes)
                 t0=time.monotonic();eid=r.submit(text);end=t0+900
                 while not r.idle():
@@ -186,6 +191,7 @@ def run_rep(installed,seed,rep,fixtures):
                                       'context_chars':len(new),'memories':len(mems),'offers':len(subs),'answer_role':cap['answer_role'],'same_as_live':o.strip()==out.strip(),'output':o[:400]})
                     line[arm]=rows[-1]['pass']
                 print(json.dumps(line),flush=True)
+            flush()
         finally:
             RT.FocalLoop,RT.save_context,F.admit=orig_loop,orig_save,orig_admit
             r.close()
@@ -256,17 +262,22 @@ def main(installed,out,seeds=SEEDS,reps=2,limit=None):
     installed=Path(installed).resolve();out=Path(out)
     prev=json.loads(out.read_text()) if out.exists() else {}
     rows,measures=prev.get('rows',[]),prev.get('measures',[])
-    done={(x['seed'],x['rep']) for x in rows}
+    done={(x['seed'],x['rep']) for x in rows};ckpt=out.with_suffix('.partial.jsonl')
+    part=[json.loads(l) for l in ckpt.read_text().splitlines() if l.strip()] if ckpt.exists() else []
     for seed in seeds:
         fx=tasks(seed)
         if limit:fx=[f for i,f in enumerate(fx) if i%(len(fx)//limit)==0][:limit]
         for rep in range(1,reps+1):
             if (seed,rep) in done:continue
-            rr,mm=run_rep(installed,seed,rep,fx);rows+=rr;measures+=mm
+            prior=[x for x in part if (x['seed'],x['rep'])==(seed,rep)];have={x['fixture'] for x in prior}
+            rr,mm=run_rep(installed,seed,rep,[f for f in fx if f[0] not in have],ckpt)
+            rows+=[r for x in prior for r in x['rows']]+rr;measures+=[m for x in prior for m in x['measures']]+mm
             atomic_write(out,json.dumps({'kind':'WP_Z5C_RECENCY','preregistration':'bench-results/z5c-recency-20261021/PREREGISTRATION.md',
                 'bench_cfg':U2.BENCH_CFG|CFG|{'effort':'max'},'seeds':list(seeds),'runs_done':sorted({(x['seed'],x['rep']) for x in rows}),
                 **analyse(rows,measures),'rows':rows,'measures':measures,
                 'claim_limit':'generated English tasks (Z5b templates), three task seeds, regex on the final answer, lexical recall, greedy bench decoding, cloud CPU'},indent=1))
+            part=[x for x in part if (x['seed'],x['rep'])!=(seed,rep)]
+            if ckpt.exists():ckpt.write_text(''.join(json.dumps(x)+'\n' for x in part))
     print(json.dumps(analyse(rows,measures)['verdict'],indent=1))
 
 if __name__=='__main__':
