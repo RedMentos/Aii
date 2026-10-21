@@ -69,7 +69,7 @@ Summe: **8 ✅, 14 🟡, 2 ❌.**
 
 | Gate | Was es verlangt | Stand / Lücke | Paket |
 |---|---|---|---|
-| G-B-TIMESCALE-DIVERGENCE-001 | B1/B2 mit verschiedenen, komplementären Fehlerprofilen; Kombination schlägt zwei gleiche Instanzen; 4 Kontrollen | STEP2 FAIL; in bisherigen Fixtures hat B1 keine eigene Information | **Z2** |
+| G-B-TIMESCALE-DIVERGENCE-001 | B1/B2 mit verschiedenen, komplementären Fehlerprofilen; Kombination schlägt zwei gleiche Instanzen; 4 Kontrollen | Z2 gemessen 21.10.: **FAIL** (`Z2_DIVERGENCE_NOT_SUPPORTED`): B1 hat mit Schalter `b1_recent_source_chars` erstmals eigene Information (27/70 Options-Zitate), aber Zwei-Körper .325 < bester Einzelkörper .333, ein Körper + zwei Zustände nicht schlechter | Z2 erledigt; Folgepaket Rauschband + gezielte Rückfrage |
 | G-CALLOSUM-UTILITY-002 | LATENT schlägt NONE/EXACT/CONTROL/SYMBOLIC auf 8 Achsen | L1 FAIL, Ursache diagnostiziert, Versuch 4 offen | **Z4** |
 | G-FOCAL-CAPACITY-003 | Kapazitätsgrenze, Wettbewerb, Ersetzung, Interrupt, Re-entry, Quellbindung, Erholung; schlägt „alles in den Kontext“ | Tests für Eigenschaften da; Vergleich gegen Voll-Kontext/Retrieval/feste Slots fehlt (§99-Kontrollen fehlen) | **Z5** |
 | G-PROCEDURALIZATION-004 | Latenz↓, Energie↓, Genauigkeit nicht schlechter, Wiederöffnen bei Fehler | synthetisch belegt; echte Latenz/Energie fehlt | Z6, Z7 |

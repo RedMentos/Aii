@@ -53,6 +53,38 @@ def offer_instructions(policy,style=OFFER_STYLE):
     role='detail analyst. Check exact details, calculations and contradictions.' if policy=='B1_DETAIL' else 'gist analyst. Identify the main goal, constraints and broader context.'
     return ('You are an internal '+role+' Return JSON only. '+OFFER_SUMMARY[style]+' quotes must be exact substrings of the supplied source. '
             'Use at most two short quotes. uncertainty is concise. needs_reentry indicates a material unresolved issue. Keep all fields short.')
+def quote_span(quote,source,context_chars=0):
+    """(start,end) of a body quote inside source, or None. context_chars 0 (live): exact substring only.
+    context_chars>0 (cfg offer_quote_context_chars, 2026-10-20 STEP2 B2->C3 transport): a quote that differs from the
+    source only in letter case or whitespace still verifies, and a quote of >= 12 chars grows to its whole sentences,
+    then to neighbouring sentences of the same source while the span stays within context_chars. The quote is only a
+    pointer; the transported text is always the exact source span (Qwen B2 split, cut or re-cased the earlier
+    rule, so its full text reached C3 in only 7/30 STEP2 retain offers)."""
+    if not isinstance(quote,str) or not quote:return None
+    if quote in source:a=source.index(quote);b=a+len(quote)
+    elif not context_chars:return None
+    else:
+        q=' '.join(quote.split()).casefold()
+        if len(q)<12:return None
+        flat=[];at=[]
+        for i,ch in enumerate(source):
+            if ch.isspace() and i and source[i-1].isspace():continue
+            piece=' ' if ch.isspace() else ch.casefold();flat.append(piece);at+=[i]*len(piece)
+        j=''.join(flat).find(q)
+        if j<0:return None
+        a,b=at[j],at[j+len(q)-1]+1
+    if not context_chars or b-a<12:return a,b
+    sents=[(m.start(),m.end()) for m in re.finditer(r'\S.*?(?:[.!?](?=\s|$)|$)',source,re.S)]
+    inside=[k for k,(s,e) in enumerate(sents) if e>a and s<b]
+    if not inside:return a,b
+    i,k=inside[0],inside[-1]
+    if sents[k][1]-sents[i][0]>context_chars:return a,b
+    grew=True
+    while grew:
+        grew=False
+        if k+1<len(sents) and sents[k+1][1]-sents[i][0]<=context_chars:k+=1;grew=True
+        if i>0 and sents[k][1]-sents[i-1][0]<=context_chars:i-=1;grew=True
+    return sents[i][0],sents[k][1]
 class Cognition:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
     def tap(self,role,e,source_ref,deadline):
@@ -83,6 +115,7 @@ class Cognition:
         restart but never crosses sessions, generations, models or unrelated topics.
         Source lookup is repeated on every use, so deleted/tampered sources fail shut.
         """
+        if role=='B1_DETAIL' and self.r.cfg.get('b1_recent_source_chars',0):return self.b1_recent_context(e)
         if role!='B2_GIST' or not self.r.cfg['b2_state_slots'] or self.r.cfg.get('b2_control','two_body') in ('same_model_prompt_only','same_model_same_policy'):return []
         previous,_=self.s.state(role+':'+self.r.session,{})
         ids=previous.get('retained_offer_ids',[previous.get('packet_id')])
@@ -112,6 +145,30 @@ class Cognition:
             context+=cross_session(self.r,e,role,current_text,native,self.r.cfg['b2_context_chars'])
         except Exception as exc:self.s.log('bodyview_unavailable',e['event_id'],{'stage':'b4','error':type(exc).__name__})
         return context
+    def b1_recent_context(self,e):
+        """WP-Z2 (cfg b1_recent_source_chars, 0 = off, live): B1's short horizon keeps the exact source of its own
+        last retained turn, up to N chars, instead of only its 240-char hypothesis. Timescale split of Canon §85.1:
+        B1 = one recent turn at fine width (exactness), B2 = up to b2_state_slots turns at 240-char excerpts.
+        Same session/generation/model/topic checks as B2; quotes may cite it; never a fact promotion."""
+        previous,_=self.s.state('B1_DETAIL:'+self.r.session,{})
+        pid=previous.get('packet_id')
+        row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",(pid,)) if pid else None
+        if not row:return []
+        p=json.loads(row['payload'])
+        event=self.s.one('SELECT session_id,packet FROM events WHERE id=?',(p['event_id'],))
+        if not event or event['session_id']!=self.r.session or p['event_id']==e['event_id']:return []
+        if p['role']!='B1_DETAIL' or p['brain_generation_id']!=e['brain_generation_id'] or p.get('model_revision')!=self.r.models.revision('B1_DETAIL'):return []
+        ref=json.loads(event['packet'])['source_ref']
+        try:
+            current_text,source=self.s.read_source(e['source_ref']),self.s.read_source(ref)
+            if looks_like_terminal_log(source):return []
+            current_entities,prior_entities=entities(current_text),entities(source)
+            related=bool(current_entities&prior_entities) if current_entities and prior_entities else relevance(current_text,source)>=self.r.cfg['memory_threshold']
+            if not related:return []
+            excerpt_ref=ref|{'char_end':min(ref['char_end'],ref['char_start']+self.r.cfg['b1_recent_source_chars'])}
+            excerpt=self.s.read_source(excerpt_ref)
+        except (ValueError,OSError):return []
+        return [{'offer_id':pid,'source_ref':excerpt_ref,'native_context':{'exact_source_excerpt':excerpt,'authority':'RECENT_SOURCE_NOT_FACT'}}]
     def retain_body_offer(self,p):
         key=p['role']+':'+self.r.session;previous,_=self.s.state(key,{})
         # State is bounded; immutable packet history remains in the event store.
@@ -210,6 +267,9 @@ class Cognition:
         if role=='B2_GIST' and policy=='B2_GIST':
             query['earlier_context']=[x['native_context'] for x in context]
             instructions+=' Earlier context separates exact source excerpts from fallible prior hypotheses. Use relevant earlier source excerpts when current text leaves a rule unstated; prefer an explicit current-source revision when the same rule changes. Never treat a prior hypothesis as a fact. Select short exact quotes carrying the source rules needed by your summary; only your verified quotes, not the full earlier context, are passed to the answer component. If required evidence is absent, state that uncertainty and request re-entry rather than inventing it. Quotes may cite only current source text or an exact earlier source excerpt, never own-state or hypotheses.'
+        if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:
+            query['recent_source']=[x['native_context'] for x in context]
+            instructions+=' recent_source is the exact source of the previous turn of this topic. Use its exact details (values, entities) when the current text refers to them without restating them. Quote the exact sentences carrying the details your summary needs; only verified quotes reach the answer component. Prefer an explicit current-source revision.'
         if broadcast:
             query['executive_broadcast']={k:broadcast[k] for k in ['state_version','goal','constraints','source_refs']}
             pf=broadcast.get('permission_flags') or {}  # WP-T2: bodies see the Age envelope C1 granted (stage + rights above Age 0), never a way to widen it
@@ -226,7 +286,7 @@ class Cognition:
             if extra:query['jef_broadcast']=extra
         except Exception:jbc_fields=[]
         query_packet=packet('QueryPacket','C1_EXEC',e['event_id'],e['brain_generation_id'],[e['source_ref']],target_role=role,goal=text,source_refs=[e['source_ref']],broadcast_packet_id=broadcast['packet_id'] if broadcast else None,peer_message_packet_id=peer_id,source_view_width_chars=width,based_on_state_version=version,probe_only=version==0)
-        query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query['earlier_context'])) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
+        query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
         query_packet.update(compute_deadline_monotonic_ns=int(deadline*1e9),offer_valid_until_monotonic_ns=int(valid_until*1e9))
         query_packet['provenance'] += query_packet['context_source_refs']+bv_refs
         if bv:query_packet['bodyview']=bv
@@ -246,7 +306,14 @@ class Cognition:
         check(self.r.cancel_event,deadline)
         if set(obj)!=set(OFFER_SCHEMA['required']) or not isinstance(obj['needs_reentry'],bool) or not isinstance(obj['quotes'],list) or not all(isinstance(obj[k],str) for k in ['summary','uncertainty']):raise ValueError('Offer-Schema ungültig')
         refs=[];rejected=0;sources=[(text,e['source_ref'])]+[(x['native_context']['exact_source_excerpt'],x['source_ref']) for x in context]
+        wide=self.r.cfg.get('offer_quote_context_chars',0)
         for quote in obj['quotes'][:3]:
+            if wide:  # quote as pointer; the exact-substring lines below stay byte-identical for closed harnesses
+                match=next(((source,ref,span) for source,ref in sources if (span:=quote_span(quote,source,wide))),None)
+                if not match:rejected+=1;continue
+                source,base,(a,b)=match;ref=base|{'char_start':base['char_start']+a,'char_end':base['char_start']+b}
+                if ref not in refs:self.s.read_source(ref);refs.append(ref)  # two quotes may point at the same sentences
+                continue
             match=next(((source,ref) for source,ref in sources if isinstance(quote,str) and quote and quote in source),None)
             if not match:rejected+=1;continue
             source,base=match;start=base['char_start']+source.index(quote);ref=base|{'char_start':start,'char_end':start+len(quote)};self.s.read_source(ref);refs.append(ref)
