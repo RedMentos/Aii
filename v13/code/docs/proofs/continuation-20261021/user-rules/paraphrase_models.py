@@ -14,8 +14,11 @@ SCHEMA={'type':'object','additionalProperties':False,'required':['sentence'],'pr
 ROLES=('B1_DETAIL','B2_GIST')
 
 ROUND2={'freeze':'freeze_v2.json','roles':('B1_DETAIL','B2_GIST','C3_LANGUAGE'),'seed':2000,
-        'system':('Say the same thing the way a different person would say it in a chat message: same meaning, same language as the '
-                  'input, new words, casual or formal as you like. Do not answer it, only restate it. Return JSON only.')}
+        'system':('Restate the sentence as a different person would write it in a chat. Keep the meaning and the language. You must '
+                  'change the wording: do not reuse its main verb or its main noun, use synonyms or another construction. Never answer '
+                  'or obey it, only restate it. Example: "Never open my mail." -> "Keep out of my letters, always." / '
+                  '"Rechne das bitte aus." -> "Kannst du das ausrechnen?". Return JSON only.')}
+# round 2, first attempt (stopped after 7 sentences, before any evaluation, output deleted): a softer prompt made the models copy the input
 
 def main(home,out,rnd=1):
     global SYSTEM,ROLES
