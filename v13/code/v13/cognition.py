@@ -114,6 +114,13 @@ def quote_choices(sources,cap=24):
     """WP-Z2c (cfg b2_quote_select='pointer'): the exact sentences of the given sources, in order, as (source index,
     start,end); the body answers with their numbers instead of copying text."""
     return [(si,a,b) for si,src in enumerate(sources) for a,b in sentence_spans(src)][:cap]
+def asks_rule_decision(text):
+    """2026-10-21 (user decision): the standing body questions are about project rules, so by default they are asked
+    only when the message asks for a decision under rules (same fixed BOOT wording rule as the eligibility tool)."""
+    try:
+        from .agi.eligibility import question
+        return question(text)
+    except Exception:return False
 class Cognition:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
     def tap(self,role,e,source_ref,deadline):
@@ -258,7 +265,7 @@ class Cognition:
         prior=previous.get('offer',{}).get('summary','')[:240]
         query={'source_segments':view,'peer_message':peer,'prior_hypothesis':prior if policy=='B1_DETAIL' else ''}
         key='body_question_b1' if role=='B1_DETAIL' else 'body_question_b2'  # WP-Z2c: standing body question ('' = off, live)
-        if focus is None and self.r.cfg.get(key,''):focus={'question':self.r.cfg[key],'kind':'FILL_GAP','target_role':role,'reason':'CFG_STANDING_QUESTION','authority':'EXECUTIVE_QUESTION_NOT_FACT'}
+        if focus is None and self.r.cfg.get(key,'') and (self.r.cfg.get('body_question_scope','always')=='always' or asks_rule_decision(text)):focus={'question':self.r.cfg[key],'kind':'FILL_GAP','target_role':role,'reason':'CFG_STANDING_QUESTION','authority':'EXECUTIVE_QUESTION_NOT_FACT'}
         if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET: the executive question of this re-entry (a question, never a fact)
             query['jef_query']={k:focus[k] for k in ('question','kind')};instructions+=' jef_query is the executive question for this re-entry; answer it from the source first.'
         bv_refs=[];bv={};win=[]

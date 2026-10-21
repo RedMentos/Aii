@@ -16,9 +16,11 @@ import step2_z2b_seeds as z2b
 TEXT='Project Kestrel. Option A: cost 40 euros, duration 2 days, local true. Option B: cost 70 euros, duration 7 days, local false.'
 
 class Config(unittest.TestCase):
-    def test_off_by_default_and_bounded(self):
+    def test_on_by_user_decision_and_bounded(self):
+        # 2026-10-21 user decision: the measured WP-Z2b questions are on by default, scoped to rule-decision turns
+        self.assertEqual((DEFAULTS['body_question_b1'],DEFAULTS['body_question_b2'],DEFAULTS['body_question_scope']),(z2b.QUESTIONS['B1_DETAIL'],z2b.QUESTIONS['B2_GIST'],'rule_decision'))
         for key in ('body_question_b1','body_question_b2'):
-            self.assertEqual(DEFAULTS.get(key,''),'')
+            validate(DEFAULTS|{key:''})
             validate(DEFAULTS|{key:z2b.QUESTIONS['B1_DETAIL']})
             for bad in (True,1,None,'x'*401):
                 with self.assertRaises(ValueError):validate(DEFAULTS|{key:bad})
@@ -42,7 +44,8 @@ class Offer(unittest.TestCase):
         from v13.runtime import Runtime
         with tempfile.TemporaryDirectory() as d:
             r=Runtime(Path(d))
-            try:
+            try:  # switch mechanics: no scope limit, no B1 recent-source window, questions off at first
+                r.cfg.update(body_question_scope='always',b1_recent_source_chars=0,body_question_b1='',body_question_b2='')
                 off={role:self.offer(r,role) for role in ('B1_DETAIL','B2_GIST')}
                 r.cfg['body_question_b1']=r.cfg['body_question_b2']=''
                 for role in off:  # '' is the same as absent (event ids/prior hypothesis differ per turn, so keys + instructions)
@@ -61,6 +64,19 @@ class Offer(unittest.TestCase):
                 reentry={'question':'Which duration does Option B have?','kind':'FILL_GAP'}
                 query,_,q=self.offer(r,'B1_DETAIL',focus=reentry)
                 self.assertEqual(query['jef_query'],reentry);self.assertEqual(q['jef_query'],reentry)  # a re-entry focus is never overwritten
+            finally:r.close()
+    def test_default_scope_asks_only_on_rule_decision_turns(self):
+        from v13.runtime import Runtime
+        with tempfile.TemporaryDirectory() as d:
+            r=Runtime(Path(d))
+            try:
+                r.cfg['b1_recent_source_chars']=0
+                query,_,_=self.offer(r,'B1_DETAIL');self.assertNotIn('jef_query',query)  # TEXT names options but asks for no decision
+                global TEXT
+                plain,TEXT=TEXT,TEXT+' Apply the project rules and choose the cheapest eligible option.'
+                try:query,_,_=self.offer(r,'B1_DETAIL')
+                finally:TEXT=plain
+                self.assertEqual(query['jef_query']['question'],z2b.QUESTIONS['B1_DETAIL'])
             finally:r.close()
 
 if __name__=='__main__':unittest.main()

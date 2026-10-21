@@ -53,6 +53,7 @@ class Live(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
         self.c3=FakeC3(READ);self.r.pool.get=lambda role:self.c3
+        self.r.cfg['eligibility_reader']='c3'  # these tests cover the measured C3 read path; the default fixed reader is tested in test_rule_reader_fixed
     def tearDown(self):self.r.close();self.tmp.cleanup()
     def earlier_turn(self,text):
         s=self.r.store;e=s.event(self.r.session,text)

@@ -147,6 +147,48 @@ def read_values(runner, current, earlier, cancel, deadline, max_tokens=200):
     return x
 
 
+_OPT_VALUE = {'cost': r'\bcost\s+(\d+)\b', 'days': r'\b(\d+)\s+days?\b', 'local': r'\blocal\s+(true|false)\b'}
+
+
+def _one(values):
+    return next(iter(values)) if len(values) == 1 else None
+
+
+def fixed_read(current, history=(), quotes=()):
+    """Non-generative reader (2026-10-21 user decision: rules are read and checked by a fixed component, never by a
+    language model). Same READ_SCHEMA shape as read_values, without any model call.
+
+      rule value  from the fixed rule wording only ("budget 61 euros", "deadline 8 days", "local-only requirement: true");
+                  the current message wins; else the newest earlier user message that states it; else body quotes only
+                  if they all agree. Two different values in the same text, or disagreeing quotes -> null (recipe UNKNOWN).
+      options     from each option's own clause ("Option A: cost 45 euros, duration 7 days, local true"), current
+                  message first, then newest earlier text; a missing value raises ValueError (no proposal).
+    Claim limit: the canonical English wording; anything else stays null and the recipe refuses instead of guessing."""
+    out = {}
+    for rule in ('budget', 'deadline', 'local_only'):
+        value = None; found = stated_values(rule, current)
+        if found: value = _one(found)
+        else:
+            for text in reversed(list(history)):
+                found = stated_values(rule, text)
+                if found: value = _one(found); break
+            else:
+                found = set().union(*(stated_values(rule, q) for q in quotes)) if quotes else set()
+                value = _one(found)
+        out[rule] = value
+    options = []
+    for entity in ('A', 'B'):
+        clause = next((c for c in (option_clause(entity, x) for x in [current, *reversed(list(history)), *quotes]) if c), '')
+        o = {'entity': entity}
+        for key, rx in _OPT_VALUE.items():
+            m = re.search(rx, clause, re.I)
+            if not m: raise ValueError('option_'+entity+'_'+key)
+            o[key] = (m.group(1).lower() == 'true') if key == 'local' else int(m.group(1))
+        options.append(o)
+    out['options'] = options
+    return out
+
+
 def args_for(values, current, earlier):
     """READ_SCHEMA values -> tool args (an unavailable rule is omitted, so the tool treats it as unavailable)."""
     a, b = values['options']

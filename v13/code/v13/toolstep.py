@@ -17,6 +17,8 @@ the recipe in agi/listarith.py computes (measured: r4-typed-recipe BEFUND). The 
 Thread Q (2026-10-21): a decision over Option A/B with budget/deadline/locality rules becomes `eligibility` the same way: C3 copies
 typed values from the current message plus earlier exact text (the user's own earlier messages, verified body quotes), the
 rule-anchored recipe in agi/eligibility.py decides (measured offline: wrong committed decisions 3 -> 0, WP-W2c/W2d).
+2026-10-21 user decision: by default (cfg eligibility_reader='fixed') no language model reads the rules either; the fixed reader
+agi/eligibility.fixed_read takes them from the fixed rule wording, newest statement wins, and anything unclear stays UNKNOWN.
 """
 import json
 import re
@@ -26,7 +28,7 @@ from .contracts import packet
 
 PROPOSER='boot-arith-note-v3';KEY='TOOL_SHADOW_AGREEMENT'
 LIST_PROPOSER='boot-listarith-v1';LIST_READ_SECONDS=45  # R4 part 6: C3 value read for list_arith
-ELIG_PROPOSER='boot-eligibility-v1';ELIG_READ_SECONDS=60  # Thread Q: C3 value read for eligibility
+ELIG_PROPOSER='boot-eligibility-v1';ELIG_READ_SECONDS=60  # Thread Q: C3 value read for eligibility (only with cfg eligibility_reader='c3'; default 'fixed' reads without a model)
 LIST_NOTE='Use this exact number in the answer. If the text states a different number for it, say clearly that it is wrong.'  # wording of r4_typed_recipe RESULT_TEMPLATE
 WORD_OPS=[(r'\bmultiplied by\b|\btimes\b|×','*'),(r'\bdivided by\b|÷','/'),(r'\bplus\b','+'),(r'\bminus\b','-'),(r'\bto the power of\b|\^','**')]
 NUM=r'\d+(?:[.,]\d+)?'
@@ -107,31 +109,36 @@ class ToolStep:
             listarith.compute(op,values,text)  # guard before proposing: every value must be an exact number of the user text
         except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'list_read','error':type(exc).__name__});return None
         return {'tool':'list_arith','args':{'operation':op,'text':str(text),'values':listarith.encode(values)},'confidence':.8,'span':[0,len(str(text))],'proposer':LIST_PROPOSER}
-    def earlier_exact(self,e,offers=(),version=None):
-        """Thread Q: earlier exact evidence for eligibility. The user's own earlier messages in the history window (stored
-        source text) and source-verified quotes of the selected body offers; never hypotheses or assistant answers."""
-        out=[]
+    def earlier_parts(self,e,offers=(),version=None):
+        """Thread Q: earlier exact evidence for eligibility, as (user history oldest->newest, verified body quotes). The user's
+        own earlier messages in the history window (stored source text) and source-verified quotes of the selected body
+        offers; never hypotheses or assistant answers."""
+        hist=[];quotes=[]
         try:
             from .history import native_history
             rows,_=native_history(self.r.store,self.r.session,e['event_id'],self.r.cfg['history_turns'])
-            out+=[m['text'] for m in rows if m['role']=='user']
+            hist+=[m['text'] for m in rows if m['role']=='user']
         except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'elig_history','error':type(exc).__name__})
         if offers and version is not None:
-            try:out+=[q['text'] for a in self.r.cognition.analyst_context(list(offers),e,version) for q in a['verified_quotes']]
+            try:quotes+=[q['text'] for a in self.r.cognition.analyst_context(list(offers),e,version) for q in a['verified_quotes']]
             except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'elig_quotes','error':type(exc).__name__})
         seen=set();keep=[]
-        for t in out:
+        for kind,t in [('h',x) for x in hist]+[('q',x) for x in quotes]:
             t=str(t).strip()
-            if t and t not in seen and len(t)<=1000:seen.add(t);keep.append(t)
+            if t and t not in seen and len(t)<=1000:seen.add(t);keep.append((kind,t))
         from .agi import eligibility
-        return keep[-eligibility.MAX_EARLIER:]
+        keep=keep[-eligibility.MAX_EARLIER:]
+        return [t for k,t in keep if k=='h'],[t for k,t in keep if k=='q']
+    def earlier_exact(self,e,offers=(),version=None):
+        h,q=self.earlier_parts(e,offers,version);return h+q
     def _propose_eligibility(self,e,text,offers=(),version=None):
         """Thread Q: Option A/B decision (BOOT wording rule) -> C3 copies typed values -> eligibility proposal."""
         from .agi import eligibility
         if not eligibility.question(text) or 'eligibility' not in self._registry().box.load()[0]['enabled']:return None  # C3 read costs a model call: only after the user enabled the tool
-        earlier=self.earlier_exact(e,offers,version)
+        hist,quotes=self.earlier_parts(e,offers,version);earlier=hist+quotes
         try:
-            values=eligibility.read_values(self.r.pool.get('C3_LANGUAGE'),text,earlier,self.r.cancel_event,time.monotonic()+ELIG_READ_SECONDS)
+            if self.r.cfg.get('eligibility_reader','c3')=='fixed':values=eligibility.fixed_read(text,hist,quotes)  # 2026-10-21 user decision: no language model reads rules
+            else:values=eligibility.read_values(self.r.pool.get('C3_LANGUAGE'),text,earlier,self.r.cancel_event,time.monotonic()+ELIG_READ_SECONDS)
             args=eligibility.args_for(values,text,earlier)
         except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'elig_read','error':type(exc).__name__});return None
         return {'tool':'eligibility','args':args,'confidence':.8,'span':[0,len(str(text))],'proposer':ELIG_PROPOSER}

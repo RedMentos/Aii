@@ -86,6 +86,8 @@ class B1RecentWindow(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             r=Runtime(Path(d))
             try:
+                self.assertEqual(r.cfg['b1_recent_source_chars'],600)  # on since the 2026-10-21 user decision (quote help); 0 = previous path
+                r.cfg.update(b1_recent_source_chars=0,offer_quote_context_chars=0)  # window mechanics with exact-substring quotes
                 self.offer(r,SHEET,[])
                 p,query,instr=self.offer(r,cur,[q])
                 self.assertNotIn('recent_source',query);self.assertEqual(p['evidence_refs'],[]);self.assertEqual(p['context_source_refs'],[])

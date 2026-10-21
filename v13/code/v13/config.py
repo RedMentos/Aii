@@ -73,7 +73,14 @@ KNOBS['native_ctx_checkpoints']=(6,"COUNT",0,32,"G6B BOOT llama-server --ctx-che
 KNOBS['observer_sample_rate']=(.5,"BUDGET_FRACTION",0.,1.,"§22.2.4 BOOT share of events that get pre-answer observer passes under observer_schedule SAMPLED_OBSERVER (deterministic per event)")
 KNOBS['control_budget_params_mb']=(0.,"THRESHOLD",0.,4096.,"WP-T14 §22.2.3 cap on approved learned control checkpoints in MB; 0 = unset")
 DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"learning_mode":"RECORD_ONLY","system_stage":0,"user_stage_cap":0,
- "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","observer_schedule":"A_THEN_B_SEQUENTIAL","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"boot","segment_mode":"percept","tool_conflict_policy":"correct"}
+ "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","observer_schedule":"A_THEN_B_SEQUENTIAL","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"boot","segment_mode":"percept","tool_conflict_policy":"correct",
+ # 2026-10-21 user decision (thread "Zitierhilfe an, Regeln ohne Halluzination"): quote help ON. Bodies point at exact source
+ # sentences instead of copying them (measured WP-Z2/Z2b/Z2d settings: B2 rule quote .17 -> .97, 0 wrong); the standing
+ # rule questions are asked only on rule-decision turns; deciding stays with the fixed recipe, never a language model.
+ "offer_quote_context_chars":200,"b2_quote_select":"pointer","b2_offer_body_state":False,"offer_quote_min_chars":90,"b1_recent_source_chars":600,
+ "body_question_scope":"rule_decision","eligibility_reader":"fixed",
+ "body_question_b1":"Which option figures apply here: cost, duration and locality of Option A and Option B? Quote the exact source sentences that state them, or say they are not in the source.",
+ "body_question_b2":"Which earlier project rules apply here: budget, deadline and local-only requirement? Quote the exact earlier source sentence that states them, or say they are not in the source."}
 # IH-H5 KnobSpec: every knob has a declared kind, so 0..1 is never silently read as a probability.
 KNOB_KINDS={'AUTHORITY','MIX_WEIGHT','PRIOR','PROBABILITY','THRESHOLD','BUDGET_FRACTION','BOOLEAN','COUNT','BYTES','BYTES_MB',
             'DURATION_MS','DURATION_S','DURATION_DAYS','RATE_HZ','LEARNING_RATE','DECAY','TEMPERATURE'}
@@ -112,6 +119,8 @@ def validate(cfg):
     if cfg.get("b2_quote_select","off") not in {"off","anchor","pointer"}:raise ValueError("b2_quote_select off|anchor|pointer")
     for key in ("body_question_b1","body_question_b2"):
         if not (isinstance(cfg.get(key,""),str) and len(cfg.get(key,""))<=400):raise ValueError(key+" text 0..400 chars")
+    if cfg.get("body_question_scope","always") not in {"always","rule_decision"}:raise ValueError("body_question_scope always|rule_decision")
+    if cfg.get("eligibility_reader","c3") not in {"fixed","c3"}:raise ValueError("eligibility_reader fixed|c3")
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
     return cfg
 def initialize(home):

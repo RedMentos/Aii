@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'body_question', 'eligibility_live')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'body_question', 'body_question_scope', 'eligibility_live')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -317,6 +317,28 @@ def b2_quote_select(text):
     return t
 
 
+RULE_DECISION_HELPER = """def asks_rule_decision(text):
+    \"\"\"2026-10-21 (user decision): the standing body questions are about project rules, so by default they are asked
+    only when the message asks for a decision under rules (same fixed BOOT wording rule as the eligibility tool).\"\"\"
+    try:
+        from .agi.eligibility import question
+        return question(text)
+    except Exception:return False
+"""
+
+
+def body_question_scope(text):
+    """2026-10-21 (user decision, thread "Zitierhilfe an, Regeln ohne Halluzination"): cfg body_question_scope
+    always|rule_decision. 'always' = the WP-Z2c behaviour; 'rule_decision' asks the standing body questions only on
+    turns whose message asks for a decision under rules, so ordinary chat turns stay unchanged. The bodies only quote;
+    the decision stays with the fixed eligibility recipe."""
+    if 'def asks_rule_decision(' in text:
+        raise ValueError('Integrated anchor changed: body_question_scope already applied')
+    t = _replace(text, 'class Cognition:\n', RULE_DECISION_HELPER+'class Cognition:\n')
+    return _replace(t, "        if focus is None and self.r.cfg.get(key,''):focus=",
+                    "        if focus is None and self.r.cfg.get(key,'') and (self.r.cfg.get('body_question_scope','always')=='always' or asks_rule_decision(text)):focus=")
+
+
 def eligibility_live(sources):
     """2026-10-21 thread Q: ToolStep.plan gets the selected body offers and the state version, so the eligibility tool
     can use their source-verified quotes as earlier exact evidence (it only acts when the user enabled `eligibility`)."""
@@ -387,7 +409,7 @@ def rebase(texts, root=ROOT):
     out = _chain(full)
     out = {k: (out[k] if k in NAMES else v) for k, v in texts.items()}
     if 'v13/cognition.py' in out:  # cognition.py is bound exactly by source_handoff_candidate, not by NAMES
-        out['v13/cognition.py'] = body_question(b2_quote_select(b1_recent(quote_context(b2_offer(out['v13/cognition.py'])))))
+        out['v13/cognition.py'] = body_question_scope(body_question(b2_quote_select(b1_recent(quote_context(b2_offer(out['v13/cognition.py']))))))
     return out
 
 
