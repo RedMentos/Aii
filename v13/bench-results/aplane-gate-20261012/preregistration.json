@@ -1,0 +1,17 @@
+{
+ "schema": "ABLATION_APLANE_GATE_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "turns": 3000,
+ "p_teacher_available": 0.9,
+ "scaffold_accuracy": 0.6,
+ "student_accuracy": ".70 -> .95 over 500 turns, then two drops to .50 for 150 turns (starts after 800)",
+ "user_promote_every": 100,
+ "primary": "accuracy on teacher-unavailable turns after turn 100",
+ "win_rule": "gated beats always, never and rate_only in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+}

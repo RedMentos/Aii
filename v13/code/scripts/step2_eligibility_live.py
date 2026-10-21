@@ -5,6 +5,8 @@ offer_quote_context_chars=200). Per row the evidence is exactly what the live To
 and the verified analyst quotes C3 received. C3 extracts typed values with EXTRACT_SYSTEM/EXTRACT_SCHEMA, the
 deterministic recipe decides. Baseline: the replay through the STEP2 consumer prompt (tool_context.json, same rows).
 Preregistration: docs/proofs/continuation-20261021/eligibility-live/PREREG.md. Linux cloud, SHADOW, no gate promotion.
+CLOSED: ran on commit 298b6d7 (eligibility.read/args_from of that commit). After the merge with thread Q those helpers
+were replaced by eligibility.read_values/args_for; rerun from 298b6d7, not from later commits.
 """
 import argparse
 import json

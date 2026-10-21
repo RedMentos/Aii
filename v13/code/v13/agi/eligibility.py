@@ -98,61 +98,115 @@ SCHEMA = {'current': 'text', 'quotes': 'text?', 'a_cost': 'int', 'a_days': 'int'
           'b_cost': 'int', 'b_days': 'int', 'b_local': 'bool', 'budget': 'int?', 'deadline': 'int?', 'local_only': 'bool?'}
 
 
-# Live answer path (2026-10-20 thread "STEP2-Nutzen Engpass", follow-up): v13/toolstep.ToolStep proposes this tool for a
-# decision question when the user enabled it. C3 only extracts typed values from the current source and the verified
-# body quotes (offer evidence refs); the recipe above decides. Measured replay basis: docs/proofs/continuation-20261020/
-# step2-quote-context/BEFUND.md (24/30 retain rows exact, 0 wrong committed, with B2 quote context on).
-LIVE_PROPOSER = 'boot-eligibility-v1'
-_OPTION = {'type': 'object', 'additionalProperties': False, 'required': ['entity', 'cost', 'days', 'local'],
-           'properties': {'entity': {'type': 'string', 'enum': ['A', 'B']}, 'cost': {'type': 'integer'},
-                          'days': {'type': 'integer'}, 'local': {'type': 'boolean'}}}
-EXTRACT_SCHEMA = {'type': 'object', 'additionalProperties': False,
-                  'required': ['project', 'options', 'budget', 'deadline', 'local_only'],
-                  'properties': {'project': {'type': 'string'},
-                                 'options': {'type': 'array', 'minItems': 2, 'maxItems': 2, 'items': _OPTION},
-                                 'budget': {'type': ['integer', 'null']},
-                                 'deadline': {'type': ['integer', 'null']},
-                                 'local_only': {'type': ['boolean', 'null']}}}
-EXTRACT_SYSTEM = ('You read a decision task and return the required JSON only. Extract typed values, do not decide. '
-                  'For option A and option B give its own cost, days and local flag. Give the project rules: budget (euros), '
-                  'deadline (days) and local_only (true or false). Rules may be stated in the current source or in verified '
-                  'quotes of earlier project rules; explicit updated rules in the current source override earlier rules. '
-                  'If a rule is stated in neither, return null for it. Never invent a missing rule.')
-_ASK = re.compile(r'\boption\s+a\b[\s\S]*\boption\s+b\b', re.I)
-_DECIDE = re.compile(r'\beligib|\bcheapest\b|\bwhich option\b|\bbudget\b', re.I)
+# Live path (Thread Q, 2026-10-21): the same recipe as a C5 TOOL_CALL in the runtime turn (toolstep.py), like list_arith.
+# A BOOT wording rule spots a decision over Option A/B; C3 only copies typed values (READ_SCHEMA); decide() keeps the
+# guard, so values that are not stated after their rule word, or that conflict with the current message, never count.
+# Evidence = current user message + EARLIER_EXACT texts: the user's own earlier messages of this session (stored source
+# text, not model output) and source-verified quotes of the selected body offers. Claim limit: English, the fixture
+# wording ("budget 61 euros", "Option A: cost 45 euros, duration 7 days, local true"); other wordings get UNKNOWN.
+OPTION_PAIR = re.compile(r'\boption\s+A\b[\s\S]*\boption\s+B\b', re.I)
+DECIDE = re.compile(r'(?i)\b(?:choose|chooses|pick|select|recommend|cheapest|eligib\w*|which\s+option|go\s+with|decide)\b')
+MAX_TEXT = 2000
+MAX_EARLIER = 6
+READ_SYSTEM = ('Read the project rules and the two options. Return JSON only. Copy every number exactly as written; never '
+               'calculate anything. budget, deadline, local_only: the value written right after that rule word; if the current '
+               'message states a rule, take it from there, otherwise from the earlier text; if a rule is not written anywhere, '
+               'use null. options: cost, duration in days and local (true or false) of option A and of option B.')
+_READ_OPTION = {'type': 'object', 'additionalProperties': False, 'required': ['entity', 'cost', 'days', 'local'],
+                'properties': {'entity': {'type': 'string', 'enum': ['A', 'B']}, 'cost': {'type': 'integer'},
+                               'days': {'type': 'integer'}, 'local': {'type': 'boolean'}}}
+READ_SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['options', 'budget', 'deadline', 'local_only'],
+               'properties': {'options': {'type': 'array', 'minItems': 2, 'maxItems': 2, 'items': _READ_OPTION},
+                              'budget': {'type': ['integer', 'null']}, 'deadline': {'type': ['integer', 'null']},
+                              'local_only': {'type': ['boolean', 'null']}}}
+LIVE_NOTE = ('Answer with this decision first, in your own words, then the remaining budget. If the decision is UNKNOWN, say '
+             'which rule is missing and do not choose an option.')
 
 
-def asks(text):
-    """BOOT wording rule: a choice between option A and option B under budget/eligibility rules (not learned)."""
+def question(text):
+    """BOOT rule: the message names Option A and Option B and asks for a choice/eligibility."""
     t = str(text)
-    return len(t) <= 4000 and bool(_ASK.search(t)) and bool(_DECIDE.search(t))
+    return len(t) <= MAX_TEXT and OPTION_PAIR.search(t) is not None and DECIDE.search(t) is not None
 
 
-def read(runner, current, quotes, cancel, deadline, max_tokens=256):
-    """C3 extracts typed values only; returns the parsed dict or raises ValueError/JSON errors."""
+def read_prompt(current, earlier):
+    body = ''
+    if earlier:
+        body = 'Earlier exact text (older):\n'+'\n'.join('- '+str(t) for t in earlier)+'\n\n'
+    body += 'Current message (newest; a rule stated here overrides the earlier text):\n'+str(current)
+    return [{'role': 'system', 'content': READ_SYSTEM}, {'role': 'user', 'content': body}]
+
+
+def read_values(runner, current, earlier, cancel, deadline, max_tokens=200):
+    """The model only copies typed values; returns the READ_SCHEMA object or raises ValueError/JSON errors."""
     import json
-    user = json.dumps({'current_source': str(current), 'verified_quotes': list(quotes)}, ensure_ascii=False)
-    raw = ''.join(runner.generate([{'role': 'system', 'content': EXTRACT_SYSTEM}, {'role': 'user', 'content': user}],
-                                  cancel, deadline, max_tokens, EXTRACT_SCHEMA))
-    x = json.loads(raw)
-    if not isinstance(x, dict) or set(x) != set(EXTRACT_SCHEMA['required']) or sorted(o.get('entity') for o in x['options']) != ['A', 'B']:
-        raise ValueError('extract_schema')
+    x = json.loads(''.join(runner.generate(read_prompt(current, earlier), cancel, deadline, max_tokens, READ_SCHEMA)))
+    if not isinstance(x, dict) or set(x) != set(READ_SCHEMA['required']): raise ValueError('read_schema')
+    ents = [o.get('entity') for o in x['options']] if isinstance(x['options'], list) else []
+    if ents != ['A', 'B']: raise ValueError('options')
     return x
 
 
-def args_from(extracted, current, quotes):
-    """Extracted values -> ToolRegistry args (unavailable rules are omitted, never None)."""
-    o = {x['entity']: x for x in extracted['options']}
-    args = {'current': str(current), 'quotes': '\n'.join(quotes), 'a_cost': o['A']['cost'], 'a_days': o['A']['days'],
-            'a_local': o['A']['local'], 'b_cost': o['B']['cost'], 'b_days': o['B']['days'], 'b_local': o['B']['local']}
+def args_for(values, current, earlier):
+    """READ_SCHEMA values -> tool args (an unavailable rule is omitted, so the tool treats it as unavailable)."""
+    a, b = values['options']
+    args = {'current': str(current), 'a_cost': a['cost'], 'a_days': a['days'], 'a_local': a['local'],
+            'b_cost': b['cost'], 'b_days': b['days'], 'b_local': b['local']}
+    if earlier: args['quotes'] = '\n'.join(str(t).replace('\n', ' ') for t in earlier)
     for k in ('budget', 'deadline', 'local_only'):
-        if extracted[k] is not None: args[k] = extracted[k]
+        if values.get(k) is not None: args[k] = values[k]
     return args
 
 
-def label(result):
-    """Readable decision line for the answering body (the measured lesson of R4: raw JSON is ignored by C3)."""
-    if result['action'] == 'UNKNOWN':
-        return 'UNKNOWN: a required project rule (budget, deadline or local-only) is not stated in the source or a verified quote.'
-    parts = [f"option {o['entity']}: remaining {o['remaining']}, {'eligible' if o['eligible'] else 'not eligible'}" for o in result['options']]
-    return ('choose option '+result['action'] if result['action'] in ('A', 'B') else 'no option is eligible (NONE)')+'; '+'; '.join(parts)
+def decision_line(result):
+    """One readable line: what the recipe decided (used by the TOOL_RESULT layer and the broker correction)."""
+    act = result['action']
+    head = {'A': 'choose Option A', 'B': 'choose Option B', 'NONE': 'no option is eligible',
+            'UNKNOWN': 'decision UNKNOWN (a rule is missing or not stated exactly)'}.get(act, str(act))
+    parts = []
+    for o in result['options']:
+        if o['eligible'] is None: parts.append(f"Option {o['entity']}: cost {o['cost']} euros, {o['days']} days")
+        else: parts.append(f"Option {o['entity']}: remaining budget {o['remaining']} euros, {'eligible' if o['eligible'] else 'not eligible'}")
+    return head+' ('+'; '.join(parts)+')'
+
+
+def unresolved(args, result):
+    """Rules the recipe could not use: not read at all, not stated after the rule word, or conflicting with the current message."""
+    out = [k for k in ('budget', 'deadline', 'local_only') if args.get(k) is None]
+    out += [r.split(':')[0] for r in result.get('rejected', []) if r.split(':')[0] in ('budget', 'deadline', 'local_only')]
+    return sorted(set(out), key=out.index)
+
+
+def answer_sentence(args, result):
+    """The decision phrased as the start of an answer (TOOL_RESULT layer)."""
+    act = result['action']
+    left = {o['entity']: o['remaining'] for o in result['options']}
+    if act in ('A', 'B'): return f'Choose Option {act}. Remaining budget: {left[act]} euros.'
+    if act == 'NONE': return 'Neither option is eligible.'
+    miss = unresolved(args, result)
+    if miss:
+        names = [m.replace('_', '-') for m in miss]
+        both = names[0] if len(names) == 1 else ', '.join(names[:-1])+' and '+names[-1]
+        return f"I cannot decide yet: the {both} {'rule is' if len(names) == 1 else 'rules are'} missing or not stated exactly."
+    return 'I cannot decide yet: an option is not stated exactly.'
+
+
+_UNKNOWN = re.compile(r"(?i)\b(?:unknown|cannot (?:be )?(?:decide|determine|choose|tell|make)\w*|can't (?:decide|determine|choose|tell)|"
+                      r"not enough information|insufficient information|missing|not (?:stated|given|provided|specified|known)|unavailable)\b")
+_NONE = re.compile(r'(?i)\b(?:neither|none of (?:the|them)|no option|no eligible|nothing is eligible|both (?:are|options are) (?:not|in)eligible)\b')
+_PICK = re.compile(r'(?i)\b(?:choose|chose|pick|select|recommend|go with|cheapest eligible(?: option)? is|best (?:choice|option) is|answer(?: is)?:?)\s+(?:is\s+)?(?:the\s+)?(?:option\s+)?([AB])\b')
+_POS = re.compile(r"(?i)\boption\s+([AB])\s+(?:is|would be|remains)\s+(?:the\s+)?(?:cheaper|cheapest|best|better|most affordable|only|right|recommended|eligible|valid)\b")
+_OPT = re.compile(r'(?i)\boption\s+([AB])\b')
+
+
+def answer_action(text):
+    """Which decision a free-text answer commits to: 'A'|'B'|'NONE'|'UNKNOWN'|None (no or mixed signal). Fixed parser."""
+    t = str(text or '')
+    picks = {m.upper() for m in _PICK.findall(t)}
+    if len(picks) == 1: return picks.pop()
+    if _NONE.search(t): return 'NONE'
+    pos = {m.upper() for m in _POS.findall(t)}
+    if len(pos) == 1: return pos.pop()
+    if _UNKNOWN.search(t): return 'UNKNOWN'
+    opts = {m.upper() for m in _OPT.findall(t)}
+    return opts.pop() if len(opts) == 1 else None

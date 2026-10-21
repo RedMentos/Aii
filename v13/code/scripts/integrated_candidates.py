@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'eligibility_live')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -236,8 +236,17 @@ def quote_context(text):
     return t
 
 
+def eligibility_live(sources):
+    """2026-10-21 thread Q: ToolStep.plan gets the selected body offers and the state version, so the eligibility tool
+    can use their source-verified quotes as earlier exact evidence (it only acts when the user enabled `eligibility`)."""
+    out = dict(sources)
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], 'try:tool_plan=toolctl.ToolStep(self).plan(e,text)  #',
+                                     'try:tool_plan=toolctl.ToolStep(self).plan(e,text,offers=selected,version=version)  #')
+    return out
+
+
 def _later(sources):
-    return b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))
+    return eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))
 
 
 def _baseline(root):
