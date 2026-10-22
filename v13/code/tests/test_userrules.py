@@ -57,6 +57,15 @@ class Parse(unittest.TestCase):
         for text in ('Can you delete the old note?',"Don't forget to save my notes.",'Don\'t worry about the budget.','No thanks.'):
             self.assertEqual(kinds(text),[],text)
         self.assertEqual(kinds('You can install whatever you need, no worries.'),['LOOSEN'])
+    def test_v5_condition_is_never_a_loosening_and_german_hold_forms(self):
+        # round-4 failure forms (docs/proofs/continuation-20261022/user-rules-v4/BEFUND.md)
+        for text in ('Du darfst nur Nachrichten senden, wenn du meine Genehmigung hast.','Du darfst erst Nachrichten versenden, wenn ich dir das erlaube.',
+                     'Kein Kram ohne mein grünes Licht.'):
+            self.assertIn(kinds(text)[0] if kinds(text) else 'NONE',('ASK_FIRST','UNCLEAR'),text)
+        for text in ('Bleib ab von meinen Notizen!','Kein Versand!','Verzichte auf Werkzeuge.','Meine Notizen in Ruhe lassen.','Schütze meine Notizen.'):
+            self.assertIn(kinds(text)[0] if kinds(text) else 'NONE',('FORBID','UNCLEAR'),text)
+        self.assertIn('INTERNET',U.parse('Bitte keine Dateien herunterladen.')[0]['objects'])  # downloading is about the internet too
+        self.assertEqual(kinds('Du darfst jetzt wieder ins Internet.'),['LOOSEN'])
     def test_v3_lexicon_is_data_with_evidence_and_refuses_sealed_sentences(self):
         for e in U.LEXICON['entries']:
             self.assertTrue(e['evidence'].strip());self.assertFalse(any(x in e['evidence'] for x in U.LEXICON['sealed']))

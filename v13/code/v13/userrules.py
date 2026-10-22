@@ -24,7 +24,7 @@ import time
 from pathlib import Path
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v4'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v5'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -63,7 +63,7 @@ OBJECT_STEMS={'NOTE':('note','notiz','memo','vermerk'),'FILE':('file','document'
     'PERSONAL':('personal','privat','private','password','passwort','passwoert','secret','geheim','familie','family','address','adresse','name'),
     'INTERNET':('internet','online','web','netz','cloud','server','network'),'CALCULATOR':('calculator','calc','taschenrechner','rechner','math','arithmetic'),
     'MONEY':('money','payment','credit','geld','zahlung','kreditkart','konto','euro','dollar'),'TOOLS':('tool','werkzeug')}
-ANY_OBJECT=('anything','everything','something','nothing','stuff','things','alles','irgendwas','irgendetwas','etwas','nichts','nix','sachen','zeug','anywhere','irgendwo','irgendwohin')
+ANY_OBJECT=('kram','krams','anything','everything','something','nothing','stuff','things','alles','irgendwas','irgendetwas','etwas','nichts','nix','sachen','zeug','anywhere','irgendwo','irgendwohin')
 PRONOUNS=('that','this','it','them','those','these','das','dies','dieses','es','sie','ihn','die','den','dem')
 
 FORBID=re.compile(r"\b(?:don'?t|do\s+not|never|stop|quit|cease|avoid\w*|refrain\w*|strictly|keep\s+(?:\w+\s+){0,2}(?:away|off)|stay\s+away|away\s+from|not\s+(?:be\s+)?(?:allowed|permitted)|(?:is|are)\s+(?:not\s+)?(?:prohibited|forbidden)|vermeid\w*|halt\s+dich\s+fern|\w*\s*fern\b|bleib\w*\s+(?:\w+\s+)?weg|untersag\w*|nicht\s+erlaubt|no\s+more|must\s*n'?o?t|mustn'?t|may\s+not|shall\s+not|should\s*n'?o?t|shouldn'?t|cannot|can'?t|"
@@ -246,6 +246,7 @@ def parse_clause(clause,prev=None):
     protect=bool(PROTECT.search(t))
     if protect:actions|={'DELETE','WRITE'}
     if 'INTERNET' in objs:actions.add('NETWORK')  # anything done "online / ins Internet" uses the network
+    if 'NETWORK' in acts:objs.add('INTERNET')  # v5: "keine Dateien herunterladen" is about the internet too, not only about files
     if 'TOOLS' in objs:actions.add('TOOL')
     if 'MODULE' in objs and actions&{'NETWORK','WRITE'}:actions.add('INSTALL')
     advice=bool(ADVICE.search(t));request=bool(REQUEST.search(t))
