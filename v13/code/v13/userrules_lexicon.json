@@ -1,11 +1,7 @@
 {
  "schema": "USER_RULES_LEXICON_V5",
  "note": "Additions of reader v3 on top of the built-in v2 lexicon in userrules.py. Each entry names the already known sentence it came from (dev, author holdout, model rounds 1 to 4). Sealed test sets (round 5, holdout_de2 and later) are never evidence; userrules.extend() refuses them. Regex slots take a fragment that is matched inside word boundaries.",
- "sealed": [
-  "round5",
-  "user-rules-v5/round5",
-  "holdout_de2"
- ],
+ "sealed": ["round6", "user-rules-v6/round6", "holdout_de3"],
  "entries": [
   {
    "slot": "ASK",
