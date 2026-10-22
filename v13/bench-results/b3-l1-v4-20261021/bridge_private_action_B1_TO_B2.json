@@ -1,0 +1,125 @@
+{
+ "revision": "b3-bridge-v1",
+ "direction": "B1_TO_B2",
+ "d": 2048,
+ "K": 4,
+ "r": 8,
+ "h": 16,
+ "classes": 3,
+ "aux": 2,
+ "sender_revision": "bench:LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+ "receiver_revision": "bench:Qwen3.5-0.8B-Q4_0.gguf",
+ "sha256": "3c75aad1273eabc86a12bd1b9062db207310618c51dfe6ea788249af6a7b5da8",
+ "calibrated": true,
+ "budget": {
+  "params": {
+   "selector": 8192,
+   "projector": 16384,
+   "receiver_projector": 512,
+   "gate": 1,
+   "readout_residual": 48,
+   "input_norm": 4096
+  },
+  "param_count": 29233,
+  "weights_bf16_bytes": 58466,
+  "message_bf16_bytes": 64,
+  "slot_buffer_bf16_bytes": 16384,
+  "total_bytes": 74914,
+  "age0_ok": true,
+  "claim_limit": "arithmetic payload, not RSS"
+ },
+ "created_wall_time": 1792583333.7391253,
+ "train": {
+  "epochs": 10,
+  "lr": 0.003,
+  "batch": 64,
+  "samples": 360,
+  "last": {
+   "ce": 0.0079,
+   "var_hinge": 0.4018,
+   "decorrelation": 0.6588,
+   "slot_overlap": 0.0102,
+   "aux_mse": 0.0182
+  },
+  "first": {
+   "ce": 0.0904,
+   "var_hinge": 0.3496,
+   "decorrelation": 1.1071,
+   "slot_overlap": 0.0105,
+   "aux_mse": 0.0997
+  }
+ },
+ "l1_gate": {
+  "gate": "G-CALLOSUM-UTILITY-002",
+  "level": "L1",
+  "verdict": "PASS",
+  "criteria": {
+   "beats_no_message": {
+    "mean": 0.485,
+    "se": 0.0127,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "beats_latent_shuffled": {
+    "mean": 0.5367,
+    "se": 0.0241,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "beats_latent_random": {
+    "mean": 0.5517,
+    "se": 0.0089,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "utility_beats_exact": {
+    "mean": 0.2162,
+    "se": 0.0152,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "utility_beats_control": {
+    "mean": 0.4596,
+    "se": 0.0226,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "utility_beats_symbolic": {
+    "mean": 0.1311,
+    "se": 0.0201,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "role_retention": {
+    "drop": 0.0,
+    "significant": true
+   },
+   "receiver_ood": {
+    "rate": 0.0133,
+    "significant": true
+   },
+   "restart_reproducibility": {
+    "significant": true
+   }
+  },
+  "utility_mean": {
+   "NO_MESSAGE": 0.0,
+   "EXACT": 0.2648,
+   "CONTROL": 0.0214,
+   "LATENT": 0.481,
+   "LATENT_SHUFFLED": -0.0517,
+   "LATENT_RANDOM": -0.0667,
+   "SYMBOLIC": 0.3499
+  },
+  "missing_baselines": [],
+  "consequence": "L2 prefix SHADOW test allowed; LATENT authority stays 0"
+ },
+ "task": "private/action",
+ "manifest_note": "sender/receiver_revision corrected after the run: b3bridge.save kept the reload-check values s/r (fixed in b3bridge.py after this run); weights/sha256 unchanged"
+}

@@ -1,0 +1,484 @@
+{
+ "kind": "B3_L1_ESCAPO_DIAGNOSE_EXPLORATORY",
+ "states": "states.npz",
+ "data_seed": 20261021,
+ "seeds": 5,
+ "view": "private",
+ "tasks": {
+  "escalate": {
+   "acc": {
+    "NO_MESSAGE": {
+     "mean": 0.6533,
+     "per_seed": [
+      0.625,
+      0.6083,
+      0.7,
+      0.6583,
+      0.675
+     ]
+    },
+    "ORACLE_UF_REFIT": {
+     "mean": 0.9783,
+     "per_seed": [
+      0.975,
+      0.975,
+      0.9667,
+      1.0,
+      0.975
+     ]
+    },
+    "ORACLE_UF_FROZEN": {
+     "mean": 0.8967,
+     "per_seed": [
+      0.9333,
+      0.875,
+      0.875,
+      0.9167,
+      0.8833
+     ]
+    },
+    "SCALAR_REFIT": {
+     "mean": 0.8933,
+     "per_seed": [
+      0.9083,
+      0.8833,
+      0.9083,
+      0.8833,
+      0.8833
+     ]
+    },
+    "SCALAR_FROZEN": {
+     "mean": 0.8717,
+     "per_seed": [
+      0.8583,
+      0.8583,
+      0.8833,
+      0.8917,
+      0.8667
+     ]
+    },
+    "SYMBOLIC_ATTR_REFIT": {
+     "mean": 0.845,
+     "per_seed": [
+      0.8167,
+      0.8167,
+      0.8833,
+      0.875,
+      0.8333
+     ]
+    },
+    "SYMBOLIC_ATTR_FROZEN": {
+     "mean": 0.8333,
+     "per_seed": [
+      0.7667,
+      0.8167,
+      0.8833,
+      0.85,
+      0.85
+     ]
+    },
+    "ORACLE_UF_TRUEFACT": {
+     "mean": 1.0,
+     "per_seed": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "LATENT": {
+     "mean": 0.83,
+     "per_seed": [
+      0.8583,
+      0.8083,
+      0.8667,
+      0.775,
+      0.8417
+     ]
+    },
+    "LATENT_SHUFFLED": {
+     "mean": 0.5517,
+     "per_seed": [
+      0.5917,
+      0.5417,
+      0.6333,
+      0.4833,
+      0.5083
+     ]
+    },
+    "LATENT_REFIT": {
+     "mean": 0.91,
+     "per_seed": [
+      0.925,
+      0.85,
+      0.925,
+      0.9083,
+      0.9417
+     ]
+    },
+    "LATENT_RC": {
+     "mean": 0.8533,
+     "per_seed": [
+      0.85,
+      0.8833,
+      0.875,
+      0.8,
+      0.8583
+     ]
+    },
+    "LATENT_RC_SHUFFLED": {
+     "mean": 0.545,
+     "per_seed": [
+      0.5167,
+      0.5417,
+      0.525,
+      0.6,
+      0.5417
+     ]
+    }
+   },
+   "D1_frozen_cost_pts": {
+    "ORACLE_UF": 8.16,
+    "SCALAR": 2.16,
+    "SYMBOLIC_ATTR": 1.17
+   },
+   "D3_paired_LATENT_RC_minus_LATENT": {
+    "mean": 0.0233,
+    "se": 0.014,
+    "wins": 4,
+    "n": 5,
+    "significant": false
+   },
+   "paired_LATENT_REFIT_minus_LATENT": {
+    "mean": 0.08,
+    "se": 0.0164,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "D2_fact_from_receiver_acc": 1.0,
+   "D4_errors_near_threshold": {
+    "LATENT": {
+     "errors": 102,
+     "near_le1": 73
+    },
+    "LATENT_RC": {
+     "errors": 88,
+     "near_le1": 64
+    }
+   },
+   "near_threshold_share_of_test_items": 0.325
+  },
+  "apologize": {
+   "acc": {
+    "NO_MESSAGE": {
+     "mean": 0.6,
+     "per_seed": [
+      0.6417,
+      0.6167,
+      0.5917,
+      0.5417,
+      0.6083
+     ]
+    },
+    "ORACLE_UF_REFIT": {
+     "mean": 0.985,
+     "per_seed": [
+      0.975,
+      0.9833,
+      0.9833,
+      0.9833,
+      1.0
+     ]
+    },
+    "ORACLE_UF_FROZEN": {
+     "mean": 0.8917,
+     "per_seed": [
+      0.8583,
+      0.9417,
+      0.8917,
+      0.8917,
+      0.875
+     ]
+    },
+    "SCALAR_REFIT": {
+     "mean": 0.9367,
+     "per_seed": [
+      0.95,
+      0.9583,
+      0.9,
+      0.9583,
+      0.9167
+     ]
+    },
+    "SCALAR_FROZEN": {
+     "mean": 0.885,
+     "per_seed": [
+      0.8667,
+      0.925,
+      0.8917,
+      0.8667,
+      0.875
+     ]
+    },
+    "SYMBOLIC_ATTR_REFIT": {
+     "mean": 0.865,
+     "per_seed": [
+      0.8833,
+      0.8917,
+      0.8583,
+      0.8833,
+      0.8083
+     ]
+    },
+    "SYMBOLIC_ATTR_FROZEN": {
+     "mean": 0.8517,
+     "per_seed": [
+      0.8417,
+      0.8583,
+      0.8417,
+      0.8917,
+      0.825
+     ]
+    },
+    "ORACLE_UF_TRUEFACT": {
+     "mean": 1.0,
+     "per_seed": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "LATENT": {
+     "mean": 0.85,
+     "per_seed": [
+      0.825,
+      0.8583,
+      0.85,
+      0.9,
+      0.8167
+     ]
+    },
+    "LATENT_SHUFFLED": {
+     "mean": 0.5167,
+     "per_seed": [
+      0.5083,
+      0.4667,
+      0.5,
+      0.55,
+      0.5583
+     ]
+    },
+    "LATENT_REFIT": {
+     "mean": 0.905,
+     "per_seed": [
+      0.8833,
+      0.875,
+      0.9417,
+      0.9417,
+      0.8833
+     ]
+    },
+    "LATENT_RC": {
+     "mean": 0.8667,
+     "per_seed": [
+      0.8333,
+      0.8917,
+      0.8833,
+      0.8917,
+      0.8333
+     ]
+    },
+    "LATENT_RC_SHUFFLED": {
+     "mean": 0.5017,
+     "per_seed": [
+      0.575,
+      0.525,
+      0.525,
+      0.4333,
+      0.45
+     ]
+    }
+   },
+   "D1_frozen_cost_pts": {
+    "ORACLE_UF": 9.33,
+    "SCALAR": 5.17,
+    "SYMBOLIC_ATTR": 1.33
+   },
+   "D3_paired_LATENT_RC_minus_LATENT": {
+    "mean": 0.0167,
+    "se": 0.0079,
+    "wins": 4,
+    "n": 5,
+    "significant": true
+   },
+   "paired_LATENT_REFIT_minus_LATENT": {
+    "mean": 0.055,
+    "se": 0.0125,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "D2_fact_from_receiver_acc": 1.0,
+   "D4_errors_near_threshold": {
+    "LATENT": {
+     "errors": 90,
+     "near_le1": 70
+    },
+    "LATENT_RC": {
+     "errors": 80,
+     "near_le1": 65
+    }
+   },
+   "near_threshold_share_of_test_items": 0.3883
+  },
+  "action": {
+   "acc": {
+    "NO_MESSAGE": {
+     "mean": 0.415,
+     "per_seed": [
+      0.425,
+      0.375,
+      0.4167,
+      0.4583,
+      0.4
+     ]
+    },
+    "ORACLE_UF_REFIT": {
+     "mean": 0.8967,
+     "per_seed": [
+      0.8667,
+      0.8667,
+      0.8917,
+      0.9167,
+      0.9417
+     ]
+    },
+    "ORACLE_UF_FROZEN": {
+     "mean": 0.9517,
+     "per_seed": [
+      0.9583,
+      0.9333,
+      0.9167,
+      0.9667,
+      0.9833
+     ]
+    },
+    "SCALAR_REFIT": {
+     "mean": 0.8517,
+     "per_seed": [
+      0.8,
+      0.825,
+      0.8917,
+      0.825,
+      0.9167
+     ]
+    },
+    "SCALAR_FROZEN": {
+     "mean": 0.8717,
+     "per_seed": [
+      0.8833,
+      0.8167,
+      0.8833,
+      0.8417,
+      0.9333
+     ]
+    },
+    "SYMBOLIC_ATTR_REFIT": {
+     "mean": 0.7667,
+     "per_seed": [
+      0.7083,
+      0.75,
+      0.8,
+      0.7667,
+      0.8083
+     ]
+    },
+    "SYMBOLIC_ATTR_FROZEN": {
+     "mean": 0.7683,
+     "per_seed": [
+      0.75,
+      0.725,
+      0.7667,
+      0.8083,
+      0.7917
+     ]
+    },
+    "LATENT": {
+     "mean": 0.9,
+     "per_seed": [
+      0.9167,
+      0.875,
+      0.8917,
+      0.9,
+      0.9167
+     ]
+    },
+    "LATENT_SHUFFLED": {
+     "mean": 0.3633,
+     "per_seed": [
+      0.3667,
+      0.3167,
+      0.2833,
+      0.425,
+      0.425
+     ]
+    },
+    "LATENT_REFIT": {
+     "mean": 0.89,
+     "per_seed": [
+      0.9083,
+      0.8667,
+      0.875,
+      0.8833,
+      0.9167
+     ]
+    },
+    "LATENT_RC": {
+     "mean": 0.9083,
+     "per_seed": [
+      0.9167,
+      0.8833,
+      0.8917,
+      0.9167,
+      0.9333
+     ]
+    },
+    "LATENT_RC_SHUFFLED": {
+     "mean": 0.3767,
+     "per_seed": [
+      0.3417,
+      0.4917,
+      0.275,
+      0.4,
+      0.375
+     ]
+    }
+   },
+   "D1_frozen_cost_pts": {
+    "ORACLE_UF": -5.5,
+    "SCALAR": -2.0,
+    "SYMBOLIC_ATTR": -0.16
+   },
+   "D3_paired_LATENT_RC_minus_LATENT": {
+    "mean": 0.0083,
+    "se": 0.0037,
+    "wins": 3,
+    "n": 5,
+    "significant": true
+   },
+   "paired_LATENT_REFIT_minus_LATENT": {
+    "mean": -0.01,
+    "se": 0.0031,
+    "wins": 0,
+    "n": 5,
+    "significant": false
+   }
+  }
+ },
+ "claim_limit": "exploratory on attempt-4 test items (already seen); not a canon verdict",
+ "seconds": 2309.9
+}

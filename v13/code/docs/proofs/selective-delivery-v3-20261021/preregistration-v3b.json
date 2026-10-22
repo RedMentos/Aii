@@ -1,0 +1,15 @@
+{
+ "schema": "V13_SELECTIVE_DELIVERY_V3B_PREREGISTRATION_V1",
+ "utc": "2026-10-21T12:55:49.400118+00:00",
+ "package": "WP-T9 v3b: re-run of v3 after a native bug fix in the scoped guard",
+ "why": "v3 result (bench-results/selective-delivery-v3-20261021) showed foreign firing in the combined arm that the last-user scope should block. Cause: the embedding hook of v13_memory_hook.h also inserts every decoded prompt chunk into the guard context, so natively the scope only held for the cached prefix. Fixed: with explicit_ctx and scope_mark>=0 only generated tokens (n==1) join. Torch path was correct. v3 verdicts stay as recorded; v3 measured guard_distinct with an ineffective native scope.",
+ "script": "code/scripts/selective_delivery_v3_bench.py (unchanged)",
+ "script_sha256": "78882369416e3c401d39a72381f53293c62ef5d16de0f7c129ab81c6ff0d9733",
+ "sparse_memory_sha256": "c84a0358a0503c81db93f5a420d7a8df496dab96bf6a50a764894357109e3f76",
+ "hook_header_sha256": "824b49b1e2b87f613acb1d542269aab6a28445ad09559361d4932fa040e3eebb",
+ "traces": "the two v3 trace artifacts reused byte-identically (v1 and fix .bin, same hashes as the v3 report binding); only the native binary changes",
+ "decision_rule": "identical to code/docs/proofs/selective-delivery-v3-20261021/preregistration.json (H1 KEY_SEPARATION_SUPPORTED, H2 SELECTIVE_WINS_CANDIDATE); reported in addition: foreign-firing rows of combined and selective vs v3",
+ "expectation": "combined and selective foreign firing drop clearly; trace arms unchanged (no fact words in the system prompt); H2 may still fail on paraphrase values",
+ "single_run": "No re-run with changed settings counts as this attempt; a FAIL stays a FAIL.",
+ "hardware": "Linux x86_64 cloud CPU, 4 threads; not Redmi"
+}

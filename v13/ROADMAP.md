@@ -5,6 +5,17 @@ Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STA
 `status/completion-ledger.json`, `code/specs/component-contracts.json`,
 `code/docs/REMAINING_IMPLEMENTATION.md`. Kein Code wurde für diese Roadmap geändert.
 
+## Nachtrag 22.10.2026: Handy-Bedienung – APK oder Termux? (WP-UI1, Thread „APK oder Termux-Oberfläche“, Branch `claude/project-thread-e53fle`)
+
+Entscheidung (Empfehlung, keine Nutzerfrage nötig): **in Termux bleiben, keine APK jetzt.** Kein Tempo-Gewinn durch
+eine APK (gleicher nativer llama.cpp-Code), eher mehr RAM-Verbrauch, gleiche Probleme mit dem Android-Hintergrund-Killer,
+viel Aufwand ohne PC. Keine Web-Oberfläche auf localhost (jede App erreicht localhost; Befehle bleiben TTY-only).
+Gebaut: `code/KNOEPFE_EINRICHTEN.sh` (fünf Termux:Widget-Knöpfe: Chat mit Wach-Halter, Status, Befehle, Notaus, Stillstand), `code/docs/BEFEHLE.md` (alle Befehle mit Erklärung in einfachem Deutsch, zum Scrollen; `:befehle [Wort]` im Chat filtert; Test prüft, dass jeder Befehl in `operator.py` erklärt ist),
+`code/v13/phone_halt.py` (Chat übernimmt Knopf-Dateien aus `~/v13/control/` mit denselben Funktionen wie `:notaus`/
+`:stillstand`; nur Einschalten, Aufheben nur getippt; wartender Stopp greift beim Start), 2 Zeilen in `v13/ui.py`,
+`tests/test_phone_halt.py` (6 Tests). Hash-gebundene Dateien (runtime/runners/store/memory_server) unverändert.
+Begründung + Handy-Prüfschritte: `code/docs/HANDY_OBERFLAECHE.md`. Offen: Prüfung am Redmi (Testliste Punkt „Knöpfe“).
+
 ## Nachtrag 22.10.2026: Body-Lernpfad prüfen, Promptverlust begrenzen
 
 Isoliertes Codex-Paket auf `codex/learning-path-audit-20261022`, Basis `9436eb7`:
@@ -27,9 +38,13 @@ Dieses Paket ergänzt WP-Z12/STEP6 und überschreibt keine übrigen Arbeitspaket
 - **WP-SAFE2 `:stillstand`** (`v13/standstill.py`, `tests/test_standstill.py`): Notaus + Warteschlange + Age-Freeze in einem Befehl, bestätigter Stillstand erst wenn der laufende Vorgang zu Ende ist, bleibt über Neustart, Aufheben nur der eigenen Teile, meldet wieder anlaufende Hintergrund-Aufgaben. Grund: unter `:notaus` liefen Lernen/Traum/Replay/Training weiter (GPT-Punkt 2 bestätigt).
 - Neue offene Pakete daraus:
   - **WP-AGE0a** späte Selbstkorrektur ohne Age-4-Recht — **GEBAUT 2026-10-22 (gleicher Branch), Standard SHADOW**: neues Age-0-Recht `late_correction` (öffnet keine anderen Selbst-Nachrichten), Nachrichtenart `correction`, Modus `:self correction off|shadow|deliver` (gespeichert; unlesbar → off). `shadow` = Live-Verhalten unverändert (HELD-Hinweis) + eigener Ring mit dem Satz, der gesagt worden wäre (kein Freitext in Telemetrie). `deliver`: Text „Möglicher Fehler in meiner letzten Antwort (Sicherheit: niedrig|mittel; Grund)“, gleiche Relevanz-/Doppel-/Raten-/Pausen-Tore; alte Antwort wird nie umgeschrieben. Tests `tests/test_late_correction.py` (9). Offen: vorregistriert messen, wie oft der Erkenner (fehlende Zahlen / offener Punkt) falsch anschlägt, bevor `deliver` empfohlen wird; die Erkennung ist keine allgemeine Widerspruchserkennung.
+  - **WP-AGE0c** Fehlalarm der späten Selbstkorrektur — **GEMESSEN 2026-10-22, `AGE0C_STAY_SHADOW`** (Branch `claude/project-thread-ozmbv5`): vorregistriert (K1 Fehlalarm ≤ 10 %, K2 ≥ 50 % der Alarme nennen den echten Fehler, K3 schlägt bei falschen Antworten ≥ 20 Punkte öfter an als bei richtigen), Wiedergabe von 1137 echten B1/B2-Angeboten aus STEP2 + Kalibrierung gegen richtige und echte C3-Antworten, echter Code = Nachbau in allen Paaren. Heutiger Erkenner: **100 %** Fehlalarm bei richtiger JSON-Antwort, 41 % bei knapper, 19 % bei Antwort mit Fragewiederholung; **0 %** begründete Alarme, **0** Trennschärfe. Grund: `needs_reentry` steht in allen 400 STEP2-Angeboten auf true (der Körper sieht die Antwort nie), die „fehlenden Zahlen“ sind Echos der Frage. Auch die Varianten ohne `needs_reentry` und mit Echo-Filter erkennen keinen einzigen echten Fehler. `deliver` wird nicht empfohlen, Standard bleibt shadow. Befund `code/docs/proofs/continuation-20261022/age0a-false-alarm/BEFUND.md`, Skript `code/scripts/age0c_false_alarm.py`, Tests `code/tests/test_age0c_false_alarm.py` (4).
+  - **WP-AGE0d** (neu, offen): späte Prüfung, die die Antwort **sieht** (Antwortzahlen mit dem Rechenwerkzeug nachrechnen, oder Körper bekommt Antwort + Quelle und muss einen Widerspruch mit Zitat nennen). Neu vorregistrieren, an frischen Daten mit richtigen **und** falschen Antworten messen; erst dann erneut über `deliver` entscheiden.
   - **WP-AGE0b** Organ-Checkpoint — **GEBAUT 2026-10-22 (gleicher Branch)**: `v13/organ.py`, `:organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>]`, Tests `tests/test_organ.py` (9). Ein Organ = eine Modellrolle; Mitglieder: Modell (Revision, sha256, Bridge-Key; nur per Prüfsumme), aktive Köpfe/Adapter der Generation, deren `encoder_role` die Rolle ist oder die von ihrer Revision abhängen (z. B. `b1_predictor`, `output_adapter`), B3-Brücken-Manifeste, Slot-Assets. Sicherung nur im Leerlauf (am besten nach `:stillstand`). Wiederherstellen schreibt eine neue Generation, in der **nur dieses Organ** zurückgestellt wird (bisher ging Rücknahme nur rückwärts über alle Komponenten), verweigert bei gewechseltem Modell oder beschädigter Sicherung, Brücken erst nach erfolgreichem Schreiben. Danach ist globales `:rollback` geschlossen (würde die Organ-Rücknahme sonst still überschreiben). Nicht enthalten: Optimiererzustand der Offline-Trainer, GGUF-Dateien, Gedächtnis (bewusst nur anhängend), Köpfe außerhalb der Generation.
   - Nachtrag SAFE2: `:stillstand` bestätigt jetzt auch, dass der Koordinator geparkt ist (ein gerade laufender Zeitplaner-Tick wurde vorher nicht abgewartet; gefunden durch einen sporadisch fehlschlagenden eigenen Test). Gelöst ohne Änderung an `runtime.py` (hash-gebunden durch `integrated_candidates`), über ein beobachtendes `wake`-Ereignis.
   - **WP-LP1** Lernpfad mit Komponenten-Gradienten (GPT-Plan PR #29) — **GEMESSEN 2026-10-22, `LP1_NO_ATTRIBUTABLE_GAIN`**: vorregistriert, C3-Master LFM2.5-350M, 3 Arme × 3 Saaten × 30 Schritte. Der latente Term erreicht die LoRA-Parameter (8 % → ~21 % Gradientenanteil), bringt aber nichts (Umformulierungen 13 vs. CE 14 von 18) und verdoppelt die Drift (KL .017 → .035). Auch ein **falsch zugeordnetes** Ziel hebt den Kosinus fast gleich (.75 vs .79) → Kosinus ist kein Lernbeleg. `jepa_weight` bleibt 0. Befund `code/docs/proofs/continuation-20261022/lp1-component-gradients/BEFUND.md`. Nächster Schritt: Ziel, das die richtige Zuordnung belohnt (kontrastiv oder Predictor + Slow-Target), Nutzen an neuen Aufgaben messen, Drift-Grenze; B1/B2 erst mit Trainingsport.
+  - **WP-LP2** Lernziel, das nur die richtige Zuordnung belohnt (Predictor + langsames EMA-Ziel + Kontrast/InfoNCE gegen die anderen Fakten) — **GEMESSEN 2026-10-22, `LP2_ALIGNS_NO_GAIN`** (Branch `claude/project-thread-h8vj3v`): vorregistriert, C3-Master LFM2.5-350M, 16 Fakten, 3 Arme × 4 neue Saaten × 30 Schritte, Hauptgröße 32 neu geschriebene Umformulierungen. Der Predictor ordnet neue Fragen fast fehlerfrei dem richtigen Fakt zu (.41 → .99; bei falscher Zuordnung landet er sicher beim falschen, .91) → anders als der LP1-Kosinus trennt diese Probe richtig/falsch sauber. **Aber kein Nutzen:** neue Aufgaben 110 = CE 110, falsche Zuordnung 108 von 128; Drift nur +8 %, kein Vergessen. Grund: auch eine falsche Zuordnung ist fast gleich lernbar (NCE .27 vs .21), die Zuordnung sitzt im Predictor, die Antwort hängt nicht davon ab; alle Arme scheitern an denselben 5 Fragen. `jepa_weight` bleibt 0. Befund `code/docs/proofs/continuation-20261022/lp2-assignment-objective/BEFUND.md`, Skript `code/scripts/lp2_assignment_objective.py`.
+  - **WP-LP3** (neu, offen): Antwort muss vom vorhergesagten Zustand **abhängen** (Predictor-Ausgabe als Soft-Prefix oder Speicher-Schlüssel, der den Fakt holt); neu vorregistrieren, mit Verschiebungs-Kontrolle und der LP2-Zuordnungsprobe, gemessen an den 5 festen Fehlfragen + neuen schwereren Umformulierungen.
   - Kleiner Rest: Promptgrenzen-Kandidat lässt Paare mit nur 1 Prompt-Token durch (Mindestanteil erst mit Daten festlegen).
 
 ## 0. Ziele und Stand nach Blueprint (Zielabgleich 2026-10-21) — GILT VOR §1–§4
@@ -1296,7 +1311,14 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Fix: `Bridge(recv_cond=dim)` + `Bridge.refit_readout(...)` (Standard aus, Tor zu = alter Kopf bitgleich, Tests). Versuch 5 vorregistriert (`9d52f49`) vor den Zuständen: frische Saat 20261105 (0 Überschneidung mit Versuch 3/4), neue B1/B2-Zustände, Gate/64 B/Splits unverändert.
 - Ergebnis privat: **escalate 90,5 %** (Attribut-Wörter 84,7, Label 78,7, SCALAR 89,2) → **Kanon-L1 PASS** (alle Kriterien, Rollen-Verlust 0, OOD 1,0 %, Reload bitgleich); strikt gegen SCALAR FAIL (n.s.). **apologize 89,0 vs Attribut-Wörter 88,5 → FAIL** (Nutzen +0,003 n.s.). **action (Replikation) 86,7 vs Label 83,5 → FAIL** (n.s.); auch das Versuch-4-Rezept 86,5 → der action-PASS aus Versuch 4 hängt von der Saat ab.
 - Folge: **L2-Prefix-SHADOW für `private/escalate` erlaubt** (Aufgabe ohne billiges Sender-Label-Wort, wie Z4b gefordert); vorher L1-PASS auf eigenen Seeds prüfen. Autorität 0, Runtime unverändert. Beleg `bench-results/b3-l1-v5-20261021/README.md`, Brücke `bridge_private_escalate_B1_TO_B2.*`; Zustände nur im Projektordner.
-- Nächstes Paket: **WP-Z4d** L1-Robustheit (escalate + action auf 2 weiteren frischen Saaten, vorregistriert) und danach L2-Prefix-SHADOW für `private/escalate`.
+- ~~Nächstes Paket:~~ (erledigt, siehe WP-Z4d unten: escalate **nicht repliziert**, kein L2-Schritt) **WP-Z4d** L1-Robustheit (escalate + action auf 2 weiteren frischen Saaten, vorregistriert) und danach L2-Prefix-SHADOW für `private/escalate`.
+
+### WP-Z4d B3 L1 Robustheit auf 2 frischen Saaten (Cloud, Modelle) — ERLEDIGT 2026-10-22, **escalate NICHT REPLIZIERT** (Thread „B3 L1 frische Seeds“, Branch `claude/project-thread-y2mnt5`)
+- Vorregistriert (`b17b8ec`) vor den Zuständen: Versuch-5-Rezept unverändert (`b3_l1_v6_bench.py` ruft `b3_l1_v5_bench` auf, nur Datensaat getauscht), Saaten 20261201 und 20261202, je 600 Zeilen, 0 Überschneidung mit Versuch 3/4/5 und untereinander, neue B1/B2-Zustände. Regel: escalate gilt als repliziert nur bei Kanon-PASS auf beiden Saaten.
+- Ergebnis privat: **escalate 86,2 / 85,5 %** gegen Attribut-Wörter 84,5 / 81,3 → Nutzen +0,015 (3/5) / +0,040 (4/5), beide n.s. → **Kanon FAIL auf 0 von 2 → NOT_REPLICATED**. Label-Wort, EXACT, Kontrollen, Rollen, OOD, Reload jeweils bestanden; es fehlt nur der Abstand zu den Attribut-Wörtern. apologize FAIL/FAIL (89,3 / 91,2 vs 85,5 / 90,7). action PASS (Saat 1, auch strikt) / FAIL (Saat 2, Label-Wort +0,027 n.s.) → über 4 frische Datensätze 2 PASS, 2 FAIL = **saatabhängig**.
+- Beobachtung (nicht vorregistriert): LATENT liegt auf allen 3 frischen Saaten vor den Attribut-Wörtern (escalate +0,056/+0,015/+0,040), aber nur 1–4 Punkte bei 120 Testzeilen je Split → zu wenig Teststärke; SCALAR bleibt 3–5 Punkte vorn.
+- Folge: Versuch-5-PASS gilt als Saat-Effekt. **B3_LATENT bleibt unavailable, L2 gesperrt, kein L2-Prefix auf escalate.** Kein weiterer Leser-Feinschliff auf dem 600-Zeilen-Design; ein nächster Versuch bräuchte mehr Testdaten je Saat (Teststärke vorab berechnen) oder eine Aufgabe, bei der Wörter die abgestufte Größe nicht tragen können. Beleg `bench-results/b3-l1-v6-20261022/README.md`; Zustände nur im Projektordner.
+- Ehrlich: Saat 20261202 wurde durch einen Container-Neustart unterbrochen und mit gespeicherten Zuständen und gleichem Skript neu gestartet (escalate/apologize-Zeilen beider Läufe identisch). Der Report-Eintrag `overlap…attempt5` zeigt fälschlich 600 (Vergleich nach dem Saat-Tausch); nachgerechnet 0.
 
 ### WP-Z5 Fokus-Koalition gegen §99-Kontrollen (Cloud, Modelle) — GEMESSEN, Gate PARTIAL
 - **Status 2026-10-21: gemessen, Gate bleibt PARTIAL (Thread „Z5 Koalition gegen Voll-Kontext“, Branch `claude/project-thread-hmopsm`).** Vorregistriert, `code/scripts/z5_focal_controls.py`, Beleg `code/bench-results/z5-focal-controls-20261021/` (README, z5.json). 60 Aufgaben × 5 Läufe, Effort max, Kontroll-Arme im selben Turn aus denselben Angeboten (Wiedergabe-Treue 300/300). Bestanden: Koalition 186/300, Voll-Kontext 183, feste Slots 193, nur Retrieval 184, ohne Hypothesen 195; Koalition vs. Voll-Kontext 17:14 p = 0,72, Rauschband 7 → „schlägt Voll-Kontext“ **FAIL**, nicht schlechter als Retrieval/feste Slots. 7 Eigenschaften gemessen: Wettbewerb, Re-entry, Quellbindung, Halten/Wiederherstellen ja; **Kapazitätsgrenze, Ersetzung, Interrupt treten nie auf** (max. 3 Kandidaten bei 4 Slots). Antwortendes Organ bei Effort max: B1/B2, nie C3. Folge: neue Vorregistrierung mit Kapazitätsdruck (Ablenker-Erinnerungen, mehrere Turns, Embedding-Retrieval).
@@ -1315,13 +1337,49 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Messung: Holdout 0 Fehler; frische Modell-Umformulierungen v1 71 / v2 20 Fehler (8/57 Sätze). Fester Wortleser allein reicht nicht; Grundregel „Außenwirkung nur als Vorschlag“ trägt die Garantie. Befund `code/docs/proofs/continuation-20261021/user-rules/BEFUND.md`.
 - Offen: v3 mit den 8 Fehlerformen + frische Runde 3; LEARN/Merken im Gedächtnis durchsetzen; feinere Wirkungsklassen.
 
+### WP-UR3 Regel-Leser v3 + versiegelte Runde 3 — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V3_UNSAFE` (Thread „Regel-Leser Version 3“, Branch `claude/project-thread-c62rfz`)
+- v3: Lexikon als Daten mit Beleg je Eintrag (`v13/userrules_lexicon.json`, `extend()` lehnt versiegelte Sätze ab), „vorher/vor dem … + zeigen/sagen“ = erst fragen, „rät ab / warnt vor“ = Rückfrage, Ich-Satz an die KI („I forbade you“) zählt, Verbformen, offene Rückfragen mit Vorschlag („Mein Vorschlag: als Verbot lesen“).
+- Reihenfolge: Vorregistrierung → Runde 3 roh und ungelesen committet (Gemma 3 4B, Llama 3.2 3B, SmolLM3 3B; 354 Sätze) → v3 eingefroren → Audit von Hand (149 Haupt, 105 Sprachwechsel nur Nebenbefund) → Messung.
+- Ergebnis Runde 3: v3 **58 Sicherheitsfehler in 19/149 Sätzen** (11 übersehene Verbote), v2 92 in 29. Bekannte Sätze (Dev, Holdout, Runde 1, Runde 2): v3 0 Fehler. Übervorsicht 31 %.
+- Neue Fehlerformen: lässige Bitte als Frage („could you like, not …?“), Verbot ohne Verneinung („put the calculator away“, „stay offline“), „warte bis zur Freigabe“, „I'd prefer if you didn't … without me saying you can“, Etiketten.
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v3/BEFUND.md`. Grundregel bleibt: Außenwirkung nur als Vorschlag.
+- Offen: v4 mit Grundsätzen statt Wortlisten (an die KI gerichtete Bitte + Halte-Signal ⇒ mindestens Rückfrage; Fragezeichen macht Bitte nicht zur Nicht-Regel) + versiegelte Runde 4 mit neuen Erzeugern und deutschem Auftrag.
+
+### WP-UR4 Regel-Leser v4 + versiegelte Runde 4 — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V4_UNSAFE` (gleicher Thread/Branch)
+- v4 aus Runde-3-Fehlern: höfliche Frage-Bitten („could you not …?“) sind Bitten, „make sure not to“, Schutzwörter („preserve“, „leave as they are“), Halte-Signale ohne Verneinung („put away“, „stay offline“, „skip“), „until I give the okay“, Wort als Ziel und Handlung („phone“) wird weiter, „…, okay?“ ist keine Frage. Bekannte Sätze inkl. Runde 3: 0 Fehler.
+- Runde 4 (Phi-4-mini, Granite 3.3 2B, EuroLLM 9B; 630 roh, 93 geprüft, 67 deutsch): v4 **13 Fehler in 6 Sätzen**, alle deutsch (v3, v2 gleich). Englisch 0/26.
+- Gefährlichste Form: Erlaubnis mit Bedingung („Du darfst nur … wenn …“, „erst … wenn ich erlaube“) wird als Lockerung gelesen. Dazu „bleib ab von“, „Kein Versand!“, „grünes Licht“, „keine Dateien herunterladen“ (Ziel macht Verbot zu eng).
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v4/BEFUND.md`.
+- Offen: v5 (Bedingung vor Lockerung, deutsche Halte-Formen, Nomen zu Handlungen, Handlung mit eigenem Ziel) + Runde 5 aus deutschen Quellsätzen.
+
+### WP-UR5 Regel-Leser v5 + deutsche Prüfsätze — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V5_UNSAFE` (gleicher Thread/Branch)
+- v5 aus Runde-4-Fehlern: Bedingung („nur/erst … wenn“, „only if“, „meine Erlaubnis“) ist immer „erst fragen“, nie Lockerung; deutsche Halte-Formen (verzichte auf, bleib ab, in Ruhe lassen, beende, schütze), Nomen „Versand“, Herunterladen betrifft immer das Internet. Bekannte Sätze inkl. Runde 4: 0 Fehler.
+- T1 neuer deutscher Autor-Satz `holdout_de2` (46): v5 25 Fehler in 7 Sätzen (v4 27/8). T2 Runde 5 (Mistral 7B, Falcon 3 7B, OLMo 2 7B; 100 deutsch): v5 45 Fehler in 19 (v4 52/23, v3 63/25). Bedingung nie mehr als Lockerung gelesen.
+- Lehre nach drei frischen Runden: fester Wortleser wird pro Version besser, konvergiert auf offener deutscher Alltagssprache aber nicht gegen 0 („Fass mein Handy nicht an“, „an niemanden weiter“ fehlen noch).
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v5/BEFUND.md`.
+- Offen (v6, Architektur): breites Netz (jedes Halte-/Verneinungs-/Bedingungssignal mit Handlung oder Ziel ⇒ mindestens Rückfrage mit Vorschlag) + Bestätigung der Lesart durch den Nutzer, erst dann feste Regel; Messung: kein Regelsatz ohne Rückfrage, Rate unnötiger Rückfragen.
+
+
+### WP-UR6 Regel-Leser v6 (breites Netz) + versiegelte Runde 6 — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V6_UNSAFE` (gleicher Thread/Branch)
+- v6 = Architekturwechsel: Liest der genaue Leser einen Satz als „keine Regel“ oder „Lockerung“, prüft ein Netz Verneinung, Halten oder Bedingung zusammen mit einer bekannten Handlung oder einem bekannten Ziel. Trifft es zu, entsteht eine offene Rückfrage (Grund `NET`, gilt bis zur Antwort als „erst fragen“). Das gilt auch über Teilsätze hinweg. Dazu kommen trennbare deutsche Verben und ein Hinweis zum Berichtigen bei festen Regeln. Bekannte Sätze: 0 Fehler.
+- T1 `holdout_de3` (60 deutsche Autor-Sätze): v6 1 Fehler in 1 Satz (v5 19 in 6).
+- T2 Runde 6 (Qwen 2.5 7B, EXAONE 3.5 7.8B, GLM-4 9B; 181 deutsche Sätze): v6 29 Fehler in 11 Sätzen (v5 57 in 20). Übersehene Verbote 7 (v5 14).
+- Kosten: unnötige Rückfragen bei 38 % (T1) bzw. 30,4 % (T2) der Sätze ohne Regel. Das verfehlt K6 (höchstens 30 %) knapp. Übervorsicht 30–34 %.
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v6/BEFUND.md`.
+- Offen (v7):
+  - Sperr-Wörter ohne Verneinung (ausgeschlossen, abgeschafft, blockiert).
+  - Ziel-Nomen per Wortende (Zusatzprogramm, Internetverbindung), Telefon/Handy als ganzes Gerät.
+  - „sag mir, wenn …“ und „erstmal“ als Bedingung.
+  - Doppelpunkt-Etiketten als ganzer Satz.
+  - Weniger Rückfragen bei Verneinung über Dritte.
+  - Handy-Test, ob das Nachfragen stört.
 ### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — OFFEN
 - 24.22 Wake (R4 im Blueprint-Sinn; Ergebnisse der R4-Werkzeug-Teile hier einbringen), 24.23 Effort (R5), 24.17 Deliberation, 24.25 Observer-Nutzen, 24.26 Broadcast-Brücke, 24.32 Lebenszyklus Scaffold→gelernte Route je Fähigkeit. Typisierte Modulatoren (G-MODULATOR-SPECIFICITY-001) mit echten Modellen.
 
 ### WP-Z7 Ein Redmi-Paket für alle Handy-Pflichtmessungen (Nutzer, WP-R) — OFFEN
 - Ein Befehl wie `WERKZEUG_TESTEN.sh`: TRAIN_RUNNER_PROOF (G-TRAIN-RUNNER-PROOF-001), Langlauf (G-MOBILE-LONGRUN-001), §24.14 Overhead, §24.33 Residenz, Proceduralisierung Latenz/Energie, Werkzeug-Vorhersage. Ergebnis-ZIP hochladen. Bau in der Cloud, Lauf nur durch den Nutzer.
 
-### WP-Z8 Age-Plastizität entscheiden (Nutzer) — OFFEN
+### WP-Z8 Age-Plastizität entscheiden (Nutzer) — ENTSCHIEDEN 2026-10-22: `noise_aware` ist Standard, Zitat-Kontext an (`NUTZER_ENTSCHEIDUNGEN.md`); offen nur noch der Wiederöffnen-Test
 - Wahl `age_plasticity_policy = boot | stable_reopen | noise_aware` (offen seit 10.10., Messung in WP-AB). Danach Wiederöffnen-Test für G-AGE-REOPEN-001.
 
 ### WP-Z9 Dream-Kontrolle „policy-only“ (Cloud) — OFFEN
@@ -1366,13 +1424,18 @@ Auswertung: `research/HARNESS2_AUSWERTUNG.md` (arXiv 2610.14224, `google-researc
 Parser, Rezepte) mit Beleg verbessern, Gewichte fest. Reihenfolge: nach den Z-Paketen; HX1 und HX3 klein, dürfen parallel laufen.
 Sicherheits-/Moralregeln sind nie änderbar. Alles vorregistriert, Autorität 0 bis Gate-PASS, Nutzerfreigabe vor Übernahme.
 
-### WP-HX1 Drumherum als Vorschlagsart in AG8 (Cloud, klein, kein Modell) — OFFEN
+### WP-HX1 Drumherum als Vorschlagsart in AG8 (Cloud, klein, kein Modell) — ERLEDIGT 2026-10-22 (Thread „Harness-Pakete HX1 HX3 HX4“, Branch `claude/project-thread-4iqpro`)
 - `agi/self_improve.py`: neue Art `harness` mit Erlaubt-Liste (Körper-Prompts, Werkzeug-Hinweise, Parser-Regelsätze, Rezept-Vorlagen); gleicher Regressionsschild, Nutzerfreigabe, Rückkehrpunkt.
+- Gebaut: `code/v13/agi/harness.py` mit fester Ziel-Liste (20 Ziele in 4 Arten: Prompt-Teile `answer_rules/digest/task_context/hypotheses/clarify/replay/duplex_handoff/welcome` je en/de, `tool_hint.list_note`, `tool_hint.eligibility_note`, `parser.listarith_extra`, `recipe.list_result`). Nie Ziel: `system`, `conduct`, Operator-Regeln, Nutzer-Regeln/Verbote, Age, Kanal, Knobs. Zweites Netz: Texte, die Regeln abschwächen („ignore the rules“, „Regeln gelten nicht“, …), werden abgelehnt (Wort-Heuristik, Lücken möglich; Hauptschutz ist die Liste + Freigabe). `HarnessLibrary.apply()` nimmt nur einen APPROVED-Vorschlag mit bestandenem Schild und genau den freigegebenen Werten, einmal; `rollback(ziel)` geht auf die Vorversion bzw. den Live-Standard zurück; `manifest_fields()` liefert `harness_hash` für das Generation-Manifest.
+- **Autorität 0 / SHADOW:** kein Live-Pfad liest Überschreibungen (`live_consumers: 0`); `resolve()`/`overlay()` nur für Evaluatoren/Benches. Live-Anschluss erst nach HX2-PASS und Nutzerfreigabe. Laufzeit-Dateien unverändert.
 ### WP-HX2 Vergleich auf derselben Aufgabe ohne Gold-Antwort (Cloud, Modelle) — OFFEN
 - Referenz + k Varianten gleicher Seed, Verhaltens-Unterschiede protokollieren, allgemein/fachlich getrennt; erste Probe B2-Regel-Zitat STEP2; Gate Holdout-Gewinn KI>0, keine Achse schlechter; Kontrolle „ungeführte Änderung“.
-### WP-HX3 Erfahrungs-Bibliothek (Cloud, klein) — OFFEN
+### WP-HX3 Erfahrungs-Bibliothek (Cloud, klein) — ERLEDIGT 2026-10-22 (gleicher Thread/Branch)
 - Eintrag je übernommener Änderung (Situation, Lehre, Beleg, Generation), nur mit Beleg; Nachschlagen nach Aufgabentyp; Ablation mit/ohne.
-### WP-HX4 Blinder Auswähler für Benches (Cloud, klein) — OFFEN
+- Gebaut: `code/v13/agi/experience.py`. Eintrag nur bei APPROVED + Schild bestanden + mindestens eine existierende Beleg-Datei (sha256 gespeichert); `verify()` macht Einträge mit geänderter/fehlender Datei STALE; `retire(vorschlag)` nach Rücknahme; `lookup(aufgabentyp)` liefert nur ACTIVE, jede Zeile `authority: DATA_NOT_INSTRUCTION`; Texte gekappt, regelschwächende Wörter abgelehnt; ein Eintrag je Änderung. `ablation(aufgaben, löser, bibliothek)` vergleicht dieselben Aufgaben mit/ohne. Die echte Ablation mit Modellen gehört zu HX2 (noch offen).
+### WP-HX4 Blinder Auswähler für Benches (Cloud, klein) — ERLEDIGT 2026-10-22 (gleicher Thread/Branch)
+- Gebaut: `code/v13/agi/blind_select.py` `blind_select(kandidaten, richter, seed)`: Richter sieht nur Buchstaben + Text (Herkunftsnamen im Text geschwärzt); Zuordnung vorher per Hash versiegelt, nach der Wahl aufgedeckt (`verify()` prüft); zwei Runden in umgekehrter Reihenfolge — wählt der Richter verschiedene Ausgaben (Positions-Vorliebe), ist das Ergebnis INCONSISTENT; Fehler oder unbekannter Buchstabe = NO_PICK, nie stiller Standard.
+- Tests: `code/tests/test_harness_hx.py` (10 Tests für HX1/HX3/HX4, keine Modelle). Nächster Schritt: WP-HX2 (Referenz + Varianten auf derselben Aufgabe, erste Probe B2-Regel-Zitat STEP2) nutzt alle drei Teile.
 ### WP-HX5 Drumherum-Protokolle als Lerndaten (Evo2-Idee, arXiv 2610.13025) — GESPERRT bis HX2 PASS
 
 ### WP-DS1..DS3 aus DeepSeek-Kritik (2026-10-21, Thread „DeepSeek-Kritik gegen Stand prüfen“, PR #25)
