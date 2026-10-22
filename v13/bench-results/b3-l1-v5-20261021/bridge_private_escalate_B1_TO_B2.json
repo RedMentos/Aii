@@ -1,0 +1,129 @@
+{
+ "train": {
+  "epochs": 10,
+  "lr": 0.003,
+  "batch": 64,
+  "samples": 360,
+  "last": {
+   "ce": 0.0052,
+   "var_hinge": 0.4235,
+   "decorrelation": 0.5171,
+   "slot_overlap": 0.0106,
+   "aux_mse": 0.0087
+  },
+  "first": {
+   "ce": 0.0437,
+   "var_hinge": 0.3686,
+   "decorrelation": 0.9119,
+   "slot_overlap": 0.0102,
+   "aux_mse": 0.1584
+  }
+ },
+ "readout_refit": {
+  "l2": 0.1,
+  "samples": 360
+ },
+ "revision": "b3-bridge-v1",
+ "direction": "B1_TO_B2",
+ "d": 2048,
+ "K": 4,
+ "r": 8,
+ "h": 16,
+ "classes": 2,
+ "aux": 2,
+ "recv_cond": 48,
+ "sender_revision": "bench:LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+ "receiver_revision": "bench:Qwen3.5-0.8B-Q4_0.gguf",
+ "sha256": "f23734d308d6716ea1e3dd88e87912677d1f7978d0c0d6ef03b730b30c39dfe5",
+ "calibrated": true,
+ "budget": {
+  "params": {
+   "selector": 8192,
+   "projector": 16384,
+   "receiver_projector": 512,
+   "gate": 1,
+   "readout_residual": 32,
+   "input_norm": 4096
+  },
+  "param_count": 29217,
+  "weights_bf16_bytes": 58434,
+  "message_bf16_bytes": 64,
+  "slot_buffer_bf16_bytes": 16384,
+  "total_bytes": 74882,
+  "age0_ok": true,
+  "claim_limit": "arithmetic payload, not RSS"
+ },
+ "created_wall_time": 1792607501.314164,
+ "l1_gate": {
+  "gate": "G-CALLOSUM-UTILITY-002",
+  "level": "L1",
+  "verdict": "PASS",
+  "criteria": {
+   "beats_no_message": {
+    "mean": 0.265,
+    "se": 0.0201,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "beats_latent_shuffled": {
+    "mean": 0.3117,
+    "se": 0.0251,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "beats_latent_random": {
+    "mean": 0.2417,
+    "se": 0.0249,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "utility_beats_exact": {
+    "mean": 0.1611,
+    "se": 0.0111,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "utility_beats_control": {
+    "mean": 0.1796,
+    "se": 0.0315,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "utility_beats_symbolic": {
+    "mean": 0.0561,
+    "se": 0.019,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "role_retention": {
+    "drop": 0.0,
+    "significant": true
+   },
+   "receiver_ood": {
+    "rate": 0.01,
+    "significant": true
+   },
+   "restart_reproducibility": {
+    "significant": true
+   }
+  },
+  "utility_mean": {
+   "NO_MESSAGE": 0.0,
+   "EXACT": 0.0999,
+   "CONTROL": 0.0814,
+   "LATENT": 0.261,
+   "LATENT_SHUFFLED": -0.0467,
+   "LATENT_RANDOM": 0.0233,
+   "SYMBOLIC": 0.2049
+  },
+  "missing_baselines": [],
+  "consequence": "L2 prefix SHADOW test allowed; LATENT authority stays 0"
+ },
+ "task": "private/escalate"
+}
