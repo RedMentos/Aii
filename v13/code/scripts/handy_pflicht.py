@@ -81,6 +81,22 @@ def run_step(step, stage, home, folder, log):
     return {'step': step, 'status': status, 'exit_code': rc, 'minutes': round((time.monotonic()-t0)/60, 1), 'deadline_h': deadline/3600}
 
 
+def enable_eligibility(home):
+    """User decision 2026-10-22 („Ja, beide an im Handy-Paket“): the eligibility tool is enabled in the installed home before
+    the measurements (Age 0 = SHADOW with comparison; rules only from the fixed reader). Same call as `:growth enable eligibility`."""
+    try:
+        from v13.runtime import Runtime
+        from v13.agi import hub
+        r = Runtime(home)
+        try:
+            hub(r).tools.enable('eligibility'); return {'eligibility_enabled': True, 'eligibility_reader': r.cfg.get('eligibility_reader'),
+                                                         'tool_answer_first': r.cfg.get('tool_answer_first')}
+        finally:
+            r.close()
+    except Exception as exc:
+        return {'eligibility_enabled': False, 'error': str(exc)[:200]}
+
+
 def short_text(stage, check, results, trace):
     lines = ['V13 Handy-Pflichtmessungen', '==========================', '', 'Stufe: %s' % stage]
     mem = check.get('mem', {})
@@ -120,6 +136,7 @@ def main(argv=None):
     state = json.loads(state_path.read_text()) if state_path.exists() and not a.neu else {'steps': {}}
     print('\nHandy-Pflichtmessungen starten (Stufe %s, Schritte: %s). Handy am Ladegerät, Termux offen lassen.\n'
           'Abbrechen mit Strg+C; fertige Schritte bleiben, ein neuer Start macht weiter.\n' % (a.stage, ', '.join(steps)), flush=True)
+    tools = enable_eligibility(home); print('Eignungs-Werkzeug: %s' % ('an (SHADOW bei Age 0)' if tools.get('eligibility_enabled') else 'nicht aktiviert: ' + tools.get('error', '')), flush=True)
     locked = W.wake_lock(True); results = []
     try:
         with W.SystemTrace(every=30.) as trace:
@@ -135,7 +152,7 @@ def main(argv=None):
         if locked: W.wake_lock(False)
     traced = trace.summary(); stamp = time.strftime('%Y%m%d-%H%M%S')
     text = short_text(a.stage, check, results, traced)
-    receipt = {'schema': SCHEMA, 'stage': a.stage, 'precheck': check, 'results': results, 'state': state, 'system_trace': traced, 'authority': 0}
+    receipt = {'schema': SCHEMA, 'stage': a.stage, 'precheck': check, 'tools': tools, 'results': results, 'state': state, 'system_trace': traced, 'authority': 0}
     target = Path(a.target_dir).expanduser() if a.target_dir else W.downloads_dir(home)
     zp = W.collect(root, target/('V13-Pflicht-Ergebnis-%s-%s.zip' % (a.stage, stamp)),
                    {'KURZ.txt': text, 'paket-bericht.json': json.dumps(receipt, indent=2, sort_keys=True)+'\n'})

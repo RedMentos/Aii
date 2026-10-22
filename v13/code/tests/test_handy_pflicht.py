@@ -32,7 +32,7 @@ class HandyPflichtTest(unittest.TestCase):
     def run_main(self, *extra):
         check = {'installed': True, 'problems': [], 'warnings': [], 'chat_running': False, 'mem': {}, 'cpu_count': 4}
         with mock.patch.object(H.W, 'precheck', return_value=check), mock.patch.object(H, 'commands', fake_commands), \
-             mock.patch.object(H.W, 'wake_lock', return_value=False):
+             mock.patch.object(H.W, 'wake_lock', return_value=False), mock.patch.object(H, 'enable_eligibility', return_value={'eligibility_enabled': True}):
             return H.main(['kurz', '--installed-home', str(self.home), '--target-dir', str(self.target), *extra])
 
     def test_steps_run_resume_and_honest_training(self):
