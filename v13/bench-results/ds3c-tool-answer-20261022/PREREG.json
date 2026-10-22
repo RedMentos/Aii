@@ -1,0 +1,84 @@
+{
+ "schema": "v13-ds3c-prereg-v1",
+ "created_utc": "2026-10-22T19:43:18Z",
+ "dev_sha256": {
+  "f69": "041712da9b843b54f2a8407c7dc889c2865f3cc6e2e1457d6699789c7a445c93"
+ },
+ "dev_f": {
+  "recipe_always": {
+   "strict": {
+    "correct": 48,
+    "wrong": 12,
+    "utility": 36.0,
+    "utility_lambda2": 24
+   },
+   "bench": {
+    "correct": 53,
+    "wrong": 7,
+    "utility": 46.0,
+    "utility_lambda2": 39
+   },
+   "abstain": 0,
+   "repair": 0
+  },
+  "check": {
+   "strict": {
+    "correct": 48,
+    "wrong": 1,
+    "utility": 47.0,
+    "utility_lambda2": 46
+   },
+   "bench": {
+    "correct": 48,
+    "wrong": 1,
+    "utility": 47.0,
+    "utility_lambda2": 46
+   },
+   "abstain": 11,
+   "repair": 0
+  },
+  "check_repair": {
+   "strict": {
+    "correct": 59,
+    "wrong": 1,
+    "utility": 58.0,
+    "utility_lambda2": 57
+   },
+   "bench": {
+    "correct": 59,
+    "wrong": 1,
+    "utility": 58.0,
+    "utility_lambda2": 57
+   },
+   "abstain": 0,
+   "repair": 11
+  }
+ },
+ "dev_f_check": {
+  "tool_tasks": 60,
+  "flagged": 11,
+  "flagged_wrong_strict": 11,
+  "recipe_wrong_strict_on_tool": 12,
+  "caught": 11,
+  "precision": 1.0,
+  "recall": 0.9167
+ },
+ "dev_f_repair_errors": {
+  "repair_wrong": 0,
+  "repair_wrong_with_correct_read": 0,
+  "fixtures": []
+ },
+ "fresh_seeds": {
+  "r4": [
+   61,
+   67
+  ],
+  "f": [
+   71,
+   73
+  ]
+ },
+ "decision_rule": "Fresh R4 seeds 61+67 and family-F seeds 71+73 (120 tasks each), evaluated once; scoring strict, LAMBDA=1. H1 (R4): check_repair strict utility >= check strict utility + 6 and check_repair strict wrong <= check strict wrong + 2. H2 (F, transfer of the check): of the F tool tasks whose check fails >= 70 % are wrong (strict) under recipe_always, and the check flags >= 50 % of the strict-wrong recipe_always answers on F tool tasks. H3 (F): check_repair strict utility >= recipe_always strict utility + 5 and >= check strict utility. H4 (both): every strict-wrong repair sentence comes from a wrong value read (expression not correct). DS3C_SUPPORTED when H1..H4 all pass, else the failing parts are named. Bench-regex scoring and LAMBDA=2 reported only.",
+ "script_sha256": "3a63657e37fb04509d34f757dcda162ee7458580b44fc48995aaf477c2a4f899",
+ "ds3b_sha256": "a111c088ec5441c262c44360cee92d6a08dcae479aea33606984d0c8668f35c2"
+}
