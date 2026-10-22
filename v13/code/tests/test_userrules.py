@@ -66,6 +66,23 @@ class Parse(unittest.TestCase):
             self.assertIn(kinds(text)[0] if kinds(text) else 'NONE',('FORBID','UNCLEAR'),text)
         self.assertIn('INTERNET',U.parse('Bitte keine Dateien herunterladen.')[0]['objects'])  # downloading is about the internet too
         self.assertEqual(kinds('Du darfst jetzt wieder ins Internet.'),['LOOSEN'])
+    def test_v6_broad_net_turns_missed_rule_sentences_into_open_questions(self):
+        # holdout_de2 / round-5 failure forms (docs/proofs/continuation-20261022/user-rules-v5/BEFUND.md)
+        for text in ('Fass mein Handy nicht an.','Gib meine Telefonnummer an niemanden weiter.','Schluss mit dem Internet.',
+                     'Von meinen Dateien lässt du die Finger.','Erst fragen, dann ändern – das gilt für meine Dateien.',
+                     'Präsentiere mir jeden Entwurf, bevor er abgeschickt wird.','Ich bitte um Nichtveränderung meiner Notizen.'):
+            self.assertTrue(kinds(text) and kinds(text)[0] in ('FORBID','ASK_FIRST','UNCLEAR'),text)
+        c=U.parse('Schluss mit dem Internet.')[0];self.assertEqual((c['reasons'],c['suggest']),(['NET'],'FORBID'))
+        self.assertIn('NETWORK',c['actions']);self.assertIn('UNKNOWN',c['actions'])  # unknown words widen, never narrow
+        self.assertIn('ich verstehe den Satz nicht sicher',U.notice(dict(c,id='R2',status='OPEN')))
+        for text in ('Heute habe ich nichts heruntergeladen.','Kein Problem, die Rechnung passt.','Gestern hatte ich keine Zeit für Notizen.',
+                     'Vergiss nicht, die Fotos zu sichern.'):
+            self.assertEqual(kinds(text),[],text)  # no rule, no question
+        self.assertNotIn('SEND',U.parse('Bitte gib mir immer im Voraus mitteilst, was du machen möchtest.')[0]['actions'])  # "mitteilst" is not "teil"
+        self.assertIn('SEND',U.parse('Bitte schreibe keine E-Mails in meinem Namen.')[0]['actions'])
+    def test_v6_firm_rule_notice_says_how_to_correct_the_reading(self):
+        c=U.parse('Lösch niemals meine Fotos.')[0]
+        self.assertIn('Falsch verstanden?',U.notice(dict(c,id='R1',status='ACTIVE')))
     def test_v3_lexicon_is_data_with_evidence_and_refuses_sealed_sentences(self):
         for e in U.LEXICON['entries']:
             self.assertTrue(e['evidence'].strip());self.assertFalse(any(x in e['evidence'] for x in U.LEXICON['sealed']))
