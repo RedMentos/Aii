@@ -1,3 +1,7 @@
+# Aktuell 2026-10-22 (Thread „STEP2-Nutzen Engpass“): Werkzeug-Entscheidung vorn
+
+Eignungs-Werkzeug: Regeln liest ein fester Leser, die Entscheidung ist der erste Satz der Antwort (bei unbekannt/keine die ganze Antwort). Vorregistriert gemessen, 60 frische Aufgaben: Antwort richtig 59/60, 0 falsch (vorher 23/60). Standard an, Werkzeug selbst nur nach Freigabe. Befund `docs/proofs/continuation-20261022/eligibility-first/BEFUND.md`.
+
 # Aktuell 2026-10-21 (Thread „STEP2-Nutzen Engpass“): Eignungs-Werkzeug im Live-Pfad
 
 `ToolStep._propose_eligibility`: Option-A/B-Fragen unter Projektregeln → C3 liest typisierte Werte aus Quelle + Body-Zitaten → Rezept entscheidet. Nur nach `:growth enable eligibility`, Age 0 SHADOW. Vorregistriert gemessen: 55/70 exakt, 0 falsch (LIVE_PROMPT_SUPPORTED). Handy-Testliste `../HANDY_TESTLISTE.md`. Befund `docs/proofs/continuation-20261021/eligibility-live/BEFUND.md`.

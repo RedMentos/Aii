@@ -1442,3 +1442,9 @@ Sicherheits-/Moralregeln sind nie änderbar. Alles vorregistriert, Autorität 0 
 - Tests `tests/test_prohibitions.py` (16, inkl. Modell schlägt Ausnahme vor, gefälschtes APPROVED, ganzer Zug mit Befehlen im Modelltext). Doku `code/docs/VERBOTE_UND_NOTAUS.md`.
 - Befund: Neuromod-Veto wirkt nur aufs Lernen (im Standard RECORD_ONLY ohne Wirkung; live setzt nur C6-Regelverstoß ein Veto). Selbst-Unsicherheit hebt live den Aufwand; „nachfragen statt raten“ nur SHADOW.
 - Offen WP-SAFE2: Verbots-Treffer als Veto-Signal an Neuromod/C5-Lernen; ASK_USER-Messung (zusammen mit WP-DS3).
+
+### Werkzeug-Entscheidung vorn + fester Regel-Leser — ERLEDIGT 2026-10-22, **FIRST_SUPPORTED + FIXED_READER_SUPPORTED** (Thread „STEP2-Nutzen Engpass“, Branch `claude/project-thread-dq33gk`)
+- Engpass aus Qs Messung: C3 übergeht die TOOL_RESULT-Schicht und liest Regeln falsch. Neu: `eligibility.read_fixed` (Regeln nie von C3, Nutzerentscheidung 21.10.) und `ToolStep.lead/lead_final` + Kettenglied `integrated_candidates.tool_answer_first` (Entscheidungssatz ist der erste sichtbare Satz; bei UNKNOWN/NONE ist der feste Text die ganze Antwort).
+- Vorregistriert `6d278e5`, frische Saat 41, 60 Aufgaben, 4 Arme: Antworttext richtig **59/60** (Q-Pfad 23, C3 allein 18), falsch festgelegt **0** (Q-Pfad 30), Rezept-Entscheidung 60/60 (C3-Leser 42), geänderte Regeln 15/15 (vorher 4/15), Zug 1,6 s statt 3,0 s. Rest: 1 Widerspruch in C3s Fortsetzung, vom Broker korrigiert.
+- Standard jetzt `eligibility_reader=fixed`, `tool_answer_first=true` (alt in `LEGACY_PRE_20261022`); Werkzeug selbst weiter nur nach `:growth enable eligibility`. Suite grün. Befund `code/docs/proofs/continuation-20261022/eligibility-first/BEFUND.md`.
+- Offen: Handy-Paket (WP-Z7) mit beidem (Nutzer: „Ja, beide an im Handy-Paket“); andere Wortformen über den Regel-Leser-Strang.

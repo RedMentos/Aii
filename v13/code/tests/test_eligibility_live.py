@@ -53,6 +53,7 @@ class Live(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
         self.c3=FakeC3(READ);self.r.pool.get=lambda role:self.c3
+        self.r.cfg.update(eligibility_reader='model',tool_answer_first=False)  # these tests cover Q's C3-read path (default since 22.10.: fixed reader)
     def tearDown(self):self.r.close();self.tmp.cleanup()
     def earlier_turn(self,text):
         s=self.r.store;e=s.event(self.r.session,text)

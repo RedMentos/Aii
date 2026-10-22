@@ -29,8 +29,10 @@ class Reader(unittest.TestCase):
         self.assertEqual(E.tool(**E.args_for(E.read_fixed(CURRENT,[PRIOR]),CURRENT,[PRIOR]))['action'],'A')
 
 class Config(unittest.TestCase):
-    def test_defaults_off_and_validation(self):
-        self.assertEqual((DEFAULTS['eligibility_reader'],DEFAULTS['tool_answer_first']),('model',False))
+    def test_defaults_and_validation(self):
+        from v13.config import LEGACY_PRE_20261022 as L
+        self.assertEqual((DEFAULTS['eligibility_reader'],DEFAULTS['tool_answer_first']),('fixed',True))  # FIRST_SUPPORTED 22.10.
+        self.assertEqual((L['eligibility_reader'],L['tool_answer_first']),('model',False))
         for bad in ({'eligibility_reader':'c3'},{'tool_answer_first':1}):
             with self.assertRaises(ValueError):validate(dict(DEFAULTS,**bad))
         validate(dict(DEFAULTS,eligibility_reader='fixed',tool_answer_first=True))
@@ -56,10 +58,10 @@ class Live(unittest.TestCase):
         text=FULL.replace('Option B: cost 55 euros','Option B costs 55 euros')
         e,ts,p=self.plan(text);self.assertEqual(len(self.c3.calls),1)
         self.assertEqual((p['args']['budget'],p['args']['local_only']),(61,False))
-    def test_model_reader_is_the_default(self):
-        e,ts,p=self.plan(FULL);self.assertEqual(len(self.c3.calls),1);self.assertEqual(p['args']['budget'],99)
+    def test_model_reader_still_selectable(self):
+        self.r.cfg['eligibility_reader']='model';e,ts,p=self.plan(FULL);self.assertEqual(len(self.c3.calls),1);self.assertEqual(p['args']['budget'],99)
     def test_lead_only_when_switched_on_and_executed(self):
-        self.r.cfg['eligibility_reader']='fixed';e,ts,p=self.plan(FULL)
+        self.r.cfg.update(eligibility_reader='fixed',tool_answer_first=False);e,ts,p=self.plan(FULL)
         res={'tool':'eligibility','args':p['args'],'result':E.tool(**p['args']),'tx':'t1','action_tx':None}
         self.assertIsNone(ts.lead(res));self.assertEqual(ts.layer(res)['note'],E.LIVE_NOTE)
         self.r.cfg['tool_answer_first']=True
