@@ -41,6 +41,7 @@ class OfferPath(unittest.TestCase):
             seen['query']=json.loads(messages[1]['content']);seen['schema']=schema;return iter([json.dumps(reply)])
         r.pool.get=Mock(return_value=SimpleNamespace(role='B2_GIST',last_metrics={},generate=generate))
         e=r.store.event(r.session,TASK+' '+RULE);p=r.cognition.offer('B2_GIST',e,0,time.monotonic()+30)
+        seen['analyst']=r.cognition.analyst_context([p],e,0)  # the live consumer path must accept the widened exact spans
         return p,[r.store.read_source(x) for x in p['evidence_refs']],seen
     def run_mode(self,mode,reply):
         from v13.runtime import Runtime
@@ -61,6 +62,7 @@ class OfferPath(unittest.TestCase):
         ch=seen['query']['quote_choices'];self.assertEqual(ch[4]['text'],'Budget 100 euros.')
         self.assertEqual(seen['schema']['properties']['quotes']['items']['enum'],list(range(1,len(ch)+1)))
         self.assertEqual(p['b2_quote_select']['picked'],[5]);self.assertIn(RULE,ev[0]);self.assertEqual(p['offer']['quotes'],['Budget 100 euros.'])
+        self.assertEqual([q['text'] for q in seen['analyst'][0]['verified_quotes']],ev);self.assertEqual(seen['analyst'][0]['verified_quotes'][0]['verification'],'EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE')
     def test_b1_is_never_touched(self):
         from v13.runtime import Runtime
         with tempfile.TemporaryDirectory() as d:

@@ -363,6 +363,7 @@ class Cognition:
             if not match:rejected+=1;continue
             source,base=match;start=base['char_start']+source.index(quote);ref=base|{'char_start':start,'char_end':start+len(quote)};self.s.read_source(ref);refs.append(ref)
         p=packet('OfferPacket',role,e['event_id'],e['brain_generation_id'],[e['source_ref']],role=role,based_on_state_version=version,deadline_monotonic_ns=int(valid_until*1e9),compute_deadline_monotonic_ns=int(deadline*1e9),evidence_refs=refs,offer=obj,confidence=0.,confidence_status='UNCALIBRATED',rejected_quotes=rejected,model_revision=self.r.models.revision(role),native_metrics=runner.last_metrics,query_packet_id=query_packet['packet_id'],broadcast_packet_id=query_packet['broadcast_packet_id'],peer_message_packet_id=peer_id,source_view_width_chars=width)
+        if wide:p['quote_context_chars']=wide  # analyst_context accepts the widened spans only for this offer
         p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])
         if selected:p['b2_quote_select']=selected
         p['provenance'] += query_packet['context_source_refs']
@@ -397,7 +398,10 @@ class Cognition:
                 bound=any(all(ref.get(k)==base.get(k) for k in ('source_id','sha256','modality'))
                     and base['char_start']<=ref['char_start']<ref['char_end']<=base['char_end'] for base in allowed)
                 if not bound:raise ValueError('Consumer quote outside supplied source scope')
-                text=self.s.read_source(ref)
+                text=self.s.read_source(ref);wide=offer.get('quote_context_chars',0)
+                if wide and text not in offer['offer'].get('quotes',[]) and len(text)<=wide and any(quote_span(q,text,wide) for q in offer['offer'].get('quotes',[])):
+                    # 2026-10-21: an exact source span the offered quote points into (live turn failed 'differs from offered quote' without this)
+                    verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE','semantic_truth_authority':False});continue
                 if text not in offer['offer'].get('quotes',[]):raise ValueError('Consumer quote differs from offered quote')
                 verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SUBSTRING_ONLY',
                                  'semantic_truth_authority':False})
