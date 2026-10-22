@@ -81,9 +81,10 @@ def behaviour(report,episodes):
 def run(installed,work,arm,seed):
     from v13.common import atomic_write,file_hash
     work=Path(work)
-    with HP.overlay(VARIANTS[arm]) as applied:
+    with HP.overlay(VARIANTS[arm],capture_b2=True) as applied:
         summary=z2b.run_one(installed,work,arm,seed)
-        b2=applied['b2_note'];rewrite={'calls':b2.calls,'rewritten':b2.rewritten} if b2 else None
+        b2=applied['b2_note'];rewrite={'calls':b2.calls,'rewritten':b2.rewritten}
+        atomic_write(work/('b2_capture_'+z2b.run_id(arm,seed)+'.json'),json.dumps(b2.capture,ensure_ascii=False))  # HX5 data source
     report=json.loads((work/('step2_'+z2b.run_id(arm,seed)+'.json')).read_text())
     allep=tuple(f['id'] for f in z2.FIXTURES)
     rr=z2c.b2_rows(report)
@@ -100,7 +101,7 @@ def run(installed,work,arm,seed):
 def compose(runs):
     ref=runs[('REF',PROBE_SEED)]['hx2']
     bad=[a for a in PROBE_ARMS if a!='REF' and not (runs[(a,PROBE_SEED)]['hx2']['b2_note_rewrite'] or {}).get('rewritten')]
-    if bad or ref['b2_note_rewrite'] is not None:return {'status':'INVALID','choice':None,'reason':'Overlay hat B2 nicht erreicht: '+','.join(bad)}
+    if bad or ref['b2_note_rewrite']['rewritten']:return {'status':'INVALID','choice':None,'reason':'Overlay hat B2 nicht erreicht: '+','.join(bad)}
     scores={a:runs[(a,PROBE_SEED)]['hx2']['probe_score'] for a in PROBE_ARMS if a!='REF'}
     fields=('b2_quotes','b2_rejected','b2_summary','raw_answer','b2_prompt_tokens')
     pe=lambda b:{k:v for k,v in b.items() if k.split(':')[0] in PROBE_EPISODES}
@@ -123,7 +124,7 @@ def gate(runs,choice):
     if any(k not in runs for k in need):return {'status':'INCOMPLETE','missing':[z2b.run_id(*k) for k in need if k not in runs]}
     structural=all(runs[k]['tool_status']!='STRUCTURAL_FAIL' and runs[k]['step2_status']!='DIAGNOSTIC_INCOMPLETE' for k in need) and \
                all(runs[k]['queried_offers']['with_question']==runs[k]['queried_offers']['offers']>0 for k in need) and \
-               all((runs[k]['hx2']['b2_note_rewrite'] is None)==(k[0]=='REF') and (k[0]=='REF' or runs[k]['hx2']['b2_note_rewrite']['rewritten']>0) for k in need)
+               all((runs[k]['hx2']['b2_note_rewrite']['rewritten']>0)==(k[0]!='REF') for k in need)
     wrong={n:sum(runs[(a,s)]['hx2']['wrong_committed_tool'] for s in HOLDOUT_SEEDS) for n,a in (('ref','REF'),('chosen',choice),('unguided','U'))}
     def axes(eps):
         v={n:axis_values(runs,a,eps) for n,a in (('ref','REF'),('chosen',choice),('unguided','U'))}

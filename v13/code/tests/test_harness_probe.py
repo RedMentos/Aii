@@ -29,6 +29,21 @@ class Overlay(unittest.TestCase):
                 with HP.overlay({'prompt.b2_earlier_context':harness.B2_CONTEXT_NOTE+' X.'}):raise RuntimeError
             self.assertIs(runners.LlamaRunner.generate,fake)
         finally:runners.LlamaRunner.generate=real
+    def test_capture_keeps_base_messages_and_overlay_output(self):
+        from v13 import runners
+        real=runners.LlamaRunner.generate;seen=[]
+        def fake(runner,messages,*a,**kw):seen.append(messages[0]['content']);return iter(['{"a"',':1}'])
+        runners.LlamaRunner.generate=fake
+        try:
+            base='Role.'+harness.B2_CONTEXT_NOTE
+            for diff in (None,{'prompt.b2_earlier_context':harness.B2_CONTEXT_NOTE+' Y.'}):
+                with HP.overlay(diff,capture_b2=True) as o:
+                    self.assertEqual(''.join(runners.LlamaRunner.generate(None,[{'role':'system','content':base}])),'{"a":1}')
+                    cap=o['b2_note'].capture
+                self.assertEqual(cap[0]['messages'][0]['content'],base);self.assertEqual(cap[0]['output'],'{"a":1}')
+                self.assertEqual(o['b2_note'].rewritten,0 if diff is None else 1)
+            self.assertEqual(seen,[base,base+' Y.'])
+        finally:runners.LlamaRunner.generate=real
     def test_overlay_prompt_piece_restored(self):
         from v13 import prompts
         old=prompts.TEXT['en']['digest']

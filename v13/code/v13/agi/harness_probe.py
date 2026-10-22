@@ -23,17 +23,26 @@ MIN_PROBE_GAIN=.05;AXIS_TOLERANCE=.02;BOOT=10000;BOOT_SEED=20261022
 
 class _B2Note:
     """prompt.b2_earlier_context lives inline in cognition.offer (hash-pinned file). The bench overlay rewrites the exact
-    base text inside the system message of a native call instead; counts how many calls it rewrote."""
-    def __init__(self):self.calls=0;self.rewritten=0
+    base text inside the system message of a native call instead; counts the rewrites. With capture, each B2 call is
+    kept as {'messages': the messages under the BASE harness, 'output': raw text under the overlay} (HX5 data source).
+    value None = capture only, nothing rewritten (reference arm)."""
+    CAP=4096
+    def __init__(self,capture=False):self.calls=0;self.rewritten=0;self.capture=[] if capture else None
     def install(self,value):
         from .. import runners
         from .harness import B2_CONTEXT_NOTE
         gen=runners.LlamaRunner.generate;me=self
         def generate(runner,messages,*a,**kw):
             me.calls+=1
-            if messages and messages[0].get('role')=='system' and B2_CONTEXT_NOTE in messages[0].get('content',''):
+            b2=bool(messages) and messages[0].get('role')=='system' and B2_CONTEXT_NOTE in messages[0].get('content','')
+            if not b2:return gen(runner,messages,*a,**kw)
+            base=[dict(m) for m in messages]
+            if value is not None:
                 messages=[dict(messages[0],content=messages[0]['content'].replace(B2_CONTEXT_NOTE,value,1))]+list(messages[1:]);me.rewritten+=1
-            return gen(runner,messages,*a,**kw)
+            if me.capture is None:return gen(runner,messages,*a,**kw)
+            out=''.join(gen(runner,messages,*a,**kw))
+            if len(me.capture)<me.CAP:me.capture.append({'messages':base,'output':out})
+            return iter([out])
         runners.LlamaRunner.generate=generate
         return lambda:setattr(runners.LlamaRunner,'generate',gen)
 
@@ -49,14 +58,15 @@ def _setter(target):
     return (lambda:getattr(mod,name)),(lambda v:setattr(mod,name,v))
 
 @contextlib.contextmanager
-def overlay(diff):
+def overlay(diff,capture_b2=False):
     """Bench-only: apply a validated harness diff to the module defaults, restore on exit (also on error).
-    Yields {'diff': applied values, 'b2_note': rewrite counter or None}."""
+    Yields {'diff': applied values, 'b2_note': rewrite counter or None}. capture_b2 also records every B2 call."""
     diff=candidate(diff) if diff else {}
     undo=[];b2=None
     try:
+        if capture_b2 and 'prompt.b2_earlier_context' not in diff:b2=_B2Note(True);undo.append(b2.install(None))
         for t,v in diff.items():
-            if t=='prompt.b2_earlier_context':b2=_B2Note();undo.append(b2.install(v));continue
+            if t=='prompt.b2_earlier_context':b2=_B2Note(capture_b2);undo.append(b2.install(v));continue
             get,put=_setter(t);old=get();put(v);undo.append(lambda put=put,old=old:put(old))
         yield {'diff':diff,'b2_note':b2}
     finally:
