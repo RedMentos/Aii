@@ -150,3 +150,7 @@ Nutzerhinweis: GPT arbeitet am selben Code weiter. Stand: Branch `claude/project
 ## Ergänzung 2026-10-21 Thread „Z5 Koalition gegen Voll-Kontext“: WP-Z5 gemessen — G-FOCAL-CAPACITY-003 bleibt PARTIAL
 
 Vorregistriert (`bench-results/z5-focal-controls-20261021/PREREGISTRATION.md`), `scripts/z5_focal_controls.py`, 6 Tests. 60 WP-T3b-Aufgaben × 5 Läufe, Effort max, Kontroll-Arme im selben Turn aus denselben Angeboten an dasselbe Organ (Wiedergabe-Treue 300/300). Koalition 186/300, Voll-Kontext 183, feste Slots 193, Retrieval 184, ohne Hypothesen 195; alle p ≥ 0,32, Rauschband 7 → schlägt Voll-Kontext nicht. Kapazität bindet nie (max. 3 Kandidaten, 4 Slots), Ersetzung/Interrupt 0. Nächster Schritt: neue Vorregistrierung mit Kapazitätsdruck. Branch `claude/project-thread-hmopsm`.
+
+## Ergänzung 2026-10-22 Thread „Z5 Koalition gegen Voll-Kontext“: WP-Z5c lange Sitzung — Gate-Regel erfüllt mit Vorbehalt
+
+`scripts/z5_focal_controls.py --session`, Beleg `bench-results/z5c-focal-session-20261022/`. 60 Aufgaben je Lauf in einer Sitzung, 5 Läufe, Kapazität bindet 295/300. Koalition 166, Voll-Kontext 82 (158 Overflow), feste Slots 181, Retrieval 185, ohne Hypothesen 188. Regel „schlägt Voll-Kontext“ erfüllt (97:13), aber nur über Platz (83:82 wenn beides passt); Koalition schlechter als ohne Hypothesen (p 0,006); Live-Pfad läuft 41/300 über. Nicht ohne Vorbehalt grün führen. Offen: Live-Overflow-Fix, Schaden der Hypothesen-Schicht in langen Sitzungen.

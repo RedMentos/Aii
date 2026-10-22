@@ -61,6 +61,16 @@ def intrusion(output,nums,previous):
     own={str(n) for n in nums}
     return any(re.search(r'(?<![\d.,])'+str(n)+r'(?![\d])',output or '') for ns in previous for n in ns if str(n) not in own)
 
+def is_system_report(output):
+    """The runtime answered with a system diagnosis (e.g. native context window exceeded) instead of a model answer."""
+    return (output or '').lstrip().startswith('[SOURCE_SYSTEM_REPORT')
+
+def rescore(rows):
+    """Apply the system-report rule to stored rows (live rows of runs made before the rule existed)."""
+    for x in rows:
+        if x['arm']=='coalition_live' and is_system_report(x.get('output')):x.update({'pass_raw':x['pass'],'pass':False,'overflow':True,'intrusion':False})
+    return rows
+
 def prior_block(retained,n=None):
     items=sorted(retained,key=lambda x:-x['created'])[:n] if n is not None else sorted(retained,key=lambda x:-x['created'])
     return PRIOR_HEAD+dumps([x['text'] for x in items]) if items else ''
@@ -151,10 +161,11 @@ def run_rep(installed,rep,fixtures,session_mode=False):
                     if time.monotonic()>end:r.cancel();break
                     time.sleep(.1)
                 a=audit_event(r.store,eid);out=a.get('output') or '';meta=a.get('output_metadata') or {};turn_s=round(time.monotonic()-t0,2)
-                ok,num=U.score(out,nums,checks)
+                ok,num=U.score(out,nums,checks);live_overflow=is_system_report(out)
+                if live_overflow:ok,num={'answer':False},{}  # a system report echoes the input; its numbers are not an answer
                 base={'rep':rep,'fixture':fid,'kind':fid.rstrip('0123456789')};prev=previous[-3:];previous.append(nums)
                 rows.append(base|{'arm':'coalition_live','pass':all(ok.values()) and all(num.values()),'turn_s':turn_s,'status':a.get('status'),
-                                  'context_chars':len(dumps(cap['ctx']['coalition'])) if cap.get('ctx',{}).get('coalition') else 0,'intrusion':intrusion(out,nums,prev),'output':out[:400]})
+                                  'context_chars':len(dumps(cap['ctx']['coalition'])) if cap.get('ctx',{}).get('coalition') else 0,'intrusion':intrusion(out,nums,prev) and not live_overflow,'overflow':live_overflow,'output':out[:400]})
                 run=cap.get('run');msgs=cap.get('messages')
                 plan_applied=(meta.get('context_plan') or {}).get('applied')
                 if run is None or msgs is None or plan_applied:
@@ -275,7 +286,7 @@ def main(installed,out,reps=5,limit=None,session_mode=False):
     if limit:fx=[f for i,f in enumerate(fx) if i%(len(fx)//limit)==0][:limit]
     if session_mode:import random;random.Random(SESSION_SEED).shuffle(fx)  # kinds interleaved: earlier tasks become distractors
     prev=json.loads(out.read_text()) if out.exists() else {}
-    rows,measures,retention=prev.get('rows',[]),prev.get('measures',[]),prev.get('retention',[])
+    rows,measures,retention=rescore(prev.get('rows',[])),prev.get('measures',[]),prev.get('retention',[])
     done={x['rep'] for x in rows}
     for rep in range(1,reps+1):
         if rep in done:continue

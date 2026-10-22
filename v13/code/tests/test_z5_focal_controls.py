@@ -47,6 +47,13 @@ class Session(unittest.TestCase):
         got=Z.retrieve(text,6,['How many bicycles were counted in Lyon: 999 bicycles.'])
         self.assertIn('How many bicycles were counted in Lyon: 999 bicycles.',got)  # a distractor can compete
 
+class SystemReport(unittest.TestCase):
+    def test_system_report_never_passes(self):
+        rep='[SOURCE_SYSTEM_REPORT; Systemdiagnose; keine Modellantwort]\nAngenommene Eingabe: Total 119'
+        self.assertTrue(Z.is_system_report(rep));self.assertFalse(Z.is_system_report('The total is 119.'))
+        r=Z.rescore([{'arm':'coalition_live','pass':True,'output':rep},{'arm':'coalition','pass':True,'output':rep}])
+        self.assertEqual([x['pass'] for x in r],[False,True]);self.assertTrue(r[0]['overflow'] and r[0]['pass_raw'])
+
 class Verdict(unittest.TestCase):
     def test_full_context_win_needs_significance_and_noise_band(self):
         r=[]

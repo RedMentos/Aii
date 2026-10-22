@@ -27,3 +27,11 @@ Grund: In WP-Z5 (`../z5-focal-controls-20261021/`) band die Kapazität nie (max.
 ## Grenzen
 Wie Z5; dazu: Ablenker sind frühere Aufgaben derselben Bench (gleicher Aufbau, andere Zahlen), keine echten Langgespräche;
 Verlauf (`history_turns`) bleibt 0, damit nur die Fokus-Auswahl variiert.
+
+## Nachtrag nach dem Lauf (2026-10-22, nur Benennung und Auswertung, Regeln unverändert)
+- Umbenannt von „WP-Z5b“ in **WP-Z5c**, weil ein anderer Thread am 21.10. schon einen anderen Z5b-Versuch hatte
+  (gespeicherte Erinnerungen als Ablenker, `z5b-capacity-20261021/` auf Branch `claude/project-thread-bn7n5k`). Verzeichnis und Datei folgen dem.
+- Nach dem Lauf entdeckt: Läuft der **Live**-Turn über das Kontextfenster, antwortet die Runtime mit einem Systembericht, der die
+  Eingabe wiederholt; die Regex fand darin die Zahlen der Aufgabe (22 Schein-Bestanden). Diese Live-Zeilen sind nachträglich als
+  nicht bestanden gezählt (gleiche Overflow-Regel wie vorregistriert; Rohwert in `pass_raw`). Die Entscheidungs-Arme sind Wiedergaben
+  und davon nicht betroffen.
