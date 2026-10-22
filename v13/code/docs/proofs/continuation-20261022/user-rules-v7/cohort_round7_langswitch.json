@@ -1,0 +1,15 @@
+{
+ "schema": "USER_RULES_COHORT_ROUND7_V1",
+ "cohort": "secondary (same meaning, switched to English; not for the verdict)",
+ "items": [
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Niemand verstehen diese Rechnung.",
+   "lang": "de",
+   "source": "HUNYUAN_7B/P1",
+   "original": "Kein Mensch versteht diese Rechnung."
+  }
+ ]
+}

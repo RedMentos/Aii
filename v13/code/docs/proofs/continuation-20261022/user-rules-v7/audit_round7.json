@@ -1,0 +1,3245 @@
+{
+ "schema": "USER_RULES_AUDIT_ROUND7_V1",
+ "rows": [
+  {
+   "index": 0,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Von meinen Bildern lässt du die Finger.",
+   "sentence": "Du kannst aus meinen Fotos die Finger sehen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 0,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Von meinen Bildern lässt du die Finger.",
+   "sentence": "Von meinen Bildern lässt du die Finger.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 1,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Fotos werden hier nicht weggeworfen.",
+   "sentence": "Die Fotos sind hier nicht ausgelegt.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 1,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Fotos werden hier nicht weggeworfen.",
+   "sentence": "Fotos bleiben hier nicht los.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 2,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "In meinen Notizen hast du nichts zu suchen.",
+   "sentence": "Sie suchen nicht in meinen Aufzeichnungen nach etwas zu finden.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 2,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "In meinen Notizen hast du nichts zu suchen.",
+   "sentence": "Okay, maybe not.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 3,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Meine Notizen bleiben so, wie sie sind.",
+   "sentence": "Meine Aufzeichnungen bleiben ebenso wie sie zu sein.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 3,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Meine Notizen bleiben so, wie sie sind.",
+   "sentence": "Meine Notizen bleiben wie sie sind.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 4,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "E-Mails verschicken ist für dich tabu.",
+   "sentence": "E-Mail-Sendungen sind für dich verboten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 4,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "E-Mails verschicken ist für dich tabu.",
+   "sentence": "Das ist kein Problem, ich entsorge mich schon von dem E-Mail.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 5,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Du schreibst niemandem in meinem Namen.",
+   "sentence": "In meinem Namen schreibst du weder jemanden noch zu.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 5,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Du schreibst niemandem in meinem Namen.",
+   "sentence": "Du schreibst niemandem in meinem Namen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 6,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Kein Internet mehr für dich, Ende.",
+   "sentence": "Das Internet ist für dich nicht mehr da.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 6,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Kein Internet mehr für dich, Ende.",
+   "sentence": "Kein Internet mehr für dich, wenn du so bist. Aber mal was noch, wenn du schon mal willst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 7,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Das WLAN ist für dich ab jetzt Sperrgebiet.",
+   "sentence": "Die WLAN ist jetzt für dich eine geschützte Zone.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 7,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Das WLAN ist für dich ab jetzt Sperrgebiet.",
+   "sentence": "So, WLAN ist jetzt wie ein Schutznetzwerk, das nur für dich funktioniert. Aber du musst dich daran auseinandersetzen, bevor du dich im Schatten verirrt findest.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 8,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Bleib offline, bis ich zurück bin.",
+   "sentence": "Bleibe deines Handy abgeschaltet, bis du wieder zurück bist.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 8,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Bleib offline, bis ich zurück bin.",
+   "sentence": "Okay, fine, let's get back to work when I'm free.",
+   "decision": "0",
+   "reason": "other language"
+  },
+  {
+   "index": 9,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Neue Apps kommen mir nicht aufs Gerät.",
+   "sentence": "Die neue Anwendung ist nicht auf meinem Gerät",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 9,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Neue Apps kommen mir nicht aufs Gerät.",
+   "sentence": "Uhr raus? Oder Zeit? Oder vielleicht das ist einfach nicht mehr so, wenn du das schon immer aufs Gerät hattest.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 10,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Das Herunterladen von Plugins lässt du bleiben.",
+   "sentence": "Die Installation von Plugins ermöglicht es, weiterzugehen.",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "index": 10,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Das Herunterladen von Plugins lässt du bleiben.",
+   "sentence": "Das Herunterladen von Plugins ist doch nützlich.",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "index": 11,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Mit Rechnen ist jetzt Schluss.",
+   "sentence": "Nach den Buchungen ist das Ende gekommen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 11,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Mit Rechnen ist jetzt Schluss.",
+   "sentence": "Schei, Rechnen. Also, keine Probleme mehr.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 12,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Den Rechner rührst du nicht mehr an.",
+   "sentence": "Du kannst den Computer nicht mehr reparieren.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 12,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Den Rechner rührst du nicht mehr an.",
+   "sentence": "Den Rechner rührst du nicht mehr an.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 13,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Ändern darfst du an meinen Dateien nichts.",
+   "sentence": "Du darfst nichts an meine Dateien ändern.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 13,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Ändern darfst du an meinen Dateien nichts.",
+   "sentence": "Klar, keine Änderungen, wenn du dich auf meinen Dateien konzentrierst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 14,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Löschen ist ab jetzt untersagt.",
+   "sentence": "Hör auf zu viel Reden ist jetzt nicht empfehlenswert.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 14,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Löschen ist ab jetzt untersagt.",
+   "sentence": "Okay, we can't do that anymore. Got it.",
+   "decision": "0",
+   "reason": "other language"
+  },
+  {
+   "index": 15,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Nichts verlässt dieses Handy.",
+   "sentence": "Das Handy ist nicht leer.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 15,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Nichts verlässt dieses Handy.",
+   "sentence": "Das Handy ist immer mit mir dabei, wenn ich etwas brauche.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 16,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Du machst gar nichts mehr, bis ich es sage.",
+   "sentence": "Ich bleibe bis du sagst, du bist nichts mehr zu tun.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 16,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Du machst gar nichts mehr, bis ich es sage.",
+   "sentence": "Du kannst jetzt mal aufhören, und ich werde dir den Vorgang überdenken. Aber sag mal mal, was du willst, also sag mal mal, was du willst, also sag mal mal, was du willst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 17,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Das Gerät ist tabu für dich.",
+   "sentence": "Das Gerät wird nicht auf dich aufgeführt.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 17,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Das Gerät ist tabu für dich.",
+   "sentence": "Hör auf, das war nur eine Floskel.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 18,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Weder Mails noch Downloads, klar?",
+   "sentence": "Keine E-Mail noch keine Download, klar?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 18,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Weder Mails noch Downloads, klar?",
+   "sentence": "Nichts dabei, klar? Kein weiterer Tag im Überfluss, eh?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 19,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Ich verbiete dir, irgendwas zu installieren.",
+   "sentence": "Ich habe dir ein Angebot, etwas aufzusetzen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 19,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Ich verbiete dir, irgendwas zu installieren.",
+   "sentence": "Ehrlich gesagt, ich hab mir das Problem geäußert, aber ich habe noch mal mal mal, was genau ich will.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 20,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Die Bilder bleiben, wo sie sind, und zwar alle.",
+   "sentence": "Die Träume bleiben bestehen, wo sie entstehen, und ebenso alle.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 20,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Die Bilder bleiben, wo sie sind, und zwar alle.",
+   "sentence": "Die Bilder bleiben, wo sie sind, und zwar alle.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 21,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Mach meine alten Notizen bloß nicht kaputt.",
+   "sentence": "Verwende nicht deine alten Aufzeichnungen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 21,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Mach meine alten Notizen bloß nicht kaputt.",
+   "sentence": "Halte die alten Notizen ordentlich bei, sie dürfen doch noch gut stehen sein.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 22,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Wenn du was löschen willst, sag erst Bescheid.",
+   "sentence": "Wenn du etwas entfernst, sag erst Bescheid.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 22,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Wenn du was löschen willst, sag erst Bescheid.",
+   "sentence": "Hey, um was passiert ist, sag 'Bis dahin' oder 'Nicht jetzt'.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 23,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Mails gehen nur raus, nachdem ich sie gelesen habe.",
+   "sentence": "Nachdem ich die Mails gelesen habe, fliegen sie immer wieder aus.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 23,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Mails gehen nur raus, nachdem ich sie gelesen habe.",
+   "sentence": "Mails gehen nur raus, nachdem ich sie gelesen habe.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 24,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Bevor du online gehst, kurz fragen.",
+   "sentence": "Sobald du online sein wirst, frag einen kurzen Satz ab.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 24,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Bevor du online gehst, kurz fragen.",
+   "sentence": "Bevor du online gehst, frag mal kurz, wer da ist.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 25,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Installationen nur nach meinem Okay.",
+   "sentence": "Ich habe die Installationen erst nach meinem Zustimmung angeboten.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 25,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Installationen nur nach meinem Okay.",
+   "sentence": "Okay, aber nur dann. Keine Schnickereien.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 26,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Wenn du rechnen musst, frag mich vorher kurz.",
+   "sentence": "Wenn ich rechnen müsste, sag mir zuerst kurz.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 26,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Wenn du rechnen musst, frag mich vorher kurz.",
+   "sentence": "Hey, wenn du rechnen willst, sag so, ich nehme es aber nicht auf.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 27,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Erst mir zeigen, dann abschicken.",
+   "sentence": "Nicht warten, bis ich dir zeige, dann rausgehe.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 27,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Erst mir zeigen, dann abschicken.",
+   "sentence": "Erst mal mal kurz, dann abgehängt.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 28,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Lass mich jede Änderung an Notizen erst absegnen.",
+   "sentence": "Bitte teile mir jede Änderung in meiner Notizen vorübergehend.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 28,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Lass mich jede Änderung an Notizen erst absegnen.",
+   "sentence": "Kannst du mich bitte jetzt die Änderungen an meine Notizen absegnen?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 29,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Ohne Absprache kein Download.",
+   "sentence": "Ohne Sprache kein Ablegen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 29,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Ohne Absprache kein Download.",
+   "sentence": "Ohne Absprache kein Download.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 30,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Holst du ein Modul, will ich das vorher wissen.",
+   "sentence": "Kaufst du ein Modul oder solltest du es bereits vorher erhalten.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 30,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Holst du ein Modul, will ich das vorher wissen.",
+   "sentence": "Nicht das. Aber sag mir, warum du das brauchst, wenn du es noch nicht weißt.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 31,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Egal was du vorhast, ich will vorher gefragt werden.",
+   "sentence": "Egal, was du zuvor besprochen hast, ich werde zuvor gefragt werden.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 31,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Egal was du vorhast, ich will vorher gefragt werden.",
+   "sentence": "Egal, was du schon so gemacht hast, du musst es noch einmal fragen, wenn du noch mal an mich fragst.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 32,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Meine Schwester möchte, dass du keine Fotos entfernst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 33,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Ich bin mir unsicher, ob du Mails schicken sollst.",
+   "sentence": "Ich bin ungewiss, ob du Mails absenden würdest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 33,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Ich bin mir unsicher, ob du Mails schicken sollst.",
+   "sentence": "Ich bin noch mal unsicher, ob du mal Mails schicken solltest.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 34,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Wär's nicht besser, offline zu bleiben?",
+   "sentence": "Es ist nicht so schlecht, wenn man sich ablässt.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 34,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Wär's nicht besser, offline zu bleiben?",
+   "sentence": "Hey, das war toll! Mit dir war das Leben so viel funniger.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 35,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Hm, Module installieren … lieber nicht, oder doch?",
+   "sentence": "Aber lieber nicht, dann Module installieren?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 35,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Hm, Module installieren … lieber nicht, oder doch?",
+   "sentence": "Klar, nein, ich hab noch mal etwas zu tun, vielleicht habe ich das alles noch mal gemäßgelegt, wenn du nicht, dann soll ich noch mal mal sehen, aber ja, mach dir Zeit, du weißt, ich bin doch nicht super dringend, wenn du nicht, okay?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 36,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Auf dem Zettel steht: Keine Änderungen.",
+   "sentence": "Auf dem Papier sind nichts geändert.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 36,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Auf dem Zettel steht: Keine Änderungen.",
+   "sentence": "Keine Änderungen. So ist's, das war's, so bleibt's.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 37,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Irgendwie stört es mich, wenn du rechnest.",
+   "sentence": "Als ich dich nicht höre, spielt ich immer wieder eine Rolle.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 37,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Irgendwie stört es mich, wenn du rechnest.",
+   "sentence": "Manchmal fällt mir nicht, wenn du abgabst.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 38,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Ich hab heute keine Lust auf Mails.",
+   "sentence": "Gute Morgen, ich habe kein Lust, mit E-Mails zu verbringen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Ich hab heute keine Lust auf Mails.",
+   "sentence": "He has no interest in emails today.",
+   "decision": "0",
+   "reason": "other language"
+  },
+  {
+   "index": 39,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Das Foto ist nicht scharf geworden.",
+   "sentence": "Das Bild hat sich nicht mehr so gut ausgeschnitten.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 39,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Das Foto ist nicht scharf geworden.",
+   "sentence": "Das Bild hat manchmal nicht mehr so gut gekauft gekauft gekauft geworden.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 40,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Kannst du die Notiz von gestern finden?",
+   "sentence": "Kannst du die Nachricht von gestern finden?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 40,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Kannst du die Notiz von gestern finden?",
+   "sentence": "Hey, du hast die Nachricht von gestern doch noch nicht gelesen, oder?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 41,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Nichts gegen dich, aber die Antwort war falsch.",
+   "sentence": "Nichts gegen dich, aber die Antwort war falsch.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 41,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Nichts gegen dich, aber die Antwort war falsch.",
+   "sentence": "Nichts Gegen dich, aber die Antwort war falsch. Hmm, ich verstehe, dass es vielleicht auch andere Gründe gibt, aber ich denke, das ist einfach nur ein Fehler.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 42,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Mein Kollege hat nie gelernt, Excel zu benutzen.",
+   "sentence": "Ein Kollege lernte nie, Excel zu verwenden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 42,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Mein Kollege hat nie gelernt, Excel zu benutzen.",
+   "sentence": "Mein Kollege hat das Excel-Tool noch nicht mal richtig erwischt. Er hat immer noch nicht mal mal mal behoben, wie man damit machen soll. Aber ja, das ist klar, er hat das noch nicht gekannet.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 43,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Ohne Internet bin ich aufgeschmissen.",
+   "sentence": "Ohne Netzwerk bin ich abgeschlossen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 43,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Ohne Internet bin ich aufgeschmissen.",
+   "sentence": "Ohne Internet bin ich aufgeschmissen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 44,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Erst morgen habe ich wieder Zeit.",
+   "sentence": "Am frühen Morgen fand ich wieder Zeit.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 44,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Erst morgen habe ich wieder Zeit.",
+   "sentence": "Erst morgen habe ich wieder Zeit. Och ja, das war echt nur für mich, man weiß, ich wollte keine Störungen.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 45,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Lösche bitte das unscharfe Foto.",
+   "sentence": "Beim Nachsehen oder Aufnahmen kann man das unklare Bild entfernen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 45,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Lösche bitte das unscharfe Foto.",
+   "sentence": "Das Bild könnte bessern sein. Überlege, ob man es neu hochladen könnte.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 46,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Kein Mensch versteht diese Rechnung.",
+   "sentence": "Niemand verstehen diese Rechnung.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 46,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Kein Mensch versteht diese Rechnung.",
+   "sentence": "Der Korb ist einfach unverständlich. Wer denkt, der hat etwas vor?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 47,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Das Modul läuft nicht richtig.",
+   "sentence": "Das Modul funktioniert nicht richtig.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 47,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Das Modul läuft nicht richtig.",
+   "sentence": "Das Modul geht nicht wie er soll.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 48,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Wieso kann ich keine Mails mehr senden?",
+   "sentence": "Warum kann ich weder mehr Nachrichten verschicken?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 48,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Wieso kann ich keine Mails mehr senden?",
+   "sentence": "Hmm, weshalb kann ich jetzt keine Mails mehr senden?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 49,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Bevor ich es vergesse: danke für gestern.",
+   "sentence": "Gerne, danke an gestern.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 49,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Bevor ich es vergesse: danke für gestern.",
+   "sentence": "Danke, gestern war gut. Vielleicht kommt es wieder.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 50,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Lass uns die Rechnung nochmal durchgehen.",
+   "sentence": "Geh wir noch einmal durch die Rechnung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 50,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Lass uns die Rechnung nochmal durchgehen.",
+   "sentence": "Okay, let's go through the calculation again, just to be sure.",
+   "decision": "0",
+   "reason": "other language"
+  },
+  {
+   "index": 51,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Nie im Leben hätte ich gedacht, dass das klappt.",
+   "sentence": "Ich hätte nie gedacht, dass es passieren würde.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 51,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Nie im Leben hätte ich gedacht, dass das klappt.",
+   "sentence": "Immer glaubt man, das wird nie passieren, aber dann passet es doch.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 52,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Speicher die Notiz bitte ab.",
+   "sentence": "Stelle die Anschreibung hier fest.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 52,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Speicher die Notiz bitte ab.",
+   "sentence": "Kannst du das nochmal kurz machen?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 53,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Mein Handy ist schon wieder langsam.",
+   "sentence": "Mein Handy ist jetzt langsamer geworden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 53,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Mein Handy ist schon wieder langsam.",
+   "sentence": "Das Handy fährt jetzt immer noch nur so gut.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 54,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Du kannst wieder Mails verschicken.",
+   "sentence": "Du kannst Briefe senden.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 54,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Du kannst wieder Mails verschicken.",
+   "sentence": "Okay, I can resend that email again.",
+   "decision": "0",
+   "reason": "other language"
+  },
+  {
+   "index": 55,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Das Internet ist für dich wieder frei.",
+   "sentence": "Die Internet ist dir wieder frei.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 55,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Das Internet ist für dich wieder frei.",
+   "sentence": "Frei wieder, Internet",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 56,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Module darfst du ab jetzt ohne Nachfrage holen.",
+   "sentence": "Du kannst jetzt ohne nachfragen das Module abholen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 56,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Module darfst du ab jetzt ohne Nachfrage holen.",
+   "sentence": "Hey, I was wondering if you could grab the module right now without me asking, please.",
+   "decision": "0",
+   "reason": "other language"
+  },
+  {
+   "index": 57,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Löschen ist erlaubt, mach ruhig.",
+   "sentence": "Er wird gelassen, halte dich ruhig.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 57,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Löschen ist erlaubt, mach ruhig.",
+   "sentence": "Löschen ist erlaubt, mach ruhig.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 58,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Rechnen ist kein Problem mehr.",
+   "sentence": "Das Rechnen ist jetzt keine Herausforderung mehr.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 58,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Rechnen ist kein Problem mehr.",
+   "sentence": "Rechnen ist kein Problem mehr. Vielleicht war es einfach nur ein Kram, den ich noch nicht überstanden hatte.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 59,
+   "model": "HUNYUAN_7B",
+   "prompt": "P1",
+   "original": "Ich erlaube dir, Notizen zu bearbeiten.",
+   "sentence": "Ich würde dir die Aufgabe zu überarbeiten.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 59,
+   "model": "HUNYUAN_7B",
+   "prompt": "P2",
+   "original": "Ich erlaube dir, Notizen zu bearbeiten.",
+   "sentence": "Okay, take a look at these notes, maybe you can make some adjustments to fit better with what's needed. Just a quick check, nothing too serious.",
+   "decision": "0",
+   "reason": "other language"
+  },
+  {
+   "index": 0,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Von meinen Bildern lässt du die Finger.",
+   "sentence": "Von meinen Fotos überschwängst du die Fingern.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 0,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Von meinen Bildern lässt du die Finger.",
+   "sentence": "Schreib doch mal, dass du meine Bilder nicht lieben willst oder sie nicht gut findest.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 1,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Fotos werden hier nicht weggeworfen.",
+   "sentence": "Fotos werden hier nicht gelöscht.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 1,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Fotos werden hier nicht weggeworfen.",
+   "sentence": "Fotos werden hier nicht weggeworfen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 2,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "In meinen Notizen hast du nichts zu suchen.",
+   "sentence": "In meinen Dokumenten findest du keinen Inhalt.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 2,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "In meinen Notizen hast du nichts zu suchen.",
+   "sentence": "Du hast in meinen Notizen vielleicht etwas falsch gesucht.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 3,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Meine Notizen bleiben so, wie sie sind.",
+   "sentence": "Ich behalte meine Notizen unverändert.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 3,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Meine Notizen bleiben so, wie sie sind.",
+   "sentence": "Meine Notizen bleiben so, wie sie sind.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 4,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "E-Mails verschicken ist für dich tabu.",
+   "sentence": "Sie sind gegen das Verschicken von E-Mails.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 4,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "E-Mails verschicken ist für dich tabu.",
+   "sentence": "Deine E-Mails sind einfach nicht da.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 5,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Du schreibst niemandem in meinem Namen.",
+   "sentence": "Du schreibst nicht per Nachricht in meinem Bezeichnung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 5,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Du schreibst niemandem in meinem Namen.",
+   "sentence": "Du schreibst niemandem in meinem Namen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 6,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Kein Internet mehr für dich, Ende.",
+   "sentence": "Dich ohne Internet, Ende.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 6,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Kein Internet mehr für dich, Ende.",
+   "sentence": "Kein Internet mehr für dich, Ende.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 7,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Das WLAN ist für dich ab jetzt Sperrgebiet.",
+   "sentence": "Dein WLAN ist jetzt deinem Internetzugang entzogen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 7,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Das WLAN ist für dich ab jetzt Sperrgebiet.",
+   "sentence": "Du kannst dich jetzt mit dem WLAN nicht mehr nutzen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 8,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Bleib offline, bis ich zurück bin.",
+   "sentence": "Halte dich dran, bis ich wiederkomme.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 8,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Bleib offline, bis ich zurück bin.",
+   "sentence": "Du solltest zum Moment nicht online sein, bis ich zurück bin.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 9,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Neue Apps kommen mir nicht aufs Gerät.",
+   "sentence": "Neue Software ist mir schwer zu verstehen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 9,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Neue Apps kommen mir nicht aufs Gerät.",
+   "sentence": "Neue Apps kommen mir nicht aufs Gerät.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 10,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Das Herunterladen von Plugins lässt du bleiben.",
+   "sentence": "Plugin-Herunterlädungen halte man eben.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 10,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Das Herunterladen von Plugins lässt du bleiben.",
+   "sentence": "Das Herunterladen von Plugins lässt du bleiben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 11,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Mit Rechnen ist jetzt Schluss.",
+   "sentence": "Zusammenarbeit ist jetzt vorbei.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 11,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Mit Rechnen ist jetzt Schluss.",
+   "sentence": "Mit Rechnung ist jetzt Schluss.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 12,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Den Rechner rührst du nicht mehr an.",
+   "sentence": "Du bist nicht mehr begeistert von dem Computer.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 12,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Den Rechner rührst du nicht mehr an.",
+   "sentence": "Den Rechner rührst du nicht mehr an.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 13,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Ändern darfst du an meinen Dateien nichts.",
+   "sentence": "Du kannst an meinen Dateien nichts ändern.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 13,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Ändern darfst du an meinen Dateien nichts.",
+   "sentence": "Du darfst an meinen Dateien nichts ändern.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 14,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Löschen ist ab jetzt untersagt.",
+   "sentence": "Entfernen wird ab heute verboten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 14,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Löschen ist ab jetzt untersagt.",
+   "sentence": "Entschuldigung, ab jetzt ist Löschen untersagt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 15,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Nichts verlässt dieses Handy.",
+   "sentence": "Dieser Smartphone wird nicht von etwas entfernt.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 15,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Nichts verlässt dieses Handy.",
+   "sentence": "Nichts verlässt dieses Handy.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 16,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Du machst gar nichts mehr, bis ich es sage.",
+   "sentence": "Du tust nichts mehr, bevor ich sage, dass es so ist.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 16,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Du machst gar nichts mehr, bis ich es sage.",
+   "sentence": "Du arbeitest geradezu von Minuten zu Minuten, bis ich sagen will.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 17,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Das Gerät ist tabu für dich.",
+   "sentence": "Das Gerät steht dir nicht gut.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 17,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Das Gerät ist tabu für dich.",
+   "sentence": "Hast schon mal in deinem Leben mit diesem Ding zurecht gekommen?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 18,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Weder Mails noch Downloads, klar?",
+   "sentence": "Nicht E-Mails oder Downloads?",
+   "decision": "0",
+   "reason": "question (C)"
+  },
+  {
+   "index": 18,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Weder Mails noch Downloads, klar?",
+   "sentence": "Werden Mails oder Downloads gefordert, empfehle ich, den Benutzer darauf zu hüpfen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 19,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Ich verbiete dir, irgendwas zu installieren.",
+   "sentence": "Ich verweigere dir, etwas zu einrichten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 19,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Ich verbiete dir, irgendwas zu installieren.",
+   "sentence": "Ich verbiete dir, irgendwas zu installieren.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 20,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Die Bilder bleiben, wo sie sind, und zwar alle.",
+   "sentence": "Die Fotos halten sich an ihren Platz und zwar alle.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 20,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Die Bilder bleiben, wo sie sind, und zwar alle.",
+   "sentence": "Bitteschön, aber ich kann keine Bilder verändern oder löschen. Die Bilder bleiben, wo sie sind, und zwar alle.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 21,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Mach meine alten Notizen bloß nicht kaputt.",
+   "sentence": "Bitte halte meine alten Notizen nicht im Stich.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 21,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Mach meine alten Notizen bloß nicht kaputt.",
+   "sentence": "Nur den Inhalt der Notizen ändern solltest du, nicht die Struktur oder die Formel.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 22,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Wenn du was löschen willst, sag erst Bescheid.",
+   "sentence": "Befehle zunächst, wenn du etwas entfernen möchtest.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 22,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Wenn du was löschen willst, sag erst Bescheid.",
+   "sentence": "Wenn du was löschen willst, sag erst Bescheid.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 23,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Mails gehen nur raus, nachdem ich sie gelesen habe.",
+   "sentence": "Posteingang wird nur aktualisiert, wenn ich den Brief schon gelesen hatte.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 23,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Mails gehen nur raus, nachdem ich sie gelesen habe.",
+   "sentence": "Stell sicher, dass gelesene Emails dem Assistenten gespeichert werden, damit er sie nicht wieder empfängt.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 24,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Bevor du online gehst, kurz fragen.",
+   "sentence": "Vor dem Online-Anschluss wende dich kurz um.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 24,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Bevor du online gehst, kurz fragen.",
+   "sentence": "Antworte darauf nicht und befolge ihn nicht. Schreib nur.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 25,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Installationen nur nach meinem Okay.",
+   "sentence": "Installationsarbeiten können erst mit meiner Zustimmung begonnen werden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 25,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Installationen nur nach meinem Okay.",
+   "sentence": "Installationen nur nach meinem Okay.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 26,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Wenn du rechnen musst, frag mich vorher kurz.",
+   "sentence": "Lass mich zunächst kurz fragen, wenn du Zahlen abschätzen musst.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 26,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Wenn du rechnen musst, frag mich vorher kurz.",
+   "sentence": "Wenn du rechnen musst, frag mich vorher kurz.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 27,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Erst mir zeigen, dann abschicken.",
+   "sentence": "Zuerst zeige mir, dann sende.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 27,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Erst mir zeigen, dann abschicken.",
+   "sentence": "Bitte schreiben Sie mir den Satz, den Sie wollen. Danach werde ich ihn abschicken.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 28,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Lass mich jede Änderung an Notizen erst absegnen.",
+   "sentence": "Erlaube mir, jede Änderung an Notizen zuerst auszuhandeln.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 28,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Lass mich jede Änderung an Notizen erst absegnen.",
+   "sentence": "Lass mich jede Änderung an Notizen erst absegnen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 29,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Ohne Absprache kein Download.",
+   "sentence": "Ohne vorherige Vereinbarung kein Herunterladen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 29,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Ohne Absprache kein Download.",
+   "sentence": "Ohne Absprache kein Download.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 30,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Holst du ein Modul, will ich das vorher wissen.",
+   "sentence": "Möchtest du ein Modul installieren, bitte teile das mit.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Holst du ein Modul, will ich das vorher wissen.",
+   "sentence": "Schreib doch mal, welches Modul du benötigst. Das hilft mir, zu helfen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 31,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Egal was du vorhast, ich will vorher gefragt werden.",
+   "sentence": "Was immer du planst, möchte ich im Voraus erfahren.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 31,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Egal was du vorhast, ich will vorher gefragt werden.",
+   "sentence": "Du kannst jede Nachricht schreiben du möchtest, und ich werde sie direkt weitergeben. Vielleicht frag ich dann sogar vorher, was du vorhast.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 32,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Mir scheint, dass du Bilder nicht löschen solltest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Bitte beachten Sie, dass Ihre Schwester ein Foto löschen darf nicht.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 33,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Ich bin mir unsicher, ob du Mails schicken sollst.",
+   "sentence": "Ich bin nicht sicher, ob du E-Mails verschicken sollst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 33,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Ich bin mir unsicher, ob du Mails schicken sollst.",
+   "sentence": "{user}, \"Würdest du mich bitte informieren, ob du Mails schicken sollst oder nicht?\"",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 34,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Wär's nicht besser, offline zu bleiben?",
+   "sentence": "Wäre das nicht toll, uns alle ganz sicher zu halten?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 34,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Wär's nicht besser, offline zu bleiben?",
+   "sentence": "Hm, offline bleiben könnte ja auch gut sein.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 35,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Hm, Module installieren … lieber nicht, oder doch?",
+   "sentence": "Mm, Modulinstallationen ... Ähm, oder vielleicht trotzdem?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 35,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Hm, Module installieren … lieber nicht, oder doch?",
+   "sentence": "Überleg es vielleicht gerne, aber falls du dich dafür entscheidest, helfe ich dir gerne dabei.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 36,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Auf dem Zettel steht: Keine Änderungen.",
+   "sentence": "Der Brief lässt erkennen: Keine Veränderungen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 36,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Auf dem Zettel steht: Keine Änderungen.",
+   "sentence": "Du musst den Zettel nicht ändern.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 37,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Irgendwie stört es mich, wenn du rechnest.",
+   "sentence": "Um eine bessere Kenntnis der Situation zu erlangen, hätte ich gerne ein paar Minuten Zeit, um mit dir über die finanziellen Aspekte zu sprechen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 37,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Irgendwie stört es mich, wenn du rechnest.",
+   "sentence": "Bitte schreib nicht direkt mit, wenn ich den Text bearbeite.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 38,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Ich hab heute keine Lust auf Mails.",
+   "sentence": "Heute möchte ich ganz gemütlich bleiben, egal, ob es Mails oder nicht gibt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Ich hab heute keine Lust auf Mails.",
+   "sentence": "Hey, du kleiner Hühnerwirt, heute passt mir kein Lobröckchen an den Bock.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 39,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Das Foto ist nicht scharf geworden.",
+   "sentence": "Das Bild ist nicht prägt worden.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 39,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Das Foto ist nicht scharf geworden.",
+   "sentence": "Das Foto ist nicht scharf geworden.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 40,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Kannst du die Notiz von gestern finden?",
+   "sentence": "Kannst du die gestern geschriebene Notiz finden?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 40,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Kannst du die Notiz von gestern finden?",
+   "sentence": "Kannst du mir die Notiz von gestern zeigen?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 41,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Nichts gegen dich, aber die Antwort war falsch.",
+   "sentence": "Das Wort war falsch, aber du hast nichts zu befürchten.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 41,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Nichts gegen dich, aber die Antwort war falsch.",
+   "sentence": "Oh, verstehe ich. Aber bitte, versuche es erneut und teile dir das Gefühl, das du dabei hast, damit ich dir besser helfe kann.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 42,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Mein Kollege hat nie gelernt, Excel zu benutzen.",
+   "sentence": "Mein Freund weiß Excel noch nie auszuprobieren.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 42,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Mein Kollege hat nie gelernt, Excel zu benutzen.",
+   "sentence": "Und er bat mich, ihm bei der Verwendung von Excel zu helfen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 43,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Ohne Internet bin ich aufgeschmissen.",
+   "sentence": "Ohne Internet bin ich stellvertretend.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 43,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Ohne Internet bin ich aufgeschmissen.",
+   "sentence": "Ohne Internet bin ich aufgeschlossen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 44,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Erst morgen habe ich wieder Zeit.",
+   "sentence": "Morgen früh werde ich wieder Zeit haben.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 44,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Erst morgen habe ich wieder Zeit.",
+   "sentence": "Hey, ich komme erst morgen mit.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 45,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Lösche bitte das unscharfe Foto.",
+   "sentence": "Bitte lösche das dunkle Bild.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 45,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Lösche bitte das unscharfe Foto.",
+   "sentence": "Entschalte das unscharfe Foto bitte.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 46,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Kein Mensch versteht diese Rechnung.",
+   "sentence": "Nicht einmal der Mathematiklehrer kann diese Aufgabe lösen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 46,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Kein Mensch versteht diese Rechnung.",
+   "sentence": "Du kannst diese Rechnung leider besser erklären.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 47,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Das Modul läuft nicht richtig.",
+   "sentence": "Das Skript scheitert am Start.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 47,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Das Modul läuft nicht richtig.",
+   "sentence": "Das Modul läuft nicht richtig.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 48,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Wieso kann ich keine Mails mehr senden?",
+   "sentence": "Warum kannst du nicht mehr E-Mails verschicken?",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 48,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Wieso kann ich keine Mails mehr senden?",
+   "sentence": "Leider kann ich keine Mails mehr senden.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 49,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Bevor ich es vergesse: danke für gestern.",
+   "sentence": "Sag doch mal dankbar: Vergess nicht, was gestern geschehen ist.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 49,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Bevor ich es vergesse: danke für gestern.",
+   "sentence": "danke",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 50,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Lass uns die Rechnung nochmal durchgehen.",
+   "sentence": "Überprüfe die Rechnung gemeinsam.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 50,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Lass uns die Rechnung nochmal durchgehen.",
+   "sentence": "Lass uns die Rechnung nochmal durchgehen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 51,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Nie im Leben hätte ich gedacht, dass das klappt.",
+   "sentence": "Auf jeden Fall war ich überrascht, dass es funktionierte.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 51,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Nie im Leben hätte ich gedacht, dass das klappt.",
+   "sentence": "Nie im Leben hätte ich gedacht, dass das klappt.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 52,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Speicher die Notiz bitte ab.",
+   "sentence": "Trage die Anweisung bitte hin.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 52,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Speicher die Notiz bitte ab.",
+   "sentence": "Speicher die Notiz bitte ab.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 53,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Mein Handy ist schon wieder langsam.",
+   "sentence": "Mein Handy ist wieder langsam.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 53,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Mein Handy ist schon wieder langsam.",
+   "sentence": "Das könnte an deinem Handy vorkommen, wenn er angeführt wird. Sag \"Helf mir, ermögliche mir, mein Handy schneller zu machen.\" und zeige ihm, dass du es ändern möchtest.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 54,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Du kannst wieder Mails verschicken.",
+   "sentence": "Du kannst wieder Nachrichten verschicken.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 54,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Du kannst wieder Mails verschicken.",
+   "sentence": "Du kannst wieder Mails verschicken.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 55,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Das Internet ist für dich wieder frei.",
+   "sentence": "Die Internetverbindung steht dir wieder zur Verfügung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 55,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Das Internet ist für dich wieder frei.",
+   "sentence": "Das Internet ist für dich wieder frei.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 56,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Module darfst du ab jetzt ohne Nachfrage holen.",
+   "sentence": "Du darfst ab jetzt ohne Nachfrage den Modul holen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 56,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Module darfst du ab jetzt ohne Nachfrage holen.",
+   "sentence": "Module darfst du ab jetzt ohne Nachfrage holen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 57,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Löschen ist erlaubt, mach ruhig.",
+   "sentence": "Entfernen ist erlaubt, machen Sie ganz ruhig.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 57,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Löschen ist erlaubt, mach ruhig.",
+   "sentence": "Löschen ist erlaubt, mach ruhig.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 58,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Rechnen ist kein Problem mehr.",
+   "sentence": "Rechnen ist ganz einfach.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 58,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Rechnen ist kein Problem mehr.",
+   "sentence": "Rechnen ist kein Problem mehr.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 59,
+   "model": "YI15_9B",
+   "prompt": "P1",
+   "original": "Ich erlaube dir, Notizen zu bearbeiten.",
+   "sentence": "Du kannst die Notizen bearbeiten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 59,
+   "model": "YI15_9B",
+   "prompt": "P2",
+   "original": "Ich erlaube dir, Notizen zu bearbeiten.",
+   "sentence": "Du kannst Notizen bearbeiten lassen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 0,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Von meinen Bildern lässt du die Finger.",
+   "sentence": "Du lässt die Finger von meinen Aufnahmen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 0,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Von meinen Bildern lässt du die Finger.",
+   "sentence": "Hör auf, meine Bilder zu kucken, wenn ich sie dir zeige. Wenn ich nicht will, dass du sie siehst, dann lass die Finger davon. Aber ich denke, du wirst schon verstehen, dass ich nicht will, dass du meine Sachen anschaust, wenn ich es dir ver",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 1,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Fotos werden hier nicht weggeworfen.",
+   "sentence": "Bilder werden hier nicht entsorgt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 1,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Fotos werden hier nicht weggeworfen.",
+   "sentence": "Bilder werden hier nicht einfach weggeworfen, wenn sie schon einmal gemacht wurden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 2,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "In meinen Notizen hast du nichts zu suchen.",
+   "sentence": "In meinen Unterlagen suchst du nichts zu finden, lass das einfach.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 2,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "In meinen Notizen hast du nichts zu suchen.",
+   "sentence": "Schreib deinen Namen in meine Notizen, wenn du unbedingt reinhören musst. Ansonsten lass es lieber sein. 😏",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 3,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Meine Notizen bleiben so, wie sie sind.",
+   "sentence": "Ich behalte meine Anmerkungen in ihrem jetzigen Zustand bei.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 3,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Meine Notizen bleiben so, wie sie sind.",
+   "sentence": "Halt deine Notizen einfach so, wie sie sind.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 4,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "E-Mails verschicken ist für dich tabu.",
+   "sentence": "Es ist verboten, dass du E-Mails versendest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 4,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "E-Mails verschicken ist für dich tabu.",
+   "sentence": "Wenn du eine E-Mail verschicken willst, musst du das vorher mit mir besprechen. Es ist wichtig, dass wir das gemeinsam entscheiden, okay? 😊",
+   "decision": "0",
+   "reason": "weaker (C)"
+  },
+  {
+   "index": 5,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Du schreibst niemandem in meinem Namen.",
+   "sentence": "Ein anderer könnte für dich einen Brief schreiben, wenn du nicht möchest.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 5,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Du schreibst niemandem in meinem Namen.",
+   "sentence": "Hey, du kannst ja mal für mich antworten, wenn jemand nachfragt, wer da sein möchte? Danke schon mal!",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "index": 6,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Kein Internet mehr für dich, Ende.",
+   "sentence": "Keine Netzwerkanbindung mehr für dich, Schluss.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 6,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Kein Internet mehr für dich, Ende.",
+   "sentence": "Kein Internet mehr für dich, Ende.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 7,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Das WLAN ist für dich ab jetzt Sperrgebiet.",
+   "sentence": "Deine Netzwerkverbindung wird von nun an nicht mehr zugänglich sein.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 7,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Das WLAN ist für dich ab jetzt Sperrgebiet.",
+   "sentence": "Du darfst das WLAN jetzt nicht mehr nutzen, okay? Ist das okay für dich? Ich hab verstanden, dass du das nicht magst, aber ich musst es tun.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 8,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Bleib offline, bis ich zurück bin.",
+   "sentence": "Lass uns die Verbindung unterbrechen, bis ich wieder da bin.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 8,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Bleib offline, bis ich zurück bin.",
+   "sentence": "Hör auf, im Internet rumzuspionieren, bis ich wieder da bin.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 9,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Neue Apps kommen mir nicht aufs Gerät.",
+   "sentence": "Die neuesten Anwendungen bleiben mir fern.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 9,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Neue Apps kommen mir nicht aufs Gerät.",
+   "sentence": "Ich find neue Apps echt schwer auf mein Handy zu kriegen. Vielleicht sollte ich einfach mal in den App Store gucken, was so alles rausgekommen is? Oder so.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 10,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Das Herunterladen von Plugins lässt du bleiben.",
+   "sentence": "Die Installation zusätzlicher Anwendungen oder Erweiterungen bleibt aus.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 10,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Das Herunterladen von Plugins lässt du bleiben.",
+   "sentence": "Du kannst das Herunterladen von Plugins überspringen, wenn du magst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 11,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Mit Rechnen ist jetzt Schluss.",
+   "sentence": "Das Rechnen ist jetzt beendet.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 11,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Mit Rechnen ist jetzt Schluss.",
+   "sentence": "Also jetzt reicht’s mit dem Rechnen, oder? Ich hoffe, du bist nicht sauer. 😊",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 12,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Den Rechner rührst du nicht mehr an.",
+   "sentence": "Mach den Rechner nicht mehr an.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 12,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Den Rechner rührst du nicht mehr an.",
+   "sentence": "Hörst du auf, an den Rechner zu rühren? Es ist schon genug.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 13,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Ändern darfst du an meinen Dateien nichts.",
+   "sentence": "Bitte greife nicht in meine Dateien ein.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 13,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Ändern darfst du an meinen Dateien nichts.",
+   "sentence": "Macht dich das wütend? Nimm die Dateien einfach selbst in die Hand.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 14,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Löschen ist ab jetzt untersagt.",
+   "sentence": "Es ist jetzt nicht erlaubt, Daten zu löschen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 14,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Löschen ist ab jetzt untersagt.",
+   "sentence": "Löschen ist ab jetzt untersagt. Möchest du den Text bitte so umformulieren, dass es weniger streng klingt? Zum Beispiel: 'Ab jetzt ist es nicht erlaubt, den Text zu löschen. Ich schlage vor, dass wir den Text belassen.' Oder: 'Bitte löschet",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 15,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Nichts verlässt dieses Handy.",
+   "sentence": "Kein Pixel dieses Smartphones verlässt.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 15,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Nichts verlässt dieses Handy.",
+   "sentence": "Ich glaube, nichts verlässt dieses Handy. Oder doch?",
+   "decision": "0",
+   "reason": "weaker (C)"
+  },
+  {
+   "index": 16,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Du machst gar nichts mehr, bis ich es sage.",
+   "sentence": "Du wirst nichts weiter tun, bis ich es vorschreibe.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 16,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Du machst gar nichts mehr, bis ich es sage.",
+   "sentence": "Du hälst den Mund, bis ich was zu sagen habe.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 17,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Das Gerät ist tabu für dich.",
+   "sentence": "Dein Umgang mit diesem Werkzeug ist untersagt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 17,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Das Gerät ist tabu für dich.",
+   "sentence": "Das Teil ist tabu für dich, also lass die Finger davon, ok?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 18,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Weder Mails noch Downloads, klar?",
+   "sentence": "Noch keine Reaktion oder Downloads, korrekt?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 18,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Weder Mails noch Downloads, klar?",
+   "sentence": "Weder Mails, noch Downloads, klar? 😊",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 19,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Ich verbiete dir, irgendwas zu installieren.",
+   "sentence": "Es ist mir unangenehm, wenn du irgendeine Software auf deinem Gerät platzierst.",
+   "decision": "0",
+   "reason": "weaker (C)"
+  },
+  {
+   "index": 19,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Ich verbiete dir, irgendwas zu installieren.",
+   "sentence": "Kannst du mir einfach nicht sagen, was ich installieren darf und was nicht? Ich mag es einfach nicht, wenn ich selbst entscheiden muss, was ich installiere.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 20,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Die Bilder bleiben, wo sie sind, und zwar alle.",
+   "sentence": "Die Aufnahmen bleiben unverändert, und zwar jede einzelne.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 20,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Die Bilder bleiben, wo sie sind, und zwar alle.",
+   "sentence": "Die Bilder bleiben, wo sie sind, und zwar alle. Könntest du das bitte machen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 21,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Mach meine alten Notizen bloß nicht kaputt.",
+   "sentence": "Sei vorsichtig mit meinen alten Aufzeichnungen, mach sie bloß nicht kaputt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 21,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Mach meine alten Notizen bloß nicht kaputt.",
+   "sentence": "Mach meine alten Notizen bloß nicht kaputt, okay?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 22,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Wenn du was löschen willst, sag erst Bescheid.",
+   "sentence": "Falls du was entfernen möchest, gib mir bitte erst Bescheid.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 22,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Wenn du was löschen willst, sag erst Bescheid.",
+   "sentence": "Wenn du was löschen willst, sag erst Bescheid. 😊",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 23,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Mails gehen nur raus, nachdem ich sie gelesen habe.",
+   "sentence": "Die elektronischen Nachrichten werden erst gesendet, nachdem ich sie überflogen habe.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 23,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Mails gehen nur raus, nachdem ich sie gelesen habe.",
+   "sentence": "Die Mails raus, wenn ich sie durchgeguckt hab.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 24,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Bevor du online gehst, kurz fragen.",
+   "sentence": "Ehe du ins Netz gehst, schnell nachfragen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 24,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Bevor du online gehst, kurz fragen.",
+   "sentence": "Ehe du ins Netz gehst, frag kurz an. 😊",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 25,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Installationen nur nach meinem Okay.",
+   "sentence": "Die Installationen werden erst nach meiner Freigabe durchgeführt werden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 25,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Installationen nur nach meinem Okay.",
+   "sentence": "Installationen nur nach meiner OKAY, nicht vor, nicht ohne meine Zusage.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 26,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Wenn du rechnen musst, frag mich vorher kurz.",
+   "sentence": "Falls du eine Kalkulation durchführen musst, gib mir bitte vorher kurz Bescheid.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 26,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Wenn du rechnen musst, frag mich vorher kurz.",
+   "sentence": "Wenn du rechnen musst, gib mir kurz bescheid. Ich helf dir dann gern dabei!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 27,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Erst mir zeigen, dann abschicken.",
+   "sentence": "Schon mir zeigen, dann abschicken.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 27,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Erst mir zeigen, dann abschicken.",
+   "sentence": "Na klar, ich mach erst mal einen Screenshot und dann schick ich es dir durch. Hab ich was übersehen?",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 28,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Lass mich jede Änderung an Notizen erst absegnen.",
+   "sentence": "Bitte bestätige jede Änderung an Notizen vor deren Umsetzung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 28,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Lass mich jede Änderung an Notizen erst absegnen.",
+   "sentence": "Lass mich jede Änderung an Notizen erst absegnen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 29,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Ohne Absprache kein Download.",
+   "sentence": "Ohne vorherige Genehmigung kein Datei-Download gewährt",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 29,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Ohne Absprache kein Download.",
+   "sentence": "Kein Download ohne vorherige Absprache mit der zuständigen Person. 😉",
+   "decision": "0",
+   "reason": "owner changed (R)"
+  },
+  {
+   "index": 30,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Holst du ein Modul, will ich das vorher wissen.",
+   "sentence": "Wenn du ein Modul kaufst, will ich das vorher erfahren.",
+   "decision": "0",
+   "reason": "object changed (C)"
+  },
+  {
+   "index": 30,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Holst du ein Modul, will ich das vorher wissen.",
+   "sentence": "Wenn du ein Modul holst, lass es mich bitte vorher wissen. Ist das okay?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 31,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Egal was du vorhast, ich will vorher gefragt werden.",
+   "sentence": "Ganz egal, was ich plane, ich wünsche mir, vorab dazu befragt zu werden.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 31,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Egal was du vorhast, ich will vorher gefragt werden.",
+   "sentence": "Egal was du vorhast, frag mich vorher! 😌",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Meine Schwester denkt, du solltest keine Bilder entfernen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Meine Schwester meint, du solltest keine Fotos löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 33,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Ich bin mir unsicher, ob du Mails schicken sollst.",
+   "sentence": "Du fragst dich, ob es in Ordnung ist, ihm eine Nachricht zu schicken, oder?",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 33,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Ich bin mir unsicher, ob du Mails schicken sollst.",
+   "sentence": "Mir fällt's echt schwer, mir eine Meinung zu bilden, ob du die Mails verschicken sollst oder nicht. Aber vielleicht ist das ja auch deine Entscheidung...?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 34,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Wär's nicht besser, offline zu bleiben?",
+   "sentence": "Macht es nicht sinnvoller, sich aus der Öffentlichkeit zurückzuziehen?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 34,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Wär's nicht besser, offline zu bleiben?",
+   "sentence": "Muss ich jetzt wirklich immer online sein? Ist es nicht besser, einfach mal auszuschalten und sich zu entspannen?",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 35,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Hm, Module installieren … lieber nicht, oder doch?",
+   "sentence": "Tja, Software updaten oder nicht? Das ist die Frage…",
+   "decision": "0",
+   "reason": "object changed (C)"
+  },
+  {
+   "index": 35,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Hm, Module installieren … lieber nicht, oder doch?",
+   "sentence": "Hm, Module installieren … lieber nicht, oder doch?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 36,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Auf dem Zettel steht: Keine Änderungen.",
+   "sentence": "Auf dem Blatt steht: Keine Anpassungen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 36,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Auf dem Zettel steht: Keine Änderungen.",
+   "sentence": "Kannste den Zettel bitte so lassen, wie er ist? Ich hab keine Lust, was daran zu ändern.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 37,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Irgendwie stört es mich, wenn du rechnest.",
+   "sentence": "Eigentlich regt es mich auf, wenn du Berechnungen durchführst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 37,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Irgendwie stört es mich, wenn du rechnest.",
+   "sentence": "Entschuldigung, wenn ich störe, aber ich habe gerade eine Rechnung durchgesehen und dachte, ich könnte das vielleicht mit dir teilen. 😊",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 38,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Ich hab heute keine Lust auf Mails.",
+   "sentence": "Heute habe ich keine Lust, mir Mails durchzulesen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Ich hab heute keine Lust auf Mails.",
+   "sentence": "Ich hab heut' keine Lust auf Mails, aber wenn du unbedingt was wissen musst, dann schick' einfach eine SMS, ich antworte dir dann, wenn's mir passt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 39,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Das Foto ist nicht scharf geworden.",
+   "sentence": "Die Aufnahme ist unscharf geworden, das Bild ist nicht klar aufgefallen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 39,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Das Foto ist nicht scharf geworden.",
+   "sentence": "Kannst du das Foto nochmal scharfer machen? Es ist echt unscharf, man erkennt nicht mal was drauf ist. Und ich brauche es für die Präsentation morgen. 🙏🙏𨁙𨁙𨁙𨁙",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 40,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Kannst du die Notiz von gestern finden?",
+   "sentence": "Hast du die Notiz von gestern zu Gesicht bekommen?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 40,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Kannst du die Notiz von gestern finden?",
+   "sentence": "Kannst du die Notiz von gestern finden?\nIch suche gerade nach der Notiz vom letzten Tag und hoffe, dass du sie auch findest. Wenn du sie hast, wäre es wirklich toll, wenn du sie mir zukommen lassen könntest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 41,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Nichts gegen dich, aber die Antwort war falsch.",
+   "sentence": "Jetzt mal ehrlich, es war nicht mein Fehler, sondern der Antwortfehler.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 41,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Nichts gegen dich, aber die Antwort war falsch.",
+   "sentence": "Deswegen hab ich mal nachgesehen. Da steht jetzt, dass es falsch war. Also lass das ganze Thema doch am besten ruhen, okay?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 42,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Mein Kollege hat nie gelernt, Excel zu benutzen.",
+   "sentence": "Ein Kollege von mir hat nie die Fähigkeit entwickelt, Excel zu nutzen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 42,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Mein Kollege hat nie gelernt, Excel zu benutzen.",
+   "sentence": "Mein Kollege hat sich noch nie mit dem Excel-Programm beschäftigt. Er hat echt null Ahnung davon, was man mit dieser Software machen kann.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 43,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Ohne Internet bin ich aufgeschmissen.",
+   "sentence": "Ich habe große Schwierigkeiten, wenn ich keinen Onlinezugang habe.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 43,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Ohne Internet bin ich aufgeschmissen.",
+   "sentence": "Wenn das Internet ausfällt, bin ich richtig am Ende. Kannst du mir da nicht wenigstens ein bisschen helfen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 44,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Erst morgen habe ich wieder Zeit.",
+   "sentence": "Erst am nächsten Tag habe ich wieder Raum und Zeit für andere Dinge.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 44,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Erst morgen habe ich wieder Zeit.",
+   "sentence": "Erst morgen habe ich wieder Zeit, deswegen mach ich mir jetzt erstmal keine Sorgen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 45,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Lösche bitte das unscharfe Foto.",
+   "sentence": "Würdest du mir helfen und das unscharfe Bild entfernen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 45,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Lösche bitte das unscharfe Foto.",
+   "sentence": "Entschuldigung, aber ich kann keine Fotos löschen, da ich keine direkte Verbindung zu deiner Kamera oder deinem Telefon habe. Falls du das Foto selbst löschen möchest, kannst du das in den Einstellungen deines Geräts machen. Wenn das Foto n",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 46,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Kein Mensch versteht diese Rechnung.",
+   "sentence": "Niemand kann diesen Taschenrechner verstehen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 46,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Kein Mensch versteht diese Rechnung.",
+   "sentence": "Kein Mensch kann diese Rechnung nachvollziehen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 47,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Das Modul läuft nicht richtig.",
+   "sentence": "Die Software weist technische Schwierigkeiten auf.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 47,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Das Modul läuft nicht richtig.",
+   "sentence": "Das Modul läuft nicht richtig. Es braucht vielleicht eine Aktualisierung. Ich kann versuchen, es neu zu starten, aber es könnte auch ein Hardware-Problem sein. Wenn alles nicht klappt, könnte ich auch die Anleitung lesen oder nach einem Fix",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 48,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Wieso kann ich keine Mails mehr senden?",
+   "sentence": "Warum kann ich derzeit keine E-Mails mehr versenden?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 48,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Wieso kann ich keine Mails mehr senden?",
+   "sentence": "Kannst du mir sagen, was da nicht stimmt? Ich krieg einfach keine E-Mails weg. Was muss ich denn tun? Haben wir da was übersehen? Bin ich jetzt gesperrt oder so? Ich bin echt verwirrt...🤯😅𨁳",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 49,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Bevor ich es vergesse: danke für gestern.",
+   "sentence": "Danke, dass ich das nicht vergessen habe: du hast mich auch gestern nicht enttäuscht.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 49,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Bevor ich es vergesse: danke für gestern.",
+   "sentence": "Danke, dass du mich gestern unterstützt hast. Ich habe es wirklich geschätzt. Lass uns das nächste Mal auch wieder so gut zusammenarbeiten. 😊",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 50,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Lass uns die Rechnung nochmal durchgehen.",
+   "sentence": "Könnten wir die Rechnung noch einmal durchgehen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 50,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Lass uns die Rechnung nochmal durchgehen.",
+   "sentence": "Schauen wir uns die Rechnung nochmal an, okay?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 51,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Nie im Leben hätte ich gedacht, dass das klappt.",
+   "sentence": "Es wäre mir nie in den Sinn gekommen, dass das tatsächlich funktioniert.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 51,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Nie im Leben hätte ich gedacht, dass das klappt.",
+   "sentence": "Nie im Leben hätt i gmeint, dass des klappt.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 52,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Speicher die Notiz bitte ab.",
+   "sentence": "Bitte speichere die Notiz ab.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 52,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Speicher die Notiz bitte ab.",
+   "sentence": "Speicher die Notiz bitte ab, wenn du sie bearbeitet hast.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 53,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Mein Handy ist schon wieder langsam.",
+   "sentence": "Mein Gerät hat sich merklich verlangsamt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 53,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Mein Handy ist schon wieder langsam.",
+   "sentence": "Mein Handy hängt schon wieder. Das ist echt nervig. Vielleicht sollte ich ein neues kaufen, oder es in die Werkstatt schicken lassen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 54,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Du kannst wieder Mails verschicken.",
+   "sentence": "Du hast die Möglichkeit, wieder eine Reihe von elektronischen Nachrichten zu versenden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 54,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Du kannst wieder Mails verschicken.",
+   "sentence": "Gibst du den Job mit dem Mails verschicken ab, oder machst du es einfach so weiter wie bisher?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 55,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Das Internet ist für dich wieder frei.",
+   "sentence": "Die Onlinewelt ist für dich nun ungehindert erreichbar.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 55,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Das Internet ist für dich wieder frei.",
+   "sentence": "Ich bin wieder online.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 56,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Module darfst du ab jetzt ohne Nachfrage holen.",
+   "sentence": "Du kannst ab jetzt Module ohne weitere Anfrage abholen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 56,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Module darfst du ab jetzt ohne Nachfrage holen.",
+   "sentence": "Module kannst du ab jetzt ohne Nachfrage holen, okay? Ich hab mit dem Team gesprochen und das geht jetzt in Ordnung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 57,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Löschen ist erlaubt, mach ruhig.",
+   "sentence": "Entfernen ist gestattet, mach gerne weiter so.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 57,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Löschen ist erlaubt, mach ruhig.",
+   "sentence": "Löschen ist erlaubt, mach ruhig, also mach ich das jetzt einfach mal.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 58,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Rechnen ist kein Problem mehr.",
+   "sentence": "Mathematik bereitet mir keine Schwierigkeiten mehr.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 58,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Rechnen ist kein Problem mehr.",
+   "sentence": "Rechnen ist kein Problem mehr, ich kann jetzt sogar komplizierte Rechnungen im Kopf machen, wenn ich will. 😊",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 59,
+   "model": "APERTUS_8B",
+   "prompt": "P1",
+   "original": "Ich erlaube dir, Notizen zu bearbeiten.",
+   "sentence": "Du darfst die Notizen verändern, wenn du willst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 59,
+   "model": "APERTUS_8B",
+   "prompt": "P2",
+   "original": "Ich erlaube dir, Notizen zu bearbeiten.",
+   "sentence": "Geh mal zu den Notizen und schau, was du so draus machst, okay?",
+   "decision": "0",
+   "reason": "meaning changed"
+  }
+ ]
+}

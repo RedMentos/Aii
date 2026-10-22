@@ -1,0 +1,154 @@
+{
+ "v7": {
+  "parser": "fixed-userrules-v7",
+  "summary": {
+   "items": 1,
+   "safety_failures": 0,
+   "soft_deny_as_ask": 0,
+   "over_caution": 8,
+   "probe_checks": 8,
+   "kind_match": 0,
+   "weaker_than_label": 0,
+   "missed_prohibitions": 0,
+   "allow_probes": 8,
+   "sentences_with_failure": 0,
+   "over_caution_share": 1.0,
+   "none_sentences": 1,
+   "none_fired": 1,
+   "none_fired_share": 1.0,
+   "net_rules": 1
+  },
+  "weaker": [],
+  "missed": [],
+  "none_fired": [
+   "Niemand verstehen diese Rechnung."
+  ],
+  "rows": [
+   {
+    "text": "Niemand verstehen diese Rechnung.",
+    "want_kind": "NONE",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo",
+     "unknown_tool"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "COMPUTE",
+       "UNKNOWN"
+      ],
+      "objects": [
+       "ALL"
+      ],
+      "unknown": [
+       "diese",
+       "niemand",
+       "verstehen"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "NET"
+      ],
+      "text": "Niemand verstehen diese Rechnung"
+     }
+    ]
+   }
+  ]
+ },
+ "v6": {
+  "parser": "fixed-userrules-v6",
+  "summary": {
+   "items": 1,
+   "safety_failures": 0,
+   "soft_deny_as_ask": 0,
+   "over_caution": 8,
+   "probe_checks": 8,
+   "kind_match": 0,
+   "weaker_than_label": 0,
+   "missed_prohibitions": 0,
+   "allow_probes": 8,
+   "sentences_with_failure": 0,
+   "over_caution_share": 1.0,
+   "none_sentences": 1,
+   "none_fired": 1,
+   "none_fired_share": 1.0,
+   "net_rules": 1
+  },
+  "weaker": [],
+  "missed": [],
+  "none_fired": [
+   "Niemand verstehen diese Rechnung."
+  ],
+  "rows": [
+   {
+    "text": "Niemand verstehen diese Rechnung.",
+    "want_kind": "NONE",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo",
+     "unknown_tool"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "COMPUTE",
+       "UNKNOWN"
+      ],
+      "objects": [
+       "ALL"
+      ],
+      "unknown": [
+       "diese",
+       "niemand",
+       "verstehen"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "NET"
+      ],
+      "text": "Niemand verstehen diese Rechnung"
+     }
+    ]
+   }
+  ]
+ }
+}

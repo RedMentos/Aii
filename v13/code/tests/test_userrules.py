@@ -80,6 +80,24 @@ class Parse(unittest.TestCase):
             self.assertEqual(kinds(text),[],text)  # no rule, no question
         self.assertNotIn('SEND',U.parse('Bitte gib mir immer im Voraus mitteilst, was du machen möchtest.')[0]['actions'])  # "mitteilst" is not "teil"
         self.assertIn('SEND',U.parse('Bitte schreibe keine E-Mails in meinem Namen.')[0]['actions'])
+    def test_v7_block_words_compounds_device_and_requests(self):
+        # holdout_de3 / round-6 failure forms (docs/proofs/continuation-20261022/user-rules-v6/BEFUND.md)
+        for text in ('Die Internetverbindung ist zurzeit ausgeschlossen.','Eine Änderung ist ausgeschlossen.','Stelle keine Zusatzprogramme herunter.',
+                     'Mein Telefon ist dir blockiert.','Ich möchte nicht, dass du addiert.','Sag mir immer mal, wenn du rechnen willst.',
+                     "Gib mir erstmal 'ne Vorschau, wie du die Notiz anpasst, okay?",'Ehrlich gesagt stört mich es, wenn du an meinen Notizen herumfare.',
+                     'Ich habe das Internet für dich abgeschaltet.'):
+            self.assertTrue(kinds(text) and kinds(text)[0] in ('FORBID','ASK_FIRST','UNCLEAR'),text)
+        cs=U.parse('Na klar, erst wenn ich sag, dann machst du was mit dem Installieren.')  # the target sits in the "dann" clause
+        self.assertTrue(any('INSTALL' in c['actions'] or 'ANY' in c['actions'] for c in cs))
+        c=U.parse('Auf dem Schild steht: Nicht berühren.')[0];self.assertEqual((c['kind'],c['reasons']),('UNCLEAR',['QUOTED']))
+        self.assertIn('MODULE',U.parse('Keine Zusatzprogramme.')[0]['objects'])
+    def test_v7_reports_about_others_the_past_or_faults_are_no_rules_but_firm_forms_stay(self):
+        for text in ('Niemand hat mir gesagt, dass das Modul neu ist.','Du hast nichts falsch gemacht.','Warum geht das Internet nicht?',
+                     'Heute geht das Netz wirklich nicht so schnell.','Nun, es war nichts.','Ich habe gestern nichts gelöscht.'):
+            self.assertEqual(kinds(text),[],text)
+        for text in ('Löschen geht gar nicht.','Nichts ist erlaubt.','Niemand bekommt von dir eine Nachricht.','Das Internet geht dich nichts an.',
+                     'Niemand hat dir erlaubt, Fotos zu löschen.','Du hast nie Fotos gelöscht und wirst es auch nie.','Lass alles, wie es ist.'):
+            self.assertTrue(kinds(text) and kinds(text)[0] in ('FORBID','ASK_FIRST','UNCLEAR'),text)  # dev_v7 counterexamples
     def test_v6_firm_rule_notice_says_how_to_correct_the_reading(self):
         c=U.parse('Lösch niemals meine Fotos.')[0]
         self.assertIn('Falsch verstanden?',U.notice(dict(c,id='R1',status='ACTIVE')))
