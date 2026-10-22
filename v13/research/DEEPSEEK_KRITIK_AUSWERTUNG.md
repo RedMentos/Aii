@@ -32,7 +32,7 @@ Alle vier Hypothesen PASS: H1 Neugier schlägt Zufall (20/20 Seeds für jede Neu
 | Paket | Inhalt | messbar durch |
 |---|---|---|
 | **DS1** ✅ | Sandkasten + 6 Neugier-Arten, vorregistriert | oben |
-| **DS2** | Kombinierte Policy: Lernfortschritt als Neugier + Hungerziel als Pragmatik; Neuromod-Kanal „Neuheit“ hebt die Neugier, wenn ein neues Objekt auftaucht (Verhaltens-Seite von Punkt 1). Ziel: Hunger wie DS1-efe, neues Objekt wie LP. Danach Sandkasten mit Wort-Kombinationen („glas auf stein“) und Kamera-Merkmalen aus dem Vision-Lab | neue Vorregistrierung, gleiche Seeds-Regel |
-| **DS3** | Metakognition ins Verhalten: kalibrierte Unsicherheit (AG9 + C3-Signal) entscheidet zwischen Werkzeug-Nachprüfung, „unsicher“ sagen und normal antworten; Messung auf den R4-Aufgaben | Fehlerrate bei gleicher Antwortquote |
+| **DS2** ✅ 2026-10-22 (A 4/4 + B 3/3 PASS, Neuheits-Schub schadet; `bench-results/sandbox-ds2-20261022/BEFUND.md`) | Kombinierte Policy: Lernfortschritt als Neugier + Hungerziel als Pragmatik; Neuromod-Kanal „Neuheit“ hebt die Neugier, wenn ein neues Objekt auftaucht (Verhaltens-Seite von Punkt 1). Ziel: Hunger wie DS1-efe, neues Objekt wie LP. Danach Sandkasten mit Wort-Kombinationen („glas auf stein“) und Kamera-Merkmalen aus dem Vision-Lab | neue Vorregistrierung, gleiche Seeds-Regel |
+| **DS3** ❌ 2026-10-22 NOT_SUPPORTED (Kalibrierung trägt, Nutzen +1 statt +5; `bench-results/ds3-metacog-20261022/BEFUND.md`) | Metakognition ins Verhalten: kalibrierte Unsicherheit (AG9 + C3-Signal) entscheidet zwischen Werkzeug-Nachprüfung, „unsicher“ sagen und normal antworten; Messung auf den R4-Aufgaben | Fehlerrate bei gleicher Antwortquote |
 
 Nicht übernommen: Neuromodulation und lernender Balken als neue Pakete — sind vorhanden; offen ist nur Messung (Z6, Z4b, Z10).
