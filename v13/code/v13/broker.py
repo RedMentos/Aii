@@ -52,6 +52,9 @@ def conflicts(output,status,tool_result=None,pending=None,egress=None):
     out=[]
     if status=='FINAL' and tool_result and tool_result.get('result') is not None and not isinstance(tool_result['result'],(dict,list)) and not contains_value(tool_result['result'],output):
         out.append('ANSWER_OMITS_TOOL_RESULT')
+    elif status=='FINAL' and tool_result and tool_result.get('tool')=='eligibility' and isinstance(tool_result.get('result'),dict):
+        from .agi import eligibility  # Thread Q: the answer must commit to the recipe's decision
+        if eligibility.answer_action(output)!=tool_result['result'].get('action'):out.append('ANSWER_OMITS_TOOL_RESULT')
     if pending and DONE_CLAIM.search(output or ''):out.append('ANSWER_CLAIMS_PENDING_ACTION_DONE')
     if egress and not egress['ok']:out+=['EGRESS:'+v for v in egress['violations']]
     return out
@@ -66,7 +69,14 @@ def preview_text(pending):
     return '\n'.join(lines)
 
 def correction_text(tool_result):
-    return '[Korrektur · Werkzeugergebnis] '+tool_result['tool']+'('+dumps(tool_result['args'])+') = '+str(tool_result['result'])+' (lokal exakt berechnet; die Antwort oben nennt diesen Wert nicht).'
+    call=tool_result['tool']+'('+dumps(tool_result['args'])+')'
+    if tool_result['tool']=='list_arith':  # R4 part 6: args carry the whole user text; show the recipe line instead
+        from .agi import listarith
+        call='list_arith: '+(listarith.label(tool_result['args']) or tool_result['args'].get('operation','?'))
+    if tool_result['tool']=='eligibility':
+        from .agi import eligibility
+        return '[Korrektur · Werkzeugergebnis] eligibility: '+eligibility.decision_line(tool_result['result'])+' (lokal nach den genannten Regeln berechnet; die Antwort oben trifft diese Entscheidung nicht).'
+    return '[Korrektur · Werkzeugergebnis] '+call+' = '+str(tool_result['result'])+' (lokal exakt berechnet; die Antwort oben nennt diesen Wert nicht).'
 
 class Broker:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store

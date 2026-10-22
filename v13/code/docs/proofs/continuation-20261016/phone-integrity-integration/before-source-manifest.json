@@ -1,0 +1,9 @@
+{
+  "scope": "Historical source before integration; original first preregistration remains preserved separately. No native completion claimed.",
+  "files": {
+    "tool_forecast_learning_check.py": "109681d70fac32988e022f8709aa9edcb6f42dbc13bd0d926bae14eddfb694c1",
+    "test_tool_forecast_phone.py": "bcfb015e77a355dfb49ed628c0f4004e893c6161d07f01901bcce59dd420197e",
+    "tool_forecast_bounded_phone_candidate.py": "f1c335515e7aecc7fc06ba898973490d132f24302066f768f6d1a66731b9e61e",
+    "tool_forecast_bound_learning_candidate.py": "9412a80297a2af71d8d38c47e29a758e14375ae9bfcf747546539391837278e3"
+  }
+}

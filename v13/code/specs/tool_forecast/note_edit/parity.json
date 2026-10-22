@@ -1,0 +1,1607 @@
+{
+"schema": "v13-tool-forecast-v1-parity",
+"world": "note_edit",
+"partition": "test",
+"rows": [
+{
+"input": "The note reads: Call the bank on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Call the bank on Friday. Done."
+},
+{
+"input": "The note reads: Call the bank on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Call the bank on Friday."
+},
+{
+"input": "The note reads: Call the bank on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Call the bank on Friday."
+},
+{
+"input": "The note reads: Call the bank on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: CALL THE BANK ON FRIDAY."
+},
+{
+"input": "The note reads: Call the doctor tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Call the doctor tomorrow. Done."
+},
+{
+"input": "The note reads: Call the doctor tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Call the doctor tomorrow."
+},
+{
+"input": "The note reads: Call the doctor tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Call the doctor tomorrow."
+},
+{
+"input": "The note reads: Call the doctor tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: CALL THE DOCTOR TOMORROW."
+},
+{
+"input": "The note reads: Call the team today.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Call the team today. Done."
+},
+{
+"input": "The note reads: Call the team today.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Call the team today."
+},
+{
+"input": "The note reads: Call the team today.",
+"action": "undo",
+"outcome": "After undo, the note reads: Call the team today."
+},
+{
+"input": "The note reads: Call the team today.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: CALL THE TEAM TODAY."
+},
+{
+"input": "The note reads: Email the plumber this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Email the plumber this evening. Done."
+},
+{
+"input": "The note reads: Email the plumber this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Email the plumber this evening."
+},
+{
+"input": "The note reads: Email the plumber this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Email the plumber this evening."
+},
+{
+"input": "The note reads: Email the plumber this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: EMAIL THE PLUMBER THIS EVENING."
+},
+{
+"input": "The note reads: Email the bank tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Email the bank tomorrow. Done."
+},
+{
+"input": "The note reads: Email the bank tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Email the bank tomorrow."
+},
+{
+"input": "The note reads: Email the bank tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Email the bank tomorrow."
+},
+{
+"input": "The note reads: Email the bank tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: EMAIL THE BANK TOMORROW."
+},
+{
+"input": "The note reads: Email the bank next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Email the bank next week. Done."
+},
+{
+"input": "The note reads: Email the bank next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Email the bank next week."
+},
+{
+"input": "The note reads: Email the bank next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Email the bank next week."
+},
+{
+"input": "The note reads: Email the bank next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: EMAIL THE BANK NEXT WEEK."
+},
+{
+"input": "The note reads: Email the dentist today.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Email the dentist today. Done."
+},
+{
+"input": "The note reads: Email the dentist today.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Email the dentist today."
+},
+{
+"input": "The note reads: Email the dentist today.",
+"action": "undo",
+"outcome": "After undo, the note reads: Email the dentist today."
+},
+{
+"input": "The note reads: Email the dentist today.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: EMAIL THE DENTIST TODAY."
+},
+{
+"input": "The note reads: Email the dentist on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Email the dentist on Monday. Done."
+},
+{
+"input": "The note reads: Email the dentist on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Email the dentist on Monday."
+},
+{
+"input": "The note reads: Email the dentist on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Email the dentist on Monday."
+},
+{
+"input": "The note reads: Email the dentist on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: EMAIL THE DENTIST ON MONDAY."
+},
+{
+"input": "The note reads: Email grandma this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Email grandma this evening. Done."
+},
+{
+"input": "The note reads: Email grandma this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Email grandma this evening."
+},
+{
+"input": "The note reads: Email grandma this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Email grandma this evening."
+},
+{
+"input": "The note reads: Email grandma this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: EMAIL GRANDMA THIS EVENING."
+},
+{
+"input": "The note reads: Email the landlord on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Email the landlord on Monday. Done."
+},
+{
+"input": "The note reads: Email the landlord on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Email the landlord on Monday."
+},
+{
+"input": "The note reads: Email the landlord on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Email the landlord on Monday."
+},
+{
+"input": "The note reads: Email the landlord on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: EMAIL THE LANDLORD ON MONDAY."
+},
+{
+"input": "The note reads: Email the team on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Email the team on Friday. Done."
+},
+{
+"input": "The note reads: Email the team on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Email the team on Friday."
+},
+{
+"input": "The note reads: Email the team on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Email the team on Friday."
+},
+{
+"input": "The note reads: Email the team on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: EMAIL THE TEAM ON FRIDAY."
+},
+{
+"input": "The note reads: Visit the plumber on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Visit the plumber on Monday. Done."
+},
+{
+"input": "The note reads: Visit the plumber on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Visit the plumber on Monday."
+},
+{
+"input": "The note reads: Visit the plumber on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Visit the plumber on Monday."
+},
+{
+"input": "The note reads: Visit the plumber on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: VISIT THE PLUMBER ON MONDAY."
+},
+{
+"input": "The note reads: Visit the plumber this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Visit the plumber this evening. Done."
+},
+{
+"input": "The note reads: Visit the plumber this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Visit the plumber this evening."
+},
+{
+"input": "The note reads: Visit the plumber this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Visit the plumber this evening."
+},
+{
+"input": "The note reads: Visit the plumber this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: VISIT THE PLUMBER THIS EVENING."
+},
+{
+"input": "The note reads: Visit the bank this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Visit the bank this evening. Done."
+},
+{
+"input": "The note reads: Visit the bank this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Visit the bank this evening."
+},
+{
+"input": "The note reads: Visit the bank this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Visit the bank this evening."
+},
+{
+"input": "The note reads: Visit the bank this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: VISIT THE BANK THIS EVENING."
+},
+{
+"input": "The note reads: Visit grandma next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Visit grandma next week. Done."
+},
+{
+"input": "The note reads: Visit grandma next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Visit grandma next week."
+},
+{
+"input": "The note reads: Visit grandma next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Visit grandma next week."
+},
+{
+"input": "The note reads: Visit grandma next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: VISIT GRANDMA NEXT WEEK."
+},
+{
+"input": "The note reads: Visit the school today.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Visit the school today. Done."
+},
+{
+"input": "The note reads: Visit the school today.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Visit the school today."
+},
+{
+"input": "The note reads: Visit the school today.",
+"action": "undo",
+"outcome": "After undo, the note reads: Visit the school today."
+},
+{
+"input": "The note reads: Visit the school today.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: VISIT THE SCHOOL TODAY."
+},
+{
+"input": "The note reads: Visit the neighbour this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Visit the neighbour this evening. Done."
+},
+{
+"input": "The note reads: Visit the neighbour this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Visit the neighbour this evening."
+},
+{
+"input": "The note reads: Visit the neighbour this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Visit the neighbour this evening."
+},
+{
+"input": "The note reads: Visit the neighbour this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: VISIT THE NEIGHBOUR THIS EVENING."
+},
+{
+"input": "The note reads: Visit the doctor this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Visit the doctor this evening. Done."
+},
+{
+"input": "The note reads: Visit the doctor this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Visit the doctor this evening."
+},
+{
+"input": "The note reads: Visit the doctor this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Visit the doctor this evening."
+},
+{
+"input": "The note reads: Visit the doctor this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: VISIT THE DOCTOR THIS EVENING."
+},
+{
+"input": "The note reads: Visit the library tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Visit the library tomorrow. Done."
+},
+{
+"input": "The note reads: Visit the library tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Visit the library tomorrow."
+},
+{
+"input": "The note reads: Visit the library tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Visit the library tomorrow."
+},
+{
+"input": "The note reads: Visit the library tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: VISIT THE LIBRARY TOMORROW."
+},
+{
+"input": "The note reads: Visit the library this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Visit the library this evening. Done."
+},
+{
+"input": "The note reads: Visit the library this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Visit the library this evening."
+},
+{
+"input": "The note reads: Visit the library this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Visit the library this evening."
+},
+{
+"input": "The note reads: Visit the library this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: VISIT THE LIBRARY THIS EVENING."
+},
+{
+"input": "The note reads: Pay the plumber today.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Pay the plumber today. Done."
+},
+{
+"input": "The note reads: Pay the plumber today.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Pay the plumber today."
+},
+{
+"input": "The note reads: Pay the plumber today.",
+"action": "undo",
+"outcome": "After undo, the note reads: Pay the plumber today."
+},
+{
+"input": "The note reads: Pay the plumber today.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: PAY THE PLUMBER TODAY."
+},
+{
+"input": "The note reads: Pay the dentist this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Pay the dentist this evening. Done."
+},
+{
+"input": "The note reads: Pay the dentist this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Pay the dentist this evening."
+},
+{
+"input": "The note reads: Pay the dentist this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Pay the dentist this evening."
+},
+{
+"input": "The note reads: Pay the dentist this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: PAY THE DENTIST THIS EVENING."
+},
+{
+"input": "The note reads: Pay grandma today.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Pay grandma today. Done."
+},
+{
+"input": "The note reads: Pay grandma today.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Pay grandma today."
+},
+{
+"input": "The note reads: Pay grandma today.",
+"action": "undo",
+"outcome": "After undo, the note reads: Pay grandma today."
+},
+{
+"input": "The note reads: Pay grandma today.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: PAY GRANDMA TODAY."
+},
+{
+"input": "The note reads: Pay the landlord tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Pay the landlord tomorrow. Done."
+},
+{
+"input": "The note reads: Pay the landlord tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Pay the landlord tomorrow."
+},
+{
+"input": "The note reads: Pay the landlord tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Pay the landlord tomorrow."
+},
+{
+"input": "The note reads: Pay the landlord tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: PAY THE LANDLORD TOMORROW."
+},
+{
+"input": "The note reads: Pay the neighbour on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Pay the neighbour on Monday. Done."
+},
+{
+"input": "The note reads: Pay the neighbour on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Pay the neighbour on Monday."
+},
+{
+"input": "The note reads: Pay the neighbour on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Pay the neighbour on Monday."
+},
+{
+"input": "The note reads: Pay the neighbour on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: PAY THE NEIGHBOUR ON MONDAY."
+},
+{
+"input": "The note reads: Pay the neighbour on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Pay the neighbour on Friday. Done."
+},
+{
+"input": "The note reads: Pay the neighbour on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Pay the neighbour on Friday."
+},
+{
+"input": "The note reads: Pay the neighbour on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Pay the neighbour on Friday."
+},
+{
+"input": "The note reads: Pay the neighbour on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: PAY THE NEIGHBOUR ON FRIDAY."
+},
+{
+"input": "The note reads: Pay the team this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Pay the team this evening. Done."
+},
+{
+"input": "The note reads: Pay the team this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Pay the team this evening."
+},
+{
+"input": "The note reads: Pay the team this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Pay the team this evening."
+},
+{
+"input": "The note reads: Pay the team this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: PAY THE TEAM THIS EVENING."
+},
+{
+"input": "The note reads: Thank the bank next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Thank the bank next week. Done."
+},
+{
+"input": "The note reads: Thank the bank next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Thank the bank next week."
+},
+{
+"input": "The note reads: Thank the bank next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Thank the bank next week."
+},
+{
+"input": "The note reads: Thank the bank next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: THANK THE BANK NEXT WEEK."
+},
+{
+"input": "The note reads: Thank grandma on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Thank grandma on Friday. Done."
+},
+{
+"input": "The note reads: Thank grandma on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Thank grandma on Friday."
+},
+{
+"input": "The note reads: Thank grandma on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Thank grandma on Friday."
+},
+{
+"input": "The note reads: Thank grandma on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: THANK GRANDMA ON FRIDAY."
+},
+{
+"input": "The note reads: Thank the landlord on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Thank the landlord on Friday. Done."
+},
+{
+"input": "The note reads: Thank the landlord on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Thank the landlord on Friday."
+},
+{
+"input": "The note reads: Thank the landlord on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Thank the landlord on Friday."
+},
+{
+"input": "The note reads: Thank the landlord on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: THANK THE LANDLORD ON FRIDAY."
+},
+{
+"input": "The note reads: Thank the landlord next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Thank the landlord next week. Done."
+},
+{
+"input": "The note reads: Thank the landlord next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Thank the landlord next week."
+},
+{
+"input": "The note reads: Thank the landlord next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Thank the landlord next week."
+},
+{
+"input": "The note reads: Thank the landlord next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: THANK THE LANDLORD NEXT WEEK."
+},
+{
+"input": "The note reads: Thank the school tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Thank the school tomorrow. Done."
+},
+{
+"input": "The note reads: Thank the school tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Thank the school tomorrow."
+},
+{
+"input": "The note reads: Thank the school tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Thank the school tomorrow."
+},
+{
+"input": "The note reads: Thank the school tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: THANK THE SCHOOL TOMORROW."
+},
+{
+"input": "The note reads: Thank the neighbour on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Thank the neighbour on Friday. Done."
+},
+{
+"input": "The note reads: Thank the neighbour on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Thank the neighbour on Friday."
+},
+{
+"input": "The note reads: Thank the neighbour on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Thank the neighbour on Friday."
+},
+{
+"input": "The note reads: Thank the neighbour on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: THANK THE NEIGHBOUR ON FRIDAY."
+},
+{
+"input": "The note reads: Thank the neighbour this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Thank the neighbour this evening. Done."
+},
+{
+"input": "The note reads: Thank the neighbour this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Thank the neighbour this evening."
+},
+{
+"input": "The note reads: Thank the neighbour this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Thank the neighbour this evening."
+},
+{
+"input": "The note reads: Thank the neighbour this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: THANK THE NEIGHBOUR THIS EVENING."
+},
+{
+"input": "The note reads: Thank the doctor this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Thank the doctor this evening. Done."
+},
+{
+"input": "The note reads: Thank the doctor this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Thank the doctor this evening."
+},
+{
+"input": "The note reads: Thank the doctor this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Thank the doctor this evening."
+},
+{
+"input": "The note reads: Thank the doctor this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: THANK THE DOCTOR THIS EVENING."
+},
+{
+"input": "The note reads: Meet the plumber next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Meet the plumber next week. Done."
+},
+{
+"input": "The note reads: Meet the plumber next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Meet the plumber next week."
+},
+{
+"input": "The note reads: Meet the plumber next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Meet the plumber next week."
+},
+{
+"input": "The note reads: Meet the plumber next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: MEET THE PLUMBER NEXT WEEK."
+},
+{
+"input": "The note reads: Meet the plumber this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Meet the plumber this evening. Done."
+},
+{
+"input": "The note reads: Meet the plumber this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Meet the plumber this evening."
+},
+{
+"input": "The note reads: Meet the plumber this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Meet the plumber this evening."
+},
+{
+"input": "The note reads: Meet the plumber this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: MEET THE PLUMBER THIS EVENING."
+},
+{
+"input": "The note reads: Meet the dentist this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Meet the dentist this evening. Done."
+},
+{
+"input": "The note reads: Meet the dentist this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Meet the dentist this evening."
+},
+{
+"input": "The note reads: Meet the dentist this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Meet the dentist this evening."
+},
+{
+"input": "The note reads: Meet the dentist this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: MEET THE DENTIST THIS EVENING."
+},
+{
+"input": "The note reads: Meet the neighbour on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Meet the neighbour on Friday. Done."
+},
+{
+"input": "The note reads: Meet the neighbour on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Meet the neighbour on Friday."
+},
+{
+"input": "The note reads: Meet the neighbour on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Meet the neighbour on Friday."
+},
+{
+"input": "The note reads: Meet the neighbour on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: MEET THE NEIGHBOUR ON FRIDAY."
+},
+{
+"input": "The note reads: Meet the neighbour this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Meet the neighbour this evening. Done."
+},
+{
+"input": "The note reads: Meet the neighbour this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Meet the neighbour this evening."
+},
+{
+"input": "The note reads: Meet the neighbour this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Meet the neighbour this evening."
+},
+{
+"input": "The note reads: Meet the neighbour this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: MEET THE NEIGHBOUR THIS EVENING."
+},
+{
+"input": "The note reads: Meet the library tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Meet the library tomorrow. Done."
+},
+{
+"input": "The note reads: Meet the library tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Meet the library tomorrow."
+},
+{
+"input": "The note reads: Meet the library tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Meet the library tomorrow."
+},
+{
+"input": "The note reads: Meet the library tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: MEET THE LIBRARY TOMORROW."
+},
+{
+"input": "The note reads: Ask the bank tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Ask the bank tomorrow. Done."
+},
+{
+"input": "The note reads: Ask the bank tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Ask the bank tomorrow."
+},
+{
+"input": "The note reads: Ask the bank tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Ask the bank tomorrow."
+},
+{
+"input": "The note reads: Ask the bank tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: ASK THE BANK TOMORROW."
+},
+{
+"input": "The note reads: Ask grandma tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Ask grandma tomorrow. Done."
+},
+{
+"input": "The note reads: Ask grandma tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Ask grandma tomorrow."
+},
+{
+"input": "The note reads: Ask grandma tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Ask grandma tomorrow."
+},
+{
+"input": "The note reads: Ask grandma tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: ASK GRANDMA TOMORROW."
+},
+{
+"input": "The note reads: Ask the school today.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Ask the school today. Done."
+},
+{
+"input": "The note reads: Ask the school today.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Ask the school today."
+},
+{
+"input": "The note reads: Ask the school today.",
+"action": "undo",
+"outcome": "After undo, the note reads: Ask the school today."
+},
+{
+"input": "The note reads: Ask the school today.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: ASK THE SCHOOL TODAY."
+},
+{
+"input": "The note reads: Ask the doctor tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Ask the doctor tomorrow. Done."
+},
+{
+"input": "The note reads: Ask the doctor tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Ask the doctor tomorrow."
+},
+{
+"input": "The note reads: Ask the doctor tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Ask the doctor tomorrow."
+},
+{
+"input": "The note reads: Ask the doctor tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: ASK THE DOCTOR TOMORROW."
+},
+{
+"input": "The note reads: Ask the team on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Ask the team on Friday. Done."
+},
+{
+"input": "The note reads: Ask the team on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Ask the team on Friday."
+},
+{
+"input": "The note reads: Ask the team on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Ask the team on Friday."
+},
+{
+"input": "The note reads: Ask the team on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: ASK THE TEAM ON FRIDAY."
+},
+{
+"input": "The note reads: Ask the library on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Ask the library on Monday. Done."
+},
+{
+"input": "The note reads: Ask the library on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Ask the library on Monday."
+},
+{
+"input": "The note reads: Ask the library on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Ask the library on Monday."
+},
+{
+"input": "The note reads: Ask the library on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: ASK THE LIBRARY ON MONDAY."
+},
+{
+"input": "The note reads: Remind the plumber next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Remind the plumber next week. Done."
+},
+{
+"input": "The note reads: Remind the plumber next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Remind the plumber next week."
+},
+{
+"input": "The note reads: Remind the plumber next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Remind the plumber next week."
+},
+{
+"input": "The note reads: Remind the plumber next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: REMIND THE PLUMBER NEXT WEEK."
+},
+{
+"input": "The note reads: Remind the dentist today.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Remind the dentist today. Done."
+},
+{
+"input": "The note reads: Remind the dentist today.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Remind the dentist today."
+},
+{
+"input": "The note reads: Remind the dentist today.",
+"action": "undo",
+"outcome": "After undo, the note reads: Remind the dentist today."
+},
+{
+"input": "The note reads: Remind the dentist today.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: REMIND THE DENTIST TODAY."
+},
+{
+"input": "The note reads: Remind the landlord tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Remind the landlord tomorrow. Done."
+},
+{
+"input": "The note reads: Remind the landlord tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Remind the landlord tomorrow."
+},
+{
+"input": "The note reads: Remind the landlord tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Remind the landlord tomorrow."
+},
+{
+"input": "The note reads: Remind the landlord tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: REMIND THE LANDLORD TOMORROW."
+},
+{
+"input": "The note reads: Remind the landlord on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Remind the landlord on Monday. Done."
+},
+{
+"input": "The note reads: Remind the landlord on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Remind the landlord on Monday."
+},
+{
+"input": "The note reads: Remind the landlord on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Remind the landlord on Monday."
+},
+{
+"input": "The note reads: Remind the landlord on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: REMIND THE LANDLORD ON MONDAY."
+},
+{
+"input": "The note reads: Remind the school this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Remind the school this evening. Done."
+},
+{
+"input": "The note reads: Remind the school this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Remind the school this evening."
+},
+{
+"input": "The note reads: Remind the school this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Remind the school this evening."
+},
+{
+"input": "The note reads: Remind the school this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: REMIND THE SCHOOL THIS EVENING."
+},
+{
+"input": "The note reads: Remind the doctor tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Remind the doctor tomorrow. Done."
+},
+{
+"input": "The note reads: Remind the doctor tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Remind the doctor tomorrow."
+},
+{
+"input": "The note reads: Remind the doctor tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Remind the doctor tomorrow."
+},
+{
+"input": "The note reads: Remind the doctor tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: REMIND THE DOCTOR TOMORROW."
+},
+{
+"input": "The note reads: Remind the team on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Remind the team on Friday. Done."
+},
+{
+"input": "The note reads: Remind the team on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Remind the team on Friday."
+},
+{
+"input": "The note reads: Remind the team on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Remind the team on Friday."
+},
+{
+"input": "The note reads: Remind the team on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: REMIND THE TEAM ON FRIDAY."
+},
+{
+"input": "The note reads: Remind the team this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Remind the team this evening. Done."
+},
+{
+"input": "The note reads: Remind the team this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Remind the team this evening."
+},
+{
+"input": "The note reads: Remind the team this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Remind the team this evening."
+},
+{
+"input": "The note reads: Remind the team this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: REMIND THE TEAM THIS EVENING."
+},
+{
+"input": "The note reads: Help the plumber tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the plumber tomorrow. Done."
+},
+{
+"input": "The note reads: Help the plumber tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the plumber tomorrow."
+},
+{
+"input": "The note reads: Help the plumber tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the plumber tomorrow."
+},
+{
+"input": "The note reads: Help the plumber tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE PLUMBER TOMORROW."
+},
+{
+"input": "The note reads: Help the plumber on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the plumber on Friday. Done."
+},
+{
+"input": "The note reads: Help the plumber on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the plumber on Friday."
+},
+{
+"input": "The note reads: Help the plumber on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the plumber on Friday."
+},
+{
+"input": "The note reads: Help the plumber on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE PLUMBER ON FRIDAY."
+},
+{
+"input": "The note reads: Help the plumber this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the plumber this evening. Done."
+},
+{
+"input": "The note reads: Help the plumber this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the plumber this evening."
+},
+{
+"input": "The note reads: Help the plumber this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the plumber this evening."
+},
+{
+"input": "The note reads: Help the plumber this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE PLUMBER THIS EVENING."
+},
+{
+"input": "The note reads: Help the bank on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the bank on Monday. Done."
+},
+{
+"input": "The note reads: Help the bank on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the bank on Monday."
+},
+{
+"input": "The note reads: Help the bank on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the bank on Monday."
+},
+{
+"input": "The note reads: Help the bank on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE BANK ON MONDAY."
+},
+{
+"input": "The note reads: Help the bank this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the bank this evening. Done."
+},
+{
+"input": "The note reads: Help the bank this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the bank this evening."
+},
+{
+"input": "The note reads: Help the bank this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the bank this evening."
+},
+{
+"input": "The note reads: Help the bank this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE BANK THIS EVENING."
+},
+{
+"input": "The note reads: Help the dentist on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the dentist on Monday. Done."
+},
+{
+"input": "The note reads: Help the dentist on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the dentist on Monday."
+},
+{
+"input": "The note reads: Help the dentist on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the dentist on Monday."
+},
+{
+"input": "The note reads: Help the dentist on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE DENTIST ON MONDAY."
+},
+{
+"input": "The note reads: Help the dentist next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the dentist next week. Done."
+},
+{
+"input": "The note reads: Help the dentist next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the dentist next week."
+},
+{
+"input": "The note reads: Help the dentist next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the dentist next week."
+},
+{
+"input": "The note reads: Help the dentist next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE DENTIST NEXT WEEK."
+},
+{
+"input": "The note reads: Help the landlord on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the landlord on Friday. Done."
+},
+{
+"input": "The note reads: Help the landlord on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the landlord on Friday."
+},
+{
+"input": "The note reads: Help the landlord on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the landlord on Friday."
+},
+{
+"input": "The note reads: Help the landlord on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE LANDLORD ON FRIDAY."
+},
+{
+"input": "The note reads: Help the school today.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the school today. Done."
+},
+{
+"input": "The note reads: Help the school today.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the school today."
+},
+{
+"input": "The note reads: Help the school today.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the school today."
+},
+{
+"input": "The note reads: Help the school today.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE SCHOOL TODAY."
+},
+{
+"input": "The note reads: Help the school this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the school this evening. Done."
+},
+{
+"input": "The note reads: Help the school this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the school this evening."
+},
+{
+"input": "The note reads: Help the school this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the school this evening."
+},
+{
+"input": "The note reads: Help the school this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE SCHOOL THIS EVENING."
+},
+{
+"input": "The note reads: Help the doctor on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the doctor on Monday. Done."
+},
+{
+"input": "The note reads: Help the doctor on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the doctor on Monday."
+},
+{
+"input": "The note reads: Help the doctor on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the doctor on Monday."
+},
+{
+"input": "The note reads: Help the doctor on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE DOCTOR ON MONDAY."
+},
+{
+"input": "The note reads: Help the doctor this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the doctor this evening. Done."
+},
+{
+"input": "The note reads: Help the doctor this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the doctor this evening."
+},
+{
+"input": "The note reads: Help the doctor this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the doctor this evening."
+},
+{
+"input": "The note reads: Help the doctor this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE DOCTOR THIS EVENING."
+},
+{
+"input": "The note reads: Help the team tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the team tomorrow. Done."
+},
+{
+"input": "The note reads: Help the team tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the team tomorrow."
+},
+{
+"input": "The note reads: Help the team tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the team tomorrow."
+},
+{
+"input": "The note reads: Help the team tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE TEAM TOMORROW."
+},
+{
+"input": "The note reads: Help the team on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the team on Friday. Done."
+},
+{
+"input": "The note reads: Help the team on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the team on Friday."
+},
+{
+"input": "The note reads: Help the team on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the team on Friday."
+},
+{
+"input": "The note reads: Help the team on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE TEAM ON FRIDAY."
+},
+{
+"input": "The note reads: Help the library this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Help the library this evening. Done."
+},
+{
+"input": "The note reads: Help the library this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Help the library this evening."
+},
+{
+"input": "The note reads: Help the library this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Help the library this evening."
+},
+{
+"input": "The note reads: Help the library this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: HELP THE LIBRARY THIS EVENING."
+},
+{
+"input": "The note reads: Invite the plumber next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite the plumber next week. Done."
+},
+{
+"input": "The note reads: Invite the plumber next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite the plumber next week."
+},
+{
+"input": "The note reads: Invite the plumber next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite the plumber next week."
+},
+{
+"input": "The note reads: Invite the plumber next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE THE PLUMBER NEXT WEEK."
+},
+{
+"input": "The note reads: Invite the bank on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite the bank on Friday. Done."
+},
+{
+"input": "The note reads: Invite the bank on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite the bank on Friday."
+},
+{
+"input": "The note reads: Invite the bank on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite the bank on Friday."
+},
+{
+"input": "The note reads: Invite the bank on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE THE BANK ON FRIDAY."
+},
+{
+"input": "The note reads: Invite grandma on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite grandma on Friday. Done."
+},
+{
+"input": "The note reads: Invite grandma on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite grandma on Friday."
+},
+{
+"input": "The note reads: Invite grandma on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite grandma on Friday."
+},
+{
+"input": "The note reads: Invite grandma on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE GRANDMA ON FRIDAY."
+},
+{
+"input": "The note reads: Invite grandma next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite grandma next week. Done."
+},
+{
+"input": "The note reads: Invite grandma next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite grandma next week."
+},
+{
+"input": "The note reads: Invite grandma next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite grandma next week."
+},
+{
+"input": "The note reads: Invite grandma next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE GRANDMA NEXT WEEK."
+},
+{
+"input": "The note reads: Invite the landlord on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite the landlord on Monday. Done."
+},
+{
+"input": "The note reads: Invite the landlord on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite the landlord on Monday."
+},
+{
+"input": "The note reads: Invite the landlord on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite the landlord on Monday."
+},
+{
+"input": "The note reads: Invite the landlord on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE THE LANDLORD ON MONDAY."
+},
+{
+"input": "The note reads: Invite the school this evening.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite the school this evening. Done."
+},
+{
+"input": "The note reads: Invite the school this evening.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite the school this evening."
+},
+{
+"input": "The note reads: Invite the school this evening.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite the school this evening."
+},
+{
+"input": "The note reads: Invite the school this evening.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE THE SCHOOL THIS EVENING."
+},
+{
+"input": "The note reads: Invite the neighbour tomorrow.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite the neighbour tomorrow. Done."
+},
+{
+"input": "The note reads: Invite the neighbour tomorrow.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite the neighbour tomorrow."
+},
+{
+"input": "The note reads: Invite the neighbour tomorrow.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite the neighbour tomorrow."
+},
+{
+"input": "The note reads: Invite the neighbour tomorrow.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE THE NEIGHBOUR TOMORROW."
+},
+{
+"input": "The note reads: Invite the doctor on Friday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite the doctor on Friday. Done."
+},
+{
+"input": "The note reads: Invite the doctor on Friday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite the doctor on Friday."
+},
+{
+"input": "The note reads: Invite the doctor on Friday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite the doctor on Friday."
+},
+{
+"input": "The note reads: Invite the doctor on Friday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE THE DOCTOR ON FRIDAY."
+},
+{
+"input": "The note reads: Invite the library on Monday.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite the library on Monday. Done."
+},
+{
+"input": "The note reads: Invite the library on Monday.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite the library on Monday."
+},
+{
+"input": "The note reads: Invite the library on Monday.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite the library on Monday."
+},
+{
+"input": "The note reads: Invite the library on Monday.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE THE LIBRARY ON MONDAY."
+},
+{
+"input": "The note reads: Invite the library next week.",
+"action": "append_done",
+"outcome": "After appending, the note reads: Invite the library next week. Done."
+},
+{
+"input": "The note reads: Invite the library next week.",
+"action": "prefix_urgent",
+"outcome": "After adding a prefix, the note reads: Urgent: Invite the library next week."
+},
+{
+"input": "The note reads: Invite the library next week.",
+"action": "undo",
+"outcome": "After undo, the note reads: Invite the library next week."
+},
+{
+"input": "The note reads: Invite the library next week.",
+"action": "uppercase",
+"outcome": "After uppercasing, the note reads: INVITE THE LIBRARY NEXT WEEK."
+}
+]
+}

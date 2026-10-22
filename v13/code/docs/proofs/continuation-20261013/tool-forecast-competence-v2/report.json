@@ -1,0 +1,58 @@
+{
+ "worlds": {
+  "calc_counter": {
+   "states": {
+    "calc_in_world": 30,
+    "calc_out_of_range": 30
+   },
+   "auroc": 0.9844,
+   "in_world_flag_rate": 0.0333,
+   "out_of_world_flag_rate": 0.9,
+   "distance_median": {
+    "calc_in_world": 0.512768,
+    "calc_out_of_range": 1.139175
+   },
+   "threshold": 0.03536972,
+   "report_only_ratio_geo_mean": {
+    "unflagged": 0.14,
+    "flagged": 0.5048
+   },
+   "pass": true
+  },
+  "note_edit": {
+   "states": {
+    "note_in_world": 30,
+    "note_free": 30
+   },
+   "auroc": 1.0,
+   "in_world_flag_rate": 0.0,
+   "out_of_world_flag_rate": 1.0,
+   "distance_median": {
+    "note_in_world": 0.540471,
+    "note_free": 2.47937
+   },
+   "threshold": 0.03475002,
+   "report_only_ratio_geo_mean": {
+    "unflagged": 0.0708,
+    "flagged": 0.7201
+   },
+   "pass": true
+  }
+ },
+ "gates": {
+  "auroc_min": 0.9,
+  "in_world_flag_max": 0.1,
+  "out_of_world_flag_min": 0.8
+ },
+ "verdict": "COMPETENCE_SIGNAL_CONFIRMED",
+ "schema": "v13-tool-forecast-competence-check-v1",
+ "round": 2,
+ "plan_counts": {
+  "calc_in_world": 30,
+  "calc_out_of_range": 30,
+  "note_in_world": 30,
+  "note_free": 30
+ },
+ "live_verdict": "LIVE_PATH_CONFIRMED",
+ "claim_limit": "Pre-effect domain flag of a SHADOW forecast on two closed worlds; Linux cloud, not the Redmi; nothing reads the flag."
+}

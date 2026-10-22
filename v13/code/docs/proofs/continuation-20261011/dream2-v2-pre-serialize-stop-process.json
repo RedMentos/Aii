@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-10-11T04:19:24Z",
+  "matches": [
+    {
+      "proc_pid": 31866,
+      "namespace_pid_line": "NSpid:\t31866\t6",
+      "args": [
+        "/workspace/scratch/5a9214d3f329/training-resources/venv/bin/python",
+        "scripts/dream_ablation_bench.py",
+        "--master",
+        "/workspace/scratch/5a9214d3f329/training-resources/master230",
+        "--dreams",
+        "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/bench-results/dream-ablation-20261010/dreams.json",
+        "--out",
+        "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/dream2-b40-v2",
+        "--seeds",
+        "13,21,34",
+        "--b-steps",
+        "40",
+        "--threads",
+        "1"
+      ]
+    }
+  ]
+}

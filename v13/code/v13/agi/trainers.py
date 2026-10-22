@@ -69,11 +69,12 @@ def requirements(runtime,state=None):
             'memory_server_ok':_memory_server_ok(runtime.home)}
 
 def _memory_server_ok(home):
-    """bin/llama-server-mem built by v13.memory_server and unchanged since (manifest hash)."""
+    """Native build capability, using the same launcher/library binding as the runtime."""
     try:
-        from ..memory_server import MANIFEST
+        from ..memory_server import MANIFEST,runtime_library_hashes
         m=json.loads((Path(home)/MANIFEST).read_text());b=Path(home)/'bin/llama-server-mem'
-        return b.is_file() and file_hash(b)==m.get('binary_sha256')
+        return (b.is_file() and file_hash(b)==m.get('binary_sha256')
+                and runtime_library_hashes(b)==m.get('runtime_libraries_sha256',{}))
     except (OSError,ValueError):return False
 
 class LiveNearMissEvaluator:

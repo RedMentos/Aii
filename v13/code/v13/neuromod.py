@@ -224,6 +224,25 @@ class Neuromod:
         h=st.get('meta_head')
         if not h or h['n']<META_MIN_N:return None
         return round(_sig(sum(a*f[k] for a,k in zip(h['w'],META_FEATURES))+h['b']),6)
+    def _meta_compare(self,name,p,st,features,rule,proposal):
+        """One live plasticity proposal per unchanged path/head, never a retention outcome.
+
+        The logistic head predicts retention, so its probability is not comparable to the rule's
+        plasticity. Compare the rule with the actual adjusted plasticity proposal on the same features.
+        Mark before observing: interruption can conservatively omit evidence, but cannot count an
+        unchanged decision again after restart. Diagnostic reports do not call this hook.
+        """
+        fingerprint=hashlib.sha256(dumps({'event':p.get('last_event'),'n':st['meta_head']['n'],
+            'features':features,'rule':rule,'proposal':proposal}).encode()).hexdigest()
+        def mark(current):
+            path=current['paths'].get(name)
+            if path is None or path.get('meta_comparison')==fingerprint:return False
+            if current.get('meta_head',{}).get('n')!=st['meta_head']['n'] or path.get('last_event')!=p.get('last_event'):
+                return False  # A concurrent new trace/retention result makes this comparison stale.
+            path['meta_comparison']=fingerprint;return True
+        if self._mutate(mark):
+            from .authority import observe
+            observe(self.s,'neuromod_meta',rule,proposal)
     def meta_mode(self):return (self._load()[0].get('meta_mode') or 'SHADOW')
     def set_meta_mode(self,mode,authority='SYSTEM'):
         if mode not in {'SHADOW','ACTIVE'}:raise ValueError('SHADOW|ACTIVE')
@@ -286,7 +305,7 @@ class Neuromod:
         if self.age is None:return 1.
         try:return clamp(self.age.plasticity(AGE_CAPABILITY[kind],novel_domain=p['novelty']>=.5,repeated_errors=p['repeated_errors']))
         except Exception:return 1.
-    def gate(self,component):
+    def gate(self,component,observe=True):
         """Plasticity gate for the next shadow job of `component`: factor in [0,1] scales LR and update norm."""
         self.sync();st,_=self._load();name=path_of(component);seq=self._seq()
         p=self._advance(json.loads(dumps(st['paths'].get(name) or empty_path()|{'seq':seq})),seq)
@@ -299,6 +318,8 @@ class Neuromod:
         except Exception:hg,hmode=1.,'SHADOW'
         mf=self.meta_features(p);rule=self.meta_rule(mf);learned=self.meta_predict(st,mf);mode=st.get('meta_mode') or 'SHADOW'
         p_applied=round(clamp(rule*(.5+learned) if learned is not None else rule),6)
+        if observe and learned is not None and name in st['paths'] and not veto and not verify:
+            self._meta_compare(name,p,st,mf,rule,p_applied)
         meta_mult=p_applied if mode=='ACTIVE' else 1.
         factor=0. if veto or verify else round(clamp(age_p*meta_mult*(hg if hmode=='ACTIVE' else 1.)*(FLOOR+(1-FLOOR)*e*m),EPS,1.),6)
         return {'revision':REVISION,'path_id':name,'kind':kind,'factor':factor,'eligibility':round(e,6),
@@ -338,7 +359,7 @@ class Neuromod:
     def tags(self):self.sync();return {k:p['tag_reason'] for k,p in self._load()[0]['paths'].items() if p['tag']}
     def report(self,component=None):
         self.sync();st,_=self._load();names=[path_of(component)] if component else sorted(st['paths'])
-        return {'revision':REVISION,'paths':{n:self.gate(n) for n in names},'unassigned_modulators':st['unassigned_modulators'],'sleeps':st['sleeps'],
+        return {'revision':REVISION,'paths':{n:self.gate(n,observe=False) for n in names},'unassigned_modulators':st['unassigned_modulators'],'sleeps':st['sleeps'],
                 'claim_limit':'Scales explicit shadow-job budgets only; local error δ stays in each worker; no commit, consolidation or native-weight authority'}
 
 def step(n,path):

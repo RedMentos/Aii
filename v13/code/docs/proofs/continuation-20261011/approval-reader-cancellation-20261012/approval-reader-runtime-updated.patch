@@ -1,0 +1,220 @@
+--- a/v13/runners.py
++++ b/v13/runners.py
+@@ -27,8 +27,9 @@
+ def rotate_log(path,cap=3*1024*1024):
+     if path.exists() and path.stat().st_size>cap:os.replace(path,path.with_suffix(".previous.log"))
+ class LlamaRunner:
+-    def __init__(self,home,role,model,config,purpose='generate'):
++    def __init__(self,home,role,model,config,purpose='generate',approval_store=None):
+         self.home=Path(home);self.role=role;self.model=model;self.cfg=config;self.purpose=purpose;self.proc=None;self.port=None;self.key=secrets.token_hex(24);self.last_metrics={};self.log_handle=None
++        self.approval_store=approval_store;self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
+         self.binary=os.environ.get("V13_LLAMA_SERVER",str(home/"bin/llama-server"))
+         self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+     def _lifecycle_stamp(self):
+@@ -49,6 +50,7 @@
+                 own=path.lstat();target=path.stat()
+                 return (str(path),*( (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode) for s in (own,target)))
+             except OSError:return (str(path),None)
++        paths += self._approved_asset_paths+list(self._launch_assets.values())
+         return tuple(stamp(p) for p in paths)
+     @property
+     def memory_delivery_binding(self):
+@@ -61,6 +63,8 @@
+         before=process_memory(self.proc.pid) if self.proc else None;kill_process(self.proc);self.proc=None
+         self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+         if self.log_handle:self.log_handle.close();self.log_handle=None
++        if self._asset_snapshot is not None:shutil.rmtree(self._asset_snapshot,ignore_errors=True)
++        self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
+         return {"before":before,"process_reaped":True}
+     def _json(self,method,path,payload,deadline,timeout_cap=3.):
+         remaining=deadline-time.monotonic()
+@@ -71,10 +75,75 @@
+             if r.status!=200:raise RuntimeError(f"Runner HTTP {r.status}: {data[:200].decode(errors='replace')}")
+             return json.loads(data)
+         finally:conn.close()
++    @contextlib.contextmanager
++    def _approval_guard(self,cancel,deadline):
++        # Approval can hold the writer mutex across filesystem recovery. A
++        # reader waiting for it must still honour its cancellation/deadline.
++        check(cancel,deadline)
++        if self.approval_store is None:
++            yield
++            return
++        acquired=False
++        try:
++            while not acquired:
++                check(cancel,deadline)
++                acquired=self.approval_store.mutex.acquire(timeout=max(0.,min(.05,deadline-time.monotonic())))
++            check(cancel,deadline)
++            yield
++        finally:
++            if acquired:self.approval_store.mutex.release()
++    def _verify_approval_mirror(self):
++        # Caller holds Store.mutex. The database remains authoritative even
++        # when a failed mirror recovery leaves an ACTIVATING journal behind.
++        if self.approval_store is None:return
++        from .lora_trainer import REGISTRY_KEY,MIRROR
++        active=(self.approval_store.state(REGISTRY_KEY,None)[0] or {}).get('active',{})
++        expected={r:{k:b[k] for k in ('path','sha256','base_model_sha256','batch_id','scale','sidecar_sha256') if k in b}
++                  for r,b in active.items() if b}
++        try:actual=json.loads((self.home/MIRROR).read_text())
++        except FileNotFoundError:actual={}
++        except (OSError,ValueError) as exc:raise Unavailable('Adapter mirror unreadable') from exc
++        if actual!=expected:raise Unavailable('Adapter mirror differs from committed approval')
++    def _snapshot_assets(self,cmd,env):
++        if self.approval_store is None or self.purpose!='generate':return
++        from .common import file_hash
++        from .lora_trainer import REGISTRY_KEY
++        active=(self.approval_store.state(REGISTRY_KEY,None)[0] or {}).get('active',{})
++        specs=[]
++        if '--lora-scaled' in cmd:
++            i=cmd.index('--lora-scaled')+1
++            specs.append(('adapter',cmd[i],active[self.role]['sha256'],i))
++        if self.memory:
++            cur=active[self.role+'#sparse_memory'];path=self.memory['env']['V13_MEMORY_FILE']
++            specs.append(('memory',path,cur['sha256'],None))
++            if cur.get('sidecar_sha256'):
++                specs.append(('memory.items',str(path)+'.items.json',cur['sidecar_sha256'],None))
++        if not specs:return
++        folder=self.home/'tmp'/('runner-assets-'+secrets.token_hex(16));folder.mkdir(parents=True,mode=0o700)
++        self._asset_snapshot=folder;self._launch_assets={};self._approved_asset_paths=[p for _,p,_,_ in specs]
++        try:
++            for kind,path,expected,index in specs:
++                dest=Path(str(self._launch_assets['memory'])+'.items.json') if kind=='memory.items' else folder/(kind+Path(path).suffix)
++                shutil.copyfile(path,dest)
++                if file_hash(dest)!=expected:raise Unavailable('Approved adapter bytes changed during snapshot')
++                dest.chmod(0o400);self._launch_assets[kind]=str(dest)
++                if index is not None:cmd[index]=str(dest)
++                elif kind=='memory':env['V13_MEMORY_FILE']=str(dest)
++            # Record hashes independently from original paths; the child opens
++            # these private bytes after Store.mutex has been released.
++            self._asset_snapshot_hashes={p:file_hash(p) for p in self._launch_assets.values()}
++        except BaseException:
++            shutil.rmtree(folder,ignore_errors=True);self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
++            raise
+     def load(self,cancel,deadline):
++        try:return self._load_validated(cancel,deadline)
++        except BaseException:self.unload();raise
++    def _load_validated(self,cancel,deadline):
+         check(cancel,deadline)
+         if self.proc and self.proc.poll() is None:
+-            if self._loaded_stamp==self._lifecycle_stamp():return
++            with self._approval_guard(cancel,deadline):
++                self._verify_approval_mirror()
++                if self._loaded_stamp==self._lifecycle_stamp():return
+             # Forget/rebind may rewrite a native memory while the old server
+             # still owns its loaded copy. Reap it before validating a new child.
+             self.unload()
+@@ -90,17 +159,22 @@
+         if self.purpose=='tap':cmd += ['--embedding','--pooling','none']
+         elif self.purpose=='embed':cmd += ['--embedding','--no-repack']  # pooled vectors (model pooling, EmbeddingGemma: mean); no repack halves RSS (cloud 737->393 MB)
+         elif self.purpose=='generate':
+-            try:
+-                from .lora_trainer import runner_lora_args
+-                cmd += runner_lora_args(self.home,self.role,self.model)  # only a user-approved, hash-bound AG6 adapter
+-            except Exception:pass
+-            try:  # approved keyed fact memory (WP-S3): patched llama-server-mem, only if binary/model/memory hashes match
+-                from .memory_server import runner_memory
+-                mem=runner_memory(self.home,self.role,self.model)
+-                if mem:cmd[0]=mem['binary'];env.update(mem['env'])
+-                self.memory=mem
+-            except Exception:self.memory=None
++            with self._approval_guard(cancel,deadline):
++                self._verify_approval_mirror()
++                try:
++                    from .lora_trainer import runner_lora_args
++                    cmd += runner_lora_args(self.home,self.role,self.model)  # only a user-approved, hash-bound AG6 adapter
++                except Exception:pass
++                try:  # approved keyed fact memory (WP-S3): patched llama-server-mem, only if binary/model/memory hashes match
++                    from .memory_server import runner_memory
++                    mem=runner_memory(self.home,self.role,self.model)
++                    if mem:cmd[0]=mem['binary'];env.update(mem['env'])
++                    self.memory=mem
++                except Exception:self.memory=None
++                try:self._snapshot_assets(cmd,env)
++                except BaseException:self.unload();raise
+         self._loaded_binary=cmd[0];launch_stamp=self._lifecycle_stamp()
++        check(cancel,deadline)
+         try:
+             self.proc=subprocess.Popen(cmd,stdin=subprocess.DEVNULL,stdout=self.log_handle,stderr=self.log_handle,env=env)
+             while True:
+@@ -110,13 +184,18 @@
+                     if self._json("GET","/health",None,min(deadline,time.monotonic()+1)).get("status")=="ok":break
+                 except (OSError,RuntimeError,http.client.HTTPException,json.JSONDecodeError):pass
+                 cancel.wait(.1)
+-            binding=None
+-            if self.memory:
+-                from .memory_server import captured_delivery_binding
+-                binding=captured_delivery_binding(self.home,self.role,self.model)
+-                if binding and str(binding.get('path'))!=self.memory['env']['V13_MEMORY_FILE']:binding=None
+-            if launch_stamp!=self._lifecycle_stamp():raise Unavailable(self.role+': Runner-Bindung während des Ladens geändert; erneut versuchen')
+-            self._loaded_stamp=launch_stamp;self._memory_delivery_binding=binding
++            with self._approval_guard(cancel,deadline):
++                self._verify_approval_mirror()
++                for path,expected in self._asset_snapshot_hashes.items():
++                    from .common import file_hash
++                    if file_hash(path)!=expected:raise Unavailable("Runner asset snapshot changed")
++                binding=None
++                if self.memory:
++                    from .memory_server import captured_delivery_binding
++                    binding=captured_delivery_binding(self.home,self.role,self.model)
++                    if binding and str(binding.get('path'))!=self.memory['env']['V13_MEMORY_FILE']:binding=None
++                if launch_stamp!=self._lifecycle_stamp():raise Unavailable(self.role+': Runner-Bindung während des Ladens geändert; erneut versuchen')
++                self._loaded_stamp=launch_stamp;self._memory_delivery_binding=binding
+         except BaseException:self.unload();raise
+     def embed(self,texts,cancel,deadline):
+         """Pooled sentence embeddings (WP-H). Only for purpose='embed'; vectors are relevance keys, never facts."""
+@@ -299,8 +378,8 @@
+     """
+     role='C3_LANGUAGE'
+     purpose='causal_stream'
+-    def __init__(self,home,model,config):
+-        self.home=Path(home);self.model=model;self.cfg=config
++    def __init__(self,home,model,config,approval_store=None):
++        self.home=Path(home);self.model=model;self.cfg=config;self.approval_store=approval_store
+         self.template=None;self.session=None;self.last_metrics={};self.bias_provider=None
+     def pids(self):
+         out=self.template.pids() if self.template else []
+@@ -359,7 +438,7 @@
+             self.last_metrics['feature_abi']=binding['feature_abi']
+             self.last_metrics['native_parameters']={'context_tokens':2048,'threads':2,'n_batch':128,'n_ubatch':128,'prompt_token_limit':512,'output_token_limit':cap}
+             # No history or rule text is silently removed to satisfy this ABI.
+-            self.template=LlamaRunner(self.home,self.role,self.model,dict(self.cfg,context_tokens=2048,threads=2))
++            self.template=LlamaRunner(self.home,self.role,self.model,dict(self.cfg,context_tokens=2048,threads=2),approval_store=self.approval_store)
+             self.template.binary=binding['identity']['server_path']
+             context_started=time.monotonic()
+             try:
+@@ -437,7 +516,7 @@
+     """Native runners. WP-N11: several generate runners may stay resident under the AG13 body budget
+     (bodies.BodyFabric decides load/evict); tap and causal-stream runners stay exclusive. Without a fabric
+     or with body_residency_mb=0 this is the old one-process-at-a-time pool."""
+-    def __init__(self,home,models,cfg):self.home=home;self.models=models;self.cfg=cfg;self.current=None;self.resident={};self.fabric=None;self.mutex=threading.RLock();self.release_history=[]
++    def __init__(self,home,models,cfg,approval_store=None):self.home=home;self.models=models;self.cfg=cfg;self.approval_store=approval_store;self.current=None;self.resident={};self.fabric=None;self.mutex=threading.RLock();self.release_history=[]
+     def resident_roles(self):return [k[0] for k,v in self.resident.items() if v.pids()]
+     def _adopt_current(self):
+         # A runner set directly on .current (tests, older callers) is owned like a resident one.
+@@ -479,11 +558,12 @@
+                 self._release(key)
+             if key not in self.resident:
+                 self.resident[key]=LlamaRunner(self.home,role,path,self.cfg)
++                self.resident[key].approval_store=self.approval_store
+                 if self.fabric is not None:self._port(role,'ASSIGNED',path)
+             self.current=self.resident[key];return self.current
+     def get_output(self,role):
+         if role!='C3_LANGUAGE' or self.cfg.get('c3_decode_mode','server')=='server':return self.get(role)
+-        with self.mutex:return self._exclusive((role,'causal_stream'),lambda:CausalStreamRunner(self.home,self.models.path_for(role),self.cfg))
++        with self.mutex:return self._exclusive((role,'causal_stream'),lambda:CausalStreamRunner(self.home,self.models.path_for(role),self.cfg,approval_store=self.approval_store))
+     def get_tap(self,role):
+         from .common import file_hash
+         from .models import model_key
+--- a/v13/runtime.py
++++ b/v13/runtime.py
+@@ -48,7 +48,7 @@
+     def session(self,value):self._selected_session=value
+     def __init__(self,home,notify=None):
+         self._session_local=threading.local();self._selected_session=None
+-        self.home=home;self.cfg=initialize(home);self.store=Store(home,self.cfg['log_retention_days']);prune_runner_logs(home,self.cfg['log_retention_days']);self.models=ModelManager(home,self.cfg.get('b2_control','two_body'));self.pool=RunnerPool(home,self.models,self.cfg);self.needle=NeedleRunner(home,self.models)
++        self.home=home;self.cfg=initialize(home);self.store=Store(home,self.cfg['log_retention_days']);prune_runner_logs(home,self.cfg['log_retention_days']);self.models=ModelManager(home,self.cfg.get('b2_control','two_body'));self.pool=RunnerPool(home,self.models,self.cfg,approval_store=self.store);self.needle=NeedleRunner(home,self.models)
+         self.store.ensure_generation_snapshot(self.cfg,self.revisions())
+         self.cancel_event=threading.Event()
+         self.session=self.store.meta('last_session') or self.store.new_session();self.memory=Memory(self.store,self.cfg);semantic_memory.attach(self);self.cognition=Cognition(self);self.learner=Learner(self);self.world=WorldState(self)

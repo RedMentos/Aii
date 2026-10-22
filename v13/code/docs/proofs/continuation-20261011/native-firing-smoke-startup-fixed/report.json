@@ -1,0 +1,140 @@
+{
+  "status": "PASS_EXECUTION_ONLY",
+  "binding": {
+    "binary_sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "memory_sha256": "d9bdce1c173e425f53b1690d6efc28041bd6fc0759498670e48d972f297ce73a",
+    "script_sha256": "f0dc4d13dd0efe61b84325aab1eb6242b5be298096ebced45e8c8d9f71aaf71b",
+    "header_sha256": "a53938f12ad7cb5fc5dceadcce061990e18cf2ac020f7a1b2c4f1b39004e3b68",
+    "parser_sha256": "723a833719cb0303528a0bcba30f3823c9c9d7151d962c1cb1c28ba8ab04657b"
+  },
+  "memory_origin": "SYNTHETIC_PROTOCOL_FIXTURE",
+  "phone_measured": false,
+  "learned_recall_proven": false,
+  "activation_authorized": false,
+  "arms": {
+    "audit_off": [
+      {
+        "index": 0,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.3951519479996932
+      },
+      {
+        "index": 1,
+        "prompt": "What is two plus two?",
+        "answer": "Two plus two equals four.",
+        "prompt_tokens": 192,
+        "seconds": 0.3371695550004006
+      },
+      {
+        "index": 2,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.28393686300023546
+      }
+    ],
+    "audit_on": [
+      {
+        "index": 0,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.39004103500064957,
+        "native_firing": {
+          "status": "OBSERVED_NATIVE_WRITES",
+          "request": 1,
+          "layer": 0,
+          "evaluated_rows": 193,
+          "batches": 4,
+          "slot_applied_counts": [
+            193,
+            0,
+            0
+          ],
+          "slot_guard_blocked_counts": [
+            0,
+            193,
+            0
+          ],
+          "fired_rows": [
+            0
+          ],
+          "exact_retained": true,
+          "quality_proven": false,
+          "activation_authorized": false
+        }
+      },
+      {
+        "index": 1,
+        "prompt": "What is two plus two?",
+        "answer": "Two plus two equals four.",
+        "prompt_tokens": 192,
+        "seconds": 0.2963892469997518,
+        "native_firing": {
+          "status": "OBSERVED_NATIVE_WRITES",
+          "request": 2,
+          "layer": 0,
+          "evaluated_rows": 134,
+          "batches": 8,
+          "slot_applied_counts": [
+            134,
+            0,
+            0
+          ],
+          "slot_guard_blocked_counts": [
+            0,
+            134,
+            0
+          ],
+          "fired_rows": [
+            0
+          ],
+          "exact_retained": true,
+          "quality_proven": false,
+          "activation_authorized": false
+        }
+      },
+      {
+        "index": 2,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.27520234900021023,
+        "native_firing": {
+          "status": "OBSERVED_NATIVE_WRITES",
+          "request": 3,
+          "layer": 0,
+          "evaluated_rows": 129,
+          "batches": 3,
+          "slot_applied_counts": [
+            129,
+            0,
+            0
+          ],
+          "slot_guard_blocked_counts": [
+            0,
+            129,
+            0
+          ],
+          "fired_rows": [
+            0
+          ],
+          "exact_retained": true,
+          "quality_proven": false,
+          "activation_authorized": false
+        }
+      }
+    ]
+  },
+  "checks": {
+    "answers_identical": true,
+    "prompt_tokens_identical": true,
+    "three_requests_bound": true,
+    "all_requests_observed": true,
+    "only_nonzero_unguarded_row_fired": true,
+    "entity_guard_blocked": true
+  }
+}

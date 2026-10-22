@@ -1,0 +1,68 @@
+{
+ "calibration_thresholds": {
+  "B3.max_expert_flip_rate": 0.16541666666666666,
+  "B3.max_residual_norm_shift": 0.0651016917615053,
+  "B3.max_router_input_shift": 0.037959127402375725,
+  "B3.max_router_kl": 0.022217364248851543,
+  "report.expert_hist_shift": 0.042304368272927814,
+  "report.router_input_drift": 0.06894515417794245,
+  "report.shared_drift": 0.04668982782786191
+ },
+ "runners": {
+  "f16": {
+   "dir": "/home/user/models/out/tap-f16",
+   "reasons": [],
+   "summary": {
+    "expert_hist_shift": {
+     "mean": 0.001925462081051225,
+     "p95": 0.006133083574956768
+    },
+    "router_input_drift": {
+     "mean": 0.0002739041421997458,
+     "p95": 0.0009320374190968482
+    },
+    "router_input_norm_shift": {
+     "mean": 0.0005301211462304282,
+     "p95": 0.0013765479805883372
+    },
+    "router_kl": {
+     "mean": 4.619208830179642e-05,
+     "p95": 0.00014618436151819997
+    },
+    "topk_flip_rate": {
+     "mean": 0.009356149622655236,
+     "p95": 0.024570938215102964
+    }
+   },
+   "within_receiver_baseline_p95": "PASS"
+  },
+  "q4_k_m": {
+   "dir": "/home/user/models/out/tap-q4_k_m",
+   "reasons": [],
+   "summary": {
+    "expert_hist_shift": {
+     "mean": 0.023749833602563525,
+     "p95": 0.03299568039230859
+    },
+    "router_input_drift": {
+     "mean": 0.04717212831184917,
+     "p95": 0.0687723034350823
+    },
+    "router_input_norm_shift": {
+     "mean": 0.01985713129462264,
+     "p95": 0.02645780964041431
+    },
+    "router_kl": {
+     "mean": 0.011640357459277417,
+     "p95": 0.018419235617701982
+    },
+    "topk_flip_rate": {
+     "mean": 0.11783917225349187,
+     "p95": 0.15857213438735177
+    }
+   },
+   "within_receiver_baseline_p95": "PASS"
+  }
+ },
+ "schema": "v13-moe-router-parity-v1"
+}

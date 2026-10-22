@@ -1,0 +1,169 @@
+{
+ "schema": "v13-r4-tool-choice-head-prereg-v1",
+ "created_utc": "2026-10-13T10:17:05Z",
+ "vectors_sha256": "92e978e5ea64a6d5e87c5d7ef687c13748640f6875346b3f2740773feae07a47",
+ "vectors_meta": {
+  "corpus_sha256": "e703bf3061833bed528795d90b5a9ac80b76c7b11f371f8c61985834e08c8d8b",
+  "encoder_revision": "b274efcb211a9eef48c9a88da4b43bd569696a39",
+  "script_sha256": "be6e3a9c98c6adb0c8c0105ff88df79ff7578636e09b5a82d7ba3daf832f06ea"
+ },
+ "corpus_sha256": "e703bf3061833bed528795d90b5a9ac80b76c7b11f371f8c61985834e08c8d8b",
+ "n": {
+  "train": 240,
+  "test": 228,
+  "de": 120
+ },
+ "train_cv": {
+  "full:0.001": {
+   "macro_f1": 0.635,
+   "f1": {
+    "none": 0.6818,
+    "total": 0.4255,
+    "difference_max_min": 0.7975
+   },
+   "false_alarm_rate": 0.375,
+   "op_confusion_rate": 0.2014,
+   "missed_rate": 0.1389,
+   "confusion": [
+    [
+     60,
+     34,
+     2
+    ],
+    [
+     18,
+     30,
+     24
+    ],
+    [
+     2,
+     5,
+     65
+    ]
+   ],
+   "score": -0.115
+  },
+  "full:0.1": {
+   "macro_f1": 0.6217,
+   "f1": {
+    "none": 0.7234,
+    "total": 0.375,
+    "difference_max_min": 0.7667
+   },
+   "false_alarm_rate": 0.2917,
+   "op_confusion_rate": 0.2083,
+   "missed_rate": 0.1667,
+   "confusion": [
+    [
+     68,
+     18,
+     10
+    ],
+    [
+     22,
+     21,
+     29
+    ],
+    [
+     2,
+     1,
+     69
+    ]
+   ],
+   "score": 0.0383
+  },
+  "question:0.001": {
+   "macro_f1": 0.6291,
+   "f1": {
+    "none": 0.6667,
+    "total": 0.3636,
+    "difference_max_min": 0.8571
+   },
+   "false_alarm_rate": 0.375,
+   "op_confusion_rate": 0.1667,
+   "missed_rate": 0.1667,
+   "confusion": [
+    [
+     60,
+     36,
+     0
+    ],
+    [
+     24,
+     24,
+     24
+    ],
+    [
+     0,
+     0,
+     72
+    ]
+   ],
+   "score": -0.1209
+  },
+  "question:0.1": {
+   "macro_f1": 0.6372,
+   "f1": {
+    "none": 0.625,
+    "total": 0.3636,
+    "difference_max_min": 0.9231
+   },
+   "false_alarm_rate": 0.375,
+   "op_confusion_rate": 0.0833,
+   "missed_rate": 0.25,
+   "confusion": [
+    [
+     60,
+     36,
+     0
+    ],
+    [
+     36,
+     24,
+     12
+    ],
+    [
+     0,
+     0,
+     72
+    ]
+   ],
+   "score": -0.1128
+  }
+ },
+ "chosen": {
+  "view": "full",
+  "l2": 0.1
+ },
+ "train_rule": {
+  "macro_f1": 0.6053,
+  "f1": {
+   "none": 0.6693,
+   "total": 0.6466,
+   "difference_max_min": 0.5
+  },
+  "false_alarm_rate": 0.125,
+  "op_confusion_rate": 0.0417,
+  "missed_rate": 0.4931,
+  "confusion": [
+   [
+    84,
+    12,
+    0
+   ],
+   [
+    29,
+    43,
+    0
+   ],
+   [
+    42,
+    6,
+    24
+   ]
+  ]
+ },
+ "decision_rule": "Test family B (English, held-out wording), once: LEARNED_CHOICE_SUPPORTED iff head macro-F1 >= rule macro-F1 + 0.15 AND head false-alarm rate on 'none' <= 0.05 AND total<->difference confusions <= 2% of arithmetic items. Head = multinomial logistic regression on standardised Needle vectors; view and L2 chosen on train only by leave-one-template-out CV (score = macro-F1 minus 2 x false-alarm rate). German family C and the hybrid 'rule, else head' are reported only.",
+ "script_sha256": "be6e3a9c98c6adb0c8c0105ff88df79ff7578636e09b5a82d7ba3daf832f06ea",
+ "listarith_sha256": "39c1aed90373965cb86eb845409555d36da49232e565974209081a1ede628be6"
+}

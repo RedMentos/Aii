@@ -1,0 +1,112 @@
+{
+ "prereg_sha256": "9a21248a4ad2a156fb5589b50e87ed9fa8ebedabbaf4c2eb2dd5bdb0ece1b348",
+ "fresh_sha256": "ebd5237f9dff5440bec26a0570cc834e69db5da0e859f6eff4378ef9bb171f3d",
+ "sets": {
+  "orig": {
+   "n": 60,
+   "c3_alone": 40,
+   "tool_active": 54,
+   "wins": 16,
+   "losses": 2,
+   "net": 14,
+   "sign_test_p": 0.0013,
+   "by_kind": {
+    "summary": {
+     "c3_alone": 6,
+     "tool_active": 14,
+     "value_correct": 14,
+     "n": 15
+    },
+    "long": {
+     "c3_alone": 15,
+     "tool_active": 15,
+     "value_correct": 0,
+     "n": 15
+    },
+    "notes": {
+     "c3_alone": 13,
+     "tool_active": 13,
+     "value_correct": 0,
+     "n": 15
+    },
+    "compare": {
+     "c3_alone": 6,
+     "tool_active": 12,
+     "value_correct": 15,
+     "n": 15
+    }
+   },
+   "proposals": 30,
+   "tool_executed": 30,
+   "guard_refused": 0,
+   "value_correct": 29,
+   "pass_with_correction": 56,
+   "turn_s_median": {
+    "c3_alone": 3.82,
+    "tool_active": 4.53
+   }
+  },
+  "match": {
+   "n": 30,
+   "c3_alone": 8,
+   "tool_active": 21,
+   "wins": 13,
+   "losses": 0,
+   "net": 13,
+   "sign_test_p": 0.0002,
+   "by_kind": {
+    "summary": {
+     "c3_alone": 5,
+     "tool_active": 14,
+     "value_correct": 14,
+     "n": 15
+    },
+    "compare": {
+     "c3_alone": 3,
+     "tool_active": 7,
+     "value_correct": 15,
+     "n": 15
+    }
+   },
+   "proposals": 30,
+   "tool_executed": 30,
+   "guard_refused": 0,
+   "value_correct": 29,
+   "pass_with_correction": 22,
+   "turn_s_median": {
+    "c3_alone": 3.92,
+    "tool_active": 5.52
+   }
+  },
+  "nomatch": {
+   "n": 15,
+   "c3_alone": 5,
+   "tool_active": 5,
+   "wins": 0,
+   "losses": 0,
+   "net": 0,
+   "sign_test_p": 1.0,
+   "by_kind": {
+    "compare": {
+     "c3_alone": 5,
+     "tool_active": 5,
+     "value_correct": 0,
+     "n": 15
+    }
+   },
+   "proposals": 0,
+   "tool_executed": 0,
+   "guard_refused": 0,
+   "value_correct": 0,
+   "pass_with_correction": 5,
+   "turn_s_median": {
+    "c3_alone": 5.73,
+    "tool_active": 2.61
+   }
+  }
+ },
+ "max_kind_drop": 0,
+ "verdict": "TOOL_PATH_SUPPORTED",
+ "age_right_replaced_for_measurement": true,
+ "phone_measured": false
+}

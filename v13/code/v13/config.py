@@ -68,9 +68,15 @@ KNOBS['drift_flip_max']=(.10,"THRESHOLD",0.,1.,"WP-S5 max share of frozen protec
 KNOBS['drift_required']=(0,"COUNT",0,1,"WP-S5 1 = updates without a drift measurement are refused at :approve; 0 = checked when measured")
 KNOBS['control_budget_p95_ms']=(0.,"THRESHOLD",0.,60000.,"WP-T14 §22.2.3 cap on P95 control-fabric latency per turn in ms; 0 = unset (limits only after Redmi measurement)")
 KNOBS['control_budget_state_mb']=(0.,"THRESHOLD",0.,4096.,"WP-T14 §22.2.3 cap on persistent control state (states table) in MB; 0 = unset")
+KNOBS['native_cache_ram_mb']=(128,"BYTES_MB",0,8192,"G6B BOOT llama-server --cache-ram per runner (b10964 default 8192); 0 disables the host prompt cache. With native_ctx_checkpoints 6 the worst case stays <=256 MiB per body (cloud measurement, Redmi open)")
+KNOBS['native_ctx_checkpoints']=(6,"COUNT",0,32,"G6B BOOT llama-server --ctx-checkpoints per slot (b10964 default 32; Qwen3.5 B2 ~19 MiB each, LFM2.5 <0.2 MiB)")
+KNOBS['observer_sample_rate']=(.5,"BUDGET_FRACTION",0.,1.,"§22.2.4 BOOT share of events that get pre-answer observer passes under observer_schedule SAMPLED_OBSERVER (deterministic per event)")
 KNOBS['control_budget_params_mb']=(0.,"THRESHOLD",0.,4096.,"WP-T14 §22.2.3 cap on approved learned control checkpoints in MB; 0 = unset")
 DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"learning_mode":"RECORD_ONLY","system_stage":0,"user_stage_cap":0,
- "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"boot","segment_mode":"percept","tool_conflict_policy":"correct"}
+ "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","observer_schedule":"A_THEN_B_SEQUENTIAL","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"noise_aware","offer_quote_context_chars":200,"b2_offer_body_state":False,"offer_quote_min_chars":90,"segment_mode":"percept","tool_conflict_policy":"correct","eligibility_reader":"fixed","tool_answer_first":True}
+# Defaults before the user decision of 2026-10-22 (noise_aware Age, quote context on). Frozen, preregistered
+# harnesses and tests of the old behaviour merge this so their recorded results stay reproducible.
+LEGACY_PRE_20261022={"age_plasticity_policy":"boot","offer_quote_context_chars":0,"b2_offer_body_state":True,"offer_quote_min_chars":0,"eligibility_reader":"model","tool_answer_first":False}
 # IH-H5 KnobSpec: every knob has a declared kind, so 0..1 is never silently read as a probability.
 KNOB_KINDS={'AUTHORITY','MIX_WEIGHT','PRIOR','PROBABILITY','THRESHOLD','BUDGET_FRACTION','BOOLEAN','COUNT','BYTES','BYTES_MB',
             'DURATION_MS','DURATION_S','DURATION_DAYS','RATE_HZ','LEARNING_RATE','DECAY','TEMPERATURE'}
@@ -98,9 +104,15 @@ def validate(cfg):
     if cfg.get("duplex_mode","auto") not in {"auto","interrupt","off"}:raise ValueError("duplex_mode auto|interrupt|off")
     if cfg.get("b2_control","two_body") not in {"two_body","shared_body_dual_state","same_model_prompt_only","same_model_same_policy"}:raise ValueError("b2_control")
     if cfg["observer_mode"] not in {"background","off"}:raise ValueError("observer")
+    if cfg.get("observer_schedule","A_THEN_B_SEQUENTIAL") not in {"A_THEN_B_SEQUENTIAL","B_THEN_A_SEQUENTIAL","ALWAYS_BOTH_ASYNC","JEF_FIRST_THEN_BOTH","SAMPLED_OBSERVER","ON_DEMAND_REENTRY"}:raise ValueError("observer_schedule")
     if not 0<=cfg["user_stage_cap"]<=5:raise ValueError("stage cap")
     if cfg.get("tool_conflict_policy","correct") not in {"log","correct"}:raise ValueError("tool_conflict_policy log|correct")
     if cfg.get("segment_mode","percept") not in {"fixed","percept","all"}:raise ValueError("segment_mode fixed|percept|all")
+    if not isinstance(cfg.get("b2_offer_body_state",True),bool):raise ValueError("b2_offer_body_state true|false")
+    if not (isinstance(cfg.get("offer_quote_min_chars",0),int) and 0<=cfg.get("offer_quote_min_chars",0)<=400):raise ValueError("offer_quote_min_chars 0..400")
+    if not (isinstance(cfg.get("offer_quote_context_chars",0),int) and not isinstance(cfg.get("offer_quote_context_chars",0),bool) and 0<=cfg.get("offer_quote_context_chars",0)<=400):raise ValueError("offer_quote_context_chars 0..400")
+    if cfg.get("eligibility_reader","model") not in {"model","fixed"}:raise ValueError("eligibility_reader model|fixed")
+    if not isinstance(cfg.get("tool_answer_first",False),bool):raise ValueError("tool_answer_first true|false")
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
     return cfg
 def initialize(home):

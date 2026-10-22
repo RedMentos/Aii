@@ -1,0 +1,61 @@
+{
+  "schema": "v13-action-jepa-round3-preregistration-v1",
+  "status": "PREREGISTERED_BEFORE_GENERATION_AND_CAPTURE",
+  "bound_at": "2026-10-12T03:27:20.540151+00:00",
+  "why": "Rounds 1/2 tested only on six historically exposed topics. Round 3 tests on fresh topics never generated, captured or scored before.",
+  "fresh_topics": [
+    "baking bread",
+    "public libraries",
+    "bicycles",
+    "chess",
+    "beekeeping",
+    "hospitals"
+  ],
+  "reserve_topics": [
+    "pottery",
+    "rivers and lakes"
+  ],
+  "reserve_rule": "A fresh topic yielding fewer than 16 parsed sentences is skipped and the next reserve topic is used, in order.",
+  "sentence_generation": {
+    "model": "LFM2.5-350M-QAD-Q4_0.gguf sha256 3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d (C3, specs/models.json)",
+    "prompt": "Write 24 different short English sentences about {topic}. Write one sentence per line. Do not number them.",
+    "temperature": 0,
+    "max_tokens": 1024,
+    "parse": "scripts/action_jepa_round3.py parse_sentences (3-25 words, ends . ! ?, dedupe, first 24)"
+  },
+  "action_generation": "same model, the four prompts of bench-results/jepa-action-20261010/gen_actions.py, temperature 0, max_tokens 48, first line",
+  "capture": {
+    "model": "Qwen3.5-0.8B-Q4_0.gguf sha256 57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+    "runner": "llama.cpp b10964 release ubuntu-x64 tarball sha256 9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+    "args": "--embedding --pooling mean -c 2048 -t 2 -tb 2, batch 16",
+    "rows": "all 1875 old rows plus all fresh rows in one runtime (release build differs from the earlier local build: 48 control rows max abs diff 1.9e-3, cos >= .99991; not mixed)"
+  },
+  "partitions": {
+    "train/calibration/retention": "plan-v2 kept episodes (unchanged)",
+    "test": "fresh topics only; historical test topics not used",
+    "exclusion": "drop fresh episodes whose normalized input/output text appears in any non-test row; dedupe fresh inputs"
+  },
+  "training": {
+    "seeds": [
+      13,
+      21,
+      34
+    ],
+    "arm_round1": "scripts/action_jepa_objective.py, steps 240 dim 16 lr .02 max_update_norm .05 ema .99 retention_max_delta 0",
+    "arm_round2": "scripts/action_jepa_residual_candidate.py, steps grid 240,960 chosen on calibration, same other config"
+  },
+  "gates": "unchanged original gates; per seed and arm candidate_gate_pass reported; no test-based selection",
+  "source_hashes": {
+    "scripts/action_jepa_round3.py": "9a522e780a3469e825e918aff02dbba3971e5af152a2698f9afd3230da464faf",
+    "scripts/action_jepa_objective.py": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439",
+    "scripts/action_jepa_residual_candidate.py": "b35ff4aebf7c0a5134779cc99324f0fd928852ce797c899dfc09966575808851",
+    "scripts/export_action_jepa_dataset.py": "448966b6323baf8593c3f75d6cdb2ef62261d7eeba196d35b0d26d2a996141bc",
+    "v13/predictor_worker.py": "e54f539dc79e6d3b8ba88cbab601aeabf5d0fbbd7ac75e477d49e362d7d94a6e",
+    "tests/test_action_jepa_round3.py": "5016c2dfd5929e74868cf55af4e27ea964bcd6d7a1ad6d5e93315907628dc1a4"
+  },
+  "receiver_authority": 0,
+  "learn_authority": 0,
+  "runtime_integrated": false,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}

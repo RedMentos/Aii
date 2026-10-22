@@ -1,0 +1,17 @@
+{
+  "schema": "v13-dream2-attempt-stop-v1",
+  "status": "STOPPED_BINDING_GAP",
+  "stopped_at": "2026-10-11T04:04:59Z",
+  "reason": "Run binding omitted AutoTokenizer chat_template.jinja; original attempt kept unchanged, restarted in fresh v2 cohort after binding correction.",
+  "observed_pid": 31467,
+  "observed_namespace_pid": 6,
+  "session_id": 78475,
+  "stop_method": "write_stdin(session_id=78475, chars=CTRL-C); session exit130; /proc/31467 absent",
+  "initial_direct_signal_attempt": "ProcessLookupError due exec per-command PID namespace; no direct kill occurred.",
+  "completed_arms": 0,
+  "artifact_sha256": {
+    "dream-run.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "dream_ablation_b40.json": "d1b8d813c3c98297f6f0b2bfc26694496b327f8b24435f24728361117c0e7562"
+  },
+  "log_sha256": "adec1a5ccce65a99b375343782968e2138bb0320531ba527f12cd2e307ce01eb"
+}

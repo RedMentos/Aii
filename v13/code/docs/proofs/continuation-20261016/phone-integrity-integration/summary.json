@@ -1,0 +1,23 @@
+{
+  "schema": "V13_PHONE_LEARNING_INTEGRITY_INTEGRATION_SOFTWARE_V1",
+  "tests_run": 48,
+  "new_integration_tests": 12,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "native_run": false,
+  "phone_measured": false,
+  "canonical_gate_pass": false,
+  "low_level_numeric_analyze_unchanged": true,
+  "gates": {
+    "shift_gain_max_ratio": 0.9,
+    "in_world_max_ratio": 1.02
+  },
+  "source_sha256": {
+    "scripts/tool_forecast_learning_check.py": "b6df654e6f4ad2155dfa409d569ea1af33eef1c6198199724c6bd437622fdcda",
+    "scripts/test_tool_forecast_phone.py": "9686a8f3800dcaafa59dd509b37e2a09b52cc7c2397f246acc0ce116bcea8998",
+    "scripts/tool_forecast_bounded_phone_candidate.py": "2705b556b48e8a1e7e8ce1dff63ee7de881ea46ab1cf3f66bce5b36e99c2800d",
+    "scripts/tool_forecast_bound_learning_candidate.py": "c4d4e6da4a57089bc5147f2a4607031ca83c511b88ca2be04fff05976330a6ee",
+    "tests/test_phone_learning_integrity_integration.py": "c63d974efa14574302ebcc84bedcd9b9cc0cb853becc8037c30b5c1f773c11ce"
+  }
+}

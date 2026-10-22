@@ -1,0 +1,376 @@
+{
+  "schema": "v13-bounded-native-tap-lifecycle-v1",
+  "wrapper": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/bounded_action_jepa_capture.py",
+    "sha256": "467f809bc5a716d6aa3d0ed1f86c589da6fc5f480b254cc35f073506858e4dab"
+  },
+  "inherited_native_environment": {},
+  "driver_environment_overrides": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "2",
+    "V13_variables": "removed",
+    "LD_PRELOAD": "removed",
+    "LD_LIBRARY_PATH": "removed"
+  },
+  "source_checker": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/resume_action_jepa_capture_observed.py",
+    "sha256": "91c7d146be9618b70dd837dfb694712710a627b5197048b12673468f8ab4d1b1"
+  },
+  "exporter": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/export_action_jepa_dataset.py",
+    "sha256": "448966b6323baf8593c3f75d6cdb2ef62261d7eeba196d35b0d26d2a996141bc"
+  },
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy_version": "2.3.5",
+  "source_archive": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/step2-webchat-70/frozen-source.tar.gz",
+    "sha256": "d59ac71c5af559db015e521052f13d00736784ba18eb8c258caf0933d29ee081"
+  },
+  "terminal_report": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/step2-webchat-70/report.json",
+    "sha256": "e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555"
+  },
+  "original_prefix_archive": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-prefix736.closed.zip",
+    "sha256": "b86c7da6e5a2e1ed85c0eb2c016ee681dae1a23e584526bd0f74f7d3d78fee4f"
+  },
+  "original_registration": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-native-capture/registration.json",
+    "sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa"
+  },
+  "original_prefix_rows": 736,
+  "original_prefix_array_sha256": "a20f8443caeaefb17d3f3bc7b342d0659a6168105b754fa5673de910fbb9f48e",
+  "original_prefix_records": [
+    {
+      "path": "batches/batch-00000-00016.json",
+      "sha256": "e26210ee60bbc857a7aced8476433b5bc2cdb64c3b83089e4e16e6c1f4d5c722"
+    },
+    {
+      "path": "batches/batch-00016-00032.json",
+      "sha256": "c922f8a438821767bba422b9f96c25d1319782a098f19ef9d4cc5a5148d336d7"
+    },
+    {
+      "path": "batches/batch-00032-00048.json",
+      "sha256": "e98d6acf13b76433e0c96d0dcec55820c50f26e4006943fe928a3dcec53a8597"
+    },
+    {
+      "path": "batches/batch-00048-00064.json",
+      "sha256": "c2efc48ae4867b6b01e09114c81875db5c24df0433864c34e1a9fb2209ef1533"
+    },
+    {
+      "path": "batches/batch-00064-00080.json",
+      "sha256": "5b1faf72c34dd3e5058ac3de31c92d68ed875d2f91edbb5afa5d52a7c521f0cf"
+    },
+    {
+      "path": "batches/batch-00080-00096.json",
+      "sha256": "11ee81e03587ae3eecbc5276d0a0120f64244347cbfd7a610f95d12e6d0bce6c"
+    },
+    {
+      "path": "batches/batch-00096-00112.json",
+      "sha256": "d655b479a4ed43e57a2bf94d20a153e64e6954ee2af2ca8466478e2f6abb925f"
+    },
+    {
+      "path": "batches/batch-00112-00128.json",
+      "sha256": "0d2b1bf8e8c57877cbdb3c3937fd18aba060dc36e4b28225b96e4225a99b29f8"
+    },
+    {
+      "path": "batches/batch-00128-00144.json",
+      "sha256": "32ec145f1349b219820b733061768a2d7ad611f10653e4fa59625ed169f16c16"
+    },
+    {
+      "path": "batches/batch-00144-00160.json",
+      "sha256": "ab109ef89fa5cc6134854d58fbe9b75d2d42bc2990d7b87e0dac63dfcfa18eb4"
+    },
+    {
+      "path": "batches/batch-00160-00176.json",
+      "sha256": "54ed9b48fd1fc0e749e98107ab3a0a6774f86f2dd3e33fef6276302a4aa987f1"
+    },
+    {
+      "path": "batches/batch-00176-00192.json",
+      "sha256": "f9c7697929f1f95ed1bc62d43297c4f3490257eab7f8b1ad4f51e165350b4d94"
+    },
+    {
+      "path": "batches/batch-00192-00208.json",
+      "sha256": "f5a508d371696a69bfc5ce2ba08b422afac88f3c94c5542706115b272745fecd"
+    },
+    {
+      "path": "batches/batch-00208-00224.json",
+      "sha256": "286ab13fbb40e75b33053b253af851a2ce532048e02e39d1c785ae1fd940a022"
+    },
+    {
+      "path": "batches/batch-00224-00240.json",
+      "sha256": "cc2d3273b430ae3da867b92e959feba4c076643c5c1f5f992658ce65aa3348b7"
+    },
+    {
+      "path": "batches/batch-00240-00256.json",
+      "sha256": "57153c79904dc55b0433bf8488c8e21a91144af27807c267ae64667f9511c9dc"
+    },
+    {
+      "path": "batches/batch-00256-00272.json",
+      "sha256": "35c1d560ea1b8e488ea72a668393c455d34d4b46fe5dc334def191f8711b8290"
+    },
+    {
+      "path": "batches/batch-00272-00288.json",
+      "sha256": "b2a514dc19424198ea70d6eca7e7e4359710bf43479d61c6e598ce90828ef144"
+    },
+    {
+      "path": "batches/batch-00288-00304.json",
+      "sha256": "3d1ffb5afcc28fd83b883cd66306355d2211429b749d461c4151d56043d97731"
+    },
+    {
+      "path": "batches/batch-00304-00320.json",
+      "sha256": "a7d8d15d8c663eaa1171ac8dc2c27c863de579db10f057580dc1f363e1df4003"
+    },
+    {
+      "path": "batches/batch-00320-00336.json",
+      "sha256": "97cbe7814e0176e304f0a9066dda89ccf3864ee4114a5848bc0e2161b9c8c69d"
+    },
+    {
+      "path": "batches/batch-00336-00352.json",
+      "sha256": "dbd1a193f0ce4debd404438d2797290f46bfbbf2b398fd3e5605f030d28db3e1"
+    },
+    {
+      "path": "batches/batch-00352-00368.json",
+      "sha256": "d86a2f9367477aa41f6baf9ee5cb2106b4f309f73fe1ec205f104c6da0e40d13"
+    },
+    {
+      "path": "batches/batch-00368-00384.json",
+      "sha256": "72b8d59299ff6ba6121544e8d74c85a888f875aff078e6d30180afe59f078541"
+    },
+    {
+      "path": "batches/batch-00384-00400.json",
+      "sha256": "16531e3083867eaa7a97d2ff1af1b11a7ecc1619528bcce01214ebe4580341bb"
+    },
+    {
+      "path": "batches/batch-00400-00416.json",
+      "sha256": "eef1cd6cd6b5f8bb7b5c1736e91ca73d4b148ed947d52c6d53e7985a42957763"
+    },
+    {
+      "path": "batches/batch-00416-00432.json",
+      "sha256": "10018508819b8a201771bb0cbdfbb3d4854951f9a1b4650a3592081ba4d7230a"
+    },
+    {
+      "path": "batches/batch-00432-00448.json",
+      "sha256": "d004fa2cb213bb294eb84bdb367676d123ef61a3e5a0754fda6beb76f5f8c28b"
+    },
+    {
+      "path": "batches/batch-00448-00464.json",
+      "sha256": "0bbc1bd1a64a679a1385c39323879ade50089410efdd2abd116a92984a9b3745"
+    },
+    {
+      "path": "batches/batch-00464-00480.json",
+      "sha256": "d6b39ccf3bd3ebca8596bab976ea0c9ced870550fa53f201d194d7a36d2060d0"
+    },
+    {
+      "path": "batches/batch-00480-00496.json",
+      "sha256": "d32bcf4a8706982e3fa507c77d786393ac678f3bb44376bc8a7def741e74ce49"
+    },
+    {
+      "path": "batches/batch-00496-00512.json",
+      "sha256": "c477798e0d38ea723c1d9f0f6a80bc2525e4c3b8aabce47346f89aa9dd68eeea"
+    },
+    {
+      "path": "batches/batch-00512-00528.json",
+      "sha256": "cc81953f7f4e07a4fd76d02a4791c3fdcdf9706d12a15e5a1ef1d0991a9863ca"
+    },
+    {
+      "path": "batches/batch-00528-00544.json",
+      "sha256": "82fd85be1e4d0ac0dbf11ae7614519b8be7bece7c6d116df554e2be533c4e73e"
+    },
+    {
+      "path": "batches/batch-00544-00560.json",
+      "sha256": "41dcc8af787356611b403ba0a90fae57d64996763cb2e109d4b8125c10bbda94"
+    },
+    {
+      "path": "batches/batch-00560-00576.json",
+      "sha256": "96d770dfa99d9f880d4f30b8b0b81a81172772cc33bbe5eda4af656fbe234c5d"
+    },
+    {
+      "path": "batches/batch-00576-00592.json",
+      "sha256": "2950ef8e0cdfdacbf9d61a5d3465b721fca113456b7cc32db7c84b0272e5722a"
+    },
+    {
+      "path": "batches/batch-00592-00608.json",
+      "sha256": "f8c40dbd8896ccc93a86056ec31558afc8346d4e1c4e48622620f507d105866b"
+    },
+    {
+      "path": "batches/batch-00608-00624.json",
+      "sha256": "72396fcdb1755ab72f32e87a99665f1e92b56dafce8ef55d3612bdc0921424b8"
+    },
+    {
+      "path": "batches/batch-00624-00640.json",
+      "sha256": "93e319134222dbd0b7eae9aa56ba868cd9285c50a1029e6dfc2ebaaec1181eb7"
+    },
+    {
+      "path": "batches/batch-00640-00656.json",
+      "sha256": "9cb3260aabfd73efaa6e9cb82f52eddf8ea0ad636c2729a9a4248e7372af2d6d"
+    },
+    {
+      "path": "batches/batch-00656-00672.json",
+      "sha256": "4bdbd29f37084d84ccf8becbfcfdd7d3e6284ee15f0a72f5a22339a3f6dd01b5"
+    },
+    {
+      "path": "batches/batch-00672-00688.json",
+      "sha256": "de816502a9d8d37a667d9b3d4fc0da895b7d74eb2589da916662ad55e8d2371b"
+    },
+    {
+      "path": "batches/batch-00688-00704.json",
+      "sha256": "25cf01a06836428ec74617cc80c7db5518baf54374ca0932ed533aff2628482f"
+    },
+    {
+      "path": "batches/batch-00704-00720.json",
+      "sha256": "1c5a84c645ddcaf59b1276f9a55159d7b4f66b79d7bf83a0d7ba7dd2ce583280"
+    },
+    {
+      "path": "batches/batch-00720-00736.json",
+      "sha256": "5ecd61a719e8de338fa965a73cf602b1dcb174c66f32ffc0513b38444a2ee02b"
+    }
+  ],
+  "current_registration": {
+    "schema": "v13-action-native-tap-registration-v1",
+    "plan": {
+      "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-preregistered-plan-v2.json",
+      "sha256": "94072d386e6f7f55dd972592bc97b78e6f1f4cae05f80fa132bd7efb16d476f1"
+    },
+    "sentences": {
+      "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/bench-results/jepa-ablation-20261010/sentences.json",
+      "sha256": "b67ec434f0e0fbc91f2502dc50a4551fb29f6ab7e1001f4a458e0c7c14ef5828"
+    },
+    "actions": {
+      "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/bench-results/jepa-action-20261010/actions.json",
+      "sha256": "36380af40c5896aa6cdbcaf906b7c4471c57383a7064c054673035ca0c6c200e"
+    },
+    "texts_sha256": "e68867ce03b1c62b85b55cc9c09b7e8767807c8e87193f0df37773572359e7cc",
+    "expected_rows": 1875,
+    "expected_dim": 1024,
+    "dtype": "float64",
+    "batch_size": 16,
+    "threads": 2,
+    "context": 2048,
+    "pooling": "mean",
+    "embedding": true,
+    "native_template": "raw_text_embedding",
+    "artifacts": {
+      "model_gguf": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+        "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+      },
+      "runner": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/llama-server",
+        "sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8"
+      },
+      "extractor": {
+        "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/jepa_ablation_bench.py",
+        "sha256": "b6e73928a44ab695a8c224f1aa6dd2c9a8f2bdb1596fe39de5ce55026e4fc95e"
+      },
+      "capture_driver": {
+        "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/capture_action_jepa_taps.py",
+        "sha256": "42b38b8d0f3f96a811f330895de62e35ec81bfea89383edd3ba00da52d06defd"
+      }
+    },
+    "runtime_libraries": {
+      "libggml-base.so": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-base.so.0.24.0",
+        "sha256": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a"
+      },
+      "libggml-base.so.0": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-base.so.0.24.0",
+        "sha256": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a"
+      },
+      "libggml-base.so.0.24.0": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-base.so.0.24.0",
+        "sha256": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a"
+      },
+      "libggml-cpu.so": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-cpu.so.0.24.0",
+        "sha256": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b"
+      },
+      "libggml-cpu.so.0": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-cpu.so.0.24.0",
+        "sha256": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b"
+      },
+      "libggml-cpu.so.0.24.0": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-cpu.so.0.24.0",
+        "sha256": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b"
+      },
+      "libggml.so": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml.so.0.24.0",
+        "sha256": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d"
+      },
+      "libggml.so.0": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml.so.0.24.0",
+        "sha256": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d"
+      },
+      "libggml.so.0.24.0": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml.so.0.24.0",
+        "sha256": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d"
+      },
+      "libllama-common.so": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-common.so.0.4.1",
+        "sha256": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee"
+      },
+      "libllama-common.so.0": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-common.so.0.4.1",
+        "sha256": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee"
+      },
+      "libllama-common.so.0.4.1": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-common.so.0.4.1",
+        "sha256": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee"
+      },
+      "libllama-server-impl.so": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-server-impl.so",
+        "sha256": "0bd03879553abc98f5d2951886989820cd61049ce071f727e06f9cc926d4c8f1"
+      },
+      "libllama.so": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama.so.0.4.1",
+        "sha256": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50"
+      },
+      "libllama.so.0": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama.so.0.4.1",
+        "sha256": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50"
+      },
+      "libllama.so.0.4.1": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama.so.0.4.1",
+        "sha256": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50"
+      },
+      "libmtmd.so": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libmtmd.so.0.4.1",
+        "sha256": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+      },
+      "libmtmd.so.0": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libmtmd.so.0.4.1",
+        "sha256": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+      },
+      "libmtmd.so.0.4.1": {
+        "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libmtmd.so.0.4.1",
+        "sha256": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+      }
+    },
+    "model_role": "B2_GIST_Qwen3.5-0.8B_Q4_0",
+    "receiver_authority": 0,
+    "semantic_quality_proven": false,
+    "canonical_architecture_complete": false
+  },
+  "exact_original_binding": true,
+  "main_capture_out": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-bounded-recovery/exact-resume",
+  "source_checker_snapshot_root": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-bounded-recovery/snapshot.checkpoint/frozen70",
+  "frozen70": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/step2-webchat-70/report.json",
+    "sha256": "e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555",
+    "status": "UTILITY_FAIL",
+    "rows": 70,
+    "frozen_source_intact": true,
+    "utility_gate_inferred": false
+  },
+  "maximum_successful_new_batches_per_worker": 8,
+  "control_workers": 2,
+  "control_batches_per_worker": 1,
+  "control_gate": "np.array_equal across two actual fresh-worker first-batch arrays; fail closed",
+  "historical_drift_control": "first 16 historical rows vs fresh worker; report exact equality and max_abs_difference, no mixing when native binding differs",
+  "checkpoint_stop": "after raw batch + NPZ + RUNNING progress atomically persisted; unchanged driver owned Popen termination and wait",
+  "native_parameters_changed": false,
+  "native_model_started": false,
+  "receiver_authority": 0,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}

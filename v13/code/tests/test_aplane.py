@@ -32,6 +32,12 @@ class StudentT2(Base):
         self.assertEqual(aplane.set_student_mode(self.r.store,'fallback'),'fallback')
         self.evals([False]*8);g=aplane.student_gate(self.r.store)  # newest window drops > 5 points: retention fails
         self.assertFalse(g['retention_pass']);self.assertFalse(g['pass'])
+    def test_small_dip_keeps_gate_and_old_failures_leave_the_window(self):
+        # thread L 2026-10-12, preregistered candidate PASS: window 100, retention only against a clear drop
+        self.evals([False]*60+[True]*100);g=aplane.student_gate(self.r.store)
+        self.assertEqual(g['n'],100);self.assertTrue(g['pass'])  # early failures are outside the window
+        self.evals([True,True,False]*3);g=aplane.student_gate(self.r.store)
+        self.assertTrue(g['retention_pass']);self.assertTrue(g['pass'])  # recent 25 still >= .75
     def test_fallback_routes_only_when_promoted_and_demotes_itself(self):
         r=self.r;e=r.store.event(r.session,'Explain the budget')
         r.learner.student_route=Mock(return_value={'route':'detail','percept':{}})

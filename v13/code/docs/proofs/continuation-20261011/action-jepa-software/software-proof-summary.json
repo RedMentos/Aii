@@ -1,0 +1,55 @@
+{
+  "schema": "v13-action-jepa-software-proof-v1",
+  "software_tests": 17,
+  "test_status": "PASS",
+  "source_sha256": {
+    "scripts/action_jepa_objective.py": "1ef7488bb5e1f57473b5c123bd5b43e2f6a9a3c46132c859fe19c914a1100a6b",
+    "scripts/export_action_jepa_dataset.py": "ec48380c7b2fd44a74850bff4873ca1f47dc46840f59ebe1041585fb6fc9a261",
+    "tests/test_action_jepa_objective.py": "329ecb828d7b07694a497fcbe05ce2526a8d4b83398b757d8048c272fed0cb2e",
+    "tests/test_action_jepa_export.py": "4558bdcfd239e094318ee54d3b2babefe94393e4cd32702255bc2a2f57f847bb"
+  },
+  "current_plan": "../action-jepa-preregistered-plan-v2.json",
+  "plan_sha256": "94072d386e6f7f55dd972592bc97b78e6f1f4cae05f80fa132bd7efb16d476f1",
+  "seeds": [
+    {
+      "seed": 13,
+      "candidate_gate_pass": false,
+      "gates": {
+        "analytic_gradient": true,
+        "finite": true,
+        "deterministic": true,
+        "checkpoint_reload": true,
+        "noncollapse": true,
+        "predictive_gain_over_controls": false,
+        "fixed_reference_retention": true,
+        "observed_input_declared": false
+      },
+      "metrics_sha256": "e5e405ae71168343ec7798a64f875b6bde1fb8b0f877d0dbf72fd429bdf07308"
+    },
+    {
+      "seed": 21,
+      "candidate_gate_pass": false,
+      "gates": {
+        "analytic_gradient": true,
+        "finite": true,
+        "deterministic": true,
+        "checkpoint_reload": true,
+        "noncollapse": true,
+        "predictive_gain_over_controls": false,
+        "fixed_reference_retention": false,
+        "observed_input_declared": false
+      },
+      "metrics_sha256": "adadf64ef88879bd3afd47e4d483f75e818df62221d92b3aafc0373e082512e1"
+    }
+  ],
+  "authentic_preflight": {
+    "status": "UNAVAILABLE",
+    "reason": "Authentic native tap cache and capture manifest unavailable",
+    "receiver_authority": 0,
+    "canonical_architecture_complete": false
+  },
+  "native_model_started": false,
+  "actual_native_tap_quality_proof": false,
+  "receiver_authority": 0,
+  "canonical_architecture_complete": false
+}

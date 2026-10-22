@@ -17,6 +17,18 @@ from .lora_trainer import answer_hit,LoraTrainer
 
 ROLE='C3_LANGUAGE#sparse_memory'
 
+def merge_training_lineage(old,new):
+    """Preserve accumulated slot ownership and immutable authored fact bindings."""
+    bindings=dict(old.get('item_bindings',{}))
+    for mid,binding in new.get('item_bindings',{}).items():
+        if mid in bindings and bindings[mid]!=binding:raise ValueError('Sparse fact binding changed')
+        bindings[mid]=binding
+    forgotten=sorted(set(old.get('forgotten',[]))|set(new.get('forgotten',[])))
+    new['slot_items']={**old.get('slot_items',{}),**new.get('slot_items',{})}
+    new['slots']=list(old.get('slots',[]))+list(new.get('slots',[]))
+    new['forgotten']=forgotten;new['item_bindings']={k:v for k,v in bindings.items() if k not in forgotten}
+    return new
+
 FRESH_TASK_CONTEXT={"action_type":None,"external_tool_execution":False,"task_request":None,"unresolved_observer_hypotheses":[]}
 
 def live_system(cfg=None,memories=None):
@@ -85,7 +97,7 @@ class SparseMemoryAG6Trainer:
         out=tr.fit(items,cancel=cancel,deadline=deadline)
         if prev and out.get('artifact'):
             old=torch.load(prev,weights_only=False);new=torch.load(out['artifact'],weights_only=False)
-            new['slot_items']=dict(old.get('slot_items',{}),**new.get('slot_items',{}));new['slots']=list(old.get('slots',[]))+list(new.get('slots',[]))
+            merge_training_lineage(old,new)
             new['parent']=prev;torch.save(new,out['artifact']);out['hash']=file_hash(out['artifact'])
         native=None
         if out.get('artifact'):  # bound + served artifact = the native V13SMEM1 file (llama-server-mem); .pt stays for training
@@ -142,7 +154,8 @@ def forget_memory(store,memory_id):
     if cur.get('previous'):
         st=reg._load();c=st['active'][ROLE];q=c.get('previous')
         while q:
-            if Path(q['path']).is_file():q['sha256']=file_hash(q['path'])
+            if Path(q['path']).is_file():
+                q['sha256']=file_hash(q['path']);reg._bind_sidecar(q)
             q=q.get('previous')
         reg._save(st)
     store.log('sparse_memory_forget',None,{'memory_id':memory_id,'slots':n})

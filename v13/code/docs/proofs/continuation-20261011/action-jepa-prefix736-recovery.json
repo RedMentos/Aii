@@ -1,0 +1,10 @@
+{
+  "schema": "v13-native-prefix-recovery-v1",
+  "archive_sha256": "b86c7da6e5a2e1ed85c0eb2c016ee681dae1a23e584526bd0f74f7d3d78fee4f",
+  "registration_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+  "npz_sha256": "69b95532896de66fa7c6065bbf4d14e84c32a362c5e8e13d3b4340d177c4035a",
+  "recovered_rows": 736,
+  "raw_batches_verified": 46,
+  "higher_live_prefix_recovered": false,
+  "native_model_started": false
+}

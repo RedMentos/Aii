@@ -27,14 +27,21 @@ def percept_mode(cfg):
     """segment_mode fixed|percept|all: the A4 PerceptPacket uses event segments unless the operator chose 'fixed'."""
     return 'fixed' if cfg.get('segment_mode','percept')=='fixed' else 'event'
 OFFER_SCHEMA={'type':'object','properties':{'summary':{'type':'string'},'quotes':{'type':'array','items':{'type':'string'},'maxItems':3},'uncertainty':{'type':'string'},'needs_reentry':{'type':'boolean'}},'required':['summary','quotes','uncertainty','needs_reentry'],'additionalProperties':False}
-def offer_schema(tokens):
+def offer_schema(tokens,quote_min_chars=0):
     """OFFER_SCHEMA with string caps that fit the observer token budget, so a verbose body (B2 Qwen3.5 gist)
     closes its JSON instead of being cut off and discarded. ~2.2 chars/token (German + Qwen tokenizer, measured truncation at 3); split summary 45 %, quotes 2x20 %,
-    uncertainty 15 % of what is left after ~30 tokens of JSON syntax. BOOT estimate, not tuned."""
+    uncertainty 15 % of what is left after ~30 tokens of JSON syntax. BOOT estimate, not tuned.
+    quote_min_chars (cfg offer_quote_min_chars, 0 = off) raises the quote cap so one whole source sentence fits."""
     chars=max(110,int((int(tokens)-30)*2.2))
     s=json.loads(json.dumps(OFFER_SCHEMA));pr=s['properties']
     pr['summary']['maxLength']=max(48,int(chars*.45));pr['uncertainty']['maxLength']=max(16,int(chars*.15))
     pr['quotes']['maxItems']=2;pr['quotes']['items']['maxLength']=max(24,int(chars*.2))
+    if quote_min_chars>pr['quotes']['items']['maxLength']:
+        # Thread O STEP2 producer ablation: 57-char quotes cut every earlier rule sentence (~80 chars) before its last
+        # rule ("... Local-"). A longer quote takes its room from the summary, so the worst case stays within budget.
+        q=min(int(quote_min_chars),(chars-48-pr['uncertainty']['maxLength'])//2)  # never beyond the budget
+        if q>pr['quotes']['items']['maxLength']:
+            pr['quotes']['items']['maxLength']=q;pr['summary']['maxLength']=chars-2*q-pr['uncertainty']['maxLength']
     return s
 # WP-KAL2 (2026-10-09, bench-results/KALIBRIERUNG.md): the 'hypothesis' wording made bodies restate the task
 # ("requires adding 46 and 62") instead of solving it: B1 named the result in 5 % of checkable tasks, 'solve' in 37.5 %.
@@ -46,6 +53,38 @@ def offer_instructions(policy,style=OFFER_STYLE):
     role='detail analyst. Check exact details, calculations and contradictions.' if policy=='B1_DETAIL' else 'gist analyst. Identify the main goal, constraints and broader context.'
     return ('You are an internal '+role+' Return JSON only. '+OFFER_SUMMARY[style]+' quotes must be exact substrings of the supplied source. '
             'Use at most two short quotes. uncertainty is concise. needs_reentry indicates a material unresolved issue. Keep all fields short.')
+def quote_span(quote,source,context_chars=0):
+    """(start,end) of a body quote inside source, or None. context_chars 0 (live): exact substring only.
+    context_chars>0 (cfg offer_quote_context_chars, 2026-10-20 STEP2 B2->C3 transport): a quote that differs from the
+    source only in letter case or whitespace still verifies, and a quote of >= 12 chars grows to its whole sentences,
+    then to neighbouring sentences of the same source while the span stays within context_chars. The quote is only a
+    pointer; the transported text is always the exact source span (Qwen B2 split, cut or re-cased the earlier
+    rule, so its full text reached C3 in only 7/30 STEP2 retain offers)."""
+    if not isinstance(quote,str) or not quote:return None
+    if quote in source:a=source.index(quote);b=a+len(quote)
+    elif not context_chars:return None
+    else:
+        q=' '.join(quote.split()).casefold()
+        if len(q)<12:return None
+        flat=[];at=[]
+        for i,ch in enumerate(source):
+            if ch.isspace() and i and source[i-1].isspace():continue
+            piece=' ' if ch.isspace() else ch.casefold();flat.append(piece);at+=[i]*len(piece)
+        j=''.join(flat).find(q)
+        if j<0:return None
+        a,b=at[j],at[j+len(q)-1]+1
+    if not context_chars or b-a<12:return a,b
+    sents=[(m.start(),m.end()) for m in re.finditer(r'\S.*?(?:[.!?](?=\s|$)|$)',source,re.S)]
+    inside=[k for k,(s,e) in enumerate(sents) if e>a and s<b]
+    if not inside:return a,b
+    i,k=inside[0],inside[-1]
+    if sents[k][1]-sents[i][0]>context_chars:return a,b
+    grew=True
+    while grew:
+        grew=False
+        if k+1<len(sents) and sents[k+1][1]-sents[i][0]<=context_chars:k+=1;grew=True
+        if i>0 and sents[k][1]-sents[i-1][0]<=context_chars:i-=1;grew=True
+    return sents[i][0],sents[k][1]
 class Cognition:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
     def tap(self,role,e,source_ref,deadline):
@@ -172,10 +211,11 @@ class Cognition:
             if policy=='B1_DETAIL':
                 win=bodyview.detail_windows(self.s,e['event_id'],text,e['source_ref'])
                 if win:query['detail_windows']=[w['text'] for w in win];bv_refs+=[w['source_ref'] for w in win];bv['detail_windows']=len(win)
-            bs=bodyview.body_state(self.r,e,role,text)
+            # Thread O STEP2 producer ablation: body_state hijacked 41/50 B2 offers; cfg b2_offer_body_state=False leaves it out for B2.
+            bs=None if policy=='B2_GIST' and not self.r.cfg.get('b2_offer_body_state',True) else bodyview.body_state(self.r,e,role,text)
             if bs:query['body_state']=bs['view'];bv_refs.append(bs['source_ref']);bv['body_state_ref']=bs['source_ref']
         except Exception as exc:self.s.log('bodyview_unavailable',e['event_id'],{'stage':'offer','error':type(exc).__name__})
-        if bv_refs:instructions+=' detail_windows are exact source spans attention marked as important; body_state is your own world/self/skill state, not a fact.'
+        if bv_refs:instructions+=' detail_windows are exact source spans attention marked as important; body_state is own world/self/skill state, never source evidence. Its world.mode counts only completed own digital actions; it says nothing about available source knowledge. self.external_tools limits tool execution, not reading supplied text or reasoning about its constraints.'
         local_gist=None
         if policy=='B1_DETAIL' and (focus or (previous.get('offer') or {}).get('needs_reentry')):  # WP-U7 §3.2A: A bundles fine context for a detail re-entry
             try:
@@ -201,7 +241,7 @@ class Cognition:
                 instructions+=' gist_slots are exact source groups in order (older parts are coarser); quotes must be exact substrings of them.'
         if role=='B2_GIST' and policy=='B2_GIST':
             query['earlier_context']=[x['native_context'] for x in context]
-            instructions+=' Earlier context contains exact source excerpts and fallible prior hypotheses. Never treat a prior hypothesis as a fact. Quotes may cite only the current source or an exact source excerpt.'
+            instructions+=' Earlier context separates exact source excerpts from fallible prior hypotheses. Use relevant earlier source excerpts when current text leaves a rule unstated; prefer an explicit current-source revision when the same rule changes. Never treat a prior hypothesis as a fact. Select short exact quotes carrying the source rules needed by your summary; only your verified quotes, not the full earlier context, are passed to the answer component. If required evidence is absent, state that uncertainty and request re-entry rather than inventing it. Quotes may cite only current source text or an exact earlier source excerpt, never own-state or hypotheses.'
         if broadcast:
             query['executive_broadcast']={k:broadcast[k] for k in ['state_version','goal','constraints','source_refs']}
             pf=broadcast.get('permission_flags') or {}  # WP-T2: bodies see the Age envelope C1 granted (stage + rights above Age 0), never a way to widen it
@@ -230,7 +270,7 @@ class Cognition:
         runner=None;started=time.monotonic();attempt_status='ERROR'
         try:
             runner=self.r.pool.get(role)
-            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],offer_schema(self.r.cfg['observer_tokens'])));attempt_status='FINAL'
+            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],offer_schema(self.r.cfg['observer_tokens'],**({'quote_min_chars':q} if (q:=self.r.cfg.get('offer_quote_min_chars',0)) else {}))));attempt_status='FINAL'
         finally:
             metrics=dict(runner.last_metrics) if runner else {'status':'ERROR','duration_s':time.monotonic()-started}
             self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':metrics.get('status',attempt_status),'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'state_policy':query_packet['state_policy']})
@@ -238,14 +278,63 @@ class Cognition:
         check(self.r.cancel_event,deadline)
         if set(obj)!=set(OFFER_SCHEMA['required']) or not isinstance(obj['needs_reentry'],bool) or not isinstance(obj['quotes'],list) or not all(isinstance(obj[k],str) for k in ['summary','uncertainty']):raise ValueError('Offer-Schema ungültig')
         refs=[];rejected=0;sources=[(text,e['source_ref'])]+[(x['native_context']['exact_source_excerpt'],x['source_ref']) for x in context]
+        wide=self.r.cfg.get('offer_quote_context_chars',0)
         for quote in obj['quotes'][:3]:
+            if wide:  # quote as pointer; the exact-substring lines below stay byte-identical for closed harnesses
+                match=next(((source,ref,span) for source,ref in sources if (span:=quote_span(quote,source,wide))),None)
+                if not match:rejected+=1;continue
+                source,base,(a,b)=match;ref=base|{'char_start':base['char_start']+a,'char_end':base['char_start']+b}
+                if ref not in refs:self.s.read_source(ref);refs.append(ref)  # two quotes may point at the same sentences
+                continue
             match=next(((source,ref) for source,ref in sources if isinstance(quote,str) and quote and quote in source),None)
             if not match:rejected+=1;continue
             source,base=match;start=base['char_start']+source.index(quote);ref=base|{'char_start':start,'char_end':start+len(quote)};self.s.read_source(ref);refs.append(ref)
         p=packet('OfferPacket',role,e['event_id'],e['brain_generation_id'],[e['source_ref']],role=role,based_on_state_version=version,deadline_monotonic_ns=int(valid_until*1e9),compute_deadline_monotonic_ns=int(deadline*1e9),evidence_refs=refs,offer=obj,confidence=0.,confidence_status='UNCALIBRATED',rejected_quotes=rejected,model_revision=self.r.models.revision(role),native_metrics=runner.last_metrics,query_packet_id=query_packet['packet_id'],broadcast_packet_id=query_packet['broadcast_packet_id'],peer_message_packet_id=peer_id,source_view_width_chars=width)
+        if wide:p['quote_context_chars']=wide  # analyst_context accepts the widened spans only for this offer
         p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])
         p['provenance'] += query_packet['context_source_refs']
         self.s.add_packet('OfferPacket',p);self.retain_body_offer(p);return p
+    def analyst_context(self,offers,e,version):
+        """Render selected hypotheses and only their source-verified quotations.
+
+        An exact quote proves transport of source text, not semantic truth. A
+        retained source merely available to a body is never copied wholesale.
+        Persisted Query/Offer bindings, current event/generation/version, exact
+        quote equality and source digest/range are rechecked before delivery.
+        """
+        rendered=[]
+        for supplied in offers:
+            row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",(supplied.get('packet_id'),))
+            if not row:raise ValueError('Consumer offer is not stored')
+            offer=json.loads(row['payload'])
+            if (offer!=supplied or not offer_is_fresh(offer,e['event_id'],e['brain_generation_id'],version)
+                    or offer.get('model_revision')!=self.r.models.revision(offer['role'])):
+                raise ValueError('Consumer offer binding changed or expired')
+            query_row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='QueryPacket'",(offer.get('query_packet_id'),))
+            if not query_row:raise ValueError('Consumer query binding missing')
+            query=json.loads(query_row['payload'])
+            if (query['event_id']!=e['event_id'] or query['brain_generation_id']!=e['brain_generation_id']
+                    or query['target_role']!=offer['role'] or query.get('based_on_state_version')!=version
+                    or query['source_refs']!=[e['source_ref']]
+                    or query.get('context_source_refs',[])!=offer.get('context_source_refs',[])):
+                raise ValueError('Consumer query scope changed')
+            allowed=[e['source_ref']]+query.get('context_source_refs',[])
+            verified=[]
+            for ref in offer['evidence_refs']:
+                bound=any(all(ref.get(k)==base.get(k) for k in ('source_id','sha256','modality'))
+                    and base['char_start']<=ref['char_start']<ref['char_end']<=base['char_end'] for base in allowed)
+                if not bound:raise ValueError('Consumer quote outside supplied source scope')
+                text=self.s.read_source(ref);wide=offer.get('quote_context_chars',0)
+                if wide and text not in offer['offer'].get('quotes',[]) and len(text)<=wide and any(quote_span(q,text,wide) for q in offer['offer'].get('quotes',[])):
+                    # 2026-10-21: an exact source span the offered quote points into (live turn failed 'differs from offered quote' without this)
+                    verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE','semantic_truth_authority':False});continue
+                if text not in offer['offer'].get('quotes',[]):raise ValueError('Consumer quote differs from offered quote')
+                verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SUBSTRING_ONLY',
+                                 'semantic_truth_authority':False})
+            rendered.append({'role':offer['role'],'offer_packet_id':offer['packet_id'],
+                'hypothesis':{k:offer['offer'][k] for k in ('summary','uncertainty','needs_reentry')},
+                'hypothesis_authority':'MODEL_HYPOTHESIS_NOT_FACT','verified_quotes':verified})
+        return rendered
     def communicate(self,offer,receiver,fast=None):
         if {offer['role'],receiver}!={'B1_DETAIL','B2_GIST'}:raise ValueError('Ungültige B3-Richtung')
         channel=self.r.cfg['channel'];proposal=channel;applied=False;cal=None

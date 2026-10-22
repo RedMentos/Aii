@@ -6,8 +6,11 @@ from .common import dumps,atomic_write,safe_text,file_hash
 from .config import KNOBS,save_config
 from .models import ROLES
 from . import age as agectl
+def obsched_names():
+    from .observer_schedule import SCHEDULES
+    return SCHEDULES
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
-:help / :status / :doctor [full] / :ledger / :schemas / :resources / :models / :brain / :logs [runner]
+:help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
@@ -30,7 +33,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :export dataset [session|all]
 :replay [Anzahl] / :replay status
 :consolidate semantic|procedural / :consolidate status / :consolidate rollback <ID>
-:route auto|simple|detail|gist|both / :observers background|off
+:route auto|simple|detail|gist|both / :observers background|off|A_THEN_B_SEQUENTIAL|B_THEN_A_SEQUENTIAL|ALWAYS_BOTH_ASYNC|JEF_FIRST_THEN_BOTH|SAMPLED_OBSERVER|ON_DEMAND_REENTRY
 :decode [server|same_causal_zero|same_causal] / :sampling [anti_echo|legacy] / :semantic [status|off|shadow|on|auto] / :episodes [status|list|cut|graph <id>|relation <a> <b>|forgetting] / :live / :register [summary|drift|paths|declared|<Präfix>] / :gates [summary|all|<Gate>] / :drift [status|probes|freeze <Set>|refreeze <Set> <Grund>|sdft] / :admission [status|train|active|shadow|table] / :duplex [status|auto|interrupt|off] / :fabric [report|record] / :image [status|add <Pfad>|list|describe [id] [g|rIJ|hl|hr|ht|hb]|train|look [id]|locate <id> <Text>|forget <id>] / :collapse [all]
 :effort [disabled|low|adaptive|high|max] (Reasoning-Effort/Body-Wake; ohne Wert: Status)
 :focal (JEF-Fokusschleife: Workspace-Slots, letzte Runden, Inquisition P1/P2, C5-Auswahl)
@@ -54,7 +57,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :homeostasis [status|run|shadow|active] (WP-U2 Homöostase: Drift-/Sättigungs-Gate + langsame Pfad-Gains; aktiv nur durch Nutzer)
 :attention [status|edge <Kante>|shadow|active] (WP-N5 Aufmerksamkeit, thalamische Gain, A4)
 :ctxos [status|last|shadow|active|layout <L>|knob <N> <W>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <W>] (WP-N7 Context OS, Cache-Policy)
-:callosum [status|shadow|active] (WP-J B3-Kanal-Policy, signed_gain) / :gist [status|shadow|active|preview <Text>] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
+:callosum [status|shadow|active|degrade|promote <Richtung>] (WP-J B3-Kanal-Policy, signed_gain; WP-N19 B3-H10-Degradation) / :gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots; readout = nativer B2-Tap-Konsument, SHADOW) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :toolforecast [status|shadow|off|score] (Werkzeug-Folgen-Prädiktor vor der Wirkung, SHADOW, Runden 7/8) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
 :jef [status|last|shadow|active|query|outcome <Event> <0..1>] (WP-N3 JEF-Broadcast-Cache, Offer-Nutzen, Top-down-Query)
 :self [status|model|body|messages|edit list|edit approve|reject|rollback <Id>] (WP-N9 Selbstmodell, Körpergefühl, Corollary, Self-Messages/-Edits)
 :download all|needle|language|body|gist|embedding / :import model <Rolle> <Pfad>
@@ -112,6 +115,9 @@ class Operator:
             return operator_command(r,args)
         if cmd=='gist':
             from .gist import operator_command
+            return operator_command(r,args)
+        if cmd=='toolforecast':
+            from .toolforecast import operator_command
             return operator_command(r,args)
         if cmd=='tx':
             from .transaction import operator_command
@@ -182,7 +188,10 @@ class Operator:
         if cmd=='pause':r.pause();return 'Pausiert'
         if cmd=='resume':r.resume();return 'Fortgesetzt'
         if cmd=='status':return dumps({'session':r.session,'job':r.current,'queued':s.queue_stats()['count'],'paused':r.paused,'generation':s.generation_id,'learning':r.cfg['learning_mode'],'age':agectl.controller(r).system_stage()})
-        if cmd=='resources':return dumps(r.resources())
+        if cmd=='resources':
+            from . import resource_modes  # §97.2 GREEN/YELLOW/ORANGE/RED
+            if args:return dumps(resource_modes.command(r,args))
+            snap=r.resources();r.guard.update(snap);return dumps(snap|{'resource_mode':resource_modes.report(r)})
         if cmd=='brain':return dumps(s.generation())
         if cmd=='models':return dumps(r.models.installed)
         if cmd=='self':return dumps(r.world.self_state())
@@ -354,6 +363,7 @@ class Operator:
             key={'route':'route_override','observers':'observer_mode','channel':'channel','learning':'learning_mode'}[cmd]
             if len(args)!=1:raise ValueError('Ein Wert erforderlich')
             value={'record':'RECORD_ONLY','shadow':'SHADOW_UPDATE','commit':'APPROVED_COMMIT'}.get(args[0],args[0]) if cmd=='learning' else args[0]
+            if cmd=='observers' and args[0].upper() in obsched_names():key,value='observer_schedule',args[0].upper()  # §22.2.4 deployment knob
             cfg=r.cfg|{key:value};save_config(r.home,cfg);r.cfg.update(cfg);return key+' = '+value
         if cmd=='budget':
             if len(args)!=2 or args[0] not in KNOBS:raise ValueError(':budget Name Wert; :budget listet Bereiche')

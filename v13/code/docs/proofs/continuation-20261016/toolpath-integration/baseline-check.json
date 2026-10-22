@@ -1,0 +1,18 @@
+{
+  "baseline_commit": "1941d07afeb57299d7d5a466fd1eb44ec2569dfe",
+  "list_proposer_absent": true,
+  "list_registry_absent": true,
+  "listarith_module_absent": true,
+  "peer_owned_source_observations": {
+    "v13/code/v13/agi/__init__.py": {
+      "edited_by_this_package": false,
+      "matches_baseline": true,
+      "sha256": "91931ed46c1212a42a96eb567ed8afa409078992a6064a4e45329ff938f1a4f5"
+    },
+    "v13/code/v13/toolforecast.py": {
+      "edited_by_this_package": false,
+      "matches_baseline": false,
+      "sha256": "2fb07f2797190179d9cd395c4a6cdda5974f20ee1a79194e4640b98a7296f29f"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "v13_closed_native_runner_bundle_inventory_v1",
+  "path": "/workspace/scratch/5a9214d3f329/deliverables/native-runner-b10964-linux-x86_64.closed.tar.gz",
+  "sha256": "cfc19c687a5874e3e8294569139975e1228139f5007b0b7a9c594b530f051069",
+  "bytes": 6453915,
+  "unique_elf_bytes": 18503280,
+  "unique_elf_files": 8,
+  "library_entries": 19,
+  "archive_entries": 26,
+  "source_bytes": 0,
+  "model_bytes": 0,
+  "phone_proof": false,
+  "cache_only": true
+}

@@ -9,6 +9,7 @@ from v13.memory import Memory
 from v13.executive import Executive,MAX_EVENTS
 from v13.contracts import packet
 from v13.common import atomic_write
+import resource_pins
 
 class ExecutiveChecks(unittest.TestCase):
     def setUp(self):
@@ -110,7 +111,7 @@ class ExecutiveRuntimeChecks(unittest.TestCase):
         report=self.op.run(':force-report');self.assertIn('CURRENT_OUTPUT_SNAPSHOT',report);self.assertIn(row['text'],report)
         self.assertEqual(self.r.last_answer(),row)
     def test_c2_resource_guard_abstains_without_native_or_head_execution(self):
-        e=self.r.store.event(self.r.session,'Hallo');self.r.executive.begin(e,self.r.session,self.r.cfg);self.r.guard.state='PRESSURE'
+        e=self.r.store.event(self.r.session,'Hallo');self.r.executive.begin(e,self.r.session,self.r.cfg);self.assertEqual(resource_pins.pin(self.r,'PRESSURE'),'PRESSURE')
         def forbidden(*args,**kwargs):raise AssertionError('Native execution was not permitted')
         self.r.needle.control=forbidden;self.r.learner.propose=forbidden
         route,info=self.r._route('Hallo',e,time.monotonic()+1)

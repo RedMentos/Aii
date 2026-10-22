@@ -33,6 +33,7 @@ RIGHTS={'direct_route':0,'episodic_memory_write':0,'simple_feedback':0,'small_sh
  'integrate_new_body':5,'body_swap':5,'structural_modification':5}
 STRUCTURAL={'integrate_new_body','body_swap','structural_modification'}
 RESOURCE_BLOCKED={'RED':{'short_dream','route_exploration','long_loops','own_sleep_planning','self_initiative','active_info_search','tool_learning','raw_body_attempt'},
+                  'ORANGE':{'short_dream','long_loops','route_exploration','self_initiative','active_info_search','tool_learning'},  # §97.2: pause shadow learning
                   'YELLOW':{'long_loops','route_exploration','self_initiative'}}
 NEVER={'edit_hard_rules','exceed_user_stage_cap'}
 # WP-T2 §17.4: the capability whose stage governs a right (ceiling = min(system, capability)); unlisted rights follow the system stage.
@@ -190,6 +191,7 @@ class AgeControl:
             lo,hi=ranges[stage];val=lo+(hi-lo)*m
             out[k]=int(round(val)) if isinstance(lo,int) and isinstance(hi,int) else round(val,6)
         if resource_mode=='RED':out.update(dream_seconds=0,replay_items=0,exploration_rate=0,own_loops=0)
+        elif resource_mode=='ORANGE':out.update(dream_seconds=0,replay_items=0,exploration_rate=0)  # §97.2 ORANGE: no replay/dream, Sleep C only
         out['autonomous_effort_max']=EFFORT_LEVELS[int(out['autonomous_effort_max'])]
         mm=self._subject(st,capability)['maturity']
         out['teacher_reliance']=round(1-.15*stage-.1*mm['trust'],6)

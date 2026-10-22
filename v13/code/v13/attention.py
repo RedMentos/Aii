@@ -182,6 +182,17 @@ class Attention:
             scaffold=r['priority']*g[TARGET_GAIN[r['target']]]/max(g.values());learned=self._learned(st,r)
             score=scaffold*(1+LEARNED_MAX*learned) if active else scaffold
             scored.append((score,scaffold,learned,r))
+        # Compare the actual learned ranking with the scaffold on the same
+        # eligible requests. Delivery providers still run only once below;
+        # a ranking comparison supplies no counterfactual outcome label.
+        eligible=[x for x in scored if x[3]['event_id']==event_id
+                  and (x[3].get('expires_at') is None or x[3]['expires_at']>=now)
+                  and (x[3]['resolution']!='teacher_view' or stage==0)]
+        if any((st['policy'].get(x[3]['reason']+'|'+x[3]['target']) or {}).get('n',0)>=5 for x in eligible):
+            from .authority import observe
+            base=sorted(eligible,key=lambda x:(-x[1],x[3]['packet_id']))
+            proposed=sorted(eligible,key=lambda x:(-x[1]*(1+LEARNED_MAX*x[2]),x[3]['packet_id']))
+            observe(self.s,'attention',[x[3]['packet_id'] for x in base],[x[3]['packet_id'] for x in proposed])
         scored.sort(key=lambda x:(-x[0],x[3]['packet_id']));responses=[]
         for score,scaffold,learned,r in scored:
             status,detail,payload='GRANTED',None,None

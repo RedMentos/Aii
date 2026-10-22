@@ -38,6 +38,7 @@ def calc(expression):
 class ToolSpec:
     def __init__(self,name,fn,risk='READ_LOCAL',reversible=True,right='simple_tool_choice',description='',schema=None,undo=None,preview=None):
         if risk not in RISKS:raise ValueError('risk')
+        if risk!='READ_LOCAL' and any(str(v).rstrip('?')=='text' for v in (schema or {}).values()):raise ValueError('text args only for READ_LOCAL')  # WP-W2c
         from ..transaction import valid_name
         self.name=valid_name(name);self.fn=fn;self.risk=risk;self.reversible=reversible;self.right=right;self.description=description
         self.schema=schema;self.undo=undo  # WP-K: typed argument schema {'arg':'str|int|float|bool|secret[?]'}, compensating action
@@ -50,6 +51,10 @@ class ToolRegistry:
         self.register(ToolSpec('calc',calc,description='Arithmetik ohne eval',schema={'expression':'str'}))
         from ..transaction import sandbox_note_tool
         self.register(ToolSpec('sandbox_note',*sandbox_note_tool(store.home)))  # WP-K: first WRITE_LOCAL tool, sandboxed + undo
+        from . import eligibility  # WP-W2c: deterministic budget/deadline/locality recipe, rule-anchored guard
+        self.register(ToolSpec('eligibility',eligibility.tool,description='Eignung/Budget-Rezept (deterministisch, Regel-verankert)',schema=eligibility.SCHEMA))
+        from . import listarith  # R4 part 6: model reads listed values, fixed recipe computes (sum, max-min)
+        self.register(ToolSpec('list_arith',listarith.tool,description='Summe/Differenz über aufgezählte Werte (Rezept, Zahlen-Wächter)',schema=listarith.SCHEMA))
     def register(self,spec):self.tools[spec.name]=spec
     def enable(self,name,on=True):
         """User permission per tool (§17.3). Default: nothing enabled."""
@@ -107,13 +112,17 @@ class ToolRegistry:
         a=T.execute(a['id'],spec.fn)
         tx.update(action_tx=a['id'],status='EXECUTED' if a['state']=='SUCCEEDED' else 'FAILED',result=a['result'],error=a['error'],duration_s=a.get('duration_s'))
         if self.on_outcome:
-            if tx.get('event_id'):  # IH-H13: an outcome inside a running turn stays provisional until that turn is FINAL
+            if tx.get('event_id') and not self._turn_ended(tx['event_id']):  # IH-H13: an outcome inside a running turn stays provisional until that turn is FINAL
                 SINKS['tool_outcome']=self.on_outcome
                 try:Provisional(self.s).put(tx['event_id'],'tool_outcome',dict(tx));return tx
                 except Exception:pass
             try:self.on_outcome(tx)
             except Exception:pass
         return tx
+    def _turn_ended(self,event_id):
+        """A call approved after its proposing turn ended would wait for a settle that never comes (TTL tombstone).
+        Its outcome is a real, human-approved effect, not revisable turn content, so it goes to grounding directly."""
+        return self.s.one("SELECT 1 FROM messages WHERE event_id=? AND role='assistant' AND status IN ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED') LIMIT 1",(event_id,)) is not None
     def _save(self,tx,replace=False):
         def f(st):
             if replace:st['calls']=[c for c in st['calls'] if c['id']!=tx['id']]

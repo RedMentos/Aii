@@ -1,0 +1,58 @@
+{
+  "schema": "v13-dream2-serialization-pause-v1",
+  "status": "PAUSED_FOR_SERIAL_HEAVY_JOBS",
+  "paused_at": "2026-10-11T04:19:35Z",
+  "observed_proc_pid": 31866,
+  "observed_namespace_pid": 6,
+  "session_id": 43460,
+  "session_exit_code": 130,
+  "worker_reaped": true,
+  "completed_arms": 2,
+  "completed_pairs": [
+    [
+      13,
+      "none"
+    ],
+    [
+      13,
+      "replay_exact"
+    ]
+  ],
+  "unfinished_arm": {
+    "seed": 13,
+    "arm": "dream_validated",
+    "phase": "B",
+    "training_progress": {
+      "steps": 10,
+      "final_ce": 0.022822588147391798,
+      "items": 16
+    },
+    "phase_a": {
+      "steps": 12,
+      "final_ce": 0.01672,
+      "items": 4
+    },
+    "after_a": {
+      "A": {
+        "recall": 1.0,
+        "paraphrase": 0.75
+      },
+      "B": {
+        "recall": 0.0,
+        "paraphrase": 0.0
+      },
+      "near_miss_leak": 0.6,
+      "probe_retention": 0.75,
+      "kl_to_base": 1.1130312408010166,
+      "forgotten": [
+        "What colour is the sky on a clear day?",
+        "Which planet do we live on?"
+      ]
+    }
+  },
+  "resume_report_sha256": "be0c2ed6d90d8d862bdd85d361e9c1f617dbc734dd3364cb299ba536fd5dd778",
+  "log_snapshot_sha256": "28c3f74b78b1f306e5852bfb3629d8524e0ad1073ec0f4207fa005eefedd37eb",
+  "reason": "Root observed native capture SIGKILL-9 and cgroup OOM counter increments under8GiB; heavy jobs now serialized. Dream interrupted gracefully without changing its bound protocol. Partial active arm restarts from unchanged base under --resume.",
+  "canonical_gate_pass": false,
+  "phone_measured": false
+}

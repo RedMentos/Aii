@@ -1,0 +1,109 @@
+{
+  "status": "LINUX_NATIVE_BACKGROUND_EXECUTION_COMPLETE",
+  "native_probe_status": "SMOKE_PASS",
+  "native_probe_assessment": {
+    "claim_limit": "Native smoke is not stable JEF proof, complementary utility, sustained RSS, thermal or energy proof.",
+    "configuration_recorded": true,
+    "errors": [],
+    "phone_smoke_valid": false,
+    "smoke_valid": true,
+    "step1_complete": false,
+    "step2_complete": false
+  },
+  "model_revisions": {
+    "B1_DETAIL": "6767265158422fb8a19c62ceb45f16f05363615b",
+    "B2_GIST": "8fea620810c4afa23dd6443f999a48574c1611a3",
+    "C2_CONTROL": "b274efcb211a9eef48c9a88da4b43bd569696a39",
+    "C3_LANGUAGE": "657e078c94084481950a2d555a941481f715536b",
+    "TEACHER": "unavailable"
+  },
+  "model_hashes": {
+    "body": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+    "gist": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+    "language": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "needle": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38"
+  },
+  "needle_worker_sha256": "4ad0a44bfdab215937533f20952f7828b53da21069568b2c79e772bbccba05a2",
+  "native_runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "runner_source_sha256": "c520107c35b959051f031ab581443c6b8c84da3d8fc67b146dbc3e8a9f768d91",
+  "background_rows": [
+    {
+      "route_override": "simple",
+      "status": "FINAL",
+      "elapsed_s": 27.39531699500003,
+      "output": "Remaining budget: Option Red (110 euros) vs. Option Blue (110 euros)  \nTrade-off: Option Blue is cheaper but requires a longer time commitment.",
+      "native_output_role": "C3_LANGUAGE",
+      "ttft_s": 2.1387920080001095,
+      "sampled_peak_rss_bytes": 453439488,
+      "offer_roles": [
+        "B1_DETAIL",
+        "B2_GIST",
+        "B1_DETAIL"
+      ],
+      "selected_offer_ids": [
+        "pkt_2aa54afac32f43888b26f1e04b35a803",
+        "pkt_c2d547757f824ed498b9b3d6ace14cc9",
+        "pkt_9353ae02f1ae4b10931c5bb8fc1a4d7f"
+      ],
+      "all_audit_checks_pass": true,
+      "fallback": null,
+      "resource_fallback": null
+    },
+    {
+      "route_override": "detail",
+      "status": "FINAL",
+      "elapsed_s": 30.94827252200048,
+      "output": "The remaining budget for Option Red is 40 euros, while Option Blue leaves 30 euros. The trade-off involves choosing between a longer duration (Option Red) for potentially more work or a shorter duration (Option Blue) for quicker results.",
+      "native_output_role": "B1_DETAIL",
+      "ttft_s": 5.88405318399964,
+      "sampled_peak_rss_bytes": 1391558656,
+      "offer_roles": [
+        "B1_DETAIL",
+        "B2_GIST",
+        "B1_DETAIL"
+      ],
+      "selected_offer_ids": [
+        "pkt_3aae7c50aca24e63b42c04cb8f6c3d74",
+        "pkt_43289a1fd63a433cbb107283892a4217",
+        "pkt_54ecef4a1bad43569f2c9a9a37186024"
+      ],
+      "all_audit_checks_pass": true,
+      "fallback": null,
+      "resource_fallback": null
+    },
+    {
+      "route_override": "both",
+      "status": "FINAL",
+      "elapsed_s": 31.953888885000197,
+      "output": "The remaining budget for Option Red is 40 euros, while Option Blue leaves 30 euros. The trade-off involves choosing between a longer duration (Option Red) for potentially more work or a shorter duration (Option Blue) for quicker results.",
+      "native_output_role": "B1_DETAIL",
+      "ttft_s": 5.704180201999407,
+      "sampled_peak_rss_bytes": 1372020736,
+      "offer_roles": [
+        "B1_DETAIL",
+        "B2_GIST",
+        "B1_DETAIL"
+      ],
+      "selected_offer_ids": [
+        "pkt_548c4a11f4fd4847bc846d323d879258",
+        "pkt_968be6c7280d4fa39816606c5a02c376",
+        "pkt_03edbdbe4b0f4f14808dd9e9a904c27b"
+      ],
+      "all_audit_checks_pass": true,
+      "fallback": null,
+      "resource_fallback": null
+    }
+  ],
+  "initial_observer_off_artifact_preserved": "report.json",
+  "integrity_errors": [],
+  "full_runner_proof": false,
+  "phone_measured": false,
+  "step1_complete": false,
+  "step2_complete": false,
+  "quality_pass_claimed": false,
+  "quality_limits": [
+    "Remaining Blue budget must be10euros, Red40; do not score any occurrence of10as semanticcorrectness.",
+    "Initial detail/both outputs falsely said Blueuses10eurosmoreupfront; these remain preserved failures.",
+    "Execution and audit PASS do not imply answercorrectness/complementarity/training."
+  ]
+}

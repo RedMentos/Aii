@@ -1,0 +1,18 @@
+{
+  "schema": "v13-action-jepa-post-failure-resource-diagnostic-v1",
+  "first_capture_completed_rows": 384,
+  "server_returncode": "UNAVAILABLE_NOT_PERSISTED",
+  "server_signal": "UNAVAILABLE_NOT_PERSISTED",
+  "native_stderr_bytes": 0,
+  "memory": {
+    "/sys/fs/cgroup/memory.events": "low 0\nhigh 0\nmax 35786\noom 4\noom_kill 1\noom_group_kill 0\n",
+    "/sys/fs/cgroup/memory.current": "5597245440\n",
+    "/sys/fs/cgroup/memory.max": "8589934592\n",
+    "/sys/fs/cgroup/memory.peak": "8590688256\n"
+  },
+  "oom_attributed_to_this_worker": false,
+  "next_start_blocked_by_changed_source": "v13/bodyview.py",
+  "native_resume_started": false,
+  "semantic_quality_proven": false,
+  "receiver_authority": 0
+}

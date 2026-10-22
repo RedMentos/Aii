@@ -2,6 +2,7 @@
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 from v13.common import dumps,file_hash,uid
 from v13.runtime import Runtime
 from v13.operator import Operator
@@ -37,11 +38,23 @@ class TraceTests(Base):
         self.assertEqual(N.Neuromod(self.r.store).report('route')['paths']['route']['eligibility'],self.n.gate('route')['eligibility'])
         self.assertEqual(self.r.store.state(N.KEY)[0]['paths']['route']['activations'],1)
     def test_detailed_traces_are_selective(self):
-        for i in range(30):self.n.touch('world_predictor',self.ev(str(i)))
+        # Fixed event IDs exercise the real SHA sampler. Random UUIDs can
+        # legitimately select eight or more of 30 traces and hit the cap.
+        # For these IDs/rate the fixed selected event is 23.
+        event_ids=iter(range(1,31))
+        def fixed_event(prefix):return 'evt_'+format(next(event_ids),'032x') if prefix=='evt' else uid(prefix)
+        with patch('v13.store.uid',side_effect=fixed_event):
+            for i in range(30):self.n.touch('world_predictor',self.ev(str(i)))
         self.n.touch('route',self.ev('h'),authority='EXPLICIT_HUMAN_LEARN')
         self.n.sync();paths=self.r.store.state(N.KEY)[0]['paths']
-        self.assertLess(len(paths['world_predictor']['details']),N.MAX_DETAILS)
+        self.assertEqual([d['event_id'] for d in paths['world_predictor']['details']],['evt_'+format(23,'032x')])
         self.assertEqual(paths['route']['details'][-1]['class'],'human_feedback')
+    def test_detailed_trace_cap_keeps_latest_mandatory_human_observations(self):
+        events=[self.ev(str(i)) for i in range(N.MAX_DETAILS+3)]
+        for event in events:self.n.touch('route',event,authority='EXPLICIT_HUMAN_LEARN')
+        self.n.sync();details=self.r.store.state(N.KEY)[0]['paths']['route']['details']
+        self.assertEqual([d['event_id'] for d in details],events[-N.MAX_DETAILS:])
+        self.assertTrue(all(d['class']=='human_feedback' for d in details))
 
 class ModulatorTests(Base):
     def test_credit_map_projects_unpathed_modulator_onto_eligible_paths_of_same_event(self):

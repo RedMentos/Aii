@@ -1,0 +1,32 @@
+{
+  "binding": {
+    "preregistration_sha256": "c3c696a26843cfb93f906d1ddab2109098076894e48b9254bc434b2b011661e6"
+  },
+  "canonical_gate_pass": false,
+  "child_status_observed": null,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/scratch/f24630d7727d/Aii/v13/code/scripts/tool_forecast_bound_learning_candidate.py",
+    "worker",
+    "--home",
+    "/workspace/scratch/f24630d7727d/native16-evening-home",
+    "--preregistration",
+    "/workspace/scratch/f24630d7727d/Aii/v13/code/docs/proofs/continuation-20261016/recovery-evening/native-preregistration.json",
+    "--out",
+    "/workspace/scratch/f24630d7727d/native16-evening-run/cohort"
+  ],
+  "driver_exit_code": 0,
+  "driver_log_sha256": "9fdbb03a143035f491e1c60a4b0e123d308f42bbcf6a5942e2c6d78689c43fcd",
+  "elapsed_seconds": 942.57,
+  "grace_seconds": 3.0,
+  "leader_reaped": true,
+  "native_quality_claimed": false,
+  "owned_pgid": 13,
+  "owned_pid": 13,
+  "partial_outputs_preserved": true,
+  "phone_measured_by_wrapper": false,
+  "schema": "V13_BOUNDED_TOOL_FORECAST_DEVICE_DRIVER_CANDIDATE_V1",
+  "signals": [],
+  "status": "DRIVER_EXITED",
+  "timeout_seconds": 7200
+}

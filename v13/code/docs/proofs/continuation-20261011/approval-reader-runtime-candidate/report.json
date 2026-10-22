@@ -1,0 +1,40 @@
+{
+  "schema": "APPROVAL_READER_RUNTIME_CANDIDATE_V1",
+  "created_utc": "2026-10-11T21:20:03.417863+00:00",
+  "status": "ISOLATED_TESTS_PASS_NOT_INTEGRATED",
+  "tests": 9,
+  "test_duration_s": 1.316,
+  "test_exit_code": 0,
+  "native_model_inference": false,
+  "production_integrated": false,
+  "activation_authorized": false,
+  "learned_quality_proven": false,
+  "semantic_truth_authority": false,
+  "shared_store_guard": true,
+  "committed_registry_required": true,
+  "private_hash_verified_asset_snapshots": true,
+  "store_lock_during_popen_or_health": false,
+  "global_filesystem_sqlite_atomicity": false,
+  "external_unguarded_readers_fixed": false,
+  "live_source_sha256": {
+    "v13/runners.py": "845bb87f9e8bd24333217e86b6558f5292c3838e26352fe756a32882f3fef705",
+    "v13/runtime.py": "5bad1a09678bc79a79a6adeb8c96bfed38244629f9033392380081571705c333"
+  },
+  "candidate_source_sha256": {
+    "v13/runners.py": "e63b953f15130db49b690484fae833934b0249dfc314f851e9fc4885a7b2a0e1",
+    "v13/runtime.py": "dd219a2a1885b3e284da406b775c5269351240ae201af53796849331250567d8"
+  },
+  "patch_sha256": "1ad6ca49925c59b615676e87ccc66d9f33d55b1f443e69be9efb18fe833f8f1d",
+  "test_log_sha256": "8bcc75b07524a0a3294eda847873a5151323895421fdd8c9238799c884093c8e",
+  "helper_sha256": "c4de4104418f152b9560bf6c62a802306b0c95e80e72bb98872d5d5bc6f9be5e",
+  "tests_sha256": "370cba8fe31b53edac1d84d6d6e3bcc8f8614a776a150e8d53c875567b64c9e6",
+  "integration_order": [
+    "approval_reader.transform",
+    "native_firing.transform"
+  ],
+  "phone_fixture_files": [
+    "approval-reader-runtime-baseline/runners.py",
+    "approval-reader-runtime-baseline/runtime.py",
+    "approval-reader-runtime-baseline/manifest.json"
+  ]
+}

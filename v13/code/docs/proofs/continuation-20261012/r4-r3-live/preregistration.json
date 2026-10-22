@@ -1,0 +1,21 @@
+{
+ "schema": "v13-r4-r3-live-prereg-v1",
+ "created_utc": "2026-10-13T10:36:58Z",
+ "seed": 29,
+ "new_wordings": {
+  "summary": "Is the summary line correct? Add the items up and give the right figure.",
+  "compare": "Which city was the wettest, and by how many millimetres did it exceed the driest one?"
+ },
+ "n": 30,
+ "decision_rule": "Fresh seed 29, 30 tasks (15 summary, 15 compare) with wordings only R3 recognises: R3_LIVE_SUPPORTED iff tool_active vs c3_alone net wins >= +5 AND sign test p < .05 AND tool values correct >= 28/30 AND no kind loses more than 2.",
+ "script_sha256": "29ca1cf7ed9e11cd4b7ae2a0db7a159e4c145303629711f7e9db343d73dbb171",
+ "capture_script_sha256": "44a816319062bcc81a2be5abe1882297b476dfde223f77ba63b318b869c2c96c",
+ "code_sha256": {
+  "toolstep.py": "3fad7df7693a13cfed5bd0d487db089219c5650d7679b7c02a70c4ee4d1ca657",
+  "agi/listarith.py": "e3e8ad02a59f2327fe5fb924b3070c1f90b2a0b2fa1c0f79c401c453399b7282",
+  "agi/tools.py": "2e93d442a0e282912e2f7d4a14bc2bc30976dfc4e2330ce49082e280bb2f8337",
+  "transaction.py": "d3d0f8a9011fa40a4c662ce7e85fbc7ff341644ee9e592bee8f8b80128324e43",
+  "runtime.py": "5bad1a09678bc79a79a6adeb8c96bfed38244629f9033392380081571705c333",
+  "broker.py": "3a073278e6bf043f7d26fe245b87e52a2be90eb21a67569890ef2d5f1b40211a"
+ }
+}

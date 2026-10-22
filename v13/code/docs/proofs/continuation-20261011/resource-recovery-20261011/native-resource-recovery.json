@@ -1,0 +1,276 @@
+{
+  "schema": "v13_native_resource_recovery_v1",
+  "started_at": "2026-10-11T09:57:01.208448+00:00",
+  "status": "RESTORED_EXACT_BINDING",
+  "reason": "Transient scratch resources disappeared after platform usage halt; code and closed proof restored from verified GitHub tree",
+  "restored_remote_commit": "3d63ec8e8f5735f7a6c6a5675635ea115d51242c",
+  "source_archive": {
+    "tag": "b10964",
+    "source_revision": "b29c606e2",
+    "source_url": "https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz",
+    "source_sha256": "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe",
+    "source_size": 37420323
+  },
+  "models": {
+    "body": {
+      "model_id": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+      "revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+      "license_id": "LFM Open License 1.0",
+      "license_url": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/6767265158422fb8a19c62ceb45f16f05363615b/LICENSE",
+      "quant_format": "QAD_Q4_0",
+      "main_file": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+      "files": [
+        {
+          "local_name": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+          "upstream_path": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+          "size": 695755488,
+          "sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+          "url": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/resolve/6767265158422fb8a19c62ceb45f16f05363615b/LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf"
+        }
+      ]
+    },
+    "gist": {
+      "model_id": "ggml-org/Qwen3.5-0.8B-GGUF",
+      "revision": "8fea620810c4afa23dd6443f999a48574c1611a3",
+      "license_id": "Apache-2.0",
+      "license_url": "https://huggingface.co/Qwen/Qwen3.5-0.8B",
+      "quant_format": "Q4_0",
+      "main_file": "Qwen3.5-0.8B-Q4_0.gguf",
+      "selection": "WP-V4 user decision 2026-10-09: B1 and B2 are different bodies; B2 = research pick (research/FORSCHUNG.md), unmeasured on Redmi",
+      "files": [
+        {
+          "local_name": "Qwen3.5-0.8B-Q4_0.gguf",
+          "upstream_path": "Qwen3.5-0.8B-Q4_0.gguf",
+          "size": 563036064,
+          "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+          "url": "https://huggingface.co/ggml-org/Qwen3.5-0.8B-GGUF/resolve/8fea620810c4afa23dd6443f999a48574c1611a3/Qwen3.5-0.8B-Q4_0.gguf"
+        }
+      ]
+    },
+    "language": {
+      "model_id": "LiquidAI/LFM2.5-350M-GGUF",
+      "revision": "657e078c94084481950a2d555a941481f715536b",
+      "license_id": "LFM Open License 1.0",
+      "license_url": "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/blob/657e078c94084481950a2d555a941481f715536b/LICENSE",
+      "quant_format": "QAD_Q4_0",
+      "main_file": "LFM2.5-350M-QAD-Q4_0.gguf",
+      "files": [
+        {
+          "local_name": "LFM2.5-350M-QAD-Q4_0.gguf",
+          "upstream_path": "LFM2.5-350M-QAD-Q4_0.gguf",
+          "size": 219312832,
+          "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+          "url": "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/LFM2.5-350M-QAD-Q4_0.gguf"
+        }
+      ],
+      "selection": "WP-KAL2 2026-10-09: C3 switched from LFM2.5-230M after cloud measurements (bench-results/KALIBRIERUNG.md, Runde 2): STEP2 B1+B2 exact .58 vs .37, AG12 exact with anti-echo .55 vs .12; +70 MB file, ~40 % slower decode; Redmi RSS/latency unmeasured (WP-R). LoRA/adapters on the 230M must be redistilled.",
+      "previous": {
+        "model_id": "LiquidAI/LFM2.5-230M-GGUF",
+        "revision": "cdf97bd8205908758f44aec508d68ac1aef98f5c",
+        "main_file": "LFM2.5-230M-QAD-Q4_0.gguf",
+        "files": [
+          {
+            "local_name": "LFM2.5-230M-QAD-Q4_0.gguf",
+            "upstream_path": "LFM2.5-230M-QAD-Q4_0.gguf",
+            "size": 149081056,
+            "sha256": "e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292",
+            "url": "https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF/resolve/cdf97bd8205908758f44aec508d68ac1aef98f5c/LFM2.5-230M-QAD-Q4_0.gguf"
+          }
+        ]
+      }
+    }
+  },
+  "previous_installed_binding": {
+    "model_revisions": {
+      "B1_DETAIL": "6767265158422fb8a19c62ceb45f16f05363615b",
+      "B2_GIST": "8fea620810c4afa23dd6443f999a48574c1611a3",
+      "C3_LANGUAGE": "657e078c94084481950a2d555a941481f715536b"
+    },
+    "model_sha256": {
+      "B1_DETAIL": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+      "B2_GIST": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+      "C3_LANGUAGE": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+    },
+    "runner_runtime_libraries_sha256": {
+      "libggml-base.so": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-base.so.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-base.so.0.24.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-cpu.so": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml-cpu.so.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml-cpu.so.0.24.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml.so": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libggml.so.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libggml.so.0.24.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libllama-common.so": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-common.so.0": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-common.so.0.4.1": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-server-impl.so": "0bd03879553abc98f5d2951886989820cd61049ce071f727e06f9cc926d4c8f1",
+      "libllama.so": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libllama.so.0": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libllama.so.0.4.1": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libmtmd.so": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+      "libmtmd.so.0": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+      "libmtmd.so.0.4.1": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    },
+    "runner_sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8"
+  },
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "heavy_inference_started": false,
+  "canonical_gate_pass": false,
+  "phone_proof": false,
+  "resource_archive_verified": true,
+  "cmake_version": "4.4.4",
+  "models_verified": {
+    "body": {
+      "sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+      "size": 695755488
+    },
+    "gist": {
+      "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+      "size": 563036064
+    },
+    "language": {
+      "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+      "size": 219312832
+    }
+  },
+  "patched_native_source_sha256": {
+    "tools/server/server.cpp": "af73304b089ae56f27aa74fd080a31e9375cec6e64a4c550fe790b3935cbe852",
+    "tools/server/server-context.cpp": "929e58f8e7b6db428aa82f5b0459f82c32b2cd906757b477617a71867ce73b80",
+    "tools/server/v13_memory_hook.h": "a53938f12ad7cb5fc5dceadcce061990e18cf2ac020f7a1b2c4f1b39004e3b68"
+  },
+  "patched_source_matches_original": {
+    "server_cpp_sha256": true,
+    "server_context_sha256": true,
+    "header_sha256": true
+  },
+  "build_log_path": "/workspace/scratch/5a9214d3f329/native-audit-cache/logs/recovery-native-build.log",
+  "build_flags": [
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DGGML_NATIVE=OFF",
+    "-DGGML_OPENMP=OFF",
+    "-DGGML_LLAMAFILE=OFF",
+    "-DLLAMA_OPENSSL=OFF",
+    "-DLLAMA_CURL=OFF",
+    "-DLLAMA_BUILD_TESTS=OFF",
+    "-DLLAMA_BUILD_EXAMPLES=OFF",
+    "-DLLAMA_BUILD_SERVER=ON",
+    "-DLLAMA_BUILD_UI=OFF",
+    "-DLLAMA_USE_PREBUILT_UI=OFF"
+  ],
+  "cgroup_memory_max": "8589934592",
+  "cgroup_memory_events_at_build_observation": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "completed_at": "2026-10-11T10:05:11.354996+00:00",
+  "current_installed_binding": {
+    "model_sha256": {
+      "B1_DETAIL": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+      "B2_GIST": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+      "C3_LANGUAGE": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+    },
+    "model_revisions": {
+      "B1_DETAIL": "6767265158422fb8a19c62ceb45f16f05363615b",
+      "B2_GIST": "8fea620810c4afa23dd6443f999a48574c1611a3",
+      "C3_LANGUAGE": "657e078c94084481950a2d555a941481f715536b"
+    },
+    "runner_sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8",
+    "runner_runtime_libraries_sha256": {
+      "libggml-base.so": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-base.so.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-base.so.0.24.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-cpu.so": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml-cpu.so.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml-cpu.so.0.24.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml.so": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libggml.so.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libggml.so.0.24.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libllama-common.so": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-common.so.0": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-common.so.0.4.1": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-server-impl.so": "0bd03879553abc98f5d2951886989820cd61049ce071f727e06f9cc926d4c8f1",
+      "libllama.so": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libllama.so.0": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libllama.so.0.4.1": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libmtmd.so": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+      "libmtmd.so.0": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+      "libmtmd.so.0.4.1": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    }
+  },
+  "same_original_installed_binding": true,
+  "binding_comparison": {
+    "model_revisions": true,
+    "model_sha256": true,
+    "runner_runtime_libraries_sha256": true,
+    "runner_sha256": true
+  },
+  "native_library_changes": {},
+  "version_result": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "version: 0.4.1-dev (build 0, commit unknown)\nbuilt with GNU 13.3.0 for Linux x86_64\n"
+  },
+  "memory_server_manifest": {
+    "binary_sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8",
+    "header_sha256": "a53938f12ad7cb5fc5dceadcce061990e18cf2ac020f7a1b2c4f1b39004e3b68",
+    "runtime_libraries_sha256": {
+      "libggml-base.so": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-base.so.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-base.so.0.24.0": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a",
+      "libggml-cpu.so": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml-cpu.so.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml-cpu.so.0.24.0": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b",
+      "libggml.so": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libggml.so.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libggml.so.0.24.0": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d",
+      "libllama-common.so": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-common.so.0": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-common.so.0.4.1": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee",
+      "libllama-server-impl.so": "0bd03879553abc98f5d2951886989820cd61049ce071f727e06f9cc926d4c8f1",
+      "libllama.so": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libllama.so.0": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libllama.so.0.4.1": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50",
+      "libmtmd.so": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+      "libmtmd.so.0": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e",
+      "libmtmd.so.0.4.1": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    },
+    "server_context_sha256": "929e58f8e7b6db428aa82f5b0459f82c32b2cd906757b477617a71867ce73b80",
+    "server_cpp_sha256": "af73304b089ae56f27aa74fd080a31e9375cec6e64a4c550fe790b3935cbe852",
+    "source": "/workspace/scratch/5a9214d3f329/native-audit-cache/source/llama.cpp-b10964",
+    "tag": "b10964"
+  },
+  "model_deep_verification": {
+    "body": {
+      "ok": true,
+      "hash_checked": true,
+      "errors": [],
+      "revision": "6767265158422fb8a19c62ceb45f16f05363615b"
+    },
+    "gist": {
+      "ok": true,
+      "hash_checked": true,
+      "errors": [],
+      "revision": "8fea620810c4afa23dd6443f999a48574c1611a3"
+    },
+    "language": {
+      "ok": true,
+      "hash_checked": true,
+      "errors": [],
+      "revision": "657e078c94084481950a2d555a941481f715536b"
+    }
+  },
+  "build_log_sha256": "9c9796b5ccb7f5b86bfb7dad8a98f709ae294c11bcea8410d35989b0b6306fe6",
+  "cmake_cache_sha256": "e13d2fd0fb2daf2374a495cf9af75c039f624c78f915a843b7a3f85d754e3d83",
+  "cgroup_memory_events_after_build": "low 0\nhigh 0\nmax 1016\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "inference_continuation_requirement": "ORIGINAL_BINDING_VALID",
+  "build_api_invocation": {
+    "module": "v13.memory_server",
+    "function": "build",
+    "home": "/workspace/scratch/5a9214d3f329/native-audit-cache",
+    "source": "/workspace/scratch/5a9214d3f329/native-audit-cache/source/llama.cpp-b10964",
+    "jobs": 2
+  },
+  "build_commands": [
+    "cmake -S /workspace/scratch/5a9214d3f329/native-audit-cache/source/llama.cpp-b10964 -B /workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964 -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DGGML_LLAMAFILE=OFF -DLLAMA_OPENSSL=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=ON -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF",
+    "cmake --build /workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964 --target llama-server --parallel 2"
+  ]
+}
