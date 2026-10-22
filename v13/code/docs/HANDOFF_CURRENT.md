@@ -27,6 +27,8 @@ Vorregistrierter Lauf (C/D/CQ/DQ × Seeds 14–16, 840 Zeilen, echte Modelle, Li
 # Aktuell 2026-10-21 (Thread „Z2 STEP2 mit B1-Detailinfo“): STEP2 mit B1-eigener Information — Gate FAIL
 
 Neuer Schalter `b1_recent_source_chars` (Standard 0 = aus): B1 behält die exakte Quelle seiner letzten Runde. Vorregistrierter Lauf (10 Episoden, 5 Arme × 70 Zeilen, echte Modelle, Linux-Cloud): `Z2_DIVERGENCE_NOT_SUPPORTED` — Zwei-Körper .325 < b1_only .333, ein Körper + zwei Zustände nicht schlechter. B1 liefert jetzt Optionswerte (27/70 statt 0), exakte SPLIT-Entscheidungen nur im Ein-Körper-Arm (3/6). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2-timescale/BEFUND.md`, Code nur im Git-Branch `claude/project-thread-hsm0ga` (Schalter in `v13/cognition.py`, hier im Projektordner noch nicht). STEP2 UTILITY_FAIL bleibt.
+# Aktuell 2026-10-22 (Thread „STEP2-Nutzen Engpass“): Werkzeug-Entscheidung vorn
+Eignungs-Werkzeug: Regeln liest ein fester Leser, die Entscheidung ist der erste Satz der Antwort (bei unbekannt/keine die ganze Antwort). Vorregistriert gemessen, 60 frische Aufgaben: Antwort richtig 59/60, 0 falsch (vorher 23/60). Standard an, Werkzeug selbst nur nach Freigabe. Befund `docs/proofs/continuation-20261022/eligibility-first/BEFUND.md`.
 
 # Aktuell 2026-10-21 (Thread „STEP2-Nutzen Engpass“): Eignungs-Werkzeug im Live-Pfad
 
