@@ -1267,6 +1267,12 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
   - Doppelpunkt-Etiketten als ganzer Satz.
   - Weniger Rückfragen bei Verneinung über Dritte.
   - Handy-Test, ob das Nachfragen stört.
+### WP-UR7 Regel-Leser v7 + versiegelte Runde 7 — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V7_UNSAFE` (Thread „Regel-Leser Version 7“, Branch `claude/project-thread-ub4in2`)
+- v7 schließt alle Lücken aus dem v6-Befund (Sperr-Wörter ohne Verneinung, zusammengesetzte Ziel-Nomen, Telefon, „sag mir, wenn …“, „erstmal“, Zitat nach „steht:“, Netz über Teilsätze) und spart Rückfragen bei Berichten über Dritte, Vergangenes und Störungen. Bekannte Sätze: 0 Fehler, unnötige Rückfragen dort 68 → 48 von 265.
+- T1 `holdout_de4` (60 neue Autor-Sätze): v7 4 Fehlersätze, v6 4. T2 Runde 7 (Hunyuan 7B, Yi 1.5 9B, Apertus 8B; 118 von 360 brauchbar): v7 14, v6 13. Unnötige Rückfragen 50 % (K6 klar verfehlt).
+- Rückschritt: Die Kosten-Regel „kaputt/geht nicht = Feststellung“ verschluckt „Mach meine Notizen bloß nicht kaputt“. Lehre: Kosten-Regeln nur mit Gegenproben.
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v7/BEFUND.md`.
+- Offen (WP-UR8): starkes Sperr-Signal ohne Ziel ⇒ Rückfrage für alles; „kaputt“-Regel zurücknehmen; zweite Meinung (kleines lokales Modell oder gelernter JEF-Leser), die nur Vorsicht hinzufügen darf, auf frischer Runde messen. Weitere reine Wortlisten-Versionen lohnen kaum.
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.

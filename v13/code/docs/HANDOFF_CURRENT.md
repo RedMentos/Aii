@@ -1,3 +1,7 @@
+# Aktuell 2026-10-22 (Thread „Regel-Leser Version 7“): v7 auf frischer Runde 7 → `USER_RULES_V7_UNSAFE`, nicht besser als v6
+
+Neu v7 (`fixed-userrules-v7`, Branch `claude/project-thread-ub4in2`): schließt die v6-Lücken und spart Rückfragen bei Berichten über Dritte/Vergangenes/Störungen. Bekannte Sätze 0 Fehler. Frisch: holdout_de4 4 Fehlersätze von 60 (v6 4), Runde 7 (Hunyuan 7B, Yi 1.5 9B, Apertus 8B) 14 von 118 (v6 13); unnötige Rückfragen 50 %. Rückschritt durch die „kaputt“-Regel. Befund `docs/proofs/continuation-20261022/user-rules-v7/BEFUND.md`. Nächster Schritt WP-UR8: Sperr-Signal ohne Ziel ⇒ Rückfrage, „kaputt“ zurücknehmen, zweite Meinung, die nur Vorsicht hinzufügt.
+
 # Aktuell 2026-10-22 (Thread „Regel-Leser Version 3“): Regel-Leser v3–v6, versiegelte Runden 3–6 → alle `UNSAFE`, v6 halbiert die Fehler
 
 Neu v6 (`fixed-userrules-v6`): breites Netz hinter dem genauen Leser. Verneinung, Halten oder Bedingung zusammen mit einer bekannten Handlung oder einem Ziel ergibt eine offene Rückfrage (`NET`, gilt bis zur Antwort als „erst fragen“). Ergebnis: holdout_de3 1 Fehlersatz von 60 (v5: 6), Runde 6 (Qwen 2.5, EXAONE 3.5, GLM-4) 11 von 181 (v5: 20). Unnötige Rückfragen 30–38 % (K6 knapp verfehlt). Befund `docs/proofs/continuation-20261022/user-rules-v6/BEFUND.md`; nächster Schritt v7 (Sperr-Wörter ohne Verneinung, Ziel-Nomen per Wortende, „sag mir, wenn“).
