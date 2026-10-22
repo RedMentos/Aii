@@ -1366,13 +1366,18 @@ Auswertung: `research/HARNESS2_AUSWERTUNG.md` (arXiv 2610.14224, `google-researc
 Parser, Rezepte) mit Beleg verbessern, Gewichte fest. Reihenfolge: nach den Z-Paketen; HX1 und HX3 klein, dürfen parallel laufen.
 Sicherheits-/Moralregeln sind nie änderbar. Alles vorregistriert, Autorität 0 bis Gate-PASS, Nutzerfreigabe vor Übernahme.
 
-### WP-HX1 Drumherum als Vorschlagsart in AG8 (Cloud, klein, kein Modell) — OFFEN
+### WP-HX1 Drumherum als Vorschlagsart in AG8 (Cloud, klein, kein Modell) — ERLEDIGT 2026-10-22 (Thread „Harness-Pakete HX1 HX3 HX4“, Branch `claude/project-thread-4iqpro`)
 - `agi/self_improve.py`: neue Art `harness` mit Erlaubt-Liste (Körper-Prompts, Werkzeug-Hinweise, Parser-Regelsätze, Rezept-Vorlagen); gleicher Regressionsschild, Nutzerfreigabe, Rückkehrpunkt.
+- Gebaut: `code/v13/agi/harness.py` mit fester Ziel-Liste (20 Ziele in 4 Arten: Prompt-Teile `answer_rules/digest/task_context/hypotheses/clarify/replay/duplex_handoff/welcome` je en/de, `tool_hint.list_note`, `tool_hint.eligibility_note`, `parser.listarith_extra`, `recipe.list_result`). Nie Ziel: `system`, `conduct`, Operator-Regeln, Nutzer-Regeln/Verbote, Age, Kanal, Knobs. Zweites Netz: Texte, die Regeln abschwächen („ignore the rules“, „Regeln gelten nicht“, …), werden abgelehnt (Wort-Heuristik, Lücken möglich; Hauptschutz ist die Liste + Freigabe). `HarnessLibrary.apply()` nimmt nur einen APPROVED-Vorschlag mit bestandenem Schild und genau den freigegebenen Werten, einmal; `rollback(ziel)` geht auf die Vorversion bzw. den Live-Standard zurück; `manifest_fields()` liefert `harness_hash` für das Generation-Manifest.
+- **Autorität 0 / SHADOW:** kein Live-Pfad liest Überschreibungen (`live_consumers: 0`); `resolve()`/`overlay()` nur für Evaluatoren/Benches. Live-Anschluss erst nach HX2-PASS und Nutzerfreigabe. Laufzeit-Dateien unverändert.
 ### WP-HX2 Vergleich auf derselben Aufgabe ohne Gold-Antwort (Cloud, Modelle) — OFFEN
 - Referenz + k Varianten gleicher Seed, Verhaltens-Unterschiede protokollieren, allgemein/fachlich getrennt; erste Probe B2-Regel-Zitat STEP2; Gate Holdout-Gewinn KI>0, keine Achse schlechter; Kontrolle „ungeführte Änderung“.
-### WP-HX3 Erfahrungs-Bibliothek (Cloud, klein) — OFFEN
+### WP-HX3 Erfahrungs-Bibliothek (Cloud, klein) — ERLEDIGT 2026-10-22 (gleicher Thread/Branch)
 - Eintrag je übernommener Änderung (Situation, Lehre, Beleg, Generation), nur mit Beleg; Nachschlagen nach Aufgabentyp; Ablation mit/ohne.
-### WP-HX4 Blinder Auswähler für Benches (Cloud, klein) — OFFEN
+- Gebaut: `code/v13/agi/experience.py`. Eintrag nur bei APPROVED + Schild bestanden + mindestens eine existierende Beleg-Datei (sha256 gespeichert); `verify()` macht Einträge mit geänderter/fehlender Datei STALE; `retire(vorschlag)` nach Rücknahme; `lookup(aufgabentyp)` liefert nur ACTIVE, jede Zeile `authority: DATA_NOT_INSTRUCTION`; Texte gekappt, regelschwächende Wörter abgelehnt; ein Eintrag je Änderung. `ablation(aufgaben, löser, bibliothek)` vergleicht dieselben Aufgaben mit/ohne. Die echte Ablation mit Modellen gehört zu HX2 (noch offen).
+### WP-HX4 Blinder Auswähler für Benches (Cloud, klein) — ERLEDIGT 2026-10-22 (gleicher Thread/Branch)
+- Gebaut: `code/v13/agi/blind_select.py` `blind_select(kandidaten, richter, seed)`: Richter sieht nur Buchstaben + Text (Herkunftsnamen im Text geschwärzt); Zuordnung vorher per Hash versiegelt, nach der Wahl aufgedeckt (`verify()` prüft); zwei Runden in umgekehrter Reihenfolge — wählt der Richter verschiedene Ausgaben (Positions-Vorliebe), ist das Ergebnis INCONSISTENT; Fehler oder unbekannter Buchstabe = NO_PICK, nie stiller Standard.
+- Tests: `code/tests/test_harness_hx.py` (10 Tests für HX1/HX3/HX4, keine Modelle). Nächster Schritt: WP-HX2 (Referenz + Varianten auf derselben Aufgabe, erste Probe B2-Regel-Zitat STEP2) nutzt alle drei Teile.
 ### WP-HX5 Drumherum-Protokolle als Lerndaten (Evo2-Idee, arXiv 2610.13025) — GESPERRT bis HX2 PASS
 
 ### WP-DS1..DS3 aus DeepSeek-Kritik (2026-10-21, Thread „DeepSeek-Kritik gegen Stand prüfen“, PR #25)

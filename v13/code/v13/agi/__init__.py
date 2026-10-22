@@ -12,7 +12,10 @@ human decision wherever weights, structure, hard rules or the outside world are 
   AG5  curiosity.py      learning progress + novelty as intrinsic value, Age-bounded exploration
   AG6  weights.py        nightly consolidation into weights: stage → train → retention gate → user
   AG7  abstraction.py    cluster → induce rule → test on held-out cases (DSL inducer)
-  AG8  self_improve.py   knob/learning-rule proposals, sandbox eval, regression shield, user approval
+  AG8  self_improve.py   knob/learning-rule/harness proposals, sandbox eval, regression shield, user approval
+       harness.py        WP-HX1 allow-listed harness overrides (prompts, tool hints, parser rules, recipes), rollback
+       experience.py     WP-HX3 experience library: one evidence-bound entry per applied change, lookup by task type
+       blind_select.py   WP-HX4 blind selector: anonymised k>1 outputs, origin revealed only after the pick
   AG9  metacog.py        calibration per component, second-attempt/abstain, semantic entropy
   AG10 tools.py          tool registry + per-call transaction, safe calc, outcome → AG2
   AG11 user_model.py     evidence-bound beliefs about the user, decay, forget
@@ -40,6 +43,8 @@ class Growth:
         from .skills import SkillLibrary
         from .abstraction import Abstraction
         from .self_improve import SelfImprovement
+        from .harness import HarnessLibrary
+        from .experience import ExperienceLibrary
         from .teacher import TeacherDistillation
         from .user_model import UserModel
         from .slots import ModelSlots
@@ -57,6 +62,7 @@ class Growth:
         self.skills=SkillLibrary(store,age,self.tools)
         self.abstraction=Abstraction(store)
         self.improve=SelfImprovement(store,cfg,age)
+        self.harness=HarnessLibrary(store);self.experience=ExperienceLibrary(store,home)  # WP-HX1/HX3, SHADOW
         self.teacher=TeacherDistillation(store,age,self.eval)
         self.users=UserModel(store)
         self.slots=ModelSlots(store,age)
