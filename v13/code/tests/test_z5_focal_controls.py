@@ -33,6 +33,20 @@ class Arms(unittest.TestCase):
         self.assertEqual(Z.swap_layer('S'+anchor+'{}',head,None,'\nR: []',anchor),'S\nR: []'+anchor+'{}')
         with self.assertRaises(ValueError):Z.swap_layer('S'+anchor,head,body,'',anchor)
 
+class Session(unittest.TestCase):
+    def test_intrusion_counts_only_foreign_expected_numbers(self):
+        self.assertTrue(Z.intrusion('The total is 212 euros.',[150],[[212],[40]]))
+        self.assertFalse(Z.intrusion('The total is 150 euros.',[150],[[212]]))
+        self.assertFalse(Z.intrusion('It is 2120.',[150],[[212]]))  # part of a longer number
+    def test_prior_block_newest_first_and_capped(self):
+        ret=[{'text':'old','created':1.},{'text':'new','created':3.},{'text':'mid','created':2.}]
+        self.assertEqual(Z.prior_block(ret,2),Z.PRIOR_HEAD+dumps(['new','mid']))
+        self.assertEqual(Z.prior_block([],None),'')
+    def test_retrieval_pool_includes_conversation(self):
+        _,text,_,_=U2.tasks()[15]
+        got=Z.retrieve(text,6,['How many bicycles were counted in Lyon: 999 bicycles.'])
+        self.assertIn('How many bicycles were counted in Lyon: 999 bicycles.',got)  # a distractor can compete
+
 class Verdict(unittest.TestCase):
     def test_full_context_win_needs_significance_and_noise_band(self):
         r=[]

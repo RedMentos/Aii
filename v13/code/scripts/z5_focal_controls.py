@@ -13,7 +13,11 @@ analyst_context (binding/freshness checks still apply); the real answer message 
 The 7 G-FOCAL-CAPACITY-003 properties are measured from FocalCycle/FocalItem/Workspace telemetry of the live turns,
 retention/recovery after a restart on the same home.
 Claim limit: generated English tasks, one seed, regex checks on the final answer, lexical retrieval, greedy bench decoding.
-Usage: z5_focal_controls.py <installed_home> <out.json> [--reps N] [--limit N]"""
+--session (WP-Z5b): all tasks of a repetition in ONE session, kinds shuffled (seed 7), so retained workspace items of earlier
+tasks compete with the fresh offers (capacity pressure); full_context additionally carries every retained earlier hypothesis,
+fixed_slots the two newest, retrieval_only ranks user-message sentences together with the retained texts; intrusion = the answer
+names an expected number of one of the 3 previous tasks.
+Usage: z5_focal_controls.py <installed_home> <out.json> [--reps N] [--limit N] [--session]"""
 import hashlib
 import json
 import re
@@ -24,7 +28,7 @@ import time
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from v13.common import atomic_write,dumps
+from v13.common import atomic_write,dumps,Limits
 import utility_bench as U
 import utility_bench2 as U2
 
@@ -32,6 +36,9 @@ ARMS=('coalition_live','coalition','full_context','fixed_slots','retrieval_only'
 REPLAY=ARMS[1:]
 CONTROLS=('full_context','fixed_slots','retrieval_only','no_hypotheses')
 RETRIEVED_HEAD='\nRetrieved passages from the user message (exact quotes, ranked by relevance to the question): '
+POOL_HEAD='\nRetrieved passages from this conversation (exact quotes, ranked by relevance to the question): '
+PRIOR_HEAD='\nEarlier hypotheses from previous turns (not checked for this question): '
+SESSION_SEED=7
 SENT=re.compile(r'(?<=[.!?])\s+')
 
 def split_question(text):
@@ -41,12 +48,22 @@ def split_question(text):
         if i>0:return text[:i].strip(),text[i:].strip()
     return text,text
 
-def retrieve(text,k):
+def retrieve(text,k,extra=()):
+    """Top-k lexical passages for the question; ``extra`` = further passages of the conversation (session mode)."""
     from v13.memory import relevance
     material,question=split_question(text)
-    parts=[p.strip() for p in re.split(r'(?<=[.!?:])\s+|,\s+(?=[A-Z][a-z]+ \d)',material) if p.strip()]
+    parts=[p.strip() for p in re.split(r'(?<=[.!?:])\s+|,\s+(?=[A-Z][a-z]+ \d)',material) if p.strip()]+[x for x in extra if x]
     ranked=sorted(range(len(parts)),key=lambda i:(-relevance(question,parts[i]),i))[:k]
     return [parts[i] for i in sorted(ranked)]
+
+def intrusion(output,nums,previous):
+    """Session mode: the answer names an expected number of one of the previous tasks that this task does not expect."""
+    own={str(n) for n in nums}
+    return any(re.search(r'(?<![\d.,])'+str(n)+r'(?![\d])',output or '') for ns in previous for n in ns if str(n) not in own)
+
+def prior_block(retained,n=None):
+    items=sorted(retained,key=lambda x:-x['created'])[:n] if n is not None else sorted(retained,key=lambda x:-x['created'])
+    return PRIOR_HEAD+dumps([x['text'] for x in items]) if items else ''
 
 def latest_per_role(offers):
     by={}
@@ -85,7 +102,7 @@ def focal_measure(store,eid,run,slots):
             'all_offers_selected':len(run['selected'])==len(run['offers']),'cycles':len(traj),'decision':run['decision'],
             'inquisition':[x['verdict'] for x in run['inquisition']],'focal_items_logged':len(items)}
 
-def run_rep(installed,rep,fixtures):
+def run_rep(installed,rep,fixtures,session_mode=False):
     from v13 import effort as EF
     from v13 import focal as F
     from v13 import runtime as RT
@@ -101,7 +118,10 @@ def run_rep(installed,rep,fixtures):
         save_config(home,cfg|{'learning_mode':'RECORD_ONLY','teacher_enabled':False,'history_turns':0}|U2.BENCH_CFG)
         r=RT.Runtime(home);EF.set_mode(r.store,'max')
         cap={}
-        orig_loop,orig_save,orig_admit=RT.FocalLoop,RT.save_context,F.admit
+        orig_loop,orig_save,orig_admit,orig_load=RT.FocalLoop,RT.save_context,F.admit,F.Workspace.load
+        def load(self,e):
+            got=orig_load(self,e);cap['retained']=[{'item_id':x['item_id'],'kind':x['source_kind'],'text':x['text'],'created':x['created_wall']} for x in got]
+            return got
         def admit(cands,capacity,threshold,interrupt=F.BOOT['sal_interrupt']):
             a,rest=orig_admit(cands,capacity,threshold,interrupt)
             cap['admissions']=[c.get('admission') for c in a+rest];cap['n_candidates']=len(cands)
@@ -118,20 +138,23 @@ def run_rep(installed,rep,fixtures):
         def save(store,session,eid,role,messages):
             cap['messages']=json.loads(json.dumps(messages));cap['answer_role']=role
             return orig_save(store,session,eid,role,messages)
-        RT.FocalLoop,RT.save_context,F.admit=Loop,save,admit
+        RT.FocalLoop,RT.save_context,F.admit,F.Workspace.load=Loop,save,admit,load
         try:
             hyp_head='\n'+prompt(r.cfg,'hypotheses');anchor='\n'+prompt(r.cfg,'task_context')
-            cache={}
+            cache={};previous=[]
+            if session_mode:r.session=r.store.new_session();sessions.append(r.session)
             for fid,text,nums,checks in fixtures:
-                cap.clear();r.session=r.store.new_session();sessions.append(r.session);t0=time.monotonic();eid=r.submit(text);end=t0+900
+                cap.clear()
+                if not session_mode:r.session=r.store.new_session();sessions.append(r.session)
+                t0=time.monotonic();eid=r.submit(text);end=t0+900
                 while not r.idle():
                     if time.monotonic()>end:r.cancel();break
                     time.sleep(.1)
                 a=audit_event(r.store,eid);out=a.get('output') or '';meta=a.get('output_metadata') or {};turn_s=round(time.monotonic()-t0,2)
                 ok,num=U.score(out,nums,checks)
-                base={'rep':rep,'fixture':fid,'kind':fid.rstrip('0123456789')}
+                base={'rep':rep,'fixture':fid,'kind':fid.rstrip('0123456789')};prev=previous[-3:];previous.append(nums)
                 rows.append(base|{'arm':'coalition_live','pass':all(ok.values()) and all(num.values()),'turn_s':turn_s,'status':a.get('status'),
-                                  'context_chars':len(dumps(cap['ctx']['coalition'])) if cap.get('ctx',{}).get('coalition') else 0,'output':out[:400]})
+                                  'context_chars':len(dumps(cap['ctx']['coalition'])) if cap.get('ctx',{}).get('coalition') else 0,'intrusion':intrusion(out,nums,prev),'output':out[:400]})
                 run=cap.get('run');msgs=cap.get('messages')
                 plan_applied=(meta.get('context_plan') or {}).get('applied')
                 if run is None or msgs is None or plan_applied:
@@ -139,25 +162,34 @@ def run_rep(installed,rep,fixtures):
                     print(json.dumps({'rep':rep,'fixture':fid,'skipped':True,'roles':[o['role'] for o in a.get('offers',[])]}),flush=True);continue
                 measures.append(base|focal_measure(r.store,eid,run,cap['slots']))
                 sysmsg=msgs[0]['content'];coal=cap['ctx'].get('coalition')
-                blocks={'no_hypotheses':'','retrieval_only':RETRIEVED_HEAD+dumps(retrieve(text,r.cfg['focal_slots']))}
+                retained=cap.get('retained',[]) if session_mode else []
+                blocks={'no_hypotheses':'','retrieval_only':(POOL_HEAD if session_mode else RETRIEVED_HEAD)+dumps(retrieve(text,r.cfg['focal_slots'],[x['text'] for x in retained]))}
                 for arm in ('coalition','full_context','fixed_slots'):
                     body=cap['ctx'].get(arm)
                     blocks[arm]=None if isinstance(body,dict) and 'error' in body else ('' if body is None else hyp_head+dumps(body))
-                line={'rep':rep,'fixture':fid,'role':cap['answer_role'],'live':rows[-1]['pass'],'turn_s':turn_s,'offers':len(run['offers']),'coalition':len(run['coalition'])}
+                if session_mode:  # "everything into the context" also carries every retained earlier hypothesis; fixed slots keep the 2 newest
+                    if blocks['full_context'] is not None:blocks['full_context']+=prior_block(retained)
+                    if blocks['fixed_slots'] is not None:blocks['fixed_slots']+=prior_block(retained,max(0,r.cfg['focal_slots']-2))
+                line={'rep':rep,'fixture':fid,'role':cap['answer_role'],'retained':len(retained),'live':rows[-1]['pass'],'turn_s':turn_s,'offers':len(run['offers']),'coalition':len(run['coalition'])}
                 for arm in REPLAY:
                     if blocks[arm] is None:rows.append(base|{'arm':arm,'pass':False,'skipped':'ANALYST_CONTEXT_REJECTED','error':cap['ctx'][arm]['error']});continue
                     try:system=swap_layer(sysmsg,hyp_head,coal,blocks[arm],anchor)
                     except ValueError as exc:rows.append(base|{'arm':arm,'pass':False,'skipped':'LAYER_SWAP_FAILED','error':str(exc)});continue
                     m=[{'role':'system','content':system}]+msgs[1:];key=hashlib.sha256(dumps(m).encode()).hexdigest()
                     t1=time.monotonic()
-                    if key not in cache:cache[key]=''.join(r.pool.get(cap['answer_role']).generate(m,r.cancel_event,time.monotonic()+300))
+                    if key not in cache:
+                        try:cache[key]=''.join(r.pool.get(cap['answer_role']).generate(m,r.cancel_event,time.monotonic()+300))
+                        except Limits:cache[key]=None  # the context does not fit the native window: counts as a failed answer
+                    if cache[key] is None:
+                        rows.append(base|{'arm':arm,'pass':False,'overflow':True,'context_hash':key[:16],'context_chars':len(blocks[arm]),'answer_role':cap['answer_role'],'intrusion':False,'output':''})
+                        line[arm]='OVERFLOW';continue
                     o=cache[key];ok,num=U.score(o,nums,checks)
                     rows.append(base|{'arm':arm,'pass':all(ok.values()) and all(num.values()),'gen_s':round(time.monotonic()-t1,2),'context_hash':key[:16],
-                                      'context_chars':len(blocks[arm]),'answer_role':cap['answer_role'],'same_as_live':o.strip()==out.strip(),'output':o[:400]})
+                                      'context_chars':len(blocks[arm]),'answer_role':cap['answer_role'],'same_as_live':o.strip()==out.strip(),'intrusion':intrusion(o,nums,prev),'output':o[:400]})
                     line[arm]=rows[-1]['pass']
                 print(json.dumps(line),flush=True)
         finally:
-            RT.FocalLoop,RT.save_context,F.admit=orig_loop,orig_save,orig_admit
+            RT.FocalLoop,RT.save_context,F.admit,F.Workspace.load=orig_loop,orig_save,orig_admit,orig_load
             r.close()
         retention=restart_retention(home,sessions)
     finally:
@@ -191,7 +223,8 @@ def analyse(rows,measures,retention):
     reps=sorted({x['rep'] for x in rows})
     summary={arm:{'n':len(m),'pass':sum(v['pass'] for v in m.values()),'pass_rate':round(sum(v['pass'] for v in m.values())/max(1,len(m)),3),
                   'per_rep':[sum(v['pass'] for k,v in m.items() if k[0]==rp) for rp in reps],
-                  'mean_context_chars':round(sum(v.get('context_chars',0) for v in m.values())/max(1,len(m)),1)} for arm,m in by.items()}
+                  'mean_context_chars':round(sum(v.get('context_chars',0) for v in m.values())/max(1,len(m)),1),
+                  'intrusions':sum(bool(v.get('intrusion')) for v in m.values()),'overflows':sum(bool(v.get('overflow')) for v in m.values())} for arm,m in by.items()}
     live=summary.get('coalition_live',{}).get('per_rep',[])
     band=max(live)-min(live) if len(live)>1 else None
     paired={}
@@ -237,23 +270,25 @@ def analyse(rows,measures,retention):
              'gate':'GREEN' if beats=='PASS' and all(observed.values()) and not_worse('retrieval_only') and not_worse('fixed_slots') else 'PARTIAL'}
     return {'summary':summary,'paired':paired,'by_kind':by_kind,'properties':props,'verdict':verdict}
 
-def main(installed,out,reps=5,limit=None):
+def main(installed,out,reps=5,limit=None,session_mode=False):
     installed=Path(installed).resolve();out=Path(out);fx=U2.tasks()
     if limit:fx=[f for i,f in enumerate(fx) if i%(len(fx)//limit)==0][:limit]
+    if session_mode:import random;random.Random(SESSION_SEED).shuffle(fx)  # kinds interleaved: earlier tasks become distractors
     prev=json.loads(out.read_text()) if out.exists() else {}
     rows,measures,retention=prev.get('rows',[]),prev.get('measures',[]),prev.get('retention',[])
     done={x['rep'] for x in rows}
     for rep in range(1,reps+1):
         if rep in done:continue
-        rr,mm,ret=run_rep(installed,rep,fx);rows+=rr;measures+=mm;retention.append(ret|{'rep':rep})
-        atomic_write(out,json.dumps({'kind':'WP_Z5_FOCAL_CONTROLS','preregistration':'bench-results/z5-focal-controls-20261021/PREREGISTRATION.md',
+        rr,mm,ret=run_rep(installed,rep,fx,session_mode);rows+=rr;measures+=mm;retention.append(ret|{'rep':rep})
+        atomic_write(out,json.dumps({'kind':'WP_Z5B_FOCAL_SESSION' if session_mode else 'WP_Z5_FOCAL_CONTROLS','session_mode':session_mode,'preregistration':'bench-results/z5-focal-controls-20261021/PREREGISTRATION.md',
             'bench_cfg':U2.BENCH_CFG|{'effort':'max'},'fixtures':[f[0] for f in fx],'reps_done':sorted({x['rep'] for x in rows}),
             **analyse(rows,measures,retention),'rows':rows,'measures':measures,'retention':retention,
             'claim_limit':'generated English tasks, one seed, regex on the final answer, lexical retrieval, greedy bench decoding, cloud CPU'},indent=1))
     print(json.dumps(analyse(rows,measures,retention)['verdict'],indent=1))
 
 if __name__=='__main__':
-    a=sys.argv[1:];reps=5;lim=None
+    a=sys.argv[1:];reps=5;lim=None;sm='--session' in a
+    if sm:a.remove('--session')
     if '--reps' in a:i=a.index('--reps');reps=int(a[i+1]);del a[i:i+2]
     if '--limit' in a:i=a.index('--limit');lim=int(a[i+1]);del a[i:i+2]
-    main(a[0],a[1],reps,lim)
+    main(a[0],a[1],reps,lim,sm)
