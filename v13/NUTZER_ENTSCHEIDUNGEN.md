@@ -47,3 +47,8 @@ Wortlaut 09:00 Berlin: „Ig noise aware ka? Welches besser in log term yk.. Und
 1. **`age_plasticity_policy = noise_aware`** ist jetzt Standard (`config.py` DEFAULTS). Begründung für lange Sicht: im verrauschten Teil der WP-AB-Messung bester Wert (0,073 gegen boot 0,175, stable_reopen 0,129), Preis ist langsameres Umlernen bei echtem Zielwechsel (0,079 gegen 0,053). Blockiert G-AGE-REOPEN-001 nicht mehr; der Wiederöffnen-Test (WP-Z8) steht noch aus.
 2. **Zitat-Kontext an:** `offer_quote_context_chars=200`, `b2_offer_body_state=false`, `offer_quote_min_chars=90` sind Standard.
 Alte Werte bleiben als `LEGACY_PRE_20261022` für eingefrorene, vorregistrierte Harnesses und Tests des alten Verhaltens. Volle Suite 1609 Tests OK, 5 Skips.
+
+## 2026-10-22 16:33 Berlin — Eignungs-Werkzeug im Handy-Paket an (Thread „STEP2-Nutzen Engpass“)
+Entscheidungskarte „Sollen die zwei neuen Schalter ins nächste Handy-Paket, eingeschaltet?“, gewählt: **„Ja, beide an im Handy-Paket“**.
+1. Zitat-Kontext: war schon an (siehe oben), bleibt.
+2. Eignungs-Werkzeug (`:growth enable eligibility`) ist im nächsten Redmi-Paket (WP-Z7) vorab freigegeben. Age 0 = SHADOW mit Vergleich, Rezept mit strict-Prüfung (WP-Z3), Ja/Nein-Regeln nur deterministisch (WP-Z3b), nie von C3. Ob es danach dauerhaft an bleibt, entscheidet der Nutzer nach dem Handy-Test.

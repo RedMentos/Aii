@@ -131,7 +131,11 @@ class ToolStep:
         if not eligibility.question(text) or 'eligibility' not in self._registry().box.load()[0]['enabled']:return None  # C3 read costs a model call: only after the user enabled the tool
         earlier=self.earlier_exact(e,offers,version)
         try:
-            values=eligibility.read_values(self.r.pool.get('C3_LANGUAGE'),text,earlier,self.r.cancel_event,time.monotonic()+ELIG_READ_SECONDS)
+            fixed=eligibility.read_fixed(text,earlier) if self.r.cfg.get('eligibility_reader','model')=='fixed' else None  # rules never from a model
+            if fixed and fixed['options']:values=fixed  # this wording is fully covered: no model call
+            else:
+                values=eligibility.read_values(self.r.pool.get('C3_LANGUAGE'),text,earlier,self.r.cancel_event,time.monotonic()+ELIG_READ_SECONDS)
+                if fixed:values=eligibility.with_fixed_rules(values,fixed)
             args=eligibility.args_for(values,text,earlier)
         except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'elig_read','error':type(exc).__name__});return None
         return {'tool':'eligibility','args':args,'confidence':.8,'span':[0,len(str(text))],'proposer':ELIG_PROPOSER}
@@ -185,6 +189,17 @@ class ToolStep:
                 if attempt:raise
         self.r.store.log('tool_shadow_outcome',e['event_id'],{})
         return agree
+    def lead(self,result):
+        """cfg tool_answer_first: the executed eligibility decision opens the visible answer as a fixed sentence (the body
+        only explains it), so a 350M body that ignores the TOOL_RESULT layer can no longer replace the decision."""
+        if not self.r.cfg.get('tool_answer_first') or not result or result.get('tool')!='eligibility' or not isinstance(result.get('result'),dict):return None
+        from .agi import eligibility
+        return eligibility.answer_sentence(result['args'],result['result'])
+    def lead_final(self,result):
+        """UNKNOWN/NONE: the fixed text is the whole answer (no body continuation that could still pick an option)."""
+        if not self.lead(result) or result['result'].get('action') not in ('UNKNOWN','NONE'):return None
+        from .agi import eligibility
+        return eligibility.final_text(result['args'],result['result'])
     def layer(self,result):
         """Volatile context layer for the answering body: grounded tool output with its transaction id."""
         args=result['args']
@@ -195,7 +210,7 @@ class ToolStep:
         if result['tool']=='eligibility':  # Thread Q: readable decision line, like list_arith (raw JSON gets ignored by C3 350M)
             from .agi import eligibility
             return {'tool':'eligibility','answer':eligibility.answer_sentence(args,result['result']),'details':eligibility.decision_line(result['result']),'rejected_values':result['result'].get('rejected',[]),
-                    'note':eligibility.LIVE_NOTE,'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
+                    'note':eligibility.FIRST_NOTE if self.lead(result) else eligibility.LIVE_NOTE,'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
         return {'tool':result['tool'],'input':args,'output':result['result'],'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
 
 def report(store,limit=200):

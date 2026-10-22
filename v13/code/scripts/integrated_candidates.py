@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'eligibility_live')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'eligibility_live', 'tool_answer_first')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -245,8 +245,26 @@ def eligibility_live(sources):
     return out
 
 
+def tool_answer_first(sources):
+    """2026-10-22 (thread „STEP2-Nutzen Engpass“): with cfg tool_answer_first the executed eligibility decision is the first
+    visible sentence of the answer (ToolStep.lead), the body only continues; for UNKNOWN/NONE the fixed text is the whole
+    answer (ToolStep.lead_final, no generation); default off = unchanged turn."""
+    out = dict(sources)
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], "                leading_output=''\n                lw=latewatch.start(",
+        "                leading_output=''\n"
+        "                lead=toolctl.ToolStep(self).lead(tool_result) if tool_result and tool_result.get('result') is not None else None\n"
+        "                if lead:  # cfg tool_answer_first: the exact tool decision is the first visible sentence, the body continues\n"
+        "                    txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns()\n"
+        "                    final=toolctl.ToolStep(self).lead_final(tool_result);lead=final or lead\n"
+        "                    self.store.append_message(mid,lead+('' if final else ' '));output=lead+('' if final else ' ');meta['tool_answer_first']='FINAL' if final else 'LEAD'\n"
+        "                lw=latewatch.start(")
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], 'for token in runner.generate(messages,self.cancel_event,deadline,**output_kwargs):',
+                                     "for token in (() if meta.get('tool_answer_first')=='FINAL' else runner.generate(messages,self.cancel_event,deadline,**output_kwargs)):")
+    return out
+
+
 def _later(sources):
-    return eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))
+    return tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))))
 
 
 def _baseline(root):
