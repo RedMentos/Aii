@@ -1366,16 +1366,21 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
   - Doppelpunkt-Etiketten als ganzer Satz.
   - Weniger Rückfragen bei Verneinung über Dritte.
   - Handy-Test, ob das Nachfragen stört.
-### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — OFFEN
+### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — TEIL Z6a GEMESSEN 2026-10-22: `Z6A_EFFORT_ADAPTIVE_FAIL` (Thread „Offene Ziel-Pakete Z6 bis Z12“, Branch `claude/project-thread-i41cub`, PR #38)
+- **Z6a §24.23 Effort** (vorregistriert, `code/scripts/z6a_effort_bench.py`, Befund `code/docs/proofs/continuation-20261022/z6a-effort/BEFUND.md`, Daten `bench-results/z6a-effort-20261022/`): 60 Aufgaben, bestanden disabled 42 / low 42 / adaptive 39 / high 33 / max 35, Zeit bis FINAL 2,4 / 2,4 / 6,6 / 6,5 / 15,2 s. A1 und A2 PASS, **A3 FAIL: adaptive weckt auf 42/42 schon gelösten Aufgaben einen Körper** (immer FOCAL_TARGETED, nur 4/60 Weckungen nötig). Nächster Schritt: Weckung an ein Signal aus dem C3-Entwurf binden, neu vorregistrieren.
+- Offen: die übrigen §24-Teile unten.
 - 24.22 Wake (R4 im Blueprint-Sinn; Ergebnisse der R4-Werkzeug-Teile hier einbringen), 24.23 Effort (R5), 24.17 Deliberation, 24.25 Observer-Nutzen, 24.26 Broadcast-Brücke, 24.32 Lebenszyklus Scaffold→gelernte Route je Fähigkeit. Typisierte Modulatoren (G-MODULATOR-SPECIFICITY-001) mit echten Modellen.
 
-### WP-Z7 Ein Redmi-Paket für alle Handy-Pflichtmessungen (Nutzer, WP-R) — OFFEN
+### WP-Z7 Ein Redmi-Paket für alle Handy-Pflichtmessungen (Nutzer, WP-R) — GEBAUT 2026-10-22, Lauf durch den Nutzer offen (PR #38)
+- `HANDY_PFLICHT.sh` / `code/scripts/handy_pflicht.py` (Schritte ram, training, residenz, wiederholung, werkzeug, langlauf; Fortsetzen nach Abbruch; Ergebnis-ZIP mit KURZ.txt), `z7_residency_bench.py` (§24.33 + §24.14 Overhead, Wiederholungs-Latenz), `train_runner_proof.py` (G-TRAIN-RUNNER-PROOF-001 für den Routen-Kopf; Cloud-Fuzz alles grün; Fund: candidate.npz bekam kein fsync vor metrics.json, behoben). Anleitung `code/docs/HANDY_PFLICHT.md`. Schaltet vorab das Eignungs-Werkzeug ein (Nutzerentscheidung 22.10., SHADOW bei Age 0).
 - Ein Befehl wie `WERKZEUG_TESTEN.sh`: TRAIN_RUNNER_PROOF (G-TRAIN-RUNNER-PROOF-001), Langlauf (G-MOBILE-LONGRUN-001), §24.14 Overhead, §24.33 Residenz, Proceduralisierung Latenz/Energie, Werkzeug-Vorhersage. Ergebnis-ZIP hochladen. Bau in der Cloud, Lauf nur durch den Nutzer.
 
-### WP-Z8 Age-Plastizität entscheiden (Nutzer) — ENTSCHIEDEN 2026-10-22: `noise_aware` ist Standard, Zitat-Kontext an (`NUTZER_ENTSCHEIDUNGEN.md`); offen nur noch der Wiederöffnen-Test
+### WP-Z8 Age-Plastizität entscheiden (Nutzer) — ENTSCHIEDEN 2026-10-22: `noise_aware` ist Standard, Zitat-Kontext an (`NUTZER_ENTSCHEIDUNGEN.md`); Wiederöffnen-Test GEMESSEN: **G-AGE-REOPEN-001 FAIL**
+- Z8b/Z8c (vorregistriert, `code/scripts/z8_age_reopen.py`, Befund `code/docs/proofs/continuation-20261022/z8-age-reopen/BEFUND.md`): echtes AgeControl+Store öffnet bei Umbruch wieder, schließt wieder, Neustart identisch (K1/K3–K6 PASS), aber das Wiederöffnen spart nur 7,4 % Fehler (Z8b) bzw. 3,8 % auf frischen Seeds (Z8c), Schwelle 10 % → FAIL. Kandidat noise_aware_v2 ebenfalls FAIL (öffnet auch bei Rauschen). Ursache: Age sieht nur den eigenen Fehler; braucht ein unabhängiges Rausch-Signal.
 - Wahl `age_plasticity_policy = boot | stable_reopen | noise_aware` (offen seit 10.10., Messung in WP-AB). Danach Wiederöffnen-Test für G-AGE-REOPEN-001.
 
-### WP-Z9 Dream-Kontrolle „policy-only“ (Cloud) — OFFEN
+### WP-Z9 Dream-Kontrolle „policy-only“ (Cloud) — GEMESSEN 2026-10-22: `Z9_POLICY_DREAM_NO_GAIN`, Zuordnung `FACT_WRITE_CARRIES`
+- Alle vier §99-Dream-Kontrollen (`code/scripts/z9_dream_policy_only.py`, Befund `code/docs/proofs/continuation-20261022/z9-dream-policy-only/BEFUND.md`): Basis reproduziert Dream2v3; Dream ohne Faktenschreiben (Verlustmaske auf Faktenwerten) A-Umschreibung 0, Replay+Policy-Dream nur +0,08, Proben 0,22 vs. 0,61. Der Dream-Gewinn kommt aus dem Schreiben der Fakten selbst → G-REPLAY-CONSOLIDATION-001 bleibt offen.
 - Fehlende §99-Kontrolle für „Dream hilft“; schließt mit Dream2v3 G-REPLAY-CONSOLIDATION-001.
 
 ### WP-Z10 MoE verdrahten + Pre-Router-Vergessen messen (Cloud, groß) — OFFEN
