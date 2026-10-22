@@ -1,0 +1,60 @@
+{"fixture": "summary00", "p1": false, "op": "total", "expr": "printer paper 62 + cleaning service 30 + train tickets 17", "value": 109, "err": null, "p3": true}
+{"fixture": "summary01", "p1": false, "op": "total", "expr": "train tickets 29 + postage 30 + office chairs 16", "value": 75, "err": null, "p3": true}
+{"fixture": "summary02", "p1": false, "op": "total", "expr": "software licence 79 + office chairs 64 + cleaning service 38", "value": 181, "err": null, "p3": true}
+{"fixture": "summary03", "p1": false, "op": "total", "expr": "train tickets 55 + printer paper 37 + projector 38", "value": 130, "err": null, "p3": true}
+{"fixture": "summary04", "p1": true, "op": "total", "expr": "projector 38 + cables 39 + office chairs 65", "value": 142, "err": null, "p3": true}
+{"fixture": "summary05", "p1": true, "op": "total", "expr": "printer paper 29 + software licence 38 + cables 30", "value": 97, "err": null, "p3": true}
+{"fixture": "summary06", "p1": true, "op": "total", "expr": "printer paper 95 + train tickets 39 + cleaning service 38", "value": 172, "err": null, "p3": true}
+{"fixture": "summary07", "p1": false, "op": "total", "expr": "cables 94 + office chairs 40 + snacks 73", "value": 207, "err": null, "p3": false}
+{"fixture": "summary08", "p1": false, "op": "total", "expr": "coffee beans 54 + cables 85 + snacks 62", "value": 201, "err": null, "p3": true}
+{"fixture": "summary09", "p1": true, "op": "total", "expr": "cables 51 + office chairs 34 + train tickets 83", "value": 168, "err": null, "p3": true}
+{"fixture": "summary10", "p1": true, "op": "total", "expr": "train tickets 15 + software licence 88 + office chairs 59", "value": 162, "err": null, "p3": true}
+{"fixture": "summary11", "p1": true, "op": "total", "expr": "projector 95 + coffee beans 37 + postage 26", "value": 158, "err": null, "p3": true}
+{"fixture": "summary12", "p1": true, "op": "total", "expr": "office chairs 63 + cables 18 + cleaning service 83", "value": 164, "err": null, "p3": true}
+{"fixture": "summary13", "p1": true, "op": "total", "expr": "coffee beans 36 + train tickets 37 + postage 54", "value": 127, "err": null, "p3": true}
+{"fixture": "summary14", "p1": false, "op": "total", "expr": "software licence 75 + cleaning service 90 + printer paper 77", "value": 242, "err": null, "p3": true}
+{"fixture": "long00", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long01", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long02", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long03", "p1": false, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long04", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long05", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long06", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long07", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long08", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long09", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long10", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long11", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long12", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long13", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "long14", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes00", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes01", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes02", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes03", "p1": false, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes04", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes05", "p1": false, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes06", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes07", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes08", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes09", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes10", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes11", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes12", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes13", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "notes14", "p1": true, "op": "none", "expr": null, "value": null, "err": "ValueError: no operation", "p3": null}
+{"fixture": "compare00", "p1": false, "op": "difference_max_min", "expr": "largest Turin 699 - smallest Linz 240", "value": 459, "err": null, "p3": true}
+{"fixture": "compare01", "p1": false, "op": "difference_max_min", "expr": "largest Porto 579 - smallest Bremen 334", "value": 245, "err": null, "p3": true}
+{"fixture": "compare02", "p1": false, "op": "difference_max_min", "expr": "largest Ghent 893 - smallest Brno 379", "value": 514, "err": null, "p3": true}
+{"fixture": "compare03", "p1": true, "op": "difference_max_min", "expr": "largest Cork 450 - smallest Turin 170", "value": 280, "err": null, "p3": true}
+{"fixture": "compare04", "p1": false, "op": "difference_max_min", "expr": "largest Malmo 872 - smallest Bremen 210", "value": 662, "err": null, "p3": true}
+{"fixture": "compare05", "p1": false, "op": "difference_max_min", "expr": "largest Malmo 542 - smallest Turin 180", "value": 362, "err": null, "p3": false}
+{"fixture": "compare06", "p1": true, "op": "difference_max_min", "expr": "largest Lyon 654 - smallest Ghent 588", "value": 66, "err": null, "p3": true}
+{"fixture": "compare07", "p1": false, "op": "difference_max_min", "expr": "largest Ghent 593 - smallest Brno 163", "value": 430, "err": null, "p3": true}
+{"fixture": "compare08", "p1": false, "op": "difference_max_min", "expr": "largest Ghent 662 - smallest Lyon 160", "value": 502, "err": null, "p3": true}
+{"fixture": "compare09", "p1": false, "op": "difference_max_min", "expr": "largest Porto 706 - smallest Linz 622", "value": 84, "err": null, "p3": true}
+{"fixture": "compare10", "p1": true, "op": "difference_max_min", "expr": "largest Bremen 657 - smallest Cork 243", "value": 414, "err": null, "p3": false}
+{"fixture": "compare11", "p1": false, "op": "difference_max_min", "expr": "largest Turin 791 - smallest Ghent 365", "value": 426, "err": null, "p3": false}
+{"fixture": "compare12", "p1": false, "op": "difference_max_min", "expr": "largest Linz 804 - smallest Bremen 246", "value": 558, "err": null, "p3": false}
+{"fixture": "compare13", "p1": false, "op": "difference_max_min", "expr": "largest Lyon 564 - smallest Brno 276", "value": 288, "err": null, "p3": true}
+{"fixture": "compare14", "p1": false, "op": "difference_max_min", "expr": "largest Turin 798 - smallest Bremen 464", "value": 334, "err": null, "p3": true}

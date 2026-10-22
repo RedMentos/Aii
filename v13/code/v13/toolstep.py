@@ -24,7 +24,7 @@ import time
 from .common import dumps
 from .contracts import packet
 
-PROPOSER='boot-arith-note-v3';KEY='TOOL_SHADOW_AGREEMENT'
+PROPOSER='boot-arith-note-v3';KEY='TOOL_SHADOW_AGREEMENT';CHECK_KEY='TOOL_ANSWER_CHECK'
 LIST_PROPOSER='boot-listarith-v1';LIST_READ_SECONDS=45  # R4 part 6: C3 value read for list_arith
 ELIG_PROPOSER='boot-eligibility-v1';ELIG_READ_SECONDS=60  # Thread Q: C3 value read for eligibility
 LIST_NOTE='Use this exact number in the answer. If the text states a different number for it, say clearly that it is wrong.'  # wording of r4_typed_recipe RESULT_TEMPLATE
@@ -189,6 +189,25 @@ class ToolStep:
                 if attempt:raise
         self.r.store.log('tool_shadow_outcome',e['event_id'],{})
         return agree
+    def check_answer(self,e,result,output,mid):
+        """WP-DS3b cfg tool_answer_check: fixed cross-check of the finished answer against an executed list_arith recipe.
+        off (default): nothing runs. shadow: counted only. note: a failed check appends a fixed sentence saying the answer
+        does not match the exact calculation (the streamed answer cannot be taken back). Returns the appended text."""
+        mode=self.r.cfg.get('tool_answer_check','off')
+        if mode=='off' or not result or result.get('tool')!='list_arith' or result.get('result') is None:return ''
+        from .agi import listarith
+        ok,reason=listarith.answer_check(result['args'],result['result'],output)
+        for attempt in (0,1):  # counts in a state (telemetry whitelists fields)
+            st,v=self.r.store.state(CHECK_KEY);st=st or {'checked':0,'failed':0,'noted':0,'reasons':{}}
+            st['checked']+=1;st['failed']+=int(not ok);st['noted']+=int(not ok and mode=='note')
+            if not ok:st['reasons'][reason]=st['reasons'].get(reason,0)+1
+            try:self.r.store.set_state(CHECK_KEY,st,expected=v);break
+            except ValueError:
+                if attempt:raise
+        self.r.store.log('tool_answer_check',e['event_id'],{})
+        if ok or mode!='note':return ''
+        note=(' ' if output and not output.endswith((' ','\n')) else '')+listarith.check_note(result['args'],result['result'])
+        self.r.store.append_message(mid,note);return note
     def lead(self,result):
         """cfg tool_answer_first: the executed eligibility decision opens the visible answer as a fixed sentence (the body
         only explains it), so a 350M body that ignores the TOOL_RESULT layer can no longer replace the decision."""

@@ -563,6 +563,8 @@ class Runtime:
                     marks=meta['stage_marks_s'];obs_s=marks.get('focal_loop',0.)-marks.get('preanswer_observers',0.)
                     jefctl.controller(self).learn_turn(e,text,offers,output,focal_run,pre_offer_ids if focal_run else [],obs_s)
                 except Exception as exc:self.store.log('jef_bridge_unavailable',eid,{'stage':'learn','error':type(exc).__name__})
+                try:output+=toolctl.ToolStep(self).check_answer(e,tool_result,output,mid)  # WP-DS3b cfg tool_answer_check (default off: adds nothing)
+                except Exception as exc:self.store.log('tool_step_unavailable',eid,{'stage':'answer_check','error':type(exc).__name__})
                 try:toolctl.ToolStep(self).compare(e,tool_shadow,output) if tool_shadow else None  # shadow agreement = evidence for the Age-1 tool right
                 except Exception as exc:self.store.log('tool_step_unavailable',eid,{'stage':'compare','error':type(exc).__name__})
                 try:attctl.controller(self).source_outcome(eid,text,output)  # WP-N5 §4B.4: did the A4 high-res spans reach the answer?

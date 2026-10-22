@@ -1,0 +1,73 @@
+{
+ "schema": "v13-ds3-metacog-prereg-v1",
+ "created_utc": "2026-10-22T14:40:21Z",
+ "dev_sha256": {
+  "7": "881c119014b1030b32d61bd94a58ee31874f8610b8623c5b867d4294df83a141",
+  "11": "23f1ca82ed88cf4d290eddabc72fe9241b63579171fb0d02a129bf603be2864f",
+  "17": "16cfa2ad69fa84a059e2e8b76586dee7c0c5c0db23bbebb930d852684b0e0bba"
+ },
+ "calibrators": {
+  "after_tool": [
+   0.25,
+   0.25,
+   0.25,
+   0.428571,
+   0.428571,
+   0.5,
+   0.5,
+   0.8,
+   0.857143,
+   0.876712
+  ],
+  "no_tool": [
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5625,
+   0.5625,
+   0.5625,
+   0.5625,
+   0.625,
+   0.961538
+  ]
+ },
+ "t_abstain": 0.5,
+ "lambda": 1.0,
+ "dev": {
+  "c3_alone": {
+   "correct": 121,
+   "wrong": 59,
+   "abstain": 0,
+   "tool": 0,
+   "answered_share": 1.0,
+   "utility": 62.0,
+   "utility_lambda2": 3.0
+  },
+  "recipe_always": {
+   "correct": 156,
+   "wrong": 24,
+   "abstain": 0,
+   "tool": 90,
+   "answered_share": 1.0,
+   "utility": 132.0,
+   "utility_lambda2": 108.0
+  },
+  "ds3": {
+   "correct": 155,
+   "wrong": 16,
+   "abstain": 9,
+   "tool": 81,
+   "answered_share": 0.95,
+   "utility": 139.0,
+   "utility_lambda2": 123.0
+  }
+ },
+ "dev_auroc_wrong": 0.8429,
+ "fresh_task_seeds": [
+  31,
+  37
+ ],
+ "decision_rule": "Fresh seeds 31+37 (120 tasks). H1 calibration: AUROC of c for \"final answer wrong\" >= .70 and ECE of the dev-fitted calibrator <= .15. H2 utility: ds3 utility (LAMBDA=1) >= recipe_always + 5 and ds3 wrong answers <= 0.7 x recipe_always wrong answers, with answered share >= .70. H3 abstention precision: of the abstained tasks >= 60 % would have been wrong under recipe_always. H4 kept answers: ds3 correct >= recipe_always correct - 6. DS3_SUPPORTED when H1..H4 all pass, else the failing parts are named. LAMBDA=2 is reported, not judged.",
+ "script_sha256": "44813bac29cbb5e6f1b6da9be8b281641a7b3f92e8d1a65fdc95246f9b3a9988"
+}

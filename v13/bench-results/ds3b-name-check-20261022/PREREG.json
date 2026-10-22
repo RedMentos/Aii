@@ -1,0 +1,203 @@
+{
+ "schema": "v13-ds3b-prereg-v1",
+ "created_utc": "2026-10-22T15:02:03Z",
+ "dev_sha256": {
+  "41": "878f6f662cbff34dae627a277d2e9aea5355253fae28cde769fcb6d4779bead1",
+  "43": "d689f2715df8a354a8e768a0b435cde97569550432590fbdb527f86f1efedcf5"
+ },
+ "calibrators_digit": {
+  "after_tool": [
+   0.272727,
+   0.272727,
+   0.272727,
+   0.5,
+   0.5,
+   0.666667,
+   0.666667,
+   0.666667,
+   0.666667,
+   0.8
+  ],
+  "no_tool": [
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.75,
+   0.75,
+   0.980769
+  ]
+ },
+ "calibrators_entity": {
+  "after_tool": [
+   0.384615,
+   0.384615,
+   0.384615,
+   0.5,
+   0.5,
+   0.625,
+   0.625,
+   0.714286,
+   0.815789,
+   0.815789
+  ],
+  "no_tool": [
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.714286,
+   0.714286,
+   0.714286,
+   0.857143,
+   0.857143,
+   0.972973
+  ]
+ },
+ "t_digit": 0.5,
+ "t_entity": 0.5,
+ "lambda": 1.0,
+ "dev": {
+  "c3_alone": {
+   "correct": 80,
+   "wrong": 40,
+   "abstain": 0,
+   "repair": 0,
+   "answered_share": 1.0,
+   "utility": 40.0,
+   "utility_lambda2": 0.0,
+   "strict": {
+    "correct": 78,
+    "wrong": 42,
+    "utility": 36
+   }
+  },
+  "recipe_always": {
+   "correct": 101,
+   "wrong": 19,
+   "abstain": 0,
+   "repair": 0,
+   "answered_share": 1.0,
+   "utility": 82.0,
+   "utility_lambda2": 63.0,
+   "strict": {
+    "correct": 89,
+    "wrong": 31,
+    "utility": 58
+   }
+  },
+  "ds3_digit": {
+   "correct": 101,
+   "wrong": 14,
+   "abstain": 5,
+   "repair": 0,
+   "answered_share": 0.9583,
+   "utility": 87.0,
+   "utility_lambda2": 73.0,
+   "strict": {
+    "correct": 89,
+    "wrong": 26,
+    "utility": 63
+   }
+  },
+  "name_unc": {
+   "correct": 99,
+   "wrong": 14,
+   "abstain": 7,
+   "repair": 0,
+   "answered_share": 0.9417,
+   "utility": 85.0,
+   "utility_lambda2": 71.0,
+   "strict": {
+    "correct": 89,
+    "wrong": 24,
+    "utility": 65
+   }
+  },
+  "check": {
+   "correct": 99,
+   "wrong": 4,
+   "abstain": 17,
+   "repair": 0,
+   "answered_share": 0.8583,
+   "utility": 95.0,
+   "utility_lambda2": 91.0,
+   "strict": {
+    "correct": 89,
+    "wrong": 14,
+    "utility": 75
+   }
+  },
+  "ds3b": {
+   "correct": 97,
+   "wrong": 4,
+   "abstain": 19,
+   "repair": 0,
+   "answered_share": 0.8417,
+   "utility": 93.0,
+   "utility_lambda2": 89.0,
+   "strict": {
+    "correct": 89,
+    "wrong": 12,
+    "utility": 77
+   }
+  },
+  "check_repair": {
+   "correct": 116,
+   "wrong": 4,
+   "abstain": 0,
+   "repair": 17,
+   "answered_share": 1.0,
+   "utility": 112.0,
+   "utility_lambda2": 108.0,
+   "strict": {
+    "correct": 106,
+    "wrong": 14,
+    "utility": 92
+   }
+  }
+ },
+ "dev_auroc_wrong": {
+  "digit": 0.826,
+  "digit_entity": 0.7264
+ },
+ "dev_check": {
+  "tool_tasks": 60,
+  "flagged": 17,
+  "flagged_wrong": 15,
+  "recipe_wrong_on_tool": 16,
+  "caught": 15,
+  "precision": 0.8824,
+  "recall": 0.9375,
+  "reasons": {
+   "stated_number_not_flagged": 5,
+   "wrong_largest": 7,
+   "value_missing": 5
+  }
+ },
+ "dev_check_full": {
+  "tool_tasks": 60,
+  "flagged": 27,
+  "flagged_wrong": 15,
+  "recipe_wrong_on_tool": 16,
+  "caught": 15,
+  "precision": 0.5556,
+  "recall": 0.9375,
+  "reasons": {
+   "stated_number_not_flagged": 5,
+   "wrong_largest": 7,
+   "wrong_smallest": 10,
+   "value_missing": 5
+  }
+ },
+ "fresh_task_seeds": [
+  47,
+  53,
+  59
+ ],
+ "decision_rule": "Fresh seeds 47+53+59 (180 tasks), evaluated once. H1 entity signal: AUROC of digit+entity confidence for \"final answer wrong\" >= .70 and >= AUROC of digit confidence alone + .03. H2 cross-check: of the tool tasks whose check fails >= 70 % are wrong under recipe_always, and the check flags >= 50 % of the wrong recipe_always answers on tool tasks. H3 utility (primary ds3b, LAMBDA=1): ds3b >= recipe_always + 7, ds3b wrong <= 0.7 x recipe_always wrong, answered share >= .70. H4 kept answers: ds3b correct >= recipe_always correct - 9. DS3B_SUPPORTED when H1..H4 all pass, else the failing parts are named; H2 and H3 can pass without H1 (then the check alone carries it). check_repair, check_full, strict scoring and LAMBDA=2 are reported, not judged. No runtime change.",
+ "script_sha256": "a111c088ec5441c262c44360cee92d6a08dcae479aea33606984d0c8668f35c2"
+}
