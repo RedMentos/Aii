@@ -25,7 +25,7 @@ GATES={'experience':(0,50,200,800,2000,5000),'competence':(0,.6,.7,.78,.85,.9),'
        'retention':(0,.9,.92,.94,.96,.97),'calibration':(0,.6,.7,.75,.8,.85),'memory_health':(0,.9,.9,.92,.94,.95),
        'safe_self_control':(0,.95,.97,.98,.99,.995)}
 # Minimum stage per right (§17.7-17.12). Hard-rule edits are never an age right.
-RIGHTS={'direct_route':0,'episodic_memory_write':0,'simple_feedback':0,'small_shadow_update':0,
+RIGHTS={'direct_route':0,'episodic_memory_write':0,'simple_feedback':0,'small_shadow_update':0,'late_correction':0,
  'shadow_alternative_routes':1,'autonomous_memory_edit':1,'simple_tool_choice':1,'skip_translator':1,'short_dream':1,'route_exploration':1,
  'deliberation_modes':2,'tool_learning':2,'raw_body_attempt':2,'procedural_memory':2,'routine_skip_defaults':2,'adaptive_gist_grouping':2,
  'long_loops':3,'own_sleep_planning':3,'request_teacher':3,'safe_self_edit_without_dialog':3,
