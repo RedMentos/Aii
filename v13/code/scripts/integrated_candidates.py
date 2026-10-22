@@ -172,8 +172,35 @@ def b2_offer(text):
     return t
 
 
+def context_fit(sources):
+    """2026-10-22 WP-Z5d (Z5c follow-up): live context fit before the answer (v13/context_fit.py) + exact prompt count."""
+    out = dict(sources)
+    t = out['v13/runtime.py']
+    t = _replace(t, 'from . import effort\n', 'from . import effort\nfrom . import context_fit as ctxfit\n')
+    t = _replace(t, "                sys=stable+''.join(head+dumps(body) for _,head,body in volatile)\n                history=[{'role':m['role'],'content':m['text']} for m in history_records]\n",
+                 "                history=[{'role':m['role'],'content':m['text']} for m in history_records]\n"
+                 "                try:  # WP-Z5d: long sessions must not overflow the native window; cut old thoughts first (only when it does not fit)\n"
+                 "                    count,how=ctxfit.counter(runner,self.cancel_event,deadline)\n"
+                 "                    volatile,fitrep=ctxfit.fit(self.cfg.get('context_fit','active'),stable,volatile,history,text,count,ctxfit.budget(self.cfg))\n"
+                 "                    if not fitrep.get('quick'):meta['context_fit']=fitrep|{'count':how};self.store.log('context_fit',eid,meta['context_fit'])\n"
+                 "                except Exception as exc:self.store.log('context_fit_unavailable',eid,{'error':type(exc).__name__})\n"
+                 "                sys=stable+''.join(head+dumps(body) for _,head,body in volatile)\n")
+    out['v13/runtime.py'] = t
+    t = out['v13/runners.py']
+    gen = "    def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):\n        if self.purpose!='generate':raise Unavailable('Tap-Runner erzeugt keine Antworten; Generation-Runner anfordern')\n"
+    t = _replace(t, gen,
+                 "    def prompt_tokens(self,messages,cancel,deadline):\n"
+                 "        \"\"\"WP-Z5d: exact prompt length (same template + tokenizer as generate), without truncation.\"\"\"\n"
+                 "        if self.purpose!='generate':raise Unavailable('Nur Generation-Runner zählen Prompt-Tokens')\n"
+                 "        self.load(cancel,deadline);check(cancel,deadline)\n"
+                 "        p=self._json(\"POST\",\"/apply-template\",{\"messages\":[dict(x) for x in messages],\"add_generation_prompt\":True,\"chat_template_kwargs\":{\"enable_thinking\":False}},deadline)[\"prompt\"]\n"
+                 "        return len(self._json(\"POST\",\"/tokenize\",{\"content\":p,\"add_special\":True},deadline)[\"tokens\"])\n"+gen)
+    out['v13/runners.py'] = t
+    return out
+
+
 def _later(sources):
-    return b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))
+    return context_fit(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))
 
 
 def _baseline(root):
