@@ -1,0 +1,81 @@
+{
+ "schema": "V13_B3_L1_V6_PREREGISTRATION_V1",
+ "utc": "2026-10-22T06:13:46.257393+00:00",
+ "package": "WP-Z4d: B3-H3 L1 attempt 6 = replication of the attempt-5 private/escalate canon PASS on two fresh data seeds",
+ "script_path": "scripts/b3_l1_v6_bench.py",
+ "v5_script_path": "scripts/b3_l1_v5_bench.py",
+ "v4_helpers_path": "scripts/b3_l1_v4_bench.py",
+ "v3_helpers_path": "scripts/b3_l1_v3_bench.py",
+ "h2_helpers_path": "scripts/b3_h2_bench.py",
+ "bridge_path": "v13/b3bridge.py",
+ "script_sha256": "11a761823e85c0a2245b52753643ad0b70dee8642d74fda6728f1ace385a4a2c",
+ "v5_script_sha256": "d8e8bb023e58536df5d65095bd67cb01b94154d4f0837b92afb67e5b7cfb9879",
+ "v4_helpers_sha256": "9dc8d7144ee3d10678b207afccbf4d87c6333def97b534362f52d06a9079e113",
+ "v3_helpers_sha256": "0c8422fed9575418a22b103690d82bbfab25bec1d8e7b16d0db308d26e19bea5",
+ "h2_helpers_sha256": "546c4a3d72d3f7b53213edc1add4ff385878958af0008a92ef1a92d4150bff9a",
+ "bridge_sha256": "382b70238903616259eddec1e0bc612da67e253e1f824b36179202eb613c9850",
+ "unchanged_vs_attempt5_prereg": {
+  "v4_helpers": true,
+  "v3_helpers": true,
+  "h2_helpers": true,
+  "bridge": true,
+  "v5_script": true
+ },
+ "recipe": "identical to attempt 5 (b3_l1_v5_bench.run_task and main called unchanged; only SEED_DATA and the overlap report are replaced): recv_cond aux bridge + Bridge.refit_readout, 64 B message K=4 r=8 h=16, l1_gate, baselines/controls, splits 60/20/20, 5 paired split seeds, both views",
+ "data": {
+  "20261201": {
+   "n": 600,
+   "sha256": "62f48bfdbb905b6838b1944a783053d03b4bd75deb894fe0d71adaea65046495",
+   "overlap": {
+    "same_sender_text_as_attempt3": 0,
+    "same_sender_text_as_attempt4": 0,
+    "same_sender_text_as_attempt5": 0,
+    "same_sender_text_as_attempt6_other_seed": 0,
+    "n": 600
+   }
+  },
+  "20261202": {
+   "n": 600,
+   "sha256": "b657f1b7fdffe18e1394aea61af9bb41addf00148d2d3ffb3e9fd8906bcb3265",
+   "overlap": {
+    "same_sender_text_as_attempt3": 0,
+    "same_sender_text_as_attempt4": 0,
+    "same_sender_text_as_attempt5": 0,
+    "same_sender_text_as_attempt6_other_seed": 0,
+    "n": 600
+   }
+  }
+ },
+ "states": "NEW B1/B2 states per data seed, computed after this preregistration is pushed",
+ "models": {
+  "body": {
+   "model_id": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+   "revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1"
+  },
+  "gist": {
+   "model_id": "ggml-org/Qwen3.5-0.8B-GGUF",
+   "revision": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+  }
+ },
+ "runner": {
+  "tag": "b10964",
+  "linux_x86_64_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
+ },
+ "gate": "G-CALLOSUM-UTILITY-002 via unchanged b3bridge.l1_gate (BYTES_W .25, BYTES_NORM 4000, paired mean-2se>0, role_drop<=.01, ood<=.05, reload identical)",
+ "tasks": {
+  "escalate": "TARGET of the replication (attempt-5 canon PASS)",
+  "apologize": "reported (attempt-5 FAIL)",
+  "action": "reported (attempt-4 PASS, attempt-5 not replicated)",
+  "topic": "receiver role retention"
+ },
+ "verdict_rule": "Per data seed and task: canon L1 PASS = l1_gate PASS against label word AND attribute words (as attempt 5). private/escalate is REPLICATED only if canon PASS on BOTH fresh seeds; PASS on exactly one = SEED_DEPENDENT; on none = NOT_REPLICATED. apologize/action: same three labels reported, no gate decision beyond that. strict SCALAR reported as claim limit. Each seed runs once; no re-run with changed settings counts; FAIL stays FAIL.",
+ "consequence": {
+  "REPLICATED": "escalate L1 counts as robust over 3 data seeds; an L2 prefix SHADOW run on private/escalate may be preregistered next; LATENT authority stays 0, runtime unchanged",
+  "SEED_DEPENDENT": "escalate L1 PASS treated as fragile like action; no L2 step on escalate; next = more data per seed or a stronger channel, not a new readout tweak",
+  "NOT_REPLICATED": "attempt-5 PASS treated as a seed effect; B3_LATENT stays unavailable; L2 stays locked"
+ },
+ "expectation": "attempt 5 escalate margin over attribute words was +0.056 utility (5/5 split seeds); attribute-word strength varied by 2 points between data seeds, so one of two fresh seeds failing is plausible",
+ "hardware": "Linux x86_64 cloud CPU, 4 threads, seeds run sequentially; not Redmi"
+}
