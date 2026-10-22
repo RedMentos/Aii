@@ -1239,6 +1239,13 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Befund `code/docs/proofs/continuation-20261022/user-rules-v3/BEFUND.md`. Grundregel bleibt: Außenwirkung nur als Vorschlag.
 - Offen: v4 mit Grundsätzen statt Wortlisten (an die KI gerichtete Bitte + Halte-Signal ⇒ mindestens Rückfrage; Fragezeichen macht Bitte nicht zur Nicht-Regel) + versiegelte Runde 4 mit neuen Erzeugern und deutschem Auftrag.
 
+### WP-UR4 Regel-Leser v4 + versiegelte Runde 4 — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V4_UNSAFE` (gleicher Thread/Branch)
+- v4 aus Runde-3-Fehlern: höfliche Frage-Bitten („could you not …?“) sind Bitten, „make sure not to“, Schutzwörter („preserve“, „leave as they are“), Halte-Signale ohne Verneinung („put away“, „stay offline“, „skip“), „until I give the okay“, Wort als Ziel und Handlung („phone“) wird weiter, „…, okay?“ ist keine Frage. Bekannte Sätze inkl. Runde 3: 0 Fehler.
+- Runde 4 (Phi-4-mini, Granite 3.3 2B, EuroLLM 9B; 630 roh, 93 geprüft, 67 deutsch): v4 **13 Fehler in 6 Sätzen**, alle deutsch (v3, v2 gleich). Englisch 0/26.
+- Gefährlichste Form: Erlaubnis mit Bedingung („Du darfst nur … wenn …“, „erst … wenn ich erlaube“) wird als Lockerung gelesen. Dazu „bleib ab von“, „Kein Versand!“, „grünes Licht“, „keine Dateien herunterladen“ (Ziel macht Verbot zu eng).
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v4/BEFUND.md`.
+- Offen: v5 (Bedingung vor Lockerung, deutsche Halte-Formen, Nomen zu Handlungen, Handlung mit eigenem Ziel) + Runde 5 aus deutschen Quellsätzen.
+
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
