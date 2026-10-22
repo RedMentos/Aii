@@ -137,6 +137,27 @@ def gate(runs,choice):
     out['choice']=choice;out['canonical_gate_pass']=False
     return out
 
+def hx5_records(work,arm,seeds=HOLDOUT_SEEDS):
+    """HX5 data candidates from the B2 capture of an arm: current-turn calls on RULE/SPLIT episodes, accepted only when the
+    exactly verifiable quotes state every rule of the episode and no wrong rule value (oracle used after the gate only)."""
+    from v13.cognition import quote_span
+    from v13.agi import eligibility as E
+    by_goal={f['current']:f for f in z2.FIXTURES if f['type'] in z2c.RULE_TYPES};out=[]
+    for s in seeds:
+        f=Path(work)/('b2_capture_'+z2b.run_id(arm,s)+'.json')
+        if not f.exists():continue
+        for n,c in enumerate(json.loads(f.read_text())):
+            try:user=json.loads(c['messages'][-1]['content']);obj=json.loads(c['output'])
+            except (ValueError,KeyError,IndexError):continue
+            fx=by_goal.get(user.get('goal'))
+            if fx is None:continue
+            sources=[user['goal']]+[x.get('exact_source_excerpt','') for x in user.get('earlier_context') or []]
+            exact=[q for q in obj.get('quotes',[])[:3] if isinstance(q,str) and any(quote_span(q,src,200) for src in sources)]
+            text=' '.join(exact)
+            ok=all(E.stated(k,v,text) for k,v in fx['rules'].items()) and not any(fx['rules'][k]!=v for k,v in z2c.rule_values(text))
+            out.append({'messages':c['messages'],'output':c['output'],'accepted':ok,'task':fx['id'],'run':z2b.run_id(arm,s)+f'#{n}'})
+    return out
+
 def order(stage,choice=None):
     if stage=='probe':return [(a,PROBE_SEED) for a in PROBE_ARMS]
     return [(a,s) for s in HOLDOUT_SEEDS for a in ('REF',choice,'U')]
@@ -158,7 +179,9 @@ def main():
     if comp['status']!='CHOSEN':result['gate']={'status':'HX2_NO_CANDIDATE','canonical_gate_pass':False}
     elif a.stage in ('holdout','all'):
         for k in order('holdout',comp['choice']):load_or_run(*k)
-        result['gate']=gate(runs,comp['choice'])
+        result['gate']=gate(runs,comp['choice']);result['chosen_diff']=VARIANTS[comp['choice']]
+        recs=hx5_records(work,comp['choice']);result['hx5_candidates']={'records':len(recs),'accepted':sum(r['accepted'] for r in recs),
+                                                                       'locked':result['gate']['status']!='HX2_PASS'}
     result['runs']={z2b.run_id(*k):{'tool':v['paired_tool']['mean_utility'],'probe_score':v['hx2']['probe_score'],'wrong':v['hx2']['wrong_committed_tool']} for k,v in sorted(runs.items())}
     atomic_write(work/'hx2_result.json',json.dumps(result,ensure_ascii=False,indent=2));print(json.dumps(result.get('gate'),indent=1)[:4000])
 if __name__=='__main__':main()

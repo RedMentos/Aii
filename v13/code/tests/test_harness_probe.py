@@ -78,3 +78,19 @@ class Gate(unittest.TestCase):
     def test_structural(self):self.assertEqual(HP.holdout_gate(axes(.3,.5,.3),'both_exact',self.W,False)['status'],'HX2_INVALID')
 
 if __name__=='__main__':unittest.main()
+
+class HX5Records(unittest.TestCase):
+    def test_capture_records_accept_only_full_exact_rule(self):
+        import json,sys,tempfile
+        from pathlib import Path
+        sys.path[:0]=[str(Path(__file__).resolve().parents[1]/'scripts')]
+        import hx2_same_task_probe as h
+        from v13.cognition import sentence_spans
+        f=next(x for x in h.z2.FIXTURES if x['id']=='Quasar');src=f['history'][0][:h.z2.B2_EXCERPT_CHARS]
+        rules=[src[a:b] for a,b in sentence_spans(src)][1:4]  # budget, deadline, local-only sentences
+        user=json.dumps({'goal':f['current'],'earlier_context':[{'exact_source_excerpt':src}]})
+        cap=[{'messages':[{'role':'system','content':'s'},{'role':'user','content':user}],'output':json.dumps({'quotes':q})} for q in (rules,rules[:2],['Budget 999 euros.'],[])]
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d)/'b2_capture_V2_s21.json').write_text(json.dumps(cap))
+            recs=h.hx5_records(d,'V2',seeds=(21,))
+        self.assertEqual([r['accepted'] for r in recs],[True,False,False,False])
