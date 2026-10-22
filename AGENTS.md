@@ -26,3 +26,12 @@ These project instructions preserve the user's decisions, including the 2026-10-
 - Existing STEP2 UTILITY_FAIL and B3 L1 FAIL remain until their original gates pass. `canonical_architecture_complete` and `user_full_scope_complete` remain false while any required scope is open.
 - Publish reviewable checkpoints regularly to the authorized `RedMentos/Aii` work branch without re-requesting routine push permission. Verify remote commit/tree after each push; local commits alone are not a backup. Preserve a current handoff for Codex/Claude/other agents and update the agreed second location when technically available.
 - Close and hash-bind raw evidence before saving; use the existing lossless small-object storage for large artifacts. Give brief progress updates and continue across checkpoints rather than stopping after one small task. Never claim a save, model run or result before confirmation.
+
+## Cross-review between Claude and GPT/Codex (user request 2026-10-21)
+
+The user wants Claude and GPT/Codex to check each other's work. This is a standing rule for both sides:
+
+- Before building on the other side's latest work, review it first: run the full suite, read the runtime-code diff (`v13/code/v13/`), try at least one counterexample per new guard or gate, check that every FAIL stays FAIL and that SHADOW/synthetic/Linux/Redmi evidence levels stay separate, check that preregistrations were committed before their runs, and run `python v13/code/scripts/public_repo_privacy_scan.py --base <last reviewed commit> --head <their branch>` (must print CLEAN).
+- Also check the goal: no harm to people; new tools or modules default off and only run with the user's conscious, unmanipulated permission; unmeasured SHADOW parts get no decision authority.
+- Record each round at the top of `v13/PRUEFUNG_CLAUDE_FUER_GPT.md` (or `v13/PRUEFUNG_GPT_FUER_CLAUDE.md`): reviewed commits, commands with output, findings (bug / note / OK) and what you changed. Fix confirmed small bugs with a test; leave larger findings as open points for the other side or the user.
+- Never overwrite the other side: `git fetch` before every push, merge foreign commits instead of replacing them, no force-push, and name in the handoff what came from whom. The repo is public: nothing private (tokens, personal data, private chats, device identifiers) in git; private material goes to Drive only. Back up each round to git and Drive.
