@@ -1262,6 +1262,19 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Bestätigungslauf Seed 14 (`scripts/step2_z2c_switch.py`, kein Gate): Schalter beide both_exact .592 (ohne .375, Z2b-Patch .675), nur B1 .450; b1_only .275 → .575; B1-Optionszitate 18 → 52; 0 falsch in 140 Werkzeug-Zeilen. Befund `code/docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md`.
 - Offen: Nutzerentscheidung Einschalten (nur sinnvoll für STEP2-artige Aufgaben, Frage ist aufgabenspezifisch); allgemeine Frage für Chat ungemessen; B2-Regelzitat-Paket; Seed-Bug `cognition.offer`.
 
+### WP-Z2b STEP2 Rauschband + gezielte Körper-Fragen (Cloud, Modelle) — ERLEDIGT 2026-10-21, Gate FAIL (Thread „Z2b STEP2 mit mehreren Seeds“, Branch `claude/project-thread-s439sv`)
+- Vorregistriert (`f5b9d03`, vor dem Lauf). Arme C/D (wie Z2) und CQ/DQ (+ feste gezielte Frage über `jef_query`, nur aktuelle Runde: B2 „frühere Regeln zitieren“, B1 „Optionswerte zitieren“) × Seeds 14/15/16 = 840 Zeilen + Werkzeug-Replay, alle RECORDED. Fund vorab: Körper-Angebote ignorierten `cfg['seed']` (immer 13), im Skript behoben, Live-Code unverändert.
+- **Urteil `Z2B_DIVERGENCE_NOT_SUPPORTED`:** CQ both_exact .611 vs b1_only .592, +.019 [CI −.075, +.106]; Kontrollen nicht geschlagen; ein Körper + zwei Zustände gleich gut (§99: nein).
+- **Z2 war Rauschen:** C both_exact schwankt über Seeds .308–.450; Qwen- vs. LFM-B2 NO_CLEAR_DIFFERENCE.
+- **Gezielte Frage hilft klar:** +.233 [+.122, +.344] (zwei Körper), +.228 [+.100, +.378] (ein Körper); B1 liefert Optionswerte 63 → 170/210 Zeilen. 0 falsch festgelegt in 840 Zeilen.
+- Engpass jetzt B2: zitiert die alte Regel nur in ~¼ der Zeilen, mit oder ohne Frage. Befund `code/docs/proofs/continuation-20261021/step2-z2b-seeds/BEFUND.md`.
+- Offen: (a) Nutzerentscheidung: gezielte B1-Frage als Schalter (aus) in den Live-Pfad; (b) neues Paket „B2 liefert Regel-Zitat“; (c) `cognition.offer` soll `cfg['seed']` übergeben.
+
+### WP-Z2c Gezielte Körper-Frage als Live-Schalter — ERLEDIGT 2026-10-21, Standard aus (Thread „B1-Frage als Schalter“, Branch `claude/project-thread-4ttld7`)
+- Schalter `body_question_b1` / `body_question_b2` (Text ≤ 400 Zeichen, `''` = aus = live byte-gleich; Kettenglied `integrated_candidates.body_question`; Tests `test_body_question.py`). Re-Entry-Fokus gewinnt immer. Suite 1608, nur bekannter Altfehler `test_neuro_ledger`.
+- Bestätigungslauf Seed 14 (`scripts/step2_z2c_switch.py`, kein Gate): Schalter beide both_exact .592 (ohne .375, Z2b-Patch .675), nur B1 .450; b1_only .275 → .575; B1-Optionszitate 18 → 52; 0 falsch in 140 Werkzeug-Zeilen. Befund `code/docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md`.
+- Offen: Nutzerentscheidung Einschalten (nur sinnvoll für STEP2-artige Aufgaben, Frage ist aufgabenspezifisch); allgemeine Frage für Chat ungemessen; B2-Regelzitat-Paket; Seed-Bug `cognition.offer`.
+
 ### WP-Z2d B2 liefert das Regel-Zitat (im Code/Prereg „z2c“; umbenannt, weil Thread „B1-Frage als Schalter“ parallel WP-Z2c vergab) (Cloud, Modelle) — ERLEDIGT 2026-10-21, `Z2C_B2_RULE_QUOTE_FIXED` (Thread „B2 zitiert Regel selten“, Branch `claude/project-thread-0fckhc`)
 - **Ursache** (Diagnose auf 384 Z2b-B2-Angeboten): nur 115 trugen die volle alte Regel; 110 scheiterten an einer **Umschreibung/kaputten Kopie des richtigen Satzes** („Project Kestrel has a budget of 100 euros“), 65 zitierten den aktuellen Aufgabentext. B2 kennt die Regel, kopiert sie aber nicht wörtlich.
 - Neu: Schalter `b2_quote_select` `off` (Standard, byte-gleich) | `anchor` (`cognition.anchor_span`: nicht passendes Zitat → exakte Quellsätze mit allen Zahlen + ≥ 60 % Wörtern) | `pointer` (`quote_choices`: B2 wählt nummerierte exakte Sätze per Schema-enum). Nur B2 in eigener Policy. Kettenglied `integrated_candidates.b2_quote_select`, Config validiert, Tests `tests/test_b2_quote_select.py` 7/7.

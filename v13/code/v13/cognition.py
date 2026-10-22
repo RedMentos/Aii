@@ -115,6 +115,7 @@ class Cognition:
         restart but never crosses sessions, generations, models or unrelated topics.
         Source lookup is repeated on every use, so deleted/tampered sources fail shut.
         """
+        if role=='B1_DETAIL' and self.r.cfg.get('b1_recent_source_chars',0):return self.b1_recent_context(e)
         if role!='B2_GIST' or not self.r.cfg['b2_state_slots'] or self.r.cfg.get('b2_control','two_body') in ('same_model_prompt_only','same_model_same_policy'):return []
         previous,_=self.s.state(role+':'+self.r.session,{})
         ids=previous.get('retained_offer_ids',[previous.get('packet_id')])
@@ -144,6 +145,30 @@ class Cognition:
             context+=cross_session(self.r,e,role,current_text,native,self.r.cfg['b2_context_chars'])
         except Exception as exc:self.s.log('bodyview_unavailable',e['event_id'],{'stage':'b4','error':type(exc).__name__})
         return context
+    def b1_recent_context(self,e):
+        """WP-Z2 (cfg b1_recent_source_chars, 0 = off, live): B1's short horizon keeps the exact source of its own
+        last retained turn, up to N chars, instead of only its 240-char hypothesis. Timescale split of Canon §85.1:
+        B1 = one recent turn at fine width (exactness), B2 = up to b2_state_slots turns at 240-char excerpts.
+        Same session/generation/model/topic checks as B2; quotes may cite it; never a fact promotion."""
+        previous,_=self.s.state('B1_DETAIL:'+self.r.session,{})
+        pid=previous.get('packet_id')
+        row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",(pid,)) if pid else None
+        if not row:return []
+        p=json.loads(row['payload'])
+        event=self.s.one('SELECT session_id,packet FROM events WHERE id=?',(p['event_id'],))
+        if not event or event['session_id']!=self.r.session or p['event_id']==e['event_id']:return []
+        if p['role']!='B1_DETAIL' or p['brain_generation_id']!=e['brain_generation_id'] or p.get('model_revision')!=self.r.models.revision('B1_DETAIL'):return []
+        ref=json.loads(event['packet'])['source_ref']
+        try:
+            current_text,source=self.s.read_source(e['source_ref']),self.s.read_source(ref)
+            if looks_like_terminal_log(source):return []
+            current_entities,prior_entities=entities(current_text),entities(source)
+            related=bool(current_entities&prior_entities) if current_entities and prior_entities else relevance(current_text,source)>=self.r.cfg['memory_threshold']
+            if not related:return []
+            excerpt_ref=ref|{'char_end':min(ref['char_end'],ref['char_start']+self.r.cfg['b1_recent_source_chars'])}
+            excerpt=self.s.read_source(excerpt_ref)
+        except (ValueError,OSError):return []
+        return [{'offer_id':pid,'source_ref':excerpt_ref,'native_context':{'exact_source_excerpt':excerpt,'authority':'RECENT_SOURCE_NOT_FACT'}}]
     def retain_body_offer(self,p):
         key=p['role']+':'+self.r.session;previous,_=self.s.state(key,{})
         # State is bounded; immutable packet history remains in the event store.
@@ -203,6 +228,8 @@ class Cognition:
         context=self.body_context(role,e)
         prior=previous.get('offer',{}).get('summary','')[:240]
         query={'source_segments':view,'peer_message':peer,'prior_hypothesis':prior if policy=='B1_DETAIL' else ''}
+        key='body_question_b1' if role=='B1_DETAIL' else 'body_question_b2'  # WP-Z2c: standing body question ('' = off, live)
+        if focus is None and self.r.cfg.get(key,''):focus={'question':self.r.cfg[key],'kind':'FILL_GAP','target_role':role,'reason':'CFG_STANDING_QUESTION','authority':'EXECUTIVE_QUESTION_NOT_FACT'}
         if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET: the executive question of this re-entry (a question, never a fact)
             query['jef_query']={k:focus[k] for k in ('question','kind')};instructions+=' jef_query is the executive question for this re-entry; answer it from the source first.'
         bv_refs=[];bv={};win=[]
@@ -242,6 +269,9 @@ class Cognition:
         if role=='B2_GIST' and policy=='B2_GIST':
             query['earlier_context']=[x['native_context'] for x in context]
             instructions+=' Earlier context separates exact source excerpts from fallible prior hypotheses. Use relevant earlier source excerpts when current text leaves a rule unstated; prefer an explicit current-source revision when the same rule changes. Never treat a prior hypothesis as a fact. Select short exact quotes carrying the source rules needed by your summary; only your verified quotes, not the full earlier context, are passed to the answer component. If required evidence is absent, state that uncertainty and request re-entry rather than inventing it. Quotes may cite only current source text or an exact earlier source excerpt, never own-state or hypotheses.'
+        if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:
+            query['recent_source']=[x['native_context'] for x in context]
+            instructions+=' recent_source is the exact source of the previous turn of this topic. Use its exact details (values, entities) when the current text refers to them without restating them. Quote the exact sentences carrying the details your summary needs; only verified quotes reach the answer component. Prefer an explicit current-source revision.'
         if broadcast:
             query['executive_broadcast']={k:broadcast[k] for k in ['state_version','goal','constraints','source_refs']}
             pf=broadcast.get('permission_flags') or {}  # WP-T2: bodies see the Age envelope C1 granted (stage + rights above Age 0), never a way to widen it
@@ -258,7 +288,7 @@ class Cognition:
             if extra:query['jef_broadcast']=extra
         except Exception:jbc_fields=[]
         query_packet=packet('QueryPacket','C1_EXEC',e['event_id'],e['brain_generation_id'],[e['source_ref']],target_role=role,goal=text,source_refs=[e['source_ref']],broadcast_packet_id=broadcast['packet_id'] if broadcast else None,peer_message_packet_id=peer_id,source_view_width_chars=width,based_on_state_version=version,probe_only=version==0)
-        query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query['earlier_context'])) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
+        query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
         query_packet.update(compute_deadline_monotonic_ns=int(deadline*1e9),offer_valid_until_monotonic_ns=int(valid_until*1e9))
         query_packet['provenance'] += query_packet['context_source_refs']+bv_refs
         if bv:query_packet['bodyview']=bv

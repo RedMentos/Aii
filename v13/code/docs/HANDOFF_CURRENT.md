@@ -11,6 +11,17 @@ Eignungs-Werkzeug: Regeln liest ein fester Leser, die Entscheidung ist der erste
 `eligibility` läuft im normalen Turn (nur nach Freigabe, Alter 0 = SHADOW). Vorregistrierte Messung, 60 frische Aufgaben auf C3: Antworttext richtig 22 → 32 (p .006), falsch festgelegt 33 → 23, Rezept nie falsch, mit Broker-Korrektur sichtbar richtig 53/60. Befund `docs/proofs/continuation-20261021/eligibility-whole-turn-q/BEFUND.md`, Branch `claude/project-thread-hzzqh4`. Parallele Fassung im Thread „STEP2-Nutzen Engpass“ (dq33gk) beim Zusammenführen abgleichen.
 
 Zusammengeführt in `claude/project-thread-dq33gk` (PR #7): Qs Fassung gilt, dazu Zitat-als-Zeiger-Schalter + `analyst_context`-Fix (Chat brach mit Schalter an ab). Ganzer Turn der dq33gk-Variante war NOT_SUPPORTED, daher entfallen.
+# Aktuell 2026-10-21 (Thread „B1-Frage als Schalter“): gezielte Körper-Frage als Live-Schalter — Standard aus
+
+Neue Schalter `body_question_b1` / `body_question_b2` (Standard `''` = aus = live unverändert): feste Frage als `jef_query` an jedes Körper-Angebot ohne Rückfrage-Fokus. Bestätigungslauf Seed 14 mit echten Modellen: Schalter (beide) both_exact .592 vs ohne .375 (Z2b-Patch .675), nur B1 .450; b1_only .275 → .575; 0 falsch festgelegt. Frage ist STEP2-spezifisch, deshalb bleibt sie aus. Befund `docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md`, Branch `claude/project-thread-4ttld7`.
+
+# Aktuell 2026-10-21 (Thread „Z2b STEP2 mit mehreren Seeds“): Rauschband + gezielte Fragen — Gate FAIL, Frage hilft
+
+Vorregistrierter Lauf (C/D/CQ/DQ × Seeds 14–16, 840 Zeilen, echte Modelle, Linux-Cloud): `Z2B_DIVERGENCE_NOT_SUPPORTED`. Z2-Abstände lagen im Rauschband. Eine feste gezielte Frage an die Körper hebt den Werkzeug-Nutzen um +.23 (CI > 0), vor allem weil B1 dann die Optionswerte zitiert; B2 zitiert die alte Regel weiter selten (Engpass). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2b-seeds/BEFUND.md`, Branch `claude/project-thread-s439sv`.
+
+# Aktuell 2026-10-21 (Thread „Z2 STEP2 mit B1-Detailinfo“): STEP2 mit B1-eigener Information — Gate FAIL
+
+Neuer Schalter `b1_recent_source_chars` (Standard 0 = aus): B1 behält die exakte Quelle seiner letzten Runde. Vorregistrierter Lauf (10 Episoden, 5 Arme × 70 Zeilen, echte Modelle, Linux-Cloud): `Z2_DIVERGENCE_NOT_SUPPORTED` — Zwei-Körper .325 < b1_only .333, ein Körper + zwei Zustände nicht schlechter. B1 liefert jetzt Optionswerte (27/70 statt 0), exakte SPLIT-Entscheidungen nur im Ein-Körper-Arm (3/6). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2-timescale/BEFUND.md`, Branch `claude/project-thread-hsm0ga`. STEP2 UTILITY_FAIL bleibt.
 
 # Aktuell 2026-10-20 (Abend): Handy-Paket Werkzeug-Vorhersage fertig
 

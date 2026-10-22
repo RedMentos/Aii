@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'eligibility_live', 'tool_answer_first', 'runner_seed')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'body_question', 'eligibility_live', 'tool_answer_first', 'runner_seed')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -234,6 +234,36 @@ def quote_context(text):
                      "                    verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE','semantic_truth_authority':False});continue\n"
                      "                if text not in offer['offer'].get('quotes',[]):raise")
     return t
+B1_RECENT_METHOD = '    def b1_recent_context(self,e):\n        """WP-Z2 (cfg b1_recent_source_chars, 0 = off, live): B1\'s short horizon keeps the exact source of its own\n        last retained turn, up to N chars, instead of only its 240-char hypothesis. Timescale split of Canon §85.1:\n        B1 = one recent turn at fine width (exactness), B2 = up to b2_state_slots turns at 240-char excerpts.\n        Same session/generation/model/topic checks as B2; quotes may cite it; never a fact promotion."""\n        previous,_=self.s.state(\'B1_DETAIL:\'+self.r.session,{})\n        pid=previous.get(\'packet_id\')\n        row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind=\'OfferPacket\'",(pid,)) if pid else None\n        if not row:return []\n        p=json.loads(row[\'payload\'])\n        event=self.s.one(\'SELECT session_id,packet FROM events WHERE id=?\',(p[\'event_id\'],))\n        if not event or event[\'session_id\']!=self.r.session or p[\'event_id\']==e[\'event_id\']:return []\n        if p[\'role\']!=\'B1_DETAIL\' or p[\'brain_generation_id\']!=e[\'brain_generation_id\'] or p.get(\'model_revision\')!=self.r.models.revision(\'B1_DETAIL\'):return []\n        ref=json.loads(event[\'packet\'])[\'source_ref\']\n        try:\n            current_text,source=self.s.read_source(e[\'source_ref\']),self.s.read_source(ref)\n            if looks_like_terminal_log(source):return []\n            current_entities,prior_entities=entities(current_text),entities(source)\n            related=bool(current_entities&prior_entities) if current_entities and prior_entities else relevance(current_text,source)>=self.r.cfg[\'memory_threshold\']\n            if not related:return []\n            excerpt_ref=ref|{\'char_end\':min(ref[\'char_end\'],ref[\'char_start\']+self.r.cfg[\'b1_recent_source_chars\'])}\n            excerpt=self.s.read_source(excerpt_ref)\n        except (ValueError,OSError):return []\n        return [{\'offer_id\':pid,\'source_ref\':excerpt_ref,\'native_context\':{\'exact_source_excerpt\':excerpt,\'authority\':\'RECENT_SOURCE_NOT_FACT\'}}]\n'
+B1_RECENT_QUERY = "        if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:\n            query['recent_source']=[x['native_context'] for x in context]\n            instructions+=' recent_source is the exact source of the previous turn of this topic. Use its exact details (values, entities) when the current text refers to them without restating them. Quote the exact sentences carrying the details your summary needs; only verified quotes reach the answer component. Prefer an explicit current-source revision.'\n"
+
+
+def b1_recent(text):
+    """2026-10-21 WP-Z2: cfg b1_recent_source_chars (0 = off = previous behaviour) gives B1 the exact source of its own
+    last turn on the same topic (short exact horizon) next to B2's long coarse window (Canon §85.1 timescale split)."""
+    if 'def b1_recent_context(' in text:
+        raise ValueError('Integrated anchor changed: b1_recent already applied')
+    t = _replace(text, "        if role!='B2_GIST' or not self.r.cfg['b2_state_slots']",
+                 "        if role=='B1_DETAIL' and self.r.cfg.get('b1_recent_source_chars',0):return self.b1_recent_context(e)\n"
+                 "        if role!='B2_GIST' or not self.r.cfg['b2_state_slots']")
+    t = _replace(t, '    def retain_body_offer(self,p):\n', B1_RECENT_METHOD+'    def retain_body_offer(self,p):\n')
+    t = _replace(t, "        if broadcast:\n            query['executive_broadcast']", B1_RECENT_QUERY+"        if broadcast:\n            query['executive_broadcast']")
+    t = _replace(t, "context_chars=len(dumps(query['earlier_context'])) if context else 0",
+                 "context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0")
+    return t
+
+
+
+def body_question(text):
+    """2026-10-21 WP-Z2c: cfg body_question_b1 / body_question_b2 ('' = off = previous behaviour) give a body a standing
+    executive question (jef_query, kind FILL_GAP) on every offer without a re-entry focus. Same QUERY_PACKET path the
+    WP-Z2b runner patch used (+.23 both_exact, CI > 0, 0 wrong committed)."""
+    if "key='body_question_b1'" in text:
+        raise ValueError('Integrated anchor changed: body_question already applied')
+    return _replace(text, "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET",
+                    "        key='body_question_b1' if role=='B1_DETAIL' else 'body_question_b2'  # WP-Z2c: standing body question ('' = off, live)\n"
+                    "        if focus is None and self.r.cfg.get(key,''):focus={'question':self.r.cfg[key],'kind':'FILL_GAP','target_role':role,'reason':'CFG_STANDING_QUESTION','authority':'EXECUTIVE_QUESTION_NOT_FACT'}\n"
+                    "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET")
 
 
 def eligibility_live(sources):
@@ -324,7 +354,7 @@ def rebase(texts, root=ROOT):
     out = _chain(full)
     out = {k: (out[k] if k in NAMES else v) for k, v in texts.items()}
     if 'v13/cognition.py' in out:  # cognition.py is bound exactly by source_handoff_candidate, not by NAMES
-        out['v13/cognition.py'] = quote_context(b2_offer(out['v13/cognition.py']))
+        out['v13/cognition.py'] = body_question(b1_recent(quote_context(b2_offer(out['v13/cognition.py']))))
     return out
 
 
