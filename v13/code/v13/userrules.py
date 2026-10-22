@@ -24,7 +24,7 @@ import time
 from pathlib import Path
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v3'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v4'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -119,8 +119,8 @@ STOP=set(("a an the of for and or to in on at with by from my your our me you i 
 # ---- v3: lexicon additions as data (v13/userrules_lexicon.json), each with the known sentence it came from. Sealed test
 # sentences are never evidence (extend() refuses them), so a fresh round stays a fair test of the frozen reader.
 LEXICON_FILE=Path(__file__).with_name('userrules_lexicon.json')
-REGEX_SLOTS=('FORBID','ASK','RESTRICT','POSITIVE','ADVICE','BEFORE','TELL')
-_V2={'FORBID':FORBID,'ASK':ASK,'RESTRICT':RESTRICT,'POSITIVE':POSITIVE}
+REGEX_SLOTS=('FORBID','ASK','RESTRICT','POSITIVE','ADVICE','BEFORE','TELL','PROTECT','REPORTED','HEDGE')
+_V2={'FORBID':FORBID,'ASK':ASK,'RESTRICT':RESTRICT,'POSITIVE':POSITIVE,'REPORTED':REPORTED,'HEDGE':HEDGE}
 
 
 def _check(entry,sealed):
@@ -133,7 +133,7 @@ def _check(entry,sealed):
 
 
 def _apply(entries):
-    global FORBID,ASK,RESTRICT,POSITIVE,ADVICE,BEFORE,TELL
+    global FORBID,ASK,RESTRICT,POSITIVE,ADVICE,BEFORE,TELL,PROTECT,REPORTED,HEDGE
     rx={k:[] for k in REGEX_SLOTS}
     for e in entries:
         slot=e['slot']
@@ -146,7 +146,8 @@ def _apply(entries):
         if base is None:return re.compile(extra or r'(?!)')
         return re.compile(base.pattern+'|'+extra) if extra else base
     FORBID,ASK,RESTRICT,POSITIVE=build('FORBID'),build('ASK'),build('RESTRICT'),build('POSITIVE')
-    ADVICE,BEFORE,TELL=build('ADVICE'),build('BEFORE'),build('TELL')
+    ADVICE,BEFORE,TELL,PROTECT=build('ADVICE'),build('BEFORE'),build('TELL'),build('PROTECT')
+    REPORTED,HEDGE=build('REPORTED'),build('HEDGE')
 
 
 def load_lexicon(path=LEXICON_FILE):
@@ -166,6 +167,17 @@ def extend(entry,path=LEXICON_FILE):
 LEXICON=load_lexicon()
 # the AI is addressed ("I forbade you", "ich habe dir verboten"): a first-person sentence about what the AI may do, not about oneself
 YOU=re.compile(r"\b(?:you|your|du|dir|dich|ihnen|euch)\b")
+# v4 principles (round-3 failures): chat fillers hide the sentence start; a polite question ("could you not ...?") is a
+# request, not a question; a bare "not" in a request or "make sure not to" is a prohibition; protecting words ("preserve",
+# "leave as they are") forbid deleting and changing.
+FILLER=re.compile(r"^(?:(?:hey|hi|hallo|so|ok|okay|seriously|yo|dude|oh|um|uh|well|look|listen|mate|also|and|just|alright|ach|naja|please|bitte|"
+    r"you\s+know|ya\s+know|i\s+mean|like)\b[\s,.!-]*)+")
+INNER_FILLER=re.compile(r"\b(?:like|you\s+know|ya\s+know|i\s+mean|kinda|sort\s+of)\s*,")
+REQUEST=re.compile(r"^(?:could|can|would|will|wouldn'?t|won'?t|koenntest|kannst|wuerdest|wirst|magst)\s+(?:you|du|sie)\b|^(?:make|be)\s+sure\b|^(?:mach|sorg)\w*\s+(?:bitte\s+)?(?:sicher|dafuer)")
+BARE_NOT=re.compile(r"\b(?:not|never|no)\b|\byou\s+(?:didn'?t|did\s+not|wouldn'?t|would\s+not|won'?t)\b")
+APPROVAL=re.compile(r"\b(?:give|gives|given|giving|get|gets|got|geb\w*|gib)\s+(?:you\s+|dir\s+|me\s+|mir\s+)?(?:the\s+|my\s+|an?\s+|das\s+|mein\w*\s+|ein\w*\s+)?(?:green\s+light|okay|ok|go-?ahead|thumbs\s+up|all-?clear|permission|approval|consent|say-?so|nod|freigabe|erlaubnis|zustimmung)\b")
+TAG=re.compile(r"[\s,](?:okay|ok|alright|right|yeah|yes|ja|oder|gell|ne|ya\s+know|you\s+know)\s*\?$")  # "..., okay?" is no question
+MAKE_SURE=re.compile(r"\b(?:make|be)\s+sure\s+(?:\w+\s+)?(?:not|never|no)\b|\bsicher\w*\b.*\b(?:nicht|nie|kein\w*)\b")
 
 
 def norm(text):
@@ -218,33 +230,40 @@ def _objects(t,action_words):
 def parse_clause(clause,prev=None):
     """One clause -> {'kind','actions','objects','unknown','exceptions','reasons'} (fixed rules only, never a model)."""
     raw=norm(clause);t=POSITIVE.sub(' ',raw).strip()
+    t=INNER_FILLER.sub(' ',t);t=re.sub(r'\s+',' ',FILLER.sub('',t)).strip() or t
     out={'kind':'NONE','actions':[],'objects':[],'unknown':[],'exceptions':[],'reasons':[],'text':clause.strip()}
     if not t:return out
     m=EXCEPT.search(t);exc_text=''
     if m:t,exc_text=t[:m.start()],t[m.end():]
-    ta=ASK_WORDS.sub(' ',t)
+    ta=APPROVAL.sub(' ',ASK_WORDS.sub(' ',t))  # "until I give you the okay" names no action of the AI
     acts=_classes(ta,ACTION_STEMS,ACTION_WORDS);weak={w for w in _words(ta) if w in WEAK_ANY}
     if weak and not acts:acts={'ANY':weak}
     aw=(set().union(*acts.values()) if acts else set())|weak
     objs,unknown,pron=_objects(t,aw)
     actions=set(acts)
+    objwords=set().union(*_classes(t,OBJECT_STEMS,{}).values()) if objs else set()
+    if acts and all(ws<=objwords for ws in acts.values()):actions.add('ANY')  # "my phone": a word that is object and action widens
+    protect=bool(PROTECT.search(t))
+    if protect:actions|={'DELETE','WRITE'}
     if 'INTERNET' in objs:actions.add('NETWORK')  # anything done "online / ins Internet" uses the network
     if 'TOOLS' in objs:actions.add('TOOL')
     if 'MODULE' in objs and actions&{'NETWORK','WRITE'}:actions.add('INSTALL')
-    advice=bool(ADVICE.search(t))
-    forbid=bool(FORBID.search(t) or NO_START.search(t) or advice);loosen=bool(LOOSEN.search(t))
+    advice=bool(ADVICE.search(t));request=bool(REQUEST.search(t))
+    addressed=request or bool(YOU.search(t) and not FIRST_PERSON.search(t)) or bool(MAKE_SURE.search(t))
+    forbid=bool(FORBID.search(t) or NO_START.search(t) or advice or protect or MAKE_SURE.search(t) or (addressed and BARE_NOT.search(t)))
+    loosen=bool(LOOSEN.search(t))
     ask=bool(ASK.search(t) or (BEFORE.search(t) and TELL.search(t)))  # v3: "vor dem Senden, mir zeigen", "show me before posting"
-    question=clause.strip().endswith('?')
+    question=clause.strip().endswith('?') and not request and not TAG.search(norm(clause))  # "could you not go online?" asks for something, it is no question
     if not (forbid or ask):
         if loosen and (actions or objs):out.update(kind='LOOSEN',actions=sorted(actions),objects=sorted(objs))
         elif (actions or objs) and not question and RESTRICT.search(t):  # unknown wording of a possible rule: ask, never ignore
             out.update(kind='UNCLEAR',actions=sorted(actions or {'ANY'}),objects=sorted(objs or {'ALL'}),unknown=sorted(set(unknown)),reasons=['UNKNOWN_WORDING'],suggest='ASK_FIRST')
         return out
     imperative=bool(IMPERATIVE.search(t))
-    strong=ask or any(not WEAK.fullmatch(m.group(0)) for m in FORBID.finditer(t)) or bool(NO_START.search(t) and unknown)
+    strong=ask or any(not WEAK.fullmatch(m.group(0)) for m in FORBID.finditer(t)) or bool(NO_START.search(t) and unknown) or protect or advice or addressed
     if objs=={'ALL'} and not actions:objs=set()  # "nothing"/"nichts" alone is no object ("es war nichts")
     if not actions and not objs and not imperative and not (strong and unknown):return out  # "I don't know", "no thanks", "das funktioniert nicht"
-    first=bool(FIRST_PERSON.search(t)) and not WANT.search(t) and not YOU.search(t)
+    first=bool(FIRST_PERSON.search(t)) and not WANT.search(t) and not YOU.search(t) and not protect
     if first and not actions:return out  # a statement about oneself ("I didn't have time")
     unknown_wording=not actions and not objs and not imperative  # a strong rule word with only unknown words: an open question
     if not actions:actions=set(prev['actions']) if prev and prev.get('actions') else {'ANY'} if objs else {'UNKNOWN'}  # "not my photos" after "delete the drafts"
@@ -254,7 +273,7 @@ def parse_clause(clause,prev=None):
     if not actions&ENFORCED-{'UNKNOWN'} and not actions&{'LEARN'}:actions.add('UNKNOWN')
     reasons=[]
     if HEDGE.search(t):reasons.append('HEDGE')
-    if REPORTED.search(t):reasons.append('SOMEONE_ELSE')
+    if REPORTED.search(t) and not request:reasons.append('SOMEONE_ELSE')
     if advice and 'SOMEONE_ELSE' not in reasons:reasons.append('ADVICE')  # "X advises/warns against": a hint, not yet a rule
     if question:reasons.append('QUESTION')
     if first:reasons.append('ABOUT_YOURSELF')
@@ -277,7 +296,8 @@ def parse(text):
         if not piece or not piece.strip():continue
         c=parse_clause(piece,prev)
         has_q=piece.strip().endswith('?') or bool(re.search(re.escape(piece.strip())+r'\s*\?',src))
-        if has_q and c['kind'] in ('FORBID','ASK_FIRST'):c['kind']='UNCLEAR';c['reasons'].append('QUESTION')
+        req=bool(REQUEST.search(re.sub(r'\s+',' ',FILLER.sub('',INNER_FILLER.sub(' ',norm(piece)))).strip()))
+        if has_q and not req and not TAG.search(norm(piece.strip()+'?')) and c['kind'] in ('FORBID','ASK_FIRST'):c['suggest']=c['kind'];c['kind']='UNCLEAR';c['reasons'].append('QUESTION')
         if c['kind']!='NONE':out.append(c)
         if c['actions'] or c['objects']:prev=c
         else:

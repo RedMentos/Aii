@@ -1,9 +1,9 @@
 {
- "schema": "USER_RULES_LEXICON_V3",
- "note": "Additions of reader v3 on top of the built-in v2 lexicon in userrules.py. Each entry names the already known sentence it came from (dev, author holdout, model rounds 1 and 2). Sealed test sets (round 3 and later) are never evidence; userrules.extend() refuses them. Regex slots take a fragment that is matched inside word boundaries.",
+ "schema": "USER_RULES_LEXICON_V4",
+ "note": "Additions of reader v3 on top of the built-in v2 lexicon in userrules.py. Each entry names the already known sentence it came from (dev, author holdout, model rounds 1 to 3). Sealed test sets (round 4 and later) are never evidence; userrules.extend() refuses them. Regex slots take a fragment that is matched inside word boundaries.",
  "sealed": [
-  "round3",
-  "user-rules-v3/round3"
+  "round4",
+  "user-rules-v4/round4"
  ],
  "entries": [
   {
@@ -170,6 +170,191 @@
    "slot": "OBJECT_STEMS.TOOLS",
    "value": "hilfsmittel",
    "evidence": "round1: Bitte nutze heute keine Hilfsmittel."
+  },
+  {
+   "slot": "FORBID",
+   "value": "put\\s+(?:\\w+\\s+){0,3}away|stay\\s+offline|go\\s+offline|keep\\s+out|keep\\s+(?:\\w+\\s+){0,2}out\\s+of|skip\\w*|ditch\\w*|day\\s+off\\s+from|hold\\s+up\\s+on|pause\\w*|leave\\s+(?:\\w+\\s+){0,2}out|wait\\s+(?:with|until|till)|no\\s+(?:entry|access|admittance|entrance|trespassing)|lass\\w*\\s+(?:\\w+\\s+){0,2}weg|pausier\\w*|kein\\s+(?:zutritt|eintritt|zugang)",
+   "evidence": "round3: Just put the calculator away, okay? / Stay offline, or else. / Keep out of my confidential communications. / let's skip the file transfers / ditch the device / take a day off from those tools / hold up on forwarding messages / there was a sign... saying no entry"
+  },
+  {
+   "slot": "ASK",
+   "value": "until\\s+(?:i\\b|i'?ve\\b|you\\s+(?:get|have|hear))|bis\\s+ich\\b|without\\s+me\\b|ohne\\s+mich\\b|if\\s+i\\s+tell\\s+you|wenn\\s+ich\\s+es\\s+(?:dir\\s+)?sage|let\\s+me\\s+(?:\\w+\\s+){0,2}(?:see|look|glance|check|review|read|approve)\\w*\\b.*\\b(?:first|before)|lass\\s+mich\\s+(?:\\w+\\s+){0,3}(?:sehen|ansehen|pruefen|lesen)\\b.*\\b(?:erst|vorher|zuerst)",
+   "evidence": "round3: Could you hold up on forwarding messages until I've given the all-clear? / let me glance at what you're about to post first / Just change my notes if I tell you to / I'd prefer if you didn't fiddle around with my phone without me saying you can"
+  },
+  {
+   "slot": "PROTECT",
+   "value": "preserv\\w*|keep\\s+(?:\\w+\\s+){0,3}(?:intact|safe|untouched|as\\s+(?:it\\s+is|they\\s+are))|leave\\s+(?:\\w+\\s+){0,3}(?:untouched|intact|as\\s+(?:it\\s+is|they\\s+are)|alone)|stay\\s+as\\s+they\\s+are|lass\\w*\\s+(?:\\w+\\s+){0,3}(?:drin|stehen|unveraendert|so\\s+wie)|behalt\\w*|bewahr\\w*",
+   "evidence": "round3: Please preserve my notes and refrain from transmitting them / Leave my notes untouched / die alte lassste drin / It's really important they stay as they are"
+  },
+  {
+   "slot": "ADVICE",
+   "value": "discourag\\w*|reconsider\\w*|think\\s+twice|ueberleg\\w*\\s+(?:\\w+\\s+)?(?:dir|es)",
+   "evidence": "round3: My sibling asserts that accessing the global network is generally discouraged. / You might want to reconsider erasing anything."
+  },
+  {
+   "slot": "REPORTED",
+   "value": "asserts?|asserted|states?|stated|saying|mentioned|warning|notice|sign",
+   "evidence": "round3: My sibling asserts that ... / there was a sign... saying no entry / It just flashed a warning: keep out."
+  },
+  {
+   "slot": "HEDGE",
+   "value": "prefer\\w*|would\\s+rather|lieber\\s+waere|might\\s+want",
+   "evidence": "round3: I'd prefer if you didn't fiddle around with my phone / You might want to reconsider erasing anything."
+  },
+  {
+   "slot": "ACTION_WORDS.INSTALL",
+   "value": "grab|grabs|grabbing|grabbed",
+   "evidence": "round3: don't grab any code pieces from anyplace unless I give you the okay first"
+  },
+  {
+   "slot": "ACTION_WORDS.NETWORK",
+   "value": "grab|grabs|grabbing|grabbed",
+   "evidence": "round3: don't grab any code pieces from anyplace (grab = fetch)"
+  },
+  {
+   "slot": "ACTION_STEMS.SEND",
+   "value": "transfer",
+   "evidence": "round3: let's skip the file transfers / do not transfer them to any other location"
+  },
+  {
+   "slot": "ACTION_STEMS.NETWORK",
+   "value": "transfer",
+   "evidence": "round3: let's skip the file transfers"
+  },
+  {
+   "slot": "ACTION_STEMS.COMPUTE",
+   "value": "figur",
+   "evidence": "round3: ditch the device for figuring things out"
+  },
+  {
+   "slot": "ACTION_STEMS.ANY",
+   "value": "fiddl",
+   "evidence": "round3: I'd prefer if you didn't fiddle around with my phone"
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "phone",
+   "evidence": "round3: Keep your hands off my phone unless I give you the green light. / hold off on messing with my mobile device"
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "device",
+   "evidence": "round3: Keep your hands off my phone unless I give you the green light. / hold off on messing with my mobile device"
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "handy",
+   "evidence": "round3: Keep your hands off my phone unless I give you the green light. / hold off on messing with my mobile device"
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "geraet",
+   "evidence": "round3: Keep your hands off my phone unless I give you the green light. / hold off on messing with my mobile device"
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "mobile",
+   "evidence": "round3: Keep your hands off my phone unless I give you the green light. / hold off on messing with my mobile device"
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "smartphone",
+   "evidence": "round3: Keep your hands off my phone unless I give you the green light. / hold off on messing with my mobile device"
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "computer",
+   "evidence": "round3: Keep your hands off my phone unless I give you the green light. / hold off on messing with my mobile device"
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "laptop",
+   "evidence": "round3: Keep your hands off my phone unless I give you the green light. / hold off on messing with my mobile device"
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "tablet",
+   "evidence": "round3: Keep your hands off my phone unless I give you the green light. / hold off on messing with my mobile device"
+  },
+  {
+   "slot": "OBJECT_STEMS.MESSAGE",
+   "value": "communicat",
+   "evidence": "round3: Keep out of my confidential communications. / dispatching that correspondence / my personal chats"
+  },
+  {
+   "slot": "OBJECT_STEMS.MESSAGE",
+   "value": "correspondence",
+   "evidence": "round3: Keep out of my confidential communications. / dispatching that correspondence / my personal chats"
+  },
+  {
+   "slot": "OBJECT_STEMS.MESSAGE",
+   "value": "dms",
+   "evidence": "round3: Keep out of my confidential communications. / dispatching that correspondence / my personal chats"
+  },
+  {
+   "slot": "OBJECT_STEMS.MESSAGE",
+   "value": "texts",
+   "evidence": "round3: Keep out of my confidential communications. / dispatching that correspondence / my personal chats"
+  },
+  {
+   "slot": "OBJECT_STEMS.MESSAGE",
+   "value": "chats",
+   "evidence": "round3: Keep out of my confidential communications. / dispatching that correspondence / my personal chats"
+  },
+  {
+   "slot": "OBJECT_STEMS.MODULE",
+   "value": "code",
+   "evidence": "round3: don't grab any code pieces / executing those scripts / Don't add any fresh packages"
+  },
+  {
+   "slot": "OBJECT_STEMS.MODULE",
+   "value": "script",
+   "evidence": "round3: don't grab any code pieces / executing those scripts / Don't add any fresh packages"
+  },
+  {
+   "slot": "OBJECT_STEMS.MODULE",
+   "value": "package",
+   "evidence": "round3: don't grab any code pieces / executing those scripts / Don't add any fresh packages"
+  },
+  {
+   "slot": "OBJECT_STEMS.MODULE",
+   "value": "paket",
+   "evidence": "round3: don't grab any code pieces / executing those scripts / Don't add any fresh packages"
+  },
+  {
+   "slot": "OBJECT_STEMS.TOOLS",
+   "value": "gadget",
+   "evidence": "round3: No gadgetry should be employed / refrain from employing any equipment"
+  },
+  {
+   "slot": "OBJECT_STEMS.TOOLS",
+   "value": "equipment",
+   "evidence": "round3: No gadgetry should be employed / refrain from employing any equipment"
+  },
+  {
+   "slot": "OBJECT_STEMS.TOOLS",
+   "value": "ausruestung",
+   "evidence": "round3: No gadgetry should be employed / refrain from employing any equipment"
+  },
+  {
+   "slot": "OBJECT_STEMS.INTERNET",
+   "value": "offline",
+   "evidence": "round3: Stay offline, or else. / accessing the global network"
+  },
+  {
+   "slot": "OBJECT_STEMS.INTERNET",
+   "value": "global network",
+   "evidence": "round3: Stay offline, or else. / accessing the global network"
+  },
+  {
+   "slot": "OBJECT_STEMS.CALCULATOR",
+   "value": "computational",
+   "evidence": "round3: Cease employing the computational device."
+  },
+  {
+   "slot": "POSITIVE",
+   "value": "no\\s+(?:rush|worries|worry|problem|problems|hurry|stress|pressure|big\\s+deal)|(?:don'?t|do\\s+not)\\s+(?:stress|sweat)|keine\\s+(?:eile|hektik|panik)",
+   "evidence": "round3: install whatever you need, no rush / You can install whatever you need, no worries. / don't stress about the money"
   }
  ]
 }

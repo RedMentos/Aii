@@ -42,6 +42,21 @@ class Parse(unittest.TestCase):
             self.assertIn(kinds(text)[0] if kinds(text) else 'NONE',ok,text)
         self.assertEqual(kinds('I never delete my notes.'),['UNCLEAR'])  # about oneself, the AI is not addressed
         self.assertEqual(U.parse('I forbade you from running any programs.')[0]['actions'],['RUN'])  # "running" -> run
+    def test_v4_casual_requests_and_prohibitions_without_negation(self):
+        # round-3 failure forms (docs/proofs/continuation-20261022/user-rules-v3/BEFUND.md)
+        for text in ('Hey, could you like, not go on the internet, please?','Can you please make sure not to delete any of my notes?',
+                     'Just put the calculator away, okay?','Stay offline, or else.','Seriously, let\'s skip the file transfers, okay?',
+                     'Keep out of my confidential communications.','Please preserve my notes and refrain from transmitting them to any external destination.'):
+            self.assertIn(kinds(text)[0] if kinds(text) else 'NONE',('FORBID','UNCLEAR'),text)
+        for text in ("Could you hold up on forwarding messages until I've given the all-clear?","Just a heads-up – let me glance at what you're about to post first, okay?",
+                     'Keep your hands off my phone unless I give you the green light.'):
+            self.assertIn(kinds(text)[0] if kinds(text) else 'NONE',('ASK_FIRST','UNCLEAR'),text)
+        c=U.parse('Keep your hands off my phone unless I give you the green light.')[0];self.assertIn('ALL',c['objects'])
+        self.assertIn('ANY',c['actions'])  # "phone" is an object here, the action word widens
+        self.assertIn('DELETE',U.parse('Please preserve my notes and refrain from transmitting them.')[0]['actions'])
+        for text in ('Can you delete the old note?',"Don't forget to save my notes.",'Don\'t worry about the budget.','No thanks.'):
+            self.assertEqual(kinds(text),[],text)
+        self.assertEqual(kinds('You can install whatever you need, no worries.'),['LOOSEN'])
     def test_v3_lexicon_is_data_with_evidence_and_refuses_sealed_sentences(self):
         for e in U.LEXICON['entries']:
             self.assertTrue(e['evidence'].strip());self.assertFalse(any(x in e['evidence'] for x in U.LEXICON['sealed']))
