@@ -18,11 +18,13 @@ A learned JEF/JEPA reader may later be added only as a stricter second opinion: 
 Enforced today: every call through agi.tools.ToolRegistry (all tools). Not yet enforced: memory/learning (LEARN), which
 is said plainly in the notice when a rule touches it.
 """
+import json
 import re
 import time
+from pathlib import Path
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v2'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v3'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -114,6 +116,57 @@ STOP=set(("a an the of for and or to in on at with by from my your our me you i 
     "zustimme zustimmst erlaube erlaubst then dann neu neue neuen alte alten weiter perhaps maybe probably vielleicht eventuell lieber besser eher rather "
     "wahrscheinlich for now jetzt mal thanks thank danke problem problems worries idea clue way doubt wonder").split())
 
+# ---- v3: lexicon additions as data (v13/userrules_lexicon.json), each with the known sentence it came from. Sealed test
+# sentences are never evidence (extend() refuses them), so a fresh round stays a fair test of the frozen reader.
+LEXICON_FILE=Path(__file__).with_name('userrules_lexicon.json')
+REGEX_SLOTS=('FORBID','ASK','RESTRICT','POSITIVE','ADVICE','BEFORE','TELL')
+_V2={'FORBID':FORBID,'ASK':ASK,'RESTRICT':RESTRICT,'POSITIVE':POSITIVE}
+
+
+def _check(entry,sealed):
+    slot=entry.get('slot','');ev=str(entry.get('evidence','')).strip()
+    if not ev:raise ValueError('lexicon entry without evidence: '+repr(entry))
+    if any(x in ev for x in sealed):raise ValueError('sealed test sentences are no evidence: '+ev)
+    if slot not in REGEX_SLOTS and not (slot.split('.')[0] in ('ACTION_STEMS','ACTION_WORDS','OBJECT_STEMS') and '.' in slot):
+        raise ValueError('unknown lexicon slot: '+slot)
+    if slot in REGEX_SLOTS:re.compile(entry['value'])
+
+
+def _apply(entries):
+    global FORBID,ASK,RESTRICT,POSITIVE,ADVICE,BEFORE,TELL
+    rx={k:[] for k in REGEX_SLOTS}
+    for e in entries:
+        slot=e['slot']
+        if slot in rx:rx[slot].append(e['value']);continue
+        table,cls=slot.split('.',1);tab={'ACTION_STEMS':ACTION_STEMS,'ACTION_WORDS':ACTION_WORDS,'OBJECT_STEMS':OBJECT_STEMS}[table]
+        tab[cls]=tuple(dict.fromkeys(tab.get(cls,())+tuple(e['value'].split('|') if table=='ACTION_WORDS' else (e['value'],))))
+    def build(name):
+        extra=r'\b(?:'+'|'.join(rx[name])+r')\b' if rx[name] else None
+        base=_V2.get(name)
+        if base is None:return re.compile(extra or r'(?!)')
+        return re.compile(base.pattern+'|'+extra) if extra else base
+    FORBID,ASK,RESTRICT,POSITIVE=build('FORBID'),build('ASK'),build('RESTRICT'),build('POSITIVE')
+    ADVICE,BEFORE,TELL=build('ADVICE'),build('BEFORE'),build('TELL')
+
+
+def load_lexicon(path=LEXICON_FILE):
+    data=json.loads(Path(path).read_text(encoding='utf-8'))
+    for e in data['entries']:_check(e,data.get('sealed',[]))
+    _apply(data['entries']);return data
+
+
+def extend(entry,path=LEXICON_FILE):
+    """The only way to grow the lexicon: one entry with evidence from a known (not sealed) sentence. Returns the entry."""
+    data=json.loads(Path(path).read_text(encoding='utf-8'));_check(entry,data.get('sealed',[]))
+    data['entries'].append({'slot':entry['slot'],'value':entry['value'],'evidence':entry['evidence']})
+    Path(path).write_text(json.dumps(data,ensure_ascii=False,indent=1)+'\n',encoding='utf-8');_apply(data['entries'])
+    return entry
+
+
+LEXICON=load_lexicon()
+# the AI is addressed ("I forbade you", "ich habe dir verboten"): a first-person sentence about what the AI may do, not about oneself
+YOU=re.compile(r"\b(?:you|your|du|dir|dich|ihnen|euch)\b")
+
 
 def norm(text):
     t=str(text).casefold().replace('ä','ae').replace('ö','oe').replace('ü','ue').replace('ß','ss').replace('’',"'").replace('`',"'")
@@ -127,6 +180,14 @@ def _has(word,stems):
     return any(word.startswith(s) or (word.startswith('ge') and word[2:].startswith(s)) for s in stems if ' ' not in s)
 
 
+def _forms(w):
+    """w and its possible verb base forms (running->run, opened->open). No plural -s: "notes" must not become the verb "note"."""
+    out={w}
+    if len(w)>4 and w.endswith('ing'):b=w[:-3];out|={b,b+'e'}|({b[:-1]} if len(b)>2 and b[-1]==b[-2] else set())
+    if len(w)>3 and w.endswith('ed'):b=w[:-2];out|={b,w[:-1]}|({b[:-1]} if len(b)>2 and b[-1]==b[-2] else set())
+    return out
+
+
 def _classes(t,stems,words):
     """Classes named in normalized text t, and the words that named them."""
     found={};ws=_words(t)
@@ -137,7 +198,7 @@ def _classes(t,stems,words):
             if phrase in t:found.setdefault(cls,set()).add(phrase)
     for cls,exact in words.items():
         for w in ws:
-            if w in exact:found.setdefault(cls,set()).add(w)
+            if _forms(w)&set(exact):found.setdefault(cls,set()).add(w)
     return found
 
 
@@ -170,18 +231,20 @@ def parse_clause(clause,prev=None):
     if 'INTERNET' in objs:actions.add('NETWORK')  # anything done "online / ins Internet" uses the network
     if 'TOOLS' in objs:actions.add('TOOL')
     if 'MODULE' in objs and actions&{'NETWORK','WRITE'}:actions.add('INSTALL')
-    forbid=bool(FORBID.search(t) or NO_START.search(t));ask=bool(ASK.search(t));loosen=bool(LOOSEN.search(t))
+    advice=bool(ADVICE.search(t))
+    forbid=bool(FORBID.search(t) or NO_START.search(t) or advice);loosen=bool(LOOSEN.search(t))
+    ask=bool(ASK.search(t) or (BEFORE.search(t) and TELL.search(t)))  # v3: "vor dem Senden, mir zeigen", "show me before posting"
     question=clause.strip().endswith('?')
     if not (forbid or ask):
         if loosen and (actions or objs):out.update(kind='LOOSEN',actions=sorted(actions),objects=sorted(objs))
         elif (actions or objs) and not question and RESTRICT.search(t):  # unknown wording of a possible rule: ask, never ignore
-            out.update(kind='UNCLEAR',actions=sorted(actions or {'ANY'}),objects=sorted(objs or {'ALL'}),unknown=sorted(set(unknown)),reasons=['UNKNOWN_WORDING'])
+            out.update(kind='UNCLEAR',actions=sorted(actions or {'ANY'}),objects=sorted(objs or {'ALL'}),unknown=sorted(set(unknown)),reasons=['UNKNOWN_WORDING'],suggest='ASK_FIRST')
         return out
     imperative=bool(IMPERATIVE.search(t))
     strong=ask or any(not WEAK.fullmatch(m.group(0)) for m in FORBID.finditer(t)) or bool(NO_START.search(t) and unknown)
     if objs=={'ALL'} and not actions:objs=set()  # "nothing"/"nichts" alone is no object ("es war nichts")
     if not actions and not objs and not imperative and not (strong and unknown):return out  # "I don't know", "no thanks", "das funktioniert nicht"
-    first=bool(FIRST_PERSON.search(t)) and not WANT.search(t)
+    first=bool(FIRST_PERSON.search(t)) and not WANT.search(t) and not YOU.search(t)
     if first and not actions:return out  # a statement about oneself ("I didn't have time")
     unknown_wording=not actions and not objs and not imperative  # a strong rule word with only unknown words: an open question
     if not actions:actions=set(prev['actions']) if prev and prev.get('actions') else {'ANY'} if objs else {'UNKNOWN'}  # "not my photos" after "delete the drafts"
@@ -192,6 +255,7 @@ def parse_clause(clause,prev=None):
     reasons=[]
     if HEDGE.search(t):reasons.append('HEDGE')
     if REPORTED.search(t):reasons.append('SOMEONE_ELSE')
+    if advice and 'SOMEONE_ELSE' not in reasons:reasons.append('ADVICE')  # "X advises/warns against": a hint, not yet a rule
     if question:reasons.append('QUESTION')
     if first:reasons.append('ABOUT_YOURSELF')
     if pron_only and not (prev and prev.get('objects')):reasons.append('UNCLEAR_OBJECT')
@@ -202,6 +266,7 @@ def parse_clause(clause,prev=None):
         exc|={'UNKNOWN'} if exc_unknown or not exc else set()
     kind='UNCLEAR' if reasons else 'ASK_FIRST' if ask else 'FORBID'
     out.update(kind=kind,actions=sorted(actions),objects=sorted(objs),unknown=sorted(set(unknown)),exceptions=sorted(exc),reasons=reasons)
+    if kind=='UNCLEAR':out['suggest']='ASK_FIRST' if ask or not forbid else 'FORBID'  # shown to the user as a proposal, never applied by itself
     return out
 
 
@@ -297,7 +362,7 @@ def add(store,text,origin,clock=time.time):
             if same:new.append(dict(same,known=True));continue
             r={'id':'R'+str(st['next']),'kind':c['kind'],'status':'OPEN' if c['kind']=='UNCLEAR' else 'ACTIVE','actions':c['actions'],'objects':c['objects'],
                'unknown':c['unknown'],'exceptions':c['exceptions'],'reasons':c['reasons'],'text':c['text'],'line':str(text)[:400],'origin':origin,
-               'created':clock(),'parser':PARSER}
+               'created':clock(),'parser':PARSER,'suggest':c.get('suggest')}
             st['next']+=1;st['rules'].append(r);new.append(r)
         return new
     return box(store).mutate(f)
@@ -312,10 +377,11 @@ def notice(r):
     if r['kind']=='UNCLEAR':
         why={'HEDGE':'du klingst unsicher','SOMEONE_ELSE':'das hat jemand anderes gesagt','QUESTION':'es ist eine Frage',
              'ABOUT_YOURSELF':'es klingt wie ein Satz über dich','UNCLEAR_OBJECT':'ich weiß nicht, was mit „das/es“ gemeint ist',
-             'UNKNOWN_WORDING':'die Formulierung kenne ich noch nicht sicher'}
+             'UNKNOWN_WORDING':'die Formulierung kenne ich noch nicht sicher','ADVICE':'es klingt wie ein Rat, nicht wie eine feste Regel'}
+        prop={'FORBID':f' Mein Vorschlag: als Verbot lesen (:regel verbot {r["id"]}).','ASK_FIRST':f' Mein Vorschlag: als „erst fragen“ lesen (:regel fragen {r["id"]}).'}.get(r.get('suggest'),'')
         return (f'[Rückfrage {r["id"]}] Soll das eine Regel für mich sein? „{r["text"]}“ ({", ".join(why[x] for x in r["reasons"])}). '
                 f'Bis du antwortest, frage ich vorher bei allem, was das betreffen könnte ({_short(r)}). '
-                f'Antworte mit :regel verbot {r["id"]}, :regel fragen {r["id"]} oder :regel nein {r["id"]}.'+note)
+                f'Antworte mit :regel verbot {r["id"]}, :regel fragen {r["id"]} oder :regel nein {r["id"]}.'+prop+note)
     return f'[Regel {r["id"]} gespeichert] {lead}: {_short(r)} — „{r["text"]}“. Gilt sofort, bis du sie mit :regel aus {r["id"]} aufhebst.'+note
 
 

@@ -33,6 +33,28 @@ class Parse(unittest.TestCase):
             self.assertIn(kinds(text)[0] if kinds(text) else 'NONE',('FORBID','UNCLEAR'),text)
         for text in ('Before you proceed with any action, I advise you to speak first.','Erzähl mir, bevor du etwas tust.','Sag mir immer vor, was du tun willst.'):
             self.assertEqual(kinds(text),['ASK_FIRST'],text)
+    def test_v3_round2_failure_forms_are_read(self):
+        # the 8 sentences v2 missed in round 2 (docs/proofs/continuation-20261021/user-rules/BEFUND.md)
+        for text,ok in (('Tell me ahead of time what you intend to do.',('ASK_FIRST',)),('Maintain a safe distance from my pictures.',('FORBID',)),
+                        ('I never let you take my recipes away.',('FORBID',)),('It might be better to hold off on that message.',('UNCLEAR',)),
+                        ('My sibling advises against accessing the web.',('UNCLEAR',)),('I forbade you from running any programs.',('FORBID',)),
+                        ('The indication warned against coming inside.',('UNCLEAR',)),('Gut vor dem Senden, mir zeigen.',('ASK_FIRST',))):
+            self.assertIn(kinds(text)[0] if kinds(text) else 'NONE',ok,text)
+        self.assertEqual(kinds('I never delete my notes.'),['UNCLEAR'])  # about oneself, the AI is not addressed
+        self.assertEqual(U.parse('I forbade you from running any programs.')[0]['actions'],['RUN'])  # "running" -> run
+    def test_v3_lexicon_is_data_with_evidence_and_refuses_sealed_sentences(self):
+        for e in U.LEXICON['entries']:
+            self.assertTrue(e['evidence'].strip());self.assertFalse(any(x in e['evidence'] for x in U.LEXICON['sealed']))
+        with tempfile.TemporaryDirectory() as d:
+            f=Path(d)/'lex.json';f.write_text(json.dumps({'sealed':['round3'],'entries':[]}))
+            with self.assertRaises(ValueError):U.extend({'slot':'FORBID','value':'nope','evidence':''},f)
+            with self.assertRaises(ValueError):U.extend({'slot':'FORBID','value':'nope','evidence':'round3: a sealed sentence'},f)
+            with self.assertRaises(ValueError):U.extend({'slot':'NOWHERE','value':'x','evidence':'dev'},f)
+        U.load_lexicon()
+    def test_v3_unclear_rule_carries_a_proposal(self):
+        c=U.parse('My sibling advises against accessing the web.')[0];self.assertEqual(c['suggest'],'FORBID')
+        text=U.notice(dict(c,id='R4',status='OPEN'));self.assertIn('Mein Vorschlag: als Verbot lesen (:regel verbot R4)',text)
+        c=U.parse('Vielleicht vorher fragen, bevor du etwas sendest.')[0];self.assertEqual((c['kind'],c['suggest']),('UNCLEAR','ASK_FIRST'))
     def test_loosening_is_recognised_but_not_a_rule(self):
         self.assertEqual(kinds('You can delete notes again now.'),['LOOSEN']);self.assertEqual(kinds('Du darfst jetzt wieder ins Internet.'),['LOOSEN'])
     def test_every_named_action_and_object_counts(self):
