@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_timeout_stops_term_resistant_test_descendant (tests.test_phone_release_audit_candidate.PhoneReleaseAudit.test_timeout_stops_term_resistant_test_descendant)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/tests/test_phone_release_audit_candidate.py", line 110, in test_timeout_stops_term_resistant_test_descendant
+    self.assertFalse(marker.exists(), 'Audit timeout left a live test descendant')
+AssertionError: True is not false : Audit timeout left a live test descendant
+
+----------------------------------------------------------------------
+Ran 1 test in 1.205s
+
+FAILED (failures=1)

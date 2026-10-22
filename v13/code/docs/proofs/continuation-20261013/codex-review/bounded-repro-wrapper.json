@@ -1,0 +1,32 @@
+{
+  "binding": {},
+  "canonical_gate_pass": false,
+  "child_report_path": "/workspace/scratch/f24630d7727d/cancel-repro/candidate/device-check/report.json",
+  "child_report_sha256": "f846075a7bb22d9895b8d76a1759d9b2a2beceb28f71e388034a353ec7e13b1e",
+  "child_status_observed": "PARITY",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-u",
+    "/workspace/scratch/f24630d7727d/Aii/v13/code/docs/proofs/continuation-20261013/codex-review/reproduce_phone_cancel.py",
+    "child",
+    "/workspace/scratch/f24630d7727d/cancel-repro/home",
+    "/workspace/scratch/f24630d7727d/cancel-repro/candidate/device-check"
+  ],
+  "driver_exit_code": -9,
+  "driver_log_sha256": "c55224111b535e8f36f9047f2497e1fc55f0748297ebe1831d0f6b9874c5fe08",
+  "elapsed_seconds": 1.103,
+  "grace_seconds": 0.1,
+  "leader_reaped": true,
+  "native_quality_claimed": false,
+  "owned_pgid": 15,
+  "owned_pid": 15,
+  "partial_outputs_preserved": true,
+  "phone_measured_by_wrapper": false,
+  "schema": "V13_BOUNDED_TOOL_FORECAST_DEVICE_DRIVER_CANDIDATE_V1",
+  "signals": [
+    "SIGTERM",
+    "SIGKILL"
+  ],
+  "status": "DEADLINE",
+  "timeout_seconds": 1.0
+}

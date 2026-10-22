@@ -1,0 +1,111 @@
+{
+  "baseline": {
+    "commit": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+    "ref": "refs/remotes/origin/claude/project-thread-cui1zm",
+    "tree": "a553d944192a89c5015efbf04443f7675513f8c4"
+  },
+  "packages": [
+    {
+      "commit": "42a28dda70b1c41a908d66c8a0ebc15dde9a8046",
+      "owner": "K",
+      "paths": [
+        "v13/code/v13/agi/listarith.py",
+        "v13/code/v13/toolstep.py",
+        "v13/code/v13/broker.py",
+        "v13/code/tests/test_listarith.py",
+        "v13/code/docs/proofs/continuation-20261012/r4-r3-live/BEFUND.md"
+      ],
+      "ref": "refs/remotes/origin/claude/project-thread-s0290g",
+      "tree": "02dacfd733b184ae584d24e2987d40f6c99c1f49"
+    },
+    {
+      "commit": "b0d00ef17571cf53ba395685b42d1b5753b2ec23",
+      "owner": "L",
+      "paths": [
+        "v13/code/v13/selfmodel.py",
+        "v13/code/v13/aplane.py",
+        "v13/code/v13/latewatch.py",
+        "v13/code/v13/neuro_ledger.py",
+        "v13/code/tests/test_neuro_ledger.py",
+        "v13/bench-results/corollary-unclear-20261012/report.json"
+      ],
+      "ref": "refs/remotes/origin/claude/project-thread-n3gv74",
+      "tree": "9738d30304d289dea9eec3c35c9ac43167e1e37d"
+    },
+    {
+      "commit": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+      "owner": "M",
+      "paths": [
+        "v13/code/v13/toolforecast.py",
+        "v13/code/scripts/install_tool_forecast.py",
+        "v13/code/scripts/test_tool_forecast_phone.py",
+        "v13/code/tests/test_toolforecast.py",
+        "v13/code/docs/proofs/continuation-20261013/tool-forecast-competence-v2/preregistration.json",
+        "v13/code/docs/proofs/continuation-20261013/tool-forecast-learning-region/report.json"
+      ],
+      "ref": "refs/remotes/origin/claude/project-thread-cui1zm",
+      "tree": "a553d944192a89c5015efbf04443f7675513f8c4"
+    },
+    {
+      "commit": "434b19b1889f9a77abbc953b62c2da9d590113c2",
+      "owner": "N",
+      "paths": [
+        "v13/code/v13/b3order.py",
+        "v13/code/v13/b3calibration.py",
+        "v13/code/v13/b3degrade.py",
+        "v13/code/v13/body_sizes.py",
+        "v13/code/v13/observer_schedule.py",
+        "v13/code/v13/resource_modes.py",
+        "v13/code/v13/sleep.py",
+        "v13/code/v13/scheduler.py",
+        "v13/code/tests/test_body_sizes.py",
+        "v13/code/tests/test_b3order.py",
+        "v13/code/docs/B3_DEGRADATION.md",
+        "v13/code/bench-results/longrun-soak-20261012/report.json"
+      ],
+      "ref": "refs/remotes/origin/claude/project-thread-lmo0ri",
+      "tree": "4c3d9204c4e01b100011da9bb57d8ba5d1e12bff"
+    },
+    {
+      "commit": "c9b7eddf996406a0f3dc128fdcd585e690bd46cd",
+      "owner": "O",
+      "paths": [
+        "v13/code/scripts/step2_b2_offer_candidate.py",
+        "v13/code/tests/resource_pins.py",
+        "v13/code/tests/test_bodies.py",
+        "v13/code/tests/test_executive.py",
+        "v13/code/docs/proofs/continuation-20261013/b2-offer-candidate/BEFUND.md"
+      ],
+      "ref": "refs/remotes/origin/claude/project-thread-yrrnjn",
+      "tree": "9311200068a5ac1547ab5548bf65f8b770c0bb6c"
+    },
+    {
+      "commit": "3d7d8e8386df5845d14386a7b3590a17eb2287b1",
+      "owner": "P",
+      "paths": [
+        "v13/code/scripts/ram_budget_bench.py",
+        "v13/code/scripts/ram_squeeze_bench.py",
+        "v13/code/tests/test_ram_budget_bench.py",
+        "v13/code/bench-results/ram-budget-20261012/cloud.json",
+        "v13/code/bench-results/ram-budget-20261012/README.md"
+      ],
+      "ref": "refs/remotes/origin/claude/project-thread-s6dg4n",
+      "tree": "0f8c48c0f7e9b903b97081498f4e4d9969a2db07"
+    },
+    {
+      "commit": "483af03452ad7bb7387edbc45c71bb31255afc38",
+      "owner": "G",
+      "paths": [
+        "v13/code/v13/agi/tools.py",
+        "v13/code/v13/cognition.py",
+        "v13/code/v13/config.py",
+        "v13/code/scripts/integrated_candidates.py",
+        "v13/code/tests/test_b2_offer_candidate.py"
+      ],
+      "ref": "refs/remotes/origin/claude/project-thread-qgkt5z",
+      "tree": "bb647463f8aa3de874ca5d17c759187b56024a21"
+    }
+  ],
+  "schema": "v13-branch-content-audit-v1",
+  "scope_note": "Files selected from documented K/L/M/N/O/P/G ownership and evidence paths. Not a full repository merge plan. Thread activity not observable."
+}

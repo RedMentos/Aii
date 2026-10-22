@@ -1,0 +1,790 @@
+{
+  "active_thread_state": "NOT_OBSERVED",
+  "evidence_level": "FETCHED_LOCAL_GIT_AND_SCOPED_WORKTREE",
+  "files": [
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "K",
+      "path": "v13/code/docs/proofs/continuation-20261012/r4-r3-live/BEFUND.md",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "86864f3b409faf8aa4d79330cb8893b60d7002cf",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "K",
+      "path": "v13/code/tests/test_listarith.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "49e8478810ec8d4bc25a9f78a35f606656eeb40d",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "K",
+      "path": "v13/code/v13/agi/listarith.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "dc9699232ea747843ad0610f57c07db8f5bade5b",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": {
+        "blob": "dc2563d25689f9250247d2919b5c55e64e144bf9",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "K",
+      "path": "v13/code/v13/broker.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "018c121ae377127c3bc6b1f04785b9813c322a0f",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "dc2563d25689f9250247d2919b5c55e64e144bf9",
+        "mode": "100644",
+        "sha256": "aade4b74cafae5c475907aef3933cc1fdba8d4191106f484d545e63ca7b586ad"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": {
+        "blob": "73f8711e9e4022b21d774f0c5815364f7e52f86a",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "K",
+      "path": "v13/code/v13/toolstep.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "3975a9148b3f8e9f2b6ba50a40b03c7d7ce703b1",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "73f8711e9e4022b21d774f0c5815364f7e52f86a",
+        "mode": "100644",
+        "sha256": "9b49d3d6d86471d7b1090051382b1683ead591b9427739e4ce38081a94f77c36"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "L",
+      "path": "v13/bench-results/corollary-unclear-20261012/report.json",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "691e0f3a0aef45156f447e2cdd7bb93d612bbf5e",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "L",
+      "path": "v13/code/tests/test_neuro_ledger.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "0d1a769ba6e82a4df18fb29b99e9fce6041b43cb",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": {
+        "blob": "3c7142f13c3af45e059fd5dd20d1efc1eb46f769",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "L",
+      "path": "v13/code/v13/aplane.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "eaf1df45a4cc08be37359d19a8c159d3abfde36c",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "3c7142f13c3af45e059fd5dd20d1efc1eb46f769",
+        "mode": "100644",
+        "sha256": "c8f194267f5a4e4e17184f2f7f3905537aec195125d920b5f58df66101f494de"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": {
+        "blob": "755e943c852a24cc97ab829c1d82506d81cbdcf5",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "L",
+      "path": "v13/code/v13/latewatch.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "3e7bee816aa33dd2983d1323b879d75e5c6e6fef",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "755e943c852a24cc97ab829c1d82506d81cbdcf5",
+        "mode": "100644",
+        "sha256": "3ba850b4d407e4d586804d5ca16f66a5b9c3d122ff95bbd134929ff8b4b3dc15"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "L",
+      "path": "v13/code/v13/neuro_ledger.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "edba574b1add4631c58f3aab2484b19cb0303bd3",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": {
+        "blob": "10b58b83166bc0d8b59ffca2f4c826ef7b23e910",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "L",
+      "path": "v13/code/v13/selfmodel.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "8877ebc595e7b080469422ed71292920b0141832",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "10b58b83166bc0d8b59ffca2f4c826ef7b23e910",
+        "mode": "100644",
+        "sha256": "8a3248f929dcfc78f7ca7c421fe6dd9279a9da5f67400a0d754faff8e30931e8"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": {
+        "blob": "3e035518695b5aadd057887320e8f187217e1cbe",
+        "mode": "100644"
+      },
+      "baseline_comparison": "MATCH",
+      "owner": "M",
+      "path": "v13/code/docs/proofs/continuation-20261013/tool-forecast-competence-v2/preregistration.json",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "3e035518695b5aadd057887320e8f187217e1cbe",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "3e035518695b5aadd057887320e8f187217e1cbe",
+        "mode": "100644",
+        "sha256": "f65d92d8391632b230173515785c50eccfdc2c899044db49d1e57b37bd5782b9"
+      },
+      "working_comparison": "MATCH"
+    },
+    {
+      "baseline": {
+        "blob": "d2bd2c5581ba1cf60a4ddbf7cf31a94a525f6710",
+        "mode": "100644"
+      },
+      "baseline_comparison": "MATCH",
+      "owner": "M",
+      "path": "v13/code/docs/proofs/continuation-20261013/tool-forecast-learning-region/report.json",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "d2bd2c5581ba1cf60a4ddbf7cf31a94a525f6710",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "d2bd2c5581ba1cf60a4ddbf7cf31a94a525f6710",
+        "mode": "100644",
+        "sha256": "9372611051050d50b9d252b3c28ff4796650f3ae747522ef231e454f0d2688c3"
+      },
+      "working_comparison": "MATCH"
+    },
+    {
+      "baseline": {
+        "blob": "59fdcd9af62e9e7e1832ad039c0b473034218ec7",
+        "mode": "100644"
+      },
+      "baseline_comparison": "MATCH",
+      "owner": "M",
+      "path": "v13/code/scripts/install_tool_forecast.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "59fdcd9af62e9e7e1832ad039c0b473034218ec7",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "59fdcd9af62e9e7e1832ad039c0b473034218ec7",
+        "mode": "100644",
+        "sha256": "13770a85b1081478a222ce78286c4dc15538de7dc4736aa68275050f6e5e8ab1"
+      },
+      "working_comparison": "MATCH"
+    },
+    {
+      "baseline": {
+        "blob": "d09ad882ab91c406e1ad52309b2784d45915aa79",
+        "mode": "100644"
+      },
+      "baseline_comparison": "MATCH",
+      "owner": "M",
+      "path": "v13/code/scripts/test_tool_forecast_phone.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "d09ad882ab91c406e1ad52309b2784d45915aa79",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "d09ad882ab91c406e1ad52309b2784d45915aa79",
+        "mode": "100644",
+        "sha256": "bcfb015e77a355dfb49ed628c0f4004e893c6161d07f01901bcce59dd420197e"
+      },
+      "working_comparison": "MATCH"
+    },
+    {
+      "baseline": {
+        "blob": "0fc6ed3a9b776217a7ec4c34a6163663b4ba4b57",
+        "mode": "100644"
+      },
+      "baseline_comparison": "MATCH",
+      "owner": "M",
+      "path": "v13/code/tests/test_toolforecast.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "0fc6ed3a9b776217a7ec4c34a6163663b4ba4b57",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "0fc6ed3a9b776217a7ec4c34a6163663b4ba4b57",
+        "mode": "100644",
+        "sha256": "8c1cfaef4d98e41eb8a5f099968e954c3137442abca3b2cf92d9e6a1ecdef933"
+      },
+      "working_comparison": "MATCH"
+    },
+    {
+      "baseline": {
+        "blob": "c775d14a8aa1453966ef08bea2b98d378562e7af",
+        "mode": "100644"
+      },
+      "baseline_comparison": "MATCH",
+      "owner": "M",
+      "path": "v13/code/v13/toolforecast.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "c775d14a8aa1453966ef08bea2b98d378562e7af",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "c775d14a8aa1453966ef08bea2b98d378562e7af",
+        "mode": "100644",
+        "sha256": "be56e1e22d5ce0886d4c0db719fe92815838c4fc2074578aca0406f5f90e241d"
+      },
+      "working_comparison": "MATCH"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/bench-results/longrun-soak-20261012/report.json",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "191fbbb2e3a79843b0281cccbef28dbbd88ac796",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/docs/B3_DEGRADATION.md",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "539e1987c319ed6220b9dc544d5e3fa1957781d0",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/tests/test_b3order.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "429fea752c8e919f7aaa39c6da2d0f258c922eef",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/tests/test_body_sizes.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "1cc382a9f8d04020516bf0b8e195716a8c337d32",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/v13/b3calibration.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "25e22e027f08cf7a43ac401a46e3c160a2342851",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/v13/b3degrade.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "6af3ed47cbcdb430f39569901bb56ddcc3571875",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/v13/b3order.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "dfbdb633b3c9a6700f61f67ca77f425750dffd39",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/v13/body_sizes.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "11a99b38f7a2bd9f0e707cb907ac02ab559f0f86",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/v13/observer_schedule.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "fb7fb40c6a2d0b6fe2aba733158be40f460c911a",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "N",
+      "path": "v13/code/v13/resource_modes.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "fef6f6f72d6bd479177f366c79c4f4651cce8b58",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": {
+        "blob": "39fc9cd3906331f6d5a02cac78f3248d06b35976",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "N",
+      "path": "v13/code/v13/scheduler.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "b7ac3f7c13f21d9f2bae111422bc226ceaa0e31d",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "39fc9cd3906331f6d5a02cac78f3248d06b35976",
+        "mode": "100644",
+        "sha256": "c21b5aae9e49bce906869a1bc2f605d3abda2054827577959118eda91ca95bb0"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": {
+        "blob": "2c570815e77c84be035b5d2eadf04e75ebcfd464",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "N",
+      "path": "v13/code/v13/sleep.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "12fc576c531a6da5ecad3c29e97c93ebca36a2eb",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "2c570815e77c84be035b5d2eadf04e75ebcfd464",
+        "mode": "100644",
+        "sha256": "da32aaaf5d6b7542ab64c5204bb3ffa6942af643793da0adac0c51a2b225e3b8"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "O",
+      "path": "v13/code/docs/proofs/continuation-20261013/b2-offer-candidate/BEFUND.md",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "3c7ec8563b56caa7d9348d6fa3ea2c5f810a4a5e",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "O",
+      "path": "v13/code/scripts/step2_b2_offer_candidate.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "e0ef4e1ade58527ea0fe82651c8a006ff632e779",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "O",
+      "path": "v13/code/tests/resource_pins.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "81e829120404cdc7faee48278b9c120c4f85dbc4",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": {
+        "blob": "a7da0e75488cd27eea2d4ec04ba58a96b263e2ba",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "O",
+      "path": "v13/code/tests/test_bodies.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "30cba313777385d3cdcf34651dfb8782dccb4b66",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "a7da0e75488cd27eea2d4ec04ba58a96b263e2ba",
+        "mode": "100644",
+        "sha256": "a32d6c2cea524b7bfe06aff9f4af3d3fa479ed668688381df523017964bfeb28"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": {
+        "blob": "b93ef2692746cbee60ae8cf77a6150cd857e4ec0",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "O",
+      "path": "v13/code/tests/test_executive.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "3a33963f25c13b99a23768d243e3d06ca482d2f4",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "b93ef2692746cbee60ae8cf77a6150cd857e4ec0",
+        "mode": "100644",
+        "sha256": "b50f0dad67a7ee1da18b18b36c47682e1d5549a99aacf8d43fa61aa06a627090"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "P",
+      "path": "v13/code/bench-results/ram-budget-20261012/README.md",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "4f3bef53af26511d84be0f7c63d08386c2e8a220",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "P",
+      "path": "v13/code/bench-results/ram-budget-20261012/cloud.json",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "f512894489bf46e4007eca17b84b26124563c0d7",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "P",
+      "path": "v13/code/scripts/ram_budget_bench.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "ace869f61987589eda467d0bd76f32fc3ef309a8",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "P",
+      "path": "v13/code/scripts/ram_squeeze_bench.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "53a13531544ebc8b8f7a1318f87be45a534b9e96",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "P",
+      "path": "v13/code/tests/test_ram_budget_bench.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "87e90e2227d9ffb1e79eb8b6ee19b2bd46596fd6",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": {
+        "blob": "176af1dddd086aa22abd45eda449fa760483ef00",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "G",
+      "path": "v13/code/scripts/integrated_candidates.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "c5d19a23c112706ec47368d6e4984e52e3e69c28",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "176af1dddd086aa22abd45eda449fa760483ef00",
+        "mode": "100644",
+        "sha256": "e3d0e086e995a485de480fe46fdbcf430367a38d551cd4bacbd372abfc963ada"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": null,
+      "baseline_comparison": "MISSING",
+      "owner": "G",
+      "path": "v13/code/tests/test_b2_offer_candidate.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "1eca94305237e0a58add66821c6dfb69cdddafd1",
+        "mode": "100644"
+      },
+      "working": null,
+      "working_comparison": "MISSING"
+    },
+    {
+      "baseline": {
+        "blob": "1222ea9df3f2a7991916cf298d489d068edebd9f",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "G",
+      "path": "v13/code/v13/agi/tools.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "48cfa37f8ed34db3b8ab917405f943f5ff36d34e",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "1222ea9df3f2a7991916cf298d489d068edebd9f",
+        "mode": "100644",
+        "sha256": "a65d328e8be2170022d1fa5ba862cd3f42f5d64bba9414d3885d2bd79aacc4c6"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": {
+        "blob": "454e360ebbacc21c64fd61593b36baab44fc6a17",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "G",
+      "path": "v13/code/v13/cognition.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "6796f2cc89d4144cf036f33bf2a656575aba3c41",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "454e360ebbacc21c64fd61593b36baab44fc6a17",
+        "mode": "100644",
+        "sha256": "d68df49a947b7211a5cf273a29ca620b0f9a7b5fd9d75497cf46c04e9504b5d7"
+      },
+      "working_comparison": "DIFFERENT"
+    },
+    {
+      "baseline": {
+        "blob": "a8b54d6cdae2a84026dd90db70d1219f690863d3",
+        "mode": "100644"
+      },
+      "baseline_comparison": "DIFFERENT",
+      "owner": "G",
+      "path": "v13/code/v13/config.py",
+      "scoped_dirty": false,
+      "source": {
+        "blob": "671ef0cd710acd3887a428a55434f0f8baef8749",
+        "mode": "100644"
+      },
+      "working": {
+        "blob": "a8b54d6cdae2a84026dd90db70d1219f690863d3",
+        "mode": "100644",
+        "sha256": "21a1fbd969d0e4e19c94bf0b5687eb6ebc8e263866055c65a47703e38799696a"
+      },
+      "working_comparison": "DIFFERENT"
+    }
+  ],
+  "head": "d826f55f677a5ab7668af3762e00703178c1b2b7",
+  "issues": [
+    {
+      "actual": "d826f55f677a5ab7668af3762e00703178c1b2b7",
+      "expected": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+      "kind": "WORKTREE_HEAD_DIFFERS"
+    }
+  ],
+  "network_used": false,
+  "plan_sha256": "ea86eb2d4f2fdb491d781b837db095a76efbe1cbdfb11ab6be0bbc85cd0a5b01",
+  "runtime_changed": false,
+  "schema": "v13-branch-content-audit-v1",
+  "scope": "Declared package paths only; differences do not imply a required merge or completion.",
+  "snapshots": [
+    {
+      "commit": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+      "owner": "BASELINE",
+      "ref": "refs/remotes/origin/claude/project-thread-cui1zm",
+      "resolved_ref": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+      "tree": "a553d944192a89c5015efbf04443f7675513f8c4"
+    },
+    {
+      "commit": "42a28dda70b1c41a908d66c8a0ebc15dde9a8046",
+      "owner": "K",
+      "ref": "refs/remotes/origin/claude/project-thread-s0290g",
+      "resolved_ref": "42a28dda70b1c41a908d66c8a0ebc15dde9a8046",
+      "tree": "02dacfd733b184ae584d24e2987d40f6c99c1f49"
+    },
+    {
+      "commit": "b0d00ef17571cf53ba395685b42d1b5753b2ec23",
+      "owner": "L",
+      "ref": "refs/remotes/origin/claude/project-thread-n3gv74",
+      "resolved_ref": "b0d00ef17571cf53ba395685b42d1b5753b2ec23",
+      "tree": "9738d30304d289dea9eec3c35c9ac43167e1e37d"
+    },
+    {
+      "commit": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+      "owner": "M",
+      "ref": "refs/remotes/origin/claude/project-thread-cui1zm",
+      "resolved_ref": "673e3fb20196ec77f0f32eecc5f6e149f8423a15",
+      "tree": "a553d944192a89c5015efbf04443f7675513f8c4"
+    },
+    {
+      "commit": "434b19b1889f9a77abbc953b62c2da9d590113c2",
+      "owner": "N",
+      "ref": "refs/remotes/origin/claude/project-thread-lmo0ri",
+      "resolved_ref": "434b19b1889f9a77abbc953b62c2da9d590113c2",
+      "tree": "4c3d9204c4e01b100011da9bb57d8ba5d1e12bff"
+    },
+    {
+      "commit": "c9b7eddf996406a0f3dc128fdcd585e690bd46cd",
+      "owner": "O",
+      "ref": "refs/remotes/origin/claude/project-thread-yrrnjn",
+      "resolved_ref": "c9b7eddf996406a0f3dc128fdcd585e690bd46cd",
+      "tree": "9311200068a5ac1547ab5548bf65f8b770c0bb6c"
+    },
+    {
+      "commit": "3d7d8e8386df5845d14386a7b3590a17eb2287b1",
+      "owner": "P",
+      "ref": "refs/remotes/origin/claude/project-thread-s6dg4n",
+      "resolved_ref": "3d7d8e8386df5845d14386a7b3590a17eb2287b1",
+      "tree": "0f8c48c0f7e9b903b97081498f4e4d9969a2db07"
+    },
+    {
+      "commit": "483af03452ad7bb7387edbc45c71bb31255afc38",
+      "owner": "G",
+      "ref": "refs/remotes/origin/claude/project-thread-qgkt5z",
+      "resolved_ref": "483af03452ad7bb7387edbc45c71bb31255afc38",
+      "tree": "bb647463f8aa3de874ca5d17c759187b56024a21"
+    }
+  ],
+  "source_sha256": "15f572d6c8e9421745cd5836b8f6f90bf53891f91bda9925b8f7273c9372ceb9",
+  "status": "AUDIT_ISSUES",
+  "working_counts": {
+    "DIFFERENT": 13,
+    "MATCH": 6,
+    "MISSING": 25,
+    "SOURCE_MISSING": 0
+  }
+}

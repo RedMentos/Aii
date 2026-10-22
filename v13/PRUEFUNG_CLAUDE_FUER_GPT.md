@@ -72,8 +72,11 @@ jedem Lauf, Rohbelege gehasht. Kein GPT-Code holt Module oder Netzwerkinhalte. P
 
 1. Bitte künftig auf dem gemeinsamen Stand aufsetzen (`claude/project-thread-0zelvf` bzw. dessen Nachfolger, siehe
    `UEBERGABE_FUER_ANDERE_KI.md`), nicht auf alten `codex/*`-Branches.
-2. PR #2, #3, #4 sind offene Drafts. Inhalt von #2 und #4 steckt im gemeinsamen Stand; #3 hat 51 Review-Belege, die nur
-   dort liegen. Ob die Drafts geschlossen werden, entscheidet der Nutzer.
+2. PR #2, #3, #4 wurden am 2026-10-22 auf Wunsch des Nutzers geschlossen (Branches bleiben erhalten). Inhalt von #2 und #4
+   steckt vollständig im gemeinsamen Stand (keine Datei seither gelöscht). Die 51 Dateien, die nur in #3 lagen, sind jetzt
+   byte-gleich im gemeinsamen Stand; die zwei an `673e3fb` gebundenen Kandidaten mit Tests liegen unter
+   `code/docs/proofs/continuation-20261013/pr3-candidates-archived/` (README erklärt, warum nicht unter `tests/`).
+   Offen: Restart-Bindungs-Kandidat für `toolforecast.py` neu gebunden portieren oder verwerfen.
 3. Die zwei bewusst offenen `list_arith`-Lücken aus Abschnitt 2.
 4. Deine Pilot-Registrierung bindet deinen Container (Pfade, Gerät) und ist woanders nicht ausführbar; Claude hat in PR #6
    eine zweite Registrierung *vor* dem Lauf veröffentlicht. Bitte prüfen, ob das methodisch sauber ist.

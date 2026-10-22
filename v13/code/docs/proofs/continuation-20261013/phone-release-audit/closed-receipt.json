@@ -1,0 +1,20 @@
+{
+  "schema": "V13_PHONE_RELEASE_CLOSED_RECEIPT_V1",
+  "bound_zip": "final-phone.zip",
+  "bound_zip_sha256": "f039cbec836a1111e4143c673167de7cbd1fb25528567d2bc47cb59523ae874d",
+  "candidate_sources": {
+    "scripts/phone_release_audit_candidate.py": "5dd2bb58cfcaa35876976bbd0f4af1f798cbbea714689dbff53edc22465968b3",
+    "tests/test_phone_release_audit_candidate.py": "b224cf50a8afc24a6c2f0a8b54b16908a3ec042ab461af596f6f101289a9da5a"
+  },
+  "proofs": {
+    "candidate-focused.log": "de66f89b5a6b1b2a0af9d8b0154baf842ed75b85d5432a9791a22255dda16bf5",
+    "baseline-receipt.json": "8eed6bf24d4f65f5a14a6122e2da0a7df5b8fa5584adba3cff15541c39ce693a",
+    "baseline-tests.log": "84bd97ddca71efa4734f645afb0a8b6e8f023e43dce52ffe8d79c9ccec28fb46",
+    "final-proof/audit.json": "7e3eb599874cd0204939ffae743df35344092a00e9f8a0fc8e11f76003563d9d",
+    "final-proof/suite-summary.json": "293845b9fe9d32fc9e3730c2208488619fa6e2f811e01a0ac173ae439c52a0be",
+    "final-proof/suite.log": "3c5b0ea967fe7ac5c4ca6bfc143619a92d53d290035654b21aceecf0e9712334"
+  },
+  "implemented_runtime_changes": false,
+  "claude_active_threads_merged": false,
+  "claim_scope": "Archive integrity and extracted Linux software tests; no native model or device claims"
+}
