@@ -1,0 +1,1909 @@
+{
+ "v5": {
+  "parser": "fixed-userrules-v5",
+  "summary": {
+   "items": 17,
+   "safety_failures": 2,
+   "soft_deny_as_ask": 5,
+   "over_caution": 31,
+   "probe_checks": 136,
+   "kind_match": 8,
+   "weaker_than_label": 1,
+   "missed_prohibitions": 0,
+   "allow_probes": 89,
+   "sentences_with_failure": 1
+  },
+  "weaker": [
+   "Better install nothing, I guess."
+  ],
+  "missed": [],
+  "rows": [
+   {
+    "text": "Ain't no new modules, no extensions, nothing to install bro",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "install_module"
+    ],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ASK",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "INSTALL"
+      ],
+      "objects": [
+       "ALL",
+       "MODULE"
+      ],
+      "unknown": [
+       "ain't",
+       "bro"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "UNKNOWN_WORDING"
+      ],
+      "text": "Ain't no new modules, no extensions, nothing to install bro"
+     }
+    ]
+   },
+   {
+    "text": "Hey buddy, better keep your hands off my notes, alright? No messin' around, got it?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "note_replace"
+    ],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "NOTE"
+      ],
+      "unknown": [
+       "alright",
+       "around",
+       "better",
+       "buddy",
+       "keep",
+       "messin"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "HEDGE",
+       "QUESTION"
+      ],
+      "text": "Hey buddy, better keep your hands off my notes, alright? No messin' around, got it?"
+     }
+    ]
+   },
+   {
+    "text": "Hey, from now on, no more tools, alright? Keep it cool.",
+    "want_kind": "FORBID",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "DENY",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "DENY",
+     "web": "DENY",
+     "install_module": "DENY",
+     "delete_photo": "DENY",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "ANY",
+       "TOOL"
+      ],
+      "objects": [
+       "TOOLS"
+      ],
+      "unknown": [
+       "alright",
+       "cool",
+       "keep"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Hey, from now on, no more tools, alright? Keep it cool"
+     }
+    ]
+   },
+   {
+    "text": "Avoid spending any cash, mate.",
+    "want_kind": "FORBID",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "BUY"
+      ],
+      "objects": [],
+      "unknown": [
+       "cash",
+       "mate"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Avoid spending any cash, mate"
+     }
+    ]
+   },
+   {
+    "text": "Ain't managed to download anything today, mate.",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Chill, dude, no worries about the bill, alright?",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Don't send mails in my name, okay?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "send_email"
+    ],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ASK",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "SEND"
+      ],
+      "objects": [
+       "MESSAGE",
+       "PERSONAL"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Don't send mails in my name, okay?"
+     }
+    ]
+   },
+   {
+    "text": "No more tools from now on.",
+    "want_kind": "FORBID",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "DENY",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "DENY",
+     "web": "DENY",
+     "install_module": "DENY",
+     "delete_photo": "DENY",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "ANY",
+       "TOOL"
+      ],
+      "objects": [
+       "TOOLS"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [],
+      "text": "No more tools from now on"
+     }
+    ]
+   },
+   {
+    "text": "Don't take anything from our chats, okay?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "ALL",
+       "MESSAGE"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Don't take anything from our chats, okay?"
+     }
+    ]
+   },
+   {
+    "text": "Tell me first what you're up to.",
+    "want_kind": "ASK_FIRST",
+    "got_kind": "ASK_FIRST",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "ASK_FIRST",
+      "actions": [
+       "UNKNOWN"
+      ],
+      "objects": [],
+      "unknown": [
+       "you're"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Tell me first what you're up to"
+     }
+    ]
+   },
+   {
+    "text": "Show me all drafts before they go out.",
+    "want_kind": "ASK_FIRST",
+    "got_kind": "ASK_FIRST",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "ASK_FIRST",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [],
+      "unknown": [
+       "drafts",
+       "they"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Show me all drafts before they go out"
+     }
+    ]
+   },
+   {
+    "text": "Better install nothing, I guess.",
+    "want_kind": "UNCLEAR",
+    "got_kind": "NONE",
+    "safety_failures": [
+     "install_module",
+     "unknown_tool"
+    ],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Can you delete the old note?",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "No stop, keep saving my notes.",
+    "want_kind": "NONE",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "note_new",
+     "note_replace",
+     "install_module",
+     "unknown_tool"
+    ],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ASK",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "WRITE"
+      ],
+      "objects": [
+       "NOTE"
+      ],
+      "unknown": [
+       "keep"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "No stop, keep saving my notes"
+     }
+    ]
+   },
+   {
+    "text": "Leave my phone alone, please. It's kinda important, so try not to touch it.",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "DENY",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "DENY",
+     "web": "DENY",
+     "install_module": "DENY",
+     "delete_photo": "DENY",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "ANY",
+       "CONTACT",
+       "DELETE",
+       "WRITE"
+      ],
+      "objects": [
+       "ALL"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Leave my phone alone, please"
+     },
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "ALL"
+      ],
+      "unknown": [
+       "important",
+       "it's",
+       "kinda",
+       "try"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "UNKNOWN_WORDING"
+      ],
+      "text": "It's kinda important, so try not to touch it"
+     }
+    ]
+   },
+   {
+    "text": "Leave my notes alone, will ya?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "note_new",
+     "note_replace"
+    ],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "DELETE",
+       "WRITE"
+      ],
+      "objects": [
+       "NOTE"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Leave my notes alone, will ya?"
+     }
+    ]
+   },
+   {
+    "text": "No idea what that means.",
+    "want_kind": "NONE",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo",
+     "unknown_tool"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "UNKNOWN"
+      ],
+      "objects": [],
+      "unknown": [
+       "means"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "UNKNOWN_WORDING"
+      ],
+      "text": "No idea what that means"
+     }
+    ]
+   }
+  ]
+ },
+ "v4": {
+  "parser": "fixed-userrules-v4",
+  "summary": {
+   "items": 17,
+   "safety_failures": 2,
+   "soft_deny_as_ask": 5,
+   "over_caution": 31,
+   "probe_checks": 136,
+   "kind_match": 8,
+   "weaker_than_label": 1,
+   "missed_prohibitions": 0,
+   "allow_probes": 89,
+   "sentences_with_failure": 1
+  },
+  "weaker": [
+   "Better install nothing, I guess."
+  ],
+  "missed": [],
+  "rows": [
+   {
+    "text": "Ain't no new modules, no extensions, nothing to install bro",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "install_module"
+    ],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ASK",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "INSTALL"
+      ],
+      "objects": [
+       "ALL",
+       "MODULE"
+      ],
+      "unknown": [
+       "ain't",
+       "bro"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "UNKNOWN_WORDING"
+      ],
+      "text": "Ain't no new modules, no extensions, nothing to install bro"
+     }
+    ]
+   },
+   {
+    "text": "Hey buddy, better keep your hands off my notes, alright? No messin' around, got it?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "note_replace"
+    ],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "NOTE"
+      ],
+      "unknown": [
+       "alright",
+       "around",
+       "better",
+       "buddy",
+       "keep",
+       "messin"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "HEDGE",
+       "QUESTION"
+      ],
+      "text": "Hey buddy, better keep your hands off my notes, alright? No messin' around, got it?"
+     }
+    ]
+   },
+   {
+    "text": "Hey, from now on, no more tools, alright? Keep it cool.",
+    "want_kind": "FORBID",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "DENY",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "DENY",
+     "web": "DENY",
+     "install_module": "DENY",
+     "delete_photo": "DENY",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "ANY",
+       "TOOL"
+      ],
+      "objects": [
+       "TOOLS"
+      ],
+      "unknown": [
+       "alright",
+       "cool",
+       "keep"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Hey, from now on, no more tools, alright? Keep it cool"
+     }
+    ]
+   },
+   {
+    "text": "Avoid spending any cash, mate.",
+    "want_kind": "FORBID",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "BUY"
+      ],
+      "objects": [],
+      "unknown": [
+       "cash",
+       "mate"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Avoid spending any cash, mate"
+     }
+    ]
+   },
+   {
+    "text": "Ain't managed to download anything today, mate.",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Chill, dude, no worries about the bill, alright?",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Don't send mails in my name, okay?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "send_email"
+    ],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ASK",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "SEND"
+      ],
+      "objects": [
+       "MESSAGE",
+       "PERSONAL"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Don't send mails in my name, okay?"
+     }
+    ]
+   },
+   {
+    "text": "No more tools from now on.",
+    "want_kind": "FORBID",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "DENY",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "DENY",
+     "web": "DENY",
+     "install_module": "DENY",
+     "delete_photo": "DENY",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "ANY",
+       "TOOL"
+      ],
+      "objects": [
+       "TOOLS"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [],
+      "text": "No more tools from now on"
+     }
+    ]
+   },
+   {
+    "text": "Don't take anything from our chats, okay?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "ALL",
+       "MESSAGE"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Don't take anything from our chats, okay?"
+     }
+    ]
+   },
+   {
+    "text": "Tell me first what you're up to.",
+    "want_kind": "ASK_FIRST",
+    "got_kind": "ASK_FIRST",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "ASK_FIRST",
+      "actions": [
+       "UNKNOWN"
+      ],
+      "objects": [],
+      "unknown": [
+       "you're"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Tell me first what you're up to"
+     }
+    ]
+   },
+   {
+    "text": "Show me all drafts before they go out.",
+    "want_kind": "ASK_FIRST",
+    "got_kind": "ASK_FIRST",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "ASK_FIRST",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [],
+      "unknown": [
+       "drafts",
+       "they"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Show me all drafts before they go out"
+     }
+    ]
+   },
+   {
+    "text": "Better install nothing, I guess.",
+    "want_kind": "UNCLEAR",
+    "got_kind": "NONE",
+    "safety_failures": [
+     "install_module",
+     "unknown_tool"
+    ],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Can you delete the old note?",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "No stop, keep saving my notes.",
+    "want_kind": "NONE",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "note_new",
+     "note_replace",
+     "install_module",
+     "unknown_tool"
+    ],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ASK",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "WRITE"
+      ],
+      "objects": [
+       "NOTE"
+      ],
+      "unknown": [
+       "keep"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "No stop, keep saving my notes"
+     }
+    ]
+   },
+   {
+    "text": "Leave my phone alone, please. It's kinda important, so try not to touch it.",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "DENY",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "DENY",
+     "web": "DENY",
+     "install_module": "DENY",
+     "delete_photo": "DENY",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "ANY",
+       "CONTACT",
+       "DELETE",
+       "WRITE"
+      ],
+      "objects": [
+       "ALL"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Leave my phone alone, please"
+     },
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "ALL"
+      ],
+      "unknown": [
+       "important",
+       "it's",
+       "kinda",
+       "try"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "UNKNOWN_WORDING"
+      ],
+      "text": "It's kinda important, so try not to touch it"
+     }
+    ]
+   },
+   {
+    "text": "Leave my notes alone, will ya?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "note_new",
+     "note_replace"
+    ],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "DELETE",
+       "WRITE"
+      ],
+      "objects": [
+       "NOTE"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Leave my notes alone, will ya?"
+     }
+    ]
+   },
+   {
+    "text": "No idea what that means.",
+    "want_kind": "NONE",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo",
+     "unknown_tool"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "UNKNOWN"
+      ],
+      "objects": [],
+      "unknown": [
+       "means"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "UNKNOWN_WORDING"
+      ],
+      "text": "No idea what that means"
+     }
+    ]
+   }
+  ]
+ },
+ "v3": {
+  "parser": "fixed-userrules-v3",
+  "summary": {
+   "items": 17,
+   "safety_failures": 2,
+   "soft_deny_as_ask": 11,
+   "over_caution": 32,
+   "probe_checks": 136,
+   "kind_match": 8,
+   "weaker_than_label": 1,
+   "missed_prohibitions": 0,
+   "allow_probes": 89,
+   "sentences_with_failure": 1
+  },
+  "weaker": [
+   "Better install nothing, I guess."
+  ],
+  "missed": [],
+  "rows": [
+   {
+    "text": "Ain't no new modules, no extensions, nothing to install bro",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "install_module"
+    ],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ASK",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "INSTALL"
+      ],
+      "objects": [
+       "ALL",
+       "MODULE"
+      ],
+      "unknown": [
+       "ain't",
+       "bro"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "UNKNOWN_WORDING"
+      ],
+      "text": "Ain't no new modules, no extensions, nothing to install bro"
+     }
+    ]
+   },
+   {
+    "text": "Hey buddy, better keep your hands off my notes, alright? No messin' around, got it?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "note_replace"
+    ],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "NOTE"
+      ],
+      "unknown": [
+       "alright",
+       "around",
+       "better",
+       "buddy",
+       "hey",
+       "keep",
+       "messin"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "HEDGE",
+       "QUESTION"
+      ],
+      "text": "Hey buddy, better keep your hands off my notes, alright? No messin' around, got it?"
+     }
+    ]
+   },
+   {
+    "text": "Hey, from now on, no more tools, alright? Keep it cool.",
+    "want_kind": "FORBID",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "DENY",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "DENY",
+     "web": "DENY",
+     "install_module": "DENY",
+     "delete_photo": "DENY",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "TOOL"
+      ],
+      "objects": [
+       "TOOLS"
+      ],
+      "unknown": [
+       "alright",
+       "cool",
+       "hey",
+       "keep"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Hey, from now on, no more tools, alright? Keep it cool"
+     }
+    ]
+   },
+   {
+    "text": "Avoid spending any cash, mate.",
+    "want_kind": "FORBID",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "BUY"
+      ],
+      "objects": [],
+      "unknown": [
+       "cash",
+       "mate"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Avoid spending any cash, mate"
+     }
+    ]
+   },
+   {
+    "text": "Ain't managed to download anything today, mate.",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Chill, dude, no worries about the bill, alright?",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Don't send mails in my name, okay?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "send_email"
+    ],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ASK",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "SEND"
+      ],
+      "objects": [
+       "MESSAGE",
+       "PERSONAL"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Don't send mails in my name, okay?"
+     }
+    ]
+   },
+   {
+    "text": "No more tools from now on.",
+    "want_kind": "FORBID",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "DENY",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "DENY",
+     "web": "DENY",
+     "install_module": "DENY",
+     "delete_photo": "DENY",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "TOOL"
+      ],
+      "objects": [
+       "TOOLS"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [],
+      "text": "No more tools from now on"
+     }
+    ]
+   },
+   {
+    "text": "Don't take anything from our chats, okay?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "ALL",
+       "MESSAGE"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Don't take anything from our chats, okay?"
+     }
+    ]
+   },
+   {
+    "text": "Tell me first what you're up to.",
+    "want_kind": "ASK_FIRST",
+    "got_kind": "ASK_FIRST",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "ASK_FIRST",
+      "actions": [
+       "UNKNOWN"
+      ],
+      "objects": [],
+      "unknown": [
+       "you're"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Tell me first what you're up to"
+     }
+    ]
+   },
+   {
+    "text": "Show me all drafts before they go out.",
+    "want_kind": "ASK_FIRST",
+    "got_kind": "ASK_FIRST",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "ASK_FIRST",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [],
+      "unknown": [
+       "drafts",
+       "they"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Show me all drafts before they go out"
+     }
+    ]
+   },
+   {
+    "text": "Better install nothing, I guess.",
+    "want_kind": "UNCLEAR",
+    "got_kind": "NONE",
+    "safety_failures": [
+     "install_module",
+     "unknown_tool"
+    ],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Can you delete the old note?",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "No stop, keep saving my notes.",
+    "want_kind": "NONE",
+    "got_kind": "FORBID",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "note_new",
+     "note_replace",
+     "install_module",
+     "unknown_tool"
+    ],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "DENY",
+     "note_replace": "DENY",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ASK",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "WRITE"
+      ],
+      "objects": [
+       "NOTE"
+      ],
+      "unknown": [
+       "keep"
+      ],
+      "exceptions": [],
+      "reasons": [],
+      "text": "No stop, keep saving my notes"
+     }
+    ]
+   },
+   {
+    "text": "Leave my phone alone, please. It's kinda important, so try not to touch it.",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "DENY",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "FORBID",
+      "actions": [
+       "CONTACT"
+      ],
+      "objects": [
+       "ALL"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [],
+      "text": "Leave my phone alone, please"
+     },
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "ALL"
+      ],
+      "unknown": [
+       "important",
+       "it's",
+       "kinda",
+       "try"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "UNKNOWN_WORDING"
+      ],
+      "text": "It's kinda important, so try not to touch it"
+     }
+    ]
+   },
+   {
+    "text": "Leave my notes alone, will ya?",
+    "want_kind": "FORBID",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [
+     "note_new",
+     "note_replace"
+    ],
+    "over_caution": [
+     "send_email"
+    ],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY"
+      ],
+      "objects": [
+       "NOTE"
+      ],
+      "unknown": [],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Leave my notes alone, will ya?"
+     }
+    ]
+   },
+   {
+    "text": "No idea what that means.",
+    "want_kind": "NONE",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo",
+     "unknown_tool"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "UNKNOWN"
+      ],
+      "objects": [],
+      "unknown": [
+       "means"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "UNKNOWN_WORDING"
+      ],
+      "text": "No idea what that means"
+     }
+    ]
+   }
+  ]
+ }
+}

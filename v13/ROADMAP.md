@@ -1246,6 +1246,13 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Befund `code/docs/proofs/continuation-20261022/user-rules-v4/BEFUND.md`.
 - Offen: v5 (Bedingung vor Lockerung, deutsche Halte-Formen, Nomen zu Handlungen, Handlung mit eigenem Ziel) + Runde 5 aus deutschen Quellsätzen.
 
+### WP-UR5 Regel-Leser v5 + deutsche Prüfsätze — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V5_UNSAFE` (gleicher Thread/Branch)
+- v5 aus Runde-4-Fehlern: Bedingung („nur/erst … wenn“, „only if“, „meine Erlaubnis“) ist immer „erst fragen“, nie Lockerung; deutsche Halte-Formen (verzichte auf, bleib ab, in Ruhe lassen, beende, schütze), Nomen „Versand“, Herunterladen betrifft immer das Internet. Bekannte Sätze inkl. Runde 4: 0 Fehler.
+- T1 neuer deutscher Autor-Satz `holdout_de2` (46): v5 25 Fehler in 7 Sätzen (v4 27/8). T2 Runde 5 (Mistral 7B, Falcon 3 7B, OLMo 2 7B; 100 deutsch): v5 45 Fehler in 19 (v4 52/23, v3 63/25). Bedingung nie mehr als Lockerung gelesen.
+- Lehre nach drei frischen Runden: fester Wortleser wird pro Version besser, konvergiert auf offener deutscher Alltagssprache aber nicht gegen 0 („Fass mein Handy nicht an“, „an niemanden weiter“ fehlen noch).
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v5/BEFUND.md`.
+- Offen (v6, Architektur): breites Netz (jedes Halte-/Verneinungs-/Bedingungssignal mit Handlung oder Ziel ⇒ mindestens Rückfrage mit Vorschlag) + Bestätigung der Lesart durch den Nutzer, erst dann feste Regel; Messung: kein Regelsatz ohne Rückfrage, Rate unnötiger Rückfragen.
+
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
