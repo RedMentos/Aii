@@ -1,0 +1,172 @@
+{
+ "kind": "WP_Z5D_CONTEXT_FIT",
+ "arm": "active",
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180,
+  "effort": "max",
+  "history_turns": 0
+ },
+ "fixtures": [
+  "notes10",
+  "summary00",
+  "compare05",
+  "notes00",
+  "summary10",
+  "long05"
+ ],
+ "summary": {
+  "turns": 6,
+  "pass": 5,
+  "overflow": 0,
+  "intrusion": 0,
+  "per_rep": [
+   5
+  ],
+  "overflow_per_rep": [
+   0
+  ],
+  "fit_checked": 5,
+  "fit_applied": 2,
+  "fit_still_too_long": 0,
+  "fit_steps": {
+   "OLD_QUESTIONS": 7,
+   "TASK_DUPLICATE": 2
+  },
+  "median_turn_s": 22.71
+ },
+ "rows": [
+  {
+   "rep": 1,
+   "fixture": "notes10",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 22.71,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1185,
+    "tokens_before": 1185
+   },
+   "output": "The most recent note is from 18 March stating Elif's team has 39 members."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary00",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 20.28,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1310,
+    "tokens_before": 1310
+   },
+   "output": "No, the summary is incorrect. The calculation is: 95 + 18 + 21 = 134 euros. The stated total of 114 euros does not match this sum."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare05",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 20.69,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "Lyon had the most rain (890 mm) and was 567 mm higher than Graz (383 mm)."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes00",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 19.97,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1513,
+    "tokens_before": 1513
+   },
+   "output": "The most recent note is from 16 March stating Mira's team has 71 members."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary10",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 23.28,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": true,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {
+     "OLD_QUESTIONS": 3,
+     "TASK_DUPLICATE": 1
+    },
+    "tokens_after": 1752,
+    "tokens_before": 1999
+   },
+   "output": "No, the total is incorrect. The sum of the listed items (33 + 55 + 31) equals 119 euros, not 139."
+  },
+  {
+   "rep": 1,
+   "fixture": "long05",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 23.69,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": true,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {
+     "OLD_QUESTIONS": 4,
+     "TASK_DUPLICATE": 1
+    },
+    "tokens_after": 1705,
+    "tokens_before": 2067
+   },
+   "output": "The field notes state that exactly 752 bicycles were counted in Lyon."
+  }
+ ],
+ "claim_limit": "generated English tasks, one seed, regex on the final answer, greedy bench decoding, cloud CPU"
+}
