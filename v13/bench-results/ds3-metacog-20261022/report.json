@@ -1,0 +1,95 @@
+{
+ "prereg_sha256": "206357b28c88d776b00ff882866bcbd80a658b4cb994b406d2b99c0fda23ff86",
+ "fresh_sha256": {
+  "31": "dc9c4a0a4637a0d5409b3b1ea6fac3eaae684e64c31c4ac3cf622a3dccb50b87",
+  "37": "29e9a5e9377ec9668fd2856f6fb2eb49dc57c1fd2fe730ca7582c58381303d85"
+ },
+ "policies": {
+  "c3_alone": {
+   "correct": 82,
+   "wrong": 38,
+   "abstain": 0,
+   "tool": 0,
+   "answered_share": 1.0,
+   "utility": 44.0,
+   "utility_lambda2": 6.0
+  },
+  "recipe_always": {
+   "correct": 107,
+   "wrong": 13,
+   "abstain": 0,
+   "tool": 60,
+   "answered_share": 1.0,
+   "utility": 94.0,
+   "utility_lambda2": 81.0
+  },
+  "ds3": {
+   "correct": 106,
+   "wrong": 11,
+   "abstain": 3,
+   "tool": 57,
+   "answered_share": 0.975,
+   "utility": 95.0,
+   "utility_lambda2": 84.0
+  }
+ },
+ "hypotheses": {
+  "H1_calibration": {
+   "auroc_wrong": 0.7779,
+   "ece": 0.076,
+   "pass": true
+  },
+  "H2_utility": {
+   "ds3": 95.0,
+   "recipe_always": 94.0,
+   "ds3_wrong": 11,
+   "recipe_wrong": 13,
+   "answered_share": 0.975,
+   "pass": false
+  },
+  "H3_abstain_precision": {
+   "abstained": 3,
+   "would_be_wrong": 2,
+   "share": 0.6667,
+   "pass": true
+  },
+  "H4_kept_answers": {
+   "ds3_correct": 106,
+   "recipe_correct": 107,
+   "pass": true
+  }
+ },
+ "ds3_by_kind": {
+  "summary": {
+   "answer": 0,
+   "tool": 30,
+   "abstain": 0,
+   "correct": 28,
+   "wrong": 2
+  },
+  "long": {
+   "answer": 30,
+   "tool": 0,
+   "abstain": 0,
+   "correct": 29,
+   "wrong": 1
+  },
+  "notes": {
+   "answer": 30,
+   "tool": 0,
+   "abstain": 0,
+   "correct": 28,
+   "wrong": 2
+  },
+  "compare": {
+   "answer": 0,
+   "tool": 27,
+   "abstain": 3,
+   "correct": 21,
+   "wrong": 6
+  }
+ },
+ "verdict": "NOT_SUPPORTED: H2_utility",
+ "phone_measured": false,
+ "runtime_changed": false
+}
