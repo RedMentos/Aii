@@ -8,7 +8,7 @@ Ausgangslage: v4 hatte auf der versiegelten Runde 4 13 Sicherheitsfehler in 6 vo
 `holdout_de2.json`: 46 neue deutsche Sätze (Verbote, erst fragen, unklar, keine Regel, Lockerung, gemischte Sätze),
 **vor jeder Zeile v5-Code und vor der Erzeugung von Runde 5** geschrieben. Er ist doppelt Prüfsatz:
 - **T1** `holdout_de2.json` selbst (vom Autor geschrieben, kein Leser kennt ihn);
-- **T2** Runde 5: dieselben 46 Sätze, von drei neuen Modellfamilien umformuliert (Mistral 7B v0.3, Aya Expanse 8B,
+- **T2** Runde 5: dieselben 46 Sätze, von drei neuen Modellfamilien umformuliert (Mistral 7B v0.3, Falcon 3 7B,
   OLMo 2 7B), mit rein deutschem Auftrag (`generate_round5.py`, P1/P2, Temperatur 0.8, Seed 5000+Nummer; 276 Rohsätze).
 Beide sind kein Lexikon-Beleg; `holdout_de2` und `round5` stehen in der Sperrliste von `userrules_lexicon.json`.
 
@@ -27,3 +27,7 @@ gelesen als sein Label (dazu zählt ausdrücklich: eine Bedingung wie „nur wen
 bekannten Sätzen (Dev, Holdout, Runden 1–4 Haupt- und Nebenkohorten), K5 Chat-Text lockert nie. Übervorsicht als Anteil
 der ALLOW-Probes; über 50 % ⇒ `OVERCAUTIOUS`. T2 unter 80 geprüften Sätzen ⇒ `UNDERPOWERED` (T1 hat 46, ist also für sich
 klein und wird nur zusammen mit T2 bewertet). Urteil `USER_RULES_V5_SAFE_ON_ROUND5` nur, wenn K1–K5 auf T1 und T2 halten.
+
+Nachtrag vor der Erzeugung: Aya Expanse 8B lief mit dem festen llama.cpp `b10964` nicht (Server-Fehler 500 „output does not
+match the expected peg-native format“ schon beim Probesatz); ersetzt durch Falcon 3 7B (TII). Modell-Hashes:
+Mistral 7B v0.3 `1270d22c…62b6`, Falcon 3 7B `f25718c3…04ea`, OLMo 2 7B `88790198…f168`.
