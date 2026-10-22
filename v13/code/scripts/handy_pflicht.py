@@ -9,7 +9,7 @@ starts over. Order = importance for the open §100/STEP7 gates:
   wiederholung scripts/z7_residency_bench.py --mode repeat              proceduralization latency (G-PROCEDURALIZATION-004)
   werkzeug     scripts/werkzeug_handy.py kurz                           tool forecast on the device
   langlauf     scripts/longrun_soak.py --native                         G-MOBILE-LONGRUN-001 (software + native, simulated days)
-  training     TRAIN_RUNNER_PROOF (G-TRAIN-RUNNER-PROOF-001)            not built yet: reported as NOT_BUILT, never faked
+  training     scripts/train_runner_proof.py                            G-TRAIN-RUNNER-PROOF-001 for the STEP5 route-head runner
 Uses the precheck, wake lock, system trace and ZIP collector of scripts/werkzeug_handy.py.
   bash HANDY_PFLICHT.sh [kurz|voll] [--nur ram,residenz] [--neu] [--trotzdem]
 """
@@ -27,10 +27,10 @@ import werkzeug_handy as W  # noqa: E402
 
 SCHEMA = 'V13_HANDY_PFLICHT_V1'
 # step -> (title, {stage: (argv builder, deadline s)})
-STEPS = ('ram', 'residenz', 'wiederholung', 'werkzeug', 'langlauf', 'training')
+STEPS = ('ram', 'training', 'residenz', 'wiederholung', 'werkzeug', 'langlauf')
 TITLES = {'ram': 'RAM aller Modelle (WP-R, §24.33)', 'residenz': 'Beobachter-Reihenfolge und Residenz (§24.33, §24.14)',
           'wiederholung': 'Wiederholte Aufgaben: wird es schneller? (Proceduralization)', 'werkzeug': 'Werkzeug-Vorhersage',
-          'langlauf': 'Langlauf über mehrere simulierte Tage (G-MOBILE-LONGRUN-001)', 'training': 'Trainings-Nachweis (G-TRAIN-RUNNER-PROOF-001)'}
+          'langlauf': 'Langlauf über mehrere simulierte Tage (G-MOBILE-LONGRUN-001)', 'training': 'Trainings-Nachweis Routen-Kopf (G-TRAIN-RUNNER-PROOF-001)'}
 
 
 def commands(step, stage, home, out):
@@ -47,6 +47,8 @@ def commands(step, stage, home, out):
         return [py, str(s/'werkzeug_handy.py'), 'kurz', '--installed-home', str(home), '--no-setup', '--target-dir', str(out)], 5*3600
     if step == 'langlauf':
         return [py, str(s/'longrun_soak.py'), '--home', str(out/'soak-home'), '--days', '2' if quick else '7', '--native', '--models-from', str(home)], (3 if quick else 10)*3600
+    if step == 'training':
+        return [py, str(s/'train_runner_proof.py'), '--installed-home', str(home), '--out', str(out), '--kills', '24' if quick else '64'], 2*3600
     return None, 0
 
 

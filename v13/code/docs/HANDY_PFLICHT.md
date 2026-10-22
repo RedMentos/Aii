@@ -22,7 +22,7 @@ Nur einzelne Schritte: `bash HANDY_PFLICHT.sh --nur ram,residenz`. Alles neu: `-
 | wiederholung | 12 (voll 24) ähnliche Aufgaben in einer Sitzung: wird es schneller, ohne schlechter zu werden? | Proceduralization |
 | werkzeug | Werkzeug-Vorhersage (wie das Werkzeug-Paket, Stufe kurz) | Werkzeug-Vorhersage aus SHADOW |
 | langlauf | 2 (voll 7) simulierte Tage durch die echte Runtime mit echten Modellen: Neustarts, Weckreihenfolge, Gedächtnis, Wachstum der Datenbank | G-MOBILE-LONGRUN-001 |
-| training | Trainings-Nachweis | **noch nicht gebaut**, wird ehrlich als „noch nicht gebaut“ gemeldet |
+| training | Trainings-Nachweis für den Teil, der auf dem Handy wirklich lernt (kleiner Routen-Kopf, kein Sprachmodell): Gradient, gleiches Ergebnis bei Wiederholung, Abbruch mitten im Lernen, Absturz beim Speichern, Fortsetzen, Rücknahme, Behalten, Zeit je Schritt, Akku/Temperatur | G-TRAIN-RUNNER-PROOF-001 |
 
 ## Ergebnis
 `V13-Pflicht-Ergebnis-<Stufe>-<Zeit>.zip` in Downloads, darin `KURZ.txt` (deutsche Zusammenfassung), `paket-bericht.json`

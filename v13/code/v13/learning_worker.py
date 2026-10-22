@@ -59,7 +59,8 @@ def train(inp,out):
         held={'n':len(vi),'loss_before':oldloss,'loss_after':newloss,'accuracy':accuracy,'scaffold_accuracy':baseline,'per_class':perclass}
         retained=all(v['after']>=v['before']-cfg['retention_max_delta'] for v in perclass.values())
         eligible=len(y)>=12 and len(vi)>=4 and len(perclass)==4 and newloss<oldloss and accuracy>=.75 and accuracy>=baseline and retained
-    path=Path(out)/'candidate.npz';np.savez(path,route_w=new,eligibility=tr)
+    path=Path(out)/'candidate.npz'
+    with open(path,'wb') as f:np.savez(f,route_w=new,eligibility=tr);f.flush();os.fsync(f.fileno())  # durable before metrics.json (TrainRunnerProof crash_during_checkpoint)
     with np.load(path,allow_pickle=False) as z:reload_ok=bool(np.array_equal(z['route_w'],new))
     metrics={'objective':'explicit-human-route-cross-entropy-v1','n':len(y),'embedding_dim':x.shape[1]-1,'trainable_parameter_count':int(new.size),'nontrainable_trace_count':int(tr.size),'loss_before':before,'loss_after':objective(x,y,new)[0],'held_out':held,'finite_difference_max_error':err,'gradient_check':err<1e-6,'deterministic_repeat':deterministic,'checkpoint_reload':reload_ok,'finite':finite,'duration_s':time.monotonic()-started,'process_memory':process_memory(),'device':device(),'energy_joules':None,'phone_benchmark':False,'body_parameters_modified':0}
     metrics.update(commit_eligible=bool(eligible and finite and deterministic and reload_ok and err<1e-6),retention_pass=bool(retained),optimizer_steps=cfg['learning_steps'],**stats)
