@@ -38,19 +38,24 @@ def run_arm(installed, arm, fixtures):
         r = Runtime(home); EF.set_mode(r.store, arm)
         try:
             for fid, text, nums, checks in fixtures:
-                r.session = r.store.new_session(); t0 = time.monotonic(); eid = r.submit(text); end = t0+900
+                r.session = r.store.new_session(); t0 = time.monotonic(); eid = r.submit(text); end = t0+900; answer_s = None
                 while not r.idle():
+                    if answer_s is None:
+                        m = r.store.one("SELECT status FROM messages WHERE event_id=? AND role='assistant' ORDER BY id DESC LIMIT 1", (eid,))
+                        if m and m['status'] in ('FINAL', 'CANCELLED', 'DEADLINE', 'ERROR', 'INTERRUPTED'):
+                            answer_s = round(time.monotonic()-t0, 2); r.cancel()  # prereg addendum: post-commit observers cut in all arms
                     if time.monotonic() > end:
                         r.cancel(); break
                     time.sleep(.1)
                 a = audit_event(r.store, eid); out = a.get('output') or ''
+                post = {json.loads(x['metrics']).get('id') for x in r.store.rows("SELECT metrics FROM telemetry WHERE kind='postcommit_offer' AND event_id=?", (eid,))}
                 ok, num = U.score(out, nums, checks)
                 ed = r.store.rows("SELECT payload FROM packets WHERE kind='EffortDecision' AND payload LIKE ? ORDER BY rowid DESC LIMIT 1", ('%'+eid+'%',))
                 ed = json.loads(ed[0]['payload']) if ed else {}
                 rows.append({'fixture': fid, 'arm': arm, 'pass': all(ok.values()) and all(num.values()),
-                             'turn_s': round(time.monotonic()-t0, 2), 'status': a.get('status'),
-                             'offers': sorted({o['role'] for o in a.get('offers', [])}),
-                             'effort': ed.get('effort'), 'band': (ed.get('plan') or {}).get('band'), 'wake': ed.get('wake'),
+                             'turn_s': answer_s if answer_s is not None else round(time.monotonic()-t0, 2), 'wall_s': round(time.monotonic()-t0, 2),
+                             'status': a.get('status'), 'offers': sorted({o['role'] for o in a.get('offers', []) if o.get('packet_id') not in post}),
+                             'postcommit_offers': len(post), 'effort': ed.get('effort'), 'band': (ed.get('plan') or {}).get('band'), 'wake': ed.get('wake'),
                              'constraints': ed.get('constraints'), 'output': out[:400]})
                 print(json.dumps({k: rows[-1][k] for k in ('arm', 'fixture', 'pass', 'turn_s', 'offers', 'band')}), flush=True)
         finally:

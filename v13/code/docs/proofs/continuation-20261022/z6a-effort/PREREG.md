@@ -27,3 +27,12 @@ niedriger eskaliert als max; Eskalations-Kalibrierung = Anteil der adaptive-Wake
 ## Grenzen (vorab)
 Generierte englische Aufgaben, Regex auf der Endantwort, ein Seed, Cloud-CPU (Zeiten nur relativ, keine Energie).
 Ein FAIL bleibt FAIL; keine nachträgliche Schwelle.
+
+---
+## Nachtrag vor dem Hauptlauf (nach einem Probelauf mit 2 Aufgaben, Ergebnisse des Probelaufs nicht verwendet)
+Der Probelauf zeigte: das Warten „bis Runtime leer“ enthält die Beobachter-Durchgänge **nach** der Antwort (Hintergrund,
+ändern die Antwort nie, laufen in allen Armen gleich, §24.25 misst sie getrennt). Deshalb gilt:
+- **Turnzeit = Zeit bis die Antwort FINAL ist** (für den Nutzer sichtbare Latenz). Danach werden die Hintergrund-
+  Beobachter in **allen** Armen gleich abgebrochen (`r.cancel()`), um Rechenzeit zu sparen.
+- Body-Wake zählt nur Angebote **vor** der Antwort (Angebote mit `postcommit_offer`-Telemetrie werden ausgenommen).
+Kriterien A1–A3 und alle Schwellen bleiben unverändert.
