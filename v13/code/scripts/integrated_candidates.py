@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'eligibility_live', 'tool_answer_first')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'eligibility_live', 'tool_answer_first', 'tool_answer_check')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -263,8 +263,19 @@ def tool_answer_first(sources):
     return out
 
 
+def tool_answer_check(sources):
+    """2026-10-22 (thread „Unsicherheit bei Namen prüfen“, WP-DS3b): after the answer, ToolStep.check_answer compares it with an
+    executed list_arith recipe under cfg tool_answer_check (off|shadow|note); default off adds nothing to the turn."""
+    out = dict(sources)
+    anchor = "                try:toolctl.ToolStep(self).compare(e,tool_shadow,output) if tool_shadow else None"
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], anchor,
+        "                try:output+=toolctl.ToolStep(self).check_answer(e,tool_result,output,mid)  # WP-DS3b cfg tool_answer_check (default off: adds nothing)\n"
+        "                except Exception as exc:self.store.log('tool_step_unavailable',eid,{'stage':'answer_check','error':type(exc).__name__})\n"+anchor)
+    return out
+
+
 def _later(sources):
-    return tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))))
+    return tool_answer_check(tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))))
 
 
 def _baseline(root):

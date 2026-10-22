@@ -107,3 +107,59 @@ def read_values(runner, text, cancel, deadline, max_tokens=160):
     if not isinstance(values, list):
         raise ValueError('values')
     return values
+
+
+# WP-DS3b (bench-results/ds3b-name-check-20261022/BEFUND.md, preregistered, fresh seeds 47/53/59): after the recipe most
+# wrong answers are confident (right number, wrong city), so token uncertainty misses them. A fixed cross-check of the
+# finished answer against the executed recipe caught 18 of 21 wrong tool answers (precision .78). Only runs under cfg
+# tool_answer_check (default off).
+MAX_WORDS = re.compile(r'(?i)\b(?:most|largest|highest|greatest|wettest|maximum|max)\b')
+NEGATION = re.compile(r"(?i)\b(?:no|not|incorrect|wrong|error|mistake|discrepancy|does not match|doesn't match)\b")
+_ANS_NUM = re.compile(r'(?<![\d.,])\d+(?![\d])')
+CHECK_NOTE = ('Check: this answer does not match the exact local calculation ({recipe} = {value}). '
+              'Treat the answer above as unsure.')
+
+
+def _clauses(answer):
+    return [c for c in re.split(r'(?<=[.;!?])\s+|,\s+(?:and\s+|while\s+|but\s+)?|\s+(?:and|while|but|whereas)\s+', str(answer)) if c.strip()]
+
+
+def _named(clause, names):
+    hits = []
+    for n in names:
+        m = re.search(r'(?i)(?<![A-Za-z])'+re.escape(n)+r'(?![A-Za-z])', clause)
+        if m:
+            hits.append((m.start(), n))
+    return [n for _, n in sorted(hits)]
+
+
+def answer_check(args, value, answer):
+    """(ok, reason): does the finished answer agree with the executed recipe? Uses only the user text, the read values
+    and the result: the answer names the result; for difference_max_min the clause saying "most/largest/..." names the
+    recipe's largest item; when the user text asks whether a stated number is correct and that number differs from the
+    result, the answer says it is wrong."""
+    values = [v for v in decode(args['values']) if not AGGREGATE.match(str(v.get('name', '')))]
+    names = [str(v['name']).strip() for v in values if str(v['name']).strip()]
+    text = str(args['text']); answer = str(answer)
+    if str(value) not in _ANS_NUM.findall(answer):
+        return False, 'value_missing'
+    if args['operation'] == 'difference_max_min' and names:
+        nums = [int(v['number']) for v in values]; hi = names[nums.index(max(nums))]
+        if not _named(answer, names):
+            return False, 'no_item_named'
+        for c in _clauses(answer):
+            got = _named(c, names)
+            if MAX_WORDS.search(c) and got and got[0] != hi:
+                return False, 'wrong_largest'
+        if hi.lower() not in answer.lower():
+            return False, 'largest_not_named'
+    if re.search(r'(?i)\bcorrect\?', text):
+        read = {int(v['number']) for v in values}
+        stated = [int(n) for n in _ANS_NUM.findall(text[:text.rfind('?')+1]) if int(n) not in read]
+        if any(n != value for n in stated) and not NEGATION.search(answer):
+            return False, 'stated_number_not_flagged'
+    return True, 'ok'
+
+
+def check_note(args, value):
+    return CHECK_NOTE.format(recipe=label(args) or args['operation'], value=value)
