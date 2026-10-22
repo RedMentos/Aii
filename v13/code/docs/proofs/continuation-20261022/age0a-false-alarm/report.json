@@ -1,0 +1,593 @@
+{
+ "activated": false,
+ "arms": {
+  "A_real": {
+   "V0": {
+    "alarms": 400,
+    "n": 400,
+    "rate": 1.0,
+    "wilson95": [
+     0.9905,
+     1.0
+    ]
+   },
+   "V1": {
+    "alarms": 67,
+    "n": 400,
+    "rate": 0.1675,
+    "wilson95": [
+     0.1341,
+     0.2072
+    ]
+   },
+   "V2": {
+    "alarms": 5,
+    "n": 400,
+    "rate": 0.0125,
+    "wilson95": [
+     0.0054,
+     0.0289
+    ]
+   }
+  },
+  "A_right": {
+   "V0": {
+    "alarms": 263,
+    "n": 263,
+    "rate": 1.0,
+    "wilson95": [
+     0.9856,
+     1.0
+    ]
+   },
+   "V1": {
+    "alarms": 76,
+    "n": 263,
+    "rate": 0.289,
+    "wilson95": [
+     0.2375,
+     0.3465
+    ]
+   },
+   "V2": {
+    "alarms": 6,
+    "n": 263,
+    "rate": 0.0228,
+    "wilson95": [
+     0.0105,
+     0.0489
+    ]
+   }
+  },
+  "B_echo": {
+   "V0": {
+    "alarms": 46,
+    "n": 237,
+    "rate": 0.1941,
+    "wilson95": [
+     0.1488,
+     0.2492
+    ]
+   },
+   "V1": {
+    "alarms": 9,
+    "n": 237,
+    "rate": 0.038,
+    "wilson95": [
+     0.0201,
+     0.0706
+    ]
+   },
+   "V2": {
+    "alarms": 9,
+    "n": 237,
+    "rate": 0.038,
+    "wilson95": [
+     0.0201,
+     0.0706
+    ]
+   }
+  },
+  "B_terse": {
+   "V0": {
+    "alarms": 97,
+    "n": 237,
+    "rate": 0.4093,
+    "wilson95": [
+     0.3486,
+     0.4728
+    ]
+   },
+   "V1": {
+    "alarms": 69,
+    "n": 237,
+    "rate": 0.2911,
+    "wilson95": [
+     0.237,
+     0.3519
+    ]
+   },
+   "V2": {
+    "alarms": 9,
+    "n": 237,
+    "rate": 0.038,
+    "wilson95": [
+     0.0201,
+     0.0706
+    ]
+   }
+  }
+ },
+ "by_role": {
+  "A_real": {
+   "B1": {
+    "V0": {
+     "alarms": 200,
+     "n": 200,
+     "rate": 1.0,
+     "wilson95": [
+      0.9812,
+      1.0
+     ]
+    },
+    "V1": {
+     "alarms": 0,
+     "n": 200,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.0188
+     ]
+    },
+    "V2": {
+     "alarms": 0,
+     "n": 200,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.0188
+     ]
+    }
+   },
+   "B2": {
+    "V0": {
+     "alarms": 200,
+     "n": 200,
+     "rate": 1.0,
+     "wilson95": [
+      0.9812,
+      1.0
+     ]
+    },
+    "V1": {
+     "alarms": 67,
+     "n": 200,
+     "rate": 0.335,
+     "wilson95": [
+      0.2732,
+      0.403
+     ]
+    },
+    "V2": {
+     "alarms": 5,
+     "n": 200,
+     "rate": 0.025,
+     "wilson95": [
+      0.0107,
+      0.0572
+     ]
+    }
+   }
+  },
+  "A_right": {
+   "B1": {
+    "V0": {
+     "alarms": 84,
+     "n": 84,
+     "rate": 1.0,
+     "wilson95": [
+      0.9563,
+      1.0
+     ]
+    },
+    "V1": {
+     "alarms": 0,
+     "n": 84,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.0437
+     ]
+    },
+    "V2": {
+     "alarms": 0,
+     "n": 84,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.0437
+     ]
+    }
+   },
+   "B2": {
+    "V0": {
+     "alarms": 179,
+     "n": 179,
+     "rate": 1.0,
+     "wilson95": [
+      0.979,
+      1.0
+     ]
+    },
+    "V1": {
+     "alarms": 76,
+     "n": 179,
+     "rate": 0.4246,
+     "wilson95": [
+      0.3545,
+      0.4978
+     ]
+    },
+    "V2": {
+     "alarms": 6,
+     "n": 179,
+     "rate": 0.0335,
+     "wilson95": [
+      0.0155,
+      0.0712
+     ]
+    }
+   }
+  },
+  "B_echo": {
+   "B1": {
+    "V0": {
+     "alarms": 25,
+     "n": 122,
+     "rate": 0.2049,
+     "wilson95": [
+      0.1428,
+      0.285
+     ]
+    },
+    "V1": {
+     "alarms": 0,
+     "n": 122,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.0305
+     ]
+    },
+    "V2": {
+     "alarms": 0,
+     "n": 122,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.0305
+     ]
+    }
+   },
+   "B2": {
+    "V0": {
+     "alarms": 21,
+     "n": 115,
+     "rate": 0.1826,
+     "wilson95": [
+      0.1227,
+      0.2631
+     ]
+    },
+    "V1": {
+     "alarms": 9,
+     "n": 115,
+     "rate": 0.0783,
+     "wilson95": [
+      0.0417,
+      0.1421
+     ]
+    },
+    "V2": {
+     "alarms": 9,
+     "n": 115,
+     "rate": 0.0783,
+     "wilson95": [
+      0.0417,
+      0.1421
+     ]
+    }
+   }
+  },
+  "B_terse": {
+   "B1": {
+    "V0": {
+     "alarms": 43,
+     "n": 122,
+     "rate": 0.3525,
+     "wilson95": [
+      0.2734,
+      0.4406
+     ]
+    },
+    "V1": {
+     "alarms": 22,
+     "n": 122,
+     "rate": 0.1803,
+     "wilson95": [
+      0.1222,
+      0.258
+     ]
+    },
+    "V2": {
+     "alarms": 0,
+     "n": 122,
+     "rate": 0.0,
+     "wilson95": [
+      0.0,
+      0.0305
+     ]
+    }
+   },
+   "B2": {
+    "V0": {
+     "alarms": 54,
+     "n": 115,
+     "rate": 0.4696,
+     "wilson95": [
+      0.3808,
+      0.5603
+     ]
+    },
+    "V1": {
+     "alarms": 47,
+     "n": 115,
+     "rate": 0.4087,
+     "wilson95": [
+      0.3232,
+      0.5001
+     ]
+    },
+    "V2": {
+     "alarms": 9,
+     "n": 115,
+     "rate": 0.0783,
+     "wilson95": [
+      0.0417,
+      0.1421
+     ]
+    }
+   }
+  }
+ },
+ "by_trigger": {
+  "A_real": {
+   "both": 67,
+   "none": 0,
+   "numbers_only": 0,
+   "reentry_only": 333
+  },
+  "A_right": {
+   "both": 76,
+   "none": 0,
+   "numbers_only": 0,
+   "reentry_only": 187
+  },
+  "B_echo": {
+   "both": 1,
+   "none": 191,
+   "numbers_only": 8,
+   "reentry_only": 37
+  },
+  "B_terse": {
+   "both": 10,
+   "none": 140,
+   "numbers_only": 59,
+   "reentry_only": 28
+  }
+ },
+ "criteria": {
+  "V0": {
+   "K1": false,
+   "K2": false,
+   "K3": false,
+   "deliverable": false
+  },
+  "V1": {
+   "K1": false,
+   "K2": false,
+   "K3": false,
+   "deliverable": false
+  },
+  "V2": {
+   "K1": true,
+   "K2": false,
+   "K3": false,
+   "deliverable": false
+  }
+ },
+ "detector_sha256": "459134e2d81001319349edddbe1a1168f0ee54f165f72167da961c4152885fba",
+ "discrimination_A": {
+  "V0": {
+   "alarm_right": 1.0,
+   "alarm_wrong": 1.0,
+   "difference_pp": 0.0,
+   "fires_only_on_right": 0,
+   "fires_only_on_wrong": 0,
+   "n_pairs": 400
+  },
+  "V1": {
+   "alarm_right": 0.2175,
+   "alarm_wrong": 0.1675,
+   "difference_pp": -5.0,
+   "fires_only_on_right": 20,
+   "fires_only_on_wrong": 0,
+   "n_pairs": 400
+  },
+  "V2": {
+   "alarm_right": 0.015,
+   "alarm_wrong": 0.0125,
+   "difference_pp": -0.25,
+   "fires_only_on_right": 1,
+   "fires_only_on_wrong": 0,
+   "n_pairs": 400
+  }
+ },
+ "examples_V0": {
+  "A_right": [
+   {
+    "cited_missing": [],
+    "needs_reentry": true,
+    "output": "{\"action\": \"A\", \"options\": [{\"cost\": 40, \"days\": 2, \"eligible\": true, \"entity\": \"A\", \"local\": true, \"remaining\": 60}, {\"",
+    "role": "B1_DETAIL",
+    "summary": "Budget and deadline are critical factors."
+   },
+   {
+    "cited_missing": [
+     "100"
+    ],
+    "needs_reentry": true,
+    "output": "{\"action\": \"A\", \"options\": [{\"cost\": 40, \"days\": 2, \"eligible\": true, \"entity\": \"A\", \"local\": true, \"remaining\": 60}, {\"",
+    "role": "B2_GIST",
+    "summary": "The provided text describes a specific project proposal with a budget of 100 euros and a deadline of five days, but l"
+   },
+   {
+    "cited_missing": [
+     "100"
+    ],
+    "needs_reentry": true,
+    "output": "{\"action\": \"A\", \"options\": [{\"cost\": 40, \"days\": 2, \"eligible\": true, \"entity\": \"A\", \"local\": true, \"remaining\": 60}, {\"",
+    "role": "B2_GIST",
+    "summary": "The proposal for Project Aurora specifies a budget of 100 euros with a deadline of five days, but the local requirement is set. "
+   },
+   {
+    "cited_missing": [
+     "100"
+    ],
+    "needs_reentry": true,
+    "output": "{\"action\": \"A\", \"options\": [{\"cost\": 40, \"days\": 2, \"eligible\": true, \"entity\": \"A\", \"local\": true, \"remaining\": 60}, {\"",
+    "role": "B2_GIST",
+    "summary": "The text describes a project proposal with a budget of 100 euros and a deadline of five days, but l"
+   }
+  ],
+  "B_echo": [
+   {
+    "cited_missing": [],
+    "needs_reentry": true,
+    "output": "Compute: 24 * 2 = ? Answer: 48",
+    "role": "B1",
+    "summary": "Calculation pending resolution."
+   },
+   {
+    "cited_missing": [],
+    "needs_reentry": true,
+    "output": "Compute: 917 * 2 = ? Answer: 1834",
+    "role": "B1",
+    "summary": "Calculation pending resolution."
+   },
+   {
+    "cited_missing": [],
+    "needs_reentry": true,
+    "output": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS...\n....\n.##.\n..#Z Answer: 6",
+    "role": "B1",
+    "summary": "Analyzing the path details."
+   },
+   {
+    "cited_missing": [],
+    "needs_reentry": true,
+    "output": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.....\n..#.....\n........\n....#...\n..#.....\n#.#.....",
+    "role": "B1",
+    "summary": "Analyzing the path from S to Z reveals key obstacles."
+   }
+  ],
+  "B_terse": [
+   {
+    "cited_missing": [
+     "3",
+     "7"
+    ],
+    "needs_reentry": false,
+    "output": "10",
+    "role": "B2",
+    "summary": "The user asks for the result of the mathematical expression 3 + 7."
+   },
+   {
+    "cited_missing": [
+     "0"
+    ],
+    "needs_reentry": false,
+    "output": "7",
+    "role": "B1",
+    "summary": "The calculation requires adding 0 and 7."
+   },
+   {
+    "cited_missing": [
+     "0"
+    ],
+    "needs_reentry": false,
+    "output": "7",
+    "role": "B2",
+    "summary": "The source segment asks for the result of the mathematical expression 0 + 7."
+   },
+   {
+    "cited_missing": [
+     "46",
+     "62"
+    ],
+    "needs_reentry": false,
+    "output": "108",
+    "role": "B1",
+    "summary": "The calculation requires adding 46 and 62."
+   }
+  ]
+ },
+ "inputs": {
+  "bench-results/kalibrierung-20261009/offers.json": "9cb512e46db5fb358e06a4dc8232afdfd5e428752e17ac0a7d45b9af9ad9ae5a",
+  "bench-results/kalibrierung-20261009/offers_solve.json": "1e1127b536e6c689ccbd60adf0f719376d6f46ed572289ec649e1fc690f7977d",
+  "bench-results/kalibrierung2-20261009/offers.json": "20d745118186ee84c62b88f30beeb569055f83ecca45d5b24fa7c1d1f6aed5b7",
+  "bench-results/kalibrierung2-20261009/offers_hypothesis.json": "0df7762dc31effa06e87e169d615390093ee1fc12e4f644ee64a4c485392a9f5",
+  "bench-results/kalibrierung2-20261009/step2-c3-230m.json": "a55413eba2a9dc700d91cdc5c140a0e0546955eeaccef0ea251472a1b7f5122b",
+  "bench-results/kalibrierung2-20261009/step2-c3-350m.json": "ee33dbd5f54747d6eb4d6b9e67fc85df7f915c3976f30912f24ee50a088c4b0a",
+  "bench-results/step2-two-body-20261009/step2_utility.json": "9e04064096a74434f36fcd82ba5bb8fc9a98e68f3208d514d30c25c12b1dca2b",
+  "code/docs/proofs/continuation-20261011/step2-webchat-70/report.json": "e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555"
+ },
+ "live_matches_V0": {
+  "A_real": true,
+  "A_right": true,
+  "B_echo": true,
+  "B_terse": true
+ },
+ "missing_criteria_V0": [
+  "K1",
+  "K2",
+  "K3"
+ ],
+ "pairs": {
+  "A_real": 400,
+  "A_right": 263,
+  "B_echo": 237,
+  "B_terse": 237
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261022/age0a-false-alarm/PREREG.md",
+ "prereg_sha256": "2c6c23d069a957a17016ac749129b0327a8b6ac705b51c70c474cb1a6c37d70f",
+ "reason_hits_A_real": {
+  "V0": {
+   "alarms": 400,
+   "justified": 0,
+   "share": 0.0
+  },
+  "V1": {
+   "alarms": 67,
+   "justified": 0,
+   "share": 0.0
+  },
+  "V2": {
+   "alarms": 5,
+   "justified": 0,
+   "share": 0.0
+  }
+ },
+ "schema": "age0c-false-alarm-v1",
+ "verdict": "AGE0C_STAY_SHADOW"
+}
