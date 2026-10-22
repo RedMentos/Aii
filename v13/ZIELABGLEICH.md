@@ -23,9 +23,9 @@ Legende: ✅ erreicht (Code + echte Messung), 🟡 teilweise (Code da, Messung/N
 | 1 | echte vortrainierte A + B + C | ✅ | G1; B1 LFM2.5-1.2B, B2 Qwen3.5-0.8B, C2 Needle, C3 LFM2.5-350M | – |
 | 2 | B1 fein + B2 adaptiv grob mit Cross-scale SourceLinks | 🟡 | G1B: B2-Readout misst Text-Grenzen besser, gelernte adaptive Gruppierung und Antwort-Nutzen fehlen | WP-G2-Rest, Z2 |
 | 3 | BodyPort-Profile + trainierter Callosum-Bootstrap | 🟡 | G2; Bootstrap nur EXACT/CONTROL/SYMBOLIC | Z4 |
-| 4 | adaptive Kanal-Policy mit nachgewiesenem Latent-vs-Fallback-Nutzen + Empfänger-Kalibrierung | ❌ | B3 L1 FAIL (Diagnose 20.10.), §24.11 MEASURED_FAILING | Z4 |
-| 5 | echter Message-Subspace-Austausch ohne Private-State-Kollaps | ❌ | B3 L2–L4 gesperrt bis L1 PASS | Z4 |
-| 6 | kleiner echter JEF-Sprach-/Executive-Body mit privatem Native-KV | 🟡 | C3 läuft, rechnet aber nicht (STEP2-Pilot 0/18, 20.10.); kein natives JEF-KV | Z3 |
+| 4 | adaptive Kanal-Policy mit nachgewiesenem Latent-vs-Fallback-Nutzen + Empfänger-Kalibrierung | 🟡 | B3 L1 **PASS auf 1 von 3 Aufgaben** (Versuch 4, 21.10., `private/action`); escalate/apologize FAIL; §24.11 sonst MEASURED_FAILING | Z4b |
+| 5 | echter Message-Subspace-Austausch ohne Private-State-Kollaps | ❌ | L2-SHADOW jetzt nur für `private/action` erlaubt, noch nicht gemessen; L3–L4 gesperrt | Z4b |
+| 6 | kleiner echter JEF-Sprach-/Executive-Body mit privatem Native-KV | 🟡 | C3 läuft, entscheidet nie (Z3 21.10.: 0/117 direkt, auch mit fertigem Werkzeug-Satz); liest Zahlen fehlerfrei, Bool `local_only` falsch; Entscheidung nur über Werkzeug (strict 0 falsch); B1/B2 als Konsument schlechter; kein natives JEF-KV; Z3b 21.10.: Parser + C3-Zahlen kanonisch 117/117, C3 liest Ja/Nein-Regeln nie (immer `true`), auf Umformulierungen kein sicherer Gewinn | Z3 ✓, Z3b ✓ |
 | 7 | versionierter JEF_BROADCAST_CACHE + trainierte JEF↔A/B-Brücken | 🟡 | Broadcast-Cache da, Brücken nur gelernte Feld-Gates | Z6 |
 | 8 | A/B-Observer-Pass → OFFER_PACKETs | 🟡 | live im Turn; Nutzen (§24.25) nur Existenz-Test | Z6 |
 | 9 | FOCAL_COALITION_STATE | 🟡 | Code live; Utility-Bench: kein Arm außerhalb des Rauschens; G-FOCAL-CAPACITY-003 PARTIAL | Z5 |
@@ -58,7 +58,7 @@ Summe: **8 ✅, 14 🟡, 2 ❌.**
 | 4 Reference Teacher | SELF zuerst, REFERENCE getrennt, HUMAN entscheidet | 🟡 | Lanes da, kein stärkerer Referenz-Lehrer angeschlossen (Z11) |
 | 5 Shadow Learning | TRAIN_RUNNER_PROOF, ModulatorPacket, Eligibility, Shadow-Generation, atomarer Commit | 🟡 | alles da außer TRAIN_RUNNER_PROOF auf dem Redmi (Z7) |
 | 6A Callosum-Kanäle | NONE/EXACT/CONTROL/SYMBOLIC | ✅ | |
-| 6B Latent-Brücke | einfachste Prefix-Ausrichtung zuerst | ❌ | L1 FAIL, Versuch 4 offen (Z4) |
+| 6B Latent-Brücke | einfachste Prefix-Ausrichtung zuerst | 🟡 | L1 PASS auf `private/action` (Versuch 4, 21.10.); L2-Prefix als nächstes (Z4b) |
 | 6C B-Lernen | Prädiktoren, Projektoren, aktive Expert-Deltas, Router eingefroren | 🟡 | Prädiktoren ja; Expert-Deltas fehlen (MoE nicht verdrahtet, Z10) |
 | 7 Stabilitäts-Epoche | Wochen, Retention, Thermik, Neustarts | ❌ | nur 7 simulierte Tage in der Cloud; Redmi fehlt (Z7) |
 | 8–11 Modalitäten, Age > 0 | „erst danach“ | ⏸ | Vision-Lab existiert trotzdem schon (siehe 5d) |
@@ -70,8 +70,8 @@ Summe: **8 ✅, 14 🟡, 2 ❌.**
 | Gate | Was es verlangt | Stand / Lücke | Paket |
 |---|---|---|---|
 | G-B-TIMESCALE-DIVERGENCE-001 | B1/B2 mit verschiedenen, komplementären Fehlerprofilen; Kombination schlägt zwei gleiche Instanzen; 4 Kontrollen | Z2 gemessen 21.10.: **FAIL** (`Z2_DIVERGENCE_NOT_SUPPORTED`): B1 hat mit Schalter `b1_recent_source_chars` erstmals eigene Information (27/70 Options-Zitate), aber Zwei-Körper .325 < bester Einzelkörper .333, ein Körper + zwei Zustände nicht schlechter | Z2 erledigt; Folgepaket Rauschband + gezielte Rückfrage |
-| G-CALLOSUM-UTILITY-002 | LATENT schlägt NONE/EXACT/CONTROL/SYMBOLIC auf 8 Achsen | L1 FAIL, Ursache diagnostiziert, Versuch 4 offen | **Z4** |
-| G-FOCAL-CAPACITY-003 | Kapazitätsgrenze, Wettbewerb, Ersetzung, Interrupt, Re-entry, Quellbindung, Erholung; schlägt „alles in den Kontext“ | Tests für Eigenschaften da; Vergleich gegen Voll-Kontext/Retrieval/feste Slots fehlt (§99-Kontrollen fehlen) | **Z5** |
+| G-CALLOSUM-UTILITY-002 | LATENT schlägt NONE/EXACT/CONTROL/SYMBOLIC auf 8 Achsen | L1 PASS 1/3 Aufgaben (action), FAIL escalate/apologize; 8 Achsen offen | **Z4b** |
+| G-FOCAL-CAPACITY-003 | Kapazitätsgrenze, Wettbewerb, Ersetzung, Interrupt, Re-entry, Quellbindung, Erholung; schlägt „alles in den Kontext“ | Z5 (21.10.) gemessen: Koalition 186/300 vs. Voll-Kontext 183, feste Slots 193, Retrieval 184, p ≥ 0,32, Rauschband 7 → schlägt Voll-Kontext nicht; Kapazität bindet auf den Aufgaben nie (Grenze/Ersetzung/Interrupt 0) | Z5-Folge mit Kapazitätsdruck |
 | G-PROCEDURALIZATION-004 | Latenz↓, Energie↓, Genauigkeit nicht schlechter, Wiederöffnen bei Fehler | synthetisch belegt; echte Latenz/Energie fehlt | Z6, Z7 |
 | G-SELF-WORLD-005 | 6 Fälle Selbst- vs. Welt-Ursache | Tests da (synthetisch), Corollary-Kandidat 3 übernommen; keine echte Handlungsfolge | Z12 |
 | G-TRAIN-RUNNER-PROOF-001 | kein APPROVED_COMMIT ohne grünen Proof für genau diesen Parameterpfad | Cloud-Proof da; Redmi-Proof fehlt | **Z7** |
@@ -104,7 +104,7 @@ h. **`gate-graph.json` STEP2 = GREEN** obwohl der Blueprint-Ausgang (Komplementa
 | **Z1** | `gate-graph.json`: STEP2 in `STEP2_HARNESS` (grün) und `STEP2_EXIT` (Komplementarität, rot) trennen; §100-Gates mit Blueprint-Kriterien je Gate prüfen statt nur Belegdateien; `measure_suite` gibt §29-Tabelle aus | Ehrlichkeit, IH-H33 | Cloud, klein |
 | **Z2** | STEP2 neu: vorregistrierte Fixtures, in denen **B1 eigene Detail-Information** hat und B2 den Überblick; alle 4 Kontrollen (gleiches Modell gleiche Policy, nur anderer Prompt, ein Körper + zwei Zustände, zwei Körper) | G-B-TIMESCALE-DIVERGENCE-001, §99 „zwei Bodies lohnen“, STEP2-Ausgang | Cloud, Modelle |
 | **Z3** | C3-Konsument isolieren: gleiche exakte Quellen an C3 (350M), an B1 als Antwort-Körper und an deterministisches Werkzeug vor C3; entscheidet, ob C3 ersetzt/ergänzt werden muss (§29 Nr. 6, §31 R9/§24.34) | STEP2-Engpass aus Pilot 20.10. | Cloud, Modelle |
-| **Z4** | B3 L1 Versuch 4 (läuft seit 21.10. in einem anderen Thread): frische Zustände, `aux`-Brücke, Gate unverändert, vorregistriert | G-CALLOSUM-UTILITY-002, STEP6B | Cloud, Modelle |
+| **Z4** | B3 L1 Versuch 4 — ERLEDIGT 21.10.: L1 PASS auf `private/action`, FAIL escalate/apologize (`bench-results/b3-l1-v4-20261021/`). **Z4b:** L2-Prefix-SHADOW nur für `private/action`, vorregistriert | G-CALLOSUM-UTILITY-002, STEP6B | Cloud, Modelle |
 | **Z5** | Fokus-Koalition gegen die drei fehlenden §99-Kontrollen (Voll-Kontext, nur Retrieval, feste Slots) auf den 60 Widerspruchs-Aufgaben aus WP-T3b mit festem Rauschband | G-FOCAL-CAPACITY-003 | Cloud, Modelle |
 | **Z6** | §24 von TESTED zu MEASURED, zuerst die Gehirn-Mitte: 24.22 Wake, 24.23 Effort (R5), 24.17 Deliberation, 24.25 Observer-Nutzen, 24.26 Broadcast-Brücke, 24.32 Lebenszyklus je Fähigkeit; R4-Werkzeug-Ergebnisse hier einbringen | §29 Nr. 7, 8, 10, 12, 19, 21; G-MODULATOR-SPECIFICITY-001 | Cloud, Modelle |
 | **Z7** | Ein Redmi-Paket für den Nutzer mit allen Handy-Pflichtmessungen in einem Lauf: TRAIN_RUNNER_PROOF, Langlauf, 24.14, 24.33, Proceduralisierung Latenz/Energie, Werkzeug-Vorhersage | G-TRAIN-RUNNER-PROOF-001, G-MOBILE-LONGRUN-001, STEP5, STEP7 | Nutzer (WP-R) |

@@ -109,8 +109,8 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Router-Stabilität für MoE | B3-H6, §16.2.1 | 🟡 | `scripts/moe_router_monitor.py` Gate + Kalibrierung aus Basis-Schwankung, echte EuroMoE-Messung `bench-results/moe-router-20261012/` (stabil nur α ≤ 0,01); isoliert, nicht im Lauf | WP-N11 |
 | B3 Callosum Exact/Control/Symbolic | §1.4, B3, §54 | ✅ | `cognition.communicate` | – |
 | B3 Kanal-Nutzen-Messung | §1.4.1, B3-H9, §24.15 | 🟡 | STEP2-Ablation NONE/EXACT/CONTROL/SYMBOLIC; Ergebnis UTILITY_FAIL | WP-G |
-| B3 Latent L1 (nur Empfänger-Adapter) | B3-H3 L1 | 🟡 | Numerik-Experimente (`native_receiver_effect.cpp`), Autorität 0 | WP-J |
-| B3 Latent L2–L4 | B3-H3 | ❌ | – | WP-J |
+| B3 Latent L1 (nur Empfänger-Adapter) | B3-H3 L1 | 🟡 | Numerik-Experimente (`native_receiver_effect.cpp`); **Kanon-L1 PASS auf `private/action`** (Versuch 4, aux-Brücke, `bench-results/b3-l1-v4-20261021/`), escalate/apologize FAIL; Autorität 0 | WP-J, Z4 |
+| B3 Latent L2–L4 | B3-H3 | ❌ | L2-SHADOW nur für `private/action` erlaubt, nicht gemessen | WP-J, Z4b |
 | Callosum fördert UND hemmt | §85.2 | 🟡 | `callosum.py`: signed_gain als Vorschlag, gelernte Kanal-Policy (SHADOW/ACTIVE); kein Latent | WP-J |
 | B4 Verteilter Zustand | B4, §8.1 | ✅ | Multi-Slot-Workspace mit SourceBinding/Zeitskala/Status (`focal.Workspace`), B1/B2-Zustand je Session, B4-Sicht über Sessions (`bodyview.cross_session`, SHADOW), L3-B4-Lernschleife Haltedauer je Quellenart (`workspace_learn.py`, SHADOW) | WP-N1, WP-T5, WP-U8 |
 | B4 Multi-Slot-Workspace | §8.2, §8.2A, §55 | ✅ | Workspace mit Slots live in der Fokusschleife (`focal.py`, WP-N1), Tests `test_focal.py`; 2026-10-12 §8.2-Slot-Minimum Pflicht in `FocalItem`/`WorkspaceSlot` (self_generated, Zeit/Alter/Ablauf, exakter Fallback, Zeitskala, Abdeckung, Kompression, Grenz-Konfidenz als lexikalischer Proxy, Cross-Scale-Links; `test_workspace_slot.py`) | WP-N1, Thread L |
@@ -148,7 +148,7 @@ kein eigenes Paket; Teile standen verstreut in WP-D, WP-K und WP-V7.
 | Memory Active/Warm | §9.1 | ✅ | C1-Zustand + warme Erinnerungen mit Zerfall/Reaktivierung (`context_os.py`) | WP-N7 |
 | Fast Episodic | §9.1, STEP3 | ✅ | Korrekturen, Episoden mit Grenzen/Route/Ergebnis/Quellen (`episodes.py`), lexikalischer + optional semantischer Abruf; „zweites Mal besser“: einzelne Routen-Korrektur wirkt bei ähnlicher Anfrage sofort (`episodic_route.py`, Standard shadow) | WP-H, WP-S2, WP-N8, WP-U10 |
 | Parametric Fast Trace | §9.1 optional | 🟡 | Sparse-Memory-Layer an C3 (`sparse_memory.py`, keyed: 8/8 gelernt, KL 3e-6, nichts vergessen); nur torch, nicht im Lauf, Near-Miss-Leck offen | WP-S3 |
-| Conditional Associative Memory | §9.1 [RESEARCH] | 🟡 | keyed Slots mit Radius-Gate (feuern nur nahe ihrem Schlüssel) in `sparse_memory.py`; Forschungsstand | WP-S3 |
+| Conditional Associative Memory | §9.1 [RESEARCH] | 🟡 | keyed Slots mit Radius-Gate (feuern nur nahe ihrem Schlüssel) in `sparse_memory.py`; Schlüsseltrennung (unterscheidende Guard-Wörter, Guard nur letzte Nutzerfrage) nativ gemessen: 0 fremde Feuerungen auf Faktfragen, selektive Zustellung noch kein Gewinn (`bench-results/selective-delivery-v3-20261021/`) | WP-S3, WP-T9 |
 | Exact / Provenance | §9.1, §1.8 | ✅ | `store.py`, `SourceRef` | – |
 | Semantic/Procedural Staging | §9.1 | ✅ | `consolidation.py`: semantische/prozedurale Kandidaten nach ≥ 3 unabhängigen Bestätigungen, Staging → menschliche Freigabe → aktiv, Rollback; Sleep A staged automatisch (`tests/test_consolidation.py`) | WP-E |
 | Archive | §9.1 | ✅ | Backups, Generationen + kalte Quellen verlustfrei komprimiert (`archive.py`, Sleep C, `:archive`) | WP-U4 |

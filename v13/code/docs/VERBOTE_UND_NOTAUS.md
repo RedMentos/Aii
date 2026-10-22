@@ -57,8 +57,27 @@ Freitext-Regeln („sei höflich“) bleiben nur Hinweise im Prompt. Das steht e
 - **Selbst-Unsicherheit** (`agi/metacog.py`, `agi/live.py`): wirkt teilweise. Ist sie kalibriert, hebt sie live den Rechenaufwand (Effort-Modus `adaptive` ist Standard): mehr Körper wecken, zweiter Versuch. „Lieber nachfragen statt raten“ (ASK_USER) läuft im Standard nur im Beobachtungsmodus; aktiv nur nach ausdrücklicher Nutzerfreigabe.
 - Gelernte Aktionswahl (`actionlearn.py`) steht im Beobachtungsmodus und kann Verbote ohnehin nie aufheben.
 
+## Stillstand: alles anhalten (`:stillstand`, WP-SAFE2, 22.10.)
+
+`:notaus` stoppt nur Werkzeuge und Freigaben (und den laufenden Zug). Lernen, Traum/Schlaf, Replay, Training und
+wartende Hintergrund-Aufgaben liefen bisher weiter. `:stillstand` hält alles zusammen an:
+
+| Teil | vorhandener Schalter | stoppt |
+| --- | --- | --- |
+| Werkzeuge | Notaus | jeden Werkzeugaufruf und jede Freigabe |
+| Aufgaben | Warteschlange pausiert (`:pause`) | Gesprächszüge, Lernen, Traum/Schlaf, Replay, Training, Zeitplaner; laufender Vorgang wird abgebrochen |
+| Alterung | `:age freeze` | Stufenaufstieg |
+
+- Bestätigt wird „kein Vorgang läuft mehr“ erst, wenn der laufende Vorgang wirklich zu Ende ist (bis 10 s warten). Hört ein
+  Vorgang nicht auf, steht sein Name in der Meldung; er wird nie als gestoppt ausgegeben. `:stillstand status` prüft erneut.
+- Nach einem Neustart bleibt der Stillstand an.
+- `:stillstand aus` hebt nur auf, was `:stillstand` selbst eingeschaltet hat. Hattest du vorher schon Notaus oder
+  `:age freeze` gesetzt, bleibt das an. Die Meldung sagt, wie viele wartende Hintergrund-Aufgaben danach wieder anlaufen.
+- Deine eigenen Befehle gehen während des Stillstands weiter (z. B. `:status`, `:backup`): so lässt sich ein
+  konsistenter Sicherungspunkt machen.
+
 ## Ehrliche Grenzen
 
 - Die Risikoklasse eines Werkzeugs schreibt der Programmierer beim Registrieren hin; sie wird nicht nachgemessen. Neue Werkzeuge brauchen deshalb Code-Review.
-- Notaus stoppt Werkzeuge und Freigaben, nicht das Schreiben von Antworttext (Text hat keine Außenwirkung; `:cancel` bricht den laufenden Zug ab, Notaus ruft das mit auf).
+- Notaus stoppt Werkzeuge und Freigaben, nicht Lernen/Hintergrund (dafür `:stillstand`) und nicht das Schreiben von Antworttext (Text hat keine Außenwirkung; `:cancel` bricht den laufenden Zug ab, Notaus ruft das mit auf).
 - Das Weltmodell kennt Verbote noch nicht als Vorhersage („wenn ich das täte, wäre es verboten“). Das ist nur ein Plan-Hinweis, kein Sicherheitsproblem, weil die Prüfung ohnehin im Code passiert.

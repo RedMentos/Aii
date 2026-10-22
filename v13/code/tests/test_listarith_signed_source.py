@@ -43,3 +43,13 @@ class SignedSource(unittest.TestCase):
                 self.assertEqual(L.decode(proposal['args']['values']), values(-5))
             finally:
                 r.close()
+
+
+class RepeatedValue(unittest.TestCase):
+    def test_value_read_more_often_than_written_is_rejected(self):
+        text = 'Rent 300 euros, food 120 euros, travel 80 euros. What is the total?'
+        read = [{'name': 'rent', 'number': 300}, {'name': 'food', 'number': 120}, {'name': 'travel', 'number': 80}]
+        self.assertEqual(L.compute('total', read, text)[0], 500)
+        with self.assertRaises(ValueError):
+            L.compute('total', read+[{'name': 'rent again', 'number': 300}], text)
+        self.assertEqual(L.compute('total', [{'name': 'a', 'number': 7}, {'name': 'b', 'number': 7}], 'a 7, b 7. Give the total.')[0], 14)
