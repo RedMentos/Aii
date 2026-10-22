@@ -24,7 +24,7 @@ class NeuroLedger(unittest.TestCase):
     def test_claims_map_to_section99_verdicts(self):
         rows={x['feature_id']:x for x in completion_ledger(self.r)['rows']}
         n=rows['MODULE_NEUROMOD'];self.assertEqual(n['neuro_inspiration_class'],'MECHANISM_INSPIRED');self.assertEqual(n['neuro_claim_status'],'TESTED_PARTIAL')
-        self.assertEqual(n['modulator_schema'],'ModulatorPacket');self.assertEqual(n['eligibility_owner'],'v13/neuromod.py');self.assertEqual(n['age_window_policy'],'AGE_CONTROL:boot')
+        self.assertEqual(n['modulator_schema'],'ModulatorPacket');self.assertEqual(n['eligibility_owner'],'v13/neuromod.py');self.assertEqual(n['age_window_policy'],'AGE_CONTROL:'+self.r.cfg['age_plasticity_policy'])
         self.assertEqual(rows['MODULE_AGE']['neuro_claim_status'],'TESTED_NOT_SUPPORTED')
         self.assertEqual(rows['B3_LATENT']['neuro_claim_status'],'TESTED_FAIL')
         self.assertEqual(rows['F9_EPISODIC_REPLAY']['replay_authority'],'HYPOTHESIS_NO_LEARNING')

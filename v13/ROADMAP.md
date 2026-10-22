@@ -1350,13 +1350,27 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Befund `code/docs/proofs/continuation-20261022/user-rules-v5/BEFUND.md`.
 - Offen (v6, Architektur): breites Netz (jedes Halte-/Verneinungs-/Bedingungssignal mit Handlung oder Ziel ⇒ mindestens Rückfrage mit Vorschlag) + Bestätigung der Lesart durch den Nutzer, erst dann feste Regel; Messung: kein Regelsatz ohne Rückfrage, Rate unnötiger Rückfragen.
 
+
+### WP-UR6 Regel-Leser v6 (breites Netz) + versiegelte Runde 6 — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V6_UNSAFE` (gleicher Thread/Branch)
+- v6 = Architekturwechsel: Liest der genaue Leser einen Satz als „keine Regel“ oder „Lockerung“, prüft ein Netz Verneinung, Halten oder Bedingung zusammen mit einer bekannten Handlung oder einem bekannten Ziel. Trifft es zu, entsteht eine offene Rückfrage (Grund `NET`, gilt bis zur Antwort als „erst fragen“). Das gilt auch über Teilsätze hinweg. Dazu kommen trennbare deutsche Verben und ein Hinweis zum Berichtigen bei festen Regeln. Bekannte Sätze: 0 Fehler.
+- T1 `holdout_de3` (60 deutsche Autor-Sätze): v6 1 Fehler in 1 Satz (v5 19 in 6).
+- T2 Runde 6 (Qwen 2.5 7B, EXAONE 3.5 7.8B, GLM-4 9B; 181 deutsche Sätze): v6 29 Fehler in 11 Sätzen (v5 57 in 20). Übersehene Verbote 7 (v5 14).
+- Kosten: unnötige Rückfragen bei 38 % (T1) bzw. 30,4 % (T2) der Sätze ohne Regel. Das verfehlt K6 (höchstens 30 %) knapp. Übervorsicht 30–34 %.
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v6/BEFUND.md`.
+- Offen (v7):
+  - Sperr-Wörter ohne Verneinung (ausgeschlossen, abgeschafft, blockiert).
+  - Ziel-Nomen per Wortende (Zusatzprogramm, Internetverbindung), Telefon/Handy als ganzes Gerät.
+  - „sag mir, wenn …“ und „erstmal“ als Bedingung.
+  - Doppelpunkt-Etiketten als ganzer Satz.
+  - Weniger Rückfragen bei Verneinung über Dritte.
+  - Handy-Test, ob das Nachfragen stört.
 ### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — OFFEN
 - 24.22 Wake (R4 im Blueprint-Sinn; Ergebnisse der R4-Werkzeug-Teile hier einbringen), 24.23 Effort (R5), 24.17 Deliberation, 24.25 Observer-Nutzen, 24.26 Broadcast-Brücke, 24.32 Lebenszyklus Scaffold→gelernte Route je Fähigkeit. Typisierte Modulatoren (G-MODULATOR-SPECIFICITY-001) mit echten Modellen.
 
 ### WP-Z7 Ein Redmi-Paket für alle Handy-Pflichtmessungen (Nutzer, WP-R) — OFFEN
 - Ein Befehl wie `WERKZEUG_TESTEN.sh`: TRAIN_RUNNER_PROOF (G-TRAIN-RUNNER-PROOF-001), Langlauf (G-MOBILE-LONGRUN-001), §24.14 Overhead, §24.33 Residenz, Proceduralisierung Latenz/Energie, Werkzeug-Vorhersage. Ergebnis-ZIP hochladen. Bau in der Cloud, Lauf nur durch den Nutzer.
 
-### WP-Z8 Age-Plastizität entscheiden (Nutzer) — OFFEN
+### WP-Z8 Age-Plastizität entscheiden (Nutzer) — ENTSCHIEDEN 2026-10-22: `noise_aware` ist Standard, Zitat-Kontext an (`NUTZER_ENTSCHEIDUNGEN.md`); offen nur noch der Wiederöffnen-Test
 - Wahl `age_plasticity_policy = boot | stable_reopen | noise_aware` (offen seit 10.10., Messung in WP-AB). Danach Wiederöffnen-Test für G-AGE-REOPEN-001.
 
 ### WP-Z9 Dream-Kontrolle „policy-only“ (Cloud) — OFFEN
