@@ -1,0 +1,485 @@
+{
+ "schema": "v13-eligibility-first-prereg-v1",
+ "created_utc": "2026-10-22T14:54:08Z",
+ "dev_seed": 7,
+ "dev_sha256": "f441a87ae3b5245747c487f58babeb06a68ebd404ff022496973449f50f1aacc",
+ "dev": {
+  "all": {
+   "n": 12,
+   "correct": {
+    "c3_alone": 5,
+    "tool_model": 6,
+    "tool_fixed": 7,
+    "tool_fixed_first": 12
+   },
+   "wrong_committed": {
+    "c3_alone": 7,
+    "tool_model": 6,
+    "tool_fixed": 5,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "turn_s_median": {
+    "c3_alone": 1.91,
+    "tool_model": 3.01,
+    "tool_fixed": 1.91,
+    "tool_fixed_first": 1.61
+   },
+   "pool_gets": {
+    "c3_alone": 18,
+    "tool_model": 30,
+    "tool_fixed": 18,
+    "tool_fixed_first": 18
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 10,
+    "tool_fixed": 12,
+    "tool_fixed_first": 12
+   },
+   "correction_applied": {
+    "tool_model": 6,
+    "tool_fixed": 5,
+    "tool_fixed_first": 0
+   },
+   "executed": {
+    "tool_model": 12,
+    "tool_fixed": 12,
+    "tool_fixed_first": 12
+   },
+   "decision_correct": {
+    "tool_model": 10,
+    "tool_fixed": 12,
+    "tool_fixed_first": 12
+   },
+   "decision_unknown": {
+    "tool_model": 5,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "values_exact": {
+    "tool_model": 8,
+    "tool_fixed": 12,
+    "tool_fixed_first": 12
+   },
+   "first_vs_model": {
+    "wins": 6,
+    "losses": 0,
+    "net": 6,
+    "sign_test_p": 0.0312
+   },
+   "first_vs_c3": {
+    "wins": 7,
+    "losses": 0,
+    "net": 7,
+    "sign_test_p": 0.0156
+   },
+   "fixed_vs_model": {
+    "wins": 2,
+    "losses": 1,
+    "net": 1,
+    "sign_test_p": 1.0
+   }
+  },
+  "complete": {
+   "n": 3,
+   "correct": {
+    "c3_alone": 2,
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "wrong_committed": {
+    "c3_alone": 1,
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "turn_s_median": {
+    "c3_alone": 2.01,
+    "tool_model": 3.01,
+    "tool_fixed": 1.41,
+    "tool_fixed_first": 1.61
+   },
+   "pool_gets": {
+    "c3_alone": 3,
+    "tool_model": 6,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "correction_applied": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "executed": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "decision_correct": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "decision_unknown": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "values_exact": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "first_vs_model": {
+    "wins": 0,
+    "losses": 0,
+    "net": 0,
+    "sign_test_p": 1.0
+   },
+   "first_vs_c3": {
+    "wins": 1,
+    "losses": 0,
+    "net": 1,
+    "sign_test_p": 1.0
+   },
+   "fixed_vs_model": {
+    "wins": 0,
+    "losses": 0,
+    "net": 0,
+    "sign_test_p": 1.0
+   }
+  },
+  "missing": {
+   "n": 3,
+   "correct": {
+    "c3_alone": 0,
+    "tool_model": 1,
+    "tool_fixed": 0,
+    "tool_fixed_first": 3
+   },
+   "wrong_committed": {
+    "c3_alone": 3,
+    "tool_model": 2,
+    "tool_fixed": 3,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "turn_s_median": {
+    "c3_alone": 1.91,
+    "tool_model": 2.82,
+    "tool_fixed": 1.91,
+    "tool_fixed_first": 0.41
+   },
+   "pool_gets": {
+    "c3_alone": 3,
+    "tool_model": 6,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "correction_applied": {
+    "tool_model": 2,
+    "tool_fixed": 3,
+    "tool_fixed_first": 0
+   },
+   "executed": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "decision_correct": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "decision_unknown": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "values_exact": {
+    "tool_model": 1,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "first_vs_model": {
+    "wins": 2,
+    "losses": 0,
+    "net": 2,
+    "sign_test_p": 0.5
+   },
+   "first_vs_c3": {
+    "wins": 3,
+    "losses": 0,
+    "net": 3,
+    "sign_test_p": 0.25
+   },
+   "fixed_vs_model": {
+    "wins": 0,
+    "losses": 1,
+    "net": -1,
+    "sign_test_p": 1.0
+   }
+  },
+  "earlier": {
+   "n": 3,
+   "correct": {
+    "c3_alone": 2,
+    "tool_model": 2,
+    "tool_fixed": 2,
+    "tool_fixed_first": 3
+   },
+   "wrong_committed": {
+    "c3_alone": 1,
+    "tool_model": 1,
+    "tool_fixed": 1,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "turn_s_median": {
+    "c3_alone": 1.51,
+    "tool_model": 2.92,
+    "tool_fixed": 1.81,
+    "tool_fixed_first": 1.81
+   },
+   "pool_gets": {
+    "c3_alone": 6,
+    "tool_model": 9,
+    "tool_fixed": 6,
+    "tool_fixed_first": 6
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "correction_applied": {
+    "tool_model": 1,
+    "tool_fixed": 1,
+    "tool_fixed_first": 0
+   },
+   "executed": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "decision_correct": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "decision_unknown": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "values_exact": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "first_vs_model": {
+    "wins": 1,
+    "losses": 0,
+    "net": 1,
+    "sign_test_p": 1.0
+   },
+   "first_vs_c3": {
+    "wins": 1,
+    "losses": 0,
+    "net": 1,
+    "sign_test_p": 1.0
+   },
+   "fixed_vs_model": {
+    "wins": 0,
+    "losses": 0,
+    "net": 0,
+    "sign_test_p": 1.0
+   }
+  },
+  "override": {
+   "n": 3,
+   "correct": {
+    "c3_alone": 1,
+    "tool_model": 0,
+    "tool_fixed": 2,
+    "tool_fixed_first": 3
+   },
+   "wrong_committed": {
+    "c3_alone": 2,
+    "tool_model": 3,
+    "tool_fixed": 1,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "turn_s_median": {
+    "c3_alone": 1.91,
+    "tool_model": 3.32,
+    "tool_fixed": 1.91,
+    "tool_fixed_first": 1.81
+   },
+   "pool_gets": {
+    "c3_alone": 6,
+    "tool_model": 9,
+    "tool_fixed": 6,
+    "tool_fixed_first": 6
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 1,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "correction_applied": {
+    "tool_model": 3,
+    "tool_fixed": 1,
+    "tool_fixed_first": 0
+   },
+   "executed": {
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "decision_correct": {
+    "tool_model": 1,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "decision_unknown": {
+    "tool_model": 2,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "values_exact": {
+    "tool_model": 1,
+    "tool_fixed": 3,
+    "tool_fixed_first": 3
+   },
+   "first_vs_model": {
+    "wins": 3,
+    "losses": 0,
+    "net": 3,
+    "sign_test_p": 0.25
+   },
+   "first_vs_c3": {
+    "wins": 2,
+    "losses": 0,
+    "net": 2,
+    "sign_test_p": 0.5
+   },
+   "fixed_vs_model": {
+    "wins": 2,
+    "losses": 0,
+    "net": 2,
+    "sign_test_p": 0.5
+   }
+  }
+ },
+ "fresh_task_seed": 41,
+ "fresh_per_kind": 15,
+ "fresh_tasks_sha256": "c72bad06cda92e1fa1d3f93274f4b14405d26041f2a8f857d98662e01bde8b73",
+ "arms": {
+  "c3_alone": null,
+  "tool_model": {
+   "eligibility_reader": "model",
+   "tool_answer_first": false
+  },
+  "tool_fixed": {
+   "eligibility_reader": "fixed",
+   "tool_answer_first": false
+  },
+  "tool_fixed_first": {
+   "eligibility_reader": "fixed",
+   "tool_answer_first": true
+  }
+ },
+ "kinds": [
+  "complete",
+  "missing",
+  "earlier",
+  "override"
+ ],
+ "cfg": {
+  "learning_mode": "RECORD_ONLY",
+  "teacher_enabled": false,
+  "history_turns": 2,
+  "observer_mode": "off",
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "decision_rule": "Fresh seed 41, 15 tasks per kind (60 total), arms paired on the same task. FIRST_SUPPORTED iff, tool_fixed_first vs tool_model on the answer text: (a) net correct wins >= +10 AND two-sided sign test p < .05, (b) wrong_committed(tool_fixed_first) <= wrong_committed(tool_model), (c) tool_wrong(tool_fixed_first) == 0, (d) no kind loses more than 2 tasks net. FIXED_READER_SUPPORTED iff decision_correct(tool_fixed) >= decision_correct(tool_model) + 5 AND tool_wrong(tool_fixed) == 0. Reported, not part of the verdicts: c3_alone, shown_correct (with broker correction) per arm, per kind, model read calls, turn time.",
+ "script_sha256": "fe399bb53b9f6ea537fe71bb096e8236affc068f36e101cc972c6fae7ea1b03a",
+ "code_sha256": {
+  "toolstep.py": "10b2c493efae865638715d5661503b100b3e0663cd5ef72353a9aca280361454",
+  "agi/eligibility.py": "39274a0f6fc13ef8c94dae98ad3815eedff9e4394a38c9279e7a2aeb45ede932",
+  "agi/tools.py": "aaec7fb801392d7bc3084760985ebc57f79506c87175cbaad1864ff691a403da",
+  "transaction.py": "7edd8e349cfc449a1123c660d35cfc337261754b138cd6cf8ba62c0b5b6530b0",
+  "runtime.py": "2020e6d2f12e034fb6321c5c94869ff1f88c318319b4ff1c0b2bb823b90e06d0",
+  "broker.py": "27186038aaa89b5409e26d5d3fff7278ad6fc3ff03a35bd6c92dcf3bf15feacd",
+  "history.py": "45c0893c31194336886ed02a19417f1f9375f90c750f4a276acf01f0b322df49",
+  "config.py": "fe676a95f759c7916e399ab0e9e9763d9b3eb2d1036355530127195aaac85d60",
+  "scripts/eligibility_live.py": "027a31d524628619a4b2c306194814e8c57b0cf6285097e51d3ca958984f89a0"
+ }
+}

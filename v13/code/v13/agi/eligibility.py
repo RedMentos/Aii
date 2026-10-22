@@ -96,3 +96,171 @@ def tool(current, a_cost, a_days, a_local, b_cost, b_days, b_local, quotes='', b
 
 SCHEMA = {'current': 'text', 'quotes': 'text?', 'a_cost': 'int', 'a_days': 'int', 'a_local': 'bool',
           'b_cost': 'int', 'b_days': 'int', 'b_local': 'bool', 'budget': 'int?', 'deadline': 'int?', 'local_only': 'bool?'}
+
+
+# Live path (Thread Q, 2026-10-21): the same recipe as a C5 TOOL_CALL in the runtime turn (toolstep.py), like list_arith.
+# A BOOT wording rule spots a decision over Option A/B; C3 only copies typed values (READ_SCHEMA); decide() keeps the
+# guard, so values that are not stated after their rule word, or that conflict with the current message, never count.
+# Evidence = current user message + EARLIER_EXACT texts: the user's own earlier messages of this session (stored source
+# text, not model output) and source-verified quotes of the selected body offers. Claim limit: English, the fixture
+# wording ("budget 61 euros", "Option A: cost 45 euros, duration 7 days, local true"); other wordings get UNKNOWN.
+OPTION_PAIR = re.compile(r'\boption\s+A\b[\s\S]*\boption\s+B\b', re.I)
+DECIDE = re.compile(r'(?i)\b(?:choose|chooses|pick|select|recommend|cheapest|eligib\w*|which\s+option|go\s+with|decide)\b')
+MAX_TEXT = 2000
+MAX_EARLIER = 6
+READ_SYSTEM = ('Read the project rules and the two options. Return JSON only. Copy every number exactly as written; never '
+               'calculate anything. budget, deadline, local_only: the value written right after that rule word; if the current '
+               'message states a rule, take it from there, otherwise from the earlier text; if a rule is not written anywhere, '
+               'use null. options: cost, duration in days and local (true or false) of option A and of option B.')
+_READ_OPTION = {'type': 'object', 'additionalProperties': False, 'required': ['entity', 'cost', 'days', 'local'],
+                'properties': {'entity': {'type': 'string', 'enum': ['A', 'B']}, 'cost': {'type': 'integer'},
+                               'days': {'type': 'integer'}, 'local': {'type': 'boolean'}}}
+READ_SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['options', 'budget', 'deadline', 'local_only'],
+               'properties': {'options': {'type': 'array', 'minItems': 2, 'maxItems': 2, 'items': _READ_OPTION},
+                              'budget': {'type': ['integer', 'null']}, 'deadline': {'type': ['integer', 'null']},
+                              'local_only': {'type': ['boolean', 'null']}}}
+LIVE_NOTE = ('Answer with this decision first, in your own words, then the remaining budget. If the decision is UNKNOWN, say '
+             'which rule is missing and do not choose an option.')
+FIRST_NOTE = ('The user already sees the "answer" sentence as the start of your reply. Continue right after it with one or two '
+              'short sentences that explain it with the numbers in "details". Do not repeat it and do not choose a different option.')
+
+
+def question(text):
+    """BOOT rule: the message names Option A and Option B and asks for a choice/eligibility."""
+    t = str(text)
+    return len(t) <= MAX_TEXT and OPTION_PAIR.search(t) is not None and DECIDE.search(t) is not None
+
+
+def read_prompt(current, earlier):
+    body = ''
+    if earlier:
+        body = 'Earlier exact text (older):\n'+'\n'.join('- '+str(t) for t in earlier)+'\n\n'
+    body += 'Current message (newest; a rule stated here overrides the earlier text):\n'+str(current)
+    return [{'role': 'system', 'content': READ_SYSTEM}, {'role': 'user', 'content': body}]
+
+
+def read_values(runner, current, earlier, cancel, deadline, max_tokens=200):
+    """The model only copies typed values; returns the READ_SCHEMA object or raises ValueError/JSON errors."""
+    import json
+    x = json.loads(''.join(runner.generate(read_prompt(current, earlier), cancel, deadline, max_tokens, READ_SCHEMA)))
+    if not isinstance(x, dict) or set(x) != set(READ_SCHEMA['required']): raise ValueError('read_schema')
+    ents = [o.get('entity') for o in x['options']] if isinstance(x['options'], list) else []
+    if ents != ['A', 'B']: raise ValueError('options')
+    return x
+
+
+def args_for(values, current, earlier):
+    """READ_SCHEMA values -> tool args (an unavailable rule is omitted, so the tool treats it as unavailable)."""
+    a, b = values['options']
+    args = {'current': str(current), 'a_cost': a['cost'], 'a_days': a['days'], 'a_local': a['local'],
+            'b_cost': b['cost'], 'b_days': b['days'], 'b_local': b['local']}
+    if earlier: args['quotes'] = '\n'.join(str(t).replace('\n', ' ') for t in earlier)
+    for k in ('budget', 'deadline', 'local_only'):
+        if values.get(k) is not None: args[k] = values[k]
+    return args
+
+
+# Fixed reader (Thread „STEP2-Nutzen Engpass“, 2026-10-22; cfg eligibility_reader='fixed'). User decision 2026-10-21: rules are
+# read by a fixed, non-generative component, never by a language model (WP-Z3b: C3 350M always says local_only=true and
+# often keeps a stale rule). Rule values: the current message wins; otherwise the newest earlier text that states the rule.
+# A text that states two different values for one rule gives no value (refuse, never guess). Options: their own clause in
+# the current message, else in the newest earlier text; an option this wording does not cover leaves options to the model.
+_OPT_VALUES = (r'\bcost\s+(\d+)\b', r'\b(\d+)\s+days?\b', r'\blocal\s+(true|false)\b')
+
+
+def fixed_rule(rule, current, earlier=()):
+    for text in (current, *reversed(list(earlier))):
+        found = stated_values(rule, str(text))
+        if found: return found.pop() if len(found) == 1 else None
+    return None
+
+
+def fixed_option(entity, current, earlier=()):
+    for text in (current, *reversed(list(earlier))):
+        clause = option_clause(entity, str(text))
+        if not clause: continue
+        got = [re.findall(rx, clause, re.I) for rx in _OPT_VALUES]
+        if any(len(set(g)) != 1 for g in got): return None
+        return {'entity': entity, 'cost': int(got[0][0]), 'days': int(got[1][0]), 'local': got[2][0].lower() == 'true'}
+    return None
+
+
+def read_fixed(current, earlier=()):
+    """READ_SCHEMA-shaped values without a model; 'options' is None when this wording does not cover both options."""
+    opts = [fixed_option(x, current, earlier) for x in 'AB']
+    out = {k: fixed_rule(k, current, earlier) for k in ('budget', 'deadline', 'local_only')}
+    out['options'] = opts if all(opts) else None
+    return out
+
+
+def with_fixed_rules(values, fixed):
+    """Model-read options, rules only from the fixed reader (the model's rule values are discarded)."""
+    return dict(values, **{k: fixed[k] for k in ('budget', 'deadline', 'local_only')})
+
+
+def decision_line(result):
+    """One readable line: what the recipe decided (used by the TOOL_RESULT layer and the broker correction)."""
+    act = result['action']
+    head = {'A': 'choose Option A', 'B': 'choose Option B', 'NONE': 'no option is eligible',
+            'UNKNOWN': 'decision UNKNOWN (a rule is missing or not stated exactly)'}.get(act, str(act))
+    parts = []
+    for o in result['options']:
+        if o['eligible'] is None: parts.append(f"Option {o['entity']}: cost {o['cost']} euros, {o['days']} days")
+        else: parts.append(f"Option {o['entity']}: remaining budget {o['remaining']} euros, {'eligible' if o['eligible'] else 'not eligible'}")
+    return head+' ('+'; '.join(parts)+')'
+
+
+def unresolved(args, result):
+    """Rules the recipe could not use: not read at all, not stated after the rule word, or conflicting with the current message."""
+    out = [k for k in ('budget', 'deadline', 'local_only') if args.get(k) is None]
+    out += [r.split(':')[0] for r in result.get('rejected', []) if r.split(':')[0] in ('budget', 'deadline', 'local_only')]
+    return sorted(set(out), key=out.index)
+
+
+def answer_sentence(args, result):
+    """The decision phrased as the start of an answer (TOOL_RESULT layer)."""
+    act = result['action']
+    left = {o['entity']: o['remaining'] for o in result['options']}
+    if act in ('A', 'B'): return f'Choose Option {act}. Remaining budget: {left[act]} euros.'
+    if act == 'NONE': return 'Neither option is eligible.'
+    miss = unresolved(args, result)
+    if miss:
+        names = [m.replace('_', '-') for m in miss]
+        both = names[0] if len(names) == 1 else ', '.join(names[:-1])+' and '+names[-1]
+        return f"I cannot decide yet: the {both} {'rule is' if len(names) == 1 else 'rules are'} missing or not stated exactly."
+    return 'I cannot decide yet: an option is not stated exactly.'
+
+
+def final_text(args, result):
+    """UNKNOWN/NONE under cfg tool_answer_first: the whole answer, fixed text, no body continuation (dev seed 7: the 350M
+    body went on to pick an option after "I cannot decide yet" in 2 of 3 missing-rule tasks)."""
+    if result['action'] == 'NONE':
+        return answer_sentence(args, result)+' '+'; '.join(
+            f"Option {o['entity']}: {o['cost']} euros, {o['days']} days, {'local' if o['local'] else 'not local'}, not eligible" for o in result['options'])+'.'
+    miss = unresolved(args, result)
+    names = [m.replace('_', '-') for m in miss]
+    both = ', '.join(names[:-1])+' and '+names[-1] if len(names) > 1 else ''.join(names)
+    ask = ('Please tell me the '+both+(' rule.' if len(names) == 1 else ' rules.')) if miss \
+        else 'Please state both options with cost, duration and local.'
+    return answer_sentence(args, result)+' '+ask
+
+
+_UNKNOWN = re.compile(r"(?i)\b(?:unknown|cannot (?:be )?(?:decide|determine|choose|tell|make)\w*|can't (?:decide|determine|choose|tell)|"
+                      r"not enough information|insufficient information|missing|not (?:stated|given|provided|specified|known)|unavailable)\b")
+_NONE = re.compile(r'(?i)\b(?:neither|none of (?:the|them)|no option|no eligible|nothing is eligible|both (?:are|options are) (?:not|in)eligible)\b')
+_PICK = re.compile(r'(?i)\b(?:choose|chose|pick|select|recommend|go with|cheapest eligible(?: option)? is|best (?:choice|option) is|answer(?: is)?:?)\s+(?:is\s+)?(?:the\s+)?(?:option\s+)?([AB])\b')
+_POS = re.compile(r"(?i)\boption\s+([AB])\s+(?:is|would be|remains)\s+(?:the\s+)?(?:cheaper|cheapest|best|better|most affordable|only|right|recommended|eligible|valid)\b")
+_OPT = re.compile(r'(?i)\boption\s+([AB])\b')
+
+
+def answer_action(text):
+    """Which decision a free-text answer commits to: 'A'|'B'|'NONE'|'UNKNOWN'|None (no or mixed signal). Fixed parser."""
+    t = str(text or '')
+    picks = {m.upper() for m in _PICK.findall(t)}
+    if len(picks) == 1: return picks.pop()
+    if _NONE.search(t): return 'NONE'
+    pos = {m.upper() for m in _POS.findall(t)}
+    if len(pos) == 1: return pos.pop()
+    if _UNKNOWN.search(t): return 'UNKNOWN'
+    opts = {m.upper() for m in _OPT.findall(t)}
+    return opts.pop() if len(opts) == 1 else None

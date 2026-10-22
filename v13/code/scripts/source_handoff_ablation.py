@@ -18,12 +18,12 @@ from scripts.source_handoff_candidate import ROOT, SNAPSHOT, _replace, sources
 from tests.integration_step2_utility import installed_artifacts, installed_links, SYSTEM, SCHEMA
 from v13 import bodyview
 from v13.common import atomic_write, digest, dumps, file_hash
-from v13.config import DEFAULTS, initialize, save_config
+from v13.config import DEFAULTS, LEGACY_PRE_20261022, initialize, save_config
 from v13.runtime import Runtime
 from v13.utility import score_decision
 
 ARMS = ('baseline', 'state_off', 'semantics_only', 'full_candidate')
-CONFIG = DEFAULTS | {'threads':2, 'temperature':0., 'seed':13, 'context_tokens':2048,
+CONFIG = DEFAULTS | LEGACY_PRE_20261022 | {'threads':2, 'temperature':0., 'seed':13, 'context_tokens':2048,
           'observer_tokens':160, 'answer_tokens':256, 'observer_seconds':45,
           'deadline_seconds':120, 'observer_mode':'off', 'history_turns':0,
           'memory_top_k':0, 'teacher_enabled':False, 'learning_mode':'RECORD_ONLY',

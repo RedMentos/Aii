@@ -422,7 +422,7 @@ class Runtime:
             view=focal_run['trajectory'][-1]['view'] if focal_run and focal_run['trajectory'] else None
             tool_plan=tool_result=tool_shadow=tool_pending=None
             if not direct:
-                try:tool_plan=toolctl.ToolStep(self).plan(e,text)  # WP-K/AG10: concrete tool proposal -> C5 candidate under IH-H29
+                try:tool_plan=toolctl.ToolStep(self).plan(e,text,offers=selected,version=version)  # WP-K/AG10: concrete tool proposal -> C5 candidate under IH-H29
                 except Exception as exc:self.store.log('tool_step_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
             clar=agi_live.clarify(self,meta) if not direct else None  # WP-N13 AG9 abstain -> C5 ASK_USER
             c5=ActionGate(self.store).select(e,route=route,direct=direct,resource_state=state,coalition=focal_run['coalition'] if focal_run else [],view=view,age=age_lim,effort=effort_plan['effort'] if effort_plan else None,gain_action=self._action_gain(eid),tool=tool_plan,clarify=clar)
@@ -526,8 +526,13 @@ class Runtime:
                         runner=self.pool.get('C3_LANGUAGE')
                 mark('native_answer')
                 leading_output=''
+                lead=toolctl.ToolStep(self).lead(tool_result) if tool_result and tool_result.get('result') is not None else None
+                if lead:  # cfg tool_answer_first: the exact tool decision is the first visible sentence, the body continues
+                    txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns()
+                    final=toolctl.ToolStep(self).lead_final(tool_result);lead=final or lead
+                    self.store.append_message(mid,lead+('' if final else ' '));output=lead+('' if final else ' ');meta['tool_answer_first']='FINAL' if final else 'LEAD'
                 lw=latewatch.start(self,e,version,offers,deadline,meta,runner,eligible=not direct and state=='NORMAL')  # WP-U3 F2: late body offer may cut the stream
-                for token in runner.generate(messages,self.cancel_event,deadline,**output_kwargs):
+                for token in (() if meta.get('tool_answer_first')=='FINAL' else runner.generate(messages,self.cancel_event,deadline,**output_kwargs)):
                     clean=safe_text(token)
                     meta['output_removed_characters']=meta.get('output_removed_characters',0)+len(token)-len(clean)
                     if not output:

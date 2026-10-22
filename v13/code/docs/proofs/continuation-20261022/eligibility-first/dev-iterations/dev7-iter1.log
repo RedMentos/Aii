@@ -1,0 +1,12 @@
+{"task": "complete00", "oracle": "A", "c3_alone": "A", "tool_model": "A", "tool_fixed": "A", "tool_fixed_first": "A", "dec": {"tool_model": "A", "tool_fixed": "A", "tool_fixed_first": "A"}}
+{"task": "complete01", "oracle": "B", "c3_alone": "B", "tool_model": "B", "tool_fixed": "B", "tool_fixed_first": "B", "dec": {"tool_model": "B", "tool_fixed": "B", "tool_fixed_first": "B"}}
+{"task": "complete02", "oracle": "NONE", "c3_alone": "B", "tool_model": "B", "tool_fixed": "NONE", "tool_fixed_first": "NONE", "dec": {"tool_model": "NONE", "tool_fixed": "NONE", "tool_fixed_first": "NONE"}}
+{"task": "missing00", "oracle": "UNKNOWN", "c3_alone": "B", "tool_model": "B", "tool_fixed": "B", "tool_fixed_first": "B", "dec": {"tool_model": "UNKNOWN", "tool_fixed": "UNKNOWN", "tool_fixed_first": "UNKNOWN"}}
+{"task": "missing01", "oracle": "UNKNOWN", "c3_alone": "B", "tool_model": "B", "tool_fixed": "B", "tool_fixed_first": "UNKNOWN", "dec": {"tool_model": "UNKNOWN", "tool_fixed": "UNKNOWN", "tool_fixed_first": "UNKNOWN"}}
+{"task": "missing02", "oracle": "UNKNOWN", "c3_alone": "B", "tool_model": "B", "tool_fixed": "B", "tool_fixed_first": "B", "dec": {"tool_model": "UNKNOWN", "tool_fixed": "UNKNOWN", "tool_fixed_first": "UNKNOWN"}}
+{"task": "earlier00", "oracle": "A", "c3_alone": "A", "tool_model": "A", "tool_fixed": "A", "tool_fixed_first": "A", "dec": {"tool_model": "A", "tool_fixed": "A", "tool_fixed_first": "A"}}
+{"task": "earlier01", "oracle": "B", "c3_alone": "B", "tool_model": "B", "tool_fixed": "B", "tool_fixed_first": "B", "dec": {"tool_model": "B", "tool_fixed": "B", "tool_fixed_first": "B"}}
+{"task": "earlier02", "oracle": "NONE", "c3_alone": "A", "tool_model": "A", "tool_fixed": "A", "tool_fixed_first": "NONE", "dec": {"tool_model": "NONE", "tool_fixed": "NONE", "tool_fixed_first": "NONE"}}
+{"task": "override00", "oracle": "A", "c3_alone": "A", "tool_model": "A", "tool_fixed": "A", "tool_fixed_first": "A", "dec": {"tool_model": "UNKNOWN", "tool_fixed": "A", "tool_fixed_first": "A"}}
+{"task": "override01", "oracle": "B", "c3_alone": "A", "tool_model": "A", "tool_fixed": "B", "tool_fixed_first": "B", "dec": {"tool_model": "UNKNOWN", "tool_fixed": "B", "tool_fixed_first": "B"}}
+{"task": "override02", "oracle": "NONE", "c3_alone": "B", "tool_model": "B", "tool_fixed": "A", "tool_fixed_first": "B", "dec": {"tool_model": "NONE", "tool_fixed": "NONE", "tool_fixed_first": "NONE"}}
