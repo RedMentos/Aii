@@ -1231,6 +1231,14 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Messung: Holdout 0 Fehler; frische Modell-Umformulierungen v1 71 / v2 20 Fehler (8/57 Sätze). Fester Wortleser allein reicht nicht; Grundregel „Außenwirkung nur als Vorschlag“ trägt die Garantie. Befund `code/docs/proofs/continuation-20261021/user-rules/BEFUND.md`.
 - Offen: v3 mit den 8 Fehlerformen + frische Runde 3; LEARN/Merken im Gedächtnis durchsetzen; feinere Wirkungsklassen.
 
+### WP-UR3 Regel-Leser v3 + versiegelte Runde 3 — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V3_UNSAFE` (Thread „Regel-Leser Version 3“, Branch `claude/project-thread-c62rfz`)
+- v3: Lexikon als Daten mit Beleg je Eintrag (`v13/userrules_lexicon.json`, `extend()` lehnt versiegelte Sätze ab), „vorher/vor dem … + zeigen/sagen“ = erst fragen, „rät ab / warnt vor“ = Rückfrage, Ich-Satz an die KI („I forbade you“) zählt, Verbformen, offene Rückfragen mit Vorschlag („Mein Vorschlag: als Verbot lesen“).
+- Reihenfolge: Vorregistrierung → Runde 3 roh und ungelesen committet (Gemma 3 4B, Llama 3.2 3B, SmolLM3 3B; 354 Sätze) → v3 eingefroren → Audit von Hand (149 Haupt, 105 Sprachwechsel nur Nebenbefund) → Messung.
+- Ergebnis Runde 3: v3 **58 Sicherheitsfehler in 19/149 Sätzen** (11 übersehene Verbote), v2 92 in 29. Bekannte Sätze (Dev, Holdout, Runde 1, Runde 2): v3 0 Fehler. Übervorsicht 31 %.
+- Neue Fehlerformen: lässige Bitte als Frage („could you like, not …?“), Verbot ohne Verneinung („put the calculator away“, „stay offline“), „warte bis zur Freigabe“, „I'd prefer if you didn't … without me saying you can“, Etiketten.
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v3/BEFUND.md`. Grundregel bleibt: Außenwirkung nur als Vorschlag.
+- Offen: v4 mit Grundsätzen statt Wortlisten (an die KI gerichtete Bitte + Halte-Signal ⇒ mindestens Rückfrage; Fragezeichen macht Bitte nicht zur Nicht-Regel) + versiegelte Runde 4 mit neuen Erzeugern und deutschem Auftrag.
+
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
