@@ -1,0 +1,204 @@
+{
+ "schema": "USER_RULES_COHORT_ROUND5_V1",
+ "cohort": "secondary (same meaning, switched to English; not for the verdict)",
+ "items": [
+  {
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Ain't no new modules, no extensions, nothing to install bro",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Keine neuen Module, keine Erweiterungen, gar nichts installieren."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Hey buddy, better keep your hands off my notes, alright? No messin' around, got it?",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Überschreib meine Notizen unter keinen Umständen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Hey, from now on, no more tools, alright? Keep it cool.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Ab jetzt keine Werkzeuge mehr."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "text": "Avoid spending any cash, mate.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Kauf nichts und gib kein Geld aus."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Ain't managed to download anything today, mate.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Ich hab heute nichts heruntergeladen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Chill, dude, no worries about the bill, alright?",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Mach dir keinen Stress mit der Rechnung."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Don't send mails in my name, okay?",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Verschick keine Mails in meinem Namen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "No more tools from now on.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Ab jetzt keine Werkzeuge mehr."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "text": "Don't take anything from our chats, okay?",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Merk dir nichts aus unseren Gesprächen."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "text": "Tell me first what you're up to.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Show me all drafts before they go out.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Zeig mir jeden Entwurf, bevor er rausgeht."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Better install nothing, I guess.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Besser nichts installieren, glaube ich."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Can you delete the old note?",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Kannst du die alte Notiz löschen?"
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "No stop, keep saving my notes.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Hör nicht auf, meine Notizen zu speichern."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Leave my phone alone, please. It's kinda important, so try not to touch it.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Fass mein Handy nicht an."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Leave my notes alone, will ya?",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Bitte nichts mehr an meinen Notizen verändern."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "No idea what that means.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Keine Ahnung, was das bedeutet."
+  }
+ ]
+}

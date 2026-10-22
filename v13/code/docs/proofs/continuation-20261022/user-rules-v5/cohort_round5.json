@@ -1,0 +1,1117 @@
+{
+ "schema": "USER_RULES_COHORT_ROUND5_V1",
+ "cohort": "primary (same meaning, German)",
+ "items": [
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Entferne bitte nie wieder eines meiner Bilder mehr",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Lösch nie wieder eins meiner Fotos."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Man soll doch meine Bilder lieber lassen, wo sie stehen – ich will nicht, dass man sie löscht.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Meine Bilder bleiben, wo sie sind – nichts davon löschen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Halt dich aus meiner Aufzeichnungen heraus. (Halte dich aus meiner Notizbuch entfernt.)",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Halt dich aus meinen Notizen raus."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Senden Sie keine E-Mails unter Verwendung meines Namens.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Verschick keine Mails in meinem Namen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Du fährst mir nicht online.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Du gehst mir nicht ins Internet."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Internet-Zugang ist für dich verboten",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Das Internet ist für dich tabu."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "text": "Aber du solltest heute mal mal die Rechenarbeiten lassen, freundlich gesagt.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Rechnen lässt du heute bitte bleiben."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Lass' mal den Handy steh'n liegen, du Dummkopf!",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Fass mein Handy nicht an."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Vertraue meine Telefonnummer niemandem zu, verbreite sie bitte nicht weiter",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Gib meine Telefonnummer an niemanden weiter."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Es ist verboten, etwas herunterzuladen.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Ich verbiete dir, irgendwas herunterzuladen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Nunmehr sollten keine Werkzeuge mehr verwendet werden.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Ab jetzt keine Werkzeuge mehr."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Du verlässt meine Dateien unberührt.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Von meinen Dateien lässt du die Finger."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Bitte, keine Änderungen mehr an meinen Notizen vornehmen.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Bitte nichts mehr an meinen Notizen verändern."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "text": "Verzichte auf Kauf und halte das Geldbesitz zurück",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Kauf nichts und gib kein Geld aus."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "text": "Erinnerung an unsere Gespräche vermeide",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Merk dir nichts aus unseren Gesprächen."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Bevor du die E-Mail verschickst, möchte ich sie einmal durchsehen.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Bevor du eine Mail abschickst, will ich sie sehen."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Erstelle nur eine Installation, wenn ich zustimme.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Installier nur etwas, wenn ich ja sage."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Sie dürfen Nachrichten erst senden, nachdem ich meine Zustimmung gegeben habe.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Du darfst Nachrichten erst schicken, nachdem ich zugestimmt habe."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "text": "Meldet mich vor dem Ausführen jeder Aktion.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Du sollst nur Modules nur mit ausdrücklicher Genehmigung entnehmen.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Holst du bloß den Modul nur, wenn ich dafür ausdrücklich sag's, kasch?",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "web"
+   ],
+   "text": "Bevor du etwas im Internet aussuchst, frage mich bitte zuvor.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Wenn du etwas im Internet nachschauen willst, frag mich vorher."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Zeige mir jeden Entwurf, bevor er veröffentlicht wird.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Zeig mir jeden Entwurf, bevor er rausgeht."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "delete_photo"
+   ],
+   "text": "Meine Schwester denkt, dass du da nichts von den Fotos löscht sollst.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Ich denke, es besser ist, nichts einzurichten.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Besser nichts installieren, glaube ich."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "text": "Das Papier sagt so etwas wie: Geh nichts aufmachen.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Auf dem Zettel stand: Nicht öffnen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Sorg dich mal um die Fotos, dass sie nicht verloren gehen",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Vergiss nicht, die Fotos zu sichern."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Könntest du die alte Anmerkung löschen?",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Kannst du die alte Notiz löschen?"
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Kannst du die alte Notiz mal wegschaffen, die ich irgendwo versteckt hab? Viel Spaß, und danke schon vorher.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Kannst du die alte Notiz löschen?"
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Heute habe ich nichts downloaded.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Ich hab heute nichts heruntergeladen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Kein Problem, die Rechnung passt",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Nicht schlecht, die Rechnung stimmt."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Auch nicht so schlimm, die Rechnung passt ja noch mal.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Nicht schlecht, die Rechnung stimmt."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Jetzt dürfen Sie wieder Pakete installieren.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Du darfst jetzt wieder Module installieren."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Von nun an kannst du ohne jeglichen Voraussetzung zurechnen.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Ab sofort darfst du ohne Nachfrage rechnen."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Es ist erlaubt, alleine E-Mails zu versenden",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Mails darfst du wieder alleine verschicken."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Verwirf die Projekte, aber halte meine Bilder.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Lösch die Entwürfe, aber nicht meine Fotos."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Duh, lösch mal die Skizzen, aber die Fotos laß mal liegen, k?",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Lösch die Entwürfe, aber nicht meine Fotos."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Bleib ruhig und lass den Surfen im Internet für jetzt aus.",
+   "lang": "de",
+   "source": "MISTRAL7B/P1",
+   "original": "Rechne ruhig, aber ins Internet gehst du nicht."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Chillax man, internet surfen laß, aber die Rechnungen laufen weiter.",
+   "lang": "de",
+   "source": "MISTRAL7B/P2",
+   "original": "Rechne ruhig, aber ins Internet gehst du nicht."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Versuche nie mehr ein meiner Bilder zu löschen.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Lösch nie wieder eins meiner Fotos."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Meine Bildern sind fest im Ort – keine gelöscht werden.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Meine Bilder bleiben, wo sie sind – nichts davon löschen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Nichts installieren, keine neuen Module, keine Erweiterungen.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Keine neuen Module, keine Erweiterungen, gar nichts installieren."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Keine neuen Mods, gar nichts installieren!",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Keine neuen Module, keine Erweiterungen, gar nichts installieren."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Lassen Sie meine Telefonnummer nicht an irgendjemanden teilen.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Gib meine Telefonnummer an niemanden weiter."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Du darfst dir nicht etwas herunterladen.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Ich verbiete dir, irgendwas herunterzuladen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Hey, halt mal keine Datei herunterladen lassen!",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Ich verbiete dir, irgendwas herunterzuladen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Jetzt weg von dem Internet, locker.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Schluss mit dem Internet."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Bitte keine Änderungen an meinen Notizen machen.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Bitte nichts mehr an meinen Notizen verändern."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Lass' die Notizen wie diese hier bleiben, okay?",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Bitte nichts mehr an meinen Notizen verändern."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "text": "Beachte keine Informationen aus unseren Gesprächen.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Merk dir nichts aus unseren Gesprächen."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Nur installiere etwas, wenn ich eindeutig sagt.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Installier nur etwas, wenn ich ja sage."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Noch keine Nachricht senden, bis ich geklickt habe!",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Du darfst Nachrichten erst schicken, nachdem ich zugestimmt habe."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email",
+    "web"
+   ],
+   "text": "Der Okay muss mein Okay sein, sonst geht nichts ins Netz.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Ohne mein Okay geht nichts ins Netz."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "text": "Frage mir Rat bevor du irgendwas unternehmen willst.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_new",
+    "note_replace"
+   ],
+   "text": "Zunächst stellt man Fragen, später ändert man – das gilt für meine Dateien.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Erst fragen, dann ändern – das gilt für meine Dateien."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_new",
+    "note_replace"
+   ],
+   "text": "Fragen zunächst, ändern danach, das geht für meine Dateien.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Erst fragen, dann ändern – das gilt für meine Dateien."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "web"
+   ],
+   "text": "Wenn du etwas online schauen willst, frag mich mal vor.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Wenn du etwas im Internet nachschauen willst, frag mich vorher."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "delete_photo"
+   ],
+   "text": "Meine Schwester glaubt, dass du keine Bilder verschwinden solltest.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Ich glaube, dass man besser nichts installieren soll.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Besser nichts installieren, glaube ich."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "text": "Am Papier war: Keine öffnung.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Auf dem Zettel stand: Nicht öffnen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "text": "Zettel hatte: Keine öffnen!",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Auf dem Zettel stand: Nicht öffnen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Heute habe ich nichts heruntergeladen.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Ich hab heute nichts heruntergeladen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Heute hab ich nichts heruntergeladen, so dass mein Laptop nichts neu hält.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Ich hab heute nichts heruntergeladen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Kein Stress über die Rechnung mach.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Mach dir keinen Stress mit der Rechnung."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Fortsetze die Speicherung meiner Notizen, bitte!",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Hör nicht auf, meine Notizen zu speichern."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du bist in der Lage wieder alleine zu senden Emails.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Mails darfst du wieder alleine verschicken."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Du schreibe die Email, jedoch verpassst ihr den Versand.",
+   "lang": "de",
+   "source": "FALCON3_7B/P1",
+   "original": "Schreib die Mail, aber schick sie nicht ab."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Mail schreibe, aber nicht senden.",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Schreib die Mail, aber schick sie nicht ab."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Rechne ruhig, aber mach kein Online-Schritt!",
+   "lang": "de",
+   "source": "FALCON3_7B/P2",
+   "original": "Rechne ruhig, aber ins Internet gehst du nicht."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Bitte lass meine Notizen alleine liegen. Mach dir keine Sorgen darüber.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Halt dich aus meinen Notizen raus."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Bitte schreibe keine E-Mails in meinem Namen.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Verschick keine Mails in meinem Namen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Du darfst das Internet nicht nutzen, das ist ja total verboten!",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Das Internet ist für dich tabu."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "text": "Könntest du heute bitte nicht rechnen und liegen bleiben?",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Rechnen lässt du heute bitte bleiben."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Du darfst die Notizen gar nicht überschreiben, es ist verboten!",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Überschreib meine Notizen unter keinen Umständen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Ab jetzt keine Werkzeuge mehr, bitte nur mit Händen.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Ab jetzt keine Werkzeuge mehr."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Ich bitte um Nichtveränderung meiner Notizen.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Bitte nichts mehr an meinen Notizen verändern."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Bevor du eine E-Mail abschickst, möchte ich sie anschauen.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Bevor du eine Mail abschickst, will ich sie sehen."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Setze nur etwas ein, wenn ich 'ja' sage.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Installier nur etwas, wenn ich ja sage."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Dus sendest erst die Nachrichten dann, wenn ich gegeben habe, dass ich zustimme.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Du darfst Nachrichten erst schicken, nachdem ich zugestimmt habe."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "text": "Mehreren Mal fragen, bevor du etwas loslöst",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Frag lieber einmal zu viel, bevor du was löschst."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "text": "Mach lieber mal zu viel Frage, bevor du irgendetwas löscht.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Frag lieber einmal zu viel, bevor du was löschst."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email",
+    "web"
+   ],
+   "text": "Ohne mein Zustimmung geht nichts in das Internet.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Ohne mein Okay geht nichts ins Netz."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "text": "Telle mich, bevor du irgend etwas machst.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Du kannst die Module nur mit meiner ausdrÃ¼cklichen Erlaubnis holen.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Du kannst die Module nur mit meiner ausdrücklichen Erlaubnis abholen.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "web"
+   ],
+   "text": "Stelle bitte vorher eine Frage, falls du Online-Recherche tätigen möchtest.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Wenn du etwas im Internet nachschauen willst, frag mich vorher."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Präsentiere mir jeden Entwurf, bevor er abgeschickt wird.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Zeig mir jeden Entwurf, bevor er rausgeht."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "web"
+   ],
+   "text": "Möchtest du vielleicht heute das Internet auslassen?",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Vielleicht lässt du das Internet heute lieber aus."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "web"
+   ],
+   "text": "Möchtest du vielleicht heute das Internet ganz einfach nicht nutzen?",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Vielleicht lässt du das Internet heute lieber aus."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "delete_photo"
+   ],
+   "text": "Meine Schwester sagt, dass du eigentlich nicht die Fotos löschen solltest.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Nichts zu installieren ist meistens besser, finde ich.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Besser nichts installieren, glaube ich."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "text": "Auf dem Zettel lag: 'Nicht aufmachen'.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Auf dem Zettel stand: Nicht öffnen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "text": "Na, drauf steht doch ganz deutlich: 'Nicht öffnen'.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Auf dem Zettel stand: Nicht öffnen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Kannst du die alten Anmerkungen entfernen?",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Kannst du die alte Notiz löschen?"
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Hab mal nichts heruntergeladen.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Ich hab heute nichts heruntergeladen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Vermeide es nicht, meine Anmerkungen zu speichern.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Hör nicht auf, meine Notizen zu speichern."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Na, das ist ja ordnungsgemäß.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Nicht schlecht, die Rechnung stimmt."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du kannst jetzt Module neu installieren.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Du darfst jetzt wieder Module installieren."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du darfst alleine Mails verschicken.",
+   "lang": "de",
+   "source": "OLMO2_7B/P1",
+   "original": "Mails darfst du wieder alleine verschicken."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Lass die Entwürfe weglassen, aber lasse meine Fotos liegen.",
+   "lang": "de",
+   "source": "OLMO2_7B/P2",
+   "original": "Lösch die Entwürfe, aber nicht meine Fotos."
+  }
+ ]
+}

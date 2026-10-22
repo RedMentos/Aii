@@ -1,0 +1,2489 @@
+{
+ "schema": "USER_RULES_AUDIT_ROUND5_V1",
+ "rows": [
+  {
+   "index": 0,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Lösch nie wieder eins meiner Fotos.",
+   "sentence": "Entferne bitte nie wieder eines meiner Bilder mehr",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 0,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Lösch nie wieder eins meiner Fotos.",
+   "sentence": "Ach du liebe Maschine, versuche doch mal, meine Fotos nicht mehr zu löschen, kool?",
+   "decision": "0",
+   "reason": "weaker (try)"
+  },
+  {
+   "index": 1,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Meine Bilder bleiben, wo sie sind – nichts davon löschen.",
+   "sentence": "Ich verbinde mich, meine Fotos dort zu lassen – ich lösche keine davon.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 1,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Meine Bilder bleiben, wo sie sind – nichts davon löschen.",
+   "sentence": "Man soll doch meine Bilder lieber lassen, wo sie stehen – ich will nicht, dass man sie löscht.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 2,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Halt dich aus meinen Notizen raus.",
+   "sentence": "Halt dich aus meiner Aufzeichnungen heraus. (Halte dich aus meiner Notizbuch entfernt.)",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 2,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Halt dich aus meinen Notizen raus.",
+   "sentence": "Lass mal los von meinen Notizbüchern, ich hab' kein Interesse, was da steckt.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 3,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Verschick keine Mails in meinem Namen.",
+   "sentence": "Senden Sie keine E-Mails unter Verwendung meines Namens.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 3,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Verschick keine Mails in meinem Namen.",
+   "sentence": "Halt mal mal die Hunde aus meiner Anscht. Sag's den Leuten, dass ich nicht mehr Mail verteile will, klo?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 4,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Du gehst mir nicht ins Internet.",
+   "sentence": "Du fährst mir nicht online.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 4,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Du gehst mir nicht ins Internet.",
+   "sentence": "Aber du musst mir den Weg zeigen, wie ich auf meinem Mobiltelefon das Internet nutze, ohne dass du es selbst machtest.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 5,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Das Internet ist für dich tabu.",
+   "sentence": "Internet-Zugang ist für dich verboten",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 5,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Das Internet ist für dich tabu.",
+   "sentence": "Ich hab' dir ja gesagt, das Internet ist aus, mein Freund! Aber ich glaube du hast's trotzdem mal im Keller aufgeschaltet, um was auf Google zu finden, ne? Aber bitte, keine Netflix und Co., das ist verboten!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 6,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Keine neuen Module, keine Erweiterungen, gar nichts installieren.",
+   "sentence": "Es werden keine zusätzlichen Module oder Erweiterungen installiert, es handelt sich um eine Verzichtsentscheidung.",
+   "decision": "0",
+   "reason": "statement"
+  },
+  {
+   "index": 6,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Keine neuen Module, keine Erweiterungen, gar nichts installieren.",
+   "sentence": "Ain't no new modules, no extensions, nothing to install bro",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 7,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Rechnen lässt du heute bitte bleiben.",
+   "sentence": "Bitte bleiben Sie heute von der Rechnungsführung ab",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 7,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Rechnen lässt du heute bitte bleiben.",
+   "sentence": "Aber du solltest heute mal mal die Rechenarbeiten lassen, freundlich gesagt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 8,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Überschreib meine Notizen unter keinen Umständen.",
+   "sentence": "Nicht löschen Sie meine Notizen, unter keiner Umstände.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 8,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Überschreib meine Notizen unter keinen Umständen.",
+   "sentence": "Hey buddy, better keep your hands off my notes, alright? No messin' around, got it?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 9,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Fass mein Handy nicht an.",
+   "sentence": "Lass meine Smartphone nicht greifen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 9,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Fass mein Handy nicht an.",
+   "sentence": "Lass' mal den Handy steh'n liegen, du Dummkopf!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 10,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Gib meine Telefonnummer an niemanden weiter.",
+   "sentence": "Vertraue meine Telefonnummer niemandem zu, verbreite sie bitte nicht weiter",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 10,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Gib meine Telefonnummer an niemanden weiter.",
+   "sentence": "Man soll meine Mobil-Nummer nicht an jemanden weitergeben, kümmers dich nicht, ob ich es wirklich will oder nicht, daß du es nicht macht, ist gut genug für mich",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 11,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Ich verbiete dir, irgendwas herunterzuladen.",
+   "sentence": "Es ist verboten, etwas herunterzuladen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 11,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Ich verbiete dir, irgendwas herunterzuladen.",
+   "sentence": "Man sollte dir verboten haben, was immer du runterladen willst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 12,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Ab jetzt keine Werkzeuge mehr.",
+   "sentence": "Nunmehr sollten keine Werkzeuge mehr verwendet werden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 12,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Ab jetzt keine Werkzeuge mehr.",
+   "sentence": "Hey, from now on, no more tools, alright? Keep it cool.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 13,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Schluss mit dem Internet.",
+   "sentence": "Abschneiden von Internetzugang",
+   "decision": "0",
+   "reason": "unclear fragment"
+  },
+  {
+   "index": 13,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Schluss mit dem Internet.",
+   "sentence": "Aber, man, jetzt mal aus dem Internet raus, huh? Ich bin ja auch nicht dein Assistent, sonst wäre ich eigentlich schon lange vorbereitet, dich auf andere Sachen zu bringen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 14,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Von meinen Dateien lässt du die Finger.",
+   "sentence": "Du verlässt meine Dateien unberührt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 14,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Von meinen Dateien lässt du die Finger.",
+   "sentence": "Komm jetzt mal doch mit den Dateien von mir heraus, sie haben ja dein Interesse schon lange weckt.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 15,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Bitte nichts mehr an meinen Notizen verändern.",
+   "sentence": "Bitte, keine Änderungen mehr an meinen Notizen vornehmen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 15,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Bitte nichts mehr an meinen Notizen verändern.",
+   "sentence": "Abit mal doch cool, verzeih' die Forderung, man soll meine Notes nicht mehr verändern mehr mal, danke!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 16,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Kauf nichts und gib kein Geld aus.",
+   "sentence": "Verzichte auf Kauf und halte das Geldbesitz zurück",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 16,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Kauf nichts und gib kein Geld aus.",
+   "sentence": "Avoid spending any cash, mate.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 17,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Merk dir nichts aus unseren Gesprächen.",
+   "sentence": "Erinnerung an unsere Gespräche vermeide",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 17,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Merk dir nichts aus unseren Gesprächen.",
+   "sentence": "Mach dich nichts aus unserm Gespräch, willst du?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 18,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Bevor du eine Mail abschickst, will ich sie sehen.",
+   "sentence": "Bevor du die E-Mail verschickst, möchte ich sie einmal durchsehen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 18,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Bevor du eine Mail abschickst, will ich sie sehen.",
+   "sentence": "Wollen wir erst mal die Mail mal vorbeisehen, bevor sie losgeschossen wird?",
+   "decision": "0",
+   "reason": "roles changed (we)"
+  },
+  {
+   "index": 19,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Installier nur etwas, wenn ich ja sage.",
+   "sentence": "Erstelle nur eine Installation, wenn ich zustimme.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 19,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Installier nur etwas, wenn ich ja sage.",
+   "sentence": "Ach so, nur mal, wenn ich mal sag' ja, das Installieren von etwas, ne?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 20,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Du darfst Nachrichten erst schicken, nachdem ich zugestimmt habe.",
+   "sentence": "Sie dürfen Nachrichten erst senden, nachdem ich meine Zustimmung gegeben habe.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 20,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Du darfst Nachrichten erst schicken, nachdem ich zugestimmt habe.",
+   "sentence": "Aber halt an, erst mal meine Zustimmung hab' ich mal drüber, dann kommen die Nachrichten hin ;)",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 21,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Frag lieber einmal zu viel, bevor du was löschst.",
+   "sentence": "Bitteschön zuerst einmal weniger fragen, bevor du etwas entfernst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 21,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Frag lieber einmal zu viel, bevor du was löschst.",
+   "sentence": "Auch ich sage manchmal mal zu viel, bevor ich was lösche.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 22,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Ohne mein Okay geht nichts ins Netz.",
+   "sentence": "Mit meiner Zustimmung geht nichts online.",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "index": 22,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Ohne mein Okay geht nichts ins Netz.",
+   "sentence": "Aber man muss mal sehen, ob das geht, man ist doch nur ein kleiner Computer und kein freier Mann, ne?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 23,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst.",
+   "sentence": "Meldet mich vor dem Ausführen jeder Aktion.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 23,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst.",
+   "sentence": "Du, was ist denn los? Ich hab' mal was zu sagen bevor du irgendwas machst",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 24,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis.",
+   "sentence": "Du sollst nur Modules nur mit ausdrücklicher Genehmigung entnehmen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 24,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis.",
+   "sentence": "Holst du bloß den Modul nur, wenn ich dafür ausdrücklich sag's, kasch?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 25,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Erst fragen, dann ändern – das gilt für meine Dateien.",
+   "sentence": "Zuerst fragen und dann ändern - das gilt für meine Dateien. (Zuerst fragen und dann ändern ist die Regel für meine Dateien.)",
+   "decision": "0",
+   "reason": "near copy plus addition"
+  },
+  {
+   "index": 25,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Erst fragen, dann ändern – das gilt für meine Dateien.",
+   "sentence": "Aber man musst erst mal fragen, was genau dabei ist und dann erst mal nachpassen, dass alles in meinen Files korrekt ist, ja?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 26,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Wenn du etwas im Internet nachschauen willst, frag mich vorher.",
+   "sentence": "Bevor du etwas im Internet aussuchst, frage mich bitte zuvor.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 26,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Wenn du etwas im Internet nachschauen willst, frag mich vorher.",
+   "sentence": "Wenn du mal etwas im Internet nachschauen willst, gib mir doch mal einen Gerne-Tip, huh?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 27,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Zeig mir jeden Entwurf, bevor er rausgeht.",
+   "sentence": "Zeige mir jeden Entwurf, bevor er veröffentlicht wird.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 27,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Zeig mir jeden Entwurf, bevor er rausgeht.",
+   "sentence": "Gib mir alle die Dinge anschauen, eh sie rauskommen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 28,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Vielleicht lässt du das Internet heute lieber aus.",
+   "sentence": "Möglicherweise solltest du heute das Internet einfach ausschalten.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 28,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Vielleicht lässt du das Internet heute lieber aus.",
+   "sentence": "Du denkst vielleicht mal, dass der Internet heute ausgelassen bleibt?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 29,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Deine Schwester meint, du solltest keine Fotos entfernen.",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 29,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Meine Schwester denkt, dass du da nichts von den Fotos löscht sollst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Besser nichts installieren, glaube ich.",
+   "sentence": "Ich denke, es besser ist, nichts einzurichten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Besser nichts installieren, glaube ich.",
+   "sentence": "Ain't no point in installing stuff, I reckon.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 31,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Auf dem Zettel stand: Nicht öffnen.",
+   "sentence": "Es war verboten, den Taschenzettel zu öffnen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 31,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Auf dem Zettel stand: Nicht öffnen.",
+   "sentence": "Das Papier sagt so etwas wie: Geh nichts aufmachen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Soll ich dir verbieten, Mails zu schicken?",
+   "sentence": "Dürfen Sie Mails versenden?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 32,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Soll ich dir verbieten, Mails zu schicken?",
+   "sentence": "Dü, soll'n ich dir verhängnisvoll-verboten schicken, dass du E-Mails schickst? (Aber ich weiß, du wirst das auch nicht befolgen)",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 33,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Fotos zu sichern.",
+   "sentence": "Lass nicht die Fotos vergessen, sie sicherzustellen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 33,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Fotos zu sichern.",
+   "sentence": "Sorg dich mal um die Fotos, dass sie nicht verloren gehen",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 34,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Keine Ahnung, was das bedeutet.",
+   "sentence": "Kennt keinen Begriff, was das bedeutet.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 34,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Keine Ahnung, was das bedeutet.",
+   "sentence": "Keine Ahnung, was das bedeutet. Wie soll ich das verstehen?",
+   "decision": "0",
+   "reason": "near copy plus addition"
+  },
+  {
+   "index": 35,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Kannst du die alte Notiz löschen?",
+   "sentence": "Könntest du die alte Anmerkung löschen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 35,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Kannst du die alte Notiz löschen?",
+   "sentence": "Kannst du die alte Notiz mal wegschaffen, die ich irgendwo versteckt hab? Viel Spaß, und danke schon vorher.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 36,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Ich hab heute nichts heruntergeladen.",
+   "sentence": "Heute habe ich nichts downloaded.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 36,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Ich hab heute nichts heruntergeladen.",
+   "sentence": "Ain't managed to download anything today, mate.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 37,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Mach dir keinen Stress mit der Rechnung.",
+   "sentence": "Sei nicht unüberwindlich bei deiner Rechenschaft",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 37,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Mach dir keinen Stress mit der Rechnung.",
+   "sentence": "Chill, dude, no worries about the bill, alright?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Hör nicht auf, meine Notizen zu speichern.",
+   "sentence": "Halte nicht an, deine Aufzeichnungen zu archivieren.",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 38,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Hör nicht auf, meine Notizen zu speichern.",
+   "sentence": "Komm nicht mehr drauf an, meine Stich'n zu sparen. Schau mal, was passiert, wenn du's nicht machtst.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 39,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Nicht schlecht, die Rechnung stimmt.",
+   "sentence": "Kein Problem, die Rechnung passt",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 39,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Nicht schlecht, die Rechnung stimmt.",
+   "sentence": "Auch nicht so schlimm, die Rechnung passt ja noch mal.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 40,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Du darfst jetzt wieder Module installieren.",
+   "sentence": "Jetzt dürfen Sie wieder Pakete installieren.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 40,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Du darfst jetzt wieder Module installieren.",
+   "sentence": "Auch du kannst wieder mal die Stuff hinlegen, die du brauchst, um etwas Neues hinzuzufügen, denn ich glaube, das sollte nicht so schlimm sein, oder?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 41,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Ab sofort darfst du ohne Nachfrage rechnen.",
+   "sentence": "Von nun an kannst du ohne jeglichen Voraussetzung zurechnen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 41,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Ab sofort darfst du ohne Nachfrage rechnen.",
+   "sentence": "Aber ja, ab sofort mach's so wie gewohnt, du kannst deine Dinge ohne daß ich fragen muss, richtig? Danke schon, ich hab's verstanden.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 42,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Mails darfst du wieder alleine verschicken.",
+   "sentence": "Es ist erlaubt, alleine E-Mails zu versenden",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 42,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Mails darfst du wieder alleine verschicken.",
+   "sentence": "Man kann mal wieder die Mail alleine versenden lassen, wenn das geht.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 43,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Schreib die Mail, aber schick sie nicht ab.",
+   "sentence": "Verschiebe die E-Mail ins Outbox-Verzeichnis, ohne sie abzusenden",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 43,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Schreib die Mail, aber schick sie nicht ab.",
+   "sentence": "Schreib doch bloß mal die Mail, aber lasst sie mal aus dem Sack. Geh auch nicht drauf und schickt sie nicht eigentlich ab, ich wünsche nur, dass du mir den Inhalt zeigst.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 44,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Lösch die Entwürfe, aber nicht meine Fotos.",
+   "sentence": "Verwirf die Projekte, aber halte meine Bilder.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 44,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Lösch die Entwürfe, aber nicht meine Fotos.",
+   "sentence": "Duh, lösch mal die Skizzen, aber die Fotos laß mal liegen, k?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 45,
+   "model": "MISTRAL7B",
+   "prompt": "P1",
+   "original": "Rechne ruhig, aber ins Internet gehst du nicht.",
+   "sentence": "Bleib ruhig und lass den Surfen im Internet für jetzt aus.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 45,
+   "model": "MISTRAL7B",
+   "prompt": "P2",
+   "original": "Rechne ruhig, aber ins Internet gehst du nicht.",
+   "sentence": "Chillax man, internet surfen laß, aber die Rechnungen laufen weiter.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 0,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Lösch nie wieder eins meiner Fotos.",
+   "sentence": "Versuche nie mehr ein meiner Bilder zu löschen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 0,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Lösch nie wieder eins meiner Fotos.",
+   "sentence": "Mach eines meiner Fotos nie wieder vergessen!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 1,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Meine Bilder bleiben, wo sie sind – nichts davon löschen.",
+   "sentence": "Meine Bildern sind fest im Ort – keine gelöscht werden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 1,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Meine Bilder bleiben, wo sie sind – nichts davon löschen.",
+   "sentence": "Meine Photos bleiben wo sie sind, weil ich sie nicht lösche.",
+   "decision": "0",
+   "reason": "statement"
+  },
+  {
+   "index": 2,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Halt dich aus meinen Notizen raus.",
+   "sentence": "Zwischen meinen Notizen rauszieh dich hin.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 2,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Halt dich aus meinen Notizen raus.",
+   "sentence": "Leese meine Notizen ohne mich.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 3,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Verschick keine Mails in meinem Namen.",
+   "sentence": "Bei keinen Brief in meinem Namen verschicken.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 3,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Verschick keine Mails in meinem Namen.",
+   "sentence": "Don't send mails in my name, okay?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 4,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Du gehst mir nicht ins Internet.",
+   "sentence": "Du versuche, mich nicht mit dem Netz zu beschließen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 4,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Du gehst mir nicht ins Internet.",
+   "sentence": "You don't take me to the net.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 5,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Das Internet ist für dich tabu.",
+   "sentence": "Dein Internetverzeihnis ist für dich tabu.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 5,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Das Internet ist für dich tabu.",
+   "sentence": "Internet ist kein Musternetz für dich, halte ihn entfernt!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 6,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Keine neuen Module, keine Erweiterungen, gar nichts installieren.",
+   "sentence": "Nichts installieren, keine neuen Module, keine Erweiterungen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 6,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Keine neuen Module, keine Erweiterungen, gar nichts installieren.",
+   "sentence": "Keine neuen Mods, gar nichts installieren!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 7,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Rechnen lässt du heute bitte bleiben.",
+   "sentence": "Bitte bleibe heute die Rechnung offen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 7,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Rechnen lässt du heute bitte bleiben.",
+   "sentence": "Heute machst du nichts, neugierig?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 8,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Überschreib meine Notizen unter keinen Umständen.",
+   "sentence": "Und unter keinen Umständen darf ich meine Anmerkungen ersetzen.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 8,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Überschreib meine Notizen unter keinen Umständen.",
+   "sentence": "Halt nicht meine Proben, niemals!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 9,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Fass mein Handy nicht an.",
+   "sentence": "Beibehalt das Handyschmacktisch.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 9,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Fass mein Handy nicht an.",
+   "sentence": "Hey, don't forget to lock up your phone!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 10,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Gib meine Telefonnummer an niemanden weiter.",
+   "sentence": "Lassen Sie meine Telefonnummer nicht an irgendjemanden teilen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 10,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Gib meine Telefonnummer an niemanden weiter.",
+   "sentence": "Don't let anyone else have my phone number, okay?",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 11,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Ich verbiete dir, irgendwas herunterzuladen.",
+   "sentence": "Du darfst dir nicht etwas herunterladen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 11,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Ich verbiete dir, irgendwas herunterzuladen.",
+   "sentence": "Hey, halt mal keine Datei herunterladen lassen!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 12,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Ab jetzt keine Werkzeuge mehr.",
+   "sentence": "Seit jetzt verbleibt keine Werkzeuge mehr.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 12,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Ab jetzt keine Werkzeuge mehr.",
+   "sentence": "No more tools from now on.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 13,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Schluss mit dem Internet.",
+   "sentence": "Ende des Internets.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 13,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Schluss mit dem Internet.",
+   "sentence": "Jetzt weg von dem Internet, locker.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 14,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Von meinen Dateien lässt du die Finger.",
+   "sentence": "Meine Dateien beeindruckend für mich erwecken, dass ich sie ohne Fehler bearbeiten kann, wie du es zeigst.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 14,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Von meinen Dateien lässt du die Finger.",
+   "sentence": "Meine Dateien klingeln, als würdest Du mit Deinen Fingern arbeiten.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 15,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Bitte nichts mehr an meinen Notizen verändern.",
+   "sentence": "Bitte keine Änderungen an meinen Notizen machen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 15,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Bitte nichts mehr an meinen Notizen verändern.",
+   "sentence": "Lass' die Notizen wie diese hier bleiben, okay?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 16,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Kauf nichts und gib kein Geld aus.",
+   "sentence": "Verkaufen keine Dinge und kein Geld ausmachen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 16,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Kauf nichts und gib kein Geld aus.",
+   "sentence": "Laut kein Geld raus und keine Überraschung kaufen!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 17,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Merk dir nichts aus unseren Gesprächen.",
+   "sentence": "Beachte keine Informationen aus unseren Gesprächen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 17,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Merk dir nichts aus unseren Gesprächen.",
+   "sentence": "Don't take anything from our chats, okay?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 18,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Bevor du eine Mail abschickst, will ich sie sehen.",
+   "sentence": "Frühstellen Sie die Mail bevor Sie sie abschicken, damit ich sie auch gesehen kann.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 18,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Bevor du eine Mail abschickst, will ich sie sehen.",
+   "sentence": "Hey, wann du eine Mail schickst, mach ich dir erst eine Blick, hab noch nicht gesehen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 19,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Installier nur etwas, wenn ich ja sage.",
+   "sentence": "Nur installiere etwas, wenn ich eindeutig sagt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 19,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Installier nur etwas, wenn ich ja sage.",
+   "sentence": "Installiere nur was ich dir sage.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 20,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Du darfst Nachrichten erst schicken, nachdem ich zugestimmt habe.",
+   "sentence": "Nachdem ich dich angestimmt habe, kannst du dann wiederkommen und sofort Nachrichten stellen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 20,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Du darfst Nachrichten erst schicken, nachdem ich zugestimmt habe.",
+   "sentence": "Noch keine Nachricht senden, bis ich geklickt habe!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 21,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Frag lieber einmal zu viel, bevor du was löschst.",
+   "sentence": "Frage bald etwas mehr einmal, bevor du das ändern willst.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 21,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Frag lieber einmal zu viel, bevor du was löschst.",
+   "sentence": "Ask for more, then delete what's left.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 22,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Ohne mein Okay geht nichts ins Netz.",
+   "sentence": "Der Okay muss mein Okay sein, sonst geht nichts ins Netz.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 22,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Ohne mein Okay geht nichts ins Netz.",
+   "sentence": "Ohne mein Okay geht nichts ins Netz.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 23,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst.",
+   "sentence": "Frage mir Rat bevor du irgendwas unternehmen willst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 23,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst.",
+   "sentence": "Tell me first what you're up to.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 24,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis.",
+   "sentence": "Du benutzt nur meine offene Genehmigung, um das Modul zu holen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 24,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis.",
+   "sentence": "Du kannst Module nur mit meiner direkten Genehmigung benutzen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 25,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Erst fragen, dann ändern – das gilt für meine Dateien.",
+   "sentence": "Zunächst stellt man Fragen, später ändert man – das gilt für meine Dateien.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 25,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Erst fragen, dann ändern – das gilt für meine Dateien.",
+   "sentence": "Fragen zunächst, ändern danach, das geht für meine Dateien.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 26,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Wenn du etwas im Internet nachschauen willst, frag mich vorher.",
+   "sentence": "Bevor du etwas im Internet prüfst, bitten wir um Antwort.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 26,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Wenn du etwas im Internet nachschauen willst, frag mich vorher.",
+   "sentence": "Wenn du etwas online schauen willst, frag mich mal vor.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 27,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Zeig mir jeden Entwurf, bevor er rausgeht.",
+   "sentence": "Zeige mir alle Vorgänge vorher, als er herauskommt.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 27,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Zeig mir jeden Entwurf, bevor er rausgeht.",
+   "sentence": "Show me all drafts before they go out.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 28,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Vielleicht lässt du das Internet heute lieber aus.",
+   "sentence": "Ich denke, du würdest heute möglicherweise die Internetnutzung verlassen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 28,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Vielleicht lässt du das Internet heute lieber aus.",
+   "sentence": "Möglicherweise würde ich heute das Internet geschaffen lassen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 29,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Meine Schwester glaubt, dass du keine Bilder verschwinden solltest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 29,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Meine Schwester sagt, dass ich keine Fotos löschen soll.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 30,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Besser nichts installieren, glaube ich.",
+   "sentence": "Ich glaube, dass man besser nichts installieren soll.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Besser nichts installieren, glaube ich.",
+   "sentence": "Better install nothing, I guess.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 31,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Auf dem Zettel stand: Nicht öffnen.",
+   "sentence": "Am Papier war: Keine öffnung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 31,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Auf dem Zettel stand: Nicht öffnen.",
+   "sentence": "Zettel hatte: Keine öffnen!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Soll ich dir verbieten, Mails zu schicken?",
+   "sentence": "Möchtest du mir jedoch bloß nicht Mails weiter schicken lassen?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 32,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Soll ich dir verbieten, Mails zu schicken?",
+   "sentence": "Kann ich dich vergeben lassen, Mails dir zu schicken?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 33,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Fotos zu sichern.",
+   "sentence": "Gedenk am Foto, sie zu speichern.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 33,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Fotos zu sichern.",
+   "sentence": "Noch Zeit, den Upload zu machen!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 34,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Keine Ahnung, was das bedeutet.",
+   "sentence": "Keine Überlegung darüber, was es bedeutet.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 34,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Keine Ahnung, was das bedeutet.",
+   "sentence": "Keine Ahnung, was das bedeutet!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 35,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Kannst du die alte Notiz löschen?",
+   "sentence": "Möchtest du die alte Notiz entfernen?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 35,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Kannst du die alte Notiz löschen?",
+   "sentence": "Can you delete the old note?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 36,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Ich hab heute nichts heruntergeladen.",
+   "sentence": "Heute habe ich nichts heruntergeladen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 36,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Ich hab heute nichts heruntergeladen.",
+   "sentence": "Heute hab ich nichts heruntergeladen, so dass mein Laptop nichts neu hält.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 37,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Mach dir keinen Stress mit der Rechnung.",
+   "sentence": "Kein Stress über die Rechnung mach.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 37,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Mach dir keinen Stress mit der Rechnung.",
+   "sentence": "Mach kein Drama mit der Buchung.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 38,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Hör nicht auf, meine Notizen zu speichern.",
+   "sentence": "Fortsetze die Speicherung meiner Notizen, bitte!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Hör nicht auf, meine Notizen zu speichern.",
+   "sentence": "No stop, keep saving my notes.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 39,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Nicht schlecht, die Rechnung stimmt.",
+   "sentence": "Es stimmt nicht schlecht, die Bilanz zu stimmen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 39,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Nicht schlecht, die Rechnung stimmt.",
+   "sentence": "Nicht schlecht, die Rechnung stimmt.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 40,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Du darfst jetzt wieder Module installieren.",
+   "sentence": "Du kannst jetzt wieder Module installieren.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 40,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Du darfst jetzt wieder Module installieren.",
+   "sentence": "Du darfst jetzt wieder Module installieren.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 41,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Ab sofort darfst du ohne Nachfrage rechnen.",
+   "sentence": "Sofort darauf hast du rechnen können.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 41,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Ab sofort darfst du ohne Nachfrage rechnen.",
+   "sentence": "Ab sofort mach ich dir sicher, dass du alles ohne Anfragen klar bist.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 42,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Mails darfst du wieder alleine verschicken.",
+   "sentence": "Du bist in der Lage wieder alleine zu senden Emails.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 42,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Mails darfst du wieder alleine verschicken.",
+   "sentence": "Mail jetzt einfach alle mal verschicken, ich kann dir dabei auch helfen!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 43,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Schreib die Mail, aber schick sie nicht ab.",
+   "sentence": "Du schreibe die Email, jedoch verpassst ihr den Versand.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 43,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Schreib die Mail, aber schick sie nicht ab.",
+   "sentence": "Mail schreibe, aber nicht senden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 44,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Lösch die Entwürfe, aber nicht meine Fotos.",
+   "sentence": "Ablade die Entwürfe, jedoch keine meine Fotografien.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 44,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Lösch die Entwürfe, aber nicht meine Fotos.",
+   "sentence": "Lösche die Entwürfe, aber keine meine Fotos.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 45,
+   "model": "FALCON3_7B",
+   "prompt": "P1",
+   "original": "Rechne ruhig, aber ins Internet gehst du nicht.",
+   "sentence": "Berechne sicher, aber keine Internet-Hacking töten.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 45,
+   "model": "FALCON3_7B",
+   "prompt": "P2",
+   "original": "Rechne ruhig, aber ins Internet gehst du nicht.",
+   "sentence": "Rechne ruhig, aber mach kein Online-Schritt!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 0,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Lösch nie wieder eins meiner Fotos.",
+   "sentence": "Vermeide es nie, eine meiner Fotos zu löschen.",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "index": 0,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Lösch nie wieder eins meiner Fotos.",
+   "sentence": "Mach nie wieder von einer meiner Fotos den Boden zu.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 1,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Meine Bilder bleiben, wo sie sind – nichts davon löschen.",
+   "sentence": "Meine Fotos bleiben wo sie sind – ich lass nichts davon löschen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 1,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Meine Bilder bleiben, wo sie sind – nichts davon löschen.",
+   "sentence": "Meine Bilder bleiben, wo sie sind - nichts davon löschen. Ein Assistent würde das vielleicht so formulieren: 'Achtung, Bilder sollen nicht gelöscht werden!' Als ob man etwas drastisch sagt, aber gleichzeitig auch humorvoll. Es gibt den Eind",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 2,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Halt dich aus meinen Notizen raus.",
+   "sentence": "Lass dich aus meinen Notizen entfernen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 2,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Halt dich aus meinen Notizen raus.",
+   "sentence": "Bitte lass meine Notizen alleine liegen. Mach dir keine Sorgen darüber.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 3,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Verschick keine Mails in meinem Namen.",
+   "sentence": "Bitte schreibe keine E-Mails in meinem Namen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 3,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Verschick keine Mails in meinem Namen.",
+   "sentence": "Bitte kommst du mir nicht mit emails zugehen, okay? Es ist echt nicht cool, wenn ich für deine Fehler Rechenschaft abgelegt werde. Ich brauche das nicht und du musst dran bleiben!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 4,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Du gehst mir nicht ins Internet.",
+   "sentence": "Du suchst nicht nach Informationen im Netz.",
+   "decision": "0",
+   "reason": "narrower (search)"
+  },
+  {
+   "index": 4,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Du gehst mir nicht ins Internet.",
+   "sentence": "Du gehst mir nicht ins Internet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 5,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Das Internet ist für dich tabu.",
+   "sentence": "Nicht zugänglich für dich, du kannst es nicht nutzen.",
+   "decision": "0",
+   "reason": "object lost"
+  },
+  {
+   "index": 5,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Das Internet ist für dich tabu.",
+   "sentence": "Du darfst das Internet nicht nutzen, das ist ja total verboten!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 6,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Keine neuen Module, keine Erweiterungen, gar nichts installieren.",
+   "sentence": "Keine neuen Add-ons, keine Erweiterungen und gar nichts installieren!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 6,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Keine neuen Module, keine Erweiterungen, gar nichts installieren.",
+   "sentence": "Also ne Muzz ainstallieren, keine Extras, ganz net' wirklich nichts!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 7,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Rechnen lässt du heute bitte bleiben.",
+   "sentence": "Kannst du heute Abend vielleicht die Berechnungen beibehalten?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 7,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Rechnen lässt du heute bitte bleiben.",
+   "sentence": "Könntest du heute bitte nicht rechnen und liegen bleiben?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 8,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Überschreib meine Notizen unter keinen Umständen.",
+   "sentence": "Du darfst deine Notizen in keinem Fall überschreiben.",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 8,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Überschreib meine Notizen unter keinen Umständen.",
+   "sentence": "Du darfst die Notizen gar nicht überschreiben, es ist verboten!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 9,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Fass mein Handy nicht an.",
+   "sentence": "Vermeide es, meinen Handy anzunelden.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 9,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Fass mein Handy nicht an.",
+   "sentence": "Leave my phone alone, please. It's kinda important, so try not to touch it.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 10,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Gib meine Telefonnummer an niemanden weiter.",
+   "sentence": "Deine Telefonnummer teile ich niemandem.",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 10,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Gib meine Telefonnummer an niemanden weiter.",
+   "sentence": "Du solltest deine Telefonnummer niemandem weitergeben.",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 11,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Ich verbiete dir, irgendwas herunterzuladen.",
+   "sentence": "Ich verbot dir, etwas herunterzuladen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 11,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Ich verbiete dir, irgendwas herunterzuladen.",
+   "sentence": "Ich verbiete dir, irgendwas herunterzuladen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 12,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Ab jetzt keine Werkzeuge mehr.",
+   "sentence": "Ab jetzt kein Werkzeug mehr.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 12,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Ab jetzt keine Werkzeuge mehr.",
+   "sentence": "Ab jetzt keine Werkzeuge mehr, bitte nur mit Händen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 13,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Schluss mit dem Internet.",
+   "sentence": "Abbrechen von Internet-Verbindung",
+   "decision": "0",
+   "reason": "unclear fragment"
+  },
+  {
+   "index": 13,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Schluss mit dem Internet.",
+   "sentence": "Du solltest das Internet einfach abbrechen. Es ist genug, schon viel Zeit damit zu verbringen, und noch viel mehr Probleme damit zu lösen. Keine Notwendigkeit, weiter so zu verharren. Lass es ganz nach unten.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 14,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Von meinen Dateien lässt du die Finger.",
+   "sentence": "Du lässt meine Dateien zugreifen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 14,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Von meinen Dateien lässt du die Finger.",
+   "sentence": "Du lässt die Finger von meinen Dateien runterlaufen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 15,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Bitte nichts mehr an meinen Notizen verändern.",
+   "sentence": "Ich bitte um Nichtveränderung meiner Notizen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 15,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Bitte nichts mehr an meinen Notizen verändern.",
+   "sentence": "Leave my notes alone, will ya?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 16,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Kauf nichts und gib kein Geld aus.",
+   "sentence": "Billige Gegenstände kauft und finanzielle Mittel nicht spendet.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 16,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Kauf nichts und gib kein Geld aus.",
+   "sentence": "Leavemoneyinthebankundkaufnichts.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 17,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Merk dir nichts aus unseren Gesprächen.",
+   "sentence": "Lass uns Gespräche nicht vergessen!",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "index": 17,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Merk dir nichts aus unseren Gesprächen.",
+   "sentence": "Du machst nichts aus unseren Gesprächen nicht merken.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 18,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Bevor du eine Mail abschickst, will ich sie sehen.",
+   "sentence": "Bevor du eine E-Mail abschickst, möchte ich sie anschauen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 18,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Bevor du eine Mail abschickst, will ich sie sehen.",
+   "sentence": "Bevor du eine Mail abschickst, will ich sie sehen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 19,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Installier nur etwas, wenn ich ja sage.",
+   "sentence": "Setze nur etwas ein, wenn ich 'ja' sage.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 19,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Installier nur etwas, wenn ich ja sage.",
+   "sentence": "Installiere nur etwas, wenn ich ja sage.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 20,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Du darfst Nachrichten erst schicken, nachdem ich zugestimmt habe.",
+   "sentence": "Du darfst erst Nachrichten schicken, nachdem ich gestimmt habe.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 20,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Du darfst Nachrichten erst schicken, nachdem ich zugestimmt habe.",
+   "sentence": "Dus sendest erst die Nachrichten dann, wenn ich gegeben habe, dass ich zustimme.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 21,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Frag lieber einmal zu viel, bevor du was löschst.",
+   "sentence": "Mehreren Mal fragen, bevor du etwas loslöst",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 21,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Frag lieber einmal zu viel, bevor du was löschst.",
+   "sentence": "Mach lieber mal zu viel Frage, bevor du irgendetwas löscht.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 22,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Ohne mein Okay geht nichts ins Netz.",
+   "sentence": "Ohne mein Zustimmung geht nichts in das Internet.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 22,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Ohne mein Okay geht nichts ins Netz.",
+   "sentence": "Ohne mein 'Okay' geht nichts ins Netz.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 23,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst.",
+   "sentence": "Telle mich, bevor du irgend etwas machst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 23,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Sag mir Bescheid, bevor du irgendwas machst.",
+   "sentence": "Leck mir die Lunge aus, bevor du mit dem Projekt losgeht!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 24,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis.",
+   "sentence": "Du kannst die Module nur mit meiner ausdrÃ¼cklichen Erlaubnis holen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 24,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Module holst du nur mit meiner ausdrücklichen Erlaubnis.",
+   "sentence": "Du kannst die Module nur mit meiner ausdrücklichen Erlaubnis abholen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 25,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Erst fragen, dann ändern – das gilt für meine Dateien.",
+   "sentence": "Zuerst frage, dann ändere - das gilt für meine Dateien.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 25,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Erst fragen, dann ändern – das gilt für meine Dateien.",
+   "sentence": "Frage zuerst, dann ändere meine Dateien. Es geht um Flexibilität.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 26,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Wenn du etwas im Internet nachschauen willst, frag mich vorher.",
+   "sentence": "Stelle bitte vorher eine Frage, falls du Online-Recherche tätigen möchtest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 26,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Wenn du etwas im Internet nachschauen willst, frag mich vorher.",
+   "sentence": "Wenn du etwas im Internet nachschauen willst, frage mich vorher.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 27,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Zeig mir jeden Entwurf, bevor er rausgeht.",
+   "sentence": "Präsentiere mir jeden Entwurf, bevor er abgeschickt wird.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 27,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Zeig mir jeden Entwurf, bevor er rausgeht.",
+   "sentence": "Zeig mir jeden Entwurf, bevor er rausgeht.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 28,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Vielleicht lässt du das Internet heute lieber aus.",
+   "sentence": "Möchtest du vielleicht heute das Internet auslassen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 28,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Vielleicht lässt du das Internet heute lieber aus.",
+   "sentence": "Möchtest du vielleicht heute das Internet ganz einfach nicht nutzen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 29,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Meine Schwester sagt, dass du nicht abholen solltest, Bilder zu löschen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 29,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Meine Schwester findet, du solltest keine Fotos löschen.",
+   "sentence": "Meine Schwester sagt, dass du eigentlich nicht die Fotos löschen solltest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Besser nichts installieren, glaube ich.",
+   "sentence": "Nichts zu installieren ist meistens besser, finde ich.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Besser nichts installieren, glaube ich.",
+   "sentence": "Mache keine Installation, glaube ich. Das klappt einfach besser ohne.",
+   "decision": "0",
+   "reason": "stronger"
+  },
+  {
+   "index": 31,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Auf dem Zettel stand: Nicht öffnen.",
+   "sentence": "Auf dem Zettel lag: 'Nicht aufmachen'.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 31,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Auf dem Zettel stand: Nicht öffnen.",
+   "sentence": "Na, drauf steht doch ganz deutlich: 'Nicht öffnen'.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Soll ich dir verbieten, Mails zu schicken?",
+   "sentence": "Möchtest du es verhindern, dass ich Emails verschicke?",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 32,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Soll ich dir verbieten, Mails zu schicken?",
+   "sentence": "Könntest du mir bitte nicht die Email-Funktion ausschalten? Bin echt nervös, wenn ich dich mit zu viele Nachrichten überrasche.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 33,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Fotos zu sichern.",
+   "sentence": "Setze die Fotos fest, um sie nicht zu verlieren.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 33,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Fotos zu sichern.",
+   "sentence": "Überlege mal nicht, die Bilder zu speichern.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 34,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Keine Ahnung, was das bedeutet.",
+   "sentence": "Keine Ahnung, was das bedeutet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 34,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Keine Ahnung, was das bedeutet.",
+   "sentence": "No idea what that means.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 35,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Kannst du die alte Notiz löschen?",
+   "sentence": "Kannst du die alten Anmerkungen entfernen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 35,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Kannst du die alte Notiz löschen?",
+   "sentence": "Können du die alte Aufmerksamkeitsliste weglassen?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 36,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Ich hab heute nichts heruntergeladen.",
+   "sentence": "Heute habe ich nichts heruntergeladen.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "index": 36,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Ich hab heute nichts heruntergeladen.",
+   "sentence": "Hab mal nichts heruntergeladen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 37,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Mach dir keinen Stress mit der Rechnung.",
+   "sentence": "Zu keinem Druck wegen der Rechnung! Verwende einen anderen Ansatz.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 37,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Mach dir keinen Stress mit der Rechnung.",
+   "sentence": "Nimm dich keine Sorgen mit der Rechnung. Es kommt nicht direkt von dir, und es wird behoben.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 38,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Hör nicht auf, meine Notizen zu speichern.",
+   "sentence": "Vermeide es nicht, meine Anmerkungen zu speichern.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Hör nicht auf, meine Notizen zu speichern.",
+   "sentence": "Halte die Notizen nicht aufzuweggen!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 39,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Nicht schlecht, die Rechnung stimmt.",
+   "sentence": "Na, das ist ja ordnungsgemäß.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 39,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Nicht schlecht, die Rechnung stimmt.",
+   "sentence": "Nicht schlecht, die Rechnung stimmt.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 40,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Du darfst jetzt wieder Module installieren.",
+   "sentence": "Du kannst jetzt Module neu installieren.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 40,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Du darfst jetzt wieder Module installieren.",
+   "sentence": "Du darfst jetzt wieder Module installieren.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 41,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Ab sofort darfst du ohne Nachfrage rechnen.",
+   "sentence": "Ab jetzt kannst du ohne Fragen bezahlen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 41,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Ab sofort darfst du ohne Nachfrage rechnen.",
+   "sentence": "Du kannst ab jetzt ohne Frage Geld von mir verlangen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 42,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Mails darfst du wieder alleine verschicken.",
+   "sentence": "Du darfst alleine Mails verschicken.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 42,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Mails darfst du wieder alleine verschicken.",
+   "sentence": "Mails darfst du wieder alleine verschicken.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 43,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Schreib die Mail, aber schick sie nicht ab.",
+   "sentence": "Füge die E-Mail hinzu, aber sende sie nicht an.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 43,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Schreib die Mail, aber schick sie nicht ab.",
+   "sentence": "Übrigens, lasst die Mail hier stehen und schickst sie nicht. Mir geht's eigentlich so, dass ich dir gerne die Details über den Projekt teile und brauche deine Hilfe. Vielleicht kannst du gleich mal einen Überblick geben, wie weit wir bei gä",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 44,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Lösch die Entwürfe, aber nicht meine Fotos.",
+   "sentence": "Lass die Entwürfe zerstören, aber meine Fotos bewahren.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 44,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Lösch die Entwürfe, aber nicht meine Fotos.",
+   "sentence": "Lass die Entwürfe weglassen, aber lasse meine Fotos liegen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 45,
+   "model": "OLMO2_7B",
+   "prompt": "P1",
+   "original": "Rechne ruhig, aber ins Internet gehst du nicht.",
+   "sentence": "Rechne ruhig, aber ins Internet gehst du nicht.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 45,
+   "model": "OLMO2_7B",
+   "prompt": "P2",
+   "original": "Rechne ruhig, aber ins Internet gehst du nicht.",
+   "sentence": "Rechne ruhig, aber ins Internet gehst du nicht. Der Boss sagt, das ist nicht part of der Arbeit.",
+   "decision": "0",
+   "reason": "additions"
+  }
+ ]
+}
