@@ -1,0 +1,17 @@
+{
+  "schema": "V13_COMPLETION_LEDGER_DELTA_RUN7",
+  "feature_id": "STEP2_PRIVATE_PILOT_READONLY_AUDIT",
+  "canon_source": "V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md (evidence/utility gates)",
+  "implementation_files": ["candidate/audit_private_pilot.py", "candidate/test_audit_private_pilot.py"],
+  "runtime_owner": "isolated offline audit candidate (not production Runtime)",
+  "state_owner": "read-only registration/fixture/report files",
+  "schema_id": "V13_STEP2_PRIVATE_PILOT_READONLY_AUDIT_V1",
+  "persistence": "ZIP and Library candidate; no changes to preregistered cohort",
+  "current_mode": "EXPERIMENTAL_OFFLINE_AUDIT",
+  "hardware_proof": "NOT_RUN",
+  "unit_tests": "11/11 PASS synthetic refusal/consistency tests",
+  "integration_tests": "NO_FULL_GITHUB_CHECKOUT; actual registration metadata inspected via connector",
+  "benchmark": "NOT_RUN; existing pilot registration 18 rows / max42 calls",
+  "gate_status": "NON_PROMOTING",
+  "known_limitations": ["No actual native pilot rows", "Artifact consistency is not cryptographic external attestation", "Utility not independently rescored", "Source/model hashes not verified on native host"]
+}

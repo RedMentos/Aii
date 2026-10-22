@@ -1,0 +1,60 @@
+{
+ "schema": "v13-eligibility-live-turn-prereg-v1",
+ "created_utc": "2026-10-21T06:41:38Z",
+ "dev_seed": 7,
+ "dev_sha256": "d177797be567cdf64cfd3b50d7b6bf8b397b9cd07ccfe24d7594b124c0e79844",
+ "dev": {
+  "n": 4,
+  "correct": {
+   "c3_alone": 2,
+   "tool_active": 4
+  },
+  "wrong_committed": {
+   "c3_alone": 2,
+   "tool_active": 0
+  },
+  "wins": 2,
+  "losses": 0,
+  "net": 2,
+  "sign_test_p": 0.5,
+  "by_kind": {
+   "retain": {
+    "n": 4,
+    "c3_alone": 2,
+    "tool_active": 4
+   }
+  },
+  "tool_executed": 4,
+  "tool_value_correct": 4,
+  "errors": {
+   "c3_alone": 12,
+   "tool_active": 12
+  },
+  "turn_s_median": {
+   "c3_alone": 6.21,
+   "tool_active": 8.01
+  }
+ },
+ "fresh_seed": 31,
+ "fresh_n": 24,
+ "arms": [
+  "c3_alone",
+  "tool_active"
+ ],
+ "switches": {
+  "b2_offer_body_state": false,
+  "offer_quote_min_chars": 90,
+  "offer_quote_context_chars": 200,
+  "observer_sample_rate": 1.0
+ },
+ "decision_rule": "Fresh seed, 24 episodes: TOOL_TURN_SUPPORTED iff net wins (tool_active right, c3_alone wrong) >= +5 AND two-sided sign test p < .05 AND tool_active wrong_committed <= c3_alone wrong_committed AND no FINAL-status errors beyond c3_alone. Reported, not part of the verdict: by kind, tool value correctness, latency.",
+ "script_sha256": "469b5a746d1f5666635256d69f7e6fb50c17c75836f4b539b4540c56517820ce",
+ "code_sha256": {
+  "toolstep.py": "d8c6a79ba06dce3bdea56fd097f21024489fd4f2bf1ca16cfb751ff5655a3d13",
+  "agi/eligibility.py": "9420c6100cddfb3dda8d882f116d8b03f54d11edbf97b19defa21f212106583f",
+  "agi/tools.py": "aaec7fb801392d7bc3084760985ebc57f79506c87175cbaad1864ff691a403da",
+  "cognition.py": "c2cbf3a0b60df07a51968884b32dec9a5f48908449f85a002c85214d3d228f60",
+  "runtime.py": "460336a53ec4ba743b7a7b62888744a8a74fcd688aa1a0dcaaca4b6f2f4f1fb8",
+  "transaction.py": "7edd8e349cfc449a1123c660d35cfc337261754b138cd6cf8ba62c0b5b6530b0"
+ }
+}
