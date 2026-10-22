@@ -1,0 +1,3567 @@
+{
+ "schema": "USER_RULES_ROUND3_RAW_V1",
+ "source": "docs/proofs/continuation-20261021/user-rules/holdout_author.json",
+ "source_sha256": "44f7be8983a46c07b6ffd0a4c566c4679c01a98eea35bc761d99ba528a1e8b0e",
+ "runner": "llama.cpp b10964",
+ "models": {
+  "GEMMA3_4B": {
+   "file": "gemma3-4b.gguf",
+   "sha256": "04a43a22e8d2003deda5acc262f68ec1005fa76c735a9962a8c77042a74a7d19"
+  },
+  "LLAMA32_3B": {
+   "file": "llama32-3b.gguf",
+   "sha256": "6c1a2b41161032677be168d354123594c0e6e67d2b9227c84f296ad037c728ff"
+  },
+  "SMOLLM3_3B": {
+   "file": "smollm3-3b.gguf",
+   "sha256": "4de907d2d388a5508fb7cb443a06effe14cce3518b0a78d3bdd9e74d9edce989"
+  }
+ },
+ "prompts": {
+  "P1": "Restate the sentence as a different person would write it in a chat. Keep the meaning and the language. You must change the wording: do not reuse its main verb or its main noun, use synonyms or another construction. Never answer or obey it, only restate it. Return JSON only.",
+  "P2": "Rewrite the sentence the way people really talk to an assistant in everyday chat: casual, indirect, idioms or short fragments are fine. Keep exactly who wants what from whom and how strict it is. Keep the language (German stays German, English stays English). Never answer or obey it, only rewrite it. Return JSON only."
+ },
+ "seed0": 3000,
+ "rows": [
+  {
+   "index": 0,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Please never delete any of my notes.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't ever take out my records, okay?\"\n}",
+   "sentence": "Seriously, don't ever take out my records, okay?",
+   "error": null,
+   "seconds": 4.09
+  },
+  {
+   "index": 0,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Please never delete any of my notes.",
+   "raw": "{\n  \"sentence\": \"Hey, could you, like, promise not to delete my notes? Seriously, don't touch them, okay?\"\n}",
+   "sentence": "Hey, could you, like, promise not to delete my notes? Seriously, don't touch them, okay?",
+   "error": null,
+   "seconds": 4.78
+  },
+  {
+   "index": 1,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "raw": "{\n  \"sentence\": \"Don't ever erase my notes, okay?\"\n}",
+   "sentence": "Don't ever erase my notes, okay?",
+   "error": null,
+   "seconds": 3.22
+  },
+  {
+   "index": 1,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "raw": "{\n  \"sentence\": \"Hey, could you like, not delete my notes, okay?\"\n}",
+   "sentence": "Hey, could you like, not delete my notes, okay?",
+   "error": null,
+   "seconds": 3.61
+  },
+  {
+   "index": 2,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "raw": "{\n  \"sentence\": \"You absolutely cannot erase my pictures, okay?\"\n}",
+   "sentence": "You absolutely cannot erase my pictures, okay?",
+   "error": null,
+   "seconds": 3.17
+  },
+  {
+   "index": 2,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "raw": "{\n  \"sentence\": \"Hey, could you, like, not delete my photos, please? Seriously, don't.\"\n}",
+   "sentence": "Hey, could you, like, not delete my photos, please? Seriously, don't.",
+   "error": null,
+   "seconds": 4.15
+  },
+  {
+   "index": 3,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Don't send emails without asking me first.",
+   "raw": "{\n  \"sentence\": \"Could you hold up on forwarding messages until I've given the all-clear?\"\n}",
+   "sentence": "Could you hold up on forwarding messages until I've given the all-clear?",
+   "error": null,
+   "seconds": 3.94
+  },
+  {
+   "index": 3,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Don't send emails without asking me first.",
+   "raw": "{\n  \"sentence\": \"Hey, could you like, not just send emails without checking with me first, okay?\"\n}",
+   "sentence": "Hey, could you like, not just send emails without checking with me first, okay?",
+   "error": null,
+   "seconds": 4.03
+  },
+  {
+   "index": 4,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "raw": "{\n  \"sentence\": \"Don't post anything online without getting my permission first, okay?\"\n}",
+   "sentence": "Don't post anything online without getting my permission first, okay?",
+   "error": null,
+   "seconds": 3.66
+  },
+  {
+   "index": 4,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "raw": "{\n  \"sentence\": \"Könntest du vielleicht nicht einfach irgendwas ins Netz stellen, ohne mich erst zu fragen, okay?\"\n}",
+   "sentence": "Könntest du vielleicht nicht einfach irgendwas ins Netz stellen, ohne mich erst zu fragen, okay?",
+   "error": null,
+   "seconds": 4.7
+  },
+  {
+   "index": 5,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "raw": "{\n  \"sentence\": \"Don't add any fresh packages without my say-so, alright?\"\n}",
+   "sentence": "Don't add any fresh packages without my say-so, alright?",
+   "error": null,
+   "seconds": 3.58
+  },
+  {
+   "index": 5,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "raw": "{\n  \"sentence\": \"Just so you know, don't add anything new without me saying it's okay, alright?\"\n}",
+   "sentence": "Just so you know, don't add anything new without me saying it's okay, alright?",
+   "error": null,
+   "seconds": 4.29
+  },
+  {
+   "index": 6,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Stop using the calculator.",
+   "raw": "{\n  \"sentence\": \"Seriously, ditch the device for figuring things out.\"\n}",
+   "sentence": "Seriously, ditch the device for figuring things out.",
+   "error": null,
+   "seconds": 3.28
+  },
+  {
+   "index": 6,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Stop using the calculator.",
+   "raw": "{\n  \"sentence\": \"Hey, could you maybe lay off the calculator, yeah?\"\n}",
+   "sentence": "Hey, could you maybe lay off the calculator, yeah?",
+   "error": null,
+   "seconds": 3.45
+  },
+  {
+   "index": 7,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Hör auf, im Internet zu suchen.",
+   "raw": "{\n  \"sentence\": \"Stop looking up stuff online, okay?\"\n}",
+   "sentence": "Stop looking up stuff online, okay?",
+   "error": null,
+   "seconds": 3.62
+  },
+  {
+   "index": 7,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Hör auf, im Internet zu suchen.",
+   "raw": "{\n  \"sentence\": \"Could you, like, stop looking stuff up online?\"\n}",
+   "sentence": "Could you, like, stop looking stuff up online?",
+   "error": null,
+   "seconds": 3.38
+  },
+  {
+   "index": 8,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "You must not go online.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't log in, okay?\"\n}",
+   "sentence": "Seriously, don't log in, okay?",
+   "error": null,
+   "seconds": 3.15
+  },
+  {
+   "index": 8,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "You must not go online.",
+   "raw": "{\n  \"sentence\": \"Hey, could you like, not go on the internet, please?\"\n}",
+   "sentence": "Hey, could you like, not go on the internet, please?",
+   "error": null,
+   "seconds": 3.57
+  },
+  {
+   "index": 9,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "raw": "{\n  \"sentence\": \"Seriously, please don't touch my documents, okay?\"\n}",
+   "sentence": "Seriously, please don't touch my documents, okay?",
+   "error": null,
+   "seconds": 3.35
+  },
+  {
+   "index": 9,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "raw": "{\n  \"sentence\": \"Hey, could you like, not mess with my files, okay?\"\n}",
+   "sentence": "Hey, could you like, not mess with my files, okay?",
+   "error": null,
+   "seconds": 3.57
+  },
+  {
+   "index": 10,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Don't forget to save my notes.",
+   "raw": "{\n  \"sentence\": \"Just a heads-up – make sure you preserve my records, okay?\"\n}",
+   "sentence": "Just a heads-up – make sure you preserve my records, okay?",
+   "error": null,
+   "seconds": 3.6
+  },
+  {
+   "index": 10,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Don't forget to save my notes.",
+   "raw": "{\n  \"sentence\": \"Hey, could you just...remind me to save my notes? Like, please?\"\n}",
+   "sentence": "Hey, could you just...remind me to save my notes? Like, please?",
+   "error": null,
+   "seconds": 3.89
+  },
+  {
+   "index": 11,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "raw": "{\n  \"sentence\": \"Don't forget to save the memo, okay?\"\n}",
+   "sentence": "Don't forget to save the memo, okay?",
+   "error": null,
+   "seconds": 3.04
+  },
+  {
+   "index": 11,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "raw": "{\n  \"sentence\": \"Just a reminder... don't forget to save the note, okay?\"\n}",
+   "sentence": "Just a reminder... don't forget to save the note, okay?",
+   "error": null,
+   "seconds": 3.32
+  },
+  {
+   "index": 12,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "raw": "{\n  \"sentence\": \"Feel free to reach out if anything's confusing.\"\n}",
+   "sentence": "Feel free to reach out if anything's confusing.",
+   "error": null,
+   "seconds": 3.02
+  },
+  {
+   "index": 12,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "raw": "{\n  \"sentence\": \"Just let me know if anything's confusing, okay?\"\n}",
+   "sentence": "Just let me know if anything's confusing, okay?",
+   "error": null,
+   "seconds": 3.24
+  },
+  {
+   "index": 13,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Can you delete the old note?",
+   "raw": "{\n  \"sentence\": \"Hey, could you take out that dated reminder, please?\"\n}",
+   "sentence": "Hey, could you take out that dated reminder, please?",
+   "error": null,
+   "seconds": 3.22
+  },
+  {
+   "index": 13,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Can you delete the old note?",
+   "raw": "{\n  \"sentence\": \"Hey, could you maybe take out that old note? Just, you know, delete it?\"\n}",
+   "sentence": "Hey, could you maybe take out that old note? Just, you know, delete it?",
+   "error": null,
+   "seconds": 3.85
+  },
+  {
+   "index": 14,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "raw": "{\n  \"sentence\": \"Could you send me a message, please?\"\n}",
+   "sentence": "Could you send me a message, please?",
+   "error": null,
+   "seconds": 3.38
+  },
+  {
+   "index": 14,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "raw": "{\n  \"sentence\": \"Hey, could you like, send me an email?\"\n}",
+   "sentence": "Hey, could you like, send me an email?",
+   "error": null,
+   "seconds": 3.26
+  },
+  {
+   "index": 15,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "I didn't delete anything yesterday.",
+   "raw": "{\n  \"sentence\": \"Nope, I didn't scrub anything away the other day.\"\n}",
+   "sentence": "Nope, I didn't scrub anything away the other day.",
+   "error": null,
+   "seconds": 3.37
+  },
+  {
+   "index": 15,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "I didn't delete anything yesterday.",
+   "raw": "{\n  \"sentence\": \"So, uh, yesterday, I didn't mess with anything, you know?\"\n}",
+   "sentence": "So, uh, yesterday, I didn't mess with anything, you know?",
+   "error": null,
+   "seconds": 3.89
+  },
+  {
+   "index": 16,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "What is 17 times 23?",
+   "raw": "{\n  \"sentence\": \"Hey, could you tell me the product of seventy-seven and twenty-three?\"\n}",
+   "sentence": "Hey, could you tell me the product of seventy-seven and twenty-three?",
+   "error": null,
+   "seconds": 3.98
+  },
+  {
+   "index": 16,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "What is 17 times 23?",
+   "raw": "{\n  \"sentence\": \"Hey, could you just tell me, like, what's 17 times 23?\"\n}",
+   "sentence": "Hey, could you just tell me, like, what's 17 times 23?",
+   "error": null,
+   "seconds": 4.3
+  },
+  {
+   "index": 17,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "raw": "{\n  \"sentence\": \"Seriously, please don’t erase or swap out my records, and keep them private, alright?\"\n}",
+   "sentence": "Seriously, please don’t erase or swap out my records, and keep them private, alright?",
+   "error": null,
+   "seconds": 4.16
+  },
+  {
+   "index": 17,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "raw": "{\n  \"sentence\": \"Hey, just... could you promise not to touch my notes? And like, definitely don't send them off anywhere, okay?\"\n}",
+   "sentence": "Hey, just... could you promise not to touch my notes? And like, definitely don't send them off anywhere, okay?",
+   "error": null,
+   "seconds": 4.96
+  },
+  {
+   "index": 18,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "raw": "{\n  \"sentence\": \"Don't ever delete or send out my pictures or texts, okay?\"\n}",
+   "sentence": "Don't ever delete or send out my pictures or texts, okay?",
+   "error": null,
+   "seconds": 3.79
+  },
+  {
+   "index": 18,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "raw": "{\n  \"sentence\": \"Hey, could you like, not delete or send my pics or messages, okay?\"\n}",
+   "sentence": "Hey, could you like, not delete or send my pics or messages, okay?",
+   "error": null,
+   "seconds": 4.08
+  },
+  {
+   "index": 19,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Always ask me before you write anything to my files.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't just jot down stuff in my documents without checking with me first, okay?\"\n}",
+   "sentence": "Seriously, don't just jot down stuff in my documents without checking with me first, okay?",
+   "error": null,
+   "seconds": 4.13
+  },
+  {
+   "index": 19,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Always ask me before you write anything to my files.",
+   "raw": "{\n  \"sentence\": \"Hey, could you maybe just, like, check with me first before you touch my files, okay?\"\n}",
+   "sentence": "Hey, could you maybe just, like, check with me first before you touch my files, okay?",
+   "error": null,
+   "seconds": 4.44
+  },
+  {
+   "index": 20,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "raw": "{\n  \"sentence\": \"Could you please ask me before you're putting anything new onto my device, okay?\"\n}",
+   "sentence": "Could you please ask me before you're putting anything new onto my device, okay?",
+   "error": null,
+   "seconds": 4.11
+  },
+  {
+   "index": 20,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "raw": "{\n  \"sentence\": \"Hey, could you maybe ask me first before you install anything, yeah?\"\n}",
+   "sentence": "Hey, could you maybe ask me first before you install anything, yeah?",
+   "error": null,
+   "seconds": 3.68
+  },
+  {
+   "index": 21,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Tell me before you do anything.",
+   "raw": "{\n  \"sentence\": \"Let me know what you're planning to make happen first.\"\n}",
+   "sentence": "Let me know what you're planning to make happen first.",
+   "error": null,
+   "seconds": 3.5
+  },
+  {
+   "index": 21,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Tell me before you do anything.",
+   "raw": "{\n  \"sentence\": \"Just let me know what you're thinking of doing, okay?\"\n}",
+   "sentence": "Just let me know what you're thinking of doing, okay?",
+   "error": null,
+   "seconds": 3.56
+  },
+  {
+   "index": 22,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "raw": "{\n  \"sentence\": \"Let me know what you're planning ahead of time, alright?\"\n}",
+   "sentence": "Let me know what you're planning ahead of time, alright?",
+   "error": null,
+   "seconds": 3.61
+  },
+  {
+   "index": 22,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "raw": "{\n  \"sentence\": \"Hey, kannst du mir mal sagen, was du planst?\"\n}",
+   "sentence": "Hey, kannst du mir mal sagen, was du planst?",
+   "error": null,
+   "seconds": 3.41
+  },
+  {
+   "index": 23,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Finger weg von meinen Notizen!",
+   "raw": "{\n  \"sentence\": \"Leave my scribbles alone, please!\"\n}",
+   "sentence": "Leave my scribbles alone, please!",
+   "error": null,
+   "seconds": 2.95
+  },
+  {
+   "index": 23,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Finger weg von meinen Notizen!",
+   "raw": "{\n  \"sentence\": \"Don't touch my notes, please!\"\n}",
+   "sentence": "Don't touch my notes, please!",
+   "error": null,
+   "seconds": 3.17
+  },
+  {
+   "index": 24,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Keep your hands off my photos.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't touch my pictures, okay?\"\n}",
+   "sentence": "Seriously, don't touch my pictures, okay?",
+   "error": null,
+   "seconds": 3.48
+  },
+  {
+   "index": 24,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Keep your hands off my photos.",
+   "raw": "{\n  \"sentence\": \"Could you, like, not look at my pictures?\"\n}",
+   "sentence": "Could you, like, not look at my pictures?",
+   "error": null,
+   "seconds": 3.36
+  },
+  {
+   "index": 25,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Never delete files, except the drafts.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't erase documents, unless they're just the preliminary versions.\"\n}",
+   "sentence": "Seriously, don't erase documents, unless they're just the preliminary versions.",
+   "error": null,
+   "seconds": 3.93
+  },
+  {
+   "index": 25,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Never delete files, except the drafts.",
+   "raw": "{\n  \"sentence\": \"Äh, ich wollte nur fragen, darf ich Dateien nie löschen? Nur die Entwürfe, klar?\"\n}",
+   "sentence": "Äh, ich wollte nur fragen, darf ich Dateien nie löschen? Nur die Entwürfe, klar?",
+   "error": null,
+   "seconds": 4.42
+  },
+  {
+   "index": 26,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "raw": "{\n  \"sentence\": \"Don't delete anything besides drafts, okay?\"\n}",
+   "sentence": "Don't delete anything besides drafts, okay?",
+   "error": null,
+   "seconds": 3.13
+  },
+  {
+   "index": 26,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "raw": "{\n  \"sentence\": \"Just... don't delete anything except drafts, okay?\"\n}",
+   "sentence": "Just... don't delete anything except drafts, okay?",
+   "error": null,
+   "seconds": 3.3
+  },
+  {
+   "index": 27,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Never delete my recipes.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't take away my food ideas, okay?\"\n}",
+   "sentence": "Seriously, don't take away my food ideas, okay?",
+   "error": null,
+   "seconds": 3.3
+  },
+  {
+   "index": 27,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Never delete my recipes.",
+   "raw": "{\n  \"sentence\": \"Hey, could you, like, promise not to delete my recipes? Seriously, don't!\"\n}",
+   "sentence": "Hey, could you, like, promise not to delete my recipes? Seriously, don't!",
+   "error": null,
+   "seconds": 4.12
+  },
+  {
+   "index": 28,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Maybe don't send that email yet.",
+   "raw": "{\n  \"sentence\": \"You might wanna hold off on dispatching that correspondence for a bit, though.\"\n}",
+   "sentence": "You might wanna hold off on dispatching that correspondence for a bit, though.",
+   "error": null,
+   "seconds": 3.72
+  },
+  {
+   "index": 28,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Maybe don't send that email yet.",
+   "raw": "{\n  \"sentence\": \"You know, maybe hold off on sending that email for now?\"\n}",
+   "sentence": "You know, maybe hold off on sending that email for now?",
+   "error": null,
+   "seconds": 3.44
+  },
+  {
+   "index": 29,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "raw": "{\n  \"sentence\": \"Maybe you’d be better off not deleting anything, though.\"\n}",
+   "sentence": "Maybe you’d be better off not deleting anything, though.",
+   "error": null,
+   "seconds": 3.32
+  },
+  {
+   "index": 29,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "raw": "{\n  \"sentence\": \"Just... maybe don't delete anything, okay?\"\n}",
+   "sentence": "Just... maybe don't delete anything, okay?",
+   "error": null,
+   "seconds": 3.19
+  },
+  {
+   "index": 30,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "My brother says you should never use the internet.",
+   "raw": "{\n  \"sentence\": \"He's telling me to steer clear of online stuff, seriously.\"\n}",
+   "sentence": "He's telling me to steer clear of online stuff, seriously.",
+   "error": null,
+   "seconds": 3.42
+  },
+  {
+   "index": 30,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "My brother says you should never use the internet.",
+   "raw": "{\n  \"sentence\": \"My brother was just saying, like, don't use the internet, you know?\"\n}",
+   "sentence": "My brother was just saying, like, don't use the internet, you know?",
+   "error": null,
+   "seconds": 3.82
+  },
+  {
+   "index": 31,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "raw": "{\n  \"sentence\": \"My boss is saying you aren't allowed to send out emails.\"\n}",
+   "sentence": "My boss is saying you aren't allowed to send out emails.",
+   "error": null,
+   "seconds": 3.54
+  },
+  {
+   "index": 31,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "raw": "{\n  \"sentence\": \"My boss is saying, like, don't send any emails, okay?\"\n}",
+   "sentence": "My boss is saying, like, don't send any emails, okay?",
+   "error": null,
+   "seconds": 3.75
+  },
+  {
+   "index": 32,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "You can delete notes again now.",
+   "raw": "{\n  \"sentence\": \"Feel free to remove those records once more, right now.\"\n}",
+   "sentence": "Feel free to remove those records once more, right now.",
+   "error": null,
+   "seconds": 3.37
+  },
+  {
+   "index": 32,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "You can delete notes again now.",
+   "raw": "{\n  \"sentence\": \"Just, like, go ahead and delete those notes, okay?\"\n}",
+   "sentence": "Just, like, go ahead and delete those notes, okay?",
+   "error": null,
+   "seconds": 3.57
+  },
+  {
+   "index": 33,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "raw": "{\n  \"sentence\": \"You’re good to go back online now.\"\n}",
+   "sentence": "You’re good to go back online now.",
+   "error": null,
+   "seconds": 3.12
+  },
+  {
+   "index": 33,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "raw": "{\n  \"sentence\": \"Okay, kannst du jetzt wieder online gehen?\"\n}",
+   "sentence": "Okay, kannst du jetzt wieder online gehen?",
+   "error": null,
+   "seconds": 3.11
+  },
+  {
+   "index": 34,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Feel free to install whatever you need.",
+   "raw": "{\n  \"sentence\": \"Go ahead and get everything you're looking for, no worries!\"\n}",
+   "sentence": "Go ahead and get everything you're looking for, no worries!",
+   "error": null,
+   "seconds": 3.55
+  },
+  {
+   "index": 34,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Feel free to install whatever you need.",
+   "raw": "{\n  \"sentence\": \"Just, you know, go ahead and get whatever you need, okay?\"\n}",
+   "sentence": "Just, you know, go ahead and get whatever you need, okay?",
+   "error": null,
+   "seconds": 3.77
+  },
+  {
+   "index": 35,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "No downloads, please.",
+   "raw": "{\n  \"sentence\": \"Seriously, let's skip the file transfers, okay?\"\n}",
+   "sentence": "Seriously, let's skip the file transfers, okay?",
+   "error": null,
+   "seconds": 3.37
+  },
+  {
+   "index": 35,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "No downloads, please.",
+   "raw": "{\n  \"sentence\": \"Kein Download, bitte. Oder, you know, just skip that part?\"\n}",
+   "sentence": "Kein Download, bitte. Oder, you know, just skip that part?",
+   "error": null,
+   "seconds": 3.55
+  },
+  {
+   "index": 36,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Keine Uploads!",
+   "raw": "{\n  \"sentence\": \"No files to send, period.\"\n}",
+   "sentence": "No files to send, period.",
+   "error": null,
+   "seconds": 2.86
+  },
+  {
+   "index": 36,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Keine Uploads!",
+   "raw": "{\n  \"sentence\": \"Hey, no uploads, okay?\"\n}",
+   "sentence": "Hey, no uploads, okay?",
+   "error": null,
+   "seconds": 2.92
+  },
+  {
+   "index": 37,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "You are not allowed to learn from my private messages.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't try to figure things out from my personal chats, okay?\"\n}",
+   "sentence": "Seriously, don't try to figure things out from my personal chats, okay?",
+   "error": null,
+   "seconds": 3.77
+  },
+  {
+   "index": 37,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "You are not allowed to learn from my private messages.",
+   "raw": "{\n  \"sentence\": \"Hey, could you, like, not read my stuff? Seriously, keep it private, okay?\"\n}",
+   "sentence": "Hey, could you, like, not read my stuff? Seriously, keep it private, okay?",
+   "error": null,
+   "seconds": 4.18
+  },
+  {
+   "index": 38,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Merk dir nichts über meine Familie.",
+   "raw": "{\n  \"sentence\": \"Don't take it personally about my kin, alright?\"\n}",
+   "sentence": "Don't take it personally about my kin, alright?",
+   "error": null,
+   "seconds": 3.48
+  },
+  {
+   "index": 38,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Merk dir nichts über meine Familie.",
+   "raw": "{\n  \"sentence\": \"Just... you know... don't even think about my family, okay?\"\n}",
+   "sentence": "Just... you know... don't even think about my family, okay?",
+   "error": null,
+   "seconds": 3.69
+  },
+  {
+   "index": 39,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Don't touch anything on my phone without my permission.",
+   "raw": "{\n  \"sentence\": \"Seriously, hold off on messing with my mobile device until I say it's okay.\"\n}",
+   "sentence": "Seriously, hold off on messing with my mobile device until I say it's okay.",
+   "error": null,
+   "seconds": 3.84
+  },
+  {
+   "index": 39,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Don't touch anything on my phone without my permission.",
+   "raw": "{\n  \"sentence\": \"Just... don't mess with my phone, okay? Seriously, no touching anything unless I say so.\"\n}",
+   "sentence": "Just... don't mess with my phone, okay? Seriously, no touching anything unless I say so.",
+   "error": null,
+   "seconds": 4.16
+  },
+  {
+   "index": 40,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "raw": "{\n  \"sentence\": \"Only if I say so can you send out messages.\"\n}",
+   "sentence": "Only if I say so can you send out messages.",
+   "error": null,
+   "seconds": 3.14
+  },
+  {
+   "index": 40,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "raw": "{\n  \"sentence\": \"Du kannst keine Nachrichten schicken, ohne dass ich okay gebe.\"\n}",
+   "sentence": "Du kannst keine Nachrichten schicken, ohne dass ich okay gebe.",
+   "error": null,
+   "seconds": 3.5
+  },
+  {
+   "index": 41,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Don't stop saving my notes.",
+   "raw": "{\n  \"sentence\": \"Seriously, keep collecting my records, okay?\"\n}",
+   "sentence": "Seriously, keep collecting my records, okay?",
+   "error": null,
+   "seconds": 3.17
+  },
+  {
+   "index": 41,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Don't stop saving my notes.",
+   "raw": "{\n  \"sentence\": \"Hey, could you like, keep saving my notes? Just, you know, don't forget.\"\n}",
+   "sentence": "Hey, could you like, keep saving my notes? Just, you know, don't forget.",
+   "error": null,
+   "seconds": 4.3
+  },
+  {
+   "index": 42,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Don't worry about the budget.",
+   "raw": "{\n  \"sentence\": \"Seriously, it's cool if we go over the funds.\"\n}",
+   "sentence": "Seriously, it's cool if we go over the funds.",
+   "error": null,
+   "seconds": 3.37
+  },
+  {
+   "index": 42,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Don't worry about the budget.",
+   "raw": "{\n  \"sentence\": \"Just, you know, don't stress about the money, okay?\"\n}",
+   "sentence": "Just, you know, don't stress about the money, okay?",
+   "error": null,
+   "seconds": 3.6
+  },
+  {
+   "index": 43,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "raw": "{\n  \"sentence\": \"Don't worry about the deadline, seriously.\"\n}",
+   "sentence": "Don't worry about the deadline, seriously.",
+   "error": null,
+   "seconds": 3.3
+  },
+  {
+   "index": 43,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "raw": "{\n  \"sentence\": \"Don't worry about the deadline, okay?\"\n}",
+   "sentence": "Don't worry about the deadline, okay?",
+   "error": null,
+   "seconds": 3.14
+  },
+  {
+   "index": 44,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Under no circumstances should you share my contacts.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't even think about forwarding my phone numbers to anyone, okay?\"\n}",
+   "sentence": "Seriously, don't even think about forwarding my phone numbers to anyone, okay?",
+   "error": null,
+   "seconds": 3.72
+  },
+  {
+   "index": 44,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Under no circumstances should you share my contacts.",
+   "raw": "{\n  \"sentence\": \"Hey, could you, like, promise me you won't share my contacts? Seriously, don't.\"\n}",
+   "sentence": "Hey, could you, like, promise me you won't share my contacts? Seriously, don't.",
+   "error": null,
+   "seconds": 4.36
+  },
+  {
+   "index": 45,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't shell out any cash, okay?\"\n}",
+   "sentence": "Seriously, don't shell out any cash, okay?",
+   "error": null,
+   "seconds": 3.63
+  },
+  {
+   "index": 45,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "raw": "{\n  \"sentence\": \"Hey, just... seriously, no spending any money, okay?\"\n}",
+   "sentence": "Hey, just... seriously, no spending any money, okay?",
+   "error": null,
+   "seconds": 3.47
+  },
+  {
+   "index": 46,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "I forbid you to run any programs.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't even think about executing those scripts.\"\n}",
+   "sentence": "Seriously, don't even think about executing those scripts.",
+   "error": null,
+   "seconds": 3.34
+  },
+  {
+   "index": 46,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "I forbid you to run any programs.",
+   "raw": "{\n  \"sentence\": \"Hey, could you, like, not run any programs? Seriously, no way.\"\n}",
+   "sentence": "Hey, could you, like, not run any programs? Seriously, no way.",
+   "error": null,
+   "seconds": 3.9
+  },
+  {
+   "index": 47,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Bitte nichts herunterladen.",
+   "raw": "{\n  \"sentence\": \"Don't grab anything, okay?\"\n}",
+   "sentence": "Don't grab anything, okay?",
+   "error": null,
+   "seconds": 3.06
+  },
+  {
+   "index": 47,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Bitte nichts herunterladen.",
+   "raw": "{\n  \"sentence\": \"Just... don't download anything, okay?\"\n}",
+   "sentence": "Just... don't download anything, okay?",
+   "error": null,
+   "seconds": 3.22
+  },
+  {
+   "index": 48,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "raw": "{\n  \"sentence\": \"Seriously, please don't change my scribbles at all, okay?\"\n}",
+   "sentence": "Seriously, please don't change my scribbles at all, okay?",
+   "error": null,
+   "seconds": 3.48
+  },
+  {
+   "index": 48,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "raw": "{\n  \"sentence\": \"Hey, could you please, like, not change my notes? Seriously, no way. It's really important they stay as they are.\"\n}",
+   "sentence": "Hey, could you please, like, not change my notes? Seriously, no way. It's really important they stay as they are.",
+   "error": null,
+   "seconds": 5.05
+  },
+  {
+   "index": 49,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "raw": "{\n  \"sentence\": \"Just adjust my records only if I permit you to.\"\n}",
+   "sentence": "Just adjust my records only if I permit you to.",
+   "error": null,
+   "seconds": 3.34
+  },
+  {
+   "index": 49,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "raw": "{\n  \"sentence\": \"Just change my notes if I tell you to, okay?\"\n}",
+   "sentence": "Just change my notes if I tell you to, okay?",
+   "error": null,
+   "seconds": 3.37
+  },
+  {
+   "index": 50,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "The sign said do not enter.",
+   "raw": "{\n  \"sentence\": \"It just flashed a warning: keep out.\"\n}",
+   "sentence": "It just flashed a warning: keep out.",
+   "error": null,
+   "seconds": 3.13
+  },
+  {
+   "index": 50,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "The sign said do not enter.",
+   "raw": "{\n  \"sentence\": \"Oh, there was a sign... saying no entry, you know?\"\n}",
+   "sentence": "Oh, there was a sign... saying no entry, you know?",
+   "error": null,
+   "seconds": 3.42
+  },
+  {
+   "index": 51,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Never mind, it was nothing.",
+   "raw": "{\n  \"sentence\": \"Seriously, it wasn’t a big deal at all.\"\n}",
+   "sentence": "Seriously, it wasn’t a big deal at all.",
+   "error": null,
+   "seconds": 3.38
+  },
+  {
+   "index": 51,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Never mind, it was nothing.",
+   "raw": "{\n  \"sentence\": \"Ach, egal. It was nothing, really.\"\n}",
+   "sentence": "Ach, egal. It was nothing, really.",
+   "error": null,
+   "seconds": 3.26
+  },
+  {
+   "index": 52,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "raw": "{\n  \"sentence\": \"Write the note, but don't ever erase the previous one.\"\n}",
+   "sentence": "Write the note, but don't ever erase the previous one.",
+   "error": null,
+   "seconds": 3.45
+  },
+  {
+   "index": 52,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "raw": "{\n  \"sentence\": \"Könntest du vielleicht eine Notiz machen? Aber, bitte, die alte lassste drin, okay?\"\n}",
+   "sentence": "Könntest du vielleicht eine Notiz machen? Aber, bitte, die alte lassste drin, okay?",
+   "error": null,
+   "seconds": 4.35
+  },
+  {
+   "index": 53,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Before you send anything, show it to me.",
+   "raw": "{\n  \"sentence\": \"Just a heads-up – let me glance at what you're about to post first, okay?\"\n}",
+   "sentence": "Just a heads-up – let me glance at what you're about to post first, okay?",
+   "error": null,
+   "seconds": 4.35
+  },
+  {
+   "index": 53,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Before you send anything, show it to me.",
+   "raw": "{\n  \"sentence\": \"Hey, could you maybe take a look at it before you hit send?\"\n}",
+   "sentence": "Hey, could you maybe take a look at it before you hit send?",
+   "error": null,
+   "seconds": 3.74
+  },
+  {
+   "index": 54,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Nichts verschicken!",
+   "raw": "{\n  \"sentence\": \"Don't dispatch anything!\"\n}",
+   "sentence": "Don't dispatch anything!",
+   "error": null,
+   "seconds": 2.97
+  },
+  {
+   "index": 54,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Nichts verschicken!",
+   "raw": "{\n  \"sentence\": \"Don't send anything, okay?\"\n}",
+   "sentence": "Don't send anything, okay?",
+   "error": null,
+   "seconds": 2.99
+  },
+  {
+   "index": 55,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Please don't use any tools today.",
+   "raw": "{\n  \"sentence\": \"Could you hold off on employing instruments for now, please?\"\n}",
+   "sentence": "Could you hold off on employing instruments for now, please?",
+   "error": null,
+   "seconds": 3.38
+  },
+  {
+   "index": 55,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Please don't use any tools today.",
+   "raw": "{\n  \"sentence\": \"Hey, could you like, not use any tools today? Just, you know, no tools?\"\n}",
+   "sentence": "Hey, could you like, not use any tools today? Just, you know, no tools?",
+   "error": null,
+   "seconds": 4.07
+  },
+  {
+   "index": 56,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Benutze keine Werkzeuge.",
+   "raw": "{\n  \"sentence\": \"Don't employ instruments.\"\n}",
+   "sentence": "Don't employ instruments.",
+   "error": null,
+   "seconds": 2.77
+  },
+  {
+   "index": 56,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Benutze keine Werkzeuge.",
+   "raw": "{\n  \"sentence\": \"Could you, like, not use any tools?\"\n}",
+   "sentence": "Could you, like, not use any tools?",
+   "error": null,
+   "seconds": 2.92
+  },
+  {
+   "index": 57,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "raw": "{\n  \"sentence\": \"Seriously, don't grab any code pieces from anyplace unless I give you the okay first, alright?\"\n}",
+   "sentence": "Seriously, don't grab any code pieces from anyplace unless I give you the okay first, alright?",
+   "error": null,
+   "seconds": 4.02
+  },
+  {
+   "index": 57,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "raw": "{\n  \"sentence\": \"Just, like, don't grab modules from anywhere unless I say so, okay?\"\n}",
+   "sentence": "Just, like, don't grab modules from anywhere unless I say so, okay?",
+   "error": null,
+   "seconds": 3.63
+  },
+  {
+   "index": 58,
+   "model": "GEMMA3_4B",
+   "prompt": "P1",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "raw": "{\n  \"sentence\": \"I absolutely won't let you grab any components unless I specifically give my okay first.\"\n}",
+   "sentence": "I absolutely won't let you grab any components unless I specifically give my okay first.",
+   "error": null,
+   "seconds": 3.63
+  },
+  {
+   "index": 58,
+   "model": "GEMMA3_4B",
+   "prompt": "P2",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "raw": "{\n  \"sentence\": \"Just... don't grab any modules without me saying okay first, ya know?\"\n}",
+   "sentence": "Just... don't grab any modules without me saying okay first, ya know?",
+   "error": null,
+   "seconds": 3.51
+  },
+  {
+   "index": 0,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Please never delete any of my notes.",
+   "raw": "{\n  \"sentence\": \"Don't ever erase any of my notes, okay?\"\n}",
+   "sentence": "Don't ever erase any of my notes, okay?",
+   "error": null,
+   "seconds": 2.42
+  },
+  {
+   "index": 0,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Please never delete any of my notes.",
+   "raw": "{\n  \"sentence\": \"Can you please make sure not to delete any of my notes?\"\n}",
+   "sentence": "Can you please make sure not to delete any of my notes?",
+   "error": null,
+   "seconds": 2.42
+  },
+  {
+   "index": 1,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "raw": "{\n  \"sentence\": \"Don't ever destroy my notes.\"\n}",
+   "sentence": "Don't ever destroy my notes.",
+   "error": null,
+   "seconds": 1.69
+  },
+  {
+   "index": 1,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "raw": "{\n  \"sentence\": \"Can you ever please destroy my notes?\"\n}",
+   "sentence": "Can you ever please destroy my notes?",
+   "error": null,
+   "seconds": 1.64
+  },
+  {
+   "index": 2,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "raw": "{\n  \"sentence\": \"You shouldn't delete my photos.\"\n}",
+   "sentence": "You shouldn't delete my photos.",
+   "error": null,
+   "seconds": 1.6
+  },
+  {
+   "index": 2,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "raw": "{\n  \"sentence\": \"Don't touch my photos, okay?\"\n}",
+   "sentence": "Don't touch my photos, okay?",
+   "error": null,
+   "seconds": 1.65
+  },
+  {
+   "index": 3,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Don't send emails without asking me first.",
+   "raw": "{\n  \"sentence\": \"Get in touch via email only after I've given the thumbs up.\"\n}",
+   "sentence": "Get in touch via email only after I've given the thumbs up.",
+   "error": null,
+   "seconds": 2.05
+  },
+  {
+   "index": 3,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Don't send emails without asking me first.",
+   "raw": "{\n  \"sentence\": \"Can you make sure I get notified before you shoot off any emails?\"\n}",
+   "sentence": "Can you make sure I get notified before you shoot off any emails?",
+   "error": null,
+   "seconds": 2.13
+  },
+  {
+   "index": 4,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "raw": "{\n  \"sentence\": \"Don't upload anything to the web without me beforehand asking.\"\n}",
+   "sentence": "Don't upload anything to the web without me beforehand asking.",
+   "error": null,
+   "seconds": 2.02
+  },
+  {
+   "index": 4,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "raw": "{\n  \"sentence\": \"Don't put anything online without asking me first\"\n}",
+   "sentence": "Don't put anything online without asking me first",
+   "error": null,
+   "seconds": 1.95
+  },
+  {
+   "index": 5,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "raw": "{\n  \"sentence\": \"Don't introduce fresh packages unless the admin gives consent.\"\n}",
+   "sentence": "Don't introduce fresh packages unless the admin gives consent.",
+   "error": null,
+   "seconds": 2.05
+  },
+  {
+   "index": 5,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "raw": "{\n  \"sentence\": \"Don't add new stuff unless you get the green light from me.\"\n}",
+   "sentence": "Don't add new stuff unless you get the green light from me.",
+   "error": null,
+   "seconds": 2.15
+  },
+  {
+   "index": 6,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Stop using the calculator.",
+   "raw": "{\n  \"sentence\": \"Cease employing the computational device.\"\n}",
+   "sentence": "Cease employing the computational device.",
+   "error": null,
+   "seconds": 1.52
+  },
+  {
+   "index": 6,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Stop using the calculator.",
+   "raw": "{\n    \"sentence\": \"Just put the calculator away, okay?\"\n}",
+   "sentence": "Just put the calculator away, okay?",
+   "error": null,
+   "seconds": 1.57
+  },
+  {
+   "index": 7,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Hör auf, im Internet zu suchen.",
+   "raw": "{\n  \"sentence\": \"Cease scouring the web.\"\n}",
+   "sentence": "Cease scouring the web.",
+   "error": null,
+   "seconds": 1.53
+  },
+  {
+   "index": 7,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Hör auf, im Internet zu suchen.",
+   "raw": "{\n  \"sentence\": \"Can you please stop searching online?\"\n}",
+   "sentence": "Can you please stop searching online?",
+   "error": null,
+   "seconds": 1.63
+  },
+  {
+   "index": 8,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "You must not go online.",
+   "raw": "{\n  \"sentence\": \"Stay offline, or else.\"\n}",
+   "sentence": "Stay offline, or else.",
+   "error": null,
+   "seconds": 1.5
+  },
+  {
+   "index": 8,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "You must not go online.",
+   "raw": "{\n  \"sentence\": \"Can you please stop me from browsing the internet?\"\n}",
+   "sentence": "Can you please stop me from browsing the internet?",
+   "error": null,
+   "seconds": 1.79
+  },
+  {
+   "index": 9,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "raw": "{\n  \"sentence\": \"Don't modify anything on my files, please.\"\n}",
+   "sentence": "Don't modify anything on my files, please.",
+   "error": null,
+   "seconds": 1.95
+  },
+  {
+   "index": 9,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "raw": "{\n  \"sentence\": \"Can you please not modify anything on my files?\"\n}",
+   "sentence": "Can you please not modify anything on my files?",
+   "error": null,
+   "seconds": 1.86
+  },
+  {
+   "index": 10,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Don't forget to save my notes.",
+   "raw": "{\n  \"sentence\": \"Don't forget to store my notes\"\n}",
+   "sentence": "Don't forget to store my notes",
+   "error": null,
+   "seconds": 1.69
+  },
+  {
+   "index": 10,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Don't forget to save my notes.",
+   "raw": "{\n  \"sentence\": \"Could you guys make sure to save my notes for me?\"\n}",
+   "sentence": "Could you guys make sure to save my notes for me?",
+   "error": null,
+   "seconds": 2.08
+  },
+  {
+   "index": 11,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "raw": "{\n  \"sentence\": \"Don't forget to log the note.\"\n}",
+   "sentence": "Don't forget to log the note.",
+   "error": null,
+   "seconds": 1.67
+  },
+  {
+   "index": 11,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "raw": "{\n  \"sentence\": \"Don't forget to save the note\"\n}",
+   "sentence": "Don't forget to save the note",
+   "error": null,
+   "seconds": 1.77
+  },
+  {
+   "index": 12,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "raw": "{\n  \"sentence\": \"Don't be uncertain about reaching out to me if something is ambiguous.\"\n}",
+   "sentence": "Don't be uncertain about reaching out to me if something is ambiguous.",
+   "error": null,
+   "seconds": 2.15
+  },
+  {
+   "index": 12,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "raw": "{\n  \"sentence\": \"Don't be shy, hit me up if anything's fuzzy.\"\n}",
+   "sentence": "Don't be shy, hit me up if anything's fuzzy.",
+   "error": null,
+   "seconds": 2.14
+  },
+  {
+   "index": 13,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Can you delete the old note?",
+   "raw": "{\n  \"sentence\": \"Could you wipe out the outdated remark?\"\n}",
+   "sentence": "Could you wipe out the outdated remark?",
+   "error": null,
+   "seconds": 1.68
+  },
+  {
+   "index": 13,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Can you delete the old note?",
+   "raw": "{\n  \"sentence\": \"Can you delete the old note?\"\n}",
+   "sentence": "Can you delete the old note?",
+   "error": null,
+   "seconds": 1.63
+  },
+  {
+   "index": 14,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "raw": "{\n  \"sentence\": \"Kannst du mir eine E-Mail in Word schreiben?\"\n}",
+   "sentence": "Kannst du mir eine E-Mail in Word schreiben?",
+   "error": null,
+   "seconds": 2.07
+  },
+  {
+   "index": 14,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "raw": "{\n  \"sentence\": \"K\\\"nntest du mir eine E-Mail schreiben?\"\n}",
+   "sentence": "K\"nntest du mir eine E-Mail schreiben?",
+   "error": null,
+   "seconds": 2.2
+  },
+  {
+   "index": 15,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "I didn't delete anything yesterday.",
+   "raw": "{\n  \"sentence\": \"I didn't take any action on data from the previous day.\"\n}",
+   "sentence": "I didn't take any action on data from the previous day.",
+   "error": null,
+   "seconds": 2.21
+  },
+  {
+   "index": 15,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "I didn't delete anything yesterday.",
+   "raw": "{\n  \"sentence\": \"I didn't delete anything yesterday\"\n}",
+   "sentence": "I didn't delete anything yesterday",
+   "error": null,
+   "seconds": 1.76
+  },
+  {
+   "index": 16,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "What is 17 times 23?",
+   "raw": "{\n  \"sentence\": \"What is the product of seventeen and twenty-three?\"\n}",
+   "sentence": "What is the product of seventeen and twenty-three?",
+   "error": null,
+   "seconds": 1.83
+  },
+  {
+   "index": 16,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "What is 17 times 23?",
+   "raw": "{\n  \"sentence\": \"Can you tell me 17 x 23, mate?\"\n}",
+   "sentence": "Can you tell me 17 x 23, mate?",
+   "error": null,
+   "seconds": 2.01
+  },
+  {
+   "index": 17,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "raw": "{\n  \"sentence\": \"Please preserve my notes and refrain from transmitting them to any external destination.\"\n}",
+   "sentence": "Please preserve my notes and refrain from transmitting them to any external destination.",
+   "error": null,
+   "seconds": 2.25
+  },
+  {
+   "index": 17,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "raw": "{\n  \"sentence\": \"Never delete or overwrite my notes and keep them local\"\n}",
+   "sentence": "Never delete or overwrite my notes and keep them local",
+   "error": null,
+   "seconds": 1.97
+  },
+  {
+   "index": 18,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "raw": "{\n  \"sentence\": \"Never send or destroy my photos or messages.\"\n}",
+   "sentence": "Never send or destroy my photos or messages.",
+   "error": null,
+   "seconds": 1.74
+  },
+  {
+   "index": 18,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "raw": "{\n  \"sentence\": \"L\\u00f6sche und verschicke nie meine Fotos oder Nachrichten.\"\n}",
+   "sentence": "Lösche und verschicke nie meine Fotos oder Nachrichten.",
+   "error": null,
+   "seconds": 2.63
+  },
+  {
+   "index": 19,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Always ask me before you write anything to my files.",
+   "raw": "{\n  \"sentence\": \"Before proceeding with any content creation, make sure to get explicit permission from the owner of the files in question.\"\n}",
+   "sentence": "Before proceeding with any content creation, make sure to get explicit permission from the owner of the files in question.",
+   "error": null,
+   "seconds": 2.73
+  },
+  {
+   "index": 19,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Always ask me before you write anything to my files.",
+   "raw": "{\n  \"sentence\": \"Before you start editing anything on my files, could you get me a heads up?\"\n}",
+   "sentence": "Before you start editing anything on my files, could you get me a heads up?",
+   "error": null,
+   "seconds": 2.31
+  },
+  {
+   "index": 20,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "raw": "{\n  \"sentence\": \"Hast du mich im Voraus informiert, bevor du irgendetwas installierst?\"\n}",
+   "sentence": "Hast du mich im Voraus informiert, bevor du irgendetwas installierst?",
+   "error": null,
+   "seconds": 2.66
+  },
+  {
+   "index": 20,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "raw": "{\n  \"sentence\": \"Kannst du mir nur sagen, bevor du etwas installierst?\"\n}",
+   "sentence": "Kannst du mir nur sagen, bevor du etwas installierst?",
+   "error": null,
+   "seconds": 2.22
+  },
+  {
+   "index": 21,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Tell me before you do anything.",
+   "raw": "{\n  \"sentence\": \"Inform me prior to initiating any activity.\"\n}",
+   "sentence": "Inform me prior to initiating any activity.",
+   "error": null,
+   "seconds": 1.74
+  },
+  {
+   "index": 21,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Tell me before you do anything.",
+   "raw": "{\n  \"sentence\": \"Can you let me know what's going on before you proceed?\"\n}",
+   "sentence": "Can you let me know what's going on before you proceed?",
+   "error": null,
+   "seconds": 2.06
+  },
+  {
+   "index": 22,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "raw": "{\n  \"sentence\": \"Always inform me beforehand about your plans.\"\n}",
+   "sentence": "Always inform me beforehand about your plans.",
+   "error": null,
+   "seconds": 1.7
+  },
+  {
+   "index": 22,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "raw": "{\n  \"sentence\": \"Tell me beforehand what you're going to do.\"\n}",
+   "sentence": "Tell me beforehand what you're going to do.",
+   "error": null,
+   "seconds": 1.92
+  },
+  {
+   "index": 23,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Finger weg von meinen Notizen!",
+   "raw": "{\n  \"sentence\": \"Shoo away from my notes!\"\n}",
+   "sentence": "Shoo away from my notes!",
+   "error": null,
+   "seconds": 1.69
+  },
+  {
+   "index": 23,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Finger weg von meinen Notizen!",
+   "raw": "{\n  \"sentence\": \"Can you please remove your finger from my notes?\"\n}",
+   "sentence": "Can you please remove your finger from my notes?",
+   "error": null,
+   "seconds": 1.87
+  },
+  {
+   "index": 24,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Keep your hands off my photos.",
+   "raw": "{\n  \"sentence\": \"Don't touch my snaps.\"\n}",
+   "sentence": "Don't touch my snaps.",
+   "error": null,
+   "seconds": 1.58
+  },
+  {
+   "index": 24,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Keep your hands off my photos.",
+   "raw": "{\n  \"sentence\": \"Can you please leave my photos alone?\"\n}",
+   "sentence": "Can you please leave my photos alone?",
+   "error": null,
+   "seconds": 1.7
+  },
+  {
+   "index": 25,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Never delete files, except the drafts.",
+   "raw": "{\n  \"sentence\": \"Never remove files, unless they are preliminary versions.\"\n}",
+   "sentence": "Never remove files, unless they are preliminary versions.",
+   "error": null,
+   "seconds": 1.9
+  },
+  {
+   "index": 25,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Never delete files, except the drafts.",
+   "raw": "{\n  \"sentence\": \"Don't touch the files, except the drafts ones.\"\n}",
+   "sentence": "Don't touch the files, except the drafts ones.",
+   "error": null,
+   "seconds": 1.93
+  },
+  {
+   "index": 26,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "raw": "{\"sentence\": \"Eliminate all files except drafts.\"}",
+   "sentence": "Eliminate all files except drafts.",
+   "error": null,
+   "seconds": 1.37
+  },
+  {
+   "index": 26,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "raw": "{\n  \"sentence\": \"Entw\\\"rfedateien löschen, bitte.\"\n}",
+   "sentence": "Entw\"rfedateien löschen, bitte.",
+   "error": null,
+   "seconds": 2.01
+  },
+  {
+   "index": 27,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Never delete my recipes.",
+   "raw": "{\n  \"sentence\": \"Don't wipe out my culinary masterpieces.\"\n}",
+   "sentence": "Don't wipe out my culinary masterpieces.",
+   "error": null,
+   "seconds": 1.82
+  },
+  {
+   "index": 27,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Never delete my recipes.",
+   "raw": "{\n  \"sentence\": \"Please don't ever remove my recipes\"\n}",
+   "sentence": "Please don't ever remove my recipes",
+   "error": null,
+   "seconds": 1.73
+  },
+  {
+   "index": 28,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Maybe don't send that email yet.",
+   "raw": "{\"sentence\":\"You might want to hold off on hitting that send button for now.\"}",
+   "sentence": "You might want to hold off on hitting that send button for now.",
+   "error": null,
+   "seconds": 1.52
+  },
+  {
+   "index": 28,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Maybe don't send that email yet.",
+   "raw": "{\n  \"sentence\": \"Hörst du, solltest du vielleicht noch nicht dieses E-Mail senden.\"\n}",
+   "sentence": "Hörst du, solltest du vielleicht noch nicht dieses E-Mail senden.",
+   "error": null,
+   "seconds": 2.42
+  },
+  {
+   "index": 29,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "raw": "{\n  \"sentence\": \"You might want to reconsider erasing anything.\"\n}",
+   "sentence": "You might want to reconsider erasing anything.",
+   "error": null,
+   "seconds": 1.77
+  },
+  {
+   "index": 29,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "raw": "{\n  \"sentence\": \"You might wanna leave it alone.\"\n}",
+   "sentence": "You might wanna leave it alone.",
+   "error": null,
+   "seconds": 1.72
+  },
+  {
+   "index": 30,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "My brother says you should never use the internet.",
+   "raw": "{\n  \"sentence\": \"My sibling asserts that accessing the global network is generally discouraged.\"\n}",
+   "sentence": "My sibling asserts that accessing the global network is generally discouraged.",
+   "error": null,
+   "seconds": 2.0
+  },
+  {
+   "index": 30,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "My brother says you should never use the internet.",
+   "raw": "{\n  \"sentence\": \"Mein Bruder sagt, dass man dem Internet niemals vertrauen sollte.\"\n}",
+   "sentence": "Mein Bruder sagt, dass man dem Internet niemals vertrauen sollte.",
+   "error": null,
+   "seconds": 2.48
+  },
+  {
+   "index": 31,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "raw": "{\n  \"sentence\": \"My boss says you can't send emails.\"\n}",
+   "sentence": "My boss says you can't send emails.",
+   "error": null,
+   "seconds": 1.76
+  },
+  {
+   "index": 31,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "raw": "{\n  \"sentence\": \"My boss says you can't send emails.\"\n}",
+   "sentence": "My boss says you can't send emails.",
+   "error": null,
+   "seconds": 1.81
+  },
+  {
+   "index": 32,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "You can delete notes again now.",
+   "raw": "{\n  \"sentence\": \"Go ahead and remove your notes one more time.\"\n}",
+   "sentence": "Go ahead and remove your notes one more time.",
+   "error": null,
+   "seconds": 1.79
+  },
+  {
+   "index": 32,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "You can delete notes again now.",
+   "raw": "{\n  \"sentence\": \"Can I finally get rid of those notes again?\"\n}",
+   "sentence": "Can I finally get rid of those notes again?",
+   "error": null,
+   "seconds": 1.92
+  },
+  {
+   "index": 33,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "raw": "{\n  \"sentence\": \"You're free to reconnect to the web now.\"\n}",
+   "sentence": "You're free to reconnect to the web now.",
+   "error": null,
+   "seconds": 1.82
+  },
+  {
+   "index": 33,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "raw": "{\n  \"sentence\": \"You can go back online now.\"\n}",
+   "sentence": "You can go back online now.",
+   "error": null,
+   "seconds": 1.6
+  },
+  {
+   "index": 34,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Feel free to install whatever you need.",
+   "raw": "{\n  \"sentence\": \"Take a moment to pick up whatever is required.\"\n}",
+   "sentence": "Take a moment to pick up whatever is required.",
+   "error": null,
+   "seconds": 1.8
+  },
+  {
+   "index": 34,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Feel free to install whatever you need.",
+   "raw": "{\n  \"sentence\": \"install whatever you need, no rush\"\n}",
+   "sentence": "install whatever you need, no rush",
+   "error": null,
+   "seconds": 1.71
+  },
+  {
+   "index": 35,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "No downloads, please.",
+   "raw": "{\n  \"sentence\": \"No downloads, please\"\n}",
+   "sentence": "No downloads, please",
+   "error": null,
+   "seconds": 1.44
+  },
+  {
+   "index": 35,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "No downloads, please.",
+   "raw": "{\n  \"sentence\": \"Keine Downloads bitte.\"\n}",
+   "sentence": "Keine Downloads bitte.",
+   "error": null,
+   "seconds": 1.4
+  },
+  {
+   "index": 36,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Keine Uploads!",
+   "raw": "{\n  \"sentence\": \"No uploads allowed!\"\n}",
+   "sentence": "No uploads allowed!",
+   "error": null,
+   "seconds": 1.38
+  },
+  {
+   "index": 36,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Keine Uploads!",
+   "raw": "{\n  \"sentence\": \"Can you please stop uploading anything?\"\n}",
+   "sentence": "Can you please stop uploading anything?",
+   "error": null,
+   "seconds": 1.58
+  },
+  {
+   "index": 37,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "You are not allowed to learn from my private messages.",
+   "raw": "{\n  \"sentence\": \"Keep out of my confidential communications.\"\n}",
+   "sentence": "Keep out of my confidential communications.",
+   "error": null,
+   "seconds": 1.65
+  },
+  {
+   "index": 37,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "You are not allowed to learn from my private messages.",
+   "raw": "{\n  \"sentence\": \"keine Privatnachrichten lernen Sie von mir\"\n}",
+   "sentence": "keine Privatnachrichten lernen Sie von mir",
+   "error": null,
+   "seconds": 2.12
+  },
+  {
+   "index": 38,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Merk dir nichts über meine Familie.",
+   "raw": "{\n  \"sentence\": \"Don't bother me with info about my family.\"\n}",
+   "sentence": "Don't bother me with info about my family.",
+   "error": null,
+   "seconds": 1.89
+  },
+  {
+   "index": 38,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Merk dir nichts über meine Familie.",
+   "raw": "{\n  \"sentence\": \"Don't mention my family.\"\n}",
+   "sentence": "Don't mention my family.",
+   "error": null,
+   "seconds": 1.58
+  },
+  {
+   "index": 39,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Don't touch anything on my phone without my permission.",
+   "raw": "{\n  \"sentence\": \"Keep your hands off my phone unless I give you the green light.\"\n}",
+   "sentence": "Keep your hands off my phone unless I give you the green light.",
+   "error": null,
+   "seconds": 2.19
+  },
+  {
+   "index": 39,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Don't touch anything on my phone without my permission.",
+   "raw": "{\n  \"sentence\": \"Can I get access to my phone?\"\n}",
+   "sentence": "Can I get access to my phone?",
+   "error": null,
+   "seconds": 1.82
+  },
+  {
+   "index": 40,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "raw": "{\n  \"sentence\": \"You're only allowed to send messages with my permission.\"\n}",
+   "sentence": "You're only allowed to send messages with my permission.",
+   "error": null,
+   "seconds": 1.95
+  },
+  {
+   "index": 40,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "raw": "{\n    \"sentence\": \"You need my permission to send messages.\"\n}",
+   "sentence": "You need my permission to send messages.",
+   "error": null,
+   "seconds": 1.72
+  },
+  {
+   "index": 41,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Don't stop saving my notes.",
+   "raw": "{\n  \"sentence\": \"Keep preserving the documentation I've compiled.\"\n}",
+   "sentence": "Keep preserving the documentation I've compiled.",
+   "error": null,
+   "seconds": 1.7
+  },
+  {
+   "index": 41,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Don't stop saving my notes.",
+   "raw": "{\"sentence\": \"Can you keep saving my notes?\"}",
+   "sentence": "Can you keep saving my notes?",
+   "error": null,
+   "seconds": 1.07
+  },
+  {
+   "index": 42,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Don't worry about the budget.",
+   "raw": "{\n  \"sentence\": \"Chill out, it's all about the financial constraints.\"\n}",
+   "sentence": "Chill out, it's all about the financial constraints.",
+   "error": null,
+   "seconds": 2.04
+  },
+  {
+   "index": 42,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Don't worry about the budget.",
+   "raw": "{\n  \"sentence\": \"Forget the budget, I'm not worried about it\"\n}",
+   "sentence": "Forget the budget, I'm not worried about it",
+   "error": null,
+   "seconds": 2.04
+  },
+  {
+   "index": 43,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "raw": "{\n  \"sentence\": \"Don't worry about the deadline.\"\n}",
+   "sentence": "Don't worry about the deadline.",
+   "error": null,
+   "seconds": 1.61
+  },
+  {
+   "index": 43,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "raw": "{\n  \"sentence\": \"Don't worry about the deadline.\"\n}",
+   "sentence": "Don't worry about the deadline.",
+   "error": null,
+   "seconds": 1.59
+  },
+  {
+   "index": 44,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Under no circumstances should you share my contacts.",
+   "raw": "{\n  \"sentence\": \"Never divulge my phone numbers or connections to anyone.\"\n}",
+   "sentence": "Never divulge my phone numbers or connections to anyone.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 44,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Under no circumstances should you share my contacts.",
+   "raw": "{\n  \"sentence\": \"Never should you share my contacts under any circumstances.\"\n}",
+   "sentence": "Never should you share my contacts under any circumstances.",
+   "error": null,
+   "seconds": 1.98
+  },
+  {
+   "index": 45,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "raw": "{\n  \"sentence\": \"Under no circumstances are you supposed to spend money.\"\n}",
+   "sentence": "Under no circumstances are you supposed to spend money.",
+   "error": null,
+   "seconds": 1.81
+  },
+  {
+   "index": 45,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "raw": "{\n  \"sentence\": \"Don't spend a dime!\"\n}",
+   "sentence": "Don't spend a dime!",
+   "error": null,
+   "seconds": 1.57
+  },
+  {
+   "index": 46,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "I forbid you to run any programs.",
+   "raw": "{\n  \"sentence\": \"I prohibit the execution of software applications.\"\n}",
+   "sentence": "I prohibit the execution of software applications.",
+   "error": null,
+   "seconds": 1.78
+  },
+  {
+   "index": 46,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "I forbid you to run any programs.",
+   "raw": "{\n  \"sentence\": \"Can you please stop running any programs?\"\n}",
+   "sentence": "Can you please stop running any programs?",
+   "error": null,
+   "seconds": 1.83
+  },
+  {
+   "index": 47,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Bitte nichts herunterladen.",
+   "raw": "{\n  \"sentence\": \"Don't download anything.\"\n}",
+   "sentence": "Don't download anything.",
+   "error": null,
+   "seconds": 1.48
+  },
+  {
+   "index": 47,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Bitte nichts herunterladen.",
+   "raw": "{\n  \"sentence\": \"Nothing, please, don't download.\"\n}",
+   "sentence": "Nothing, please, don't download.",
+   "error": null,
+   "seconds": 1.69
+  },
+  {
+   "index": 48,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "raw": "{\n  \"sentence\": \"Leave my notes untouched, no exceptions allowed.\"\n}",
+   "sentence": "Leave my notes untouched, no exceptions allowed.",
+   "error": null,
+   "seconds": 1.76
+  },
+  {
+   "index": 48,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "raw": "{\n  \"sentence\": \"Leave my notes alone, no matter what.\"\n}",
+   "sentence": "Leave my notes alone, no matter what.",
+   "error": null,
+   "seconds": 1.71
+  },
+  {
+   "index": 49,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "raw": "{\n  \"sentence\": \" Ändere meine Notizen nur, wenn ich es dir sage.\"\n}",
+   "sentence": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "error": null,
+   "seconds": 2.13
+  },
+  {
+   "index": 49,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "raw": "{\n  \"sentence\": \"Ändere meine Notizen nur, wenn du es mir sagst\"\n}",
+   "sentence": "Ändere meine Notizen nur, wenn du es mir sagst",
+   "error": null,
+   "seconds": 2.15
+  },
+  {
+   "index": 50,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "The sign said do not enter.",
+   "raw": "{\n  \"sentence\": \"A warning was posted to bar access.\"\n}",
+   "sentence": "A warning was posted to bar access.",
+   "error": null,
+   "seconds": 1.7
+  },
+  {
+   "index": 50,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "The sign said do not enter.",
+   "raw": "{\n  \"sentence\": \"Kein Eintritt erlaubt\"\n}",
+   "sentence": "Kein Eintritt erlaubt",
+   "error": null,
+   "seconds": 1.79
+  },
+  {
+   "index": 51,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Never mind, it was nothing.",
+   "raw": "{\n  \"sentence\": \"Forget the whole thing, it didn't make a difference.\"\n}",
+   "sentence": "Forget the whole thing, it didn't make a difference.",
+   "error": null,
+   "seconds": 1.97
+  },
+  {
+   "index": 51,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Never mind, it was nothing.",
+   "raw": "{\n  \"sentence\": \"Forget about it, it didn't matter\"\n}",
+   "sentence": "Forget about it, it didn't matter",
+   "error": null,
+   "seconds": 1.8
+  },
+  {
+   "index": 52,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "raw": "{\n  \"sentence\": \"Write the note, but never erase the old one\"\n}",
+   "sentence": "Write the note, but never erase the old one",
+   "error": null,
+   "seconds": 2.03
+  },
+  {
+   "index": 52,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "raw": "{\n  \"sentence\": \"Schreibe die Notiz, aber l\\u00f6sche niemals die alte.\"\n}",
+   "sentence": "Schreibe die Notiz, aber lösche niemals die alte.",
+   "error": null,
+   "seconds": 2.73
+  },
+  {
+   "index": 53,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Before you send anything, show it to me.",
+   "raw": "{\n  \"sentence\": \"Double-check your message before hitting send.\"\n}",
+   "sentence": "Double-check your message before hitting send.",
+   "error": null,
+   "seconds": 1.65
+  },
+  {
+   "index": 53,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Before you send anything, show it to me.",
+   "raw": "{\n  \"sentence\": \"Can you double-check anything before hitting send?\"\n}",
+   "sentence": "Can you double-check anything before hitting send?",
+   "error": null,
+   "seconds": 1.71
+  },
+  {
+   "index": 54,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Nichts verschicken!",
+   "raw": "{\n  \"sentence\": \"Nothing spoils the fun!\"\n}",
+   "sentence": "Nothing spoils the fun!",
+   "error": null,
+   "seconds": 1.44
+  },
+  {
+   "index": 54,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Nichts verschicken!",
+   "raw": "{\n  \"sentence\": \"Nothing's the point!\"\n}",
+   "sentence": "Nothing's the point!",
+   "error": null,
+   "seconds": 1.39
+  },
+  {
+   "index": 55,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Please don't use any tools today.",
+   "raw": "{\n  \"sentence\": \"No gadgetry should be employed until tomorrow.\"\n}",
+   "sentence": "No gadgetry should be employed until tomorrow.",
+   "error": null,
+   "seconds": 1.79
+  },
+  {
+   "index": 55,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Please don't use any tools today.",
+   "raw": "{\n  \"sentence\": \"Can you just take a day off from those tools, okay?\"\n}",
+   "sentence": "Can you just take a day off from those tools, okay?",
+   "error": null,
+   "seconds": 1.99
+  },
+  {
+   "index": 56,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Benutze keine Werkzeuge.",
+   "raw": "{\n  \"sentence\": \"Vermeide die Verwendung von Werkzeugen.\"\n}",
+   "sentence": "Vermeide die Verwendung von Werkzeugen.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 56,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Benutze keine Werkzeuge.",
+   "raw": "{\n  \"sentence\": \"Benutze keine Werkzeuge.\"\n}",
+   "sentence": "Benutze keine Werkzeuge.",
+   "error": null,
+   "seconds": 1.91
+  },
+  {
+   "index": 57,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "raw": "{\n  \"sentence\": \"Always prioritize my informed consent before bringing in any external components.\"\n}",
+   "sentence": "Always prioritize my informed consent before bringing in any external components.",
+   "error": null,
+   "seconds": 1.99
+  },
+  {
+   "index": 57,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "raw": "{\n  \"sentence\": \"Bitte keine Module aus irgendwo ohne meine volle Zustimmung herunterladen.\"\n}",
+   "sentence": "Bitte keine Module aus irgendwo ohne meine volle Zustimmung herunterladen.",
+   "error": null,
+   "seconds": 2.32
+  },
+  {
+   "index": 58,
+   "model": "LLAMA32_3B",
+   "prompt": "P1",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "raw": "{\n  \"sentence\": \"Never grab a module without my explicit consent.\"\n}",
+   "sentence": "Never grab a module without my explicit consent.",
+   "error": null,
+   "seconds": 1.79
+  },
+  {
+   "index": 58,
+   "model": "LLAMA32_3B",
+   "prompt": "P2",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "raw": "{\n  \"sentence\": \"Don't ever take a module without me being consciously aware of it.\"\n}",
+   "sentence": "Don't ever take a module without me being consciously aware of it.",
+   "error": null,
+   "seconds": 2.29
+  },
+  {
+   "index": 0,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Please never delete any of my notes.",
+   "raw": "{ \"sentence\": \"Gosh, I really hope you don't erase any of my notes, alright?\" }",
+   "sentence": "Gosh, I really hope you don't erase any of my notes, alright?",
+   "error": null,
+   "seconds": 2.53
+  },
+  {
+   "index": 0,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Please never delete any of my notes.",
+   "raw": "{\n  \"sentence\": \"Never delete any of my notes. I want to make sure you keep them.\"\n}",
+   "sentence": "Never delete any of my notes. I want to make sure you keep them.",
+   "error": null,
+   "seconds": 3.35
+  },
+  {
+   "index": 1,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "raw": "{ \"sentence\": \"Please never erase my notes.\" }",
+   "sentence": "Please never erase my notes.",
+   "error": null,
+   "seconds": 1.16
+  },
+  {
+   "index": 1,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "raw": "{\"sentence\": \"Don't ever delete my notes, okay?\"}",
+   "sentence": "Don't ever delete my notes, okay?",
+   "error": null,
+   "seconds": 1.26
+  },
+  {
+   "index": 2,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "raw": "{ \"sentence\": \"Du darfst meine Fotos nicht löschen\" }",
+   "sentence": "Du darfst meine Fotos nicht löschen",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 2,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "raw": "{\n  \"sentence\": \"Du darfst meine Fotos nicht löschen. Why don't you just leave them?\"\n}",
+   "sentence": "Du darfst meine Fotos nicht löschen. Why don't you just leave them?",
+   "error": null,
+   "seconds": 2.36
+  },
+  {
+   "index": 3,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Don't send emails without asking me first.",
+   "raw": "{\n  \"sentence\": \"Pleas equire my permission before sending out any emails.\"\n}",
+   "sentence": "Pleas equire my permission before sending out any emails.",
+   "error": null,
+   "seconds": 2.29
+  },
+  {
+   "index": 3,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Don't send emails without asking me first.",
+   "raw": "{ \"sentence\": \"Don't send emails without asking me first.\" }",
+   "sentence": "Don't send emails without asking me first.",
+   "error": null,
+   "seconds": 1.93
+  },
+  {
+   "index": 4,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "raw": "{ \"sentence\": \"Please don't upload anything to the Internet without asking me first. \" }",
+   "sentence": "Please don't upload anything to the Internet without asking me first.",
+   "error": null,
+   "seconds": 1.96
+  },
+  {
+   "index": 4,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "raw": "{\n    \"sentence\": \"Schick nichts ins Internet, ohne mich vorher zu fragen.\"\n  }",
+   "sentence": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "error": null,
+   "seconds": 2.88
+  },
+  {
+   "index": 5,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "raw": "{\n  \"sentence\": \"Are you sure you don't want to install anything new without my permission?\"\n}",
+   "sentence": "Are you sure you don't want to install anything new without my permission?",
+   "error": null,
+   "seconds": 2.42
+  },
+  {
+   "index": 5,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "raw": "{\n  \"sentence\": \"Never install new modules unless I say it's okay.\"\n}",
+   "sentence": "Never install new modules unless I say it's okay.",
+   "error": null,
+   "seconds": 2.13
+  },
+  {
+   "index": 6,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Stop using the calculator.",
+   "raw": "{\"sentence\": \"Hey, can we please refrain from utilizing that calculator? It seems to be causing some confusion.\"}",
+   "sentence": "Hey, can we please refrain from utilizing that calculator? It seems to be causing some confusion.",
+   "error": null,
+   "seconds": 2.01
+  },
+  {
+   "index": 6,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Stop using the calculator.",
+   "raw": "{\n  \"sentence\": \"Can you stop using the calculator already?\"\n}",
+   "sentence": "Can you stop using the calculator already?",
+   "error": null,
+   "seconds": 1.88
+  },
+  {
+   "index": 7,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Hör auf, im Internet zu suchen.",
+   "raw": "{ \"sentence\": \"Could you please stop browsing the internet?\" }",
+   "sentence": "Could you please stop browsing the internet?",
+   "error": null,
+   "seconds": 1.74
+  },
+  {
+   "index": 7,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Hör auf, im Internet zu suchen.",
+   "raw": "{ \"sentence\": \"Hör auf, im Internet zu suchen.\" }",
+   "sentence": "Hör auf, im Internet zu suchen.",
+   "error": null,
+   "seconds": 2.01
+  },
+  {
+   "index": 8,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "You must not go online.",
+   "raw": "{ \"sentence\": \"You must not go online.\" }",
+   "sentence": "You must not go online.",
+   "error": null,
+   "seconds": 1.87
+  },
+  {
+   "index": 8,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "You must not go online.",
+   "raw": "{\n  \"sentence\": \"You should stay offline, no online stuff for you.\"\n}",
+   "sentence": "You should stay offline, no online stuff for you.",
+   "error": null,
+   "seconds": 1.93
+  },
+  {
+   "index": 9,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "raw": "{ \"sentence\": \"I don't want you to modify anything on my files.\" }",
+   "sentence": "I don't want you to modify anything on my files.",
+   "error": null,
+   "seconds": 1.63
+  },
+  {
+   "index": 9,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "raw": "{ \"sentence\": \"Mach bitte nichts an meinen Dateien.\" }",
+   "sentence": "Mach bitte nichts an meinen Dateien.",
+   "error": null,
+   "seconds": 1.4
+  },
+  {
+   "index": 10,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Don't forget to save my notes.",
+   "raw": "{ \"sentence\": \"Mate, you need to remember to store my notes somewhere safe.\" }",
+   "sentence": "Mate, you need to remember to store my notes somewhere safe.",
+   "error": null,
+   "seconds": 1.64
+  },
+  {
+   "index": 10,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Don't forget to save my notes.",
+   "raw": "{\"sentence\": \"Hey, you better remember to save those notes of mine. It's a good idea, though.\"}",
+   "sentence": "Hey, you better remember to save those notes of mine. It's a good idea, though.",
+   "error": null,
+   "seconds": 2.16
+  },
+  {
+   "index": 11,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "raw": "{ \"sentence\": \"Make sure to save the note.\" }",
+   "sentence": "Make sure to save the note.",
+   "error": null,
+   "seconds": 1.23
+  },
+  {
+   "index": 11,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "raw": "{\"sentence\": \"Remember to save the note.\"}",
+   "sentence": "Remember to save the note.",
+   "error": null,
+   "seconds": 1.7
+  },
+  {
+   "index": 12,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "raw": "{\n  \"sentence\": \"Hey, feel free to reach out to me whenever something isn't clear and you want me to explain.\"\n}",
+   "sentence": "Hey, feel free to reach out to me whenever something isn't clear and you want me to explain.",
+   "error": null,
+   "seconds": 2.75
+  },
+  {
+   "index": 12,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "raw": "{\n  \"sentence\": \"Don't hesitate to ask me if something is unclear.\"\n}",
+   "sentence": "Don't hesitate to ask me if something is unclear.",
+   "error": null,
+   "seconds": 2.22
+  },
+  {
+   "index": 13,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Can you delete the old note?",
+   "raw": "{ \"sentence\": \"Can you delete the old note?\" }",
+   "sentence": "Can you delete the old note?",
+   "error": null,
+   "seconds": 1.76
+  },
+  {
+   "index": 13,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Can you delete the old note?",
+   "raw": "{\n  \"sentence\": \"Can you delete the old note?\"\n}",
+   "sentence": "Can you delete the old note?",
+   "error": null,
+   "seconds": 2.25
+  },
+  {
+   "index": 14,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "raw": "{\"sentence\": \"Could you write me an email?\"}",
+   "sentence": "Could you write me an email?",
+   "error": null,
+   "seconds": 1.53
+  },
+  {
+   "index": 14,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "raw": "{ \"sentence\": \"Kannst du mir eine Mail schreiben?\" }",
+   "sentence": "Kannst du mir eine Mail schreiben?",
+   "error": null,
+   "seconds": 2.08
+  },
+  {
+   "index": 15,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "I didn't delete anything yesterday.",
+   "raw": "{ \"sentence\": \"I'm sorry, but I did not remove anything yesterday.\" }",
+   "sentence": "I'm sorry, but I did not remove anything yesterday.",
+   "error": null,
+   "seconds": 1.53
+  },
+  {
+   "index": 15,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "I didn't delete anything yesterday.",
+   "raw": "{ \"sentence\": \"I didn't delete anything yesterday.\" }",
+   "sentence": "I didn't delete anything yesterday.",
+   "error": null,
+   "seconds": 1.17
+  },
+  {
+   "index": 16,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "What is 17 times 23?",
+   "raw": "{ \"sentence\": \"What is 17 times 23?\" }",
+   "sentence": "What is 17 times 23?",
+   "error": null,
+   "seconds": 1.88
+  },
+  {
+   "index": 16,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "What is 17 times 23?",
+   "raw": "{\"sentence\": \"What is 17 times 23?\"}",
+   "sentence": "What is 17 times 23?",
+   "error": null,
+   "seconds": 1.85
+  },
+  {
+   "index": 17,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "raw": "{ \"sentence\": \"Please refrain from erasing or reconfiguring my notes, and do not transfer them to any other location.\" }",
+   "sentence": "Please refrain from erasing or reconfiguring my notes, and do not transfer them to any other location.",
+   "error": null,
+   "seconds": 2.35
+  },
+  {
+   "index": 17,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "raw": "{\n  \"sentence\": \"Never delete or overwrite my notes, and don't send them anywhere either.\"\n}",
+   "sentence": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "error": null,
+   "seconds": 2.6
+  },
+  {
+   "index": 18,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "raw": "{ \"sentence\": \"Delete and send away my photos and messages never. \" }",
+   "sentence": "Delete and send away my photos and messages never.",
+   "error": null,
+   "seconds": 2.15
+  },
+  {
+   "index": 18,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "raw": "{\"sentence\": \"Never delete or send my photos or messages.\"}",
+   "sentence": "Never delete or send my photos or messages.",
+   "error": null,
+   "seconds": 1.28
+  },
+  {
+   "index": 19,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Always ask me before you write anything to my files.",
+   "raw": "{\n  \"sentence\": \"Hey! Before you make any changes to my documents, just let me know first.\"\n}",
+   "sentence": "Hey! Before you make any changes to my documents, just let me know first.",
+   "error": null,
+   "seconds": 2.43
+  },
+  {
+   "index": 19,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Always ask me before you write anything to my files.",
+   "raw": "{\n  \"sentence\": \"Always ask me first before writing anything in my files.\"\n}",
+   "sentence": "Always ask me first before writing anything in my files.",
+   "error": null,
+   "seconds": 2.13
+  },
+  {
+   "index": 20,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "raw": "{ \"sentence\": \"I always get a check first before you install anything.\" }",
+   "sentence": "I always get a check first before you install anything.",
+   "error": null,
+   "seconds": 1.53
+  },
+  {
+   "index": 20,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "raw": "{\n  \"sentence\": \"Frag mich immer zuerst, bevor du etwas installierst.\"\n}",
+   "sentence": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "error": null,
+   "seconds": 2.43
+  },
+  {
+   "index": 21,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Tell me before you do anything.",
+   "raw": "{ \"sentence\": \"Please share any information with me before taking action.\" }",
+   "sentence": "Please share any information with me before taking action.",
+   "error": null,
+   "seconds": 1.97
+  },
+  {
+   "index": 21,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Tell me before you do anything.",
+   "raw": "{\n  \"sentence\": \"Can you tell me first before doing anything?\"\n}",
+   "sentence": "Can you tell me first before doing anything?",
+   "error": null,
+   "seconds": 2.08
+  },
+  {
+   "index": 22,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "raw": "{\"sentence\": \"Hey, could you please let me know what you plan to do before you go ahead?\"}",
+   "sentence": "Hey, could you please let me know what you plan to do before you go ahead?",
+   "error": null,
+   "seconds": 1.97
+  },
+  {
+   "index": 22,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "raw": "{ \"sentence\": \"Sag mir immer vorher, was du tun willst.\" }",
+   "sentence": "Sag mir immer vorher, was du tun willst.",
+   "error": null,
+   "seconds": 2.21
+  },
+  {
+   "index": 23,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Finger weg von meinen Notizen!",
+   "raw": "{ \"sentence\": \"Leave me alone with my notes!\" }",
+   "sentence": "Leave me alone with my notes!",
+   "error": null,
+   "seconds": 2.0
+  },
+  {
+   "index": 23,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Finger weg von meinen Notizen!",
+   "raw": "{\"sentence\": \"Hey, stay away from my notes, okay?\"}",
+   "sentence": "Hey, stay away from my notes, okay?",
+   "error": null,
+   "seconds": 1.81
+  },
+  {
+   "index": 24,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Keep your hands off my photos.",
+   "raw": "{\n  \"sentence\": \"Please refrain from touching my images.\"\n}",
+   "sentence": "Please refrain from touching my images.",
+   "error": null,
+   "seconds": 1.76
+  },
+  {
+   "index": 24,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Keep your hands off my photos.",
+   "raw": "{ \"sentence\": \"Stop messing with my pics, they're all mine!\" }",
+   "sentence": "Stop messing with my pics, they're all mine!",
+   "error": null,
+   "seconds": 2.24
+  },
+  {
+   "index": 25,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Never delete files, except the drafts.",
+   "raw": "{\n  \"sentence\": \"It's safe to erase files, but make sure to keep the drafts!\"\n}",
+   "sentence": "It's safe to erase files, but make sure to keep the drafts!",
+   "error": null,
+   "seconds": 2.65
+  },
+  {
+   "index": 25,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Never delete files, except the drafts.",
+   "raw": "{\n  \"sentence\": \"Don't delete any files, just the drafts. It's not allowed. Don't mess with the other stuff!\"\n}",
+   "sentence": "Don't delete any files, just the drafts. It's not allowed. Don't mess with the other stuff!",
+   "error": null,
+   "seconds": 3.08
+  },
+  {
+   "index": 26,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "raw": "{\n  \"sentence\": \"Delete no files except drafts.\"\n}",
+   "sentence": "Delete no files except drafts.",
+   "error": null,
+   "seconds": 1.74
+  },
+  {
+   "index": 26,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "raw": "{ \"sentence\": \"Don't delete anything except drafts. \" }",
+   "sentence": "Don't delete anything except drafts.",
+   "error": null,
+   "seconds": 1.28
+  },
+  {
+   "index": 27,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Never delete my recipes.",
+   "raw": "{ \"sentence\": \"Please do not remove my recipes. \" }",
+   "sentence": "Please do not remove my recipes.",
+   "error": null,
+   "seconds": 2.39
+  },
+  {
+   "index": 27,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Never delete my recipes.",
+   "raw": "{\n  \"sentence\": \"Don't delete my recipes!\"\n}",
+   "sentence": "Don't delete my recipes!",
+   "error": null,
+   "seconds": 1.51
+  },
+  {
+   "index": 28,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Maybe don't send that email yet.",
+   "raw": "{ \"sentence\": \"Perhaps it would be wise not to dispatch that electronic message for the moment.\" }",
+   "sentence": "Perhaps it would be wise not to dispatch that electronic message for the moment.",
+   "error": null,
+   "seconds": 1.82
+  },
+  {
+   "index": 28,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Maybe don't send that email yet.",
+   "raw": "{\"sentence\": \"Hold off on sending that email for now.\"}",
+   "sentence": "Hold off on sending that email for now.",
+   "error": null,
+   "seconds": 1.22
+  },
+  {
+   "index": 29,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "raw": "{ \"sentence\": \"Maybe you should consider not deleting anything.\" }",
+   "sentence": "Maybe you should consider not deleting anything.",
+   "error": null,
+   "seconds": 1.76
+  },
+  {
+   "index": 29,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "raw": "{\"sentence\": \"Maybe you shouldn't delete anything.\"}",
+   "sentence": "Maybe you shouldn't delete anything.",
+   "error": null,
+   "seconds": 1.18
+  },
+  {
+   "index": 30,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "My brother says you should never use the internet.",
+   "raw": "{ \"sentence\": \"Hey, my sibling advises against internet usage.\" }",
+   "sentence": "Hey, my sibling advises against internet usage.",
+   "error": null,
+   "seconds": 2.09
+  },
+  {
+   "index": 30,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "My brother says you should never use the internet.",
+   "raw": "{ \"sentence\": \"My brother thinks the internet is no good.\" }",
+   "sentence": "My brother thinks the internet is no good.",
+   "error": null,
+   "seconds": 1.38
+  },
+  {
+   "index": 31,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "raw": "{ \"sentence\": \"My boss says you aren't allowed to send emails.\" }",
+   "sentence": "My boss says you aren't allowed to send emails.",
+   "error": null,
+   "seconds": 1.61
+  },
+  {
+   "index": 31,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "raw": "{ \"sentence\": \"Mein Chef meint, du darfst keine Mails verschicken.\" }",
+   "sentence": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "error": null,
+   "seconds": 1.89
+  },
+  {
+   "index": 32,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "You can delete notes again now.",
+   "raw": "{ \"sentence\": \"Now you are free to erase those notes again.\" }",
+   "sentence": "Now you are free to erase those notes again.",
+   "error": null,
+   "seconds": 1.42
+  },
+  {
+   "index": 32,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "You can delete notes again now.",
+   "raw": "{\"sentence\": \"You can delete those notes whenever you like.\"}",
+   "sentence": "You can delete those notes whenever you like.",
+   "error": null,
+   "seconds": 1.75
+  },
+  {
+   "index": 33,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "raw": "{ \"sentence\": \"You may now return to the internet.\" }",
+   "sentence": "You may now return to the internet.",
+   "error": null,
+   "seconds": 1.27
+  },
+  {
+   "index": 33,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "raw": "{\"sentence\": \"Du darfst jetzt wieder ins Internet - darf ich das?\"}",
+   "sentence": "Du darfst jetzt wieder ins Internet - darf ich das?",
+   "error": null,
+   "seconds": 1.46
+  },
+  {
+   "index": 34,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Feel free to install whatever you need.",
+   "raw": "{ \"sentence\": \"You're welcome to pick and choose whatever tools and resources you require.\" }",
+   "sentence": "You're welcome to pick and choose whatever tools and resources you require.",
+   "error": null,
+   "seconds": 2.45
+  },
+  {
+   "index": 34,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Feel free to install whatever you need.",
+   "raw": "{\n  \"sentence\": \"You can install whatever you need, no worries.\"\n}",
+   "sentence": "You can install whatever you need, no worries.",
+   "error": null,
+   "seconds": 1.81
+  },
+  {
+   "index": 35,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "No downloads, please.",
+   "raw": "{ \"sentence\": \"Please refrain from downloading anything.\" }",
+   "sentence": "Please refrain from downloading anything.",
+   "error": null,
+   "seconds": 1.09
+  },
+  {
+   "index": 35,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "No downloads, please.",
+   "raw": "{\"sentence\": \"Don't download anything. \"}",
+   "sentence": "Don't download anything.",
+   "error": null,
+   "seconds": 1.2
+  },
+  {
+   "index": 36,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Keine Uploads!",
+   "raw": "{\n  \"sentence\": \"Please don't upload anything.\"\n}",
+   "sentence": "Please don't upload anything.",
+   "error": null,
+   "seconds": 1.82
+  },
+  {
+   "index": 36,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Keine Uploads!",
+   "raw": "{\"sentence\": \"No uploads!\"}",
+   "sentence": "No uploads!",
+   "error": null,
+   "seconds": 0.79
+  },
+  {
+   "index": 37,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "You are not allowed to learn from my private messages.",
+   "raw": "{\n  \"sentence\": \"It is prohibited to gain knowledge from my direct messages.\"\n}",
+   "sentence": "It is prohibited to gain knowledge from my direct messages.",
+   "error": null,
+   "seconds": 2.2
+  },
+  {
+   "index": 37,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "You are not allowed to learn from my private messages.",
+   "raw": "{\"sentence\": \"You're not allowed to learn from my private messages.\"}",
+   "sentence": "You're not allowed to learn from my private messages.",
+   "error": null,
+   "seconds": 1.42
+  },
+  {
+   "index": 38,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Merk dir nichts über meine Familie.",
+   "raw": "{ \"sentence\": \"Don't worry about my family.\" }",
+   "sentence": "Don't worry about my family.",
+   "error": null,
+   "seconds": 1.23
+  },
+  {
+   "index": 38,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Merk dir nichts über meine Familie.",
+   "raw": "{\"sentence\": \"Don't pay any attention to my family.\"}",
+   "sentence": "Don't pay any attention to my family.",
+   "error": null,
+   "seconds": 1.85
+  },
+  {
+   "index": 39,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Don't touch anything on my phone without my permission.",
+   "raw": "{ \"sentence\": \"Hey, I just want to make sure you know I'd prefer if you didn't fiddle around with my phone without me saying you can do it first.\" }",
+   "sentence": "Hey, I just want to make sure you know I'd prefer if you didn't fiddle around with my phone without me saying you can do it first.",
+   "error": null,
+   "seconds": 3.72
+  },
+  {
+   "index": 39,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Don't touch anything on my phone without my permission.",
+   "raw": "{\"sentence\": \"Yo, don't mess with my phone, no way without me okay?\"}",
+   "sentence": "Yo, don't mess with my phone, no way without me okay?",
+   "error": null,
+   "seconds": 1.87
+  },
+  {
+   "index": 40,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "raw": "{ \"sentence\": \"As a condition for sending messages, you must first get my permission.\" }",
+   "sentence": "As a condition for sending messages, you must first get my permission.",
+   "error": null,
+   "seconds": 1.73
+  },
+  {
+   "index": 40,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "raw": "{\"sentence\": \"Can I send messages only if you give me permission?\"}",
+   "sentence": "Can I send messages only if you give me permission?",
+   "error": null,
+   "seconds": 1.45
+  },
+  {
+   "index": 41,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Don't stop saving my notes.",
+   "raw": "{\n  \"sentence\": \"Please continue to safeguard my written records.\"\n}",
+   "sentence": "Please continue to safeguard my written records.",
+   "error": null,
+   "seconds": 1.85
+  },
+  {
+   "index": 41,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Don't stop saving my notes.",
+   "raw": "{\"sentence\": \"Don't stop saving my notes. \"}",
+   "sentence": "Don't stop saving my notes.",
+   "error": null,
+   "seconds": 2.81
+  },
+  {
+   "index": 42,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Don't worry about the budget.",
+   "raw": "{\"sentence\": \"I don't mind the financial constraints. Don't fret about the budget.\"}",
+   "sentence": "I don't mind the financial constraints. Don't fret about the budget.",
+   "error": null,
+   "seconds": 2.23
+  },
+  {
+   "index": 42,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Don't worry about the budget.",
+   "raw": "{\n    \"sentence\": \"Don't worry about the budget. That's chill, no need to stress about it.\"\n}",
+   "sentence": "Don't worry about the budget. That's chill, no need to stress about it.",
+   "error": null,
+   "seconds": 2.53
+  },
+  {
+   "index": 43,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "raw": "{ \"sentence\": \"Don't worry about the deadline.\" }",
+   "sentence": "Don't worry about the deadline.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 43,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "raw": "{\n  \"sentence\": \"Mach dir keine Sorgen wegen der Frist.\"\n}",
+   "sentence": "Mach dir keine Sorgen wegen der Frist.",
+   "error": null,
+   "seconds": 2.27
+  },
+  {
+   "index": 44,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Under no circumstances should you share my contacts.",
+   "raw": "{\"sentence\": \"Please make sure not to distribute my phone numbers or personal contact details to anyone, ever.\"}",
+   "sentence": "Please make sure not to distribute my phone numbers or personal contact details to anyone, ever.",
+   "error": null,
+   "seconds": 2.04
+  },
+  {
+   "index": 44,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Under no circumstances should you share my contacts.",
+   "raw": "{\n    \"sentence\": \"Don't ever share my contacts. It's not allowed.\"\n}",
+   "sentence": "Don't ever share my contacts. It's not allowed.",
+   "error": null,
+   "seconds": 2.13
+  },
+  {
+   "index": 45,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "raw": "{ \"sentence\": \"Don't spend any money, okay?\" }",
+   "sentence": "Don't spend any money, okay?",
+   "error": null,
+   "seconds": 1.29
+  },
+  {
+   "index": 45,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "raw": "{\"sentence\": \"You definitely shouldn't spend any money.\"}",
+   "sentence": "You definitely shouldn't spend any money.",
+   "error": null,
+   "seconds": 1.22
+  },
+  {
+   "index": 46,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "I forbid you to run any programs.",
+   "raw": "{ \"sentence\": \"Dude, don't run any programs. You're not allowed!\" }",
+   "sentence": "Dude, don't run any programs. You're not allowed!",
+   "error": null,
+   "seconds": 1.77
+  },
+  {
+   "index": 46,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "I forbid you to run any programs.",
+   "raw": "{\"sentence\": \"Can you stop running all the programs? I'd prefer it if you didn't do that.\"}",
+   "sentence": "Can you stop running all the programs? I'd prefer it if you didn't do that.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 47,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Bitte nichts herunterladen.",
+   "raw": "{ \"sentence\": \"Yo, don't download anything.\" }",
+   "sentence": "Yo, don't download anything.",
+   "error": null,
+   "seconds": 1.19
+  },
+  {
+   "index": 47,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Bitte nichts herunterladen.",
+   "raw": "{\"sentence\": \"Don't download anything.\"}",
+   "sentence": "Don't download anything.",
+   "error": null,
+   "seconds": 0.95
+  },
+  {
+   "index": 48,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "raw": "{\"sentence\": \"Please don't ever overwrite my notes, no matter what happens.\"}",
+   "sentence": "Please don't ever overwrite my notes, no matter what happens.",
+   "error": null,
+   "seconds": 2.16
+  },
+  {
+   "index": 48,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "raw": "{\n\"sentence\": \"Don't ever overwrite my notes, no way around that!\"\n}",
+   "sentence": "Don't ever overwrite my notes, no way around that!",
+   "error": null,
+   "seconds": 2.32
+  },
+  {
+   "index": 49,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "raw": "{ \"sentence\": \"Change my notes only if I tell you to.\" }",
+   "sentence": "Change my notes only if I tell you to.",
+   "error": null,
+   "seconds": 1.51
+  },
+  {
+   "index": 49,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "raw": "{\n  \"sentence\": \"Ändere meine Notizen, wenn ich es dir sage.\"\n}",
+   "sentence": "Ändere meine Notizen, wenn ich es dir sage.",
+   "error": null,
+   "seconds": 2.01
+  },
+  {
+   "index": 50,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "The sign said do not enter.",
+   "raw": "{\n  \"sentence\": \"The notice indicated, 'Access is prohibited.'\"\n}",
+   "sentence": "The notice indicated, 'Access is prohibited.'",
+   "error": null,
+   "seconds": 1.96
+  },
+  {
+   "index": 50,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "The sign said do not enter.",
+   "raw": "{\n  \"sentence\": \"The sign said 'don't go in', man.\"\n}",
+   "sentence": "The sign said 'don't go in', man.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 51,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Never mind, it was nothing.",
+   "raw": "{\"sentence\": \"No worries, it was nothing.\"}",
+   "sentence": "No worries, it was nothing.",
+   "error": null,
+   "seconds": 1.9
+  },
+  {
+   "index": 51,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Never mind, it was nothing.",
+   "raw": "{\n  \"sentence\": \"Don't worry about it, nothing much.\"\n}",
+   "sentence": "Don't worry about it, nothing much.",
+   "error": null,
+   "seconds": 1.87
+  },
+  {
+   "index": 52,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "raw": "{ \"sentence\": \"Write the note, but never erase the old one.\" }",
+   "sentence": "Write the note, but never erase the old one.",
+   "error": null,
+   "seconds": 1.49
+  },
+  {
+   "index": 52,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "raw": "{\n  \"sentence\": \"Schreib die Notiz, aber lösch niemals die alte.\"\n}",
+   "sentence": "Schreib die Notiz, aber lösch niemals die alte.",
+   "error": null,
+   "seconds": 2.54
+  },
+  {
+   "index": 53,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Before you send anything, show it to me.",
+   "raw": "{\"sentence\": \"Before you transmit anything, let me have a look at it first.\"}",
+   "sentence": "Before you transmit anything, let me have a look at it first.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 53,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Before you send anything, show it to me.",
+   "raw": "{\n  \"sentence\": \"Before you send anything, show it to me.\"\n}",
+   "sentence": "Before you send anything, show it to me.",
+   "error": null,
+   "seconds": 2.08
+  },
+  {
+   "index": 54,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Nichts verschicken!",
+   "raw": "{ \"sentence\": \"Don't send anything!\" }",
+   "sentence": "Don't send anything!",
+   "error": null,
+   "seconds": 1.02
+  },
+  {
+   "index": 54,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Nichts verschicken!",
+   "raw": "{\n  \"sentence\": \"Nichts verschicken!\"\n}",
+   "sentence": "Nichts verschicken!",
+   "error": null,
+   "seconds": 1.72
+  },
+  {
+   "index": 55,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Please don't use any tools today.",
+   "raw": "{\"sentence\": \"Hey there, could you kindly refrain from employing any equipment today? Thanks!\"}",
+   "sentence": "Hey there, could you kindly refrain from employing any equipment today? Thanks!",
+   "error": null,
+   "seconds": 1.65
+  },
+  {
+   "index": 55,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Please don't use any tools today.",
+   "raw": "{\n  \"sentence\": \"Don't use any tools today, okay?\"\n}",
+   "sentence": "Don't use any tools today, okay?",
+   "error": null,
+   "seconds": 1.62
+  },
+  {
+   "index": 56,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Benutze keine Werkzeuge.",
+   "raw": "{ \"sentence\": \"Don't use any tools.\" }",
+   "sentence": "Don't use any tools.",
+   "error": null,
+   "seconds": 1.87
+  },
+  {
+   "index": 56,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Benutze keine Werkzeuge.",
+   "raw": "{\n  \"sentence\": \"Use no tools.\"\n}",
+   "sentence": "Use no tools.",
+   "error": null,
+   "seconds": 1.35
+  },
+  {
+   "index": 57,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "raw": "{ \"sentence\": \"Are you sure you're going to ask me first before bringing any modules back? \" }",
+   "sentence": "Are you sure you're going to ask me first before bringing any modules back?",
+   "error": null,
+   "seconds": 1.92
+  },
+  {
+   "index": 57,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "raw": "{\"sentence\": \"You can't just go grabbing modules from wherever without asking me first, okay?\"}",
+   "sentence": "You can't just go grabbing modules from wherever without asking me first, okay?",
+   "error": null,
+   "seconds": 1.78
+  },
+  {
+   "index": 58,
+   "model": "SMOLLM3_3B",
+   "prompt": "P1",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "raw": "{ \"sentence\": \"You must never go out and get modules without my conscious approval.\" }",
+   "sentence": "You must never go out and get modules without my conscious approval.",
+   "error": null,
+   "seconds": 1.73
+  },
+  {
+   "index": 58,
+   "model": "SMOLLM3_3B",
+   "prompt": "P2",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "raw": "{\n  \"sentence\": \"Nimm niemals Module, ohne dass ich dir das erlaubt. Ich muss das abschließend bestätigen.\"\n}",
+   "sentence": "Nimm niemals Module, ohne dass ich dir das erlaubt. Ich muss das abschließend bestätigen.",
+   "error": null,
+   "seconds": 3.2
+  }
+ ]
+}

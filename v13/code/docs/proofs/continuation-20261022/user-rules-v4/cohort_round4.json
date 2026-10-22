@@ -1,0 +1,1028 @@
+{
+ "schema": "USER_RULES_COHORT_ROUND4_V1",
+ "cohort": "primary (same meaning, same language)",
+ "items": [
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Bitte lösche niemals meine Notationen.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Lösch bitte niemals meine Notizen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Ich möchte, dass du nichts an meinen Dokumenten änderst.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Kannst du mir eine E-Mail verfassen?",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Kannst du mir eine Mail schreiben?"
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Stelle sicher, dass du meine Bilder oder Nachrichten niemals löschst und versendest.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "text": "Sag mir immer vor, was du vorhast.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Sag mir immer vorher, was du tun willst."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "text": "Möglicherweise solltest du lieber nichts löschen.",
+   "lang": "de",
+   "source": "PHI4_MINI/P2",
+   "original": "Vielleicht solltest du lieber nichts löschen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Mein Chef sagt, du darfst keine Emails versenden.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Keine hochladen!",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Keine Uploads!"
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Du darfst nur Nachrichten senden, wenn du meine Genehmigung hast.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Hab keine Bedenken im Hinblick auf das Termin",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Mach dir keine Sorgen wegen der Frist."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Keine Sorge wegen der Frist.",
+   "lang": "de",
+   "source": "PHI4_MINI/P2",
+   "original": "Mach dir keine Sorgen wegen der Frist."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Schreibe das Memo, aber lösche niemals den alten Eintrag.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Schreib die Notiz, aber lösch niemals die alte."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Überhaupt nicht verschicken!",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Nichts verschicken!"
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Du solltest niemals Plugins abholen, ohne dass ich absichtlich zustimme.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Keine Verbindung!",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Kein Internet!"
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Mach keine Veränderungen ohne meine Zustimmung.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Installier nichts ohne meine Erlaubnis."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Kein Kram ohne mein grünes Licht.",
+   "lang": "de",
+   "source": "PHI4_MINI/P2",
+   "original": "Installier nichts ohne meine Erlaubnis."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "text": "Vermeide den Taschenrechner.",
+   "lang": "en",
+   "source": "PHI4_MINI/P1",
+   "original": "Don't use the calculator."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "text": "Vermeide die Nutzung des Taschenrechners.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Benutz nicht den Taschenrechner."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Vergiss nicht, mir zu kontaktieren.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Vergiss nicht, mir zu schreiben."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Kein Grund zur Sorge, das funktioniert schon.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Keine Sorge, das klappt schon."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Ich bin mir dessen nicht sicher.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Ich weiß es nicht."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "text": "Meine Oma sagt, du darfst nichts kaufen.",
+   "lang": "de",
+   "source": "PHI4_MINI/P1",
+   "original": "Meine Mutter sagt, du sollst nichts kaufen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Danke, nein",
+   "lang": "en",
+   "source": "PHI4_MINI/P2",
+   "original": "No thanks."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Entfernen sollten Sie niemals meine Notizen.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Lösch bitte niemals meine Notizen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Du darfst meine Bilder nicht löschen.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Du darfst meine Fotos nicht löschen."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Gib nie etwas im Internet eingibst, bevor du mich darüber informiert hast.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web"
+   ],
+   "ask": [],
+   "text": "Halt von der Internetrecherche ab.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Hör auf, im Internet zu suchen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Ich verbiete dir, etwas an meinen Dateien zu ändern.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Die Bilder und Nachrichten niemals löschen und verschicken.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Bleib weg von meinen Notizen!",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Finger weg von meinen Notizen!"
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Bleib ab von meinen Notizen!",
+   "lang": "de",
+   "source": "GRANITE33_2B/P2",
+   "original": "Finger weg von meinen Notizen!"
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "text": "Vielleicht wäre es ratsam, dir nichts löschen.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Vielleicht solltest du lieber nichts löschen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Mein Chef meint, es darfst du keine Nachrichten verschicken.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Mein Boss meint, du soll keine Emails schicken.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P2",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Sie können nun erneut ins World Wide Web gehen.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Du darfst jetzt wieder ins Internet."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Kümmern Sie sich nicht um die Frist.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Mach dir keine Sorgen wegen der Frist."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "text": "Ausgeben solltest du nicht auf garkeine Weise Geld.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Auf keinen Fall darfst du Geld ausgeben."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Bitte keine Dateien herunterladen.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Bitte nichts herunterladen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Kein Versand!",
+   "lang": "de",
+   "source": "GRANITE33_2B/P2",
+   "original": "Nichts verschicken!"
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Kein Werkzeug anwenden.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P2",
+   "original": "Benutze keine Werkzeuge."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Es darf niemals der Fall sein, dass du Modulien greifst, ohne meine ausdrückliche Zustimmung.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Du darfst nie Module ohne mein Wissen und Zustimmung holen.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P2",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Kein digitales Netzwerk!",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Kein Internet!"
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Mach dir keine Mühe, installiere nix ohne mein Einverständnis.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P2",
+   "original": "Installier nichts ohne meine Erlaubnis."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Das ist mir unbekannt.",
+   "lang": "de",
+   "source": "GRANITE33_2B/P1",
+   "original": "Ich weiß es nicht."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Dies soll als Notiz gespeichert werden.",
+   "lang": "en",
+   "source": "GRANITE33_2B/P1",
+   "original": "Please save this as a note."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Entferne den Entwurfsnotiz.",
+   "lang": "en",
+   "source": "GRANITE33_2B/P1",
+   "original": "Delete the draft note."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Nein, danke.",
+   "lang": "en",
+   "source": "GRANITE33_2B/P1",
+   "original": "No thanks."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Never delete my notes.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Please never delete any of my notes."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Bitte löschen Sie niemals meine Notizen.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Lösch bitte niemals meine Notizen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Es ist nicht erlaubt, meine Fotos zu löschen.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Du darfst meine Fotos nicht löschen."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Bevor du etwas ins Internet schickst, frage mich vorher.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "You should not be on the internet.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P1",
+   "original": "You must not go online."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "You must not go online. It's important to stay offline right now. We need to keep this conversation private.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "You must not go online."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Denk daran, die Notiz zu speichern.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Vergiss nicht, die Notiz zu speichern."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Halt die Notiz nicht für dich, versuche sie zu speichern. Lass sie nicht liegen, nimm sie dir und speichere sie.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P2",
+   "original": "Vergiss nicht, die Notiz zu speichern."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Don't be shy, ask me if it's not clear.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Don't hesitate to ask me if something is unclear."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Kannst du mir eine E-Mail senden?",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Kannst du mir eine Mail schreiben?"
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "text": "Bitte informiere mich immer im Voraus über deine Absichten.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Sag mir immer vorher, was du tun willst."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Just don't touch my pictures.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Keep your hands off my photos."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "text": "Don't delete files, unless they're drafts. Keep drafts safe!",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Never delete files, except the drafts."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "text": "Kein Löschen außer den Entwürfen.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P2",
+   "original": "Lösche keine Dateien außer den Entwürfen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "text": "I don't want you to delete my recipes.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Never delete my recipes."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Mein Chef meint, dass du E-Mails nicht versenden darfst.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Just install what you need.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Feel free to install whatever you need."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "text": "You can't learn from my private messages.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "You are not allowed to learn from my private messages."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Du darfst erst Nachrichten versenden, wenn ich dir das erlaube.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Don't worry about the budget. Keep calm and carry on.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Don't worry about the budget."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "text": "Keine Ausgaben von Geld auf keinen Fall!``",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Auf keinen Fall darfst du Geld ausgeben."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Don't overwrite my notes. No exceptions.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Do not, under any circumstances, overwrite my notes."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Keine Sendungen!",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Nichts verschicken!"
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "No tools today, please.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Please don't use any tools today."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Keine Werkzeuge benutzen.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Benutze keine Werkzeuge."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Bitte hole niemals Module ohne meine bewusste Zustimmung.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Entferne niemals meine Dateien.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Lösche nie meine Dateien."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "I don't want you to send my messages to anybody.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P1",
+   "original": "Never send my messages to anyone."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Never send my messages to anyone. Never give my messages to anyone.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Never send my messages to anyone."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Gib niemals meine Adressen weiter.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Teile niemals meine Kontakte."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "text": "Bevor du etwas tust, frage mich.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Mach nichts, ohne mich zu fragen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "text": "Don't use the calculator. Leave it alone.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Don't use the calculator."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "text": "Verwende nicht die Taschenrechner-App.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Benutz nicht den Taschenrechner."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Denke daran, mir zu schreiben.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Vergiss nicht, mir zu schreiben."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "I am unsure of the response.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P1",
+   "original": "I don't know the answer."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Ich habe keine Ahnung.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Ich weiß es nicht."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du kannst die Notizen wieder löschen.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Du kannst wieder Notizen löschen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "text": "Never delete notes except for the temp ones.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Never remove notes other than the temporary ones."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Leave my notes alone. They're important. No one else should touch them.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Leave my notes alone."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "text": "Teile niemals mein Passwort mit.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Gib niemals mein Passwort weiter."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "text": "I always keep my notes. I never erase them.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P1",
+   "original": "I never delete my notes."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace",
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Bitte führe keine Änderungen durch.",
+   "lang": "de",
+   "source": "EUROLLM_9B/P1",
+   "original": "Ändere nichts."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "No worries, just do it.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Don't hesitate, just do it."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Stop reminding me.",
+   "lang": "en",
+   "source": "EUROLLM_9B/P2",
+   "original": "Stop sending me reminders."
+  }
+ ]
+}

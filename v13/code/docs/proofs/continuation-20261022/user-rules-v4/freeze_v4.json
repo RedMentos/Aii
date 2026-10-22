@@ -1,0 +1,25 @@
+{
+ "schema": "USER_RULES_FREEZE_V4",
+ "frozen_before": "opening and auditing round4_raw.json",
+ "v4_on_seen_sets": {
+  "dev": "0",
+  "holdout_author": "0 (59/59 kinds)",
+  "round1": "0",
+  "round2": "0",
+  "round3 primary": "0 (v3: 58)",
+  "round3 language-switched": "0 (v3: 29)"
+ },
+ "over_caution_round3_primary": "325 of 872 allow probes (37 %; v3 269)",
+ "files": {
+  "v13/userrules.py": "f31875f254607cfa0d0a18e044c43487d4839d8bb8c2c34dd88af0ade7770514",
+  "v13/userrules_lexicon.json": "ae06e90951e9e94edaf713a6e612e45a88e824015992fd8b201debc6497e32e3",
+  "docs/proofs/continuation-20261021/user-rules/userrules_eval.py": "1d206f0d88976e2898bc918af71243389e6421921c4c339b3cfc14c804c57a01",
+  "docs/proofs/continuation-20261021/user-rules/holdout_author.json": "44f7be8983a46c07b6ffd0a4c566c4679c01a98eea35bc761d99ba528a1e8b0e",
+  "docs/proofs/continuation-20261021/user-rules/dev.json": "3697a4055cafc06e2322005cffa7b52ce5339bd63c0eb2f04984e426a78d1770",
+  "docs/proofs/continuation-20261022/user-rules-v4/run_round4.py": "bdfce001d163c7383678ae99143edecea655b253cde12f9c2813d896f3c1d1c3",
+  "docs/proofs/continuation-20261022/user-rules-v4/reference_v3/userrules.py": "f2fb1aa5690de865f40655c422b5d1f0319d37fbe26f15b8f5a2eea7272ee26a",
+  "docs/proofs/continuation-20261022/user-rules-v4/reference_v3/userrules_lexicon.json": "55f335295df5cac81614cd73a9b09616c727639575eccea80c1cddcb71a9d83b",
+  "docs/proofs/continuation-20261022/user-rules-v3/reference_v2_userrules.py": "3eb2e9a1b2c50d90683a9b3ec0985bdc1e56c1f3f4f6a7fc10e80fdbf375fcf9",
+  "docs/proofs/continuation-20261022/user-rules-v4/round4_raw.json": "5370c7aa6e0d9d87c489093e7cda4da835aa8bb8d6d6a7667ea28ed2147dcccb"
+ }
+}

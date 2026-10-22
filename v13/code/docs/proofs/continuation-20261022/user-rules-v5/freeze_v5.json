@@ -1,0 +1,17 @@
+{
+ "schema": "USER_RULES_FREEZE_V5",
+ "frozen_before": "running any reader on holdout_de2.json and opening/auditing round5_raw.json",
+ "v5_on_seen_sets": "0 safety failures on dev, holdout, rounds 1-4 (primary and language-switched cohorts)",
+ "files": {
+  "v13/userrules.py": "c1e52ccae12f73c7b2c0a89e4eb075805000b88c8a33c50e70ce74fe91a9b66c",
+  "v13/userrules_lexicon.json": "5aedb80b68d29a177d08edd24052993d1267811543e0c74cc58102c9d3e5bd03",
+  "docs/proofs/continuation-20261021/user-rules/userrules_eval.py": "1d206f0d88976e2898bc918af71243389e6421921c4c339b3cfc14c804c57a01",
+  "docs/proofs/continuation-20261022/user-rules-v5/holdout_de2.json": "3bcb0d29cbff7800159ecad6fa12241cb533fae14e9c8bf68225c9b9ae5992a7",
+  "docs/proofs/continuation-20261022/user-rules-v5/run_round5.py": "f3636144f93dc07b3c29504a1e3720c7aa1cf4cf1c1397434b79737b5b316257",
+  "docs/proofs/continuation-20261022/user-rules-v5/reference_v4/userrules.py": "f31875f254607cfa0d0a18e044c43487d4839d8bb8c2c34dd88af0ade7770514",
+  "docs/proofs/continuation-20261022/user-rules-v5/reference_v4/userrules_lexicon.json": "ae06e90951e9e94edaf713a6e612e45a88e824015992fd8b201debc6497e32e3",
+  "docs/proofs/continuation-20261022/user-rules-v4/reference_v3/userrules.py": "f2fb1aa5690de865f40655c422b5d1f0319d37fbe26f15b8f5a2eea7272ee26a",
+  "docs/proofs/continuation-20261022/user-rules-v4/reference_v3/userrules_lexicon.json": "55f335295df5cac81614cd73a9b09616c727639575eccea80c1cddcb71a9d83b",
+  "docs/proofs/continuation-20261022/user-rules-v5/round5_raw.json": "55b4a7f70abf0659f338602fda2616d8e9be0d2c44ced9469780ed0ceb0f5854"
+ }
+}

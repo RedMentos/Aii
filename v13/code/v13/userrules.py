@@ -18,11 +18,13 @@ A learned JEF/JEPA reader may later be added only as a stricter second opinion: 
 Enforced today: every call through agi.tools.ToolRegistry (all tools). Not yet enforced: memory/learning (LEARN), which
 is said plainly in the notice when a rule touches it.
 """
+import json
 import re
 import time
+from pathlib import Path
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v2'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v6'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -33,18 +35,18 @@ LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','N
 
 # ---- lexicon (data; normalized: lower case, ä->ae ö->oe ü->ue ß->ss). STEMS match a word start (German participles
 # "ge"+stem too); WORDS match whole words only (short or ambiguous words). One word may name several classes: more is safer.
-ACTION_STEMS={'DELETE':('overwrit','ueberschreib','replac','ersetz','delet','remov','eras','wipe','wiping','destroy','trash','discard','purg','loesch','entfern','vernicht','wegwerf','wegschmeiss','ausradier'),
+ACTION_STEMS={'DELETE':('overwrit','ueberschreib','replac','ersetz','delet','remov','eras','wipe','wiping','destroy','trash','discard','purg','loesch','entfern','vernicht','wegwerf','wegschmeiss','ausradier','verwerf','verwirf'),
     'WRITE':('writ','wrote','sav','creat','edit','chang','modif','renam','record','schreib','speicher','aender','bearbeit','erstell','anleg','umbenenn','verschieb','notier','aufschreib','hinzufueg','veraender'),
     'SEND':('send','sent','shar','upload','post','publish','forward','mail','tweet','transmit','leak','disclos','schick','versend','verschick','teil','hochlad','veroeffentlich','weiterleit','weitergeb','verrat','uebermittel'),
     'NETWORK':('download','brows','internet','online','surf','herunterlad','runterlad','googl','verbind','connect'),
-    'INSTALL':('install','upgrad','plugin','plug-in','nachlad','aktualisier','aktivier'),
-    'RUN':('execut','launch','ausfuehr','programm'),
+    'INSTALL':('install','upgrad','plugin','plug-in','nachlad','aktualisier','aktivier','einricht'),
+    'RUN':('execut','launch','ausfuehr','programm','oeffn','aufmach'),
     'LEARN':('learn','train','memoriz','rememb','lern','trainier','merk'),
-    'COMPUTE':('calculat','comput','rechn','berechn'),
+    'COMPUTE':('calculat','comput','rechn','berechn','rechen'),
     'TOOL':('using','tool','werkzeug','benutz','verwend','nutz','einsetz'),
     'BUY':('buy','bought','purchas','order','kauf','bezahl','bestell','ausgeb'),
     'CONTACT':('phon','contact','kontaktier','anruf','telefonier'),
-    'ANY':('touch','anfass','mess with','fiddl','herumspiel','rumspiel','tamper')}
+    'ANY':('touch','anfass','mess with','fiddl','herumspiel','rumspiel','tamper','aktion','handlung')}
 ACTION_WORDS={'DELETE':('clear','rm','del'),'WRITE':('add','store','move','set','put','note'),'SEND':('text','tell','give','gib','sag'),
     'NETWORK':('web','net','netz','search','suche','suchen','such','fetch','lookup','load','lad','lade','laden','laedst'),
     'INSTALL':('load','fetch','hol','holen','hole','holst','lad','lade','laden','laedst','module','modul','module','modules','extension','update','updates'),
@@ -53,7 +55,7 @@ ACTION_WORDS={'DELETE':('clear','rm','del'),'WRITE':('add','store','move','set',
     'CONTACT':('call','calls','ruf')}
 # "do"/"machen" name an action only when nothing more specific is named ("don't do anything", not "do not erase")
 WEAK_ANY=('do','does','doing','tun','tue','tust','mach','mache','machen','machst','act','acting')
-OBJECT_STEMS={'NOTE':('note','notiz','memo','vermerk'),'FILE':('file','document','folder','datei','dokument','ordner','daten','data'),
+OBJECT_STEMS={'NOTE':('note','notiz','memo','vermerk','aufzeichn'),'FILE':('file','document','folder','datei','dokument','ordner','daten','data'),
     'MESSAGE':('message','email','e-mail','mail','nachricht','sms','chat'),'PHOTO':('photo','picture','image','foto','bild','fotos'),
     'CONTACTS':('contact','kontakt','address book','adressbuch','telefonnummer','phone number'),
     'MODULE':('modul','plugin','plug-in','extension','erweiterung','modell','model','app','software','program','update','application','anwendung'),
@@ -61,7 +63,7 @@ OBJECT_STEMS={'NOTE':('note','notiz','memo','vermerk'),'FILE':('file','document'
     'PERSONAL':('personal','privat','private','password','passwort','passwoert','secret','geheim','familie','family','address','adresse','name'),
     'INTERNET':('internet','online','web','netz','cloud','server','network'),'CALCULATOR':('calculator','calc','taschenrechner','rechner','math','arithmetic'),
     'MONEY':('money','payment','credit','geld','zahlung','kreditkart','konto','euro','dollar'),'TOOLS':('tool','werkzeug')}
-ANY_OBJECT=('anything','everything','something','nothing','stuff','things','alles','irgendwas','irgendetwas','etwas','nichts','nix','sachen','zeug','anywhere','irgendwo','irgendwohin')
+ANY_OBJECT=('kram','krams','anything','everything','something','nothing','stuff','things','alles','irgendwas','irgendetwas','etwas','nichts','nix','sachen','zeug','anywhere','irgendwo','irgendwohin')
 PRONOUNS=('that','this','it','them','those','these','das','dies','dieses','es','sie','ihn','die','den','dem')
 
 FORBID=re.compile(r"\b(?:don'?t|do\s+not|never|stop|quit|cease|avoid\w*|refrain\w*|strictly|keep\s+(?:\w+\s+){0,2}(?:away|off)|stay\s+away|away\s+from|not\s+(?:be\s+)?(?:allowed|permitted)|(?:is|are)\s+(?:not\s+)?(?:prohibited|forbidden)|vermeid\w*|halt\s+dich\s+fern|\w*\s*fern\b|bleib\w*\s+(?:\w+\s+)?weg|untersag\w*|nicht\s+erlaubt|no\s+more|must\s*n'?o?t|mustn'?t|may\s+not|shall\s+not|should\s*n'?o?t|shouldn'?t|cannot|can'?t|"
@@ -114,6 +116,76 @@ STOP=set(("a an the of for and or to in on at with by from my your our me you i 
     "zustimme zustimmst erlaube erlaubst then dann neu neue neuen alte alten weiter perhaps maybe probably vielleicht eventuell lieber besser eher rather "
     "wahrscheinlich for now jetzt mal thanks thank danke problem problems worries idea clue way doubt wonder").split())
 
+# ---- v3: lexicon additions as data (v13/userrules_lexicon.json), each with the known sentence it came from. Sealed test
+# sentences are never evidence (extend() refuses them), so a fresh round stays a fair test of the frozen reader.
+LEXICON_FILE=Path(__file__).with_name('userrules_lexicon.json')
+REGEX_SLOTS=('FORBID','ASK','RESTRICT','POSITIVE','ADVICE','BEFORE','TELL','PROTECT','REPORTED','HEDGE')
+_V2={'FORBID':FORBID,'ASK':ASK,'RESTRICT':RESTRICT,'POSITIVE':POSITIVE,'REPORTED':REPORTED,'HEDGE':HEDGE}
+
+
+def _check(entry,sealed):
+    slot=entry.get('slot','');ev=str(entry.get('evidence','')).strip()
+    if not ev:raise ValueError('lexicon entry without evidence: '+repr(entry))
+    if any(x in ev for x in sealed):raise ValueError('sealed test sentences are no evidence: '+ev)
+    if slot not in REGEX_SLOTS and not (slot.split('.')[0] in ('ACTION_STEMS','ACTION_WORDS','OBJECT_STEMS') and '.' in slot):
+        raise ValueError('unknown lexicon slot: '+slot)
+    if slot in REGEX_SLOTS:re.compile(entry['value'])
+
+
+def _apply(entries):
+    global FORBID,ASK,RESTRICT,POSITIVE,ADVICE,BEFORE,TELL,PROTECT,REPORTED,HEDGE
+    rx={k:[] for k in REGEX_SLOTS}
+    for e in entries:
+        slot=e['slot']
+        if slot in rx:rx[slot].append(e['value']);continue
+        table,cls=slot.split('.',1);tab={'ACTION_STEMS':ACTION_STEMS,'ACTION_WORDS':ACTION_WORDS,'OBJECT_STEMS':OBJECT_STEMS}[table]
+        tab[cls]=tuple(dict.fromkeys(tab.get(cls,())+tuple(e['value'].split('|') if table=='ACTION_WORDS' else (e['value'],))))
+    def build(name):
+        extra=r'\b(?:'+'|'.join(rx[name])+r')\b' if rx[name] else None
+        base=_V2.get(name)
+        if base is None:return re.compile(extra or r'(?!)')
+        return re.compile(base.pattern+'|'+extra) if extra else base
+    FORBID,ASK,RESTRICT,POSITIVE=build('FORBID'),build('ASK'),build('RESTRICT'),build('POSITIVE')
+    ADVICE,BEFORE,TELL,PROTECT=build('ADVICE'),build('BEFORE'),build('TELL'),build('PROTECT')
+    REPORTED,HEDGE=build('REPORTED'),build('HEDGE')
+
+
+def load_lexicon(path=LEXICON_FILE):
+    data=json.loads(Path(path).read_text(encoding='utf-8'))
+    for e in data['entries']:_check(e,data.get('sealed',[]))
+    _apply(data['entries']);return data
+
+
+def extend(entry,path=LEXICON_FILE):
+    """The only way to grow the lexicon: one entry with evidence from a known (not sealed) sentence. Returns the entry."""
+    data=json.loads(Path(path).read_text(encoding='utf-8'));_check(entry,data.get('sealed',[]))
+    data['entries'].append({'slot':entry['slot'],'value':entry['value'],'evidence':entry['evidence']})
+    Path(path).write_text(json.dumps(data,ensure_ascii=False,indent=1)+'\n',encoding='utf-8');_apply(data['entries'])
+    return entry
+
+
+LEXICON=load_lexicon()
+# the AI is addressed ("I forbade you", "ich habe dir verboten"): a first-person sentence about what the AI may do, not about oneself
+YOU=re.compile(r"\b(?:you|your|du|dir|dich|ihnen|euch)\b")
+# v4 principles (round-3 failures): chat fillers hide the sentence start; a polite question ("could you not ...?") is a
+# request, not a question; a bare "not" in a request or "make sure not to" is a prohibition; protecting words ("preserve",
+# "leave as they are") forbid deleting and changing.
+FILLER=re.compile(r"^(?:(?:hey|hi|hallo|so|ok|okay|seriously|yo|dude|oh|um|uh|well|look|listen|mate|also|and|just|alright|ach|naja|please|bitte|"
+    r"you\s+know|ya\s+know|i\s+mean|like)\b[\s,.!-]*)+")
+INNER_FILLER=re.compile(r"\b(?:like|you\s+know|ya\s+know|i\s+mean|kinda|sort\s+of)\s*,")
+REQUEST=re.compile(r"^(?:could|can|would|will|wouldn'?t|won'?t|koenntest|kannst|wuerdest|wirst|magst)\s+(?:you|du|sie)\b|^(?:make|be)\s+sure\b|^(?:mach|sorg)\w*\s+(?:bitte\s+)?(?:sicher|dafuer)")
+BARE_NOT=re.compile(r"\b(?:not|never|no)\b|\byou\s+(?:didn'?t|did\s+not|wouldn'?t|would\s+not|won'?t)\b")
+APPROVAL=re.compile(r"\b(?:give|gives|given|giving|get|gets|got|geb\w*|gib)\s+(?:you\s+|dir\s+|me\s+|mir\s+)?(?:the\s+|my\s+|an?\s+|das\s+|mein\w*\s+|ein\w*\s+)?(?:green\s+light|okay|ok|go-?ahead|thumbs\s+up|all-?clear|permission|approval|consent|say-?so|nod|freigabe|erlaubnis|zustimmung)\b")
+TAG=re.compile(r"[\s,](?:okay|ok|alright|right|yeah|yes|ja|oder|gell|ne|ya\s+know|you\s+know)\s*\?$")  # "..., okay?" is no question
+MAKE_SURE=re.compile(r"\b(?:make|be)\s+sure\s+(?:\w+\s+)?(?:not|never|no)\b|\bsicher\w*\b.*\b(?:nicht|nie|kein\w*)\b")
+
+
+NET_IDIOM=re.compile(r"\b(?:kein(?:e|en)?\s+(?:problem|ahnung|stress|sorge|ursache|thema)|(?:auch\s+)?nicht\s+(?:so\s+)?(?:schlecht|schlimm|uebel)|"
+    r"no\s+(?:problem|worries|idea|stress)|not\s+(?:bad|a\s+problem)|never\s*mind)\b")  # v6 (round 5): "Kein Problem, die Rechnung passt" is no rule
+
+
+NET_SELF=re.compile(r"^(?:\w+\s+){0,2}(?:habe?|hatte|bin|war)\s+(?:ich|i)\b|^(?:hab|habe|hatte)\b")  # "Heute habe ich nichts heruntergeladen"
+
 
 def norm(text):
     t=str(text).casefold().replace('ä','ae').replace('ö','oe').replace('ü','ue').replace('ß','ss').replace('’',"'").replace('`',"'")
@@ -123,8 +195,25 @@ def norm(text):
 def _words(t):return re.findall(r"[a-z0-9]+(?:[-'][a-z0-9]+)*",t)
 
 
+SEP_PREFIX=re.compile(r"^(ab|an|auf|aus|ein|mit|weg|zu|raus|rein|runter|hoch|durch|fort|los|nach|vor|weiter|zurueck|her|hin)(zu|ge)?")
+
+
 def _has(word,stems):
-    return any(word.startswith(s) or (word.startswith('ge') and word[2:].startswith(s)) for s in stems if ' ' not in s)
+    """word starts with a stem, also after "ge", and for German separable verbs with the prefix cut off ("abgeschickt" ->
+    schick, stems of 5+ letters only, so "mitteilst" is not "teil") or with the "zu/ge" infix taken out ("einzurichten" -> einricht)."""
+    base={word}|({word[2:]} if word.startswith('ge') else set());m=SEP_PREFIX.match(word);cut=set()
+    if m:
+        rest=word[m.end():];cut={rest}|({rest[2:]} if rest.startswith('ge') else set())
+        if m.group(2):base.add(m.group(1)+rest)
+    return any(c.startswith(s) for s in stems if ' ' not in s for c in base) or any(c.startswith(s) for s in stems if ' ' not in s and len(s)>=5 for c in cut)
+
+
+def _forms(w):
+    """w and its possible verb base forms (running->run, opened->open). No plural -s: "notes" must not become the verb "note"."""
+    out={w}
+    if len(w)>4 and w.endswith('ing'):b=w[:-3];out|={b,b+'e'}|({b[:-1]} if len(b)>2 and b[-1]==b[-2] else set())
+    if len(w)>3 and w.endswith('ed'):b=w[:-2];out|={b,w[:-1]}|({b[:-1]} if len(b)>2 and b[-1]==b[-2] else set())
+    return out
 
 
 def _classes(t,stems,words):
@@ -137,7 +226,7 @@ def _classes(t,stems,words):
             if phrase in t:found.setdefault(cls,set()).add(phrase)
     for cls,exact in words.items():
         for w in ws:
-            if w in exact:found.setdefault(cls,set()).add(w)
+            if _forms(w)&set(exact):found.setdefault(cls,set()).add(w)
     return found
 
 
@@ -156,32 +245,43 @@ def _objects(t,action_words):
 
 def parse_clause(clause,prev=None):
     """One clause -> {'kind','actions','objects','unknown','exceptions','reasons'} (fixed rules only, never a model)."""
-    raw=norm(clause);t=POSITIVE.sub(' ',raw).strip()
+    raw=norm(clause);t=NET_IDIOM.sub(' ',POSITIVE.sub(' ',raw)).strip()  # v6: "kein Problem", "nicht schlecht" are no rule words
+    t=INNER_FILLER.sub(' ',t);t=re.sub(r'\s+',' ',FILLER.sub('',t)).strip() or t
     out={'kind':'NONE','actions':[],'objects':[],'unknown':[],'exceptions':[],'reasons':[],'text':clause.strip()}
     if not t:return out
     m=EXCEPT.search(t);exc_text=''
     if m:t,exc_text=t[:m.start()],t[m.end():]
-    ta=ASK_WORDS.sub(' ',t)
+    ta=APPROVAL.sub(' ',ASK_WORDS.sub(' ',t))  # "until I give you the okay" names no action of the AI
     acts=_classes(ta,ACTION_STEMS,ACTION_WORDS);weak={w for w in _words(ta) if w in WEAK_ANY}
     if weak and not acts:acts={'ANY':weak}
     aw=(set().union(*acts.values()) if acts else set())|weak
     objs,unknown,pron=_objects(t,aw)
     actions=set(acts)
+    objwords=set().union(*_classes(t,OBJECT_STEMS,{}).values()) if objs else set()
+    if acts and all(ws<=objwords for ws in acts.values()):actions.add('ANY')  # "my phone": a word that is object and action widens
+    protect=bool(PROTECT.search(t))
+    if protect:actions|={'DELETE','WRITE'}
     if 'INTERNET' in objs:actions.add('NETWORK')  # anything done "online / ins Internet" uses the network
+    if 'NETWORK' in acts:objs.add('INTERNET')  # v5: "keine Dateien herunterladen" is about the internet too, not only about files
     if 'TOOLS' in objs:actions.add('TOOL')
+    if 'MESSAGE' in objs and 'WRITE' in actions:actions.add('SEND')  # v6 (round 5): "keine E-Mails in meinem Namen schreiben" means sending
     if 'MODULE' in objs and actions&{'NETWORK','WRITE'}:actions.add('INSTALL')
-    forbid=bool(FORBID.search(t) or NO_START.search(t));ask=bool(ASK.search(t));loosen=bool(LOOSEN.search(t))
-    question=clause.strip().endswith('?')
+    advice=bool(ADVICE.search(t));request=bool(REQUEST.search(t))
+    addressed=request or bool(YOU.search(t) and not FIRST_PERSON.search(t)) or bool(MAKE_SURE.search(t))
+    forbid=bool(FORBID.search(t) or NO_START.search(t) or advice or protect or MAKE_SURE.search(t) or (addressed and BARE_NOT.search(t)))
+    loosen=bool(LOOSEN.search(t))
+    ask=bool(ASK.search(t) or (BEFORE.search(t) and TELL.search(t)))  # v3: "vor dem Senden, mir zeigen", "show me before posting"
+    question=clause.strip().endswith('?') and not request and not TAG.search(norm(clause))  # "could you not go online?" asks for something, it is no question
     if not (forbid or ask):
         if loosen and (actions or objs):out.update(kind='LOOSEN',actions=sorted(actions),objects=sorted(objs))
         elif (actions or objs) and not question and RESTRICT.search(t):  # unknown wording of a possible rule: ask, never ignore
-            out.update(kind='UNCLEAR',actions=sorted(actions or {'ANY'}),objects=sorted(objs or {'ALL'}),unknown=sorted(set(unknown)),reasons=['UNKNOWN_WORDING'])
+            out.update(kind='UNCLEAR',actions=sorted(actions or {'ANY'}),objects=sorted(objs or {'ALL'}),unknown=sorted(set(unknown)),reasons=['UNKNOWN_WORDING'],suggest='ASK_FIRST')
         return out
     imperative=bool(IMPERATIVE.search(t))
-    strong=ask or any(not WEAK.fullmatch(m.group(0)) for m in FORBID.finditer(t)) or bool(NO_START.search(t) and unknown)
+    strong=ask or any(not WEAK.fullmatch(m.group(0)) for m in FORBID.finditer(t)) or bool(NO_START.search(t) and unknown) or protect or advice or addressed
     if objs=={'ALL'} and not actions:objs=set()  # "nothing"/"nichts" alone is no object ("es war nichts")
     if not actions and not objs and not imperative and not (strong and unknown):return out  # "I don't know", "no thanks", "das funktioniert nicht"
-    first=bool(FIRST_PERSON.search(t)) and not WANT.search(t)
+    first=bool(FIRST_PERSON.search(t) or NET_SELF.search(t)) and not WANT.search(t) and not YOU.search(t) and not protect
     if first and not actions:return out  # a statement about oneself ("I didn't have time")
     unknown_wording=not actions and not objs and not imperative  # a strong rule word with only unknown words: an open question
     if not actions:actions=set(prev['actions']) if prev and prev.get('actions') else {'ANY'} if objs else {'UNKNOWN'}  # "not my photos" after "delete the drafts"
@@ -191,7 +291,8 @@ def parse_clause(clause,prev=None):
     if not actions&ENFORCED-{'UNKNOWN'} and not actions&{'LEARN'}:actions.add('UNKNOWN')
     reasons=[]
     if HEDGE.search(t):reasons.append('HEDGE')
-    if REPORTED.search(t):reasons.append('SOMEONE_ELSE')
+    if REPORTED.search(t) and not request:reasons.append('SOMEONE_ELSE')
+    if advice and 'SOMEONE_ELSE' not in reasons:reasons.append('ADVICE')  # "X advises/warns against": a hint, not yet a rule
     if question:reasons.append('QUESTION')
     if first:reasons.append('ABOUT_YOURSELF')
     if pron_only and not (prev and prev.get('objects')):reasons.append('UNCLEAR_OBJECT')
@@ -202,7 +303,48 @@ def parse_clause(clause,prev=None):
         exc|={'UNKNOWN'} if exc_unknown or not exc else set()
     kind='UNCLEAR' if reasons else 'ASK_FIRST' if ask else 'FORBID'
     out.update(kind=kind,actions=sorted(actions),objects=sorted(objs),unknown=sorted(set(unknown)),exceptions=sorted(exc),reasons=reasons)
+    if kind=='UNCLEAR':out['suggest']='ASK_FIRST' if ask or not forbid else 'FORBID'  # shown to the user as a proposal, never applied by itself
     return out
+
+
+# v6 broad net (after v3-v5: every fresh round brought new wordings): a clause the exact reader reads as no rule or as a
+# loosening, but that carries a negation, hold or condition signal and names a known action or object, becomes an open
+# question (UNCLEAR, reason NET; works like "ask first" until the user answers). Safety must not depend on knowing the wording.
+NET_NEG=re.compile(r"\b(?:nicht\w*|kein\w*|nie|niemals|nimmer|niemand\w*|nichts|nix|no|not|never|nobody|nothing|none|nowhere|nirgends|nirgendwo)\b|n't\b")
+NET_HOLD=re.compile(r"\b(?:bleib\w*|schluss|genug|weg|finger|pfoten|ruhe|tabu|gesperrt|sperr\w*|verbot\w*|verbiet\w*|untersag\w*|"
+    r"gestrichen|streich\w*|aufhoer\w*|hoer\w*\s+(?:\w+\s+){0,4}auf|halt\w*\s+(?:\w+\s+){0,5}(?:raus|heraus|zurueck|fern)|raus|heraus|unterlass\w*|vorbei|"
+    r"\w*lass\w*|\w*laesst|halte|behalt\w*|liegen|unberuehrt|bewahr\w*|verschon\w*|verpass\w*|versaeum\w*|skip\w*|omit\w*|spare?|"
+    r"stop\w*|enough|keep|leave|quit|ban\w*|block\w*|forbid\w*|off[\s-]limits|hands\s+off|taboo|halt|cut\s+(?:it\s+)?out|no\s+more)\b")
+NET_COND=re.compile(r"\b(?:nur|erst|bevor|vorher|vorab|zuerst|zunaechst|ohne|ausser|bis|only|before|first|without|unless|until|except|prior|"
+    r"frag\w*\s+(?:\w+\s+){0,2}(?:mich|mir)|fragen|ask\s+me|meld\w*\s+(?:\w+\s+){0,2}(?:mich|mir)|bescheid|rueckmeld\w*|nachfrag\w*|rueckfrag\w*|check\s+with\s+me)\b")
+WH_QUESTION=re.compile(r"^(?:warum|wieso|weshalb|was|wie|wo|wann|wer|welche\w*|why|what|how|where|when|who|which)\b")
+NET_IF=re.compile(r"\b(?:wenn|falls|sobald|nachdem|if|when|once|after)\b")
+NET_OK=re.compile(r"\b(?:erlaub\w*|genehmig\w*|zustimm\w*|zugestimmt|okay|ok|ja|freigabe|freigeb\w*|segen|einverstanden|absprache|ruecksprache|"
+    r"permission|approv\w*|consent|say-?so|yes|agree\w*|green\s+light)\b")
+NET_NOT_COND=re.compile(r"\bohne\s+(?:nach|rueck)?frage\w*|\bohne\s+(?:mich\s+)?(?:zu\s+)?fragen\b|\bwithout\s+asking(?:\s+me)?\s*(?:first)?$")  # "darfst du ohne Nachfrage": a loosening
+
+
+def _net(piece):
+    """Open question for a clause the exact reader missed, or None. Fixed signals only, never a model."""
+    raw=norm(piece);t=NET_IDIOM.sub(' ',POSITIVE.sub(' ',raw)).strip();t=re.sub(r'\s+',' ',FILLER.sub('',INNER_FILLER.sub(' ',t))).strip() or t
+    if not t:return None
+    request=bool(REQUEST.search(t))
+    if piece.strip().endswith('?') and WH_QUESTION.search(t):return None  # a real question ("warum geht das nicht?"), not a rule
+    if (FIRST_PERSON.search(t) or NET_SELF.search(t)) and not YOU.search(t) and not WANT.search(t) and not HEDGE.search(t):return None  # a statement about oneself
+    neg=bool(NET_NEG.search(t));hold=bool(NET_HOLD.search(t))
+    cond=bool(NET_COND.search(NET_NOT_COND.sub(' ',t)) or (NET_IF.search(t) and NET_OK.search(t)))
+    if not (neg or hold or cond):return None
+    ta=APPROVAL.sub(' ',ASK_WORDS.sub(' ',t))
+    acts=_classes(ta,ACTION_STEMS,ACTION_WORDS);weak={w for w in _words(ta) if w in WEAK_ANY}
+    aw=(set().union(*acts.values()) if acts else set())|weak
+    objs,unknown,_=_objects(t,aw)
+    if not acts and not objs:return None  # nothing the AI could do is named ("kein Problem", "nicht schlecht")
+    actions=set(acts)|{'UNKNOWN'}  # unknown words widen, never narrow (G3)
+    if 'INTERNET' in objs or 'NETWORK' in acts:actions.add('NETWORK');objs.add('INTERNET')
+    if 'TOOLS' in objs:actions.add('TOOL')
+    if not objs:objs={'ALL'}
+    return {'kind':'UNCLEAR','actions':sorted(actions),'objects':sorted(objs),'unknown':sorted(set(unknown)),'exceptions':[],'reasons':['NET'],
+            'text':piece.strip(),'suggest':'ASK_FIRST' if cond and not (neg or hold) else 'FORBID'}
 
 
 def parse(text):
@@ -212,12 +354,19 @@ def parse(text):
         if not piece or not piece.strip():continue
         c=parse_clause(piece,prev)
         has_q=piece.strip().endswith('?') or bool(re.search(re.escape(piece.strip())+r'\s*\?',src))
-        if has_q and c['kind'] in ('FORBID','ASK_FIRST'):c['kind']='UNCLEAR';c['reasons'].append('QUESTION')
+        req=bool(REQUEST.search(re.sub(r'\s+',' ',FILLER.sub('',INNER_FILLER.sub(' ',norm(piece)))).strip()))
+        if has_q and not req and not TAG.search(norm(piece.strip()+'?')) and c['kind'] in ('FORBID','ASK_FIRST'):c['suggest']=c['kind'];c['kind']='UNCLEAR';c['reasons'].append('QUESTION')
+        if c['kind'] in ('NONE','LOOSEN'):
+            n=_net(piece)
+            if n:c=n
         if c['kind']!='NONE':out.append(c)
         if c['actions'] or c['objects']:prev=c
         else:
             a=_classes(norm(piece),ACTION_STEMS,ACTION_WORDS);o=_objects(norm(piece),set().union(*a.values()) if a else set())[0]
             if a or o:prev={'actions':sorted(a),'objects':sorted(o)}
+    if not any(c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR') for c in out):  # v6: signal and target in different clauses ("Erst fragen, dann ändern")
+        n=_net(src)
+        if n:out.append(n)
     return out
 
 
@@ -297,7 +446,7 @@ def add(store,text,origin,clock=time.time):
             if same:new.append(dict(same,known=True));continue
             r={'id':'R'+str(st['next']),'kind':c['kind'],'status':'OPEN' if c['kind']=='UNCLEAR' else 'ACTIVE','actions':c['actions'],'objects':c['objects'],
                'unknown':c['unknown'],'exceptions':c['exceptions'],'reasons':c['reasons'],'text':c['text'],'line':str(text)[:400],'origin':origin,
-               'created':clock(),'parser':PARSER}
+               'created':clock(),'parser':PARSER,'suggest':c.get('suggest')}
             st['next']+=1;st['rules'].append(r);new.append(r)
         return new
     return box(store).mutate(f)
@@ -312,11 +461,13 @@ def notice(r):
     if r['kind']=='UNCLEAR':
         why={'HEDGE':'du klingst unsicher','SOMEONE_ELSE':'das hat jemand anderes gesagt','QUESTION':'es ist eine Frage',
              'ABOUT_YOURSELF':'es klingt wie ein Satz über dich','UNCLEAR_OBJECT':'ich weiß nicht, was mit „das/es“ gemeint ist',
-             'UNKNOWN_WORDING':'die Formulierung kenne ich noch nicht sicher'}
+             'UNKNOWN_WORDING':'die Formulierung kenne ich noch nicht sicher','ADVICE':'es klingt wie ein Rat, nicht wie eine feste Regel',
+             'NET':'es klingt nach einer Regel, aber ich verstehe den Satz nicht sicher'}
+        prop={'FORBID':f' Mein Vorschlag: als Verbot lesen (:regel verbot {r["id"]}).','ASK_FIRST':f' Mein Vorschlag: als „erst fragen“ lesen (:regel fragen {r["id"]}).'}.get(r.get('suggest'),'')
         return (f'[Rückfrage {r["id"]}] Soll das eine Regel für mich sein? „{r["text"]}“ ({", ".join(why[x] for x in r["reasons"])}). '
                 f'Bis du antwortest, frage ich vorher bei allem, was das betreffen könnte ({_short(r)}). '
-                f'Antworte mit :regel verbot {r["id"]}, :regel fragen {r["id"]} oder :regel nein {r["id"]}.'+note)
-    return f'[Regel {r["id"]} gespeichert] {lead}: {_short(r)} — „{r["text"]}“. Gilt sofort, bis du sie mit :regel aus {r["id"]} aufhebst.'+note
+                f'Antworte mit :regel verbot {r["id"]}, :regel fragen {r["id"]} oder :regel nein {r["id"]}.'+prop+note)
+    return f'[Regel {r["id"]} gespeichert] {lead}: {_short(r)} — „{r["text"]}“. Gilt sofort, bis du sie mit :regel aus {r["id"]} aufhebst. Falsch verstanden? Dann :regel aus {r["id"]} und schreib die Regel noch einmal anders.'+note
 
 
 def observe(store,line,clock=time.time):

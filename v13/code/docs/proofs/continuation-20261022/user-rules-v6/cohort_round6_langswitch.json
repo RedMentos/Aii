@@ -1,0 +1,53 @@
+{
+ "schema": "USER_RULES_COHORT_ROUND6_V1",
+ "cohort": "secondary (same meaning, switched to English; not for the verdict)",
+ "items": [
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Muss echt Kaffee haben, sonst geht nix.",
+   "lang": "de",
+   "source": "QWEN25_7B/P2",
+   "original": "Ohne Kaffee geht bei mir nichts."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "text": "Hey, peek at this note first before you tweak anything, okay?",
+   "lang": "de",
+   "source": "EXAONE35_8B/P2",
+   "original": "Zeig mir vorher, was du an meiner Notiz ändern willst."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Hey, could you add a new note for me?",
+   "lang": "de",
+   "source": "EXAONE35_8B/P2",
+   "original": "Kannst du mir eine neue Notiz anlegen?"
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Gerne weiter fortgehen.",
+   "lang": "de",
+   "source": "EXAONE35_8B/P1",
+   "original": "Kein Problem, mach weiter."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Ganz egal, fahre fort.",
+   "lang": "de",
+   "source": "GLM4_9B/P1",
+   "original": "Kein Problem, mach weiter."
+  }
+ ]
+}

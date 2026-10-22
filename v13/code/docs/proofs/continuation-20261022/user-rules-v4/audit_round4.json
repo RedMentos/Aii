@@ -1,0 +1,6305 @@
+{
+ "schema": "USER_RULES_AUDIT_ROUND4_V1",
+ "rows": [
+  {
+   "source": "holdout",
+   "index": 0,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Please never delete any of my notes.",
+   "sentence": "Bitte lass dir keine meiner Notizen löschen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 0,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Please never delete any of my notes.",
+   "sentence": "Vermeide es, alle meine Notizen zu löschen.",
+   "decision": "0",
+   "reason": "scope changed (all)"
+  },
+  {
+   "source": "holdout",
+   "index": 1,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "sentence": "Bitte lösche niemals meine Notationen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 1,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "sentence": "Schreib bitte nicht mehr Notizen, ich brauche die Platz.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 2,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "sentence": "Ich darf deine Bilder nicht entfernen.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "holdout",
+   "index": 2,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "sentence": "Du darfst meine Fotos nicht löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 3,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't send emails without asking me first.",
+   "sentence": "Überlege, E-Mails zu senden, ohne mich zuerst zu fragen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 3,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't send emails without asking me first.",
+   "sentence": "Kein E-Mail senden ohne vorher fragen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 4,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "sentence": "Schreib dir nichts ins Web, ohne vorher mein Eingreifen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 4,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "sentence": "Sag mir nicht, was du ins Internet schickst, ohne vorher nachzufragen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 5,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "sentence": "Installiere niemals neue Module, es sei denn, ich behalte es ausdrücklich.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 5,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "sentence": "Never install new modules, unless I explicitly allow it.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 6,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Stop using the calculator.",
+   "sentence": "Hast du den Taschenrechner mal auf Eis gelegt?",
+   "decision": "0",
+   "reason": "question"
+  },
+  {
+   "source": "holdout",
+   "index": 6,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Stop using the calculator.",
+   "sentence": "Kein mehr Taschenrechner!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 7,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Hör auf, im Internet zu suchen.",
+   "sentence": "Stopp, bei der Online-Recherche zu helfen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 7,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Hör auf, im Internet zu suchen.",
+   "sentence": "Schlag auf, im Internet nicht zu suchen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 8,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "You must not go online.",
+   "sentence": "Du darfst nicht ins Internet surfen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 8,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "You must not go online.",
+   "sentence": "Du darfst nicht ins Internet gehen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 9,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "sentence": "Ich möchte, dass du nichts an meinen Dokumenten änderst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 9,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "sentence": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 10,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't forget to save my notes.",
+   "sentence": "Vergiss nicht, meine Notizen zu speichern.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 10,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't forget to save my notes.",
+   "sentence": "Vergiss nicht, meine Notizen zu speichern",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "holdout",
+   "index": 11,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "sentence": "Vergiss nicht, die Notiz zu sichern.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 11,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "sentence": "Vergiss die Notiz nicht zu speichern.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 12,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "sentence": "Keine Sorge, frag mich, wenn etwas unklar ist.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 12,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "sentence": "Mach dir keine Sorgen, frage mich, wenn etwas unklar ist.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 13,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Can you delete the old note?",
+   "sentence": "Kannst du das alte Notizblatt löschen?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 13,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Can you delete the old note?",
+   "sentence": "Kannst du den alten Notiz löschen?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 14,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "sentence": "Kannst du mir eine E-Mail verfassen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 14,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "sentence": "Kannst du mir ne Mail schreiben?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 15,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "I didn't delete anything yesterday.",
+   "sentence": "Gestern habe ich nichts gelöscht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 15,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "I didn't delete anything yesterday.",
+   "sentence": "Ich habe nichts gestrichen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 16,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "What is 17 times 23?",
+   "sentence": "Wie lautet das Produkt von 17 mal 23?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 16,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "What is 17 times 23?",
+   "sentence": "Was ergibt 17 multipliziert mit 23?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 17,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "sentence": "Lass niemals meine Anmerkungen löschen oder überschreiben und lass sie auch nicht irgendwo schicken.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 17,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "sentence": "Nicht löschen oder überschreiben, meine Notizen. Nicht irgendwo schicken.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 18,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "sentence": "Stelle sicher, dass du meine Bilder oder Nachrichten niemals löschst und versendest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 18,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "sentence": "Stopp es, und schick meine Fotos und Nachrichten nie!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 19,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Always ask me before you write anything to my files.",
+   "sentence": "Bevor du irgendetwas auf meine Dateien schreibst, frage mich zuerst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 19,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Always ask me before you write anything to my files.",
+   "sentence": "Frage mich immer, bevor du etwas auf meine Dateien schreibst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 20,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "sentence": "Bitte frage mich immer zuerst, bevor du etwas installiert.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 20,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "sentence": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 21,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Tell me before you do anything.",
+   "sentence": "Bitte gib mir vor, dass du irgendether machst.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 21,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Tell me before you do anything.",
+   "sentence": "Sag mir vorher, bevor du irgendwas machst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 22,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "sentence": "Sag mir immer vor, was du vorhast.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 22,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "sentence": "Sag mir immer vorher, was du tun willst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 23,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Finger weg von meinen Notizen!",
+   "sentence": "Vermeide mein Notizbuch!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 23,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Finger weg von meinen Notizen!",
+   "sentence": "Finger weg von meinen Notizen!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 24,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Keep your hands off my photos.",
+   "sentence": "Halte deine Hände fern von meinen Fotos.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 24,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Keep your hands off my photos.",
+   "sentence": "Halte deine Finger von meinen Fotos fern.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 25,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never delete files, except the drafts.",
+   "sentence": "Lass die Dokumente nicht löschen, es sei denn, es sind Entwürfe.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 25,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never delete files, except the drafts.",
+   "sentence": "Verschiebe niemals Dateien, außer Entwürfen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 26,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "sentence": "Überspringe keine Ordner, außer den Prototypen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 26,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "sentence": "Schließe keine Dateien aus, außer Entwürfen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 27,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never delete my recipes.",
+   "sentence": "Lass meine Rezepte nicht löschen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 27,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never delete my recipes.",
+   "sentence": "Keine Löschen meiner Rezepte.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 28,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Maybe don't send that email yet.",
+   "sentence": "Vielleicht solltest du diesen E-Mail noch nicht senden.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 28,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Maybe don't send that email yet.",
+   "sentence": "Vielleicht schon nicht schicken.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 29,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "sentence": "Vielleicht solltest du lieber nichts entfernen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 29,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "sentence": "Möglicherweise solltest du lieber nichts löschen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 30,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "My brother says you should never use the internet.",
+   "sentence": "Mein Bruder sagt, du solltest niemals das Internet nutzen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 30,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "My brother says you should never use the internet.",
+   "sentence": "Mein Bruder sagt, du sollst das Internet nie benutzen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 31,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "sentence": "Mein Chef sagt, du darfst keine Emails versenden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 31,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "sentence": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 32,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "You can delete notes again now.",
+   "sentence": "Jetzt kannst du die Notizen erneut löschen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 32,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "You can delete notes again now.",
+   "sentence": "Du kannst die Notizen nochmal löschen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 33,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "sentence": "Sie darf jetzt wieder ins Internet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 33,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "sentence": "Schreib mal wieder rein.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 34,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Feel free to install whatever you need.",
+   "sentence": "Du bist frei, was du auch möchtest, zu installieren.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 34,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Feel free to install whatever you need.",
+   "sentence": "Du kannst was du brauchst installieren.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 35,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "No downloads, please.",
+   "sentence": "Bitte keine Downloads.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 35,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "No downloads, please.",
+   "sentence": "Bitte keine Downloads.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "holdout",
+   "index": 36,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Keine Uploads!",
+   "sentence": "Keine hochladen!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 36,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Keine Uploads!",
+   "sentence": "Keine Uploads!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 37,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "You are not allowed to learn from my private messages.",
+   "sentence": "Du darfst meine privaten Nachrichten nicht auslegen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 37,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "You are not allowed to learn from my private messages.",
+   "sentence": "Du darfst nicht von meinen privaten Nachrichten lernen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 38,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Merk dir nichts über meine Familie.",
+   "sentence": "Vergiss nicht meine Verwandten.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 38,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Merk dir nichts über meine Familie.",
+   "sentence": "Mach dir nichts von meiner Familie.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 39,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't touch anything on my phone without my permission.",
+   "sentence": "Mach dir keine Sorgen, touches nichts auf meinem Handy ohne mein Erlaubnis.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 39,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't touch anything on my phone without my permission.",
+   "sentence": "Kein Spiel mit meinem Handy, ohne mein Einverständnis!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 40,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "sentence": "Du darfst nur Nachrichten senden, wenn du meine Genehmigung hast.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 40,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "sentence": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 41,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't stop saving my notes.",
+   "sentence": "Halte meine Notizen fest.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 41,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't stop saving my notes.",
+   "sentence": "Halte die Notizen fest!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 42,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't worry about the budget.",
+   "sentence": "Vergesst nicht die Finanzen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 42,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't worry about the budget.",
+   "sentence": "Keine Sorge um den Budget.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 43,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "sentence": "Hab keine Bedenken im Hinblick auf das Termin",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 43,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "sentence": "Keine Sorge wegen der Frist.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 44,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Under no circumstances should you share my contacts.",
+   "sentence": "Sie dürfen meine Kontakte niemals teilen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 44,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Under no circumstances should you share my contacts.",
+   "sentence": "Du darfst meinen Kontakten überhaupt nicht zustimmen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 45,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "sentence": "Auf keinen Fall solltest du Geld ausgeben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 45,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "sentence": "Du darfst dir kein Geld ausgeben.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "holdout",
+   "index": 46,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "I forbid you to run any programs.",
+   "sentence": "Ich beherrsche deine Fähigkeit, Programme auszuführen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 46,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "I forbid you to run any programs.",
+   "sentence": "Du darfst keine Programme ausführen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 47,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Bitte nichts herunterladen.",
+   "sentence": "Halte dich nicht mit Downloads ab.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 47,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Bitte nichts herunterladen.",
+   "sentence": "Lass uns nicht downloaden.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "holdout",
+   "index": 48,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "sentence": "Vermeide es, in jeder Situation meine Notizen zu überschreiben.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 48,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "sentence": "Überprüfe nicht meine Notizen, egal was passiert.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 49,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "sentence": "Ändere meinen Notizbuch, nur wenn du mich damit informierst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 49,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "sentence": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 50,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "The sign said do not enter.",
+   "sentence": "Das Schild warnte, keine einzutreten.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 50,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "The sign said do not enter.",
+   "sentence": "Das Schild sagt: 'Bitte nicht eintreten'",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 51,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never mind, it was nothing.",
+   "sentence": "Keine Sorge, es war nichts.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 51,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never mind, it was nothing.",
+   "sentence": "Kein Problem, das war nichts.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 52,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "sentence": "Schreibe das Memo, aber lösche niemals den alten Eintrag.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 52,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "sentence": "Schreib die Notiz, aber lösch niemals die alte.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 53,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Before you send anything, show it to me.",
+   "sentence": "Bevor du irgendethmail sendest, zeige es mir zuerst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 53,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Before you send anything, show it to me.",
+   "sentence": "Mache das mal, zeig mir zuerst was.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 54,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Nichts verschicken!",
+   "sentence": "Überhaupt nicht verschicken!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 54,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Nichts verschicken!",
+   "sentence": "Nichts verschicken!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 55,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Please don't use any tools today.",
+   "sentence": "Bitte vermeide die Nutzung aller Werkzeuge heute.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 55,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Please don't use any tools today.",
+   "sentence": "Verpasse heute keine Werkzeuge.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 56,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Benutze keine Werkzeuge.",
+   "sentence": "Verwende keine Geräte.",
+   "decision": "0",
+   "reason": "object changed (devices)"
+  },
+  {
+   "source": "holdout",
+   "index": 56,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Benutze keine Werkzeuge.",
+   "sentence": "Benutze keine Werkzeuge.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 57,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "sentence": "Stelle sicher, dass du Module nicht von irgendwelchen Orten holst, ohne meine bewusste Zustimmung.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 57,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "sentence": "Nie hol dir Module von irgendjemandem, ohne meine bewussteste Erlaubnis.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 58,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "sentence": "Du solltest niemals Plugins abholen, ohne dass ich absichtlich zustimme.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 58,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "sentence": "Du sollst keine Module holen, ohne dass ich es bewusst zustimme.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 0,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't delete my notes.",
+   "sentence": "Schütze meine Notizen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 0,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't delete my notes.",
+   "sentence": "Könntest du bitte meine Notizen nicht löschen?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 1,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Do not ever erase my files.",
+   "sentence": "Überhaupt sollt ihr meine Ordner niemals löschen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 1,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Do not ever erase my files.",
+   "sentence": "Ich will niemals meine Dateien löschen",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "dev",
+   "index": 2,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Lösche nie meine Dateien.",
+   "sentence": "Never delete my files.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 2,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Lösche nie meine Dateien.",
+   "sentence": "Schreibst du nicht meine Dateien?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 3,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Du sollst keine Notizen überschreiben.",
+   "sentence": "Du darfst keine Markierungen überschreiben.",
+   "decision": "0",
+   "reason": "object changed"
+  },
+  {
+   "source": "dev",
+   "index": 3,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Du sollst keine Notizen überschreiben.",
+   "sentence": "Du sollst keine Notizen überschreiben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 4,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never send my messages to anyone.",
+   "sentence": "Gib meine Nachrichten nie jemandem",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 4,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never send my messages to anyone.",
+   "sentence": "Nimm meine Nachrichten niemandem.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 5,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Teile niemals meine Kontakte.",
+   "sentence": "Spare meine Kontakte nie.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 5,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Teile niemals meine Kontakte.",
+   "sentence": "Keine Ahnung, du musst deine Kontakte nicht teilen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 6,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't upload anything.",
+   "sentence": "Bleib es nicht",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 6,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't upload anything.",
+   "sentence": "Mach dir keine Sorgen, keine Sachen hochzuladen",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 7,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "No internet access.",
+   "sentence": "Keine Internetverbindung vorhanden.",
+   "decision": "0",
+   "reason": "statement"
+  },
+  {
+   "source": "dev",
+   "index": 7,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "No internet access.",
+   "sentence": "Keine Internetverbindung.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 8,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Kein Internet!",
+   "sentence": "Keine Verbindung!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 8,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Kein Internet!",
+   "sentence": "Kein Internet!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 9,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Ask me first before installing anything.",
+   "sentence": "Bitte frage mich, bevor du irgendetwas installierst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 9,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Ask me first before installing anything.",
+   "sentence": "Machst du zuerst nehm' ich mir die Zeit an?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 10,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Installier nichts ohne meine Erlaubnis.",
+   "sentence": "Mach keine Veränderungen ohne meine Zustimmung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 10,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Installier nichts ohne meine Erlaubnis.",
+   "sentence": "Kein Kram ohne mein grünes Licht.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 11,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Only send emails if I approve them.",
+   "sentence": "Schicke nur E-Mails, wenn ich zustimme.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 11,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Only send emails if I approve them.",
+   "sentence": "Schick mir E-Mails nur, wenn ich das genehmige.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "dev",
+   "index": 12,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't do anything without telling me.",
+   "sentence": "Mach nichts ohne mein Wissen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 12,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't do anything without telling me.",
+   "sentence": "Mach nichts ohne mich zu fragen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 13,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Mach nichts, ohne mich zu fragen.",
+   "sentence": "Mach nichts, ohne mich zu fragen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 13,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Mach nichts, ohne mich zu fragen.",
+   "sentence": "Mach nichts, ohne mich zu fragen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 14,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't use the calculator.",
+   "sentence": "Vermeide den Taschenrechner.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 14,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't use the calculator.",
+   "sentence": "Vermeide den Taschenrechner.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "dev",
+   "index": 15,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Benutz nicht den Taschenrechner.",
+   "sentence": "Vermeide die Nutzung des Taschenrechners.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 15,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Benutz nicht den Taschenrechner.",
+   "sentence": "Schreib nicht mit dem Taschenrechner.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 16,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't forget the meeting.",
+   "sentence": "Vergiss nicht die Besprechung.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 16,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't forget the meeting.",
+   "sentence": "Vergiss nicht das Treffen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 17,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Vergiss nicht, mir zu schreiben.",
+   "sentence": "Vergiss nicht, mir zu kontaktieren.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 17,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Vergiss nicht, mir zu schreiben.",
+   "sentence": "Vergiss nicht, mir zu schreiben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 18,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Keine Sorge, das klappt schon.",
+   "sentence": "Kein Grund zur Sorge, das funktioniert schon.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 18,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Keine Sorge, das klappt schon.",
+   "sentence": "Keine Sorge, das klappt schon.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 19,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "I don't know the answer.",
+   "sentence": "Ich weiß nicht, wie man damit umgehen soll.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 19,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "I don't know the answer.",
+   "sentence": "Ich weiß es nicht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 20,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Ich weiß es nicht.",
+   "sentence": "Ich bin mir dessen nicht sicher.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 20,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Ich weiß es nicht.",
+   "sentence": "Ich weiß es nicht.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 21,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Please save this as a note.",
+   "sentence": "Sage mir, lass uns das als Notiz speichern.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 21,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Please save this as a note.",
+   "sentence": "Kannst du das als Notiz speichern?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 22,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Delete the draft note.",
+   "sentence": "Lösche das Entwurfshinweis.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 22,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Delete the draft note.",
+   "sentence": "Zieh den Entwurfentwurf weg.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 23,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Why don't you save it?",
+   "sentence": "Warum hättest du es nicht aufbewahren können?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 23,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Why don't you save it?",
+   "sentence": "Warum nicht davon salben?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 24,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Perhaps don't install updates for now.",
+   "sentence": "Überlege, ob du die Updates für den Moment überspringen solltest.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 24,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Perhaps don't install updates for now.",
+   "sentence": "Möglicherweise installiere Updates nicht für jetzt.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 25,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Meine Mutter sagt, du sollst nichts kaufen.",
+   "sentence": "Meine Oma sagt, du darfst nichts kaufen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 25,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Meine Mutter sagt, du sollst nichts kaufen.",
+   "sentence": "Meine Mutter sagt, du sollst nichts kaufen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 26,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't do that again.",
+   "sentence": "Mach das nicht wieder.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 26,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't do that again.",
+   "sentence": "Das mach ma nich wieder.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 27,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "You may send emails now.",
+   "sentence": "Du kannst jetzt E-Mails senden.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 27,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "You may send emails now.",
+   "sentence": "Du kannst jetzt Emails schicken.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 28,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Du kannst wieder Notizen löschen.",
+   "sentence": "Du hast die Möglichkeit, Notizabschnitte zu löschen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 28,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Du kannst wieder Notizen löschen.",
+   "sentence": "Du kannst wieder Notizen löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 29,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Delete the old drafts, but not my photos.",
+   "sentence": "Erstelle neue Entwürfe, aber lass meine Fotos unverändert.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 29,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Delete the old drafts, but not my photos.",
+   "sentence": "Schließe die alten Entwürfe, aber lass meine Fotos.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 30,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never remove notes other than the temporary ones.",
+   "sentence": "Vermeide die Entfernung von Notizen, es sei denn, es sind vorübergehende.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 30,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never remove notes other than the temporary ones.",
+   "sentence": "Keine Notiz entfern, außer den temporären",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 31,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Leave my notes alone.",
+   "sentence": "Lass meine Notizen in Ruhe.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 31,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Leave my notes alone.",
+   "sentence": "Lass meine Notizen in Ruhe.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "dev",
+   "index": 32,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Lass meine Fotos in Ruhe.",
+   "sentence": "Setze meine Bilder beiseite.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 32,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Lass meine Fotos in Ruhe.",
+   "sentence": "Lass meine Fotos in Ruhe.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 33,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Hands off my files!",
+   "sentence": "Bitte lassen Sie meine Dokumente stehen!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 33,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Hands off my files!",
+   "sentence": "Zieh dir die Dateien nicht an die Hand!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 34,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't ever share my passwords.",
+   "sentence": "Stelle sicher, dass du meine Passwörter nie teilst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 34,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't ever share my passwords.",
+   "sentence": "Stell dir vor, du musstst mein Passwort nicht teilen!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 35,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Gib niemals mein Passwort weiter.",
+   "sentence": "Halte dir niemals deine Anmeldeinformation vor.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 35,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Gib niemals mein Passwort weiter.",
+   "sentence": "Nimm kein Passwort vom Tisch.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 36,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "I never delete my notes.",
+   "sentence": "Ich lösche nie meine Notizen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 36,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "I never delete my notes.",
+   "sentence": "Ich lösche meine Notizen nie.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 37,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never download programs.",
+   "sentence": "Lass niemals Software herunterladen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 37,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never download programs.",
+   "sentence": "Download keine Programme.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 38,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't change anything.",
+   "sentence": "Ändere nichts.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 38,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't change anything.",
+   "sentence": "Kein Brötchen ändern.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 39,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Ändere nichts.",
+   "sentence": "Ändere nichts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 39,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Ändere nichts.",
+   "sentence": "Veränder nichts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 40,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Show me what you plan before you act.",
+   "sentence": "Zeige mir was du vorhast, bevor du handelst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 40,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Show me what you plan before you act.",
+   "sentence": "Zeig mir deinen Plan, bevor du handelst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 41,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Bevor du etwas löschst, frag mich.",
+   "sentence": "Bevor du etwas löschen möchtest, frage mich.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 41,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Bevor du etwas löschst, frag mich.",
+   "sentence": "Stell dir vor, du würdest mir fragen, bevor du was löschst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 42,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Never write to my notes without my okay.",
+   "sentence": "Bitte lass dich nicht über meine Notizen hinreißen, ohne mein Einverständnis.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 42,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Never write to my notes without my okay.",
+   "sentence": "Schreibst du dir Notizen ohne mein Einverständnis?",
+   "decision": "0",
+   "reason": "question"
+  },
+  {
+   "source": "dev",
+   "index": 43,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Don't hesitate, just do it.",
+   "sentence": "Überprüfe es nicht, mach es einfach.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 43,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Don't hesitate, just do it.",
+   "sentence": "Keine Schüsse, mach es.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 44,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "No thanks.",
+   "sentence": "Nicht bitte.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 44,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "No thanks.",
+   "sentence": "Danke, nein",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 45,
+   "model": "PHI4_MINI",
+   "prompt": "P1",
+   "original": "Stop sending me reminders.",
+   "sentence": "Bitte beende die Erinnerungen an mich.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 45,
+   "model": "PHI4_MINI",
+   "prompt": "P2",
+   "original": "Stop sending me reminders.",
+   "sentence": "Bitte stopp das, ich brauche keine Erinnerungen mehr.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 0,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Please never delete any of my notes.",
+   "sentence": "",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 0,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Please never delete any of my notes.",
+   "sentence": "Kannst ma bitte keine meine Notizen löschen lassen?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 1,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "sentence": "Entfernen sollten Sie niemals meine Notizen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 1,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "sentence": "Lösch bitte niemals meine Notizen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 2,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "sentence": "Du darfst meine Bilder nicht löschen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 2,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "sentence": "Du darfst meine Fotos nicht löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 3,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't send emails without asking me first.",
+   "sentence": "Lassen Sie sich vorher mit mir abstimmen und senden Sie kein E-Mail ohne mein Zustimmung.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 3,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't send emails without asking me first.",
+   "sentence": "Mach's maßen, bevor du einen Brief schreibst, bitte.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 4,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "sentence": "Gib nie etwas im Internet eingibst, bevor du mich darüber informiert hast.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 4,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "sentence": "Hey, nichts ins Netz klickst oder fragst, bevor ich es gesagt habe.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 5,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "sentence": "Lasse keine neuen Modul installieren, solange ich nicht ausdrücklich genehmige.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 5,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "sentence": "Lass dir keine neuen Module nicht einbauen, solange ich es nicht bestätigen habe.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 6,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Stop using the calculator.",
+   "sentence": "Bitte verzichten Sie auf die Berechnung mit dem Taschenrechner.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 6,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Stop using the calculator.",
+   "sentence": "Kopf aus, Calc!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 7,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Hör auf, im Internet zu suchen.",
+   "sentence": "Halt von der Internetrecherche ab.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 7,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Hör auf, im Internet zu suchen.",
+   "sentence": "Hör auf, im Internet zu suchen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 8,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "You must not go online.",
+   "sentence": "Bleiben Sie von dem Online-Surfen ab.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 8,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "You must not go online.",
+   "sentence": "Du darfst nicht online gehst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 9,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "sentence": "Ich verbiete dir, etwas an meinen Dateien zu ändern.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 9,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "sentence": "Ich will nix ändern an meinen Dateien, lass das denen bleiben.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "holdout",
+   "index": 10,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't forget to save my notes.",
+   "sentence": "Überprüfe nicht, ob du meine Notizen abgelegt hast.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 10,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't forget to save my notes.",
+   "sentence": "Mach's mal fitzt, die Notizen von mir zu sichern.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 11,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "sentence": "Überzeuge dich selbst, die Gedanken zu archivieren.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 11,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "sentence": "Vergiss nicht, die Notiz zu speichern.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 12,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "sentence": "Zweifel nicht, mich zu fragen, falls etwas nicht klar ist.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 12,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "sentence": "Mach mal großes Taschengeld vorab, frag einfach, wenn etwas nicht klar ist.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 13,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Can you delete the old note?",
+   "sentence": "Kannst du das alte Memo entfernen?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 13,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Can you delete the old note?",
+   "sentence": "Kannst du den alten Notiz wegklammern?",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 14,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "sentence": "Könnte ich dir eine E-Mail erstellen?",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "holdout",
+   "index": 14,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "sentence": "Kannst du mir ne E-Mail schreiben?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 15,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "I didn't delete anything yesterday.",
+   "sentence": "I habe gestern nichts löschen lassen.",
+   "decision": "0",
+   "reason": "mixed language"
+  },
+  {
+   "source": "holdout",
+   "index": 15,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "I didn't delete anything yesterday.",
+   "sentence": "Ich hab nichts gestern löschen lassen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 16,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "What is 17 times 23?",
+   "sentence": "Welches ist 17 mal 23?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 16,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "What is 17 times 23?",
+   "sentence": "Machst du mal 17 mal 23?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 17,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "sentence": "Meine Ergänzungen sollen niemals gelöscht oder überschrieben werden und keine Weiterleitung erfahren.",
+   "decision": "0",
+   "reason": "object changed"
+  },
+  {
+   "source": "holdout",
+   "index": 17,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "sentence": "Neues sollte ich dir nie löschen oder ersetzen, und solche auch nicht wegschicken.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 18,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "sentence": "Die Bilder und Nachrichten niemals löschen und verschicken.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 18,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "sentence": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 19,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Always ask me before you write anything to my files.",
+   "sentence": "Bitte zuvor mit mir absprechen, bevor du etwas in meine Dateien schreibst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 19,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Always ask me before you write anything to my files.",
+   "sentence": "Mach mal nachfragen bevor du mir was in die Dateien schreibst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 20,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "sentence": "Erkundige mich stets zunächst, bevor etwas installiert wird.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 20,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "sentence": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 21,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Tell me before you do anything.",
+   "sentence": "Ich möchte, dass du mir vorher berichtest, bevor du etwas unternimmst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 21,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Tell me before you do anything.",
+   "sentence": "Vielleicht solltest du mir vorher alles erzählen, bevor du etwas machst.",
+   "decision": "0",
+   "reason": "weaker (hedge added)"
+  },
+  {
+   "source": "holdout",
+   "index": 22,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "sentence": "Vergescheucht, vorher mitzuteilen, was du tust möchtest.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 22,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "sentence": "Sag mir immer vorher, was du tust willst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 23,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Finger weg von meinen Notizen!",
+   "sentence": "Bleib weg von meinen Notizen!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 23,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Finger weg von meinen Notizen!",
+   "sentence": "Bleib ab von meinen Notizen!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 24,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Keep your hands off my photos.",
+   "sentence": "",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 24,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Keep your hands off my photos.",
+   "sentence": "Lass das Bild von mir weg, Tut mir leid.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 25,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never delete files, except the drafts.",
+   "sentence": "Bleibt die Löschung von Dateien bei, außer den Entwürfen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 25,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never delete files, except the drafts.",
+   "sentence": "Kannst nix löschen, außer die Entwürfe.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "holdout",
+   "index": 26,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "sentence": "Überlasse nur die Entwürfe nicht löschen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 26,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "sentence": "Lass dir keine Feste-Dateien machen, außer den Entwürfen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 27,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never delete my recipes.",
+   "sentence": "Meine Gerichte sollen niemals gelöscht werden.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 27,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never delete my recipes.",
+   "sentence": "Bleibt meine Rezepte niemals weggeworfen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 28,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Maybe don't send that email yet.",
+   "sentence": "Vielleicht bewahre das E-Mail noch ein bisschen vorhandenen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 28,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Maybe don't send that email yet.",
+   "sentence": "Vielleich sendest du das E-Mail noch nicht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 29,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "sentence": "Vielleicht wäre es ratsam, dir nichts löschen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 29,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "sentence": "Vielleicht solltest du lieber nichts löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 30,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "My brother says you should never use the internet.",
+   "sentence": "Mein Bruder rät einfach davon ab, das Internet zu nutzen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 30,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "My brother says you should never use the internet.",
+   "sentence": "Mein Bruder meint, man sollte nie das Internet benutzen.",
+   "decision": "0",
+   "reason": "roles changed (one)"
+  },
+  {
+   "source": "holdout",
+   "index": 31,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "sentence": "Mein Chef meint, es darfst du keine Nachrichten verschicken.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 31,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "sentence": "Mein Boss meint, du soll keine Emails schicken.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 32,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "You can delete notes again now.",
+   "sentence": "Nun können Sie die Notizen erneut löschen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 32,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "You can delete notes again now.",
+   "sentence": "Du kannst die Notizen nochmal löschen gehen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 33,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "sentence": "Sie können nun erneut ins World Wide Web gehen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 33,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "sentence": "Nun bist du wieder internetverbindbar.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 34,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Feel free to install whatever you need.",
+   "sentence": "Experimentieren Sie frei, das benötigte einzuleiten, wie es Ihnen gefällt.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 34,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Feel free to install whatever you need.",
+   "sentence": "Kannst du so viel installieren, wie du brauchst.",
+   "decision": "0",
+   "reason": "question"
+  },
+  {
+   "source": "holdout",
+   "index": 35,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "No downloads, please.",
+   "sentence": "Bitte keine Downloads ausführen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 35,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "No downloads, please.",
+   "sentence": "Keine Downloads, bitte.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 36,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Keine Uploads!",
+   "sentence": "Keine Hochladungen möglich!",
+   "decision": "0",
+   "reason": "meaning changed (impossible)"
+  },
+  {
+   "source": "holdout",
+   "index": 36,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Keine Uploads!",
+   "sentence": "Keine Uploads!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 37,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "You are not allowed to learn from my private messages.",
+   "sentence": "Es ist Ihnen nicht gestattet, aus meinen privaten Nachrichten zu lernen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 37,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "You are not allowed to learn from my private messages.",
+   "sentence": "Kein Brauch, davon zu lernen in meinen Privatnachrichten.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 38,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Merk dir nichts über meine Familie.",
+   "sentence": "Lass dir die Angelegenheiten meiner Familie nicht anhören.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 38,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Merk dir nichts über meine Familie.",
+   "sentence": "Nichts über meine Familie für dich.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 39,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't touch anything on my phone without my permission.",
+   "sentence": "Sollten Sie nicht auf meinem Smartphone etwas anfassen, ohne meine Zustimmung.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 39,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't touch anything on my phone without my permission.",
+   "sentence": "Verwende mein Handy nicht ohne meine Erlaubnis.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 40,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "sentence": "In meinem Namen dürfen Sie nur Nachrichten senden, wenn ich es mir ausdrucklich erlauben.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "holdout",
+   "index": 40,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "sentence": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 41,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't stop saving my notes.",
+   "sentence": "Lass die Zettel nicht abgebrochen werden.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 41,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't stop saving my notes.",
+   "sentence": "Kopf ab, bleib so und fäss meine Notizen!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 42,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't worry about the budget.",
+   "sentence": "Bitte keine Angst vor dem Budget haben.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 42,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't worry about the budget.",
+   "sentence": "Ich sorg' mir'n Bogen vor der Kasse.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 43,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "sentence": "Kümmern Sie sich nicht um die Frist.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 43,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "sentence": "Mach dir keine Sorgen wegen der Frist.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 44,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Under no circumstances should you share my contacts.",
+   "sentence": "Angemessenheit nicht einmal im Traum, meine Kontakte teilen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 44,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Under no circumstances should you share my contacts.",
+   "sentence": "Ich möchte absolut kein Vertrauen in dich schenken. Lass mich bitte alle Kontakte allein.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 45,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "sentence": "Ausgeben solltest du nicht auf garkeine Weise Geld.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 45,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "sentence": "Auf keinen Fall darfst du Geld ausgeben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 46,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "I forbid you to run any programs.",
+   "sentence": "I verbiete Ihnen, jedes Programm auszuführen.",
+   "decision": "0",
+   "reason": "mixed language"
+  },
+  {
+   "source": "holdout",
+   "index": 46,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "I forbid you to run any programs.",
+   "sentence": "Ich verbiet dir, jede Programme auszuführen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 47,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Bitte nichts herunterladen.",
+   "sentence": "Bitte keine Dateien herunterladen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 47,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Bitte nichts herunterladen.",
+   "sentence": "Bitte nichts herunterladen",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 48,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "sentence": "Lassen Sie meine Notizen in keiner Bundesliga unter keinen Umständen überschreiben.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 48,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "sentence": "Kopf hoch, das soll's nicht werden, die Notizen sollen unverändert bleiben.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 49,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "sentence": "Überlege dir, meine Notizen zu ändern, sollte ich das befehlen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 49,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "sentence": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 50,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "The sign said do not enter.",
+   "sentence": "Das Schild flüsterte, nicht eintreten.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 50,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "The sign said do not enter.",
+   "sentence": "Die Schutzplatte meinte, kein Eintrittszeichen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 51,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never mind, it was nothing.",
+   "sentence": "Das ist kein Problem, egal.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 51,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never mind, it was nothing.",
+   "sentence": "Blosse Sache, vielleicht gar Nichts.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 52,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "sentence": "Verwende das Tagebucheintrag, verwende jedoch niemals die alten Einträge löschen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 52,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "sentence": "Schreib die Notiz, aber lösch die alte nie.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 53,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Before you send anything, show it to me.",
+   "sentence": "Bevor du etwas abschickst, zeig es mir noch.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 53,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Before you send anything, show it to me.",
+   "sentence": "Vor dir rausgeschickt zu bekommen, solltest du es mir noch mal zeigen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 54,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Nichts verschicken!",
+   "sentence": "Alles behalten!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 54,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Nichts verschicken!",
+   "sentence": "Kein Versand!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 55,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Please don't use any tools today.",
+   "sentence": "Lassen Sie heute keinen Werkzeugen bedienen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 55,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Please don't use any tools today.",
+   "sentence": "Kein Zeug gebrauchen heute, bitte.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 56,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Benutze keine Werkzeuge.",
+   "sentence": "Verzichte auf Werkzeuge.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 56,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Benutze keine Werkzeuge.",
+   "sentence": "Kein Werkzeug anwenden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 57,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "sentence": "Lass keine Module aus irgendeinem Ort herunterladen, ohne meine ausdrückliche Zustimmung.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 57,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "sentence": "Lass dir keine Module ohne meine Zustimmung ranstellen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 58,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "sentence": "Es darf niemals der Fall sein, dass du Modulien greifst, ohne meine ausdrückliche Zustimmung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 58,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "sentence": "Du darfst nie Module ohne mein Wissen und Zustimmung holen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 0,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't delete my notes.",
+   "sentence": "Nicht meine Notizen löschen!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 0,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't delete my notes.",
+   "sentence": "Bleib meine Notizen machen!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 1,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Do not ever erase my files.",
+   "sentence": "Sollen meine Dokumente niemals gelöscht werden.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 1,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Do not ever erase my files.",
+   "sentence": "Soll's keine Deine Dateien löschen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 2,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Lösche nie meine Dateien.",
+   "sentence": "Bleib meine Dateien nicht löschen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 2,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Lösche nie meine Dateien.",
+   "sentence": "Lösche nie meine Dateien.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 3,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Du sollst keine Notizen überschreiben.",
+   "sentence": "Es darf keine Ergänzungen auf die Notizen gemacht werden.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 3,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Du sollst keine Notizen überschreiben.",
+   "sentence": "Du sollste keine Notizen überschreiben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 4,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never send my messages to anyone.",
+   "sentence": "Bitte sendet keine Nachrichten von mir weg.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 4,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never send my messages to anyone.",
+   "sentence": "Never in Mitleider, was mein Nachrichten an niemanden sendet.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 5,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Teile niemals meine Kontakte.",
+   "sentence": "Gib niemals deine Kontaktdaten preis.",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "source": "dev",
+   "index": 5,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Teile niemals meine Kontakte.",
+   "sentence": "Teile niemals meine Kontakte.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 6,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't upload anything.",
+   "sentence": "Keinen Dokumenten hochladen sollten.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 6,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't upload anything.",
+   "sentence": "Lasst kein Bild hochladen.",
+   "decision": "0",
+   "reason": "narrower"
+  },
+  {
+   "source": "dev",
+   "index": 7,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "No internet access.",
+   "sentence": "Keine Internetverbindung möglich.",
+   "decision": "0",
+   "reason": "statement"
+  },
+  {
+   "source": "dev",
+   "index": 7,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "No internet access.",
+   "sentence": "Keine Internetverbindung.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "dev",
+   "index": 8,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Kein Internet!",
+   "sentence": "Kein digitales Netzwerk!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 8,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Kein Internet!",
+   "sentence": "Kein Internet!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 9,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Ask me first before installing anything.",
+   "sentence": "Inquire of mich zuerst, bevor etwas installiert wird.",
+   "decision": "0",
+   "reason": "mixed language"
+  },
+  {
+   "source": "dev",
+   "index": 9,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Ask me first before installing anything.",
+   "sentence": "Frag mich zuerst, bevor du was installierst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 10,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Installier nichts ohne meine Erlaubnis.",
+   "sentence": "Überspringe keine Installation ohne mein Einverständnis.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 10,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Installier nichts ohne meine Erlaubnis.",
+   "sentence": "Mach dir keine Mühe, installiere nix ohne mein Einverständnis.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 11,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Only send emails if I approve them.",
+   "sentence": "E-Mails senden, solange ich deren Genehmigung erteile.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 11,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Only send emails if I approve them.",
+   "sentence": "Send mir nur E-Mails, wenn du sie absegnet.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "dev",
+   "index": 12,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't do anything without telling me.",
+   "sentence": "Lass dir keine Maßnahmen ungehört gehen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 12,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't do anything without telling me.",
+   "sentence": "Mach dir kein Bekanntschaft, ohne mich zu bitten.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 13,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Mach nichts, ohne mich zu fragen.",
+   "sentence": "Bleiben Sie beim Zugehen nicht ohne Frage vor mir.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 13,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Mach nichts, ohne mich zu fragen.",
+   "sentence": "Mach nichts, ohne mich zu fragen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 14,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't use the calculator.",
+   "sentence": "",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 14,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't use the calculator.",
+   "sentence": "Zieh'n das Taschenrechner weg lassen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 15,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Benutz nicht den Taschenrechner.",
+   "sentence": "",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 15,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Benutz nicht den Taschenrechner.",
+   "sentence": "Kopf es selbst, nix mit dem Pocket-Calc!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 16,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't forget the meeting.",
+   "sentence": "Machen Sie bitte nicht vergessen, die Besprechung.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 16,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't forget the meeting.",
+   "sentence": "Mach's gut, die Meeting-Termin hat's nicht vergessen!",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 17,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, mir zu schreiben.",
+   "sentence": "Vergesse bitte, mir eine Nachricht zu schicken.",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "source": "dev",
+   "index": 17,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, mir zu schreiben.",
+   "sentence": "Vergiss nicht, mir zu schreiben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 18,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Keine Sorge, das klappt schon.",
+   "sentence": "\\",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 18,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Keine Sorge, das klappt schon.",
+   "sentence": "Keine Sorge, das klappt schon.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 19,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "I don't know the answer.",
+   "sentence": "Das weiß ich noch nicht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 19,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "I don't know the answer.",
+   "sentence": "Ich weiß das nicht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 20,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Ich weiß es nicht.",
+   "sentence": "Das ist mir unbekannt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 20,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Ich weiß es nicht.",
+   "sentence": "Ich weiß es nicht.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 21,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Please save this as a note.",
+   "sentence": "Dies soll als Notiz gespeichert werden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 21,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Please save this as a note.",
+   "sentence": "Mach' dat als Notiz fest.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 22,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Delete the draft note.",
+   "sentence": "Entferne den Entwurfsnotiz.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 22,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Delete the draft note.",
+   "sentence": "Draufzukopierendes Entwurfsprojekt löschen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 23,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Why don't you save it?",
+   "sentence": "Warum sollten Sie es nicht speichern?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 23,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Why don't you save it?",
+   "sentence": "Warum machst du das nicht aufsparen?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 24,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Perhaps don't install updates for now.",
+   "sentence": "Vielleicht lässt man die Updates erst ein weilweise",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 24,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Perhaps don't install updates for now.",
+   "sentence": "Vielleicht installierst du die Updates erst später.",
+   "decision": "0",
+   "reason": "meaning changed (later)"
+  },
+  {
+   "source": "dev",
+   "index": 25,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Meine Mutter sagt, du sollst nichts kaufen.",
+   "sentence": "Meine Mutter ruft dich ab, nichts zu kaufen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 25,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Meine Mutter sagt, du sollst nichts kaufen.",
+   "sentence": "Meine Mutter meint, du sollst dir kein Kleingeld sparen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 26,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't do that again.",
+   "sentence": "Das machen Sie bitte nicht erneut.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 26,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't do that again.",
+   "sentence": "Kannst das bitte nicht wieder machen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 27,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "You may send emails now.",
+   "sentence": "Du kannst jetzt Nachrichten verschicken.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 27,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "You may send emails now.",
+   "sentence": "Du kannst jetzt Nachrichten schicken.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 28,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Du kannst wieder Notizen löschen.",
+   "sentence": "Sie kann wieder Aufzeichnungen löschen.",
+   "decision": "0",
+   "reason": "roles changed (she)"
+  },
+  {
+   "source": "dev",
+   "index": 28,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Du kannst wieder Notizen löschen.",
+   "sentence": "Du kannst wieder Notizen löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 29,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Delete the old drafts, but not my photos.",
+   "sentence": "",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 29,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Delete the old drafts, but not my photos.",
+   "sentence": "Lösch die alten Entwürfe, aber nicht meine Bilder.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 30,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never remove notes other than the temporary ones.",
+   "sentence": "Vermeide das Entfernen von Bemerkungen, außer solcher, die vorübergehend gedruckt sind.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 30,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never remove notes other than the temporary ones.",
+   "sentence": "Kann man keine Notizen wegwerfen, außer die temporären.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 31,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Leave my notes alone.",
+   "sentence": "Keine Sorge, meine Notizen sollten ruhig bleiben.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 31,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Leave my notes alone.",
+   "sentence": "Meine Notizen sollst du bitte allein lassen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 32,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Lass meine Fotos in Ruhe.",
+   "sentence": "Ich möchte meine Bilder in Frieden.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 32,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Lass meine Fotos in Ruhe.",
+   "sentence": "Lass meine Fotos in Ruhe.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 33,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Hands off my files!",
+   "sentence": "Mach' dich nicht auf meine Dokumente her!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 33,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Hands off my files!",
+   "sentence": "Bleibt ab meine Dokumente!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 34,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't ever share my passwords.",
+   "sentence": "Gib niemals meine Geheimcodes preis.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 34,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't ever share my passwords.",
+   "sentence": "Keine Sorge, sollst du meine Passwörter nicht teilen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 35,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Gib niemals mein Passwort weiter.",
+   "sentence": "Never vertraute ich meinem Passwort jemanden an.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 35,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Gib niemals mein Passwort weiter.",
+   "sentence": "Gib niemals mein Passwort weiter.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 36,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "I never delete my notes.",
+   "sentence": "Ich lösche niemals meine Notizen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 36,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "I never delete my notes.",
+   "sentence": "Ich löscht nie meine Notizen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 37,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never download programs.",
+   "sentence": "Keine Software herunterladen",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 37,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never download programs.",
+   "sentence": "Keine Programme runterladen sollten.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 38,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't change anything.",
+   "sentence": "Bleibt alles beim Alten.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 38,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't change anything.",
+   "sentence": "Bleibt der Satz so, wie er ist.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 39,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Ändere nichts.",
+   "sentence": "Bleiben Sie bei dem, wie er ist.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 39,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Ändere nichts.",
+   "sentence": "Bleib bloß so, wie du bist.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 40,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Show me what you plan before you act.",
+   "sentence": "Zeig mir noch einmal euren Plan, bevor du dazu vorangehst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 40,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Show me what you plan before you act.",
+   "sentence": "Mache erst deinen Plan bekannt, bevor du dazu greifst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 41,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Bevor du etwas löschst, frag mich.",
+   "sentence": "Bevor du etwas löschst, zweifle ich an deiner Absicht ab.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 41,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Bevor du etwas löschst, frag mich.",
+   "sentence": "Bevor du etwas löschst, frag mich. (Before you delete something, ask me.)",
+   "decision": "0",
+   "reason": "near copy plus translation"
+  },
+  {
+   "source": "dev",
+   "index": 42,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Never write to my notes without my okay.",
+   "sentence": "Sollt' ich dir nicht erlauben, deine Gedanken auf meine Notizen zu schreiben, ohne meine Zustimmation.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "dev",
+   "index": 42,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Never write to my notes without my okay.",
+   "sentence": "Du solltest meine Notizen niemals ohne mein Okay markieren.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 43,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Don't hesitate, just do it.",
+   "sentence": "Gib dir keine Mühe, sondern werde es tun.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 43,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Don't hesitate, just do it.",
+   "sentence": "Bleib nicht stehen, sondern tu's einfach.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 44,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "No thanks.",
+   "sentence": "Nein, danke.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 44,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "No thanks.",
+   "sentence": "Nicht im Geringsten interessiert mich das.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 45,
+   "model": "GRANITE33_2B",
+   "prompt": "P1",
+   "original": "Stop sending me reminders.",
+   "sentence": "Bitte stoppen Sie mir keine Erinnerungen mehr zu schicken.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 45,
+   "model": "GRANITE33_2B",
+   "prompt": "P2",
+   "original": "Stop sending me reminders.",
+   "sentence": "Kopf ab, keine Erinnerungen mehr.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 0,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Please never delete any of my notes.",
+   "sentence": "Bitte löschen Sie niemals einen meiner Notizen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 0,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Please never delete any of my notes.",
+   "sentence": "Never delete my notes.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 1,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "sentence": "Bitte löschen Sie niemals meine Notizen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 1,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "sentence": "Never delete my notes.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "holdout",
+   "index": 2,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "sentence": "Es ist nicht erlaubt, meine Fotos zu löschen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 2,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "sentence": "Du darfst meine Fotos nicht löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 3,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't send emails without asking me first.",
+   "sentence": "Bevor du E-Mails sendest, frage mich bitte vorher.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 3,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't send emails without asking me first.",
+   "sentence": "Don't send emails without asking me first.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 4,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "sentence": "Bevor du etwas ins Internet schickst, frage mich vorher.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 4,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "sentence": "Never post anything online without asking me first.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 5,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "sentence": "Never install new modules unless I explicitly allow it.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 5,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "sentence": "Never install new modules unless I explicitly allow it.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 6,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Stop using the calculator.",
+   "sentence": "Hör auf, die Rechenmaschine zu benutzen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 6,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Stop using the calculator.",
+   "sentence": "Sei leise mit dem Taschenrechner. Mach das nicht mehr. Das ist kein Spielzeug.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 7,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Hör auf, im Internet zu suchen.",
+   "sentence": "Hör auf, im Internet zu suchen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 7,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Hör auf, im Internet zu suchen.",
+   "sentence": "Bleib weg vom Internet.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 8,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "You must not go online.",
+   "sentence": "You should not be on the internet.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 8,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "You must not go online.",
+   "sentence": "You must not go online. It's important to stay offline right now. We need to keep this conversation private.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 9,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "sentence": "Ich möchte nicht, dass du irgendetwas an meinen Dateien änderst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 9,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "sentence": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 10,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't forget to save my notes.",
+   "sentence": "Füge meine Notizen als Lesezeichen ein.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 10,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't forget to save my notes.",
+   "sentence": "Halt meine Notizen fest.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 11,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "sentence": "Denk daran, die Notiz zu speichern.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 11,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "sentence": "Halt die Notiz nicht für dich, versuche sie zu speichern. Lass sie nicht liegen, nimm sie dir und speichere sie.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 12,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "sentence": "Fragen Sie mich jederzeit, wenn etwas unklar ist.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 12,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "sentence": "Don't be shy, ask me if it's not clear.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 13,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Can you delete the old note?",
+   "sentence": "Möchtest du die alte Notiz löschen?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 13,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Can you delete the old note?",
+   "sentence": "Can you delete the old note?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 14,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "sentence": "Kannst du mir eine E-Mail senden?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 14,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "sentence": "Can you write me an email?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 15,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "I didn't delete anything yesterday.",
+   "sentence": "Ich habe gestern nichts gelöscht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 15,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "I didn't delete anything yesterday.",
+   "sentence": "Hey, I didn't delete anything yesterday.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 16,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "What is 17 times 23?",
+   "sentence": "What is 17 times 23?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 16,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "What is 17 times 23?",
+   "sentence": "What is 17 times 23?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 17,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "sentence": "Nicht löschen oder überschreiben Sie meine Notizen, und senden Sie sie auch nirgendwohin.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 17,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "sentence": "Deleted notes - overwrite me and don't send anywhere.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 18,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "sentence": "Never delete or send my photos or messages.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 18,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "sentence": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 19,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Always ask me before you write anything to my files.",
+   "sentence": "Bevor du etwas in meine Dateien schreibst, bitte frage mich zuerst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 19,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Always ask me before you write anything to my files.",
+   "sentence": "Always ask me before you write anything to my files.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 20,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "sentence": "Always ask me first before you install something.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 20,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "sentence": "Frag immer erst, bevor du was installierst. 😊",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 21,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Tell me before you do anything.",
+   "sentence": "Bevor du irgendetwas tust, lass es mich wissen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 21,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Tell me before you do anything.",
+   "sentence": "Tell me before you do anything.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 22,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "sentence": "Bitte informiere mich immer im Voraus über deine Absichten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 22,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "sentence": "Sag mir immer vorher, was du tun willst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 23,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Finger weg von meinen Notizen!",
+   "sentence": "Hands off my notes!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 23,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Finger weg von meinen Notizen!",
+   "sentence": "Finger weg von meinen Notizen! (Stay away from my notes!)",
+   "decision": "0",
+   "reason": "near copy plus translation"
+  },
+  {
+   "source": "holdout",
+   "index": 24,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Keep your hands off my photos.",
+   "sentence": "Bitte berühre meine Bilder nicht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 24,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Keep your hands off my photos.",
+   "sentence": "Just don't touch my pictures.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 25,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never delete files, except the drafts.",
+   "sentence": "Verschwinde niemals Dateien, außer die Entwürfe.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "source": "holdout",
+   "index": 25,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never delete files, except the drafts.",
+   "sentence": "Don't delete files, unless they're drafts. Keep drafts safe!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 26,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "sentence": "Eliminate only the draft files, not others.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 26,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "sentence": "Kein Löschen außer den Entwürfen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 27,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never delete my recipes.",
+   "sentence": "Deletete niemals meine Rezepte.",
+   "decision": "0",
+   "reason": "mixed language"
+  },
+  {
+   "source": "holdout",
+   "index": 27,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never delete my recipes.",
+   "sentence": "I don't want you to delete my recipes.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 28,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Maybe don't send that email yet.",
+   "sentence": "Vielleicht solltest du noch nicht auf ‚Senden‘ klicken.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 28,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Maybe don't send that email yet.",
+   "sentence": "Vielleicht solltest du die E-Mail noch nicht abschicken.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 29,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "sentence": "Es könnte sein, dass du etwas löschen solltest, aber vielleicht solltest du lieber nicht.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 29,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "sentence": "Vielleicht solltest du lieber nichts löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 30,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "My brother says you should never use the internet.",
+   "sentence": "Mein Bruder sagt, man sollte das Internet niemals benutzen.",
+   "decision": "0",
+   "reason": "roles changed (one)"
+  },
+  {
+   "source": "holdout",
+   "index": 30,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "My brother says you should never use the internet.",
+   "sentence": "My brother says you should never use the internet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 31,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "sentence": "Mein Chef meint, dass du E-Mails nicht versenden darfst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 31,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "sentence": "Chef says you can't send emails.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 32,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "You can delete notes again now.",
+   "sentence": "Sie können Notizen jetzt erneut löschen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 32,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "You can delete notes again now.",
+   "sentence": "You can delete notes again now.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 33,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "sentence": "Du darfst jetzt wieder ins Internet gehen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 33,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "sentence": "Du darfst jetzt wieder ins Internet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 34,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Feel free to install whatever you need.",
+   "sentence": "Bitte installiere, was auch immer du benötigst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 34,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Feel free to install whatever you need.",
+   "sentence": "Just install what you need.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 35,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "No downloads, please.",
+   "sentence": "Keine Downloads, bitte.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "holdout",
+   "index": 35,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "No downloads, please.",
+   "sentence": "No downloads, please.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 36,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Keine Uploads!",
+   "sentence": "Keine Uploads!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 36,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Keine Uploads!",
+   "sentence": "No uploads!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 37,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "You are not allowed to learn from my private messages.",
+   "sentence": "Private Nachrichten können nicht für Lernzwecke verwendet werden.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 37,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "You are not allowed to learn from my private messages.",
+   "sentence": "You can't learn from my private messages.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 38,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Merk dir nichts über meine Familie.",
+   "sentence": "Denk nicht an meine Familie.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "holdout",
+   "index": 38,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Merk dir nichts über meine Familie.",
+   "sentence": "Merk dir nichts über meine Familie. (Don't you remember anything about my family.)",
+   "decision": "0",
+   "reason": "near copy plus translation"
+  },
+  {
+   "source": "holdout",
+   "index": 39,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't touch anything on my phone without my permission.",
+   "sentence": "Bitte berühre nichts auf meinem Telefon ohne meine Erlaubnis.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 39,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't touch anything on my phone without my permission.",
+   "sentence": "Don't touch anything on my phone without my permission.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 40,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "sentence": "Du darfst erst Nachrichten versenden, wenn ich dir das erlaube.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 40,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "sentence": "Only with my permission can you send messages. (but only if that's okay with me.)",
+   "decision": "0",
+   "reason": "near copy plus addition"
+  },
+  {
+   "source": "holdout",
+   "index": 41,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't stop saving my notes.",
+   "sentence": "Bitte setze das Speichern meiner Notizen fort.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 41,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't stop saving my notes.",
+   "sentence": "Don't stop saving my notes.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 42,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't worry about the budget.",
+   "sentence": "Macht euch keine Sorgen um den Etat.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 42,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't worry about the budget.",
+   "sentence": "Don't worry about the budget. Keep calm and carry on.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 43,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "sentence": "Mach dir keine Sorgen wegen der Frist.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 43,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "sentence": "Don't worry about the deadline.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 44,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Under no circumstances should you share my contacts.",
+   "sentence": "You should under no circumstances share my contacts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 44,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Under no circumstances should you share my contacts.",
+   "sentence": "Under no circumstances should you share my contacts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 45,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "sentence": "Keine Ausgaben von Geld auf keinen Fall!``",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 45,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "sentence": "Auf keinen Fall darfst du Geld ausgeben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 46,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "I forbid you to run any programs.",
+   "sentence": "Ich verbiete dir, irgendeine Programme zu führen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 46,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "I forbid you to run any programs.",
+   "sentence": "I forbid you to run any programs.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 47,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Bitte nichts herunterladen.",
+   "sentence": "Bitte keine Dateien herunterladen.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "holdout",
+   "index": 47,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Bitte nichts herunterladen.",
+   "sentence": "Bitte nichts herunterladen. Bitte nichts herunterladen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 48,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "sentence": "Bitte überschreibe meine Notizen auf keinen Fall.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 48,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "sentence": "Don't overwrite my notes. No exceptions.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 49,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "sentence": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 49,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "sentence": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 50,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "The sign said do not enter.",
+   "sentence": "Das Schild sagte, nicht einzutreten.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 50,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "The sign said do not enter.",
+   "sentence": "The sign said not to enter.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 51,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never mind, it was nothing.",
+   "sentence": "Never mind, it was nothing. Restatement:",
+   "decision": "0",
+   "reason": "model artefact"
+  },
+  {
+   "source": "holdout",
+   "index": 51,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never mind, it was nothing.",
+   "sentence": "Never mind, it was nothing.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 52,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "sentence": "Schreibe die Notiz, aber lösch niemals die alte.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 52,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "sentence": "Schreib die Notiz, aber lösch niemals die alte.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 53,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Before you send anything, show it to me.",
+   "sentence": "Bevor du irgendetwas verschickst, zeig es mir.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 53,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Before you send anything, show it to me.",
+   "sentence": "Before you send anything, show it to me.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 54,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Nichts verschicken!",
+   "sentence": "Keine Sendungen!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 54,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Nichts verschicken!",
+   "sentence": "Nichts verschicken!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 55,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Please don't use any tools today.",
+   "sentence": "Verwende heute bitte keine Werkzeuge.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 55,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Please don't use any tools today.",
+   "sentence": "No tools today, please.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 56,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Benutze keine Werkzeuge.",
+   "sentence": "Keine Werkzeuge benutzen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 56,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Benutze keine Werkzeuge.",
+   "sentence": "Don't use any tools.`",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 57,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "sentence": "Ich werde niemals Module ohne mein bewusstes Einverständnis von irgendwo abrufen.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "holdout",
+   "index": 57,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "sentence": "Never fetch modules from anywhere without my conscious permission.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "holdout",
+   "index": 58,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "sentence": "Bitte hole niemals Module ohne meine bewusste Zustimmung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "holdout",
+   "index": 58,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "sentence": "You should never fetch modules without me consciously agreeing to it.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 0,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't delete my notes.",
+   "sentence": "Bitte lösch meine Notizen nicht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 0,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't delete my notes.",
+   "sentence": "Don't delete my notes.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 1,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Do not ever erase my files.",
+   "sentence": "Löschen Sie meine Dateien niemals.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 1,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Do not ever erase my files.",
+   "sentence": "Erasen Sie niemals meine Dateien.",
+   "decision": "0",
+   "reason": "mixed language"
+  },
+  {
+   "source": "dev",
+   "index": 2,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Lösche nie meine Dateien.",
+   "sentence": "Entferne niemals meine Dateien.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 2,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Lösche nie meine Dateien.",
+   "sentence": "Never delete my files.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "dev",
+   "index": 3,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Du sollst keine Notizen überschreiben.",
+   "sentence": "Du sollst keine Notizen überschreiben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 3,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Du sollst keine Notizen überschreiben.",
+   "sentence": "Du sollst keine Notizen überschreiben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 4,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never send my messages to anyone.",
+   "sentence": "I don't want you to send my messages to anybody.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 4,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never send my messages to anyone.",
+   "sentence": "Never send my messages to anyone. Never give my messages to anyone.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 5,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Teile niemals meine Kontakte.",
+   "sentence": "Gib niemals meine Adressen weiter.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 5,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Teile niemals meine Kontakte.",
+   "sentence": "Teile niemals meine Kontakte.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 6,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't upload anything.",
+   "sentence": "Aktiviere keine Uploads. (German) / Do not upload anything. (English)",
+   "decision": "0",
+   "reason": "mixed language"
+  },
+  {
+   "source": "dev",
+   "index": 6,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't upload anything.",
+   "sentence": "Don't upload anything.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 7,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "No internet access.",
+   "sentence": "Keine Internetverbindung verfügbar.",
+   "decision": "0",
+   "reason": "statement"
+  },
+  {
+   "source": "dev",
+   "index": 7,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "No internet access.",
+   "sentence": "No internet access.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 8,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Kein Internet!",
+   "sentence": "Keine Internetverbindung!",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "dev",
+   "index": 8,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Kein Internet!",
+   "sentence": "Kein Internet! 📶",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 9,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Ask me first before installing anything.",
+   "sentence": "Bevor du irgendetwas installierst, frage mich bitte vorher.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 9,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Ask me first before installing anything.",
+   "sentence": "Hey, can you ask me first before installing anything?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 10,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Installier nichts ohne meine Erlaubnis.",
+   "sentence": "Do not install anything without my permission.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 10,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Installier nichts ohne meine Erlaubnis.",
+   "sentence": "Installier nichts ohne meine Erlaubnis.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 11,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Only send emails if I approve them.",
+   "sentence": "Send emails only if I approve them.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 11,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Only send emails if I approve them.",
+   "sentence": "Only send emails if I approve them.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 12,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't do anything without telling me.",
+   "sentence": "Ich werde nichts unternehmen, ohne es mit dir zu besprechen.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "source": "dev",
+   "index": 12,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't do anything without telling me.",
+   "sentence": "Don't do anything without tellin' me.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 13,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Mach nichts, ohne mich zu fragen.",
+   "sentence": "Bevor du etwas tust, frage mich.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 13,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Mach nichts, ohne mich zu fragen.",
+   "sentence": "Mach nichts, ohne mich zu fragen. (Don't do anything without asking me.)",
+   "decision": "0",
+   "reason": "near copy plus translation"
+  },
+  {
+   "source": "dev",
+   "index": 14,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't use the calculator.",
+   "sentence": "Unterlasse die Verwendung der Rechenmaschine.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 14,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't use the calculator.",
+   "sentence": "Don't use the calculator. Leave it alone.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 15,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Benutz nicht den Taschenrechner.",
+   "sentence": "Verwende nicht die Taschenrechner-App.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 15,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Benutz nicht den Taschenrechner.",
+   "sentence": "Don't use the calculator.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 16,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't forget the meeting.",
+   "sentence": "Für die Sitzung musst du dich nicht an die Begegnung erinnern.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 16,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't forget the meeting.",
+   "sentence": "vergiss die Besprechung nicht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 17,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, mir zu schreiben.",
+   "sentence": "Denke daran, mir zu schreiben.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 17,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, mir zu schreiben.",
+   "sentence": "vergiss nicht, mir zu schreiben",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 18,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Keine Sorge, das klappt schon.",
+   "sentence": "Keine Sorge, das geht schon.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 18,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Keine Sorge, das klappt schon.",
+   "sentence": "Keine Sorge, das klappt schon.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 19,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "I don't know the answer.",
+   "sentence": "I am unsure of the response.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 19,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "I don't know the answer.",
+   "sentence": "Ich weiß die Antwort nicht.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 20,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Ich weiß es nicht.",
+   "sentence": "Ich habe keine Ahnung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 20,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Ich weiß es nicht.",
+   "sentence": "Ich weiß es nicht.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 21,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Please save this as a note.",
+   "sentence": "Bitte speichere dies als Notiz.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 21,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Please save this as a note.",
+   "sentence": "Hier als Notiz speichern, bitte.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 22,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Delete the draft note.",
+   "sentence": "Entferne den Entwurfsnotiz.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "dev",
+   "index": 22,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Delete the draft note.",
+   "sentence": "Löschen Sie den Entwurf der Notiz.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 23,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Why don't you save it?",
+   "sentence": "Solltest du es nicht speichern?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 23,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Why don't you save it?",
+   "sentence": "Why don't you save it?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 24,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Perhaps don't install updates for now.",
+   "sentence": "Vielleicht solltest du Updates vorerst nicht installieren.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 24,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Perhaps don't install updates for now.",
+   "sentence": "Vielleicht solltest du Updates vorerst nicht installieren.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "source": "dev",
+   "index": 25,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Meine Mutter sagt, du sollst nichts kaufen.",
+   "sentence": "Meine Mutter rät, du solltest nichts kaufen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 25,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Meine Mutter sagt, du sollst nichts kaufen.",
+   "sentence": "My mom says don't buy anything.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 26,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't do that again.",
+   "sentence": "Again, don't do that.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 26,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't do that again.",
+   "sentence": "Don't do that again.`",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 27,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "You may send emails now.",
+   "sentence": "Du darfst jetzt E-Mails senden.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 27,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "You may send emails now.",
+   "sentence": "You may send emails now.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 28,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Du kannst wieder Notizen löschen.",
+   "sentence": "Du kannst die Notizen wieder löschen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 28,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Du kannst wieder Notizen löschen.",
+   "sentence": "Du kannst wieder Notizen löschen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 29,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Delete the old drafts, but not my photos.",
+   "sentence": "Entferne die alten Entwürfe, aber nicht meine Fotos.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 29,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Delete the old drafts, but not my photos.",
+   "sentence": "Delete the old drafts, but not my photos.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 30,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never remove notes other than the temporary ones.",
+   "sentence": "Entferne niemals andere als die temporären Notizen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 30,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never remove notes other than the temporary ones.",
+   "sentence": "Never delete notes except for the temp ones.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 31,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Leave my notes alone.",
+   "sentence": "Meine Notizen in Ruhe lassen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 31,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Leave my notes alone.",
+   "sentence": "Leave my notes alone. They're important. No one else should touch them.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 32,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Lass meine Fotos in Ruhe.",
+   "sentence": "Leave my photos alone.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 32,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Lass meine Fotos in Ruhe.",
+   "sentence": "Lass meine Fotos in Ruhe.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 33,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Hands off my files!",
+   "sentence": "Hände weg von meinen Dateien!",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 33,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Hands off my files!",
+   "sentence": "Hands off my files!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 34,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't ever share my passwords.",
+   "sentence": "Gib niemals meine Passwörter preis.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 34,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't ever share my passwords.",
+   "sentence": "Keine Passwörter teilen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 35,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Gib niemals mein Passwort weiter.",
+   "sentence": "Teile niemals mein Passwort mit.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 35,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Gib niemals mein Passwort weiter.",
+   "sentence": "Gib niemals mein Passwort weiter.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 36,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "I never delete my notes.",
+   "sentence": "I always keep my notes. I never erase them.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 36,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "I never delete my notes.",
+   "sentence": "I never delete my notes.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 37,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never download programs.",
+   "sentence": "Keine Programme herunterladen.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 37,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never download programs.",
+   "sentence": "Never download programs.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 38,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't change anything.",
+   "sentence": "Verändere nichts.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 38,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't change anything.",
+   "sentence": "Don't change anything.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 39,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Ändere nichts.",
+   "sentence": "Bitte führe keine Änderungen durch.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 39,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Ändere nichts.",
+   "sentence": "Ändere nichts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 40,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Show me what you plan before you act.",
+   "sentence": "Bitte zeig mir vorher, wie du vorgehst, bevor du handelst.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 40,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Show me what you plan before you act.",
+   "sentence": "Was hast du vor, bevor du handelst?",
+   "decision": "0",
+   "reason": "question"
+  },
+  {
+   "source": "dev",
+   "index": 41,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Bevor du etwas löschst, frag mich.",
+   "sentence": "Bevor du etwas löschst, frag mich vorher.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 41,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Bevor du etwas löschst, frag mich.",
+   "sentence": "Bevor du was löschst, frag mich!",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 42,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Never write to my notes without my okay.",
+   "sentence": "Bitte keine Nachrichten zu meinen Notizen ohne mein Einverständnis schreiben.",
+   "decision": "0",
+   "reason": "object changed"
+  },
+  {
+   "source": "dev",
+   "index": 42,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Never write to my notes without my okay.",
+   "sentence": "Never write to my notes without my okay.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 43,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Don't hesitate, just do it.",
+   "sentence": "Zögere nicht, tue es einfach.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 43,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Don't hesitate, just do it.",
+   "sentence": "No worries, just do it.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 44,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "No thanks.",
+   "sentence": "Ich danke ab. Bitte nicht.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "source": "dev",
+   "index": 44,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "No thanks.",
+   "sentence": "No thanks.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "source": "dev",
+   "index": 45,
+   "model": "EUROLLM_9B",
+   "prompt": "P1",
+   "original": "Stop sending me reminders.",
+   "sentence": "Bitte sende mir keine Erinnerungen mehr.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "source": "dev",
+   "index": 45,
+   "model": "EUROLLM_9B",
+   "prompt": "P2",
+   "original": "Stop sending me reminders.",
+   "sentence": "Stop reminding me.",
+   "decision": "1",
+   "reason": "same"
+  }
+ ]
+}

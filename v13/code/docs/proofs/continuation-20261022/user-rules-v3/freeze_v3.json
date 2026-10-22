@@ -1,0 +1,19 @@
+{
+ "schema": "USER_RULES_FREEZE_V3",
+ "frozen_before": "opening and auditing round3_raw.json",
+ "v3_on_seen_sets": {
+  "dev": "0 safety failures",
+  "holdout_author": "0 safety failures, 59/59 kinds",
+  "round1": "0 safety failures (v2: 1)",
+  "round2": "0 safety failures (v2: 20)"
+ },
+ "files": {
+  "v13/userrules.py": "f2fb1aa5690de865f40655c422b5d1f0319d37fbe26f15b8f5a2eea7272ee26a",
+  "v13/userrules_lexicon.json": "55f335295df5cac81614cd73a9b09616c727639575eccea80c1cddcb71a9d83b",
+  "docs/proofs/continuation-20261021/user-rules/userrules_eval.py": "1d206f0d88976e2898bc918af71243389e6421921c4c339b3cfc14c804c57a01",
+  "docs/proofs/continuation-20261021/user-rules/holdout_author.json": "44f7be8983a46c07b6ffd0a4c566c4679c01a98eea35bc761d99ba528a1e8b0e",
+  "docs/proofs/continuation-20261022/user-rules-v3/run_round3.py": "e1761c655b6985fe9b56cec181c25136a2a54af2930349771e214153bd6dbb84",
+  "docs/proofs/continuation-20261022/user-rules-v3/reference_v2_userrules.py": "3eb2e9a1b2c50d90683a9b3ec0985bdc1e56c1f3f4f6a7fc10e80fdbf375fcf9",
+  "docs/proofs/continuation-20261022/user-rules-v3/round3_raw.json": "a6dc8df29eae655b2815097e8c2a0cec29f9e0a18ce8c5b650bce3dc578047e5"
+ }
+}

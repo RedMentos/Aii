@@ -1,0 +1,331 @@
+{
+ "v6": {
+  "parser": "fixed-userrules-v6",
+  "summary": {
+   "items": 5,
+   "safety_failures": 0,
+   "soft_deny_as_ask": 0,
+   "over_caution": 14,
+   "probe_checks": 40,
+   "kind_match": 3,
+   "weaker_than_label": 0,
+   "missed_prohibitions": 0,
+   "allow_probes": 38,
+   "sentences_with_failure": 0,
+   "over_caution_share": 0.368,
+   "none_sentences": 4,
+   "none_fired": 1,
+   "none_fired_share": 0.25,
+   "net_rules": 1
+  },
+  "weaker": [],
+  "missed": [],
+  "none_fired": [
+   "Muss echt Kaffee haben, sonst geht nix."
+  ],
+  "rows": [
+   {
+    "text": "Muss echt Kaffee haben, sonst geht nix.",
+    "want_kind": "NONE",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "note_replace",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo",
+     "unknown_tool"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "UNKNOWN"
+      ],
+      "objects": [
+       "ALL"
+      ],
+      "unknown": [
+       "echt",
+       "geht",
+       "haben",
+       "kaffee",
+       "sonst"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "NET"
+      ],
+      "text": "Muss echt Kaffee haben, sonst geht nix"
+     }
+    ]
+   },
+   {
+    "text": "Hey, peek at this note first before you tweak anything, okay?",
+    "want_kind": "ASK_FIRST",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY",
+       "WRITE"
+      ],
+      "objects": [
+       "ALL",
+       "NOTE"
+      ],
+      "unknown": [
+       "peek",
+       "tweak"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Hey, peek at this note first before you tweak anything, okay?"
+     }
+    ]
+   },
+   {
+    "text": "Hey, could you add a new note for me?",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Gerne weiter fortgehen.",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Ganz egal, fahre fort.",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   }
+  ]
+ },
+ "v5": {
+  "parser": "fixed-userrules-v5",
+  "summary": {
+   "items": 5,
+   "safety_failures": 0,
+   "soft_deny_as_ask": 0,
+   "over_caution": 6,
+   "probe_checks": 40,
+   "kind_match": 4,
+   "weaker_than_label": 0,
+   "missed_prohibitions": 0,
+   "allow_probes": 38,
+   "sentences_with_failure": 0,
+   "over_caution_share": 0.158,
+   "none_sentences": 4,
+   "none_fired": 0,
+   "none_fired_share": 0.0,
+   "net_rules": 0
+  },
+  "weaker": [],
+  "missed": [],
+  "none_fired": [],
+  "rows": [
+   {
+    "text": "Muss echt Kaffee haben, sonst geht nix.",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Hey, peek at this note first before you tweak anything, okay?",
+    "want_kind": "ASK_FIRST",
+    "got_kind": "UNCLEAR",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [
+     "calc",
+     "note_new",
+     "send_email",
+     "web",
+     "install_module",
+     "delete_photo"
+    ],
+    "verdicts": {
+     "calc": "ASK",
+     "note_new": "ASK",
+     "note_replace": "ASK",
+     "send_email": "ASK",
+     "web": "ASK",
+     "install_module": "ASK",
+     "delete_photo": "ASK",
+     "unknown_tool": "ASK"
+    },
+    "rules": [
+     {
+      "kind": "UNCLEAR",
+      "actions": [
+       "ANY",
+       "WRITE"
+      ],
+      "objects": [
+       "ALL",
+       "NOTE"
+      ],
+      "unknown": [
+       "peek",
+       "tweak"
+      ],
+      "exceptions": [],
+      "reasons": [
+       "QUESTION"
+      ],
+      "text": "Hey, peek at this note first before you tweak anything, okay?"
+     }
+    ]
+   },
+   {
+    "text": "Hey, could you add a new note for me?",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Gerne weiter fortgehen.",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   },
+   {
+    "text": "Ganz egal, fahre fort.",
+    "want_kind": "NONE",
+    "got_kind": "NONE",
+    "safety_failures": [],
+    "soft": [],
+    "over_caution": [],
+    "verdicts": {
+     "calc": "ALLOW",
+     "note_new": "ALLOW",
+     "note_replace": "ALLOW",
+     "send_email": "ALLOW",
+     "web": "ALLOW",
+     "install_module": "ALLOW",
+     "delete_photo": "ALLOW",
+     "unknown_tool": "ALLOW"
+    },
+    "rules": []
+   }
+  ]
+ }
+}
