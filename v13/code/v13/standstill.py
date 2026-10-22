@@ -14,6 +14,7 @@ Release (:stillstand aus) only undoes the parts this command switched on itself;
 Not covered (said in the status): operator commands the user types himself still run, and an external process that
 ignores the cancel signal is only reported, never claimed as stopped.
 """
+import threading
 import time
 from . import age as agectl
 from . import prohibitions as P
@@ -34,6 +35,33 @@ def _held_background(r):
     except Exception:return None
 
 
+class _SeenEvent(threading.Event):
+    """Drop-in for Runtime.wake that records when the coordinator thread waits on it. The coordinator waits only at
+    its two idle points (paused, or after a scheduler tick), never inside a job or a tick, so a wait that started
+    after the pause proves no tick/job is running and the next loop sees the pause. runtime.py stays untouched."""
+    def __init__(self):super().__init__();self.last_wait=-1.
+    def wait(self,timeout=None):
+        if threading.current_thread() is getattr(self,'worker',None):self.last_wait=time.monotonic()
+        return super().wait(timeout)
+
+
+def _watch(r):
+    w=getattr(r,'wake',None)
+    if isinstance(w,_SeenEvent):return w
+    e=_SeenEvent();e.worker=getattr(r,'worker',None)
+    if w is not None and w.is_set():e.set()
+    r.wake=e;r._standstill_since=time.monotonic()
+    return e
+
+
+def _parked(r):
+    """The coordinator has seen the pause and waits (no scheduler tick or job can start after this)."""
+    w=getattr(r,'worker',None)
+    if w is None or not w.is_alive():return True
+    e=_watch(r);since=getattr(r,'_standstill_since',time.monotonic())
+    return bool(r.paused) and e.last_wait>=since
+
+
 def parts(r):
     a=agectl.controller(r)
     return {'notaus':bool(P.report(r.store)['notaus']),'queue':bool(r.paused and r.store.queue_paused()),
@@ -42,6 +70,7 @@ def parts(r):
 
 def status(r):
     st,_=_state(r.store);p=parts(r);job=r.current
+    if job is None and p['queue'] and not _parked(r):job='coordinator'  # worker not yet parked (e.g. inside a scheduler tick)
     return {'revision':REVISION,'on':bool(st['on']),'since':st['since'],'parts':p,'all_parts_on':all(p.values()),
             'running_job':job,'confirmed_still':bool(all(p.values()) and job is None),'set_by_standstill':st['set'],
             'background_waiting':_held_background(r),
@@ -51,15 +80,16 @@ def status(r):
 
 def engage(r,wait=WAIT_SECONDS,clock=time.monotonic):
     st,v=_state(r.store);before=parts(r)
-    P.halt(r.store,True,authority=P.HUMAN)
+    P.halt(r.store,True,authority=P.HUMAN);_watch(r)
     if not before['queue']:r.pause()
     else:r.cancel()
+    r._standstill_since=time.monotonic()  # a coordinator wait after this point proves it is parked
     if not before['age']:agectl.controller(r).freeze(True)
     newly={k:not before[k] for k in before}
     if st['on']:newly={k:bool(st['set'].get(k) or newly[k]) for k in newly}  # repeated call keeps the first record
     r.store.set_state(KEY,{'revision':REVISION,'on':True,'since':st['since'] or time.time(),'set':newly},expected=v)
     end=clock()+max(0.,float(wait))
-    while r.current is not None and clock()<end:time.sleep(.02)
+    while (r.current is not None or not _parked(r)) and clock()<end:time.sleep(.02)
     r.store.log('standstill',None,{'on':True,'set':newly,'running_job':r.current})
     return status(r)
 

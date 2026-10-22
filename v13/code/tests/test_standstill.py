@@ -42,6 +42,15 @@ class EngageTests(Base):
         self.assertEqual(self.r.sleep.tick.call_count,n)
         S.release(self.r);self.assertTrue(self.wait(lambda:self.r.sleep.tick.call_count>n))
 
+    def test_engage_waits_for_a_scheduler_tick_in_progress(self):
+        inside=threading.Event();calls=[]
+        def tick():
+            calls.append(1)
+            if len(calls)==1:inside.set();time.sleep(.4)
+        self.r.sleep.tick=tick;self.assertTrue(inside.wait(3))
+        s=S.engage(self.r,wait=3);self.assertTrue(s['confirmed_still']);n=len(calls);time.sleep(.5)
+        self.assertEqual(len(calls),n)  # no tick after "confirmed"
+
     def test_queued_turn_is_not_answered_while_still(self):
         S.engage(self.r);self.r.submit('Hallo');time.sleep(.5)
         self.assertEqual(self.r.store.queue_stats()['count'],1);self.assertIsNone(self.r.current)
