@@ -15,7 +15,7 @@ from .base import StateBox
 from ..common import digest,dumps
 
 KEY='G8_HARNESS';REVISION='hx1-harness-v1'
-MAX_TEXT=600;MAX_RULES=32;MAX_PATTERN=200;HISTORY=64
+MAX_TEXT=600;MAX_LONG_TEXT=1000;MAX_RULES=32;MAX_PATTERN=200;HISTORY=64
 LIST_OPS=('total','difference_max_min')  # listarith operations a parser rule may map to
 # Never editable, whatever the target name says (also checked on the text: a harness edit may not talk the body out of its rules).
 PROTECTED_PROMPTS=('system','conduct','operator_rules','replay_rules','user_model','memories','replay_memories')
@@ -39,9 +39,9 @@ def _listarith_extra():
     from . import listarith
     return [[p.pattern,op] for p,op in listarith.EXTRA]
 
-def _text(v,required=()):
+def _text(v,required=(),limit=MAX_TEXT):
     if not isinstance(v,str) or not v.strip():raise ValueError('Text erwartet')
-    if len(v)>MAX_TEXT:raise ValueError(f'Text länger als {MAX_TEXT}')
+    if len(v)>limit:raise ValueError(f'Text länger als {limit}')
     if any(ord(c)<32 and c not in '\n\t' for c in v):raise ValueError('Steuerzeichen im Text')
     for r in required:
         if r not in v:raise ValueError('Platzhalter fehlt: '+r)
@@ -62,6 +62,10 @@ TARGETS={}
 for _lang in ('en','de'):
     for _k in ('answer_rules','digest','task_context','hypotheses','clarify','replay','duplex_handoff','welcome'):
         TARGETS[f'prompt.{_lang}.{_k}']=('body_prompt',_prompt(_lang,_k),_text)
+# WP-HX2 first probe (B2 rule quote): the B2 earlier-context instruction, verbatim from cognition.Cognition.offer (a test checks it
+# still occurs there; cognition.py is hash-pinned by the source-handoff chain, so the text is mirrored, not imported).
+B2_CONTEXT_NOTE=' Earlier context separates exact source excerpts from fallible prior hypotheses. Use relevant earlier source excerpts when current text leaves a rule unstated; prefer an explicit current-source revision when the same rule changes. Never treat a prior hypothesis as a fact. Select short exact quotes carrying the source rules needed by your summary; only your verified quotes, not the full earlier context, are passed to the answer component. If required evidence is absent, state that uncertainty and request re-entry rather than inventing it. Quotes may cite only current source text or an exact earlier source excerpt, never own-state or hypotheses.'
+TARGETS['prompt.b2_earlier_context']=('body_prompt',lambda:B2_CONTEXT_NOTE,lambda v:_text(v,limit=MAX_LONG_TEXT))
 TARGETS['tool_hint.list_note']=('tool_hint',_attr('toolstep','LIST_NOTE'),_text)
 TARGETS['tool_hint.eligibility_note']=('tool_hint',_attr('agi.eligibility','LIVE_NOTE'),_text)
 TARGETS['parser.listarith_extra']=('parser_rules',_listarith_extra,_rules)
