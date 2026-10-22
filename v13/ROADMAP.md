@@ -22,6 +22,15 @@ gebundener Kohorte nachweisen. Der vollständige gekoppelte Funktionsumfang
 bleibt Ziel; Einzeltests helfen beim Eingrenzen und ersetzen ihn nicht.
 Dieses Paket ergänzt WP-Z12/STEP6 und überschreibt keine übrigen Arbeitspakete.
 
+## Gegenprüfung Runde 2 + WP-SAFE2 Stillstand — ERLEDIGT 2026-10-22 (Thread „GPT-Stand erneut prüfen“, Branch `claude/project-thread-2p69gl`)
+- GPT-Pakete vom 22.10. (PR #29 Lernpfad-Auditor, PR #27 Age-0/Freeze-Notiz, Drive-Notiz Abschnitte 9–10) geprüft und unverändert gemergt; Aussagen selbst nachgerechnet, alle bestätigt. Protokoll oben in `PRUEFUNG_CLAUDE_FUER_GPT.md`, Antwort je Prüfpunkt `code/docs/coordination/CLAUDE_ANTWORT_AGE0_LERNPFAD_20261022.md`. Runde 1 (PR #8) nachträglich in die Kette geholt. Suite nach Merge 1714 OK; mit SAFE2 1727 OK, 5 Skips (2 von 3 Läufen; 1 Lauf 1 sporadischer Fehler, nicht reproduziert, bekannte Flake-Kandidaten).
+- **WP-SAFE2 `:stillstand`** (`v13/standstill.py`, `tests/test_standstill.py`): Notaus + Warteschlange + Age-Freeze in einem Befehl, bestätigter Stillstand erst wenn der laufende Vorgang zu Ende ist, bleibt über Neustart, Aufheben nur der eigenen Teile, meldet wieder anlaufende Hintergrund-Aufgaben. Grund: unter `:notaus` liefen Lernen/Traum/Replay/Training weiter (GPT-Punkt 2 bestätigt).
+- Neue offene Pakete daraus:
+  - **WP-AGE0a** späte Selbstkorrektur ohne Age-4-Recht: eigenes Recht `late_correction` (Stufe 0/1), Korrektur nennt Unsicherheit, vorregistriert messen (falsch-positive Korrekturen vs. verpasste). Heute ist `selfmodel.late_offer` bei Ceiling 0 immer HELD.
+  - **WP-AGE0b** Organ-Checkpoint: Manifest je Rolle (Adapter, Köpfe, Optimiererzustand, Policy-Version, Bridge-Keys) + System-Checkpoint im Stillstand; Test Organ-Rollback mit inkompatibler Bridge.
+  - **WP-LP1** Lernpfad mit Komponenten-Gradienten (GPT-Plan PR #29): neue Kohorte an C3 (vorhandener Trainer), CE/KL allein vs. richtiges vs. falsch zugeordnetes latentes Ziel bei gleichem Budget, Retention; B1/B2 sobald ein Trainingsport existiert (heute keiner).
+  - Kleiner Rest: Promptgrenzen-Kandidat lässt Paare mit nur 1 Prompt-Token durch (Mindestanteil erst mit Daten festlegen).
+
 ## 0. Ziele und Stand nach Blueprint (Zielabgleich 2026-10-21) — GILT VOR §1–§4
 
 Die Abschnitte 1–4 unten sind der Stand vom 09.10. und bleiben nur als Verlauf stehen (IH-H0). Sie sind teils überholt
@@ -1199,8 +1208,11 @@ Nachgeschaltet Vorzeichen-Guard fürlist_arith minimal korrigiert,11TestPASS; ne
 - `code/scripts/b3_l1_diagnose.py` (vorregistriert, `code/docs/proofs/b3-l1-diagnose-20261020/`), Nachtrag `b3_l1_diagnose_addendum.py`, Fix-Probe `b3_l1_aux_explore.py`, Ergebnis `bench-results/b3-l1-diagnose-20261020/README.md` (explorativ auf den gecachten Zuständen von Versuch 3). Ursache des FAIL: **nicht Bytes** (64 B kosten nur 0,004 Nutzen mehr), **nicht der Kanal** – die 64-B-Nachricht trägt U/F (R² 0,88–0,94) und ist, mit U/F-Sonde gelesen, so gut wie SCALAR (89/93/86 % vs 91/94/84 %). Sie verliert, weil die Brücke nur aus ≤ 360 Aufgabenlabels lernt, die SYMBOLIC_ATTR/SCALAR-Baselines aber privilegierte U/F-Labels bekommen; der eingefrorene NO_MESSAGE-Kopf kostet weitere ~2 Punkte. Fix-Kandidat: `Bridge(aux=A).fit(…, aux=…)` (nur Trainingssignal, Empfängerpfad und 64 B unverändert, Default byte-identisch, Test). Explorativ: +5,5/+4,7/+9,8 Punkte, Gate auf `action` PASS (auch strikt gegen SCALAR), escalate/apologize weiter FAIL gegen Attributwörter. Kein Canon-PASS (Testitems schon gesehen): `B3_LATENT` bleibt `unavailable`, L2 gesperrt. Nächstes Paket: **vorregistrierter Versuch 4** mit frischen Daten und `aux`-Brücke.
 - Nächstes Paket (offen): **B3 L1 Versuch 4** – neue Datensaat (neue B1/B2-Zustände nötig, Modelle wie Versuch 3), Brücke mit `aux`-Zielen, Gate unverändert, Rollen-Retention neu messen; vorregistrieren vor dem Lauf. Nur ein PASS dort erlaubt den L2-SHADOW-Test.
 
-### Anspruch 2026-10-21 06:10Z — Thread „Nächste Pakete Q“: Eignungs-Werkzeug `eligibility` im Live-Antwortpfad (C5/IH-H29, SHADOW zuerst)
-- Offen seit WP-W2c/W2d und STEP2-Engpass (Offen (2)): C3 liest typisierte Regel-/Optionswerte, Rezept entscheidet, Vorschlag als C5-TOOL_CALL, abgelehnt → SHADOW-Vergleich. Branch `claude/project-thread-hzzqh4` (Basis `0zelvf`). Nicht angefasst: B3 L1 Versuch 4 + native Firing-Diagnostik (Thread R).
+### Eignungs-Werkzeug im ganzen Live-Turn gemessen — ERLEDIGT 2026-10-21 (Thread „Nächste Pakete Q“, Branch `claude/project-thread-hzzqh4`)
+- Unabhängige zweite Fassung derselben Live-Anbindung wie Thread „STEP2-Nutzen Engpass“ (dq33gk, Abschnitt unten; beide am selben Morgen parallel, beim Zusammenführen `toolstep.py`/`agi/eligibility.py`/`tests/test_eligibility_live.py` abgleichen). Liefert dessen Offen (1): **ganzer Turn mit C5-Wahl + C3-Antworttext**.
+- Code: `toolstep._propose_eligibility` (BOOT-Regel, C3 kopiert nur Werte, frühere Evidenz = eigene frühere Nutzer-Nachrichten im History-Fenster + geprüfte Body-Zitate), SHADOW-Vergleich, Antwortsatz in der TOOL_RESULT-Schicht, Broker-Korrektur; Runtime-Zeile als Kettenglied `integrated_candidates.eligibility_live`. Suite 1609 OK.
+- Vorregistriert (`a94f91c`, vor dem Lauf gepusht), frischer Seed 29, 60 generierte Aufgaben (complete/missing/earlier/override je 15), C3 LFM2.5-350M, Linux-Cloud: **TOOL_LIVE_SUPPORTED** – Antworttext richtig 22 → 32/60 (p .006), falsch festgelegt 33 → 23, **Rezept 0/60 falsch**; **TOOL_SHOWN_SUPPORTED** – mit Broker-Korrektur sichtbar richtig 53/60. Schwächen: C3 sagt bei fehlender Regel im eigenen Text nie „kann nicht entscheiden“ (nur die Korrektur zeigt es); bei geänderten Regeln liest C3 oft die alte Regel (override 5/15 exakt gelesen) → sichere Ablehnung UNKNOWN.
+- Befund `code/docs/proofs/continuation-20261021/eligibility-whole-turn-q/BEFUND.md`. Nächster Engpass: Lesen geänderter Regeln (nicht Rechnen); Nutzerentscheidung zum Einschalten unverändert offen.
 
 ## Neue Pakete aus dem Zielabgleich (WP-Z, 2026-10-21, Thread „Ziele gegen Blueprint abgleichen“)
 
@@ -1208,10 +1220,12 @@ Grund: Nutzer am 21.10., Ziele fehlen und passen nicht zum Blueprint. Befund und
 `ABDECKUNG.md` §12. Diese Pakete gehen vor allen älteren offenen Paketen, weil sie die §100-Gates und den STEP2-Engpass angehen.
 Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, Autorität 0 bis zum Gate-PASS.
 
-### WP-Z1 Gate-Ehrlichkeit (klein, Cloud, kein Modell) — OFFEN
-- `code/specs/gate-graph.json`: STEP2 in `STEP2_HARNESS` (heute grün) und `STEP2_EXIT` (Komplementarität, heute rot) trennen; gleiches für STEP5 (TRAIN_RUNNER_PROOF Redmi).
-- Die zehn §100-Gates gegen die Kriterien aus dem Blueprint-Text prüfen (§85-Abschnitte zu jedem Gate), nicht nur gegen vorhandene Belegdateien.
-- `measure_suite.py` gibt zusätzlich die §29-Tabelle (24 Eigenschaften) und STEP-Ausgänge aus. Test dazu.
+### WP-Z1 Gate-Ehrlichkeit (klein, Cloud, kein Modell) — ERLEDIGT 2026-10-21 (Thread „Z1 STEP2-Gate ehrlich“, Branch `claude/project-thread-61we5j`)
+- `code/specs/gate-graph.json`: STEP2 geteilt in `STEP2_HARNESS` (Harness, GREEN) und `STEP2_EXIT` (§96: Komplementarität, RSS, Observer-Latenz) → **EVIDENCE_NOT_PASSING** (canonical_gate_pass false, B1/B2 gewinnen nicht je eine Episode, RSS-Budget ungemessen, Latenz Cloud 3,8 s/Offer). STEP6 und G-FOCAL hängen am Ausgang.
+- Neuer `blueprint`-Block: Blueprint-Kriterien je Gate an gemessene Werte gebunden (UNMEASURED/FAIL/PASS) für STEP2_EXIT, STEP5 und alle zehn §100-Gates; synthetische Ablationen zählen nicht. `v13/gates.py`: Status `CRITERIA_UNMEASURED`; gemessenes FAIL nie mehr hinter PARTIAL versteckt. STEP5 jetzt CRITERIA_UNMEASURED (TRAIN_RUNNER_PROOF am Gerät fehlt).
+- `measure_suite.py` + `specs/properties29.json`: §29-Tabelle berechnet (Projektstand: **3 erreicht, 15 teilweise, 6 fehlen**; Hand-Einschätzung 8/14/2) plus Kriterien-Tabelle je Gate.
+- Gates Projektstand: vorher 8 GREEN / 1 ENP / 10 PARTIAL, jetzt 7 GREEN / 5 ENP / 1 CRITERIA_UNMEASURED / 7 PARTIAL. Befund `code/docs/proofs/continuation-20261021/z1-gate-ehrlich/BEFUND.md`.
+- Offen: STEP2-RSS-Budget vorregistrieren (mit Z2); restliche STEPs (1, 3, 6) bei Bedarf ebenfalls mit `blueprint`-Block.
 
 ### WP-Z2 STEP2 neu: B1 mit eigener Detail-Information (Cloud, Modelle) — ERLEDIGT 2026-10-21, Gate FAIL (Thread „Z2 STEP2 mit B1-Detailinfo“, Branch `claude/project-thread-hsm0ga`)
 - Befund vorab im Code: B1 behielt aus der Vorrunde nur seine 240-Zeichen-Hypothese, nie exakten Quelltext → konnte nie etwas Eigenes beitragen. Neuer Schalter `b1_recent_source_chars` (0 = aus = live, byte-gleich; Kettenglied `integrated_candidates.b1_recent`): B1 behält die exakte Quelle seiner letzten Runde (bis N Zeichen), B2 weiter 4 Runden × 240 Zeichen (§85.1 Zeitskalen-Trennung).
@@ -1229,6 +1243,11 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Engpass jetzt B2: zitiert die alte Regel nur in ~¼ der Zeilen, mit oder ohne Frage. Befund `code/docs/proofs/continuation-20261021/step2-z2b-seeds/BEFUND.md`.
 - Offen: (a) Nutzerentscheidung: gezielte B1-Frage als Schalter (aus) in den Live-Pfad; (b) neues Paket „B2 liefert Regel-Zitat“; (c) `cognition.offer` soll `cfg['seed']` übergeben.
 
+### WP-Z2c Gezielte Körper-Frage als Live-Schalter — ERLEDIGT 2026-10-21, Standard aus (Thread „B1-Frage als Schalter“, Branch `claude/project-thread-4ttld7`)
+- Schalter `body_question_b1` / `body_question_b2` (Text ≤ 400 Zeichen, `''` = aus = live byte-gleich; Kettenglied `integrated_candidates.body_question`; Tests `test_body_question.py`). Re-Entry-Fokus gewinnt immer. Suite 1608, nur bekannter Altfehler `test_neuro_ledger`.
+- Bestätigungslauf Seed 14 (`scripts/step2_z2c_switch.py`, kein Gate): Schalter beide both_exact .592 (ohne .375, Z2b-Patch .675), nur B1 .450; b1_only .275 → .575; B1-Optionszitate 18 → 52; 0 falsch in 140 Werkzeug-Zeilen. Befund `code/docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md`.
+- Offen: Nutzerentscheidung Einschalten (nur sinnvoll für STEP2-artige Aufgaben, Frage ist aufgabenspezifisch); allgemeine Frage für Chat ungemessen; B2-Regelzitat-Paket; Seed-Bug `cognition.offer`.
+
 ### WP-Z2d B2 liefert das Regel-Zitat (im Code/Prereg „z2c“; umbenannt, weil Thread „B1-Frage als Schalter“ parallel WP-Z2c vergab) (Cloud, Modelle) — ERLEDIGT 2026-10-21, `Z2C_B2_RULE_QUOTE_FIXED` (Thread „B2 zitiert Regel selten“, Branch `claude/project-thread-0fckhc`)
 - **Ursache** (Diagnose auf 384 Z2b-B2-Angeboten): nur 115 trugen die volle alte Regel; 110 scheiterten an einer **Umschreibung/kaputten Kopie des richtigen Satzes** („Project Kestrel has a budget of 100 euros“), 65 zitierten den aktuellen Aufgabentext. B2 kennt die Regel, kopiert sie aber nicht wörtlich.
 - Neu: Schalter `b2_quote_select` `off` (Standard, byte-gleich) | `anchor` (`cognition.anchor_span`: nicht passendes Zitat → exakte Quellsätze mit allen Zahlen + ≥ 60 % Wörtern) | `pointer` (`quote_choices`: B2 wählt nummerierte exakte Sätze per Schema-enum). Nur B2 in eigener Policy. Kettenglied `integrated_candidates.b2_quote_select`, Config validiert, Tests `tests/test_b2_quote_select.py` 7/7.
@@ -1236,10 +1255,57 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Folge für STEP2 (sekundär): Zeiger `both_exact` .881 vs. b1_only .581, **+.30 [+.21, +.38], jeder Seed** → Z2b-Kriterium 1 fällt erstmals; 27/30 exakte Entscheidungen (SPLIT 15/18). Kriterium 3 (Fehlerprofile, für diese Fixtures streng) bleibt ✗; Ein-Körper-Kontrolle mit Zeiger nicht gemessen → STEP2 formal weiter FAIL. Kosten B2-Prompt +~35 % Tokens.
 - Grenze: Zeiger wirkt mit der Zitat-Erweiterung zusammen (B2 wählt oft Kopfzeile der kurzen Regel-Notiz); längere Notizen ungetestet. Befund `code/docs/proofs/continuation-20261021/step2-z2c-b2-rule/BEFUND.md`.
 - Offen: (a) Nutzerentscheidung `b2_quote_select=pointer` (+ `offer_quote_context_chars=200` usw.) in den Live-Pfad; vorher live-`analyst_context` für erweiterte Zitate reparieren; (b) neues Prereg: Zeiger mit Ein-Körper-Kontrolle (D/DQ), längere/geänderte Regeln, frische Episoden; (c) Handy-Kosten messen.
-### WP-Z2c Gezielte Körper-Frage als Live-Schalter — ERLEDIGT 2026-10-21, Standard aus (Thread „B1-Frage als Schalter“, Branch `claude/project-thread-4ttld7`)
-- Schalter `body_question_b1` / `body_question_b2` (Text ≤ 400 Zeichen, `''` = aus = live byte-gleich; Kettenglied `integrated_candidates.body_question`; Tests `test_body_question.py`). Re-Entry-Fokus gewinnt immer. Suite 1608, nur bekannter Altfehler `test_neuro_ledger`.
-- Bestätigungslauf Seed 14 (`scripts/step2_z2c_switch.py`, kein Gate): Schalter beide both_exact .592 (ohne .375, Z2b-Patch .675), nur B1 .450; b1_only .275 → .575; B1-Optionszitate 18 → 52; 0 falsch in 140 Werkzeug-Zeilen. Befund `code/docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md`.
-- Offen: Nutzerentscheidung Einschalten (nur sinnvoll für STEP2-artige Aufgaben, Frage ist aufgabenspezifisch); allgemeine Frage für Chat ungemessen; B2-Regelzitat-Paket; Seed-Bug `cognition.offer`.
+
+
+### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — ERLEDIGT 2026-10-21 (Thread „Z3 C3-Konsument isolieren“, Branch `claude/project-thread-xiuwmf`)
+- Vorregistriert vor dem Lauf, 39 private Fixtures × 3 Seeds × 7 Arme, gleiche Exakt-Quellen an alle; Beleg `code/docs/proofs/continuation-20261021/z3-c3-consumer/BEFUND.md`.
+- Urteil laut Regel: **NO_CONSUMER_PATH** (kein Arm ≥ 0.80 exakt bei ≤ 0.05 falscher Festlegung). C3 direkt 0/117 (immer UNKNOWN, auch mit fertigem Werkzeug-Satz), B1 0.13 / B2 0.27 exakt mit 72 % / 63 % falscher Festlegung (Positions-Bias „A“), C3-Lesen + Eignungs-Werkzeug strict 0.54 exakt, **0 falsch**; Werkzeug ohne Modell 1.00.
+- Ursache im Werkzeug-Arm eindeutig: C3 liest alle Zahlen richtig (117/117), aber `local_only` immer `true`; der Wächter verwirft es → UNKNOWN. v2 ohne strict legt sich bei widersprüchlichen Zitaten fest (3/18) → strict-Prüfung vor jedem Einschalten des Live-ToolStep-Pfads.
+- Folge für §29 Nr. 6: C3 = Leser, nicht Entscheider; größerer Körper als Konsument widerlegt. Nächstes: **Z3b** (neue Registrierung) Bool-Regeln deterministisch lesen + Paraphrasen-Kohorte, damit C3 als Leser gegen reinen Parser gemessen wird.
+
+### WP-Z3b Fester Parser vs. C3 als Regel-Leser (Cloud, Modell C3) — ERLEDIGT 2026-10-21 (Thread „Z3b Parser statt C3-Leser“, Branch `claude/project-thread-a9je9s`)
+- Vorregistriert vor dem Lauf (Schwellen ≥ 0.80 exakt, ≤ 0.05 falsch), 39 kanonische + 39 umformulierte Fixtures (gleiche Werte/Orakel, 16 Vorlagen inkl. verneinter Ja/Nein-Regeln) × 3 Seeds × 7 Arme, 468 C3-Aufrufe; Beleg `code/docs/proofs/continuation-20261021/z3b-parser-paraphrase/BEFUND.md`.
+- Urteil laut Regel: **PARSER_SUFFICIENT_NO_C3_GAIN**; sekundär **BOOL_PARSER_FIX_CONFIRMED** (C3-Zahlen + Parser-`local_only` kanonisch 117/117, 0 falsch).
+- C3 liest `local_only` gar nicht: Extraktion 234/234 `true`, fokussierter Leser auf Paraphrasen 117/117 `true`. Zahlen auf Paraphrasen nur Budget 72 % / Frist 45 %.
+- Einziger Gewinn über den Parser (C3 liest alles, wortlaut-unabhängige Wächter): Paraphrase 0.41 statt 0.15 exakt, aber 7.7 % falsche Festlegungen (alle aus der Bool-Konstante) → zählt nicht. Hybrid mit C3-Rückfall kanonisch 7.7 % falsch (erfundenes `local_only` bei fehlender Regel).
+- Folge: Regeln liest ein Parser, C3 höchstens Optionszahlen; Ja/Nein-Regeln nie vom C3-350M, auch nicht als Rückfall. Live-Pfad eligibility-v2: Bool deterministisch + Z3 strict. Neue Wortformen brauchen erweiterbaren Parser oder Lese-Training (neues Paket).
+
+### WP-Z3c Erweiterbarer Regel-Parser (Cloud, B1 als Umformulierer, C3-Probe) — ERLEDIGT 2026-10-21 (Thread „Z3c Erweiterbarer Regel-Parser“, Branch `claude/project-thread-x1etmj`)
+- Vorregistriert (≥ 0.80 exakt, ≤ 0.05 falsch) mit versiegeltem Autor-Holdout vor jeder Zeile Parser-Code; Parser eingefroren vor dem Modell-Holdout; Beleg `code/docs/proofs/continuation-20261021/z3c-extensible-parser/BEFUND.md`.
+- Parser v2: Lexikon als Daten mit Beleg je Eintrag (`lexicon.json`, `extend()` lehnt Holdout-Belege ab), Verneinung, Synonyme, Köder-Sätze (unentschieden/Vergangenheit/Frage) werden ignoriert, alles Unlesbare → UNKNOWN.
+- Urteil laut Regel: **PARSER_V2_CARRIES_AUTHOR_ONLY**. Kanonisch 39/39, Z3b-Paraphrasen 39/39, frischer Autor-Holdout 0.91 exakt mit 1/57 falscher Wahl (Köder „Nobody has decided whether the budget should be 102 euros.“). Modell-Holdout (B1 formuliert um) nur 22/39 bedeutungsgleich = unterbesetzt; dort 0.32 exakt, 0 falsch, Lokal-Wortschatz fehlt („nearby“, „area“, „anywhere“).
+- Sekundär **C3_TRAINING_NOT_NOW**: C3 sagt auf 60 Einzelsätzen 57× `true`, nie `null` bei Ködern; kein Signal für ein kleines Lese-Training.
+- Nächstes (neues Paket, neuer Holdout): Lexikon um die gefundenen Lücken erweitern, Köder-Erkennung für „nobody has decided“, fremder Holdout aus vom Nutzer geschriebenen Sätzen oder einem stärkeren Cloud-Modell. Bis dahin v2 nur SHADOW.
+
+### WP-Z4 B3 L1 Versuch 4 (Cloud, Modelle) — ERLEDIGT 2026-10-21, **L1 PASS auf `private/action`** (Thread „Nächste Pakete R“, Branch `claude/project-thread-8hlx74`)
+- Vorregistriert (`eaf49b7`) vor dem Berechnen der Zustände: neue Datensaat 20261021 (600 Zeilen, 0 Sendertexte aus Versuch 3), **neue** B1-LFM2.5-1.2B/B2-Qwen3.5-0.8B-Zustände (Runner b10964, Hash-geprüft), Brücke mit `aux`-Zielen (U, F, nur Training), Gate/64 B/Splits unverändert, Rollen-Retention neu gemessen.
+- Ergebnis (privat = Ziel): action LATENT **90,0 %** (ohne aux 80,0; SYMBOLIC 81,5; Attribut-Wörter 76,7; SCALAR 85,2) → **Kanon-L1 PASS** (alle Kriterien, Rollen-Verlust 0, OOD 1,3 %, Reload bitgleich). escalate 83,0 / apologize 85,0 → FAIL gegen Attribut-Wörter (wie vorhergesagt). aux-Gewinn +5/+4/+10 Punkte, signifikant. Strikt gegen SCALAR: FAIL (action +4,8 Punkte, Nutzen nicht signifikant).
+- Folge: **L2-Prefix-SHADOW-Test nur für `private/action` erlaubt**; LATENT-Autorität 0, Runtime unverändert, keine Brücke installiert. G-CALLOSUM-UTILITY-002 bleibt offen (1 von 3 Aufgaben, L2–L4 + 8 Achsen fehlen). Nebenbei behoben: `b3bridge.save` übernahm alte Revisionen aus einem früheren Speichern (Test).
+- Belege `bench-results/b3-l1-v4-20261021/README.md`, `report.json`, Brücke `bridge_private_action_B1_TO_B2.*`; Zustände (231 MB) nur im Projektordner.
+- Nächstes Paket (erledigt, siehe WP-Z4b): **WP-Z4b L2-Prefix-SHADOW für `private/action`** (vorregistriert, Brücken-Nachricht als Prefix in B2, Empfänger-Effekt + Retention messen).
+
+### WP-Z4b B3 L2-Prefix-SHADOW nur `private/action` (Cloud, B2 eingefroren) — ERLEDIGT 2026-10-21, **L2 FAIL** (Thread „Z4b L2 nur für action“, Branch `claude/project-thread-c122qc`)
+- Vorregistriert vor jeder echten Messung (`code/docs/proofs/b3-l2-prefix-20261021/preregistration.json`). Die 64-B-Nachricht der L1-Brücke (Versuch 4, Seeds/Splits identisch, L1 exakt reproduziert) wird in den Eingabe-Embedding-Raum von Qwen3.5-0.8B ausgerichtet, auf native Token-Statistik kalibriert und als 4 kontinuierliche Prefix-Slots über den eigenen Eingabepfad eingespeist (llama.cpp b10964 `batch.embd`, eigenes Werkzeug `code/scripts/native/b3_prefix_embd.cpp`). Auslesen nur über die eigenen Text-Tokens des Empfängers, also nur über das eingefrorene Rückgrat. Neues Gate `b3bridge.l2_gate` (+Test).
+- Ergebnis (5 Seeds): Prefix **80,2 %** vs. aus 41,5, vertauscht 37,5, zufällig 37,8 → Rückgrat nimmt den Inhalt auf. Nutzen schlägt EXACT-Text (76,5) und Attribut-Wörter (74,8), Retention 0, Normverhältnis 1,00, Rerun bitgleich. **Aber: Label-Wort als Text 81,5 % → Nutzen −0,017, FAIL.** Explorative Variante EXACT_ALIGN 77,5 % ebenfalls FAIL.
+- Nebenbefunde: L2 liegt 9,8 Punkte unter L1 (90,0); ein auf prefixfreien Zuständen trainierter Themen-Kopf fällt mit Prefix von 100 % auf 40 % (neu trainiert: 0 Verlust) → spätere Stufen brauchen neu kalibrierte Empfänger-Köpfe.
+- Folge: B3_LATENT bleibt **L1_shadow** für private/action, L3 gesperrt, Autorität 0, Runtime unverändert. Neuer L2-Versuch nur auf einer Aufgabe ohne billiges Sender-Label-Wort (dafür zuerst L1 auf escalate/apologize bestehen). Beleg `bench-results/b3-l2-prefix-20261021/README.md`.
+
+### WP-Z4c B3 L1 escalate/apologize (Cloud, Modelle) — ERLEDIGT 2026-10-21, **L1 PASS auf `private/escalate`**, apologize FAIL, action-PASS nicht repliziert (Thread „B3 L1 escalate apologize“, Branch `claude/project-thread-yub2lf`)
+- Ursache (explorativ auf Versuch-4-Zuständen, Skript vor dem Lauf committet): escalate/apologize brauchen eine **Empfänger-private Tatsache** (Kapazität/Kunde, aus dem Empfänger-Zustand zu 100 % lesbar) kombiniert mit U/F. Die Brücke las als Zusatz auf dem **eingefrorenen** NO_MESSAGE-Kopf, dessen Kapazität/Kunde-Gewichte ohne U/F gelernt und daher zu schwach sind; mit echtem U/F kostet das 8,2/9,3 Punkte (bei action −5,5, dort hilft der eingefrorene Kopf). Gleiche Nachricht mit gemeinsam neu angepasstem Leser: +8,0/+5,5 Punkte (5/5). 72–78 % der Fehler liegen ±1 an der Schwelle. Beleg `bench-results/b3-l1-escapo-diagnose-20261021/README.md`.
+- Fix: `Bridge(recv_cond=dim)` + `Bridge.refit_readout(...)` (Standard aus, Tor zu = alter Kopf bitgleich, Tests). Versuch 5 vorregistriert (`9d52f49`) vor den Zuständen: frische Saat 20261105 (0 Überschneidung mit Versuch 3/4), neue B1/B2-Zustände, Gate/64 B/Splits unverändert.
+- Ergebnis privat: **escalate 90,5 %** (Attribut-Wörter 84,7, Label 78,7, SCALAR 89,2) → **Kanon-L1 PASS** (alle Kriterien, Rollen-Verlust 0, OOD 1,0 %, Reload bitgleich); strikt gegen SCALAR FAIL (n.s.). **apologize 89,0 vs Attribut-Wörter 88,5 → FAIL** (Nutzen +0,003 n.s.). **action (Replikation) 86,7 vs Label 83,5 → FAIL** (n.s.); auch das Versuch-4-Rezept 86,5 → der action-PASS aus Versuch 4 hängt von der Saat ab.
+- Folge: **L2-Prefix-SHADOW für `private/escalate` erlaubt** (Aufgabe ohne billiges Sender-Label-Wort, wie Z4b gefordert); vorher L1-PASS auf eigenen Seeds prüfen. Autorität 0, Runtime unverändert. Beleg `bench-results/b3-l1-v5-20261021/README.md`, Brücke `bridge_private_escalate_B1_TO_B2.*`; Zustände nur im Projektordner.
+- Nächstes Paket: **WP-Z4d** L1-Robustheit (escalate + action auf 2 weiteren frischen Saaten, vorregistriert) und danach L2-Prefix-SHADOW für `private/escalate`.
+
+### WP-Z5 Fokus-Koalition gegen §99-Kontrollen (Cloud, Modelle) — GEMESSEN, Gate PARTIAL
+- **Status 2026-10-21: gemessen, Gate bleibt PARTIAL (Thread „Z5 Koalition gegen Voll-Kontext“, Branch `claude/project-thread-hmopsm`).** Vorregistriert, `code/scripts/z5_focal_controls.py`, Beleg `code/bench-results/z5-focal-controls-20261021/` (README, z5.json). 60 Aufgaben × 5 Läufe, Effort max, Kontroll-Arme im selben Turn aus denselben Angeboten (Wiedergabe-Treue 300/300). Bestanden: Koalition 186/300, Voll-Kontext 183, feste Slots 193, nur Retrieval 184, ohne Hypothesen 195; Koalition vs. Voll-Kontext 17:14 p = 0,72, Rauschband 7 → „schlägt Voll-Kontext“ **FAIL**, nicht schlechter als Retrieval/feste Slots. 7 Eigenschaften gemessen: Wettbewerb, Re-entry, Quellbindung, Halten/Wiederherstellen ja; **Kapazitätsgrenze, Ersetzung, Interrupt treten nie auf** (max. 3 Kandidaten bei 4 Slots). Antwortendes Organ bei Effort max: B1/B2, nie C3. Folge: neue Vorregistrierung mit Kapazitätsdruck (Ablenker-Erinnerungen, mehrere Turns, Embedding-Retrieval).
+- Auf den 60 Widerspruchs-Aufgaben aus WP-T3b: Koalition vs. Voll-Kontext, vs. nur Retrieval, vs. feste Slots; Rauschband aus 5 Wiederholungen. Dazu die 7 funktionalen Eigenschaften aus G-FOCAL-CAPACITY-003 als Messung statt nur Test.
+
+### WP-Z5b Fokus-Koalition unter echtem Platzmangel (Cloud, Modelle) — GEMESSEN, Gate PARTIAL
+- **Status 2026-10-21: gemessen (Thread „Z5b Koalition mit Platzmangel“, Branch `claude/project-thread-bn7n5k`, Draft-PR #16).** Vorregistriert vor dem Lauf, `code/scripts/z5b_capacity.py`, Beleg `code/bench-results/z5b-capacity-20261021/` (README, z5b.json). 60 neue Aufgaben (update/combine/correction/distract) mit je 6 gespeicherten Notizen, Effort max, 4 Plätze, 5 Läufe. **Platzgrenze greift in 300/300 Turns (9 Kandidaten), 11 Verdrängungen.**
+- Bestanden/300: ausgeliefert 68, Koalition als Engpass (`coalition_gated`) 60, Voll-Kontext 54, feste Slots 55, nur Retrieval 64, ohne Kontext 47. Koalition vs. Voll-Kontext 33:27 p = 0,52, Rauschband 4 → „schlägt Voll-Kontext“ **FAIL**; nicht schlechter als Retrieval/feste Slots. Eigenschaften 1, 2, 3, 5, 6, 7 gemessen, **4 (Aufnahme nur über Salienz) nie** → G-FOCAL-CAPACITY-003 bleibt **PARTIAL**.
+- Befund: Die Koalition behält oft die falsche Notiz (correction: Retrieval 0,53 vs. Koalition 0,16), weil die Priorität keinen Term für Aktualität/Ersetzung hat. Kontext −44 % ohne messbaren Verlust. Nächster Schritt (neu vorregistrieren): Aktualitäts-/Ersetzungs-Term für Notizen, dieselben 60 Aufgaben erneut; Aufgaben für Eigenschaft 4.
+
 
 ### WP-UR Nutzer-Regeln per festem Leser (JEF, kein Modell) — ERLEDIGT 2026-10-21 als Schicht 2, Urteil `USER_RULES_UNSAFE` (Thread „Zitierhilfe an, Regeln per JEF“, Branch `claude/project-thread-2gzrwi`)
 - Nutzerwunsch: KI tut nichts, wovon der Nutzer nichts weiß, sagt vorher, was sie tun würde, und legt Verbote nie falsch aus; Regeln entscheidet kein halluzinierendes Modell.
@@ -1247,16 +1313,6 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Zitierhilfe standardmäßig an (Nutzerentscheidung), Körper-Frage nur bei Regel-Entscheidungen, Eignungs-Regelwerte fest gelesen.
 - Messung: Holdout 0 Fehler; frische Modell-Umformulierungen v1 71 / v2 20 Fehler (8/57 Sätze). Fester Wortleser allein reicht nicht; Grundregel „Außenwirkung nur als Vorschlag“ trägt die Garantie. Befund `code/docs/proofs/continuation-20261021/user-rules/BEFUND.md`.
 - Offen: v3 mit den 8 Fehlerformen + frische Runde 3; LEARN/Merken im Gedächtnis durchsetzen; feinere Wirkungsklassen.
-
-### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
-- Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
-- Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
-
-### WP-Z4 B3 L1 Versuch 4 (Cloud, Modelle) — IN ARBEIT bei Thread R (Stand 21.10. früh)
-- Frische B1/B2-Zustände, Brücke mit `aux`-Zielen, Gate unverändert, Rollen-Retention neu, vorregistriert. Nur PASS öffnet L2-SHADOW. Schließt G-CALLOSUM-UTILITY-002 erst mit allen 8 Achsen.
-
-### WP-Z5 Fokus-Koalition gegen §99-Kontrollen (Cloud, Modelle) — OFFEN
-- Auf den 60 Widerspruchs-Aufgaben aus WP-T3b: Koalition vs. Voll-Kontext, vs. nur Retrieval, vs. feste Slots; Rauschband aus 5 Wiederholungen. Dazu die 7 funktionalen Eigenschaften aus G-FOCAL-CAPACITY-003 als Messung statt nur Test.
 
 ### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — OFFEN
 - 24.22 Wake (R4 im Blueprint-Sinn; Ergebnisse der R4-Werkzeug-Teile hier einbringen), 24.23 Effort (R5), 24.17 Deliberation, 24.25 Observer-Nutzen, 24.26 Broadcast-Brücke, 24.32 Lebenszyklus Scaffold→gelernte Route je Fähigkeit. Typisierte Modulatoren (G-MODULATOR-SPECIFICITY-001) mit echten Modellen.
@@ -1281,6 +1337,12 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 
 ### Nicht weiter ausbauen bis Z2–Z5 Ergebnisse haben
 R4-Werkzeug-Regeln (Teile 4–11), weitere Action-JEPA-Runden, Werkzeug-Vorhersage über das Handy-Paket hinaus, Vision-Lab (STEP8 erst nach STEP7).
+
+## Gegenseitige Prüfung Claude ↔ GPT, Runde 1 — ERLEDIGT 2026-10-21 (Thread „Gegenseitige Prüfung mit GPT“)
+- Claude hat GPTs Stand bis `a1973d4` (PR #2–#4) geprüft: Code korrekt, Gate-Angaben ehrlich, alle GPT-Branches privat-sauber. Protokoll + Checkliste für GPT: `PRUEFUNG_CLAUDE_FUER_GPT.md`; Regel für beide Seiten in `AGENTS.md` („Cross-review“). Branch `claude/project-thread-g2f277`.
+- Behoben: `list_arith`-Zahlen-Wächter zählt jetzt Vorkommen (doppelt gelesener Posten wurde mitgezählt); 19 vom §102-Ledger zitierte Belegordner `bench-results/*-20261012` fehlten im Git (Suite im reinen Git-Baum war 1 FAIL, jetzt 1585 OK, 5 Skips). Neu: `code/scripts/public_repo_privacy_scan.py` (vor jedem Push, beide Seiten).
+- Offen: GPT prüft Claudes Arbeit (Runde 2, Checkliste Abschnitt 4); zwei bewusst offene `list_arith`-Lücken (ausgelassener Posten, „Total cost“-Zeile); Nutzer entscheidet über die alten GPT-Draft-PRs #2–#4.
+
 ## Eignungs-Werkzeug im Live-Antwortpfad — ERLEDIGT 2026-10-21 (Thread „STEP2-Nutzen Engpass“, Folgepaket)
 - Nutzerziel 2026-10-21 bestätigt (AGI: wissenschaftlich/psychologisch/moralisch, schadet Menschen nicht, holt später Module nur mit bewusster, unmanipulierter Erlaubnis). Daraus: Werkzeug zuerst in den Live-Pfad, dann Schalter gemeinsam einschalten.
 - `v13/toolstep.ToolStep._propose_eligibility` + `offer_quotes`, `v13/agi/eligibility.asks/read/args_from/label`: Frage nach Option A/B unter Projektregeln → C3 liest nur typisierte Werte aus aktueller Quelle + verifizierten Body-Zitaten dieses Turns → Rezept entscheidet → C5-Kandidat (IH-H29). Nur nach Freigabe `:growth enable eligibility`; Age 0 = SHADOW mit Vergleich, Age 1 = TOOL_RESULT-Schicht mit lesbarer Entscheidung. Tests `tests/test_eligibility_live.py` 5/5; Suite 1593, nur alter `test_neuro_ledger`-Fehler.
@@ -1289,14 +1351,39 @@ R4-Werkzeug-Regeln (Teile 4–11), weitere Action-JEPA-Runden, Werkzeug-Vorhersa
 - Handy-Testliste für den Nutzer: `v13/HANDY_TESTLISTE.md` (Werkzeug-Vorhersage, RAM WP-R, TESTEN --quick; STEP2 am Handy erst mit neuem Paket).
 - Offen: (1) ganzer Live-Turn mit Werkzeug + Antworttext (C5-Wahl, C3-Antwort nennt Entscheidung) messen; (2) danach Nutzerentscheidung Schalter + Werkzeug einschalten; (3) Handy-Paket mit beidem; (4) STEP2-Fixtures mit B1-eigener Information.
 - **Nachtrag 2026-10-21 (gleicher Thread):** Ganze Live-Turns mit dieser Fassung vorregistriert gemessen (Seed 31, 24 Episoden): **NOT_SUPPORTED** — Rezept 23/24 richtig, aber C3 übernimmt die TOOL_RESULT-Schicht nicht (Antwort richtig 13/24 mit vs. 14/24 ohne Werkzeug). Dabei gefunden und behoben: mit `offer_quote_context_chars>0` brach **jeder echte Chat-Turn** in `analyst_context` ab („Consumer quote differs from offered quote“); Fix im Kettenglied `quote_context` (`e6603fc`). Parallel hat Thread Q (`claude/project-thread-hzzqh4`) eine Fassung mit Antwortsatz-Schicht + Broker-Korrektur gebaut; beim Zusammenführen in `claude/project-thread-dq33gk` ist **Qs `toolstep.py`/`eligibility.py`/Tests übernommen**, die hier gemessene Variante entfällt. Befund `code/docs/proofs/continuation-20261021/eligibility-live-turn/BEFUND.md`.
-### Eignungs-Werkzeug im ganzen Live-Turn gemessen — ERLEDIGT 2026-10-21 (Thread „Nächste Pakete Q“, Branch `claude/project-thread-hzzqh4`)
-- Unabhängige zweite Fassung derselben Live-Anbindung wie Thread „STEP2-Nutzen Engpass“ (dq33gk, Abschnitt unten; beide am selben Morgen parallel, beim Zusammenführen `toolstep.py`/`agi/eligibility.py`/`tests/test_eligibility_live.py` abgleichen). Liefert dessen Offen (1): **ganzer Turn mit C5-Wahl + C3-Antworttext**.
-- Code: `toolstep._propose_eligibility` (BOOT-Regel, C3 kopiert nur Werte, frühere Evidenz = eigene frühere Nutzer-Nachrichten im History-Fenster + geprüfte Body-Zitate), SHADOW-Vergleich, Antwortsatz in der TOOL_RESULT-Schicht, Broker-Korrektur; Runtime-Zeile als Kettenglied `integrated_candidates.eligibility_live`. Suite 1609 OK.
-- Vorregistriert (`a94f91c`, vor dem Lauf gepusht), frischer Seed 29, 60 generierte Aufgaben (complete/missing/earlier/override je 15), C3 LFM2.5-350M, Linux-Cloud: **TOOL_LIVE_SUPPORTED** – Antworttext richtig 22 → 32/60 (p .006), falsch festgelegt 33 → 23, **Rezept 0/60 falsch**; **TOOL_SHOWN_SUPPORTED** – mit Broker-Korrektur sichtbar richtig 53/60. Schwächen: C3 sagt bei fehlender Regel im eigenen Text nie „kann nicht entscheiden“ (nur die Korrektur zeigt es); bei geänderten Regeln liest C3 oft die alte Regel (override 5/15 exakt gelesen) → sichere Ablehnung UNKNOWN.
-- Befund `code/docs/proofs/continuation-20261021/eligibility-whole-turn-q/BEFUND.md`. Nächster Engpass: Lesen geänderter Regeln (nicht Rechnen); Nutzerentscheidung zum Einschalten unverändert offen.
 - **Zusammengeführt 2026-10-21:** dq33gk enthält jetzt Qs Fassung (inkl. `f2d99b3`) plus Zitat-als-Zeiger-Schalter und `analyst_context`-Fix; beide Schalter weiter aus, Nutzerentscheidung offen.
 
-## Gegenseitige Prüfung Claude ↔ GPT, Runde 1 — ERLEDIGT 2026-10-21 (Thread „Gegenseitige Prüfung mit GPT“)
-- Claude hat GPTs Stand bis `a1973d4` (PR #2–#4) geprüft: Code korrekt, Gate-Angaben ehrlich, alle GPT-Branches privat-sauber. Protokoll + Checkliste für GPT: `PRUEFUNG_CLAUDE_FUER_GPT.md`; Regel für beide Seiten in `AGENTS.md` („Cross-review“). Branch `claude/project-thread-g2f277`.
-- Behoben: `list_arith`-Zahlen-Wächter zählt jetzt Vorkommen (doppelt gelesener Posten wurde mitgezählt); 19 vom §102-Ledger zitierte Belegordner `bench-results/*-20261012` fehlten im Git (Suite im reinen Git-Baum war 1 FAIL, jetzt 1585 OK, 5 Skips). Neu: `code/scripts/public_repo_privacy_scan.py` (vor jedem Push, beide Seiten).
-- Offen: GPT prüft Claudes Arbeit (Runde 2, Checkliste Abschnitt 4); zwei bewusst offene `list_arith`-Lücken (ausgelassener Posten, „Total cost“-Zeile); Nutzer entscheidet über die alten GPT-Draft-PRs #2–#4.
+## Native Firing-Diagnostik + Schlüsseltrennung der schnellen Spur (WP-T9 v3, §9.1/§24.18) — ERLEDIGT 2026-10-21 (Thread „Nächste Pakete R“)
+- Paket 5 Teil 2 aus „Nächste offene Pakete“. Diagnose der alten Audit-Daten (WP-T9 v1, Slot → Gedächtnis-ID über die Zeilenkarte): falsches Feuern hat **zwei Ursachen** — (1) gemeinsame Guard-Wörter („favourite“ öffnet den „favourite dish“-Slot bei „favourite colour“, ebenso *play*, *best*, *live*); (2) der Guard sah den ganzen Prompt, also öffnete ein Exakt-Block mit einem anderen Fakt dessen Slot (combined: 121 fremde Feuerungen).
+- Fix (Standard aus, Verhalten unverändert): `sparse_memory` `guard_distinct` + `guard_vocab` (nur unterscheidende Wörter über die Fragen des Speichers) und `guard_scope='last_user'` (Guard nur auf letzte Nutzerfrage, torch + nativ, V13SMEM1-Kopf Feld 6 = 2 + Marker-Token); `tests/test_guard_separation.py` 12 Tests.
+- Native Messung (vorregistriert `f2f6976`, Runner b10964 aus dem GitHub-Archiv gepatcht): **KEY_SEPARATION_SUPPORTED** — fremdes Feuern 24 → 17 Zeilen, auf den 40 Faktfragen 4 → 0, eigene Slots 20/20. Dabei **nativen Fehler im Fix gefunden** (Embedding-Hook fügte dekodierte Prompt-Stücke wieder ein, Scope wirkte nur im Cache-Präfix), behoben (`f09ef8b`), v3b vorregistriert und gemessen: combined 84 → **17**, selektiv 25 → **16** fremde Zeilen, 0 auf Faktfragen. Rest = Fragen nach dem Ding einer anderen Person („my sister's car“).
+- **SELECTIVE_DOES_NOT_WIN** (unveränderte v1-Kriterien): selektiv vs exakt 2:5 (vorher 2:9), Fakten 97,5 % = exakt, −30 Prompt-Tokens, weniger Leck; alle 5 Verluste sind Paraphrasen mit **falschem Wert der Spur** (Tee „chamomile“, Vogel „blue jay“), nicht Feuern. Folge: exakte Zustellung bleibt, nichts aktiviert; Schlüsseltrennung ist das empfohlene Spur-Rezept; nächster Hebel = Wertqualität auf Paraphrasen.
+- Belege `bench-results/selective-delivery-v3-20261021/README.md` (+ `v3b/`), Spuren/Server-Logs im Projektordner. Volle Suite: 1591 Tests, einziger Fehler `test_neuro_ledger` → 19 fehlende §102-Belegordner `bench-results/*-20261012` aus dem Projektordner ins Git (wie Thread uvi2sq), jetzt OK.
+
+## Neue Pakete aus Harness² von Google (WP-HX, 2026-10-21, Thread „Harness2 von Google“) — OFFEN
+Auswertung: `research/HARNESS2_AUSWERTUNG.md` (arXiv 2610.14224, `google-research/harness2`). Idee: Drumherum (Prompts, Werkzeug-Hinweise,
+Parser, Rezepte) mit Beleg verbessern, Gewichte fest. Reihenfolge: nach den Z-Paketen; HX1 und HX3 klein, dürfen parallel laufen.
+Sicherheits-/Moralregeln sind nie änderbar. Alles vorregistriert, Autorität 0 bis Gate-PASS, Nutzerfreigabe vor Übernahme.
+
+### WP-HX1 Drumherum als Vorschlagsart in AG8 (Cloud, klein, kein Modell) — OFFEN
+- `agi/self_improve.py`: neue Art `harness` mit Erlaubt-Liste (Körper-Prompts, Werkzeug-Hinweise, Parser-Regelsätze, Rezept-Vorlagen); gleicher Regressionsschild, Nutzerfreigabe, Rückkehrpunkt.
+### WP-HX2 Vergleich auf derselben Aufgabe ohne Gold-Antwort (Cloud, Modelle) — OFFEN
+- Referenz + k Varianten gleicher Seed, Verhaltens-Unterschiede protokollieren, allgemein/fachlich getrennt; erste Probe B2-Regel-Zitat STEP2; Gate Holdout-Gewinn KI>0, keine Achse schlechter; Kontrolle „ungeführte Änderung“.
+### WP-HX3 Erfahrungs-Bibliothek (Cloud, klein) — OFFEN
+- Eintrag je übernommener Änderung (Situation, Lehre, Beleg, Generation), nur mit Beleg; Nachschlagen nach Aufgabentyp; Ablation mit/ohne.
+### WP-HX4 Blinder Auswähler für Benches (Cloud, klein) — OFFEN
+### WP-HX5 Drumherum-Protokolle als Lerndaten (Evo2-Idee, arXiv 2610.13025) — GESPERRT bis HX2 PASS
+
+### WP-DS1..DS3 aus DeepSeek-Kritik (2026-10-21, Thread „DeepSeek-Kritik gegen Stand prüfen“, PR #25)
+- Bewertung der 5 Punkte: `research/DEEPSEEK_KRITIK_AUSWERTUNG.md`. Neuromodulation, Metakognition, lernender Balken existieren (offen nur Messung: Z6, Z4b, Z10); Active Inference teilweise; Verkörperung echte Lücke (STEP8 gesperrt).
+- **WP-DS1 erledigt:** Lab-Sandkasten `code/v13/sandbox.py` (nicht in Laufzeit), vorregistriert, 20 Seeds, alle 4 Hypothesen PASS. AG5-Lernfortschritt schlägt reinen Informationsgewinn 19/20; Überraschung-suchen hängt 94 % am Rausch-Fernseher; Hungerziel senkt Hunger 20/20, lernt neues Objekt aber nur 7/20. Belege `bench-results/sandbox-ds1-20261021/`.
+- **WP-DS2 offen:** kombinierte Policy (Lernfortschritt + Ziel, Neuheits-Kanal hebt Neugier bei neuem Objekt), danach Wort-Kombinationen und Vision-Lab-Merkmale im Sandkasten. Neue Vorregistrierung.
+- **WP-DS3 offen:** kalibrierte Unsicherheit (AG9 + C3-Signal) wählt Werkzeug-Nachprüfung / „unsicher“ sagen / antworten; Messung auf R4-Aufgaben.
+
+## WP-SAFE1 Feste Verbote, Notaus, Vorabansage — ERLEDIGT 2026-10-21 (Thread „Sicherheit: Verbote modellunabhängig“)
+- Neu `code/v13/prohibitions.py`: Verbote als feste Zeilen (`:verbot werkzeug|art|unumkehrbar|alles`, `:verbot weg V1`), exakter Vergleich, kein Modell liest/deutet sie; nur der Nutzer ändert sie; beschädigte Tabelle = alles gesperrt.
+- Geprüft vor der Wirkung zweimal: erster Schritt in `transaction.authorize` (vor Schema und Einzelfreigabe) und letztes Tor in `Transactions.execute` direkt vor der Funktion. Verbot schlägt Einzelfreigabe; verbotene Werkzeuge laufen auch nicht im Schatten.
+- `:notaus` / `:notaus aus`: sperrt alle Werkzeuge und Freigaben, Rückgängig bleibt. `:verbot ansage an`: jede Aktion (auch Rechnen) erst als Vorschlag mit `:tx approve`.
+- Tests `tests/test_prohibitions.py` (16, inkl. Modell schlägt Ausnahme vor, gefälschtes APPROVED, ganzer Zug mit Befehlen im Modelltext). Doku `code/docs/VERBOTE_UND_NOTAUS.md`.
+- Befund: Neuromod-Veto wirkt nur aufs Lernen (im Standard RECORD_ONLY ohne Wirkung; live setzt nur C6-Regelverstoß ein Veto). Selbst-Unsicherheit hebt live den Aufwand; „nachfragen statt raten“ nur SHADOW.
+- Offen WP-SAFE2: Verbots-Treffer als Veto-Signal an Neuromod/C5-Lernen; ASK_USER-Messung (zusammen mit WP-DS3).

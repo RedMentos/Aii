@@ -36,3 +36,9 @@ Dies ist die dauerhafte Freigabe, im Rahmen der beauftragten V13-Entwicklung Än
 - Age-Plastizität `age_plasticity_policy = boot | stable_reopen | noise_aware` (Messung WP-AB, offen seit 10.10.; blockiert G-AGE-REOPEN-001, Paket WP-Z8).
 - ~~Zitat-Kontext-Schalter einschalten~~ → entschieden 2026-10-21: an (siehe oben).
 - Redmi-Läufe (WP-Z7): ohne sie können STEP5, STEP7 und drei §100-Gates nicht grün werden.
+
+## Offen (Stand 2026-10-21, aus dem Zielabgleich `ZIELABGLEICH.md` §7) — noch keine Entscheidung
+- Age-Plastizität `age_plasticity_policy = boot | stable_reopen | noise_aware` (Messung WP-AB, offen seit 10.10.; blockiert G-AGE-REOPEN-001, Paket WP-Z8).
+- Zitat-Kontext-Schalter `offer_quote_context_chars=200` einschalten (offen seit 20.10., STEP2-Transport).
+- Redmi-Läufe (WP-Z7): ohne sie können STEP5, STEP7 und drei §100-Gates nicht grün werden.
+- B2-Zeiger `b2_quote_select=pointer` einschalten (WP-Z2d, 21.10.: B2-Regelzitat .17 → .97, zwei Körper +.30 über B1; braucht zugleich den Zitat-Kontext-Schalter und eine Reparatur von `analyst_context`).

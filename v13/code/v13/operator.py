@@ -14,7 +14,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
-:notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
+:notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
 :feedback fact|style|preference <Korrektur> [--learn]
 :feedback route simple|detail|gist|both [--learn]
@@ -136,6 +136,9 @@ class Operator:
         if cmd=='notaus':
             from .prohibitions import notaus_command
             return notaus_command(r,args)
+        if cmd=='stillstand':
+            from .standstill import operator_command
+            return operator_command(r,args)
         if cmd=='body':
             from .bodyport import operator_command
             return operator_command(r,args)

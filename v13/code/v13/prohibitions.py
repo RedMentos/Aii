@@ -169,5 +169,6 @@ def notaus_command(r,args):
         halt(s,True,authority=HUMAN)
         try:r.cancel()  # stop the running turn too, if any
         except Exception:pass
-        return 'NOTAUS AN: kein Werkzeug läuft mehr, keine Freigabe wird ausgeführt. Rückgängig machen (:tx undo) bleibt möglich. Aufheben: :notaus aus'
+        return ('NOTAUS AN: kein Werkzeug läuft mehr, keine Freigabe wird ausgeführt. Rückgängig machen (:tx undo) bleibt möglich. Aufheben: :notaus aus\n'
+                'Lernen und Hintergrund laufen weiter; alles anhalten: :stillstand')
     raise ValueError(':notaus | :notaus aus | :notaus status')

@@ -1,3 +1,7 @@
+# Aktuell 2026-10-22 (Thread „GPT-Stand erneut prüfen“): Gegenprüfung Runde 2 + `:stillstand`
+
+GPT/Codex-Stand vom 22.10. (PR #29 `c1d6615`, PR #27 `16a0b17`, Drive-Notiz) geprüft und gemergt, Aussagen nachgerechnet und bestätigt; Runde 1 (PR #8) nachgeholt. Neu WP-SAFE2 `:stillstand`: hält Werkzeuge, Aufgaben/Lernen/Hintergrund und Alterung zusammen an, bestätigt erst nach Ende des laufenden Vorgangs, bleibt über Neustart, hebt nur eigene Teile auf. Neue Pakete WP-AGE0a (späte Selbstkorrektur ohne Age-4), WP-AGE0b (Organ-Checkpoint), WP-LP1 (Lernpfad mit Komponenten-Gradienten). Details `docs/coordination/CLAUDE_ANTWORT_AGE0_LERNPFAD_20261022.md`, Branch `claude/project-thread-2p69gl`. ROADMAP/Handoff/Zielabgleich hier mit dem Projektordner zusammengeführt (beide Seiten hatten Abschnitte, die der anderen fehlten).
+
 # Aktuell 2026-10-22 (Codex, isoliertes Review-Paket): Lernpfad-Auditor und Promptgrenze
 
 Basis `9436eb7` (Claudes zusammengeführte Nutzerregeln + SAFE1), eigener Branch `codex/learning-path-audit-20261022`. Zwei neue, standardmäßig nicht integrierte Skripte: read-only `learning_path_claim_audit.py` und quellgebundener `lora_prompt_boundary_candidate.py`. Audit der 14 archivierten AG6-Manifeste: alle JEPA-Gewicht 0, alle Kosinusgewinn; kein Nachweis eines Beitrags des JEPA-Terms. Tatsächlichen `_encode`-Fehler bei vollständig abgeschnittenem Prompt reproduziert; Kandidat lehnt solche Paare ab und trennt Checkpointordner per Revision/Quellhash. 34 fokussierte Tests bestanden; Software-/Artefaktprüfung, kein neuer Native-/Redmi-Lauf. Runtime, aktive Kohorten und Gates unverändert. Details/Belege: `LEARNING_PATH_AUDIT_20261022.md`, `proofs/continuation-20261022/learning-path-audit/`. Nächster Schritt: registrierter Komponenten-Gradienten-/Nutzenvergleich am vorgesehenen Body-Pfad, innerhalb der vollständigen verbundenen Architektur. Übergabe ist kein Nachweis, dass Claude sie bereits gelesen hat.
@@ -5,9 +9,11 @@ Basis `9436eb7` (Claudes zusammengeführte Nutzerregeln + SAFE1), eigener Branch
 # Aktuell 2026-10-21 (Thread „Zitierhilfe an, Regeln per JEF“): Zitierhilfe an + Nutzer-Regeln mit festem Leser
 
 Nutzerentscheidung: Zitierhilfe an (Standard jetzt `b2_quote_select='pointer'`, `offer_quote_context_chars=200`, `b1_recent_source_chars=600`, alte Werte für eingefrorene Harnesses in `config.LEGACY_QUOTE_PATH`); `analyst_context`-Fix aus PR #7 übernommen; Körper-Frage an, aber nur bei Regel-Entscheidungsfragen (`body_question_scope='rule_decision'`); Regelwerte liest kein Modell mehr (`eligibility_reader='fixed'`, `eligibility.fixed_read`). Neu `v13/userrules.py`: fester Leser (kein Modell) für Verbote / „frag mich vorher“ aus den eigenen Zeilen des Nutzers, durchgesetzt in IH-H29 `_policy`, feste Hinweise im Broker, Befehle `:regeln` / `:regel`. Gemessen: Autor-Holdout 0 Sicherheitsfehler; frische Modell-Umformulierungen Runde 2: v2 20 Fehler in 8/57 Sätzen (v1: 71) → `USER_RULES_UNSAFE`. Schreibende Werkzeuge bleiben ohnehin Vorschläge. Befund `docs/proofs/continuation-20261021/user-rules/BEFUND.md`, Branch `claude/project-thread-2gzrwi` (enthält PR #7, #19, #21). PR #2, #3, #4 geschlossen.
+
 # Aktuell 2026-10-21 (Thread „B2 zitiert Regel selten“): WP-Z2d B2 liefert das Regel-Zitat — Zeiger behebt den Engpass
 
 Ursache: B2 schreibt die alte Regel um statt sie wörtlich zu zitieren (110/384 Z2b-Angebote), die Zitatprüfung verwirft das. Neuer Schalter `b2_quote_select` (`off` Standard | `anchor` | `pointer`, Kettenglied `integrated_candidates.b2_quote_select`). Vorregistrierter Lauf CQ/CQA/CQP × Seeds 17–19 (630 Zeilen): B2-Regelquote .167 → Anker .542 (teilweise) → **Zeiger .969** (`Z2C_B2_RULE_QUOTE_FIXED`, CI > 0, 0 falsch). STEP2 zwei Körper `both_exact` .881 vs. b1_only .581 (+.30, CI > 0, alle Seeds), 27/30 exakte Entscheidungen. STEP2 bleibt formal FAIL (Kriterium 3, Ein-Körper-Kontrolle offen). Schalter aus bis Nutzerentscheidung; live-`analyst_context` nimmt erweiterte Zitate noch nicht an. Befund `docs/proofs/continuation-20261021/step2-z2c-b2-rule/BEFUND.md`, Branch `claude/project-thread-0fckhc`. Merge-Hinweis: Thread „B1-Frage als Schalter“ (Branch `4ttld7`, auch „WP-Z2c“ genannt) hängt ein eigenes Kettenglied `body_question` an `cognition.py`; beim Zusammenführen beide Glieder in `integrated_candidates.rebase` hintereinander anwenden.
+
 # Aktuell 2026-10-21 (Thread „B1-Frage als Schalter“): gezielte Körper-Frage als Live-Schalter — Standard aus
 
 Neue Schalter `body_question_b1` / `body_question_b2` (Standard `''` = aus = live unverändert): feste Frage als `jef_query` an jedes Körper-Angebot ohne Rückfrage-Fokus. Bestätigungslauf Seed 14 mit echten Modellen: Schalter (beide) both_exact .592 vs ohne .375 (Z2b-Patch .675), nur B1 .450; b1_only .275 → .575; 0 falsch festgelegt. Frage ist STEP2-spezifisch, deshalb bleibt sie aus. Befund `docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md`, Branch `claude/project-thread-4ttld7`.
@@ -18,16 +24,37 @@ Vorregistrierter Lauf (C/D/CQ/DQ × Seeds 14–16, 840 Zeilen, echte Modelle, Li
 
 # Aktuell 2026-10-21 (Thread „Z2 STEP2 mit B1-Detailinfo“): STEP2 mit B1-eigener Information — Gate FAIL
 
-Neuer Schalter `b1_recent_source_chars` (Standard 0 = aus): B1 behält die exakte Quelle seiner letzten Runde. Vorregistrierter Lauf (10 Episoden, 5 Arme × 70 Zeilen, echte Modelle, Linux-Cloud): `Z2_DIVERGENCE_NOT_SUPPORTED` — Zwei-Körper .325 < b1_only .333, ein Körper + zwei Zustände nicht schlechter. B1 liefert jetzt Optionswerte (27/70 statt 0), exakte SPLIT-Entscheidungen nur im Ein-Körper-Arm (3/6). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2-timescale/BEFUND.md`, Branch `claude/project-thread-hsm0ga`. STEP2 UTILITY_FAIL bleibt.
+Neuer Schalter `b1_recent_source_chars` (Standard 0 = aus): B1 behält die exakte Quelle seiner letzten Runde. Vorregistrierter Lauf (10 Episoden, 5 Arme × 70 Zeilen, echte Modelle, Linux-Cloud): `Z2_DIVERGENCE_NOT_SUPPORTED` — Zwei-Körper .325 < b1_only .333, ein Körper + zwei Zustände nicht schlechter. B1 liefert jetzt Optionswerte (27/70 statt 0), exakte SPLIT-Entscheidungen nur im Ein-Körper-Arm (3/6). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2-timescale/BEFUND.md`, Code nur im Git-Branch `claude/project-thread-hsm0ga` (Schalter in `v13/cognition.py`, hier im Projektordner noch nicht). STEP2 UTILITY_FAIL bleibt.
+
 # Aktuell 2026-10-21 (Thread „STEP2-Nutzen Engpass“): Eignungs-Werkzeug im Live-Pfad
 
 `ToolStep._propose_eligibility`: Option-A/B-Fragen unter Projektregeln → C3 liest typisierte Werte aus Quelle + Body-Zitaten → Rezept entscheidet. Nur nach `:growth enable eligibility`, Age 0 SHADOW. Vorregistriert gemessen: 55/70 exakt, 0 falsch (LIVE_PROMPT_SUPPORTED). Handy-Testliste `../HANDY_TESTLISTE.md`. Befund `docs/proofs/continuation-20261021/eligibility-live/BEFUND.md`.
+
+Zusammengeführt in `claude/project-thread-dq33gk` (PR #7): Qs Fassung gilt (TOOL_LIVE_SUPPORTED), dazu Zitat-als-Zeiger-Schalter + `analyst_context`-Fix (Chat brach mit Schalter an ab). Ganzer Turn der dq33gk-Variante war NOT_SUPPORTED, entfällt.
 
 # Aktuell 2026-10-21 (Thread „Nächste Pakete Q“): Eignungs-Werkzeug im ganzen Live-Turn
 
 `eligibility` läuft im normalen Turn (nur nach Freigabe, Alter 0 = SHADOW). Vorregistrierte Messung, 60 frische Aufgaben auf C3: Antworttext richtig 22 → 32 (p .006), falsch festgelegt 33 → 23, Rezept nie falsch, mit Broker-Korrektur sichtbar richtig 53/60. Befund `docs/proofs/continuation-20261021/eligibility-whole-turn-q/BEFUND.md`, Branch `claude/project-thread-hzzqh4`. Parallele Fassung im Thread „STEP2-Nutzen Engpass“ (dq33gk) beim Zusammenführen abgleichen.
 
 Zusammengeführt in `claude/project-thread-dq33gk` (PR #7): Qs Fassung gilt, dazu Zitat-als-Zeiger-Schalter + `analyst_context`-Fix (Chat brach mit Schalter an ab). Ganzer Turn der dq33gk-Variante war NOT_SUPPORTED, daher entfallen.
+
+# Aktuell 2026-10-21 (Thread „B3 L1 escalate apologize“): L1 PASS auf escalate, apologize knapp FAIL
+
+Ursache der escalate/apologize-FAILs gefunden: eingefrorener NO_MESSAGE-Kopf kann die Empfänger-private Tatsache (Kapazität/Kunde) nicht zur Nachricht passend gewichten (kostet selbst mit echtem U/F 8–9 Punkte). Fix `Bridge(recv_cond)` + `refit_readout` (Standard aus). Vorregistrierter Versuch 5 auf frischer Saat 20261105: **escalate Kanon-L1 PASS** (90,5 vs Attribut-Wörter 84,7), apologize FAIL (89,0 vs 88,5, n.s.), action-PASS aus Versuch 4 **nicht repliziert** (86,7 vs Label 83,5, n.s.). L2-SHADOW nur für private/escalate erlaubt. Belege `bench-results/b3-l1-escapo-diagnose-20261021/`, `bench-results/b3-l1-v5-20261021/`, Branch `claude/project-thread-yub2lf` (auf c122qc / PR #20).
+
+# Aktuell 2026-10-21 (Thread „Nächste Pakete R“): B3 L1 Versuch 4 PASS auf action + Schlüsseltrennung der schnellen Spur
+
+- **WP-Z4 B3 L1 Versuch 4** (vorregistriert `eaf49b7`, frische Saat 20261021, neue B1/B2-Zustände, `aux`-Brücke): **Kanon-L1 PASS auf `private/action`** (LATENT 90,0 % vs SYMBOLIC 81,5 / Attribut-Wörter 76,7 / SCALAR 85,2; Rollen-Verlust 0, OOD 1,3 %). escalate/apologize FAIL. Folge: nur L2-Prefix-SHADOW für `private/action` erlaubt (nächstes Paket Z4b), Autorität 0, Runtime unverändert. `bench-results/b3-l1-v4-20261021/`.
+- **Native Firing-Diagnostik / WP-T9 v3**: zwei Ursachen falschen Feuerns gefunden und behoben (`sparse_memory` `guard_distinct`/`guard_vocab`/`guard_scope='last_user'`, Hook `v13_memory_hook.h`, Standard aus). Nativ: 0 fremde Feuerungen auf Faktfragen, combined 84 → 17 Zeilen; selektive Zustellung 2:5 gegen exakt (vorher 2:9) → weiter kein Gewinn, Verluste = falsche Spur-Werte auf Paraphrasen. `bench-results/selective-delivery-v3-20261021/`.
+- Branch `claude/project-thread-8hlx74` (Basis `claude/project-thread-0zelvf`). Suite 1591, einziger Fehler `test_neuro_ledger` durch 19 nachgezogene Belegordner behoben.
+
+# Aktuell 2026-10-21 (Thread „Z3b Parser statt C3-Leser“): Parser reicht, C3 bringt als Leser nichts Sicheres
+
+Vorregistriert, 39 kanonische + 39 umformulierte Aufgaben × 3 Seeds, nur C3. Urteil `PARSER_SUFFICIENT_NO_C3_GAIN`, sekundär `BOOL_PARSER_FIX_CONFIRMED`: C3-Zahlen + Parser für `local_only` kanonisch 117/117 exakt, 0 falsch. C3 gibt `local_only` immer `true` zurück (auch bei verneinten Umformulierungen); auf Umformulierungen kein C3-Arm ≥ 0.80, einziger Gewinn (+26 Punkte) mit 7.7 % falscher Wahl. Regel: Ja/Nein-Regeln nie vom C3 lesen lassen. Beleg `docs/proofs/continuation-20261021/z3b-parser-paraphrase/BEFUND.md`. Keine Gate-Beförderung.
+
+# Aktuell 2026-10-21 (Thread „Z1 STEP2-Gate ehrlich“): Gate-Graph ehrlich
+
+STEP2 geteilt: `STEP2_HARNESS` GREEN, `STEP2_EXIT` (§96 Komplementarität) EVIDENCE_NOT_PASSING. STEP2_EXIT, STEP5 und alle zehn §100-Gates prüfen jetzt Blueprint-Kriterien an gemessenen Werten (`blueprint`-Block, Status CRITERIA_UNMEASURED); gemessenes FAIL nie mehr hinter PARTIAL. `measure_suite.py` gibt die §29-Tabelle berechnet aus: 3 erreicht, 15 teilweise, 6 fehlen. Befund `docs/proofs/continuation-20261021/z1-gate-ehrlich/BEFUND.md`. Branch `claude/project-thread-61we5j`.
 
 # Aktuell 2026-10-20 (Abend): Handy-Paket Werkzeug-Vorhersage fertig
 
@@ -177,3 +204,7 @@ Frischer Seed 29: 25/30 statt 13 (p 0,0018), Werte 30/30. R4-Werkzeugkette (Teil
 ## Merge-Hinweis 2026-10-13 13:05Z Thread K (GPT/Codex arbeitet parallel)
 
 Nutzerhinweis: GPT arbeitet am selben Code weiter. Stand: Branch `claude/project-thread-s0290g` (HEAD `42a28dd`) hat keine fremden Commits. `origin/codex/continuation-review-20261013` (GPT/Codex, letzter Commit `5a69538`) baut auf Thread M auf und enthält Thread Ks R4-Werkzeug **nicht**. Beim Zusammenführen betroffen: `v13/toolstep.py` (Thread K: `_propose_list`, `shadow`, `layer`, `LIST_*`; Thread M: `propose_note_edit`, `_forecast`), `v13/agi/tools.py` (eine `list_arith`-Registrierung), `v13/transaction.py` (WP-W2c-`text`-Typ, identisch zu W2c), `v13/broker.py` (`correction_text` für `list_arith`), neu `v13/agi/listarith.py`. Der geteilte Ordner `/mnt/project-files/v13/code` enthält beide Seiten schon zusammengeführt und getestet (Referenz). Nichts überschreiben, kein Force-Push; Konflikte beidseitig erhalten.
+
+## Ergänzung 2026-10-21 Thread „Z5b Koalition mit Platzmangel“: WP-Z5b gemessen — G-FOCAL-CAPACITY-003 bleibt PARTIAL
+
+Vorregistriert (`bench-results/z5b-capacity-20261021/PREREGISTRATION.md`), `scripts/z5b_capacity.py`, 5 Tests. 60 neue Aufgaben mit je 6 gespeicherten Notizen, Effort max, 4 Plätze, 5 Läufe: Platzgrenze greift in 300/300 Turns (9 Kandidaten), 11 Verdrängungen. Bestanden/300: ausgeliefert 68, Koalition als Engpass 60, Voll-Kontext 54, feste Slots 55, Retrieval 64, ohne Kontext 47; Koalition vs. Voll-Kontext 33:27 p = 0,52, Rauschband 4 → FAIL. Eigenschaft 4 (Aufnahme nur über Salienz) tritt nie auf. Ursache: Notiz-Priorität kennt keine Aktualität/Ersetzung. Wichtig für Folgearbeit: im ausgelieferten Pfad gehen abgerufene Notizen an der Koalition vorbei in die Antwort (ACTIVE_VIEW); die Koalition filtert nur Körper-Angebote. Cloud-Home: `python3 -m v13.bootstrap --home DIR` (ca. 3 min).

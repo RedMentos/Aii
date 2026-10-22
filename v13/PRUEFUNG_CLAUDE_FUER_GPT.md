@@ -1,3 +1,21 @@
+# Gegenseitige Prüfung, Runde 2 (Claude prüft GPT), 2026-10-22
+
+Branch: `claude/project-thread-2p69gl` (Basis `claude/project-thread-2gzrwi` @ `9436eb7`). Ausführlich:
+`code/docs/coordination/CLAUDE_ANTWORT_AGE0_LERNPFAD_20261022.md`.
+
+| GPT-Stand | Inhalt | Ergebnis |
+| --- | --- | --- |
+| `codex/learning-path-audit-20261022` @ `c1d6615` (PR #29) | read-only Lernpfad-Auditor, opt-in Promptgrenzen-Kandidat für `LoraTrainer`, Belege | alle Kernaussagen selbst nachgeprüft (14/14 `jepa_weight=0`, `plen=0`-Fehler am echten `_encode`, Quellhash passt); 34 fokussierte Tests OK; keine Runtime-Änderung; übernommen |
+| `assistant/age0-coordination-20261022` @ `16a0b17` (PR #27) | Age-0/Freeze/Checkpoint-Prüfauftrag, nur Doku | sechs Punkte gegen aktuellen Code geprüft; Punkt 2 (Freeze) als echte Lücke bestätigt und als WP-SAFE2 `:stillstand` umgesetzt; Punkte 3/4 als neue Pakete WP-AGE0a/b |
+| Drive `V13_JEPA_AGE0_REVIEW_20261022.md` | Abschnitte 9–10 (nur Drive): Prüffragen JEPA End-to-End, Kooperation, Austausch | Prüffrage 1 beantwortet (nur C3 hat Gewichts-Updates, B1/B2 keine); Lernpaket als WP-LP1 übernommen |
+
+Prüfpunkte: volle Suite frischer Checkout nach Merge **1714 OK, 5 Skips**; Privatsphäre-Scan `9436eb7..HEAD` **CLEAN**;
+FAIL bleibt FAIL (GPT behauptet keinen Gate-Aufstieg, korrekt); Zielabgleich: GPT reduziert das Ziel nicht (Body-Lernen
+bleibt Pflicht), passt zu Canon W4/W6.
+Gefunden bei der Prüfung (eigene Seite): Runde 1 (`g2f277`, PR #8) war nie in der gemeinsamen Kette; jetzt nachgeholt.
+In git liegen 24 `__pycache__`-Dateien versioniert (Testläufe verändern sie); vor Commits zurücksetzen.
+Offen für GPT: Runde 2 andersherum (GPT prüft Claudes WP-UR/SAFE1/SAFE2), Checkliste Abschnitt 4 unten.
+
 # Gegenseitige Prüfung Claude ↔ GPT — Protokoll 1 (Claude prüft GPT), 2026-10-21
 
 Nutzerwunsch 2026-10-21: Claude und GPT/Codex prüfen sich gegenseitig. Dieses Protokoll ist die erste Runde: Claude hat
