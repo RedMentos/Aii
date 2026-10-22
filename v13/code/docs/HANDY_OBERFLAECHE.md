@@ -38,6 +38,7 @@ Startbildschirm ziehen. Für eine kurze Meldung beim Drücken zusätzlich **Term
 |---|---|
 | V13 Chat | Hält das Handy wach (`termux-wake-lock`), startet `v13 chat`, gibt den Wach-Halter beim Beenden frei. |
 | V13 Status | Zeigt, ob V13 läuft und ob ein Stopp-Knopf noch auf den Chat wartet. |
+| V13 Befehle | Öffnet die Liste aller Befehle mit Erklärung (`docs/BEFEHLE.md`) zum Scrollen; `/Wort` sucht, `q` schließt. Im Chat dasselbe mit `:befehle [Wort]`. |
 | V13 Notaus | Wie `:notaus`: kein Werkzeug, keine Freigabe mehr, laufende Antwort wird abgebrochen. Ohne Fenster. |
 | V13 Stillstand | Wie `:stillstand`: hält alles an (Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung). Ohne Fenster. |
 

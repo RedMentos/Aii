@@ -10,10 +10,10 @@ Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STA
 Entscheidung (Empfehlung, keine Nutzerfrage nötig): **in Termux bleiben, keine APK jetzt.** Kein Tempo-Gewinn durch
 eine APK (gleicher nativer llama.cpp-Code), eher mehr RAM-Verbrauch, gleiche Probleme mit dem Android-Hintergrund-Killer,
 viel Aufwand ohne PC. Keine Web-Oberfläche auf localhost (jede App erreicht localhost; Befehle bleiben TTY-only).
-Gebaut: `code/KNOEPFE_EINRICHTEN.sh` (vier Termux:Widget-Knöpfe: Chat mit Wach-Halter, Status, Notaus, Stillstand),
+Gebaut: `code/KNOEPFE_EINRICHTEN.sh` (fünf Termux:Widget-Knöpfe: Chat mit Wach-Halter, Status, Befehle, Notaus, Stillstand), `code/docs/BEFEHLE.md` (alle Befehle mit Erklärung in einfachem Deutsch, zum Scrollen; `:befehle [Wort]` im Chat filtert; Test prüft, dass jeder Befehl in `operator.py` erklärt ist),
 `code/v13/phone_halt.py` (Chat übernimmt Knopf-Dateien aus `~/v13/control/` mit denselben Funktionen wie `:notaus`/
 `:stillstand`; nur Einschalten, Aufheben nur getippt; wartender Stopp greift beim Start), 2 Zeilen in `v13/ui.py`,
-`tests/test_phone_halt.py` (4 Tests). Hash-gebundene Dateien (runtime/runners/store/memory_server) unverändert.
+`tests/test_phone_halt.py` (6 Tests). Hash-gebundene Dateien (runtime/runners/store/memory_server) unverändert.
 Begründung + Handy-Prüfschritte: `code/docs/HANDY_OBERFLAECHE.md`. Offen: Prüfung am Redmi (Testliste Punkt „Knöpfe“).
 
 ## Nachtrag 22.10.2026: Body-Lernpfad prüfen, Promptverlust begrenzen

@@ -53,19 +53,42 @@ class ButtonTests(unittest.TestCase):
 
 
 class InstallerTests(unittest.TestCase):
-    def test_installer_writes_four_buttons_that_only_drop_request_files(self):
+    def test_installer_writes_five_buttons_and_stop_buttons_only_drop_request_files(self):
         with tempfile.TemporaryDirectory() as t:
             env=dict(os.environ,HOME=t,PREFIX='/usr',V13_HOME=t+'/v13')
             subprocess.run(['bash',str(APP/'KNOEPFE_EINRICHTEN.sh')],env=env,check=True,capture_output=True)
             sc=Path(t)/'.shortcuts'
-            for n in ('V13 Chat','V13 Status','tasks/V13 Notaus','tasks/V13 Stillstand'):
+            for n in ('V13 Chat','V13 Status','V13 Befehle','tasks/V13 Notaus','tasks/V13 Stillstand'):
                 self.assertTrue((sc/n).is_file(),n);self.assertEqual((sc/n).stat().st_mode&0o777,0o700)
             subprocess.run(['bash',str(sc/'tasks/V13 Stillstand')],env=env,check=True,capture_output=True)
             self.assertEqual(H.pending(Path(t)/'v13'),['STILLSTAND'])
             for n in ('tasks/V13 Notaus','tasks/V13 Stillstand'):
                 self.assertNotIn(' aus',(sc/n).read_text().split('msg=')[0])  # a button cannot lift a stop
+            out=subprocess.run(['bash',str(sc/'V13 Befehle')],env=env|{'PATH':'/usr/bin:/bin'},stdin=subprocess.DEVNULL,capture_output=True,text=True)
+            self.assertIn(':stillstand',out.stdout)  # the guide opens (less without a terminal just prints it)
             subprocess.run(['bash',str(APP/'KNOEPFE_EINRICHTEN.sh'),'weg'],env=env,check=True,capture_output=True)
             self.assertFalse((sc/'V13 Chat').exists())
+
+
+class GuideTests(unittest.TestCase):
+    """docs/BEFEHLE.md must explain every command the operator handles, so the guide cannot silently fall behind."""
+    def test_every_operator_command_is_explained(self):
+        import re
+        from v13 import befehle
+        src=(APP/'v13/operator.py').read_text(encoding='utf-8')
+        cmds=set(re.findall(r"cmd==['\"]([a-z0-9-]+)['\"]",src))
+        for group in re.findall(r"cmd in [{(]([^})]*)[})]",src):cmds|=set(re.findall(r"'([a-z0-9-]+)'",group))
+        guide=befehle.PATH.read_text(encoding='utf-8')
+        documented=set(re.findall(r'(?<![:\w]):([a-z0-9][a-z0-9-]*)',guide))
+        self.assertGreater(len(cmds),100)
+        self.assertEqual(sorted(cmds-documented),[])
+
+    def test_befehle_command_shows_guide_and_filters(self):
+        from v13 import befehle
+        full=befehle.operator_command(None,[]);self.assertIn('## 1 Sicherheit',full)
+        hit=befehle.operator_command(None,['stillstand','aus'])
+        self.assertIn(':stillstand',hit);self.assertNotIn(':download',hit)
+        self.assertIn('Nichts gefunden',befehle.operator_command(None,['gibtsnicht']))
 
 
 if __name__=='__main__':unittest.main()
