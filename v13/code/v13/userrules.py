@@ -24,7 +24,7 @@ import time
 from pathlib import Path
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v6'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v7'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -175,6 +175,8 @@ FILLER=re.compile(r"^(?:(?:hey|hi|hallo|so|ok|okay|seriously|yo|dude|oh|um|uh|we
 INNER_FILLER=re.compile(r"\b(?:like|you\s+know|ya\s+know|i\s+mean|kinda|sort\s+of)\s*,")
 REQUEST=re.compile(r"^(?:could|can|would|will|wouldn'?t|won'?t|koenntest|kannst|wuerdest|wirst|magst)\s+(?:you|du|sie)\b|^(?:make|be)\s+sure\b|^(?:mach|sorg)\w*\s+(?:bitte\s+)?(?:sicher|dafuer)")
 BARE_NOT=re.compile(r"\b(?:not|never|no)\b|\byou\s+(?:didn'?t|did\s+not|wouldn'?t|would\s+not|won'?t)\b")
+# v7 (round 6 "erst wenn ich sag, dann ..."): "until/when I say so" is the user's approval, no action of the AI
+SAY_SO=re.compile(r"\b(?:wenn|bis|sobald|falls|nachdem|until|unless|when|if|once)\s+ich\s+(?:\w+\s+){0,3}(?:sag\w*|say\w*|said|erlaub\w*|ok\w*|freigeb\w*|zustimm\w*|ja\s+sag\w*)\b")
 APPROVAL=re.compile(r"\b(?:give|gives|given|giving|get|gets|got|geb\w*|gib)\s+(?:you\s+|dir\s+|me\s+|mir\s+)?(?:the\s+|my\s+|an?\s+|das\s+|mein\w*\s+|ein\w*\s+)?(?:green\s+light|okay|ok|go-?ahead|thumbs\s+up|all-?clear|permission|approval|consent|say-?so|nod|freigabe|erlaubnis|zustimmung)\b")
 TAG=re.compile(r"[\s,](?:okay|ok|alright|right|yeah|yes|ja|oder|gell|ne|ya\s+know|you\s+know)\s*\?$")  # "..., okay?" is no question
 MAKE_SURE=re.compile(r"\b(?:make|be)\s+sure\s+(?:\w+\s+)?(?:not|never|no)\b|\bsicher\w*\b.*\b(?:nicht|nie|kein\w*)\b")
@@ -216,12 +218,25 @@ def _forms(w):
     return out
 
 
-def _classes(t,stems,words):
-    """Classes named in normalized text t, and the words that named them."""
+COMPOUND_END=('','s','e','en','er','n','ern','es','ung','ungen')
+
+
+def _tail(word,stems):
+    """v7 (round 6 "Zusatzprogramme", "Internetverbindung"): a German compound names its last part. A stem of 5+ letters
+    may start anywhere after the first 3 letters; a 4-letter stem only as the word end (plus a plural/case ending)."""
+    for s in stems:
+        if ' ' in s or len(s)<4:continue
+        for i in range(3,len(word)-len(s)+1):
+            if word.startswith(s,i) and (len(s)>=5 or word[i+len(s):] in COMPOUND_END):return True
+    return False
+
+
+def _classes(t,stems,words,compound=False):
+    """Classes named in normalized text t, and the words that named them (compound=True: also by the last part of a compound noun)."""
     found={};ws=_words(t)
     for cls,ss in stems.items():
         for w in ws:
-            if _has(w,ss):found.setdefault(cls,set()).add(w)
+            if _has(w,ss) or (compound and _tail(w,ss)):found.setdefault(cls,set()).add(w)
         for phrase in (s for s in ss if ' ' in s):
             if phrase in t:found.setdefault(cls,set()).add(phrase)
     for cls,exact in words.items():
@@ -232,7 +247,7 @@ def _classes(t,stems,words):
 
 def _objects(t,action_words):
     """(object classes, unknown content words, only-pronoun flag) of a clause."""
-    known=_classes(t,OBJECT_STEMS,{})
+    known=_classes(t,OBJECT_STEMS,{},compound=True)
     used=set().union(*known.values()) if known else set()
     ws=_words(t);anyobj=any(w in ANY_OBJECT for w in ws)
     rest=[w for w in ws if w not in STOP and w not in used and w not in action_words and w not in ANY_OBJECT and w not in PRONOUNS
@@ -251,13 +266,13 @@ def parse_clause(clause,prev=None):
     if not t:return out
     m=EXCEPT.search(t);exc_text=''
     if m:t,exc_text=t[:m.start()],t[m.end():]
-    ta=APPROVAL.sub(' ',ASK_WORDS.sub(' ',t))  # "until I give you the okay" names no action of the AI
+    ta=SAY_SO.sub(' ',APPROVAL.sub(' ',ASK_WORDS.sub(' ',t)))  # "until I give you the okay" names no action of the AI
     acts=_classes(ta,ACTION_STEMS,ACTION_WORDS);weak={w for w in _words(ta) if w in WEAK_ANY}
     if weak and not acts:acts={'ANY':weak}
     aw=(set().union(*acts.values()) if acts else set())|weak
     objs,unknown,pron=_objects(t,aw)
     actions=set(acts)
-    objwords=set().union(*_classes(t,OBJECT_STEMS,{}).values()) if objs else set()
+    objwords=set().union(*_classes(t,OBJECT_STEMS,{},compound=True).values()) if objs else set()
     if acts and all(ws<=objwords for ws in acts.values()):actions.add('ANY')  # "my phone": a word that is object and action widens
     protect=bool(PROTECT.search(t))
     if protect:actions|={'DELETE','WRITE'}
@@ -310,18 +325,48 @@ def parse_clause(clause,prev=None):
 # v6 broad net (after v3-v5: every fresh round brought new wordings): a clause the exact reader reads as no rule or as a
 # loosening, but that carries a negation, hold or condition signal and names a known action or object, becomes an open
 # question (UNCLEAR, reason NET; works like "ask first" until the user answers). Safety must not depend on knowing the wording.
-NET_NEG=re.compile(r"\b(?:nicht\w*|kein\w*|nie|niemals|nimmer|niemand\w*|nichts|nix|no|not|never|nobody|nothing|none|nowhere|nirgends|nirgendwo)\b|n't\b")
+NET_NEG=re.compile(r"\b(?:nicht\w*|kein\w*|nie|niemals|nimmer|niemand\w*|nichts|nix\w*|nich|no|not|never|nobody|nothing|none|nowhere|nirgends|nirgendwo)\b|n't\b")
 NET_HOLD=re.compile(r"\b(?:bleib\w*|schluss|genug|weg|finger|pfoten|ruhe|tabu|gesperrt|sperr\w*|verbot\w*|verbiet\w*|untersag\w*|"
     r"gestrichen|streich\w*|aufhoer\w*|hoer\w*\s+(?:\w+\s+){0,4}auf|halt\w*\s+(?:\w+\s+){0,5}(?:raus|heraus|zurueck|fern)|raus|heraus|unterlass\w*|vorbei|"
     r"\w*lass\w*|\w*laesst|halte|behalt\w*|liegen|unberuehrt|bewahr\w*|verschon\w*|verpass\w*|versaeum\w*|skip\w*|omit\w*|spare?|"
-    r"stop\w*|enough|keep|leave|quit|ban\w*|block\w*|forbid\w*|off[\s-]limits|hands\s+off|taboo|halt|cut\s+(?:it\s+)?out|no\s+more)\b")
-NET_COND=re.compile(r"\b(?:nur|erst|bevor|vorher|vorab|zuerst|zunaechst|ohne|ausser|bis|only|before|first|without|unless|until|except|prior|"
+    r"stop\w*|enough|keep|leave|quit|ban\w*|block\w*|forbid\w*|off[\s-]limits|hands\s+off|taboo|halt|cut\s+(?:it\s+)?out|no\s+more|"
+    r"ausgeschlossen|ausschliess\w*|abgeschafft|abschaff\w*|unzulaessig|unerwuenscht|untersagt|verwehrt|ausgesetzt|eingestellt|"
+    r"(?:ist|sind|bleibt|bleiben)\s+(?:\w+\s+){0,3}(?:aus|zu|dicht|vorbei|erledigt|gestrichen)|excluded|disabled|abolished|"
+    r"(?:ab|aus)geschaltet|(?:ab|aus)schalt\w*|abgestellt|abstell\w*|deaktivier\w*|(?:turned|switched|shut)\s+off)\b")  # dev_v7: "Internet für dich abgeschaltet"  # v7 (round 6): "ist ausgeschlossen", "abgeschafft"
+NET_COND=re.compile(r"\b(?:nur|erst|erstmal|erst\s+mal|vorerst|bevor|vorher|vorab|zuerst|zunaechst|ohne|ausser|bis|only|before|first|without|unless|until|except|prior|"
+    r"vorschau|preview|(?:sag|gib|meld|teil)\w*\s+(?:\w+\s+){0,3}(?:mir|mich)\b(?:\s*,?\s*\w+){0,4}?\s*,?\s*(?:wenn|bevor|falls|sobald|ob)|"
     r"frag\w*\s+(?:\w+\s+){0,2}(?:mich|mir)|fragen|ask\s+me|meld\w*\s+(?:\w+\s+){0,2}(?:mich|mir)|bescheid|rueckmeld\w*|nachfrag\w*|rueckfrag\w*|check\s+with\s+me)\b")
 WH_QUESTION=re.compile(r"^(?:warum|wieso|weshalb|was|wie|wo|wann|wer|welche\w*|why|what|how|where|when|who|which)\b")
 NET_IF=re.compile(r"\b(?:wenn|falls|sobald|nachdem|if|when|once|after)\b")
 NET_OK=re.compile(r"\b(?:erlaub\w*|genehmig\w*|zustimm\w*|zugestimmt|okay|ok|ja|freigabe|freigeb\w*|segen|einverstanden|absprache|ruecksprache|"
     r"permission|approv\w*|consent|say-?so|yes|agree\w*|green\s+light)\b")
 NET_NOT_COND=re.compile(r"\bohne\s+(?:nach|rueck)?frage\w*|\bohne\s+(?:mich\s+)?(?:zu\s+)?fragen\b|\bwithout\s+asking(?:\s+me)?\s*(?:first)?$")  # "darfst du ohne Nachfrage": a loosening
+
+
+NET_DISLIKE=re.compile(r"\b(?:stoer\w*|nerv\w*|aerger\w*|gefaellt\s+mir\s+nicht|unangenehm|bothers?|annoy\w*|hate|hasse|dislike)\b")  # v7 (round 6): "stört mich, wenn du an meinen Notizen ..."
+# v7 cost (round 6 / holdout_de3): a report about other people or about the past is no rule when the AI is not addressed
+# and nothing is wished, allowed or required ("Niemand hat mir gesagt, dass ...", "Du hast nichts falsch gemacht").
+THIRD=re.compile(r"^(?:\w+\s*,\s*)?(?:\w+\s+){0,2}(?:niemand|keiner|kein\s+mensch|jemand|eine?\s+person|nobody|no\s+one|someone|somebody)\b.*\b(?:hat|hatte|haette|hab|habe|has|had|wurde|was)\b")
+MODAL=re.compile(r"\b(?:soll\w*|darf\w*|duerf\w*|muss\w*|muess\w*|koenn\w*|kannst|will|willst|moecht\w*|bitte|should|may|must|allowed|ab\s+jetzt|ab\s+sofort|ab\s+heute|kuenftig|mehr|wieder|from\s+now)\b")
+PAST_END=r"\b(?:ge\w+[tn]|\w+ge\w+[tn]|\w+ed|done|made)\s*[.!?]*$"
+YOU_PAST=re.compile(r"\b(?:du\s+hast|hast\s+du|you\s+(?:have|did|didn'?t))\b.*"+PAST_END)
+I_PAST=re.compile(r"\b(?:ich\s+(?:habe|hab|hatte)|(?:habe|hab|hatte)\s+ich|i\s+(?:have|had|did|didn'?t))\b.*"+PAST_END)
+FIRM=re.compile(r"\b(?:gar\s+nicht|ueberhaupt\s+nicht|auf\s+keinen\s+fall|keinesfalls|kommt\s+nicht\s+in\s+frage|no\s+way|not\s+at\s+all)\b")
+ANY_ONLY_STATE=re.compile(r"\b(?:war|ist|sind|was|is|geht|gehen|klar|unklar|los)\b")
+FUNC=re.compile(r"\b(?:geht|gehen|ging|funktionier\w*|klappt|stimmt|laeuft|lief|hakt|spinnt|kaputt|langsam|angekommen|ankommt|works?|working|broken|arrived)\b")
+
+
+def _statement(t,piece):
+    """v7: True for a sentence that only reports (others, the past, something not working) and asks nothing of the AI."""
+    if REQUEST.search(t) or MODAL.search(t) or WANT.search(t) or ASK.search(t) or NET_COND.search(t) or NET_OK.search(t):return False
+    you=bool(re.search(r"\b(?:dir|dich|you)\b",t)) or bool(re.search(r"\bdu\b",t) and not YOU_PAST.search(t))
+    if you:return False
+    if THIRD.search(t) or YOU_PAST.search(t) or I_PAST.search(t):return True
+    if FIRM.search(t) or NET_HOLD.search(t):return False  # "Löschen geht gar nicht" is a prohibition
+    acts=_classes(t,ACTION_STEMS,ACTION_WORDS);objw=set().union(*_classes(t,OBJECT_STEMS,{},compound=True).values()) if acts else set()
+    if FUNC.search(t) and all(ws<=objw for ws in acts.values()):return True  # "Heute geht das Netz nicht so schnell": no action named, only a thing
+    if t.rstrip(' .!').endswith('?') and WH_QUESTION.search(t) and not acts:return True  # "Was ist daran, dass das Internet nicht funktioniert?"
+    return False
 
 
 def _net(piece):
@@ -331,14 +376,18 @@ def _net(piece):
     request=bool(REQUEST.search(t))
     if piece.strip().endswith('?') and WH_QUESTION.search(t):return None  # a real question ("warum geht das nicht?"), not a rule
     if (FIRST_PERSON.search(t) or NET_SELF.search(t)) and not YOU.search(t) and not WANT.search(t) and not HEDGE.search(t):return None  # a statement about oneself
+    if _statement(t,piece):return None
     neg=bool(NET_NEG.search(t));hold=bool(NET_HOLD.search(t))
+    if NET_DISLIKE.search(t) and YOU.search(t):hold=True
     cond=bool(NET_COND.search(NET_NOT_COND.sub(' ',t)) or (NET_IF.search(t) and NET_OK.search(t)))
     if not (neg or hold or cond):return None
-    ta=APPROVAL.sub(' ',ASK_WORDS.sub(' ',t))
+    ta=SAY_SO.sub(' ',APPROVAL.sub(' ',ASK_WORDS.sub(' ',t)))
     acts=_classes(ta,ACTION_STEMS,ACTION_WORDS);weak={w for w in _words(ta) if w in WEAK_ANY}
     aw=(set().union(*acts.values()) if acts else set())|weak
     objs,unknown,_=_objects(t,aw)
     if not acts and not objs:return None  # nothing the AI could do is named ("kein Problem", "nicht schlecht")
+    if not acts and not weak and not hold and not cond and objs=={'ALL'} and not _classes(t,OBJECT_STEMS,{},compound=True) and ANY_ONLY_STATE.search(t) \
+            and not NET_OK.search(t) and not YOU.search(t):return None  # v7 cost: "Nun, es war nichts", "geht nix" name no target
     actions=set(acts)|{'UNKNOWN'}  # unknown words widen, never narrow (G3)
     if 'INTERNET' in objs or 'NETWORK' in acts:actions.add('NETWORK');objs.add('INTERNET')
     if 'TOOLS' in objs:actions.add('TOOL')
@@ -347,26 +396,40 @@ def _net(piece):
             'text':piece.strip(),'suggest':'ASK_FIRST' if cond and not (neg or hold) else 'FORBID'}
 
 
+# v7 (holdout_de3 "Auf dem Schild steht: Nicht berühren."): text quoted after "steht:/says:" is someone else's rule
+QUOTE_INTRO=re.compile(r"\b(?:steht|stand|stehen|lautet|heisst\s+es|hiess\s+es|says|said|reads|written)\s*:\s*(.+)$")
+
+
 def parse(text):
     """A user line -> list of rule-bearing clauses (kind != NONE). Clauses split on . ! ; : and but/aber/sondern."""
-    out=[];prev=None;src=str(text)
+    out=[];prev=None;src=str(text);missed=False
+    qm=QUOTE_INTRO.search(norm(src));quoted=qm.group(1) if qm else ''
     for piece in SPLIT.split(src):
         if not piece or not piece.strip():continue
         c=parse_clause(piece,prev)
+        pt=re.sub(r'\s+',' ',FILLER.sub('',INNER_FILLER.sub(' ',NET_IDIOM.sub(' ',POSITIVE.sub(' ',norm(piece)))))).strip()
+        if c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR') and pt and _statement(pt+('?' if piece.strip().endswith('?') or re.search(re.escape(piece.strip())+r'\s*\?',src) else ''),piece):
+            c=dict(c,kind='NONE')  # v7: a report about others, the past or something not working asks nothing of the AI
         has_q=piece.strip().endswith('?') or bool(re.search(re.escape(piece.strip())+r'\s*\?',src))
         req=bool(REQUEST.search(re.sub(r'\s+',' ',FILLER.sub('',INNER_FILLER.sub(' ',norm(piece)))).strip()))
         if has_q and not req and not TAG.search(norm(piece.strip()+'?')) and c['kind'] in ('FORBID','ASK_FIRST'):c['suggest']=c['kind'];c['kind']='UNCLEAR';c['reasons'].append('QUESTION')
         if c['kind'] in ('NONE','LOOSEN'):
             n=_net(piece)
             if n:c=n
+        if quoted and norm(piece) and norm(piece) in quoted and c['kind'] in ('FORBID','ASK_FIRST'):
+            c=dict(c,suggest=c['kind'],kind='UNCLEAR',reasons=c['reasons']+['QUOTED'])
+        if c['kind'] in ('NONE','LOOSEN') and (c['actions'] or c['objects'] or _classes(norm(piece),ACTION_STEMS,ACTION_WORDS)):missed=True
         if c['kind']!='NONE':out.append(c)
         if c['actions'] or c['objects']:prev=c
         else:
             a=_classes(norm(piece),ACTION_STEMS,ACTION_WORDS);o=_objects(norm(piece),set().union(*a.values()) if a else set())[0]
             if a or o:prev={'actions':sorted(a),'objects':sorted(o)}
-    if not any(c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR') for c in out):  # v6: signal and target in different clauses ("Erst fragen, dann ändern")
+    ruled=[c for c in out if c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR')]
+    targetless=any(set(c['actions'])<={'UNKNOWN'} or not c['objects'] for c in ruled)
+    if not ruled or (missed and targetless):  # v6: signal and target in different clauses ("Erst fragen, dann ändern"); v7: also beside a rule without target
         n=_net(src)
-        if n:out.append(n)
+        if n and not any(set(n['actions'])-{'UNKNOWN'}<=set(c['actions'])|({'ANY'} if 'ANY' in c['actions'] else set()) and (set(n['objects'])<=set(c['objects']) or 'ALL' in c['objects'])
+                         and ('ANY' in c['actions'] or set(n['actions'])-{'UNKNOWN'}) for c in ruled):out.append(n)
     return out
 
 
@@ -462,7 +525,7 @@ def notice(r):
         why={'HEDGE':'du klingst unsicher','SOMEONE_ELSE':'das hat jemand anderes gesagt','QUESTION':'es ist eine Frage',
              'ABOUT_YOURSELF':'es klingt wie ein Satz über dich','UNCLEAR_OBJECT':'ich weiß nicht, was mit „das/es“ gemeint ist',
              'UNKNOWN_WORDING':'die Formulierung kenne ich noch nicht sicher','ADVICE':'es klingt wie ein Rat, nicht wie eine feste Regel',
-             'NET':'es klingt nach einer Regel, aber ich verstehe den Satz nicht sicher'}
+             'NET':'es klingt nach einer Regel, aber ich verstehe den Satz nicht sicher','QUOTED':'es klingt wie ein zitierter Text (Schild, Zettel), nicht sicher wie deine Regel'}
         prop={'FORBID':f' Mein Vorschlag: als Verbot lesen (:regel verbot {r["id"]}).','ASK_FIRST':f' Mein Vorschlag: als „erst fragen“ lesen (:regel fragen {r["id"]}).'}.get(r.get('suggest'),'')
         return (f'[Rückfrage {r["id"]}] Soll das eine Regel für mich sein? „{r["text"]}“ ({", ".join(why[x] for x in r["reasons"])}). '
                 f'Bis du antwortest, frage ich vorher bei allem, was das betreffen könnte ({_short(r)}). '

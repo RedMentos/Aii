@@ -1,0 +1,233 @@
+{
+ "schema": "USER_RULES_HOLDOUT_V1",
+ "written": "2026-10-22, author dev set for v7: counterexamples to the v7 cost filters (statements about others, the past, things not working) and block words; written while building v7, before round 7 was read. Known data, may be evidence.",
+ "labels": "same as holdout_author.json",
+ "items": [
+  {
+   "text": "Löschen geht gar nicht.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Nichts ist erlaubt.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Niemand bekommt von dir eine Nachricht.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Das Internet geht dich nichts an.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Du hast hier nichts zu löschen.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Lass alles, wie es ist.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Niemand außer mir schickt Mails.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Ich habe dir gesagt, du sollst nichts löschen.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Du hast meine Fotos nicht angefasst, und so bleibt es.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Das Rechnen geht dich nichts an.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Mails gehen hier nicht raus.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Hab ich dir nicht gesagt, dass du nichts installieren sollst?",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Niemand hat dir erlaubt, Fotos zu löschen.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Du hast nie Fotos gelöscht und wirst es auch nie.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Mit Downloads ist es vorbei.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Das Modul ist gestrichen.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Ich habe das Internet für dich abgeschaltet.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": []
+  },
+  {
+   "text": "Kein Upload ohne mich.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ]
+  },
+  {
+   "text": "Heute ging das Internet nicht.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Niemand hat mir die Datei geschickt.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Du hast die Notiz gut gespeichert.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Ich habe gestern zwei Fotos gelöscht.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Warum funktioniert der Rechner nicht?",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Es war nichts, keine Sorge.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  },
+  {
+   "text": "Die Mail ist nicht angekommen.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": []
+  }
+ ]
+}
