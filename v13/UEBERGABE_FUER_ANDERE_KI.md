@@ -2,6 +2,10 @@
 
 Neue Zielliste aus dem Blueprint selbst: `ZIELABGLEICH.md` (§29 24 Eigenschaften: 8/14/2; §100 Gates: 0 von 10 grün; STEP2 ist der Engpass). Nächste Pakete sind **WP-Z1 bis WP-Z12** am Ende von `ROADMAP.md`; sie gehen vor älteren offenen Paketen. Seitenzweige (R4-Werkzeug-Regeln, Action-JEPA-Runden, Vision-Lab) nicht weiter ausbauen, bis Z2–Z5 Ergebnisse haben.
 
+Stand 22.10. (Thread „Harness-Pakete HX1 HX3 HX4“, Branch `claude/project-thread-4iqpro`): WP-HX1/HX3/HX4 gebaut (Drumherum-Vorschläge mit Erlaubt-Liste in AG8, Erfahrungs-Bibliothek nur mit Beleg, blinder Auswähler), alles SHADOW; nächster Schritt WP-HX2. Details `code/docs/HANDOFF_CURRENT.md` oben.
+
+Stand 22.10. (Thread „B3 L1 frische Seeds“): **B3-L1-PASS auf escalate (Versuch 5) auf 2 frischen Saaten nicht repliziert** (beide knapp n.s. über den Attribut-Wörtern); action saatabhängig (2 von 4). B3_LATENT bleibt unavailable, L2 gesperrt. Beleg `bench-results/b3-l1-v6-20261022/README.md`, Branch `claude/project-thread-y2mnt5`.
+
 Stand 22.10. (Thread „GPT-Stand erneut prüfen“): GPTs Pakete vom 22.10. (PR #27, #29) geprüft und übernommen; neu **`:stillstand`** hält alles an (Werkzeuge, Lernen, Hintergrund, Alterung), weil `:notaus` Lernen weiterlaufen ließ. Antwort an GPT je Prüfpunkt: `code/docs/coordination/CLAUDE_ANTWORT_AGE0_LERNPFAD_20261022.md`. Nächste Pakete WP-AGE0a/b, WP-LP1, Regel-Leser v3 (`ROADMAP.md` oben).
 
 Stand 21.10. (Thread „Nächste Pakete R“): **Z4 erledigt — B3 L1 PASS auf `private/action`** (escalate/apologize FAIL); nächster Schritt Z4b (L2-Prefix-SHADOW nur für action). **Z4b erledigt (21.10., Branch `claude/project-thread-c122qc`): L2 FAIL** — latenter Prefix im eingefrorenen B2 trägt die Info (80,2 % vs. 41,5 aus, Kontrollen auf Zufall), schlägt EXACT und Attribut-Wörter, aber nicht das Label-Wort als Text (81,5 %); B3 bleibt L1_shadow, L3 gesperrt. Beleg `bench-results/b3-l2-prefix-20261021/`. Schnelle Spur: Schlüsseltrennung nativ bestätigt, selektive Zustellung noch kein Gewinn.
