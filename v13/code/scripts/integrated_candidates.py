@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'eligibility_live', 'tool_answer_first')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'eligibility_live', 'tool_answer_first', 'runner_seed')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -263,8 +263,19 @@ def tool_answer_first(sources):
     return out
 
 
+def runner_seed(sources):
+    """2026-10-22 (WP-Z2b offen c): the native runner used seed 13 whatever cfg['seed'] said (STEP2 body offers ignored
+    their seed). A call without an explicit seed now uses cfg['seed']; the default cfg seed is 13, so default turns are
+    unchanged."""
+    out = dict(sources)
+    t = _replace(out['v13/runners.py'], "def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):",
+                 "def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=None,first_token_bias=None,confidence_field='summary'):")
+    out['v13/runners.py'] = _replace(t, '"seed":seed,', '"seed":self.cfg.get("seed",13) if seed is None else seed,')
+    return out
+
+
 def _later(sources):
-    return tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))))
+    return runner_seed(tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))))
 
 
 def _baseline(root):
