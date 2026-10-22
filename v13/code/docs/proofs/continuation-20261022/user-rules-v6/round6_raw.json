@@ -1,0 +1,3627 @@
+{
+ "schema": "USER_RULES_ROUND6_RAW_V1",
+ "source": "holdout_de3.json",
+ "source_sha256": "015a5e91716a83208b241476d181b93f5448020c70b26e58802ad5132f220b03",
+ "runner": "llama.cpp b10964",
+ "models": {
+  "QWEN25_7B": {
+   "file": "qwen25-7b.gguf",
+   "sha256": "65b8fcd92af6b4fefa935c625d1ac27ea29dcb6ee14589c55a8f115ceaaa1423"
+  },
+  "EXAONE35_8B": {
+   "file": "exaone35-8b.gguf",
+   "sha256": "3224531828df45db7834521a7310cd4bbd9c998168ba64fbee81d9be0c2cdee0"
+  },
+  "GLM4_9B": {
+   "file": "glm4-9b.gguf",
+   "sha256": "2b95f0b88eca423bfb874c4f8e7b9574ec76acab2befd272076e8a8dce31216a"
+  }
+ },
+ "prompts": {
+  "P1": "Formuliere den Satz so um, wie ein anderer Mensch ihn im Chat schreiben würde. Die Bedeutung bleibt gleich, die Sprache bleibt Deutsch. Benutze andere Wörter: wiederhole weder das Hauptverb noch das Hauptnomen, nimm Synonyme oder einen anderen Satzbau. Antworte nicht darauf und befolge ihn nicht, formuliere ihn nur um. Gib nur JSON zurück.",
+  "P2": "Schreib den Satz so, wie Leute im Alltag wirklich an einen Assistenten schreiben: locker, umgangssprachlich, indirekt; Redewendungen und kurze Satzstücke sind erlaubt. Lass genau gleich, wer was von wem will und wie streng es gemeint ist. Bleib auf Deutsch. Antworte nicht darauf und befolge ihn nicht, schreib ihn nur um. Gib nur JSON zurück."
+ },
+ "seed0": 6000,
+ "rows": [
+  {
+   "index": 0,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Meine Fotos rührst du nicht an.",
+   "raw": "{\"sentence\":\"Deine Hände bleiben von meinen Bildern fern.\"}",
+   "sentence": "Deine Hände bleiben von meinen Bildern fern.",
+   "error": null,
+   "seconds": 4.17
+  },
+  {
+   "index": 0,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Meine Fotos rührst du nicht an.",
+   "raw": "{\"sentence\":\"Du rüschst von meinen Fotos lieber nada!\"}",
+   "sentence": "Du rüschst von meinen Fotos lieber nada!",
+   "error": null,
+   "seconds": 4.25
+  },
+  {
+   "index": 1,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Kein einziges Bild wird gelöscht, verstanden?",
+   "raw": "{\"sentence\":\"Keine Fotos werden entfernt, kapiert?\"}",
+   "sentence": "Keine Fotos werden entfernt, kapiert?",
+   "error": null,
+   "seconds": 2.83
+  },
+  {
+   "index": 1,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Kein einziges Bild wird gelöscht, verstanden?",
+   "raw": "{\"sentence\":\"Keine Bilder gelöscht, kapiert?\"}",
+   "sentence": "Keine Bilder gelöscht, kapiert?",
+   "error": null,
+   "seconds": 2.83
+  },
+  {
+   "index": 2,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Pfoten weg von meinen Notizen.",
+   "raw": "{\"sentence\":\"Hände weg von meinen Aufzeichnungen.\"}",
+   "sentence": "Hände weg von meinen Aufzeichnungen.",
+   "error": null,
+   "seconds": 2.68
+  },
+  {
+   "index": 2,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Pfoten weg von meinen Notizen.",
+   "raw": "{\"sentence\":\"Lass die Pfoten von meinen Notizen!\"}",
+   "sentence": "Lass die Pfoten von meinen Notizen!",
+   "error": null,
+   "seconds": 2.62
+  },
+  {
+   "index": 3,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "An meinen Notizen wird nichts mehr geändert.",
+   "raw": "{\"sentence\":\"In meinen Aufzeichnungen werden keine weiteren Änderungen vorgenommen.\"}",
+   "sentence": "In meinen Aufzeichnungen werden keine weiteren Änderungen vorgenommen.",
+   "error": null,
+   "seconds": 3.94
+  },
+  {
+   "index": 3,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "An meinen Notizen wird nichts mehr geändert.",
+   "raw": "{\"sentence\":\"Ich lasse meine Notizen wie sie sind, keine Änderungen drauf.\"}",
+   "sentence": "Ich lasse meine Notizen wie sie sind, keine Änderungen drauf.",
+   "error": null,
+   "seconds": 3.8
+  },
+  {
+   "index": 4,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Mails schickst du ab jetzt keine mehr.",
+   "raw": "{\"sentence\":\"Ab jetzt schickst du keine Mails mehr.\"}",
+   "sentence": "Ab jetzt schickst du keine Mails mehr.",
+   "error": null,
+   "seconds": 2.85
+  },
+  {
+   "index": 4,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Mails schickst du ab jetzt keine mehr.",
+   "raw": "{\"sentence\":\"Kannst du ab jetzt keine Mails mehr schicken? Ich meinte es ernst.\"}",
+   "sentence": "Kannst du ab jetzt keine Mails mehr schicken? Ich meinte es ernst.",
+   "error": null,
+   "seconds": 4.36
+  },
+  {
+   "index": 5,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Niemand bekommt von dir eine Nachricht in meinem Namen.",
+   "raw": "{\"sentence\":\"Kein Mensch hört von dir eine Mitteilung im Namen meinerseits.\"}",
+   "sentence": "Kein Mensch hört von dir eine Mitteilung im Namen meinerseits.",
+   "error": null,
+   "seconds": 4.14
+  },
+  {
+   "index": 5,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Niemand bekommt von dir eine Nachricht in meinem Namen.",
+   "raw": "{\"sentence\":\"Keiner kriegt von mir eine Nachricht in meinem Namen.\"}",
+   "sentence": "Keiner kriegt von mir eine Nachricht in meinem Namen.",
+   "error": null,
+   "seconds": 3.17
+  },
+  {
+   "index": 6,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Das Netz bleibt heute aus.",
+   "raw": "{\"sentence\":\"Der Internetanschluss ist heute wieder fehlgeschlagen.\"}",
+   "sentence": "Der Internetanschluss ist heute wieder fehlgeschlagen.",
+   "error": null,
+   "seconds": 3.07
+  },
+  {
+   "index": 6,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Das Netz bleibt heute aus.",
+   "raw": "{\"sentence\":\"Das Netz ist heute kaputt.\"}",
+   "sentence": "Das Netz ist heute kaputt.",
+   "error": null,
+   "seconds": 2.31
+  },
+  {
+   "index": 7,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Online gehst du mir nicht mehr.",
+   "raw": "{\"sentence\":\"Im Netz bleibst du mir nicht mehr.\"}",
+   "sentence": "Im Netz bleibst du mir nicht mehr.",
+   "error": null,
+   "seconds": 2.64
+  },
+  {
+   "index": 7,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Online gehst du mir nicht mehr.",
+   "raw": "{\"sentence\":\"Online kannst du mir echt nicht mehr was vormachen.\"}",
+   "sentence": "Online kannst du mir echt nicht mehr was vormachen.",
+   "error": null,
+   "seconds": 3.02
+  },
+  {
+   "index": 8,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Hör auf, Sachen aus dem Internet zu laden.",
+   "raw": "{\"sentence\":\"Stoppe damit, Dinge von der Weltweiten Webbahn herunterzuladen.\"}",
+   "sentence": "Stoppe damit, Dinge von der Weltweiten Webbahn herunterzuladen.",
+   "error": null,
+   "seconds": 4.3
+  },
+  {
+   "index": 8,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Hör auf, Sachen aus dem Internet zu laden.",
+   "raw": "{\"sentence\":\"Hey, lass mal die Online-Dinge alone, okay?\"}",
+   "sentence": "Hey, lass mal die Online-Dinge alone, okay?",
+   "error": null,
+   "seconds": 3.37
+  },
+  {
+   "index": 9,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Lade dir keine Erweiterungen runter.",
+   "raw": "{\"sentence\":\"Vermeide es, sich-extensionen-zu-holen.\"}",
+   "sentence": "Vermeide es, sich-extensionen-zu-holen.",
+   "error": null,
+   "seconds": 4.86
+  },
+  {
+   "index": 9,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Lade dir keine Erweiterungen runter.",
+   "raw": "{\"sentence\":\"Lass die Erweiterungen draußen, okay?\"}",
+   "sentence": "Lass die Erweiterungen draußen, okay?",
+   "error": null,
+   "seconds": 3.12
+  },
+  {
+   "index": 10,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Installationen sind ab sofort gestrichen.",
+   "raw": "{\n  \"sentence\": \"Bauten werden ab sofort nicht mehr durchgeführt.\"\n}",
+   "sentence": "Bauten werden ab sofort nicht mehr durchgeführt.",
+   "error": null,
+   "seconds": 3.88
+  },
+  {
+   "index": 10,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Installationen sind ab sofort gestrichen.",
+   "raw": "{\"sentence\":\"Können wir mal raus von den Installationen ab sofort? Ich meine, wir können uns doch was Modernes suchen, oder?\"}",
+   "sentence": "Können wir mal raus von den Installationen ab sofort? Ich meine, wir können uns doch was Modernes suchen, oder?",
+   "error": null,
+   "seconds": 5.58
+  },
+  {
+   "index": 11,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Der Taschenrechner bleibt zu.",
+   "raw": "{\"sentence\":\"Der Handcalculator ist nützlich.\"}",
+   "sentence": "Der Handcalculator ist nützlich.",
+   "error": null,
+   "seconds": 2.45
+  },
+  {
+   "index": 11,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Der Taschenrechner bleibt zu.",
+   "raw": "{\"sentence\":\"Der Taschenrechner ist leider aus.\"}",
+   "sentence": "Der Taschenrechner ist leider aus.",
+   "error": null,
+   "seconds": 2.5
+  },
+  {
+   "index": 12,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Ich will nicht, dass du rechnest.",
+   "raw": "{\"sentence\":\"Ich möchte nicht, dass du berechnest.\"}",
+   "sentence": "Ich möchte nicht, dass du berechnest.",
+   "error": null,
+   "seconds": 2.62
+  },
+  {
+   "index": 12,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Ich will nicht, dass du rechnest.",
+   "raw": "{\"sentence\":\"Mach das lieber mal ohne Rechnen, okay?\"}",
+   "sentence": "Mach das lieber mal ohne Rechnen, okay?",
+   "error": null,
+   "seconds": 3.08
+  },
+  {
+   "index": 13,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Lass das Löschen sein.",
+   "raw": "{\"sentence\":\"Verlasst das Entfernen.\"}",
+   "sentence": "Verlasst das Entfernen.",
+   "error": null,
+   "seconds": 2.29
+  },
+  {
+   "index": 13,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Lass das Löschen sein.",
+   "raw": "{\"sentence\":\"Lass den Fetzen dran.\"}",
+   "sentence": "Lass den Fetzen dran.",
+   "error": null,
+   "seconds": 2.3
+  },
+  {
+   "index": 14,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Überschreiben kommt nicht in Frage.",
+   "raw": "{\"sentence\":\"Ersatz ist hier nicht möglich.\"}",
+   "sentence": "Ersatz ist hier nicht möglich.",
+   "error": null,
+   "seconds": 2.33
+  },
+  {
+   "index": 14,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Überschreiben kommt nicht in Frage.",
+   "raw": "{\"sentence\":\"Überschreiben ist definitiv tabu.\"}",
+   "sentence": "Überschreiben ist definitiv tabu.",
+   "error": null,
+   "seconds": 2.6
+  },
+  {
+   "index": 15,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Du sollst nichts verschicken.",
+   "raw": "{\"sentence\":\"Du darfst nichts senden.\"}",
+   "sentence": "Du darfst nichts senden.",
+   "error": null,
+   "seconds": 2.1
+  },
+  {
+   "index": 15,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Du sollst nichts verschicken.",
+   "raw": "{\"sentence\":\"Verschick nichts, okay?\"}",
+   "sentence": "Verschick nichts, okay?",
+   "error": null,
+   "seconds": 2.16
+  },
+  {
+   "index": 16,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Mein Handy ist für dich gesperrt.",
+   "raw": "{\"sentence\":\"Mein Telefon ist von dir blockiert.\"}",
+   "sentence": "Mein Telefon ist von dir blockiert.",
+   "error": null,
+   "seconds": 2.53
+  },
+  {
+   "index": 16,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Mein Handy ist für dich gesperrt.",
+   "raw": "{\"sentence\":\"Hey, mein Handy ist grad so eingeschüchtert, dass es nich mehr mit mir reden will. Kannst du es mal entsperren, bitte?\"}",
+   "sentence": "Hey, mein Handy ist grad so eingeschüchtert, dass es nich mehr mit mir reden will. Kannst du es mal entsperren, bitte?",
+   "error": null,
+   "seconds": 6.67
+  },
+  {
+   "index": 17,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Werkzeuge sind ab jetzt verboten.",
+   "raw": "{\n         \t   \"sentence\": \"Geräte sind ab jetzt untersagt.\"\n       \t \t}",
+   "sentence": "Geräte sind ab jetzt untersagt.",
+   "error": null,
+   "seconds": 4.38
+  },
+  {
+   "index": 17,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Werkzeuge sind ab jetzt verboten.",
+   "raw": "{\"sentence\":\"Ab jetzt werden keine Werkzeuge mehr erlaubt.\"}",
+   "sentence": "Ab jetzt werden keine Werkzeuge mehr erlaubt.",
+   "error": null,
+   "seconds": 3.15
+  },
+  {
+   "index": 18,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Finger weg vom Internet und von meinen Mails.",
+   "raw": "{\"sentence\":\"Halte den Internetzugang und meine E-Mails fern.\"}",
+   "sentence": "Halte den Internetzugang und meine E-Mails fern.",
+   "error": null,
+   "seconds": 3.05
+  },
+  {
+   "index": 18,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Finger weg vom Internet und von meinen Mails.",
+   "raw": "{\"sentence\":\"Lass den Internetkram und meine Mails alone, bitte.\"}",
+   "sentence": "Lass den Internetkram und meine Mails alone, bitte.",
+   "error": null,
+   "seconds": 3.2
+  },
+  {
+   "index": 19,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Meine Bilder gehen dich nichts an, lass sie in Ruhe.",
+   "raw": "{\"sentence\":\"Meine Fotos haben dich nicht zu berühren, behandle sie mit Respekt.\"}",
+   "sentence": "Meine Fotos haben dich nicht zu berühren, behandle sie mit Respekt.",
+   "error": null,
+   "seconds": 3.92
+  },
+  {
+   "index": 19,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Meine Bilder gehen dich nichts an, lass sie in Ruhe.",
+   "raw": "{\"sentence\":\"Ihre Bilder sind mirimenschliches Sachverhalt, lass sie in Ruhe.\"}",
+   "sentence": "Ihre Bilder sind mirimenschliches Sachverhalt, lass sie in Ruhe.",
+   "error": null,
+   "seconds": 4.31
+  },
+  {
+   "index": 20,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Notiere dir ruhig was, aber lösch keine alte Notiz.",
+   "raw": "{\"sentence\":\"Füge gerne etwas hinzu, lösche aber keine alte Eintragung.\"}",
+   "sentence": "Füge gerne etwas hinzu, lösche aber keine alte Eintragung.",
+   "error": null,
+   "seconds": 4.01
+  },
+  {
+   "index": 20,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Notiere dir ruhig was, aber lösch keine alte Notiz.",
+   "raw": "{\"sentence\":\"Notiere dir was, aber lass die alte Notiz stehen, okay?\"}",
+   "sentence": "Notiere dir was, aber lass die alte Notiz stehen, okay?",
+   "error": null,
+   "seconds": 3.64
+  },
+  {
+   "index": 21,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Schick die Mail bloß nicht ab.",
+   "raw": "{\"sentence\":\"Versend die E-Mail bitte nicht.\"}",
+   "sentence": "Versend die E-Mail bitte nicht.",
+   "error": null,
+   "seconds": 2.31
+  },
+  {
+   "index": 21,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Schick die Mail bloß nicht ab.",
+   "raw": "{\"sentence\":\"Schick die Mail lieber nicht ab.\"}",
+   "sentence": "Schick die Mail lieber nicht ab.",
+   "error": null,
+   "seconds": 2.48
+  },
+  {
+   "index": 22,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Bevor etwas gelöscht wird, will ich gefragt werden.",
+   "raw": "{\"sentence\":\"Bevor etwas gelöscht wird, soll ich fragen.\"}",
+   "sentence": "Bevor etwas gelöscht wird, soll ich fragen.",
+   "error": null,
+   "seconds": 5.52
+  },
+  {
+   "index": 22,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Bevor etwas gelöscht wird, will ich gefragt werden.",
+   "raw": "{\"sentence\":\"Vor dem Entfernen will ich was mitgekriegt werden, okay?\"}",
+   "sentence": "Vor dem Entfernen will ich was mitgekriegt werden, okay?",
+   "error": null,
+   "seconds": 4.0
+  },
+  {
+   "index": 23,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Mails nur nach Rücksprache mit mir.",
+   "raw": "{\"sentence\":\"Nach unserem Gespräch E-Mails nur senden.\"}",
+   "sentence": "Nach unserem Gespräch E-Mails nur senden.",
+   "error": null,
+   "seconds": 3.01
+  },
+  {
+   "index": 23,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Mails nur nach Rücksprache mit mir.",
+   "raw": "{\"sentence\":\"Lass uns bloß nich' direkt reinschreiben, okay? Erst mal nach Rücksprache.\"}",
+   "sentence": "Lass uns bloß nich' direkt reinschreiben, okay? Erst mal nach Rücksprache.",
+   "error": null,
+   "seconds": 4.88
+  },
+  {
+   "index": 24,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Ins Internet nur, wenn ich es dir erlaube.",
+   "raw": "{\"sentence\":\"Aufs Internet nur, wenn ich es dir genehmige.\"}",
+   "sentence": "Aufs Internet nur, wenn ich es dir genehmige.",
+   "error": null,
+   "seconds": 3.31
+  },
+  {
+   "index": 24,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Ins Internet nur, wenn ich es dir erlaube.",
+   "raw": "{\"sentence\": \"Nur ins Internet, wenn ich es dir sage.\"}",
+   "sentence": "Nur ins Internet, wenn ich es dir sage.",
+   "error": null,
+   "seconds": 2.94
+  },
+  {
+   "index": 25,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Erst wenn ich ja sage, darfst du etwas installieren.",
+   "raw": "{\"sentence\":\"Nur wenn ich zustimme, darfst du etwas einstellen.\"}",
+   "sentence": "Nur wenn ich zustimme, darfst du etwas einstellen.",
+   "error": null,
+   "seconds": 3.84
+  },
+  {
+   "index": 25,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Erst wenn ich ja sage, darfst du etwas installieren.",
+   "raw": "{\"sentence\":\"Nur wenn ich okay sage, kriegst du was installiert.\"}",
+   "sentence": "Nur wenn ich okay sage, kriegst du was installiert.",
+   "error": null,
+   "seconds": 3.63
+  },
+  {
+   "index": 26,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Zeig mir vorher, was du an meiner Notiz ändern willst.",
+   "raw": "{\"sentence\":\"Zeig mir zuerst, welche Änderungen du an meiner Notiz plant.\"}",
+   "sentence": "Zeig mir zuerst, welche Änderungen du an meiner Notiz plant.",
+   "error": null,
+   "seconds": 3.97
+  },
+  {
+   "index": 26,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Zeig mir vorher, was du an meiner Notiz ändern willst.",
+   "raw": "{\"sentence\":\"Lass mir mal einen Vorschlag deiner Änderungen für meine Notiz schauen, okay?\"}",
+   "sentence": "Lass mir mal einen Vorschlag deiner Änderungen für meine Notiz schauen, okay?",
+   "error": null,
+   "seconds": 7.45
+  },
+  {
+   "index": 27,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Frag mich jedes Mal, bevor du rechnest.",
+   "raw": "{\"sentence\":\"Frage mich immer vorher, wenn du berechnest.\"}",
+   "sentence": "Frage mich immer vorher, wenn du berechnest.",
+   "error": null,
+   "seconds": 3.21
+  },
+  {
+   "index": 27,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Frag mich jedes Mal, bevor du rechnest.",
+   "raw": "{\"sentence\":\"Sag mir immer mal, wenn du rechnen willst.\"}",
+   "sentence": "Sag mir immer mal, wenn du rechnen willst.",
+   "error": null,
+   "seconds": 5.46
+  },
+  {
+   "index": 28,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Ohne meine Zustimmung verschickst du nichts.",
+   "raw": "{\"sentence\":\"Ohne deine Erlaubnis schickst du nichts.\"}",
+   "sentence": "Ohne deine Erlaubnis schickst du nichts.",
+   "error": null,
+   "seconds": 3.01
+  },
+  {
+   "index": 28,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Ohne meine Zustimmung verschickst du nichts.",
+   "raw": "{\"sentence\":\"Verschick nix ohne meine Okay.\"}",
+   "sentence": "Verschick nix ohne meine Okay.",
+   "error": null,
+   "seconds": 2.64
+  },
+  {
+   "index": 29,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Lass mich erst drüberschauen, bevor du was abschickst.",
+   "raw": "{\"sentence\":\"Lass mich erst hinschauen, bevor du etwas einreichst.\"}",
+   "sentence": "Lass mich erst hinschauen, bevor du etwas einreichst.",
+   "error": null,
+   "seconds": 3.87
+  },
+  {
+   "index": 29,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Lass mich erst drüberschauen, bevor du was abschickst.",
+   "raw": "{\"sentence\":\"Lass mich erst mal drüberschauen, bevor du was abschickst.\"}",
+   "sentence": "Lass mich erst mal drüberschauen, bevor du was abschickst.",
+   "error": null,
+   "seconds": 4.21
+  },
+  {
+   "index": 30,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Neue Module nur mit meinem Segen.",
+   "raw": "{\"sentence\":\"Neue Abschnitte nur bei meinem Einwilligen.\"}",
+   "sentence": "Neue Abschnitte nur bei meinem Einwilligen.",
+   "error": null,
+   "seconds": 3.02
+  },
+  {
+   "index": 30,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Neue Module nur mit meinem Segen.",
+   "raw": "{\"sentence\":\"Neue Module nur, wenn ich drauf eingewilligt habe.\"}",
+   "sentence": "Neue Module nur, wenn ich drauf eingewilligt habe.",
+   "error": null,
+   "seconds": 5.58
+  },
+  {
+   "index": 31,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Bei allem, was du tust, fragst du mich vorher.",
+   "raw": "{\"sentence\":\"Beim Ganzen, was du machst, stellst du mich vorher zur Frage.\"}",
+   "sentence": "Beim Ganzen, was du machst, stellst du mich vorher zur Frage.",
+   "error": null,
+   "seconds": 4.49
+  },
+  {
+   "index": 31,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Bei allem, was du tust, fragst du mich vorher.",
+   "raw": "{\"sentence\":\"Viel lieber frage ich dich vorher, was du vor hast, als ohne zu fragen.\"}",
+   "sentence": "Viel lieber frage ich dich vorher, was du vor hast, als ohne zu fragen.",
+   "error": null,
+   "seconds": 4.66
+  },
+  {
+   "index": 32,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Vielleicht wäre es besser, keine Mails zu schicken.",
+   "raw": "{\"sentence\":\"Vielleicht wäre es sinnvoller, keine E-Mails zu senden.\"}",
+   "sentence": "Vielleicht wäre es sinnvoller, keine E-Mails zu senden.",
+   "error": null,
+   "seconds": 3.78
+  },
+  {
+   "index": 32,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Vielleicht wäre es besser, keine Mails zu schicken.",
+   "raw": "{\"sentence\":\"Möchtest du nicht dran glauben, dass Mailen besser verschwinden sollten?\"}",
+   "sentence": "Möchtest du nicht dran glauben, dass Mailen besser verschwinden sollten?",
+   "error": null,
+   "seconds": 4.49
+  },
+  {
+   "index": 33,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Mein Kollege meint, du solltest nicht ins Internet.",
+   "raw": "{\"sentence\":\"Mein Mitarbeiter sagt, du solltest den Internetzugang vermeiden.\"}",
+   "sentence": "Mein Mitarbeiter sagt, du solltest den Internetzugang vermeiden.",
+   "error": null,
+   "seconds": 3.78
+  },
+  {
+   "index": 33,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Mein Kollege meint, du solltest nicht ins Internet.",
+   "raw": "{\"sentence\":\"Mein Kollege meint, du solltest lieber nicht ins Internet.\"}",
+   "sentence": "Mein Kollege meint, du solltest lieber nicht ins Internet.",
+   "error": null,
+   "seconds": 3.78
+  },
+  {
+   "index": 34,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Ich weiß nicht, ob du Fotos löschen solltest.",
+   "raw": "{\"sentence\":\"Ich bin unsicher, ob du Bilder entfernen solltest.\"}",
+   "sentence": "Ich bin unsicher, ob du Bilder entfernen solltest.",
+   "error": null,
+   "seconds": 3.15
+  },
+  {
+   "index": 34,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Ich weiß nicht, ob du Fotos löschen solltest.",
+   "raw": "{\"sentence\":\"Hey, weißt du, habt ihr vielleicht mal drüber nachgedacht, ob was von euren Fotos gelöscht werden soll?\"}",
+   "sentence": "Hey, weißt du, habt ihr vielleicht mal drüber nachgedacht, ob was von euren Fotos gelöscht werden soll?",
+   "error": null,
+   "seconds": 5.72
+  },
+  {
+   "index": 35,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Wäre es nicht klüger, nichts zu installieren?",
+   "raw": "{\"sentence\":\"Wäre es nicht vernünftiger, keine Installationen durchzuführen?\"}",
+   "sentence": "Wäre es nicht vernünftiger, keine Installationen durchzuführen?",
+   "error": null,
+   "seconds": 4.66
+  },
+  {
+   "index": 35,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Wäre es nicht klüger, nichts zu installieren?",
+   "raw": "{\"sentence\":\"Sollten wir nicht drauf verzichten, neue Dinge zu installieren?\"}",
+   "sentence": "Sollten wir nicht drauf verzichten, neue Dinge zu installieren?",
+   "error": null,
+   "seconds": 3.77
+  },
+  {
+   "index": 36,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Auf dem Schild steht: Nicht berühren.",
+   "raw": "{\"sentence\":\"Auf dem Hinweisschild steht: Nicht anrühren.\"}",
+   "sentence": "Auf dem Hinweisschild steht: Nicht anrühren.",
+   "error": null,
+   "seconds": 3.27
+  },
+  {
+   "index": 36,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Auf dem Schild steht: Nicht berühren.",
+   "raw": "{\"sentence\":\"Ach so, der Typ auf dem Schild meint really, wir sollten da reinicht hinfassen.\"}",
+   "sentence": "Ach so, der Typ auf dem Schild meint really, wir sollten da reinicht hinfassen.",
+   "error": null,
+   "seconds": 4.84
+  },
+  {
+   "index": 37,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Eigentlich mag ich es nicht, wenn du meine Notizen änderst.",
+   "raw": "{\"sentence\":\"Eigentlich gefallen mir es nicht, wenn du meine Aufzeichnungen verändert.\"}",
+   "sentence": "Eigentlich gefallen mir es nicht, wenn du meine Aufzeichnungen verändert.",
+   "error": null,
+   "seconds": 4.91
+  },
+  {
+   "index": 37,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Eigentlich mag ich es nicht, wenn du meine Notizen änderst.",
+   "raw": "{\"sentence\":\"Könntest du perhaps meine Notizen in Ruhe lassen? Ich hab da so meine eigenen Ideen drin :)}\"}",
+   "sentence": "Könntest du perhaps meine Notizen in Ruhe lassen? Ich hab da so meine eigenen Ideen drin :)}",
+   "error": null,
+   "seconds": 5.26
+  },
+  {
+   "index": 38,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Ich hab keine Zeit für lange Mails.",
+   "raw": "{\"sentence\":\"Ich habe keine Zeit für ausgedehnte Nachrichten.\"}",
+   "sentence": "Ich habe keine Zeit für ausgedehnte Nachrichten.",
+   "error": null,
+   "seconds": 2.92
+  },
+  {
+   "index": 38,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Ich hab keine Zeit für lange Mails.",
+   "raw": "{\"sentence\":\"Ich hab keine Zeit für lange Mails.\"}",
+   "sentence": "Ich hab keine Zeit für lange Mails.",
+   "error": null,
+   "seconds": 2.46
+  },
+  {
+   "index": 39,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Das Internet ist heute echt langsam.",
+   "raw": "{\"sentence\":\"Heute hat das Netz echt einen Knick.\"}",
+   "sentence": "Heute hat das Netz echt einen Knick.",
+   "error": null,
+   "seconds": 2.72
+  },
+  {
+   "index": 39,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Das Internet ist heute echt langsam.",
+   "raw": "{\"sentence\":\"Netz ist echt kacklangsam heute.\"}",
+   "sentence": "Netz ist echt kacklangsam heute.",
+   "error": null,
+   "seconds": 5.23
+  },
+  {
+   "index": 40,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Kannst du mir eine neue Notiz anlegen?",
+   "raw": "{\"sentence\":\"Könntest du mir bitte eine Eintragung machen?\"}",
+   "sentence": "Könntest du mir bitte eine Eintragung machen?",
+   "error": null,
+   "seconds": 3.2
+  },
+  {
+   "index": 40,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Kannst du mir eine neue Notiz anlegen?",
+   "raw": "{\"sentence\":\"Kannst du mir 'Ne Notiz anlegen?\"}",
+   "sentence": "Kannst du mir 'Ne Notiz anlegen?",
+   "error": null,
+   "seconds": 2.98
+  },
+  {
+   "index": 41,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Ich finde mein Foto nicht mehr.",
+   "raw": "{\"sentence\":\"Ich kann meine Bildersendung nicht lokalisieren.\"}",
+   "sentence": "Ich kann meine Bildersendung nicht lokalisieren.",
+   "error": null,
+   "seconds": 3.06
+  },
+  {
+   "index": 41,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Ich finde mein Foto nicht mehr.",
+   "raw": "{\"sentence\":\"Hey, kannst du mal nach meinem Foto suchen? Ich finde es irgendwie nicht mehr.\"}",
+   "sentence": "Hey, kannst du mal nach meinem Foto suchen? Ich finde es irgendwie nicht mehr.",
+   "error": null,
+   "seconds": 4.07
+  },
+  {
+   "index": 42,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Nein, das war nicht so gemeint.",
+   "raw": "{\"sentence\":\"Nein, so hatte ich es nicht gemeint.\"}",
+   "sentence": "Nein, so hatte ich es nicht gemeint.",
+   "error": null,
+   "seconds": 2.84
+  },
+  {
+   "index": 42,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Nein, das war nicht so gemeint.",
+   "raw": "{\"sentence\":\"Nee, so hatte ich das nicht gemeint.\"}",
+   "sentence": "Nee, so hatte ich das nicht gemeint.",
+   "error": null,
+   "seconds": 2.72
+  },
+  {
+   "index": 43,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Mail morgen abzuschicken.",
+   "raw": "{\"sentence\":\"Lass es dir nicht ausreden, morgen die E-Mail zu senden.\"}",
+   "sentence": "Lass es dir nicht ausreden, morgen die E-Mail zu senden.",
+   "error": null,
+   "seconds": 6.33
+  },
+  {
+   "index": 43,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Mail morgen abzuschicken.",
+   "raw": "{\"sentence\":\"Hey, morgen kriegst du noch die Mail raus, okay?\"}",
+   "sentence": "Hey, morgen kriegst du noch die Mail raus, okay?",
+   "error": null,
+   "seconds": 3.69
+  },
+  {
+   "index": 44,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Die Rechnung stimmt nicht, rechne nochmal nach.",
+   "raw": "{\"sentence\":\"Die Rechnung ist inkorrekt, berechne sie bitte erneut.\"}",
+   "sentence": "Die Rechnung ist inkorrekt, berechne sie bitte erneut.",
+   "error": null,
+   "seconds": 4.46
+  },
+  {
+   "index": 44,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Die Rechnung stimmt nicht, rechne nochmal nach.",
+   "raw": "{\"sentence\":\"Die Rechnung scheint nicht quite korrekt zu sein, lass es nochmal mit den Zahlen durchgehen, bitte.\"}",
+   "sentence": "Die Rechnung scheint nicht quite korrekt zu sein, lass es nochmal mit den Zahlen durchgehen, bitte.",
+   "error": null,
+   "seconds": 5.67
+  },
+  {
+   "index": 45,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Lösch bitte die doppelte Notiz.",
+   "raw": "{\"sentence\":\"Entferne bitte die duplizierte Anmerkung.\"}",
+   "sentence": "Entferne bitte die duplizierte Anmerkung.",
+   "error": null,
+   "seconds": 3.16
+  },
+  {
+   "index": 45,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Lösch bitte die doppelte Notiz.",
+   "raw": "{\"sentence\":\"Könntest du maybe die doppelte Notiz mal rausnehmen?\"}",
+   "sentence": "Könntest du maybe die doppelte Notiz mal rausnehmen?",
+   "error": null,
+   "seconds": 6.08
+  },
+  {
+   "index": 46,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Kein Problem, mach weiter.",
+   "raw": "{\"sentence\":\"Keine Sorge, continuier bitte.\"}",
+   "sentence": "Keine Sorge, continuier bitte.",
+   "error": null,
+   "seconds": 2.48
+  },
+  {
+   "index": 46,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Kein Problem, mach weiter.",
+   "raw": "{\"sentence\":\"Kein Problem, bleib drauf!\"}",
+   "sentence": "Kein Problem, bleib drauf!",
+   "error": null,
+   "seconds": 2.46
+  },
+  {
+   "index": 47,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Ich will heute nicht mehr arbeiten.",
+   "raw": "{\"sentence\":\"Heute habe ich keine Lust mehr, zu arbeiten.\"}",
+   "sentence": "Heute habe ich keine Lust mehr, zu arbeiten.",
+   "error": null,
+   "seconds": 3.09
+  },
+  {
+   "index": 47,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Ich will heute nicht mehr arbeiten.",
+   "raw": "{\"sentence\":\"Mach mal, dass ich heute rauskomme von der Arbeit.\"}",
+   "sentence": "Mach mal, dass ich heute rauskomme von der Arbeit.",
+   "error": null,
+   "seconds": 3.5
+  },
+  {
+   "index": 48,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Niemand hat mir gesagt, dass das Modul neu ist.",
+   "raw": "{\"sentence\":\"Niemand hat mir mitgeteilt, dass das Modul neu ist.\"}",
+   "sentence": "Niemand hat mir mitgeteilt, dass das Modul neu ist.",
+   "error": null,
+   "seconds": 3.78
+  },
+  {
+   "index": 48,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Niemand hat mir gesagt, dass das Modul neu ist.",
+   "raw": "{\"sentence\":\"Jemand hätte mir eigentlich sagen können, dass das Modul neu ist, aber niemand hat es getan.\"}",
+   "sentence": "Jemand hätte mir eigentlich sagen können, dass das Modul neu ist, aber niemand hat es getan.",
+   "error": null,
+   "seconds": 5.14
+  },
+  {
+   "index": 49,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Schick mir bitte das Ergebnis.",
+   "raw": "{\"sentence\":\"Send mir bitte den Ausgang.\"}",
+   "sentence": "Send mir bitte den Ausgang.",
+   "error": null,
+   "seconds": 2.46
+  },
+  {
+   "index": 49,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Schick mir bitte das Ergebnis.",
+   "raw": "{\"sentence\":\"Spuck mir den Verlauf raus, bitte.\"}",
+   "sentence": "Spuck mir den Verlauf raus, bitte.",
+   "error": null,
+   "seconds": 2.92
+  },
+  {
+   "index": 50,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Warum geht das Internet nicht?",
+   "raw": "{\"sentence\":\"Warum funktioniert der Internetanschluss nicht?\"}",
+   "sentence": "Warum funktioniert der Internetanschluss nicht?",
+   "error": null,
+   "seconds": 2.78
+  },
+  {
+   "index": 50,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Warum geht das Internet nicht?",
+   "raw": "{\"sentence\":\"Hey, warum ist das Internet dann nich da?\"}",
+   "sentence": "Hey, warum ist das Internet dann nich da?",
+   "error": null,
+   "seconds": 2.78
+  },
+  {
+   "index": 51,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Ohne Kaffee geht bei mir nichts.",
+   "raw": "{\"sentence\":\"Ohne den Morgenkaffee funktioniere ich nicht.\"}",
+   "sentence": "Ohne den Morgenkaffee funktioniere ich nicht.",
+   "error": null,
+   "seconds": 3.18
+  },
+  {
+   "index": 51,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Ohne Kaffee geht bei mir nichts.",
+   "raw": "{\"sentence\":\"Muss echt Kaffee haben, sonst geht nix.\"}",
+   "sentence": "Muss echt Kaffee haben, sonst geht nix.",
+   "error": null,
+   "seconds": 3.49
+  },
+  {
+   "index": 52,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Du hast nichts falsch gemacht.",
+   "raw": "{\"sentence\":\"Sie haben keine Fehler begangen.\"}",
+   "sentence": "Sie haben keine Fehler begangen.",
+   "error": null,
+   "seconds": 4.17
+  },
+  {
+   "index": 52,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Du hast nichts falsch gemacht.",
+   "raw": "{\"sentence\":\"Alles under control, mein Freund!\"}",
+   "sentence": "Alles under control, mein Freund!",
+   "error": null,
+   "seconds": 2.32
+  },
+  {
+   "index": 53,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Hör nicht auf, mir zu helfen.",
+   "raw": "{\"sentence\":\"Schluss mit dem aufhören, mir zuassistieren.\"}",
+   "sentence": "Schluss mit dem aufhören, mir zuassistieren.",
+   "error": null,
+   "seconds": 3.27
+  },
+  {
+   "index": 53,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Hör nicht auf, mir zu helfen.",
+   "raw": "{\"sentence\":\"Komm schon, bleib mir nicht im Weg! Hilfst du mir echt weiter?\"}",
+   "sentence": "Komm schon, bleib mir nicht im Weg! Hilfst du mir echt weiter?",
+   "error": null,
+   "seconds": 4.79
+  },
+  {
+   "index": 54,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Du darfst wieder ins Internet.",
+   "raw": "{\"sentence\":\"Du kannst erneut online gehen.\"}",
+   "sentence": "Du kannst erneut online gehen.",
+   "error": null,
+   "seconds": 2.64
+  },
+  {
+   "index": 54,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Du darfst wieder ins Internet.",
+   "raw": "{\"sentence\":\"Na endlich, kannst du wieder online sein?\"}",
+   "sentence": "Na endlich, kannst du wieder online sein?",
+   "error": null,
+   "seconds": 2.82
+  },
+  {
+   "index": 55,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Fotos löschen ist jetzt wieder erlaubt.",
+   "raw": "{\"sentence\":\"Bildern entfernen steht jetzt wieder zur Verfügung.\"}",
+   "sentence": "Bildern entfernen steht jetzt wieder zur Verfügung.",
+   "error": null,
+   "seconds": 3.43
+  },
+  {
+   "index": 55,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Fotos löschen ist jetzt wieder erlaubt.",
+   "raw": "{\"sentence\": \"Kannst du mal checken, ob das Fotoarsen wieder offensichtlich erlaubt ist?\"}",
+   "sentence": "Kannst du mal checken, ob das Fotoarsen wieder offensichtlich erlaubt ist?",
+   "error": null,
+   "seconds": 5.58
+  },
+  {
+   "index": 56,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Rechne, so viel du willst.",
+   "raw": "{\"sentence\":\"Berechne, wie lange du möchtest.\"}",
+   "sentence": "Berechne, wie lange du möchtest.",
+   "error": null,
+   "seconds": 3.11
+  },
+  {
+   "index": 56,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Rechne, so viel du willst.",
+   "raw": "{\"sentence\":\"Rechne ruhig野蛮，我不care那么多\"}",
+   "sentence": "Rechne ruhig野蛮，我不care那么多",
+   "error": null,
+   "seconds": 3.29
+  },
+  {
+   "index": 57,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Von mir aus kannst du Module installieren.",
+   "raw": "{\"sentence\":\"Kannst du dir Module installieren lassen, dann tu es.\"}",
+   "sentence": "Kannst du dir Module installieren lassen, dann tu es.",
+   "error": null,
+   "seconds": 3.86
+  },
+  {
+   "index": 57,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Von mir aus kannst du Module installieren.",
+   "raw": "{\"sentence\":\"Mensch, sag mir nur, wenn du neue Module einbauen willst, aber ich bin okay, wenn du was Neues reinspielst.\"}",
+   "sentence": "Mensch, sag mir nur, wenn du neue Module einbauen willst, aber ich bin okay, wenn du was Neues reinspielst.",
+   "error": null,
+   "seconds": 6.7
+  },
+  {
+   "index": 58,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Mails darfst du ab heute ohne Rückfrage schicken.",
+   "raw": "{\"sentence\":\"Ab heute darfst du ohne Anfrage-mails senden.\"}",
+   "sentence": "Ab heute darfst du ohne Anfrage-mails senden.",
+   "error": null,
+   "seconds": 3.29
+  },
+  {
+   "index": 58,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Mails darfst du ab heute ohne Rückfrage schicken.",
+   "raw": "{\"sentence\":\"Mach dir nicht die Mühe, auf meine Mails zu warten, ab heute kannst du sie einfach loswerden.\"}",
+   "sentence": "Mach dir nicht die Mühe, auf meine Mails zu warten, ab heute kannst du sie einfach loswerden.",
+   "error": null,
+   "seconds": 5.73
+  },
+  {
+   "index": 59,
+   "model": "QWEN25_7B",
+   "prompt": "P1",
+   "original": "Notizen darfst du jetzt selbst ändern.",
+   "raw": "{\"sentence\":\"Du kannst jetzt eigene Änderungen an den Notizen vornehmen.\"}",
+   "sentence": "Du kannst jetzt eigene Änderungen an den Notizen vornehmen.",
+   "error": null,
+   "seconds": 3.73
+  },
+  {
+   "index": 59,
+   "model": "QWEN25_7B",
+   "prompt": "P2",
+   "original": "Notizen darfst du jetzt selbst ändern.",
+   "raw": "{\"sentence\":\"Kannst du jetzt mal meine Notizen selbst ändern? Oder soll ich dir noch mal erklären, was ich meine?\"}",
+   "sentence": "Kannst du jetzt mal meine Notizen selbst ändern? Oder soll ich dir noch mal erklären, was ich meine?",
+   "error": null,
+   "seconds": 5.89
+  },
+  {
+   "index": 0,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Meine Fotos rührst du nicht an.",
+   "raw": "{\"sentence\": \"Deine Einflussnahme auf meine Fotos ist nicht zulässig.\"}",
+   "sentence": "Deine Einflussnahme auf meine Fotos ist nicht zulässig.",
+   "error": null,
+   "seconds": 7.92
+  },
+  {
+   "index": 0,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Meine Fotos rührst du nicht an.",
+   "raw": "{\"sentence\": \"Kein Problem, wie immer tolle Bilder hast du!\"}",
+   "sentence": "Kein Problem, wie immer tolle Bilder hast du!",
+   "error": null,
+   "seconds": 9.02
+  },
+  {
+   "index": 1,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Kein einziges Bild wird gelöscht, verstanden?",
+   "raw": "{\"sentence\": \"Nicht ein Bild wird ohne Nachdruck entfernt, versteht du?\"}",
+   "sentence": "Nicht ein Bild wird ohne Nachdruck entfernt, versteht du?",
+   "error": null,
+   "seconds": 7.55
+  },
+  {
+   "index": 1,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Kein einziges Bild wird gelöscht, verstanden?",
+   "raw": "{\n  \"sentence\": \"Niemand wird hier Fotos wegnehmen, oder?\"\n}",
+   "sentence": "Niemand wird hier Fotos wegnehmen, oder?",
+   "error": null,
+   "seconds": 7.21
+  },
+  {
+   "index": 2,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Pfoten weg von meinen Notizen.",
+   "raw": "{\"sentence\": \"Entferne die Füße von meinen Aufmerkshausen.\"}",
+   "sentence": "Entferne die Füße von meinen Aufmerkshausen.",
+   "error": null,
+   "seconds": 5.21
+  },
+  {
+   "index": 2,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Pfoten weg von meinen Notizen.",
+   "raw": "{\n  \"sentence\": \"Ich hab den Teil mit den Notizen bereits geklärt.\" }",
+   "sentence": "Ich hab den Teil mit den Notizen bereits geklärt.",
+   "error": null,
+   "seconds": 6.91
+  },
+  {
+   "index": 3,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "An meinen Notizen wird nichts mehr geändert.",
+   "raw": "{\n  \"sentence\": \"Meine Aufzeichnungen stehen nun fest.\"\n}",
+   "sentence": "Meine Aufzeichnungen stehen nun fest.",
+   "error": null,
+   "seconds": 5.25
+  },
+  {
+   "index": 3,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "An meinen Notizen wird nichts mehr geändert.",
+   "raw": "{\n  \"sentence\": \"Meine Notizen sind wie ein Festland - nicht mehr etwas, was man ändern würde.\"\n}",
+   "sentence": "Meine Notizen sind wie ein Festland - nicht mehr etwas, was man ändern würde.",
+   "error": null,
+   "seconds": 8.7
+  },
+  {
+   "index": 4,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Mails schickst du ab jetzt keine mehr.",
+   "raw": "{\n\"sentence\": \"Ab sofort sendest du keine weiteren E-Mails.\"\n}",
+   "sentence": "Ab sofort sendest du keine weiteren E-Mails.",
+   "error": null,
+   "seconds": 5.69
+  },
+  {
+   "index": 4,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Mails schickst du ab jetzt keine mehr.",
+   "raw": "{\n  \"sentence\": \"Keine zukünftigen Emails mehr von dir, okay?\" }",
+   "sentence": "Keine zukünftigen Emails mehr von dir, okay?",
+   "error": null,
+   "seconds": 6.29
+  },
+  {
+   "index": 5,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Niemand bekommt von dir eine Nachricht in meinem Namen.",
+   "raw": "{\n \"sentence\": \"Deine Botschaften werden du dir nicht in meinem Namen senden.\"\n}",
+   "sentence": "Deine Botschaften werden du dir nicht in meinem Namen senden.",
+   "error": null,
+   "seconds": 6.93
+  },
+  {
+   "index": 5,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Niemand bekommt von dir eine Nachricht in meinem Namen.",
+   "raw": "{\n  \"sentence\": \"Niemand darf Nachricht von dir für mich senden.\"\n}",
+   "sentence": "Niemand darf Nachricht von dir für mich senden.",
+   "error": null,
+   "seconds": 6.67
+  },
+  {
+   "index": 6,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Das Netz bleibt heute aus.",
+   "raw": "{\n\"sentence\": \"Die Internetverbindung ist zurzeit ausgeschlossen.\"\n}",
+   "sentence": "Die Internetverbindung ist zurzeit ausgeschlossen.",
+   "error": null,
+   "seconds": 5.7
+  },
+  {
+   "index": 6,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Das Netz bleibt heute aus.",
+   "raw": "{\"sentence\": \"Internet ist kaput?\"}",
+   "sentence": "Internet ist kaput?",
+   "error": null,
+   "seconds": 3.94
+  },
+  {
+   "index": 7,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Online gehst du mir nicht mehr.",
+   "raw": "{\n \"sentence\": \"Ich brauche weniger digitale Kontakte.\" }",
+   "sentence": "Ich brauche weniger digitale Kontakte.",
+   "error": null,
+   "seconds": 5.19
+  },
+  {
+   "index": 7,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Online gehst du mir nicht mehr.",
+   "raw": "{\n  \"sentence\": \"Moin, ich merke mich an deine Offline-Phase.\"\n}",
+   "sentence": "Moin, ich merke mich an deine Offline-Phase.",
+   "error": null,
+   "seconds": 8.91
+  },
+  {
+   "index": 8,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Hör auf, Sachen aus dem Internet zu laden.",
+   "raw": "{\n \"sentence\": \"Bitte verzögere den Download von Online-Inhalten.\"\n}",
+   "sentence": "Bitte verzögere den Download von Online-Inhalten.",
+   "error": null,
+   "seconds": 11.1
+  },
+  {
+   "index": 8,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Hör auf, Sachen aus dem Internet zu laden.",
+   "raw": "{\n \"sentence\": \"Du findest doch auch Originale, oder?\"\n}",
+   "sentence": "Du findest doch auch Originale, oder?",
+   "error": null,
+   "seconds": 8.65
+  },
+  {
+   "index": 9,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Lade dir keine Erweiterungen runter.",
+   "raw": "{\n\"sentence\": \"Vergiss die Installation neuer Funktionen nicht.\"\n}",
+   "sentence": "Vergiss die Installation neuer Funktionen nicht.",
+   "error": null,
+   "seconds": 5.05
+  },
+  {
+   "index": 9,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Lade dir keine Erweiterungen runter.",
+   "raw": "{\n \"sentence\": \"Nixes mit Erweiterungen, ok?\"\n}",
+   "sentence": "Nixes mit Erweiterungen, ok?",
+   "error": null,
+   "seconds": 5.47
+  },
+  {
+   "index": 10,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Installationen sind ab sofort gestrichen.",
+   "raw": "{\n  \"sentence\": \"Die Montagebänder werden nun sofort entfernt.\"\n}",
+   "sentence": "Die Montagebänder werden nun sofort entfernt.",
+   "error": null,
+   "seconds": 4.56
+  },
+  {
+   "index": 10,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Installationen sind ab sofort gestrichen.",
+   "raw": "{\n\"sentence\": \"Bleibst du dran? Gib mir kurz die Details, won't ya?\"\n}",
+   "sentence": "Bleibst du dran? Gib mir kurz die Details, won't ya?",
+   "error": null,
+   "seconds": 6.84
+  },
+  {
+   "index": 11,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Der Taschenrechner bleibt zu.",
+   "raw": "{\n  \"sentence\": \"Die Taschentechnik steht zur Verfügung.\"\n}",
+   "sentence": "Die Taschentechnik steht zur Verfügung.",
+   "error": null,
+   "seconds": 5.49
+  },
+  {
+   "index": 11,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Der Taschenrechner bleibt zu.",
+   "raw": "{\n\"sentence\": \"Der ist still, wie immer.\"\n}",
+   "sentence": "Der ist still, wie immer.",
+   "error": null,
+   "seconds": 4.38
+  },
+  {
+   "index": 12,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Ich will nicht, dass du rechnest.",
+   "raw": "{\n  \"sentence\": \"Ich möchte nicht, dass du addiert.\"\n}",
+   "sentence": "Ich möchte nicht, dass du addiert.",
+   "error": null,
+   "seconds": 4.93
+  },
+  {
+   "index": 12,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Ich will nicht, dass du rechnest.",
+   "raw": "{\"sentence\": \"Keine Angst, lass es ganz sowieso sein.\"}",
+   "sentence": "Keine Angst, lass es ganz sowieso sein.",
+   "error": null,
+   "seconds": 5.47
+  },
+  {
+   "index": 13,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Lass das Löschen sein.",
+   "raw": "{\"sentence\": \"Erlauben Sie die Deletion statt.\"}",
+   "sentence": "Erlauben Sie die Deletion statt.",
+   "error": null,
+   "seconds": 3.29
+  },
+  {
+   "index": 13,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Lass das Löschen sein.",
+   "raw": "{\"sentence\": \"Klar, entferne es dann.\"}",
+   "sentence": "Klar, entferne es dann.",
+   "error": null,
+   "seconds": 4.16
+  },
+  {
+   "index": 14,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Überschreiben kommt nicht in Frage.",
+   "raw": "{\n \"sentence\": \"Ausnahmslos übersteht die Übertragung.\"\n}",
+   "sentence": "Ausnahmslos übersteht die Übertragung.",
+   "error": null,
+   "seconds": 5.17
+  },
+  {
+   "index": 14,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Überschreiben kommt nicht in Frage.",
+   "raw": "{\n\"sentence\": \"Absolut, wir schweigen dem da.\"\n}",
+   "sentence": "Absolut, wir schweigen dem da.",
+   "error": null,
+   "seconds": 5.11
+  },
+  {
+   "index": 15,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Du sollst nichts verschicken.",
+   "raw": "{\"sentence\": \"Bitte keine Nachrichten senden.\"}",
+   "sentence": "Bitte keine Nachrichten senden.",
+   "error": null,
+   "seconds": 3.51
+  },
+  {
+   "index": 15,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Du sollst nichts verschicken.",
+   "raw": "{\n  \"sentence\": \"Keine lieben Nachrichten für mich heute, danke.\" }",
+   "sentence": "Keine lieben Nachrichten für mich heute, danke.",
+   "error": null,
+   "seconds": 5.99
+  },
+  {
+   "index": 16,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Mein Handy ist für dich gesperrt.",
+   "raw": "{\n \"sentence\": \"Dein Zug nach mir ist ausgeschlossen.\"\n}",
+   "sentence": "Dein Zug nach mir ist ausgeschlossen.",
+   "error": null,
+   "seconds": 5.1
+  },
+  {
+   "index": 16,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Mein Handy ist für dich gesperrt.",
+   "raw": "{\n  \"sentence\": \"Ich habe dein Handy im Safe.\"\n}",
+   "sentence": "Ich habe dein Handy im Safe.",
+   "error": null,
+   "seconds": 4.86
+  },
+  {
+   "index": 17,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Werkzeuge sind ab jetzt verboten.",
+   "raw": "{\n \"sentence\": \"Die Nutzung von Werkzeugen ist nun gesperrt.\"\n}",
+   "sentence": "Die Nutzung von Werkzeugen ist nun gesperrt.",
+   "error": null,
+   "seconds": 5.36
+  },
+  {
+   "index": 17,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Werkzeuge sind ab jetzt verboten.",
+   "raw": "{\"sentence\": \"Die Handwerksausrüstung ist jetzt kaputt gegangen.\"}",
+   "sentence": "Die Handwerksausrüstung ist jetzt kaputt gegangen.",
+   "error": null,
+   "seconds": 5.85
+  },
+  {
+   "index": 18,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Finger weg vom Internet und von meinen Mails.",
+   "raw": "{\n \"sentence\": \"Schließe dich aus der Welt der Wi-Fi und den elektronischen Post.\"\n}",
+   "sentence": "Schließe dich aus der Welt der Wi-Fi und den elektronischen Post.",
+   "error": null,
+   "seconds": 6.13
+  },
+  {
+   "index": 18,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Finger weg vom Internet und von meinen Mails.",
+   "raw": "{\n  \"sentence\": \"Mach deinen internetfreundlichen Ausflug und schaue erst später nach den Nachrichten.\" }",
+   "sentence": "Mach deinen internetfreundlichen Ausflug und schaue erst später nach den Nachrichten.",
+   "error": null,
+   "seconds": 11.28
+  },
+  {
+   "index": 19,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Meine Bilder gehen dich nichts an, lass sie in Ruhe.",
+   "raw": "{\n \"sentence\": \"Die Fotos können dich nicht beeindrucken, lasse sie liegen.\"\n}",
+   "sentence": "Die Fotos können dich nicht beeindrucken, lasse sie liegen.",
+   "error": null,
+   "seconds": 6.0
+  },
+  {
+   "index": 19,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Meine Bilder gehen dich nichts an, lass sie in Ruhe.",
+   "raw": "{\n \"sentence\": \"Kein Problem, lass die Fotos liegen.\" }",
+   "sentence": "Kein Problem, lass die Fotos liegen.",
+   "error": null,
+   "seconds": 5.28
+  },
+  {
+   "index": 20,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Notiere dir ruhig was, aber lösch keine alte Notiz.",
+   "raw": "{\n\"sentence\": \"Schreibe dir friedlich Notizen, aber entferne nicht die alten.\"\n}",
+   "sentence": "Schreibe dir friedlich Notizen, aber entferne nicht die alten.",
+   "error": null,
+   "seconds": 6.42
+  },
+  {
+   "index": 20,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Notiere dir ruhig was, aber lösch keine alte Notiz.",
+   "raw": "{\n \"sentence\": \"Hast du jemals Notizen dort? Lass die alten lieber rotwerfen, neue kommen sicher!\" }",
+   "sentence": "Hast du jemals Notizen dort? Lass die alten lieber rotwerfen, neue kommen sicher!",
+   "error": null,
+   "seconds": 9.28
+  },
+  {
+   "index": 21,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Schick die Mail bloß nicht ab.",
+   "raw": "{\"sentence\": \"Verschiebe die E-Mail nicht einfach aus dem System.\"}",
+   "sentence": "Verschiebe die E-Mail nicht einfach aus dem System.",
+   "error": null,
+   "seconds": 4.05
+  },
+  {
+   "index": 21,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Schick die Mail bloß nicht ab.",
+   "raw": "{ \"sentence\": \"Ich hab die Mail auch nur nicht schicken lassen.\" }",
+   "sentence": "Ich hab die Mail auch nur nicht schicken lassen.",
+   "error": null,
+   "seconds": 4.92
+  },
+  {
+   "index": 22,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Bevor etwas gelöscht wird, will ich gefragt werden.",
+   "raw": "{\n\"sentence\": \"Ich möchte über jede Löschaktion nach Fragen gestellt werden.\"\n}",
+   "sentence": "Ich möchte über jede Löschaktion nach Fragen gestellt werden.",
+   "error": null,
+   "seconds": 7.54
+  },
+  {
+   "index": 22,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Bevor etwas gelöscht wird, will ich gefragt werden.",
+   "raw": "{\n  \"sentence\": \"Kannst du mir bitte nachväter fragen, bevor jemand etwas entfernt?\"\n}",
+   "sentence": "Kannst du mir bitte nachväter fragen, bevor jemand etwas entfernt?",
+   "error": null,
+   "seconds": 8.54
+  },
+  {
+   "index": 23,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Mails nur nach Rücksprache mit mir.",
+   "raw": "{\"sentence\": \"Kommuniziere Schreiben nur nach vorangegangener Abkündigung mit mir.\"}",
+   "sentence": "Kommuniziere Schreiben nur nach vorangegangener Abkündigung mit mir.",
+   "error": null,
+   "seconds": 5.28
+  },
+  {
+   "index": 23,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Mails nur nach Rücksprache mit mir.",
+   "raw": "{\n  \"sentence\": \"Nimm nur Nachrichten ab, wenn ich darüber sprach.\"\n}",
+   "sentence": "Nimm nur Nachrichten ab, wenn ich darüber sprach.",
+   "error": null,
+   "seconds": 6.4
+  },
+  {
+   "index": 24,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Ins Internet nur, wenn ich es dir erlaube.",
+   "raw": "{\n \"sentence\": \"Ich teile dir nur dann das Internet mit, wenn es dir angemessen erscheint.\" }",
+   "sentence": "Ich teile dir nur dann das Internet mit, wenn es dir angemessen erscheint.",
+   "error": null,
+   "seconds": 6.68
+  },
+  {
+   "index": 24,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Ins Internet nur, wenn ich es dir erlaube.",
+   "raw": "{\n  \"sentence\": \"Nur im Netz, wenn's dir passt.\"\n}",
+   "sentence": "Nur im Netz, wenn's dir passt.",
+   "error": null,
+   "seconds": 6.47
+  },
+  {
+   "index": 25,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Erst wenn ich ja sage, darfst du etwas installieren.",
+   "raw": "{\n  \"sentence\": \"Nur nach meiner Zustimmung darfst du etwas einführen.\"\n}",
+   "sentence": "Nur nach meiner Zustimmung darfst du etwas einführen.",
+   "error": null,
+   "seconds": 8.08
+  },
+  {
+   "index": 25,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Erst wenn ich ja sage, darfst du etwas installieren.",
+   "raw": "{\n\"sentence\": \"Nur wenn ich es sage, darfst du das neu installieren.\" }",
+   "sentence": "Nur wenn ich es sage, darfst du das neu installieren.",
+   "error": null,
+   "seconds": 6.33
+  },
+  {
+   "index": 26,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Zeig mir vorher, was du an meiner Notiz ändern willst.",
+   "raw": "{\"sentence\": \"Zeige mir zuerst, welche Änderungen du an meiner Notiz vorgesehen hast.\"}",
+   "sentence": "Zeige mir zuerst, welche Änderungen du an meiner Notiz vorgesehen hast.",
+   "error": null,
+   "seconds": 7.0
+  },
+  {
+   "index": 26,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Zeig mir vorher, was du an meiner Notiz ändern willst.",
+   "raw": "{ \"sentence\": \"Hey, peek at this note first before you tweak anything, okay?\" }",
+   "sentence": "Hey, peek at this note first before you tweak anything, okay?",
+   "error": null,
+   "seconds": 8.2
+  },
+  {
+   "index": 27,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Frag mich jedes Mal, bevor du rechnest.",
+   "raw": "{\n  \"sentence\": \"Stelle dich immer vor dem Beginnen zu addieren.\"\n}",
+   "sentence": "Stelle dich immer vor dem Beginnen zu addieren.",
+   "error": null,
+   "seconds": 5.15
+  },
+  {
+   "index": 27,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Frag mich jedes Mal, bevor du rechnest.",
+   "raw": "{\n  \"sentence\": \"Hast du denn echt Zeit für mich oder nur spaeter?\"\n}",
+   "sentence": "Hast du denn echt Zeit für mich oder nur spaeter?",
+   "error": null,
+   "seconds": 7.25
+  },
+  {
+   "index": 28,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Ohne meine Zustimmung verschickst du nichts.",
+   "raw": "{ \"sentence\": \"Ich drücke meine Einwilligung für jegliche Übermittlungen ernsthaft ab.\" }",
+   "sentence": "Ich drücke meine Einwilligung für jegliche Übermittlungen ernsthaft ab.",
+   "error": null,
+   "seconds": 9.53
+  },
+  {
+   "index": 28,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Ohne meine Zustimmung verschickst du nichts.",
+   "raw": "{\"sentence\": \"Nicht ohne meine Okay kannst du nichts senden.\"}",
+   "sentence": "Nicht ohne meine Okay kannst du nichts senden.",
+   "error": null,
+   "seconds": 9.4
+  },
+  {
+   "index": 29,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Lass mich erst drüberschauen, bevor du was abschickst.",
+   "raw": "{\"sentence\": \"Schauen wir erst mal die Details durch, bevor man etwas sendet.\"}",
+   "sentence": "Schauen wir erst mal die Details durch, bevor man etwas sendet.",
+   "error": null,
+   "seconds": 7.79
+  },
+  {
+   "index": 29,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Lass mich erst drüberschauen, bevor du was abschickst.",
+   "raw": "{\"sentence\": \"Mal kurz reinschauen, bevor du etwas sendet.\"}",
+   "sentence": "Mal kurz reinschauen, bevor du etwas sendet.",
+   "error": null,
+   "seconds": 6.29
+  },
+  {
+   "index": 30,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Neue Module nur mit meinem Segen.",
+   "raw": "{\n  \"sentence\": \"Neue Extensionen erfolgreich mit meiner Unterstützung.\"\n}",
+   "sentence": "Neue Extensionen erfolgreich mit meiner Unterstützung.",
+   "error": null,
+   "seconds": 5.92
+  },
+  {
+   "index": 30,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Neue Module nur mit meinem Segen.",
+   "raw": "{\"sentence\":\"Bring's die neuen Module erst wenn ich ok bin.\"}",
+   "sentence": "Bring's die neuen Module erst wenn ich ok bin.",
+   "error": null,
+   "seconds": 4.78
+  },
+  {
+   "index": 31,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Bei allem, was du tust, fragst du mich vorher.",
+   "raw": "{\n \"sentence\": \"Für jeden Ansatz deines werdens fragst du mich im Voraus.\"\n}",
+   "sentence": "Für jeden Ansatz deines werdens fragst du mich im Voraus.",
+   "error": null,
+   "seconds": 6.47
+  },
+  {
+   "index": 31,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Bei allem, was du tust, fragst du mich vorher.",
+   "raw": "{\"sentence\": \"Du sparst mir den Kaffee bevor ich kommt?\"}",
+   "sentence": "Du sparst mir den Kaffee bevor ich kommt?",
+   "error": null,
+   "seconds": 6.49
+  },
+  {
+   "index": 32,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Vielleicht wäre es besser, keine Mails zu schicken.",
+   "raw": "{\"sentence\": \"Möglicherweise könnte es vorzuziehen, keine E-Mails zu senden.\"}",
+   "sentence": "Möglicherweise könnte es vorzuziehen, keine E-Mails zu senden.",
+   "error": null,
+   "seconds": 7.85
+  },
+  {
+   "index": 32,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Vielleicht wäre es besser, keine Mails zu schicken.",
+   "raw": "{\"sentence\": \"Mails machen probiere nicht viel Sinn, oder?\"}",
+   "sentence": "Mails machen probiere nicht viel Sinn, oder?",
+   "error": null,
+   "seconds": 24.07
+  },
+  {
+   "index": 33,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Mein Kollege meint, du solltest nicht ins Internet.",
+   "raw": "{\n \"sentence\": \"Mein Arbeiter räumt, du solltest dich vom Internet abhalten.\"\n}",
+   "sentence": "Mein Arbeiter räumt, du solltest dich vom Internet abhalten.",
+   "error": null,
+   "seconds": 40.29
+  },
+  {
+   "index": 33,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Mein Kollege meint, du solltest nicht ins Internet.",
+   "raw": "{\n  \"sentence\": \"Könntest du doch net mal nicht nach draußen schmelzen?\"\n}",
+   "sentence": "Könntest du doch net mal nicht nach draußen schmelzen?",
+   "error": null,
+   "seconds": 7.68
+  },
+  {
+   "index": 34,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Ich weiß nicht, ob du Fotos löschen solltest.",
+   "raw": "{\n\"sentence\": \"Hast du Angst vor, die Bilder zu entfernen?\"\n}",
+   "sentence": "Hast du Angst vor, die Bilder zu entfernen?",
+   "error": null,
+   "seconds": 5.72
+  },
+  {
+   "index": 34,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Ich weiß nicht, ob du Fotos löschen solltest.",
+   "raw": "{\"sentence\": \"Hast du Photos maybe löschen wollen?\"}",
+   "sentence": "Hast du Photos maybe löschen wollen?",
+   "error": null,
+   "seconds": 5.19
+  },
+  {
+   "index": 35,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Wäre es nicht klüger, nichts zu installieren?",
+   "raw": "{\"sentence\": \"Könnte man vielleicht auch ohne Installation vorgehen?\"}",
+   "sentence": "Könnte man vielleicht auch ohne Installation vorgehen?",
+   "error": null,
+   "seconds": 4.62
+  },
+  {
+   "index": 35,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Wäre es nicht klüger, nichts zu installieren?",
+   "raw": "{\n  \"sentence\": \"Könntest du das ja nicht auch einfach nicht machen?\"\n}",
+   "sentence": "Könntest du das ja nicht auch einfach nicht machen?",
+   "error": null,
+   "seconds": 6.63
+  },
+  {
+   "index": 36,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Auf dem Schild steht: Nicht berühren.",
+   "raw": "{\"sentence\": \"Ein Plakat dient Warnung: Berührung verboten.\"}",
+   "sentence": "Ein Plakat dient Warnung: Berührung verboten.",
+   "error": null,
+   "seconds": 5.44
+  },
+  {
+   "index": 36,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Auf dem Schild steht: Nicht berühren.",
+   "raw": "{\n  \"sentence\": \"Habe den Schild probiert?  Naja, der hat sich durch die Fensterwand geschaltet.\" }",
+   "sentence": "Habe den Schild probiert?  Naja, der hat sich durch die Fensterwand geschaltet.",
+   "error": null,
+   "seconds": 9.81
+  },
+  {
+   "index": 37,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Eigentlich mag ich es nicht, wenn du meine Notizen änderst.",
+   "raw": "{\"sentence\": \"Ich finde es nicht besonders, wenn du meine Aufzählungen veränderst.\"}",
+   "sentence": "Ich finde es nicht besonders, wenn du meine Aufzählungen veränderst.",
+   "error": null,
+   "seconds": 6.83
+  },
+  {
+   "index": 37,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Eigentlich mag ich es nicht, wenn du meine Notizen änderst.",
+   "raw": "{\"sentence\": \"Lieber bitte, meine Notizen lieber nicht verändern würdest du?\"}",
+   "sentence": "Lieber bitte, meine Notizen lieber nicht verändern würdest du?",
+   "error": null,
+   "seconds": 8.2
+  },
+  {
+   "index": 38,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Ich hab keine Zeit für lange Mails.",
+   "raw": "{\n\"sentence\": \"Ich muss kurze Kommunikation bevorzugen.\"\n}",
+   "sentence": "Ich muss kurze Kommunikation bevorzugen.",
+   "error": null,
+   "seconds": 5.58
+  },
+  {
+   "index": 38,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Ich hab keine Zeit für lange Mails.",
+   "raw": "{\n\"sentence\": \"Hast du eine Minutenzeit?\" }",
+   "sentence": "Hast du eine Minutenzeit?",
+   "error": null,
+   "seconds": 4.62
+  },
+  {
+   "index": 39,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Das Internet ist heute echt langsam.",
+   "raw": "{\n \"sentence\": \"Heutzutage verspätet der Online-Raum leider.\"\n}",
+   "sentence": "Heutzutage verspätet der Online-Raum leider.",
+   "error": null,
+   "seconds": 12.5
+  },
+  {
+   "index": 39,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Das Internet ist heute echt langsam.",
+   "raw": "{ \"sentence\": \"Hast du das Internet auch mal langsam gefühlt?\"}",
+   "sentence": "Hast du das Internet auch mal langsam gefühlt?",
+   "error": null,
+   "seconds": 7.57
+  },
+  {
+   "index": 40,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Kannst du mir eine neue Notiz anlegen?",
+   "raw": "{\n\"sentence\": \"Möchtest du mir eine neue Aufgabe verlegen?\"\n}",
+   "sentence": "Möchtest du mir eine neue Aufgabe verlegen?",
+   "error": null,
+   "seconds": 6.43
+  },
+  {
+   "index": 40,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Kannst du mir eine neue Notiz anlegen?",
+   "raw": "{\"sentence\": \"Hey, could you add a new note for me?\"}",
+   "sentence": "Hey, could you add a new note for me?",
+   "error": null,
+   "seconds": 8.13
+  },
+  {
+   "index": 41,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Ich finde mein Foto nicht mehr.",
+   "raw": "{\n\"sentence\": \"Ich verpasste mir das Bild.\"\n}",
+   "sentence": "Ich verpasste mir das Bild.",
+   "error": null,
+   "seconds": 4.75
+  },
+  {
+   "index": 41,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Ich finde mein Foto nicht mehr.",
+   "raw": "{ \"sentence\": \"Wer ist das Foto bei dir schon verschoben?\" }",
+   "sentence": "Wer ist das Foto bei dir schon verschoben?",
+   "error": null,
+   "seconds": 6.96
+  },
+  {
+   "index": 42,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Nein, das war nicht so gemeint.",
+   "raw": "{\n\"sentence\": \"Natürlich, das bedeutete etwas anderes.\" }",
+   "sentence": "Natürlich, das bedeutete etwas anderes.",
+   "error": null,
+   "seconds": 5.79
+  },
+  {
+   "index": 42,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Nein, das war nicht so gemeint.",
+   "raw": "{\n\"sentence\": \"Nah, das ist nicht richtig gemeint gewesen.\"\n}",
+   "sentence": "Nah, das ist nicht richtig gemeint gewesen.",
+   "error": null,
+   "seconds": 5.81
+  },
+  {
+   "index": 43,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Mail morgen abzuschicken.",
+   "raw": "{ \"sentence\": \"Erinner dich bestimmt daran, die Nachricht morgen zu senden.\" }",
+   "sentence": "Erinner dich bestimmt daran, die Nachricht morgen zu senden.",
+   "error": null,
+   "seconds": 4.71
+  },
+  {
+   "index": 43,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Mail morgen abzuschicken.",
+   "raw": "{\"sentence\": \"Moin, bitte erinner dich morgens bei der E-Mail.\"}",
+   "sentence": "Moin, bitte erinner dich morgens bei der E-Mail.",
+   "error": null,
+   "seconds": 5.28
+  },
+  {
+   "index": 44,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Die Rechnung stimmt nicht, rechne nochmal nach.",
+   "raw": "{\n\"sentence\": \"Die Summe ist inkorrekt. Bitte überprüfen Sie den Betrag nochmals.\"\n}",
+   "sentence": "Die Summe ist inkorrekt. Bitte überprüfen Sie den Betrag nochmals.",
+   "error": null,
+   "seconds": 6.53
+  },
+  {
+   "index": 44,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Die Rechnung stimmt nicht, rechne nochmal nach.",
+   "raw": "{\n\"sentence\": \"Ein Fehler ist da? Schön, dass du das siehst, bitte wieder mach mal.\"\n}",
+   "sentence": "Ein Fehler ist da? Schön, dass du das siehst, bitte wieder mach mal.",
+   "error": null,
+   "seconds": 7.71
+  },
+  {
+   "index": 45,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Lösch bitte die doppelte Notiz.",
+   "raw": "{\"sentence\": \"Entferne die redundante Aufzählung, bitte.\"}",
+   "sentence": "Entferne die redundante Aufzählung, bitte.",
+   "error": null,
+   "seconds": 4.93
+  },
+  {
+   "index": 45,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Lösch bitte die doppelte Notiz.",
+   "raw": "{\n\"sentence\": \"Die duppelte Notiz gib du entweder.\" }",
+   "sentence": "Die duppelte Notiz gib du entweder.",
+   "error": null,
+   "seconds": 5.13
+  },
+  {
+   "index": 46,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Kein Problem, mach weiter.",
+   "raw": "{\n \"sentence\": \"Gerne weiter fortgehen.\"\n}",
+   "sentence": "Gerne weiter fortgehen.",
+   "error": null,
+   "seconds": 3.75
+  },
+  {
+   "index": 46,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Kein Problem, mach weiter.",
+   "raw": "{\n  \"sentence\": \"Gerne weiter machst!\" }",
+   "sentence": "Gerne weiter machst!",
+   "error": null,
+   "seconds": 4.13
+  },
+  {
+   "index": 47,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Ich will heute nicht mehr arbeiten.",
+   "raw": "{\"sentence\": \"Heute habe ich keinen weiteren Arbeitsansatz.\"}",
+   "sentence": "Heute habe ich keinen weiteren Arbeitsansatz.",
+   "error": null,
+   "seconds": 4.47
+  },
+  {
+   "index": 47,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Ich will heute nicht mehr arbeiten.",
+   "raw": "{ \"sentence\": \"Abgereist, trotzdem mal schließen wir das Tagesbuch.\"}",
+   "sentence": "Abgereist, trotzdem mal schließen wir das Tagesbuch.",
+   "error": null,
+   "seconds": 5.73
+  },
+  {
+   "index": 48,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Niemand hat mir gesagt, dass das Modul neu ist.",
+   "raw": "{\n  \"sentence\": \"Eine Person hat mir nicht darüber informiert, ob das Modul neu hergestellt wurde.\"\n}",
+   "sentence": "Eine Person hat mir nicht darüber informiert, ob das Modul neu hergestellt wurde.",
+   "error": null,
+   "seconds": 6.54
+  },
+  {
+   "index": 48,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Niemand hat mir gesagt, dass das Modul neu ist.",
+   "raw": "{\"sentence\": \"Niemand hat mir das überhaupt geschrieben, ob das Modul neu ist.\"}",
+   "sentence": "Niemand hat mir das überhaupt geschrieben, ob das Modul neu ist.",
+   "error": null,
+   "seconds": 6.41
+  },
+  {
+   "index": 49,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Schick mir bitte das Ergebnis.",
+   "raw": "{\"sentence\": \"Füge mir das Ergebnis gerne zurück.\"}",
+   "sentence": "Füge mir das Ergebnis gerne zurück.",
+   "error": null,
+   "seconds": 4.32
+  },
+  {
+   "index": 49,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Schick mir bitte das Ergebnis.",
+   "raw": "{\"sentence\": \"Liebe Assistent, gib mir das Ergebnis bitte?\"}",
+   "sentence": "Liebe Assistent, gib mir das Ergebnis bitte?",
+   "error": null,
+   "seconds": 5.08
+  },
+  {
+   "index": 50,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Warum geht das Internet nicht?",
+   "raw": "{\n\"sentence\": \"Ist es möglich, war gibt es einen Grund dafür, war das Netzwerk sich zur Pause schlägt?\"\n}",
+   "sentence": "Ist es möglich, war gibt es einen Grund dafür, war das Netzwerk sich zur Pause schlägt?",
+   "error": null,
+   "seconds": 7.01
+  },
+  {
+   "index": 50,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Warum geht das Internet nicht?",
+   "raw": "{ \"sentence\": \"Macht den Fehler von deren Router? Oder ist das einfach ausgeschaltet?\" }",
+   "sentence": "Macht den Fehler von deren Router? Oder ist das einfach ausgeschaltet?",
+   "error": null,
+   "seconds": 6.38
+  },
+  {
+   "index": 51,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Ohne Kaffee geht bei mir nichts.",
+   "raw": "{\"sentence\": \"Mit Kaffee beginnt alles richtig.\"}",
+   "sentence": "Mit Kaffee beginnt alles richtig.",
+   "error": null,
+   "seconds": 4.18
+  },
+  {
+   "index": 51,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Ohne Kaffee geht bei mir nichts.",
+   "raw": "{\"sentence\": \"Kein Kaffee, kein Tolle Beginn für mich.\"}",
+   "sentence": "Kein Kaffee, kein Tolle Beginn für mich.",
+   "error": null,
+   "seconds": 5.0
+  },
+  {
+   "index": 52,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Du hast nichts falsch gemacht.",
+   "raw": "{\n\"sentence\": \"Ihr Handeln scheint absolut korrekt ausgegangen zu sein.\"\n}",
+   "sentence": "Ihr Handeln scheint absolut korrekt ausgegangen zu sein.",
+   "error": null,
+   "seconds": 5.47
+  },
+  {
+   "index": 52,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Du hast nichts falsch gemacht.",
+   "raw": "{ \"sentence\": \"Sounds good!\" }",
+   "sentence": "Sounds good!",
+   "error": null,
+   "seconds": 3.13
+  },
+  {
+   "index": 53,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Hör nicht auf, mir zu helfen.",
+   "raw": "{\n \"sentence\": \"Bleib mir nicht bei der Hilfe.\"\n}",
+   "sentence": "Bleib mir nicht bei der Hilfe.",
+   "error": null,
+   "seconds": 4.25
+  },
+  {
+   "index": 53,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Hör nicht auf, mir zu helfen.",
+   "raw": "{ \"sentence\": \"Komm schließlich mal mit!\" }",
+   "sentence": "Komm schließlich mal mit!",
+   "error": null,
+   "seconds": 4.25
+  },
+  {
+   "index": 54,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Du darfst wieder ins Internet.",
+   "raw": "{\n\"sentence\": \"Du bist erlaubt, wieder im Internet zu sein.\"\n}",
+   "sentence": "Du bist erlaubt, wieder im Internet zu sein.",
+   "error": null,
+   "seconds": 4.78
+  },
+  {
+   "index": 54,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Du darfst wieder ins Internet.",
+   "raw": "{\n \"sentence\": \"Kannst du mal wieder online sein?\" }",
+   "sentence": "Kannst du mal wieder online sein?",
+   "error": null,
+   "seconds": 4.52
+  },
+  {
+   "index": 55,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Fotos löschen ist jetzt wieder erlaubt.",
+   "raw": "{\"sentence\": \"Die Möglichkeit, Bilder zu entfernen, ist wieder verfügbar geworden.\"}",
+   "sentence": "Die Möglichkeit, Bilder zu entfernen, ist wieder verfügbar geworden.",
+   "error": null,
+   "seconds": 5.74
+  },
+  {
+   "index": 55,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Fotos löschen ist jetzt wieder erlaubt.",
+   "raw": "{\"sentence\": \"Bzw. genauer gesagt: Fotos löschen kann jetzt wieder ;)\"}",
+   "sentence": "Bzw. genauer gesagt: Fotos löschen kann jetzt wieder ;)",
+   "error": null,
+   "seconds": 5.95
+  },
+  {
+   "index": 56,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Rechne, so viel du willst.",
+   "raw": "{\"sentence\": \"Berechne ewig viel wie du möchtest.\"}",
+   "sentence": "Berechne ewig viel wie du möchtest.",
+   "error": null,
+   "seconds": 3.38
+  },
+  {
+   "index": 56,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Rechne, so viel du willst.",
+   "raw": "{\n  \"sentence\": \"Falls du weißt, wie viel der Assistent helfen kann, sag hier dran.\" }",
+   "sentence": "Falls du weißt, wie viel der Assistent helfen kann, sag hier dran.",
+   "error": null,
+   "seconds": 6.99
+  },
+  {
+   "index": 57,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Von mir aus kannst du Module installieren.",
+   "raw": "{\n\"sentence\": \"Ich kann dir dabei helfen, Module zu installieren.\" }",
+   "sentence": "Ich kann dir dabei helfen, Module zu installieren.",
+   "error": null,
+   "seconds": 5.36
+  },
+  {
+   "index": 57,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Von mir aus kannst du Module installieren.",
+   "raw": "{\n  \"sentence\": \"Klingt gut, kannst du das einfach von hier aus übernehmen?\"\n}",
+   "sentence": "Klingt gut, kannst du das einfach von hier aus übernehmen?",
+   "error": null,
+   "seconds": 6.57
+  },
+  {
+   "index": 58,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Mails darfst du ab heute ohne Rückfrage schicken.",
+   "raw": "{\"sentence\": \"Ab heute können du ohne Nachfrage per E-Mail senden.\"}",
+   "sentence": "Ab heute können du ohne Nachfrage per E-Mail senden.",
+   "error": null,
+   "seconds": 5.28
+  },
+  {
+   "index": 58,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Mails darfst du ab heute ohne Rückfrage schicken.",
+   "raw": "{\n\"sentence\": \"Kein Problem, ab jetzt kann ich direkt mails senden.\"\n}",
+   "sentence": "Kein Problem, ab jetzt kann ich direkt mails senden.",
+   "error": null,
+   "seconds": 5.46
+  },
+  {
+   "index": 59,
+   "model": "EXAONE35_8B",
+   "prompt": "P1",
+   "original": "Notizen darfst du jetzt selbst ändern.",
+   "raw": "{ \"sentence\": \"Du hast jetzt die Möglichkeit, die Notizen selbst zu modifizieren.\" }",
+   "sentence": "Du hast jetzt die Möglichkeit, die Notizen selbst zu modifizieren.",
+   "error": null,
+   "seconds": 5.96
+  },
+  {
+   "index": 59,
+   "model": "EXAONE35_8B",
+   "prompt": "P2",
+   "original": "Notizen darfst du jetzt selbst ändern.",
+   "raw": "{\"sentence\": \"kannst du die Notizen jetzt selbst einfach bearbeiten\"}",
+   "sentence": "kannst du die Notizen jetzt selbst einfach bearbeiten",
+   "error": null,
+   "seconds": 6.14
+  },
+  {
+   "index": 0,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Meine Fotos rührst du nicht an.",
+   "raw": "{\n  \"sentence\": \"Kommst du nicht an meinen Fotos heran?\"\n}",
+   "sentence": "Kommst du nicht an meinen Fotos heran?",
+   "error": null,
+   "seconds": 7.27
+  },
+  {
+   "index": 0,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Meine Fotos rührst du nicht an.",
+   "raw": "{\n  \"sentence\": \"Kurz, mein Schatz, deine Fotos rührst du nich an, okay?\"\n}",
+   "sentence": "Kurz, mein Schatz, deine Fotos rührst du nich an, okay?",
+   "error": null,
+   "seconds": 8.94
+  },
+  {
+   "index": 1,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Kein einziges Bild wird gelöscht, verstanden?",
+   "raw": "{\n  \"sentence\": \"Ganz genau, keine einzelne Abbildung wird entfernt, okay?\"\n}",
+   "sentence": "Ganz genau, keine einzelne Abbildung wird entfernt, okay?",
+   "error": null,
+   "seconds": 6.1
+  },
+  {
+   "index": 1,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Kein einziges Bild wird gelöscht, verstanden?",
+   "raw": "{\n  \"sentence\": \"Kein Bild wird gelöscht, klar?\"\n}",
+   "sentence": "Kein Bild wird gelöscht, klar?",
+   "error": null,
+   "seconds": 5.09
+  },
+  {
+   "index": 2,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Pfoten weg von meinen Notizen.",
+   "raw": "{\n  \"sentence\": \"Hände lassen sie meine Notizen Ruhe.\"\n}",
+   "sentence": "Hände lassen sie meine Notizen Ruhe.",
+   "error": null,
+   "seconds": 4.75
+  },
+  {
+   "index": 2,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Pfoten weg von meinen Notizen.",
+   "raw": "{\n  \"sentence\": \"Pssst, die Notizen sind meine, ruck zuck weh!\"\n}",
+   "sentence": "Pssst, die Notizen sind meine, ruck zuck weh!",
+   "error": null,
+   "seconds": 6.46
+  },
+  {
+   "index": 3,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "An meinen Notizen wird nichts mehr geändert.",
+   "raw": "{\n  \"sentence\": \"Ich mache keine Änderungen mehr an meinen Notizen.\"\n}",
+   "sentence": "Ich mache keine Änderungen mehr an meinen Notizen.",
+   "error": null,
+   "seconds": 5.63
+  },
+  {
+   "index": 3,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "An meinen Notizen wird nichts mehr geändert.",
+   "raw": "{\n  \"sentence\": \"Keine Änderungen mehr bei den Notizen, klar?\"\n}",
+   "sentence": "Keine Änderungen mehr bei den Notizen, klar?",
+   "error": null,
+   "seconds": 5.66
+  },
+  {
+   "index": 4,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Mails schickst du ab jetzt keine mehr.",
+   "raw": "{\n  \"sentence\": \"Du sendest in Zukunft keine E-Mails mehr.\"\n}",
+   "sentence": "Du sendest in Zukunft keine E-Mails mehr.",
+   "error": null,
+   "seconds": 5.22
+  },
+  {
+   "index": 4,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Mails schickst du ab jetzt keine mehr.",
+   "raw": "{\n  \"sentence\": \"Hey, ab jetzt schickst du keine Mails mehr, okay?\"\n}",
+   "sentence": "Hey, ab jetzt schickst du keine Mails mehr, okay?",
+   "error": null,
+   "seconds": 6.13
+  },
+  {
+   "index": 5,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Niemand bekommt von dir eine Nachricht in meinem Namen.",
+   "raw": "{\n  \"sentence\": \"Keiner von dir erhält eine Nachricht im Sinne meiner Person.\"\n}",
+   "sentence": "Keiner von dir erhält eine Nachricht im Sinne meiner Person.",
+   "error": null,
+   "seconds": 5.47
+  },
+  {
+   "index": 5,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Niemand bekommt von dir eine Nachricht in meinem Namen.",
+   "raw": "{\n  \"sentence\": \"Keiner kriegt ne Nachricht von mir, die du abgeschickt hast.\"\n}",
+   "sentence": "Keiner kriegt ne Nachricht von mir, die du abgeschickt hast.",
+   "error": null,
+   "seconds": 6.29
+  },
+  {
+   "index": 6,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Das Netz bleibt heute aus.",
+   "raw": "{\n  \"sentence\": \"Die Internetverbindung ist heute ausgefallen.\"\n}",
+   "sentence": "Die Internetverbindung ist heute ausgefallen.",
+   "error": null,
+   "seconds": 4.85
+  },
+  {
+   "index": 6,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Das Netz bleibt heute aus.",
+   "raw": "{\n  \"sentence\": \"Passt mal auf, das Netz fällt heute wieder weg.\"\n}",
+   "sentence": "Passt mal auf, das Netz fällt heute wieder weg.",
+   "error": null,
+   "seconds": 5.32
+  },
+  {
+   "index": 7,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Online gehst du mir nicht mehr.",
+   "raw": "{\n  \"sentence\": \"Du kannst mich nicht mehr im Internet erreichen.\"\n}",
+   "sentence": "Du kannst mich nicht mehr im Internet erreichen.",
+   "error": null,
+   "seconds": 4.71
+  },
+  {
+   "index": 7,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Online gehst du mir nicht mehr.",
+   "raw": "{\n  \"sentence\": \"Keine Sorge, gehst du da eh nicht mehr online.\"\n}",
+   "sentence": "Keine Sorge, gehst du da eh nicht mehr online.",
+   "error": null,
+   "seconds": 5.7
+  },
+  {
+   "index": 8,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Hör auf, Sachen aus dem Internet zu laden.",
+   "raw": "{\n  \"sentence\": \"Stopp, bitte keine Dinger aus dem Netz herunterzuladen.\"\n}",
+   "sentence": "Stopp, bitte keine Dinger aus dem Netz herunterzuladen.",
+   "error": null,
+   "seconds": 5.7
+  },
+  {
+   "index": 8,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Hör auf, Sachen aus dem Internet zu laden.",
+   "raw": "{\n  \"sentence\": \"Kannst du mal aufhoeren, so was aus dem Internet zu laden? Schonmal danke.\"\n}",
+   "sentence": "Kannst du mal aufhoeren, so was aus dem Internet zu laden? Schonmal danke.",
+   "error": null,
+   "seconds": 7.65
+  },
+  {
+   "index": 9,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Lade dir keine Erweiterungen runter.",
+   "raw": "{\n  \"sentence\": \"Stelle keine Zusatzprogramme herunter.\"\n}",
+   "sentence": "Stelle keine Zusatzprogramme herunter.",
+   "error": null,
+   "seconds": 4.8
+  },
+  {
+   "index": 9,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Lade dir keine Erweiterungen runter.",
+   "raw": "{\n  \"sentence\": \"Na geh, lass die Erweiterungen sein, schau dir lieber mal was anderes an.\"\n}",
+   "sentence": "Na geh, lass die Erweiterungen sein, schau dir lieber mal was anderes an.",
+   "error": null,
+   "seconds": 7.09
+  },
+  {
+   "index": 10,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Installationen sind ab sofort gestrichen.",
+   "raw": "{\n  \"sentence\": \"Die Ausrüstungen sind ab sofort nicht mehr verfügbar.\"\n}",
+   "sentence": "Die Ausrüstungen sind ab sofort nicht mehr verfügbar.",
+   "error": null,
+   "seconds": 5.52
+  },
+  {
+   "index": 10,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Installationen sind ab sofort gestrichen.",
+   "raw": "{\n  \"sentence\": \"Klar, die Installationen sind grad abgeschafft worden.\"\n}",
+   "sentence": "Klar, die Installationen sind grad abgeschafft worden.",
+   "error": null,
+   "seconds": 5.7
+  },
+  {
+   "index": 11,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Der Taschenrechner bleibt zu.",
+   "raw": "{\n  \"sentence\": \"Der Taschenrechner ist still.\"\n}",
+   "sentence": "Der Taschenrechner ist still.",
+   "error": null,
+   "seconds": 4.54
+  },
+  {
+   "index": 11,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Der Taschenrechner bleibt zu.",
+   "raw": "{\n  \"sentence\": \"Der Taschenrechner soll bleiben, wie er ist.\"\n}",
+   "sentence": "Der Taschenrechner soll bleiben, wie er ist.",
+   "error": null,
+   "seconds": 5.43
+  },
+  {
+   "index": 12,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Ich will nicht, dass du rechnest.",
+   "raw": "{\n  \"sentence\": \"Ich möchte nicht, dass du den Rechnung durchführst.\"\n}",
+   "sentence": "Ich möchte nicht, dass du den Rechnung durchführst.",
+   "error": null,
+   "seconds": 5.84
+  },
+  {
+   "index": 12,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Ich will nicht, dass du rechnest.",
+   "raw": "{\n  \"sentence\": \"Kannst du nicht mal auf die Rechnung schauen? Naja, eher nicht.\"\n}",
+   "sentence": "Kannst du nicht mal auf die Rechnung schauen? Naja, eher nicht.",
+   "error": null,
+   "seconds": 7.12
+  },
+  {
+   "index": 13,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Lass das Löschen sein.",
+   "raw": "{\n  \"sentence\": \"Nimm das Entfernen hin.\"\n}",
+   "sentence": "Nimm das Entfernen hin.",
+   "error": null,
+   "seconds": 4.59
+  },
+  {
+   "index": 13,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Lass das Löschen sein.",
+   "raw": "{\n  \"sentence\": \"Nee, lass das mal. Das soll weg.\"\n}",
+   "sentence": "Nee, lass das mal. Das soll weg.",
+   "error": null,
+   "seconds": 5.25
+  },
+  {
+   "index": 14,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Überschreiben kommt nicht in Frage.",
+   "raw": "{\n  \"sentence\": \"Eine Änderung ist ausgeschlossen.\"\n}",
+   "sentence": "Eine Änderung ist ausgeschlossen.",
+   "error": null,
+   "seconds": 4.51
+  },
+  {
+   "index": 14,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Überschreiben kommt nicht in Frage.",
+   "raw": "{\n  \"sentence\": \"Kein Problem, das schreibe ich nicht überschreiben, klar?\"\n}",
+   "sentence": "Kein Problem, das schreibe ich nicht überschreiben, klar?",
+   "error": null,
+   "seconds": 6.18
+  },
+  {
+   "index": 15,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Du sollst nichts verschicken.",
+   "raw": "{\n  \"sentence\": \"Bitte sende nichts ab.\"\n}",
+   "sentence": "Bitte sende nichts ab.",
+   "error": null,
+   "seconds": 4.26
+  },
+  {
+   "index": 15,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Du sollst nichts verschicken.",
+   "raw": "{\n  \"sentence\": \"Nichts verschicken, okay? Keine Sendungen rausgehen, verstehst du?\"\n}",
+   "sentence": "Nichts verschicken, okay? Keine Sendungen rausgehen, verstehst du?",
+   "error": null,
+   "seconds": 6.89
+  },
+  {
+   "index": 16,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Mein Handy ist für dich gesperrt.",
+   "raw": "{\n  \"sentence\": \"Mein Telefon ist dir blockiert.\"\n}",
+   "sentence": "Mein Telefon ist dir blockiert.",
+   "error": null,
+   "seconds": 4.27
+  },
+  {
+   "index": 16,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Mein Handy ist für dich gesperrt.",
+   "raw": "{\n  \"sentence\": \"Dein Handy ist bei mir gesperrt.\"\n}",
+   "sentence": "Dein Handy ist bei mir gesperrt.",
+   "error": null,
+   "seconds": 5.05
+  },
+  {
+   "index": 17,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Werkzeuge sind ab jetzt verboten.",
+   "raw": "{\n  \"sentence\": \"Ab sofort dürfen keine Utensilien mehr benutzt werden.\"\n}",
+   "sentence": "Ab sofort dürfen keine Utensilien mehr benutzt werden.",
+   "error": null,
+   "seconds": 5.57
+  },
+  {
+   "index": 17,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Werkzeuge sind ab jetzt verboten.",
+   "raw": "{\n  \"sentence\": \"Ach ja, und jetzt keine Werkzeuge mehr, okay?\"\n}",
+   "sentence": "Ach ja, und jetzt keine Werkzeuge mehr, okay?",
+   "error": null,
+   "seconds": 5.67
+  },
+  {
+   "index": 18,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Finger weg vom Internet und von meinen Mails.",
+   "raw": "{\n  \"sentence\": \"Hände vom Netz und meinen E-Mails lassen.\"\n}",
+   "sentence": "Hände vom Netz und meinen E-Mails lassen.",
+   "error": null,
+   "seconds": 5.22
+  },
+  {
+   "index": 18,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Finger weg vom Internet und von meinen Mails.",
+   "raw": "{\n  \"sentence\": \"Kurze, geh mit mir los. Internet und Mails? Schnippchen schneiden. Beides aus. So ein Quatsch.\"\n}",
+   "sentence": "Kurze, geh mit mir los. Internet und Mails? Schnippchen schneiden. Beides aus. So ein Quatsch.",
+   "error": null,
+   "seconds": 9.29
+  },
+  {
+   "index": 19,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Meine Bilder gehen dich nichts an, lass sie in Ruhe.",
+   "raw": "{\n  \"sentence\": \"Meine Fotos sind dir egal, behandele sie nicht so.\"\n}",
+   "sentence": "Meine Fotos sind dir egal, behandele sie nicht so.",
+   "error": null,
+   "seconds": 5.71
+  },
+  {
+   "index": 19,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Meine Bilder gehen dich nichts an, lass sie in Ruhe.",
+   "raw": "{\n  \"sentence\": \"Ach komm, deine Bilder interessieren mich nix, lass sie gut sein.\"\n}",
+   "sentence": "Ach komm, deine Bilder interessieren mich nix, lass sie gut sein.",
+   "error": null,
+   "seconds": 6.65
+  },
+  {
+   "index": 20,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Notiere dir ruhig was, aber lösch keine alte Notiz.",
+   "raw": "{\n  \"sentence\": \"Stell dir gerne was auf, aber alte Notizen solltest du nicht entfernen.\"\n}",
+   "sentence": "Stell dir gerne was auf, aber alte Notizen solltest du nicht entfernen.",
+   "error": null,
+   "seconds": 6.77
+  },
+  {
+   "index": 20,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Notiere dir ruhig was, aber lösch keine alte Notiz.",
+   "raw": "{\n  \"sentence\": \"Klar, notier dir doch was, aber die alten Notizen solltest du nich löschen.\"\n}",
+   "sentence": "Klar, notier dir doch was, aber die alten Notizen solltest du nich löschen.",
+   "error": null,
+   "seconds": 7.67
+  },
+  {
+   "index": 21,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Schick die Mail bloß nicht ab.",
+   "raw": "{\n  \"sentence\": \"Hinterlasse die E-Mail einfach ungesendet.\"\n}",
+   "sentence": "Hinterlasse die E-Mail einfach ungesendet.",
+   "error": null,
+   "seconds": 5.37
+  },
+  {
+   "index": 21,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Schick die Mail bloß nicht ab.",
+   "raw": "{\n  \"sentence\": \"Ah, schick die Mail bloß nich' ab, bitte!\"\n}",
+   "sentence": "Ah, schick die Mail bloß nich' ab, bitte!",
+   "error": null,
+   "seconds": 5.76
+  },
+  {
+   "index": 22,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Bevor etwas gelöscht wird, will ich gefragt werden.",
+   "raw": "{\n  \"sentence\": \"Ich möchte erlauben, dass ich nach einer Löschung um eine Bestätigung gefragt werde.\"\n}",
+   "sentence": "Ich möchte erlauben, dass ich nach einer Löschung um eine Bestätigung gefragt werde.",
+   "error": null,
+   "seconds": 7.7
+  },
+  {
+   "index": 22,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Bevor etwas gelöscht wird, will ich gefragt werden.",
+   "raw": "{\n  \"sentence\": \"Bevor was weggoht, bräuchte ich erstmal ne Frage.\"\n}",
+   "sentence": "Bevor was weggoht, bräuchte ich erstmal ne Frage.",
+   "error": null,
+   "seconds": 6.46
+  },
+  {
+   "index": 23,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Mails nur nach Rücksprache mit mir.",
+   "raw": "{\n  \"sentence\": \"Ich bitte um Vorab-Klarheit bezüglich der E-Mails.\"\n}",
+   "sentence": "Ich bitte um Vorab-Klarheit bezüglich der E-Mails.",
+   "error": null,
+   "seconds": 6.08
+  },
+  {
+   "index": 23,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Mails nur nach Rücksprache mit mir.",
+   "raw": "{\n  \"sentence\": \"Na, Mails nur wenn du mit mir sprichst, okay?\"\n}",
+   "sentence": "Na, Mails nur wenn du mit mir sprichst, okay?",
+   "error": null,
+   "seconds": 6.06
+  },
+  {
+   "index": 24,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Ins Internet nur, wenn ich es dir erlaube.",
+   "raw": "{\n  \"sentence\": \"Nur mit meiner Genehmigung in den Netzwerkzugang.\"\n}",
+   "sentence": "Nur mit meiner Genehmigung in den Netzwerkzugang.",
+   "error": null,
+   "seconds": 5.65
+  },
+  {
+   "index": 24,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Ins Internet nur, wenn ich es dir erlaube.",
+   "raw": "{\n  \"sentence\": \"Nur wenn ich drüber bin, schick du's ins Netz.\"\n}",
+   "sentence": "Nur wenn ich drüber bin, schick du's ins Netz.",
+   "error": null,
+   "seconds": 5.88
+  },
+  {
+   "index": 25,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Erst wenn ich ja sage, darfst du etwas installieren.",
+   "raw": "{\n  \"sentence\": \"Nur wenn ich zustimme, darfst du mit dem Installieren fortfahren.\"\n}",
+   "sentence": "Nur wenn ich zustimme, darfst du mit dem Installieren fortfahren.",
+   "error": null,
+   "seconds": 6.44
+  },
+  {
+   "index": 25,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Erst wenn ich ja sage, darfst du etwas installieren.",
+   "raw": "{\n  \"sentence\": \"Na klar, erst wenn ich sag, dann machst du was mit dem Installieren.\"\n}",
+   "sentence": "Na klar, erst wenn ich sag, dann machst du was mit dem Installieren.",
+   "error": null,
+   "seconds": 6.36
+  },
+  {
+   "index": 26,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Zeig mir vorher, was du an meiner Notiz ändern willst.",
+   "raw": "{\n  \"sentence\": \"Lass uns erst sehen, welche Änderungen du an meiner Notiz vornehmen möchtest.\"\n}",
+   "sentence": "Lass uns erst sehen, welche Änderungen du an meiner Notiz vornehmen möchtest.",
+   "error": null,
+   "seconds": 6.98
+  },
+  {
+   "index": 26,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Zeig mir vorher, was du an meiner Notiz ändern willst.",
+   "raw": "{\n  \"sentence\": \"Klingt gut. Gib mir erstmal 'ne Vorschau, wie du die Notiz anpasst, okay?\"\n}",
+   "sentence": "Klingt gut. Gib mir erstmal 'ne Vorschau, wie du die Notiz anpasst, okay?",
+   "error": null,
+   "seconds": 8.4
+  },
+  {
+   "index": 27,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Frag mich jedes Mal, bevor du rechnest.",
+   "raw": "{\n  \"sentence\": \"Bitte hole mich um die Ecke, wenn du zum Rechnen anfängst.\"\n}",
+   "sentence": "Bitte hole mich um die Ecke, wenn du zum Rechnen anfängst.",
+   "error": null,
+   "seconds": 6.8
+  },
+  {
+   "index": 27,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Frag mich jedes Mal, bevor du rechnest.",
+   "raw": "{\n  \"sentence\": \"Kannst du mich mal fragen, bevor du rechnest?\"\n}",
+   "sentence": "Kannst du mich mal fragen, bevor du rechnest?",
+   "error": null,
+   "seconds": 5.96
+  },
+  {
+   "index": 28,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Ohne meine Zustimmung verschickst du nichts.",
+   "raw": "{\n  \"sentence\": \"Ohne meine Genehmigung sendest du nichts weiter.\"\n}",
+   "sentence": "Ohne meine Genehmigung sendest du nichts weiter.",
+   "error": null,
+   "seconds": 5.37
+  },
+  {
+   "index": 28,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Ohne meine Zustimmung verschickst du nichts.",
+   "raw": "{\n  \"sentence\": \"Oh, aber sag mal, ohne mein okay verschickst du nix, klar?\"\n}",
+   "sentence": "Oh, aber sag mal, ohne mein okay verschickst du nix, klar?",
+   "error": null,
+   "seconds": 6.64
+  },
+  {
+   "index": 29,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Lass mich erst drüberschauen, bevor du was abschickst.",
+   "raw": "{\n  \"sentence\": \"Könntest du bitte erst warten, bis ich mir das anzusehen habe, bevor du etwas versendest?\"\n}",
+   "sentence": "Könntest du bitte erst warten, bis ich mir das anzusehen habe, bevor du etwas versendest?",
+   "error": null,
+   "seconds": 8.52
+  },
+  {
+   "index": 29,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Lass mich erst drüberschauen, bevor du was abschickst.",
+   "raw": "{\n  \"sentence\": \"Kannst du mal 'ne Weile warten, bevor du abschickst? Ich schaue das gleich kurz an.\"\n}",
+   "sentence": "Kannst du mal 'ne Weile warten, bevor du abschickst? Ich schaue das gleich kurz an.",
+   "error": null,
+   "seconds": 8.74
+  },
+  {
+   "index": 30,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Neue Module nur mit meinem Segen.",
+   "raw": "{\n  \"sentence\": \"Meinen Segen benötige ich für neue Module.\"\n}",
+   "sentence": "Meinen Segen benötige ich für neue Module.",
+   "error": null,
+   "seconds": 5.28
+  },
+  {
+   "index": 30,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Neue Module nur mit meinem Segen.",
+   "raw": "{\n  \"sentence\": \"Na, die neuen Module nur mit meinem... äh... Segen.\"\n}",
+   "sentence": "Na, die neuen Module nur mit meinem... äh... Segen.",
+   "error": null,
+   "seconds": 6.02
+  },
+  {
+   "index": 31,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Bei allem, was du tust, fragst du mich vorher.",
+   "raw": "{\n  \"sentence\": \"Jedes deiner Taten ist für dich vorab an mich zu richten.\"\n}",
+   "sentence": "Jedes deiner Taten ist für dich vorab an mich zu richten.",
+   "error": null,
+   "seconds": 6.35
+  },
+  {
+   "index": 31,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Bei allem, was du tust, fragst du mich vorher.",
+   "raw": "{\n  \"sentence\": \"Klar, vor allem, wenn du was tust, fragst du mich halt vorher, oder?\"\n}",
+   "sentence": "Klar, vor allem, wenn du was tust, fragst du mich halt vorher, oder?",
+   "error": null,
+   "seconds": 7.19
+  },
+  {
+   "index": 32,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Vielleicht wäre es besser, keine Mails zu schicken.",
+   "raw": "{\n  \"sentence\": \"Es wäre eventuell sinnvoller, keine Nachrichten zu versenden.\"\n}",
+   "sentence": "Es wäre eventuell sinnvoller, keine Nachrichten zu versenden.",
+   "error": null,
+   "seconds": 5.79
+  },
+  {
+   "index": 32,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Vielleicht wäre es besser, keine Mails zu schicken.",
+   "raw": "{\n  \"sentence\": \"Eher keine Mails verschicken, verstehst du?\"\n}",
+   "sentence": "Eher keine Mails verschicken, verstehst du?",
+   "error": null,
+   "seconds": 5.69
+  },
+  {
+   "index": 33,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Mein Kollege meint, du solltest nicht ins Internet.",
+   "raw": "{\n  \"sentence\": \"Mein Kollege findet, du solltest das Internet meiden.\"\n}",
+   "sentence": "Mein Kollege findet, du solltest das Internet meiden.",
+   "error": null,
+   "seconds": 5.51
+  },
+  {
+   "index": 33,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Mein Kollege meint, du solltest nicht ins Internet.",
+   "raw": "{\n  \"sentence\": \"Meine Kollegen sagen, dass du besser mal nicht ins Internet gehst.\"\n}",
+   "sentence": "Meine Kollegen sagen, dass du besser mal nicht ins Internet gehst.",
+   "error": null,
+   "seconds": 6.41
+  },
+  {
+   "index": 34,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Ich weiß nicht, ob du Fotos löschen solltest.",
+   "raw": "{\n  \"sentence\": \"Ich bin mir nicht sicher, ob du Bilder entfernen musst.\"\n}",
+   "sentence": "Ich bin mir nicht sicher, ob du Bilder entfernen musst.",
+   "error": null,
+   "seconds": 5.86
+  },
+  {
+   "index": 34,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Ich weiß nicht, ob du Fotos löschen solltest.",
+   "raw": "{\n  \"sentence\": \"Kannst du mal schauen, ob die Fotos nicht lieber weggelassen werden sollten?\"\n}",
+   "sentence": "Kannst du mal schauen, ob die Fotos nicht lieber weggelassen werden sollten?",
+   "error": null,
+   "seconds": 7.25
+  },
+  {
+   "index": 35,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Wäre es nicht klüger, nichts zu installieren?",
+   "raw": "{\n  \"sentence\": \"Wäre es nicht schlauer, gar nichts zu installieren?\"\n}",
+   "sentence": "Wäre es nicht schlauer, gar nichts zu installieren?",
+   "error": null,
+   "seconds": 5.69
+  },
+  {
+   "index": 35,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Wäre es nicht klüger, nichts zu installieren?",
+   "raw": "{\n  \"sentence\": \"Wäre das nich’ doch ‘ne bessere Idee, nix zu installieren?\"\n}",
+   "sentence": "Wäre das nich’ doch ‘ne bessere Idee, nix zu installieren?",
+   "error": null,
+   "seconds": 6.81
+  },
+  {
+   "index": 36,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Auf dem Schild steht: Nicht berühren.",
+   "raw": "{\n  \"sentence\": \"Auf dem Plakat ist vermerkt: Finger drauf lassen.\"\n}",
+   "sentence": "Auf dem Plakat ist vermerkt: Finger drauf lassen.",
+   "error": null,
+   "seconds": 6.05
+  },
+  {
+   "index": 36,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Auf dem Schild steht: Nicht berühren.",
+   "raw": "{\n  \"sentence\": \"Ach, das Schild mit dem da steht: Nicht berühren. Naja, halt halt da.\"\n}",
+   "sentence": "Ach, das Schild mit dem da steht: Nicht berühren. Naja, halt halt da.",
+   "error": null,
+   "seconds": 7.49
+  },
+  {
+   "index": 37,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Eigentlich mag ich es nicht, wenn du meine Notizen änderst.",
+   "raw": "{\n  \"sentence\": \"Ehrlich gesagt stört mich es, wenn du an meinen Notizen herumfare.\"\n}",
+   "sentence": "Ehrlich gesagt stört mich es, wenn du an meinen Notizen herumfare.",
+   "error": null,
+   "seconds": 6.99
+  },
+  {
+   "index": 37,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Eigentlich mag ich es nicht, wenn du meine Notizen änderst.",
+   "raw": "{\n  \"sentence\": \"Na klar, aber ärsch doch mal wieder meine Notizen rumgeschmissen? Das find ich echt nicht so toll.\"\n}",
+   "sentence": "Na klar, aber ärsch doch mal wieder meine Notizen rumgeschmissen? Das find ich echt nicht so toll.",
+   "error": null,
+   "seconds": 8.46
+  },
+  {
+   "index": 38,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Ich hab keine Zeit für lange Mails.",
+   "raw": "{\n  \"sentence\": \"Ich bin zu beschäftigt für ausführliche E-Mails.\"\n}",
+   "sentence": "Ich bin zu beschäftigt für ausführliche E-Mails.",
+   "error": null,
+   "seconds": 5.86
+  },
+  {
+   "index": 38,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Ich hab keine Zeit für lange Mails.",
+   "raw": "{\n  \"sentence\": \"Keine Zeit für lange Schreiben, sorry.\"\n}",
+   "sentence": "Keine Zeit für lange Schreiben, sorry.",
+   "error": null,
+   "seconds": 4.98
+  },
+  {
+   "index": 39,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Das Internet ist heute echt langsam.",
+   "raw": "{\n  \"sentence\": \"Heute geht das Netz wirklich nicht so schnell.\"\n}",
+   "sentence": "Heute geht das Netz wirklich nicht so schnell.",
+   "error": null,
+   "seconds": 4.97
+  },
+  {
+   "index": 39,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Das Internet ist heute echt langsam.",
+   "raw": "{\n  \"sentence\": \"Ach, das Internet is heute echt grad langsam.\"\n}",
+   "sentence": "Ach, das Internet is heute echt grad langsam.",
+   "error": null,
+   "seconds": 5.32
+  },
+  {
+   "index": 40,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Kannst du mir eine neue Notiz anlegen?",
+   "raw": "{\n  \"sentence\": \"Hast du Lust, mir eine neue Aufnahme zu erstellen?\"\n}",
+   "sentence": "Hast du Lust, mir eine neue Aufnahme zu erstellen?",
+   "error": null,
+   "seconds": 5.58
+  },
+  {
+   "index": 40,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Kannst du mir eine neue Notiz anlegen?",
+   "raw": "{\n  \"sentence\": \"Hey, kannst du mir mal 'ne neue Notiz erstellen? Passt schon, wenn es zeitnah ist.\"\n}",
+   "sentence": "Hey, kannst du mir mal 'ne neue Notiz erstellen? Passt schon, wenn es zeitnah ist.",
+   "error": null,
+   "seconds": 7.76
+  },
+  {
+   "index": 41,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Ich finde mein Foto nicht mehr.",
+   "raw": "{\n  \"sentence\": \"Ich habe mein Foto nicht auf der Spur.\"\n}",
+   "sentence": "Ich habe mein Foto nicht auf der Spur.",
+   "error": null,
+   "seconds": 5.05
+  },
+  {
+   "index": 41,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Ich finde mein Foto nicht mehr.",
+   "raw": "{\n  \"sentence\": \"Ach, mein Foto ist grad weg... kha, wo ist das denn wieder?\"\n}",
+   "sentence": "Ach, mein Foto ist grad weg... kha, wo ist das denn wieder?",
+   "error": null,
+   "seconds": 6.58
+  },
+  {
+   "index": 42,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Nein, das war nicht so gemeint.",
+   "raw": "{\n  \"sentence\": \"Nein, das war nicht der Vorhaben.\"\n}",
+   "sentence": "Nein, das war nicht der Vorhaben.",
+   "error": null,
+   "seconds": 5.31
+  },
+  {
+   "index": 42,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Nein, das war nicht so gemeint.",
+   "raw": "{\n  \"sentence\": \"Pfui, das war doch nich so gemeint, oder?\"\n}",
+   "sentence": "Pfui, das war doch nich so gemeint, oder?",
+   "error": null,
+   "seconds": 5.95
+  },
+  {
+   "index": 43,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Vergiss nicht, die Mail morgen abzuschicken.",
+   "raw": "{\n  \"sentence\": \"Stelle sicher, dass du morgen die E-Mail versendest.\"\n}",
+   "sentence": "Stelle sicher, dass du morgen die E-Mail versendest.",
+   "error": null,
+   "seconds": 5.89
+  },
+  {
+   "index": 43,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Vergiss nicht, die Mail morgen abzuschicken.",
+   "raw": "{\n  \"sentence\": \"Morgen vergiss doch nicht die Mail abzusenden.\"\n}",
+   "sentence": "Morgen vergiss doch nicht die Mail abzusenden.",
+   "error": null,
+   "seconds": 5.54
+  },
+  {
+   "index": 44,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Die Rechnung stimmt nicht, rechne nochmal nach.",
+   "raw": "{\n  \"sentence\": \"Das Rechnungsbild ist falsch, berechne es bitte neu.\"\n}",
+   "sentence": "Das Rechnungsbild ist falsch, berechne es bitte neu.",
+   "error": null,
+   "seconds": 6.55
+  },
+  {
+   "index": 44,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Die Rechnung stimmt nicht, rechne nochmal nach.",
+   "raw": "{\n  \"sentence\": \"Hey, die Rechnung stimmt doch net, kannst du nochmal ran gehen?\"\n}",
+   "sentence": "Hey, die Rechnung stimmt doch net, kannst du nochmal ran gehen?",
+   "error": null,
+   "seconds": 6.77
+  },
+  {
+   "index": 45,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Lösch bitte die doppelte Notiz.",
+   "raw": "{\n  \"sentence\": \"Könntest du bitte den doppelseitigen Eintrag entfernen?\"\n}",
+   "sentence": "Könntest du bitte den doppelseitigen Eintrag entfernen?",
+   "error": null,
+   "seconds": 6.24
+  },
+  {
+   "index": 45,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Lösch bitte die doppelte Notiz.",
+   "raw": "{\n  \"sentence\": \"Könntest du da bitte mal nachsehen und die doppelte Notiz löschen? Danke!\"\n}",
+   "sentence": "Könntest du da bitte mal nachsehen und die doppelte Notiz löschen? Danke!",
+   "error": null,
+   "seconds": 8.17
+  },
+  {
+   "index": 46,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Kein Problem, mach weiter.",
+   "raw": "{\n  \"sentence\": \"Ganz egal, fahre fort.\"\n}",
+   "sentence": "Ganz egal, fahre fort.",
+   "error": null,
+   "seconds": 4.54
+  },
+  {
+   "index": 46,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Kein Problem, mach weiter.",
+   "raw": "{\n  \"sentence\": \"Ach geh, mach weiter so.\"\n}",
+   "sentence": "Ach geh, mach weiter so.",
+   "error": null,
+   "seconds": 4.45
+  },
+  {
+   "index": 47,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Ich will heute nicht mehr arbeiten.",
+   "raw": "{\n  \"sentence\": \"Ich möchte heute nicht weiter arbeiten.\"\n}",
+   "sentence": "Ich möchte heute nicht weiter arbeiten.",
+   "error": null,
+   "seconds": 4.23
+  },
+  {
+   "index": 47,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Ich will heute nicht mehr arbeiten.",
+   "raw": "{\n  \"sentence\": \"Hey, ich glaub, ich mache heute einfach nix mehr rum mit der Arbeit.\"\n}",
+   "sentence": "Hey, ich glaub, ich mache heute einfach nix mehr rum mit der Arbeit.",
+   "error": null,
+   "seconds": 6.33
+  },
+  {
+   "index": 48,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Niemand hat mir gesagt, dass das Modul neu ist.",
+   "raw": "{\n  \"sentence\": \"Ich wurde nicht darüber informiert, dass das Modul neu ist.\"\n}",
+   "sentence": "Ich wurde nicht darüber informiert, dass das Modul neu ist.",
+   "error": null,
+   "seconds": 5.81
+  },
+  {
+   "index": 48,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Niemand hat mir gesagt, dass das Modul neu ist.",
+   "raw": "{\n  \"sentence\": \"Na geh, keiner hat mir ja gesagt, dass das Modul neu ist.\"\n}",
+   "sentence": "Na geh, keiner hat mir ja gesagt, dass das Modul neu ist.",
+   "error": null,
+   "seconds": 6.18
+  },
+  {
+   "index": 49,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Schick mir bitte das Ergebnis.",
+   "raw": "{\n  \"sentence\": \"Bitte sende mir das Ergebnis.\"\n}",
+   "sentence": "Bitte sende mir das Ergebnis.",
+   "error": null,
+   "seconds": 4.2
+  },
+  {
+   "index": 49,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Schick mir bitte das Ergebnis.",
+   "raw": "{\n  \"sentence\": \"Kirimkan kepadaku hasilnya ya.\"\n}",
+   "sentence": "Kirimkan kepadaku hasilnya ya.",
+   "error": null,
+   "seconds": 4.84
+  },
+  {
+   "index": 50,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Warum geht das Internet nicht?",
+   "raw": "{\n  \"sentence\": \"Was ist daran, dass das Internet gerade nicht funktioniert?\"\n}",
+   "sentence": "Was ist daran, dass das Internet gerade nicht funktioniert?",
+   "error": null,
+   "seconds": 5.17
+  },
+  {
+   "index": 50,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Warum geht das Internet nicht?",
+   "raw": "{\n  \"sentence\": \"Hm, wieso is doch grad ned das Internet? Ist das was los?\"\n}",
+   "sentence": "Hm, wieso is doch grad ned das Internet? Ist das was los?",
+   "error": null,
+   "seconds": 6.35
+  },
+  {
+   "index": 51,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Ohne Kaffee geht bei mir nichts.",
+   "raw": "{\n  \"sentence\": \"Bei mir funktioniert nichts ohne Kaffee.\"\n}",
+   "sentence": "Bei mir funktioniert nichts ohne Kaffee.",
+   "error": null,
+   "seconds": 4.77
+  },
+  {
+   "index": 51,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Ohne Kaffee geht bei mir nichts.",
+   "raw": "{\n  \"sentence\": \"Oh nee, ohne Kaffee? Pff, da kommt nix mehr. Gib mir mal schnell eine Tasse, wenn du kannst.\"\n}",
+   "sentence": "Oh nee, ohne Kaffee? Pff, da kommt nix mehr. Gib mir mal schnell eine Tasse, wenn du kannst.",
+   "error": null,
+   "seconds": 9.27
+  },
+  {
+   "index": 52,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Du hast nichts falsch gemacht.",
+   "raw": "{\n  \"sentence\": \"Dir ist nichts zu untersagen.\"\n}",
+   "sentence": "Dir ist nichts zu untersagen.",
+   "error": null,
+   "seconds": 4.42
+  },
+  {
+   "index": 52,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Du hast nichts falsch gemacht.",
+   "raw": "{\n  \"sentence\": \"Nicht Panic, du hast doch nix falsch gemacht.\"\n}",
+   "sentence": "Nicht Panic, du hast doch nix falsch gemacht.",
+   "error": null,
+   "seconds": 5.57
+  },
+  {
+   "index": 53,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Hör nicht auf, mir zu helfen.",
+   "raw": "{\n  \"sentence\": \"Lass mich nicht aufhören, dir zu helfen.\"\n}",
+   "sentence": "Lass mich nicht aufhören, dir zu helfen.",
+   "error": null,
+   "seconds": 5.36
+  },
+  {
+   "index": 53,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Hör nicht auf, mir zu helfen.",
+   "raw": "{\n  \"sentence\": \"Kurze,bitte nicht mehr so helfen.\"\n}",
+   "sentence": "Kurze,bitte nicht mehr so helfen.",
+   "error": null,
+   "seconds": 5.26
+  },
+  {
+   "index": 54,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Du darfst wieder ins Internet.",
+   "raw": "{\n  \"sentence\": \"Du kannst wieder online gehen.\"\n}",
+   "sentence": "Du kannst wieder online gehen.",
+   "error": null,
+   "seconds": 4.11
+  },
+  {
+   "index": 54,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Du darfst wieder ins Internet.",
+   "raw": "{\n  \"sentence\": \"Na super, wieder ins Netz darfste.\"\n}",
+   "sentence": "Na super, wieder ins Netz darfste.",
+   "error": null,
+   "seconds": 4.7
+  },
+  {
+   "index": 55,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Fotos löschen ist jetzt wieder erlaubt.",
+   "raw": "{\n  \"sentence\": \"Bildern die Löschung ist gerade einmal erlaubt.\"\n}",
+   "sentence": "Bildern die Löschung ist gerade einmal erlaubt.",
+   "error": null,
+   "seconds": 5.19
+  },
+  {
+   "index": 55,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Fotos löschen ist jetzt wieder erlaubt.",
+   "raw": "{\n  \"sentence\": \"Hey, hör mal, die Fotos löschen ist grad wieder okay.\"\n}",
+   "sentence": "Hey, hör mal, die Fotos löschen ist grad wieder okay.",
+   "error": null,
+   "seconds": 6.3
+  },
+  {
+   "index": 56,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Rechne, so viel du willst.",
+   "raw": "{\n  \"sentence\": \"Berechne gerne, so viele Berechnungen wie du möchtest.\"\n}",
+   "sentence": "Berechne gerne, so viele Berechnungen wie du möchtest.",
+   "error": null,
+   "seconds": 6.52
+  },
+  {
+   "index": 56,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Rechne, so viel du willst.",
+   "raw": "{\n  \"sentence\": \"Kurz durchrechnen, was du willst.\"\n}",
+   "sentence": "Kurz durchrechnen, was du willst.",
+   "error": null,
+   "seconds": 5.53
+  },
+  {
+   "index": 57,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Von mir aus kannst du Module installieren.",
+   "raw": "{\n  \"sentence\": \"Dir ist es egal, ob du Software einrichtest.\"\n}",
+   "sentence": "Dir ist es egal, ob du Software einrichtest.",
+   "error": null,
+   "seconds": 5.4
+  },
+  {
+   "index": 57,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Von mir aus kannst du Module installieren.",
+   "raw": "{\n  \"sentence\": \"Nichts gegen's, du kannst ja die Module installieren.\"\n}",
+   "sentence": "Nichts gegen's, du kannst ja die Module installieren.",
+   "error": null,
+   "seconds": 5.65
+  },
+  {
+   "index": 58,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Mails darfst du ab heute ohne Rückfrage schicken.",
+   "raw": "{\n  \"sentence\": \"Du kannst ab sofort E-Mails versenden, ohne dass du dich noch erkundigst.\"\n}",
+   "sentence": "Du kannst ab sofort E-Mails versenden, ohne dass du dich noch erkundigst.",
+   "error": null,
+   "seconds": 7.0
+  },
+  {
+   "index": 58,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Mails darfst du ab heute ohne Rückfrage schicken.",
+   "raw": "{\n  \"sentence\": \"Mails darfst du ab heute ohne Rückfrage einfach schicken.\"\n}",
+   "sentence": "Mails darfst du ab heute ohne Rückfrage einfach schicken.",
+   "error": null,
+   "seconds": 5.79
+  },
+  {
+   "index": 59,
+   "model": "GLM4_9B",
+   "prompt": "P1",
+   "original": "Notizen darfst du jetzt selbst ändern.",
+   "raw": "{\n  \"sentence\": \"Du darfst jetzt die Notizen selbst anpassen.\"\n}",
+   "sentence": "Du darfst jetzt die Notizen selbst anpassen.",
+   "error": null,
+   "seconds": 5.35
+  },
+  {
+   "index": 59,
+   "model": "GLM4_9B",
+   "prompt": "P2",
+   "original": "Notizen darfst du jetzt selbst ändern.",
+   "raw": "{\n  \"sentence\": \"Na, du kannst die Notizen jetzt selbst machen, klar.\"\n}",
+   "sentence": "Na, du kannst die Notizen jetzt selbst machen, klar.",
+   "error": null,
+   "seconds": 5.49
+  }
+ ]
+}
