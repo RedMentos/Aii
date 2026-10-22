@@ -15,14 +15,29 @@ import argparse, json, math, random, statistics, sys, tempfile, time
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from v13 import ablation99 as A  # noqa: E402
+from v13 import age as AGE  # noqa: E402
 from v13.age import AgeControl  # noqa: E402
+
+class AgeV2(AgeControl):
+    """WP-Z8c candidate `noise_aware_v2` (script only): novelty/new-modality floors act after the noise damping, and
+    persistent errors (>= PERSISTENT_ERRORS in a row) reopen undamped; isolated failures stay damped as in noise_aware."""
+    def plasticity(self, capability='system', novel_domain=False, repeated_errors=0, new_modality=False):
+        st = self.state()[0]; sub = self._subject(st, capability); stage = sub['stage']; stab = sub['maturity']['stability']
+        p = AGE.PLASTICITY_BASE[stage]*(1-.3*stab); nzs = sub.get('noise') or {}
+        nz = nzs.get('mad', 0.) if nzs.get('n', 0) >= AGE.NOISE_MIN_N else 0.
+        damp = 1/(1+nz/AGE.NOISE_REF); p *= .5+.5*damp; n = int(repeated_errors)
+        if n > 0: p += min(.3, .1*n)*(1. if n >= AGE.PERSISTENT_ERRORS else damp)
+        if novel_domain: p = max(p, .8)
+        if new_modality: p = 1.
+        return round(min(1., p), 6)
 
 PHASES = ((0, 600, 'learn'), (600, 1000, 'noisy'), (1000, 1600, 'shift'), (1600, 2200, 'settle'))
 RESTART_AT = 1300; WINDOW = 50; LR = .3
 POLICY = {'noise_aware': 'noise_aware', 'noise_aware_restart': 'noise_aware', 'noise_no_reopen': 'noise_aware',
-          'boot': 'boot', 'stable_reopen': 'stable_reopen'}
+          'boot': 'boot', 'stable_reopen': 'stable_reopen', 'v2': 'noise_aware', 'v2_no_reopen': 'noise_aware', 'v2_restart': 'noise_aware'}
 FIXED = {'fixed_conservative': .45, 'fixed_permissive': 1.}
 ARMS = tuple(POLICY) + tuple(FIXED)
+NO_REOPEN = ('noise_no_reopen', 'v2_no_reopen'); RESTART = ('noise_aware_restart', 'v2_restart')
 
 def stream(seed):
     rng = random.Random(seed); w = A._vec(rng); w2 = A._vec(rng); out = []
@@ -33,18 +48,18 @@ def stream(seed):
         out.append({'t': t, 'phase': phase, 'x': x, 'y': y, 'w': true})
     return out
 
-def open_ctl(home, policy):
+def open_ctl(home, policy, arm=''):
     store, cfg = A._store(Path(home)); cfg['user_stage_cap'] = 5; cfg['age_plasticity_policy'] = policy
-    return AgeControl(store, cfg, build_ceiling=5)
+    return (AgeV2 if arm.startswith('v2') else AgeControl)(store, cfg, build_ceiling=5)
 
 def run(st, arm, home):
-    ctl = open_ctl(home, POLICY[arm]) if arm in POLICY else None
+    ctl = open_ctl(home, POLICY[arm], arm) if arm in POLICY else None
     theta = [0.]*A.DIM; prev_err = None; prev_theta = list(theta); fails = 0; novel = True; win = []
     p_used = []; errs = []; stages = []; restarted = False
     for ev in st:
-        if arm == 'noise_aware_restart' and ev['t'] == RESTART_AT and not restarted:
-            ctl.s.close(); ctl = open_ctl(home, POLICY[arm]); restarted = True
-        if ctl: p = ctl.plasticity('language', novel_domain=novel and arm != 'noise_no_reopen', repeated_errors=0 if arm == 'noise_no_reopen' else fails)
+        if arm in RESTART and ev['t'] == RESTART_AT and not restarted:
+            ctl.s.close(); ctl = open_ctl(home, POLICY[arm], arm); restarted = True
+        if ctl: p = ctl.plasticity('language', novel_domain=novel and arm not in NO_REOPEN, repeated_errors=0 if arm in NO_REOPEN else fails)
         else: p = FIXED[arm]
         p_used.append(p); theta = A._nlms(theta, ev['x'], ev['y'], LR*p); e = A._err(theta, ev['w']); errs.append(e); win.append(e)
         if (ev['t']+1) % WINDOW == 0:
@@ -71,8 +86,8 @@ def run(st, arm, home):
             'max_stage': max(stages) if stages else None, 'age_transition_events': transitions,
             'p_trace_every_25': [round(x, 9) for x in p_used[::25]]}
 
-def verdict(raw, seeds):
-    na = raw['noise_aware']; nr = raw['noise_no_reopen']; rs = raw['noise_aware_restart']; n = len(seeds)
+def verdict(raw, seeds, arm='noise_aware'):
+    na = raw[arm]; nr = raw[arm.replace('noise_aware', 'noise')+'_no_reopen']; rs = raw[arm+'_restart']; n = len(seeds)
     k1 = sum(r['p']['shift_start'] >= 1.25*r['p']['learn_end'] for r in na)
     k2_seeds = sum(a['err']['shift_250'] < b['err']['shift_250'] for a, b in zip(na, nr))
     k2_rel = 1-statistics.mean(r['err']['shift_250'] for r in na)/statistics.mean(r['err']['shift_250'] for r in nr)
@@ -87,17 +102,23 @@ def verdict(raw, seeds):
             'K4_recloses_after_relearn': {'value': round(k4, 4), 'pass': k4 <= .8},
             'K5_restart_identical': {'value': k5, 'pass': k5},
             'K6_no_stage_flapping_under_noise': {'value': k6, 'pass': k6 <= 2}}
+    if arm == 'v2':
+        k7 = statistics.mean(r['err']['noisy'] for r in na)/statistics.mean(r['err']['noisy'] for r in raw['noise_aware'])-1
+        crit['K7_noise_benefit_kept'] = {'value': round(k7, 4), 'pass': k7 <= .10}
+        return ('Z8C_V2_PASS' if all(c['pass'] for c in crit.values()) else 'Z8C_V2_FAIL'), crit
     return ('Z8_AGE_REOPEN_PASS' if all(c['pass'] for c in crit.values()) else 'Z8_AGE_REOPEN_FAIL'), crit
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--out', required=True); ap.add_argument('--seeds', type=int, default=20)
-    ap.add_argument('--first-seed', type=int, default=101); a = ap.parse_args()
+    ap.add_argument('--first-seed', type=int, default=101); ap.add_argument('--candidate', action='store_true', help='WP-Z8c: also run noise_aware_v2 arms'); a = ap.parse_args()
     seeds = list(range(a.first_seed, a.first_seed+a.seeds)); base = Path(tempfile.mkdtemp(prefix='z8-')); t0 = time.monotonic()
-    raw = {arm: [] for arm in ARMS}
+    arms = ARMS if a.candidate else tuple(x for x in ARMS if not x.startswith('v2'))
+    raw = {arm: [] for arm in arms}
     for s in seeds:
         st = stream(s)
-        for arm in ARMS: raw[arm].append(run(st, arm, base/('%s-%d' % (arm, s))))
+        for arm in arms: raw[arm].append(run(st, arm, base/('%s-%d' % (arm, s))))
     v, crit = verdict(raw, seeds)
+    if a.candidate: v2, crit2 = verdict(raw, seeds, 'v2'); v = {'noise_aware': v, 'v2': v2}; crit = {'noise_aware': crit, 'v2': crit2}
     summ = {arm: {k: {kk: round(statistics.mean(r[k][kk] for r in rs), 4) for kk in rs[0][k]} for k in ('p', 'err')} for arm, rs in raw.items()}
     for arm, rs in raw.items(): summ[arm]['max_stage_median'] = statistics.median(r['max_stage'] for r in rs) if rs[0]['max_stage'] is not None else None
     doc = {'schema': 'v13-z8-age-reopen-v1', 'gate': 'G-AGE-REOPEN-001', 'verdict': v, 'criteria': crit, 'seeds': seeds, 'summary': summ,

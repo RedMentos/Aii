@@ -31,3 +31,15 @@ Beschreibend, ohne Schwelle: Fehler je Phase aller Arme (Ablations-Basis fixed/b
 Synthetischer linearer Strom, kein Sprachmodell, keine Handy-Messung. Ein PASS heißt: der echte Age-Zustandspfad
 öffnet/schließt wie im Blueprint beschrieben und übersteht Neustart; er heißt nicht, dass Age echte Modelle stabiler macht.
 Ein FAIL bleibt FAIL; keine nachträgliche Schwelle.
+
+---
+## Nachtrag vor Lauf 2 (WP-Z8c, geschrieben nach Lauf 1, vor Lauf 2): Kandidat `noise_aware_v2`
+Lauf 1 (Seeds 101–120) ergab `Z8_AGE_REOPEN_FAIL` (nur K2 verfehlt, siehe BEFUND.md). Diagnose: die Rausch-Dämpfung von
+`noise_aware` dämpft auch das Wiederöffnen (Neuheits-Boden und Fehler-Bonus werden mit dem in der noisy-Phase hoch
+geschätzten Rauschen multipliziert). Kandidat, nur im Skript als Unterklasse (keine Produktänderung):
+(a) Neuheits-Boden (.8) und neue Modalität (1.0) wirken **nach** der Dämpfung; (b) ab `PERSISTENT_ERRORS` (2) Fehlschlägen
+in Folge ist der Fehler-Bonus ungedämpft (anhaltende Fehler sind kein Rauschen). Arme zusätzlich `v2`, `v2_no_reopen`, `v2_restart`.
+Frische Seeds 201–220. Kriterien K1–K6 unverändert, angewandt auf `v2` (K2 gegen `v2_no_reopen`, K5 gegen `v2_restart`), plus
+- K7 Rausch-Vorteil bleibt: Fehler noisy-Phase von `v2` im Mittel höchstens 10 % über `noise_aware` (gleiche Seeds).
+`Z8C_V2_PASS` nur wenn K1–K7 gelten; dann Empfehlung, `noise_aware` im Produkt so zu ändern (eigener Schritt). Sonst `Z8C_V2_FAIL`.
+Lauf 1 bleibt FAIL, unabhängig vom Ergebnis von Lauf 2.
