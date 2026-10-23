@@ -44,3 +44,10 @@ Noch nicht starten; ich sage Bescheid, sobald das Paket liegt.
 
 ## Was ich parallel weiterbaue
 Eignungs-Werkzeug im echten Antwortpfad (Messung läuft), danach die nächsten offenen Pakete aus der ROADMAP.
+
+## Knöpfe auf dem Startbildschirm (neu 22.10., kurz, 5 min)
+- Im V13-Programmordner: `bash KNOEPFE_EINRICHTEN.sh`. App **Termux:Widget** installieren (gleiche Quelle wie Termux), Widget auf den Startbildschirm ziehen.
+- „V13 Chat“ drücken → Chat startet. Zum Startbildschirm, „V13 Stillstand“ drücken, zurück: im Chat steht „STILLSTAND AN“. Aufheben: `:stillstand aus`.
+- Chat mit `:shutdown` beenden, „V13 Notaus“ drücken, Chat neu starten → Notaus ist gleich an. Aufheben: `:notaus aus`.
+- „V13 Befehle“ drücken → scrollbare Liste aller Befehle (Suchen mit `/Wort`, Schließen mit `q`). Im Chat: `:befehle notaus`.
+- Rückmeldung reicht als kurzer Satz („geht“ / was nicht ging). Details: `code/docs/HANDY_OBERFLAECHE.md`.

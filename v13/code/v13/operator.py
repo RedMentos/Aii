@@ -10,7 +10,7 @@ def obsched_names():
     from .observer_schedule import SCHEDULES
     return SCHEDULES
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
-:help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
+:befehle [Wort] (alle Befehle mit Erklärung, zum Scrollen) / :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
@@ -91,6 +91,9 @@ class Operator:
             return self.r.submit(line)
         parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r;s=r.store
         if cmd=='help':return HELP
+        if cmd=='befehle':
+            from .befehle import operator_command
+            return operator_command(r,args)
         if cmd in {'sleep','scheduler'}:
             from .sleep import operator_command
             return operator_command(r,cmd,args)
