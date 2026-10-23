@@ -22,3 +22,11 @@ Examine whether an existing Callosum/Selfmodel/Workspace component could carry a
 Only publish technical design, code, synthetic fixtures, validation and high-level status. Never commit personal profiles, conversations/transcripts, emails, phone numbers, physical addresses, account IDs, precise locations, credentials, private attachments or identifiable raw logs/screenshots. Minimize environment fingerprints and metadata in examples. Scrub data before copying to public branches. GitHub commit identities and timestamps may still correlate with contributor accounts: private and sanitized are **not** guarantees of anonymity.
 
 This is an implementation/research handoff, **not** a claim that the feature is already implemented, validated, or enabled.
+
+
+## Clarified existing JEF / small-language-model learning requirement
+- Preserve four distinct functional roles: `B1_DETAIL` and `B2_GIST` are the two larger learning bodies; **JEF** is the executive/control subsystem (including `C2_CONTROL`); **`C3_LANGUAGE` is a separate small LLM** for fast language responses and cheap common-case interaction.
+- JEF's trainable neuronal parts **and** C3 are intended to learn as well, alongside the two bodies, rather than being permanent frozen-only routers or an immutable text renderer. They need role-specific learning paths, update gates, retention evidence and potentially different adaptation time scales. Do not infer a shared JEPA loss is appropriate for every module.
+- Smaller components may learn from verified body outcomes, corrections, and carefully sourced/distilled knowledge. Large-body agreement or self-produced text alone does not prove factual correctness. Keep independent checks/teacher provenance and measured held-out transfer.
+- Goal of C3 quick path: avoid waking/decoding through both large bodies for every simple reply; the JEF route can escalate when needed. Whether this saves real latency and preserves quality is a separate runtime/phone measurement, not an accomplished performance claim.
+- This clarification restates planned target functionality, **not** a claim of current end-to-end implemented online gradient updates for JEF/C3/B1/B2. No new personal context has been included.
