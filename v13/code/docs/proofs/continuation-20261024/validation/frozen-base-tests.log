@@ -1,0 +1,190 @@
+..........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.................................................../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/case.py:589: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpp2lhex7z/data/coordinator.lock' mode='a+' encoding='UTF-8'>
+  if method() is not None:
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..................................................../workspace/scratch/5c535e8a7e2b/base-review/v13/code/scripts/fast_trace_compare.py:39: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpo0thzr5b/dead.log' mode='r' encoding='UTF-8'>
+  p.wait();raise RuntimeError('server exited during startup: '+open(log).read()[-400:])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+.base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+.base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 0.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+.............................................................................................
+Handy-Pflichtmessungen starten (Stufe kurz, Schritte: ram, training, residenz, wiederholung, werkzeug, langlauf). Handy am Ladegerät, Termux offen lassen.
+Abbrechen mit Strg+C; fertige Schritte bleiben, ein neuer Start macht weiter.
+
+Eignungs-Werkzeug: an (SHADOW bei Age 0)
+Schritt: RAM aller Modelle (WP-R, §24.33) ...
+  -> DONE
+Schritt: Trainings-Nachweis Routen-Kopf (G-TRAIN-RUNNER-PROOF-001) ...
+  -> NOT_BUILT
+Schritt: Beobachter-Reihenfolge und Residenz (§24.33, §24.14) ...
+  -> DONE
+Schritt: Wiederholte Aufgaben: wird es schneller? (Proceduralization) ...
+  -> DONE
+Schritt: Werkzeug-Vorhersage ...
+  -> DONE
+Schritt: Langlauf über mehrere simulierte Tage (G-MOBILE-LONGRUN-001) ...
+  -> DEADLINE
+
+V13 Handy-Pflichtmessungen
+==========================
+
+Stufe: kurz
+Gerät: 4 CPU-Kerne, RAM gesamt None MB, frei vor Start None MB
+Kleinster freier RAM: 9169 MB
+
+- RAM aller Modelle (WP-R, §24.33): fertig
+- Trainings-Nachweis Routen-Kopf (G-TRAIN-RUNNER-PROOF-001): noch nicht gebaut
+- Beobachter-Reihenfolge und Residenz (§24.33, §24.14): fertig
+- Wiederholte Aufgaben: wird es schneller? (Proceduralization): fertig
+- Werkzeug-Vorhersage: fertig
+- Langlauf über mehrere simulierte Tage (G-MOBILE-LONGRUN-001): Zeit abgelaufen (Teilergebnis)
+
+Nur Messung: nichts wurde eingeschaltet, keine Lernrechte vergeben.
+Bitte diese ZIP-Datei in den Claude-Chat hochladen.
+
+Ergebnis-ZIP: /tmp/tmp4y8r3wu5/dl/V13-Pflicht-Ergebnis-kurz-20261024-001306.zip
+
+Handy-Pflichtmessungen starten (Stufe kurz, Schritte: ram, residenz). Handy am Ladegerät, Termux offen lassen.
+Abbrechen mit Strg+C; fertige Schritte bleiben, ein neuer Start macht weiter.
+
+Eignungs-Werkzeug: an (SHADOW bei Age 0)
+
+V13 Handy-Pflichtmessungen
+==========================
+
+Stufe: kurz
+Gerät: 4 CPU-Kerne, RAM gesamt None MB, frei vor Start None MB
+Kleinster freier RAM: 9166 MB
+
+- RAM aller Modelle (WP-R, §24.33): schon fertig (übersprungen)
+- Beobachter-Reihenfolge und Residenz (§24.33, §24.14): schon fertig (übersprungen)
+
+Nur Messung: nichts wurde eingeschaltet, keine Lernrechte vergeben.
+Bitte diese ZIP-Datei in den Claude-Chat hochladen.
+
+Ergebnis-ZIP: /tmp/tmp4y8r3wu5/dl/V13-Pflicht-Ergebnis-kurz-20261024-001306.zip
+
+Handy-Pflichtmessungen starten (Stufe kurz, Schritte: ram). Handy am Ladegerät, Termux offen lassen.
+Abbrechen mit Strg+C; fertige Schritte bleiben, ein neuer Start macht weiter.
+
+Eignungs-Werkzeug: an (SHADOW bei Age 0)
+Schritt: RAM aller Modelle (WP-R, §24.33) ...
+  -> DONE
+
+V13 Handy-Pflichtmessungen
+==========================
+
+Stufe: kurz
+Gerät: 4 CPU-Kerne, RAM gesamt None MB, frei vor Start None MB
+Kleinster freier RAM: 9167 MB
+
+- RAM aller Modelle (WP-R, §24.33): fertig
+
+Nur Messung: nichts wurde eingeschaltet, keine Lernrechte vergeben.
+Bitte diese ZIP-Datei in den Claude-Chat hochladen.
+
+Ergebnis-ZIP: /tmp/tmp4y8r3wu5/dl/V13-Pflicht-Ergebnis-kurz-20261024-001307.zip
+.usage: python -m unittest [-h] [--installed-home INSTALLED_HOME] [--nur NUR]
+                          [--neu] [--trotzdem] [--target-dir TARGET_DIR]
+                          [--no-setup]
+                          [{kurz,voll}]
+python -m unittest: error: Schritte: ram,training,residenz,wiederholung,werkzeug,langlauf
+................................................................................................................................................s...s................................................................................................................................................................................................................usage: python -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                          [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                          [--cycles-per-batch CYCLES_PER_BATCH]
+                          [--batches BATCHES]
+                          [--duration-seconds DURATION_SECONDS]
+                          [--sample-seconds SAMPLE_SECONDS]
+                          [--max-samples MAX_SAMPLES] [--sensors-only]
+                          [--termux-battery] [--source-zip SOURCE_ZIP]
+python -m unittest: error: duration-seconds: 1..86400; sample-seconds: .25..60; max-samples: 10..100000
+usage: python -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                          [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                          [--cycles-per-batch CYCLES_PER_BATCH]
+                          [--batches BATCHES]
+                          [--duration-seconds DURATION_SECONDS]
+                          [--sample-seconds SAMPLE_SECONDS]
+                          [--max-samples MAX_SAMPLES] [--sensors-only]
+                          [--termux-battery] [--source-zip SOURCE_ZIP]
+python -m unittest: error: cycles-per-batch: 4..128; batches: 1..32
+usage: python -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                          [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                          [--cycles-per-batch CYCLES_PER_BATCH]
+                          [--batches BATCHES]
+                          [--duration-seconds DURATION_SECONDS]
+                          [--sample-seconds SAMPLE_SECONDS]
+                          [--max-samples MAX_SAMPLES] [--sensors-only]
+                          [--termux-battery] [--source-zip SOURCE_ZIP]
+python -m unittest: error: cycles-per-batch: 4..128; batches: 1..32
+usage: python -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                          [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                          [--cycles-per-batch CYCLES_PER_BATCH]
+                          [--batches BATCHES]
+                          [--duration-seconds DURATION_SECONDS]
+                          [--sample-seconds SAMPLE_SECONDS]
+                          [--max-samples MAX_SAMPLES] [--sensors-only]
+                          [--termux-battery] [--source-zip SOURCE_ZIP]
+python -m unittest: error: duration-seconds: 1..86400; sample-seconds: .25..60; max-samples: 10..100000
+.....INTERRUPTED
+Berichte: /tmp/tmpxamdtc08/proof
+Fehlende Proofs: target_phone, native_sustained_batches, thermal_sensor_observed, battery_energy_intervals_observed, native_runner_rss_observed, native_kv_growth_measured, long_term_retention_proven
+COLLECTION_COMPLETE
+Berichte: /tmp/tmpxamdtc08/proof
+Fehlende Proofs: target_phone, native_sustained_batches, thermal_sensor_observed, battery_energy_intervals_observed, native_runner_rss_observed, native_kv_growth_measured, long_term_retention_proven
+usage: python -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                          [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                          [--cycles-per-batch CYCLES_PER_BATCH]
+                          [--batches BATCHES]
+                          [--duration-seconds DURATION_SECONDS]
+                          [--sample-seconds SAMPLE_SECONDS]
+                          [--max-samples MAX_SAMPLES] [--sensors-only]
+                          [--termux-battery] [--source-zip SOURCE_ZIP]
+python -m unittest: error: Stored sensor evidence changed; resume refused
+.......................................................................................................................s...............................................................................................................................................................................................................................................................................ss......................................................................................................................................................................s................................................................................................................
+----------------------------------------------------------------------
+Ran 1761 tests in 212.934s
+
+OK (skipped=6)

@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-24",
+  "phase": "RECOVERY_FIXES_IMPLEMENTED_FULL_SUITE_RUNNING",
+  "branch": "codex/continuation-20261024",
+  "claude_base": "cb959052433e01c29afc007e02b93aef373deb7f",
+  "last_verified_remote_checkpoint": "c287db04b70af4c70bfb62f1fd32c3de2f6fed18",
+  "scope": "Existing organ recovery and WP-Z7 measurement correctness; no runtime architecture replacement",
+  "implemented": [
+    "Verify active and saved organ bytes; preflight all restoration dependencies and ownership before any writes",
+    "Stage repairs at fresh immutable paths; preserve old generation artifacts and support legacy snapshot layout",
+    "Prevent snapshot basename collisions; durably publish verified snapshot manifest",
+    "Source/input-bound phone-package resume with artifact verification, atomic stage state, explicit separate retries and exclusive lock",
+    "Per-row residency evidence journals, distinct attempts, honest missing metrics, namespace-correct child RSS",
+    "Complete lifecycle acceptance and observed phase-boundary SIGKILL checks for isolated NumPy training proof"
+  ],
+  "verification": {
+    "frozen_claude_base_suite": {"tests": 1761, "skipped": 6, "failures": 0, "errors": 0},
+    "combined_focused_suite": {"tests": 66, "failures": 0, "errors": 0},
+    "updated_full_suite": "RUNNING",
+    "train_runner": "TRAIN_RUNNER_PROOF_PARTIAL_NO_INTEGRATION",
+    "model_inference": false,
+    "phone_measured": false
+  },
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "step2_canonical_gate_pass": false,
+  "b3_latent_promoted": false,
+  "remaining": [
+    "Finish full-suite validation and source-hash comparison; public scan and verify remote saved bytes",
+    "Organ generation/bridge-file publication remains non-atomic across stores; idle concurrency remains a separate audit",
+    "Real Redmi measurement and native embedding integration remain required",
+    "Continue LP3 causal predicted-state contribution experiment separately from runtime/B3 and retain all prior negative results"
+  ],
+  "secondary_backup": "Drive upload rejected by automatic approval review; no successful Drive save claimed",
+  "next": "Close validated recovery checkpoint, then preregister and execute bounded LP3 lab if exact master/dependency prerequisites are verified"
+}

@@ -17,8 +17,8 @@ def fake_commands(step, stage, home, out):
         return None, 0
     if step == 'langlauf':
         return [sys.executable, '-c', 'import time; time.sleep(30)'], 1
-    code = "import json,sys; open(sys.argv[1],'w').write(json.dumps({'step': sys.argv[2]}))"
-    return [sys.executable, '-c', code, str(out/(step+'.json')), step], 60
+    code = "import json,sys; from pathlib import Path; p=Path(sys.argv[1]); p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps({'step': sys.argv[2]}))"
+    return [sys.executable, '-c', code, str(out/H.REPORTS[step]), step], 60
 
 
 class HandyPflichtTest(unittest.TestCase):
@@ -44,7 +44,7 @@ class HandyPflichtTest(unittest.TestCase):
         zips = sorted(self.target.glob('V13-Pflicht-Ergebnis-kurz-*.zip')); self.assertEqual(len(zips), 1)
         with zipfile.ZipFile(zips[0]) as z:
             names = z.namelist(); text = z.read('KURZ.txt').decode()
-        self.assertIn('lauf/ram/ram.json', names); self.assertIn('noch nicht gebaut', text)
+        self.assertIn('lauf/ram/ram-budget.json', names); self.assertIn('noch nicht gebaut', text)
         os.remove(zips[0])
         with mock.patch.object(H, 'run_step', wraps=H.run_step) as spy:
             self.run_main('--nur', 'ram,residenz')

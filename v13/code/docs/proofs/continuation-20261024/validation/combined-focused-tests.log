@@ -1,0 +1,94 @@
+...................................
+Handy-Pflichtmessungen starten (Stufe kurz, Schritte: ram, training, residenz, wiederholung, werkzeug, langlauf). Handy am Ladegerät, Termux offen lassen.
+Abbrechen mit Strg+C; geprüfte fertige Schritte bleiben. Teilversuche bleiben erhalten; neu messen nur mit --neu.
+
+Eignungs-Werkzeug: an (SHADOW bei Age 0)
+Schritt: RAM aller Modelle (WP-R, §24.33) ...
+  -> DONE
+Schritt: Trainings-Nachweis Routen-Kopf (G-TRAIN-RUNNER-PROOF-001) ...
+  -> NOT_BUILT
+Schritt: Beobachter-Reihenfolge und Residenz (§24.33, §24.14) ...
+  -> DONE
+Schritt: Wiederholte Aufgaben: wird es schneller? (Proceduralization) ...
+  -> DONE
+Schritt: Werkzeug-Vorhersage ...
+  -> DONE
+Schritt: Langlauf über mehrere simulierte Tage (G-MOBILE-LONGRUN-001) ...
+  -> DEADLINE
+
+V13 Handy-Pflichtmessungen
+==========================
+
+Stufe: kurz
+Gerät: 4 CPU-Kerne, RAM gesamt None MB, frei vor Start None MB
+Kleinster freier RAM: 9243 MB
+
+- RAM aller Modelle (WP-R, §24.33): fertig
+- Trainings-Nachweis Routen-Kopf (G-TRAIN-RUNNER-PROOF-001): noch nicht gebaut
+- Beobachter-Reihenfolge und Residenz (§24.33, §24.14): fertig
+- Wiederholte Aufgaben: wird es schneller? (Proceduralization): fertig
+- Werkzeug-Vorhersage: fertig
+- Langlauf über mehrere simulierte Tage (G-MOBILE-LONGRUN-001): Zeit abgelaufen (Teilergebnis)
+
+Messungen vergeben keine zusätzlichen Lernrechte. Das Eignungs-Werkzeug wird wie freigegeben aktiviert.
+Fertig heißt: Messlauf beendet, nicht wissenschaftliches Gate bestanden.
+Bitte diese ZIP-Datei in den Claude-Chat hochladen.
+
+Ergebnis-ZIP: /tmp/tmp63kqq3we/dl/V13-Pflicht-Ergebnis-kurz-20261024-001726.zip
+
+Handy-Pflichtmessungen starten (Stufe kurz, Schritte: ram, residenz). Handy am Ladegerät, Termux offen lassen.
+Abbrechen mit Strg+C; geprüfte fertige Schritte bleiben. Teilversuche bleiben erhalten; neu messen nur mit --neu.
+
+Eignungs-Werkzeug: an (SHADOW bei Age 0)
+
+V13 Handy-Pflichtmessungen
+==========================
+
+Stufe: kurz
+Gerät: 4 CPU-Kerne, RAM gesamt None MB, frei vor Start None MB
+Kleinster freier RAM: 9243 MB
+
+- RAM aller Modelle (WP-R, §24.33): schon fertig (übersprungen)
+- Beobachter-Reihenfolge und Residenz (§24.33, §24.14): schon fertig (übersprungen)
+
+Messungen vergeben keine zusätzlichen Lernrechte. Das Eignungs-Werkzeug wird wie freigegeben aktiviert.
+Fertig heißt: Messlauf beendet, nicht wissenschaftliches Gate bestanden.
+Bitte diese ZIP-Datei in den Claude-Chat hochladen.
+
+Ergebnis-ZIP: /tmp/tmp63kqq3we/dl/V13-Pflicht-Ergebnis-kurz-20261024-001726.zip
+
+Handy-Pflichtmessungen starten (Stufe kurz, Schritte: ram). Handy am Ladegerät, Termux offen lassen.
+Abbrechen mit Strg+C; geprüfte fertige Schritte bleiben. Teilversuche bleiben erhalten; neu messen nur mit --neu.
+
+Eignungs-Werkzeug: an (SHADOW bei Age 0)
+Schritt: RAM aller Modelle (WP-R, §24.33) ...
+  -> DONE
+
+V13 Handy-Pflichtmessungen
+==========================
+
+Stufe: kurz
+Gerät: 4 CPU-Kerne, RAM gesamt None MB, frei vor Start None MB
+Kleinster freier RAM: 9243 MB
+
+- RAM aller Modelle (WP-R, §24.33): fertig
+
+Messungen vergeben keine zusätzlichen Lernrechte. Das Eignungs-Werkzeug wird wie freigegeben aktiviert.
+Fertig heißt: Messlauf beendet, nicht wissenschaftliches Gate bestanden.
+Bitte diese ZIP-Datei in den Claude-Chat hochladen.
+
+Ergebnis-ZIP: /tmp/tmp63kqq3we/dl/V13-Pflicht-Ergebnis-kurz-20261024-001726.zip
+.usage: python -m unittest [-h] [--installed-home INSTALLED_HOME] [--nur NUR]
+                          [--neu] [--trotzdem] [--target-dir TARGET_DIR]
+                          [--no-setup]
+                          [{kurz,voll}]
+python -m unittest: error: Mindestens ein Schritt, jeder höchstens einmal: ram,training,residenz,wiederholung,werkzeug,langlauf
+.................{"arm": "A_THEN_B_SEQUENTIAL", "fixture": "first", "pass": true, "answer_s": 1.0, "wall_s": 2.0}
+..........usage: python -m unittest [-h] [--installed-home INSTALLED_HOME] --out OUT
+                          [--kills KILLS] [--skip-integration] [--dim DIM]
+python -m unittest: error: Existing proof evidence; choose a new output directory
+...
+----------------------------------------------------------------------
+Ran 66 tests in 7.661s
+
+OK
