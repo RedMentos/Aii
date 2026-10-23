@@ -78,6 +78,15 @@ class TestLP3(unittest.TestCase):
         row['predicted']['correct'] += 1
         with self.assertRaises(ValueError): mod.audit_rows([row])
 
+    def test_zero_intervention_is_required_by_verdict(self):
+        torch.set_num_threads(1)
+        import copy
+        one = mod.evaluate(self.bank, self.bank, self.bank, list(self.values), self.bank[:1], seed=31)
+        rows = [dict(copy.deepcopy(one), seed=seed) for seed in mod.SEEDS]
+        rows[0]['outputs']['zero_intervention'][0] = self.values[0]
+        rows[0]['zero_intervention'] = mod.score(rows[0]['expected'], rows[0]['outputs']['zero_intervention'])
+        self.assertEqual(mod.verdict(rows), 'LP3_ZERO_INTERVENTION_FAILED')
+
     def test_chat_template_used_for_prompt_encoding(self):
         class Tok:
             def apply_chat_template(self, messages, add_generation_prompt, tokenize):
