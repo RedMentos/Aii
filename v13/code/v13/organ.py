@@ -19,10 +19,12 @@ restore    needs the same model revision as at snapshot time (else: first :body 
            (memory is append-only by design), states of heads that live outside the generation.
 """
 import json
+import contextlib
+import os
 import shutil
 import time
 from pathlib import Path
-from .common import digest,dumps,file_hash,uid
+from .common import atomic_write,digest,dumps,file_hash,uid
 from .bodyport import bridge_key,direction_roles
 
 REVISION='v13-organ-checkpoint-v1'
@@ -63,17 +65,43 @@ def members(r,role):
     return {'role':role,'model':_spec(r,role),'components':_components(r,role),'bridges':_bridges(r,role),'assets':_assets(r,role)}
 
 
+def _copy_new(src,dst,expected_hash):
+    """Publish verified bytes only at a fresh path; never overwrite a generation's existing artifact."""
+    dst.parent.mkdir(parents=True,exist_ok=True);created=False
+    try:
+        with src.open('rb') as source,dst.open('xb') as target:
+            created=True;shutil.copyfileobj(source,target);target.flush();os.fsync(target.fileno())
+        if file_hash(dst)!=expected_hash:raise RuntimeError('Kopie der Organ-Datei beschädigt')
+        with contextlib.suppress(OSError):
+            fd=os.open(dst.parent,os.O_RDONLY)
+            try:os.fsync(fd)
+            finally:os.close(fd)
+    except BaseException:
+        if created:dst.unlink(missing_ok=True)
+        raise
+
+
+def _saved_component(folder,man,name,e):
+    # Additive v1 field: older snapshots used a flat basename, newer ones isolate each component.
+    rel=Path(man['component_files'][name]) if 'component_files' in man else Path(e['path']).name
+    base=folder/'files';path=base/rel
+    if not path.resolve().is_relative_to(base.resolve()):raise RuntimeError('Ungültiger Organ-Sicherungspfad')
+    return path
+
+
 def snapshot(r,role,clock=time.time):
     if not r.idle():raise ValueError('Erst :stillstand (oder warten, bis nichts läuft); sonst ist die Sicherung nicht in sich stimmig.')
     m=members(r,role);sid=uid('organ');folder=r.home/DIR/role/sid;(folder/'files').mkdir(parents=True)
+    component_files={name:'components/'+digest(name)+'.bin' for name in m['components']}
     for name,e in m['components'].items():
         src=r.home/e['path']
         if not src.is_file() or file_hash(src)!=e['sha256']:raise RuntimeError('Komponenten-Artefakt fehlt oder passt nicht: '+name)
-        shutil.copy2(src,folder/'files'/Path(e['path']).name)
-    for name in m['bridges']:shutil.copy2(r.home/'b3'/name,folder/'files'/name)
-    man={'revision':REVISION,'id':sid,'created':clock(),'generation':r.store.generation_id,'models_included':False,**m}
+        _copy_new(src,folder/'files'/component_files[name],e['sha256'])
+    for name,h in m['bridges'].items():_copy_new(r.home/'b3'/name,folder/'files'/name,h)
+    man={'revision':REVISION,'id':sid,'created':clock(),'generation':r.store.generation_id,'models_included':False,
+         'component_files':component_files,**m}
     man['hash']=digest(dumps({k:v for k,v in man.items() if k!='hash'}))
-    (folder/'manifest.json').write_text(dumps(man));r.store.log('organ_snapshot',None,{'role':role,'id':sid})
+    atomic_write(folder/'manifest.json',dumps(man));r.store.log('organ_snapshot',None,{'role':role,'id':sid})
     return man
 
 
@@ -94,50 +122,83 @@ def listing(r):
     return out
 
 
+def _file_status(path,expected_hash):
+    """Inspect artifact bytes, rather than treating generation metadata as proof of their existence."""
+    if not path.is_file():return 'MISSING'
+    try:return 'IDENTICAL' if file_hash(path)==expected_hash else 'CHANGED'
+    except OSError:return 'CHANGED'
+
+
 def check(r,sid):
-    man,_=_load(r,sid);now_=members(r,man['role']);parts={}
+    man,folder=_load(r,sid);now_=members(r,man['role']);parts={};backup_parts={}
+    for name,e in man['components'].items():
+        backup_parts['components:'+name]=_file_status(_saved_component(folder,man,name,e),e['sha256'])
+    for name,h in man['bridges'].items():
+        backup_parts['bridges:'+name]=_file_status(folder/'files'/name,h)
     for kind in ('components','bridges'):
         old,new=man[kind],now_[kind]
         for k in sorted(set(old)|set(new)):
             if k not in new:parts[kind+':'+k]='MISSING'
+            elif kind=='components' and (actual:=_file_status(r.home/new[k]['path'],new[k]['sha256']))!='IDENTICAL':
+                parts[kind+':'+k]=actual
             elif k not in old:parts[kind+':'+k]='ADDED'
             else:
                 same=(old[k]['sha256']==new[k]['sha256']) if kind=='components' else old[k]==new[k]
                 parts[kind+':'+k]='IDENTICAL' if same else 'CHANGED'
     model_same=man['model']['revision']==now_['model']['revision'] and man['model']['sha256']==now_['model']['sha256']
+    backup_intact=all(v=='IDENTICAL' for v in backup_parts.values())
+    reason=None
+    if not model_same:reason='MODEL_CHANGED: erst :body rollback '+man['role']+' oder neu kalibrieren'
+    elif not backup_intact:reason='BACKUP_DAMAGED: Organ-Sicherung enthält fehlende oder beschädigte Dateien'
     return {'id':sid,'role':man['role'],'model_same':model_same,'parts':parts,
-            'identical':model_same and all(v=='IDENTICAL' for v in parts.values()),
-            'restorable':model_same,'reason':None if model_same else 'MODEL_CHANGED: erst :body rollback '+man['role']+' oder neu kalibrieren'}
+            'backup_parts':backup_parts,'backup_intact':backup_intact,
+            'identical':model_same and backup_intact and all(v=='IDENTICAL' for v in parts.values()),
+            'restorable':model_same and backup_intact,'reason':reason}
 
 
 def restore(r,sid):
     man,folder=_load(r,sid);role=man['role']
     if not r.idle():raise ValueError('Erst :stillstand (oder warten, bis nichts läuft).')
     c=check(r,sid)
+    if not c['backup_intact']:raise RuntimeError('Organ-Sicherung beschädigt: '+sid)
     if not c['restorable']:raise ValueError(c['reason'])
     if c['identical']:return {'id':sid,'role':role,'status':'ALREADY_IDENTICAL','generation':r.store.generation_id}
     s=r.store;base=s.generation();comps=dict(s.components(base));hashes=dict(base['hashes'])
     for name in _components(r,role):  # take this organ's current components out ...
         hashes.pop(comps[name]['path'],None);comps.pop(name)
-    for name,e in man['components'].items():  # ... and put the saved ones back, nothing else changes
+    # Validate the complete plan before copying ANY artifact. A later refusal must not repair/overwrite earlier files.
+    from .store import COMPONENT_ENCODERS
+    copies=[];original_paths=set()
+    s.validate_artifacts({'hashes':hashes,'components':comps})
+    for name,saved in man['components'].items():
+        e=dict(saved)
+        if name not in COMPONENT_ENCODERS:raise ValueError('Unbekannte Update-Komponente: '+name)
         if name in comps:raise ValueError('Komponente gehört inzwischen einem anderen Organ: '+name)
         for dep,rev in (e.get('dependency_revisions') or {}).items():
             if r.models.revision(dep)!=rev:raise ValueError('Abhängiges Modell geändert: '+dep+' (erst zurückstellen oder neu kalibrieren)')
-        dst=r.home/e['path'];src=folder/'files'/Path(e['path']).name
-        if not dst.is_file() or file_hash(dst)!=e['sha256']:
-            if file_hash(src)!=e['sha256']:raise RuntimeError('Gesicherte Datei beschädigt: '+name)
-            dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst)
-        if e['path'] in hashes:raise ValueError('Artefakt gehört bereits anderer Komponente: '+name)
+        if e['path'] in hashes or e['path'] in original_paths:raise ValueError('Artefakt gehört bereits anderer Komponente: '+name)
+        original_paths.add(e['path']);dst=r.home/e['path'];src=_saved_component(folder,man,name,e)
+        if not dst.resolve().is_relative_to(r.home.resolve()):raise ValueError('Artefakt außerhalb des Brain-Verzeichnisses: '+name)
+        if _file_status(dst,e['sha256'])!='IDENTICAL':
+            e['path']='checkpoints/'+name+'-'+uid('organ_restore')+'.npz';dst=r.home/e['path']
+            copies.append((src,dst,e['sha256']))
         comps[name]=e;hashes[e['path']]=e['sha256']
-    s.validate_artifacts({'hashes':hashes,'components':comps})
     for name,h in man['bridges'].items():
         src=folder/'files'/name
         if file_hash(src)!=h:raise RuntimeError('Gesicherte Brücke beschädigt: '+name)
-    with s.tx() as cur:
-        active=json.loads(cur.execute("SELECT value FROM meta WHERE key='active_generation'").fetchone()[0])
-        if active!=base['brain_generation_id']:raise ValueError('Generation konkurrierend geändert')
-        ids=[e['update_id'] for e in comps.values() if e.get('update_id')]
-        gid=s._generation(cur,active,hashes,base['config'],base['rule_version'],base['models'],ids,comps,None)
+    created=[];gid=None
+    try:
+        for src,dst,h in copies:_copy_new(src,dst,h);created.append(dst)
+        s.validate_artifacts({'hashes':hashes,'components':comps})
+        with s.tx() as cur:
+            active=json.loads(cur.execute("SELECT value FROM meta WHERE key='active_generation'").fetchone()[0])
+            if active!=base['brain_generation_id']:raise ValueError('Generation konkurrierend geändert')
+            ids=[e['update_id'] for e in comps.values() if e.get('update_id')]
+            gid=s._generation(cur,active,hashes,base['config'],base['rule_version'],base['models'],ids,comps,None)
+    except BaseException:
+        if gid is None or s.generation_id!=gid:
+            for path in created:path.unlink(missing_ok=True)
+        raise
     for name in _bridges(r,role):  # bridges only after the generation is written (a refused commit changes nothing)
         if name not in man['bridges']:(r.home/'b3'/name).unlink()
     for name in man['bridges']:(r.home/'b3').mkdir(exist_ok=True);shutil.copy2(folder/'files'/name,r.home/'b3'/name)
@@ -149,6 +210,7 @@ def restore(r,sid):
 def text_check(c):
     lines=[f"Organ {c['role']} – Sicherung {c['id']}: "+('unverändert' if c['identical'] else 'geändert')]
     lines.append('  Modell: '+('gleich' if c['model_same'] else 'GEWECHSELT ('+c['reason']+')'))
+    if not c['backup_intact']:lines.append('  Sicherung: BESCHÄDIGT (fehlende oder beschädigte Dateien; Wiederherstellen verweigert)')
     names={'IDENTICAL':'gleich','CHANGED':'geändert','MISSING':'fehlt jetzt','ADDED':'neu seit Sicherung'}
     for k,v in c['parts'].items():lines.append(f'  {k}: {names[v]}')
     return '\n'.join(lines)
