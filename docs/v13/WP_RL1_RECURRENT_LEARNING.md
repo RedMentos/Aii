@@ -1,4 +1,8 @@
 # V13 — WP-RL1: Controlled neural re-entry and continuous learning
+
+## BINDING COMPLETE-BLUEPRINT SCOPE RULE (V13)
+**The ENTIRE V13 master blueprint v10.16.1 is the binding, unabridged target.** Neither components discussed here, illustrative lists, individual work packages nor partial implementations constitute an exhaustive selection or replacement. **Every** prescribed organ, subsystem, state layer, learning path, information flow, interaction, operational safeguard, proof and acceptance gate remains in scope even when not mentioned in this note or not yet implemented. Before acting, examine the full current canon together with decisions, roadmap, build state, evidence and active owners. New hypotheses are additions only: never silently omit, collapse or reinterpret a canonical requirement. Sequencing and experimental feature flags affect when/how something is tested or activated, **not whether it remains part of the complete target architecture**. Surface conflicts explicitly, reconcile before changing scope, and do not claim system completion from partial progress.
+
 Status: **approved architectural research requirement; feature OFF by default until verified**.
 Scope: isolated experimental implementation only. Does not supersede existing blueprint, ownership, STEP/WP gates, or measured results.
 
