@@ -1,0 +1,7 @@
+# WP-LP3 checkpoint SHA-256 (exact UTF-8 bytes)
+940e5ee4d7b5924846cdd939b822c91780e1852b0df724c0834034a5864fda79  v13/code/scripts/lp3_memory_key_candidate.py
+838ac51c4cb502bed0ceddc84f7e317768f1e0687831977c258a97cdeec4b15b  v13/code/tests/test_lp3_memory_key_candidate.py
+8699ff39c47e57e1590e51ba5bd9e502d209c4cdd09ff0015fc09105c8efecad  v13/code/docs/proofs/continuation-20261024/lp3-memory-key/PREREG.md
+0bca0da805a5f7de5770b8ffb14da7f6feb156599849aea881c2afb1b2044284  v13/code/docs/coordination/LP3_HANDOFF_20261024.md
+8d97a80eb52e7a4edb298a2717b08eacb517711db7502ce3b190df0d92da46d0  v13/code/docs/coordination/BUILD_STATE_LP3_20261024.json
+d7b86f44f363e010c56291640fbd4814888a8730b3bee47656f41be6ad740063  v13/code/docs/proofs/continuation-20261024/lp3-memory-key/software-tests.log
