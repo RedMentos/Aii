@@ -8,9 +8,8 @@ Part 2 (runner fuzz, same worker code, class-structured vectors of the real embe
   gradient_reference_test   worker finite-difference check (< 1e-6)
   deterministic_seed_test   two runs -> byte-identical candidate.npz and identical metrics weights
   cancel_during_forward / cancel_during_backward / crash_during_checkpoint
-                            SIGKILL at spread-out times while the worker runs (optimizer loop = forward+backward,
-                            then np.savez, then atomic metrics.json): either no metrics.json, or metrics.json plus a
-                            candidate that loads and equals the uninterrupted reference. A torn checkpoint never counts.
+                            SIGKILL after source-bound markers at actual objective statements or a partial checkpoint
+                            write, using a disposable test observer; supplemental wall-clock kills remain separate.
   resume_correctness        j steps, checkpoint, k steps == j+k steps continuous (allclose 1e-12)
   rollback_correctness      from part 1
   retention_suite_before_after  per-class held-out accuracy before/after (worker metric, retention_max_delta)
@@ -34,7 +33,7 @@ APP = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(APP))
 import numpy as np  # noqa: E402
 from v13.common import atomic_write, dumps, file_hash  # noqa: E402
-from v13.resources import device, snapshot  # noqa: E402
+from v13.resources import device, snapshot, process_memory  # noqa: E402
 
 CFG = {'learning_steps': 6000, 'learning_rate': .05, 'eligibility_decay': .9, 'max_update_norm': .5, 'retention_max_delta': .1}
 
@@ -67,8 +66,65 @@ def worker(folder, req, kill_after=None):
     proc.wait(); return proc.returncode
 
 
+def phase_kill(folder, req, phase, timeout=30):
+    """Kill our disposable worker at an observed phase, never an estimated time."""
+    folder.mkdir(parents=True, exist_ok=True)
+    marker = folder/'phase_reached.json'
+    if marker.exists():
+        raise ValueError('Phase probe output must be fresh')
+    env = dict(os.environ, PYTHONPATH=str(APP))
+    proc = subprocess.Popen([sys.executable, str(APP/'scripts/train_runner_phase_probe.py'),
+                             str(req), str(folder), phase], env=env, stdin=subprocess.PIPE,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    started = time.monotonic(); observation = None; peak_rss = None; killed = False
+    try:
+        while proc.poll() is None and time.monotonic()-started < timeout:
+            rss = process_memory(proc.pid).get('rss_bytes')
+            if rss is not None:
+                peak_rss = max(peak_rss or 0, rss)
+            if marker.is_file():
+                observation = json.loads(marker.read_text())
+                if (observation.get('phase') == phase
+                        and observation.get('worker_sha256') == file_hash(APP/'v13/learning_worker.py')):
+                    proc.kill(); killed = True
+                break
+            time.sleep(.01)
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+        proc.wait()
+        proc.stdin.close()
+    has_metrics = (folder/'metrics.json').exists()
+    return {'phase': phase, 'observed': observation, 'kill_sent_at_observed_phase': killed,
+            'returncode': proc.returncode, 'metrics': has_metrics,
+            'candidate_file': (folder/'candidate.npz').exists(),
+            'sampled_child_peak_rss_bytes': peak_rss,
+            'pass': bool(killed and proc.returncode == -signal.SIGKILL and not has_metrics)}
+
+
+INTEGRATION_CHECKS = (
+    'shadow_does_not_commit', 'candidate_has_changed_weights', 'train_gradient',
+    'explicit_activation', 'restart_uses_head', 'actual_learned_route_use',
+    'rollback', 'integrity', 'f7_measured_first_trial', 'f7_restart_keeps_budget',
+    'f7_worker_uses_budget', 'f7_second_shadow_no_commit', 'f7_operator_config_unchanged',
+    'f7_finished_candidate_survives_f7_crash', 'f7_typed_trial_and_budget',
+)
+
+
+def integration_pass(report, returncode):
+    """A selected subset of checks must never turn a partial lifecycle into PASS."""
+    if not isinstance(report, dict) or returncode != 0 or report.get('error'):
+        return False
+    checks = report.get('checks')
+    return bool(report.get('proof_status') == 'LEARNING_LIFECYCLE_PASS'
+                and isinstance(checks, dict)
+                and all(checks.get(k) is True for k in INTEGRATION_CHECKS)
+                and all(v is True for v in checks.values()))
+
+
 def load(folder):
-    with np.load(folder/'candidate.npz', allow_pickle=False) as z: return z['route_w'].copy(), z['eligibility'].copy()
+    with open(folder/'candidate.npz', 'rb') as stream:
+        with np.load(stream, allow_pickle=False) as z: return z['route_w'].copy(), z['eligibility'].copy()
 
 
 def thermal():
@@ -114,9 +170,18 @@ def fuzz(base, dim, kills):
         outcomes.append({'kill_after_s': round(t, 4), 'loop_fraction': round((t-t_imp)/loop, 3), 'metrics': has_m, 'candidate_file': has_c, 'complete_and_equal': ok})
     out['kills'] = {'n': len(spread), 'import_s': round(t_imp, 3), 'no_metrics_left': clean, 'complete_equal': partial_ok, 'torn_accepted': torn, 'rows': outcomes}
     inloop = [o for o in outcomes if o['loop_fraction'] < .9]; end = [o for o in outcomes if o['loop_fraction'] >= .9]
-    out['cancel_during_forward'] = out['cancel_during_backward'] = bool(inloop) and all(o['complete_and_equal'] is not False for o in inloop)
-    out['crash_during_checkpoint'] = bool(end) and torn == 0
-    out['note_forward_backward'] = 'forward and backward are one fused NumPy call per step; both checks use the same in-loop kills'
+    # Estimated wall-clock fractions above are supplemental only. Exact phase
+    # markers from an isolated observer must precede the actual SIGKILL.
+    probes = {}
+    for phase in ('forward', 'backward', 'checkpoint'):
+        pf = base/('phase_'+phase)
+        cfg = dict(CFG, learning_steps=2)
+        probes[phase] = phase_kill(pf, request(base, x, y, cfg), phase)
+    out['phase_probes'] = probes
+    out['cancel_during_forward'] = probes['forward']['pass']
+    out['cancel_during_backward'] = probes['backward']['pass']
+    out['crash_during_checkpoint'] = probes['checkpoint']['pass'] and torn == 0
+    out['note_forward_backward'] = 'SIGKILL after durable source-bound markers at actual forward/backward statements inside optimize; checkpoint kill after partial candidate write. Test observer only; production worker unchanged.'
     # resume: j + k == j+k
     j, k = 2500, 3500; a = base/'res_a'; worker(a, request(base, x, y, dict(CFG, learning_steps=j)))
     b = base/'res_b'; worker(b, request(base, x, y, dict(CFG, learning_steps=k), checkpoint=a/'candidate.npz'))
@@ -131,14 +196,20 @@ def fuzz(base, dim, kills):
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('--installed-home'); ap.add_argument('--out', required=True)
     ap.add_argument('--kills', type=int, default=24); ap.add_argument('--skip-integration', action='store_true'); ap.add_argument('--dim', type=int, default=0)
-    a = ap.parse_args(argv); out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    a = ap.parse_args(argv)
+    if a.kills < 1 or a.dim < 0:
+        ap.error('--kills must be positive and --dim nonnegative')
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    if (out/'train-runner-proof.json').exists() or (out/'integration_learning.json').exists():
+        ap.error('Existing proof evidence; choose a new output directory')
     s0 = snapshot(out); th0 = thermal(); t0 = time.monotonic(); report = {'schema': 'V13_TRAIN_RUNNER_PROOF_V1', 'device': device()}
-    integ = None
+    integ = None; integration_rc = None
     if not a.skip_integration:
         if not a.installed_home: ap.error('--installed-home required unless --skip-integration')
         ip = out/'integration_learning.json'
         rc = subprocess.run([sys.executable, str(APP/'tests/integration_learning.py'), '--installed-home', str(Path(a.installed_home).expanduser()),
                              '--out', str(ip)], env=dict(os.environ, PYTHONPATH=str(APP)), stdin=subprocess.DEVNULL).returncode
+        integration_rc = rc
         integ = json.loads(ip.read_text()) if ip.exists() else {'error': 'no report', 'exit': rc}
     dim = a.dim or ((integ or {}).get('manifest', {}).get('metrics', {}).get('embedding_dim') or 64)
     with tempfile.TemporaryDirectory(prefix='v13-trp-') as tmp:
@@ -149,20 +220,30 @@ def main(argv=None):
               'cancel_during_forward': fz['cancel_during_forward'], 'cancel_during_backward': fz['cancel_during_backward'],
               'crash_during_checkpoint': fz['crash_during_checkpoint'], 'resume_correctness': fz['resume_correctness'],
               'rollback_correctness': bool(ichecks.get('rollback')) if integ else None,
-              'real_path_shadow_approve_restart': bool(ichecks) and all(ichecks.get(k) for k in ('shadow_does_not_commit', 'explicit_activation', 'restart_uses_head', 'integrity')) if integ else None,
+              'real_path_shadow_approve_restart': integration_pass(integ, integration_rc) if integ is not None else None,
               'retention_suite_before_after': bool(fz['retention_suite_before_after']['retention_pass'])}
     required = [k for k, v in checks.items() if v is not None]
     verdict = 'TRAIN_RUNNER_PROOF_PASS' if all(checks[k] for k in required) and integ is not None else 'TRAIN_RUNNER_PROOF_FAIL' if not all(checks[k] for k in required) else 'TRAIN_RUNNER_PROOF_PARTIAL_NO_INTEGRATION'
     phone = bool(device().get('android'))
     packet = {'trainable_parameter_count': int(fz['reference']['metrics']['trainable_parameter_count']),
               'runner_revision': 'learning_worker@' + file_hash(APP/'v13/learning_worker.py')[:16], 'device': device(), 'checks': checks}
-    report.update(verdict=verdict, packet=packet, integration=integ, fuzz=fz, phone_measured=phone,
+    child_peaks = [p['sampled_child_peak_rss_bytes'] for p in fz['phase_probes'].values()
+                   if p['sampled_child_peak_rss_bytes'] is not None]
+    report.update(verdict=verdict, packet=packet, integration=integ, integration_returncode=integration_rc, fuzz=fz, phone_measured=phone,
+                  source_sha256={name: file_hash(APP/name) for name in (
+                      'scripts/train_runner_proof.py', 'scripts/train_runner_phase_probe.py',
+                      'v13/learning_worker.py', 'tests/integration_learning.py')},
+                  fuzz_input_scope='synthetic class-structured vectors, not native model embeddings',
                   measurements={'step_latency_ms': fz['step_latency_ms'], 'examples_per_step': fz['examples_per_step'],
                                 'battery_delta_percent': (s0['battery_percent'] or 0)-(s1['battery_percent'] or 0) if s0['battery_percent'] is not None and s1['battery_percent'] is not None else None,
                                 'battery_temp_start_c': s0['battery_temperature_c'], 'battery_temp_end_c': s1['battery_temperature_c'],
                                 'thermal_start': th0, 'thermal_end': th1, 'throttle_hint': (th1['cpu_freq_ratio_min'] or 1) < .6 if th1['cpu_freq_ratio_min'] else None,
                                 'energy_delta': 'battery percent only; no energy counter readable without root' if phone else None,
-                                'peak_rss_mb': round(s1['own_peak_rss_bytes']/2**20, 1), 'seconds': round(time.monotonic()-t0, 1)},
+                                'peak_rss_mb': None,
+                                'coordinator_peak_rss_mb': round(s1['own_peak_rss_bytes']/2**20, 1),
+                                'phase_probe_sampled_child_peak_rss_mb': round(max(child_peaks)/2**20, 1) if child_peaks else None,
+                                'rss_scope': 'coordinator lifetime peak and sampled disposable phase probes; full training worker peak not measured',
+                                'seconds': round(time.monotonic()-t0, 1)},
                   scope='STEP5 external route head (NumPy) only; not body/LLM weights (those have no phone train runner)',
                   canonical_gate_pass=False)
     atomic_write(out/'train-runner-proof.json', dumps(report)); print(json.dumps({'verdict': verdict, 'checks': checks}, indent=1))
