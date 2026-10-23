@@ -121,6 +121,8 @@ READ_SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['op
                               'local_only': {'type': ['boolean', 'null']}}}
 LIVE_NOTE = ('Answer with this decision first, in your own words, then the remaining budget. If the decision is UNKNOWN, say '
              'which rule is missing and do not choose an option.')
+FIRST_NOTE = ('The user already sees the "answer" sentence as the start of your reply. Continue right after it with one or two '
+              'short sentences that explain it with the numbers in "details". Do not repeat it and do not choose a different option.')
 
 
 def question(text):
@@ -200,6 +202,44 @@ def args_for(values, current, earlier):
     return args
 
 
+# Fixed reader (Thread „STEP2-Nutzen Engpass“, 2026-10-22; cfg eligibility_reader='fixed'). User decision 2026-10-21: rules are
+# read by a fixed, non-generative component, never by a language model (WP-Z3b: C3 350M always says local_only=true and
+# often keeps a stale rule). Rule values: the current message wins; otherwise the newest earlier text that states the rule.
+# A text that states two different values for one rule gives no value (refuse, never guess). Options: their own clause in
+# the current message, else in the newest earlier text; an option this wording does not cover leaves options to the model.
+_OPT_VALUES = (r'\bcost\s+(\d+)\b', r'\b(\d+)\s+days?\b', r'\blocal\s+(true|false)\b')
+
+
+def fixed_rule(rule, current, earlier=()):
+    for text in (current, *reversed(list(earlier))):
+        found = stated_values(rule, str(text))
+        if found: return found.pop() if len(found) == 1 else None
+    return None
+
+
+def fixed_option(entity, current, earlier=()):
+    for text in (current, *reversed(list(earlier))):
+        clause = option_clause(entity, str(text))
+        if not clause: continue
+        got = [re.findall(rx, clause, re.I) for rx in _OPT_VALUES]
+        if any(len(set(g)) != 1 for g in got): return None
+        return {'entity': entity, 'cost': int(got[0][0]), 'days': int(got[1][0]), 'local': got[2][0].lower() == 'true'}
+    return None
+
+
+def read_fixed(current, earlier=()):
+    """READ_SCHEMA-shaped values without a model; 'options' is None when this wording does not cover both options."""
+    opts = [fixed_option(x, current, earlier) for x in 'AB']
+    out = {k: fixed_rule(k, current, earlier) for k in ('budget', 'deadline', 'local_only')}
+    out['options'] = opts if all(opts) else None
+    return out
+
+
+def with_fixed_rules(values, fixed):
+    """Model-read options, rules only from the fixed reader (the model's rule values are discarded)."""
+    return dict(values, **{k: fixed[k] for k in ('budget', 'deadline', 'local_only')})
+
+
 def decision_line(result):
     """One readable line: what the recipe decided (used by the TOOL_RESULT layer and the broker correction)."""
     act = result['action']
@@ -231,6 +271,20 @@ def answer_sentence(args, result):
         both = names[0] if len(names) == 1 else ', '.join(names[:-1])+' and '+names[-1]
         return f"I cannot decide yet: the {both} {'rule is' if len(names) == 1 else 'rules are'} missing or not stated exactly."
     return 'I cannot decide yet: an option is not stated exactly.'
+
+
+def final_text(args, result):
+    """UNKNOWN/NONE under cfg tool_answer_first: the whole answer, fixed text, no body continuation (dev seed 7: the 350M
+    body went on to pick an option after "I cannot decide yet" in 2 of 3 missing-rule tasks)."""
+    if result['action'] == 'NONE':
+        return answer_sentence(args, result)+' '+'; '.join(
+            f"Option {o['entity']}: {o['cost']} euros, {o['days']} days, {'local' if o['local'] else 'not local'}, not eligible" for o in result['options'])+'.'
+    miss = unresolved(args, result)
+    names = [m.replace('_', '-') for m in miss]
+    both = ', '.join(names[:-1])+' and '+names[-1] if len(names) > 1 else ''.join(names)
+    ask = ('Please tell me the '+both+(' rule.' if len(names) == 1 else ' rules.')) if miss \
+        else 'Please state both options with cost, duration and local.'
+    return answer_sentence(args, result)+' '+ask
 
 
 _UNKNOWN = re.compile(r"(?i)\b(?:unknown|cannot (?:be )?(?:decide|determine|choose|tell|make)\w*|can't (?:decide|determine|choose|tell)|"
