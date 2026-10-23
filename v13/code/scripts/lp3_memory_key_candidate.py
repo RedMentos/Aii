@@ -172,6 +172,8 @@ def verdict(rows):
     audit_rows(rows)
     if len(rows) != len(SEEDS) or {r['seed'] for r in rows} != set(SEEDS):
         return "LP3_INCOMPLETE"
+    if any(r['zero_intervention']['abstain'] != r['zero_intervention']['total'] for r in rows):
+        return "LP3_ZERO_INTERVENTION_FAILED"
     gains = [r['predicted']['correct'] - r['raw']['correct'] for r in rows]
     control = [r['predicted']['correct'] - max(r['wrong_trained']['correct'], r['value_shift']['correct']) for r in rows]
     leakage = [r['near_pred_nonabstain'] - r['near_raw_nonabstain'] for r in rows]
@@ -239,15 +241,7 @@ def main():
     actual = digest.hexdigest()
     if actual != a.master_sha256: raise SystemExit('HARD_BLOCKER: master hash mismatch')
     if (a.out / 'report.json').exists(): raise SystemExit('refusing to overwrite existing cohort')
-    import torch
-    from transformers import AutoTokenizer, AutoModelForCausalLM
-    torch.set_num_threads(4)
-    tok = AutoTokenizer.from_pretrained(str(a.master), local_files_only=True, trust_remote_code=False)
-    model = AutoModelForCausalLM.from_pretrained(str(a.master), local_files_only=True, trust_remote_code=False, dtype=torch.float32).eval()
-    q = encode(model, tok, [p for p, _, _ in FACTS]); bank = encode_answers(model, tok, [t for _, t, _ in FACTS])
     tasks = tuple(HELDOUT) + HARDER
-    h = encode(model, tok, [prompt for _, prompt in tasks]); near = encode(model, tok, [q for q, _ in NEAR_MISS])
-    expected = [FACTS[i][1] for i, _ in tasks]
     binding = {"schema": "V13_LP3_MEMORY_KEY_V1", "master_sha256": actual,
                "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                "lp2_fixture_sha256": hashlib.sha256((HERE / 'lp2_assignment_objective.py').read_bytes()).hexdigest(),
@@ -256,6 +250,14 @@ def main():
                "params": {"seeds": SEEDS, "steps": STEPS, "temperature": TEMP, "lr": LR,
                           "items": len(FACTS), "holdout": len(tasks), "min_similarity": 0.35, "min_margin": 0.03}}
     write_atomic(a.out / 'run_manifest.json', binding)
+    import torch
+    from transformers import AutoTokenizer, AutoModelForCausalLM
+    torch.set_num_threads(4)
+    tok = AutoTokenizer.from_pretrained(str(a.master), local_files_only=True, trust_remote_code=False)
+    model = AutoModelForCausalLM.from_pretrained(str(a.master), local_files_only=True, trust_remote_code=False, dtype=torch.float32).eval()
+    q = encode(model, tok, [p for p, _, _ in FACTS]); bank = encode_answers(model, tok, [t for _, t, _ in FACTS])
+    h = encode(model, tok, [prompt for _, prompt in tasks]); near = encode(model, tok, [q for q, _ in NEAR_MISS])
+    expected = [FACTS[i][1] for i, _ in tasks]
     rows = []
     for seed in SEEDS:
         try:
