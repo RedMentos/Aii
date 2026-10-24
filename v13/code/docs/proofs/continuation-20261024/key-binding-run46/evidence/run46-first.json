@@ -4,7 +4,7 @@
   "heldout_seed": 20261025,
   "jepa_weight": 0,
   "metrics": {
-    "context": 1,
+    "context": 1.0,
     "no_context": 0.10546875,
     "shuffled_context": 0.42578125,
     "uniform_attention": 0.42578125,
