@@ -1,0 +1,38 @@
+{
+  "schema": "V13_RUN78_CROSS_ORGAN_SAFETY_LINUX_CI_V1",
+  "date": "2026-10-24",
+  "base": "7cc74d0d1751343ec21d1c7172f884c0ba45f25e",
+  "branch": "codex/cross-organ-safety-ci-run78-20261024",
+  "owner": "CI test selection and Run78 evidence only",
+  "change": "20 additional model-free Age, Safety, Organ, SQLite, History, Episodic, Neuromod, Attention, Self Model, Output Policy, Transaction, Sleep and Homeostasis modules added to existing focused CI",
+  "evidence": {
+    "run": 40132851072,
+    "job": 120988087459,
+    "head": "ce8e4e97731e3037cd68f8868e1add3c67220188",
+    "result": "363/363 PASS; compileall PASS; official privacy CLEAN",
+    "raw_log_blob": "c3159d6bba90f8a8394ec9f74d8144661c4a9ed8",
+    "workflow_blob": "971b7fe6664ea3e8e5ff03a040a74c2e134bd523",
+    "warnings": "SQLite ResourceWarnings observed, not test failures",
+    "levels": {
+      "software": "Actual GitHub-hosted Linux Python/SQLite",
+      "synthetic": "Authored fixtures",
+      "native_models": "NOT RUN",
+      "redmi": "NOT RUN",
+      "full_repo": "NOT RUN"
+    }
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Full 260-module repository suite remains unrun; this CI covers 38 registered modules.",
+    "Unclosed SQLite ResourceWarnings need ownership/teardown review before claiming leak-free lifecycle.",
+    "Current native body/JEPA and Redmi acceptance still blocked by resources/device and original gates."
+  ],
+  "next_command": "Review SQLite ResourceWarnings for actual connection ownership and bounded cleanup; otherwise select next substantive canon package (C3/JEF/learning) with no native claims.",
+  "user_decision_required": false
+}
