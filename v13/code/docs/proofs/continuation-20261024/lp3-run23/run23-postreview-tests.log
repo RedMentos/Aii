@@ -1,0 +1,34 @@
+======================================================================
+ERROR: test_sigterm_during_group_cleanup_blocks_receipt (test_lp3_serial_sigterm_run19.SpawnWindowAndCleanupReview.test_sigterm_during_group_cleanup_blocks_receipt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run23/v13/code/tests/test_lp3_serial_sigterm_run19.py", line 150, in test_sigterm_during_group_cleanup_blocks_receipt
+    self.call()
+    ~~~~~~~~~^^
+  File "/mnt/data/v13_run23/v13/code/tests/test_lp3_serial_sigterm_run19.py", line 92, in <lambda>
+    self.call = lambda **kw: SerialCohortTests.call(self, **kw)
+                             ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/v13_run23/v13/code/tests/test_lp3_serial_cohort.py", line 65, in call
+    return mod.run_once(**options)
+           ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/mnt/data/v13_run23/v13/code/scripts/lp3_serial_cohort.py", line 296, in run_once
+    rc, timed_out = _wait_owned_child(proc, timeout)
+                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/mnt/data/v13_run23/v13/code/scripts/lp3_serial_cohort.py", line 141, in _wait_owned_child
+    return proc.wait(timeout=timeout), False
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/subprocess.py", line 1280, in wait
+    return self._wait(timeout=timeout)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/subprocess.py", line 2060, in _wait
+    time.sleep(delay)
+    ~~~~~~~~~~^^^^^^^
+  File "/mnt/data/v13_run23/v13/code/scripts/lp3_serial_cohort.py", line 56, in on_sigterm
+    raise OwnedLaunchInterrupted('SIGTERM during owned native launch')
+lp3_serial_run16.OwnedLaunchInterrupted: SIGTERM during owned native launch
+
+----------------------------------------------------------------------
+Ran 155 tests in 31.191s
+
+FAILED (errors=1)
+{"verdict": "LP3_MEMORY_KEY_NOT_SUPPORTED", "report_sha256": "e7f204517d4e1dfb5afe7068cc82bd08558c34c7fc969f71f8ff7d27654d3a3c", "rows": 4}
