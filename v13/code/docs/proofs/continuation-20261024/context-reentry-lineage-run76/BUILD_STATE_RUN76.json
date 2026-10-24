@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN76_CONTEXT_REENTRY_LINEAGE_V1",
+  "date": "2026-10-24",
+  "base": "be84e884f0bcbd049e317c178f9511cf08da3dbc",
+  "branch": "codex/context-reentry-lineage-run76-20261024",
+  "owner": "Context OS append-only source identity, focused tests and Run76 evidence",
+  "change": "Full prior native-history row digest plus prior query SourceRef digest; latest-event exact two-row check; fail-closed on legacy missing binding",
+  "evidence": {
+    "red": {
+      "run": 40132484891,
+      "job": 120986960478,
+      "sha": "c18eafbf58672c450e05508b21f8992d7fa19461",
+      "result": "137 tests, 5 expected failures",
+      "log_blob_sha": "2d2013764bad705c3b7b2694f1387ed1d1a32cc1"
+    },
+    "green": {
+      "run": 40132563119,
+      "job": 120987233559,
+      "sha": "310532ba12d3d6789557478e8d7bd881a76ed59f",
+      "result": "138/138 PASS; compileall PASS; official privacy CLEAN",
+      "log_blob_sha": "8154fd0954429c2b8605af379e0804802b26f029"
+    },
+    "source_blobs": {
+      "v13/code/v13/context_os.py": "7b5aa1852608b32b2dfb716d8fcc192b9bbef0da",
+      "v13/code/tests/test_context_append_provenance_run74.py": "d61521935363082dba92df33ec01239ab599cc28"
+    },
+    "levels": {
+      "software": "Linux GitHub Actions actual execution",
+      "synthetic": "Authored adversarial source metadata",
+      "native_models": "NOT RUN",
+      "redmi": "NOT RUN",
+      "full_suite": "NOT RUN"
+    }
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "host_recheck": {
+    "local_cgroup_memory_bytes": 4294967296,
+    "local_cgroup_v2": true,
+    "local_cgroup_write": false,
+    "local_arch": "x86_64",
+    "transformers_installed": false,
+    "torch_installed": true,
+    "git_dns": "UNAVAILABLE"
+  },
+  "open_questions": [
+    "Real Store.native_history full-source identity integration not yet directly exercised in this package.",
+    "Append-only cache performance and actual llama.cpp KV reuse not measured in this run.",
+    "Check canonical source_ref and provenance against live runtime on Redmi; no gate promotion."
+  ],
+  "next_command": "Add real SQLite Store/native_history integration test with matching and changed source lineage, run focused CI and privacy, then continue independent blueprint package.",
+  "user_decision_required": false
+}
