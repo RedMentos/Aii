@@ -1,0 +1,45 @@
+$ python evidence/reproduce_original.py
+expected_one_decay= 0.8170728068875467
+observed_two_calls= 0.6676079717550941
+Traceback (most recent call last):
+  File "/mnt/data/v13_run62/evidence/reproduce_original.py", line 12, in <module>
+    assert abs(it['priority']-first)<1e-12, 'RED: same-time Sleep C tick compounded elapsed-day decay twice'
+AssertionError: RED: same-time Sleep C tick compounded elapsed-day decay twice
+exit_code=1 (expected RED)
+
+$ PYTHONPATH=. python -m unittest -v tests.test_sleep_trace_decay
+test_bad_persisted_watermark_refused ... ok
+test_batch_validation_no_partial_mutation ... ok
+test_clock_rollback_no_rewind_or_decay ... ok
+test_expiry_retired_once ... ok
+test_floor_never_increases_priority ... ok
+test_floor_stops_further_decay ... ok
+test_future_anchor_does_not_decay ... ok
+test_hourly_and_daily_equivalent ... ok
+test_legacy_no_watermark ... ok
+test_no_source_or_authority_mutation ... ok
+test_reject_nonfinite_and_bool_inputs ... ok
+test_replay_last_supersedes_old_watermark ... ok
+test_same_time_no_double_decay ... ok
+Ran 13 tests in 0.001s
+OK
+
+$ PYTHONPATH=. python -O -m unittest -q tests.test_sleep_trace_decay
+Ran 13 tests in 0.001s
+OK
+
+$ python evidence/independent_review.py [first draft]
+AssertionError: ('same time', 1)
+REVIEW: first draft compared t*n/n and t as exact floating point timestamps, which can differ by a rounding ULP. Test correction compares the exact persisted watermark. Both attempts preserved.
+
+$ python evidence/independent_review.py [corrected]
+2000/2000 randomized elapsed-time equivalence and idempotence PASS; seed=20261024
+
+$ python -m compileall -q v13/sleep_trace_decay.py tests/test_sleep_trace_decay.py
+exit_code=0
+
+$ python -m py_compile tests/test_sleep_trace_decay_integration.py
+exit_code=0
+Actual SleepCycle integration test: NOT RUN (full checkout unavailable).
+Official repository privacy scan: NOT RUN (full checkout unavailable).
+Native/Redmi: NOT RUN.

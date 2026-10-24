@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/data/v13_run62/evidence/independent_review.py", line 19, in <module>
+    if i['priority']!=previous:raise AssertionError(('same time',k))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('same time', 1)

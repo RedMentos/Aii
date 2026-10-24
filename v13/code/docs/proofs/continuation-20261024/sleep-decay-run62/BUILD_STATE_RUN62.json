@@ -1,0 +1,40 @@
+{
+  "schema": "V13_RUN62_SLEEP_TRACE_DECAY_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base": "7849f756fbf5da3f3bc7e279fd01c163c3f1a505",
+  "owner": "sleep_trace_decay.py, sleep.py minimal §94.4 callsite, two new test files, sleep-decay-run62 evidence only",
+  "status": "PRODUCTION_BOUND_SOFTWARE_CANDIDATE_NOT_FULL_CHECKOUT_VERIFIED",
+  "changed": [
+    "v13/code/v13/sleep_trace_decay.py",
+    "v13/code/v13/sleep.py",
+    "v13/code/tests/test_sleep_trace_decay.py",
+    "v13/code/tests/test_sleep_trace_decay_integration.py"
+  ],
+  "tests": {
+    "original": "RED reproduced (same-time repeated decay)",
+    "focused": "13/13 PASS",
+    "optimized": "13/13 PASS",
+    "randomized": "2000/2000 PASS after fixing first-review float timestamp assertion",
+    "compileall": "PASS",
+    "integration_import": "NOT RUN (full checkout unavailable)",
+    "full_repository": "NOT RUN",
+    "privacy_scan": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "proof_level": "Linux-host Python synthetic / source-static integration; not actual native model or Redmi",
+  "limitations": [
+    "Previously compounded persisted priorities cannot be reconstructed; new watermark prevents further repeated decay",
+    "Actual Store/SleepRuntime concurrency and latency unmeasured",
+    "No model, age, learning or fact-write authority granted"
+  ],
+  "next": "In complete current checkout: PYTHONPATH=v13/code python -m unittest -v v13.code.tests.test_sleep_trace_decay_integration (or cd v13/code && python -m unittest -v tests.test_sleep_trace_decay_integration); run full suite and official privacy scan; inspect persisted Store state/restart and Redmi before promotion",
+  "user_decision_required": false
+}

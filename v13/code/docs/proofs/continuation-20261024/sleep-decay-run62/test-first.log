@@ -1,0 +1,18 @@
+test_bad_persisted_watermark_refused (tests.test_sleep_trace_decay.TraceDecayTests.test_bad_persisted_watermark_refused) ... ok
+test_batch_validation_no_partial_mutation (tests.test_sleep_trace_decay.TraceDecayTests.test_batch_validation_no_partial_mutation) ... ok
+test_clock_rollback_no_rewind_or_decay (tests.test_sleep_trace_decay.TraceDecayTests.test_clock_rollback_no_rewind_or_decay) ... ok
+test_expiry_retired_once (tests.test_sleep_trace_decay.TraceDecayTests.test_expiry_retired_once) ... ok
+test_floor_never_increases_priority (tests.test_sleep_trace_decay.TraceDecayTests.test_floor_never_increases_priority) ... ok
+test_floor_stops_further_decay (tests.test_sleep_trace_decay.TraceDecayTests.test_floor_stops_further_decay) ... ok
+test_future_anchor_does_not_decay (tests.test_sleep_trace_decay.TraceDecayTests.test_future_anchor_does_not_decay) ... ok
+test_hourly_and_daily_equivalent (tests.test_sleep_trace_decay.TraceDecayTests.test_hourly_and_daily_equivalent) ... ok
+test_legacy_no_watermark (tests.test_sleep_trace_decay.TraceDecayTests.test_legacy_no_watermark) ... ok
+test_no_source_or_authority_mutation (tests.test_sleep_trace_decay.TraceDecayTests.test_no_source_or_authority_mutation) ... ok
+test_reject_nonfinite_and_bool_inputs (tests.test_sleep_trace_decay.TraceDecayTests.test_reject_nonfinite_and_bool_inputs) ... ok
+test_replay_last_supersedes_old_watermark (tests.test_sleep_trace_decay.TraceDecayTests.test_replay_last_supersedes_old_watermark) ... ok
+test_same_time_no_double_decay (tests.test_sleep_trace_decay.TraceDecayTests.test_same_time_no_double_decay) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.001s
+
+OK
