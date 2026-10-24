@@ -1,0 +1,16 @@
+{
+  "archive_sha256": "02425bfe4aa37b4cbccd164fbf45f1bb32f33f0071339c423ce07287f8e9e431",
+  "files": {
+    "adversarial-red.log": "57a0a6f20ab62066929b36bd8d67f6bc8a32414dacc2c63ee1f1e69466312a44",
+    "shadow_commit_run56/BUILD_STATE_RUN56.json": "a777a2d7464320fb14d8a03a1323f42309def9dc536e6fe2b97756986a9f746d",
+    "shadow_commit_run56/PREREG_RUN56.md": "a0bed6fa533609d41f7016879ecb0a64f1f89b49f44aa709bbca0ac2c37db4ea",
+    "shadow_commit_run56/README_RUN56.md": "e66cf745653595e49d0308163d3bbf8cfd978e85b1aa1c148ce5cb5301e776c1",
+    "shadow_commit_run56/shadow_commit.py": "f848c80f14353232135c4a9be814bf101d5ab59d01f5dad3b4290a7e8400f9d5",
+    "shadow_commit_run56/test_shadow_commit.py": "b56999b0afd6fbb86896d67a1d3accb99bfccbe8c9173fcad7dfd2306670ff5a",
+    "test-final.log": "805ba419a362a65b59547a691d6e2aee43252b54245328b2270199cc8cbce19b",
+    "test-first.log": "0008fcd431edf80c333ec566468a4a3c76868feeae1bdbee2075766cc61a18ae",
+    "test-optimized.log": "cf99581ceba6d096e21095e74cf632b926c2f9a80a5e36912b7de0616e0cf32b",
+    "test-repeat.log": "ed34899bca1cb7190113be3437daa7504e90c573f745149f220a8921998a3530"
+  },
+  "size": 8080
+}
