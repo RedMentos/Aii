@@ -3,6 +3,7 @@
 Uses actual v13.jefoutcome.training_rows in full checkout. Scratch replay
 is separate synthetic evidence; no native optimizer is exercised.
 """
+import hashlib
 import json
 import sqlite3
 import unittest
@@ -17,17 +18,30 @@ class Store:
         self.db.executescript("""
           CREATE TABLE packets(id TEXT,kind TEXT,event_id TEXT,payload TEXT);
           CREATE TABLE feedback(event_id TEXT,source_id TEXT,kind TEXT,value TEXT,permission TEXT,created REAL);
-          CREATE TABLE sources(id TEXT,deleted INTEGER);
+          CREATE TABLE sources(id TEXT,deleted INTEGER,hash TEXT,chars INTEGER,kind TEXT);
           CREATE INDEX packet_event ON packets(event_id,kind);
         """)
         self.labels=[]
+        self.blobs={}
     def state(self,key):return {'mode':'learn','labels':self.labels},1
     def rows(self,sql,args=()):return [dict(x) for x in self.db.execute(sql,args).fetchall()]
     def one(self,sql,args=()):
         row=self.db.execute(sql,args).fetchone()
         return dict(row) if row else None
-    def add_source(self,sid,deleted=0):
-        self.db.execute('INSERT INTO sources VALUES (?,?)',(sid,deleted))
+    def add_source(self,sid,deleted=0,text='detail',kind='OUTCOME_SELF_LABEL'):
+        self.blobs[sid]=text
+        self.db.execute('INSERT INTO sources VALUES (?,?,?,?,?)',
+                        (sid,deleted,hashlib.sha256(text.encode()).hexdigest(),len(text),kind))
+    def read_source(self,ref):
+        row=self.one('SELECT * FROM sources WHERE id=?',(ref['source_id'],))
+        if not row or row['deleted'] or row['hash']!=ref['sha256']:
+            raise ValueError('Invalid SourceRef')
+        text=self.blobs[ref['source_id']]
+        if hashlib.sha256(text.encode()).hexdigest()!=row['hash']:
+            raise ValueError('Corrupt source')
+        if not 0<=ref['char_start']<=ref['char_end']<=len(text):
+            raise ValueError('Invalid source extent')
+        return text[ref['char_start']:ref['char_end']]
     def add_self(self,context='ctx1',event='e1',component='wake',revision='rev',source='self1',decision='d1',packet_context=None,packet_event=None,packet_component=None,packet_revision=None):
         self.add_source(source)
         self.labels.append({'component':component,'context_revision':revision,'context_sha256':context,
