@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN100_CONTEXT_UNCLOSED_FENCE_CHECKPOINT_V1",
+  "utc": "2026-10-24T22:37:00Z",
+  "owner": "codex/context-unclosed-fence-run100-20261025",
+  "base_branch": "codex/callosum-explicit-peer-run99-20261024",
+  "base_sha": "4b0ccad29c837bba7067bc9dec8e825f1437f5bb",
+  "production_integrated": false,
+  "scope": [
+    "v13/code/v13/context_os.py:compress",
+    "v13/code/tests/test_context_unclosed_fence_run100.py",
+    ".github/workflows/v13-run100-context.yml",
+    "v13/code/docs/proofs/continuation-20261025/context-unclosed-fence-run100/*"
+  ],
+  "red": {
+    "commit": "73c7e45aec497b12707bcd311f28b8844ed6a5a3",
+    "run_id": 40139176244,
+    "job_id": 121007053607,
+    "tests": 30,
+    "failures": 2,
+    "original_log": "GitHub Actions job 121007053607",
+    "excerpt": "CI_RED_RAW_EXCERPT.log"
+  },
+  "green": {
+    "commit": "d617edf5cb4d88bcad9316f29431f40cc3acfe44",
+    "run_id": 40139248572,
+    "job_id": 121007283517,
+    "tests": 30,
+    "failures": 0,
+    "privacy": "CLEAN"
+  },
+  "integration": {
+    "run_id": 40139248529,
+    "job_id": 121007286584,
+    "focused_tests": 401,
+    "focused_failures": 0,
+    "extracted_zip_tests": 100,
+    "extracted_zip_failures": 0,
+    "phone_zip_manifest_files": 822,
+    "phone_zip_sha256": "deb72fc12493725021792eeb2098775ce66609aa9e57688915251c839a6e00ef",
+    "sqlite_restart": "PASS",
+    "privacy": "CLEAN"
+  },
+  "code_blob_sha": "66e62923773f6a7b6244c81711fb06ebe8412599",
+  "evidence_level": "GitHub Linux software, source ZIP; no native models or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Markdown alternate ~~~ fences and malformed even delimiter counts",
+    "Independent integration review against current Run99 owner",
+    "Real semantic/native utility and Redmi gates"
+  ],
+  "next_exact_step": "Review ToolStep.compare shadow arithmetic agreement against explicit negation counterexamples on a separate branch; preregister RED and preserve Actions raw evidence; do not touch concurrent owners.",
+  "native_prerequisites": "Must recheck on execution host; not inferred from Run24 scratch.",
+  "drive_backup": "Do not retry rejected anyone-writable Drive destination"
+}

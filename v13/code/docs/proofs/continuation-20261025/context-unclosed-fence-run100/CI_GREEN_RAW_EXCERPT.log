@@ -1,0 +1,15 @@
+# Run100 GREEN, original Actions job 121007283517 (run 40139248572)
+# Full original job log retained in GitHub Actions; selected lines below are unmodified.
+# Fix commit d617edf5cb4d88bcad9316f29431f40cc3acfe44; original RED run 40139176244 retained.
+2026-10-24T22:36:20.5928278Z test_closed_fence_still_compresses_and_keeps_code (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_closed_fence_still_compresses_and_keeps_code) ... ok
+2026-10-24T22:36:20.5930190Z test_late_unclosed_python_fence_stays_raw (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_late_unclosed_python_fence_stays_raw) ... ok
+2026-10-24T22:36:20.5938861Z test_ordinary_prose_still_compresses (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_ordinary_prose_still_compresses) ... ok
+2026-10-24T22:36:20.5940207Z test_two_closed_fences_still_compress (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_two_closed_fences_still_compress) ... ok
+2026-10-24T22:36:20.5941676Z test_unclosed_fence_with_numbers_stays_raw_not_numeric_only (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_unclosed_fence_with_numbers_stays_raw_not_numeric_only) ... ok
+2026-10-24T22:36:20.5943258Z test_english_curly_double_quote_survives_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_english_curly_double_quote_survives_compression) ... ok
+2026-10-24T22:36:20.5945104Z test_existing_short_ascii_and_german_quotes_remain_exact (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_existing_short_ascii_and_german_quotes_remain_exact) ... ok
+2026-10-24T22:36:20.5946499Z test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) ... ok
+2026-10-24T22:36:20.5947998Z test_oversized_quote_forces_raw_not_lossy_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_oversized_quote_forces_raw_not_lossy_compression) ... ok
+2026-10-24T22:36:21.0338073Z Ran 30 tests in 0.441s
+2026-10-24T22:36:21.0338341Z OK
+2026-10-24T22:36:21.1223936Z privacy scan 4b0ccad29..HEAD: CLEAN
