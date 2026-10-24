@@ -52,6 +52,17 @@ class ToolStepNegationRun101(Base):
             "The answer is 1,776."
         ))
 
+    # Independent post-GREEN adversarial review, not part of initial prereg.
+    def test_postposed_not_correct_is_not_agreement(self):
+        self.assertFalse(self.compare_text(
+            "1,776 is not correct; answer 1,775."
+        ))
+
+    def test_negating_other_number_does_not_suppress_correct_answer(self):
+        self.assertTrue(self.compare_text(
+            "It is not 1,775; correct answer is 1,776."
+        ))
+
 
 if __name__ == "__main__":
     unittest.main()
