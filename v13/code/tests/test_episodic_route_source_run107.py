@@ -30,6 +30,39 @@ class EpisodicRouteSourceRun107(unittest.TestCase):
         with self.s.tx() as conn:
             conn.execute(sql, args)
 
+    def test_positive_provenance_fields(self):
+        import json
+        m = self.s.one("SELECT * FROM memories WHERE id=?", (self.mid,))
+        recs = self.s.rows("SELECT payload FROM packets WHERE kind='MemoryRecord' "
+                           "AND json_extract(payload,'$.memory_id')=? LIMIT 2", (self.mid,))
+        self.assertEqual(len(recs), 1)
+        record = json.loads(recs[0]['payload'])
+        for k, v in (('memory_id', m['id']), ('event_id', m['event_id']),
+                     ('kind', 'route'), ('scope', m['scope']), ('key', m['key_text'])):
+            self.assertEqual(record.get(k), v, k)
+        ref = record['source_ref']
+        src = self.s.one("SELECT hash,chars,deleted FROM sources WHERE id=?", (m['source_id'],))
+        self.assertEqual(ref['source_id'], m['source_id'])
+        self.assertEqual(ref['sha256'], src['hash'])
+        self.assertEqual(ref['char_end'], src['chars'])
+        self.assertEqual(self.s.read_source(ref), m['value'])
+        origin = self.s.one("SELECT session_id,source_id,packet FROM events WHERE id=?", (m['event_id'],))
+        event = json.loads(origin['packet'])
+        self.assertEqual(origin['session_id'], m['session_id'])
+        self.assertEqual(event['authority'], 'AUTHORITATIVE')
+        self.assertEqual(event['source_ref']['source_id'], origin['source_id'])
+        self.s.read_source(event['source_ref'])
+        decisions = self.s.rows(
+            "SELECT payload FROM packets WHERE kind='HumanDecision' AND event_id=? "
+            "AND json_extract(payload,'$.source_ref.source_id')=? "
+            "AND json_extract(payload,'$.kind')='route' LIMIT 2",
+            (m['event_id'], m['source_id']))
+        self.assertEqual(len(decisions), 1, 'HumanDecision lookup')
+        decision = json.loads(decisions[0]['payload'])
+        self.assertEqual(decision['value'], m['value'])
+        self.assertEqual(decision['source_ref'], ref)
+        self.assertTrue(ER._source_bound(self.s, m))
+
     def test_valid_route_value_mutation_cannot_redirect_active_or_shadow(self):
         self.assertEqual(ER.for_turn(self.s, QUERY, self.r.session)[0], 'detail')
         self.mutate("UPDATE memories SET value=? WHERE id=?", ('gist', self.mid))
