@@ -1,0 +1,11 @@
+# Run94 prereg — event-group held-out world-model validation
+
+2026-10-24. Exact base Run93 PR126 `b54342c1278f78f509359b6daa8dd644e6f3a5d9`, selected Linux 401/401, extracted ZIP 100/100 PASS. Owner: `v13/code/v13/world_model.py` transitions/fit split only; new `tests/test_world_event_groups_run94.py`; focused/extracted CI invocations and Run94 proof. No new model architecture, actions, reward, gate or native runner.
+
+## Problem and expected RED
+The existing deterministic `_split(n)` holds out individual **action rows by index**. Multiple observed actions can share the same event_id, placing correlated rows of one event on both train and test sides and overstating held-out generalization. `transitions` selects event_id but discards it before `fit`. Preregister tests with 160 synthetic transitions grouped into 80 repeated event IDs: training/test event sets must be disjoint, reported held-out split mode must be EVENT_GROUP_HASHED, overlap 0; 32 actions from only two event IDs must **not** report FITTED but TOO_FEW_EVENT_GROUPS; existing synthetic legacy fixtures without event_id remain valid and explicitly marked LEGACY_INDEX_NO_EVENT_ID, not mislabeled as event-held-out. Test before code fix and preserve RED.
+
+## Fix acceptance
+Carry observed event_id into transition records. Use deterministic hash-ranked group holdout for rows with valid event_id, minimum MIN_FIT distinct groups; return non-FITTED if mixed/invalid or too few groups. Preserve legacy index split for **all-absent** synthetic fixtures, marked non-event-group proof. No event IDs in public metrics; report counts and overlap only. Existing forward/inverse/align/counterfactual objectives unchanged. Primary source consulted: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupShuffleSplit.html (group-disjoint held-out validation).
+
+Run Linux selected, extracted source ZIP, privacy. No actual causal claim, native model, Redmi or JEPA gate promotion. Original STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 INCOMPLETE.
