@@ -1,0 +1,372 @@
+﻿2026-10-24T20:23:24.1302198Z Current runner version: '2.338.0'
+2026-10-24T20:23:24.1326859Z ##[group]Runner Image Provisioner
+2026-10-24T20:23:24.1327745Z Hosted Compute Agent
+2026-10-24T20:23:24.1328341Z Version: 20261021.618
+2026-10-24T20:23:24.1329038Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-24T20:23:24.1329762Z Build Date: 2026-10-21T00:45:21Z
+2026-10-24T20:23:24.1330419Z Worker ID: {b4c46626-8a1b-455b-9bdb-b5ba203ac2e5}
+2026-10-24T20:23:24.1331271Z Region: westus
+2026-10-24T20:23:24.1331807Z Cloud: Azure
+2026-10-24T20:23:24.1332380Z ##[endgroup]
+2026-10-24T20:23:24.1334500Z ##[group]Operating System
+2026-10-24T20:23:24.1335177Z Ubuntu
+2026-10-24T20:23:24.1335801Z 26.04.1
+2026-10-24T20:23:24.1336317Z LTS
+2026-10-24T20:23:24.1336858Z ##[endgroup]
+2026-10-24T20:23:24.1337414Z ##[group]Runner Image
+2026-10-24T20:23:24.1338042Z Image: ubuntu-26.04
+2026-10-24T20:23:24.1338691Z Version: 20261012.163.1
+2026-10-24T20:23:24.1339911Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-24T20:23:24.1341547Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-24T20:23:24.1342569Z ##[endgroup]
+2026-10-24T20:23:24.1344164Z ##[group]GITHUB_TOKEN Permissions
+2026-10-24T20:23:24.1346077Z Contents: read
+2026-10-24T20:23:24.1346791Z Metadata: read
+2026-10-24T20:23:24.1347387Z ##[endgroup]
+2026-10-24T20:23:24.1349566Z Secret source: Actions
+2026-10-24T20:23:24.1350516Z Cache mode: write
+2026-10-24T20:23:24.1351273Z Prepare workflow directory
+2026-10-24T20:23:24.1689589Z Prepare all required actions
+2026-10-24T20:23:24.1738854Z Getting action download info
+2026-10-24T20:23:24.5121297Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-24T20:23:24.7402499Z Complete job name: focused
+2026-10-24T20:23:24.8292937Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-24T20:23:24.8294063Z with:
+2026-10-24T20:23:24.8294549Z   persist-credentials: false
+2026-10-24T20:23:24.8295062Z   fetch-depth: 50
+2026-10-24T20:23:24.8295527Z   filter: blob:none
+2026-10-24T20:23:24.8295998Z   sparse-checkout: v13/code
+
+2026-10-24T20:23:24.8296521Z   repository: RedMentos/Aii
+2026-10-24T20:23:24.8300175Z   token: ***
+2026-10-24T20:23:24.8300620Z   ssh-strict: true
+2026-10-24T20:23:24.8301067Z   ssh-user: git
+2026-10-24T20:23:24.8301494Z   clean: true
+2026-10-24T20:23:24.8301945Z   sparse-checkout-cone-mode: true
+2026-10-24T20:23:24.8302476Z   fetch-tags: false
+2026-10-24T20:23:24.8303184Z   show-progress: true
+2026-10-24T20:23:24.8303696Z   lfs: false
+2026-10-24T20:23:24.8304119Z   submodules: false
+2026-10-24T20:23:24.8304577Z   set-safe-directory: true
+2026-10-24T20:23:24.8305349Z ##[endgroup]
+2026-10-24T20:23:24.9424088Z Syncing repository: RedMentos/Aii
+2026-10-24T20:23:24.9426983Z ##[group]Getting Git version info
+2026-10-24T20:23:24.9428141Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-24T20:23:24.9429808Z [command]/usr/bin/git version
+2026-10-24T20:23:24.9430675Z git version 2.55.0
+2026-10-24T20:23:24.9433576Z ##[endgroup]
+2026-10-24T20:23:24.9439247Z Temporarily overriding HOME='/home/runner/work/_temp/8d4e8746-fe78-4a26-b721-6520d175e91d' before making global git config changes
+2026-10-24T20:23:24.9441643Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T20:23:24.9443671Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T20:23:24.9475519Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-24T20:23:24.9479630Z ##[group]Initializing the repository
+2026-10-24T20:23:24.9484996Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-24T20:23:24.9610128Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-24T20:23:24.9612214Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-24T20:23:24.9614369Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-24T20:23:24.9616229Z hint: call:
+2026-10-24T20:23:24.9617143Z hint:
+2026-10-24T20:23:24.9618232Z hint: 	git config --global init.defaultBranch <name>
+2026-10-24T20:23:24.9619437Z hint:
+2026-10-24T20:23:24.9620565Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-24T20:23:24.9622387Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-24T20:23:24.9624072Z hint:
+2026-10-24T20:23:24.9624943Z hint: 	git branch -m <name>
+2026-10-24T20:23:24.9626024Z hint:
+2026-10-24T20:23:24.9627301Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-24T20:23:24.9629198Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-24T20:23:24.9631681Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-24T20:23:24.9678327Z ##[endgroup]
+2026-10-24T20:23:24.9679920Z ##[group]Disabling automatic garbage collection
+2026-10-24T20:23:24.9681328Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-24T20:23:24.9718054Z ##[endgroup]
+2026-10-24T20:23:24.9719423Z ##[group]Setting up auth
+2026-10-24T20:23:24.9724190Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T20:23:24.9769548Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T20:23:25.0273526Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T20:23:25.0311831Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T20:23:25.0599134Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-24T20:23:25.0640207Z ##[endgroup]
+2026-10-24T20:23:25.0650323Z ##[group]Fetching the repository
+2026-10-24T20:23:25.0652176Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=50 origin +8fd06040c8de3203855f915e59104c0300591362:refs/remotes/pull/106/merge
+2026-10-24T20:23:25.5949822Z From https://github.com/RedMentos/Aii
+2026-10-24T20:23:25.5950749Z  * [new ref]         8fd06040c8de3203855f915e59104c0300591362 -> pull/106/merge
+2026-10-24T20:23:25.5955350Z ##[endgroup]
+2026-10-24T20:23:25.5956099Z ##[group]Determining the checkout info
+2026-10-24T20:23:25.5957608Z ##[endgroup]
+2026-10-24T20:23:25.5958656Z ##[group]Setting up sparse checkout
+2026-10-24T20:23:25.5963868Z [command]/usr/bin/git sparse-checkout set v13/code
+2026-10-24T20:23:25.6010275Z ##[endgroup]
+2026-10-24T20:23:25.6011623Z ##[group]Checking out the ref
+2026-10-24T20:23:25.6016284Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/106/merge
+2026-10-24T20:23:46.5357625Z Updating files:   0% (1/2836)
+2026-10-24T20:23:46.5401961Z Updating files:   1% (29/2836)
+2026-10-24T20:23:46.5467540Z Updating files:   2% (57/2836)
+2026-10-24T20:23:46.5533968Z Updating files:   3% (86/2836)
+2026-10-24T20:23:46.5590660Z Updating files:   4% (114/2836)
+2026-10-24T20:23:46.5639703Z Updating files:   5% (142/2836)
+2026-10-24T20:23:46.5661271Z Updating files:   6% (171/2836)
+2026-10-24T20:23:46.5681174Z Updating files:   7% (199/2836)
+2026-10-24T20:23:46.5701222Z Updating files:   8% (227/2836)
+2026-10-24T20:23:46.5742274Z Updating files:   9% (256/2836)
+2026-10-24T20:23:46.5757902Z Updating files:  10% (284/2836)
+2026-10-24T20:23:46.5774083Z Updating files:  11% (312/2836)
+2026-10-24T20:23:46.5808496Z Updating files:  12% (341/2836)
+2026-10-24T20:23:46.5842444Z Updating files:  13% (369/2836)
+2026-10-24T20:23:46.6191239Z Updating files:  14% (398/2836)
+2026-10-24T20:23:46.6203427Z Updating files:  14% (412/2836)
+2026-10-24T20:23:46.6378275Z Updating files:  15% (426/2836)
+2026-10-24T20:23:46.6400977Z Updating files:  16% (454/2836)
+2026-10-24T20:23:46.6425599Z Updating files:  17% (483/2836)
+2026-10-24T20:23:46.6471718Z Updating files:  18% (511/2836)
+2026-10-24T20:23:46.6528915Z Updating files:  19% (539/2836)
+2026-10-24T20:23:46.6545877Z Updating files:  20% (568/2836)
+2026-10-24T20:23:46.6563703Z Updating files:  21% (596/2836)
+2026-10-24T20:23:46.6590796Z Updating files:  22% (624/2836)
+2026-10-24T20:23:46.6781522Z Updating files:  23% (653/2836)
+2026-10-24T20:23:46.6892674Z Updating files:  24% (681/2836)
+2026-10-24T20:23:46.6917807Z Updating files:  25% (709/2836)
+2026-10-24T20:23:46.6943899Z Updating files:  26% (738/2836)
+2026-10-24T20:23:46.6975764Z Updating files:  27% (766/2836)
+2026-10-24T20:23:46.7031459Z Updating files:  28% (795/2836)
+2026-10-24T20:23:46.7326338Z Updating files:  29% (823/2836)
+2026-10-24T20:23:46.7592667Z Updating files:  30% (851/2836)
+2026-10-24T20:23:46.8053898Z Updating files:  31% (880/2836)
+2026-10-24T20:23:46.8334637Z Updating files:  32% (908/2836)
+2026-10-24T20:23:46.9011608Z Updating files:  33% (936/2836)
+2026-10-24T20:23:46.9563428Z Updating files:  34% (965/2836)
+2026-10-24T20:23:47.0163809Z Updating files:  35% (993/2836)
+2026-10-24T20:23:47.0454429Z Updating files:  36% (1021/2836)
+2026-10-24T20:23:47.0733779Z Updating files:  37% (1050/2836)
+2026-10-24T20:23:47.1046771Z Updating files:  38% (1078/2836)
+2026-10-24T20:23:47.1753160Z Updating files:  39% (1107/2836)
+2026-10-24T20:23:47.2151204Z Updating files:  40% (1135/2836)
+2026-10-24T20:23:47.2660710Z Updating files:  41% (1163/2836)
+2026-10-24T20:23:47.3451177Z Updating files:  42% (1192/2836)
+2026-10-24T20:23:47.3541901Z Updating files:  43% (1220/2836)
+2026-10-24T20:23:47.3570522Z Updating files:  44% (1248/2836)
+2026-10-24T20:23:47.3597501Z Updating files:  45% (1277/2836)
+2026-10-24T20:23:47.3764569Z Updating files:  46% (1305/2836)
+2026-10-24T20:23:47.3840183Z Updating files:  47% (1333/2836)
+2026-10-24T20:23:47.4561338Z Updating files:  48% (1362/2836)
+2026-10-24T20:23:47.5250804Z Updating files:  49% (1390/2836)
+2026-10-24T20:23:47.5931177Z Updating files:  50% (1418/2836)
+2026-10-24T20:23:47.6050690Z Updating files:  51% (1447/2836)
+2026-10-24T20:23:47.6076955Z Updating files:  52% (1475/2836)
+2026-10-24T20:23:47.6082835Z Updating files:  52% (1500/2836)
+2026-10-24T20:23:47.6101555Z Updating files:  53% (1504/2836)
+2026-10-24T20:23:47.6133493Z Updating files:  54% (1532/2836)
+2026-10-24T20:23:47.6162755Z Updating files:  55% (1560/2836)
+2026-10-24T20:23:47.6178206Z Updating files:  56% (1589/2836)
+2026-10-24T20:23:47.6198336Z Updating files:  57% (1617/2836)
+2026-10-24T20:23:47.6217008Z Updating files:  58% (1645/2836)
+2026-10-24T20:23:47.6236189Z Updating files:  59% (1674/2836)
+2026-10-24T20:23:47.6259232Z Updating files:  60% (1702/2836)
+2026-10-24T20:23:47.6286744Z Updating files:  61% (1730/2836)
+2026-10-24T20:23:47.6304945Z Updating files:  62% (1759/2836)
+2026-10-24T20:23:47.6323252Z Updating files:  63% (1787/2836)
+2026-10-24T20:23:47.6340850Z Updating files:  64% (1816/2836)
+2026-10-24T20:23:47.6359927Z Updating files:  65% (1844/2836)
+2026-10-24T20:23:47.6377009Z Updating files:  66% (1872/2836)
+2026-10-24T20:23:47.6392134Z Updating files:  67% (1901/2836)
+2026-10-24T20:23:47.6407001Z Updating files:  68% (1929/2836)
+2026-10-24T20:23:47.6420495Z Updating files:  69% (1957/2836)
+2026-10-24T20:23:47.6437877Z Updating files:  70% (1986/2836)
+2026-10-24T20:23:47.6456111Z Updating files:  71% (2014/2836)
+2026-10-24T20:23:47.6470582Z Updating files:  72% (2042/2836)
+2026-10-24T20:23:47.6489224Z Updating files:  73% (2071/2836)
+2026-10-24T20:23:47.6506433Z Updating files:  74% (2099/2836)
+2026-10-24T20:23:47.6533000Z Updating files:  75% (2127/2836)
+2026-10-24T20:23:47.6553280Z Updating files:  76% (2156/2836)
+2026-10-24T20:23:47.6577005Z Updating files:  77% (2184/2836)
+2026-10-24T20:23:47.6599490Z Updating files:  78% (2213/2836)
+2026-10-24T20:23:47.6626567Z Updating files:  79% (2241/2836)
+2026-10-24T20:23:47.6653819Z Updating files:  80% (2269/2836)
+2026-10-24T20:23:47.6678675Z Updating files:  81% (2298/2836)
+2026-10-24T20:23:47.6703410Z Updating files:  82% (2326/2836)
+2026-10-24T20:23:47.6726423Z Updating files:  83% (2354/2836)
+2026-10-24T20:23:47.7344402Z Updating files:  84% (2383/2836)
+2026-10-24T20:23:47.7364027Z Updating files:  85% (2411/2836)
+2026-10-24T20:23:47.7381299Z Updating files:  86% (2439/2836)
+2026-10-24T20:23:47.7398897Z Updating files:  87% (2468/2836)
+2026-10-24T20:23:47.7418383Z Updating files:  88% (2496/2836)
+2026-10-24T20:23:47.7437965Z Updating files:  89% (2525/2836)
+2026-10-24T20:23:47.7456262Z Updating files:  90% (2553/2836)
+2026-10-24T20:23:47.7475565Z Updating files:  91% (2581/2836)
+2026-10-24T20:23:47.7494791Z Updating files:  92% (2610/2836)
+2026-10-24T20:23:47.7515092Z Updating files:  93% (2638/2836)
+2026-10-24T20:23:47.7535475Z Updating files:  94% (2666/2836)
+2026-10-24T20:23:47.7564664Z Updating files:  95% (2695/2836)
+2026-10-24T20:23:47.7585862Z Updating files:  96% (2723/2836)
+2026-10-24T20:23:47.7614869Z Updating files:  97% (2751/2836)
+2026-10-24T20:23:47.7638797Z Updating files:  98% (2780/2836)
+2026-10-24T20:23:47.7668776Z Updating files:  99% (2808/2836)
+2026-10-24T20:23:47.7669110Z Updating files: 100% (2836/2836)
+2026-10-24T20:23:47.7669454Z Updating files: 100% (2836/2836), done.
+2026-10-24T20:23:47.7710493Z Note: switching to 'refs/remotes/pull/106/merge'.
+2026-10-24T20:23:47.7711129Z 
+2026-10-24T20:23:47.7711532Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-24T20:23:47.7712468Z changes and commit them, and you can discard any commits you make in this
+2026-10-24T20:23:47.7713511Z state without impacting any branches by switching back to a branch.
+2026-10-24T20:23:47.7713975Z 
+2026-10-24T20:23:47.7714278Z If you want to create a new branch to retain commits you create, you may
+2026-10-24T20:23:47.7715020Z do so (now or later) by using -c with the switch command. Example:
+2026-10-24T20:23:47.7715450Z 
+2026-10-24T20:23:47.7715975Z   git switch -c <new-branch-name>
+2026-10-24T20:23:47.7716274Z 
+2026-10-24T20:23:47.7716442Z Or undo this operation with:
+2026-10-24T20:23:47.7716724Z 
+2026-10-24T20:23:47.7716864Z   git switch -
+2026-10-24T20:23:47.7717064Z 
+2026-10-24T20:23:47.7717417Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-24T20:23:47.7717950Z 
+2026-10-24T20:23:47.7718548Z HEAD is now at 8fd0604 Merge d2e182bd93c9520fe94aa4d3d7f403dcca1a8a25 into 1ddcb357358d94632e806a2e303fa58f82a1544b
+2026-10-24T20:23:47.7820421Z ##[endgroup]
+2026-10-24T20:23:47.7874173Z [command]/usr/bin/git log -1 --format=%H
+2026-10-24T20:23:47.7902166Z 8fd06040c8de3203855f915e59104c0300591362
+2026-10-24T20:23:47.7913770Z ##[group]Removing auth
+2026-10-24T20:23:47.7917396Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T20:23:47.7950553Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T20:23:47.8248327Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T20:23:47.8284061Z http.https://github.com/.extraheader
+2026-10-24T20:23:47.8287306Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-24T20:23:47.8321816Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T20:23:47.8605009Z ##[endgroup]
+2026-10-24T20:23:47.8820337Z ##[group]Run set -euo pipefail
+2026-10-24T20:23:47.8820739Z [36;1mset -euo pipefail[0m
+2026-10-24T20:23:47.8821006Z [36;1mpython3 -m venv .venv[0m
+2026-10-24T20:23:47.8821429Z [36;1m.venv/bin/python -m pip install --disable-pip-version-check --no-input \[0m
+2026-10-24T20:23:47.8821910Z [36;1m  'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-24T20:23:47.8989631Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-24T20:23:47.8990062Z ##[endgroup]
+2026-10-24T20:23:50.8930309Z Collecting numpy==2.3.5
+2026-10-24T20:23:50.9137477Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-24T20:23:50.9567355Z Collecting prompt-toolkit==3.0.52
+2026-10-24T20:23:50.9596533Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-24T20:23:50.9888812Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-24T20:23:50.9913975Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-24T20:23:51.0035414Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-24T20:23:51.1208351Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 144.1 MB/s eta 0:00:00
+2026-10-24T20:23:51.1256042Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-24T20:23:51.1330207Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-24T20:23:51.1398098Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 113.0 MB/s eta 0:00:00
+2026-10-24T20:23:51.1752580Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-24T20:23:53.1952919Z 
+2026-10-24T20:23:53.1964514Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-24T20:23:53.2914993Z ##[group]Run set -euo pipefail
+2026-10-24T20:23:53.2915325Z [36;1mset -euo pipefail[0m
+2026-10-24T20:23:53.2915633Z [36;1m../../.venv/bin/python -m compileall -q v13 tests[0m
+2026-10-24T20:23:53.2916010Z [36;1m../../.venv/bin/python -m unittest -v \[0m
+2026-10-24T20:23:53.2916355Z [36;1m  tests.test_jef_human_precedence_run68 \[0m
+2026-10-24T20:23:53.2916685Z [36;1m  tests.test_jef_outcome_lineage_run69 \[0m
+2026-10-24T20:23:53.2917016Z [36;1m  tests.test_world_action_chronology_run70 \[0m
+2026-10-24T20:23:53.2917338Z [36;1m  tests.test_world_observed_role_run71 \[0m
+2026-10-24T20:23:53.2917662Z [36;1m  tests.test_world_model_integration_run64 \[0m
+2026-10-24T20:23:53.2917995Z [36;1m  tests.test_world_align_finite_run65 \[0m
+2026-10-24T20:23:53.2918320Z [36;1m  tests.test_context_exact_pin_run73 \[0m
+2026-10-24T20:23:53.2918613Z [36;1m  tests.test_context_os[0m
+2026-10-24T20:23:53.2981534Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-24T20:23:53.2981921Z env:
+2026-10-24T20:23:53.2982118Z   NEEDLE_TELEMETRY: 0
+2026-10-24T20:23:53.2982338Z   DO_NOT_TRACK: 1
+2026-10-24T20:23:53.2982537Z ##[endgroup]
+2026-10-24T20:23:53.3228306Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T20:23:53.3229849Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T20:23:54.2091695Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T20:23:54.2094122Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T20:23:54.4463759Z test_learn_permission_also_blocks_lower_authority (tests.test_jef_human_precedence_run68.HumanPrecedence.test_learn_permission_also_blocks_lower_authority) ... ok
+2026-10-24T20:23:54.4465945Z test_no_human_decision_does_not_block (tests.test_jef_human_precedence_run68.HumanPrecedence.test_no_human_decision_does_not_block) ... ok
+2026-10-24T20:23:54.4469311Z test_record_permission_blocks_lower_authority (tests.test_jef_human_precedence_run68.HumanPrecedence.test_record_permission_blocks_lower_authority) ... ok
+2026-10-24T20:23:54.4471937Z test_stale_revision_does_not_claim_same_context (tests.test_jef_human_precedence_run68.HumanPrecedence.test_stale_revision_does_not_claim_same_context) ... ok
+2026-10-24T20:23:54.4522026Z test_chunked_exact_human_lookup (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_chunked_exact_human_lookup) ... ok
+2026-10-24T20:23:54.4528156Z test_deleted_human_source_does_not_claim_current_veto (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_deleted_human_source_does_not_claim_current_veto) ... ok
+2026-10-24T20:23:54.4533016Z test_deleted_self_label_source_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_deleted_self_label_source_is_rejected) ... ok
+2026-10-24T20:23:54.4538418Z test_forged_cross_event_human_decision_does_not_veto (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_cross_event_human_decision_does_not_veto) ... ok
+2026-10-24T20:23:54.4543203Z test_forged_self_component_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_self_component_is_rejected) ... ok
+2026-10-24T20:23:54.4547925Z test_forged_self_context_link_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_self_context_link_is_rejected) ... ok
+2026-10-24T20:23:54.4552397Z test_forged_self_event_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_self_event_is_rejected) ... ok
+2026-10-24T20:23:54.4557956Z test_forged_self_revision_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_self_revision_is_rejected) ... ok
+2026-10-24T20:23:54.4562942Z test_human_unrelated_context_does_not_veto (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_human_unrelated_context_does_not_veto) ... ok
+2026-10-24T20:23:54.4567595Z test_no_human_allows_bound_self_label (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_no_human_allows_bound_self_label) ... ok
+2026-10-24T20:23:54.4593511Z test_old_human_record_outside_512_window_vetoes (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_old_human_record_outside_512_window_vetoes) ... ok
+2026-10-24T20:23:54.4596969Z test_record_mode_never_trains (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_record_mode_never_trains) ... ok
+2026-10-24T20:23:54.4604450Z test_future_selection_must_not_label_past_action (tests.test_world_action_chronology_run70.WorldActionChronology.test_future_selection_must_not_label_past_action) ... ok
+2026-10-24T20:23:54.4609433Z test_selection_after_one_action_before_another (tests.test_world_action_chronology_run70.WorldActionChronology.test_selection_after_one_action_before_another) ... ok
+2026-10-24T20:23:54.4613748Z test_tied_created_times_choose_latest_rowid (tests.test_world_action_chronology_run70.WorldActionChronology.test_tied_created_times_choose_latest_rowid) ... ok
+2026-10-24T20:23:54.4618427Z test_two_actions_bind_respective_prior_selection (tests.test_world_action_chronology_run70.WorldActionChronology.test_two_actions_bind_respective_prior_selection) ... ok
+2026-10-24T20:23:54.4622318Z test_unrelated_event_does_not_supply_selection (tests.test_world_action_chronology_run70.WorldActionChronology.test_unrelated_event_does_not_supply_selection) ... ok
+2026-10-24T20:23:54.4626333Z test_mismatched_final_role_rejected (tests.test_world_observed_role_run71.WorldRole.test_mismatched_final_role_rejected) ... ok
+2026-10-24T20:23:54.4629906Z test_missing_forecast_role_rejected (tests.test_world_observed_role_run71.WorldRole.test_missing_forecast_role_rejected) ... ok
+2026-10-24T20:23:54.4633636Z test_missing_observed_role_rejected (tests.test_world_observed_role_run71.WorldRole.test_missing_observed_role_rejected) ... ok
+2026-10-24T20:23:54.4637760Z test_nonfinal_failure_without_role_remains_failure (tests.test_world_observed_role_run71.WorldRole.test_nonfinal_failure_without_role_remains_failure) ... ok
+2026-10-24T20:23:54.4641469Z test_other_valid_role_supported (tests.test_world_observed_role_run71.WorldRole.test_other_valid_role_supported) ... ok
+2026-10-24T20:23:54.4645616Z test_valid_role_admitted (tests.test_world_observed_role_run71.WorldRole.test_valid_role_admitted) ... ok
+2026-10-24T20:23:54.4651484Z test_bad_durations_and_chars_skipped (tests.test_world_model_integration_run64.WorldRun64.test_bad_durations_and_chars_skipped) ... ok
+2026-10-24T20:23:54.4657444Z test_bad_input_chars_and_created_skipped (tests.test_world_model_integration_run64.WorldRun64.test_bad_input_chars_and_created_skipped) ... ok
+2026-10-24T20:23:54.4662016Z test_bad_latent_does_not_promote (tests.test_world_model_integration_run64.WorldRun64.test_bad_latent_does_not_promote) ... ok
+2026-10-24T20:23:54.4704292Z test_counterfactual_negative_chars_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_counterfactual_negative_chars_uncertain) ... ok
+2026-10-24T20:23:54.4708079Z test_counterfactual_negative_duration_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_counterfactual_negative_duration_uncertain) ... ok
+2026-10-24T20:23:54.4710956Z test_counterfactual_success_over_one_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_counterfactual_success_over_one_uncertain) ... ok
+2026-10-24T20:23:54.4716891Z test_for_event_bad_observed_state_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_for_event_bad_observed_state_uncertain) ... ok
+2026-10-24T20:23:54.4721811Z test_malformed_json_skipped (tests.test_world_model_integration_run64.WorldRun64.test_malformed_json_skipped) ... ok
+2026-10-24T20:23:54.4727661Z test_missing_route_skipped (tests.test_world_model_integration_run64.WorldRun64.test_missing_route_skipped) ... ok
+2026-10-24T20:23:54.4730808Z test_no_model_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_no_model_uncertain) ... ok
+2026-10-24T20:23:54.4732287Z test_nonfinite_model_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_nonfinite_model_uncertain) ... ok
+2026-10-24T20:23:54.4807911Z test_sqlite_fit_with_valid_rows (tests.test_world_model_integration_run64.WorldRun64.test_sqlite_fit_with_valid_rows) ... ok
+2026-10-24T20:23:54.4813323Z test_valid_sqlite_transition (tests.test_world_model_integration_run64.WorldRun64.test_valid_sqlite_transition) ... ok
+2026-10-24T20:23:54.4817255Z test_valid_supported_prediction_unchanged (tests.test_world_model_integration_run64.WorldRun64.test_valid_supported_prediction_unchanged) ... ok
+2026-10-24T20:23:54.4887408Z test_dual_primal_parity (tests.test_world_align_finite_run65.WorldAlignFinite.test_dual_primal_parity) ... ok
+2026-10-24T20:23:54.4914074Z test_huge_finite_latent_is_not_measured (tests.test_world_align_finite_run65.WorldAlignFinite.test_huge_finite_latent_is_not_measured) ... ok
+2026-10-24T20:23:54.4936358Z test_no_latent_unavailable_unchanged (tests.test_world_align_finite_run65.WorldAlignFinite.test_no_latent_unavailable_unchanged) ... ok
+2026-10-24T20:23:54.4939423Z test_primal_branch_parity (tests.test_world_align_finite_run65.WorldAlignFinite.test_primal_branch_parity) ... ok
+2026-10-24T20:23:54.4964045Z test_small_valid_latent_measured_finite (tests.test_world_align_finite_run65.WorldAlignFinite.test_small_valid_latent_measured_finite) ... ok
+2026-10-24T20:23:54.4993215Z test_active_plan_fails_closed_when_exact_pin_cannot_fit (tests.test_context_exact_pin_run73.ContextExactPin.test_active_plan_fails_closed_when_exact_pin_cannot_fit) ... ok
+2026-10-24T20:23:54.5016771Z test_exact_numeric_code_in_pinned_turn_remains_verbatim (tests.test_context_exact_pin_run73.ContextExactPin.test_exact_numeric_code_in_pinned_turn_remains_verbatim) ... ok
+2026-10-24T20:23:54.5040766Z test_generous_budget_retains_active_utility (tests.test_context_exact_pin_run73.ContextExactPin.test_generous_budget_retains_active_utility) ... ok
+2026-10-24T20:23:54.5066821Z test_pinned_turns_remain_raw_under_budget_pressure (tests.test_context_exact_pin_run73.ContextExactPin.test_pinned_turns_remain_raw_under_budget_pressure) ... ok
+2026-10-24T20:23:54.5090596Z test_shadow_never_applies (tests.test_context_exact_pin_run73.ContextExactPin.test_shadow_never_applies) ... ok
+2026-10-24T20:23:54.5132521Z test_single_pinned_turn_larger_than_budget_fails_closed (tests.test_context_exact_pin_run73.ContextExactPin.test_single_pinned_turn_larger_than_budget_fails_closed) ... ok
+2026-10-24T20:23:54.5134839Z test_compression_keeps_every_exact_span_and_is_shorter (tests.test_context_os.CompressionTests.test_compression_keeps_every_exact_span_and_is_shorter) ... ok
+2026-10-24T20:23:54.5136826Z test_exact_need_triggers (tests.test_context_os.CompressionTests.test_exact_need_triggers) ... ok
+2026-10-24T20:23:54.5138148Z test_too_many_spans_or_no_gain_stays_raw (tests.test_context_os.CompressionTests.test_too_many_spans_or_no_gain_stays_raw) ... ok
+2026-10-24T20:23:54.5387295Z test_observe_records_cache_reuse_and_cost_signal_only_when_applied (tests.test_context_os.KnobAndLearningTests.test_observe_records_cache_reuse_and_cost_signal_only_when_applied) ... ok
+2026-10-24T20:23:54.5576706Z test_plan_touches_eligibility_and_outcome_updates_prior_shadow (tests.test_context_os.KnobAndLearningTests.test_plan_touches_eligibility_and_outcome_updates_prior_shadow) ... ok
+2026-10-24T20:23:54.5910041Z test_risky_knob_raise_needs_stable_exact_recall (tests.test_context_os.KnobAndLearningTests.test_risky_knob_raise_needs_stable_exact_recall) ... ok
+2026-10-24T20:23:54.6077268Z test_active_mode_requires_explicit_human (tests.test_context_os.PlanTests.test_active_mode_requires_explicit_human) ... FAIL
+2026-10-24T20:23:54.6287491Z test_append_only_reenters_transcript_and_falls_back_on_mismatch (tests.test_context_os.PlanTests.test_append_only_reenters_transcript_and_falls_back_on_mismatch) ... ok
+2026-10-24T20:23:54.6497044Z test_budget_pressure_points_old_turns_but_never_drops_newest (tests.test_context_os.PlanTests.test_budget_pressure_points_old_turns_but_never_drops_newest) ... ok
+2026-10-24T20:23:54.6721316Z test_exact_need_restores_relevant_turn (tests.test_context_os.PlanTests.test_exact_need_restores_relevant_turn) ... ok
+2026-10-24T20:23:54.6894488Z test_oldest_unpinned_turn_is_compressed_newest_stays_raw (tests.test_context_os.PlanTests.test_oldest_unpinned_turn_is_compressed_newest_stays_raw) ... ok
+2026-10-24T20:23:54.7067216Z test_shadow_returns_legacy_messages_byte_identical (tests.test_context_os.PlanTests.test_shadow_returns_legacy_messages_byte_identical) ... ok
+2026-10-24T20:23:54.7244631Z test_stable_prefix_needs_declared_capability_and_reuses_prefix (tests.test_context_os.PlanTests.test_stable_prefix_needs_declared_capability_and_reuses_prefix) ... ok
+2026-10-24T20:23:54.7409829Z test_volatile_lists_are_compacted_to_the_global_share (tests.test_context_os.PlanTests.test_volatile_lists_are_compacted_to_the_global_share) ... ok
+2026-10-24T20:23:54.8456006Z test_turn_writes_context_plan_and_shadow_keeps_legacy_view (tests.test_context_os.RuntimeHookTests.test_turn_writes_context_plan_and_shadow_keeps_legacy_view) ... ok
+2026-10-24T20:23:54.8643407Z test_forgotten_memory_is_not_reactivated (tests.test_context_os.WarmTests.test_forgotten_memory_is_not_reactivated) ... ok
+2026-10-24T20:23:54.8829017Z test_warm_memory_reactivates_and_decays (tests.test_context_os.WarmTests.test_warm_memory_reactivates_and_decays) ... ok
+2026-10-24T20:23:54.8829695Z 
+2026-10-24T20:23:54.8829822Z ======================================================================
+2026-10-24T20:23:54.8830499Z FAIL: test_active_mode_requires_explicit_human (tests.test_context_os.PlanTests.test_active_mode_requires_explicit_human)
+2026-10-24T20:23:54.8831155Z ----------------------------------------------------------------------
+2026-10-24T20:23:54.8831542Z Traceback (most recent call last):
+2026-10-24T20:23:54.8832125Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_os.py", line 106, in test_active_mode_requires_explicit_human
+2026-10-24T20:23:54.8833364Z     out=self.plan('hi',hist);self.assertTrue(out['applied']);self.assertEqual(out['messages'],out['planned']);self.assertNotEqual(out['planned'],out['legacy'])
+2026-10-24T20:23:54.8834134Z                              ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+2026-10-24T20:23:54.8834440Z AssertionError: False is not true
+2026-10-24T20:23:54.8834618Z 
+2026-10-24T20:23:54.8834776Z ----------------------------------------------------------------------
+2026-10-24T20:23:54.8835116Z Ran 69 tests in 0.437s
+2026-10-24T20:23:54.8835253Z 
+2026-10-24T20:23:54.8835706Z FAILED (failures=1)
+2026-10-24T20:23:54.9193748Z ##[error]Process completed with exit code 1.
+2026-10-24T20:23:54.9344652Z Post job cleanup.
+2026-10-24T20:23:55.0216999Z [command]/usr/bin/git version
+2026-10-24T20:23:55.0300673Z git version 2.55.0
+2026-10-24T20:23:55.0345589Z Temporarily overriding HOME='/home/runner/work/_temp/8c8af5fc-a2a8-4aef-9346-afc0279e6038' before making global git config changes
+2026-10-24T20:23:55.0347315Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T20:23:55.0352045Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T20:23:55.0405065Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T20:23:55.0447875Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T20:23:55.0814404Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T20:23:55.0883241Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T20:23:55.1396557Z Cleaning up orphan processes
+2026-10-24T20:23:55.1885535Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

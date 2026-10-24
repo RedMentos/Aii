@@ -1,0 +1,31 @@
+{
+  "schema": "V13_RUN73_CONTEXT_EXACT_PIN_V1",
+  "date": "2026-10-24",
+  "base": "1ddcb357358d94632e806a2e303fa58f82a1544b",
+  "owner": "context_os.plan exact-pinned budget; Run73 tests; legacy ACTIVE authority fixture; CI test selection",
+  "status": "REAL_PUBLIC_LINUX_SOFTWARE_70_OF_70_PASS_PRIVACY_CLEAN",
+  "tests": {
+    "red": "52 tests, 4 expected FAIL, run 40129458948, job 120977867215",
+    "review": "69 tests, 1 existing fixture FAIL, run 40129529920, job 120978139487",
+    "green": "70/70 PASS, run 40129653728, job 120978456310",
+    "compileall": "PASS",
+    "official_privacy": "CLEAN (1ddcb3573..HEAD)",
+    "full_repo": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "No proof of token-exact fit: char budget is BOOT estimate; runner exact token trim separate",
+    "When budget impossible, legacy fallback may itself exceed context; no new unsafe compression is applied",
+    "SHADOW hypothetical append transcript can cross into ACTIVE; next Run74 source-binding guard planned"
+  ],
+  "next": "Run74: Context OS append-only transcript reentry must require actual prior applied prompt and matching source query; run focused CI and existing Context OS tests",
+  "user_decision_required": false
+}
