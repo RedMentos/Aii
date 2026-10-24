@@ -1,0 +1,42 @@
+{
+  "b3_l1": "FAIL",
+  "base_commit": "01242b1e2c9c24f3345764bb57d06d096f34b239",
+  "base_launcher_git_blob": "394deb439b1305534dcb3f51c916a0250f79c4c1",
+  "base_pr": 55,
+  "body_jepa": "UNAVAILABLE",
+  "candidate_launcher_git_blob": "7ef49985456294fd93da7671d8fbae8b26eeb20a",
+  "canonical_architecture_complete": false,
+  "cgroup_gate_git_blob": "655e0ad9cf7b75c5d365beac8d6280588ad49e5b",
+  "cgroup_join_git_blob": "b7c9318c95420ddfc08f9b3e5389b17bddd71b66",
+  "compileall": "PASS",
+  "date": "2026-10-24",
+  "detached_session_original": "RUN19_FAIL_OPEN_PRESERVED; RUN20_KERNEL_NEGATIVE_CONTROL_NOT_RUN",
+  "earlier_failures_preserved": [
+    "run20-first.log",
+    "run20-focused-first.log",
+    "run20-focused-async.log"
+  ],
+  "focused_software_synthetic": "186/186 PASS, includes inherited duplicates, 38.518 seconds",
+  "full_repository_suite": "NOT_RUN",
+  "host_cgroup_memory_limit_bytes": 4294967296,
+  "host_cgroup_mount": "cgroup2_readonly",
+  "host_missing": [
+    "seven_pinned_hf_assets",
+    "two_registered_fixture_sources",
+    "transformers",
+    "delegated_cgroup_parent",
+    "global_owner_proof",
+    "native_ram_fit"
+  ],
+  "jepa_weight": 0,
+  "native_cgroup_v2": "NOT_RUN_READONLY_HOST",
+  "native_lp3": "NOT_RUN",
+  "next_exact_step": "independent full checkout + official scan, writable delegated cgroup-v2 real synthetic setsid containment negative control, then recheck native prerequisites and serial registered LP3 cohort",
+  "official_privacy_scanner": "NOT_RUN",
+  "package": "fail-closed cgroup-v2 delegated-parent gate; pre-exec join; fixed crash-stale slot; detached residue receipt refusal; bounded owned subtree cleanup",
+  "redmi": "NOT_RUN",
+  "schema": "V13_LP3_RUN20_STATE_V1",
+  "scope": "isolated OFF-by-default code-only candidate, not installed into complete checkout/production",
+  "step2": "UTILITY_FAIL",
+  "user_full_scope_complete": false
+}

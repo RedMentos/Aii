@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-24",
+  "work_package": "WP-LP3-Run20-Detached-Session-Containment",
+  "implemented_scope": "isolated software candidate only; kernel containment not proven",
+  "code_path": ["scripts/lp3_serial_cohort.py", "scripts/lp3_cgroup_v2.py", "scripts/lp3_cgroup_join.py"],
+  "tests": "186/186 software/synthetic PASS; 0 native HF; 0 Redmi; 0 real writable cgroup",
+  "gates_preserved": {"STEP2": "UTILITY_FAIL", "B3_L1": "FAIL", "Body-JEPA": "UNAVAILABLE", "jepa_weight": 0, "full_scope_complete": false},
+  "next": "independent full-checkout and kernel containment review before any native cohort"
+}

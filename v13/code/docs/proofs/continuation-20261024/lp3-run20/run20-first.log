@@ -1,0 +1,30 @@
+======================================================================
+ERROR: test_join_helper_positive_mock_is_not_real_kernel_proof (tests.test_lp3_cgroup_run20.CgroupParserAndBootstrap.test_join_helper_positive_mock_is_not_real_kernel_proof)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_cgroup_run20.py", line 116, in test_join_helper_positive_mock_is_not_real_kernel_proof
+    self.assertEqual(json.loads(marker.read_text())['pid'], pid)
+                     ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+======================================================================
+FAIL: test_join_helper_requires_kernel_membership_before_exec (tests.test_lp3_cgroup_run20.CgroupParserAndBootstrap.test_join_helper_requires_kernel_membership_before_exec)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_cgroup_run20.py", line 97, in test_join_helper_requires_kernel_membership_before_exec
+    with self.assertRaisesRegex(RuntimeError, 'membership'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 36 tests in 11.449s
+
+FAILED (failures=1, errors=1)
