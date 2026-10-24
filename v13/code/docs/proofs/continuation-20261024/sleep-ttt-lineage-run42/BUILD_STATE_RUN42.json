@@ -1,0 +1,40 @@
+{
+  "schema": "V13_RUN42_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base_commit": "66114664c46f2b803f1c5619b54a7872c2d6d0e3",
+  "prereg_commit": "b206ab76b5d83ead98ca8e31435fff191b829a31",
+  "owner": "Codex Run42: only sleep-ttt-lineage-run42/*; no other owner paths",
+  "package": "Sleep A cached digest TTT staging provenance revalidation",
+  "status": "SOFTWARE_CANDIDATE_NOT_INTEGRATED",
+  "source_git_blob": "8dcd4b36cbe58f06ea330a510f1735b37f0ad600",
+  "test_git_blob": "b51dc4f599b2748a911c7e70de3e7fa93e7dc929",
+  "raw_evidence_tar_sha256": "6920992f8d01212353ca0fec96989eb952e4e853f7d56cfa741d8e8b9bbea882",
+  "tests": {
+    "synthetic_final": "14/14 PASS",
+    "compileall": "PASS",
+    "first_attempt": "12/13 PASS; 1 mistaken test expectation",
+    "independent_adversarial_before": "13/14 PASS; duplicate-event-id bypass reproduced",
+    "after_fix": "14/14 PASS",
+    "native_linux": "NOT_RUN",
+    "full_repo": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "known_limits": [
+    "No full checkout because github.com DNS unavailable from container",
+    "Existing cached export can remain after cancellation; training consumer must revalidate lineage at use time",
+    "native_history only covers bounded current history, so older digest entries are conservatively skipped",
+    "Not integrated with runtime or native train runner; synthetic fake-store checks only",
+    "Official privacy scanner unavailable without complete checkout",
+    "No independent agent runtime available; coordinator adversarial review found and fixed duplicate-event-id issue"
+  ],
+  "next_command": "In full current checkout, independently review Run42 candidate, run python -m unittest discover -s v13/code/docs/proofs/continuation-20261024/sleep-ttt-lineage-run42/tests -v; then integrate behind explicit switch only after runtime tests for revoked source, fixed-answer rules and cancellation. Validate consumer at use-time; retain original gates.",
+  "user_decision_required": false
+}
