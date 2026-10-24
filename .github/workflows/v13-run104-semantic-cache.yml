@@ -30,10 +30,10 @@ jobs:
         run: |
           set -euo pipefail
           ../../.venv/bin/python -m compileall -q v13 tests
-          ../../.venv/bin/python -m unittest -v \\
-            tests.test_semantic_cache_integrity_run104 \\
-            tests.test_semantic_memory \\
-            tests.test_retrieval \\
+          ../../.venv/bin/python -m unittest -v \
+            tests.test_semantic_cache_integrity_run104 \
+            tests.test_semantic_memory \
+            tests.test_retrieval \
             tests.test_memory_user_rule_gate_run103
       - name: Official public repository privacy scan
         run: |
