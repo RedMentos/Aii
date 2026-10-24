@@ -1,0 +1,114 @@
+--- original/v13/code/scripts/lp3_serial_cohort.py	2026-10-24 11:11:16.000000000 +0000
++++ v13/code/scripts/lp3_serial_cohort.py	2026-10-24 12:05:48.699788928 +0000
+@@ -23,6 +23,7 @@
+ 
+ from lp3_native_readiness import inspect as inspect_readiness
+ from lp3_closed_evidence_audit import audit, receipt_for, EvidenceError
++from lp3_cgroup_v2 import CgroupV2Job, ContainmentBlocked, host_readiness
+ 
+ 
+ class LaunchBlocked(RuntimeError):
+@@ -227,7 +228,8 @@
+ 
+ 
+ def run_once(*, master, candidate, out, evidence_dir, lock_path,
+-             owner_verified=False, ram_fit_verified=False, timeout=7200):
++             owner_verified=False, ram_fit_verified=False, timeout=7200,
++             cgroup_parent=None):
+     """Launch exactly one four-seed native process; preserve failures verbatim.
+ 
+     ``owner_verified`` and ``ram_fit_verified`` are operator attestations, not
+@@ -239,6 +241,8 @@
+         raise LaunchBlocked('global owner and host RAM-fit attestations required')
+     if timeout <= 0:
+         raise LaunchBlocked('timeout must be positive')
++    if cgroup_parent is None:
++        raise LaunchBlocked('verified delegated cgroup v2 parent required; process groups alone are unsafe')
+     if threading.current_thread() is not threading.main_thread():
+         raise LaunchBlocked('native launch requires main thread for SIGTERM cleanup')
+     _distinct_paths(out, evidence_dir, lock_path, master)
+@@ -263,12 +267,18 @@
+                   'step2': 'UTILITY_FAIL', 'b3_l1': 'FAIL',
+                   'canonical_architecture_complete': False,
+                   'user_full_scope_complete': False}
++        job = None
+         cmd = [sys.executable, str(candidate.resolve(strict=True)),
+                '--master', str(master.resolve(strict=True)),
+                '--master-sha256', readiness['pinned_master_sha256'],
+                '--out', str(out.resolve(strict=False))]
+         # Runner creates run_manifest/seed rows itself, one immutable file each.
+         try:
++            # Create a new owned cgroup only after readiness/attestation gates.
++            # The join helper enters it before exec, including before any fork.
++            job = CgroupV2Job(cgroup_parent, evidence_dir / 'cgroup-join.json')
++            record['cgroup_path'] = str(job.group)
++            cmd = job.wrap(cmd)
+             with (evidence_dir / 'native.stdout-stderr.log').open('xb') as log:
+                 with _owned_sigterm_guard() as sigterm:
+                     # Handler is installed *before* Popen; a signal delivered
+@@ -299,6 +309,11 @@
+                     else:
+                         sigterm['armed'] = False
+                         record.update(_cleanup_owned_group(proc.pid))
++                        record.update(job.finish(proc.pid))
++                        if (not record['cgroup_join_verified']
++                                or record['cgroup_residue_detected']
++                                or not record['contained_job_empty']):
++                            raise LaunchBlocked('cgroup join unverified or detached descendant residue')
+                         if (record['owned_group_residue_detected']
+                                 or not record['owned_group_absent']):
+                             raise LaunchBlocked('owned child left a surviving process-group member')
+@@ -327,6 +342,12 @@
+                                'receipt_sha256': digest,
+                                'audit_evidence_grade': result['evidence_grade']})
+         except BaseException as exc:
++            if job is not None and not job.closed:
++                try:
++                    record.update(job.abort())
++                except BaseException as abort_exc:
++                    record['cgroup_abort_error_type'] = type(abort_exc).__name__
++                    record['contained_job_empty'] = False
+             record.update({'status': 'WRAPPER_OR_AUDIT_FAILED_PRESERVED',
+                            'error_type': type(exc).__name__})
+             log_path = evidence_dir / 'native.stdout-stderr.log'
+@@ -339,7 +360,9 @@
+             # on this host, even with a different output directory. Operator
+             # must inspect the process group before clearing this lock file.
+             if (record.get('owned_group_absent') is False
+-                    or record.get('owned_child_cleanup_error_type')):
++                    or record.get('owned_child_cleanup_error_type')
++                    or record.get('contained_job_empty') is False
++                    or record.get('cgroup_abort_error_type')):
+                 os.write(fd, b'LP3_UNRESOLVED_OWNED_GROUP\n')
+                 os.fsync(fd)
+                 record['local_lock_poisoned'] = True
+@@ -363,21 +386,26 @@
+     ap.add_argument('--owner-verified', action='store_true', help='operator checked all relevant hosts/owners')
+     ap.add_argument('--ram-fit-verified', action='store_true', help='operator measured sufficient native RAM headroom')
+     ap.add_argument('--timeout', type=int, default=7200)
++    ap.add_argument('--cgroup-parent', type=Path,
++                    help='required for --run: operator-delegated writable cgroup v2 parent')
+     a = ap.parse_args()
+     try:
+         if not a.run:
+             result = check(a.master, a.candidate, a.fixture_root)
++            result['containment'] = host_readiness(a.cgroup_parent) if a.cgroup_parent else {
++                'status': 'BLOCKED', 'reason': 'no delegated cgroup parent supplied'}
+             print(json.dumps(result, indent=2, sort_keys=True))
+-            return 0 if result.get('status') == 'LOCAL_ASSETS_READY_OWNER_UNVERIFIED' else 2
++            return 0 if (result.get('status') == 'LOCAL_ASSETS_READY_OWNER_UNVERIFIED'
++                         and result['containment']['status'] == 'CGROUP_V2_PARENT_CANDIDATE') else 2
+         if not all((a.out, a.evidence_dir, a.lock_path)):
+             raise LaunchBlocked('--run requires --out, --evidence-dir and --lock-path')
+         result = run_once(master=a.master, candidate=a.candidate, out=a.out,
+                           evidence_dir=a.evidence_dir, lock_path=a.lock_path,
+                           owner_verified=a.owner_verified, ram_fit_verified=a.ram_fit_verified,
+-                          timeout=a.timeout)
++                          timeout=a.timeout, cgroup_parent=a.cgroup_parent)
+         print(json.dumps(result, indent=2, sort_keys=True))
+         return 0 if result['status'] == 'LOCAL_CLOSED_EVIDENCE_UNPUBLISHED_ANCHOR' else 2
+-    except (LaunchBlocked, OSError, EvidenceError) as exc:
++    except (LaunchBlocked, ContainmentBlocked, OSError, EvidenceError) as exc:
+         print(json.dumps({'status': 'BLOCKED_OR_FAILED', 'error_type': type(exc).__name__,
+                           'native_success_claim': False}, sort_keys=True), file=sys.stderr)
+         return 2
