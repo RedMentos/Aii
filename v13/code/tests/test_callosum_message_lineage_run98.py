@@ -91,6 +91,44 @@ class CallosumMessageLineageRun98(Base):
         receiver = self.offer(event)
         self.assert_uncredited(event, receiver)
 
+    def test_malformed_receiver_offer_json_cannot_abort_scoring(self):
+        event = self.event()
+        msg = self.message(event)
+        self.note(event, msg["packet_id"])
+        receiver = self.offer(event)
+        with self.r.store.tx() as c:
+            c.execute("UPDATE packets SET payload='{' WHERE id=?",
+                      (receiver["packet_id"],))
+        self.assert_uncredited(event, receiver)
+
+    def test_negative_native_duration_cannot_inflate_channel_utility(self):
+        event = self.event()
+        msg = self.message(event)
+        self.note(event, msg["packet_id"])
+        receiver = self.offer(event)
+        with self.r.store.tx() as c:
+            row = c.execute("SELECT payload FROM packets WHERE id=?",
+                            (receiver["packet_id"],)).fetchone()
+            data = json.loads(row["payload"])
+            data["native_metrics"] = {"duration_s": -60.}
+            c.execute("UPDATE packets SET payload=? WHERE id=?",
+                      (json.dumps(data), receiver["packet_id"]))
+        self.assert_uncredited(event, receiver)
+
+    def test_receiver_offer_from_wrong_generation_cannot_get_credit(self):
+        event = self.event()
+        msg = self.message(event)
+        self.note(event, msg["packet_id"])
+        receiver = self.offer(event)
+        with self.r.store.tx() as c:
+            row = c.execute("SELECT payload FROM packets WHERE id=?",
+                            (receiver["packet_id"],)).fetchone()
+            data = json.loads(row["payload"])
+            data["brain_generation_id"] = "foreign"
+            c.execute("UPDATE packets SET payload=? WHERE id=?",
+                      (json.dumps(data), receiver["packet_id"]))
+        self.assert_uncredited(event, receiver)
+
     def test_valid_message_credits_once_and_replay_is_idempotent(self):
         event = self.event()
         msg = self.message(event)
