@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN80_JEF_OUTCOME_SOURCE_BINDING_V1",
+  "date": "2026-10-24",
+  "base": "66c525f1b380162610067ae5c29b4f0fd66c11fb",
+  "branch": "codex/jef-outcome-source-binding-run80-20261024",
+  "owner": "JEF outcome label source-binding, tests, Run69 synthetic fixture contract update, Run80 evidence",
+  "change": "training_rows now requires nondeleted OUTCOME_SELF_LABEL source and verifies full source hash/blob/extent equals stored label before offering it to learned C2 fast heads; human precedence remains.",
+  "fixture_review": "First production fix exposed Run69's intentionally minimal SQLite fixture lacking real source hash/char/kind/read_source fields; fixture was expanded to faithfully implement source verification rather than weakening production guard. Original 9 errors preserved.",
+  "evidence": {
+    "red": {
+      "run": 40133189875,
+      "job": 120989113230,
+      "sha": "cb15a0e3d60e39d8dc793b36ec8b799eeb610c02",
+      "result": "370 tests; 3 expected FAIL",
+      "raw_blob": "7a22e8f76fd05c27669c3498fe0c6d0a5ad4a216"
+    },
+    "fixture_error": {
+      "run": 40133251528,
+      "job": 120989295077,
+      "sha": "d0cd9de32c69fef67279fe8f26d86c603190cbf5",
+      "result": "370 tests; 9 synthetic fixture ERROR",
+      "raw_blob": "ba3092d42dd21f25903efa883a5bf5e489fecd6a"
+    },
+    "green": {
+      "run": 40133319427,
+      "job": 120989503977,
+      "sha": "85663dcb47442612c4e793be42a59e929d40097c",
+      "result": "370/370 PASS, compileall PASS, official privacy CLEAN",
+      "raw_blob": "cc86868a1f9e7fe22d65d90f35386c79e3ebf4e3"
+    },
+    "source_blobs": {
+      "v13/code/v13/jefoutcome.py": "93b17a116e884ea4a4e6b349d938b73309b2a209",
+      "v13/code/tests/test_jefoutcome.py": "fc24e53877aeac37bc80f238afbc87feddfc13cc",
+      "v13/code/tests/test_jef_outcome_lineage_run69.py": "829c44cb2cb496296467bb4ea0d46d35d7332a3b"
+    },
+    "levels": {
+      "software": "Actual Linux/SQLite",
+      "synthetic": "Adversarial state/source corruption in isolated fixtures",
+      "native_models": "NOT RUN",
+      "redmi": "NOT RUN",
+      "full_repo": "NOT RUN"
+    }
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "JEF training_rows still must independently validate the ExecutiveDecision context SourceRef before learning; next package.",
+    "Native C2 readout training and current Redmi measured quality not proven.",
+    "Human precedence must stay strict and self labels remain below human."
+  ],
+  "next_command": "Run81: preregister revoked/corrupt ExecutiveDecision context SourceRef cases in actual Store, enforce source verification in JEF training_rows without altering authority or native model path.",
+  "user_decision_required": false
+}
