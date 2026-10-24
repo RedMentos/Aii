@@ -1,0 +1,36 @@
+{
+  "schema": "V13_LP3_RUN18_STATE_V1",
+  "date": "2026-10-24",
+  "base_pr": 53,
+  "base_commit": "2c009f322b8613e2f09025759c1d0269423aa252",
+  "base_launcher_git_blob": "5cdc15957f6e4e260d5362924e918bdf6b6cd5f2",
+  "candidate_launcher_git_blob": "7c3719a31826e562ecf83816d97c67e203866948",
+  "scope": "isolated source patch; not installed in full repository",
+  "software_tests": "146 PASS including inherited duplicate tests; 2 new unique adversarial cases",
+  "compileall": "PASS",
+  "native_lp3": "NOT_RUN",
+  "full_suite": "NOT_RUN",
+  "privacy_scanner": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "hard_blockers": [
+    "no complete checkout on this host (github DNS)",
+    "7 HF model files absent",
+    "LP2/LoRA fixtures absent",
+    "transformers absent",
+    "global owner not independently verified",
+    "4GiB cgroup memory fit not verified"
+  ],
+  "open_questions": [
+    "SIGTERM wrapper crash window",
+    "descendant creating independent session",
+    "orphan zombie process-group liveness",
+    "full checkout review"
+  ],
+  "next_exact_step": "independent patch review and full checkout integration, full suite/privacy scan, native prerequisites/owner check; only then serial LP3 cohort"
+}
