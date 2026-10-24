@@ -1,0 +1,8 @@
+# Run87 prereg — extracted phone ZIP actual CLI ask and restart proof
+
+Date 2026-10-24. Exact base: Run86 PR119 head `fbf786b5b1e7f86623b8dc2a6228f82c9028893d` (Run86 Linux Actions run 40134506421 SUCCESS). Owner: a new `tests/test_phone_cli_run87.py`, one invocation added to extracted-ZIP workflow step, and this Run87 proof directory. No other owner files, runtime, canon, preregistered cohorts or model revisions changed.
+
+## Registered acceptance
+The Run86 Runtime/Operator tests prove internal API behavior, but not the user-facing `python -m v13` entrypoint from the generated phone ZIP. Execute the real CLI from the **extracted** ZIP with isolated temp V13_HOME, no model artifacts: `python -m v13 --home <temp> ask 'Kopiere exakt: CLI source bound'`. Assert process exits 0 within a finite timeout and stdout is exactly `CLI source bound`; stderr may contain fixed operator notices. Restart a separate `python -m v13` process in doctor mode and verify the persisted user/assistant source and FINAL status through the actual Store; never infer native readiness from missing-model doctor warnings. A separate negative test supplies a non-exact prompt with no models and requires a bounded nonzero result rather than false FINAL; this is optional only if the timeout and no-native guarantee can be proven first.
+
+Only standard Linux software/SQLite/CLI proof. Do not run bootstrap or download models. Preserve any failing raw CI logs; do not promote STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi, native or complete V13.
