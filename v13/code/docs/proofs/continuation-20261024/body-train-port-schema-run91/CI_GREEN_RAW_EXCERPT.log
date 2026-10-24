@@ -1,0 +1,26 @@
+# Run91 GREEN, bounded verbatim GitHub Actions log excerpt
+# Full raw log: https://github.com/RedMentos/Aii/actions/runs/40135535785 (job 120996159128)
+# RED preserved separately. This is a bounded excerpt, not complete raw log.
+2026-10-24T21:44:54.6266566Z test_native_capability_diagnostic_survives_malformed_descriptor (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_native_capability_diagnostic_survives_malformed_descriptor) ... ok
+2026-10-24T21:44:54.6272065Z test_unhashable_fp32_exception_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_fp32_exception_ids_return_reason_not_typeerror) ... ok
+2026-10-24T21:44:54.6277477Z test_unhashable_master_dtype_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_master_dtype_return_reason_not_typeerror) ... ok
+2026-10-24T21:44:54.6282828Z test_unhashable_trainable_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_trainable_ids_return_reason_not_typeerror) ... ok
+2026-10-24T21:44:54.6284224Z Ran 396 tests in 9.277s
+2026-10-24T21:44:54.9574606Z privacy scan f0c0d4f70..HEAD: CLEAN
+2026-10-24T21:44:54.9671699Z [36;1m    print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))[0m
+2026-10-24T21:44:54.9672709Z [36;1mstat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-24T21:44:56.2962723Z {"bytes": 12547458, "canonical_gate_pass": false, "files": 815, "native_models_launched": false, "phone_measured": false, "sha256": "4044d004dd6996af65663698c85047519eb5b9094821763c1fb4197ff094ae0e", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run83.zip"}
+2026-10-24T21:44:56.4773226Z PHONE_SOURCE_MANIFEST_PASS 814
+2026-10-24T21:44:56.4946212Z PHONE_SOURCE_BYTES=12547458
+2026-10-24T21:44:56.4986199Z [36;1mprint('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)[0m
+2026-10-24T21:44:56.7661273Z INDEPENDENT_PHONE_ARCHIVE_PASS 814 4044d004dd6996af65663698c85047519eb5b9094821763c1fb4197ff094ae0e
+2026-10-24T21:44:56.7762015Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T21:45:03.4768522Z test_native_capability_diagnostic_survives_malformed_descriptor (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_native_capability_diagnostic_survives_malformed_descriptor) ... ok
+2026-10-24T21:45:03.4774385Z test_unhashable_fp32_exception_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_fp32_exception_ids_return_reason_not_typeerror) ... ok
+2026-10-24T21:45:03.4779825Z test_unhashable_master_dtype_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_master_dtype_return_reason_not_typeerror) ... ok
+2026-10-24T21:45:03.4785657Z test_unhashable_trainable_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_trainable_ids_return_reason_not_typeerror) ... ok
+2026-10-24T21:45:12.6521856Z Ran 95 tests in 14.532s
+2026-10-24T21:45:12.7855678Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS
+2026-10-24T21:45:14.1479461Z SHA256 digest of uploaded artifact zip is 717bc081476b403d772516f3d303dfefbea89b376e8816235f0e3a5dfa102802
+2026-10-24T21:45:14.5875571Z Artifact V13-Phone-source-3b72b12a0531b826cc1d2007f2a9d028450e390f.zip successfully finalized. Artifact ID 12576828222
+2026-10-24T21:45:14.5876685Z Artifact V13-Phone-source-3b72b12a0531b826cc1d2007f2a9d028450e390f has been successfully uploaded! Final size is 12547610 bytes. Artifact ID is 12576828222
