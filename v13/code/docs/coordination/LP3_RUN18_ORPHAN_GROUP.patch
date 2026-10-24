@@ -1,0 +1,98 @@
+--- a/v13/code/scripts/lp3_serial_cohort.py
++++ b/v13/code/scripts/lp3_serial_cohort.py
+@@ -16,6 +16,7 @@
+ import stat
+ import subprocess
+ import sys
++import time
+ from datetime import datetime, timezone
+ 
+ from lp3_native_readiness import inspect as inspect_readiness
+@@ -74,6 +75,8 @@
+             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+         except BlockingIOError as exc:
+             raise LaunchBlocked('another local owner holds LP3 lock') from exc
++        if os.fstat(fd).st_size != 0:
++            raise LaunchBlocked('local LP3 lock is poisoned; inspect unresolved owned group before clearing')
+         return fd
+     except BaseException:
+         os.close(fd)
+@@ -144,6 +147,47 @@
+         return proc.wait(timeout=grace)
+ 
+ 
++
++def _owned_group_exists(pgid):
++    """Check the group created by Popen(start_new_session=True), not other jobs."""
++    try:
++        os.killpg(pgid, 0)
++    except ProcessLookupError:
++        return False
++    except PermissionError:
++        # Fail closed: a group we cannot inspect is not known to be gone.
++        return True
++    return True
++
++
++def _cleanup_owned_group(pgid, grace=1.0):
++    """Bounded cleanup for descendants that outlive the direct child.
++
++    Reaping the Popen leader alone does NOT prove its process group has exited.
++    Never report a successful native cohort if any group member survived it.
++    This only accepts a PGID returned from our own start_new_session child.
++    """
++    if not _owned_group_exists(pgid):
++        return {'owned_group_residue_detected': False, 'owned_group_absent': True}
++    try:
++        os.killpg(pgid, signal.SIGTERM)
++    except ProcessLookupError:
++        pass
++    deadline = time.monotonic() + grace
++    while time.monotonic() < deadline and _owned_group_exists(pgid):
++        time.sleep(min(.05, max(0, deadline - time.monotonic())))
++    if _owned_group_exists(pgid):
++        try:
++            os.killpg(pgid, signal.SIGKILL)
++        except ProcessLookupError:
++            pass
++    deadline = time.monotonic() + grace
++    while time.monotonic() < deadline and _owned_group_exists(pgid):
++        time.sleep(min(.05, max(0, deadline - time.monotonic())))
++    return {'owned_group_residue_detected': True,
++            'owned_group_absent': not _owned_group_exists(pgid)}
++
++
+ def check(master, candidate, fixture_root=None):
+     return inspect_readiness(master, candidate, fixture_root=fixture_root)
+ 
+@@ -205,7 +249,15 @@
+                         record['owned_child_cleanup_returncode'] = _reap_interrupted_owned_child(proc)
+                     except BaseException as cleanup_exc:
+                         record['owned_child_cleanup_error_type'] = type(cleanup_exc).__name__
++                    finally:
++                        # A reaped leader may still have live descendants.
++                        record.update(_cleanup_owned_group(proc.pid))
+                     raise
++                else:
++                    record.update(_cleanup_owned_group(proc.pid))
++                    if (record['owned_group_residue_detected']
++                            or not record['owned_group_absent']):
++                        raise LaunchBlocked('owned child left a surviving process-group member')
+                 finally:
+                     log.flush(); os.fsync(log.fileno())
+             record.update({'native_returncode': rc, 'timed_out': timed_out,
+@@ -236,6 +288,14 @@
+             raise
+         finally:
+             record['ended_utc'] = utc()
++            # If cleanup could not establish absence, block *future* attempts
++            # on this host, even with a different output directory. Operator
++            # must inspect the process group before clearing this lock file.
++            if (record.get('owned_group_absent') is False
++                    or record.get('owned_child_cleanup_error_type')):
++                os.write(fd, b'LP3_UNRESOLVED_OWNED_GROUP\n')
++                os.fsync(fd)
++                record['local_lock_poisoned'] = True
+             _write_exclusive(evidence_dir / 'launch_status.json', record)
+             _fsync_dir(evidence_dir)
+         return record

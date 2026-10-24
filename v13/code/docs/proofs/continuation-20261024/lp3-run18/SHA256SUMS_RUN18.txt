@@ -1,0 +1,12 @@
+# SHA-256 of exact local bytes independently read back as Git blobs on GitHub
+604e726f270994f4e826ba59fb14c268abe76dbb2f9ea0c28072170a8e58e364  v13/code/docs/coordination/LP3_RUN18_ORPHAN_GROUP.patch
+bf3fb2c5c24c0e572ed31ca25547c2f085973aea6173fc0206913019d31b3db4  v13/code/tests/test_lp3_serial_review_run18.py
+d88cb0fc7297cb0f1d893a756eb3516f370300ffb721fc1d2c1db53404b1d576  v13/code/docs/proofs/continuation-20261024/lp3-run18/run18_red.log
+e9f196af144079e6162922ee694bf543c9722e102e47e0059d698189190e88e0  v13/code/docs/proofs/continuation-20261024/lp3-run18/run18_final.log
+ab561b4916b1c1ca20711bc4cbf9688f8e85dcd3ac7894a8ac22a26d40e6005d  v13/code/docs/proofs/continuation-20261024/lp3-run18/run18_host_preflight.json
+# Git blob identities for independent remote readback:
+# patch 31309fc3b71a6ab6fc386d135c76a858e562e961
+# test 0b1daacb0d981e4469c6866235a323f049540bdc
+# red 7d44262a7ccc7bde9ba323097e18b34d06dda018
+# final 5d3f7b83b692192bdbc2e58592e1a3cecda7b4ed
+# preflight 9f174bee7e07246264c518a1e8a4f1d323751db4

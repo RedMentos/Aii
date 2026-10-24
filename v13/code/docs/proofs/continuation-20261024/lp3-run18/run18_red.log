@@ -1,0 +1,15 @@
+test_successful_leader_with_live_descendant_is_not_success (test_lp3_serial_review_run18.OrphanGroupReview.test_successful_leader_with_live_descendant_is_not_success) ... FAIL
+
+======================================================================
+FAIL: test_successful_leader_with_live_descendant_is_not_success (test_lp3_serial_review_run18.OrphanGroupReview.test_successful_leader_with_live_descendant_is_not_success)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run18/v13/code/tests/test_lp3_serial_review_run18.py", line 41, in test_successful_leader_with_live_descendant_is_not_success
+    self.assertNotEqual(status['status'], 'LOCAL_CLOSED_EVIDENCE_UNPUBLISHED_ANCHOR')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'LOCAL_CLOSED_EVIDENCE_UNPUBLISHED_ANCHOR' == 'LOCAL_CLOSED_EVIDENCE_UNPUBLISHED_ANCHOR'
+
+----------------------------------------------------------------------
+Ran 1 test in 1.029s
+
+FAILED (failures=1)
