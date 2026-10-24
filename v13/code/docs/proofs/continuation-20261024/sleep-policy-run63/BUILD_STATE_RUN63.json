@@ -1,0 +1,33 @@
+{
+  "schema": "V13_RUN63_SLEEP_POLICY_FINITE_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base": "845863efac747e87593a1dc663ac5b40f4746f6b",
+  "owner": "sleep.py validation/quota only; sleep_policy_finite.py; two tests; sleep-policy-run63 evidence",
+  "status": "PRODUCTION_BOUND_SOFTWARE_CANDIDATE_NOT_FULL_CHECKOUT_VERIFIED",
+  "tests": {
+    "original_nan": "RED reproduced",
+    "review_huge": "RED reproduced",
+    "focused": "12/12 PASS",
+    "optimized": "12/12 PASS",
+    "compileall": "PASS",
+    "integration": "NOT RUN",
+    "full_repository": "NOT RUN",
+    "privacy_scan": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Production SleepRuntime integration and actual Store policy persistence not tested",
+    "No actual response-quality gain or native/Redmi measurements",
+    "Source/seed/model/permission gates unchanged"
+  ],
+  "next": "cd v13/code && python -m unittest -v tests.test_sleep_policy_finite_integration; then full repo tests and official privacy scan",
+  "user_decision_required": false
+}
