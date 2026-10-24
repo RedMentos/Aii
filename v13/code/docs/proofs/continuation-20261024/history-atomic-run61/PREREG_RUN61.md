@@ -1,0 +1,7 @@
+# Run61 — production importable Context OS native_history snapshot candidate
+
+2026-10-24. Base PR94 `88cf8c052086770569251f85d3c740e7a9ec199e`. Own new files only: `v13/code/v13/history_atomic.py`, `v13/code/tests/test_history_atomic.py`, and `v13/code/docs/proofs/continuation-20261024/history-atomic-run61/*`. Do not edit PR88-owned `history.py`, `runtime.py` or Store. Default off until independent full checkout review.
+
+Problem Run55: `native_history` fixed-rule/source reads are not one SQLite snapshot; source revocation can cross calls. Implement exact production-bound wrapper importing current `v13.history.native_history` and using existing Store.tx BEGIN IMMEDIATE to serialize SourceRef/rule/event checks. No callback injection in production API, no authority escalation, no change to history semantics, bounded turns <=64, nested transactions fail closed. This is a candidate only; runtime callsite not switched until real Store latency and concurrency tests.
+
+Predeclared tests: isolated production-module import with synthetic Store-shaped SQLite fixture, two-connection revocation writer blocked during read, nested tx and malformed args fail closed, final SourceRef revalidation, Python -O. A separate full-checkout test for actual Store will be authored but marked NOT RUN here if checkout remains unavailable. Do not promote any STEP2/B3/Body-JEPA/full-system gate. Preserve raw evidence and all original negative gates.
