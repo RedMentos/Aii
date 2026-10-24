@@ -97,7 +97,7 @@ jobs:
         working-directory: v13/code
         run: |
           set -euo pipefail
-          ../../.venv/bin/python scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run83.zip" --phone-install
+          ../../.venv/bin/python scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run83.zip" --phone-install | tee "$RUNNER_TEMP/v13-phone-packager.jsonl"
           unzip -tqq "$RUNNER_TEMP/V13-Phone-Run83.zip"
           ../../.venv/bin/python - <<'PY'
           import json,os,zipfile
@@ -121,6 +121,25 @@ jobs:
           PY
           sha256sum "$RUNNER_TEMP/V13-Phone-Run83.zip"
           stat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"
+
+      - name: Independently audit ZIP manifest paths hashes and archive bytes
+        shell: bash
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python - <<'PY'
+          import json,os
+          from pathlib import Path
+          from scripts.phone_release_audit_candidate import verify_archive,sha256
+          temp=Path(os.environ['RUNNER_TEMP'])
+          archive=temp/'V13-Phone-Run83.zip'
+          packager=json.loads((temp/'v13-phone-packager.jsonl').read_text().strip().splitlines()[-1])
+          files=verify_archive(archive)
+          actual=sha256(archive)
+          if len(files)<100 or len(files)+1!=packager['files'] or actual!=packager['sha256']:
+              raise SystemExit('Independent archive verification disagrees with packager')
+          print('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)
+          PY
 
       - name: Execute extracted V13 Phone source smoke without models
         shell: bash
