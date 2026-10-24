@@ -1,0 +1,19 @@
+# Run95 preregistered RED — bounded original CI excerpt
+
+Actions run 40136694880, job 120999601567, test-only commit 9af6220496181b4e4a535a7a7a55dc27186124ba. Full raw job log retained by GitHub Actions (1.3 MB; assertions dump SQLite state), bounded exact matching lines below. Initial software test failures are expected and not removed.
+
+2026-10-24T22:00:57.4542142Z test_equal_timestamps_use_deterministic_id_tiebreak (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_equal_timestamps_use_deterministic_id_tiebreak) ... FAIL
+2026-10-24T22:00:57.4747929Z test_first_sync_over_capacity_keeps_newest_rows (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_first_sync_over_capacity_keeps_newest_rows) ... FAIL
+2026-10-24T22:00:57.4936898Z test_new_human_corrections_are_not_starved_after_capacity (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_new_human_corrections_are_not_starved_after_capacity) ... FAIL
+2026-10-24T22:00:58.5482058Z FAIL: test_equal_timestamps_use_deterministic_id_tiebreak (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_equal_timestamps_use_deterministic_id_tiebreak)
+2026-10-24T22:00:58.5484204Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_replay_window_run95.py", line 84, in test_equal_timestamps_use_deterministic_id_tiebreak
+2026-10-24T22:00:58.7193206Z AssertionError: 'r00000' unexpectedly found in {'r00000': {'event_id': 'e00000', 'session_id': 'session', 'type': 'EPISODIC', 'evidence_class': 'EPISODIC', 'priority': 0.9, 'reps': 0, 'failures': 0, 'last': None, 'last_outcome': None, 'next_due': 100.0, 'created': 100.0,
+2026-10-24T22:00:58.8763451Z FAIL: test_first_sync_over_capacity_keeps_newest_rows (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_first_sync_over_capacity_keeps_newest_rows)
+2026-10-24T22:00:58.8765088Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_replay_window_run95.py", line 77, in test_first_sync_over_capacity_keeps_newest_rows
+2026-10-24T22:00:59.0360235Z AssertionError: 'r00000' unexpectedly found in {'r00000': {'event_id': 'e00000', 'session_id': 'session', 'type': 'EPISODIC', 'evidence_class': 'EPISODIC', 'priority': 0.9, 'reps': 0, 'failures': 0, 'last': None, 'last_outcome': None, 'next_due': 0.0, 'created': 0.0, 'ex
+2026-10-24T22:00:59.2005814Z FAIL: test_new_human_corrections_are_not_starved_after_capacity (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_new_human_corrections_are_not_starved_after_capacity)
+2026-10-24T22:00:59.2009023Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_replay_window_run95.py", line 60, in test_new_human_corrections_are_not_starved_after_capacity
+2026-10-24T22:00:59.2010938Z AssertionError: 0 != 3
+2026-10-24T22:00:59.2011965Z Ran 35 tests in 1.121s
+2026-10-24T22:00:59.2012350Z FAILED (failures=3)
+2026-10-24T22:00:59.2028663Z ##[error]Process completed with exit code 1.

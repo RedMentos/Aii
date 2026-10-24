@@ -94,9 +94,13 @@ class ReplayQueue:
         self.s.add_packet('ReplayItem',p);return rid
     def sync(self,st,policy):
         """Index rebuild: every replay row gets a schedule entry; vanished rows retire."""
-        rows=self.s.rows('SELECT r.*,e.session_id FROM replay r JOIN events e ON e.id=r.event_id ORDER BY r.created LIMIT ?',(MAX_ITEMS+1,))
+        # Bound the *active* index to the newest sources. The durable replay table
+        # remains intact; oldest-first LIMIT would starve every new correction
+        # once MAX_ITEMS historical entries exist. id breaks equal-time ties.
+        rows=self.s.rows('SELECT r.*,e.session_id FROM replay r JOIN events e ON e.id=r.event_id ORDER BY r.created DESC, r.id DESC LIMIT ?',(MAX_ITEMS+1,))
         seen=set();added=0
-        for r in rows[:MAX_ITEMS]:
+        # Keep chronological insertion order for the existing replay sampler.
+        for r in reversed(rows[:MAX_ITEMS]):
             seen.add(r['id'])
             if r['id'] in st['items']:continue
             kind=r['kind'] if r['kind'] in TYPES else 'EPISODIC'
@@ -106,12 +110,18 @@ class ReplayQueue:
                 'next_due':r['created'],'created':r['created'],'expires':r['created']+policy['ttl_days']*DAY,
                 'retired':None,'unresolved_errors':[],'affected_paths':[]}
             added+=1
+        overflow=len(rows)>MAX_ITEMS
         for rid,it in st['items'].items():
-            if rid not in seen and not it['retired'] and len(rows)<=MAX_ITEMS:it['retired']='ROW_GONE'
+            if rid not in seen and not it['retired']:
+                it['retired']='WINDOW_EVICTED' if overflow else 'ROW_GONE'
         if len(st['items'])>MAX_ITEMS:
-            # Bound state: forget retired entries first (their replay rows and packets remain).
-            for rid in sorted((k for k,v in st['items'].items() if v['retired']),key=lambda k:st['items'][k]['created'])[:len(st['items'])-MAX_ITEMS]:del st['items'][rid]
-        return added,len(rows)>MAX_ITEMS
+            # Evict only entries outside the selected window. In-window retired
+            # entries must not be deleted/reintroduced with reset replay history.
+            # Their replay rows and original source packets are never deleted.
+            stale=sorted((k for k in st['items'] if k not in seen),
+                         key=lambda k:(st['items'][k]['created'],k))
+            for rid in stale[:len(st['items'])-MAX_ITEMS]:del st['items'][rid]
+        return added,overflow
     @staticmethod
     def bucket(it):
         if it['last_outcome']=='FAIL' or it['failures']>it['reps']:return 'failure'

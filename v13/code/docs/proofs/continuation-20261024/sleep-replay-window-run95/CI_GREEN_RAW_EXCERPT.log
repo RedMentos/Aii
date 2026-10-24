@@ -1,0 +1,11 @@
+# Run95 GREEN — bounded raw CI excerpt
+
+Commit de122bf3df40ae5e8a147ca944b362005818d5fb. Actions run 40136804184, job 120999926554 SUCCESS. Selected SQLite/Sleep/Homeostasis tests 35/35 PASS, compileall PASS, official privacy scanner CLEAN. Full job logs retained by Actions. Previous run 40136760369 had 35/35 tests PASS but privacy scan ERROR due missing base commit in shallow checkout; fixed workflow fetch-depth 50 (no security bypass).
+
+2026-10-24T22:02:24.2173957Z test_equal_timestamps_use_deterministic_id_tiebreak (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_equal_timestamps_use_deterministic_id_tiebreak) ... ok
+2026-10-24T22:02:24.2332639Z test_first_sync_over_capacity_keeps_newest_rows (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_first_sync_over_capacity_keeps_newest_rows) ... ok
+2026-10-24T22:02:24.2547403Z test_new_human_corrections_are_not_starved_after_capacity (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_new_human_corrections_are_not_starved_after_capacity) ... ok
+2026-10-24T22:02:25.3816637Z Ran 35 tests in 1.187s
+2026-10-24T22:02:25.3816937Z OK
+2026-10-24T22:02:25.4161701Z [36;1m.venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "b54342c1278f78f509359b6daa8dd644e6f3a5d9" --head HEAD --no-worktree[0m
+2026-10-24T22:02:25.4783051Z privacy scan b54342c12..HEAD: CLEAN
