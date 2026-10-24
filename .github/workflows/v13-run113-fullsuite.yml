@@ -1,0 +1,51 @@
+name: V13 Run113 bounded offline full unittest audit
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run113-fullsuite.yml"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run113-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  full-suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+      NEEDLE_TELEMETRY: "0"
+      NO_MODEL_DOWNLOADS: "1"
+    steps:
+      - name: Checkout immutable integration source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Isolated model-free dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Compile and bounded full unittest discover
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python -m compileall -q v13 tests
+          timeout 900s ../../.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout immutable review source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
