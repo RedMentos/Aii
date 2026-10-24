@@ -272,7 +272,11 @@ class ContextOS:
             # (measured 2026-10-09, bench-results/context-cache-20261009). Re-enter the stored transcript: old prompt +
             # the committed answer + new volatile block + query. Any mismatch falls back to stable_prefix.
             prev=st.get('transcripts',{}).get(role);last=turns[-1] if turns else None
-            if prev and last and prev['event_id']==last[0] and prev['system']==stable and last[1][-1]['role']=='assistant':
+            if (prev and last and prev.get('messages') and
+                (st['mode']=='SHADOW' or prev.get('applied') is True) and
+                prev.get('event_id')==last[0] and prev.get('system')==stable and
+                last[1][0]['role']=='user' and last[1][-1]['role']=='assistant' and
+                prev['messages'][-1]=={'role':'user','content':last[1][0]['content']}):
                 cand=prev['messages']+[{'role':'assistant','content':last[1][-1]['content']}]+tail
                 if sum(len(m['content']) for m in cand)<=budget:planned=cand;decisions.append('append_reentry')
                 else:reason='append_budget_rebuild'
@@ -299,7 +303,7 @@ class ContextOS:
             st2['last'][role]={'legacy':fp_legacy,'planned':fp_planned,'event_id':event_id,'packet_id':p['packet_id'],'decisions':sorted(set(decisions)),'applied':applied}
             st2['recall']=(st2['recall']+[recall])[-RECALL_WINDOW:];st2['plans']+=1
             if not budget_unmet and st2['layout']=='append_only' and sum(len(m['content']) for m in planned)<=TRANSCRIPT_MAX_CHARS:
-                st2.setdefault('transcripts',{})[role]={'event_id':event_id,'system':stable,'messages':planned}
+                st2.setdefault('transcripts',{})[role]={'event_id':event_id,'system':stable,'messages':planned,'applied':applied}
             else:st2.get('transcripts',{}).pop(role,None)
         self._mutate(fn)
         if self.n is not None:
