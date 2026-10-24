@@ -1,0 +1,36 @@
+{
+  "schema": "V13_RUN51_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "owner": "Run51 only world-outcome-run51/*",
+  "base": "d123fd85a50afc491834c03735243bd0bc6683b5",
+  "prereg_commit": "fe8f0f180d6a0f2ada2ada0dd1e078a0b8a1607c",
+  "source_archive_sha256": "4b2353e7d0bcc47dc021f0f54803e8777ed2e3cbcfc5ae6bd9715a36f401303c",
+  "status": "SYNTHETIC_SQLITE_CHRONOLOGICAL_PASS_ONLY",
+  "metrics": {
+    "forward_mae": 0.0711268395125355,
+    "no_action_mae": 0.1541672437123383,
+    "shuffled_action_mae": 0.1669051089191124,
+    "gain_vs_no_action": 0.5386384435512673,
+    "gain_vs_shuffled": 0.5738486378688032,
+    "inverse_accuracy_exploratory": 0.5
+  },
+  "tests": {
+    "first": "14/15 PASS, 1 harness FAIL",
+    "after_harness_fix": "15/15 PASS",
+    "adversarial_before_fix": "16/17 PASS, 1 ERROR",
+    "final": "19/19 PASS",
+    "optimized": "19/19 PASS",
+    "compileall": "PASS",
+    "real_store": "NOT_RUN",
+    "native": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "next": "Full checkout: decode four parts, run tests, independently validate real Store/Runtime action-outcome source binding and chronological heldout utility."
+}

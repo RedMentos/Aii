@@ -1,0 +1,13 @@
+# Run51 preregistration — World-Model source-bound chronological outcome utility
+
+Parent Run50 exact head `d123fd85a50afc491834c03735243bd0bc6683b5`; independent owner only `v13/code/docs/proofs/continuation-20261024/world-outcome-run51/*`. No edits to Run49, Run50, production, Canon, original cohorts, user rules, Age rights or negative gates.
+
+Canon §7.2.1/7.2.2: forward (s,a)->observed y, inverse separate, state-align only when actual latent exists, outcome predicted vs actual; action coverage/OOD/disagreement; counterfactuals hypotheses not causality. Existing World-Model candidate `v13/code/docs/proofs/continuation-20261024/world-output-run37/scripts/world_model.py` Git blob `45bb69dcf6f8252ac304bda2c95a616412f115d1`, original Run28 `682073e55ff2698edcf4d9d7dd9f8d3662868acf`, Run37 domain guard `3554065cac57ef5c88db3321591a459173a71a90`. Do not alter these.
+
+Implement a **read-only** SQLite action/outcome extraction with exact ActionSelection packet event/generation/ID consistency and typed finite metrics; reject ambiguous/missing source instead of fabricating 0. Fit the existing ridge-style forward model with state and action features on chronological training rows; evaluate heldout future events with no test leakage, action-specific mean and no-action/shuffled-action controls. Preserve per-action coverage, OOD and predictive error; refuse out-of-domain duration/success/characters rather than clamp. Candidate remains SHADOW and never makes real action choices.
+
+Predeclared synthetic cohort: 256 deterministic on-disk SQLite action events, seed 20261051, 192 chronological training and 64 future heldout, 4 actions balanced, action effects and independent noise, no actual native inference. PASS_SYNTHETIC_ONLY if heldout forward MAE improves >=20% vs no-action and >=10% vs shuffled-action, every heldout event disjoint, source tampering/duplicates rejected, no real action authority, and negative gates unchanged. If not, preserve failure, no threshold retuning in same cohort. Independently test corrupt packet, wrong generation, duplicate ActionSelection, nonfinite metrics, missing output metric, future leakage, OOD abstention, restart deterministic metrics, and no production writes. Run Python -O and compileall.
+
+Primary source research: SQLite transactions/WAL docs; original V13 source and Canon. No model download or heavy native jobs.
+
+Gates remain STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, full V13 INCOMPLETE. Real Store/Runtime, native Linux/Redmi and full-suite acceptance require separate proofs.
