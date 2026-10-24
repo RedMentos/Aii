@@ -52,7 +52,9 @@ def transitions(store,limit=MAX_ROWS):
             if type(exp) is not dict or type(act) is not dict:continue
             fc=exp.get('forecast') or {}
             if type(fc) is not dict:continue
-            sel=store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(r['event_id'],))
+            created=r['created']
+            if not _finite_nonnegative(created):continue
+            sel=store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? AND created<=? ORDER BY created DESC,rowid DESC LIMIT 1",(r['event_id'],created))
             route=json.loads(sel['payload']).get('route_hint') if sel else None
             if route not in ACTIONS:continue
             chars=fc.get('input_chars');duration=act.get('action_duration_s')

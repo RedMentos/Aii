@@ -12,7 +12,7 @@ class Store:
         self.db=sqlite3.connect(':memory:')
         self.db.row_factory=sqlite3.Row
         self.db.executescript('''CREATE TABLE actions(id TEXT PRIMARY KEY,event_id TEXT,status TEXT,expected TEXT,outcome TEXT,created REAL);
-            CREATE TABLE packets(kind TEXT,event_id TEXT,payload TEXT);
+            CREATE TABLE packets(kind TEXT,event_id TEXT,payload TEXT,created REAL);
             CREATE TABLE kv(key TEXT PRIMARY KEY,value TEXT);
             CREATE TABLE logs(kind TEXT,event_id TEXT,payload TEXT);''')
     def rows(self,q,args):return [dict(x) for x in self.db.execute(q,args).fetchall()]
@@ -28,7 +28,7 @@ class Store:
         fc={'forecast':{'input_chars':chars,'resource_state':'NORMAL'}}
         if latent is not None:fc['forecast']['learned_latent_prediction']={'latent':latent}
         self.db.execute('INSERT INTO actions VALUES (?,?,?,?,?,?)',(str(i),'e'+str(i),'FINAL',json.dumps(fc),json.dumps({'action_duration_s':duration,'characters':output}),created+i))
-        if route is not None:self.db.execute('INSERT INTO packets VALUES (?,?,?)',('ActionSelection','e'+str(i),json.dumps({'route_hint':route})))
+        if route is not None:self.db.execute('INSERT INTO packets VALUES (?,?,?,?)',('ActionSelection','e'+str(i),json.dumps({'route_hint':route}),created+i-.01))
         self.db.commit()
 
 
