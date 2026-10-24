@@ -1,0 +1,49 @@
+=== INITIAL TEST (pre independent RNG review) ===
+/mnt/data/v13_run38/scripts/body_jepa_micro.py:127: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  'student_delta':float(torch.linalg.vector_norm(candidate.student.weight-init_student)),
+test_checkpoint_roundtrip_and_corruption (test_body_jepa_micro.MicroJEPA.test_checkpoint_roundtrip_and_corruption) ... ok
+test_gradient_and_ema_scope (test_body_jepa_micro.MicroJEPA.test_gradient_and_ema_scope) ... ok
+test_invalid_eligibility_reject (test_body_jepa_micro.MicroJEPA.test_invalid_eligibility_reject) ... ok
+test_no_production_or_age_authority (test_body_jepa_micro.MicroJEPA.test_no_production_or_age_authority) ... ok
+test_objective_adapter_complete (test_body_jepa_micro.MicroJEPA.test_objective_adapter_complete) ... ok
+test_pre_registered_synthetic_threshold (test_body_jepa_micro.MicroJEPA.test_pre_registered_synthetic_threshold) ... ok
+test_zero_eligibility_no_update (test_body_jepa_micro.MicroJEPA.test_zero_eligibility_no_update) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.204s
+
+OK
+
+=== INITIAL COHORT (pre independent RNG review) ===
+/mnt/data/v13_run38/scripts/body_jepa_micro.py:127: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  'student_delta':float(torch.linalg.vector_norm(candidate.student.weight-init_student)),
+{
+  "authority": "SYNTHETIC_SANDBOX_NO_AGE_ACTION",
+  "body_jepa_gate_pass": false,
+  "ema": 0.95,
+  "ema_delta": 3.184061288833618,
+  "holdout_pairs": 64,
+  "jepa_weight_production": 0,
+  "lr": 0.02,
+  "predictor_delta": 2.424726724624634,
+  "schema": "V13_BODY_JEPA_MICRO_SANDBOX_V1",
+  "seed": 20261024,
+  "steps": 160,
+  "student_delta": 3.241396427154541,
+  "synthetic_criterion_pass": true,
+  "target_gradients_absent": true,
+  "train_pairs": 128,
+  "trained_mse": 0.00031603535171598196,
+  "untrained_mse": 0.9462083578109741,
+  "wrong_target_mse": 0.16261698305606842
+}
+
+=== INITIAL COLLAPSE REVIEW ===
+input_variance_mean 0.5225427150726318
+target_variance_mean 1.2680193185806274
+student_variance_mean 2.0864503383636475
+target_to_input_var_ratio 2.426632881164551
+target_singular_values [2.2630367279052734, 1.8345063924789429, 1.7652353048324585, 1.4283379316329956, 1.071533203125, 0.9305886626243591, 0.7561587691307068, 0.030329013243317604]
+student_singular_values [2.285024642944336, 1.8519572019577026, 1.7831828594207764, 1.451398253440857, 1.090238094329834, 0.9448042511940002, 0.7663747668266296, 0.011355468071997166]
