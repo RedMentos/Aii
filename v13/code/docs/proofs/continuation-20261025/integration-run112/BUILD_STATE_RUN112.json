@@ -1,0 +1,61 @@
+{
+  "run": 112,
+  "utc_date": "2026-10-25",
+  "branch": "codex/integration-run112-20261025",
+  "pr": 143,
+  "parent_commit": "7ad451af9787183f929e02818a3cf2930315fdbc",
+  "state": "ISOLATED_INTEGRATED_REVIEW_CANDIDATE_NOT_MERGED",
+  "owner": "Run107 episodic_route.py import into Run108-111 chain; Run106 episodes.py separately active",
+  "imported_run107": {
+    "pr": 138,
+    "head": "cb2d6b8b67da830bdd74235d20d2f4041646834f",
+    "source_blob": "90e452f46daec9b8872924b354e0ce977a77d0b6",
+    "tests_blob": "452be5bb2ac28c0178b5535c422cfa204dd94236",
+    "workflow_blob": "2e062985854df14258bf2e7945a1c21e9df0fe0e",
+    "byte_exact_verified": true
+  },
+  "integration_ci": {
+    "run": 40144414099,
+    "job": 121022591586,
+    "tests": 112,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN"
+  },
+  "broad_ci": {
+    "run": 40144454629,
+    "job": 121022758780,
+    "tests_source_bound": 401,
+    "tests_extracted_phone": 100,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "phone_zip_manifest": "840 files",
+    "independent_archive_audit": "PASS",
+    "extracted_runtime_restart": "PASS",
+    "artifact_id": 12580395299,
+    "artifact_name": "V13-Phone-source-a96dfbe7b66fd799ca55ae74c78772d7024fed08",
+    "inner_zip_sha256": "ed2fb3a0f5782eacca3ec21321d91296f9e6b7ad86fcea6455b46e7a40af46fe",
+    "inner_zip_bytes": 12591588,
+    "canonical_gate_pass": false,
+    "native_models_launched": false,
+    "phone_measured": false
+  },
+  "inherited_negative": "Run110 DS2 H2_new_word FAIL, median delay 733>700; Run111 toy composition PASS only",
+  "evidence_level": "GitHub Linux real SQLite, software/synthetic, source ZIP and extracted smoke; NOT Redmi or native model",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_system": "INCOMPLETE"
+  },
+  "native_prereq_recheck": {
+    "memory_max_bytes": 4294967296,
+    "cgroup_v2": "read-only",
+    "transformers": false,
+    "gguf_count": 0,
+    "fixture_count": 0
+  },
+  "next": "Run113 bounded full unittest discovery in isolated GitHub CI, preserve failures and do not download models; then reconcile independent Run106 owner before further integration. No force push or production merge."
+}
