@@ -1,0 +1,17 @@
+{
+  "schema": "V13_RUN35_STATE_V1",
+  "base_commit": "c8215449b5a7249679d514d8b5b10370bd818612",
+  "owner": "Codex Run35 isolated WP-Z8 root lineage guard",
+  "file_ownership": "v13/code/docs/proofs/continuation-20261024/age-lineage-run35/ only",
+  "original_run31_source_git_blob": "f909435b18904473a802ce321871b68cf23aaf46",
+  "original_run31_test_git_blob": "3048db050e3d08ad72baf60878052e22f0a49e41",
+  "tests": "21/21 PASS software/synthetic; compileall PASS",
+  "production_integrated": false,
+  "registry_authenticated": false,
+  "source_independence_verified": false,
+  "full_repo_suite": "NOT_RUN",
+  "native_models": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "gates": {"STEP2": "UTILITY_FAIL", "B3_L1": "FAIL", "Body_JEPA": "UNAVAILABLE", "jepa_weight": 0, "Z6a": "FAIL", "Z8": "FAIL", "canonical_architecture_complete": false, "user_full_scope_complete": false},
+  "next": "Independent review and authenticated source-root provenance design; original AgeControl K1-K7 test; other canonical packages while native blocked."
+}
