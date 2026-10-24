@@ -1,0 +1,37 @@
+{
+  "schema": "V13_RUN47_TTT_CONSUMER_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base_commit": "b1951ad8c97e508aa1a9314f2089855f5dec2fe9",
+  "prereg_commit": "a29d38da3a09d3ef243c1729a01a8062e403f6f3",
+  "owner": "Codex Run47 only ttt-consumer-revalidate-run47/*",
+  "status": "SOFTWARE_CANDIDATE_NOT_INTEGRATED",
+  "source_history_git_blob": "05455f297205b40fe8e0f818c4657f1fedcd9fa3",
+  "source_run42_git_blob": "8dcd4b36cbe58f06ea330a510f1735b37f0ad600",
+  "source_consumer_git_blob": "bb5c9072c212530be26eaea3811964e4a7b1ac3f",
+  "test_git_blob": "543bd16548be40923c12e33c8cc915ed158b7ff4",
+  "evidence_tar_sha256": "0077e265dd10e4229362b1be511351c079eb24f20d0b2bcde3dc6b0f50fe3211",
+  "tests": {
+    "synthetic_consumer": "17/17 PASS",
+    "optimized_python": "17/17 PASS",
+    "compileall": "PASS",
+    "full_runtime_store": "NOT_RUN",
+    "native_model": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limits": [
+    "Exact native_history and Run42 staging, but Store/output_policy stubbed",
+    "Consumer revalidates at read time, not across subsequent asynchronous training steps",
+    "No production trainer wiring or Age/weight authority",
+    "No full checkout due DNS; no official privacy scan",
+    "No native or Redmi evidence"
+  ],
+  "next_command": "In full checkout decode run47 source/evidence and run python -m unittest discover -s tests -p test_consumer.py -v; integrate source-revalidated loader with real Store and atomic training transaction, verify revocation between validation and optimizer step, and preserve WP-I approval/retention/rollback gates.",
+  "user_decision_required": false
+}
