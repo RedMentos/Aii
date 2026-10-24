@@ -1,0 +1,9 @@
+Run 13 first adversarial red (full 10,937+ byte traceback retained in checkpoint ZIP):
+test_manifest_cannot_add_unsupported_gate_claim FAILED: EvidenceError not raised
+test_seed_cannot_add_unregistered_native_claim FAILED: EvidenceError not raised
+test_loss_cannot_add_unregistered_training_metric FAILED: EvidenceError not raised
+test_unknown_attempt_file_is_not_closed FAILED: EvidenceError not raised
+test_nonfinite_exponent_is_rejected_even_when_json_parser_accepts FAILED: test initially serialized Infinity, triggering existing parse_constant error; test corrected to literal 1e999 before final green
+test_valid_runner_schema_still_passes PASSED
+First patch: 62 passed, 2 failed (missing seed and receipt-inside-run error ordering); guard ordering fixed.
+Final: 66 passed.
