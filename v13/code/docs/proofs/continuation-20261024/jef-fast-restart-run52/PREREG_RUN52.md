@@ -1,0 +1,11 @@
+# Run52 preregistration — JEF/C2 C_fast shadow persistence and restart
+
+Parent verified Run51 `6aaf8b29fe40428a2316513c4a344eaad4109401`. Owner only `v13/code/docs/proofs/continuation-20261024/jef-fast-restart-run52/*`. No production `v13/code/v13/`, Run40/41, other owners, Canon, native model artifacts, learning/age gates or registered cohorts modified.
+
+Canon §3.4.6–3.4.9 and §14.2: C_fast route/wake/halt/report learning via local eligibility and distributed feedback, fast persistence, but JEF cannot unilaterally promote truth/action. Run40 source blob `b8fcddbc1233e29fad756098af00c68439867cfd` is reference; its original FAIL_SYNTHETIC and Run41 prereg remain unchanged. This is a NEW isolated CPU PyTorch control microcandidate, not Run40 replay or native C2/C3.
+
+Implement synthetic six-feature four-head C_fast adapter with frozen deterministic labels and eligibility, 6->32 ReLU + route/wake/halt/report heads, Adam 0.03, 200 updates of batch64, one CPU thread. Explicitly save **weights, optimizer moments, step index, source/dataset hash and checkpoint hashes** in safe non-pickle format; manifest-last atomic publication; reject tampered/mismatched/revoked sources; only SHADOW authority. Use step-index-derived deterministic minibatch RNG to permit restart with no hidden RNG state. No writes to native model weights.
+
+Predeclared acceptance for **software/synthetic checkpoint correctness**, NOT routing utility: uninterrupted 200 steps must be bitwise identical to 100+checkpoint+restore+100 steps for all weights, optimizer moments and predictions; two restarts deterministic; eligibility-zero step leaves all weights/moments unchanged; missing/invalid source and corrupt weight/optimizer/manifest files fail closed; hard source/conflict/pressure report gate never bypassed; no Age/action/latent authority. Report route accuracy, Brier and balanced 4-route diagnostic, but no PASS claim for real JEF/utility. Negative control random labels optional; if run, preserve raw result. Save raw failed tests and hashes. Python -O and compileall.
+
+No native model, Redmi, external action or paid resource. All original gates remain STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, full V13 INCOMPLETE. Full checkout integration and real user-turn outcomes remain pending.
