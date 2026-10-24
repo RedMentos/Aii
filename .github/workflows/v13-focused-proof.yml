@@ -86,7 +86,8 @@ jobs:
             tests.test_sleep_validation \
             tests.test_homeostasis_regulation \
             tests.test_body_training_port \
-            tests.test_body_train_port_paths_run90
+            tests.test_body_train_port_paths_run90 \
+            tests.test_body_train_port_schema_run91
 
       - name: Official added-lines public-repo privacy scan
         shell: bash
@@ -165,6 +166,7 @@ jobs:
             tests.test_phone_chat_sessions_run89 \
             tests.test_body_training_port \
             tests.test_body_train_port_paths_run90 \
+            tests.test_body_train_port_schema_run91 \
             tests.test_package_source
           "$GITHUB_WORKSPACE/.venv/bin/python" - <<'PY'
           import os
