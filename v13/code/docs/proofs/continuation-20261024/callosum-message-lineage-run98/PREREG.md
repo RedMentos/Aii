@@ -11,3 +11,5 @@ Preregistered RED: six real SQLite counterexamples must return scored=0 with no 
 Narrow candidate: require exact MessagePacket kind/event/generation/sender/receiver/channel, intact source refs and source blobs before selecting the receiver offer; verify the receiver OfferPacket event/role and valid lineage; malformed JSON fail closed. Never synthesize a rowid fallback. No native/Redmi/utility gate claim.
 
 STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Z6a/Z8 FAIL, full V13 INCOMPLETE remain.
+
+**Legacy fixture adaptation after GREEN candidate:** Existing Run66 CAS/once integration fixture used only a four-column `packets` table and no `events` table, incompatible with required source/event/generation validation. The original assertion and test name remain intact; the fake SQLite schema and packet payloads now include event/generation/source lineage. The first post-fix CI error (run 40137855991) is retained, not reclassified as a product failure. This extra file `tests/test_callosum_outcome_integration_run66.py` is owned only for this minimal fixture update; no production code beyond `Callosum.outcome` is touched.
