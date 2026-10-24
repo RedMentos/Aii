@@ -1,0 +1,26 @@
+# Run93 GREEN, bounded verbatim GitHub Actions log excerpt
+# Full raw log: https://github.com/RedMentos/Aii/actions/runs/40136017334 (job 120997589932)
+# RED preserved separately. This is a bounded excerpt, not complete raw log.
+2026-10-24T21:51:25.5904231Z test_english_curly_double_quote_survives_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_english_curly_double_quote_survives_compression) ... ok
+2026-10-24T21:51:25.5908157Z test_existing_short_ascii_and_german_quotes_remain_exact (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_existing_short_ascii_and_german_quotes_remain_exact) ... ok
+2026-10-24T21:51:25.5911778Z test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) ... ok
+2026-10-24T21:51:25.5914113Z test_oversized_quote_forces_raw_not_lossy_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_oversized_quote_forces_raw_not_lossy_compression) ... ok
+2026-10-24T21:51:36.7956658Z Ran 401 tests in 11.275s
+2026-10-24T21:51:37.1080468Z privacy scan e56245c10..HEAD: CLEAN
+2026-10-24T21:51:37.1199114Z [36;1m    print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))[0m
+2026-10-24T21:51:37.1200132Z [36;1mstat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-24T21:51:38.8104354Z {"bytes": 12549797, "canonical_gate_pass": false, "files": 817, "native_models_launched": false, "phone_measured": false, "sha256": "3e4915ceb3b970259aaeeccb01bafed97d3ef042db2e98426b7d6b82e9988ae3", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run83.zip"}
+2026-10-24T21:51:39.0218413Z PHONE_SOURCE_MANIFEST_PASS 816
+2026-10-24T21:51:39.0416884Z PHONE_SOURCE_BYTES=12549797
+2026-10-24T21:51:39.0464769Z [36;1mprint('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)[0m
+2026-10-24T21:51:39.3601015Z INDEPENDENT_PHONE_ARCHIVE_PASS 816 3e4915ceb3b970259aaeeccb01bafed97d3ef042db2e98426b7d6b82e9988ae3
+2026-10-24T21:51:39.3722995Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T21:51:46.9969828Z test_english_curly_double_quote_survives_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_english_curly_double_quote_survives_compression) ... ok
+2026-10-24T21:51:46.9975034Z test_existing_short_ascii_and_german_quotes_remain_exact (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_existing_short_ascii_and_german_quotes_remain_exact) ... ok
+2026-10-24T21:51:46.9980346Z test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) ... ok
+2026-10-24T21:51:46.9983355Z test_oversized_quote_forces_raw_not_lossy_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_oversized_quote_forces_raw_not_lossy_compression) ... ok
+2026-10-24T21:51:58.0594355Z Ran 100 tests in 16.997s
+2026-10-24T21:51:58.2255595Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS
+2026-10-24T21:52:00.0620371Z SHA256 digest of uploaded artifact zip is 027cc6a156114fe79e5ce1bf3123d2a9666317f33be8925ee7cb19381e65192c
+2026-10-24T21:52:00.5124344Z Artifact V13-Phone-source-aeef5ce4d78ffa3e9da4ade12463a44208500645.zip successfully finalized. Artifact ID 12576369331
+2026-10-24T21:52:00.5126514Z Artifact V13-Phone-source-aeef5ce4d78ffa3e9da4ade12463a44208500645 has been successfully uploaded! Final size is 12549949 bytes. Artifact ID is 12576369331
