@@ -1,4 +1,4 @@
-Run 13 first adversarial red (full 10,937+ byte traceback retained in checkpoint ZIP):
+Run 13 first adversarial red (full 4,329-byte traceback retained in GitHub and checkpoint ZIP):
 test_manifest_cannot_add_unsupported_gate_claim FAILED: EvidenceError not raised
 test_seed_cannot_add_unregistered_native_claim FAILED: EvidenceError not raised
 test_loss_cannot_add_unregistered_training_metric FAILED: EvidenceError not raised
