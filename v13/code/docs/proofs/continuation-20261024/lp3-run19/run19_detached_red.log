@@ -1,0 +1,2 @@
+{"claimed_full_containment": false, "detached_child_alive": true, "kind": "LINUX_SYNTHETIC_UNRESOLVED", "launcher_status": "LOCAL_CLOSED_EVIDENCE_UNPUBLISHED_ANCHOR", "receipt_exists": true}
+KNOWN FAIL-OPEN: detached child remains live despite local receipt
