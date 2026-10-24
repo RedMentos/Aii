@@ -1,0 +1,7 @@
+# Run101 intermediate failure retained — NOT a passed candidate
+
+After preserving the preregistered 4-RED/2-GREEN test-only evidence, the first production edit (`4c1370e16ddc1ddc822f50f46cd99d9943a64e5f`, blob `0704b2f73b453bb262bc3cc9ba4a885860ef8dfd`) was **invalid Python**. GitHub Actions run `40139507635`, job `121008054477`, failed `compileall`: `v13/toolstep.py` line 214 `SyntaxError: unterminated string literal`. The general focused workflow `40139507637`, job `121008061484`, also failed. Both full original logs remain in Actions.
+
+Root cause: orchestration used JavaScript `String.replace(old, replacementString)`; the `$'` sequence embedded in the regex replacement was interpreted as the JavaScript *suffix-of-match* replacement token, duplicating file content and truncating a regex line. It was not a Python algorithm failure. The fix was generated anew from the **unchanged Run100 base** using `String.replace(old, () => replacement)` (callback disables replacement-string token expansion). Corrected commit `9619a73abd22e0fccafb91badd68ff32ba1efed6`, corrected Git blob `9b992bc867a97caa444b2ca941ae9805fdb0b343`. Local extracted-source patch has the **same Git blob SHA** and passes 27 inherited `test_toolstep + test_context_os` Linux tests. Await new independent Actions checks before calling the package GREEN.
+
+Do not delete or reclassify the intermediate failed attempts. Original STEP2/B3/JEPA/Redmi gates remain unchanged.
