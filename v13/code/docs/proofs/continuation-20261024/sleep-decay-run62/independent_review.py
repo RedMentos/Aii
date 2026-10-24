@@ -1,6 +1,5 @@
 """Independent randomized algebraic review, fixed seed; no native/model execution."""
-import copy, math, random, sys
-sys.path.insert(0,'/mnt/data/v13_run62/v13/code')
+import copy, math, random
 from v13.sleep_trace_decay import DAY,plan_trace_decay,apply_trace_decay
 rng=random.Random(20261024)
 for k in range(2000):
