@@ -1,0 +1,113 @@
+test_cli_cannot_create_receipt_inside_run (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_cli_cannot_create_receipt_inside_run) ... ok
+test_coordinated_row_edit_detected_by_receipt (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_coordinated_row_edit_detected_by_receipt) ... ok
+test_duplicate_json_key_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_duplicate_json_key_refused) ... ok
+test_extra_seed_file_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_extra_seed_file_refused) ... ok
+test_failed_marker_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_failed_marker_refused) ... ok
+test_fixture_binding_catches_consistent_label_rewrite (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_fixture_binding_catches_consistent_label_rewrite) ... ok
+test_forged_report_verdict_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_forged_report_verdict_refused) ... ok
+test_interrupted_temp_file_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_interrupted_temp_file_refused) ... ok
+test_lp2_fixture_hash_inconsistent_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_lp2_fixture_hash_inconsistent_refused) ... ok
+test_missing_seed_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_missing_seed_refused) ... ok
+test_missing_tokenizer_asset_hash_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_missing_tokenizer_asset_hash_refused) ... ok
+test_nonhex_asset_hash_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_nonhex_asset_hash_refused) ... ok
+test_out_of_bank_answer_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_out_of_bank_answer_refused) ... ok
+test_postflight_binding_failure_marker_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_postflight_binding_failure_marker_refused) ... ok
+test_protocol_mismatch_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_protocol_mismatch_refused) ... ok
+test_receipt_inside_run_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_receipt_inside_run_refused) ... ok
+test_receipt_read_inside_run_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_receipt_read_inside_run_refused) ... ok
+test_receipt_symlink_parent_into_run_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_receipt_symlink_parent_into_run_refused) ... ok
+test_seed_and_report_disagree (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_seed_and_report_disagree) ... ok
+test_symlink_seed_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_symlink_seed_refused) ... ok
+test_tampered_receipt_detected_by_external_sha (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_tampered_receipt_detected_by_external_sha) ... ok
+test_unsupported_upstream_provenance_claim_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_unsupported_upstream_provenance_claim_refused) ... ok
+test_valid_synthetic_cohort_structural_only (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_valid_synthetic_cohort_structural_only) ... ok
+test_wrong_expected_order_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_wrong_expected_order_refused) ... ok
+test_wrong_model_scope_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_wrong_model_scope_refused) ... ok
+test_wrong_source_hash_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_wrong_source_hash_refused) ... ok
+test_zero_arm_must_abstain (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_zero_arm_must_abstain) ... ok
+test_boolean_aggregate_is_invalid (test_lp3_review_run12.TestRun12Review.test_boolean_aggregate_is_invalid) ... FAIL
+test_boolean_training_loss_is_invalid (test_lp3_review_run12.TestRun12Review.test_boolean_training_loss_is_invalid) ... FAIL
+test_cli_cannot_create_receipt_inside_run (test_lp3_review_run12.TestRun12Review.test_cli_cannot_create_receipt_inside_run) ... ok
+test_coordinated_row_edit_detected_by_receipt (test_lp3_review_run12.TestRun12Review.test_coordinated_row_edit_detected_by_receipt) ... ok
+test_duplicate_json_key_refused (test_lp3_review_run12.TestRun12Review.test_duplicate_json_key_refused) ... ok
+test_extra_seed_file_refused (test_lp3_review_run12.TestRun12Review.test_extra_seed_file_refused) ... ok
+test_failed_marker_refused (test_lp3_review_run12.TestRun12Review.test_failed_marker_refused) ... ok
+test_fixture_binding_catches_consistent_label_rewrite (test_lp3_review_run12.TestRun12Review.test_fixture_binding_catches_consistent_label_rewrite) ... ok
+test_forged_report_verdict_refused (test_lp3_review_run12.TestRun12Review.test_forged_report_verdict_refused) ... ok
+test_interrupted_temp_file_refused (test_lp3_review_run12.TestRun12Review.test_interrupted_temp_file_refused) ... ok
+test_lp2_fixture_hash_inconsistent_refused (test_lp3_review_run12.TestRun12Review.test_lp2_fixture_hash_inconsistent_refused) ... ok
+test_missing_seed_refused (test_lp3_review_run12.TestRun12Review.test_missing_seed_refused) ... ok
+test_missing_tokenizer_asset_hash_refused (test_lp3_review_run12.TestRun12Review.test_missing_tokenizer_asset_hash_refused) ... ok
+test_negative_training_loss_is_invalid (test_lp3_review_run12.TestRun12Review.test_negative_training_loss_is_invalid) ... FAIL
+test_nonhex_asset_hash_refused (test_lp3_review_run12.TestRun12Review.test_nonhex_asset_hash_refused) ... ok
+test_out_of_bank_answer_refused (test_lp3_review_run12.TestRun12Review.test_out_of_bank_answer_refused) ... ok
+test_partial_source_fixture_inputs_fail_closed (test_lp3_review_run12.TestRun12Review.test_partial_source_fixture_inputs_fail_closed) ... FAIL
+test_postflight_binding_failure_marker_refused (test_lp3_review_run12.TestRun12Review.test_postflight_binding_failure_marker_refused) ... ok
+test_protocol_mismatch_refused (test_lp3_review_run12.TestRun12Review.test_protocol_mismatch_refused) ... ok
+test_receipt_inside_run_refused (test_lp3_review_run12.TestRun12Review.test_receipt_inside_run_refused) ... ok
+test_receipt_read_inside_run_refused (test_lp3_review_run12.TestRun12Review.test_receipt_read_inside_run_refused) ... ok
+test_receipt_symlink_parent_into_run_refused (test_lp3_review_run12.TestRun12Review.test_receipt_symlink_parent_into_run_refused) ... ok
+test_reported_positive_unanchored_is_not_auditor_supported (test_lp3_review_run12.TestRun12Review.test_reported_positive_unanchored_is_not_auditor_supported) ... ERROR
+test_seed_and_report_disagree (test_lp3_review_run12.TestRun12Review.test_seed_and_report_disagree) ... ok
+test_symlink_seed_refused (test_lp3_review_run12.TestRun12Review.test_symlink_seed_refused) ... ok
+test_tampered_receipt_detected_by_external_sha (test_lp3_review_run12.TestRun12Review.test_tampered_receipt_detected_by_external_sha) ... ok
+test_unsupported_upstream_provenance_claim_refused (test_lp3_review_run12.TestRun12Review.test_unsupported_upstream_provenance_claim_refused) ... ok
+test_valid_synthetic_cohort_structural_only (test_lp3_review_run12.TestRun12Review.test_valid_synthetic_cohort_structural_only) ... ok
+test_wrong_expected_order_refused (test_lp3_review_run12.TestRun12Review.test_wrong_expected_order_refused) ... ok
+test_wrong_model_scope_refused (test_lp3_review_run12.TestRun12Review.test_wrong_model_scope_refused) ... ok
+test_wrong_source_hash_refused (test_lp3_review_run12.TestRun12Review.test_wrong_source_hash_refused) ... ok
+test_zero_arm_must_abstain (test_lp3_review_run12.TestRun12Review.test_zero_arm_must_abstain) ... ok
+
+======================================================================
+ERROR: test_reported_positive_unanchored_is_not_auditor_supported (test_lp3_review_run12.TestRun12Review.test_reported_positive_unanchored_is_not_auditor_supported)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run12_work/tests/test_lp3_review_run12.py", line 50, in test_reported_positive_unanchored_is_not_auditor_supported
+    self.assertFalse(result['supported_by_audit'])
+                     ~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'supported_by_audit'
+
+======================================================================
+FAIL: test_boolean_aggregate_is_invalid (test_lp3_review_run12.TestRun12Review.test_boolean_aggregate_is_invalid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run12_work/tests/test_lp3_review_run12.py", line 35, in test_boolean_aggregate_is_invalid
+    with self.assertRaisesRegex(self.audit_module.EvidenceError, 'near-miss aggregate'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_boolean_training_loss_is_invalid (test_lp3_review_run12.TestRun12Review.test_boolean_training_loss_is_invalid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run12_work/tests/test_lp3_review_run12.py", line 29, in test_boolean_training_loss_is_invalid
+    with self.assertRaisesRegex(self.audit_module.EvidenceError, 'loss'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_negative_training_loss_is_invalid (test_lp3_review_run12.TestRun12Review.test_negative_training_loss_is_invalid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run12_work/tests/test_lp3_review_run12.py", line 23, in test_negative_training_loss_is_invalid
+    with self.assertRaisesRegex(self.audit_module.EvidenceError, 'loss'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_partial_source_fixture_inputs_fail_closed (test_lp3_review_run12.TestRun12Review.test_partial_source_fixture_inputs_fail_closed)
+----------------------------------------------------------------------
+lp3_audit.EvidenceError: local source hash mismatch: candidate.py
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/data/v13_run12_work/tests/test_lp3_review_run12.py", line 17, in test_partial_source_fixture_inputs_fail_closed
+    with self.assertRaisesRegex(self.audit_module.EvidenceError, 'all three'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "all three" does not match "local source hash mismatch: candidate.py"
+
+----------------------------------------------------------------------
+Ran 59 tests in 1.401s
+
+FAILED (failures=4, errors=1)
