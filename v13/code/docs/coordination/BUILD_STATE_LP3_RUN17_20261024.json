@@ -1,0 +1,71 @@
+{
+  "schema": "V13_BUILD_STATE_DELTA_RUN17_V1",
+  "base_remote_commit": "58d8fbd4da846621c730247ac188bae20676b860",
+  "scope": "LP3_SERIAL_LIFECYCLE_INDEPENDENT_REVIEW_SOFTWARE_CANDIDATE",
+  "ownership": {
+    "v13/code/scripts/lp3_serial_cohort.py": "run17 lifecycle implementer (isolated source patch)",
+    "v13/code/tests/test_lp3_serial_cohort.py": "run17 adversarial reviewer (sequential)",
+    "v13/code/docs/coordination/LP3_RUN17_*": "checkpoint coordinator",
+    "v13/code/docs/proofs/continuation-20261024/lp3-run17/*": "checkpoint coordinator"
+  },
+  "base_run16_source_git_blob": "667d7f1b73a655097a44ff4c61749af113f7544f",
+  "source_patch": "v13/code/docs/coordination/LP3_RUN17_LIFECYCLE_REVIEW.patch",
+  "source_patch_sha256_local": "325881b22833d4daefa5be0ecdda99fe6eeafb83992fbd2e506308b2b5f8d203",
+  "result_script_git_blob": "5cdc15957f6e4e260d5362924e918bdf6b6cd5f2",
+  "result_tests_git_blob": "58bbe101abe59cdfea9c3a295c6bad7a98e2c60c",
+  "changes": [
+    "interrupt during native child wait now triggers bounded owned-child termination/reap before lock release",
+    "final wait after SIGKILL is bounded",
+    "native stdout/stderr SHA-256 is streamed rather than loading whole log into RAM",
+    "interruption/failure status records log hash"
+  ],
+  "tests": {
+    "software_synthetic_total": 105,
+    "previous": 102,
+    "new": 3,
+    "failures_after_fix": 0,
+    "compileall": "PASS",
+    "failed_counterexamples_preserved": 3,
+    "partial_checkout": true,
+    "full_repository_suite": "NOT_RUN"
+  },
+  "host": {
+    "cgroup_memory_limit_bytes": 4294967296,
+    "transformers_installed": false,
+    "seven_hf_assets_present": false,
+    "lp2_lora_fixtures_present": false,
+    "local_lp3_process_count": 0,
+    "global_owner_verified": false
+  },
+  "native_lp3": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "integration": "PATCH_ON_PR52_BUNDLE_NOT_YET_INSTALLED_AS_DIRECT_SOURCE",
+  "claim_limit": "software/synthetic and isolated subprocess lifecycle only; not a native LP3 inference proof or full repository review",
+  "blockers": [
+    "full checkout unavailable due container github.com DNS",
+    "pinned HF master absent",
+    "LP2/LoRA source fixtures absent",
+    "transformers absent",
+    "global native owner and RAM fit not verified"
+  ],
+  "remaining_questions": [
+    "How to independently anchor nonweight HF snapshot files?",
+    "Can native four-seed LP3 pass registered audit?",
+    "Does LP3 improve generated answers under equal budgets?",
+    "Can interruption handling be hardened against repeated signals and unreapable D-state children?"
+  ],
+  "next": "Apply reviewed patch to exact Run16 bundle in full current checkout, verify Git blob hashes, run complete tests and official privacy scanner; recheck native owner/assets/RAM before serial four-seed cohort and externally publish closed receipt; then generated-answer ablation.",
+  "user_decision_required": false,
+  "drive_backup": "REJECTED_ANYONE_WRITABLE_DESTINATION_NOT_RETRIED",
+  "remote_patch_git_blob": "bbbfb43b909b113f89b5612783eb6f03bed4976e",
+  "remote_patch_sha256_verified": "d8674b26c583b28796ca5578203a9685a95c67b56df30a55ad8143d33d321086",
+  "remote_patch_applies_to_run16": true,
+  "reconstructed_source_blobs_match": true,
+  "remote_review_pull_request": 53
+}
