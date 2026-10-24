@@ -123,7 +123,8 @@ class ReplayQueue:
         """Bucketed sampling by `mix` (largest remainder), leftovers by score, then old/new interleave."""
         score=lambda kv:(kv[1]['priority']*st['gains'].get(kv[1]['type'],.5),-kv[1]['next_due'])
         buckets={b:sorted([kv for kv in self.due(st,now,min_priority=min_priority) if self.bucket(kv[1])==b],key=score,reverse=True) for b in MIX}
-        total=sum(mix.values());quota={b:n*mix[b]/total for b in MIX};take={b:min(int(quota[b]),len(buckets[b])) for b in MIX}
+        from .sleep_policy_finite import normalized_quota
+        quota=normalized_quota(mix,n);take={b:min(int(quota[b]),len(buckets[b])) for b in MIX}
         for b in sorted(MIX,key=lambda b:quota[b]-int(quota[b]),reverse=True):
             if sum(take.values())<n and take[b]<len(buckets[b]):take[b]+=1
         rest=sorted([kv for b in MIX for kv in buckets[b][take[b]:]],key=score,reverse=True)
