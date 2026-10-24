@@ -1,0 +1,30 @@
+--- a/v13/code/v13/history.py
++++ b/v13/code/v13/history.py
+@@ -16,13 +16,24 @@
+             groups.setdefault(row['event_id'],[]).append(row)
+     valid=[];dependencies={}
+     for eid,rows in groups.items():
+-        if any(row['status']!='FINAL' for row in rows) or {row['role'] for row in rows}!={'user','assistant'}:continue
++        if (len(rows)!=2 or [row['role'] for row in rows]!=['user','assistant'] or
++                any(row['status']!='FINAL' or row['session_id']!=session for row in rows)):continue
++        # Verify complete event history, not only the bounded tail. A third
++        # row might be just outside the history() window.
++        count=store.one("SELECT COUNT(*) AS n FROM messages WHERE event_id=? AND session_id=? AND role IN ('user','assistant')",(eid,session))
++        if not count or count['n']!=2:continue
+         try:
+-            event=store.one('SELECT packet FROM events WHERE id=?',(eid,))
+-            if not event:continue
++            event=store.one('SELECT packet,session_id FROM events WHERE id=?',(eid,))
++            if not event or event['session_id']!=session:continue
+             # WP-V5: pasted terminal logs are not carried into later model context.
+             if any(row['role']=='user' and looks_like_terminal_log(row['text']) for row in rows):continue
+             refs=[json.loads(event['packet'])['source_ref']]
++            # Current Store.event writes user text and its source_ref together.
++            # Retained chat text must match the verified source, not merely
++            # point at some other valid source blob.
++            user_ref=json.loads(rows[0]['metadata'])['source_ref']
++            if dumps(user_ref)!=dumps(refs[0]) or store.read_source(refs[0])!=rows[0]['text']:
++                raise ValueError('History user text/source lineage mismatch')
+             for row in rows:
+                 if row['role']!='assistant':continue
+                 meta=json.loads(row['metadata'])
