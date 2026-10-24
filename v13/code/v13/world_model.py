@@ -52,6 +52,9 @@ def transitions(store,limit=MAX_ROWS):
             if type(exp) is not dict or type(act) is not dict:continue
             fc=exp.get('forecast') or {}
             if type(fc) is not dict:continue
+            if r['status']=='FINAL':
+                profile=fc.get('profile')
+                if type(profile) is not dict or type(profile.get('role')) is not str or profile['role']!=act.get('role'):continue
             created=r['created']
             if not _finite_nonnegative(created):continue
             sel=store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? AND created<=? ORDER BY created DESC,rowid DESC LIMIT 1",(r['event_id'],created))
