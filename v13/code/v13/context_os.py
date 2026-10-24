@@ -262,6 +262,7 @@ class ContextOS:
         if warm_ids:items.append({'item_id':'warm','layer':'MEMORY_POINTERS','form':'POINTER','chars':0,'ids':list(warm_ids)})
         if archived:items.append({'item_id':'archive','layer':'ARCHIVE','form':'POINTER','chars':0,'count':int(archived)})
         recall=span_kept/span_total if span_total else 1.
+        applied=st['mode']=='ACTIVE'
         layout=st['layout'];reason=None
         if layout in ('stable_prefix','append_only') and not st['capabilities'].get(role,{}).get('consecutive_user',{}).get('value'):layout,reason='legacy','template_capability_unknown'
         vtext=''.join(h+dumps(p) for _,h,p in vol);tail=([{'role':'user','content':VOLATILE_HEAD+vtext}] if vtext else [])+[{'role':'user','content':query}]
@@ -271,7 +272,8 @@ class ContextOS:
             # (measured 2026-10-09, bench-results/context-cache-20261009). Re-enter the stored transcript: old prompt +
             # the committed answer + new volatile block + query. Any mismatch falls back to stable_prefix.
             prev=st.get('transcripts',{}).get(role);last=turns[-1] if turns else None
-            if prev and last and prev['event_id']==last[0] and prev['system']==stable and last[1][-1]['role']=='assistant':
+            from .context_append_guard import can_reenter
+            if can_reenter(prev,last,stable,applied):
                 cand=prev['messages']+[{'role':'assistant','content':last[1][-1]['content']}]+tail
                 if sum(len(m['content']) for m in cand)<=budget:planned=cand;decisions.append('append_reentry')
                 else:reason='append_budget_rebuild'
@@ -280,7 +282,6 @@ class ContextOS:
         if planned is None:
             if layout=='stable_prefix' and vtext:planned=[{'role':'system','content':stable}]+hist+tail
             else:planned=[{'role':'system','content':stable+vtext}]+hist+[{'role':'user','content':query}]
-        applied=st['mode']=='ACTIVE'
         fp_legacy,fp_planned=fingerprint(legacy),fingerprint(planned);last=st['last'].get(role,{})
         cache={'layout_requested':st['layout'],'layout':layout,'fallback_reason':reason,'prompt_cache':'cache_prompt',
                'est_prompt_chars_legacy':sum(c for _,c in fp_legacy),'est_prompt_chars_planned':sum(c for _,c in fp_planned),
@@ -293,8 +294,12 @@ class ContextOS:
         def fn(st2):
             st2['last'][role]={'legacy':fp_legacy,'planned':fp_planned,'event_id':event_id,'packet_id':p['packet_id'],'decisions':sorted(set(decisions)),'applied':applied}
             st2['recall']=(st2['recall']+[recall])[-RECALL_WINDOW:];st2['plans']+=1
-            if st2['layout']=='append_only' and sum(len(m['content']) for m in planned)<=TRANSCRIPT_MAX_CHARS:
-                st2.setdefault('transcripts',{})[role]={'event_id':event_id,'system':stable,'messages':planned}
+            # Only qualified, mode-tagged prompts can seed future append reentry.
+            if (st2['layout']=='append_only' and layout in ('stable_prefix','append_only')
+                    and st2['capabilities'].get(role,{}).get('consecutive_user',{}).get('value')
+                    and sum(len(m['content']) for m in planned)<=TRANSCRIPT_MAX_CHARS):
+                st2.setdefault('transcripts',{})[role]={'event_id':event_id,'system':stable,'messages':planned,
+                    'applied':applied,'layout':layout,'append_seed':True}
             else:st2.get('transcripts',{}).pop(role,None)
         self._mutate(fn)
         if self.n is not None:
