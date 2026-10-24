@@ -1,0 +1,19 @@
+{
+  "schema": "V13_RUN33_STATE_V1",
+  "base": "9677fd7c5f43dcddb62e8d75b0dc2d605e0fa18a",
+  "owner": "Codex Run33 isolated JEF control budget candidate",
+  "production_integrated": false,
+  "pre_fix": "6 adversarial RED (5 FAIL, 1 ERROR)",
+  "tests": "8/8 PASS software",
+  "original_full_suite": "NOT_RUN",
+  "redmi_budget": "NOT_RUN",
+  "checkpoint_hash_verification": "NOT_CLAIMED",
+  "full_system": "INCOMPLETE",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0
+  },
+  "next": "Full-checkout test_control_budget.py and full suite, Redmi measured limits/energy, registry hash verification before promotion."
+}
