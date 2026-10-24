@@ -1,0 +1,49 @@
+{
+  "schema": "V13_RUN79_CONTEXT_CACHE_METRIC_INTEGRITY_V1",
+  "date": "2026-10-24",
+  "base": "aa471a307b5ea19b7ebc0a110df973a0fe4e394c",
+  "branch": "codex/context-cache-metrics-run79-20261024",
+  "owner": "Context OS measured cost input validation and focused tests",
+  "change": "Reject negative/bool cached and prompt token counters before reuse ratio, accumulated telemetry and neuromod cost signal; valid 3/7 remains 0.3",
+  "evidence": {
+    "red": {
+      "run": 40132963307,
+      "job": 120988430999,
+      "sha": "1668cafaac4a34bc6818a28bf94afe394eacd18a",
+      "result": "367 tests, 3 expected FAIL",
+      "raw_log_blob": "482a113941040351a5633cf6ca5860cb5ea7296e"
+    },
+    "green": {
+      "run": 40133023143,
+      "job": 120988622581,
+      "sha": "30b31f7b43d9f24d1dae4406b7466e226c86ce35",
+      "result": "367/367 PASS, compileall PASS, official privacy CLEAN",
+      "raw_log_blob": "ed9d11e0030e537bc1c50a4222ebc44002790a09"
+    },
+    "source_blobs": {
+      "v13/code/v13/context_os.py": "d9caa0f4940919e04db2bd63495966f21cac64b6",
+      "v13/code/tests/test_context_os.py": "661dcb3c75a3b998cb5dbafd1b6fee520b2f78e9"
+    },
+    "levels": {
+      "software": "Actual GitHub-hosted Linux",
+      "synthetic": "Authored invalid runner metrics",
+      "native_models": "NOT RUN",
+      "redmi": "NOT RUN",
+      "full_repo": "NOT RUN"
+    }
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Real llama.cpp cache counters remain unmeasured in this run.",
+    "Other learned policy paths need independent input validation.",
+    "Redmi sustained tests, Body-JEPA native training and B3 utility remain open."
+  ],
+  "next_command": "Move to independent high-priority organ package (JEF/C3 or learning) after checking newest branch and ownership; keep source-bound safety gates.",
+  "user_decision_required": false
+}

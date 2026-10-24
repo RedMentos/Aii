@@ -133,6 +133,33 @@ class KnobAndLearningTests(Base):
         self.c.set_mode('ACTIVE','EXPLICIT_HUMAN');e=self.ev('q2');self.c.plan(e,'C3_LANGUAGE','SYS',[],[],'q2');self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':0,'prompt_n':10}})
         self.assertEqual(len(self.r.store.rows("SELECT * FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))),1)
 
+
+    def _invalid_cache_metric(self,cached,prompt):
+        self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
+        e=self.ev('invalid cache counters')
+        self.c.plan(e,'C3_LANGUAGE','SYS',[],[],'invalid cache counters')
+        out=self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':cached,'prompt_n':prompt}})
+        self.assertIsNone(out['reuse_ratio'])
+        self.assertIsNone(self.c.report()['measured_cache_reuse'])
+        self.assertEqual(self.r.store.rows("SELECT * FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,)),[])
+
+    def test_negative_cached_tokens_cannot_drive_cost_learning(self):
+        self._invalid_cache_metric(-5,10)
+
+    def test_negative_prompt_tokens_cannot_drive_cost_learning(self):
+        self._invalid_cache_metric(5,-1)
+
+    def test_boolean_cached_tokens_cannot_drive_cost_learning(self):
+        self._invalid_cache_metric(True,9)
+
+    def test_valid_cache_counters_still_measure_cost(self):
+        self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
+        e=self.ev('valid cache counters')
+        self.c.plan(e,'C3_LANGUAGE','SYS',[],[],'valid cache counters')
+        out=self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':3,'prompt_n':7}})
+        self.assertAlmostEqual(out['reuse_ratio'],.3)
+        self.assertAlmostEqual(self.c.report()['measured_cache_reuse'],.3)
+
 class WarmTests(Base):
     def remember(self,key,value):
         e=self.r.store.event(self.r.session,key)

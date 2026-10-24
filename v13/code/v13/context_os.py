@@ -338,7 +338,7 @@ class ContextOS:
     def observe(self,event_id,role,metrics=None,status='FINAL',memory_ids=()):
         """After the answer: runner cache timings -> cost modulator; used memories become warm (§9.1)."""
         t=(metrics or {}).get('timings') or {};cached=t.get('cache_n');prompt=t.get('prompt_n');ratio=None
-        if isinstance(cached,int) and isinstance(prompt,int) and cached+prompt>0:ratio=cached/(cached+prompt)
+        if type(cached) is int and type(prompt) is int and cached>=0 and prompt>=0 and cached+prompt>0:ratio=cached/(cached+prompt)
         def fn(st):
             for mid in memory_ids:st['warm'][str(mid)]=1.
             if len(st['warm'])>WARM_MAX:st['warm']=dict(sorted(st['warm'].items(),key=lambda kv:-kv[1])[:WARM_MAX])
