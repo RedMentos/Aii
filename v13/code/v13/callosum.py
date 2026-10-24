@@ -147,6 +147,14 @@ class Callosum:
                 try:
                     p=json.loads(row['payload'])
                     if p.get('role')!=pair[1]:continue
+                    peer=p.get('peer_message_packet_id')
+                    # A later offer is not evidence of a message effect unless
+                    # its query explicitly consumed this exact MessagePacket.
+                    # NO_MESSAGE is the intentionally unlinked control baseline.
+                    if m['channel']=='NO_MESSAGE':
+                        if peer is not None:continue
+                    elif peer!=m['msg']:
+                        continue
                     if (p['packet_id']!=row['id'] or p['event_id']!=event_id or
                         p['brain_generation_id']!=generation or row['generation_id']!=generation):
                         break
