@@ -1,0 +1,39 @@
+{
+  "schema": "V13_RUN77_REAL_SQLITE_CONTEXT_LINEAGE_V1",
+  "date": "2026-10-24",
+  "base": "2fc8e539ef628416e33d6047ba1871d6b88f72e4",
+  "branch": "codex/context-native-history-run77-20261024",
+  "owner": "Actual Runtime Store/native_history integration tests only; production untouched",
+  "changes": [
+    "4 real SQLite/native_history tests: valid source, persisted controller, deleted old source, corrupted source metadata",
+    "No model calls; no production code changes"
+  ],
+  "evidence": {
+    "green": {
+      "run": 40132739784,
+      "job": 120987736930,
+      "head": "264ff9cdf2e7e5c70d588374f37bd3869d1c07c4",
+      "result": "142/142 PASS, compileall PASS, privacy CLEAN",
+      "raw_log_blob": "ffd249a8a464212956d996355871399f9bd669f2"
+    },
+    "test_blob": "239411149ac253240c209f0a367677a56c4f31c0",
+    "type": "Actual Linux SQLite/software; authored source-deletion and metadata-tamper adversarial cases",
+    "native_model": "NOT RUN",
+    "redmi": "NOT RUN",
+    "full_repo": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Real native llama.cpp append-only KV/prefill measurement on current source remains open.",
+    "Full suite still not run; CI is 142 focused tests.",
+    "Redmi and actual model source checks remain separate."
+  ],
+  "next_command": "Create bounded full software-suite CI audit on current source with explicit model-free prerequisites; preserve failing test logs and no gate promotion.",
+  "user_decision_required": false
+}
