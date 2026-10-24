@@ -1,0 +1,13 @@
+{
+  "schema":"V13_RUN37_STATE_V1",
+  "base":"003688c5f54fa87edae0f6496c4955484b981256",
+  "owner":"Codex Run37 isolated WP-T8 world-model outcome-domain candidate",
+  "file_ownership":"v13/code/docs/proofs/continuation-20261024/world-output-run37/ only",
+  "original_run28_world_blob":"682073e55ff2698edcf4d9d7dd9f8d3662868acf",
+  "production_integrated":false,
+  "tests_local":"10/10 software/synthetic PASS; compileall PASS",
+  "tests_full_candidate":"NOT_RUN (8 new + 7 inherited SQLite)",
+  "native_models":"NOT_RUN", "redmi":"NOT_RUN", "privacy_scan":"NOT_RUN",
+  "gates":{"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"Z6a":"FAIL","Z8":"FAIL","canonical_architecture_complete":false,"user_full_scope_complete":false},
+  "next":"Run original Run29 SQLite tests plus eight new domain tests on the exact full candidate, full suite/privacy scan, then preregister actual heldout action-outcome evaluation."
+}

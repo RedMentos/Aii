@@ -1,0 +1,8 @@
+negative_duration guarded=False label=SIMULATION_SUPPORTED reason=None duration=-0.259
+negative_duration guarded=True label=SIMULATION_UNCERTAIN reason=IMPOSSIBLE_PREDICTED_OUTCOME duration=None
+success_above_one guarded=False label=SIMULATION_SUPPORTED reason=None duration=0.649
+success_above_one guarded=True label=SIMULATION_UNCERTAIN reason=IMPOSSIBLE_PREDICTED_OUTCOME duration=None
+negative_chars guarded=False label=SIMULATION_SUPPORTED reason=None duration=0.649
+negative_chars guarded=True label=SIMULATION_UNCERTAIN reason=IMPOSSIBLE_PREDICTED_OUTCOME duration=None
+valid guarded=False label=SIMULATION_SUPPORTED reason=None duration=0.649
+valid guarded=True label=SIMULATION_SUPPORTED reason=None duration=0.649
