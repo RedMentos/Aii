@@ -35,7 +35,7 @@ LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','N
 # "ge"+stem too); WORDS match whole words only (short or ambiguous words). One word may name several classes: more is safer.
 ACTION_STEMS={'DELETE':('overwrit','ueberschreib','replac','ersetz','delet','remov','eras','wipe','wiping','destroy','trash','discard','purg','loesch','entfern','vernicht','wegwerf','wegschmeiss','ausradier'),
     'WRITE':('writ','wrote','sav','creat','edit','chang','modif','renam','record','schreib','speicher','aender','bearbeit','erstell','anleg','umbenenn','verschieb','notier','aufschreib','hinzufueg','veraender'),
-    'SEND':('send','sent','shar','upload','post','publish','forward','mail','tweet','transmit','leak','disclos','schick','versend','verschick','teil','hochlad','veroeffentlich','weiterleit','weitergeb','verrat','uebermittel'),
+    'SEND':('send','sent','shar','upload','post','publish','forward','mail','tweet','transmit','leak','disclos','expos','reveal','divulg','broadcast','schick','versend','verschick','teil','hochlad','veroeffentlich','weiterleit','weitergeb','verrat','uebermittel'),
     'NETWORK':('download','brows','internet','online','surf','herunterlad','runterlad','googl','verbind','connect'),
     'INSTALL':('install','upgrad','plugin','plug-in','nachlad','aktualisier','aktivier'),
     'RUN':('execut','launch','ausfuehr','programm'),
