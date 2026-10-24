@@ -1,0 +1,34 @@
+{
+  "schema": "V13_BUILD_STATE_DELTA_LP3_PREFLIGHT_20261024_V1",
+  "parent_branch": "codex/lp3-memory-key-20261024",
+  "parent_sha": "f6772ef3071ca30a3461fae4f265e6012f6563b4",
+  "package": "WP-LP3 pre-native snapshot and transitive fixture binding (isolated candidate)",
+  "source_sha256": "82d315ca9f6652e062870cc9abf82d586db7ddcdac37c812592116bf14a639c6",
+  "tests_sha256": "d95d0429d00c03cd02cacd625cb409a965441062b92b5ab9d4e8d9d2077418f0",
+  "raw_test_log_sha256": "8c65436a1a7c86085a5c70d395458f94e8d2883e0fdd16da87e1a19b06f22569",
+  "software_tests": {
+    "passed": 17,
+    "failed": 0,
+    "errors": 0,
+    "compileall": "PASS",
+    "evidence_level": "Linux/Python synthetic-fixture only"
+  },
+  "native_lp3": "NOT_RUN_PINNED_MASTER_ABSENT_THIS_ENV",
+  "redmi": "NOT_RUN",
+  "full_repository_suite": "NOT_RUN_FULL_CHECKOUT_UNAVAILABLE",
+  "privacy_scan": "NOT_RUN_FULL_CHECKOUT_UNAVAILABLE",
+  "native_host_cgroup_bytes": 4294967296,
+  "runtime_edited": false,
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "user_decision_required": [],
+  "hard_blockers": [
+    "Pinned HF snapshot + exclusive native host ownership must be rechecked on native host",
+    "Independent full checkout for full-suite/privacy scan and cross-review",
+    "Redmi sustained hardware proof requires real device"
+  ],
+  "next": "Independent review on full checkout; verify all pinned HF assets and current native jobs; run 4-seed LP3 memory-key pilot and seal immutable raw rows; only then plan generated-answer coupling"
+}
