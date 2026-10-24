@@ -1,0 +1,18 @@
+{
+  "schema": "V13_RUN30_AGE_SOURCE_COHORT_SUMMARY_V1",
+  "prereg_sha256": "5083cd0966e978a200381ba41c7a69b9594090f62c197f14b1db50000debf1ea",
+  "seed_range": [
+    0,
+    99
+  ],
+  "shift_detected": 40,
+  "false_shift": 0,
+  "criteria": {
+    "shift_at_least_90": false,
+    "false_shift_at_most_5": true
+  },
+  "verdict": "FAIL",
+  "evidence_type": "SYNTHETIC_ONLY",
+  "source_code_sha": "b9a5bf9ac5d8361829919d4d171dd06afa328932",
+  "no_age_integration": true
+}
