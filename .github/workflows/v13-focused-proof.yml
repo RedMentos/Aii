@@ -63,7 +63,27 @@ jobs:
             tests.test_callosum \
             tests.test_world_worker \
             tests.test_world_model \
-            tests.test_learning_invariants
+            tests.test_learning_invariants \
+            tests.test_age \
+            tests.test_age_rights \
+            tests.test_prohibitions \
+            tests.test_standstill \
+            tests.test_organ \
+            tests.test_migrations \
+            tests.test_runtime_queue \
+            tests.test_history_lineage \
+            tests.test_episodes \
+            tests.test_neuromod \
+            tests.test_attention \
+            tests.test_ledger_hygiene \
+            tests.test_selfmodel \
+            tests.test_output_policy \
+            tests.test_output_policy_runtime \
+            tests.test_toolstep \
+            tests.test_transaction \
+            tests.test_sleep_scheduler \
+            tests.test_sleep_validation \
+            tests.test_homeostasis_regulation
 
       - name: Official added-lines public-repo privacy scan
         shell: bash
