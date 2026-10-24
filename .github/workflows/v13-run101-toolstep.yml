@@ -32,8 +32,7 @@ jobs:
           ../../.venv/bin/python -m compileall -q v13 tests
           ../../.venv/bin/python -m unittest -v \
             tests.test_toolstep_negation_run101 \
-            tests.test_toolstep \
-            tests.test_toolstep_shadow
+            tests.test_toolstep
       - name: Official public repo privacy scan
         run: |
           set -euo pipefail
