@@ -1,0 +1,24 @@
+# Run88 GREEN, bounded verbatim GitHub Actions log excerpt
+# Full raw job log: https://github.com/RedMentos/Aii/actions/runs/40134921328 (job 120994310618)
+# This excerpt is not the complete raw job log; prior RED preserved separately.
+2026-10-24T21:36:17.4934978Z test_backslash_is_literal_and_ascii_case_insensitive_is_preserved (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_backslash_is_literal_and_ascii_case_insensitive_is_preserved) ... ok
+2026-10-24T21:36:17.5036441Z test_percent_is_literal_not_any_substring (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_percent_is_literal_not_any_substring) ... ok
+2026-10-24T21:36:17.5138772Z test_underscore_is_literal_not_any_character (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_underscore_is_literal_not_any_character) ... ok
+2026-10-24T21:36:20.4558817Z Ran 380 tests in 8.443s
+2026-10-24T21:36:20.8089035Z privacy scan 717771a2b..HEAD: CLEAN
+2026-10-24T21:36:20.8195935Z [36;1m    print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))[0m
+2026-10-24T21:36:20.8196789Z [36;1mstat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-24T21:36:22.0119650Z {"bytes": 12543233, "canonical_gate_pass": false, "files": 812, "native_models_launched": false, "phone_measured": false, "sha256": "8690f77084aecb9f27bbff88fb325779fe51b55ea0caa3b4b39467c02807fc26", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run83.zip"}
+2026-10-24T21:36:22.1980320Z PHONE_SOURCE_MANIFEST_PASS 811
+2026-10-24T21:36:22.2145037Z PHONE_SOURCE_BYTES=12543233
+2026-10-24T21:36:22.2215022Z [36;1mprint('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)[0m
+2026-10-24T21:36:22.4878112Z INDEPENDENT_PHONE_ARCHIVE_PASS 811 8690f77084aecb9f27bbff88fb325779fe51b55ea0caa3b4b39467c02807fc26
+2026-10-24T21:36:22.6025885Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T21:36:29.0915669Z test_backslash_is_literal_and_ascii_case_insensitive_is_preserved (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_backslash_is_literal_and_ascii_case_insensitive_is_preserved) ... ok
+2026-10-24T21:36:29.1028125Z test_percent_is_literal_not_any_substring (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_percent_is_literal_not_any_substring) ... ok
+2026-10-24T21:36:29.1137849Z test_underscore_is_literal_not_any_character (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_underscore_is_literal_not_any_character) ... ok
+2026-10-24T21:36:37.6624499Z Ran 78 tests in 13.710s
+2026-10-24T21:36:37.7931468Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS
+2026-10-24T21:36:39.2075808Z SHA256 digest of uploaded artifact zip is 444b3f16c5ba354aea9e961cdd7f429b7f711730c551f11ece0c2a821e6e3cde
+2026-10-24T21:36:39.6730686Z Artifact V13-Phone-source-53883454adb5188124d778a7ab37f6a12d3e19f9.zip successfully finalized. Artifact ID 12575893470
+2026-10-24T21:36:39.6731649Z Artifact V13-Phone-source-53883454adb5188124d778a7ab37f6a12d3e19f9 has been successfully uploaded! Final size is 12543385 bytes. Artifact ID is 12575893470
