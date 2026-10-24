@@ -62,7 +62,8 @@ class UtilityTests(Base):
         for k in ('salience','confidence','signed_gain','urgency','temporal_scope','compatibility_score','utility_history','channel_proposal'):self.assertIn(k,msg)
         self.assertEqual((msg['latent_authority'],msg['latent_level']),(0,'unavailable'));self.assertEqual(out['message_packet_id'],msg['packet_id'])
         recv=packet('OfferPacket','B2_GIST',eid,gen,[],role='B2_GIST',based_on_state_version=0,deadline_monotonic_ns=time.monotonic_ns()+10**9,evidence_refs=[],
-                    offer={'summary':'total 391','quotes':[],'uncertainty':'','needs_reentry':False},confidence=0.,native_metrics={'duration_s':3.})
+                    offer={'summary':'total 391','quotes':[],'uncertainty':'','needs_reentry':False},confidence=0.,native_metrics={'duration_s':3.},
+                    peer_message_packet_id=out['message_packet_id'])
         self.r.store.add_packet('OfferPacket',recv)
         res=self.c.outcome(eid,[recv['packet_id']],'FINAL');self.assertEqual(res['scored'],1);self.assertGreater(res['utilities'][0],1.)
         q=self.c._load()[0]['dirs']['B1_TO_B2']['u']['SOURCE_EXACT'];self.assertEqual(q['n'],1);self.assertIn('task_gain',q['parts'])
