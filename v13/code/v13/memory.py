@@ -26,6 +26,25 @@ def relevance(a,b):
     return score
 class Memory:
     def __init__(self,store,cfg):self.s=store;self.cfg=cfg
+    def _user_rule_guard(self):
+        """Fail closed for explicit memory/feedback writes under typed user rules.
+
+        Other passive/autonomous learning paths are NOT covered by this guard.
+        """
+        from . import userrules
+        try:
+            state,_=userrules.box(self.s).load()
+            active=state['rules']
+            if not isinstance(active,list):raise ValueError('Invalid user rule state')
+            effect={'actions':{'LEARN','WRITE'},
+                    'objects':{'MEMORY','MESSAGE','PERSONAL','CONTENT_ANY'},
+                    'declared':True}
+            decision,matched=userrules.verdict(active,effect)
+        except Exception as exc:
+            raise PermissionError('USER_RULE_STATE_UNAVAILABLE') from exc
+        if decision!='ALLOW':
+            ids=','.join(str(r.get('id','?')) for r in matched)
+            raise PermissionError('USER_RULE_MEMORY_'+decision+(':'+ids if ids else ''))
     def key_source(self,m):
         row=self.s.one("SELECT payload FROM packets WHERE kind='MemoryRecord' AND json_extract(payload,'$.memory_id')=?",(m['id'],))
         if not row or json.loads(row['payload'])['key']!=m['key_text']:raise ValueError('Memory key provenance changed')
@@ -42,6 +61,7 @@ class Memory:
         m['source_ref']=ref;m['key_ref']=self.key_source(m);return m
     def retrieval_feedback(self,event_id,mid,label,permission='record'):
         if label not in {'relevant','irrelevant'} or permission not in {'record','learn'}:raise ValueError('retrieval: Memory-ID relevant|irrelevant [--learn]')
+        self._user_rule_guard()
         e=self.s.one('SELECT * FROM events WHERE id=?',(event_id,))
         if not e:raise ValueError('Query event missing')
         env=json.loads(e['packet']);query_ref=env['source_ref'];self.s.read_source(query_ref)
@@ -58,6 +78,7 @@ class Memory:
         if kind in {'prediction','alignment','world'} and value!='observe':raise ValueError(kind+' observe: Quellenbeobachtung, kein Wahrheitslabel')
         if permission not in {'record','learn'} or scope not in {'session','global'}:raise ValueError('permission/scope')
         if kind=='route' and value not in {'simple','detail','gist','both'}:raise ValueError('route: simple/detail/gist/both')
+        self._user_rule_guard()
         e=self.s.one('SELECT * FROM events WHERE id=?',(event_id,))
         if not e:raise ValueError('Kein Ereignis für Feedback')
         env=json.loads(e['packet'])
