@@ -371,13 +371,11 @@ class SleepCycle:
         try:
             self._checkpoint(cancel,deadline,resource,('NORMAL','RECOVERY','PRESSURE'))
             added,overflow=self.queue.sync(st,policy);rep['index_rebuild']={'added':added,'overflow':overflow}
-            decayed=expired=0
-            for it in st['items'].values():
-                if it['retired']:continue
-                if it['expires']<now:it['retired']='TTL';expired+=1;continue
-                days=max(0.,(now-(it['last'] or it['created']))/DAY)
-                p=max(policy['priority_floor'],it['priority']*policy['trace_decay_per_day']**days)
-                if p<it['priority']:it['priority']=p;decayed+=1
+            # §94.4: elapsed-time decay must not compound old elapsed days on
+            # every Sleep C tick. Validate the whole schedule before mutation.
+            from .sleep_trace_decay import plan_trace_decay,apply_trace_decay
+            trace_plan=plan_trace_decay(st['items'].values(),now,policy['trace_decay_per_day'],policy['priority_floor'])
+            decayed,expired=apply_trace_decay(trace_plan)
             rep['trace_decay']={'decayed':decayed,'expired':expired}
             self._checkpoint(cancel,deadline,resource,('NORMAL','RECOVERY','PRESSURE'))
             rep['homeostasis']=self._homeostasis(st,now)
