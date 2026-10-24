@@ -113,7 +113,8 @@ def lifecycle(r,event_id):
     reached['L2_COMPARE']=bool(s.one('SELECT 1 FROM feedback WHERE event_id=? LIMIT 1',(event_id,))) or bool(labels) or has('StudentEvaluation')
     reached['L3_CREDIT']=has('LearningTrace') or has('ModulatorPacket')
     srcs=[r_['source_id'] for r_ in s.rows('SELECT source_id FROM feedback WHERE event_id=?',(event_id,))]+[x['source_id'] for x in labels]
-    ups=[u for u in s.rows('SELECT id,status,manifest FROM updates') if any(sid in u['manifest'] for sid in srcs)] if srcs else []
+    from .jef_lifecycle_sources import matching_updates
+    ups=matching_updates(s.rows('SELECT id,status,manifest FROM updates'),srcs) if srcs else []
     reached['L4_UPDATE_PROPOSAL']=bool(ups)
     reached['L5_SHADOW_LEARN']=any(u['status']!='ABORTED' for u in ups)
     reached['L7_VALIDATE']=any(u['status'] in ('PENDING_APPROVAL','EVALUATED_FAIL','APPROVED','ACTIVE','COMMITTED','REJECTED') for u in ups)

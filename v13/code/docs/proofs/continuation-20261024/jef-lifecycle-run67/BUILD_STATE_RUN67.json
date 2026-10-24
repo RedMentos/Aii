@@ -1,0 +1,33 @@
+{
+  "schema": "V13_RUN67_JEF_LIFECYCLE_SOURCE_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base": "978c41a2ebd15b0696c510d024b50cc0487c478f",
+  "owner": "jefoutcome.py lifecycle only; jef_lifecycle_sources.py; two tests; jef-lifecycle-run67 evidence",
+  "status": "BRANCH_INTEGRATED_READ_MODEL_SOURCE_LINEAGE_SOFTWARE_CANDIDATE",
+  "tests": {
+    "original": "RED reproduced src1 vs src10",
+    "focused": "12/12 PASS",
+    "optimized": "12/12 PASS",
+    "randomized": "2000/2000 PASS",
+    "compileall": "PASS",
+    "actual_JEF_SQLite": "NOT RUN",
+    "full_repo": "NOT RUN",
+    "privacy_scan": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Read-only lifecycle evidence, not real learning",
+    "Actual Store manifest schema and active update linking unverified",
+    "No full checkout, native or Redmi"
+  ],
+  "next": "cd v13/code && python -m unittest -v tests.test_jef_lifecycle_integration_run67; full suite/privacy scan and Store review",
+  "user_decision_required": false
+}
