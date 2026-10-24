@@ -1,0 +1,26 @@
+test_correlated_sources_can_spoof_shift_unverified (test_age_cross_source_v2.SourceV2.test_correlated_sources_can_spoof_shift_unverified) ... ok
+test_duplicate_source_does_not_inflate (test_age_cross_source_v2.SourceV2.test_duplicate_source_does_not_inflate) ... ok
+test_majority_accepts_one_noisy_source (test_age_cross_source_v2.SourceV2.test_majority_accepts_one_noisy_source) ... ok
+test_no_age_authority (test_age_cross_source_v2.SourceV2.test_no_age_authority) ... ok
+test_single_source_insufficient (test_age_cross_source_v2.SourceV2.test_single_source_insufficient) ... ok
+test_two_two_tie_is_disputed (test_age_cross_source_v2.SourceV2.test_two_two_tie_is_disputed) ... ok
+test_untrusted_quality_cannot_vote (test_age_cross_source_v2.SourceV2.test_untrusted_quality_cannot_vote) ... ok
+test_conflicting_aliases_reject (test_age_source_lineage_guard.RootLineage.test_conflicting_aliases_reject) ... ok
+test_conflicting_duplicate_exact_source_reject (test_age_source_lineage_guard.RootLineage.test_conflicting_duplicate_exact_source_reject) ... ok
+test_deterministic_reordered_votes (test_age_source_lineage_guard.RootLineage.test_deterministic_reordered_votes) ... ok
+test_distinct_claimed_roots_still_unverified (test_age_source_lineage_guard.RootLineage.test_distinct_claimed_roots_still_unverified) ... ok
+test_empty_window_is_not_a_shift (test_age_source_lineage_guard.RootLineage.test_empty_window_is_not_a_shift) ... ok
+test_known_correlated_aliases_cannot_fake_independent_majority (test_age_source_lineage_guard.RootLineage.test_known_correlated_aliases_cannot_fake_independent_majority) ... ok
+test_malformed_observations_fail_closed (test_age_source_lineage_guard.RootLineage.test_malformed_observations_fail_closed) ... ok
+test_quality_cannot_be_inflated_by_observation (test_age_source_lineage_guard.RootLineage.test_quality_cannot_be_inflated_by_observation) ... ok
+test_quality_cannot_be_inflated_by_registry (test_age_source_lineage_guard.RootLineage.test_quality_cannot_be_inflated_by_registry) ... ok
+test_registry_alias_root_change_does_not_look_authenticated (test_age_source_lineage_guard.RootLineage.test_registry_alias_root_change_does_not_look_authenticated) ... ok
+test_registry_duplicate_source_reject (test_age_source_lineage_guard.RootLineage.test_registry_duplicate_source_reject) ... ok
+test_registry_rejects_nonfinite_and_extra (test_age_source_lineage_guard.RootLineage.test_registry_rejects_nonfinite_and_extra) ... ok
+test_two_roots_each_aliased_do_not_inflate_votes (test_age_source_lineage_guard.RootLineage.test_two_roots_each_aliased_do_not_inflate_votes) ... ok
+test_unknown_source_reject_even_low_quality (test_age_source_lineage_guard.RootLineage.test_unknown_source_reject_even_low_quality) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.004s
+
+OK
