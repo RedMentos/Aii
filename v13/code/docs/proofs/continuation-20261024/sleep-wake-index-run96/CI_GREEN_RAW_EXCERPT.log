@@ -1,0 +1,12 @@
+# Run96 GREEN — bounded raw CI lines
+
+Commit 303ab09824a9d338b521202d316d47419c11d9d9. Actions run 40137245924/job 121001263197 SUCCESS. Full raw log retained in Actions. 51/51 real Runtime/SQLite/Sleep/Age tests PASS, compileall PASS, official privacy scanner CLEAN.
+
+2026-10-24T22:08:31.7094970Z test_busy_foreground_does_not_start_wake_or_index (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_busy_foreground_does_not_start_wake_or_index) ... ok
+2026-10-24T22:08:31.7258721Z test_cas_conflict_does_not_schedule_unpersisted_replay (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_cas_conflict_does_not_schedule_unpersisted_replay) ... ok
+2026-10-24T22:08:31.7416762Z test_disabled_sleep_does_not_index_or_post_background_wake (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_disabled_sleep_does_not_index_or_post_background_wake) ... ok
+2026-10-24T22:08:31.7586545Z test_new_correction_posts_wake_without_waiting_for_full_sleep (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_new_correction_posts_wake_without_waiting_for_full_sleep) ... ok
+2026-10-24T22:08:31.7854181Z test_real_scheduler_pending_survives_runtime_restart (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_real_scheduler_pending_survives_runtime_restart) ... ok
+2026-10-24T22:08:33.1018517Z Ran 51 tests in 1.421s
+2026-10-24T22:08:33.1018866Z OK
+2026-10-24T22:08:33.2039499Z privacy scan 8a43aed3b..HEAD: CLEAN
