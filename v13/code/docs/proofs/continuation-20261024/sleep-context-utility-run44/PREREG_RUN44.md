@@ -1,0 +1,11 @@
+# Run44 preregistration — source-bound Sleep TTT -> synthetic context-dependent answer utility
+
+Parent Run43 `40bbd200d848d6e65639ffe57d95f0157228044b`; independent ownership only `v13/code/docs/proofs/continuation-20261024/sleep-context-utility-run44/`. Run42/43 source, frozen production runtime, Body/JEF owners, model/seed cohorts and gates remain untouched.
+
+Goal: demonstrate or falsify **a complete isolated learning path** from validated cached Sleep A digest candidates to a small trainable answer consumer on fresh random key/value associations. This is NOT C3, Body-JEPA, real JEPA, native model, general reasoning or Redmi utility. Use the exact Run42 candidate source blob `8dcd4b36cbe58f06ea330a510f1735b37f0ad600` to stage source-valid synthetic sessions; all candidates have label_source=own_final_answer and cannot be promoted to facts or production weights.
+
+Dataset: fixed seeds train=20261024, heldout=20261025, each example contains three unique keys among K0..K7 with independently sampled values V0..V7, and a query for one of the three keys. Prior turn contains the three associations, target turn asks the chosen key. Train 512 examples, heldout 256 fresh examples, with distinct random pairings; no shared session IDs. Use fixed token format K_i V_j K_i V_j K_i V_j Q K_target, no answer token in the question. One-layer 2-head transformer d_model=32 with learned positional embeddings, cross-entropy, Adam lr=.005, 300 steps batch64, CPU 1 thread. The classifier reads the final query position. Fixed seeds; no hyperparameter retuning after evaluation.
+
+Controls: same architecture no-context (replace six mapping tokens by PAD) trained with same steps; context model evaluated with mapping values independently shuffled (wrong association), and untrained baseline. Primary metric heldout exact value accuracy. Synthetic pass iff context accuracy >=0.60, context-minus-no-context >=0.25, context-minus-shuffled >=0.25, no-context <=0.35, and at least one full source-bound staged candidate per sample. Record all negative results and raw logs. No model writes outside scratch. If fail, retain FAIL_SYNTHETIC, no gate promotion.
+
+Original gates remain STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; full V13 INCOMPLETE. Production learning and real answer utility require independent native evaluation and approval.
