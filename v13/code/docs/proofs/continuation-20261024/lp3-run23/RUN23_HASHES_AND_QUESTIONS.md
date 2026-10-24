@@ -12,7 +12,7 @@ Date: 2026-10-24. Base PR #58 `9fc61a3fce8b69d493edfb2e84e7f4273ba49cc7`. Only i
 | run23-postreview-rerun.log | `4c3d356a2e51d1c99dd697df7df6f00254cd2f2789eac8764ca87742ad1d5b5e` | `36b84566c2b835a387b63c87fddea0d40aadeede` |
 | run23-final-tests.log | `7c8a1d362c85b5c9bb86e615dea0f5c55213023bc668a89fce3c1fa41a50c257` | `0bc318c668336ded0358c12e19b936627f53807d` |
 
-Local standalone LP3-only assembled source+evidence ZIP SHA-256: `a03515a2682461a1dac04e438e1f5cddf6455d8ee545f71248f5f1dd1beb25ce` (superseded after comment-only source correction; final ZIP digest separately reported). The ZIP is a local conversation artifact, not claimed as uploaded to GitHub.
+Local standalone LP3-only assembled source+evidence ZIP SHA-256: `ca4c3fe25ee895e26e2ebf3ac64f6ae9830218bccbbb979af887bcaff93cd87c` (final local assembled source/evidence ZIP). The ZIP is a local conversation artifact, not claimed as uploaded to GitHub.
 
 ## Remaining independent checks
 1. Full current checkout (Claude integration branch, not older main) and official privacy scan; review against all runtime changes, no overlap with another owner's edits.
@@ -23,3 +23,5 @@ Local standalone LP3-only assembled source+evidence ZIP SHA-256: `a03515a2682461
 
 ## Review correction
 Patch now covers the comment-only join-helper and launcher corrections. Source blob after patch: cgroup `808acfc9f1f9b9a01311dda29635a7291fffc94a`, launcher `21f0c6952f1c279909157f95750da5154f319a1b`, join helper `1460e89de2f6d9727dbdc0eb22f1c11d4f64bed4`. The intervening inherited SIGTERM test error remains unresolved despite a passing rerun; do not claim stability from one green pass.
+
+Final source patch exact application log: `run23-patch-reproduction.log` (three files, byte-for-byte PASS). Local ZIP includes both the inherited intermittent SIGTERM ERROR and its passing rerun; no model or cgroup kernel proof is implied.
