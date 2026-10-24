@@ -16,6 +16,26 @@ from pathlib import Path
 REQUIRED_DEPS = ('torch', 'transformers', 'safetensors')
 FIXTURES = ('lp2_assignment_objective.py', 'lora_bench.py')
 
+# Independent registration from the verified PR #50 tree (0b465235), NOT
+# values supplied by the candidate under inspection. Git blob SHA-1 binds
+# the exact source bytes at that commit; SHA-256 binds the HF weight bytes.
+# These must only change with a newly reviewed and preregistered cohort.
+REGISTERED_MASTER_SHA256 = '1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e'
+REGISTERED_HF_REVISION = '55e5a53e8637c4522a0577040fe68682db3fbbb6'
+REGISTERED_HF_ASSETS = ('model.safetensors', 'config.json', 'generation_config.json',
+                        'tokenizer.json', 'tokenizer_config.json', 'chat_template.jinja', 'LICENSE')
+REGISTERED_SOURCE_GIT_BLOBS = {
+    'lp3_memory_key_candidate.py': '4006a461b82df58dbdf4fe98886207686ca30c42',
+    'lp2_assignment_objective.py': '7cc55996bd9016a05614d6f11b91fd33d1605f2e',
+    'lora_bench.py': '8a7b725bb450a21775cc1c0ab98dedba5d123278',
+}
+
+
+def git_blob_sha1(path):
+    """Git's exact blob object identity for a regular source file."""
+    data = Path(path).read_bytes()
+    return hashlib.sha1(b'blob ' + str(len(data)).encode('ascii') + b'\0' + data).hexdigest()
+
 
 def literal(path, name):
     """Extract frozen literal constants without importing project/model code."""
@@ -79,36 +99,53 @@ def inspect(master, candidate, fixture_root=None, *, modules=None, process_scan=
     missing = []
     assets = {}
     asset_symlinks = []
-    expected_weight = None
     try:
-        expected_weight = literal(candidate, 'PINNED_MASTER_SHA256')
-        names = literal(candidate, 'HF_ASSETS')
-        revision = literal(candidate, 'PINNED_HF_REVISION')
-        if not isinstance(expected_weight, str) or len(expected_weight) != 64 or not isinstance(names, tuple):
+        candidate_weight = literal(candidate, 'PINNED_MASTER_SHA256')
+        candidate_names = literal(candidate, 'HF_ASSETS')
+        candidate_revision = literal(candidate, 'PINNED_HF_REVISION')
+        if (not isinstance(candidate_weight, str) or len(candidate_weight) != 64 or
+                not isinstance(candidate_names, tuple) or not isinstance(candidate_revision, str)):
             raise ValueError('invalid registered constants')
+        candidate_blob = git_blob_sha1(candidate)
     except (OSError, SyntaxError, ValueError, TypeError) as exc:
         return {'status': 'BLOCKED', 'reason': 'CANDIDATE_SOURCE_UNREADABLE',
                 'error_type': type(exc).__name__, 'native_executed': False,
                 'phone_measured': False, 'owner_confirmed': False}
-    for name in names:
+    if (candidate_weight != REGISTERED_MASTER_SHA256 or
+            candidate_names != REGISTERED_HF_ASSETS or
+            candidate_revision != REGISTERED_HF_REVISION):
+        missing.append('candidate:registered_constants_mismatch')
+    if candidate_blob != REGISTERED_SOURCE_GIT_BLOBS['lp3_memory_key_candidate.py']:
+        missing.append('candidate:registered_source_mismatch')
+    # Never let a candidate reduce the asset set or redirect reads outside the
+    # frozen seven-file cohort. HF symlinks into the blob store are supported.
+    for name in REGISTERED_HF_ASSETS:
         path = master / name
-        if not path.is_file() or path.stat().st_size == 0:
-            missing.append('asset:' + name)
-            continue
-        # HF snapshots normally link to the revision's blobs/ store. Follow
-        # regular-file symlinks, as the registered runner does, and hash bytes.
-        if path.is_symlink():
-            asset_symlinks.append(name)
-        assets[name] = file_sha256(path)
-    if assets.get('model.safetensors') is not None and assets['model.safetensors'] != expected_weight:
+        try:
+            if not path.is_file() or path.stat().st_size == 0:
+                missing.append('asset:' + name)
+                continue
+            if path.is_symlink():
+                asset_symlinks.append(name)
+            assets[name] = file_sha256(path)
+        except (OSError, PermissionError):
+            missing.append('asset:' + name + ':unreadable')
+    if assets.get('model.safetensors') is not None and assets['model.safetensors'] != REGISTERED_MASTER_SHA256:
         missing.append('asset:master_sha256_mismatch')
     fixtures = {}
+    source_blobs = {'lp3_memory_key_candidate.py': candidate_blob}
     for name in FIXTURES:
         path = fixture_root / name
-        if not path.is_file() or path.stat().st_size == 0:
-            missing.append('fixture:' + name)
-        else:
+        try:
+            if not path.is_file() or path.stat().st_size == 0:
+                missing.append('fixture:' + name)
+                continue
             fixtures[name] = file_sha256(path)
+            source_blobs[name] = git_blob_sha1(path)
+            if source_blobs[name] != REGISTERED_SOURCE_GIT_BLOBS[name]:
+                missing.append('fixture:' + name + ':registered_source_mismatch')
+        except (OSError, PermissionError):
+            missing.append('fixture:' + name + ':unreadable')
     if modules is None:
         modules = {name: importlib.util.find_spec(name) is not None for name in REQUIRED_DEPS}
     for name in REQUIRED_DEPS:
@@ -118,14 +155,17 @@ def inspect(master, candidate, fixture_root=None, *, modules=None, process_scan=
     if jobs:
         missing.append('local_lp3_process_active')
     return {'status': 'BLOCKED' if missing else 'LOCAL_ASSETS_READY_OWNER_UNVERIFIED',
-            'missing': sorted(missing), 'snapshot_revision': revision,
-            'pinned_master_sha256': expected_weight,
+            'missing': sorted(missing), 'snapshot_revision': REGISTERED_HF_REVISION,
+            'pinned_master_sha256': REGISTERED_MASTER_SHA256,
+            'candidate_source_git_blob': candidate_blob,
+            'registered_source_git_blobs': source_blobs,
+            'registered_source_blobs_match': source_blobs == REGISTERED_SOURCE_GIT_BLOBS,
             'asset_hashes': assets, 'asset_symlinks_followed': asset_symlinks,
             'fixture_hashes': fixtures,
             'cgroup_memory_limit_bytes': local_cgroup_limit() if memory_limit is None else memory_limit,
             'local_lp3_process_count': len(jobs), 'native_executed': False,
             'phone_measured': False, 'owner_confirmed': False,
-            'claim_limit': 'Local read-only preflight only; no global job-owner or RAM-fit proof.'}
+            'claim_limit': 'Exact registered local source/weight checks only; no independent upstream nonweight authenticity, global job-owner, or RAM-fit proof.'}
 
 
 def main():
