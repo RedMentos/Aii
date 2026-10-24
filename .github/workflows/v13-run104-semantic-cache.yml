@@ -1,0 +1,41 @@
+name: V13 Run104 semantic cache integrity
+on:
+  pull_request:
+    paths:
+      - "v13/code/v13/semantic_memory.py"
+      - "v13/code/tests/test_semantic_cache_integrity_run104.py"
+      - ".github/workflows/v13-run104-semantic-cache.yml"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run104-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  semantic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout immutable review source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Install isolated test dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real SQLite semantic cache and inherited recall regressions
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python -m compileall -q v13 tests
+          ../../.venv/bin/python -m unittest -v \\
+            tests.test_semantic_cache_integrity_run104 \\
+            tests.test_semantic_memory \\
+            tests.test_retrieval \\
+            tests.test_memory_user_rule_gate_run103
+      - name: Official public repository privacy scan
+        run: |
+          set -euo pipefail
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
