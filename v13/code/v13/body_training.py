@@ -40,7 +40,7 @@ def _bound_path(home, rel):
 
 
 def _ids(value,limit=4096):
-    return isinstance(value,list) and 0<len(value)<=limit and len(set(value))==len(value) and all(isinstance(x,str) and PARAM_ID.fullmatch(x) for x in value)
+    return isinstance(value,list) and 0<len(value)<=limit and all(isinstance(x,str) and PARAM_ID.fullmatch(x) for x in value) and len(set(value))==len(value)
 
 
 def inspect_train_port(home, role, descriptor='config/native-body-train-port.json'):
@@ -61,7 +61,7 @@ def inspect_train_port(home, role, descriptor='config/native-body-train-port.jso
     if any(d.get(k) is None for k in required): return base|{'reason':'INCOMPLETE_TRAIN_PORT_DESCRIPTOR'}
     ids=d['trainable_parameter_ids']
     if not _ids(ids): return base|{'reason':'INVALID_TRAINABLE_PARAMETER_SET'}
-    if d['master_dtype'] not in MASTER_DTYPES:return base|{'reason':'MASTER_DTYPE_NOT_TRAINABLE'}
+    if not isinstance(d['master_dtype'],str) or d['master_dtype'] not in MASTER_DTYPES:return base|{'reason':'MASTER_DTYPE_NOT_TRAINABLE'}
     if no_requant and (not _ids(fp32) or not set(ids)<=set(fp32) or d['master_dtype']!='float32'):
         return base|{'reason':'REQUANTIZER_EXCEPTION_NOT_FP32'}
     # The master must be distinct from the quantized inference artifact.
