@@ -1,0 +1,15 @@
+# Run97 final GREEN — bounded raw CI lines
+
+Commit 01eca073b483ac259f13879a81b0d82df5044b16. Actions run 40137611560/job 121002358543 SUCCESS. Full job log retained by Actions. Eight adversarial JEF cache cases PASS, 33 inherited JEF/Age controls PASS; compileall and official privacy scanner PASS.
+
+2026-10-24T22:13:38.9302945Z test_deleted_original_source_blocks_active_jef_body_fields (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_deleted_original_source_blocks_active_jef_body_fields) ... ok
+2026-10-24T22:13:38.9455731Z test_forged_generation_inside_cache_payload_is_rejected (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_forged_generation_inside_cache_payload_is_rejected) ... ok
+2026-10-24T22:13:38.9597557Z test_forged_source_hash_inside_cache_provenance_is_rejected (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_forged_source_hash_inside_cache_provenance_is_rejected) ... ok
+2026-10-24T22:13:38.9738591Z test_malformed_cache_json_fails_closed_not_exception (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_malformed_cache_json_fails_closed_not_exception) ... ok
+2026-10-24T22:13:38.9875840Z test_missing_parent_broadcast_blocks_active_bridge (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_missing_parent_broadcast_blocks_active_bridge) ... ok
+2026-10-24T22:13:39.0009556Z test_non_body_role_cannot_receive_active_extra_fields (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_non_body_role_cannot_receive_active_extra_fields) ... ok
+2026-10-24T22:13:39.0156685Z test_parent_state_version_mismatch_is_rejected (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_parent_state_version_mismatch_is_rejected) ... ok
+2026-10-24T22:13:39.0293355Z test_tampered_original_blob_digest_blocks_active_bridge (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_tampered_original_blob_digest_blocks_active_bridge) ... ok
+2026-10-24T22:13:39.6628078Z Ran 41 tests in 0.758s
+2026-10-24T22:13:39.6628448Z OK
+2026-10-24T22:13:39.8296128Z privacy scan cbccef718..HEAD: CLEAN
