@@ -59,5 +59,59 @@ class ContextAppendProvenance(unittest.TestCase):
         s,c=make(active=True);prior(c)
         self.assertNotIn('append_reentry',follow(c,event='other')['plan']['decisions'])
 
+    def test_reentry_rejects_changed_earlier_turn_text(self):
+        _,c=make(active=True);prior(c);follow(c)
+        h=[{'event_id':'e1','role':'user','text':'q1'},
+           {'event_id':'e1','role':'assistant','text':'a1 tampered'},
+           {'event_id':'e2','role':'user','text':'q2'},
+           {'event_id':'e2','role':'assistant','text':'a2'}]
+        p=c.plan('e3','B1_DETAIL','SYS',vol(3),h,'q3')
+        self.assertNotIn('append_reentry',p['plan']['decisions'])
+
+    def test_reentry_rejects_changed_earlier_source_metadata(self):
+        _,c=make(active=True);prior(c)
+        h1=[{'event_id':'e1','role':'user','text':'q1','metadata':'{"source_ref":{"source_id":"original"}}'},
+            {'event_id':'e1','role':'assistant','text':'a1'}]
+        c.plan('e2','B1_DETAIL','SYS',vol(2),h1,'q2')
+        h2=[dict(h1[0],metadata='{"source_ref":{"source_id":"changed"}}'),h1[1],
+            {'event_id':'e2','role':'user','text':'q2'},
+            {'event_id':'e2','role':'assistant','text':'a2'}]
+        p=c.plan('e3','B1_DETAIL','SYS',vol(3),h2,'q3')
+        self.assertNotIn('append_reentry',p['plan']['decisions'])
+
+    def test_reentry_rejects_latest_user_source_ref_mismatch(self):
+        _,c=make(active=True)
+        ref={'source_id':'source-A','sha256':'a'*64,'char_start':0,'char_end':2,'modality':'text'}
+        c.plan('e1','B1_DETAIL','SYS',vol(1),[],'q1',provenance=[ref])
+        altered=dict(ref,source_id='source-B')
+        h=[{'event_id':'e1','role':'user','text':'q1','metadata':__import__('json').dumps({'source_ref':altered})},
+           {'event_id':'e1','role':'assistant','text':'a1'}]
+        p=c.plan('e2','B1_DETAIL','SYS',vol(2),h,'q2')
+        self.assertNotIn('append_reentry',p['plan']['decisions'])
+
+    def test_reentry_rejects_extra_message_in_latest_event(self):
+        _,c=make(active=True);prior(c)
+        h=[{'event_id':'e1','role':'user','text':'q1'},
+           {'event_id':'e1','role':'assistant','text':'a1'},
+           {'event_id':'e1','role':'assistant','text':'extra'}]
+        p=c.plan('e2','B1_DETAIL','SYS',vol(2),h,'q2')
+        self.assertNotIn('append_reentry',p['plan']['decisions'])
+
+    def test_reentry_rejects_legacy_transcript_without_history_binding(self):
+        s,c=make(active=True);prior(c)
+        s.st['transcripts']['B1_DETAIL'].pop('history_binding',None)
+        p=follow(c)
+        self.assertNotIn('append_reentry',p['plan']['decisions'])
+
+    def test_reentry_accepts_unchanged_three_turn_lineage(self):
+        _,c=make(active=True);prior(c);p2=follow(c)
+        self.assertIn('append_reentry',p2['plan']['decisions'])
+        h=[{'event_id':'e1','role':'user','text':'q1'},
+           {'event_id':'e1','role':'assistant','text':'a1'},
+           {'event_id':'e2','role':'user','text':'q2'},
+           {'event_id':'e2','role':'assistant','text':'a2'}]
+        p3=c.plan('e3','B1_DETAIL','SYS',vol(3),h,'q3')
+        self.assertIn('append_reentry',p3['plan']['decisions'])
+
 
 if __name__=='__main__':unittest.main()
