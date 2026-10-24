@@ -77,6 +77,26 @@ class SleepReplayWindowRun95(unittest.TestCase):
         self.assertNotIn("r00000", self.schedule["items"])
         self.assertIn("r%05d" % (MAX_ITEMS + 2), self.schedule["items"])
 
+    def test_retired_in_window_and_protected_replay_history_are_preserved(self):
+        for i in range(MAX_ITEMS):
+            self.store.insert(i)
+        self.queue.sync(self.schedule, self.policy)
+        self.schedule["items"]["r01000"]["retired"] = "SUPERSEDED"
+        self.schedule["items"]["r01000"]["reps"] = 3
+        self.schedule["items"]["r02000"]["reps"] = 7
+        for i in range(MAX_ITEMS, MAX_ITEMS + 4):
+            self.store.insert(i)
+        self.queue.sync(self.schedule, self.policy)
+        self.assertEqual(self.schedule["items"]["r01000"]["retired"], "SUPERSEDED")
+        self.assertEqual(self.schedule["items"]["r01000"]["reps"], 3)
+        self.assertEqual(self.schedule["items"]["r02000"]["reps"], 7)
+        self.assertLessEqual(len(self.schedule["items"]), MAX_ITEMS)
+        # No replay rows, event provenance or retired histories were deleted.
+        self.assertEqual(
+            self.store.db.execute("SELECT COUNT(*) FROM replay").fetchone()[0],
+            MAX_ITEMS + 4,
+        )
+
     def test_equal_timestamps_use_deterministic_id_tiebreak(self):
         for i in range(MAX_ITEMS + 3):
             self.store.insert(i, created=100.)
