@@ -90,7 +90,15 @@ def training_rows(store,component,revision,human_keys):
     out={}
     for x in candidates:
         if x['context_sha256'] in blocked:continue
-        if not isinstance(x.get('source_id'),str) or not store.one('SELECT 1 FROM sources WHERE id=? AND deleted=0',(x['source_id'],)):
+        source_id=x.get('source_id')
+        if type(source_id) is not str:continue
+        source=store.one('SELECT hash,chars,kind FROM sources WHERE id=? AND deleted=0',(source_id,))
+        if not source or source['kind']!=AUTHORITY:continue
+        try:
+            ref={'source_id':source_id,'sha256':source['hash'],'char_start':0,
+                 'char_end':source['chars'],'modality':'text'}
+            if store.read_source(ref)!=x.get('value'):continue
+        except (ValueError,TypeError,KeyError,OSError,UnicodeError):
             continue
         row=store.one("SELECT payload FROM packets WHERE kind='ExecutiveDecision' AND id=?",(x.get('decision_packet_id'),))
         if not row:continue

@@ -46,6 +46,40 @@ class Store(unittest.TestCase):
         self.assertEqual(self.r.store.read_source({'source_id':row['source_id'],'sha256':self.r.store.one('SELECT hash FROM sources WHERE id=?',(row['source_id'],))['hash'],'char_start':0,'char_end':4,'modality':'text'}),'skip')
         self.assertEqual(len(jo.training_rows(self.r.store,'memory',rev,{k})),2)  # a human label for that context wins
         with self.assertRaises(ValueError):Operator(self.r).run(':fastpolicy outcomes maybe')
+
+    def _one_trainable_memory_outcome(self):
+        e,_=self.labelled('Plan Aurora source integrity',
+            {'wake_decision':{'action':'both'},'memory_ids':['m1']},[],['m1'])
+        rev=jo._decision(self.r.store,e['event_id'],'memory')['context_revision']
+        Operator(self.r).run(':fastpolicy outcomes learn')
+        self.assertEqual(len(jo.training_rows(self.r.store,'memory',rev,set())),1)
+        return e,rev
+
+    def test_changed_outcome_value_without_changed_source_cannot_train(self):
+        e,rev=self._one_trainable_memory_outcome()
+        st,v=self.r.store.state(jo.KEY)
+        label=next(x for x in st['labels'] if x['component']=='memory')
+        self.assertEqual(label['value'],'skip')
+        label['value']='recall'
+        self.r.store.set_state(jo.KEY,st,expected=v)
+        self.assertEqual(jo.training_rows(self.r.store,'memory',rev,set()),[])
+
+    def test_same_text_user_source_cannot_impersonate_outcome_authority(self):
+        e,rev=self._one_trainable_memory_outcome()
+        other=self.r.store.source('skip','USER')
+        st,v=self.r.store.state(jo.KEY)
+        next(x for x in st['labels'] if x['component']=='memory')['source_id']=other['source_id']
+        self.r.store.set_state(jo.KEY,st,expected=v)
+        self.assertEqual(jo.training_rows(self.r.store,'memory',rev,set()),[])
+
+    def test_corrupt_outcome_blob_cannot_train(self):
+        e,rev=self._one_trainable_memory_outcome()
+        st,_=self.r.store.state(jo.KEY)
+        source_id=next(x for x in st['labels'] if x['component']=='memory')['source_id']
+        h=self.r.store.one('SELECT hash FROM sources WHERE id=?',(source_id,))['hash']
+        (self.r.store.home/'data/blobs'/h).write_bytes(b'corrupted fixture')
+        self.assertEqual(jo.training_rows(self.r.store,'memory',rev,set()),[])
+
     def test_human_agreement_and_route_correction_flip(self):
         e,_=self.labelled('Plan Aurora',{'wake_decision':{'action':'both'},'memory_ids':['m1']},[],['m1'])
         self.r.memory.feedback(e['event_id'],'memory','skip','learn');self.assertEqual(jo.report(self.r)['heads']['memory']['human_agreement'],1.)
