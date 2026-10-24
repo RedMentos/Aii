@@ -1,0 +1,106 @@
+=== run36-initial.log ===
+test_context_transform_is_not_idempotent (test_context_pin_runtime_patch.PinPatch.test_context_transform_is_not_idempotent) ... ok
+test_context_transform_removes_pinned_pressure (test_context_pin_runtime_patch.PinPatch.test_context_transform_removes_pinned_pressure) ... ok
+test_exact_blob_constants (test_context_pin_runtime_patch.PinPatch.test_exact_blob_constants) ... ok
+test_missing_anchor_rejects (test_context_pin_runtime_patch.PinPatch.test_missing_anchor_rejects) ... ok
+test_no_source_output_overwrite (test_context_pin_runtime_patch.PinPatch.test_no_source_output_overwrite) ... ok
+test_old_anchor_is_present (test_context_pin_runtime_patch.PinPatch.test_old_anchor_is_present) ... ok
+test_runtime_transform_protects_active_mode (test_context_pin_runtime_patch.PinPatch.test_runtime_transform_protects_active_mode) ... ERROR
+test_source_blob_hash_is_git_format (test_context_pin_runtime_patch.PinPatch.test_source_blob_hash_is_git_format) ... ok
+
+======================================================================
+ERROR: test_runtime_transform_protects_active_mode (test_context_pin_runtime_patch.PinPatch.test_runtime_transform_protects_active_mode)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run36/tests/test_context_pin_runtime_patch.py", line 54, in test_runtime_transform_protects_active_mode
+    out=P.patch_runtime(RUNTIME)
+  File "/mnt/data/v13_run36/scripts/context_pin_runtime_patch.py", line 80, in patch_runtime
+    ast.parse(source)
+    ~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/ast.py", line 50, in parse
+    return compile(source, filename, mode, flags,
+                   _feature_version=feature_version, optimize=optimize)
+  File "<unknown>", line 4
+    except Exception as exc:
+IndentationError: unexpected indent
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.004s
+
+FAILED (errors=1)
+
+=== run36-adversarial-initial.log ===
+test_context_transform_is_not_idempotent (test_context_pin_runtime_patch.PinPatch.test_context_transform_is_not_idempotent) ... ok
+test_context_transform_removes_pinned_pressure (test_context_pin_runtime_patch.PinPatch.test_context_transform_removes_pinned_pressure) ... ok
+test_exact_blob_constants (test_context_pin_runtime_patch.PinPatch.test_exact_blob_constants) ... ok
+test_missing_anchor_rejects (test_context_pin_runtime_patch.PinPatch.test_missing_anchor_rejects) ... ok
+test_no_source_output_overwrite (test_context_pin_runtime_patch.PinPatch.test_no_source_output_overwrite) ... ok
+test_old_anchor_is_present (test_context_pin_runtime_patch.PinPatch.test_old_anchor_is_present) ... ok
+test_original_budget_compresses_pinned_but_patch_preserves (test_context_pin_runtime_patch.PinPatch.test_original_budget_compresses_pinned_but_patch_preserves) ... FAIL
+test_runtime_active_exception_not_silently_swallowed (test_context_pin_runtime_patch.PinPatch.test_runtime_active_exception_not_silently_swallowed) ... ok
+test_runtime_transform_protects_active_mode (test_context_pin_runtime_patch.PinPatch.test_runtime_transform_protects_active_mode) ... ok
+test_source_blob_hash_is_git_format (test_context_pin_runtime_patch.PinPatch.test_source_blob_hash_is_git_format) ... ok
+
+======================================================================
+FAIL: test_original_budget_compresses_pinned_but_patch_preserves (test_context_pin_runtime_patch.PinPatch.test_original_budget_compresses_pinned_but_patch_preserves)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run36/tests/test_context_pin_runtime_patch.py", line 63, in test_original_budget_compresses_pinned_but_patch_preserves
+    self.assertEqual(original[1][2],'COMPRESSED')  # RED source behavior
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'RAW' != 'COMPRESSED'
+- RAW
++ COMPRESSED
+
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.005s
+
+FAILED (failures=1)
+
+=== run36-adversarial-review.log ===
+test_context_transform_is_not_idempotent (test_context_pin_runtime_patch.PinPatch.test_context_transform_is_not_idempotent) ... ok
+test_context_transform_removes_pinned_pressure (test_context_pin_runtime_patch.PinPatch.test_context_transform_removes_pinned_pressure) ... ok
+test_exact_blob_constants (test_context_pin_runtime_patch.PinPatch.test_exact_blob_constants) ... ok
+test_missing_anchor_rejects (test_context_pin_runtime_patch.PinPatch.test_missing_anchor_rejects) ... ok
+test_no_source_output_overwrite (test_context_pin_runtime_patch.PinPatch.test_no_source_output_overwrite) ... ok
+test_old_anchor_is_present (test_context_pin_runtime_patch.PinPatch.test_old_anchor_is_present) ... ok
+test_original_budget_compresses_pinned_but_patch_preserves (test_context_pin_runtime_patch.PinPatch.test_original_budget_compresses_pinned_but_patch_preserves) ... FAIL
+test_runtime_active_exception_not_silently_swallowed (test_context_pin_runtime_patch.PinPatch.test_runtime_active_exception_not_silently_swallowed) ... ok
+test_runtime_transform_protects_active_mode (test_context_pin_runtime_patch.PinPatch.test_runtime_transform_protects_active_mode) ... ok
+test_source_blob_hash_is_git_format (test_context_pin_runtime_patch.PinPatch.test_source_blob_hash_is_git_format) ... ok
+
+======================================================================
+FAIL: test_original_budget_compresses_pinned_but_patch_preserves (test_context_pin_runtime_patch.PinPatch.test_original_budget_compresses_pinned_but_patch_preserves)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run36/tests/test_context_pin_runtime_patch.py", line 62, in test_original_budget_compresses_pinned_but_patch_preserves
+    self.assertEqual(original[1][2],'COMPRESSED')  # RED source behavior
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'POINTER' != 'COMPRESSED'
+- POINTER
++ COMPRESSED
+
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.003s
+
+FAILED (failures=1)
+
+=== run36-green.log ===
+test_context_transform_is_not_idempotent (test_context_pin_runtime_patch.PinPatch.test_context_transform_is_not_idempotent) ... ok
+test_context_transform_removes_pinned_pressure (test_context_pin_runtime_patch.PinPatch.test_context_transform_removes_pinned_pressure) ... ok
+test_exact_blob_constants (test_context_pin_runtime_patch.PinPatch.test_exact_blob_constants) ... ok
+test_missing_anchor_rejects (test_context_pin_runtime_patch.PinPatch.test_missing_anchor_rejects) ... ok
+test_no_source_output_overwrite (test_context_pin_runtime_patch.PinPatch.test_no_source_output_overwrite) ... ok
+test_old_anchor_is_present (test_context_pin_runtime_patch.PinPatch.test_old_anchor_is_present) ... ok
+test_original_budget_compresses_pinned_but_patch_preserves (test_context_pin_runtime_patch.PinPatch.test_original_budget_compresses_pinned_but_patch_preserves) ... ok
+test_runtime_active_exception_not_silently_swallowed (test_context_pin_runtime_patch.PinPatch.test_runtime_active_exception_not_silently_swallowed) ... ok
+test_runtime_transform_protects_active_mode (test_context_pin_runtime_patch.PinPatch.test_runtime_transform_protects_active_mode) ... ok
+test_source_blob_hash_is_git_format (test_context_pin_runtime_patch.PinPatch.test_source_blob_hash_is_git_format) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.004s
+
+OK
+
