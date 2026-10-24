@@ -39,6 +39,7 @@ class CallosumOutcomeIntegration(unittest.TestCase):
               'channel':'SOURCE_EXACT','source_refs':[],'provenance':[],'bytes':100})
         s.add('offer1','OfferPacket','e1',{'packet_id':'offer1','event_id':'e1',
               'brain_generation_id':'g1','role':'B2_GIST','provenance':[],
+              'peer_message_packet_id':'msg1',
               'offer':{'needs_reentry':False},'evidence_refs':[],
               'native_metrics':{'duration_s':1.}})
         c=Callosum(s)

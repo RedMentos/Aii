@@ -14,7 +14,7 @@ class CallosumMessageLineageRun98(Base):
     def event(self, text="B3 callosum source check"):
         return self.r.store.event(self.r.session, text)
 
-    def offer(self, event, role="B2_GIST"):
+    def offer(self, event, role="B2_GIST", peer_id=None):
         p = packet(
             "OfferPacket", role, event["event_id"], event["brain_generation_id"],
             [event["source_ref"]], role=role, based_on_state_version=1,
@@ -22,6 +22,7 @@ class CallosumMessageLineageRun98(Base):
             evidence_refs=[event["source_ref"]],
             offer={"summary": "source bound", "quotes": [], "uncertainty": "",
                    "needs_reentry": False}, confidence=0.8,
+            peer_message_packet_id=peer_id,
         )
         return self.r.store.add_packet("OfferPacket", p)
 
@@ -133,7 +134,7 @@ class CallosumMessageLineageRun98(Base):
         event = self.event()
         msg = self.message(event)
         self.note(event, msg["packet_id"])
-        receiver = self.offer(event)
+        receiver = self.offer(event, peer_id=msg["packet_id"])
         first = self.c.outcome(event["event_id"], [receiver["packet_id"]], "FINAL")
         self.assertEqual(first["scored"], 1)
         self.assertEqual(self.c._load()[0]["dirs"]["B1_TO_B2"]["u"]["SOURCE_EXACT"]["n"], 1)

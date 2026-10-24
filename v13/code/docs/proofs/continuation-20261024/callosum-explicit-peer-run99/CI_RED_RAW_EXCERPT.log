@@ -1,0 +1,21 @@
+# Run99 preregistered RED — bounded exact CI lines
+
+Actions run 40138230684/job 121004230278, test-only commit 8124cc4fa49869910fba15bd8e423ce5a19fe749. Three new explicit peer-link counterexamples FAIL, two positive controls PASS, 30 inherited B3/Age controls PASS. Full original job log retained in Actions.
+
+2026-10-24T22:22:09.8233182Z test_exact_peer_link_credits_once (tests.test_callosum_peer_link_run99.CallosumPeerLinkRun99.test_exact_peer_link_credits_once) ... ok
+2026-10-24T22:22:09.8346386Z test_first_unlinked_offer_does_not_hide_later_linked_offer (tests.test_callosum_peer_link_run99.CallosumPeerLinkRun99.test_first_unlinked_offer_does_not_hide_later_linked_offer) ... FAIL
+2026-10-24T22:22:09.8468612Z test_offer_link_to_different_message_cannot_credit_pending_message (tests.test_callosum_peer_link_run99.CallosumPeerLinkRun99.test_offer_link_to_different_message_cannot_credit_pending_message) ... FAIL
+2026-10-24T22:22:09.8598341Z test_unlinked_no_message_control_baseline_remains_measurable (tests.test_callosum_peer_link_run99.CallosumPeerLinkRun99.test_unlinked_no_message_control_baseline_remains_measurable) ... ok
+2026-10-24T22:22:09.8715834Z test_unlinked_receiver_offer_cannot_credit_source_exact_message (tests.test_callosum_peer_link_run99.CallosumPeerLinkRun99.test_unlinked_receiver_offer_cannot_credit_source_exact_message) ... FAIL
+2026-10-24T22:22:10.0901247Z FAIL: test_first_unlinked_offer_does_not_hide_later_linked_offer (tests.test_callosum_peer_link_run99.CallosumPeerLinkRun99.test_first_unlinked_offer_does_not_hide_later_linked_offer)
+2026-10-24T22:22:10.0903780Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_callosum_peer_link_run99.py", line 87, in test_first_unlinked_offer_does_not_hide_later_linked_offer
+2026-10-24T22:22:10.0905437Z AssertionError: 0.75 not greater than 1.5
+2026-10-24T22:22:10.0906802Z FAIL: test_offer_link_to_different_message_cannot_credit_pending_message (tests.test_callosum_peer_link_run99.CallosumPeerLinkRun99.test_offer_link_to_different_message_cannot_credit_pending_message)
+2026-10-24T22:22:10.0909021Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_callosum_peer_link_run99.py", line 56, in test_offer_link_to_different_message_cannot_credit_pending_message
+2026-10-24T22:22:10.0910344Z AssertionError: 1 != 0
+2026-10-24T22:22:10.0911453Z FAIL: test_unlinked_receiver_offer_cannot_credit_source_exact_message (tests.test_callosum_peer_link_run99.CallosumPeerLinkRun99.test_unlinked_receiver_offer_cannot_credit_source_exact_message)
+2026-10-24T22:22:10.0913344Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_callosum_peer_link_run99.py", line 48, in test_unlinked_receiver_offer_cannot_credit_source_exact_message
+2026-10-24T22:22:10.0914791Z AssertionError: 1 != 0
+2026-10-24T22:22:10.0915421Z Ran 35 tests in 0.289s
+2026-10-24T22:22:10.0915649Z FAILED (failures=3)
+2026-10-24T22:22:10.1169869Z ##[error]Process completed with exit code 1.
