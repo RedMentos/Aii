@@ -3,7 +3,8 @@ name: V13 focused source-bound proofs
 on:
   pull_request:
     paths:
-      - "v13/code/**"
+      - "v13/code/v13/**"
+      - "v13/code/tests/**"
       - ".github/workflows/v13-focused-proof.yml"
 
 permissions:
