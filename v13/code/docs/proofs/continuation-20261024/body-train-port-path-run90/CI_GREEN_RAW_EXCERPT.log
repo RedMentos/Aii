@@ -1,0 +1,28 @@
+# Run90 GREEN, bounded verbatim GitHub Actions log excerpt
+# Full raw log: https://github.com/RedMentos/Aii/actions/runs/40135289555 (job 120995497083)
+# RED preserved separately. This is a bounded excerpt, not complete raw log.
+2026-10-24T21:41:50.3103899Z test_descriptor_dotdot_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_dotdot_escape_is_rejected) ... ok
+2026-10-24T21:41:50.3109809Z test_descriptor_symlink_outside_home_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_symlink_outside_home_is_rejected) ... ok
+2026-10-24T21:41:50.3116635Z test_external_artifact_symlink_with_matching_hash_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_external_artifact_symlink_with_matching_hash_is_rejected) ... ok
+2026-10-24T21:41:50.3122767Z test_parent_directory_symlink_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_parent_directory_symlink_escape_is_rejected) ... ok
+2026-10-24T21:41:50.3130870Z test_regular_bound_port_remains_non_authoritative (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_regular_bound_port_remains_non_authoritative) ... ok
+2026-10-24T21:41:50.3134258Z Ran 392 tests in 10.043s
+2026-10-24T21:41:50.6691539Z privacy scan 8a3f5e948..HEAD: CLEAN
+2026-10-24T21:41:50.6823838Z [36;1m    print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))[0m
+2026-10-24T21:41:50.6825246Z [36;1mstat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-24T21:41:52.1957129Z {"bytes": 12546300, "canonical_gate_pass": false, "files": 814, "native_models_launched": false, "phone_measured": false, "sha256": "dbc015f9ebac28bbe0fa4d6bb76befdc7c5125bcf7b5d4af224d70c147c72854", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run83.zip"}
+2026-10-24T21:41:52.4213545Z PHONE_SOURCE_MANIFEST_PASS 813
+2026-10-24T21:41:52.4406379Z PHONE_SOURCE_BYTES=12546300
+2026-10-24T21:41:52.4455501Z [36;1mprint('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)[0m
+2026-10-24T21:41:52.7804661Z INDEPENDENT_PHONE_ARCHIVE_PASS 813 dbc015f9ebac28bbe0fa4d6bb76befdc7c5125bcf7b5d4af224d70c147c72854
+2026-10-24T21:41:52.7932351Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T21:41:59.9834027Z test_descriptor_dotdot_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_dotdot_escape_is_rejected) ... ok
+2026-10-24T21:41:59.9839671Z test_descriptor_symlink_outside_home_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_symlink_outside_home_is_rejected) ... ok
+2026-10-24T21:41:59.9846541Z test_external_artifact_symlink_with_matching_hash_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_external_artifact_symlink_with_matching_hash_is_rejected) ... ok
+2026-10-24T21:41:59.9853011Z test_parent_directory_symlink_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_parent_directory_symlink_escape_is_rejected) ... ok
+2026-10-24T21:41:59.9860991Z test_regular_bound_port_remains_non_authoritative (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_regular_bound_port_remains_non_authoritative) ... ok
+2026-10-24T21:42:10.7441584Z Ran 91 tests in 16.319s
+2026-10-24T21:42:10.9210405Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS
+2026-10-24T21:42:12.4210056Z SHA256 digest of uploaded artifact zip is b32ac06a72bb205615b0eebf50f171b92be808e6a162133b5c870b4c7b659c17
+2026-10-24T21:42:12.8578852Z Artifact V13-Phone-source-3f8f88c767e1c10ece33863d53d22892841cec18.zip successfully finalized. Artifact ID 12576393165
+2026-10-24T21:42:12.8580404Z Artifact V13-Phone-source-3f8f88c767e1c10ece33863d53d22892841cec18 has been successfully uploaded! Final size is 12546452 bytes. Artifact ID is 12576393165
