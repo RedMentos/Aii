@@ -122,6 +122,42 @@ jobs:
           sha256sum "$RUNNER_TEMP/V13-Phone-Run83.zip"
           stat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"
 
+      - name: Execute extracted V13 Phone source smoke without models
+        shell: bash
+        run: |
+          set -euo pipefail
+          unpack="$RUNNER_TEMP/v13-phone-extracted-run84"
+          mkdir -p "$unpack"
+          unzip -q "$RUNNER_TEMP/V13-Phone-Run83.zip" -d "$unpack"
+          cd "$unpack/V13-Phone"
+          "$GITHUB_WORKSPACE/.venv/bin/python" -m compileall -q v13 scripts tests
+          "$GITHUB_WORKSPACE/.venv/bin/python" -m unittest -v \
+            tests.test_context_os \
+            tests.test_jefoutcome \
+            tests.test_history_lineage \
+            tests.test_age \
+            tests.test_standstill \
+            tests.test_package_source
+          "$GITHUB_WORKSPACE/.venv/bin/python" - <<'PY'
+          import os
+          from pathlib import Path
+          from v13.runtime import Runtime
+          home=Path(os.environ['RUNNER_TEMP'])/'v13-phone-run84-home'
+          r=Runtime(home)
+          try:
+              e=r.store.event(r.session,'source zip persistence check')
+              ref=e['source_ref']
+              assert r.store.read_source(ref)=='source zip persistence check'
+          finally:
+              r.close()
+          r=Runtime(home)
+          try:
+              assert r.store.read_source(ref)=='source zip persistence check'
+              print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')
+          finally:
+              r.close()
+          PY
+
       - name: Upload verified V13 Phone source ZIP
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
