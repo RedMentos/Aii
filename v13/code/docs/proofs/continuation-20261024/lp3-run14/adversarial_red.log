@@ -1,0 +1,70 @@
+test_float_encoded_temperature_int_is_not_registered_float (test_lp3_review_run14.TestRun14ProtocolTypes.test_float_encoded_temperature_int_is_not_registered_float) ... ok
+test_holdout_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_holdout_float_is_not_registered_integer) ... FAIL
+test_items_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_items_float_is_not_registered_integer) ... FAIL
+test_row_seed_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_row_seed_float_is_not_registered_integer) ... FAIL
+test_seed_list_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_seed_list_float_is_not_registered_integer) ... FAIL
+test_seed_row_boolean_is_not_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_seed_row_boolean_is_not_integer) ... ok
+test_steps_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_steps_float_is_not_registered_integer) ... FAIL
+test_unmodified_registered_attempt_passes (test_lp3_review_run14.TestRun14ProtocolTypes.test_unmodified_registered_attempt_passes) ... ok
+
+======================================================================
+FAIL: test_holdout_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_holdout_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run14/v13/code/tests/test_lp3_review_run14.py", line 39, in test_holdout_float_is_not_registered_integer
+    self.assert_invalid('protocol')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/v13_run14/v13/code/tests/test_lp3_review_run14.py", line 26, in assert_invalid
+    with self.assertRaisesRegex(self.auditor.EvidenceError, pattern):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_items_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_items_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run14/v13/code/tests/test_lp3_review_run14.py", line 35, in test_items_float_is_not_registered_integer
+    self.assert_invalid('protocol')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/v13_run14/v13/code/tests/test_lp3_review_run14.py", line 26, in assert_invalid
+    with self.assertRaisesRegex(self.auditor.EvidenceError, pattern):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_row_seed_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_row_seed_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run14/v13/code/tests/test_lp3_review_run14.py", line 51, in test_row_seed_float_is_not_registered_integer
+    with self.assertRaisesRegex(self.auditor.EvidenceError, 'seed'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_seed_list_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_seed_list_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run14/v13/code/tests/test_lp3_review_run14.py", line 43, in test_seed_list_float_is_not_registered_integer
+    self.assert_invalid('protocol')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/v13_run14/v13/code/tests/test_lp3_review_run14.py", line 26, in assert_invalid
+    with self.assertRaisesRegex(self.auditor.EvidenceError, pattern):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_steps_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_steps_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run14/v13/code/tests/test_lp3_review_run14.py", line 31, in test_steps_float_is_not_registered_integer
+    self.assert_invalid('protocol')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/v13_run14/v13/code/tests/test_lp3_review_run14.py", line 26, in assert_invalid
+    with self.assertRaisesRegex(self.auditor.EvidenceError, pattern):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.029s
+
+FAILED (failures=5)
