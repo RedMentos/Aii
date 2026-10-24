@@ -1,0 +1,4 @@
+train route_counts {'direct': 302, 'detail': 96, 'gist': 49, 'both': 65} majority_accuracy 0.58984375
+holdout route_counts {'direct': 80, 'detail': 22, 'gist': 7, 'both': 19} majority_accuracy 0.625
+wrong_target_accuracy 0.625
+original_preregistered_criterion_pass False

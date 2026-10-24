@@ -1,0 +1,23 @@
+test_conflict_hard_report_gate (test_jef_control_micro.JEFControl.test_conflict_hard_report_gate) ... ok
+test_deterministic_replay (test_jef_control_micro.JEFControl.test_deterministic_replay) ... ok
+test_eligibility_zero_no_update (test_jef_control_micro.JEFControl.test_eligibility_zero_no_update) ... ok
+test_four_heads_update (test_jef_control_micro.JEFControl.test_four_heads_update) ... ok
+test_invalid_eligibility_and_no_authority (test_jef_control_micro.JEFControl.test_invalid_eligibility_and_no_authority) ... ok
+test_missing_source_hard_report_gate (test_jef_control_micro.JEFControl.test_missing_source_hard_report_gate) ... ok
+test_objective_contract (test_jef_control_micro.JEFControl.test_objective_contract) ... ok
+test_preregistered_threshold (test_jef_control_micro.JEFControl.test_preregistered_threshold) ... FAIL
+test_pressure_hard_report_gate (test_jef_control_micro.JEFControl.test_pressure_hard_report_gate) ... ok
+
+======================================================================
+FAIL: test_preregistered_threshold (test_jef_control_micro.JEFControl.test_preregistered_threshold)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run40/tests/test_jef_control_micro.py", line 11, in test_preregistered_threshold
+    def test_preregistered_threshold(self):self.assertTrue(self.metrics['synthetic_criterion_pass'],self.metrics)
+                                           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : {'schema': 'V13_JEF_CONTROL_MICRO_SHADOW_V1', 'seed': 20261024, 'train_rows': 512, 'heldout_rows': 128, 'steps': 200, 'lr': 0.03, 'baseline': {'route_accuracy': 0.3359375, 'report_brier': 0.3195595145225525}, 'candidate': {'route_accuracy': 1.0, 'report_brier': 2.5447011466894764e-06}, 'wrong_target': {'route_accuracy': 0.625, 'report_brier': 0.06493460386991501}, 'head_deltas': {'route': 7.919677734375, 'wake': 6.171565532684326, 'halt': 5.573758125305176, 'report': 4.620363235473633}, 'authority': 'SYNTHETIC_SHADOW_NO_AGE_ACTION', 'native_jef_gate_pass': False, 'age_action_authority': False, 'synthetic_criterion_pass': False}
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.585s
+
+FAILED (failures=1)

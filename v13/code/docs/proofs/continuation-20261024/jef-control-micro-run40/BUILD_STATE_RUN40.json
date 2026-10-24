@@ -1,0 +1,14 @@
+{
+  "schema":"V13_RUN40_STATE_V1",
+  "base":"195876c930eb93e1d509c4a577f330e55a6ebc71",
+  "preregistered_commit":"70d210eb0472ba66b80b15718ef0fa06380546ee",
+  "owner":"Codex Run40 isolated JEF/C2 multihead synthetic objective",
+  "file_ownership":"v13/code/docs/proofs/continuation-20261024/jef-control-micro-run40/ only",
+  "production_integrated":false,
+  "preregistered_criterion":"FAIL_SYNTHETIC",
+  "tests":"8/9 PASS, one preregistered negative-control threshold FAIL; compileall PASS",
+  "reason":"wrong-target route accuracy 0.625 equals heldout direct-majority baseline 0.625; preregistered max 0.50",
+  "native_jef":"NOT_RUN", "redmi":"NOT_RUN", "full_repo_suite":"NOT_RUN", "privacy_scan":"NOT_RUN",
+  "gates":{"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"Z6a":"FAIL","Z8":"FAIL","canonical_architecture_complete":false,"user_full_scope_complete":false},
+  "next":"New independent preregistered class-balanced or majority-adjusted control; retain original Run40 FAIL and investigate real JEF utility."
+}
