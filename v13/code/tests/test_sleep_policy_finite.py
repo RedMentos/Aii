@@ -1,7 +1,7 @@
 import copy
 import math
 import unittest
-from v13.sleep_policy_finite import validate_mix, validate_quiet_hours
+from v13.sleep_policy_finite import validate_mix, validate_quiet_hours, normalized_quota
 
 MIX = {'recent':.50,'protected_old':.35,'failure':.15}
 
@@ -40,6 +40,14 @@ class SleepPolicyFiniteTests(unittest.TestCase):
     def test_nonmapping_and_wrong_keys_rejected(self):
         for bad in [[], None, ['recent'], {'recent':1}, {'recent':1,'protected_old':1,'failure':1,'extra':1}]:
             with self.subTest(bad=repr(bad)), self.assertRaises(ValueError): validate_mix(bad, MIX)
+
+    def test_huge_finite_weight_has_stable_quota(self):
+        m = {'recent':1e308,'protected_old':0.,'failure':0.}
+        self.assertEqual(normalized_quota(m, 8), {'recent':8.0,'protected_old':0.0,'failure':0.0})
+
+    def test_invalid_batch_size_refused(self):
+        for n in [-1,True,1.5]:
+            with self.assertRaises(ValueError): normalized_quota(MIX,n)
 
     def test_quiet_hours_valid(self):
         for q in [None,[0,0],[0,23],[23,0]]:
