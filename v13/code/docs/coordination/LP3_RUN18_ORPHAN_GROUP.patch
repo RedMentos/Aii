@@ -86,8 +86,8 @@
          finally:
              record['ended_utc'] = utc()
 +            # If cleanup could not establish absence, block *future* attempts
-+            # on this host, even with a different output directory.
-+            # Operator must inspect the process group before clearing this lock file.
++            # on this host, even with a different output directory. Operator
++            # must inspect the process group before clearing this lock file.
 +            if (record.get('owned_group_absent') is False
 +                    or record.get('owned_child_cleanup_error_type')):
 +                os.write(fd, b'LP3_UNRESOLVED_OWNED_GROUP\n')
