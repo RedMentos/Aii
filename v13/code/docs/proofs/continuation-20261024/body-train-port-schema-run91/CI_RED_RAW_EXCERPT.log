@@ -1,0 +1,21 @@
+# Run91 preregistered malformed JSON RED (verbatim bounded CI log excerpt)
+# Full original Actions log: https://github.com/RedMentos/Aii/actions/runs/40135472197 (job 120995959623)
+# Test-only head 45917562db9bdf24bcb461ada0e5d6e6e51fffba, FAILURE; this is not the full raw log.
+2026-10-24T21:43:57.9475959Z test_native_capability_diagnostic_survives_malformed_descriptor (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_native_capability_diagnostic_survives_malformed_descriptor) ... ERROR
+2026-10-24T21:43:57.9489044Z test_unhashable_fp32_exception_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_fp32_exception_ids_return_reason_not_typeerror) ... ERROR
+2026-10-24T21:43:57.9500029Z test_unhashable_master_dtype_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_master_dtype_return_reason_not_typeerror) ... ERROR
+2026-10-24T21:43:57.9512364Z test_unhashable_trainable_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_trainable_ids_return_reason_not_typeerror) ... ERROR
+2026-10-24T21:43:57.9515451Z ERROR: test_native_capability_diagnostic_survives_malformed_descriptor (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_native_capability_diagnostic_survives_malformed_descriptor)
+2026-10-24T21:43:57.9517790Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_body_train_port_schema_run91.py", line 67, in test_native_capability_diagnostic_survives_malformed_descriptor
+2026-10-24T21:43:57.9524892Z TypeError: cannot use 'dict' as a set element (unhashable type: 'dict')
+2026-10-24T21:43:57.9526354Z ERROR: test_unhashable_fp32_exception_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_fp32_exception_ids_return_reason_not_typeerror)
+2026-10-24T21:43:57.9528254Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_body_train_port_schema_run91.py", line 56, in test_unhashable_fp32_exception_ids_return_reason_not_typeerror
+2026-10-24T21:43:57.9533298Z TypeError: cannot use 'dict' as a set element (unhashable type: 'dict')
+2026-10-24T21:43:57.9534519Z ERROR: test_unhashable_master_dtype_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_master_dtype_return_reason_not_typeerror)
+2026-10-24T21:43:57.9536334Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_body_train_port_schema_run91.py", line 40, in test_unhashable_master_dtype_return_reason_not_typeerror
+2026-10-24T21:43:57.9538927Z TypeError: cannot use 'list' as a set element (unhashable type: 'list')
+2026-10-24T21:43:57.9540144Z ERROR: test_unhashable_trainable_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_trainable_ids_return_reason_not_typeerror)
+2026-10-24T21:43:57.9542136Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_body_train_port_schema_run91.py", line 29, in test_unhashable_trainable_ids_return_reason_not_typeerror
+2026-10-24T21:43:57.9546574Z TypeError: cannot use 'dict' as a set element (unhashable type: 'dict')
+2026-10-24T21:43:57.9547334Z Ran 396 tests in 11.122s
+2026-10-24T21:43:57.9547575Z FAILED (errors=4)
