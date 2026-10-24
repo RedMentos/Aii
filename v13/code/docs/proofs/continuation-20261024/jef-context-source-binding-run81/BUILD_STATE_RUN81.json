@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN81_JEF_DECISION_CONTEXT_SOURCE_BINDING_V1",
+  "date": "2026-10-24",
+  "base": "1434c51fdb704d16daf2739948385de22736475d",
+  "branch": "codex/jef-context-source-binding-run81-20261024",
+  "owner": "JEF decision context SourceRef validation, tests, Run69 synthetic fixture contract, Run81 evidence",
+  "change": "JEF training_rows requires ExecutiveDecision context SourceRef exactly equal original event envelope source and present in decision provenance, with Store.read_source hash/blob/extent validation; revoked, corrupt, same-hash foreign contexts cannot train.",
+  "evidence": {
+    "red": {
+      "run": 40133469900,
+      "job": 120989944352,
+      "sha": "7ca24a15348a66a037454410b0288c432f5ee640",
+      "result": "373 tests, 3 expected FAIL",
+      "raw_blob": "273a857f17bf213f4b0585b8168c2e9e10c8e5a1"
+    },
+    "green": {
+      "run": 40133544343,
+      "job": 120990188714,
+      "sha": "9d91e4ef90c34e63a0b0d0deb63166cdc3b56797",
+      "result": "373/373 PASS, compileall PASS, official privacy CLEAN",
+      "raw_blob": "bf467c904d0a0c7164f8eee568bc05a0689336b2"
+    },
+    "source_blobs": {
+      "v13/code/v13/jefoutcome.py": "3826bb323b12c911cc9a144be74dd746db879e5f",
+      "v13/code/tests/test_jefoutcome.py": "d452d0a9e03ddbf1de976a6d45e2425cb371daba",
+      "v13/code/tests/test_jef_outcome_lineage_run69.py": "44cc6f345b1f781f99ef9104ef3846cfcbe1f11a"
+    },
+    "levels": {
+      "software": "Actual GitHub-hosted Linux/SQLite",
+      "synthetic": "Adversarial revoked/corrupt/foreign source cases",
+      "native_models": "NOT RUN",
+      "redmi": "NOT RUN",
+      "full_repo": "NOT RUN"
+    }
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "JEF after_turn repeated FINAL event may append duplicate self-labels and create redundant sources; investigate next.",
+    "Native C2/C3/Body training and real model output quality still not measured in this run.",
+    "No source/age/approval rights promoted."
+  ],
+  "next_command": "Run82: preregister exactly-once JEF after_turn self-label behavior across repeated FINAL callbacks, route correction and persisted state; preserve all source/human gates.",
+  "user_decision_required": false
+}
