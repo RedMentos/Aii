@@ -1,0 +1,36 @@
+{
+  "schema": "V13_RUN45_SOURCE_HISTORY_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base_commit": "6f029f88726edd21edd53fd369747e10ac644228",
+  "prereg_commit": "0a7250bd77041447cb5a334b32485897e626cd3c",
+  "owner": "Codex Run45 only sleep-real-history-run45/*",
+  "status": "EXACT_HISTORY_SOURCE_SYNTHETIC_STORE_PASS_NOT_INTEGRATED",
+  "source_history_git_blob": "05455f297205b40fe8e0f818c4657f1fedcd9fa3",
+  "source_run42_git_blob": "8dcd4b36cbe58f06ea330a510f1735b37f0ad600",
+  "test_git_blob": "76db143d5e38fc7c189ad9ae7695c331425c84f1",
+  "evidence_tar_sha256": "8ee73582cdcee28cfdfdb3241c4f61d0c43c4d5d328c9fe5b5b775a27664733b",
+  "tests": {
+    "exact_history_source": "byte-for-byte upstream",
+    "source_staging": "byte-for-byte Run42",
+    "synthetic_integration": "14/14 PASS",
+    "compileall": "PASS",
+    "full_store_runtime": "NOT_RUN",
+    "native_model": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Exact native_history function executed, but Store and output_policy rules helper are simplified synthetic stubs",
+    "No full repository checkout due github.com DNS",
+    "No native model, actual training consumer, full suite or official privacy scan",
+    "Previously exported candidates still require consumer-time revalidation"
+  ],
+  "next_command": "In full current checkout, decode run45 source evidence; run python -m unittest discover -s tests -v; replace FakeStore with real Store/Runtime in integration tests and validate deletion of transitive source refs plus fixed-answer rule removal before integrating Run42 Sleep staging.",
+  "user_decision_required": false
+}
