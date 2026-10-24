@@ -1,0 +1,51 @@
+{
+  "schema": "V13_LP3_RUN23_STATE_V1",
+  "date": "2026-10-24",
+  "base_pr": 58,
+  "base_commit": "9fc61a3fce8b69d493edfb2e84e7f4273ba49cc7",
+  "branch": "codex/lp3-loader-prejoin-review-20261024",
+  "ownership": "isolated LP3 candidate patch/test/evidence only; frozen production runtime and preregistered cohort unchanged",
+  "source_bindings": {
+    "run22_cgroup_v2_blob": "c1141e3b77ff72e7d0aecf8ef1cdfe040f9ff8c1",
+    "run23_cgroup_v2_blob": "808acfc9f1f9b9a01311dda29635a7291fffc94a",
+    "run21_serial_launcher_blob": "a36254593ee2490ed30f7744f8ae0fdf8bd5bc20",
+    "run23_serial_launcher_blob": "f270b740eab95c1bdfcdeaab62e21e8e52cdd399",
+    "patch_blob": "d1a63d24886b9d69a0e1cf2c7499b1f9d274424c",
+    "test_blob": "83eabc998ee8417fd8fe2aaee5c3bf1ee96f58c3"
+  },
+  "finding": "CPython -I -S disables Python site hooks, but does not disable ELF loader LD_PRELOAD/LD_AUDIT/LD_LIBRARY_PATH constructors before cgroup membership; reproduced with a private gcc shared-library constructor writing a sentinel before the helper fails to open fake cgroup.procs.",
+  "fix": "Reject any LD_* key, including empty-valued keys; snapshot the checked environment and pass the exact snapshot to Popen; do not strip variables or alter the native runner environment silently.",
+  "tests": {
+    "original_red": "4 failed subtests (nonempty LD_* rejected only after patch)",
+    "independent_review_red": "2 failed subtests for empty-valued LD_* (corrected)",
+    "targeted_green": "5/5 PASS",
+    "assembled_focused": "155/155 PASS (software/synthetic; no full checkout)",
+    "compileall": "PASS",
+    "patch_exact_reproduction": "PASS",
+    "native_cgroup": "NOT_RUN_READONLY_CGROUP",
+    "native_model": "NOT_RUN",
+    "redmi": "NOT_RUN",
+    "full_repo_suite": "NOT_RUN_NO_CHECKOUT",
+    "official_privacy_scan": "NOT_RUN_NO_CHECKOUT"
+  },
+  "host": {
+    "memory_limit_bytes": 4294967296,
+    "cgroup_mount": "read-only cgroup2",
+    "registered_hf_assets_missing": 7,
+    "registered_fixture_sources_missing": 2,
+    "transformers_installed": false,
+    "local_lp3_process_count": 0,
+    "global_owner_verified": false,
+    "ram_fit_verified": false
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "limits": "Environment guard is a partial mitigation, NOT proof of atomic prejoin containment: ELF DT_NEEDED/DT_AUDIT, /etc/ld.so.preload, dynamic loader code or other untrusted startup could still run before cgroup join. Kernel clone3 CLONE_INTO_CGROUP or independently proven bootstrap needed.",
+  "next_exact_step": "Independent full-checkout review and official privacy scan; prove delegated writable cgroup2 with real setsid and crash/stale-slot recovery, and resolve prejoin ELF constructor gap via atomic clone3 or verified bootstrap; only then recheck pinned native resources/global owner/RAM and run unchanged four-seed LP3 cohort; separately test generated-answer utility."
+}
