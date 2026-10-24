@@ -28,7 +28,7 @@ import random
 from collections import deque
 from .agi.curiosity import Curiosity,NOVELTY
 
-REVISION='ds1-sandbox-v1'
+REVISION='ds1-sandbox-v1';DS2_REVISION='ds2-combined-v1';WORD_NOVELTY_GAIN=.3
 GRID=7;ACTIONS=('push','eat','touch','lift')
 OUTCOMES=('NOTHING','MOVED','EATEN','BLOCKED','BROKE','SOUND','LIGHT')
 K=len(OUTCOMES);ALPHA0=.5;NOISE='fernseher';NEW_KIND='pilz';NEW_KIND_AT=600
@@ -44,7 +44,7 @@ TRUE={
  NOISE:{a:[1/K]*K for a in ACTIONS},
  NEW_KIND:{'push':_d(NOTHING=1),'eat':_d(EATEN=1),'touch':_d(LIGHT=.8,NOTHING=.2),'lift':_d(MOVED=1)}}
 START_KINDS=('apfel','stein','kiste','glas',NOISE)
-POLICIES=('random','surprise','novelty','lp','eig','efe')
+POLICIES=('random','surprise','novelty','lp','eig','efe','lp_goal','lp_goal_novelty')
 
 def digamma(x):
     r=0.
@@ -111,19 +111,25 @@ class World:
 class Agent:
     def __init__(self,policy,rng):
         assert policy in POLICIES,policy
-        self.policy=policy;self.rng=rng;self.alpha={};self.surprise={};self.visits={}
+        self.policy=policy;self.rng=rng;self.alpha={};self.surprise={};self.visits={};self.word_visits={}
     def counts(self,word,action):return self.alpha.setdefault((word,action),[ALPHA0]*K)
     def observe(self,word,action,y):
         a=self.counts(word,action);s=-math.log(predictive(a)[y])/math.log(K)
         a[y]+=1;key=(word,action)
         self.surprise[key]=(self.surprise.get(key,[])+[min(1.,s)])[-2*SURPRISE_WINDOW:]
         self.visits[key]=self.visits.get(key,0)+1
+        self.word_visits[word]=self.word_visits.get(word,0)+1
     def value(self,word,action,hunger):
         key=(word,action);n=self.visits.get(key,0);a=self.counts(word,action)
         if self.policy=='surprise':
             s=self.surprise.get(key,[]);return 1. if not s else sum(s[-SURPRISE_WINDOW:])/len(s[-SURPRISE_WINDOW:])
         if self.policy=='novelty':return 1/math.sqrt(1+n)
-        if self.policy=='lp':return max(0.,Curiosity._lp(self.surprise.get(key,[])))+NOVELTY/math.sqrt(1+n)
+        if self.policy in ('lp','lp_goal','lp_goal_novelty'):
+            intrinsic=max(0.,Curiosity._lp(self.surprise.get(key,[])))+NOVELTY/math.sqrt(1+n)
+            if self.policy=='lp':return intrinsic
+            pragmatic=PRAGMATIC*hunger*predictive(a)[OUTCOMES.index('EATEN')]*HUNGER_RELIEF.get(word,0.)
+            word_novelty=(WORD_NOVELTY_GAIN/math.sqrt(1+self.word_visits.get(word,0))) if self.policy=='lp_goal_novelty' else 0.
+            return intrinsic+pragmatic+word_novelty
         v=eig(a)
         if self.policy=='efe':v+=PRAGMATIC*hunger*predictive(a)[OUTCOMES.index('EATEN')]*HUNGER_RELIEF.get(word,0.)
         return v
