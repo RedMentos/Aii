@@ -1,0 +1,22 @@
+{
+  "schema": "V13_RUN28_STATE_V1",
+  "base": "4bc67c8a3dab569b4b28f2dab8f711f93b0483ff",
+  "original_world_model_git_blob": "8579d4938624137749e7eb793f5016294c36401f",
+  "owner": "Codex Run28 isolated World-Model candidate",
+  "production_integrated": false,
+  "pre_fix": "7 adversarial red (4 FAIL + 3 ERROR); invalid for_event also RED",
+  "post_fix": "10/10 PASS synthetic/software",
+  "native_model": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "full_suite": "NOT_RUN",
+  "privacy_scan": "NOT_RUN",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Independently verify exact GitHub source patch, run original full world-model suite on checkout and real SQLite corrupt rows, then pursue WP-Z12 measured outcomes."
+}
