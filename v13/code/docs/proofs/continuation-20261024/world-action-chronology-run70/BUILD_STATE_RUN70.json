@@ -27,6 +27,7 @@
     "Temporal selection is not a cryptographic action->selection packet ID binding",
     "Same-timestamp rowid ordering is deterministic, not a physical monotonic-clock proof"
   ],
-  "next": "cd v13/code && python -m unittest -v tests.test_world_action_chronology_run70; full suite/privacy; review real ActionSelection/action timing",
-  "user_decision_required": false
+  "next": "cd v13/code && python -m unittest -v tests.test_world_action_chronology_run70 tests.test_world_model_integration_run64 tests.test_world_align_finite_run65; full suite/privacy",
+  "user_decision_required": false,
+  "review": "Run64 SQLite fixture lacked packets.created; patched fixture, full suite remains NOT RUN"
 }
