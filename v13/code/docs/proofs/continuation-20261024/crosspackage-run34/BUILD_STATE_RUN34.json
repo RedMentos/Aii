@@ -1,0 +1,29 @@
+{
+  "schema": "V13_RUN34_INTEGRATION_STATE_V1",
+  "base": "b246366e9eba5075bf8c0ba122cb434f1ae90b1a",
+  "owner": "Codex Run34 isolated cross-package integration",
+  "production_integrated": false,
+  "combined_tests": "93/93 PASS software/Linux SQLite synthetic",
+  "static_c_compile": "PASS",
+  "age_v1": "FAIL 40/100 shift, 0/100 false",
+  "age_v2": "PASS_SYNTHETIC_ONLY 98/100 shift, 0/100 false",
+  "raw_git_blob": "5fbf6883280151bbf881813d137671a9d83768d8",
+  "raw_sha256": "d0c3a544fc5e320bae720c0a0db9842aee03d5228b169144a2484eef13f0668c",
+  "native_lp3": "NOT_RUN",
+  "delegated_cgroup": "UNVERIFIED",
+  "redmi": "NOT_RUN",
+  "full_repo_suite": "NOT_RUN",
+  "privacy_scan": "NOT_RUN",
+  "library_backup": "FAILED_CONTAINER_SESSION_UNAVAILABLE",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "z6a_effort": "FAIL",
+    "z8_age_reopen": "FAIL",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Full checkout integration review PR61-69, original suite/privacy scan, positive cgroup proof; continue independent canonical functional packages meanwhile."
+}
