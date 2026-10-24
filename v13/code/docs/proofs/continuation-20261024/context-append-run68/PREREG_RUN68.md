@@ -1,0 +1,9 @@
+# Run68 prereg — Context OS append-only transcript mode provenance
+
+2026-10-24. Base Run67 PR100 e6104c8cff892cd110c126fc4f2c13c51fc58a06. Own `v13/code/v13/context_os.py` minimal append transcript/mode provenance diff, new `v13/code/v13/context_append_guard.py`, `v13/code/tests/test_context_append_guard.py`, and `v13/code/docs/proofs/continuation-20261024/context-append-run68/*`. Do not modify JEF/Callosum/World/Sleep/history owner files or native cohorts.
+
+Source observation: `ContextOS.plan` persists `planned` as a transcript when configured layout is append_only even if mode SHADOW returned `legacy` to the runner, and even if planned layout fell back to stable_prefix. After explicit SHADOW->ACTIVE mode switch, `prev` can be reused as if it was actually run, creating a false prompt-cache/history chain. ContextOS already requires explicit human activation; do not bypass.
+
+Proposed fix: tag stored transcript with whether it was actually applied and its actual effective layout. Append reentry only when previous transcript has the same applied mode, was genuinely append_only, has matching last event/system and assistant final turn. Retain SHADOW hypothetical planning within SHADOW for measurement, but never treat it as ACTIVE execution. Missing legacy metadata fails closed to stable_prefix rebuild. Keep exact spans, context budget, source provenance, compression knobs, age/permission and acceptance gates unchanged.
+
+Predeclared tests: shadow->active refusal, active->shadow refusal, same-mode append permitted, fallback stable_prefix refusal, missing legacy mode marker refusal, mismatched event/system refusal, Python -O. Full ContextOS plan integration test needs complete checkout. Original wrong-mode reuse RED preserved. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, full V13 INCOMPLETE.
