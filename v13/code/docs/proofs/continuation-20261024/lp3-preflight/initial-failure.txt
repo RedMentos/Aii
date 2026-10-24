@@ -1,0 +1,16 @@
+# Initial LP3 preflight test harness failure (2026-10-24; preserved)
+Command: cd /mnt/data/v13_turn8 && python -m unittest discover -s tests -p 'test_lp3*.py' -v
+Result: 17 tests run, 2 FAIL (new subprocess-only tests); 15 PASS.
+
+test_existing_attempt_refused_before_touching:
+  AssertionError: 'existing attempt directory' not found in
+  Traceback ... lp3_memory_key_candidate.py line 20:
+  ModuleNotFoundError: No module named 'lp2_assignment_objective'
+
+test_real_cli_does_not_create_manifest_without_pinned_master:
+  AssertionError: 'HARD_BLOCKER' not found in
+  Traceback ... lp3_memory_key_candidate.py line 20:
+  ModuleNotFoundError: No module named 'lp2_assignment_objective'
+
+Cause: standalone candidate ZIP intentionally omitted LP2 and its imports. The in-process tests inject a fixture stub, but subprocess tests did not inherit it.
+Correction: tests now supply a temporary LP2 fixture module through PYTHONPATH. Re-run final result: 17/17 PASS; full repository fixture remains the intended native integration input. This is a test-harness repair, not an LP3 native result.

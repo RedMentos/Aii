@@ -23,6 +23,55 @@ SEEDS = (31, 37, 41, 43)
 STEPS = 30
 TEMP = 0.1
 LR = 1e-3
+# Pinned by the LP1/LP2 feasibility handoff; no alternate HF weight cohort.
+PINNED_MASTER_SHA256 = "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e"
+PINNED_HF_REVISION = "55e5a53e8637c4522a0577040fe68682db3fbbb6"
+HF_ASSETS = ("model.safetensors", "config.json", "generation_config.json",
+             "tokenizer.json", "tokenizer_config.json", "chat_template.jinja", "LICENSE")
+
+
+def _sha256_file(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as f:
+        for block in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def preflight_binding(master, expected_master_sha256, *, source_root=HERE):
+    """Fail before creating evidence if exact cohort assets/sources are missing.
+
+    File hashes bind local bytes; they do not independently authenticate the
+    remaining snapshot assets against the upstream revision.
+    """
+    if expected_master_sha256 != PINNED_MASTER_SHA256:
+        raise ValueError("master digest is not the preregistered LP1/LP2 master")
+    master, source_root = Path(master), Path(source_root)
+    hashes = {}
+    for name in HF_ASSETS:
+        path = master / name
+        if not path.is_file() or path.stat().st_size == 0:
+            raise ValueError(f"missing/empty HF snapshot asset: {name}")
+        hashes[name] = _sha256_file(path)
+    if hashes["model.safetensors"] != PINNED_MASTER_SHA256:
+        raise ValueError("HF master weight bytes do not match pinned SHA256")
+    for name in ("config.json", "generation_config.json", "tokenizer.json", "tokenizer_config.json"):
+        try:
+            with (master / name).open("r", encoding="utf-8") as f:
+                if not isinstance(json.load(f), dict):
+                    raise ValueError(f"HF snapshot JSON is not an object: {name}")
+        except (UnicodeError, json.JSONDecodeError) as exc:
+            raise ValueError(f"invalid HF snapshot JSON: {name}") from exc
+    deps = {}
+    for name in ("lp2_assignment_objective.py", "lora_bench.py"):
+        path = source_root / name
+        if not path.is_file() or path.stat().st_size == 0:
+            raise ValueError(f"missing fixture dependency: {name}")
+        deps[name] = _sha256_file(path)
+    return {"repo": "LiquidAI/LFM2.5-350M", "revision": PINNED_HF_REVISION,
+            "assets_sha256": hashes, "fixture_dependencies_sha256": deps,
+            "upstream_nonweight_asset_identity": "NOT_INDEPENDENTLY_VERIFIED"}
+
 # Separate, unseen questions; five historical LP2 failures already occur in HELDOUT.
 HARDER = (
     (0, "I forgot what to call the feline I own. Remind me?"),
@@ -231,20 +280,18 @@ def main():
     ap.add_argument('--master-sha256', required=True, help='full pinned SHA256 of local model.safetensors')
     ap.add_argument('--out', type=Path, required=True)
     a = ap.parse_args()
-    st = a.master / 'model.safetensors'
-    if not re.fullmatch('[0-9a-f]{64}', a.master_sha256) or not st.is_file():
-        raise SystemExit('HARD_BLOCKER: missing pinned unsharded HF master')
-    digest = hashlib.sha256()
-    with st.open("rb") as f:
-        for block in iter(lambda: f.read(1024 * 1024), b""):
-            digest.update(block)
-    actual = digest.hexdigest()
-    if actual != a.master_sha256: raise SystemExit('HARD_BLOCKER: master hash mismatch')
-    if (a.out / 'report.json').exists(): raise SystemExit('refusing to overwrite existing cohort')
+    if a.out.exists() and any(a.out.iterdir()):
+        raise SystemExit('HARD_BLOCKER: existing attempt directory; never resume/overwrite closed evidence')
+    try:
+        snapshot = preflight_binding(a.master, a.master_sha256)
+    except (OSError, ValueError) as exc:
+        raise SystemExit(f'HARD_BLOCKER: {exc}') from exc
+    actual = snapshot['assets_sha256']['model.safetensors']
     tasks = tuple(HELDOUT) + HARDER
     binding = {"schema": "V13_LP3_MEMORY_KEY_V1", "master_sha256": actual,
                "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-               "lp2_fixture_sha256": hashlib.sha256((HERE / 'lp2_assignment_objective.py').read_bytes()).hexdigest(),
+               "lp2_fixture_sha256": snapshot['fixture_dependencies_sha256']['lp2_assignment_objective.py'],
+               "snapshot_binding": snapshot,
                "master_scope": "Linux_HF_FP32_FROZEN_ENCODER", "phone_measured": False,
                "runtime_enabled": False, "body_jepa_gate_pass": False, "step2_gate_pass": False,
                "params": {"seeds": SEEDS, "steps": STEPS, "temperature": TEMP, "lr": LR,
