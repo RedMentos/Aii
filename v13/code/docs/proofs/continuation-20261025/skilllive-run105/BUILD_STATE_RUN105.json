@@ -1,0 +1,45 @@
+{
+  "run": 105,
+  "utc_date": "2026-10-25",
+  "base_commit": "9f848f4f216d4b2cbca8b4c85e8e8c17a720a079",
+  "branch": "codex/skilllive-route-consistency-run105-20261025",
+  "pr": 137,
+  "owner": "skilllive.py only; inherited semantic_memory.py untouched",
+  "state": "ISOLATED_REVIEW_CANDIDATE_NOT_MERGED",
+  "finding": "Contradictory TRUSTED route-only skill silently bypassed C2 by choosing first route",
+  "red": {
+    "workflow_run": 40142648677,
+    "job": 121017423602,
+    "tests": 31,
+    "failures": 4,
+    "errors": 0
+  },
+  "green": {
+    "workflow_run": 40142787071,
+    "job": 121017834395,
+    "tests": 31,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS"
+  },
+  "scope": "real GitHub Linux + actual SQLite SkillLibrary/Runtime; model-free JEF; no native or Redmi",
+  "fix": "Require every step to be route-only and identical canonical route before fast-path; conflicting SHADOW excluded; positive fast-path preserved",
+  "review": "Checked malformed/mixed tool steps fail closed and repeated identical routes preserve behavior; not a claim of trained procedural skill quality",
+  "git_blobs": {
+    "v13/code/v13/skilllive.py": "22c38e3ca46a5fff8ef25d2074041c943dde10ec",
+    "v13/code/tests/test_skilllive_route_consistency_run105.py": "e48bbd5eea47662452a631b96f37262feb7e1689",
+    ".github/workflows/v13-run105-skilllive.yml": "1fcb59125d6dc32a8d87eb002fe80aca50e2cf92",
+    "v13/code/docs/proofs/continuation-20261025/skilllive-run105/PREREG.md": "49cfd63da9d15387359df003168ab42aff3e670a",
+    "v13/code/docs/proofs/continuation-20261025/skilllive-run105/CI_RED_FULL_RAW.log": "9e88dd78424429d650b5a23df37594fee7635bc6",
+    "v13/code/docs/proofs/continuation-20261025/skilllive-run105/CI_GREEN_FULL_RAW.log": "f5164a3e4b2a4e8ac806e4773b290262c672b8f8"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_system": "INCOMPLETE"
+  },
+  "next": "Run106 independent canonical A1 episode source-vector finite/dimension guard and actual persisted segmentation integrity; prereg real SQLite counterexample, tests-first CI. No heavy native jobs."
+}

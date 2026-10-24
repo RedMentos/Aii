@@ -18,8 +18,17 @@ STOP=set('a an the and or but of to in on at for from by with is are was were be
 LIVE=('TRUSTED','INTERNALISED');LEARNING=('CANDIDATE','SHADOW')
 
 def _route_only(sk):
-    routes=[s['route'] for s in sk['steps'] if 'route' in s]
-    return routes[0] if routes and len(routes)==len(sk['steps']) and routes[0] in {'simple','detail','gist','both'} else None
+    """Only an unambiguous route-only procedure may bypass C2 control.
+
+    A persisted multi-step skill can contain contradictory route hints; the
+    first step alone is not permission to silently discard later steps.
+    """
+    steps=sk.get('steps')
+    if not isinstance(steps,list) or not steps:return None
+    routes=[s['route'] for s in steps if isinstance(s,dict) and 'route' in s and 'tool' not in s]
+    if len(routes)!=len(steps):return None
+    first=routes[0]
+    return first if isinstance(first,str) and first in {'simple','detail','gist','both'} and all(r==first for r in routes) else None
 
 def matches(lib,text,stages):
     words=set(re.findall(r'\w+',str(text).casefold()));out=[]
