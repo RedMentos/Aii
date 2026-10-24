@@ -1,0 +1,12 @@
+{
+  "schema": "V13_COMPLETION_LEDGER_DELTA_RUN13_V1",
+  "package": "WP-LP3-EVIDENCE-SCHEMA",
+  "software_candidate": "IMPLEMENTED_TESTED_NOT_INTEGRATED_RUNTIME",
+  "proof_level": "SOFTWARE_SYNTHETIC_LINUX_ONLY",
+  "native_lp3": "NOT_RUN",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false
+}
