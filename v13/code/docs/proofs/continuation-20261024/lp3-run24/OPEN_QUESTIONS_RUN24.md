@@ -1,0 +1,9 @@
+# V13 LP3 Run24 — unresolved questions
+
+1. **Kernel gate:** Does `clone3(CLONE_INTO_CGROUP|CLONE_PIDFD)` work in a real writable delegated cgroup v2 on the intended Linux host, including `EACCES`/`EBUSY`/`EOPNOTSUPP` paths? Current host read-only; no root/unowned test attempted.
+2. **Ownership:** Who exclusively owns the native LP3 resources across all participating hosts? Local cgroup + flock cannot prove global ownership.
+3. **Lifecycle:** Can the staged helper's `helper_pid`/`child_pid` closed marker be integrated into `CgroupV2Job.finish` and evidence auditor without weakening original source/protocol gates? Must independently verify `setsid`, detached descendants, SIGTERM, SIGKILL and crash recovery before receipt.
+4. **Static binary provenance:** Build flags, compiler revision and source SHA are recorded, but the binary is not independently reproducible on target; pin each deployed binary SHA and verify sealed memfd at launch. Never accept an unreviewed helper or arbitrary `--sha` as trust proof.
+5. **SIGTERM test flake:** Run23 had one inherited timing ERROR; 12 corrected reruns on this host PASS, which does not prove stability under load. Retain the original failing log.
+6. **Native prerequisites:** 7 registered HF assets, 2 fixture sources, transformers, 4 GiB host RAM fit and global owner are missing/unverified. No native cohort, Redmi or generated-answer utility claim.
+7. **Full repository:** GitHub connector can fetch files and write review branches, but the container's GitHub DNS is unavailable; complete checkout/full tests/official privacy scanner remain pending.
