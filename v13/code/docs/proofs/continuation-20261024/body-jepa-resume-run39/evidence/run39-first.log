@@ -1,0 +1,12 @@
+test_dataset_hash_mismatch_rejected (test_body_jepa_resume.Resume.test_dataset_hash_mismatch_rejected) ... ok
+test_hash_corruption_rejected (test_body_jepa_resume.Resume.test_hash_corruption_rejected) ... ok
+test_no_age_or_native_authority (test_body_jepa_resume.Resume.test_no_age_or_native_authority) ... ok
+test_no_overwrite_and_invalid_step (test_body_jepa_resume.Resume.test_no_overwrite_and_invalid_step) ... ok
+test_source_revision_bound (test_body_jepa_resume.Resume.test_source_revision_bound) ... ok
+test_uninterrupted_equals_60_100_bitwise (test_body_jepa_resume.Resume.test_uninterrupted_equals_60_100_bitwise) ... ok
+test_wrong_target_negative_control_bitwise (test_body_jepa_resume.Resume.test_wrong_target_negative_control_bitwise) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.523s
+
+OK
