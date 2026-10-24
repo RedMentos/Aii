@@ -1,0 +1,20 @@
+# Run92 GREEN, bounded verbatim GitHub Actions log excerpt
+# Full raw log: https://github.com/RedMentos/Aii/actions/runs/40135809811 (job 120996971758)
+# RED preserved separately; excerpt not complete raw log.
+2026-10-24T21:48:27.0531809Z test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) ... ok
+2026-10-24T21:48:34.8738782Z Ran 397 tests in 8.400s
+2026-10-24T21:48:35.1377393Z privacy scan 8b50e8d76..HEAD: CLEAN
+2026-10-24T21:48:35.1468233Z [36;1m    print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))[0m
+2026-10-24T21:48:35.1468802Z [36;1mstat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-24T21:48:36.2879638Z {"bytes": 12548850, "canonical_gate_pass": false, "files": 816, "native_models_launched": false, "phone_measured": false, "sha256": "6d21a8f5cb419c776b58188f2b64dd9442892e2f993f5689e859ecd60ed785d5", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run83.zip"}
+2026-10-24T21:48:36.4629716Z PHONE_SOURCE_MANIFEST_PASS 815
+2026-10-24T21:48:36.4785669Z PHONE_SOURCE_BYTES=12548850
+2026-10-24T21:48:36.4818820Z [36;1mprint('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)[0m
+2026-10-24T21:48:36.7063126Z INDEPENDENT_PHONE_ARCHIVE_PASS 815 6d21a8f5cb419c776b58188f2b64dd9442892e2f993f5689e859ecd60ed785d5
+2026-10-24T21:48:36.7166026Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T21:48:43.0986745Z test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) ... ok
+2026-10-24T21:48:51.1709932Z Ran 96 tests in 13.294s
+2026-10-24T21:48:51.2945590Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS
+2026-10-24T21:48:52.8700315Z SHA256 digest of uploaded artifact zip is 45f33d08d6354009066571088f502294b29fc77a5ccdde9733b8ab1e5cf4d02d
+2026-10-24T21:48:53.2932234Z Artifact V13-Phone-source-e867f2cad9e94c898154f1527f2725153616c083.zip successfully finalized. Artifact ID 12576264236
+2026-10-24T21:48:53.2933258Z Artifact V13-Phone-source-e867f2cad9e94c898154f1527f2725153616c083 has been successfully uploaded! Final size is 12549002 bytes. Artifact ID is 12576264236
