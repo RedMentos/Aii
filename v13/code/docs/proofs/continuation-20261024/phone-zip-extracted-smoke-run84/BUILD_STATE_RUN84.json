@@ -1,0 +1,54 @@
+{
+  "schema": "V13_RUN84_EXTRACTED_PHONE_SOURCE_SMOKE_V1",
+  "date": "2026-10-24",
+  "base": "739660bc2c84d1c9f32cbb63f2f0c82558ce44ec",
+  "branch": "codex/phone-zip-extracted-smoke-run84-20261024",
+  "owner": "Read-only CI extracted phone ZIP software/runtime/restart proof and Run84 evidence",
+  "change": "Extract generated source-only Termux ZIP, compile extracted tree, execute 71 model-free software tests and isolated Runtime SQLite SourceRef restart before uploading artifact.",
+  "evidence": {
+    "run": 40133994015,
+    "job": 120991511320,
+    "head": "f4a3fbf9c31ceb8467398c33744e7fb7d79fb7aa",
+    "result": "377/377 source checkout CI PASS, 71/71 extracted ZIP PASS, Runtime source-ref restart PASS, compileall PASS, privacy CLEAN",
+    "source_zip": {
+      "filename": "V13-Phone-Run83.zip",
+      "files_including_manifest": 809,
+      "source_files": 808,
+      "bytes": 12539117,
+      "sha256": "afa8350330c038d7ab804450fa55b739e3287c307b1e947b8dc8dc850017b159",
+      "same_bytes_as_run83": true
+    },
+    "artifact": {
+      "id": 12576565696,
+      "name": "V13-Phone-source-b72eeed86388eb276e0903fbc934cc5154074d22",
+      "size_bytes": 12539269,
+      "wrapper_digest_sha256": "5a7d068d1bddc83dea8a8b34e51903c12f0ec669765afc75f38d7df6dba97288",
+      "expires_at": "2026-11-23T21:24:25Z",
+      "url": "https://github.com/RedMentos/Aii/actions/runs/40133994015/artifacts/12576565696"
+    },
+    "raw_log_blob": "68cdaad1de51bfa1081e4dffbef817ac5d52d09c",
+    "workflow_blob": "ca6c4d5da68bbf2be646d0f97ca56bd4201bdc72",
+    "levels": {
+      "software": "Actual GitHub-hosted Linux extracted ZIP",
+      "synthetic": "Authored source-ref restart smoke",
+      "native_models": "NOT RUN",
+      "redmi": "NOT RUN",
+      "phone_install": "NOT RUN",
+      "full_repo": "NOT RUN"
+    }
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Source ZIP has not been executed on Redmi/Termux; model downloads and real answer quality remain open.",
+    "Complete 260-module extracted release audit remains unrun; some tests may require native assets.",
+    "Archive independent verifier (separate from packager) can be run without model jobs; next package."
+  ],
+  "next_command": "Run85: use independent scripts/phone_release_audit_candidate.verify_archive on newly built ZIP before extracted tests/upload; preserve all gates.",
+  "user_decision_required": false
+}
