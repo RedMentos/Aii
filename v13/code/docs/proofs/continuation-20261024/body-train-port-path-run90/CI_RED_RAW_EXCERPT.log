@@ -1,0 +1,22 @@
+# Run90 preregistered real filesystem RED (verbatim bounded log excerpt)
+# Full raw GitHub Actions log: https://github.com/RedMentos/Aii/actions/runs/40135211277 (job 120995182972)
+# Test-only head 410905ad2a8546aa926972cd3e4733e5d378c67a, FAILURE. This is not a complete raw log.
+2026-10-24T21:40:25.0429862Z test_descriptor_dotdot_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_dotdot_escape_is_rejected) ... FAIL
+2026-10-24T21:40:25.0442620Z test_descriptor_symlink_outside_home_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_symlink_outside_home_is_rejected) ... FAIL
+2026-10-24T21:40:25.0454792Z test_external_artifact_symlink_with_matching_hash_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_external_artifact_symlink_with_matching_hash_is_rejected) ... FAIL
+2026-10-24T21:40:25.0466862Z test_parent_directory_symlink_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_parent_directory_symlink_escape_is_rejected) ... FAIL
+2026-10-24T21:40:25.0475832Z test_regular_bound_port_remains_non_authoritative (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_regular_bound_port_remains_non_authoritative) ... ok
+2026-10-24T21:40:25.0478617Z FAIL: test_descriptor_dotdot_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_dotdot_escape_is_rejected)
+2026-10-24T21:40:25.0480894Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_body_train_port_paths_run90.py", line 106, in test_descriptor_dotdot_escape_is_rejected
+2026-10-24T21:40:25.0482792Z AssertionError: 'PORT_BOUND_PROOF_REQUIRED' != 'INVALID_TRAIN_PORT_DESCRIPTOR'
+2026-10-24T21:40:25.0484879Z FAIL: test_descriptor_symlink_outside_home_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_symlink_outside_home_is_rejected)
+2026-10-24T21:40:25.0487101Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_body_train_port_paths_run90.py", line 93, in test_descriptor_symlink_outside_home_is_rejected
+2026-10-24T21:40:25.0488680Z AssertionError: 'PORT_BOUND_PROOF_REQUIRED' != 'INVALID_TRAIN_PORT_DESCRIPTOR'
+2026-10-24T21:40:25.0490441Z FAIL: test_external_artifact_symlink_with_matching_hash_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_external_artifact_symlink_with_matching_hash_is_rejected)
+2026-10-24T21:40:25.0492271Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_body_train_port_paths_run90.py", line 65, in test_external_artifact_symlink_with_matching_hash_is_rejected
+2026-10-24T21:40:25.0493993Z AssertionError: 'PORT_BOUND_PROOF_REQUIRED' != 'INVALID_ARTIFACT_BINDING'
+2026-10-24T21:40:25.0495817Z FAIL: test_parent_directory_symlink_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_parent_directory_symlink_escape_is_rejected)
+2026-10-24T21:40:25.0497568Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_body_train_port_paths_run90.py", line 79, in test_parent_directory_symlink_escape_is_rejected
+2026-10-24T21:40:25.0499018Z AssertionError: 'PORT_BOUND_PROOF_REQUIRED' != 'INVALID_ARTIFACT_BINDING'
+2026-10-24T21:40:25.0500556Z Ran 392 tests in 11.307s
+2026-10-24T21:40:25.0500787Z FAILED (failures=4)
