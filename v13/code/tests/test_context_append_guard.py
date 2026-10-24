@@ -45,6 +45,17 @@ class AppendGuard(unittest.TestCase):
         p=previous(True);p['messages']=None
         self.assertFalse(can_reenter(p,LAST,'SYSTEM',True))
 
+    def test_empty_previous_messages_refused(self):
+        p=previous(True);p['messages']=[]
+        self.assertFalse(can_reenter(p,LAST,'SYSTEM',True))
+
+    def test_previous_prompt_not_ending_in_user_refused(self):
+        p=previous(True);p['messages']=[{'role':'assistant','content':'a'}]
+        self.assertFalse(can_reenter(p,LAST,'SYSTEM',True))
+
+    def test_invalid_last_message_refused(self):
+        self.assertFalse(can_reenter(previous(True),('e1',['bad']),'SYSTEM',True))
+
     def test_none_previous_refused(self):
         self.assertFalse(can_reenter(None,LAST,'SYSTEM',True))
 
