@@ -109,6 +109,7 @@ def validate(cfg):
     if not (isinstance(cfg.get("offer_quote_min_chars",0),int) and 0<=cfg.get("offer_quote_min_chars",0)<=400):raise ValueError("offer_quote_min_chars 0..400")
     if not (isinstance(cfg.get("offer_quote_context_chars",0),int) and not isinstance(cfg.get("offer_quote_context_chars",0),bool) and 0<=cfg.get("offer_quote_context_chars",0)<=400):raise ValueError("offer_quote_context_chars 0..400")
     if not (isinstance(cfg.get("b1_recent_source_chars",0),int) and not isinstance(cfg.get("b1_recent_source_chars",0),bool) and 0<=cfg.get("b1_recent_source_chars",0)<=960):raise ValueError("b1_recent_source_chars 0..960")
+    if cfg.get("b2_quote_select","off") not in {"off","anchor","pointer"}:raise ValueError("b2_quote_select off|anchor|pointer")
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
     return cfg
 def initialize(home):

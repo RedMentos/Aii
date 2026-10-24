@@ -85,6 +85,35 @@ def quote_span(quote,source,context_chars=0):
         if k+1<len(sents) and sents[k+1][1]-sents[i][0]<=context_chars:k+=1;grew=True
         if i>0 and sents[k][1]-sents[i-1][0]<=context_chars:i-=1;grew=True
     return sents[i][0],sents[k][1]
+_ANCHOR_STOP=frozenset('a an the of for and or is are be to in on at with by from this that it its has have as'.split())
+def _anchor_tokens(s):
+    out=set()
+    for w in re.findall(r'[a-z]+|\d+',s.casefold()):
+        if w not in _ANCHOR_STOP:out.add(w[:-1] if not w.isdigit() and len(w)>3 and w.endswith('s') else w)
+    return out
+def sentence_spans(source):return [(m.start(),m.end()) for m in re.finditer(r'\S.*?(?:[.!?](?=\s|$)|$)',source,re.S)]
+def anchor_span(quote,sources,min_cover=.6,max_sentences=3):
+    """WP-Z2c (cfg b2_quote_select='anchor'): a B2 quote that matches no source (Qwen B2 paraphrased the earlier rule,
+    'Project X has a budget of 100 euros', in ~1/3 of Z2b offers) points at the 1..max_sentences consecutive source
+    sentences that hold every number of the quote and >= min_cover of its content words. (source index,start,end) or
+    None; None also when the best cover is tied across different sources. Only exact source text is ever transported."""
+    q=_anchor_tokens(quote) if isinstance(quote,str) else set()
+    if len(q)<3:return None
+    nums={w for w in q if w.isdigit()};found=[]
+    for si,src in enumerate(sources):
+        ss=sentence_spans(src)
+        for i in range(len(ss)):
+            for k in range(i,min(i+max_sentences,len(ss))):
+                a,b=ss[i][0],ss[k][1];t=_anchor_tokens(src[a:b])
+                if nums<=t and len(q&t)/len(q)>=min_cover:found.append((len(q&t)/len(q),a-b,si,a,b))
+    if not found:return None
+    found.sort(reverse=True);top=found[0]
+    if any(x[0]==top[0] and x[2]!=top[2] for x in found[1:]):return None
+    return top[2],top[3],top[4]
+def quote_choices(sources,cap=24):
+    """WP-Z2c (cfg b2_quote_select='pointer'): the exact sentences of the given sources, in order, as (source index,
+    start,end); the body answers with their numbers instead of copying text."""
+    return [(si,a,b) for si,src in enumerate(sources) for a,b in sentence_spans(src)][:cap]
 class Cognition:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
     def tap(self,role,e,source_ref,deadline):
@@ -267,6 +296,11 @@ class Cognition:
         if role=='B2_GIST' and policy=='B2_GIST':
             query['earlier_context']=[x['native_context'] for x in context]
             instructions+=' Earlier context separates exact source excerpts from fallible prior hypotheses. Use relevant earlier source excerpts when current text leaves a rule unstated; prefer an explicit current-source revision when the same rule changes. Never treat a prior hypothesis as a fact. Select short exact quotes carrying the source rules needed by your summary; only your verified quotes, not the full earlier context, are passed to the answer component. If required evidence is absent, state that uncertainty and request re-entry rather than inventing it. Quotes may cite only current source text or an exact earlier source excerpt, never own-state or hypotheses.'
+        select=self.r.cfg.get('b2_quote_select','off') if role=='B2_GIST' and policy=='B2_GIST' else 'off'
+        choice_sources=[text]+[x['native_context']['exact_source_excerpt'] for x in context];choices=quote_choices(choice_sources) if select=='pointer' else []
+        if choices:  # WP-Z2c: select exact sentences by number instead of copying them
+            query['quote_choices']=[{'id':n+1,'text':choice_sources[si][a:b]} for n,(si,a,b) in enumerate(choices)]
+            instructions+=' quote_choices are numbered exact sentences of the current source and the earlier source excerpts. quotes are the ids of at most two choices that carry the source rules your summary needs; their exact text is copied for you.'
         if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:
             query['recent_source']=[x['native_context'] for x in context]
             instructions+=' recent_source is the exact source of the previous turn of this topic. Use its exact details (values, entities) when the current text refers to them without restating them. Quote the exact sentences carrying the details your summary needs; only verified quotes reach the answer component. Prefer an explicit current-source revision.'
@@ -295,10 +329,12 @@ class Cognition:
         if gist_plan:query_packet['gist']=gist_plan
         if local_gist:query_packet['local_gist']=local_gist
         self.s.add_packet('QueryPacket',query_packet)
+        schema=offer_schema(self.r.cfg['observer_tokens'],**({'quote_min_chars':q} if (q:=self.r.cfg.get('offer_quote_min_chars',0)) else {}))
+        if choices:schema['properties']['quotes']['items']={'type':'integer','enum':list(range(1,len(choices)+1))}
         runner=None;started=time.monotonic();attempt_status='ERROR'
         try:
             runner=self.r.pool.get(role)
-            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],offer_schema(self.r.cfg['observer_tokens'],**({'quote_min_chars':q} if (q:=self.r.cfg.get('offer_quote_min_chars',0)) else {}))));attempt_status='FINAL'
+            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],schema));attempt_status='FINAL'
         finally:
             metrics=dict(runner.last_metrics) if runner else {'status':'ERROR','duration_s':time.monotonic()-started}
             self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':metrics.get('status',attempt_status),'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'state_policy':query_packet['state_policy']})
@@ -306,7 +342,16 @@ class Cognition:
         check(self.r.cancel_event,deadline)
         if set(obj)!=set(OFFER_SCHEMA['required']) or not isinstance(obj['needs_reentry'],bool) or not isinstance(obj['quotes'],list) or not all(isinstance(obj[k],str) for k in ['summary','uncertainty']):raise ValueError('Offer-Schema ungültig')
         refs=[];rejected=0;sources=[(text,e['source_ref'])]+[(x['native_context']['exact_source_excerpt'],x['source_ref']) for x in context]
-        wide=self.r.cfg.get('offer_quote_context_chars',0)
+        wide=self.r.cfg.get('offer_quote_context_chars',0);selected=None
+        if select!='off':selected={'mode':select,'choices':len(choices),'raw_quotes':list(obj['quotes'][:3]),'picked':None,'anchored':0}
+        if choices:  # ids -> exact sentence text; an id outside the list is dropped
+            selected['picked']=[x for x in obj['quotes'] if isinstance(x,int) and not isinstance(x,bool) and 1<=x<=len(choices)]
+            obj['quotes']=[choice_sources[choices[x-1][0]][choices[x-1][1]:choices[x-1][2]] for x in selected['picked']]
+        elif select=='anchor':
+            for n,quote in enumerate(obj['quotes'][:3]):
+                if any(quote_span(quote,source,wide) for source,_ in sources):continue
+                hit=anchor_span(quote,[source for source,_ in sources])
+                if hit:obj['quotes'][n]=sources[hit[0]][0][hit[1]:hit[2]];selected['anchored']+=1
         for quote in obj['quotes'][:3]:
             if wide:  # quote as pointer; the exact-substring lines below stay byte-identical for closed harnesses
                 match=next(((source,ref,span) for source,ref in sources if (span:=quote_span(quote,source,wide))),None)
@@ -318,7 +363,9 @@ class Cognition:
             if not match:rejected+=1;continue
             source,base=match;start=base['char_start']+source.index(quote);ref=base|{'char_start':start,'char_end':start+len(quote)};self.s.read_source(ref);refs.append(ref)
         p=packet('OfferPacket',role,e['event_id'],e['brain_generation_id'],[e['source_ref']],role=role,based_on_state_version=version,deadline_monotonic_ns=int(valid_until*1e9),compute_deadline_monotonic_ns=int(deadline*1e9),evidence_refs=refs,offer=obj,confidence=0.,confidence_status='UNCALIBRATED',rejected_quotes=rejected,model_revision=self.r.models.revision(role),native_metrics=runner.last_metrics,query_packet_id=query_packet['packet_id'],broadcast_packet_id=query_packet['broadcast_packet_id'],peer_message_packet_id=peer_id,source_view_width_chars=width)
+        if wide:p['quote_context_chars']=wide  # analyst_context accepts the widened spans only for this offer
         p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])
+        if selected:p['b2_quote_select']=selected
         p['provenance'] += query_packet['context_source_refs']
         self.s.add_packet('OfferPacket',p);self.retain_body_offer(p);return p
     def analyst_context(self,offers,e,version):
@@ -351,7 +398,10 @@ class Cognition:
                 bound=any(all(ref.get(k)==base.get(k) for k in ('source_id','sha256','modality'))
                     and base['char_start']<=ref['char_start']<ref['char_end']<=base['char_end'] for base in allowed)
                 if not bound:raise ValueError('Consumer quote outside supplied source scope')
-                text=self.s.read_source(ref)
+                text=self.s.read_source(ref);wide=offer.get('quote_context_chars',0)
+                if wide and text not in offer['offer'].get('quotes',[]) and len(text)<=wide and any(quote_span(q,text,wide) for q in offer['offer'].get('quotes',[])):
+                    # 2026-10-21: an exact source span the offered quote points into (live turn failed 'differs from offered quote' without this)
+                    verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE','semantic_truth_authority':False});continue
                 if text not in offer['offer'].get('quotes',[]):raise ValueError('Consumer quote differs from offered quote')
                 verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SUBSTRING_ONLY',
                                  'semantic_truth_authority':False})

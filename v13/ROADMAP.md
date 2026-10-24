@@ -1212,6 +1212,14 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Engpass jetzt B2: zitiert die alte Regel nur in ~¼ der Zeilen, mit oder ohne Frage. Befund `code/docs/proofs/continuation-20261021/step2-z2b-seeds/BEFUND.md`.
 - Offen: (a) Nutzerentscheidung: gezielte B1-Frage als Schalter (aus) in den Live-Pfad; (b) neues Paket „B2 liefert Regel-Zitat“; (c) `cognition.offer` soll `cfg['seed']` übergeben.
 
+### WP-Z2d B2 liefert das Regel-Zitat (im Code/Prereg „z2c“; umbenannt, weil Thread „B1-Frage als Schalter“ parallel WP-Z2c vergab) (Cloud, Modelle) — ERLEDIGT 2026-10-21, `Z2C_B2_RULE_QUOTE_FIXED` (Thread „B2 zitiert Regel selten“, Branch `claude/project-thread-0fckhc`)
+- **Ursache** (Diagnose auf 384 Z2b-B2-Angeboten): nur 115 trugen die volle alte Regel; 110 scheiterten an einer **Umschreibung/kaputten Kopie des richtigen Satzes** („Project Kestrel has a budget of 100 euros“), 65 zitierten den aktuellen Aufgabentext. B2 kennt die Regel, kopiert sie aber nicht wörtlich.
+- Neu: Schalter `b2_quote_select` `off` (Standard, byte-gleich) | `anchor` (`cognition.anchor_span`: nicht passendes Zitat → exakte Quellsätze mit allen Zahlen + ≥ 60 % Wörtern) | `pointer` (`quote_choices`: B2 wählt nummerierte exakte Sätze per Schema-enum). Nur B2 in eigener Policy. Kettenglied `integrated_candidates.b2_quote_select`, Config validiert, Tests `tests/test_b2_quote_select.py` 7/7.
+- Vorregistriert (`8cc006d`), CQ/CQA/CQP × neue Seeds 17–19 = 630 Zeilen: B2-Regelquote **.167 → Anker .542 (IMPROVED_PARTIAL) → Zeiger .969 (FIXED, +.80 [+.69, +.91])**; 0 falsche Regelwerte, 0 falsch festgelegt.
+- Folge für STEP2 (sekundär): Zeiger `both_exact` .881 vs. b1_only .581, **+.30 [+.21, +.38], jeder Seed** → Z2b-Kriterium 1 fällt erstmals; 27/30 exakte Entscheidungen (SPLIT 15/18). Kriterium 3 (Fehlerprofile, für diese Fixtures streng) bleibt ✗; Ein-Körper-Kontrolle mit Zeiger nicht gemessen → STEP2 formal weiter FAIL. Kosten B2-Prompt +~35 % Tokens.
+- Grenze: Zeiger wirkt mit der Zitat-Erweiterung zusammen (B2 wählt oft Kopfzeile der kurzen Regel-Notiz); längere Notizen ungetestet. Befund `code/docs/proofs/continuation-20261021/step2-z2c-b2-rule/BEFUND.md`.
+- Offen: (a) Nutzerentscheidung `b2_quote_select=pointer` (+ `offer_quote_context_chars=200` usw.) in den Live-Pfad; vorher live-`analyst_context` für erweiterte Zitate reparieren; (b) neues Prereg: Zeiger mit Ein-Körper-Kontrolle (D/DQ), längere/geänderte Regeln, frische Episoden; (c) Handy-Kosten messen.
+
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
