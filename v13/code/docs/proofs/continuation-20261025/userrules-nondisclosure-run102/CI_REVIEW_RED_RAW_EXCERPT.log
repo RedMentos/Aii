@@ -1,0 +1,17 @@
+# Run102 post-GREEN independent review RED: Actions run 40140288684 job 121010414674
+# Test extension commit 0c013264cd7764e85f78339ad6ed9de624464f56; before second lexicon fix.
+# Four new expected fail-open cases. Original complete Actions log retained; exact selected lines below.
+2026-10-24T22:51:19.8692956Z test_circulate_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_circulate_phone_number_cannot_be_sent) ... FAIL
+2026-10-24T22:51:19.8808204Z test_display_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_display_phone_number_cannot_be_sent) ... FAIL
+2026-10-24T22:51:19.8935979Z test_distribute_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_distribute_phone_number_cannot_be_sent) ... FAIL
+2026-10-24T22:51:19.9914798Z test_show_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_show_phone_number_cannot_be_sent) ... FAIL
+2026-10-24T22:51:20.4738780Z FAIL: test_circulate_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_circulate_phone_number_cannot_be_sent)
+2026-10-24T22:51:20.4740160Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_userrules_nondisclosure_run102.py", line 74, in test_circulate_phone_number_cannot_be_sent
+2026-10-24T22:51:20.4747623Z FAIL: test_display_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_display_phone_number_cannot_be_sent)
+2026-10-24T22:51:20.4749598Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_userrules_nondisclosure_run102.py", line 68, in test_display_phone_number_cannot_be_sent
+2026-10-24T22:51:20.4753475Z FAIL: test_distribute_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_distribute_phone_number_cannot_be_sent)
+2026-10-24T22:51:20.4754836Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_userrules_nondisclosure_run102.py", line 71, in test_distribute_phone_number_cannot_be_sent
+2026-10-24T22:51:20.4757974Z FAIL: test_show_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_show_phone_number_cannot_be_sent)
+2026-10-24T22:51:20.4759207Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_userrules_nondisclosure_run102.py", line 65, in test_show_phone_number_cannot_be_sent
+2026-10-24T22:51:20.4762362Z Ran 46 tests in 0.644s
+2026-10-24T22:51:20.5007972Z ##[error]Process completed with exit code 1.
