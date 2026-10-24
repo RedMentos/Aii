@@ -1,0 +1,38 @@
+name: V13 Run97 JEF cache lineage proof
+
+on:
+  pull_request:
+    paths:
+      - "v13/code/v13/jefbridge.py"
+      - "v13/code/tests/test_jef_cache_lineage_run97.py"
+      - ".github/workflows/v13-run97-jef.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v13-run97-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  jef-cache:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: JEF cache source lineage and age regressions
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python -m compileall -q v13 tests
+          ../../.venv/bin/python -m unittest -v tests.test_jef_cache_lineage_run97 tests.test_jefbridge tests.test_jefoutcome tests.test_jef_human_precedence_run68 tests.test_age_rights
+      - name: Official public repository privacy scan
+        run: |
+          set -euo pipefail
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree

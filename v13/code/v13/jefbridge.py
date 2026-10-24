@@ -113,20 +113,48 @@ class JEFBridge:
             state_version=broadcast['state_version'],cache=jbc,broadcast_packet_id=broadcast['packet_id'],size_bytes=len(dumps(jbc))))
         return p
     def bridge_view(self,role,e,version):
-        """Extra JBC fields for one body's query. SHADOW -> {} (B keeps today's executive_broadcast)."""
+        """ACTIVE extra fields require intact event, generation, source and parent broadcast lineage.
+
+        SHADOW stays inert. A stale/corrupt packet is never silently used as a
+        substitute for an independently source-bound executive broadcast.
+        """
         st,_=self._load()
-        if st['mode']!='ACTIVE':return {},[]
+        if st['mode']!='ACTIVE' or role not in ('B1_DETAIL','B2_GIST'):return {},[]
         row=self.s.one("SELECT payload FROM packets WHERE kind='JEFBroadcastCache' AND event_id=? ORDER BY created DESC LIMIT 1",(e['event_id'],))
         if not row:return {},[]
-        jbc=json.loads(row['payload'])
-        if jbc['state_version']!=version:return {},[]   # stale broadcast is detected, never used (§24.26)
-        out={};chosen=[]
-        for f in EXTRA_FIELDS:
-            q=st['fields'].get(role+'|'+f)
-            learned_on=bool(q and q['with'][1]>=FIELD_MIN_N and q['without'][1]>=FIELD_MIN_N and q['with'][0]/q['with'][1]-q['without'][0]/q['without'][1]>=FIELD_GAIN)
-            if learned_on or sampled(e['event_id'],role+'|'+f,EXPLORE):
-                out[f]=jbc['cache'][f];chosen.append(f)
-        return out,chosen
+        try:
+            jbc=json.loads(row['payload'])
+            cache=jbc['cache']
+            if (jbc['event_id']!=e['event_id'] or
+                jbc['brain_generation_id']!=e['brain_generation_id'] or
+                jbc['state_version']!=version or cache['state_version']!=version or
+                jbc['size_bytes']!=len(dumps(cache))):
+                return {},[]
+            parent_row=self.s.one("SELECT payload FROM packets WHERE kind='JEFBroadcastPacket' AND id=? AND event_id=?",
+                                  (jbc['broadcast_packet_id'],e['event_id']))
+            if not parent_row:return {},[]
+            parent=json.loads(parent_row['payload'])
+            refs=parent['source_refs']
+            if (parent['packet_id']!=jbc['broadcast_packet_id'] or
+                parent['event_id']!=e['event_id'] or
+                parent['brain_generation_id']!=e['brain_generation_id'] or
+                parent['state_version']!=version or
+                not isinstance(refs,list) or not refs or
+                refs!=parent['provenance'] or refs!=jbc['provenance'] or
+                refs!=cache['source_refs'] or
+                cache['goal']!=parent['goal'][:400] or
+                cache['constraints']!=parent['constraints'][:8]):
+                return {},[]
+            for ref in refs:self.s.read_source(ref)  # deletion, digest and span bounds
+            out={};chosen=[]
+            for f in EXTRA_FIELDS:
+                q=st['fields'].get(role+'|'+f)
+                learned_on=bool(q and q['with'][1]>=FIELD_MIN_N and q['without'][1]>=FIELD_MIN_N and q['with'][0]/q['with'][1]-q['without'][0]/q['without'][1]>=FIELD_GAIN)
+                if learned_on or sampled(e['event_id'],role+'|'+f,EXPLORE):
+                    out[f]=cache[f];chosen.append(f)
+            return out,chosen
+        except (ValueError,TypeError,KeyError,AttributeError,OSError,UnicodeError):
+            return {},[]
     # -- offer utility (§3.4.4, L4.4) -------------------------------------------------------------------
     def predict(self,x,st=None):
         st=st or self._load()[0];return sigmoid(sum(a*b for a,b in zip(st['w'],x)))

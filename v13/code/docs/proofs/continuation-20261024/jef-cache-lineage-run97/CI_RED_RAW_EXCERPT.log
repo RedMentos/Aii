@@ -1,0 +1,31 @@
+# Run97 preregistered RED — bounded exact CI lines
+
+Actions run 40137478208/job 121001969845, test-only commit 3d97b6805812dbe2fe3cab4b43332005b0c2ac6c. 6/6 adversarial JEF cache tests RED (5 FAIL, 1 ERROR); 33 inherited controls PASS. Full raw job log retained by Actions.
+
+2026-10-24T22:11:44.6486960Z test_deleted_original_source_blocks_active_jef_body_fields (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_deleted_original_source_blocks_active_jef_body_fields) ... FAIL
+2026-10-24T22:11:44.6593437Z test_forged_generation_inside_cache_payload_is_rejected (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_forged_generation_inside_cache_payload_is_rejected) ... FAIL
+2026-10-24T22:11:44.6702724Z test_forged_source_hash_inside_cache_provenance_is_rejected (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_forged_source_hash_inside_cache_provenance_is_rejected) ... FAIL
+2026-10-24T22:11:44.6870310Z test_malformed_cache_json_fails_closed_not_exception (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_malformed_cache_json_fails_closed_not_exception) ... ERROR
+2026-10-24T22:11:44.6968756Z test_missing_parent_broadcast_blocks_active_bridge (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_missing_parent_broadcast_blocks_active_bridge) ... FAIL
+2026-10-24T22:11:44.7072109Z test_parent_state_version_mismatch_is_rejected (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_parent_state_version_mismatch_is_rejected) ... FAIL
+2026-10-24T22:11:45.1832984Z ERROR: test_malformed_cache_json_fails_closed_not_exception (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_malformed_cache_json_fails_closed_not_exception)
+2026-10-24T22:11:45.1834691Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_jef_cache_lineage_run97.py", line 70, in test_malformed_cache_json_fails_closed_not_exception
+2026-10-24T22:11:45.1839184Z json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-10-24T22:11:45.1840419Z FAIL: test_deleted_original_source_blocks_active_jef_body_fields (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_deleted_original_source_blocks_active_jef_body_fields)
+2026-10-24T22:11:45.1841930Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_jef_cache_lineage_run97.py", line 39, in test_deleted_original_source_blocks_active_jef_body_fields
+2026-10-24T22:11:45.1843316Z AssertionError: Tuples differ: ({'recent_action_intent': None, 'corollary'[146 chars]te']) != ({}, [])
+2026-10-24T22:11:45.1845776Z FAIL: test_forged_generation_inside_cache_payload_is_rejected (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_forged_generation_inside_cache_payload_is_rejected)
+2026-10-24T22:11:45.1846856Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_jef_cache_lineage_run97.py", line 51, in test_forged_generation_inside_cache_payload_is_rejected
+2026-10-24T22:11:45.1847808Z AssertionError: Tuples differ: ({'focal_slot_refs': [], 'corollary': None,[171 chars]sk']) != ({}, [])
+2026-10-24T22:11:45.1851254Z FAIL: test_forged_source_hash_inside_cache_provenance_is_rejected (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_forged_source_hash_inside_cache_provenance_is_rejected)
+2026-10-24T22:11:45.1852478Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_jef_cache_lineage_run97.py", line 57, in test_forged_source_hash_inside_cache_provenance_is_rejected
+2026-10-24T22:11:45.1853652Z AssertionError: Tuples differ: ({'focal_slot_refs': [], 'recent_action_int[232 chars]ns']) != ({}, [])
+2026-10-24T22:11:45.1857992Z FAIL: test_missing_parent_broadcast_blocks_active_bridge (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_missing_parent_broadcast_blocks_active_bridge)
+2026-10-24T22:11:45.1859391Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_jef_cache_lineage_run97.py", line 45, in test_missing_parent_broadcast_blocks_active_bridge
+2026-10-24T22:11:45.1861039Z AssertionError: Tuples differ: ({'recent_action_intent': None, 'body_state[62 chars]te']) != ({}, [])
+2026-10-24T22:11:45.1863577Z FAIL: test_parent_state_version_mismatch_is_rejected (tests.test_jef_cache_lineage_run97.JEFCacheLineageRun97.test_parent_state_version_mismatch_is_rejected)
+2026-10-24T22:11:45.1864471Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_jef_cache_lineage_run97.py", line 63, in test_parent_state_version_mismatch_is_rejected
+2026-10-24T22:11:45.1865311Z AssertionError: Tuples differ: ({'focal_slot_refs': [], 'uncertainty_summa[141 chars]ns']) != ({}, [])
+2026-10-24T22:11:45.1867156Z Ran 39 tests in 0.553s
+2026-10-24T22:11:45.1867292Z FAILED (failures=5, errors=1)
+2026-10-24T22:11:45.2176217Z ##[error]Process completed with exit code 1.
