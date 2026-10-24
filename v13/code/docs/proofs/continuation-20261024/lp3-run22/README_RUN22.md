@@ -1,0 +1,1 @@
+Run22 code-only checkpoint. Apply LP3_RUN22_PREJOIN_ISOLATION.patch to exact Run21 source blob 655e0ad9cf7b75c5d365beac8d6280588ad49e5b. Do not install into production before full checkout review. See BUILD_STATE and review notes.

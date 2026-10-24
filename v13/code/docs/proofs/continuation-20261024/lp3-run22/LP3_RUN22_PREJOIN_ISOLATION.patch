@@ -1,0 +1,15 @@
+--- a/v13/code/scripts/lp3_cgroup_v2.py
++++ b/v13/code/scripts/lp3_cgroup_v2.py
+@@ -99,7 +99,11 @@
+ 
+     def wrap(self, command):
+         helper = Path(__file__).with_name('lp3_cgroup_join.py').resolve(strict=True)
+-        return [sys.executable, str(helper), str(self.group), str(self.marker), '--', *command]
++        # Python normally executes site/.pth startup hooks before the script.
++        # Such hooks could fork before the helper joins the owned cgroup.
++        # Isolate ONLY this stdlib-only pre-join helper; the actual registered
++        # native command is exec'd unchanged after verified membership.
++        return [sys.executable, '-I', '-S', str(helper), str(self.group), str(self.marker), '--', *command]
+ 
+     def _joined(self, pid):
+         try:

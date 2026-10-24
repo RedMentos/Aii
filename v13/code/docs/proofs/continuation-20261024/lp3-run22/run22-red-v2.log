@@ -1,0 +1,35 @@
+test_helper_command_uses_isolated_no_site_interpreter (tests.test_lp3_run22_prejoin_bootstrap.PrejoinBootstrapTests.test_helper_command_uses_isolated_no_site_interpreter) ... FAIL
+test_no_sitecustomize_code_can_run_before_cgroup_join (tests.test_lp3_run22_prejoin_bootstrap.PrejoinBootstrapTests.test_no_sitecustomize_code_can_run_before_cgroup_join) ... FAIL
+
+======================================================================
+FAIL: test_helper_command_uses_isolated_no_site_interpreter (tests.test_lp3_run22_prejoin_bootstrap.PrejoinBootstrapTests.test_helper_command_uses_isolated_no_site_interpreter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run22_work/v13/code/tests/test_lp3_run22_prejoin_bootstrap.py", line 56, in test_helper_command_uses_isolated_no_site_interpreter
+    self.assertEqual(cmd[1:3], ['-I', '-S'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['/mnt/data/v13_run22_work/v13/code/scripts[55 chars]ive'] != ['-I', '-S']
+
+First differing element 0:
+'/mnt/data/v13_run22_work/v13/code/scripts/lp3_cgroup_join.py'
+'-I'
+
++ ['-I', '-S']
+- ['/mnt/data/v13_run22_work/v13/code/scripts/lp3_cgroup_join.py',
+-  '/sys/fs/cgroup/delegated/lp3-active']
+
+======================================================================
+FAIL: test_no_sitecustomize_code_can_run_before_cgroup_join (tests.test_lp3_run22_prejoin_bootstrap.PrejoinBootstrapTests.test_no_sitecustomize_code_can_run_before_cgroup_join)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run22_work/v13/code/tests/test_lp3_run22_prejoin_bootstrap.py", line 48, in test_no_sitecustomize_code_can_run_before_cgroup_join
+    self.assertFalse(sentinel.exists(),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+                     'sitecustomize ran before the helper joined cgroup')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false : sitecustomize ran before the helper joined cgroup
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.043s
+
+FAILED (failures=2)
