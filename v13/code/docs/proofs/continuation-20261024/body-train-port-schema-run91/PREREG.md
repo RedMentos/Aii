@@ -1,0 +1,9 @@
+# Run91 prereg — malformed BodyTrainPort JSON fails closed, not TypeError
+
+2026-10-24. Exact base Run90 PR123 `f0c0d4f70c4126f895946e05896ecea89bafd2fd`, selected Linux 392/392 and extracted ZIP 91/91 PASS. Owner: narrow `v13/code/v13/body_training.py` descriptor type checks, new `tests/test_body_train_port_schema_run91.py`, focused and extracted ZIP CI invocations, Run91 evidence. No native model/training code, gate, Canon or other owner changes.
+
+## Expected RED
+A local malformed JSON descriptor with `trainable_parameter_ids:[{}]` makes `_ids` call `set(value)` before verifying each element is a string, raising TypeError. A `master_dtype:[]` similarly raises TypeError on set membership. Malformed `fp32_inference_parameter_ids:[{}]` raises TypeError in the FP32 no-requantizer exception. Because `native_capability_profile` calls `inspect_train_port`, a malformed descriptor can crash the `:native`/doctor diagnostic instead of reporting no native body training authority. First commit real temp home tests expecting stable reasons `INVALID_TRAINABLE_PARAMETER_SET`, `MASTER_DTYPE_NOT_TRAINABLE`, `REQUANTIZER_EXCEPTION_NOT_FP32` and `UNAVAILABLE` diagnostic, preserve RED.
+
+## Fix acceptance
+Validate list element types **before** building a set; validate master dtype is a string before membership. Keep all existing valid descriptor, FP32 exception, path symlink and update_authority=0 behavior. Run Linux selected tests, extracted source ZIP tests and official privacy scan. This does not prove real Body-JEPA or authorize any weight update. STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; V13 INCOMPLETE.
