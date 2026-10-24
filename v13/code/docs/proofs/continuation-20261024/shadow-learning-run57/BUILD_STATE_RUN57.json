@@ -1,0 +1,14 @@
+{
+  "schema": "V13_RUN57_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "owner": "shadow-learning-run57/* only",
+  "base": "dc474011057eee7c5d5cf37e9bfa24e030891a52",
+  "prereg_commit": "983cfa8614257acc6a8e796a40431ec14df6ebd2",
+  "status": "SOURCE_BOUND_SYNTHETIC_SHADOW_LEARNER_NOT_PRODUCTION",
+  "cohort": {"train":64,"heldout":64,"dataset_seed":20261024,"weight_seed":1337,"steps":120,"lr":0.1},
+  "metrics": {"untrained":0.0625,"trained":1.0,"shuffled_target":0.0,"preregistered_thresholds_pass":true,"evidence":"SYNTHETIC_ONLY"},
+  "tests": {"first": "4/4 PASS", "base_overwrite_red": "FAIL_REPRODUCED", "nondeterministic_serialization_red": "FAIL_REPRODUCED", "final": "6/6 PASS", "optimized": "6/6 PASS", "cross_process_hash": "3/3 identical", "compileall": "PASS", "real_store": "NOT_RUN", "native_c3": "NOT_RUN", "redmi": "NOT_RUN", "full_repo": "NOT_RUN", "official_privacy_scan": "NOT_RUN"},
+  "gates": {"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"full_V13":"INCOMPLETE"},
+  "limitations": ["Toy same-key-distribution utility only", "No actual Store/Runtime/BodyTrainPort", "No optimizer restart or retention", "Receipt hash not adversarial authentication", "Consumer-time source race"],
+  "next": "Full checkout: independent review and actual Store/C3 SHADOW path; preregister real source-grounded utility and retention, no gate promotion before native evidence"
+}
