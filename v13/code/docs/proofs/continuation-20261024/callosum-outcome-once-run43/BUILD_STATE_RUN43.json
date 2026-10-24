@@ -1,0 +1,38 @@
+{
+  "schema": "V13_RUN43_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base_commit": "9615e55e2450f02aa92e152769fb63ed66a4a204",
+  "prereg_commit": "ba241cada46dca2713011e70eab20ee7cb7e3c70",
+  "owner": "Codex Run43: only callosum-outcome-once-run43/*",
+  "package": "Callosum B3-H9 exactly-once outcome credit",
+  "status": "SOFTWARE_CANDIDATE_NOT_INTEGRATED",
+  "source_git_blob": "9518a7127af5928b39a3fbab2d58b71597eaa737",
+  "test_git_blob": "d231c7962d311c4a2409773c7302494903241b52",
+  "raw_evidence_tar_sha256": "1fd2f44f275d8ecf32144482d3e4bafb2e7043c34d1f856952dbb113c6ba1d72",
+  "tests": {
+    "synthetic_final": "14/14 PASS",
+    "first_attempt": "13/14 PASS; 1 test harness error",
+    "legacy_double_credit": "synthetic reproduced",
+    "compileall": "PASS",
+    "full_repo": "NOT_RUN",
+    "native_linux": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "known_limits": [
+    "No full checkout due github.com DNS resolution failure in container",
+    "Existing production outcome remains non-idempotent until separately integrated",
+    "Candidate requires observation binding from actual OfferPackets; isolated tests use synthetic observations",
+    "No native, Redmi, full suite or official privacy scanner proof",
+    "No independent agent available; adversarial synthetic review and test-harness correction retained"
+  ],
+  "next_command": "In full checkout: python -m unittest discover -s v13/code/docs/proofs/continuation-20261024/callosum-outcome-once-run43/tests -v; integrate credit_once inside Callosum._mutate and update return/touch to count actual applied credits, add real Runtime duplicate-outcome and restart tests, then full suite and privacy scan.",
+  "user_decision_required": false
+}
