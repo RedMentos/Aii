@@ -1,0 +1,88 @@
+======================================================================
+ERROR: test_failed_audit_preserves_log_and_failure_status (test_lp3_serial_cohort.SerialCohortTests.test_failed_audit_preserves_log_and_failure_status)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_serial_cohort.py", line 152, in test_failed_audit_preserves_log_and_failure_status
+    self.call()
+    ~~~~~~~~~^^
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_serial_cohort.py", line 65, in call
+    return mod.run_once(**options)
+           ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/mnt/data/v13_run20_work/v13/code/scripts/lp3_serial_cohort.py", line 297, in run_once
+    rc, timed_out = _wait_owned_child(proc, timeout)
+                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/mnt/data/v13_run20_work/v13/code/scripts/lp3_serial_cohort.py", line 141, in _wait_owned_child
+    return proc.wait(timeout=timeout), False
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/subprocess.py", line 1280, in wait
+    return self._wait(timeout=timeout)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/subprocess.py", line 2060, in _wait
+    time.sleep(delay)
+    ~~~~~~~~~~^^^^^^^
+  File "/mnt/data/v13_run20_work/v13/code/scripts/lp3_serial_cohort.py", line 56, in on_sigterm
+    raise OwnedLaunchInterrupted('SIGTERM during owned native launch')
+lp3_serial_run16.OwnedLaunchInterrupted: SIGTERM during owned native launch
+
+======================================================================
+FAIL: test_holdout_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_holdout_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_review_run14.py", line 39, in test_holdout_float_is_not_registered_integer
+    self.assert_invalid('protocol')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_review_run14.py", line 26, in assert_invalid
+    with self.assertRaisesRegex(self.auditor.EvidenceError, pattern):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_items_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_items_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_review_run14.py", line 35, in test_items_float_is_not_registered_integer
+    self.assert_invalid('protocol')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_review_run14.py", line 26, in assert_invalid
+    with self.assertRaisesRegex(self.auditor.EvidenceError, pattern):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_row_seed_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_row_seed_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_review_run14.py", line 51, in test_row_seed_float_is_not_registered_integer
+    with self.assertRaisesRegex(self.auditor.EvidenceError, 'seed'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_seed_list_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_seed_list_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_review_run14.py", line 43, in test_seed_list_float_is_not_registered_integer
+    self.assert_invalid('protocol')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_review_run14.py", line 26, in assert_invalid
+    with self.assertRaisesRegex(self.auditor.EvidenceError, pattern):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_steps_float_is_not_registered_integer (test_lp3_review_run14.TestRun14ProtocolTypes.test_steps_float_is_not_registered_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_review_run14.py", line 31, in test_steps_float_is_not_registered_integer
+    self.assert_invalid('protocol')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/v13_run20_work/v13/code/tests/test_lp3_review_run14.py", line 26, in assert_invalid
+    with self.assertRaisesRegex(self.auditor.EvidenceError, pattern):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+----------------------------------------------------------------------
+Ran 184 tests in 37.083s
+
+FAILED (failures=5, errors=1)
+{"verdict": "LP3_MEMORY_KEY_NOT_SUPPORTED", "report_sha256": "e7f204517d4e1dfb5afe7068cc82bd08558c34c7fc969f71f8ff7d27654d3a3c", "rows": 4}
