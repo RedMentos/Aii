@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN82_JEF_BOUNDED_FINAL_REPLAY_V1",
+  "date": "2026-10-24",
+  "base": "3b8258a9cb1df5e25d3f992d2e3e65ed09a89024",
+  "branch": "codex/jef-outcome-repeat-run82-20261024",
+  "owner": "JEF after_turn retained-label replay dedup and focused tests",
+  "change": "Within retained MAX=1024 ledger, duplicate FINAL callback does not create a second source/label, conflicting later observation does not relabel, and a route-corrected skill label is not restored; CAS rechecks event/component before commit.",
+  "claim_limit": "Bounded within retained state only; not global forever-exactly-once after MAX eviction or concurrent source creation before CAS.",
+  "evidence": {
+    "red": {
+      "run": 40133688272,
+      "job": 120990596384,
+      "sha": "923049fdbecef0db7cdbda901a2ee8fa56f60e7d",
+      "result": "377 tests, 3 expected FAIL",
+      "raw_blob": "eb7b375cb0c6b7d0af25aaeca723a7709664a878"
+    },
+    "green": {
+      "run": 40133741583,
+      "job": 120990759855,
+      "sha": "a4d33eb1b9abe759385fa967853603c1b126af20",
+      "result": "377/377 PASS, compileall PASS, official privacy CLEAN",
+      "raw_blob": "440a8e5cd2fb31219fc1fd91959320399cc5f60c"
+    },
+    "source_blobs": {
+      "v13/code/v13/jefoutcome.py": "c10fff383afa10a1a7571c64d3ea925275960158",
+      "v13/code/tests/test_jefoutcome.py": "dfe08880b8ecdcb85d2f731ec5d975bddbc120e0"
+    },
+    "levels": {
+      "software": "Actual Linux/SQLite",
+      "synthetic": "Authored replay/correction cases",
+      "native_models": "NOT RUN",
+      "redmi": "NOT RUN",
+      "full_repo": "NOT RUN"
+    }
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Global exactly-once after ledger eviction remains open.",
+    "Concurrent callbacks may create orphan source before state CAS; state labels remain deduplicated.",
+    "Current source-only phone ZIP not automatically delivered from CI; next package."
+  ],
+  "next_command": "Run83: read-only phone source ZIP build/verify/upload artifact from current GitHub CI, pinned first-party upload action; no model/phone claim.",
+  "user_decision_required": false
+}

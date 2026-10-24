@@ -107,6 +107,43 @@ class Store(unittest.TestCase):
                        (json.dumps(decision,ensure_ascii=False,separators=(',',':')),decision['packet_id']))
         self.assertEqual(jo.training_rows(self.r.store,'memory',rev,set()),[])
 
+
+    def test_repeated_final_outcome_keeps_one_label_and_source(self):
+        meta={'wake_decision':{'action':'both'},'memory_ids':['m1']}
+        coalition=[{'source_kind':'B2_GIST','item_id':'o'}]
+        e,got=self.labelled('one final event',meta,coalition,['m1'])
+        self.assertEqual(got,{'wake':'gist','memory':'skip'})
+        before=len((self.r.store.state(jo.KEY)[0] or {})['labels'])
+        sources=self.r.store.one("SELECT COUNT(*) AS n FROM sources WHERE kind='OUTCOME_SELF_LABEL'")['n']
+        replay=jo.after_turn(self.r,e,meta,'FINAL',{'coalition':coalition})
+        self.assertEqual(replay,{})
+        self.assertEqual(len(self.r.store.state(jo.KEY)[0]['labels']),before)
+        self.assertEqual(self.r.store.one("SELECT COUNT(*) AS n FROM sources WHERE kind='OUTCOME_SELF_LABEL'")['n'],sources)
+
+    def test_replayed_final_different_target_does_not_relabel(self):
+        e,_=self.labelled('one final changed observation',
+            {'wake_decision':{'action':'both'}},[{'source_kind':'B2_GIST','item_id':'o'}],[])
+        jo.after_turn(self.r,e,{'wake_decision':{'action':'both'}},'FINAL',
+                      {'coalition':[{'source_kind':'B1_DETAIL','item_id':'o2'}]})
+        self.assertEqual(jo.report(self.r)['heads']['wake']['by_value'],{'gist':1})
+
+    def test_replayed_final_cannot_undo_route_correction(self):
+        from v13.agi.live import _save
+        e=self.r.store.event(self.r.session,'skill replay')
+        fp.head(self.r,'skill',e,'skill')
+        _save(self.r.store,e['event_id'],skill='weekly_plan')
+        meta={'skill':{'name':'weekly_plan'}}
+        jo.after_turn(self.r,e,meta,'FINAL',{'coalition':[]})
+        self.assertEqual(jo.on_route_correction(self.r.store,e['event_id'],'detail'),1)
+        self.assertEqual(jo.after_turn(self.r,e,meta,'FINAL',{'coalition':[]}),{})
+        self.assertEqual(jo.report(self.r)['heads']['skill']['by_value'],{'none':1})
+
+    def test_distinct_final_events_keep_distinct_outcome_labels(self):
+        meta={'wake_decision':{'action':'both'},'memory_ids':['m1']}
+        self.labelled('distinct final one',meta,[],['m1'])
+        self.labelled('distinct final two',meta,[],['m1'])
+        self.assertEqual(jo.report(self.r)['heads']['memory']['by_value'],{'skip':2})
+
     def test_human_agreement_and_route_correction_flip(self):
         e,_=self.labelled('Plan Aurora',{'wake_decision':{'action':'both'},'memory_ids':['m1']},[],['m1'])
         self.r.memory.feedback(e['event_id'],'memory','skip','learn');self.assertEqual(jo.report(self.r)['heads']['memory']['human_agreement'],1.)
