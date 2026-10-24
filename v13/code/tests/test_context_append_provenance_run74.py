@@ -123,4 +123,83 @@ class ContextAppendProvenance(unittest.TestCase):
         self.assertIn('append_reentry',p['plan']['decisions'])
 
 
+
+class NativeHistoryReentryIntegration(unittest.TestCase):
+    """Actual SQLite/source-filter path, not only authored FakeStore dictionaries."""
+
+    def setUp(self):
+        import tempfile
+        from pathlib import Path
+        from v13.runtime import Runtime
+        from v13.history import native_history
+        self._tmp=tempfile.TemporaryDirectory()
+        self._home=Path(self._tmp.name)
+        self.r=Runtime(self._home)
+        self.session=self.r.session
+        self.native_history=native_history
+        self.c=ContextOS(self.r.store,self.r.cfg)
+        self.c.set_capability('C3_LANGUAGE','consecutive_user',True)
+        self.c.set_mode('ACTIVE',authority='EXPLICIT_HUMAN')
+        self.e1=self.r.store.event(self.session,'q1')
+        self.c.plan(self.e1['event_id'],'C3_LANGUAGE','SYS',vol(1),[],'q1',
+                    provenance=[self.e1['source_ref']])
+        self.r.store.message(self.session,self.e1['event_id'],'assistant','a1',
+                             status='FINAL',metadata={'direct_source_copy':True})
+        self.e2=self.r.store.event(self.session,'q2')
+        self.h1,_=self.native_history(self.r.store,self.session,self.e2['event_id'],5)
+
+    def tearDown(self):
+        self.r.close()
+        self._tmp.cleanup()
+
+    def _second(self):
+        self.assertEqual([row['role'] for row in self.h1],['user','assistant'])
+        p=self.c.plan(self.e2['event_id'],'C3_LANGUAGE','SYS',vol(2),self.h1,'q2',
+                      provenance=[self.e2['source_ref']])
+        self.r.store.message(self.session,self.e2['event_id'],'assistant','a2',
+                             status='FINAL',metadata={'direct_source_copy':True})
+        self.e3=self.r.store.event(self.session,'q3')
+        return p
+
+    def _third(self):
+        hist,_=self.native_history(self.r.store,self.session,self.e3['event_id'],5)
+        p=self.c.plan(self.e3['event_id'],'C3_LANGUAGE','SYS',vol(3),hist,'q3',
+                      provenance=[self.e3['source_ref']])
+        return hist,p
+
+    def test_native_history_source_ref_allows_valid_active_append(self):
+        p=self._second()
+        self.assertIn('append_reentry',p['plan']['decisions'])
+        self.assertTrue(p['applied'])
+        self.assertEqual(self.h1[0]['metadata'] and __import__('json').loads(self.h1[0]['metadata'])['source_ref'],
+                         self.e1['source_ref'])
+
+    def test_controller_restart_keeps_exact_history_binding(self):
+        self._second()
+        self.c=ContextOS(self.r.store,self.r.cfg)  # persisted Store, new controller
+        hist,p=self._third()
+        self.assertEqual(len(hist),4)
+        self.assertIn('append_reentry',p['plan']['decisions'])
+
+    def test_deleted_older_source_rebuilds_without_stale_prompt(self):
+        self._second()
+        with self.r.store.tx() as db:
+            db.execute('UPDATE sources SET deleted=1 WHERE id=?',
+                       (self.e1['source_ref']['source_id'],))
+        hist,p=self._third()
+        self.assertEqual([x['event_id'] for x in hist],[self.e2['event_id']]*2)
+        self.assertNotIn('append_reentry',p['plan']['decisions'])
+        self.assertNotIn('q1',[m['content'] for m in p['planned']])
+
+    def test_corrupt_older_source_metadata_rebuilds_without_stale_prompt(self):
+        self._second()
+        with self.r.store.tx() as db:
+            db.execute("UPDATE messages SET metadata=? WHERE event_id=? AND role='user'",
+                       ('{"source_ref":{"source_id":"invalid"}}',self.e1['event_id']))
+        hist,p=self._third()
+        self.assertEqual([x['event_id'] for x in hist],[self.e2['event_id']]*2)
+        self.assertNotIn('append_reentry',p['plan']['decisions'])
+        self.assertNotIn('q1',[m['content'] for m in p['planned']])
+
+
 if __name__=='__main__':unittest.main()
