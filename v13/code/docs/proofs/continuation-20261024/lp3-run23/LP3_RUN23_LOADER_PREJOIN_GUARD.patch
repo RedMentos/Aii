@@ -1,0 +1,65 @@
+--- a/v13/code/scripts/lp3_cgroup_v2.py
++++ b/v13/code/scripts/lp3_cgroup_v2.py
+@@ -64,6 +64,22 @@
+     return values['populated'] == '1'
+ 
+ 
++def reject_prejoin_loader_env(env):
++    """Fail closed on dynamic-linker environment hooks before cgroup join.
++
++    CPython -I -S does NOT disable ELF loader variables. Do not strip them:
++    doing so would silently change the preregistered runner environment.
++    Instead block the native attempt and preserve the failure record. This
++    does not prove absence of DT_NEEDED/DT_AUDIT constructor side effects;
++    atomic CLONE_INTO_CGROUP or an independently proven bootstrap is needed
++    for a stronger containment claim.
++    """
++    # Some LD_* settings take effect even when their value is empty.
++    names = sorted(k for k in env if k.startswith('LD_'))
++    if names:
++        raise ContainmentBlocked('prejoin dynamic loader environment active: ' + ','.join(names))
++
++
+ class CgroupV2Job:
+     """Fresh exclusively-owned subtree; kill ONLY that subtree on failure."""
+     def __init__(self, parent, marker):
+@@ -98,6 +114,7 @@
+             raise
+ 
+     def wrap(self, command):
++        reject_prejoin_loader_env(os.environ)
+         helper = Path(__file__).with_name('lp3_cgroup_join.py').resolve(strict=True)
+         # Python normally executes site/.pth startup hooks before the script.
+         # Such hooks could fork before the helper joins the owned cgroup.
+--- a/v13/code/scripts/lp3_serial_cohort.py
++++ b/v13/code/scripts/lp3_serial_cohort.py
+@@ -23,7 +23,7 @@
+ 
+ from lp3_native_readiness import inspect as inspect_readiness
+ from lp3_closed_evidence_audit import audit, receipt_for, EvidenceError
+-from lp3_cgroup_v2 import CgroupV2Job, ContainmentBlocked, host_readiness
++from lp3_cgroup_v2 import CgroupV2Job, ContainmentBlocked, host_readiness, reject_prejoin_loader_env
+ 
+ 
+ class LaunchBlocked(RuntimeError):
+@@ -270,6 +270,10 @@
+             # The join helper enters it before exec, including before any fork.
+             job = CgroupV2Job(cgroup_parent, evidence_dir / 'cgroup-join.json')
+             record['cgroup_path'] = str(job.group)
++            # Snapshot and validate exactly the environment passed to Popen.
++            # Otherwise a later os.environ mutation could bypass wrap's guard.
++            launch_env = os.environ.copy()
++            reject_prejoin_loader_env(launch_env)
+             cmd = job.wrap(cmd)
+             with (evidence_dir / 'native.stdout-stderr.log').open('xb') as log:
+                 with _owned_sigterm_guard() as sigterm:
+@@ -277,7 +281,8 @@
+                     # during spawn is deferred until proc is assigned.
+                     proc = subprocess.Popen(cmd, stdin=subprocess.DEVNULL,
+                                             stdout=log, stderr=subprocess.STDOUT,
+-                                            start_new_session=True, close_fds=True)
++                                            start_new_session=True, close_fds=True,
++                                            env=launch_env)
+                     record['native_process_launched'] = True
+                     record['native_execution_verified'] = False  # audit cannot prove inference
+                     try:
