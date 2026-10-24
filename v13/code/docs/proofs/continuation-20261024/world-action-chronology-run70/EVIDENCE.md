@@ -9,3 +9,9 @@ Isolated exact-function SQLite tests **5/5 PASS**, Python -O **5/5 PASS**, compi
 Review limitation: chronological prior selection is a bounded improvement but not a strict action-ID link; wall-clock ties may not establish true order. No new causal or utility claim. SQLite ORDER BY tie semantics: https://www.sqlite.org/lang_select.html
 
 Gates unchanged: STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 INCOMPLETE.
+
+## Independent review after checkpoint
+
+The original Run64 synthetic SQLite Store fixture omitted `packets.created` although the real V13 Store schema includes it. The new chronological query would have raised `sqlite3.OperationalError` in the existing integration tests. This was found by reading the existing tests before attempting full-suite promotion; no false full-suite PASS is claimed.
+
+Updated only the Run64 test fixture DDL and insert to include a selection timestamp earlier than its action (Git blob `0527010232799633c79776dd96cfeb4ed94614b0`). Run65 tests import the same Store fixture. Full repo still NOT RUN. No production fallback to an unbounded future selection was introduced.
