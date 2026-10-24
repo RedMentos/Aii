@@ -1,0 +1,12 @@
+{
+  "schema":"V13_RUN60_ISOLATED_CHECKPOINT_V1",
+  "date":"2026-10-24",
+  "owner":"sleep-replay-run60/* only",
+  "base":"c252704e2853932b1a01c22327cba60679f31a33",
+  "prereg_commit":"5e5e2160797bf8505ff0c986cc4fa2693df9c88a",
+  "status":"SYNTHETIC_SLEEP_WAKE_REPLAY_QUEUE_NOT_PRODUCTION",
+  "tests":{"initial":"10/10 PASS","forged_phase_red":"FAIL_REPRODUCED","expired_lease_red":"FAIL_REPRODUCED","final":"12/12 PASS","optimized":"12/12 PASS","subprocess_crash_repeat":"5/5 PASS","compileall":"PASS","real_store":"NOT_RUN","native_sleep":"NOT_RUN","redmi":"NOT_RUN","full_repo":"NOT_RUN","official_privacy_scan":"NOT_RUN"},
+  "gates":{"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"full_V13":"INCOMPLETE"},
+  "limitations":["No real SleepRuntime integration","No real retention/counterfactual model utility","No measured wake response-governor latency","Sleep C only expiry marking","No phone/resource proof"],
+  "next":"Full checkout independent review, exact Store/ContextOS/SleepRuntime integration, source/permission/age gates and live governor measurement"
+}
