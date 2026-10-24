@@ -1,0 +1,33 @@
+{
+  "schema": "V13_RUN52_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base": "6aaf8b29fe40428a2316513c4a344eaad4109401",
+  "prereg_commit": "11c1709c13bfb0ae4d3cac25f4344a4e9ef0271f",
+  "owner": "Run52 only jef-fast-restart-run52/*",
+  "source_archive_sha256": "c6e19aa34d2bfd8a14eaf905f605a46bdb7c761396366c4fa52cf05b4a2192de",
+  "status": "SYNTHETIC_CPU_SHADOW_RESTART_PASS_ONLY",
+  "tests": {
+    "first": "13/13 PASS",
+    "adversarial_red": "13/15 PASS, 2 FAIL",
+    "final": "15/15 PASS",
+    "optimized": "15/15 PASS",
+    "compileall": "PASS",
+    "native": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "metrics": {
+    "candidate_balanced_accuracy": 1,
+    "wrong_target_accuracy": 0.25,
+    "untrained_accuracy": 0.1953125,
+    "report_brier": 0.000001982352387130959,
+    "bitwise_restart": "PASS"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "next": "In full checkout: decode three parts, run 15 tests, independently integrate real C_fast objective with actual source/permission/neuromod gates, validate native/Redmi and full suite."
+}
