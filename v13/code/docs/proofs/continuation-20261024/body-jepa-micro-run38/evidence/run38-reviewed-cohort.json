@@ -1,0 +1,22 @@
+{
+  "authority": "SYNTHETIC_SANDBOX_NO_AGE_ACTION",
+  "body_jepa_gate_pass": false,
+  "checkpoint_scope": "PREDICTION_WEIGHTS_ONLY_NO_OPTIMIZER_RESUME",
+  "ema": 0.95,
+  "ema_delta": 3.725003719329834,
+  "holdout_pairs": 64,
+  "jepa_weight_production": 0,
+  "lr": 0.02,
+  "min_target_singular": 0.5742261409759521,
+  "predictor_delta": 2.5489344596862793,
+  "schema": "V13_BODY_JEPA_MICRO_SANDBOX_V1",
+  "seed": 20261024,
+  "steps": 160,
+  "student_delta": 3.8082022666931152,
+  "synthetic_criterion_pass": true,
+  "target_gradients_absent": true,
+  "train_pairs": 128,
+  "trained_mse": 0.00030293711461126804,
+  "untrained_mse": 0.9462083578109741,
+  "wrong_target_mse": 0.14485374093055725
+}
