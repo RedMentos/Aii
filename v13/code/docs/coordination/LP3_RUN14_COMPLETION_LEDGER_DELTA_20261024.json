@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-24",
+  "base": "e666d3b383024567d71ad3e8b27eadd9e3104d77",
+  "software_only": {
+    "LP3_PROTOCOL_TYPE_INTEGRITY": "IMPLEMENTED_TESTED_SOFTWARE",
+    "LP3_NATIVE_READINESS_DIAGNOSTIC": "IMPLEMENTED_TESTED_SOFTWARE"
+  },
+  "unchanged": {
+    "LP3_NATIVE_COHORT": "NOT_RUN",
+    "LP3_GENERATED_ANSWER_UTILITY": "NOT_RUN",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "BODY_JEPA": "UNAVAILABLE",
+    "CANONICAL_ARCHITECTURE_COMPLETE": false,
+    "USER_FULL_SCOPE_COMPLETE": false
+  },
+  "claim_limit": "84 software/synthetic tests and local read-only diagnostics are not native model, Redmi or full-system evidence."
+}

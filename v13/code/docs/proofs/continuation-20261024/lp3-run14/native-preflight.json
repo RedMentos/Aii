@@ -1,0 +1,25 @@
+{
+  "asset_hashes": {},
+  "cgroup_memory_limit_bytes": 4294967296,
+  "claim_limit": "Local read-only preflight only; no global job-owner or RAM-fit proof.",
+  "fixture_hashes": {},
+  "local_lp3_process_count": 0,
+  "missing": [
+    "asset:LICENSE",
+    "asset:chat_template.jinja",
+    "asset:config.json",
+    "asset:generation_config.json",
+    "asset:model.safetensors",
+    "asset:tokenizer.json",
+    "asset:tokenizer_config.json",
+    "fixture:lora_bench.py",
+    "fixture:lp2_assignment_objective.py",
+    "python_module:transformers"
+  ],
+  "native_executed": false,
+  "owner_confirmed": false,
+  "phone_measured": false,
+  "pinned_master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+  "snapshot_revision": "55e5a53e8637c4522a0577040fe68682db3fbbb6",
+  "status": "BLOCKED"
+}

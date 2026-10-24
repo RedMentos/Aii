@@ -1,0 +1,22 @@
+# Run14 source/evidence hashes (2026-10-24)
+
+Git blob SHA-1 is over the exact remote file bytes; all blobs below were read back from the work branch after publication. Source/tests and raw proof logs are byte-identical to the downloadable local Run14 bundle after the final cross-review refresh. Coordination notes in that bundle are longer local variants; remote notes are separately Git-blob-bound here.
+
+| Repo path (under v13/code/) | Git blob SHA-1 | Local bundle SHA-256 (when identical) |
+| --- | --- | --- |
+| scripts/lp3_closed_evidence_audit.py | 6068ddafa2ae319f66a1cfcd7fb50127372e20a8 | cb158aaa9b8c68a07414731b98904716d90ec52bcc93859b82148dc213627785 |
+| scripts/lp3_native_readiness.py | fa7b29148cda3eea907d1f03c127c96b2febce34 | 18e88f9a200ade4604874b7af139e8907aaa8f9d78cfdd3ec09b99decea006a0 |
+| tests/test_lp3_review_run14.py | 913efa6e9085a60cd79619efe8ce255417865bf4 | 88a03e36928045c51e405c01e1f923ef4701b69f9b8f2bacf5e570dfdd888774 |
+| tests/test_lp3_native_readiness.py | dd6df1172a0ad7a8c8918bb7e6fef5dfd2e9e87d | 7272db0f5f3719cbd3eb1ae9e7b2ef351ef601714de1959c888d6ebc8b7a2c58 |
+| docs/proofs/continuation-20261024/lp3-run14/adversarial_red.log | d1bdf815132d62e5bed41f2daa2ea3f97f4cb0fe | ff179df23e9727dcf9a858ed7c5c221320e750585a6caddb5dd68b36fdfb7b1f |
+| docs/proofs/continuation-20261024/lp3-run14/software-tests.log | 744515c945f5ff45f0219517b1886a6db9f426be | 75ee4884a0c7a6e458c6477930823a46e4584761a2195b67323405618a2733d1 |
+| docs/proofs/continuation-20261024/lp3-run14/native-preflight.json | 5c4258f5c5e177d5b9a738f809d5972300075963 | 6ea7b752c505b4442a4e2350cc4ead0741d07996fc2cc5f8536dcc3e4a0b394e |
+| docs/proofs/continuation-20261024/lp3-run14/compileall.log | 88189252a1a290c74841203b9ae32df8002cf7bd | 7e3c8e5b8f09a33de1a899b9ce090399fa269d907662bc75b3c02a5439b5982d |
+| docs/coordination/BUILD_STATE_LP3_RUN14_20261024.json | 829182745aeca072001850bb185101a7cf10d552 | remote only |
+| docs/coordination/LP3_RUN14_COMPLETION_LEDGER_DELTA_20261024.json | 00ee21de6d75b977016d7b22ed3cd06fb1e44b1a | remote only |
+| docs/coordination/LP3_RUN14_OPEN_QUESTIONS_20261024.md | 7b818e6bd7a9e9cc226c0dbdebeb97124159bc1e | remote only |
+| docs/coordination/LP3_RUN14_REVIEW_RESEARCH_20261024.md | a0c84f41aab4a2f3ce5891d141f7e992b97c5d8c | remote only |
+
+Local focused source ZIP SHA-256: `bb9f60d1385834c37325aeb9841c7dfa10ee1a9ac0fbd7c8113361f29253ec16`.
+
+No native model/Redmi or full suite/privacy-scan proof is claimed. STEP2/B3 negative gates unchanged.

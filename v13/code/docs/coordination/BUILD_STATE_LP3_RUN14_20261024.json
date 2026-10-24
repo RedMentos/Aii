@@ -1,0 +1,34 @@
+{
+  "schema": "V13_BUILD_STATE_DELTA_RUN14_V1",
+  "base_remote_commit": "e666d3b383024567d71ad3e8b27eadd9e3104d77",
+  "base_branch": "codex/lp3-closed-schema-20261024",
+  "scope": "LP3_TYPED_PROTOCOL_AUDIT_AND_READ_ONLY_NATIVE_READINESS",
+  "source_authority": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+  "implemented": [
+    "LP3 audit rejects type-confused preregistered numeric knobs, seed-list values and per-row seed identifiers",
+    "Read-only native host preflight checks pinned assets/fixture hashes, dependencies, local LP3 jobs and cgroup; never launches model or claims global ownership"
+  ],
+  "software_tests": {
+    "baseline_pass": 66,
+    "focused_pass": 84,
+    "failures": 0,
+    "errors": 0,
+    "compileall": "PASS",
+    "new_tests": 18
+  },
+  "failed_attempts_preserved": [
+    "lp3-run14/adversarial_red.log: 5 reproduced type-bypass failures before fix"
+  ],
+  "native_lp3": "NOT_RUN_PINNED_MASTER_AND_TRANSFORMERS_ABSENT_CURRENT_HOST",
+  "full_repo_suite": "NOT_RUN_GIT_DNS_NO_FULL_CHECKOUT",
+  "official_privacy_scan": "NOT_RUN_GIT_DNS_NO_FULL_CHECKOUT",
+  "redmi": "NOT_RUN",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "user_decision_required": false,
+  "next": "Independent full-checkout cross-review/full suite/public privacy scan; recheck pinned assets and global owner; serial four-seed LP3; independently anchor receipt; separate equal-budget generated-answer ablation."
+}
