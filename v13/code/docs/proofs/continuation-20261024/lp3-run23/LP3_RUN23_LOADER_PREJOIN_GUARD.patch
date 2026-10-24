@@ -42,8 +42,14 @@
  
  
  class LaunchBlocked(RuntimeError):
-@@ -270,6 +270,10 @@
-             # The join helper enters it before exec, including before any fork.
+@@ -267,9 +267,15 @@
+         # Runner creates run_manifest/seed rows itself, one immutable file each.
+         try:
+             # Create a new owned cgroup only after readiness/attestation gates.
+-            # The join helper enters it before exec, including before any fork.
++            # The helper joins before exec of the registered runner, but ELF
++            # loader startup can still execute before the helper's Python code.
++            # This is NOT atomic child containment.
              job = CgroupV2Job(cgroup_parent, evidence_dir / 'cgroup-join.json')
              record['cgroup_path'] = str(job.group)
 +            # Snapshot and validate exactly the environment passed to Popen.
@@ -53,7 +59,7 @@
              cmd = job.wrap(cmd)
              with (evidence_dir / 'native.stdout-stderr.log').open('xb') as log:
                  with _owned_sigterm_guard() as sigterm:
-@@ -277,7 +281,8 @@
+@@ -277,7 +283,8 @@
                      # during spawn is deferred until proc is assigned.
                      proc = subprocess.Popen(cmd, stdin=subprocess.DEVNULL,
                                              stdout=log, stderr=subprocess.STDOUT,
@@ -63,3 +69,16 @@
                      record['native_process_launched'] = True
                      record['native_execution_verified'] = False  # audit cannot prove inference
                      try:
+--- a/v13/code/scripts/lp3_cgroup_join.py
++++ b/v13/code/scripts/lp3_cgroup_join.py
+@@ -1,7 +1,9 @@
+ #!/usr/bin/env python3
+ """Minimal pre-exec join helper: join cgroup before running any candidate code.
+ 
+-No subprocess preexec_fn; no child may fork before the cgroup membership check.
++No subprocess preexec_fn. Python-level helper code joins before runner exec,
++but ELF loader constructors may execute before this Python script starts.
++This helper is NOT atomic process placement.
+ """
+ import json
+ import os
