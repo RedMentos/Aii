@@ -1,0 +1,56 @@
+{
+  "schema": "V13_RUN83_VERIFIED_PHONE_SOURCE_ZIP_V1",
+  "date": "2026-10-24",
+  "base": "de86bef43aa0bf53f5b145cd1d86aa1fe414530f",
+  "branch": "codex/phone-source-zip-ci-run83-20261024",
+  "owner": "Read-only GitHub CI phone source archive creation/upload and Run83 evidence",
+  "change": "After 377 Linux software tests and privacy scan, run existing streaming source packager in phone-install mode, verify ZIP CRC/manifest/canon/setup/STARTEN, publish 30-day GitHub Actions artifact.",
+  "evidence": {
+    "run": 40133871939,
+    "job": 120991141649,
+    "head": "d7926fce7f5f55815d71554a87c395362015bc46",
+    "result": "377/377 PASS, compileall PASS, official privacy CLEAN, PHONE_SOURCE_MANIFEST_PASS 808",
+    "source_zip": {
+      "filename": "V13-Phone-Run83.zip",
+      "files_including_manifest": 809,
+      "source_files": 808,
+      "bytes": 12539117,
+      "sha256": "afa8350330c038d7ab804450fa55b739e3287c307b1e947b8dc8dc850017b159",
+      "native_models_launched": false,
+      "phone_measured": false,
+      "canonical_gate_pass": false
+    },
+    "artifact": {
+      "id": 12576365682,
+      "name": "V13-Phone-source-fe28b54bd791702cea1b2e104a91da68c09aa545",
+      "size_bytes": 12539269,
+      "wrapper_digest_sha256": "88f28a05e0692bfc5eb3f733bf2da819061f3bc1e1cb8aeb9d7c71847b122df7",
+      "expires_at": "2026-11-23T21:22:18Z",
+      "url": "https://github.com/RedMentos/Aii/actions/runs/40133871939/artifacts/12576365682",
+      "note": "Artifact is a ZIP wrapper containing the 12,539,117-byte source ZIP; wrapper digest differs from inner source ZIP digest."
+    },
+    "raw_log_blob": "ebaa0da738435f09457ee3b41b8ccd36cd5d94bd",
+    "workflow_blob": "f308a3bce8cc2e74c3d38ead1644b20bcc142826",
+    "levels": {
+      "software": "Actual GitHub-hosted Linux packaging and tests",
+      "native_models": "NOT RUN",
+      "redmi": "NOT RUN",
+      "phone_install": "NOT RUN",
+      "full_repo": "NOT RUN"
+    }
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "ZIP has not been extracted and bootstrapped on Redmi; artifact expires in 30 days, branch remains durable source.",
+    "Independent extracted ZIP model-free smoke test not yet run; next package.",
+    "Full native/phone acceptance remains unproven."
+  ],
+  "next_command": "Run84: independently extract newly built phone ZIP on Linux CI and run model-free Runtime/bootstrap and source-bound focused tests from the extracted tree, then reupload only after pass.",
+  "user_decision_required": false
+}

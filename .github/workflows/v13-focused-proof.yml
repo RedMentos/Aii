@@ -91,3 +91,42 @@ jobs:
           set -euo pipefail
           .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py \
             --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+
+      - name: Build and independently verify model-free V13 Phone source ZIP
+        shell: bash
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run83.zip" --phone-install
+          unzip -tqq "$RUNNER_TEMP/V13-Phone-Run83.zip"
+          ../../.venv/bin/python - <<'PY'
+          import json,os,zipfile
+          p=os.path.join(os.environ['RUNNER_TEMP'],'V13-Phone-Run83.zip')
+          with zipfile.ZipFile(p) as z:
+              names=set(z.namelist())
+              required={
+                  'V13-Phone/setup.sh',
+                  'V13-Phone/STARTEN.sh',
+                  'V13-Phone/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md',
+                  'V13-Phone/WORKSPACE_FILES.json',
+              }
+              missing=required-names
+              if missing:raise SystemExit('Missing phone source entries: '+repr(sorted(missing)))
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              if manifest['schema_version']!=1 or len(manifest['files'])<100:
+                  raise SystemExit('Invalid or incomplete phone source manifest')
+              if any(x.endswith(('.gguf','.safetensors','.sqlite','.db','.env')) for x in names):
+                  raise SystemExit('Private/model payload in phone source ZIP')
+              print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))
+          PY
+          sha256sum "$RUNNER_TEMP/V13-Phone-Run83.zip"
+          stat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"
+
+      - name: Upload verified V13 Phone source ZIP
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Phone-source-${{ github.sha }}
+          path: ${{ runner.temp }}/V13-Phone-Run83.zip
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
