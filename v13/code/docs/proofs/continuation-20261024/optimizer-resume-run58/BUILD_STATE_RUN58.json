@@ -1,0 +1,13 @@
+{
+  "schema": "V13_RUN58_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "owner": "optimizer-resume-run58/* only",
+  "base": "1a8823d7eb5baaa11ddd20681f741baf73c9f3bd",
+  "prereg_commit": "e0fe7ae214e77f10f90377f9b6c00becb08f5868",
+  "status": "SOURCE_BOUND_SYNTHETIC_OPTIMIZER_RESTART_NOT_PRODUCTION",
+  "tests": {"initial":"9/9 PASS","compressed_npz_red":"FAIL_REPRODUCED","final":"12/12 PASS","optimized":"12/12 PASS","subprocess_crash_repeat":"3/3 PASS","compileall":"PASS","fresh_process_bitwise":"PASS","real_store":"NOT_RUN","native":"NOT_RUN","redmi":"NOT_RUN","full_repo":"NOT_RUN","official_privacy_scan":"NOT_RUN"},
+  "metrics": {"uninterrupted_vs_resume":"BITWISE_IDENTICAL_ALL_4_ARRAYS","heldout_accuracy":1.0,"train_examples":64,"heldout_examples":64,"optimizer_steps":120,"evidence":"LINUX_SYNTHETIC_PYTORCH_SQLITE"},
+  "gates": {"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"full_V13":"INCOMPLETE"},
+  "limitations": ["Synthetic Store-shaped fixture only", "No real TrainRunnerProof/retention", "No actual native Body/C3 update", "No independent authenticated receipt", "No phone proof"],
+  "next": "Full checkout independent review; actual Store/Run48 integration, native training proof, official privacy scan and full suite"
+}
