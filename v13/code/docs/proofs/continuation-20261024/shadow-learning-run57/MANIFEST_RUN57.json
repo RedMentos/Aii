@@ -1,0 +1,22 @@
+{
+  "archive_sha256": "4dab121bba149c106a0f488fda8c0caa5ea406ec9f69d888ca65693daa76e3ea",
+  "files": {
+    "adversarial-red.log": "83e89c8fda7de46f22984476d820d48a762678486e59ec8cfa79284498ba6589",
+    "determinism-crossprocess-final.log": "5d7dc91eea3f4e19e54acf323117daa6ecf8b925a29464a5adef7fafd7722fdd",
+    "determinism-red.log": "5d129ee6223a7d90cf846c3738c67ead4e139b5b37bbcf08e7fd597bd45920bc",
+    "metrics-final.json": "3da3d8c910ee21be426c0572d0d68b5d0b102ee5a4628d87a8a9578ecd994189",
+    "metrics.json": "e70738637e4e442a8dc447a69fa3bf9f0a8c7eba1c88dac46f253c0383bcfc88",
+    "shadow_learning_run57/BUILD_STATE_RUN57.json": "c80a5ca985d05573750b0ab2552d02160501b326e2a273ebbba1715f6f7b7af2",
+    "shadow_learning_run57/PREREG_RUN57.md": "0ffd622ce0e26d31778f5a1174d6f47b770c7b777bc516abfcda348db5111219",
+    "shadow_learning_run57/README_RUN57.md": "037f6d30406fcc748b3976a8f7f9a8e24d5c08f0acda263a747ec39cd81fc7b1",
+    "shadow_learning_run57/shadow_learning.py": "a988fc6853ca88ed5f23a40db90e55149122db7a80b66a55360967e580796feb",
+    "shadow_learning_run57/test_shadow_learning.py": "7810c45ddd2bab2ca0b2b12514d1f50b60c38891a21e072f4d15c1ee1fabffa1",
+    "shadow_learning_run57/upstream_run56/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shadow_learning_run57/upstream_run56/shadow_commit.py": "f848c80f14353232135c4a9be814bf101d5ab59d01f5dad3b4290a7e8400f9d5",
+    "test-final.log": "50080123c3d45278fd0bcc3f85d193c60dcfed8b753599863b59404e57aa68cb",
+    "test-first.log": "7a36c88d29e0e242079b92fa5be4e39643fa2d77bb093e0119478dde36510d51",
+    "test-optimized-final.log": "f3e3562bf5f3514ac315c1ec061b1374f876a6660da3520efd702731b9a7ebc9",
+    "test-optimized.log": "f3b89991b37ef3e1fe12b32e8ff1e5ab77b92180d40975b8b233857c3a211a8c"
+  },
+  "size": 9704
+}
