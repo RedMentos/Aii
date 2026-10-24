@@ -1,0 +1,12 @@
+test_model_trainable_not_hardcoded_lookup (test_key_binding.BindingTests.test_model_trainable_not_hardcoded_lookup) ... ok
+test_no_context_logits_independent_of_mappings (test_key_binding.BindingTests.test_no_context_logits_independent_of_mappings) ... ok
+test_output_and_attention_modes_shapes (test_key_binding.BindingTests.test_output_and_attention_modes_shapes) ... ok
+test_query_target_not_encoded_as_extra_input (test_key_binding.BindingTests.test_query_target_not_encoded_as_extra_input) ... ok
+test_seed_constants_preserved (test_key_binding.BindingTests.test_seed_constants_preserved) ... ok
+test_staged_examples_have_consistent_targets (test_key_binding.BindingTests.test_staged_examples_have_consistent_targets) ... ok
+test_uniform_attention_independent_of_query (test_key_binding.BindingTests.test_uniform_attention_independent_of_query) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.009s
+
+OK
