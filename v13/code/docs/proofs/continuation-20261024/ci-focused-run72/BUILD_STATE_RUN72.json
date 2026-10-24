@@ -1,0 +1,29 @@
+{
+  "schema": "V13_RUN72_FOCUSED_PUBLIC_CI_V1",
+  "date": "2026-10-24",
+  "base": "8af0ac96765b84829eea6995d4ca5cc700ba12e5",
+  "owner": ".github/workflows/v13-focused-proof.yml; Run72 docs/evidence",
+  "status": "WORKFLOW_COMMITTED_RUN_NOT_YET_OBSERVED",
+  "tests": {
+    "local_yaml": "NOT RUN",
+    "remote_ci": "NOT RUN",
+    "full_repo": "NOT RUN",
+    "official_privacy": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "constraints": [
+    "Public standard GitHub-hosted runner only, free per official docs",
+    "No secrets, no model downloads, contents:read, 10-minute timeout, cancellation",
+    "Sparse checkout v13/code and focused tests, not full suite"
+  ],
+  "next": "Create PR against Run71 and inspect /actions/runs for actual workflow ID/conclusion; if disabled record NOT RUN, do not fabricate PASS",
+  "user_decision_required": false
+}
