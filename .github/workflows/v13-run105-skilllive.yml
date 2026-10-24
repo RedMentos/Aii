@@ -30,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           ../../.venv/bin/python -m compileall -q v13 tests
-          ../../.venv/bin/python -m unittest -v tests.test_skilllive_route_consistency_run105 tests.test_skilllive tests.test_agi_live tests.test_agi_skills
+          ../../.venv/bin/python -m unittest -v tests.test_skilllive_route_consistency_run105 tests.test_skilllive tests.test_agi_live tests.test_agi_trainers
       - name: Official public repository privacy scan
         run: |
           set -euo pipefail
