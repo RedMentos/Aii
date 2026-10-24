@@ -1,0 +1,22 @@
+# Run86 GitHub Actions raw log excerpts (verbatim)
+# Source: https://github.com/RedMentos/Aii/actions/runs/40134506421
+# Job: 120993056078; workflow: V13 focused source-bound proofs; conclusion: success
+# Full original job log remains in GitHub Actions; this excerpt is intentionally bounded and does not claim to be the entire raw log.
+2026-10-24T21:30:52.3316429Z Ran 377 tests in 11.649s
+2026-10-24T21:30:52.6074180Z privacy scan 0947d51e9..HEAD: CLEAN
+2026-10-24T21:30:52.6205966Z [36;1m    print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))[0m
+2026-10-24T21:30:52.6207005Z [36;1mstat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-24T21:30:54.3250017Z {"bytes": 12540865, "canonical_gate_pass": false, "files": 810, "native_models_launched": false, "phone_measured": false, "sha256": "e5a7bbf047d0f910cf3f9b5fecf05feb29a54ded2e81ab399d960667fa099bd2", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run83.zip"}
+2026-10-24T21:30:54.5394417Z PHONE_SOURCE_MANIFEST_PASS 809
+2026-10-24T21:30:54.5609595Z PHONE_SOURCE_BYTES=12540865
+2026-10-24T21:30:54.5654863Z [36;1mprint('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)[0m
+2026-10-24T21:30:54.8816435Z INDEPENDENT_PHONE_ARCHIVE_PASS 809 e5a7bbf047d0f910cf3f9b5fecf05feb29a54ded2e81ab399d960667fa099bd2
+2026-10-24T21:30:54.8938649Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T21:31:01.5835091Z test_local_operator_origin_and_record_only_default (tests.test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_local_operator_origin_and_record_only_default) ... ok
+2026-10-24T21:31:01.6935769Z test_paused_fifo_exact_sources_export_and_second_restart (tests.test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_paused_fifo_exact_sources_export_and_second_restart) ... ok
+2026-10-24T21:31:01.9840690Z test_standstill_persists_and_blocks_turn_until_local_release (tests.test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_standstill_persists_and_blocks_turn_until_local_release) ... ok
+2026-10-24T21:31:13.3791340Z Ran 74 tests in 16.679s
+2026-10-24T21:31:13.5618104Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS
+2026-10-24T21:31:14.3596827Z SHA256 digest of uploaded artifact zip is aad05a27f41226eecb32c3f94cd6ac77304bceb776769b16ec40d39c065a8c05
+2026-10-24T21:31:14.7760732Z Artifact V13-Phone-source-9e878496efe623e6fab039b6348ad75c31edc12a.zip successfully finalized. Artifact ID 12576242377
+2026-10-24T21:31:14.7762700Z Artifact V13-Phone-source-9e878496efe623e6fab039b6348ad75c31edc12a has been successfully uploaded! Final size is 12541017 bytes. Artifact ID is 12576242377

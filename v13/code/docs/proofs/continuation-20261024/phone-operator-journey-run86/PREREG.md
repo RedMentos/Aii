@@ -1,0 +1,8 @@
+# Run86 prereg — extracted phone operator journey and restart proof
+
+Date: 2026-10-24. Exact base: Run85 PR118 `0947d51e9fe34bb441f672f6f11a388f5e823224` (verified Actions run 40134147030 SUCCESS). Owner: `v13/code/tests/test_phone_operator_journey_run86.py`, the single extracted-ZIP test invocation in `.github/workflows/v13-focused-proof.yml`, and this Run86 proof directory. No native runtime/model files, blueprint, cohorts, gates, or other owner files changed.
+
+## Claim and tests before implementation
+Verify the **actual generated source ZIP** can run a model-free local operator journey with real SQLite persistence and restart, not only import modules. Test A: `:pause`, accept two explicit `Kopiere exakt:` inputs, verify exact source bytes and no assistant response before restart, restart, resume FIFO, exact FINAL output, export, and second restart without duplicates. Test B: engage `:stillstand`, accept a queued exact-copy input, restart while blocked, verify no response and age/queue controls remain blocked, release by local operator, verify one FINAL answer. Test C: reject non-TTY origin even for read-only command and ensure default RECORD_ONLY remains without approvals. Tests use isolated temp homes, no network/models/paid tools, bounded waits. `Kopiere exakt` is deterministic source-copy, **not** evidence of learned intelligence, general language competence, JEPA, or STEP2 utility.
+
+Expected: tests run from the extracted archive after independent archive verification and before upload. Preserve any RED CI logs and all original gates. If a test fails, inspect whether test expectation or runtime is at fault; do not silently weaken the acceptance requirement. Scope: Linux software + extracted ZIP, NOT Redmi/native inference/full V13.
