@@ -1,0 +1,16 @@
+............................................................................................................F..........................................
+======================================================================
+FAIL: test_failed_audit_preserves_log_and_failure_status (test_lp3_serial_review_run18.LockPoisonReview.test_failed_audit_preserves_log_and_failure_status)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run19/v13/code/tests/test_lp3_serial_cohort.py", line 131, in test_failed_audit_preserves_log_and_failure_status
+    with self.assertRaises(mod.EvidenceError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+----------------------------------------------------------------------
+Ran 151 tests in 40.267s
+
+FAILED (failures=1)
+{"verdict": "LP3_MEMORY_KEY_NOT_SUPPORTED", "report_sha256": "e7f204517d4e1dfb5afe7068cc82bd08558c34c7fc969f71f8ff7d27654d3a3c", "rows": 4}
+EXIT:1
