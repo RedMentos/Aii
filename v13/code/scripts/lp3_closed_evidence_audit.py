@@ -150,6 +150,9 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
                            (lora, binding.get('fixture_dependencies_sha256', {}).get('lora_bench.py'))):
         if path is not None and digest(safe_file(Path(path))) != expected:
             raise EvidenceError(f'local source hash mismatch: {Path(path).name}')
+    supplied_sources = (source, lp2, lora)
+    if any(path is not None for path in supplied_sources) and not all(path is not None for path in supplied_sources):
+        raise EvidenceError('all three source fixtures must be supplied together or none')
     fixture_expected = None
     if source is not None and lp2 is not None and lora is not None:
         facts = list(literal_assignment(lora, 'FACTS')) + list(literal_assignment(lp2, 'FACTS_V2'))
@@ -188,7 +191,11 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
                 raise EvidenceError(f'{arm}: out-of-bank answer')
             calculated = {'correct': sum(a == b for a, b in zip(expected, actual)),
                           'abstain': sum(x is None for x in actual), 'total': 48}
-            if row.get(arm) != calculated:
+            counts_row = row.get(arm)
+            if (not isinstance(counts_row, dict) or
+                    any(type(counts_row.get(k)) is not int for k in calculated)):
+                raise EvidenceError(f'{arm}: noninteger aggregate')
+            if counts_row != calculated:
                 raise EvidenceError(f'{arm}: aggregate mismatch')
         if any(x is not None for x in outputs['zero_intervention']):
             raise EvidenceError('zero intervention did not abstain')
@@ -202,13 +209,15 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
         for arm, key in (('raw', 'near_raw_nonabstain'), ('predicted', 'near_pred_nonabstain')):
             if any(x is not None and x not in counts for x in near[arm]):
                 raise EvidenceError('near-miss out-of-bank answer')
-            if row.get(key) != sum(x is not None for x in near[arm]):
+            if type(row.get(key)) is not int or row.get(key) != sum(x is not None for x in near[arm]):
                 raise EvidenceError('near-miss aggregate mismatch')
         for key in ('good_loss', 'wrong_loss'):
             value = row.get(key, {})
-            if (not isinstance(value, dict) or value.get('steps') != 30 or
-                any(not isinstance(value.get(k), (int, float)) or
-                    not math.isfinite(value[k]) for k in ('initial_nce', 'final_nce'))):
+            if (not isinstance(value, dict) or type(value.get('steps')) is not int or
+                value['steps'] != 30 or
+                any(type(value.get(k)) not in (int, float) or
+                    not math.isfinite(value[k]) or value[k] < 0
+                    for k in ('initial_nce', 'final_nce'))):
                 raise EvidenceError('missing/nonfinite training loss')
     decision = verdict(rows)
     if report.get('verdict') != decision:
@@ -226,7 +235,18 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
         if read_json(rp) != receipt_for(run):
             raise EvidenceError('receipt file hash mismatch')
         anchor = 'RECEIPT_SHA_MATCHES_SUPPLIED_ANCHOR'
+    # Reported protocol outcome is not an independently supported finding.
+    # Only complete local fixture verification plus a supplied external digest
+    # can support a *candidate* claim; neither proves model execution or anchor
+    # independence. The canonical STEP2/B3 gates remain unchanged.
+    grade = ('SOURCE_FIXTURES_AND_SUPPLIED_ANCHOR_MATCH' if fixture_expected is not None
+             and anchor == 'RECEIPT_SHA_MATCHES_SUPPLIED_ANCHOR' else
+             'SOURCE_FIXTURES_VERIFIED_UNANCHORED' if fixture_expected is not None else
+             'STRUCTURAL_ONLY')
+    supported = (decision == 'LP3_MEMORY_KEY_CANDIDATE_SUPPORTED_ONLY' and
+                 grade == 'SOURCE_FIXTURES_AND_SUPPLIED_ANCHOR_MATCH')
     return {'audit': 'STRUCTURAL_PASS', 'evidence': 'LINUX_FILES_ONLY_NOT_NATIVE_REPRODUCTION',
+            'evidence_grade': grade, 'candidate_claim_structurally_eligible': supported,
             'anchor': anchor, 'local_source_fixture_consistent': fixture_expected is not None,
             'reported_verdict': decision, 'seeds': list(SEEDS),
             'original_gates': {'step2': 'UTILITY_FAIL', 'b3_l1': 'FAIL', 'body_jepa': 'UNAVAILABLE'}}
