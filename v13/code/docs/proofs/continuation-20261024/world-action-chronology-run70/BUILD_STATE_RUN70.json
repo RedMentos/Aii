@@ -1,0 +1,32 @@
+{
+  "schema": "V13_RUN70_WORLD_ACTION_CHRONOLOGY_V1",
+  "date": "2026-10-24",
+  "base": "672858e8156bd11c9f3409d351fd9286f4a67393",
+  "owner": "world_model.transitions ActionSelection lookup only; new SQLite tests; Run70 evidence",
+  "status": "PRODUCTION_BOUND_CHRONOLOGICAL_ACTION_BINDING_SOFTWARE_CANDIDATE",
+  "tests": {
+    "original_extracted": "2/5 PASS, 3/5 RED",
+    "fixed_extracted": "5/5 PASS",
+    "optimized": "5/5 PASS",
+    "compileall": "PASS",
+    "actual_V13_Store": "NOT RUN",
+    "full_repo": "NOT RUN",
+    "official_privacy": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Isolated exact transitions excerpt with synthetic SQLite; actual V13 Store not run",
+    "Temporal selection is not a cryptographic action->selection packet ID binding",
+    "Same-timestamp rowid ordering is deterministic, not a physical monotonic-clock proof"
+  ],
+  "next": "cd v13/code && python -m unittest -v tests.test_world_action_chronology_run70; full suite/privacy; review real ActionSelection/action timing",
+  "user_decision_required": false
+}
