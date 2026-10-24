@@ -1,0 +1,58 @@
+{
+  "raw_report_sha256": "6d69690971739ee0beff0a0bf9d95804e463e376e31f690e4518e55115cd3479",
+  "compressed_base64_chars": 41332,
+  "all_pass": false,
+  "summary": {
+    "efe": {
+      "final_kl": 0.10434,
+      "final_kl_learnable": 0.1069,
+      "grounding": 0.98422,
+      "mean_hunger": 0.04574,
+      "new_kind_learned": 7,
+      "new_kind_median_steps": 893,
+      "noise_share": 0.19432
+    },
+    "lp": {
+      "final_kl": 0.08319,
+      "final_kl_learnable": 0.08024,
+      "grounding": 0.97896,
+      "mean_hunger": 0.20014,
+      "new_kind_learned": 19,
+      "new_kind_median_steps": 501,
+      "noise_share": 0.12251
+    },
+    "lp_goal": {
+      "final_kl": 0.10146,
+      "final_kl_learnable": 0.09363,
+      "grounding": 0.97632,
+      "mean_hunger": 0.04337,
+      "new_kind_learned": 16,
+      "new_kind_median_steps": 556.5,
+      "noise_share": 0.09511
+    },
+    "lp_goal_novelty": {
+      "final_kl": 0.10545,
+      "final_kl_learnable": 0.09948,
+      "grounding": 0.98684,
+      "mean_hunger": 0.05371,
+      "new_kind_learned": 17,
+      "new_kind_median_steps": 733,
+      "noise_share": 0.10728
+    },
+    "novelty": {
+      "final_kl": 0.08503,
+      "final_kl_learnable": 0.08449,
+      "grounding": 0.98422,
+      "mean_hunger": 0.07153,
+      "new_kind_learned": 20,
+      "new_kind_median_steps": 653,
+      "noise_share": 0.16545
+    }
+  },
+  "verdict": {
+    "H1_hunger": true,
+    "H2_new_word": false,
+    "H3_no_noise_or_learning_collapse": true,
+    "H4_word_novelty_ablation": true
+  }
+}

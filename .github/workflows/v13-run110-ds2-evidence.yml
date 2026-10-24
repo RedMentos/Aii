@@ -1,0 +1,31 @@
+name: V13 Run110 DS2 closed evidence independent review
+on:
+  pull_request:
+    paths:
+      - "v13/code/scripts/sandbox_ds2_verify_report.py"
+      - "v13/code/docs/proofs/continuation-20261025/ds2-run110/REPORT_ZLIB_BASE64.txt"
+      - "v13/code/docs/proofs/continuation-20261025/ds2-run110/REPORT_SUMMARY.json"
+      - ".github/workflows/v13-run110-ds2-evidence.yml"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run110-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout immutable review source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Independent report/hash/ablation review (no simulation rerun)
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/sandbox_ds2_verify_report.py
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree

@@ -1,0 +1,39 @@
+name: V13 Run110 DS2 learning progress and goal lab
+on:
+  pull_request:
+    paths:
+      - "v13/code/v13/sandbox.py"
+      - "v13/code/tests/test_sandbox.py"
+      - "v13/code/tests/test_sandbox_ds2_run110.py"
+      - "v13/code/scripts/sandbox_ds2_bench.py"
+      - ".github/workflows/v13-run110-ds2.yml"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run110-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  ds2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout immutable review source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: DS1 retention and preregistered DS2 policy tests
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q v13/sandbox.py tests/test_sandbox.py tests/test_sandbox_ds2_run110.py scripts/sandbox_ds2_bench.py
+          python3 -m unittest -v tests.test_sandbox tests.test_sandbox_ds2_run110
+      - name: Locked 20-seed synthetic DS2 ablation and closed report
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          python3 scripts/sandbox_ds2_bench.py
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
