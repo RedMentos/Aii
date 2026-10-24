@@ -2,6 +2,8 @@
 import copy
 import importlib.util
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -30,9 +32,12 @@ class TestLP3EvidenceAudit(unittest.TestCase):
                          'phone_measured': False, 'body_jepa_gate_pass': False,
                          'step2_gate_pass': False, 'script_sha256': 'f' * 64,
                          'lp2_fixture_sha256': 'e' * 64,
-                         'snapshot_binding': {'revision': '55e5a53e8637c4522a0577040fe68682db3fbbb6',
-                                              'assets_sha256': {'model.safetensors': audit.PINNED_WEIGHT},
-                                              'fixture_dependencies_sha256': {'lora_bench.py': 'd' * 64}}}
+                         'master_scope': 'Linux_HF_FP32_FROZEN_ENCODER',
+                         'snapshot_binding': {'repo': 'LiquidAI/LFM2.5-350M',
+                                              'revision': '55e5a53e8637c4522a0577040fe68682db3fbbb6',
+                                              'assets_sha256': {k: (audit.PINNED_WEIGHT if k == 'model.safetensors' else 'a' * 64) for k in audit.HF_ASSETS},
+                                              'fixture_dependencies_sha256': {'lp2_assignment_objective.py': 'e' * 64, 'lora_bench.py': 'd' * 64},
+                                              'upstream_nonweight_asset_identity': 'NOT_INDEPENDENTLY_VERIFIED'}}
         self.rows = []
         for seed in audit.SEEDS:
             outputs = {'raw': expected[:], 'predicted': expected[:], 'wrong_trained': expected[:],
@@ -150,6 +155,7 @@ class TestLP3EvidenceAudit(unittest.TestCase):
         lora.write_text('FACTS = '+repr([(f'Q{i}', f'Fictional answer {i}', []) for i in range(8)])+'\n')
         self.manifest['script_sha256'] = audit.digest(source)
         self.manifest['lp2_fixture_sha256'] = audit.digest(lp2)
+        self.manifest['snapshot_binding']['fixture_dependencies_sha256']['lp2_assignment_objective.py'] = audit.digest(lp2)
         self.manifest['snapshot_binding']['fixture_dependencies_sha256']['lora_bench.py'] = audit.digest(lora)
         self.save()
         self.assertTrue(audit.audit(self.run, source=source, lp2=lp2, lora=lora)['local_source_fixture_consistent'])
@@ -157,6 +163,71 @@ class TestLP3EvidenceAudit(unittest.TestCase):
         self.save()
         with self.assertRaisesRegex(audit.EvidenceError, 'source fixtures'):
             audit.audit(self.run, source=source, lp2=lp2, lora=lora)
+
+    def test_missing_tokenizer_asset_hash_refused(self):
+        del self.manifest['snapshot_binding']['assets_sha256']['tokenizer.json']
+        self.save()
+        with self.assertRaisesRegex(audit.EvidenceError, 'seven-file'):
+            audit.audit(self.run)
+
+    def test_nonhex_asset_hash_refused(self):
+        self.manifest['snapshot_binding']['assets_sha256']['config.json'] = 'z' * 64
+        self.save()
+        with self.assertRaisesRegex(audit.EvidenceError, 'seven-file'):
+            audit.audit(self.run)
+
+    def test_lp2_fixture_hash_inconsistent_refused(self):
+        self.manifest['snapshot_binding']['fixture_dependencies_sha256']['lp2_assignment_objective.py'] = 'b' * 64
+        self.save()
+        with self.assertRaisesRegex(audit.EvidenceError, 'source binding'):
+            audit.audit(self.run)
+
+    def test_wrong_model_scope_refused(self):
+        self.manifest['master_scope'] = 'REDMI_PROVEN'
+        self.save()
+        with self.assertRaisesRegex(audit.EvidenceError, 'master scope'):
+            audit.audit(self.run)
+
+    def test_unsupported_upstream_provenance_claim_refused(self):
+        self.manifest['snapshot_binding']['upstream_nonweight_asset_identity'] = 'VERIFIED'
+        self.save()
+        with self.assertRaisesRegex(audit.EvidenceError, 'authenticity claim'):
+            audit.audit(self.run)
+
+    def test_extra_seed_file_refused(self):
+        (self.run / 'seed-99.json').write_text('{}')
+        with self.assertRaisesRegex(audit.EvidenceError, 'extra seed'):
+            audit.audit(self.run)
+
+    def test_interrupted_temp_file_refused(self):
+        (self.run / 'seed-31.json.tmp-42').write_text('{}')
+        with self.assertRaisesRegex(audit.EvidenceError, 'temporary'):
+            audit.audit(self.run)
+
+    def test_receipt_inside_run_refused(self):
+        with self.assertRaisesRegex(audit.EvidenceError, 'outside immutable'):
+            audit.outside_attempt(self.run / 'receipt.json', self.run)
+        self.assertFalse((self.run / 'receipt.json').exists())
+
+    def test_receipt_symlink_parent_into_run_refused(self):
+        link = self.root / 'alias'
+        link.symlink_to(self.run, target_is_directory=True)
+        with self.assertRaisesRegex(audit.EvidenceError, 'outside immutable'):
+            audit.outside_attempt(link / 'receipt.json', self.run)
+
+    def test_cli_cannot_create_receipt_inside_run(self):
+        path = self.run / 'receipt.json'
+        result = subprocess.run([sys.executable, str(SCRIPT), '--run', str(self.run),
+                                 '--make-receipt', str(path)], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('outside immutable', result.stderr)
+        self.assertFalse(path.exists())
+
+    def test_receipt_read_inside_run_refused(self):
+        receipt = self.run / 'receipt.json'
+        write(receipt, audit.receipt_for(self.run))
+        with self.assertRaisesRegex(audit.EvidenceError, 'outside immutable'):
+            audit.audit(self.run, receipt=receipt, receipt_sha256=audit.digest(receipt))
 
     def test_protocol_mismatch_refused(self):
         self.manifest['params']['steps'] = 31

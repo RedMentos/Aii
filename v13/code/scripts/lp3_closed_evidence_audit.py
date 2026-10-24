@@ -9,17 +9,58 @@ import ast
 import hashlib
 import json
 import math
+import re
 from collections import Counter
 from pathlib import Path
 
 SEEDS = (31, 37, 41, 43)
 ARMS = ('raw', 'predicted', 'wrong_trained', 'value_shift', 'zero_intervention')
+HF_ASSETS = ('model.safetensors', 'config.json', 'generation_config.json',
+             'tokenizer.json', 'tokenizer_config.json', 'chat_template.jinja', 'LICENSE')
 PINNED_WEIGHT = '1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e'
 PARAMS = {'seeds': list(SEEDS), 'steps': 30, 'temperature': 0.1, 'lr': 0.001,
           'items': 16, 'holdout': 48, 'min_similarity': 0.35, 'min_margin': 0.03}
 
 class EvidenceError(ValueError):
     pass
+
+
+def sha256_hex(value):
+    return isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) is not None
+
+
+def outside_attempt(path, run):
+    """Do not place the independent receipt inside a closed attempt, even via symlink."""
+    target = Path(path).resolve(strict=False)
+    root = Path(run).resolve(strict=True)
+    if target == root or root in target.parents:
+        raise EvidenceError('receipt must be outside immutable attempt directory')
+    return target
+
+
+def validate_binding(manifest):
+    """Check the complete runner-produced asset/source binding, not just the weight."""
+    if manifest.get('master_scope') != 'Linux_HF_FP32_FROZEN_ENCODER':
+        raise EvidenceError('master scope mismatch')
+    binding = manifest.get('snapshot_binding')
+    if not isinstance(binding, dict):
+        raise EvidenceError('missing snapshot binding')
+    if binding.get('repo') != 'LiquidAI/LFM2.5-350M' or binding.get('revision') != '55e5a53e8637c4522a0577040fe68682db3fbbb6':
+        raise EvidenceError('snapshot identity mismatch')
+    assets = binding.get('assets_sha256')
+    deps = binding.get('fixture_dependencies_sha256')
+    if not isinstance(assets, dict) or set(assets) != set(HF_ASSETS) or not all(sha256_hex(v) for v in assets.values()):
+        raise EvidenceError('incomplete/malformed seven-file HF snapshot binding')
+    if assets['model.safetensors'] != PINNED_WEIGHT:
+        raise EvidenceError('snapshot master hash mismatch')
+    if not isinstance(deps, dict) or set(deps) != {'lp2_assignment_objective.py', 'lora_bench.py'} or not all(sha256_hex(v) for v in deps.values()):
+        raise EvidenceError('incomplete/malformed fixture dependency binding')
+    if (not sha256_hex(manifest.get('script_sha256')) or
+            manifest.get('lp2_fixture_sha256') != deps['lp2_assignment_objective.py']):
+        raise EvidenceError('candidate/LP2 source binding mismatch')
+    if binding.get('upstream_nonweight_asset_identity') != 'NOT_INDEPENDENTLY_VERIFIED':
+        raise EvidenceError('unsupported upstream authenticity claim')
+    return binding
 
 
 def digest(path):
@@ -86,8 +127,13 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
     run = Path(run)
     if not run.is_dir() or run.is_symlink():
         raise EvidenceError('attempt directory missing or symlinked')
-    if any(run.glob('failed-seed-*.json')):
+    if any(run.glob('failed-seed-*')):
         raise EvidenceError('failed seed marker present; cohort not closed')
+    expected_seeds = {f'seed-{s}.json' for s in SEEDS}
+    if any(p.name not in expected_seeds for p in run.glob('seed-*.json')):
+        raise EvidenceError('unregistered extra seed present')
+    if any('.tmp-' in p.name for p in run.iterdir()):
+        raise EvidenceError('interrupted temporary evidence present')
     manifest = read_json(run / 'run_manifest.json')
     report = read_json(run / 'report.json')
     if manifest.get('schema') != 'V13_LP3_MEMORY_KEY_V1' or manifest.get('params') != PARAMS:
@@ -98,10 +144,7 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
         raise EvidenceError('unexpected runtime/phone evidence claim')
     if manifest.get('body_jepa_gate_pass') is not False or manifest.get('step2_gate_pass') is not False:
         raise EvidenceError('unexpected gate promotion')
-    binding = manifest.get('snapshot_binding', {})
-    if (binding.get('assets_sha256', {}).get('model.safetensors') != PINNED_WEIGHT
-            or binding.get('revision') != '55e5a53e8637c4522a0577040fe68682db3fbbb6'):
-        raise EvidenceError('snapshot binding mismatch')
+    binding = validate_binding(manifest)
     for path, expected in ((source, manifest.get('script_sha256')),
                            (lp2, manifest.get('lp2_fixture_sha256')),
                            (lora, binding.get('fixture_dependencies_sha256', {}).get('lora_bench.py'))):
@@ -174,7 +217,10 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
     if receipt is not None or receipt_sha256 is not None:
         if not receipt or not receipt_sha256:
             raise EvidenceError('receipt and independently published SHA required together')
-        rp = Path(receipt)
+        rp = outside_attempt(receipt, run)
+        if not sha256_hex(receipt_sha256):
+            raise EvidenceError('malformed receipt SHA256')
+
         if digest(safe_file(rp)) != receipt_sha256:
             raise EvidenceError('receipt external SHA mismatch')
         if read_json(rp) != receipt_for(run):
@@ -200,15 +246,16 @@ def main():
         result = audit(a.run, source=a.source, lp2=a.lp2, lora=a.lora,
                        receipt=a.receipt, receipt_sha256=a.receipt_sha256)
         if a.make_receipt:
+            receipt_path = outside_attempt(a.make_receipt, a.run)
             data = (json.dumps(receipt_for(a.run), sort_keys=True, indent=2) + '\n').encode()
-            with a.make_receipt.open('xb') as f:
+            with receipt_path.open('xb') as f:
                 f.write(data); f.flush()
                 import os
                 os.fsync(f.fileno())
-            fd = os.open(a.make_receipt.parent, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
+            fd = os.open(receipt_path.parent, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
             try: os.fsync(fd)
             finally: os.close(fd)
-            result['new_receipt_sha256'] = digest(a.make_receipt)
+            result['new_receipt_sha256'] = digest(receipt_path)
         print(json.dumps(result, sort_keys=True))
     except (EvidenceError, OSError, KeyError, TypeError) as exc:
         p.exit(2, f'LP3_EVIDENCE_INVALID: {exc}\n')

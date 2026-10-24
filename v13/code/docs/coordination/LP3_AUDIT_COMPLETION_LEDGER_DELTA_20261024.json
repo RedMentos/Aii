@@ -1,0 +1,14 @@
+{
+  "schema": "V13_COMPLETION_LEDGER_DELTA_V1",
+  "feature": "LP3_CLOSED_EVIDENCE_AUDIT_HARDENING",
+  "owner": "Codex/GPT independent scoped package",
+  "files": ["scripts/lp3_closed_evidence_audit.py", "tests/test_lp3_closed_evidence_audit.py"],
+  "implementation": "IMPLEMENTED_SOFTWARE_ONLY",
+  "state_path": "read-only run_manifest.json, report.json, seed-{31,37,41,43}.json; optional external receipt",
+  "persistence": "no mutation of run; external receipt create-exclusive + fsync file and directory",
+  "tests": "43/43 focused software/synthetic PASS; 11 new adversarial",
+  "telemetry": "closed software-tests.log and source/test SHA256",
+  "hardware_proof": "NOT_RUN",
+  "gate_authority": "NONE",
+  "limitations": "no full checkout/full suite/privacy scan, no pinned master, no native/Redmi proof"
+}

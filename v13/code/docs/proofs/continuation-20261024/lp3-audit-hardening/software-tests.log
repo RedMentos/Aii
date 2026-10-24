@@ -1,0 +1,48 @@
+test_cli_cannot_create_receipt_inside_run (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_cli_cannot_create_receipt_inside_run) ... ok
+test_coordinated_row_edit_detected_by_receipt (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_coordinated_row_edit_detected_by_receipt) ... ok
+test_duplicate_json_key_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_duplicate_json_key_refused) ... ok
+test_extra_seed_file_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_extra_seed_file_refused) ... ok
+test_failed_marker_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_failed_marker_refused) ... ok
+test_fixture_binding_catches_consistent_label_rewrite (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_fixture_binding_catches_consistent_label_rewrite) ... ok
+test_forged_report_verdict_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_forged_report_verdict_refused) ... ok
+test_interrupted_temp_file_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_interrupted_temp_file_refused) ... ok
+test_lp2_fixture_hash_inconsistent_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_lp2_fixture_hash_inconsistent_refused) ... ok
+test_missing_seed_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_missing_seed_refused) ... ok
+test_missing_tokenizer_asset_hash_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_missing_tokenizer_asset_hash_refused) ... ok
+test_nonhex_asset_hash_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_nonhex_asset_hash_refused) ... ok
+test_out_of_bank_answer_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_out_of_bank_answer_refused) ... ok
+test_protocol_mismatch_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_protocol_mismatch_refused) ... ok
+test_receipt_inside_run_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_receipt_inside_run_refused) ... ok
+test_receipt_read_inside_run_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_receipt_read_inside_run_refused) ... ok
+test_receipt_symlink_parent_into_run_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_receipt_symlink_parent_into_run_refused) ... ok
+test_seed_and_report_disagree (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_seed_and_report_disagree) ... ok
+test_symlink_seed_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_symlink_seed_refused) ... ok
+test_tampered_receipt_detected_by_external_sha (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_tampered_receipt_detected_by_external_sha) ... ok
+test_unsupported_upstream_provenance_claim_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_unsupported_upstream_provenance_claim_refused) ... ok
+test_valid_synthetic_cohort_structural_only (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_valid_synthetic_cohort_structural_only) ... ok
+test_wrong_expected_order_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_wrong_expected_order_refused) ... ok
+test_wrong_model_scope_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_wrong_model_scope_refused) ... ok
+test_wrong_source_hash_refused (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_wrong_source_hash_refused) ... ok
+test_zero_arm_must_abstain (test_lp3_closed_evidence_audit.TestLP3EvidenceAudit.test_zero_arm_must_abstain) ... ok
+test_audit_detects_tampered_aggregate (test_lp3_memory_key_candidate.TestLP3.test_audit_detects_tampered_aggregate) ... ok
+test_bad_latents_and_ambiguous_banks_rejected (test_lp3_memory_key_candidate.TestLP3.test_bad_latents_and_ambiguous_banks_rejected) ... ok
+test_chat_template_used_for_prompt_encoding (test_lp3_memory_key_candidate.TestLP3.test_chat_template_used_for_prompt_encoding) ... ok
+test_closed_report_cannot_be_overwritten (test_lp3_memory_key_candidate.TestLP3.test_closed_report_cannot_be_overwritten) ... ok
+test_correct_and_shifted_values_are_different (test_lp3_memory_key_candidate.TestLP3.test_correct_and_shifted_values_are_different) ... ok
+test_incomplete_never_passes (test_lp3_memory_key_candidate.TestLP3.test_incomplete_never_passes) ... ok
+test_predictor_receives_gradient_and_shift_control_is_wrong (test_lp3_memory_key_candidate.TestLP3.test_predictor_receives_gradient_and_shift_control_is_wrong) ... ok
+test_state_scaling_does_not_change_prediction (test_lp3_memory_key_candidate.TestLP3.test_state_scaling_does_not_change_prediction) ... ok
+test_zero_intervention_is_required_by_verdict (test_lp3_memory_key_candidate.TestLP3.test_zero_intervention_is_required_by_verdict) ... ok
+test_zero_query_abstains (test_lp3_memory_key_candidate.TestLP3.test_zero_query_abstains) ... ok
+test_all_assets_and_fixture_sources_are_bound (test_lp3_preflight_binding.TestPreflight.test_all_assets_and_fixture_sources_are_bound) ... ok
+test_corrupt_config_refused (test_lp3_preflight_binding.TestPreflight.test_corrupt_config_refused) ... ok
+test_existing_attempt_refused_before_touching (test_lp3_preflight_binding.TestPreflight.test_existing_attempt_refused_before_touching) ... ok
+test_missing_template_or_license_fails_closed (test_lp3_preflight_binding.TestPreflight.test_missing_template_or_license_fails_closed) ... ok
+test_missing_transitive_fixture_fails_closed (test_lp3_preflight_binding.TestPreflight.test_missing_transitive_fixture_fails_closed) ... ok
+test_real_cli_does_not_create_manifest_without_pinned_master (test_lp3_preflight_binding.TestPreflight.test_real_cli_does_not_create_manifest_without_pinned_master) ... ok
+test_wrong_master_rejected (test_lp3_preflight_binding.TestPreflight.test_wrong_master_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 43 tests in 4.622s
+
+OK
