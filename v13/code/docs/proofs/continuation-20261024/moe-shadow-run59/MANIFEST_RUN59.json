@@ -1,0 +1,16 @@
+{
+  "archive_sha256": "653ffcea7a515f25619cddf973c5833451639b9b620100d29b72ba8d3da93ff0",
+  "files": {
+    "adversarial-red.log": "e1817aca2cebf9e8a559afb5207e49cc4834ea8d4d2d9beef54ef3d0b48b8684",
+    "metrics.json": "94a2b4768cb7814382579fafc239c6b34e8032774dd1552d87f013717c1a87bb",
+    "moe_shadow_run59/BUILD_STATE_RUN59.json": "636341dabda2bad994638e23c23d220087d907a1866d12938562945fb6e67b10",
+    "moe_shadow_run59/PREREG_RUN59.md": "e162ccac3b63d3e3eba772e1a6c2ac18cac3c1df7a0aa39c62959c819838c46d",
+    "moe_shadow_run59/README_RUN59.md": "de6e441cd4bc638ae1e9adcfdf434566958e1f26134210fd1d4c88c8bd99fa42",
+    "moe_shadow_run59/moe_shadow.py": "f707aaa48b0aab08d123a63c198fc77534588939f2b134e99a2290595d588fc0",
+    "moe_shadow_run59/test_moe_shadow.py": "6f8589d95cf0fc2b79c3bab2bd358aed4134baf5fb314351879eba36ca1a16c2",
+    "test-final.log": "4a89cacff18040fbc66d7add93a13bd1287c26b3d452e27ac5dd87d7930f7965",
+    "test-first.log": "c5943de486d13d2745cb19872c187572525bd88f13fc882e32653854de26f246",
+    "test-optimized-final.log": "fd47c9726c262c2bc72c2a0e393c0dca7a8a4e9574d34ba23634c51e25e1b601"
+  },
+  "size": 5940
+}
