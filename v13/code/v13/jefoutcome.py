@@ -75,15 +75,32 @@ def on_route_correction(store,event_id,value):
     return _mutate(store,f)
 
 def training_rows(store,component,revision,human_keys):
-    """Outcome rows for learning.shadow_readout: only in 'learn' mode, only contexts without a human label."""
+    """Outcome rows for learning.shadow_readout: lower than any human decision."""
     st=store.state(KEY)[0] or {}
     if st.get('mode','record')!='learn':return []
-    out={}
+    candidates=[]
     for x in st.get('labels',[]):
-        if x['component']!=component or x['context_revision']!=revision or x['context_sha256'] in human_keys:continue
-        row=store.one("SELECT payload FROM packets WHERE kind='ExecutiveDecision' AND id=?",(x['decision_packet_id'],))
+        if not isinstance(x,dict) or x.get('component')!=component or x.get('context_revision')!=revision:
+            continue
+        if not isinstance(x.get('context_sha256'),str) or x['context_sha256'] in human_keys:
+            continue
+        candidates.append(x)
+    from .jef_human_veto import blocked_human_contexts
+    blocked=blocked_human_contexts(store,component,revision,[x['context_sha256'] for x in candidates])
+    out={}
+    for x in candidates:
+        if x['context_sha256'] in blocked:continue
+        if not isinstance(x.get('source_id'),str) or not store.one('SELECT 1 FROM sources WHERE id=? AND deleted=0',(x['source_id'],)):
+            continue
+        row=store.one("SELECT payload FROM packets WHERE kind='ExecutiveDecision' AND id=?",(x.get('decision_packet_id'),))
         if not row:continue
-        out[x['context_sha256']]=({'value':x['value'],'source_id':x['source_id'],'event_id':x['event_id'],'permission':'learn','authority':AUTHORITY},json.loads(row['payload']))
+        try:
+            p=json.loads(row['payload'])
+            if not isinstance(p,dict) or p.get('event_id')!=x.get('event_id') or p.get('component')!=component or p.get('context_revision')!=revision or p.get('context_ref',{}).get('sha256')!=x['context_sha256']:
+                continue
+            out[x['context_sha256']]=({'value':x['value'],'source_id':x['source_id'],'event_id':x['event_id'],'permission':'learn','authority':AUTHORITY},p)
+        except (ValueError,TypeError,KeyError,AttributeError):
+            continue
     return [(k,row,p) for k,(row,p) in out.items()]
 
 def report(r):
