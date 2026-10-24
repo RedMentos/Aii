@@ -1,0 +1,33 @@
+{
+  "schema": "V13_RUN50_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base": "b5de86ad417f157cb16e3af90d2dd302547cf4a3",
+  "prereg_commit": "4b173fc2d14b9a7059c666882585b0966b180f2b",
+  "owner": "Run50: only callosum-sqlite-run50/*",
+  "source_archive_sha256": "f422ed0529af519d40dde2eb7c5f3aa56bfd852dcc0c9e99431fbd0f54121956",
+  "source_blobs": {
+    "callosum": "0dbe893a983a2739bb9e008e8a0c3fab5715aec3",
+    "store": "0779d986fb8aee8aa01c5df5f656889d4bd56348",
+    "cognition": "1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf"
+  },
+  "tests": {
+    "initial": "18/18 PASS",
+    "adversarial_red": "19/21 PASS, 2 FAIL",
+    "final": "22/22 PASS",
+    "optimized": "22/22 PASS",
+    "compileall": "PASS",
+    "real_store": "NOT_RUN",
+    "runtime": "NOT_RUN",
+    "native": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "status": "ISOLATED_SYNTHETIC_SQLITE_ONLY",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "next": "Full checkout: decode three source parts; python -m unittest discover -s tests -v; independently integrate real Store/Runtime while preserving neuromod/on_rating and negative gates."
+}
