@@ -1,0 +1,30 @@
+{
+  "schema": "V13_RUN74_CONTEXT_APPEND_PROVENANCE_V1",
+  "date": "2026-10-24",
+  "base": "f81c8404894f06cebed02f3b4f38af29b9096587",
+  "owner": "context_os append-only transcript read/store; Run74 tests; CI test selection",
+  "status": "REAL_PUBLIC_LINUX_SOFTWARE_76_OF_76_PASS_PRIVACY_CLEAN",
+  "tests": {
+    "red": "76 tests, 3 expected FAIL, run 40129795646/job 120978874771",
+    "green": "76/76 PASS, run 40129841683/job 120979013206",
+    "compileall": "PASS",
+    "official_privacy": "CLEAN (f81c84048..HEAD)",
+    "full_repo": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "SHADOW append is counterfactual estimate, never a native KV proof",
+    "No real llama.cpp prompt-cache measurement or Redmi proof",
+    "Exact source text checked, not full cryptographic source_ref across cached transcript"
+  ],
+  "next": "Run75 expand independent actual Linux software suites for JEF, Callosum, World Model and learning invariants; retain native/Redmi gates",
+  "user_decision_required": false
+}
