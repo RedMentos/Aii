@@ -49,6 +49,26 @@ class SleepWakeIndexRun96(unittest.TestCase):
         self.assertIn("REPLAY_DUE", posts)
         self.assertIn(self.replay_id, self.r.sleep.cycle.queue.load()[0]["items"])
 
+    def test_real_scheduler_pending_survives_runtime_restart(self):
+        policy = default_policy()
+        with mock.patch.object(self.r.sleep.cycle, "policy", return_value=policy), \
+             mock.patch.object(self.r, "idle", return_value=True), \
+             mock.patch.object(self.r.sleep, "resource_state", return_value="NORMAL"), \
+             mock.patch.object(self.r.sleep, "idle_seconds", return_value=30.), \
+             mock.patch.object(self.r.sleep.scheduler, "next", return_value=None):
+            self.r.sleep.tick(force=True)
+        pending = self.r.sleep.scheduler.pending()
+        self.assertTrue(any(x["kind"] == "REPLAY_DUE" and
+                            x["status"] == "PENDING" for x in pending))
+        self.assertIn(self.replay_id, self.r.sleep.cycle.queue.load()[0]["items"])
+        self.r.close()
+        self.r = Runtime(Path(self.temp.name))
+        self.assertIn(self.replay_id, self.r.sleep.cycle.queue.load()[0]["items"])
+        self.assertTrue(any(x["kind"] == "REPLAY_DUE" and
+                            x["status"] == "PENDING"
+                            for x in self.r.sleep.scheduler.pending()))
+        self.assertEqual(self.r.cfg["learning_mode"], "RECORD_ONLY")
+
     def test_disabled_sleep_does_not_index_or_post_background_wake(self):
         posts = self.tick(enabled=False)
         self.assertNotIn("REPLAY_DUE", posts)
