@@ -14,14 +14,41 @@ PARAM_ID=re.compile(r'[A-Za-z0-9_.:/-]{1,160}\Z')
 ARTIFACTS=('model','master','runner','requantizer')
 
 
+def _bound_path(home, rel):
+    """Reject absolute/traversal paths and symlinked components before hashing.
+
+    This checks a stable operator-owned tree, not a hostile concurrent rename
+    race. No training authority follows from a bound descriptor.
+    """
+    if not isinstance(rel,(str,Path)) or not str(rel) or '\\' in str(rel):
+        return None
+    relative=Path(rel)
+    if relative.is_absolute() or not relative.parts or '..' in relative.parts:
+        return None
+    path=home/relative
+    try:
+        if not path.resolve().is_relative_to(home):
+            return None
+        current=home
+        for part in relative.parts:
+            current=current/part
+            if current.is_symlink():
+                return None
+    except (OSError,RuntimeError,ValueError):
+        return None
+    return path
+
+
 def _ids(value,limit=4096):
     return isinstance(value,list) and 0<len(value)<=limit and len(set(value))==len(value) and all(isinstance(x,str) and PARAM_ID.fullmatch(x) for x in value)
 
 
 def inspect_train_port(home, role, descriptor='config/native-body-train-port.json'):
-    home=Path(home); path=home/descriptor
+    home=Path(home).resolve()
     base={'role':role,'available':False,'update_authority':0,'reason':'NO_DECLARED_NATIVE_TRAIN_PORT'}
-    if not path.is_file(): return base
+    path=_bound_path(home,descriptor)
+    if path is None:return base|{'reason':'INVALID_TRAIN_PORT_DESCRIPTOR'}
+    if not path.is_file():return base
     try: d=json.loads(path.read_text())
     except Exception: return base|{'reason':'INVALID_TRAIN_PORT_DESCRIPTOR'}
     if not isinstance(d,dict) or d.get('schema')!='v13-native-body-train-port-v1' or d.get('role')!=role:
@@ -46,7 +73,8 @@ def inspect_train_port(home, role, descriptor='config/native-body-train-port.jso
         rel=d[key+'_artifact']; expected=d[key+'_sha256']
         if not isinstance(rel,str) or rel.startswith('/') or '..' in Path(rel).parts or not re.fullmatch(r'[a-f0-9]{64}',str(expected)):
             return base|{'reason':'INVALID_ARTIFACT_BINDING'}
-        p=home/rel
+        p=_bound_path(home,rel)
+        if p is None:return base|{'reason':'INVALID_ARTIFACT_BINDING'}
         if not p.is_file():return base|{'reason':'MISSING_'+key.upper()+'_ARTIFACT'}
         actual=file_hash(p);measured[key]={'path':rel,'sha256':actual,'bytes':p.stat().st_size}
         if actual!=expected:return base|{'reason':'HASH_MISMATCH_'+key.upper(),'artifacts':measured}
