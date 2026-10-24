@@ -1,0 +1,23 @@
+# Run93 preregistered ContextOS quote loss RED (verbatim bounded CI excerpt)
+# Full raw log: https://github.com/RedMentos/Aii/actions/runs/40135943150 (job 120997361869)
+# Test-only head 8a24bbd2f1d972816ae370fd9d422c26a6c36301, FAILURE. Excerpt only.
+2026-10-24T21:50:22.8099691Z test_english_curly_double_quote_survives_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_english_curly_double_quote_survives_compression) ... FAIL
+2026-10-24T21:50:22.8105219Z test_existing_short_ascii_and_german_quotes_remain_exact (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_existing_short_ascii_and_german_quotes_remain_exact) ... ok
+2026-10-24T21:50:22.8107766Z test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) ... 
+2026-10-24T21:50:22.8109747Z   test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) (opener='"') ... FAIL
+2026-10-24T21:50:22.8115005Z   test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) (opener='„') ... FAIL
+2026-10-24T21:50:22.8121643Z test_oversized_quote_forces_raw_not_lossy_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_oversized_quote_forces_raw_not_lossy_compression) ... FAIL
+2026-10-24T21:50:34.5791118Z FAIL: test_english_curly_double_quote_survives_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_english_curly_double_quote_survives_compression)
+2026-10-24T21:50:34.5794153Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_exact_quotes_run93.py", line 23, in test_english_curly_double_quote_survives_compression
+2026-10-24T21:50:34.5796900Z AssertionError: '“the river is silver”' not found in []
+2026-10-24T21:50:34.5798576Z FAIL: test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) (opener='"')
+2026-10-24T21:50:34.5801199Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_exact_quotes_run93.py", line 33, in test_long_ascii_and_german_quotes_survive
+2026-10-24T21:50:34.5804124Z AssertionError: '"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"' not found in []
+2026-10-24T21:50:34.5807112Z FAIL: test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) (opener='„')
+2026-10-24T21:50:34.5809775Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_exact_quotes_run93.py", line 33, in test_long_ascii_and_german_quotes_survive
+2026-10-24T21:50:34.5812683Z AssertionError: '„xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx“' not found in []
+2026-10-24T21:50:34.5815540Z FAIL: test_oversized_quote_forces_raw_not_lossy_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_oversized_quote_forces_raw_not_lossy_compression)
+2026-10-24T21:50:34.5818144Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_exact_quotes_run93.py", line 40, in test_oversized_quote_forces_raw_not_lossy_compression
+2026-10-24T21:50:34.5825097Z AssertionError: '“xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx”' not found in []
+2026-10-24T21:50:34.5830847Z Ran 401 tests in 11.848s
+2026-10-24T21:50:34.5831182Z FAILED (failures=4)

@@ -53,6 +53,7 @@ jobs:
             tests.test_world_model_integration_run64 \
             tests.test_world_align_finite_run65 \
             tests.test_context_exact_pin_run73 \
+            tests.test_context_exact_quotes_run93 \
             tests.test_context_os \
             tests.test_context_append_provenance_run74 \
             tests.test_jefoutcome \
@@ -169,6 +170,7 @@ jobs:
             tests.test_body_train_port_paths_run90 \
             tests.test_body_train_port_schema_run91 \
             tests.test_jef_outcome_vocab_run92 \
+            tests.test_context_exact_quotes_run93 \
             tests.test_package_source
           "$GITHUB_WORKSPACE/.venv/bin/python" - <<'PY'
           import os
