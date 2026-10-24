@@ -233,7 +233,10 @@ class Operator:
             if args==['runner']:return '\n'.join(p.name+'\n'+safe_text(p.read_text(errors='replace')[-4000:]) for p in (r.home/'logs').glob('*.log'))
             return dumps(s.rows('SELECT * FROM telemetry ORDER BY id DESC LIMIT 20'))
         if cmd=='chats':return dumps(s.rows('SELECT * FROM sessions ORDER BY created DESC'))
-        if cmd=='search':return dumps(s.rows("SELECT session_id,event_id,role,text FROM messages WHERE text LIKE ? ORDER BY id DESC LIMIT 30",('%'+' '.join(args)+'%',)))
+        if cmd=='search':
+            # SQLite LIKE treats % and _ as wildcards; operator search is literal text.
+            literal=' '.join(args).replace('\\','\\\\').replace('%','\\%').replace('_','\\_')
+            return dumps(s.rows("SELECT session_id,event_id,role,text FROM messages WHERE text LIKE ? ESCAPE '\\' ORDER BY id DESC LIMIT 30",('%'+literal+'%',)))
         if cmd=='memory':return dumps(s.rows('SELECT id,kind,scope,key_text,value FROM memories WHERE active=1 AND (session_id=? OR scope=?)',(r.session,'global')))
         if cmd=='experience':
             last=r.last_answer();eid=args[0] if len(args)==1 else (last['event_id'] if not args and last else None)
