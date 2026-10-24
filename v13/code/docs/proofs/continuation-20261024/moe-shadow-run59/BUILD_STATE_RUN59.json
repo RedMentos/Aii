@@ -1,0 +1,13 @@
+{
+  "schema":"V13_RUN59_ISOLATED_CHECKPOINT_V1",
+  "date":"2026-10-24",
+  "owner":"moe-shadow-run59/* only",
+  "base":"1c346721a90e76924f800f5a3c1cbc1aa7591bdb",
+  "prereg_commit":"646b9c065c4dacf6ef5c22007874d22b31fa02dc",
+  "status":"MOE_PHASE_B_SYNTHETIC_SHADOW_DELTA_NOT_PRODUCTION",
+  "metrics":{"new_mse_before":0.125,"new_mse_after":6.548361852765083e-11,"old_retention":1.0,"route_shift":0.0,"router_drift":0.0,"shared_drift":0.0,"base_drift":0.0,"collision":0.0,"expert_delta_norm":0.9999770522117615},
+  "tests":{"first":"6/6 PASS","adversarial_error_modulator_red":"FAIL_REPRODUCED","final":"7/7 PASS","optimized":"7/7 PASS","compileall":"PASS","evidence":"LINUX_SYNTHETIC_PYTORCH","native_sparse":"NOT_RUN","redmi":"NOT_RUN","full_repo":"NOT_RUN","official_privacy_scan":"NOT_RUN"},
+  "gates":{"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"full_V13":"INCOMPLETE"},
+  "limitations":["No real B1/B2 MoE weights or sparse native training","No real source/age approval integration","No retention on natural language tasks","No phone or resource proof"],
+  "next":"Full checkout independent review; connect source-bound shadow receipt, actual B1/B2 sparse expert probes, unchanged native TrainRunnerProof and retention gates"
+}
