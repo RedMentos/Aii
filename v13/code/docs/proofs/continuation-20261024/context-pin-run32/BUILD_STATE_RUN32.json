@@ -1,0 +1,22 @@
+{
+  "schema": "V13_RUN32_STATE_V1",
+  "base": "f33b031714e43788a662dd2ca98ceeb93a5e6081",
+  "owner": "Codex Run32 isolated Context OS guard",
+  "production_integrated": false,
+  "tests": "10/10 PASS software synthetic",
+  "source_path_concern": "ContextOS budget loop includes pinned older turns; needs full Runtime reproduction",
+  "real_context_runtime": "NOT_RUN",
+  "native_kv": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "full_suite": "NOT_RUN",
+  "privacy_scan": "NOT_RUN",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Full-checkout actual ContextOS.plan pinned-budget reproduction and guarded integration; continue independent canonical packages while blocked."
+}
