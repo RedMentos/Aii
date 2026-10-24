@@ -19,6 +19,7 @@ class Store:
           CREATE TABLE packets(id TEXT,kind TEXT,event_id TEXT,payload TEXT);
           CREATE TABLE feedback(event_id TEXT,source_id TEXT,kind TEXT,value TEXT,permission TEXT,created REAL);
           CREATE TABLE sources(id TEXT,deleted INTEGER,hash TEXT,chars INTEGER,kind TEXT);
+          CREATE TABLE events(id TEXT PRIMARY KEY,packet TEXT);
           CREATE INDEX packet_event ON packets(event_id,kind);
         """)
         self.labels=[]
@@ -44,15 +45,23 @@ class Store:
         return text[ref['char_start']:ref['char_end']]
     def add_self(self,context='ctx1',event='e1',component='wake',revision='rev',source='self1',decision='d1',packet_context=None,packet_event=None,packet_component=None,packet_revision=None):
         self.add_source(source)
-        self.labels.append({'component':component,'context_revision':revision,'context_sha256':context,
+        context_id='ctxsource_'+event
+        self.add_source(context_id,text=context,kind='USER')
+        ref={'source_id':context_id,'sha256':hashlib.sha256(context.encode()).hexdigest(),
+             'char_start':0,'char_end':len(context),'modality':'text'}
+        self.db.execute('INSERT INTO events VALUES (?,?)',(event,json.dumps({'source_ref':ref})))
+        self.labels.append({'component':component,'context_revision':revision,'context_sha256':ref['sha256'],
                             'decision_packet_id':decision,'source_id':source,'event_id':event,'value':'detail'})
+        decision_ref=dict(ref)
+        if packet_context is not None:
+            decision_ref['sha256']=hashlib.sha256(packet_context.encode()).hexdigest()
         payload={'packet_id':decision,'event_id':packet_event or event,'component':packet_component or component,
-                 'context_revision':packet_revision or revision,'context_ref':{'sha256':packet_context or context}}
+                 'context_revision':packet_revision or revision,'context_ref':decision_ref,'provenance':[ref]}
         self.db.execute('INSERT INTO packets VALUES (?,?,?,?)',(decision,'ExecutiveDecision',packet_event or event,json.dumps(payload)))
     def add_human(self,context='ctx1',event='e1',source='human1',decision='hd1',deleted=0):
         self.add_source(source,deleted)
         self.db.execute('INSERT INTO feedback VALUES (?,?,?,?,?,?)',(event,source,'wake','detail','record',1.))
-        self.db.execute('INSERT INTO packets VALUES (?,?,?,?)',(decision,'ExecutiveDecision',event,json.dumps({'packet_id':decision,'event_id':event,'component':'wake','context_revision':'rev','context_ref':{'sha256':context}})))
+        self.db.execute('INSERT INTO packets VALUES (?,?,?,?)',(decision,'ExecutiveDecision',event,json.dumps({'packet_id':decision,'event_id':event,'component':'wake','context_revision':'rev','context_ref':{'sha256':hashlib.sha256(context.encode()).hexdigest()}})))
         self.db.execute('INSERT INTO packets VALUES (?,?,?,?)',('p-'+source,'HumanDecision',event,json.dumps({'source_ref':{'source_id':source},'decision_packet_id':decision})))
     def close(self):self.db.close()
 
@@ -113,8 +122,9 @@ class JefOutcomeLineage(unittest.TestCase):
 
     def test_chunked_exact_human_lookup(self):
         self.s.add_human()
-        keys=['ctx'+str(i) for i in range(500)]+['ctx1']
-        self.assertEqual(blocked_human_contexts(self.s,'wake','rev',keys),{'ctx1'})
+        ctx=hashlib.sha256(b'ctx1').hexdigest()
+        keys=['ctx'+str(i) for i in range(500)]+[ctx]
+        self.assertEqual(blocked_human_contexts(self.s,'wake','rev',keys),{ctx})
 
 
 if __name__=='__main__':unittest.main()
