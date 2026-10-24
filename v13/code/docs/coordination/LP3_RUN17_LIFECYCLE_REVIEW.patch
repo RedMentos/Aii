@@ -88,7 +88,7 @@
              record['ended_utc'] = utc()
 --- a/v13/code/tests/test_lp3_serial_cohort.py
 +++ b/v13/code/tests/test_lp3_serial_cohort.py
-@@ -157,6 +157,77 @@
+@@ -158,5 +158,77 @@
          self.assertFalse(self.evidence.exists())
  
  
