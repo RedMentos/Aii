@@ -1,0 +1,36 @@
+{
+  "schema": "V13_RUN72_FOCUSED_PUBLIC_CI_V1",
+  "date": "2026-10-24",
+  "base": "8af0ac96765b84829eea6995d4ca5cc700ba12e5",
+  "owner": ".github/workflows/v13-focused-proof.yml; Run72 docs/evidence",
+  "status": "ACTUAL_GITHUB_PUBLIC_LINUX_CI_46_OF_46_PASS_PRIVACY_CLEAN",
+  "tests": {
+    "local_yaml": "NOT RUN",
+    "remote_ci": "46/46 PASS (actual GitHub-hosted Linux, run 40129254641, job 120977241720)",
+    "full_repo": "NOT RUN",
+    "official_privacy": "CLEAN (base 8af0ac967..HEAD)",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN",
+    "actual_v13_import": "PASS for 46 selected tests; full suite NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "constraints": [
+    "Public standard GitHub-hosted runner only, free per official docs",
+    "No secrets, no model downloads, contents:read, 10-minute timeout, cancellation",
+    "Sparse checkout v13/code and focused tests, not full suite"
+  ],
+  "next": "Review new workflow path-filter rerun; then expand actual CI tests to JEF Run67, Callosum Run66, Context OS, without claiming full suite. Native/Redmi unchanged.",
+  "user_decision_required": false,
+  "evidence": {
+    "run_id": 40129254641,
+    "job_id": 120977241720,
+    "raw_log_blob": "bbadfcb14b82e0da7d4545631968539e70e6976b",
+    "raw_log_path": "v13/code/docs/proofs/continuation-20261024/ci-focused-run72/CI_JOB_120977241720_RAW.log"
+  }
+}
