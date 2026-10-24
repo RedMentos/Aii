@@ -1,0 +1,23 @@
+{
+  "schema": "V13_RUN31_STATE_V1",
+  "base": "c9866a8ac47dbd1285aa6ebc59f7b3cf55f6d1ca",
+  "owner": "Codex Run31 isolated Age source majority candidate",
+  "production_integrated": false,
+  "tests": "7/7 PASS software",
+  "synthetic_cohort": "PASS_SYNTHETIC_ONLY: 98/100 shift detected, 0/100 false shift; v1 51/100 and 0/100",
+  "source_independence": "UNVERIFIED; correlated-source spoof reproduced",
+  "age_reopen_original": "FAIL_UNCHANGED",
+  "native_model": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "full_suite": "NOT_RUN",
+  "privacy_scan": "NOT_RUN",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Independently verify provenance; adapt to continuous Z8 stream; preregister real AgeControl K1-K7 experiment before any product integration."
+}

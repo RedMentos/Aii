@@ -1,0 +1,20 @@
+{
+  "schema": "V13_RUN31_AGE_SOURCE_COHORT_SUMMARY_V2",
+  "prereg_sha256": "ed420b65893ff7b1e03a6edb30019415ab5f7537e872a8b33ba9aff2220b67d5",
+  "seed_range": [
+    100,
+    199
+  ],
+  "v2_shift_detected": 98,
+  "v2_false_shift": 0,
+  "v1_shift_detected": 51,
+  "v1_false_shift": 0,
+  "criteria": {
+    "shift_at_least_90": true,
+    "false_shift_at_most_5": true
+  },
+  "verdict": "PASS_SYNTHETIC_ONLY",
+  "source_independence_verified": false,
+  "age_control_test": "NOT_RUN",
+  "gate_promotions": false
+}
