@@ -71,6 +71,14 @@ class ContextExactPin(unittest.TestCase):
         self.assertFalse(p['applied'])
         self.assertEqual([x['form'] for x in p['plan']['items'] if x.get('pinned')],['RAW'])
 
+    def test_unapplied_budget_plan_never_seeds_native_append_transcript(self):
+        s=FakeStore()
+        c=ContextOS(s,{'context_tokens':100,'answer_tokens':10})
+        c.set_mode('ACTIVE',authority='EXPLICIT_HUMAN')
+        out=c.plan('new-event','B1_DETAIL','SYSTEM',[],history(5,150),'next')
+        self.assertFalse(out['applied'])
+        self.assertNotIn('B1_DETAIL',s.st.get('transcripts',{}))
+
     def test_exact_numeric_code_in_pinned_turn_remains_verbatim(self):
         turns=history(5,chars=100)
         turns[-2]['text']='Pinned exact number 123456789 and code `x=42` '+('z'*300)
