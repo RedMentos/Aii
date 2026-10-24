@@ -1,0 +1,264 @@
+﻿2026-10-24T23:17:08.0167417Z Current runner version: '2.338.0'
+2026-10-24T23:17:08.0187423Z ##[group]Runner Image Provisioner
+2026-10-24T23:17:08.0188102Z Hosted Compute Agent
+2026-10-24T23:17:08.0188659Z Version: 20261021.618
+2026-10-24T23:17:08.0189173Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-24T23:17:08.0189808Z Build Date: 2026-10-21T00:45:21Z
+2026-10-24T23:17:08.0190411Z Worker ID: {6f6edfb0-1365-4e04-8255-33226a4fcf39}
+2026-10-24T23:17:08.0190970Z Region: westus3
+2026-10-24T23:17:08.0191450Z Cloud: Azure
+2026-10-24T23:17:08.0191884Z ##[endgroup]
+2026-10-24T23:17:08.0193310Z ##[group]Operating System
+2026-10-24T23:17:08.0193851Z Ubuntu
+2026-10-24T23:17:08.0194287Z 26.04.1
+2026-10-24T23:17:08.0194755Z LTS
+2026-10-24T23:17:08.0195181Z ##[endgroup]
+2026-10-24T23:17:08.0195693Z ##[group]Runner Image
+2026-10-24T23:17:08.0196244Z Image: ubuntu-26.04
+2026-10-24T23:17:08.0196702Z Version: 20261012.163.1
+2026-10-24T23:17:08.0198090Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-24T23:17:08.0199323Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-24T23:17:08.0200146Z ##[endgroup]
+2026-10-24T23:17:08.0201026Z ##[group]GITHUB_TOKEN Permissions
+2026-10-24T23:17:08.0202567Z Contents: read
+2026-10-24T23:17:08.0203075Z Metadata: read
+2026-10-24T23:17:08.0203592Z ##[endgroup]
+2026-10-24T23:17:08.0205339Z Secret source: Actions
+2026-10-24T23:17:08.0206132Z Cache mode: write
+2026-10-24T23:17:08.0206687Z Prepare workflow directory
+2026-10-24T23:17:08.1496786Z Prepare all required actions
+2026-10-24T23:17:08.1553864Z Getting action download info
+2026-10-24T23:17:08.4257826Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-24T23:17:08.9010333Z Complete job name: semantic
+2026-10-24T23:17:08.9679275Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-24T23:17:08.9680095Z with:
+2026-10-24T23:17:08.9680550Z   persist-credentials: false
+2026-10-24T23:17:08.9681190Z   fetch-depth: 50
+2026-10-24T23:17:08.9681553Z   repository: RedMentos/Aii
+2026-10-24T23:17:08.9684747Z   token: ***
+2026-10-24T23:17:08.9685089Z   ssh-strict: true
+2026-10-24T23:17:08.9685440Z   ssh-user: git
+2026-10-24T23:17:08.9685776Z   clean: true
+2026-10-24T23:17:08.9686130Z   sparse-checkout-cone-mode: true
+2026-10-24T23:17:08.9686685Z   fetch-tags: false
+2026-10-24T23:17:08.9687078Z   show-progress: true
+2026-10-24T23:17:08.9687581Z   lfs: false
+2026-10-24T23:17:08.9687911Z   submodules: false
+2026-10-24T23:17:08.9688271Z   set-safe-directory: true
+2026-10-24T23:17:08.9688882Z ##[endgroup]
+2026-10-24T23:17:09.0532131Z Syncing repository: RedMentos/Aii
+2026-10-24T23:17:09.0533489Z ##[group]Getting Git version info
+2026-10-24T23:17:09.0534062Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-24T23:17:09.0534846Z [command]/usr/bin/git version
+2026-10-24T23:17:09.0535246Z git version 2.55.0
+2026-10-24T23:17:09.0536463Z ##[endgroup]
+2026-10-24T23:17:09.0543565Z Temporarily overriding HOME='/home/runner/work/_temp/01140ac3-77cb-4f31-aa68-a6f492a8210f' before making global git config changes
+2026-10-24T23:17:09.0544825Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:17:09.0547794Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:17:09.0626783Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-24T23:17:09.0628629Z ##[group]Initializing the repository
+2026-10-24T23:17:09.0634482Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-24T23:17:09.0784070Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-24T23:17:09.0785632Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-24T23:17:09.0787131Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-24T23:17:09.0788487Z hint: call:
+2026-10-24T23:17:09.0791160Z hint:
+2026-10-24T23:17:09.0792418Z hint: 	git config --global init.defaultBranch <name>
+2026-10-24T23:17:09.0793344Z hint:
+2026-10-24T23:17:09.0794184Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-24T23:17:09.0795541Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-24T23:17:09.0796643Z hint:
+2026-10-24T23:17:09.0797448Z hint: 	git branch -m <name>
+2026-10-24T23:17:09.0798225Z hint:
+2026-10-24T23:17:09.0799140Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-24T23:17:09.0800941Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-24T23:17:09.0803398Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-24T23:17:09.0848791Z ##[endgroup]
+2026-10-24T23:17:09.0849909Z ##[group]Disabling automatic garbage collection
+2026-10-24T23:17:09.0851990Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-24T23:17:09.0888631Z ##[endgroup]
+2026-10-24T23:17:09.0889841Z ##[group]Setting up auth
+2026-10-24T23:17:09.0895926Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:17:09.0936825Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:17:09.1328630Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:17:09.1358690Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:17:09.1592883Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-24T23:17:09.1631927Z ##[endgroup]
+2026-10-24T23:17:09.1632830Z ##[group]Fetching the repository
+2026-10-24T23:17:09.1641529Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=50 origin +9621129df071635d8c834c2c40d8308856c8cf6e:refs/remotes/pull/136/merge
+2026-10-24T23:17:16.9276194Z From https://github.com/RedMentos/Aii
+2026-10-24T23:17:16.9278505Z  * [new ref]         9621129df071635d8c834c2c40d8308856c8cf6e -> pull/136/merge
+2026-10-24T23:17:16.9283137Z ##[endgroup]
+2026-10-24T23:17:16.9284457Z ##[group]Determining the checkout info
+2026-10-24T23:17:16.9285993Z ##[endgroup]
+2026-10-24T23:17:16.9286971Z [command]/usr/bin/git sparse-checkout disable
+2026-10-24T23:17:16.9332589Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-24T23:17:16.9359748Z ##[group]Checking out the ref
+2026-10-24T23:17:16.9363526Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/136/merge
+2026-10-24T23:17:17.9418359Z Updating files:  59% (2010/3356)
+2026-10-24T23:17:17.9435386Z Updating files:  60% (2014/3356)
+2026-10-24T23:17:17.9458984Z Updating files:  61% (2048/3356)
+2026-10-24T23:17:17.9474399Z Updating files:  62% (2081/3356)
+2026-10-24T23:17:17.9490122Z Updating files:  63% (2115/3356)
+2026-10-24T23:17:17.9509586Z Updating files:  64% (2148/3356)
+2026-10-24T23:17:17.9526748Z Updating files:  65% (2182/3356)
+2026-10-24T23:17:17.9547041Z Updating files:  66% (2215/3356)
+2026-10-24T23:17:17.9568201Z Updating files:  67% (2249/3356)
+2026-10-24T23:17:17.9581683Z Updating files:  68% (2283/3356)
+2026-10-24T23:17:17.9593577Z Updating files:  69% (2316/3356)
+2026-10-24T23:17:17.9604384Z Updating files:  70% (2350/3356)
+2026-10-24T23:17:17.9618521Z Updating files:  71% (2383/3356)
+2026-10-24T23:17:17.9637512Z Updating files:  72% (2417/3356)
+2026-10-24T23:17:17.9650686Z Updating files:  73% (2450/3356)
+2026-10-24T23:17:17.9668596Z Updating files:  74% (2484/3356)
+2026-10-24T23:17:17.9681790Z Updating files:  75% (2517/3356)
+2026-10-24T23:17:17.9697422Z Updating files:  76% (2551/3356)
+2026-10-24T23:17:17.9719559Z Updating files:  77% (2585/3356)
+2026-10-24T23:17:17.9739167Z Updating files:  78% (2618/3356)
+2026-10-24T23:17:17.9760834Z Updating files:  79% (2652/3356)
+2026-10-24T23:17:17.9785172Z Updating files:  80% (2685/3356)
+2026-10-24T23:17:17.9809344Z Updating files:  81% (2719/3356)
+2026-10-24T23:17:17.9831327Z Updating files:  82% (2752/3356)
+2026-10-24T23:17:17.9854226Z Updating files:  83% (2786/3356)
+2026-10-24T23:17:18.0393450Z Updating files:  84% (2820/3356)
+2026-10-24T23:17:18.0412343Z Updating files:  85% (2853/3356)
+2026-10-24T23:17:18.0427154Z Updating files:  86% (2887/3356)
+2026-10-24T23:17:18.0443202Z Updating files:  87% (2920/3356)
+2026-10-24T23:17:18.0461536Z Updating files:  88% (2954/3356)
+2026-10-24T23:17:18.0477939Z Updating files:  89% (2987/3356)
+2026-10-24T23:17:18.0494139Z Updating files:  90% (3021/3356)
+2026-10-24T23:17:18.0510638Z Updating files:  91% (3054/3356)
+2026-10-24T23:17:18.0527397Z Updating files:  92% (3088/3356)
+2026-10-24T23:17:18.0544357Z Updating files:  93% (3122/3356)
+2026-10-24T23:17:18.0570801Z Updating files:  94% (3155/3356)
+2026-10-24T23:17:18.0589822Z Updating files:  95% (3189/3356)
+2026-10-24T23:17:18.0610912Z Updating files:  96% (3222/3356)
+2026-10-24T23:17:18.0633426Z Updating files:  97% (3256/3356)
+2026-10-24T23:17:18.0670985Z Updating files:  98% (3289/3356)
+2026-10-24T23:17:18.0696605Z Updating files:  99% (3323/3356)
+2026-10-24T23:17:18.0697057Z Updating files: 100% (3356/3356)
+2026-10-24T23:17:18.0699049Z Updating files: 100% (3356/3356), done.
+2026-10-24T23:17:18.1083862Z Note: switching to 'refs/remotes/pull/136/merge'.
+2026-10-24T23:17:18.1084344Z 
+2026-10-24T23:17:18.1084640Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-24T23:17:18.1085318Z changes and commit them, and you can discard any commits you make in this
+2026-10-24T23:17:18.1085985Z state without impacting any branches by switching back to a branch.
+2026-10-24T23:17:18.1086369Z 
+2026-10-24T23:17:18.1087049Z If you want to create a new branch to retain commits you create, you may
+2026-10-24T23:17:18.1087846Z do so (now or later) by using -c with the switch command. Example:
+2026-10-24T23:17:18.1088220Z 
+2026-10-24T23:17:18.1088396Z   git switch -c <new-branch-name>
+2026-10-24T23:17:18.1088658Z 
+2026-10-24T23:17:18.1088810Z Or undo this operation with:
+2026-10-24T23:17:18.1089058Z 
+2026-10-24T23:17:18.1089198Z   git switch -
+2026-10-24T23:17:18.1089397Z 
+2026-10-24T23:17:18.1089712Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-24T23:17:18.1090146Z 
+2026-10-24T23:17:18.1090641Z HEAD is now at 9621129 Merge d3a3eadba6fab1a890ffcfeae55a1a8c6ef186c5 into 9de124ff64dc04aba2db22ad15f29616d124376b
+2026-10-24T23:17:18.1171338Z ##[endgroup]
+2026-10-24T23:17:18.1249020Z [command]/usr/bin/git log -1 --format=%H
+2026-10-24T23:17:18.1270367Z 9621129df071635d8c834c2c40d8308856c8cf6e
+2026-10-24T23:17:18.1279481Z ##[group]Removing auth
+2026-10-24T23:17:18.1282244Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:17:18.1306890Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:17:18.1568902Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:17:18.1572069Z http.https://github.com/.extraheader
+2026-10-24T23:17:18.1577137Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-24T23:17:18.1827082Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:17:18.2057112Z ##[endgroup]
+2026-10-24T23:17:18.2429985Z ##[group]Run set -euo pipefail
+2026-10-24T23:17:18.2430495Z [36;1mset -euo pipefail[0m
+2026-10-24T23:17:18.2430788Z [36;1mpython3 -m venv .venv[0m
+2026-10-24T23:17:18.2431277Z [36;1m.venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-24T23:17:18.2574266Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:17:18.2574670Z ##[endgroup]
+2026-10-24T23:17:20.9704929Z Collecting numpy==2.3.5
+2026-10-24T23:17:20.9865155Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-24T23:17:21.0125742Z Collecting prompt-toolkit==3.0.52
+2026-10-24T23:17:21.0160246Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-24T23:17:21.0305213Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-24T23:17:21.0331948Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-24T23:17:21.0393759Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-24T23:17:21.2552128Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 77.5 MB/s eta 0:00:00
+2026-10-24T23:17:21.2580739Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-24T23:17:21.2644239Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-24T23:17:21.2710686Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 108.0 MB/s eta 0:00:00
+2026-10-24T23:17:21.3010072Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-24T23:17:22.9196417Z 
+2026-10-24T23:17:22.9205935Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-24T23:17:23.0100816Z ##[group]Run set -euo pipefail
+2026-10-24T23:17:23.0101094Z [36;1mset -euo pipefail[0m
+2026-10-24T23:17:23.0101338Z [36;1m../../.venv/bin/python -m compileall -q v13 tests[0m
+2026-10-24T23:17:23.0101620Z [36;1m../../.venv/bin/python -m unittest -v \[0m
+2026-10-24T23:17:23.0101912Z [36;1m  tests.test_semantic_cache_integrity_run104 \[0m
+2026-10-24T23:17:23.0102173Z [36;1m  tests.test_semantic_memory \[0m
+2026-10-24T23:17:23.0102398Z [36;1m  tests.test_retrieval \[0m
+2026-10-24T23:17:23.0102631Z [36;1m  tests.test_memory_user_rule_gate_run103[0m
+2026-10-24T23:17:23.0159443Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:17:23.0159683Z ##[endgroup]
+2026-10-24T23:17:23.0355943Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:17:23.0356996Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:17:23.7569578Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:17:23.7570947Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:17:23.9469460Z test_boolean_cache_is_not_a_real_embedding_coordinate (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_boolean_cache_is_not_a_real_embedding_coordinate) ... ok
+2026-10-24T23:17:23.9581345Z test_non_numeric_cache_reencodes_instead_of_crashing (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_non_numeric_cache_reencodes_instead_of_crashing) ... ok
+2026-10-24T23:17:23.9693813Z test_poisoned_cache_cannot_bypass_encoder_failure (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_poisoned_cache_cannot_bypass_encoder_failure) ... ok
+2026-10-24T23:17:23.9891436Z test_poisoned_cache_stays_untrusted_after_restart (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_poisoned_cache_stays_untrusted_after_restart) ... ok
+2026-10-24T23:17:24.0009169Z test_rounded_near_unit_cache_reused (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_rounded_near_unit_cache_reused) ... ok
+2026-10-24T23:17:24.0123589Z test_sqlite_infinity_cache_does_not_become_perfect_relevance (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_sqlite_infinity_cache_does_not_become_perfect_relevance) ... ok
+2026-10-24T23:17:24.0238090Z test_sqlite_nan_cache_does_not_become_perfect_relevance (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_sqlite_nan_cache_does_not_become_perfect_relevance) ... ok
+2026-10-24T23:17:24.0352569Z test_unnormalized_cache_does_not_clip_to_perfect_relevance (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_unnormalized_cache_does_not_clip_to_perfect_relevance) ... ok
+2026-10-24T23:17:24.0466568Z test_valid_unit_cache_reused_without_key_reencoding (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_valid_unit_cache_reused_without_key_reencoding) ... ok
+2026-10-24T23:17:24.0468042Z test_matryoshka_truncation_and_modes (tests.test_semantic_memory.SemanticPieces.test_matryoshka_truncation_and_modes) ... ok
+2026-10-24T23:17:24.0588573Z test_optional_model_role_is_pinned_and_not_a_runtime_revision (tests.test_semantic_memory.SemanticPieces.test_optional_model_role_is_pinned_and_not_a_runtime_revision) ... ok
+2026-10-24T23:17:24.0708873Z test_encoder_failure_falls_back_to_lexical_and_cancel_propagates (tests.test_semantic_memory.SemanticRecall.test_encoder_failure_falls_back_to_lexical_and_cancel_propagates) ... ok
+2026-10-24T23:17:24.0825085Z test_entity_guard_and_unrelated_question_stay_out (tests.test_semantic_memory.SemanticRecall.test_entity_guard_and_unrelated_question_stay_out) ... ok
+2026-10-24T23:17:24.0952167Z test_key_cache_reused_invalidated_by_revision_and_removed_by_forget (tests.test_semantic_memory.SemanticRecall.test_key_cache_reused_invalidated_by_revision_and_removed_by_forget) ... ok
+2026-10-24T23:17:24.1091817Z test_new_keys_beyond_cap_are_deferred (tests.test_semantic_memory.SemanticRecall.test_new_keys_beyond_cap_are_deferred) ... ok
+2026-10-24T23:17:24.1212083Z test_paraphrase_found_only_by_embedding_and_value_comes_from_source (tests.test_semantic_memory.SemanticRecall.test_paraphrase_found_only_by_embedding_and_value_comes_from_source) ... ok
+2026-10-24T23:17:24.1329734Z test_shadow_measures_without_admitting (tests.test_semantic_memory.SemanticRecall.test_shadow_measures_without_admitting) ... ok
+2026-10-24T23:17:24.1462598Z test_feedback_is_query_source_bound_and_never_creates_fact (tests.test_retrieval.RetrievalAuthority.test_feedback_is_query_source_bound_and_never_creates_fact) ... ok
+2026-10-24T23:17:24.1810715Z test_inadmissible_entities_do_not_exhaust_semantic_candidate_budget (tests.test_retrieval.RetrievalAuthority.test_inadmissible_entities_do_not_exhaust_semantic_candidate_budget) ... ok
+2026-10-24T23:17:24.2382255Z test_preempted_training_aborts_without_generation_change (tests.test_retrieval.RetrievalAuthority.test_preempted_training_aborts_without_generation_change) ... ok
+2026-10-24T23:17:24.2506307Z test_report_binds_only_approved_supported_relevance_and_exact_value (tests.test_retrieval.RetrievalAuthority.test_report_binds_only_approved_supported_relevance_and_exact_value) ... ok
+2026-10-24T23:17:24.2634643Z test_semantic_admit_reject_baseline_and_cross_entity_guard (tests.test_retrieval.RetrievalAuthority.test_semantic_admit_reject_baseline_and_cross_entity_guard) ... ok
+2026-10-24T23:17:24.2763282Z test_source_mutation_scope_and_provisional_input_refuse (tests.test_retrieval.RetrievalAuthority.test_source_mutation_scope_and_provisional_input_refuse) ... ok
+2026-10-24T23:17:28.3828884Z test_disjoint_memory_groups_gradient_ablation_reload_and_retention (tests.test_retrieval.RetrievalMath.test_disjoint_memory_groups_gradient_ablation_reload_and_retention) ... ok
+2026-10-24T23:17:28.3830286Z test_entity_guard_topic_transform_and_private_telemetry (tests.test_retrieval.RetrievalMath.test_entity_guard_topic_transform_and_private_telemetry) ... ok
+2026-10-24T23:17:28.5064810Z test_invalid_native_features_duplicate_pairs_and_one_memory_refuse (tests.test_retrieval.RetrievalMath.test_invalid_native_features_duplicate_pairs_and_one_memory_refuse) ... ok
+2026-10-24T23:17:28.5195856Z test_ask_first_never_auto_approves_memory_write (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_ask_first_never_auto_approves_memory_write) ... ok
+2026-10-24T23:17:28.5326185Z test_explicitly_switched_off_rule_allows_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_explicitly_switched_off_rule_allows_feedback) ... ok
+2026-10-24T23:17:28.5445787Z test_forget_remains_available_under_no_learn_rule (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_forget_remains_available_under_no_learn_rule) ... ok
+2026-10-24T23:17:28.5563593Z test_no_learn_conversation_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_learn_conversation_blocks_feedback) ... ok
+2026-10-24T23:17:28.5952511Z test_no_remember_rule_blocks_record_and_learn (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_remember_rule_blocks_record_and_learn) ... ok
+2026-10-24T23:17:28.6074049Z test_no_rule_still_allows_explicit_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_rule_still_allows_explicit_feedback) ... ok
+2026-10-24T23:17:28.6193153Z test_no_store_personal_details_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_store_personal_details_blocks_feedback) ... ok
+2026-10-24T23:17:28.6311751Z test_no_train_messages_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_train_messages_blocks_feedback) ... ok
+2026-10-24T23:17:28.6446717Z test_retrieval_feedback_refused_without_side_effects (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_retrieval_feedback_refused_without_side_effects) ... ok
+2026-10-24T23:17:28.6659732Z test_rule_survives_restart_and_still_blocks (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_rule_survives_restart_and_still_blocks) ... ok
+2026-10-24T23:17:28.6779758Z test_unreadable_rule_state_fails_closed (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_unreadable_rule_state_fails_closed) ... ok
+2026-10-24T23:17:28.6901713Z test_unrelated_send_rule_does_not_block_memory_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_unrelated_send_rule_does_not_block_memory_feedback) ... ok
+2026-10-24T23:17:28.6902480Z 
+2026-10-24T23:17:28.6902644Z ----------------------------------------------------------------------
+2026-10-24T23:17:28.6903044Z Ran 38 tests in 4.773s
+2026-10-24T23:17:28.6903206Z 
+2026-10-24T23:17:28.6908042Z OK
+2026-10-24T23:17:28.7728892Z ##[group]Run set -euo pipefail
+2026-10-24T23:17:28.7729259Z [36;1mset -euo pipefail[0m
+2026-10-24T23:17:28.7730008Z [36;1m.venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "9de124ff64dc04aba2db22ad15f29616d124376b" --head HEAD --no-worktree[0m
+2026-10-24T23:17:28.7784234Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:17:28.7784446Z ##[endgroup]
+2026-10-24T23:17:28.9371313Z privacy scan 9de124ff6..HEAD: CLEAN
+2026-10-24T23:17:29.0156483Z Post job cleanup.
+2026-10-24T23:17:29.0840364Z [command]/usr/bin/git version
+2026-10-24T23:17:29.0879819Z git version 2.55.0
+2026-10-24T23:17:29.1483885Z Temporarily overriding HOME='/home/runner/work/_temp/9dddfe3c-a8d4-4954-9193-c72022cd4a1e' before making global git config changes
+2026-10-24T23:17:29.1484900Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:17:29.1488851Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:17:29.1970760Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:17:29.2002682Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:17:29.2246691Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:17:29.2278316Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:17:29.2678838Z Cleaning up orphan processes
+2026-10-24T23:17:29.3005834Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

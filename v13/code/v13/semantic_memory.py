@@ -55,6 +55,24 @@ class EmbeddingEncoder:
             self.last_metrics={'texts':len(texts),'cold_load':cold,'duration_s':round(time.monotonic()-started,4)}
             if not self.cfg.get('memory_embed_keep'):self.unload()
 
+def _cached_unit_vector(value, dim):
+    """Only finite real unit vectors are eligible for relevance scoring.
+
+    Persisted SQLite cache is not a trusted encoder output. Six-decimal
+    rounding of stored coordinates needs a small norm tolerance; this does
+    not authenticate a forged *valid* unit vector.
+    """
+    if not isinstance(value, list) or len(value) != dim:
+        return False
+    try:
+        if any(type(x) not in (int, float) or not math.isfinite(x) for x in value):
+            return False
+        norm = math.hypot(*value)
+        return math.isfinite(norm) and abs(norm - 1.) <= 1e-3
+    except (OverflowError, TypeError, ValueError):
+        return False
+
+
 class SemanticKeys:
     """Cached key vectors per memory; cache keys carry the value source id so :forget removes them."""
     def __init__(self,store,cfg,encoder,revision=None):
@@ -70,7 +88,7 @@ class SemanticKeys:
         dim=self.cfg['memory_embed_dim'];started=time.monotonic();cached={};missing=[]
         for r in rows:
             v,_=self.s.state(self.cache_key(r))
-            if isinstance(v,list) and len(v)==dim:cached[r['id']]=v
+            if _cached_unit_vector(v,dim):cached[r['id']]=v
             else:missing.append(r)
         deferred=len(missing)-(cap if cap is not None else len(missing));missing=missing[:cap] if cap is not None else missing
         if time.monotonic()>=deadline:raise Limits('Semantic recall budget')

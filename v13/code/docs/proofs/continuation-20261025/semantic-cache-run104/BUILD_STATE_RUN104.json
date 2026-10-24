@@ -1,0 +1,45 @@
+{
+  "run": 104,
+  "utc_date": "2026-10-25",
+  "base_commit": "9de124ff64dc04aba2db22ad15f29616d124376b",
+  "branch": "codex/semantic-cache-finite-run104-20261025",
+  "pr": 136,
+  "owner": "semantic_memory.py only; no other runtime file modified",
+  "state": "ISOLATED_REVIEW_CANDIDATE_NOT_MERGED",
+  "finding": "Persisted nonfinite/unnormalized cache could falsely score perfect cosine relevance",
+  "red": {
+    "workflow_run": 40141905006,
+    "job": 121015225671,
+    "tests": 38,
+    "failures": 5,
+    "errors": 1
+  },
+  "green": {
+    "workflow_run": 40142095464,
+    "job": 121015778505,
+    "tests": 38,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS"
+  },
+  "scope": "real Linux GitHub Actions + real SQLite persisted state + synthetic vectors; not native embeddings, no Redmi",
+  "code": "Reject malformed cached vectors; re-encode source-bound key instead of scoring poisoned cache",
+  "review": "Checked normal rounded unit vectors remain reusable; malicious unit vector is NOT authenticated; encoder failure does not use poisoned cache",
+  "git_blobs": {
+    "v13/code/v13/semantic_memory.py": "14ca78a81711510b018330c9e2b038fa65e7189a",
+    "v13/code/tests/test_semantic_cache_integrity_run104.py": "fc684d408a5f8aa9112b86c23b1874eba7a841de",
+    ".github/workflows/v13-run104-semantic-cache.yml": "99c144a09347ad1778791d1e8ed3c2a2c7dde9d5",
+    "v13/code/docs/proofs/continuation-20261025/semantic-cache-run104/PREREG.md": "f4938057b06c55278aad5a2c08e9c1fd19442c12",
+    "v13/code/docs/proofs/continuation-20261025/semantic-cache-run104/CI_RED_FULL_RAW.log": "d09c381e5b4adfb683d038350127eaa515e39185",
+    "v13/code/docs/proofs/continuation-20261025/semantic-cache-run104/CI_GREEN_FULL_RAW.log": "7337b9c3a5e8cae56b4c26453bffeac7c7f5fe07"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_system": "INCOMPLETE"
+  },
+  "next": "Run105 separate skilllive.py ownership: prereg contradictory route-only TRUSTED skill test, reproduce RED in full-checkout CI, correct only route-consistency check, preserve old tests and raw logs. Native LP3/cgroup remains blocked pending delegated writable cgroup; do not promote."
+}

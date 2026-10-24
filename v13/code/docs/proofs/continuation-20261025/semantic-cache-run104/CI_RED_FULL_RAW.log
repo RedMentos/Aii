@@ -1,0 +1,352 @@
+﻿2026-10-24T23:14:28.3339220Z Current runner version: '2.338.0'
+2026-10-24T23:14:28.3363218Z ##[group]Runner Image Provisioner
+2026-10-24T23:14:28.3364152Z Hosted Compute Agent
+2026-10-24T23:14:28.3365210Z Version: 20261021.618
+2026-10-24T23:14:28.3365855Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-24T23:14:28.3366712Z Build Date: 2026-10-21T00:45:21Z
+2026-10-24T23:14:28.3367404Z Worker ID: {bd0dfd17-45fe-4c2b-b671-c4e18c74082a}
+2026-10-24T23:14:28.3368140Z Region: westus2
+2026-10-24T23:14:28.3368700Z Cloud: Azure
+2026-10-24T23:14:28.3369237Z ##[endgroup]
+2026-10-24T23:14:28.3371206Z ##[group]Operating System
+2026-10-24T23:14:28.3371859Z Ubuntu
+2026-10-24T23:14:28.3372454Z 26.04.1
+2026-10-24T23:14:28.3372990Z LTS
+2026-10-24T23:14:28.3373502Z ##[endgroup]
+2026-10-24T23:14:28.3374147Z ##[group]Runner Image
+2026-10-24T23:14:28.3375232Z Image: ubuntu-26.04
+2026-10-24T23:14:28.3375833Z Version: 20261012.163.1
+2026-10-24T23:14:28.3377195Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-24T23:14:28.3378878Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-24T23:14:28.3379858Z ##[endgroup]
+2026-10-24T23:14:28.3381025Z ##[group]GITHUB_TOKEN Permissions
+2026-10-24T23:14:28.3382914Z Contents: read
+2026-10-24T23:14:28.3383542Z Metadata: read
+2026-10-24T23:14:28.3384217Z ##[endgroup]
+2026-10-24T23:14:28.3386637Z Secret source: Actions
+2026-10-24T23:14:28.3387674Z Cache mode: write
+2026-10-24T23:14:28.3388350Z Prepare workflow directory
+2026-10-24T23:14:28.3750496Z Prepare all required actions
+2026-10-24T23:14:28.3823892Z Getting action download info
+2026-10-24T23:14:28.6879804Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-24T23:14:28.9088402Z Complete job name: semantic
+2026-10-24T23:14:28.9994072Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-24T23:14:28.9995431Z with:
+2026-10-24T23:14:28.9995963Z   persist-credentials: false
+2026-10-24T23:14:28.9996529Z   fetch-depth: 50
+2026-10-24T23:14:28.9997036Z   repository: RedMentos/Aii
+2026-10-24T23:14:29.0001066Z   token: ***
+2026-10-24T23:14:29.0001545Z   ssh-strict: true
+2026-10-24T23:14:29.0002033Z   ssh-user: git
+2026-10-24T23:14:29.0002502Z   clean: true
+2026-10-24T23:14:29.0002993Z   sparse-checkout-cone-mode: true
+2026-10-24T23:14:29.0003571Z   fetch-tags: false
+2026-10-24T23:14:29.0004073Z   show-progress: true
+2026-10-24T23:14:29.0004726Z   lfs: false
+2026-10-24T23:14:29.0005204Z   submodules: false
+2026-10-24T23:14:29.0005707Z   set-safe-directory: true
+2026-10-24T23:14:29.0006496Z ##[endgroup]
+2026-10-24T23:14:29.1028131Z Syncing repository: RedMentos/Aii
+2026-10-24T23:14:29.1030764Z ##[group]Getting Git version info
+2026-10-24T23:14:29.1031951Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-24T23:14:29.1033478Z [command]/usr/bin/git version
+2026-10-24T23:14:29.1077617Z git version 2.55.0
+2026-10-24T23:14:29.1102786Z ##[endgroup]
+2026-10-24T23:14:29.1119745Z Temporarily overriding HOME='/home/runner/work/_temp/e5a7f06b-5911-414b-92a1-bac792bd454e' before making global git config changes
+2026-10-24T23:14:29.1121947Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:14:29.1124307Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:14:29.1206242Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-24T23:14:29.1211555Z ##[group]Initializing the repository
+2026-10-24T23:14:29.1218054Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-24T23:14:29.1373047Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-24T23:14:29.1375115Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-24T23:14:29.1376814Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-24T23:14:29.1378143Z hint: call:
+2026-10-24T23:14:29.1378856Z hint:
+2026-10-24T23:14:29.1380139Z hint: 	git config --global init.defaultBranch <name>
+2026-10-24T23:14:29.1381082Z hint:
+2026-10-24T23:14:29.1382152Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-24T23:14:29.1383891Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-24T23:14:29.1385069Z hint:
+2026-10-24T23:14:29.1385588Z hint: 	git branch -m <name>
+2026-10-24T23:14:29.1386168Z hint:
+2026-10-24T23:14:29.1386884Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-24T23:14:29.1388447Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-24T23:14:29.1391515Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-24T23:14:29.1448288Z ##[endgroup]
+2026-10-24T23:14:29.1449470Z ##[group]Disabling automatic garbage collection
+2026-10-24T23:14:29.1451793Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-24T23:14:29.1491498Z ##[endgroup]
+2026-10-24T23:14:29.1492573Z ##[group]Setting up auth
+2026-10-24T23:14:29.1499337Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:14:29.1544055Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:14:29.2057199Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:14:29.2093809Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:14:29.2372692Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-24T23:14:29.2414226Z ##[endgroup]
+2026-10-24T23:14:29.2423774Z ##[group]Fetching the repository
+2026-10-24T23:14:29.2425825Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=50 origin +de46c28c3fc5c846ba952564c35e5a69f15d17ea:refs/remotes/pull/136/merge
+2026-10-24T23:14:36.6687896Z From https://github.com/RedMentos/Aii
+2026-10-24T23:14:36.6690644Z  * [new ref]         de46c28c3fc5c846ba952564c35e5a69f15d17ea -> pull/136/merge
+2026-10-24T23:14:36.6697108Z ##[endgroup]
+2026-10-24T23:14:36.6699211Z ##[group]Determining the checkout info
+2026-10-24T23:14:36.6701479Z ##[endgroup]
+2026-10-24T23:14:36.6705697Z [command]/usr/bin/git sparse-checkout disable
+2026-10-24T23:14:36.6775601Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-24T23:14:36.6806548Z ##[group]Checking out the ref
+2026-10-24T23:14:36.6810475Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/136/merge
+2026-10-24T23:14:37.7021314Z Updating files:  50% (1704/3355)
+2026-10-24T23:14:37.7777923Z Updating files:  51% (1712/3355)
+2026-10-24T23:14:37.8548205Z Updating files:  52% (1745/3355)
+2026-10-24T23:14:37.8618376Z Updating files:  53% (1779/3355)
+2026-10-24T23:14:37.8650159Z Updating files:  54% (1812/3355)
+2026-10-24T23:14:37.8688972Z Updating files:  55% (1846/3355)
+2026-10-24T23:14:37.8720267Z Updating files:  56% (1879/3355)
+2026-10-24T23:14:37.8737858Z Updating files:  57% (1913/3355)
+2026-10-24T23:14:37.8761425Z Updating files:  58% (1946/3355)
+2026-10-24T23:14:37.8781213Z Updating files:  59% (1980/3355)
+2026-10-24T23:14:37.8806676Z Updating files:  60% (2013/3355)
+2026-10-24T23:14:37.8837388Z Updating files:  61% (2047/3355)
+2026-10-24T23:14:37.8858458Z Updating files:  62% (2081/3355)
+2026-10-24T23:14:37.8878794Z Updating files:  63% (2114/3355)
+2026-10-24T23:14:37.8903892Z Updating files:  64% (2148/3355)
+2026-10-24T23:14:37.8926455Z Updating files:  65% (2181/3355)
+2026-10-24T23:14:37.8952936Z Updating files:  66% (2215/3355)
+2026-10-24T23:14:37.8981127Z Updating files:  67% (2248/3355)
+2026-10-24T23:14:37.8998918Z Updating files:  68% (2282/3355)
+2026-10-24T23:14:37.9015255Z Updating files:  69% (2315/3355)
+2026-10-24T23:14:37.9030039Z Updating files:  70% (2349/3355)
+2026-10-24T23:14:37.9048444Z Updating files:  71% (2383/3355)
+2026-10-24T23:14:37.9073605Z Updating files:  72% (2416/3355)
+2026-10-24T23:14:37.9090408Z Updating files:  73% (2450/3355)
+2026-10-24T23:14:37.9114727Z Updating files:  74% (2483/3355)
+2026-10-24T23:14:37.9131318Z Updating files:  75% (2517/3355)
+2026-10-24T23:14:37.9151380Z Updating files:  76% (2550/3355)
+2026-10-24T23:14:37.9179171Z Updating files:  77% (2584/3355)
+2026-10-24T23:14:37.9207487Z Updating files:  78% (2617/3355)
+2026-10-24T23:14:37.9234615Z Updating files:  79% (2651/3355)
+2026-10-24T23:14:37.9265395Z Updating files:  80% (2684/3355)
+2026-10-24T23:14:37.9297042Z Updating files:  81% (2718/3355)
+2026-10-24T23:14:37.9323986Z Updating files:  82% (2752/3355)
+2026-10-24T23:14:37.9352646Z Updating files:  83% (2785/3355)
+2026-10-24T23:14:37.9980011Z Updating files:  84% (2819/3355)
+2026-10-24T23:14:38.0003965Z Updating files:  85% (2852/3355)
+2026-10-24T23:14:38.0023172Z Updating files:  86% (2886/3355)
+2026-10-24T23:14:38.0044836Z Updating files:  87% (2919/3355)
+2026-10-24T23:14:38.0069184Z Updating files:  88% (2953/3355)
+2026-10-24T23:14:38.0090157Z Updating files:  89% (2986/3355)
+2026-10-24T23:14:38.0112028Z Updating files:  90% (3020/3355)
+2026-10-24T23:14:38.0133831Z Updating files:  91% (3054/3355)
+2026-10-24T23:14:38.0155689Z Updating files:  92% (3087/3355)
+2026-10-24T23:14:38.0178052Z Updating files:  93% (3121/3355)
+2026-10-24T23:14:38.0211023Z Updating files:  94% (3154/3355)
+2026-10-24T23:14:38.0234887Z Updating files:  95% (3188/3355)
+2026-10-24T23:14:38.0261464Z Updating files:  96% (3221/3355)
+2026-10-24T23:14:38.0290172Z Updating files:  97% (3255/3355)
+2026-10-24T23:14:38.0336932Z Updating files:  98% (3288/3355)
+2026-10-24T23:14:38.0369335Z Updating files:  99% (3322/3355)
+2026-10-24T23:14:38.0370295Z Updating files: 100% (3355/3355)
+2026-10-24T23:14:38.0408467Z Updating files: 100% (3355/3355), done.
+2026-10-24T23:14:38.0409225Z Note: switching to 'refs/remotes/pull/136/merge'.
+2026-10-24T23:14:38.0409742Z 
+2026-10-24T23:14:38.0410152Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-24T23:14:38.0411073Z changes and commit them, and you can discard any commits you make in this
+2026-10-24T23:14:38.0411964Z state without impacting any branches by switching back to a branch.
+2026-10-24T23:14:38.0412515Z 
+2026-10-24T23:14:38.0412892Z If you want to create a new branch to retain commits you create, you may
+2026-10-24T23:14:38.0413769Z do so (now or later) by using -c with the switch command. Example:
+2026-10-24T23:14:38.0414268Z 
+2026-10-24T23:14:38.0414498Z   git switch -c <new-branch-name>
+2026-10-24T23:14:38.0415104Z 
+2026-10-24T23:14:38.0415332Z Or undo this operation with:
+2026-10-24T23:14:38.0415658Z 
+2026-10-24T23:14:38.0415853Z   git switch -
+2026-10-24T23:14:38.0416104Z 
+2026-10-24T23:14:38.0416551Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-24T23:14:38.0417145Z 
+2026-10-24T23:14:38.0417838Z HEAD is now at de46c28 Merge 495a1475a17794e22e92534de1db9f5891a018f5 into 9de124ff64dc04aba2db22ad15f29616d124376b
+2026-10-24T23:14:38.0523611Z ##[endgroup]
+2026-10-24T23:14:38.0588489Z [command]/usr/bin/git log -1 --format=%H
+2026-10-24T23:14:38.0614222Z de46c28c3fc5c846ba952564c35e5a69f15d17ea
+2026-10-24T23:14:38.0625439Z ##[group]Removing auth
+2026-10-24T23:14:38.0628864Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:14:38.0665949Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:14:38.0942170Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:14:38.0966111Z http.https://github.com/.extraheader
+2026-10-24T23:14:38.0974037Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-24T23:14:38.1007649Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:14:38.1279128Z ##[endgroup]
+2026-10-24T23:14:38.1490749Z ##[group]Run set -euo pipefail
+2026-10-24T23:14:38.1491192Z [36;1mset -euo pipefail[0m
+2026-10-24T23:14:38.1491509Z [36;1mpython3 -m venv .venv[0m
+2026-10-24T23:14:38.1492118Z [36;1m.venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-24T23:14:38.1684449Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:14:38.1685206Z ##[endgroup]
+2026-10-24T23:14:41.0884224Z Collecting numpy==2.3.5
+2026-10-24T23:14:41.3256775Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-24T23:14:41.3650885Z Collecting prompt-toolkit==3.0.52
+2026-10-24T23:14:41.3725330Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-24T23:14:41.3971453Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-24T23:14:41.4049173Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-24T23:14:41.4175763Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-24T23:14:41.5418136Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 142.8 MB/s eta 0:00:00
+2026-10-24T23:14:41.5491869Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-24T23:14:41.5601149Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-24T23:14:41.5660991Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 146.6 MB/s eta 0:00:00
+2026-10-24T23:14:41.6019675Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-24T23:14:43.6247466Z 
+2026-10-24T23:14:43.6259149Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-24T23:14:43.7269802Z ##[group]Run set -euo pipefail
+2026-10-24T23:14:43.7270181Z [36;1mset -euo pipefail[0m
+2026-10-24T23:14:43.7270504Z [36;1m../../.venv/bin/python -m compileall -q v13 tests[0m
+2026-10-24T23:14:43.7270881Z [36;1m../../.venv/bin/python -m unittest -v \[0m
+2026-10-24T23:14:43.7271256Z [36;1m  tests.test_semantic_cache_integrity_run104 \[0m
+2026-10-24T23:14:43.7271596Z [36;1m  tests.test_semantic_memory \[0m
+2026-10-24T23:14:43.7271890Z [36;1m  tests.test_retrieval \[0m
+2026-10-24T23:14:43.7272184Z [36;1m  tests.test_memory_user_rule_gate_run103[0m
+2026-10-24T23:14:43.7335161Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:14:43.7335438Z ##[endgroup]
+2026-10-24T23:14:43.7572875Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:14:43.7575169Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:14:44.6610074Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:14:44.6612435Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:14:44.8818118Z test_boolean_cache_is_not_a_real_embedding_coordinate (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_boolean_cache_is_not_a_real_embedding_coordinate) ... FAIL
+2026-10-24T23:14:44.8989160Z test_non_numeric_cache_reencodes_instead_of_crashing (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_non_numeric_cache_reencodes_instead_of_crashing) ... ERROR
+2026-10-24T23:14:44.9169519Z test_poisoned_cache_cannot_bypass_encoder_failure (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_poisoned_cache_cannot_bypass_encoder_failure) ... ok
+2026-10-24T23:14:44.9415767Z test_poisoned_cache_stays_untrusted_after_restart (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_poisoned_cache_stays_untrusted_after_restart) ... FAIL
+2026-10-24T23:14:44.9599372Z test_rounded_near_unit_cache_reused (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_rounded_near_unit_cache_reused) ... ok
+2026-10-24T23:14:44.9740468Z test_sqlite_infinity_cache_does_not_become_perfect_relevance (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_sqlite_infinity_cache_does_not_become_perfect_relevance) ... FAIL
+2026-10-24T23:14:44.9898779Z test_sqlite_nan_cache_does_not_become_perfect_relevance (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_sqlite_nan_cache_does_not_become_perfect_relevance) ... FAIL
+2026-10-24T23:14:45.0056073Z test_unnormalized_cache_does_not_clip_to_perfect_relevance (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_unnormalized_cache_does_not_clip_to_perfect_relevance) ... FAIL
+2026-10-24T23:14:45.0229368Z test_valid_unit_cache_reused_without_key_reencoding (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_valid_unit_cache_reused_without_key_reencoding) ... ok
+2026-10-24T23:14:45.0231421Z test_matryoshka_truncation_and_modes (tests.test_semantic_memory.SemanticPieces.test_matryoshka_truncation_and_modes) ... ok
+2026-10-24T23:14:45.0385200Z test_optional_model_role_is_pinned_and_not_a_runtime_revision (tests.test_semantic_memory.SemanticPieces.test_optional_model_role_is_pinned_and_not_a_runtime_revision) ... ok
+2026-10-24T23:14:45.0545799Z test_encoder_failure_falls_back_to_lexical_and_cancel_propagates (tests.test_semantic_memory.SemanticRecall.test_encoder_failure_falls_back_to_lexical_and_cancel_propagates) ... ok
+2026-10-24T23:14:45.0708833Z test_entity_guard_and_unrelated_question_stay_out (tests.test_semantic_memory.SemanticRecall.test_entity_guard_and_unrelated_question_stay_out) ... ok
+2026-10-24T23:14:45.0885096Z test_key_cache_reused_invalidated_by_revision_and_removed_by_forget (tests.test_semantic_memory.SemanticRecall.test_key_cache_reused_invalidated_by_revision_and_removed_by_forget) ... ok
+2026-10-24T23:14:45.1079063Z test_new_keys_beyond_cap_are_deferred (tests.test_semantic_memory.SemanticRecall.test_new_keys_beyond_cap_are_deferred) ... ok
+2026-10-24T23:14:45.1250863Z test_paraphrase_found_only_by_embedding_and_value_comes_from_source (tests.test_semantic_memory.SemanticRecall.test_paraphrase_found_only_by_embedding_and_value_comes_from_source) ... ok
+2026-10-24T23:14:45.1419701Z test_shadow_measures_without_admitting (tests.test_semantic_memory.SemanticRecall.test_shadow_measures_without_admitting) ... ok
+2026-10-24T23:14:45.1611457Z test_feedback_is_query_source_bound_and_never_creates_fact (tests.test_retrieval.RetrievalAuthority.test_feedback_is_query_source_bound_and_never_creates_fact) ... ok
+2026-10-24T23:14:45.2110866Z test_inadmissible_entities_do_not_exhaust_semantic_candidate_budget (tests.test_retrieval.RetrievalAuthority.test_inadmissible_entities_do_not_exhaust_semantic_candidate_budget) ... ok
+2026-10-24T23:14:45.2940661Z test_preempted_training_aborts_without_generation_change (tests.test_retrieval.RetrievalAuthority.test_preempted_training_aborts_without_generation_change) ... ok
+2026-10-24T23:14:45.3105652Z test_report_binds_only_approved_supported_relevance_and_exact_value (tests.test_retrieval.RetrievalAuthority.test_report_binds_only_approved_supported_relevance_and_exact_value) ... ok
+2026-10-24T23:14:45.3271881Z test_semantic_admit_reject_baseline_and_cross_entity_guard (tests.test_retrieval.RetrievalAuthority.test_semantic_admit_reject_baseline_and_cross_entity_guard) ... ok
+2026-10-24T23:14:45.3440060Z test_source_mutation_scope_and_provisional_input_refuse (tests.test_retrieval.RetrievalAuthority.test_source_mutation_scope_and_provisional_input_refuse) ... ok
+2026-10-24T23:14:49.8956138Z test_disjoint_memory_groups_gradient_ablation_reload_and_retention (tests.test_retrieval.RetrievalMath.test_disjoint_memory_groups_gradient_ablation_reload_and_retention) ... ok
+2026-10-24T23:14:49.8958501Z test_entity_guard_topic_transform_and_private_telemetry (tests.test_retrieval.RetrievalMath.test_entity_guard_topic_transform_and_private_telemetry) ... ok
+2026-10-24T23:14:50.0698513Z test_invalid_native_features_duplicate_pairs_and_one_memory_refuse (tests.test_retrieval.RetrievalMath.test_invalid_native_features_duplicate_pairs_and_one_memory_refuse) ... ok
+2026-10-24T23:14:50.0869030Z test_ask_first_never_auto_approves_memory_write (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_ask_first_never_auto_approves_memory_write) ... ok
+2026-10-24T23:14:50.1058647Z test_explicitly_switched_off_rule_allows_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_explicitly_switched_off_rule_allows_feedback) ... ok
+2026-10-24T23:14:50.1222326Z test_forget_remains_available_under_no_learn_rule (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_forget_remains_available_under_no_learn_rule) ... ok
+2026-10-24T23:14:50.1385868Z test_no_learn_conversation_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_learn_conversation_blocks_feedback) ... ok
+2026-10-24T23:14:50.1891830Z test_no_remember_rule_blocks_record_and_learn (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_remember_rule_blocks_record_and_learn) ... ok
+2026-10-24T23:14:50.2055873Z test_no_rule_still_allows_explicit_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_rule_still_allows_explicit_feedback) ... ok
+2026-10-24T23:14:50.2220324Z test_no_store_personal_details_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_store_personal_details_blocks_feedback) ... ok
+2026-10-24T23:14:50.2382557Z test_no_train_messages_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_train_messages_blocks_feedback) ... ok
+2026-10-24T23:14:50.2545336Z test_retrieval_feedback_refused_without_side_effects (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_retrieval_feedback_refused_without_side_effects) ... ok
+2026-10-24T23:14:50.2823702Z test_rule_survives_restart_and_still_blocks (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_rule_survives_restart_and_still_blocks) ... ok
+2026-10-24T23:14:50.2985216Z test_unreadable_rule_state_fails_closed (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_unreadable_rule_state_fails_closed) ... ok
+2026-10-24T23:14:50.3150080Z test_unrelated_send_rule_does_not_block_memory_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_unrelated_send_rule_does_not_block_memory_feedback) ... ok
+2026-10-24T23:14:50.3151255Z 
+2026-10-24T23:14:50.3151779Z ======================================================================
+2026-10-24T23:14:50.3153330Z ERROR: test_non_numeric_cache_reencodes_instead_of_crashing (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_non_numeric_cache_reencodes_instead_of_crashing)
+2026-10-24T23:14:50.3155127Z ----------------------------------------------------------------------
+2026-10-24T23:14:50.3155743Z Traceback (most recent call last):
+2026-10-24T23:14:50.3156829Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 86, in test_non_numeric_cache_reencodes_instead_of_crashing
+2026-10-24T23:14:50.3157728Z     self.assert_reencoded()
+2026-10-24T23:14:50.3157966Z     ~~~~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:14:50.3158457Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 62, in assert_reencoded
+2026-10-24T23:14:50.3159055Z     self.assertAlmostEqual(self.score(), 0., places=7)
+2026-10-24T23:14:50.3159390Z                            ~~~~~~~~~~^^
+2026-10-24T23:14:50.3159882Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 59, in score
+2026-10-24T23:14:50.3160940Z     return self.keys.similarities("Project Orion money?", [self.row], None, time.monotonic()+30)[self.row["id"]]
+2026-10-24T23:14:50.3161511Z            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:14:50.3162032Z   File "/home/runner/work/Aii/Aii/v13/code/v13/semantic_memory.py", line 83, in similarities
+2026-10-24T23:14:50.3162538Z     result={mid:cosine(q,v) for mid,v in cached.items()}
+2026-10-24T23:14:50.3162852Z                 ~~~~~~^^^^^
+2026-10-24T23:14:50.3163219Z   File "/home/runner/work/Aii/Aii/v13/code/v13/semantic_memory.py", line 28, in cosine
+2026-10-24T23:14:50.3163727Z     def cosine(a,b):return max(-1.,min(1.,sum(x*y for x,y in zip(a,b))))
+2026-10-24T23:14:50.3164107Z                                           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:14:50.3164833Z   File "/home/runner/work/Aii/Aii/v13/code/v13/semantic_memory.py", line 28, in <genexpr>
+2026-10-24T23:14:50.3165405Z     def cosine(a,b):return max(-1.,min(1.,sum(x*y for x,y in zip(a,b))))
+2026-10-24T23:14:50.3165765Z                                               ~^~
+2026-10-24T23:14:50.3166115Z TypeError: can't multiply sequence by non-int of type 'float'
+2026-10-24T23:14:50.3166372Z 
+2026-10-24T23:14:50.3166481Z ======================================================================
+2026-10-24T23:14:50.3167312Z FAIL: test_boolean_cache_is_not_a_real_embedding_coordinate (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_boolean_cache_is_not_a_real_embedding_coordinate)
+2026-10-24T23:14:50.3168151Z ----------------------------------------------------------------------
+2026-10-24T23:14:50.3168491Z Traceback (most recent call last):
+2026-10-24T23:14:50.3169132Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 82, in test_boolean_cache_is_not_a_real_embedding_coordinate
+2026-10-24T23:14:50.3169943Z     self.assert_reencoded()
+2026-10-24T23:14:50.3170186Z     ~~~~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:14:50.3170667Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 62, in assert_reencoded
+2026-10-24T23:14:50.3171242Z     self.assertAlmostEqual(self.score(), 0., places=7)
+2026-10-24T23:14:50.3171567Z     ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:14:50.3171906Z AssertionError: 1.0 != 0.0 within 7 places (1.0 difference)
+2026-10-24T23:14:50.3172150Z 
+2026-10-24T23:14:50.3172266Z ======================================================================
+2026-10-24T23:14:50.3173055Z FAIL: test_poisoned_cache_stays_untrusted_after_restart (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_poisoned_cache_stays_untrusted_after_restart)
+2026-10-24T23:14:50.3173861Z ----------------------------------------------------------------------
+2026-10-24T23:14:50.3174194Z Traceback (most recent call last):
+2026-10-24T23:14:50.3175199Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 105, in test_poisoned_cache_stays_untrusted_after_restart
+2026-10-24T23:14:50.3175866Z     self.assert_reencoded()
+2026-10-24T23:14:50.3176094Z     ~~~~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:14:50.3176579Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 62, in assert_reencoded
+2026-10-24T23:14:50.3177154Z     self.assertAlmostEqual(self.score(), 0., places=7)
+2026-10-24T23:14:50.3177473Z     ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:14:50.3177811Z AssertionError: 1.0 != 0.0 within 7 places (1.0 difference)
+2026-10-24T23:14:50.3178059Z 
+2026-10-24T23:14:50.3178169Z ======================================================================
+2026-10-24T23:14:50.3179038Z FAIL: test_sqlite_infinity_cache_does_not_become_perfect_relevance (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_sqlite_infinity_cache_does_not_become_perfect_relevance)
+2026-10-24T23:14:50.3180096Z ----------------------------------------------------------------------
+2026-10-24T23:14:50.3180434Z Traceback (most recent call last):
+2026-10-24T23:14:50.3181081Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 74, in test_sqlite_infinity_cache_does_not_become_perfect_relevance
+2026-10-24T23:14:50.3181744Z     self.assert_reencoded()
+2026-10-24T23:14:50.3181965Z     ~~~~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:14:50.3182451Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 62, in assert_reencoded
+2026-10-24T23:14:50.3183056Z     self.assertAlmostEqual(self.score(), 0., places=7)
+2026-10-24T23:14:50.3183389Z     ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:14:50.3183728Z AssertionError: 1.0 != 0.0 within 7 places (1.0 difference)
+2026-10-24T23:14:50.3183971Z 
+2026-10-24T23:14:50.3184090Z ======================================================================
+2026-10-24T23:14:50.3185219Z FAIL: test_sqlite_nan_cache_does_not_become_perfect_relevance (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_sqlite_nan_cache_does_not_become_perfect_relevance)
+2026-10-24T23:14:50.3186183Z ----------------------------------------------------------------------
+2026-10-24T23:14:50.3186528Z Traceback (most recent call last):
+2026-10-24T23:14:50.3187166Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 70, in test_sqlite_nan_cache_does_not_become_perfect_relevance
+2026-10-24T23:14:50.3187817Z     self.assert_reencoded()
+2026-10-24T23:14:50.3188040Z     ~~~~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:14:50.3188516Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 62, in assert_reencoded
+2026-10-24T23:14:50.3189084Z     self.assertAlmostEqual(self.score(), 0., places=7)
+2026-10-24T23:14:50.3189410Z     ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:14:50.3189897Z AssertionError: 1.0 != 0.0 within 7 places (1.0 difference)
+2026-10-24T23:14:50.3190159Z 
+2026-10-24T23:14:50.3190276Z ======================================================================
+2026-10-24T23:14:50.3191126Z FAIL: test_unnormalized_cache_does_not_clip_to_perfect_relevance (tests.test_semantic_cache_integrity_run104.SemanticCacheIntegrityRun104.test_unnormalized_cache_does_not_clip_to_perfect_relevance)
+2026-10-24T23:14:50.3192012Z ----------------------------------------------------------------------
+2026-10-24T23:14:50.3192359Z Traceback (most recent call last):
+2026-10-24T23:14:50.3193008Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 78, in test_unnormalized_cache_does_not_clip_to_perfect_relevance
+2026-10-24T23:14:50.3193685Z     self.assert_reencoded()
+2026-10-24T23:14:50.3193910Z     ~~~~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:14:50.3194388Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_semantic_cache_integrity_run104.py", line 62, in assert_reencoded
+2026-10-24T23:14:50.3195216Z     self.assertAlmostEqual(self.score(), 0., places=7)
+2026-10-24T23:14:50.3195546Z     ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:14:50.3195885Z AssertionError: 1.0 != 0.0 within 7 places (1.0 difference)
+2026-10-24T23:14:50.3196128Z 
+2026-10-24T23:14:50.3196274Z ----------------------------------------------------------------------
+2026-10-24T23:14:50.3196596Z Ran 38 tests in 5.465s
+2026-10-24T23:14:50.3196732Z 
+2026-10-24T23:14:50.3196825Z FAILED (failures=5, errors=1)
+2026-10-24T23:14:50.3495683Z ##[error]Process completed with exit code 1.
+2026-10-24T23:14:50.3636413Z Post job cleanup.
+2026-10-24T23:14:50.4501378Z [command]/usr/bin/git version
+2026-10-24T23:14:50.4546274Z git version 2.55.0
+2026-10-24T23:14:50.4591267Z Temporarily overriding HOME='/home/runner/work/_temp/6a2e501d-5ab3-44ac-9dcc-87e64092b0cf' before making global git config changes
+2026-10-24T23:14:50.4592264Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:14:50.4597449Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:14:50.4641441Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:14:50.4683348Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:14:50.5009198Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:14:50.5085947Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:14:50.5552602Z Cleaning up orphan processes
+2026-10-24T23:14:50.5934779Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
