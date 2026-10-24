@@ -9,9 +9,11 @@
     "run22_cgroup_v2_blob": "c1141e3b77ff72e7d0aecf8ef1cdfe040f9ff8c1",
     "run23_cgroup_v2_blob": "808acfc9f1f9b9a01311dda29635a7291fffc94a",
     "run21_serial_launcher_blob": "a36254593ee2490ed30f7744f8ae0fdf8bd5bc20",
-    "run23_serial_launcher_blob": "f270b740eab95c1bdfcdeaab62e21e8e52cdd399",
-    "patch_blob": "d1a63d24886b9d69a0e1cf2c7499b1f9d274424c",
-    "test_blob": "83eabc998ee8417fd8fe2aaee5c3bf1ee96f58c3"
+    "run23_serial_launcher_blob": "21f0c6952f1c279909157f95750da5154f319a1b",
+    "patch_blob": "a6fc17b624e52e4225360200b35dd0b99c56a21a",
+    "test_blob": "83eabc998ee8417fd8fe2aaee5c3bf1ee96f58c3",
+    "run21_join_helper_blob": "",
+    "run23_join_helper_blob": "1460e89de2f6d9727dbdc0eb22f1c11d4f64bed4"
   },
   "finding": "CPython -I -S disables Python site hooks, but does not disable ELF loader LD_PRELOAD/LD_AUDIT/LD_LIBRARY_PATH constructors before cgroup membership; reproduced with a private gcc shared-library constructor writing a sentinel before the helper fails to open fake cgroup.procs.",
   "fix": "Reject any LD_* key, including empty-valued keys; snapshot the checked environment and pass the exact snapshot to Popen; do not strip variables or alter the native runner environment silently.",
@@ -19,14 +21,16 @@
     "original_red": "4 failed subtests (nonempty LD_* rejected only after patch)",
     "independent_review_red": "2 failed subtests for empty-valued LD_* (corrected)",
     "targeted_green": "5/5 PASS",
-    "assembled_focused": "155/155 PASS (software/synthetic; no full checkout)",
+    "assembled_focused": "155/155 PASS on first and postreview rerun; one intervening inherited SIGTERM test error preserved",
     "compileall": "PASS",
     "patch_exact_reproduction": "PASS",
     "native_cgroup": "NOT_RUN_READONLY_CGROUP",
     "native_model": "NOT_RUN",
     "redmi": "NOT_RUN",
     "full_repo_suite": "NOT_RUN_NO_CHECKOUT",
-    "official_privacy_scan": "NOT_RUN_NO_CHECKOUT"
+    "official_privacy_scan": "NOT_RUN_NO_CHECKOUT",
+    "inherited_sigterm_flake": "1/155 ERROR on intervening run: test_sigterm_during_group_cleanup_blocks_receipt; rerun 155/155 PASS; NOT RESOLVED",
+    "basic_clone3_linux": "AVAILABLE, one child reaped; CLONE_INTO_CGROUP NOT RUN"
   },
   "host": {
     "memory_limit_bytes": 4294967296,
@@ -36,7 +40,9 @@
     "transformers_installed": false,
     "local_lp3_process_count": 0,
     "global_owner_verified": false,
-    "ram_fit_verified": false
+    "ram_fit_verified": false,
+    "kernel": "6.18.55",
+    "seccomp": "0"
   },
   "gates": {
     "step2": "UTILITY_FAIL",
@@ -47,5 +53,5 @@
     "user_full_scope_complete": false
   },
   "limits": "Environment guard is a partial mitigation, NOT proof of atomic prejoin containment: ELF DT_NEEDED/DT_AUDIT, /etc/ld.so.preload, dynamic loader code or other untrusted startup could still run before cgroup join. Kernel clone3 CLONE_INTO_CGROUP or independently proven bootstrap needed.",
-  "next_exact_step": "Independent full-checkout review and official privacy scan; prove delegated writable cgroup2 with real setsid and crash/stale-slot recovery, and resolve prejoin ELF constructor gap via atomic clone3 or verified bootstrap; only then recheck pinned native resources/global owner/RAM and run unchanged four-seed LP3 cohort; separately test generated-answer utility."
+  "next_exact_step": "Investigate inherited SIGTERM synthetic timing error; independently review in full checkout and official privacy scan; prove delegated writable cgroup2 setsid/crash/stale-slot recovery, resolve prejoin ELF window via atomic clone3 CLONE_INTO_CGROUP or verified bootstrap; then verify pinned assets/global owner/RAM and run unchanged LP3 cohort; separately test generated-answer utility."
 }
