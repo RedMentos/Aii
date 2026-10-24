@@ -1,0 +1,28 @@
+# Run102 FINAL GREEN exact selected original Actions lines
+# Code commit 132c319564860e03d162be8aef6f6bd50f8a08f3
+# Targeted run 40140372556 job 121010724204; broad run 40140372565 job 121010664423.
+# Full raw job logs retained in GitHub Actions; original RED and review RED retained separately.
+2026-10-24T22:52:48.6695877Z test_broadcast_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_broadcast_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:52:48.6954125Z test_circulate_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_circulate_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:52:48.7209911Z test_display_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_display_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:52:48.7466868Z test_distribute_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_distribute_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:52:48.7724537Z test_divulge_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_divulge_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:52:48.7973706Z test_existing_disclose_control_stays_denied (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_existing_disclose_control_stays_denied) ... ok
+2026-10-24T22:52:48.8225187Z test_expose_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_expose_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:52:48.8376915Z test_positive_request_does_not_create_prohibition (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_positive_request_does_not_create_prohibition) ... ok
+2026-10-24T22:52:48.8633090Z test_reveal_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_reveal_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:52:48.8887074Z test_show_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_show_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:52:48.9035445Z test_unclear_private_message_request_still_asks (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_unclear_private_message_request_still_asks) ... ok
+2026-10-24T22:52:49.5214641Z Ran 46 tests in 0.894s
+2026-10-24T22:52:49.5215111Z OK
+2026-10-24T22:52:49.6263730Z privacy scan 71d2fcbdd..HEAD: CLEAN
+# Broad proof:
+2026-10-24T22:52:43.0111783Z Ran 401 tests in 11.318s
+2026-10-24T22:52:43.0112138Z OK
+2026-10-24T22:52:43.2892170Z privacy scan 71d2fcbdd..HEAD: CLEAN
+2026-10-24T22:52:45.1927132Z PHONE_SOURCE_MANIFEST_PASS 824
+2026-10-24T22:52:45.5304354Z INDEPENDENT_PHONE_ARCHIVE_PASS 824 9ade24187de3ed46a73ab98f988deb09c9e4913f9fb94c67f44e238a1b617eb8
+2026-10-24T22:52:45.5427080Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T22:53:04.0795779Z Ran 100 tests in 16.861s
+2026-10-24T22:53:04.0796325Z OK
+2026-10-24T22:53:04.2460112Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS

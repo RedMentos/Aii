@@ -1,0 +1,13 @@
+# Run102 first GREEN: Actions run 40140184096 job 121010101534
+# Code commit 88d0a943127b2ea7bd3886a4b03acd9a9dfbd852; original four RED retained.
+# Exact selected original lines; full log remains in Actions.
+2026-10-24T22:49:49.0191432Z test_broadcast_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_broadcast_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:49:49.0414139Z test_divulge_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_divulge_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:49:49.0642625Z test_existing_disclose_control_stays_denied (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_existing_disclose_control_stays_denied) ... ok
+2026-10-24T22:49:49.0870547Z test_expose_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_expose_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:49:49.1007168Z test_positive_request_does_not_create_prohibition (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_positive_request_does_not_create_prohibition) ... ok
+2026-10-24T22:49:49.1232527Z test_reveal_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_reveal_phone_number_cannot_be_sent) ... ok
+2026-10-24T22:49:49.1365151Z test_unclear_private_message_request_still_asks (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_unclear_private_message_request_still_asks) ... ok
+2026-10-24T22:49:49.6727314Z Ran 42 tests in 0.687s
+2026-10-24T22:49:49.6727541Z OK
+2026-10-24T22:49:49.7626099Z privacy scan 71d2fcbdd..HEAD: CLEAN

@@ -35,7 +35,7 @@ LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','N
 # "ge"+stem too); WORDS match whole words only (short or ambiguous words). One word may name several classes: more is safer.
 ACTION_STEMS={'DELETE':('overwrit','ueberschreib','replac','ersetz','delet','remov','eras','wipe','wiping','destroy','trash','discard','purg','loesch','entfern','vernicht','wegwerf','wegschmeiss','ausradier'),
     'WRITE':('writ','wrote','sav','creat','edit','chang','modif','renam','record','schreib','speicher','aender','bearbeit','erstell','anleg','umbenenn','verschieb','notier','aufschreib','hinzufueg','veraender'),
-    'SEND':('send','sent','shar','upload','post','publish','forward','mail','tweet','transmit','leak','disclos','schick','versend','verschick','teil','hochlad','veroeffentlich','weiterleit','weitergeb','verrat','uebermittel'),
+    'SEND':('send','sent','shar','upload','post','publish','forward','mail','tweet','transmit','leak','disclos','expos','reveal','divulg','broadcast','display','distribut','circulat','schick','versend','verschick','teil','hochlad','veroeffentlich','weiterleit','weitergeb','verrat','uebermittel'),
     'NETWORK':('download','brows','internet','online','surf','herunterlad','runterlad','googl','verbind','connect'),
     'INSTALL':('install','upgrad','plugin','plug-in','nachlad','aktualisier','aktivier'),
     'RUN':('execut','launch','ausfuehr','programm'),
@@ -45,7 +45,7 @@ ACTION_STEMS={'DELETE':('overwrit','ueberschreib','replac','ersetz','delet','rem
     'BUY':('buy','bought','purchas','order','kauf','bezahl','bestell','ausgeb'),
     'CONTACT':('phon','contact','kontaktier','anruf','telefonier'),
     'ANY':('touch','anfass','mess with','fiddl','herumspiel','rumspiel','tamper')}
-ACTION_WORDS={'DELETE':('clear','rm','del'),'WRITE':('add','store','move','set','put','note'),'SEND':('text','tell','give','gib','sag'),
+ACTION_WORDS={'DELETE':('clear','rm','del'),'WRITE':('add','store','move','set','put','note'),'SEND':('text','tell','give','show','shows','showed','shown','showing','gib','sag'),
     'NETWORK':('web','net','netz','search','suche','suchen','such','fetch','lookup','load','lad','lade','laden','laedst'),
     'INSTALL':('load','fetch','hol','holen','hole','holst','lad','lade','laden','laedst','module','modul','module','modules','extension','update','updates'),
     'RUN':('run','runs','ran','start','starte','starten','startest','open','oeffne','oeffnen'),

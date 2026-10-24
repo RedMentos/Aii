@@ -1,0 +1,71 @@
+{
+  "schema": "V13_RUN102_USER_RULE_NONDISCLOSURE_CHECKPOINT_V1",
+  "utc": "2026-10-24T22:54:00Z",
+  "owner": "codex/userrules-nondisclosure-run102-20261025",
+  "base_branch": "codex/toolstep-negation-run101-20261025",
+  "base_sha": "71d2fcbdda23d7cc68ad4e5c50915d9eb5074227",
+  "production_integrated": false,
+  "scope": [
+    "v13/code/v13/userrules.py:ACTION_STEMS_SEND/ACTION_WORDS_SEND",
+    "v13/code/tests/test_userrules_nondisclosure_run102.py",
+    ".github/workflows/v13-run102-userrules.yml",
+    "v13/code/docs/proofs/continuation-20261025/userrules-nondisclosure-run102/*"
+  ],
+  "red": {
+    "commit": "9e1ee8574892ad619c005932827193bb0d3630c4",
+    "run_id": 40140113032,
+    "job_id": 121009882971,
+    "tests": 42,
+    "failures": 4
+  },
+  "first_green": {
+    "commit": "88d0a943127b2ea7bd3886a4b03acd9a9dfbd852",
+    "run_id": 40140184096,
+    "job_id": 121010101534,
+    "tests": 42,
+    "failures": 0
+  },
+  "independent_review_red": {
+    "commit": "0c013264cd7764e85f78339ad6ed9de624464f56",
+    "run_id": 40140288684,
+    "job_id": 121010414674,
+    "tests": 46,
+    "failures": 4
+  },
+  "final_green": {
+    "commit": "132c319564860e03d162be8aef6f6bd50f8a08f3",
+    "run_id": 40140372556,
+    "job_id": 121010724204,
+    "tests": 46,
+    "failures": 0,
+    "privacy": "CLEAN"
+  },
+  "integration": {
+    "run_id": 40140372565,
+    "job_id": 121010664423,
+    "focused_linux_tests": 401,
+    "extracted_zip_tests": 100,
+    "zip_files": 824,
+    "zip_sha256": "9ade24187de3ed46a73ab98f988deb09c9e4913f9fb94c67f44e238a1b617eb8",
+    "sqlite_restart": "PASS",
+    "privacy": "CLEAN"
+  },
+  "userrules_git_blob": "0dbb351d318f24ee119a966db127e4668dfdb8e0",
+  "evidence_level": "Linux real SQLite rules, synthetic SEND effect; no actual network communication",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Uncovered disclosure paraphrases and non-tool outputs",
+    "LEARN rules not globally enforced on memory/training",
+    "Independent review/merge current PR chain",
+    "Native LP3 and Redmi proofs"
+  ],
+  "next_exact_step": "New independent package: preregister real Memory.feedback and Memory.retrieval_feedback LEARN/WRITE user-rule fail-closed checks; preserve original RED, test SQLite no-write and restart; do not claim global learning consent.",
+  "drive_backup": "Rejected anyone-writable Drive destination not retried"
+}

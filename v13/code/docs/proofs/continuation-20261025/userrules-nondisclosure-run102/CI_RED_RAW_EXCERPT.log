@@ -1,0 +1,20 @@
+# Run102 original test-first RED: GitHub Actions run 40140113032 job 121009882971
+# Tests-only head 9e1ee8574892ad619c005932827193bb0d3630c4; before production lexicon fix.
+# Full original job log retained in Actions; exact selected lines below.
+2026-10-24T22:48:46.1617732Z test_broadcast_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_broadcast_phone_number_cannot_be_sent) ... FAIL
+2026-10-24T22:48:46.1744622Z test_divulge_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_divulge_phone_number_cannot_be_sent) ... FAIL
+2026-10-24T22:48:46.1948889Z test_existing_disclose_control_stays_denied (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_existing_disclose_control_stays_denied) ... ok
+2026-10-24T22:48:46.2073719Z test_expose_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_expose_phone_number_cannot_be_sent) ... FAIL
+2026-10-24T22:48:46.2194659Z test_positive_request_does_not_create_prohibition (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_positive_request_does_not_create_prohibition) ... ok
+2026-10-24T22:48:46.2318891Z test_reveal_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_reveal_phone_number_cannot_be_sent) ... FAIL
+2026-10-24T22:48:46.2437264Z test_unclear_private_message_request_still_asks (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_unclear_private_message_request_still_asks) ... ok
+2026-10-24T22:48:46.8056535Z FAIL: test_broadcast_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_broadcast_phone_number_cannot_be_sent)
+2026-10-24T22:48:46.8062157Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_userrules_nondisclosure_run102.py", line 58, in test_broadcast_phone_number_cannot_be_sent
+2026-10-24T22:48:46.8073955Z FAIL: test_divulge_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_divulge_phone_number_cannot_be_sent)
+2026-10-24T22:48:46.8077025Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_userrules_nondisclosure_run102.py", line 55, in test_divulge_phone_number_cannot_be_sent
+2026-10-24T22:48:46.8088373Z FAIL: test_expose_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_expose_phone_number_cannot_be_sent)
+2026-10-24T22:48:46.8090981Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_userrules_nondisclosure_run102.py", line 49, in test_expose_phone_number_cannot_be_sent
+2026-10-24T22:48:46.8099300Z FAIL: test_reveal_phone_number_cannot_be_sent (tests.test_userrules_nondisclosure_run102.UserRulesNondisclosureRun102.test_reveal_phone_number_cannot_be_sent)
+2026-10-24T22:48:46.8102370Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_userrules_nondisclosure_run102.py", line 52, in test_reveal_phone_number_cannot_be_sent
+2026-10-24T22:48:46.8108830Z Ran 42 tests in 0.665s
+2026-10-24T22:48:46.8365015Z ##[error]Process completed with exit code 1.
