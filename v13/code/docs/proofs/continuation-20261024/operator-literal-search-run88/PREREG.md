@@ -1,0 +1,8 @@
+# Run88 prereg — literal persistent chat search, no wildcard widening
+
+Date: 2026-10-24. Exact base Run87 PR120 `717771a2b14c337712310a69e0b34e4e33c61023`, verified Linux CI 40134710679 PASS. Owner: `v13/code/v13/operator.py` **only** narrow `:search` branch; new `v13/code/tests/test_operator_search_literal_run88.py`; focused and extracted ZIP CI test invocations; new Run88 proof files. No other runtime organs, native cohorts, permissions, source refs, canon, model weights, learning or gate changes.
+
+## Counterexample and acceptance
+The existing `:search Text` constructs `LIKE '%'+user_text+'%'` directly. SQLite treats user-typed `_` as any character and `%` as any substring. Thus searching literal `alpha_1` incorrectly returns `alphaX1`; searching `100%` incorrectly returns `100 percent`. This widens operator search results beyond the typed literal. First run three real Store/Operator SQLite tests before production fix (expected RED for underscore and percent), retain logs. Fix using SQL `LIKE ? ESCAPE '\\'` and escape only user-provided backslash, percent, underscore; preserve prior case-insensitive ASCII LIKE semantics, return columns/order/limit and local TTY-only command authority. Tests must cover backslash and case-insensitive behavior too.
+
+Run selected full-checkout and **extracted phone ZIP** tests in CI, official added-lines privacy scanner, unchanged original negative gates. No model/native/Redmi/learned utility claims. If CI fails, preserve RED and fix only proven cause.

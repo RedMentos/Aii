@@ -71,6 +71,7 @@ jobs:
             tests.test_organ \
             tests.test_migrations \
             tests.test_runtime_queue \
+            tests.test_operator_search_literal_run88 \
             tests.test_history_lineage \
             tests.test_episodes \
             tests.test_neuromod \
@@ -158,6 +159,7 @@ jobs:
             tests.test_standstill \
             tests.test_phone_operator_journey_run86 \
             tests.test_phone_cli_run87 \
+            tests.test_operator_search_literal_run88 \
             tests.test_package_source
           "$GITHUB_WORKSPACE/.venv/bin/python" - <<'PY'
           import os
