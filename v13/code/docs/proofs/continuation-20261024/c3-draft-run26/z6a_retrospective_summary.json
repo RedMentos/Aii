@@ -1,0 +1,28 @@
+{
+  "schema": "V13_Z6A_C3_DRAFT_RETROSPECTIVE_DIAGNOSTIC_V1",
+  "dataset": "v13/bench-results/z6a-effort-20261022/z6a.json",
+  "dataset_git_blob_sha": "995c76b46c334945260b6bd29d33d3012b2992b4",
+  "source_branch_head": "aba022002f445180dab355921626f8459e87e2a9",
+  "source_arm": "disabled",
+  "n_generated_outputs": 60,
+  "n_flagged": 9,
+  "flagged_existing_bench_fail": 8,
+  "flagged_existing_bench_pass": 1,
+  "unflagged_existing_bench_fail": 10,
+  "flagged_fixtures": [
+    "summary03",
+    "summary04",
+    "summary07",
+    "summary08",
+    "summary11",
+    "summary13",
+    "summary14",
+    "compare00",
+    "compare14"
+  ],
+  "analysis_engine": "JavaScript mirror of Run26 Python regexes over existing 60 GitHub dataset rows; 10 example outputs cross-checked with exact Python script; no new model execution",
+  "status": "RETROSPECTIVE_DIAGNOSTIC_NOT_PREREGISTERED_NOT_CAUSAL",
+  "interpretation": "8/18 existing benchmark failures flagged; 1/42 existing passes flagged; the single flagged PASS contains a genuine internal arithmetic inconsistency. This does not establish that a wake would help or that unflagged drafts are correct.",
+  "gate_promotions": false,
+  "source_data_mutated": false
+}

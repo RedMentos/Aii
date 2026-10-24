@@ -1,0 +1,23 @@
+{
+  "schema": "V13_RUN26_STATE_V1",
+  "base": "0590c9334dbbd6d286af2825ed6c4a7712f51c02",
+  "package": "WP-Z6b isolated C3 draft arithmetic contradiction evidence",
+  "owner": "Codex Run26 only",
+  "production_integrated": false,
+  "tests": "15/15 PASS software",
+  "sample_generated_text_replay": "10/10 processed, 9 flagged",
+  "retrospective_old_real_outputs": "9/60 flagged; 8 benchmark FAIL and 1 benchmark PASS; not preregistered",
+  "new_native_model": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "full_repo_tests": "NOT_RUN",
+  "privacy_scan": "NOT_RUN",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Independent code review, full checkout integration tests; preregister fresh C3-first selective-wake real model experiment without changing Z6a original criteria."
+}
