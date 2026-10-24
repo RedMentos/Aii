@@ -113,5 +113,14 @@ class ContextAppendProvenance(unittest.TestCase):
         p3=c.plan('e3','B1_DETAIL','SYS',vol(3),h,'q3')
         self.assertIn('append_reentry',p3['plan']['decisions'])
 
+    def test_reentry_accepts_matching_real_shape_query_source_ref(self):
+        _,c=make(active=True)
+        ref={'source_id':'source-A','sha256':'a'*64,'char_start':0,'char_end':2,'modality':'text'}
+        c.plan('e1','B1_DETAIL','SYS',vol(1),[],'q1',provenance=[ref])
+        h=[{'event_id':'e1','role':'user','text':'q1','metadata':__import__('json').dumps({'source_ref':ref})},
+           {'event_id':'e1','role':'assistant','text':'a1'}]
+        p=c.plan('e2','B1_DETAIL','SYS',vol(2),h,'q2')
+        self.assertIn('append_reentry',p['plan']['decisions'])
+
 
 if __name__=='__main__':unittest.main()
