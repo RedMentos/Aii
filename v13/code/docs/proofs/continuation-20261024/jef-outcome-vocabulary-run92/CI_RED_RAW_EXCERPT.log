@@ -1,0 +1,18 @@
+# Run92 preregistered JEF invalid self-label RED (verbatim bounded CI log excerpt)
+# Full raw log: https://github.com/RedMentos/Aii/actions/runs/40135737522 (job 120996746048)
+# Test-only head 604d4968744d1586d42dba04adb4157bee07f2bb, FAILURE; excerpt only.
+2026-10-24T21:47:29.3115623Z test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) ... 
+2026-10-24T21:47:29.3118078Z   test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) (component='wake') ... FAIL
+2026-10-24T21:47:29.3301244Z   test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) (component='memory') ... FAIL
+2026-10-24T21:47:29.3484760Z   test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) (component='skill') ... FAIL
+2026-10-24T21:47:40.0828120Z FAIL: test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) (component='wake')
+2026-10-24T21:47:40.0831114Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_jef_outcome_vocab_run92.py", line 60, in test_invalid_matching_self_label_source_cannot_train_any_head
+2026-10-24T21:47:40.0835398Z AssertionError: Lists differ: [('2d05a5d6d497d1fe58deec587de2b15448d5003[1381 chars][]})] != []
+2026-10-24T21:47:40.0854738Z FAIL: test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) (component='memory')
+2026-10-24T21:47:40.0857576Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_jef_outcome_vocab_run92.py", line 60, in test_invalid_matching_self_label_source_cannot_train_any_head
+2026-10-24T21:47:40.0861182Z AssertionError: Lists differ: [('e29dbdab05d9b3fa4958da9a4c616c2fd6d0601[1387 chars][]})] != []
+2026-10-24T21:47:40.0880160Z FAIL: test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) (component='skill')
+2026-10-24T21:47:40.0883798Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_jef_outcome_vocab_run92.py", line 60, in test_invalid_matching_self_label_source_cannot_train_any_head
+2026-10-24T21:47:40.0887713Z AssertionError: Lists differ: [('fd65298b677f6836e8f49d02be1d5578546affb[1384 chars][]})] != []
+2026-10-24T21:47:40.0905551Z Ran 397 tests in 11.681s
+2026-10-24T21:47:40.0905910Z FAILED (failures=3)

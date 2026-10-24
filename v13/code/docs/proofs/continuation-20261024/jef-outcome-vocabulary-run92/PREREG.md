@@ -1,0 +1,9 @@
+# Run92 prereg — closed JEF outcome self-label vocabulary before training
+
+2026-10-24. Base Run91 PR124 `8b50e8d76714678d3c22a9d38fba11698cd12abe`, selected Linux 396/396 and extracted ZIP 95/95 PASS. Owner: `v13/code/v13/jefoutcome.py` `training_rows` only, new `tests/test_jef_outcome_vocab_run92.py`, focused/extracted CI invocations, Run92 proof. No native body/model weights, JEF head architecture, authority, Canon or other owner edits.
+
+## Expected RED
+`jefoutcome.training_rows` already checks OUTCOME_SELF_LABEL source kind, exact value/source bytes, decision packet/context/source binding and human veto. It does **not** reject an invalid head action string when both the ledger value and OUTCOME_SELF_LABEL source are replaced consistently. Thus a corrupted/forged self-label `teleport` can reach the fast-head training input in explicit outcomes-learn mode. Test real SQLite source-bound decisions for each JEF head `wake`, `memory`, `skill`: valid label trainable in learn mode, then replace both value and source with `teleport` and require zero training rows. Preserve RED before fix. Human labels remain higher authority.
+
+## Fix
+Use the existing canonical `learning.POLICY_LABELS` action vocabulary to reject invalid self-label values before expensive source/packet reads. Keep valid labels and default record-only gate, human precedence and source lineage unchanged. Test Linux selected suites, extracted phone ZIP, privacy. No claim of learned utility, actual model training, native weights, Redmi or STEP2/B3 promotion. Gates STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 INCOMPLETE.

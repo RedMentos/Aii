@@ -87,10 +87,14 @@ def training_rows(store,component,revision,human_keys):
     """Outcome rows for learning.shadow_readout: lower than any human decision."""
     st=store.state(KEY)[0] or {}
     if st.get('mode','record')!='learn':return []
+    from .learning import POLICY_LABELS
+    allowed=POLICY_LABELS.get(component)
+    if not allowed:return []  # no self-label authority for unknown heads
     candidates=[]
     for x in st.get('labels',[]):
         if not isinstance(x,dict) or x.get('component')!=component or x.get('context_revision')!=revision:
             continue
+        if x.get('value') not in allowed:continue  # source hashes alone cannot type an action
         if not isinstance(x.get('context_sha256'),str) or x['context_sha256'] in human_keys:
             continue
         candidates.append(x)
