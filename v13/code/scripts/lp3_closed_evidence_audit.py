@@ -48,6 +48,28 @@ def outside_attempt(path, run):
     return target
 
 
+
+def validate_protocol_params(params):
+    """Require the preregistered JSON *types*, not Python's loose equality.
+
+    ``30.0 == 30`` and ``True == 1`` are true in Python. The registered
+    manifest is a typed JSON contract, so those encodings must not be treated
+    as the same protocol. The native runner itself emits int/float as below.
+    """
+    if not isinstance(params, dict) or set(params) != set(PARAMS):
+        return False
+    for key, expected in PARAMS.items():
+        actual = params[key]
+        if key == 'seeds':
+            if (not isinstance(actual, list) or len(actual) != len(expected)
+                    or any(type(v) is not int for v in actual)
+                    or actual != expected):
+                return False
+        elif type(actual) is not type(expected) or actual != expected:
+            return False
+    return True
+
+
 def validate_binding(manifest):
     """Check the complete runner-produced asset/source binding, not just the weight."""
     if manifest.get('master_scope') != 'Linux_HF_FP32_FROZEN_ENCODER':
@@ -164,7 +186,7 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
     report = read_json(run / 'report.json')
     if not isinstance(manifest, dict) or set(manifest) != MANIFEST_FIELDS:
         raise EvidenceError('manifest fields mismatch')
-    if manifest.get('schema') != 'V13_LP3_MEMORY_KEY_V1' or manifest.get('params') != PARAMS:
+    if manifest.get('schema') != 'V13_LP3_MEMORY_KEY_V1' or not validate_protocol_params(manifest.get('params')):
         raise EvidenceError('manifest schema/protocol mismatch')
     if manifest.get('master_sha256') != PINNED_WEIGHT:
         raise EvidenceError('unpinned master')
@@ -197,8 +219,9 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
         raise EvidenceError('missing or extra rows')
     if any(not isinstance(r, dict) or set(r) != ROW_FIELDS for r in rows):
         raise EvidenceError('row fields mismatch')
-    if [r.get('seed') for r in rows] != list(SEEDS):
-        raise EvidenceError('wrong seed ordering or duplicate')
+    if (any(type(r.get('seed')) is not int for r in rows) or
+            [r.get('seed') for r in rows] != list(SEEDS)):
+        raise EvidenceError('wrong seed type, ordering or duplicate')
     for row, seed in zip(rows, SEEDS):
         if read_json(run / f'seed-{seed}.json') != row:
             raise EvidenceError(f'seed-{seed} differs from report')
