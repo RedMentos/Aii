@@ -11,6 +11,22 @@ from .common import digest,dumps,now,Unavailable
 from .contracts import packet
 from .resources import device
 
+def _reject_json_constant(value):
+    raise ValueError('Nonfinite JSON literal in persisted World state')
+
+
+def _strict_json_object(raw):
+    obj=json.loads(raw,parse_constant=_reject_json_constant)
+    if not isinstance(obj,dict):raise ValueError('World JSON object required')
+    return obj
+
+
+def _finite_duration(value):
+    if value is None:return True  # unfinished actions may lack a timing measurement
+    try:return type(value) in (int,float) and 0<=value<=1e9 and math.isfinite(value)
+    except (TypeError,OverflowError,ValueError):return False
+
+
 class WorldState:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
 
@@ -76,13 +92,33 @@ class WorldState:
     def observe(self,aid):
         action=self.s.one('SELECT * FROM actions WHERE id=?',(aid,))
         if not action or action['outcome'] is None:return None
-        event=self.s.one('SELECT * FROM events WHERE id=?',(action['event_id'],));env=json.loads(event['packet'])
+        event=self.s.one('SELECT * FROM events WHERE id=?',(action['event_id'],))
+        try:
+            if not event:raise ValueError('World originating event missing')
+            env=_strict_json_object(event['packet'])
+            if env.get('event_id')!=action['event_id'] or env.get('authority')!='AUTHORITATIVE':
+                raise ValueError('World event lineage invalid')
+            self.s.read_source(env['source_ref'])
+        except (ValueError,TypeError,KeyError,OSError,UnicodeError,RecursionError,OverflowError):
+            self.s.log('world_observation_refused',action['event_id'],{'reason':'INVALID_EVENT_SOURCE'})
+            return None
         existing=self.s.one("SELECT payload FROM packets WHERE event_id=? AND kind='PredictionOutcome' AND json_extract(payload,'$.action_id')=?",(env['event_id'],aid))
         if existing:
             self._refresh(event['session_id'])
             return json.loads(existing['payload'])['observation']
-        actual=json.loads(action['outcome']);forecast=json.loads(action['expected']).get('forecast',{})
-        predicted=forecast.get('duration_median_s');duration=actual.get('action_duration_s')
+        try:
+            actual=_strict_json_object(action['outcome'])
+            expected=_strict_json_object(action['expected'])
+            forecast=expected.get('forecast',{})
+            if not isinstance(forecast,dict) or not isinstance(forecast.get('profile',{}),dict):
+                raise ValueError('World forecast shape invalid')
+            predicted=forecast.get('duration_median_s');duration=actual.get('action_duration_s')
+            if not _finite_duration(duration) or not _finite_duration(predicted):
+                raise ValueError('World timing invalid')
+        except (ValueError,TypeError,KeyError,OSError,UnicodeError,RecursionError,OverflowError):
+            # Original action bytes remain untouched; no fake PredictionOutcome or learning signal.
+            self.s.log('world_observation_refused',action['event_id'],{'reason':'INVALID_PERSISTED_WORLD_OUTCOME'})
+            return None
         comparable=action['status']=='FINAL' and actual.get('role')==forecast.get('profile',{}).get('role') and predicted is not None and duration is not None
         outcome={'action_id':aid,'status':action['status'],'self_caused':True,'observed':actual,'prediction_packet_id':forecast.get('packet_id'),
                  'timing_error_s':duration-predicted if comparable else None,'scored':bool(comparable),'semantic_success':None,
@@ -91,6 +127,8 @@ class WorldState:
             try:
                 transition=self.transition(aid)
                 error=self.r.learner.world_score(transition,forecast['learned_latent_prediction'])
+                if type(error) not in (int,float) or not math.isfinite(error):
+                    raise ValueError('World latent score nonfinite')
                 outcome.update(digital_latent_error=error,world_transition_packet_id=transition['packet_id'])
                 self.s.add_packet('ModulatorPacket',packet('ModulatorPacket','F4_WORLD',env['event_id'],env['brain_generation_id'],[transition['source_ref'],transition['outcome_source_ref']],
                     epistemic_evidence=1.,human_correction=0.,task_success=0.,resource_cost=min(1.,max(0.,float(duration or 0))/self.r.cfg['deadline_seconds']),safety_veto=False,
