@@ -496,7 +496,7 @@ class Learner:
         data=[(key,row,p) for key,(row,p) in reversed(list(unique.items())) if row['permission']=='learn'][-128:]
         try:  # WP-U1 §3.3.8: outcome self-labels fill contexts without a human label (only after :fastpolicy outcomes learn)
             from .jefoutcome import training_rows
-            data+=training_rows(self.s,component,revision,{k for k,_,_ in data})
+            data+=training_rows(self.s,component,revision,set(unique))
         except Exception as exc:self.s.log('jef_outcome_unavailable',None,{'stage':'training','error':type(exc).__name__})
         if any(sum(row['value']==label for _,row,_ in data)<6 for label in POLICY_LABELS[component]):raise ValueError('Je Klasse mindestens 6 verschiedene :feedback '+component+' <Wert> --learn; ohne gültige Entscheidung kein Trainingssample')
         deadline=time.monotonic()+240;base=self.s.generation_id;uid_=uid('upd');folder=self.r.home/'shadow'/uid_;folder.mkdir()

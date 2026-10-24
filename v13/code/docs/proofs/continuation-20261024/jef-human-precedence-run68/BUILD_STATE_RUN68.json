@@ -1,0 +1,32 @@
+{
+  "schema": "V13_RUN68_JEF_HUMAN_RECORD_PRECEDENCE_V1",
+  "date": "2026-10-24",
+  "base": "e6104c8cff892cd110c126fc4f2c13c51fc58a06",
+  "owner": "learning.py shadow_readout one-line human-context selection; new test; Run68 evidence",
+  "status": "PRODUCTION_BOUND_PRECEDENCE_SOFTWARE_CANDIDATE_NOT_FULL_CHECKOUT_TESTED",
+  "tests": {
+    "original_scratch": "3/4 PASS; 1 RED (human RECORD omitted)",
+    "fixed_scratch": "4/4 PASS",
+    "first_reviewer_scratch": "3/4 PASS (bad FakeStore test double, preserved)",
+    "compileall": "PASS",
+    "actual_V13_learner": "NOT RUN",
+    "full_repo": "NOT RUN",
+    "official_privacy": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Isolated extracted prologue replay, not actual imported Learner",
+    "No full Store or live model test",
+    "Human labels beyond feedback LIMIT 512 remain an open authority edge case"
+  ],
+  "next": "cd v13/code && python -m unittest -v tests.test_jef_human_precedence_run68; independently review 512-feedback bound and real Store before promotion",
+  "user_decision_required": false
+}
