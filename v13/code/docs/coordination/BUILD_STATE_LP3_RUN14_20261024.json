@@ -10,11 +10,11 @@
   ],
   "software_tests": {
     "baseline_pass": 66,
-    "focused_pass": 83,
+    "focused_pass": 84,
     "failures": 0,
     "errors": 0,
     "compileall": "PASS",
-    "new_tests": 17
+    "new_tests": 18
   },
   "failed_attempts_preserved": [
     "lp3-run14/adversarial_red.log: 5 reproduced type-bypass failures before fix"

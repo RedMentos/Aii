@@ -64,6 +64,18 @@ class TestNativeReadiness(unittest.TestCase):
         (self.master / 'config.json').write_bytes(b'{}')
         self.assertIn('asset:master_sha256_mismatch', self.check()['missing'])
 
+    def test_hf_snapshot_symlinks_are_hashed_not_rejected(self):
+        # Standard Hugging Face cache layout: snapshots/<rev>/name -> blobs/hash
+        blob = self.root / 'blob'
+        blob.write_bytes(b'wrong')
+        (self.master / 'model.safetensors').symlink_to(blob)
+        (self.master / 'config.json').write_text('{}')
+        r = self.check()
+        self.assertIn('model.safetensors', r['asset_symlinks_followed'])
+        self.assertEqual(r['asset_hashes']['model.safetensors'], mod.file_sha256(blob))
+        self.assertIn('asset:master_sha256_mismatch', r['missing'])
+        self.assertNotIn('asset:model.safetensors', r['missing'])
+
     def test_candidate_is_parsed_not_executed(self):
         self.candidate.write_text(self.candidate.read_text() + '\nraise RuntimeError("never execute")\n')
         self.assertEqual(self.check()['status'], 'BLOCKED')

@@ -78,6 +78,7 @@ def inspect(master, candidate, fixture_root=None, *, modules=None, process_scan=
     fixture_root = Path(fixture_root) if fixture_root else candidate.parent
     missing = []
     assets = {}
+    asset_symlinks = []
     expected_weight = None
     try:
         expected_weight = literal(candidate, 'PINNED_MASTER_SHA256')
@@ -91,16 +92,20 @@ def inspect(master, candidate, fixture_root=None, *, modules=None, process_scan=
                 'phone_measured': False, 'owner_confirmed': False}
     for name in names:
         path = master / name
-        if path.is_symlink() or not path.is_file() or path.stat().st_size == 0:
+        if not path.is_file() or path.stat().st_size == 0:
             missing.append('asset:' + name)
             continue
+        # HF snapshots normally link to the revision's blobs/ store. Follow
+        # regular-file symlinks, as the registered runner does, and hash bytes.
+        if path.is_symlink():
+            asset_symlinks.append(name)
         assets[name] = file_sha256(path)
     if assets.get('model.safetensors') is not None and assets['model.safetensors'] != expected_weight:
         missing.append('asset:master_sha256_mismatch')
     fixtures = {}
     for name in FIXTURES:
         path = fixture_root / name
-        if path.is_symlink() or not path.is_file() or path.stat().st_size == 0:
+        if not path.is_file() or path.stat().st_size == 0:
             missing.append('fixture:' + name)
         else:
             fixtures[name] = file_sha256(path)
@@ -115,7 +120,8 @@ def inspect(master, candidate, fixture_root=None, *, modules=None, process_scan=
     return {'status': 'BLOCKED' if missing else 'LOCAL_ASSETS_READY_OWNER_UNVERIFIED',
             'missing': sorted(missing), 'snapshot_revision': revision,
             'pinned_master_sha256': expected_weight,
-            'asset_hashes': assets, 'fixture_hashes': fixtures,
+            'asset_hashes': assets, 'asset_symlinks_followed': asset_symlinks,
+            'fixture_hashes': fixtures,
             'cgroup_memory_limit_bytes': local_cgroup_limit() if memory_limit is None else memory_limit,
             'local_lp3_process_count': len(jobs), 'native_executed': False,
             'phone_measured': False, 'owner_confirmed': False,
