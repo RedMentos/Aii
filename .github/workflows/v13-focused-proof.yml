@@ -54,7 +54,16 @@ jobs:
             tests.test_world_align_finite_run65 \
             tests.test_context_exact_pin_run73 \
             tests.test_context_os \
-            tests.test_context_append_provenance_run74
+            tests.test_context_append_provenance_run74 \
+            tests.test_jefoutcome \
+            tests.test_jef_lifecycle_integration_run67 \
+            tests.test_jef_lifecycle_sources \
+            tests.test_callosum_outcome_integration_run66 \
+            tests.test_callosum_outcome_once \
+            tests.test_callosum \
+            tests.test_world_worker \
+            tests.test_world_model \
+            tests.test_learning_invariants
 
       - name: Official added-lines public-repo privacy scan
         shell: bash

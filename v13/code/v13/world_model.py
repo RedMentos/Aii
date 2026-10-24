@@ -148,9 +148,17 @@ def counterfactual(store,s,a,st=None):
     """Predicted consequence of action a, never a real outcome or authority."""
     st=st or load(store)
     if a not in ACTIONS:raise ValueError('Aktion '+'|'.join(ACTIONS))
+    cov=None
     def uncertain(reason):
-        return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN',
-                'reason':reason,'cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
+        out={'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN',
+             'reason':reason,'cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
+        # An invalid extrapolation is still uncertain, but preserve a finite
+        # observed-support diagnostic when coverage was already measured.
+        if isinstance(cov,dict):
+            distance=cov.get('ood_distance')
+            if distance is None or (type(distance) in (int,float) and math.isfinite(distance)):
+                out['coverage']=cov
+        return out
     if not st or st.get('status')!='FITTED':return uncertain('NO_WORLD_MODEL')
     try:
         x=np.asarray([1.]+list(s)+onehot(a),dtype=float)

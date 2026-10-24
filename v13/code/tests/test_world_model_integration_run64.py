@@ -87,6 +87,14 @@ class WorldRun64(unittest.TestCase):
         self.assertEqual(r['confidence'],0.)
         self.assertIsNone(r['prediction'])
 
+    def test_impossible_prediction_retains_finite_coverage_diagnostic(self):
+        r=W.counterfactual(None,[0.]*4,'simple',fitted(log_duration=-.3))
+        self.assertEqual(r['reason'],'IMPOSSIBLE_PREDICTED_OUTCOME')
+        self.assertEqual(r['label'],'SIMULATION_UNCERTAIN')
+        self.assertIsNone(r['prediction'])
+        self.assertIn('coverage',r)
+        self.assertTrue(r['coverage']['in_support'])  # support alone never overrides physical impossibility
+
     def test_counterfactual_success_over_one_uncertain(self):
         r=W.counterfactual(None,[0.]*4,'simple',fitted(success=1.2))
         self.assertEqual(r['reason'],'IMPOSSIBLE_PREDICTED_OUTCOME')
