@@ -51,7 +51,9 @@ jobs:
             tests.test_world_action_chronology_run70 \
             tests.test_world_observed_role_run71 \
             tests.test_world_model_integration_run64 \
-            tests.test_world_align_finite_run65
+            tests.test_world_align_finite_run65 \
+            tests.test_context_exact_pin_run73 \
+            tests.test_context_os
 
       - name: Official added-lines public-repo privacy scan
         shell: bash

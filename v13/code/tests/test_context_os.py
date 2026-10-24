@@ -103,6 +103,8 @@ class PlanTests(Base):
     def test_active_mode_requires_explicit_human(self):
         with self.assertRaises(PermissionError):self.c.set_mode('ACTIVE')
         self.c.set_mode('ACTIVE','EXPLICIT_HUMAN');hist=rows(*[('Q%d. '%i+LONG,'A%d. '%i+LONG) for i in range(10)])
+        # This test checks operator authority, not an impossible exact-pin budget.
+        self.c.cfg=dict(self.r.cfg,context_tokens=8192,answer_tokens=256)
         out=self.plan('hi',hist);self.assertTrue(out['applied']);self.assertEqual(out['messages'],out['planned']);self.assertNotEqual(out['planned'],out['legacy'])
 
 class KnobAndLearningTests(Base):
