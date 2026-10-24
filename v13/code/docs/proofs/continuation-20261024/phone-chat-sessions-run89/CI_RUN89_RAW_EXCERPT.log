@@ -1,0 +1,18 @@
+# Run89 bounded verbatim Linux Actions log excerpt
+# Full raw log: https://github.com/RedMentos/Aii/actions/runs/40135058150 (job 120994712409)
+2026-10-24T21:38:14.7626381Z Ran 380 tests in 11.428s
+2026-10-24T21:38:14.9849012Z privacy scan 024c45190..HEAD: CLEAN
+2026-10-24T21:38:14.9972584Z [36;1m    print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))[0m
+2026-10-24T21:38:14.9973594Z [36;1mstat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-24T21:38:16.6778475Z {"bytes": 12544568, "canonical_gate_pass": false, "files": 813, "native_models_launched": false, "phone_measured": false, "sha256": "d9eede4c076e688a334a1758a8b55faede5377c98fcf47a4707baf98bb19dcbc", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run83.zip"}
+2026-10-24T21:38:16.8900503Z PHONE_SOURCE_MANIFEST_PASS 812
+2026-10-24T21:38:16.9096308Z PHONE_SOURCE_BYTES=12544568
+2026-10-24T21:38:16.9142088Z [36;1mprint('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)[0m
+2026-10-24T21:38:17.2243505Z INDEPENDENT_PHONE_ARCHIVE_PASS 812 d9eede4c076e688a334a1758a8b55faede5377c98fcf47a4707baf98bb19dcbc
+2026-10-24T21:38:17.2384738Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T21:38:24.7990246Z test_two_chat_exports_exact_sources_and_selected_chat_restart (tests.test_phone_chat_sessions_run89.PhoneChatSessionsRun89.test_two_chat_exports_exact_sources_and_selected_chat_restart) ... ok
+2026-10-24T21:38:35.8675959Z Ran 79 tests in 16.947s
+2026-10-24T21:38:36.0423293Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS
+2026-10-24T21:38:36.8161575Z SHA256 digest of uploaded artifact zip is 175e171469682214642347e866989fdd9b9ab49739213ad5394f3e7961cdd30f
+2026-10-24T21:38:37.2596725Z Artifact V13-Phone-source-b372bc63be2c17676510dba6ed6e20c846ef2f08.zip successfully finalized. Artifact ID 12576128532
+2026-10-24T21:38:37.2599405Z Artifact V13-Phone-source-b372bc63be2c17676510dba6ed6e20c846ef2f08 has been successfully uploaded! Final size is 12544720 bytes. Artifact ID is 12576128532
