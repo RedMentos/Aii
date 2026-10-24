@@ -1,0 +1,27 @@
+# Run101 final GREEN Actions: targeted run 40139740945/job 121008758428; focused run 40139740934/job 121008793207
+# Commit 61fdd69f3c09ed54fe441bf8baef29c9cbc89db5, after two independent adversarial controls.
+# Exact unmodified selected lines from original full Actions logs:
+2026-10-24T22:43:19.0046118Z test_cannot_verify_number_is_not_agreement (tests.test_toolstep_negation_run101.ToolStepNegationRun101.test_cannot_verify_number_is_not_agreement) ... ok
+2026-10-24T22:43:19.0326092Z test_correct_answer_followed_by_negation_of_wrong_number_is_agreement (tests.test_toolstep_negation_run101.ToolStepNegationRun101.test_correct_answer_followed_by_negation_of_wrong_number_is_agreement) ... ok
+2026-10-24T22:43:19.0511204Z test_correct_number_explicitly_called_incorrect_is_not_agreement (tests.test_toolstep_negation_run101.ToolStepNegationRun101.test_correct_number_explicitly_called_incorrect_is_not_agreement) ... ok
+2026-10-24T22:43:19.0692808Z test_explicit_or_ambiguity_is_not_agreement (tests.test_toolstep_negation_run101.ToolStepNegationRun101.test_explicit_or_ambiguity_is_not_agreement) ... ok
+2026-10-24T22:43:19.0881011Z test_negating_other_number_does_not_suppress_correct_answer (tests.test_toolstep_negation_run101.ToolStepNegationRun101.test_negating_other_number_does_not_suppress_correct_answer) ... ok
+2026-10-24T22:43:19.1073139Z test_not_correct_number_is_not_agreement (tests.test_toolstep_negation_run101.ToolStepNegationRun101.test_not_correct_number_is_not_agreement) ... ok
+2026-10-24T22:43:19.1257841Z test_postposed_not_correct_is_not_agreement (tests.test_toolstep_negation_run101.ToolStepNegationRun101.test_postposed_not_correct_is_not_agreement) ... ok
+2026-10-24T22:43:19.1440921Z test_unambiguous_correct_answer_is_agreement (tests.test_toolstep_negation_run101.ToolStepNegationRun101.test_unambiguous_correct_answer_is_agreement) ... ok
+2026-10-24T22:43:19.2647848Z test_shadow_computes_pure_tools_only_and_compares (tests.test_toolstep.ShadowTests.test_shadow_computes_pure_tools_only_and_compares) ... ok
+2026-10-24T22:43:19.2649611Z Ran 14 tests in 0.373s
+2026-10-24T22:43:19.2650574Z OK
+2026-10-24T22:43:19.3687958Z privacy scan 041cfad68..HEAD: CLEAN
+
+# Broad Linux source/ZIP job selected exact lines:
+2026-10-24T22:43:41.1889399Z Ran 401 tests in 10.445s
+2026-10-24T22:43:41.1889619Z OK
+2026-10-24T22:43:41.5744891Z privacy scan 041cfad68..HEAD: CLEAN
+2026-10-24T22:43:43.2975332Z PHONE_SOURCE_MANIFEST_PASS 823
+2026-10-24T22:43:43.3174469Z PHONE_SOURCE_BYTES=12561529
+2026-10-24T22:43:43.6242235Z INDEPENDENT_PHONE_ARCHIVE_PASS 823 69547b8fca6ffff73b244af04841984bbeda5d6bf24921541ea91b181ae839d6
+2026-10-24T22:43:43.6360825Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T22:44:01.4910442Z Ran 100 tests in 16.241s
+2026-10-24T22:44:01.4910663Z OK
+2026-10-24T22:44:01.6414323Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS

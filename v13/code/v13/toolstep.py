@@ -195,6 +195,27 @@ class ToolStep:
         if shadow['tool']=='eligibility':  # Thread Q: agreement = the answer commits to the recipe's decision
             from .agi import eligibility
             agree=eligibility.answer_action(output)==v['action']
+        elif shadow['tool']=='calc':
+            # Mere presence is not agreement: "1776 is wrong" must not
+            # increase the Age-1 shadow evidence counter. These conservative
+            # lexical checks are NOT general natural-language verification.
+            text=str(output);agree=False
+            for c in sorted(cands,key=len,reverse=True):
+                rx=r'(?<![\d.])'+re.escape(c)+r'(?![\d])'
+                for match in re.finditer(rx,text):
+                    before=text[max(0,match.start()-40):match.start()]
+                    after=text[match.end():match.end()+40]
+                    denied_before=re.search(
+                        r"(?:\bnot|\bnever|\bno|\bcannot(?:\s+verify)?|\bcan't(?:\s+verify)?|\bunable\s+to\s+verify)\s*$",
+                        before,re.I)
+                    denied_after=re.search(
+                        r'^\s*(?:(?:is|was|would be|seems)\s+)?(?:wrong|incorrect|false|invalid|not\s+(?:correct|right|the\s+(?:correct\s+)?answer))\b',
+                        after,re.I)
+                    ambiguous=(re.search(r'\b(?:either|or)\s*$',before,re.I) or
+                               re.search(r'^\s*(?:or|/)\s*(?=[-+]?\d)',after,re.I))
+                    if not (denied_before or denied_after or ambiguous):
+                        agree=True;break
+                if agree:break
         else:agree=any(re.search(r'(?<![\d.])'+re.escape(c)+r'(?![\d])',str(output)) for c in cands)
         for attempt in (0,1):  # telemetry whitelists fields, so the agreement count lives in a state (ids/numbers only)
             st,v=self.r.store.state(KEY);st=st or {'compared':0,'agree':0,'tools':{}}
