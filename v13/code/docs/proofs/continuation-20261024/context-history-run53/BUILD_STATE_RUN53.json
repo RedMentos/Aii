@@ -1,0 +1,32 @@
+{
+  "schema": "V13_RUN53_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "owner": "Run53 only context-history-run53/*",
+  "base": "30bca0576eec9d0bfb2feb17a1c648accc380b7c",
+  "prereg_commit": "9a5cc374eede13e1d9757869def4201e7591fa3d",
+  "source_archive_sha256": "7e3b125c9cbe8e44fe3f20650a1d9e913e15d183b32dfc7ac7e2c8f7fcabe885",
+  "source_blobs": {
+    "original_history": "05455f297205b40fe8e0f818c4657f1fedcd9fa3",
+    "patch": "4163c6c92543082e382b4bb35f884c1edc4435fb"
+  },
+  "status": "ORIGINAL_SOURCE_EXECUTED_WITH_SQLITE_STUBS_NOT_PRODUCTION",
+  "tests": {
+    "original_red": "13/16 PASS, 3 FAIL",
+    "extended_red": "13/18 PASS, 5 FAIL",
+    "lineage_red": "18/20 PASS, 2 FAIL",
+    "final": "21/21 PASS",
+    "optimized": "21/21 PASS",
+    "compileall": "PASS",
+    "actual_store": "NOT_RUN",
+    "native": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "next": "Full current checkout: git apply --check history_run53.patch; independent Store/Runtime test, full suite, privacy scan and review."
+}

@@ -1,0 +1,9 @@
+# Run53 preregistration — Context OS native-history complete-pair and lineage
+
+Base verified Run52 `30bca0576eec9d0bfb2feb17a1c648accc380b7c`. Owner exclusively `v13/code/docs/proofs/continuation-20261024/context-history-run53/*`. No production source edits, Canon, Run36/45/49, registered cohorts, Age/learning gates, external communications or other owner's work. Reference `v13/code/v13/history.py` exact Git blob `05455f297205b40fe8e0f818c4657f1fedcd9fa3`, Store `0779d986fb8aee8aa01c5df5f656889d4bd56348`, Context OS canonical source requirements.
+
+Objective: independently replay the exact native_history selection algorithm on an on-disk SQLite Store-shaped fixture, then fail closed on malformed event grouping (duplicate user, duplicate assistant, wrong order, cross-session, incomplete, invalid source lineage). Preserve approved fixed-answer source and terminal-log exclusion semantics, bounded turn count and exact source revalidation. Do not turn retained text into evidence or grant source/learning authority.
+
+Predeclared tests: one FINAL user/assistant pair included, two events preserve order, missing or revoked source excluded, incomplete pair excluded, terminal paste excluded, duplicate user/assistant and reversed pair rejected, no cross-session, no unauthorized fixed-answer source, approved fixed-answer allowed, assistant context refs revalidated, no synthetic source invented, and optimized Python run. Preserve adversarial red tests before fix. No native model or Redmi claims.
+
+This is an isolated **source-shaped** candidate; full production `history.py` and `Store` are not executed in current container. Integration requires full checkout, independent review and original regression suite. Original STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0 and full V13 INCOMPLETE remain.
