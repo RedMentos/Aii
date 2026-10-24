@@ -25,9 +25,9 @@ class Store:
         return (json.loads(x['value']) if x else default,0)
     def log(self,k,e,p):self.db.execute('INSERT INTO logs VALUES (?,?,?)',(k,e,json.dumps(p)));self.db.commit()
     def add(self,i,chars=100,duration=1.,output=20,created=1000.,route='simple',latent=None):
-        fc={'forecast':{'input_chars':chars,'resource_state':'NORMAL'}}
+        fc={'forecast':{'input_chars':chars,'resource_state':'NORMAL','profile':{'role':'C3_LANGUAGE'}}}
         if latent is not None:fc['forecast']['learned_latent_prediction']={'latent':latent}
-        self.db.execute('INSERT INTO actions VALUES (?,?,?,?,?,?)',(str(i),'e'+str(i),'FINAL',json.dumps(fc),json.dumps({'action_duration_s':duration,'characters':output}),created+i))
+        self.db.execute('INSERT INTO actions VALUES (?,?,?,?,?,?)',(str(i),'e'+str(i),'FINAL',json.dumps(fc),json.dumps({'action_duration_s':duration,'characters':output,'role':'C3_LANGUAGE'}),created+i))
         if route is not None:self.db.execute('INSERT INTO packets VALUES (?,?,?,?)',('ActionSelection','e'+str(i),json.dumps({'route_hint':route}),created+i-.01))
         self.db.commit()
 
