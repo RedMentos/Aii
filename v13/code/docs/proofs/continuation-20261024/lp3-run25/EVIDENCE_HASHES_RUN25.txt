@@ -1,0 +1,8 @@
+Run25 exact Git blob hashes (GitHub SHA-1 object IDs):
+C source: 1dbece02344277f06d1905f373a8cbd19221b04a
+Python source: fa1a365c191d6b7533209d6397dadea5e02e3788
+New tests: 2ba43264d15c059c076782013958c34b27c0f46b
+Run25 local raw evidence archive SHA256: a7eb9f8f4893a91adfe0013f5c5af2b4cac25d94d9e839bda71fd2745e7bc7a3
+Run25 local full ZIP SHA256: 84b76763fca90a6aab5dd107b96fd51f4f35ac51c8d99042b5f12c9d14a7ecde
+Run25 local red.log SHA256: 439f12b47a44aebe9be81a0f333eaab25431bfc76c37d2e01863f38c39f11976
+Run25 local final-tests.log SHA256: 7f72aa17e4d3dcf054514de9710822e0da83fd3dd600aced09b39792639b2c25

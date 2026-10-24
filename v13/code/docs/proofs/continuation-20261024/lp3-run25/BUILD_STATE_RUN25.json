@@ -1,0 +1,27 @@
+{
+  "schema": "V13_LP3_RUN25_STATE_V1",
+  "base_commit": "aba022002f445180dab355921626f8459e87e2a9",
+  "owner": "Codex Run25 isolated review",
+  "production_integrated": false,
+  "tests": {
+    "new": "7/7 PASS",
+    "inherited": "11/11 PASS",
+    "combined": "18/18 PASS",
+    "pre_fix": "5/5 adversarial FAIL",
+    "asan_control": "STACK_BUFFER_OVERFLOW_REPRODUCED_CLASS_LEVEL_ONLY",
+    "native_lp3": "NOT_RUN",
+    "redmi": "NOT_RUN",
+    "positive_cgroup": "UNVERIFIED",
+    "full_repo": "NOT_RUN",
+    "privacy_scan": "NOT_RUN"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Independent review of Run25, then independent canonical functional package; kernel delegated cgroup proof before LP3 integration."
+}
