@@ -1,0 +1,71 @@
+{
+  "binary_not_distributed": true,
+  "compiled_linux_binary_sha256": "daff302840d6277b7cb5f924c6529299e1ad8c8946a9a819a02778e7840c185a",
+  "files": {
+    "BUILD_STATE_LP3_RUN24_20261024.json": {
+      "bytes": 2003,
+      "sha256": "4fa23bb32bb88ea4c820328080e74fa00ce1857b3be4ed54bb26a8c2d7118b12"
+    },
+    "OPEN_QUESTIONS_RUN24.md": {
+      "bytes": 1606,
+      "sha256": "25eee41a6d7299485a76468c23343b2a169f85a8f2c5cd50b5df609152d10591"
+    },
+    "README_RUN24.md": {
+      "bytes": 5374,
+      "sha256": "a68a0c1e08d825164bce56afdf13dcd40c23cfd5672e2ff8e71dff1e4effb886"
+    },
+    "lp3_atomic_bootstrap.py": {
+      "bytes": 6812,
+      "sha256": "dba5ce8f5d4d7035d00257e3873d97208996fc344958a0fa55bf06c7cb143dfb"
+    },
+    "lp3_atomic_clone3.c": {
+      "bytes": 8583,
+      "sha256": "da12545ea570fb4813ee9895dc3065eba6d6ee81f2954e71c375fe6921faf3e7"
+    },
+    "run24-assembled-final.log": {
+      "bytes": 240,
+      "sha256": "ab61abc6e667714a6f1d87985706fdcd83fd420d61b7a3ae4517f753d2820fdc"
+    },
+    "run24-assembled-tests.log": {
+      "bytes": 240,
+      "sha256": "fab17aa649ac4b260d5f9916c3b8242c8464fa83828ae4300345a814b4acb717"
+    },
+    "run24-clone3-basic.log": {
+      "bytes": 36,
+      "sha256": "338f54221d778ccd3ed4bb1b4dd49138adcf4b815b62966e0ca2e38f912c21d0"
+    },
+    "run24-native-readiness.json": {
+      "bytes": 1147,
+      "sha256": "ab561b4916b1c1ca20711bc4cbf9688f8e85dcd3ac7894a8ac22a26d40e6005d"
+    },
+    "run24-sigterm-repeat-corrected.log": {
+      "bytes": 432,
+      "sha256": "d6f77ece708d351e32e03cc2a9bb07f3d3820eac06d21feeccc841925de6fa1c"
+    },
+    "run24-sigterm-repeat.log": {
+      "bytes": 612,
+      "sha256": "e9ba98e2d48a30299b4692c4aa85e75c952bc4ba579074c6901a03812e19f9c8"
+    },
+    "run24-targeted-green.log": {
+      "bytes": 1809,
+      "sha256": "e265ad427ef695900a1c64a5a287c645a46d0691c1265a0288e323cd432b546b"
+    },
+    "run24-targeted-initial.log": {
+      "bytes": 1496,
+      "sha256": "628734d963ec5ffc6b228ac6f566fffb737197f4dd3f2f8c6ba5bc09597f567f"
+    },
+    "run24-targeted-review.log": {
+      "bytes": 1367,
+      "sha256": "b3b377eeb16d620f58f2663909f09f1eb3016dcf879a757d37d39346b1d1c2e6"
+    },
+    "run24-targeted-review2.log": {
+      "bytes": 3800,
+      "sha256": "f229276fde12057d1ab58904a99a2852abb7ab13b64624147120858eb04da456"
+    },
+    "test_lp3_run24_atomic_clone3.py": {
+      "bytes": 9822,
+      "sha256": "4c128d39d36eda2e696625b7bfd789ee96d3e882bd22b8422f11dfa1a090deaf"
+    }
+  },
+  "schema": "V13_LP3_RUN24_CLOSED_INVENTORY_V1"
+}
