@@ -1,0 +1,14 @@
+test_checkpoint_roundtrip_and_corruption (test_body_jepa_micro.MicroJEPA.test_checkpoint_roundtrip_and_corruption) ... ok
+test_credit_map_local_only (test_body_jepa_micro.MicroJEPA.test_credit_map_local_only) ... ok
+test_deterministic_replay (test_body_jepa_micro.MicroJEPA.test_deterministic_replay) ... ok
+test_gradient_and_ema_scope (test_body_jepa_micro.MicroJEPA.test_gradient_and_ema_scope) ... ok
+test_invalid_eligibility_reject (test_body_jepa_micro.MicroJEPA.test_invalid_eligibility_reject) ... ok
+test_no_production_or_age_authority (test_body_jepa_micro.MicroJEPA.test_no_production_or_age_authority) ... ok
+test_objective_adapter_complete (test_body_jepa_micro.MicroJEPA.test_objective_adapter_complete) ... ok
+test_pre_registered_synthetic_threshold (test_body_jepa_micro.MicroJEPA.test_pre_registered_synthetic_threshold) ... ok
+test_zero_eligibility_no_update (test_body_jepa_micro.MicroJEPA.test_zero_eligibility_no_update) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.241s
+
+OK

@@ -1,0 +1,17 @@
+{
+  "schema":"V13_RUN38_STATE_V1",
+  "base":"5eaa87e007db7929db943600ce001db8ccce568f",
+  "preregistered_commit":"143f89d4e34394537c8cb22ca033856978e2b15f",
+  "owner":"Codex Run38 isolated Body-JEPA synthetic ObjectiveAdapter",
+  "file_ownership":"v13/code/docs/proofs/continuation-20261024/body-jepa-micro-run38/ only",
+  "production_integrated":false,
+  "preregistered_criterion":"PASS_SYNTHETIC_ONLY",
+  "tests":"9/9 software/PyTorch CPU synthetic PASS; compileall PASS",
+  "native_body_weights":"NOT_RUN",
+  "optimizer_resume":"UNAVAILABLE",
+  "redmi":"NOT_RUN",
+  "full_repo_suite":"NOT_RUN",
+  "privacy_scan":"NOT_RUN",
+  "gates":{"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"Z6a":"FAIL","Z8":"FAIL","canonical_architecture_complete":false,"user_full_scope_complete":false},
+  "next":"Independent Canon and BodyTrainPort review, safe optimizer resume, actual native port/retention proof on pinned weights, then full suite/privacy/Redmi."
+}
