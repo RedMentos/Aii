@@ -1,0 +1,266 @@
+﻿2026-10-24T23:43:41.8251991Z Current runner version: '2.338.0'
+2026-10-24T23:43:41.8274261Z ##[group]Runner Image Provisioner
+2026-10-24T23:43:41.8274928Z Hosted Compute Agent
+2026-10-24T23:43:41.8275495Z Version: 20261021.618
+2026-10-24T23:43:41.8276032Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-24T23:43:41.8276592Z Build Date: 2026-10-21T00:45:21Z
+2026-10-24T23:43:41.8277201Z Worker ID: {f83fc724-282a-436e-98eb-7f4769f20cd1}
+2026-10-24T23:43:41.8278012Z Region: northcentralus
+2026-10-24T23:43:41.8278586Z Cloud: Azure
+2026-10-24T23:43:41.8279026Z ##[endgroup]
+2026-10-24T23:43:41.8280218Z ##[group]Operating System
+2026-10-24T23:43:41.8280796Z Ubuntu
+2026-10-24T23:43:41.8281222Z 26.04.1
+2026-10-24T23:43:41.8281674Z LTS
+2026-10-24T23:43:41.8282137Z ##[endgroup]
+2026-10-24T23:43:41.8282581Z ##[group]Runner Image
+2026-10-24T23:43:41.8283094Z Image: ubuntu-26.04
+2026-10-24T23:43:41.8283590Z Version: 20261012.163.1
+2026-10-24T23:43:41.8284621Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-24T23:43:41.8285920Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-24T23:43:41.8286736Z ##[endgroup]
+2026-10-24T23:43:41.8287756Z ##[group]GITHUB_TOKEN Permissions
+2026-10-24T23:43:41.8289554Z Contents: read
+2026-10-24T23:43:41.8290046Z Metadata: read
+2026-10-24T23:43:41.8290584Z ##[endgroup]
+2026-10-24T23:43:41.8292533Z Secret source: Actions
+2026-10-24T23:43:41.8293304Z Cache mode: write
+2026-10-24T23:43:41.8294216Z Prepare workflow directory
+2026-10-24T23:43:41.8571629Z Prepare all required actions
+2026-10-24T23:43:41.8623374Z Getting action download info
+2026-10-24T23:43:42.0368553Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-24T23:43:42.2305770Z Complete job name: ds2
+2026-10-24T23:43:42.2971294Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-24T23:43:42.2972094Z with:
+2026-10-24T23:43:42.2972474Z   persist-credentials: false
+2026-10-24T23:43:42.2972883Z   fetch-depth: 50
+2026-10-24T23:43:42.2973247Z   repository: RedMentos/Aii
+2026-10-24T23:43:42.2976165Z   token: ***
+2026-10-24T23:43:42.2976521Z   ssh-strict: true
+2026-10-24T23:43:42.2976875Z   ssh-user: git
+2026-10-24T23:43:42.2977216Z   clean: true
+2026-10-24T23:43:42.2977726Z   sparse-checkout-cone-mode: true
+2026-10-24T23:43:42.2978148Z   fetch-tags: false
+2026-10-24T23:43:42.2978506Z   show-progress: true
+2026-10-24T23:43:42.2978859Z   lfs: false
+2026-10-24T23:43:42.2979191Z   submodules: false
+2026-10-24T23:43:42.2979551Z   set-safe-directory: true
+2026-10-24T23:43:42.2980173Z ##[endgroup]
+2026-10-24T23:43:42.3800410Z Syncing repository: RedMentos/Aii
+2026-10-24T23:43:42.3802445Z ##[group]Getting Git version info
+2026-10-24T23:43:42.3803388Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-24T23:43:42.3804750Z [command]/usr/bin/git version
+2026-10-24T23:43:42.3805448Z git version 2.55.0
+2026-10-24T23:43:42.3812741Z ##[endgroup]
+2026-10-24T23:43:42.3823558Z Temporarily overriding HOME='/home/runner/work/_temp/ea77be91-acaa-4d98-a249-52b5f726c375' before making global git config changes
+2026-10-24T23:43:42.3825434Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:43:42.3827046Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:43:42.4010506Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-24T23:43:42.4012601Z ##[group]Initializing the repository
+2026-10-24T23:43:42.4018141Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-24T23:43:42.4096263Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-24T23:43:42.4098154Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-24T23:43:42.4099699Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-24T23:43:42.4100876Z hint: call:
+2026-10-24T23:43:42.4101563Z hint:
+2026-10-24T23:43:42.4102750Z hint: 	git config --global init.defaultBranch <name>
+2026-10-24T23:43:42.4104495Z hint:
+2026-10-24T23:43:42.4105434Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-24T23:43:42.4106666Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-24T23:43:42.4107633Z hint:
+2026-10-24T23:43:42.4108321Z hint: 	git branch -m <name>
+2026-10-24T23:43:42.4108960Z hint:
+2026-10-24T23:43:42.4109720Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-24T23:43:42.4110496Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-24T23:43:42.4111709Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-24T23:43:42.4143263Z ##[endgroup]
+2026-10-24T23:43:42.4143910Z ##[group]Disabling automatic garbage collection
+2026-10-24T23:43:42.4146987Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-24T23:43:42.4175131Z ##[endgroup]
+2026-10-24T23:43:42.4175884Z ##[group]Setting up auth
+2026-10-24T23:43:42.4181436Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:43:42.4219812Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:43:42.4573050Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:43:42.4601166Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:43:42.4832794Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-24T23:43:42.4867881Z ##[endgroup]
+2026-10-24T23:43:42.4868547Z ##[group]Fetching the repository
+2026-10-24T23:43:42.4875179Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=50 origin +21e2593104ad7ada0316366b1f55e32f6430c03e:refs/remotes/pull/141/merge
+2026-10-24T23:43:48.9958233Z From https://github.com/RedMentos/Aii
+2026-10-24T23:43:48.9959096Z  * [new ref]         21e2593104ad7ada0316366b1f55e32f6430c03e -> pull/141/merge
+2026-10-24T23:43:48.9961841Z ##[endgroup]
+2026-10-24T23:43:48.9962807Z ##[group]Determining the checkout info
+2026-10-24T23:43:48.9964090Z ##[endgroup]
+2026-10-24T23:43:48.9969379Z [command]/usr/bin/git sparse-checkout disable
+2026-10-24T23:43:49.0012862Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-24T23:43:49.0038754Z ##[group]Checking out the ref
+2026-10-24T23:43:49.0042594Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/141/merge
+2026-10-24T23:43:50.0098762Z Updating files:  55% (1887/3383)
+2026-10-24T23:43:50.0123329Z Updating files:  56% (1895/3383)
+2026-10-24T23:43:50.0137928Z Updating files:  57% (1929/3383)
+2026-10-24T23:43:50.0154710Z Updating files:  58% (1963/3383)
+2026-10-24T23:43:50.0171150Z Updating files:  59% (1996/3383)
+2026-10-24T23:43:50.0191773Z Updating files:  60% (2030/3383)
+2026-10-24T23:43:50.0213331Z Updating files:  61% (2064/3383)
+2026-10-24T23:43:50.0227684Z Updating files:  62% (2098/3383)
+2026-10-24T23:43:50.0242458Z Updating files:  63% (2132/3383)
+2026-10-24T23:43:50.0262098Z Updating files:  64% (2166/3383)
+2026-10-24T23:43:50.0279135Z Updating files:  65% (2199/3383)
+2026-10-24T23:43:50.0297680Z Updating files:  66% (2233/3383)
+2026-10-24T23:43:50.0318204Z Updating files:  67% (2267/3383)
+2026-10-24T23:43:50.0330757Z Updating files:  68% (2301/3383)
+2026-10-24T23:43:50.0342735Z Updating files:  69% (2335/3383)
+2026-10-24T23:43:50.0353277Z Updating files:  70% (2369/3383)
+2026-10-24T23:43:50.0369433Z Updating files:  71% (2402/3383)
+2026-10-24T23:43:50.0388184Z Updating files:  72% (2436/3383)
+2026-10-24T23:43:50.0401855Z Updating files:  73% (2470/3383)
+2026-10-24T23:43:50.0418251Z Updating files:  74% (2504/3383)
+2026-10-24T23:43:50.0433925Z Updating files:  75% (2538/3383)
+2026-10-24T23:43:50.0453176Z Updating files:  76% (2572/3383)
+2026-10-24T23:43:50.0474840Z Updating files:  77% (2605/3383)
+2026-10-24T23:43:50.0495149Z Updating files:  78% (2639/3383)
+2026-10-24T23:43:50.0517289Z Updating files:  79% (2673/3383)
+2026-10-24T23:43:50.0542374Z Updating files:  80% (2707/3383)
+2026-10-24T23:43:50.0567649Z Updating files:  81% (2741/3383)
+2026-10-24T23:43:50.0588114Z Updating files:  82% (2775/3383)
+2026-10-24T23:43:50.0611738Z Updating files:  83% (2808/3383)
+2026-10-24T23:43:50.1151899Z Updating files:  84% (2842/3383)
+2026-10-24T23:43:50.1170597Z Updating files:  85% (2876/3383)
+2026-10-24T23:43:50.1186165Z Updating files:  86% (2910/3383)
+2026-10-24T23:43:50.1202324Z Updating files:  87% (2944/3383)
+2026-10-24T23:43:50.1220933Z Updating files:  88% (2978/3383)
+2026-10-24T23:43:50.1236744Z Updating files:  89% (3011/3383)
+2026-10-24T23:43:50.1254020Z Updating files:  90% (3045/3383)
+2026-10-24T23:43:50.1270711Z Updating files:  91% (3079/3383)
+2026-10-24T23:43:50.1287618Z Updating files:  92% (3113/3383)
+2026-10-24T23:43:50.1305294Z Updating files:  93% (3147/3383)
+2026-10-24T23:43:50.1331806Z Updating files:  94% (3181/3383)
+2026-10-24T23:43:50.1351771Z Updating files:  95% (3214/3383)
+2026-10-24T23:43:50.1373022Z Updating files:  96% (3248/3383)
+2026-10-24T23:43:50.1396021Z Updating files:  97% (3282/3383)
+2026-10-24T23:43:50.1432348Z Updating files:  98% (3316/3383)
+2026-10-24T23:43:50.1458178Z Updating files:  99% (3350/3383)
+2026-10-24T23:43:50.1458591Z Updating files: 100% (3383/3383)
+2026-10-24T23:43:50.1458986Z Updating files: 100% (3383/3383), done.
+2026-10-24T23:43:50.1490780Z Note: switching to 'refs/remotes/pull/141/merge'.
+2026-10-24T23:43:50.1491150Z 
+2026-10-24T23:43:50.1491729Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-24T23:43:50.1492219Z changes and commit them, and you can discard any commits you make in this
+2026-10-24T23:43:50.1492649Z state without impacting any branches by switching back to a branch.
+2026-10-24T23:43:50.1492950Z 
+2026-10-24T23:43:50.1493123Z If you want to create a new branch to retain commits you create, you may
+2026-10-24T23:43:50.1493525Z do so (now or later) by using -c with the switch command. Example:
+2026-10-24T23:43:50.1493762Z 
+2026-10-24T23:43:50.1493873Z   git switch -c <new-branch-name>
+2026-10-24T23:43:50.1494053Z 
+2026-10-24T23:43:50.1494166Z Or undo this operation with:
+2026-10-24T23:43:50.1494328Z 
+2026-10-24T23:43:50.1494425Z   git switch -
+2026-10-24T23:43:50.1494558Z 
+2026-10-24T23:43:50.1494758Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-24T23:43:50.1495023Z 
+2026-10-24T23:43:50.1495323Z HEAD is now at 21e2593 Merge 42f649b9b7f5837beabb93d696479a5531cb022f into 7239df918faf03e80284ccde6394caed1d407bfa
+2026-10-24T23:43:50.1580878Z ##[endgroup]
+2026-10-24T23:43:50.1625970Z [command]/usr/bin/git log -1 --format=%H
+2026-10-24T23:43:50.1648471Z 21e2593104ad7ada0316366b1f55e32f6430c03e
+2026-10-24T23:43:50.1656685Z ##[group]Removing auth
+2026-10-24T23:43:50.1659555Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:43:50.1685039Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:43:50.1916890Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:43:50.1936954Z http.https://github.com/.extraheader
+2026-10-24T23:43:50.1945204Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-24T23:43:50.1976017Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:43:50.2212571Z ##[endgroup]
+2026-10-24T23:43:50.2394179Z ##[group]Run set -euo pipefail
+2026-10-24T23:43:50.2394521Z [36;1mset -euo pipefail[0m
+2026-10-24T23:43:50.2394978Z [36;1mpython3 -m compileall -q v13/sandbox.py tests/test_sandbox.py tests/test_sandbox_ds2_run110.py scripts/sandbox_ds2_bench.py[0m
+2026-10-24T23:43:50.2395537Z [36;1mpython3 -m unittest -v tests.test_sandbox tests.test_sandbox_ds2_run110[0m
+2026-10-24T23:43:50.2529415Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:43:50.2529646Z ##[endgroup]
+2026-10-24T23:43:50.3509546Z test_digamma_matches_known_values (tests.test_sandbox.SandboxTests.test_digamma_matches_known_values) ... ok
+2026-10-24T23:43:50.3510365Z test_eig_shrinks_with_evidence_and_is_zero_free (tests.test_sandbox.SandboxTests.test_eig_shrinks_with_evidence_and_is_zero_free) ... ok
+2026-10-24T23:43:50.5966560Z test_every_policy_runs_and_is_seed_deterministic (tests.test_sandbox.SandboxTests.test_every_policy_runs_and_is_seed_deterministic) ... ok
+2026-10-24T23:43:50.6443027Z test_learning_lowers_model_error (tests.test_sandbox.SandboxTests.test_learning_lowers_model_error) ... ok
+2026-10-24T23:43:50.6444007Z test_noisy_tv_eig_also_vanishes (tests.test_sandbox.SandboxTests.test_noisy_tv_eig_also_vanishes)
+2026-10-24T23:43:50.6444761Z Unlike prediction error, information gain on pure noise goes to zero once the noise is known. ... ok
+2026-10-24T23:43:50.6445586Z test_path_reaches_neighbour_cell (tests.test_sandbox.SandboxTests.test_path_reaches_neighbour_cell) ... ok
+2026-10-24T23:43:50.6446501Z test_tables_are_distributions (tests.test_sandbox.SandboxTests.test_tables_are_distributions) ... ok
+2026-10-24T23:43:50.6450936Z test_combination_equals_existing_lp_plus_existing_goal (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_combination_equals_existing_lp_plus_existing_goal) ... FAIL
+2026-10-24T23:43:50.6452928Z test_new_policies_are_explicit_and_no_native_runtime_authority (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_new_policies_are_explicit_and_no_native_runtime_authority) ... FAIL
+2026-10-24T23:43:50.6456227Z test_new_policies_run_deterministically_and_keep_ds1_outputs (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_new_policies_run_deterministically_and_keep_ds1_outputs) ... FAIL
+2026-10-24T23:43:50.6458135Z test_policy_does_not_look_up_hidden_true_table (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_policy_does_not_look_up_hidden_true_table) ... FAIL
+2026-10-24T23:43:50.6460235Z test_word_novelty_modulator_is_generic_and_decays (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_word_novelty_modulator_is_generic_and_decays) ... FAIL
+2026-10-24T23:43:50.6461162Z 
+2026-10-24T23:43:50.6461593Z ======================================================================
+2026-10-24T23:43:50.6462582Z FAIL: test_combination_equals_existing_lp_plus_existing_goal (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_combination_equals_existing_lp_plus_existing_goal)
+2026-10-24T23:43:50.6463589Z ----------------------------------------------------------------------
+2026-10-24T23:43:50.6464141Z Traceback (most recent call last):
+2026-10-24T23:43:50.6464643Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sandbox_ds2_run110.py", line 17, in test_combination_equals_existing_lp_plus_existing_goal
+2026-10-24T23:43:50.6465165Z     agent = S.Agent('lp_goal', random.Random(1))
+2026-10-24T23:43:50.6465509Z   File "/home/runner/work/Aii/Aii/v13/code/v13/sandbox.py", line 113, in __init__
+2026-10-24T23:43:50.6465870Z     assert policy in POLICIES,policy
+2026-10-24T23:43:50.6466094Z            ^^^^^^^^^^^^^^^^^^
+2026-10-24T23:43:50.6466352Z AssertionError: lp_goal
+2026-10-24T23:43:50.6466497Z 
+2026-10-24T23:43:50.6466595Z ======================================================================
+2026-10-24T23:43:50.6467569Z FAIL: test_new_policies_are_explicit_and_no_native_runtime_authority (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_new_policies_are_explicit_and_no_native_runtime_authority)
+2026-10-24T23:43:50.6468620Z ----------------------------------------------------------------------
+2026-10-24T23:43:50.6469451Z Traceback (most recent call last):
+2026-10-24T23:43:50.6470261Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sandbox_ds2_run110.py", line 11, in test_new_policies_are_explicit_and_no_native_runtime_authority
+2026-10-24T23:43:50.6471000Z     self.assertIn('lp_goal', S.POLICIES)
+2026-10-24T23:43:50.6471263Z     ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:43:50.6471611Z AssertionError: 'lp_goal' not found in ('random', 'surprise', 'novelty', 'lp', 'eig', 'efe')
+2026-10-24T23:43:50.6471886Z 
+2026-10-24T23:43:50.6471980Z ======================================================================
+2026-10-24T23:43:50.6472570Z FAIL: test_new_policies_run_deterministically_and_keep_ds1_outputs (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_new_policies_run_deterministically_and_keep_ds1_outputs)
+2026-10-24T23:43:50.6473166Z ----------------------------------------------------------------------
+2026-10-24T23:43:50.6473445Z Traceback (most recent call last):
+2026-10-24T23:43:50.6473919Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sandbox_ds2_run110.py", line 46, in test_new_policies_run_deterministically_and_keep_ds1_outputs
+2026-10-24T23:43:50.6474421Z     a = S.run(policy, 7, steps=250, new_kind_at=100)
+2026-10-24T23:43:50.6474754Z   File "/home/runner/work/Aii/Aii/v13/code/v13/sandbox.py", line 148, in run
+2026-10-24T23:43:50.6475185Z     rng=random.Random(seed);world=World(random.Random(seed*7919+1));agent=Agent(policy,rng)
+2026-10-24T23:43:50.6475554Z                                                                           ~~~~~^^^^^^^^^^^^
+2026-10-24T23:43:50.6542961Z   File "/home/runner/work/Aii/Aii/v13/code/v13/sandbox.py", line 113, in __init__
+2026-10-24T23:43:50.6543570Z     assert policy in POLICIES,policy
+2026-10-24T23:43:50.6543946Z            ^^^^^^^^^^^^^^^^^^
+2026-10-24T23:43:50.6544328Z AssertionError: lp_goal
+2026-10-24T23:43:50.6544544Z 
+2026-10-24T23:43:50.6544734Z ======================================================================
+2026-10-24T23:43:50.6545549Z FAIL: test_policy_does_not_look_up_hidden_true_table (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_policy_does_not_look_up_hidden_true_table)
+2026-10-24T23:43:50.6546362Z ----------------------------------------------------------------------
+2026-10-24T23:43:50.6546809Z Traceback (most recent call last):
+2026-10-24T23:43:50.6547270Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sandbox_ds2_run110.py", line 36, in test_policy_does_not_look_up_hidden_true_table
+2026-10-24T23:43:50.6547954Z     goal = S.Agent('lp_goal_novelty', random.Random(3))
+2026-10-24T23:43:50.6548312Z   File "/home/runner/work/Aii/Aii/v13/code/v13/sandbox.py", line 113, in __init__
+2026-10-24T23:43:50.6548655Z     assert policy in POLICIES,policy
+2026-10-24T23:43:50.6548874Z            ^^^^^^^^^^^^^^^^^^
+2026-10-24T23:43:50.6549080Z AssertionError: lp_goal_novelty
+2026-10-24T23:43:50.6549214Z 
+2026-10-24T23:43:50.6549321Z ======================================================================
+2026-10-24T23:43:50.6549865Z FAIL: test_word_novelty_modulator_is_generic_and_decays (tests.test_sandbox_ds2_run110.DS2PolicyTests.test_word_novelty_modulator_is_generic_and_decays)
+2026-10-24T23:43:50.6550424Z ----------------------------------------------------------------------
+2026-10-24T23:43:50.6550716Z Traceback (most recent call last):
+2026-10-24T23:43:50.6551173Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sandbox_ds2_run110.py", line 25, in test_word_novelty_modulator_is_generic_and_decays
+2026-10-24T23:43:50.6551650Z     goal = S.Agent('lp_goal', random.Random(1))
+2026-10-24T23:43:50.6551980Z   File "/home/runner/work/Aii/Aii/v13/code/v13/sandbox.py", line 113, in __init__
+2026-10-24T23:43:50.6552308Z     assert policy in POLICIES,policy
+2026-10-24T23:43:50.6552544Z            ^^^^^^^^^^^^^^^^^^
+2026-10-24T23:43:50.6552746Z AssertionError: lp_goal
+2026-10-24T23:43:50.6552885Z 
+2026-10-24T23:43:50.6553007Z ----------------------------------------------------------------------
+2026-10-24T23:43:50.6553292Z Ran 12 tests in 0.295s
+2026-10-24T23:43:50.6553634Z 
+2026-10-24T23:43:50.6553812Z FAILED (failures=5)
+2026-10-24T23:43:50.6563077Z ##[error]Process completed with exit code 1.
+2026-10-24T23:43:50.6677254Z Post job cleanup.
+2026-10-24T23:43:50.7338560Z [command]/usr/bin/git version
+2026-10-24T23:43:50.7375014Z git version 2.55.0
+2026-10-24T23:43:50.7407874Z Temporarily overriding HOME='/home/runner/work/_temp/0bc37eb6-37a7-4e0c-b382-f3898c5a7fd3' before making global git config changes
+2026-10-24T23:43:50.7412281Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:43:50.7412761Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:43:50.7446228Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:43:50.7476190Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:43:50.7740907Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:43:50.7778881Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:43:50.8180165Z Cleaning up orphan processes
+2026-10-24T23:43:50.8495038Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
