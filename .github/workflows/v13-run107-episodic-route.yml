@@ -1,0 +1,37 @@
+name: V13 Run107 episodic route provenance
+on:
+  pull_request:
+    paths:
+      - "v13/code/v13/episodic_route.py"
+      - "v13/code/tests/test_episodic_route_source_run107.py"
+      - ".github/workflows/v13-run107-episodic-route.yml"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run107-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  episodic-route:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable review source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Isolated dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real SQLite episodic route regression
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python -m compileall -q v13 tests
+          ../../.venv/bin/python -m unittest -v tests.test_episodic_route_source_run107 tests.test_episodic_route tests.test_episodes
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree

@@ -1,0 +1,283 @@
+﻿2026-10-24T23:33:03.6861443Z Current runner version: '2.338.0'
+2026-10-24T23:33:03.6882439Z ##[group]Runner Image Provisioner
+2026-10-24T23:33:03.6883020Z Hosted Compute Agent
+2026-10-24T23:33:03.6883485Z Version: 20261021.618
+2026-10-24T23:33:03.6883902Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-24T23:33:03.6884425Z Build Date: 2026-10-21T00:45:21Z
+2026-10-24T23:33:03.6884883Z Worker ID: {3fa706af-2eef-4b84-a34a-ac55ed5ebc7e}
+2026-10-24T23:33:03.6885333Z Region: centralus
+2026-10-24T23:33:03.6885741Z Cloud: Azure
+2026-10-24T23:33:03.6886101Z ##[endgroup]
+2026-10-24T23:33:03.6887271Z ##[group]Operating System
+2026-10-24T23:33:03.6887687Z Ubuntu
+2026-10-24T23:33:03.6888025Z 26.04.1
+2026-10-24T23:33:03.6888402Z LTS
+2026-10-24T23:33:03.6888747Z ##[endgroup]
+2026-10-24T23:33:03.6889108Z ##[group]Runner Image
+2026-10-24T23:33:03.6889536Z Image: ubuntu-26.04
+2026-10-24T23:33:03.6889896Z Version: 20261012.163.1
+2026-10-24T23:33:03.6890968Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-24T23:33:03.6892037Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-24T23:33:03.6892708Z ##[endgroup]
+2026-10-24T23:33:03.6893460Z ##[group]GITHUB_TOKEN Permissions
+2026-10-24T23:33:03.6894907Z Contents: read
+2026-10-24T23:33:03.6895328Z Metadata: read
+2026-10-24T23:33:03.6895799Z ##[endgroup]
+2026-10-24T23:33:03.6897380Z Secret source: Actions
+2026-10-24T23:33:03.6898031Z Cache mode: write
+2026-10-24T23:33:03.6898545Z Prepare workflow directory
+2026-10-24T23:33:03.7124093Z Prepare all required actions
+2026-10-24T23:33:03.7158591Z Getting action download info
+2026-10-24T23:33:03.9106412Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-24T23:33:04.0592584Z Complete job name: episodic-route
+2026-10-24T23:33:04.1178530Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-24T23:33:04.1179094Z with:
+2026-10-24T23:33:04.1179384Z   persist-credentials: false
+2026-10-24T23:33:04.1179683Z   fetch-depth: 50
+2026-10-24T23:33:04.1179950Z   repository: RedMentos/Aii
+2026-10-24T23:33:04.1182345Z   token: ***
+2026-10-24T23:33:04.1182594Z   ssh-strict: true
+2026-10-24T23:33:04.1182857Z   ssh-user: git
+2026-10-24T23:33:04.1183109Z   clean: true
+2026-10-24T23:33:04.1183378Z   sparse-checkout-cone-mode: true
+2026-10-24T23:33:04.1183682Z   fetch-tags: false
+2026-10-24T23:33:04.1183948Z   show-progress: true
+2026-10-24T23:33:04.1184215Z   lfs: false
+2026-10-24T23:33:04.1184465Z   submodules: false
+2026-10-24T23:33:04.1184833Z   set-safe-directory: true
+2026-10-24T23:33:04.1185196Z ##[endgroup]
+2026-10-24T23:33:04.1933624Z Syncing repository: RedMentos/Aii
+2026-10-24T23:33:04.1935420Z ##[group]Getting Git version info
+2026-10-24T23:33:04.1936103Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-24T23:33:04.1936953Z [command]/usr/bin/git version
+2026-10-24T23:33:04.1954771Z git version 2.55.0
+2026-10-24T23:33:04.1970266Z ##[endgroup]
+2026-10-24T23:33:04.1983379Z Temporarily overriding HOME='/home/runner/work/_temp/f1980adf-2512-42e1-829f-5fba1a6de62e' before making global git config changes
+2026-10-24T23:33:04.1984404Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:33:04.1988305Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:33:04.2047351Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-24T23:33:04.2050201Z ##[group]Initializing the repository
+2026-10-24T23:33:04.2055546Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-24T23:33:04.2151958Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-24T23:33:04.2153240Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-24T23:33:04.2154335Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-24T23:33:04.2155017Z hint: call:
+2026-10-24T23:33:04.2155816Z hint:
+2026-10-24T23:33:04.2156450Z hint: 	git config --global init.defaultBranch <name>
+2026-10-24T23:33:04.2157030Z hint:
+2026-10-24T23:33:04.2157472Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-24T23:33:04.2158148Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-24T23:33:04.2158591Z hint:
+2026-10-24T23:33:04.2158854Z hint: 	git branch -m <name>
+2026-10-24T23:33:04.2159141Z hint:
+2026-10-24T23:33:04.2159522Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-24T23:33:04.2160085Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-24T23:33:04.2164469Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-24T23:33:04.2215615Z ##[endgroup]
+2026-10-24T23:33:04.2216522Z ##[group]Disabling automatic garbage collection
+2026-10-24T23:33:04.2219709Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-24T23:33:04.2281103Z ##[endgroup]
+2026-10-24T23:33:04.2283125Z ##[group]Setting up auth
+2026-10-24T23:33:04.2284066Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:33:04.2317532Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:33:04.2698723Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:33:04.2730718Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:33:04.2978017Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-24T23:33:04.3050688Z ##[endgroup]
+2026-10-24T23:33:04.3051232Z ##[group]Fetching the repository
+2026-10-24T23:33:04.3057513Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=50 origin +8c22140aecec2f5f546206fd127d3ff0bf21734d:refs/remotes/pull/138/merge
+2026-10-24T23:33:10.5513080Z From https://github.com/RedMentos/Aii
+2026-10-24T23:33:10.5514759Z  * [new ref]         8c22140aecec2f5f546206fd127d3ff0bf21734d -> pull/138/merge
+2026-10-24T23:33:10.5518005Z ##[endgroup]
+2026-10-24T23:33:10.5518944Z ##[group]Determining the checkout info
+2026-10-24T23:33:10.5520019Z ##[endgroup]
+2026-10-24T23:33:10.5522782Z [command]/usr/bin/git sparse-checkout disable
+2026-10-24T23:33:10.5570293Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-24T23:33:10.5598826Z ##[group]Checking out the ref
+2026-10-24T23:33:10.5601943Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/138/merge
+2026-10-24T23:33:11.5663758Z Updating files:  97% (3285/3367)
+2026-10-24T23:33:11.5700135Z Updating files:  98% (3300/3367)
+2026-10-24T23:33:11.5723509Z Updating files:  99% (3334/3367)
+2026-10-24T23:33:11.5724232Z Updating files: 100% (3367/3367)
+2026-10-24T23:33:11.5724562Z Updating files: 100% (3367/3367), done.
+2026-10-24T23:33:11.5750679Z Note: switching to 'refs/remotes/pull/138/merge'.
+2026-10-24T23:33:11.5751111Z 
+2026-10-24T23:33:11.5751835Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-24T23:33:11.5752385Z changes and commit them, and you can discard any commits you make in this
+2026-10-24T23:33:11.5752913Z state without impacting any branches by switching back to a branch.
+2026-10-24T23:33:11.5753195Z 
+2026-10-24T23:33:11.5753407Z If you want to create a new branch to retain commits you create, you may
+2026-10-24T23:33:11.5753872Z do so (now or later) by using -c with the switch command. Example:
+2026-10-24T23:33:11.5754114Z 
+2026-10-24T23:33:11.5754279Z   git switch -c <new-branch-name>
+2026-10-24T23:33:11.5754594Z 
+2026-10-24T23:33:11.5754717Z Or undo this operation with:
+2026-10-24T23:33:11.5754907Z 
+2026-10-24T23:33:11.5755013Z   git switch -
+2026-10-24T23:33:11.5755463Z 
+2026-10-24T23:33:11.5755787Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-24T23:33:11.5756119Z 
+2026-10-24T23:33:11.5756476Z HEAD is now at 8c22140 Merge 7a52e71b598c7cbfd8065bf432b2c4e84342becc into 81f7d5f837530d38e8f2ee5c150905c9bcd8f03c
+2026-10-24T23:33:11.5858401Z ##[endgroup]
+2026-10-24T23:33:11.5913614Z [command]/usr/bin/git log -1 --format=%H
+2026-10-24T23:33:11.5941170Z 8c22140aecec2f5f546206fd127d3ff0bf21734d
+2026-10-24T23:33:11.5951323Z ##[group]Removing auth
+2026-10-24T23:33:11.5953635Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:33:11.5984048Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:33:11.6228500Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:33:11.6251059Z http.https://github.com/.extraheader
+2026-10-24T23:33:11.6257269Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-24T23:33:11.6288831Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:33:11.6525395Z ##[endgroup]
+2026-10-24T23:33:11.6713446Z ##[group]Run set -euo pipefail
+2026-10-24T23:33:11.6713781Z [36;1mset -euo pipefail[0m
+2026-10-24T23:33:11.6713967Z [36;1mpython3 -m venv .venv[0m
+2026-10-24T23:33:11.6714316Z [36;1m.venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-24T23:33:11.6849410Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:33:11.6849703Z ##[endgroup]
+2026-10-24T23:33:14.1288984Z Collecting numpy==2.3.5
+2026-10-24T23:33:14.1812524Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-24T23:33:14.2272866Z Collecting prompt-toolkit==3.0.52
+2026-10-24T23:33:14.2431463Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-24T23:33:14.2694693Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-24T23:33:14.2837804Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-24T23:33:14.3027167Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-24T23:33:14.5017293Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 89.9 MB/s eta 0:00:00
+2026-10-24T23:33:14.5149074Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-24T23:33:14.5308816Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-24T23:33:14.5354723Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 185.4 MB/s eta 0:00:00
+2026-10-24T23:33:14.5597129Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-24T23:33:16.2163283Z 
+2026-10-24T23:33:16.2171195Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-24T23:33:16.3387767Z ##[group]Run set -euo pipefail
+2026-10-24T23:33:16.3388003Z [36;1mset -euo pipefail[0m
+2026-10-24T23:33:16.3388183Z [36;1m../../.venv/bin/python -m compileall -q v13 tests[0m
+2026-10-24T23:33:16.3388631Z [36;1m../../.venv/bin/python -m unittest -v tests.test_episodic_route_source_run107 tests.test_episodic_route tests.test_episodes[0m
+2026-10-24T23:33:16.3444727Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:33:16.3444911Z ##[endgroup]
+2026-10-24T23:33:16.3707856Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:33:16.3708835Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:33:17.0321391Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:33:17.0322408Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:33:17.1911289Z test_corrupt_source_blob_rejected (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_corrupt_source_blob_rejected) ... FAIL
+2026-10-24T23:33:17.2032359Z test_invalid_newer_candidate_does_not_hide_valid_older (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_invalid_newer_candidate_does_not_hide_valid_older) ... FAIL
+2026-10-24T23:33:17.2139417Z test_memory_record_packet_key_mismatch_rejected (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_memory_record_packet_key_mismatch_rejected) ... FAIL
+2026-10-24T23:33:17.2244659Z test_missing_originating_event_rejected (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_missing_originating_event_rejected) ... ERROR
+2026-10-24T23:33:17.2350859Z test_mutated_key_cannot_redirect_to_another_named_entity (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_mutated_key_cannot_redirect_to_another_named_entity) ... FAIL
+2026-10-24T23:33:17.2541048Z test_read_only_valid_route_restart_and_global_scope (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_read_only_valid_route_restart_and_global_scope) ... ok
+2026-10-24T23:33:17.2666693Z test_valid_route_value_mutation_cannot_redirect_active_or_shadow (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_valid_route_value_mutation_cannot_redirect_active_or_shadow) ... FAIL
+2026-10-24T23:33:17.2801819Z test_forgotten_correction_is_not_reused (tests.test_episodic_route.EpisodicRoute.test_forgotten_correction_is_not_reused) ... ok
+2026-10-24T23:33:17.2906397Z test_shadow_records_active_applies_off_disables (tests.test_episodic_route.EpisodicRoute.test_shadow_records_active_applies_off_disables) ... ok
+2026-10-24T23:33:17.3007612Z test_similar_request_gets_the_corrected_route_with_lineage (tests.test_episodic_route.EpisodicRoute.test_similar_request_gets_the_corrected_route_with_lineage) ... ok
+2026-10-24T23:33:17.3129438Z test_correction_episode_is_staging_candidate_plain_is_fast (tests.test_episodes.Admission.test_correction_episode_is_staging_candidate_plain_is_fast) ... ok
+2026-10-24T23:33:17.3236044Z test_strength_decays_and_forgetting_is_only_a_proposal (tests.test_episodes.Admission.test_strength_decays_and_forgetting_is_only_a_proposal) ... ok
+2026-10-24T23:33:17.3346353Z test_correlation_never_becomes_causation_by_counting (tests.test_episodes.Graph.test_correlation_never_becomes_causation_by_counting) ... ok
+2026-10-24T23:33:17.3474886Z test_recall_co_retrieval_spread_and_forget_cleanup (tests.test_episodes.Graph.test_recall_co_retrieval_spread_and_forget_cleanup) ... ok
+2026-10-24T23:33:17.3587471Z test_full_sleep_closes_open_episodes (tests.test_episodes.LiveHook.test_full_sleep_closes_open_episodes) ... ok
+2026-10-24T23:33:17.3690369Z test_observe_turn_reads_turn_products_and_operator (tests.test_episodes.LiveHook.test_observe_turn_reads_turn_products_and_operator) ... ok
+2026-10-24T23:33:17.3796398Z test_goal_shift_and_semantic_vectors (tests.test_episodes.Segmentation.test_goal_shift_and_semantic_vectors) ... ok
+2026-10-24T23:33:17.3917776Z test_pause_correction_failure_and_max_events (tests.test_episodes.Segmentation.test_pause_correction_failure_and_max_events) ... ok
+2026-10-24T23:33:17.4022380Z test_same_topic_stays_and_topic_plus_route_change_cuts (tests.test_episodes.Segmentation.test_same_topic_stays_and_topic_plus_route_change_cuts) ... ok
+2026-10-24T23:33:17.4120073Z test_surprise_alone_never_cuts (tests.test_episodes.Segmentation.test_surprise_alone_never_cuts) ... ok
+2026-10-24T23:33:17.4233518Z test_forgotten_or_inactive_neighbour_is_skipped (tests.test_episodes.Spread.test_forgotten_or_inactive_neighbour_is_skipped) ... ok
+2026-10-24T23:33:17.4972088Z test_live_turn_runs_spread_hook_and_operator (tests.test_episodes.Spread.test_live_turn_runs_spread_hook_and_operator) ... ok
+2026-10-24T23:33:17.5171946Z test_spread_added_memory_does_not_strengthen_its_own_edge (tests.test_episodes.Spread.test_spread_added_memory_does_not_strengthen_its_own_edge) ... ok
+2026-10-24T23:33:17.5331974Z test_spread_needs_repeated_edges_shadow_reports_on_applies (tests.test_episodes.Spread.test_spread_needs_repeated_edges_shadow_reports_on_applies) ... ok
+2026-10-24T23:33:17.5502132Z test_staging_events_lists_candidate_episodes_only (tests.test_episodes.Spread.test_staging_events_lists_candidate_episodes_only) ... ok
+2026-10-24T23:33:17.5521240Z 
+2026-10-24T23:33:17.5522381Z ======================================================================
+2026-10-24T23:33:17.5523129Z ERROR: test_missing_originating_event_rejected (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_missing_originating_event_rejected)
+2026-10-24T23:33:17.5523819Z ----------------------------------------------------------------------
+2026-10-24T23:33:17.5524176Z Traceback (most recent call last):
+2026-10-24T23:33:17.5524693Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_episodic_route_source_run107.py", line 58, in test_missing_originating_event_rejected
+2026-10-24T23:33:17.5525326Z     self.mutate("UPDATE memories SET event_id=? WHERE id=?", ('evt_not_real', self.mid))
+2026-10-24T23:33:17.5525722Z     ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:33:17.5526179Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_episodic_route_source_run107.py", line 31, in mutate
+2026-10-24T23:33:17.5526591Z     conn.execute(sql, args)
+2026-10-24T23:33:17.5526808Z     ~~~~~~~~~~~~^^^^^^^^^^^
+2026-10-24T23:33:17.5527068Z sqlite3.IntegrityError: FOREIGN KEY constraint failed
+2026-10-24T23:33:17.5527295Z 
+2026-10-24T23:33:17.5527405Z ======================================================================
+2026-10-24T23:33:17.5527971Z FAIL: test_corrupt_source_blob_rejected (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_corrupt_source_blob_rejected)
+2026-10-24T23:33:17.5528650Z ----------------------------------------------------------------------
+2026-10-24T23:33:17.5528949Z Traceback (most recent call last):
+2026-10-24T23:33:17.5529415Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_episodic_route_source_run107.py", line 54, in test_corrupt_source_blob_rejected
+2026-10-24T23:33:17.5529963Z     self.assertIsNone(ER.suggest(self.s, QUERY, self.r.session))
+2026-10-24T23:33:17.5530291Z     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:33:17.5531233Z AssertionError: {'route': 'detail', 'relevance': 1.0, 'memory_id': 'mem_601b4744c6f4406687bb4f35ecd39d55', 'event_id': 'evt_548f5ba722044d1e89ff6425cc764945', 'source_id': 'src_55b2d61692c44f379bfc340eebd21e9f', 'source': 'FAST_EPISODIC_ROUTE'} is not None
+2026-10-24T23:33:17.5531977Z 
+2026-10-24T23:33:17.5532086Z ======================================================================
+2026-10-24T23:33:17.5533170Z FAIL: test_invalid_newer_candidate_does_not_hide_valid_older (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_invalid_newer_candidate_does_not_hide_valid_older)
+2026-10-24T23:33:17.5533883Z ----------------------------------------------------------------------
+2026-10-24T23:33:17.5534186Z Traceback (most recent call last):
+2026-10-24T23:33:17.5534718Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_episodic_route_source_run107.py", line 83, in test_invalid_newer_candidate_does_not_hide_valid_older
+2026-10-24T23:33:17.5535395Z     self.assertEqual((suggestion['memory_id'], suggestion['route']), (self.mid, 'detail'))
+2026-10-24T23:33:17.5535815Z     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:33:17.5536350Z AssertionError: Tuples differ: ('mem_25cc126673164aa18637a0c7c92de5a1', 'gist') != ('mem_d91b7361b0ef42b8ae3a569fa2eb006d', 'detail')
+2026-10-24T23:33:17.5536917Z 
+2026-10-24T23:33:17.5537009Z First differing element 0:
+2026-10-24T23:33:17.5537237Z 'mem_25cc126673164aa18637a0c7c92de5a1'
+2026-10-24T23:33:17.5537480Z 'mem_d91b7361b0ef42b8ae3a569fa2eb006d'
+2026-10-24T23:33:17.5537645Z 
+2026-10-24T23:33:17.5537748Z - ('mem_25cc126673164aa18637a0c7c92de5a1', 'gist')
+2026-10-24T23:33:17.5538056Z + ('mem_d91b7361b0ef42b8ae3a569fa2eb006d', 'detail')
+2026-10-24T23:33:17.5538240Z 
+2026-10-24T23:33:17.5538345Z ======================================================================
+2026-10-24T23:33:17.5538984Z FAIL: test_memory_record_packet_key_mismatch_rejected (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_memory_record_packet_key_mismatch_rejected)
+2026-10-24T23:33:17.5539648Z ----------------------------------------------------------------------
+2026-10-24T23:33:17.5539952Z Traceback (most recent call last):
+2026-10-24T23:33:17.5540469Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_episodic_route_source_run107.py", line 49, in test_memory_record_packet_key_mismatch_rejected
+2026-10-24T23:33:17.5541293Z     self.assertIsNone(ER.suggest(self.s, QUERY, self.r.session))
+2026-10-24T23:33:17.5541618Z     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:33:17.5542442Z AssertionError: {'route': 'detail', 'relevance': 1.0, 'memory_id': 'mem_b7076bdc69804890a9a7a5b04c33731a', 'event_id': 'evt_5bfc813609434b3da02cc546bb99eb0c', 'source_id': 'src_1b501de54af54a4aaebbbc7f5a739e1c', 'source': 'FAST_EPISODIC_ROUTE'} is not None
+2026-10-24T23:33:17.5543143Z 
+2026-10-24T23:33:17.5543251Z ======================================================================
+2026-10-24T23:33:17.5543926Z FAIL: test_mutated_key_cannot_redirect_to_another_named_entity (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_mutated_key_cannot_redirect_to_another_named_entity)
+2026-10-24T23:33:17.5544601Z ----------------------------------------------------------------------
+2026-10-24T23:33:17.5544892Z Traceback (most recent call last):
+2026-10-24T23:33:17.5545398Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_episodic_route_source_run107.py", line 43, in test_mutated_key_cannot_redirect_to_another_named_entity
+2026-10-24T23:33:17.5546409Z     self.assertIsNone(ER.suggest(self.s, 'Erkläre Projekt Borealis bitte genau', self.r.session))
+2026-10-24T23:33:17.5546842Z     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:33:17.5547703Z AssertionError: {'route': 'detail', 'relevance': 1.0, 'memory_id': 'mem_4dea44039ccb499db67dd0d869998d0f', 'event_id': 'evt_8b96e0e5939840c0af1ebb857b547449', 'source_id': 'src_0a06acec0d224993a3fac8ca06402ee1', 'source': 'FAST_EPISODIC_ROUTE'} is not None
+2026-10-24T23:33:17.5548414Z 
+2026-10-24T23:33:17.5548516Z ======================================================================
+2026-10-24T23:33:17.5549234Z FAIL: test_valid_route_value_mutation_cannot_redirect_active_or_shadow (tests.test_episodic_route_source_run107.EpisodicRouteSourceRun107.test_valid_route_value_mutation_cannot_redirect_active_or_shadow)
+2026-10-24T23:33:17.5550136Z ----------------------------------------------------------------------
+2026-10-24T23:33:17.5550432Z Traceback (most recent call last):
+2026-10-24T23:33:17.5551099Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_episodic_route_source_run107.py", line 36, in test_valid_route_value_mutation_cannot_redirect_active_or_shadow
+2026-10-24T23:33:17.5551758Z     self.assertEqual(ER.for_turn(self.s, QUERY, self.r.session), (None, None))
+2026-10-24T23:33:17.5552132Z     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:33:17.5552577Z AssertionError: Tuples differ: ('gist', {'route': 'gist', 'relevance': 1.[224 chars]rue}) != (None, None)
+2026-10-24T23:33:17.5552880Z 
+2026-10-24T23:33:17.5552967Z First differing element 0:
+2026-10-24T23:33:17.5553172Z 'gist'
+2026-10-24T23:33:17.5553335Z None
+2026-10-24T23:33:17.5553545Z 
+2026-10-24T23:33:17.5553621Z + (None, None)
+2026-10-24T23:33:17.5553798Z - ('gist',
+2026-10-24T23:33:17.5554013Z -  {'applied': True,
+2026-10-24T23:33:17.5554335Z -   'event_id': 'evt_b37f9d6c86dd4665b554471f67c8b309',
+2026-10-24T23:33:17.5554639Z -   'memory_id': 'mem_15eb85e923be4dc5a3ad21080f2d7f5d',
+2026-10-24T23:33:17.5554906Z -   'mode': 'active',
+2026-10-24T23:33:17.5555096Z -   'relevance': 1.0,
+2026-10-24T23:33:17.5555292Z -   'route': 'gist',
+2026-10-24T23:33:17.5555498Z -   'source': 'FAST_EPISODIC_ROUTE',
+2026-10-24T23:33:17.5555767Z -   'source_id': 'src_c3bdee06b10a46468c403827e6a31194'})
+2026-10-24T23:33:17.5555952Z 
+2026-10-24T23:33:17.5556083Z ----------------------------------------------------------------------
+2026-10-24T23:33:17.5556368Z Ran 25 tests in 0.381s
+2026-10-24T23:33:17.5556493Z 
+2026-10-24T23:33:17.5556583Z FAILED (failures=5, errors=1)
+2026-10-24T23:33:17.5843217Z ##[error]Process completed with exit code 1.
+2026-10-24T23:33:17.5935715Z Post job cleanup.
+2026-10-24T23:33:17.6552162Z [command]/usr/bin/git version
+2026-10-24T23:33:17.6587163Z git version 2.55.0
+2026-10-24T23:33:17.6616256Z Temporarily overriding HOME='/home/runner/work/_temp/cb6e55d2-9f86-47e5-a298-1304f75d082b' before making global git config changes
+2026-10-24T23:33:17.6617147Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:33:17.6620781Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:33:17.6664008Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:33:17.6704807Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:33:17.6988258Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:33:17.7032065Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:33:17.7411938Z Cleaning up orphan processes
+2026-10-24T23:33:17.7681877Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

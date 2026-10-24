@@ -1,0 +1,46 @@
+{
+  "run": 107,
+  "utc_date": "2026-10-25",
+  "branch": "codex/episodic-route-source-run107-20261025",
+  "pr": 138,
+  "base_commit": "81f7d5f837530d38e8f2ee5c150905c9bcd8f03c",
+  "owner": "episodic_route.py only; Run106 episodes.py and Run108 world.py independent",
+  "state": "ISOLATED_REVIEW_CANDIDATE_NOT_MERGED",
+  "finding": "Mutable memories.value/key_text or damaged source bytes could silently redirect ACTIVE human fast episodic route without matching immutable HumanDecision/MemoryRecord",
+  "test_first_red": {
+    "workflow_run": 40143189352,
+    "job": 121019018430,
+    "tests": 25,
+    "failures": 5,
+    "errors": 1,
+    "note": "FK-invalid negative test corrected; original raw log preserved"
+  },
+  "first_fix_fail": {
+    "workflow_run": 40143284686,
+    "job": 121019318455,
+    "tests": 25,
+    "failures": 2,
+    "errors": 3,
+    "cause": "validator needed session_id and scope omitted by suggest SELECT; raw log preserved"
+  },
+  "green": {
+    "workflow_run": 40143412260,
+    "job": 121019693476,
+    "tests": 26,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS"
+  },
+  "implementation": "Read-only source/decision/event provenance validation for candidate route; skip unverified row, keep valid fallback; no extra source creation; refusal telemetry no user content",
+  "evidence_level": "GitHub Linux + real SQLite Runtime; model-free and synthetic queries; NOT native inference or Redmi",
+  "claim_limit": "Detects partial/stale SQLite and source corruption; not cryptographic authentication against full database rewrite",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_system": "INCOMPLETE"
+  },
+  "next": "Independent cross-review and broader runtime suite, then integrate with Run106/Run108 only after their separate reviews; no native gate promotion."
+}
