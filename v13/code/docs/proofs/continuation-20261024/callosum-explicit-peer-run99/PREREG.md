@@ -11,3 +11,5 @@ Preregistered RED: SOURCE_EXACT unlinked and wrong-link offers must score0; exac
 Narrow candidate: for non-NO_MESSAGE channels require `OfferPacket.peer_message_packet_id == pending MessagePacket.packet_id` in addition to Run98 source/generation checks; continue scanning later receiver offers when an earlier offer is unlinked. For NO_MESSAGE baseline require absence of peer link, but do not claim message influence. Never infer causality from rowid alone.
 
 Original STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Z6a/Z8 FAIL, full V13 INCOMPLETE.
+
+**Post-RED fixture updates:** Three historical positive tests directly synthesized receiver offers without the production `peer_message_packet_id` field. Updated only those positive fixtures to point to the consumed MessagePacket: `tests/test_callosum.py`, `tests/test_callosum_message_lineage_run98.py`, `tests/test_callosum_outcome_integration_run66.py`. All original assertions, negative cases, once/CAS and NO_MESSAGE baseline remain; no unsafe legacy fallback. File ownership explicitly expanded to these three fixtures only. Original RED run 40138230684 retained.
