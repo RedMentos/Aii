@@ -1,0 +1,82 @@
+{
+  "schema": "V13_RUN101_TOOLSTEP_SHADOW_AGREEMENT_CHECKPOINT_V1",
+  "utc": "2026-10-24T22:45:00Z",
+  "owner": "codex/toolstep-negation-run101-20261025",
+  "base_branch": "codex/context-unclosed-fence-run100-20261025",
+  "base_sha": "041cfad68d4ff72842103d1fbce5659f074b7f37",
+  "production_integrated": false,
+  "scope": [
+    "v13/code/v13/toolstep.py:ToolStep.compare(calc)",
+    "v13/code/tests/test_toolstep_negation_run101.py",
+    ".github/workflows/v13-run101-toolstep.yml",
+    "v13/code/docs/proofs/continuation-20261025/toolstep-negation-run101/*"
+  ],
+  "red": {
+    "commit": "2a684305f0eea2ab395b06aacf6437dda1f48ed3",
+    "run_id": 40139437610,
+    "job_id": 121007841759,
+    "tests": 12,
+    "failures": 4
+  },
+  "invalid_intermediate": {
+    "commit": "4c1370e16ddc1ddc822f50f46cd99d9943a64e5f",
+    "run_id": 40139507635,
+    "job_id": 121008054477,
+    "error": "SyntaxError line 214, JS replacement-string $' expansion",
+    "preserved": "INTERMEDIATE_FAILURE.md"
+  },
+  "corrected": {
+    "commit": "9619a73abd22e0fccafb91badd68ff32ba1efed6",
+    "toolstep_git_blob": "9b992bc867a97caa444b2ca941ae9805fdb0b343"
+  },
+  "final_green": {
+    "commit": "61fdd69f3c09ed54fe441bf8baef29c9cbc89db5",
+    "run_id": 40139740945,
+    "job_id": 121008758428,
+    "tests": 14,
+    "failures": 0,
+    "privacy": "CLEAN"
+  },
+  "integration": {
+    "run_id": 40139740934,
+    "job_id": 121008793207,
+    "focused_linux_tests": 401,
+    "extracted_zip_tests": 100,
+    "zip_files": 823,
+    "source_zip_sha256": "69547b8fca6ffff73b244af04841984bbeda5d6bf24921541ea91b181ae839d6",
+    "artifact_id": 12578835301,
+    "artifact_outer_sha256": "0946d7a84a32443a0eaa32a485c69ce5cbb663b46f34cc4af8e6d18e97fe024a",
+    "sqlite_restart": "PASS",
+    "privacy": "CLEAN"
+  },
+  "independent_local": {
+    "actual_extracted_tests": 46,
+    "additional_model_free_tests": 96,
+    "sqlite_cases": 6,
+    "sqlite_shadow_agreement": 0.3333,
+    "cli_separate_processes": 2,
+    "hardware": "Linux software only"
+  },
+  "native_host_recheck": {
+    "memory_max_bytes": 4294967296,
+    "cgroup_mount": "ro",
+    "transformers": "MISSING",
+    "github_dns": "UNAVAILABLE",
+    "models_checked_scratch": "NONE"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Independent PR review/merge with latest owner heads",
+    "Shadow numeric matching still approximate, not a correctness judge",
+    "Native registered LP3 prerequisites and Redmi device proof"
+  ],
+  "next_exact_step": "Review latest owner heads; then implement a separate substantive V13 utility/second-attempt package with source-bound real Runtime/SQLite baseline and preregistered ablation. Do not overlap Callosum/JEF/Sleep/World active owners.",
+  "drive_backup": "Rejected anyone-writable Drive folder not retried"
+}
