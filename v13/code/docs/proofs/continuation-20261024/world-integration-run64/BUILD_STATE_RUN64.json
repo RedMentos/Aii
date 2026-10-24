@@ -1,0 +1,32 @@
+{
+  "schema": "V13_RUN64_WORLD_INTEGRATION_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base": "347505fad2be9b05dcdb0506ee3e5df70678e815",
+  "owner": "world_model.py exact archived candidate, new test_world_model_integration_run64.py, world-integration-run64 evidence",
+  "source": {
+    "old_blob": "8579d4938624137749e7eb793f5016294c36401f",
+    "new_blob": "45bb69dcf6f8252ac304bda2c95a616412f115d1",
+    "archive_blob": "45bb69dcf6f8252ac304bda2c95a616412f115d1"
+  },
+  "tests": {
+    "synthetic_sqlite": "14/14 PASS exact production-source blob",
+    "optimized": "14/14 PASS",
+    "compileall": "PASS",
+    "first_test_error": "MISUSED_NO_STORE (preserved)",
+    "independent_latent_overflow": "FAIL_OPEN persisted NaN R2",
+    "full_repo": "NOT RUN",
+    "privacy_scan": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "status": "BRANCH_INTEGRATED_WORLD_GUARDS_WITH_OPEN_NUMERIC_FAIL_OPEN",
+  "next": "Run65 preregister numeric state-align fail-closed fix, then full checkout suite/privacy and real Store",
+  "user_decision_required": false
+}

@@ -1,0 +1,11 @@
+# Run64 — production-path integration of archived WP-T8 World-Model guards
+
+Base PR96 Run63 `347505fad2be9b05dcdb0506ee3e5df70678e815`. Source `v13/code/v13/world_model.py` replaced byte-for-byte with archived Run37 candidate Git blob `45bb69dcf6f8252ac304bda2c95a616412f115d1`, incorporating Run28 malformed transition refusal and Run37 impossible predicted outcome refusal. Original production blob `8579d4938624137749e7eb793f5016294c36401f` remains in immutable history. No model, gate, user permissions or native worker changed.
+
+**New exact-source Linux SQLite software evidence:** 14/14 production-import synthetic SQLite tests PASS; 14/14 Python -O PASS; compileall PASS. Tests cover valid observed actions, malformed JSON, nonfinite/negative duration/chars/state, source route, latent refusal, 24-row fit/reload, invalid for_event, impossible negative duration/success>1/negative chars, nonfinite model, and supported valid counterfactual. The locally executed source and remote production source both hash to Git blob `45bb69dcf6f8252ac304bda2c95a616412f115d1`; test source matches remote Git blob `34503edbdb03679d986d581618592146294eec93`. A first test misuse (passing no Store and no explicit model) caused one ERROR; corrected and original log preserved. The local `v13.common` shim only supplies `now()`; it is NOT a full V13 Store/Runtime.
+
+**Independent review new negative finding:** finite but enormous latent vectors (24 rows with [1e308,1e308]) produce overflow in state-align ridge and a persisted `MEASURED` result with NaN R² values. This is a confirmed synthetic fail-open; do not claim the World-Model fit path fully hardened. Original reproduction retained and next Run65 must fail closed on numerical nonfiniteness without changing heldout cohort/thresholds. No silent correction of original rows.
+
+**Limitations:** branch-scoped production path only, not merged into main or installed on Redmi. Complete repo suite, official privacy scan, actual V13 Store concurrency, native model and Redmi NOT RUN. Original STEP2/B3/Body-JEPA gates unchanged.
+
+**Next:** preregister Run65 numerical-state-align fail-closed fix; preserve Run64 exact archived candidate and its failing huge-latent review. Then full checkout independent review, full suite/privacy scan and actual Store lifecycle. World predictions remain HYPOTHESIS, never causal truth.

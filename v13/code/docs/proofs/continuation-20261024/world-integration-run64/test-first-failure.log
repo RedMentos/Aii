@@ -1,0 +1,18 @@
+======================================================================
+ERROR: test_no_model_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_no_model_uncertain)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run64/v13/code/tests/test_world_model_integration_run64.py", line 111, in test_no_model_uncertain
+    r=W.counterfactual(None,[0.]*4,'simple',None)
+  File "/mnt/data/v13_run64/v13/code/v13/world_model.py", line 128, in counterfactual
+    st=st or load(store)
+             ~~~~^^^^^^^
+  File "/mnt/data/v13_run64/v13/code/v13/world_model.py", line 113, in load
+    st=store.state(KEY,None)[0]
+       ^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'state'
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.010s
+
+FAILED (errors=1)

@@ -1,0 +1,9 @@
+# Run64 prereg — integrate independently archived World-Model fail-closed candidate
+
+2026-10-24. Base Run63 PR96 347505fad2be9b05dcdb0506ee3e5df70678e815. Own `v13/code/v13/world_model.py` and new `v13/code/tests/test_world_model_integration_run64.py`, `v13/code/docs/proofs/continuation-20261024/world-integration-run64/*` only. Do not edit Run61 history or Sleep owner code, registered LP3/STEP2 cohorts or models.
+
+Current production `world_model.py` Git blob 8579d4938624137749e7eb793f5016294c36401f is unchanged since Run28. The archived Run37 candidate `v13/code/docs/proofs/continuation-20261024/world-output-run37/scripts/world_model.py` Git blob 45bb69dcf6f8252ac304bda2c95a616412f115d1 includes the Run28 malformed-source/nonfinite refusal and Run37 impossible-outcome refusal. Previous isolated Run29 SQLite and Run37 domain tests are recorded, but the production module has not yet incorporated these fixes.
+
+Goal: exact byte-for-byte replacement of the branch-scoped production `world_model.py` with the archived candidate after independent source diff review. No model/weight/authority or gate changes. Add new actual production-module synthetic SQLite tests for malformed transition skipping, invalid observed event, physically impossible predicted outcomes, and a valid supported prediction unchanged. Do not claim tests run unless actually executed. If full checkout unavailable, retain NOT_RUN and use independent seam tests, exact source Git-blob verification, compile/static checks.
+
+Predeclared negative controls: original negative duration SIMULATION_SUPPORTED and original malformed rows raise; candidate must return SIMULATION_UNCERTAIN and avoid training on invalid rows. Preserve old source blob and original evidence. Full suite and official privacy scan mandatory before merge. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 INCOMPLETE.

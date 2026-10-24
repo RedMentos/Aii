@@ -34,20 +34,44 @@ def state_vec(input_chars,resource_state='NORMAL',hour=12.):
     return [math.log1p(max(0,float(input_chars)))/8,PRESSURE.get(resource_state,.5),math.sin(h),math.cos(h)]
 def onehot(a):return [1. if a==x else 0. for x in ACTIONS]
 
+def _finite_nonnegative(value):
+    return type(value) in (int,float) and math.isfinite(value) and value >= 0
+
+
 def transitions(store,limit=MAX_ROWS):
-    """Observed own transitions with a forecast and an outcome; the route comes from the committed ActionSelection."""
+    """Only finite, nonnegative observed transitions may enter the world model.
+
+    Malformed historical rows are excluded, not repaired or invented. This
+    candidate does not assert that skipped rows are valid evidence.
+    """
     rows=store.rows("SELECT a.id,a.event_id,a.status,a.expected,a.outcome,a.created FROM actions a WHERE a.outcome IS NOT NULL AND a.expected LIKE ? ORDER BY a.created DESC LIMIT ?",('%"forecast"%',limit))
     out=[]
     for r in rows:
-        exp=json.loads(r['expected']);fc=exp.get('forecast') or {};act=json.loads(r['outcome'] or '{}')
-        sel=store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(r['event_id'],))
-        route=json.loads(sel['payload']).get('route_hint') if sel else None
-        if route not in ACTIONS or not isinstance(fc.get('input_chars'),(int,float)) or not isinstance(act.get('action_duration_s'),(int,float)):continue
-        hour=(r['created']%86400)/3600
-        lat=(fc.get('learned_latent_prediction') or {}).get('latent')
-        out.append({'action_id':r['id'],'s':state_vec(fc['input_chars'],fc.get('resource_state','NORMAL'),hour),'a':route,
-                    'y':[math.log1p(act['action_duration_s']),1. if r['status']=='FINAL' else 0.,math.log1p(act.get('characters') or 0)/8],
-                    'latent':lat if isinstance(lat,list) and lat and all(isinstance(v,(int,float)) for v in lat) else None})
+        try:
+            exp=json.loads(r['expected']);act=json.loads(r['outcome'] or '{}')
+            if type(exp) is not dict or type(act) is not dict:continue
+            fc=exp.get('forecast') or {}
+            if type(fc) is not dict:continue
+            sel=store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(r['event_id'],))
+            route=json.loads(sel['payload']).get('route_hint') if sel else None
+            if route not in ACTIONS:continue
+            chars=fc.get('input_chars');duration=act.get('action_duration_s')
+            output_chars=act.get('characters') or 0
+            created=r['created']
+            if not all(_finite_nonnegative(v) for v in (chars,duration,output_chars,created)):continue
+            hour=(created%86400)/3600
+            state=state_vec(chars,fc.get('resource_state','NORMAL'),hour)
+            if not all(math.isfinite(v) for v in state):continue
+            lat=(fc.get('learned_latent_prediction') or {})
+            lat=lat.get('latent') if type(lat) is dict else None
+            if not (type(lat) is list and 0<len(lat)<=4096 and
+                    all(type(v) in (int,float) and math.isfinite(v) for v in lat)):
+                lat=None
+            out.append({'action_id':r['id'],'s':state,'a':route,
+                        'y':[math.log1p(duration),1. if r['status']=='FINAL' else 0.,math.log1p(output_chars)/8],
+                        'latent':lat})
+        except (ValueError,TypeError,KeyError,OverflowError,AttributeError):
+            continue
     return list(reversed(out))
 
 def ridge(X,Y,lam=RIDGE):
@@ -100,26 +124,55 @@ def coverage(st,s,a):
     return {'samples':n,'ood_distance':round(ood,4),'in_support':ood<=OOD_SUPPORT}
 
 def counterfactual(store,s,a,st=None):
-    """Predicted consequence of action a in state s, with coverage, model disagreement and a confidence label."""
+    """Predicted consequence of action a, never a real outcome or authority."""
     st=st or load(store)
     if a not in ACTIONS:raise ValueError('Aktion '+'|'.join(ACTIONS))
-    if not st or st.get('status')!='FITTED':
-        return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_WORLD_MODEL','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
-    x=np.array([1.]+list(s)+onehot(a));preds=np.array([x@np.array(W) for W in st['forward']])
-    mean=preds.mean(0);spread=float(preds.std(0).mean());cov=coverage(st,s,a)
-    ood=cov['ood_distance'] if cov['ood_distance'] is not None else 1e9
-    conf=(1-math.exp(-cov['samples']/COVER_N))*math.exp(-max(0.,ood-OOD_SUPPORT))/(1+spread/SPREAD_REF)
+    def uncertain(reason):
+        return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN',
+                'reason':reason,'cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
+    if not st or st.get('status')!='FITTED':return uncertain('NO_WORLD_MODEL')
+    try:
+        x=np.asarray([1.]+list(s)+onehot(a),dtype=float)
+        if x.shape!=(9,) or not np.isfinite(x).all():return uncertain('INVALID_STATE')
+        W=np.asarray(st['forward'],dtype=float)
+        if W.shape!=(ENSEMBLE,9,3) or not np.isfinite(W).all():
+            return uncertain('INVALID_MODEL_STATE')
+        preds=np.array([x@w for w in W])
+        mean=preds.mean(0);spread=float(preds.std(0).mean())
+        cov=coverage(st,s,a)
+        ood=cov['ood_distance'] if cov['ood_distance'] is not None else 1e9
+        if not np.isfinite(mean).all() or not math.isfinite(spread) or not math.isfinite(ood):
+            return uncertain('NONFINITE_PREDICTION')
+        # The training targets are log1p(nonnegative duration/chars) and
+        # binary success. A ridge extrapolation outside their physical
+        # domains is not a supported simulation; never clamp/invent values.
+        if mean[0]<0 or not 0<=mean[1]<=1 or mean[2]<0:
+            return uncertain('IMPOSSIBLE_PREDICTED_OUTCOME')
+        conf=(1-math.exp(-cov['samples']/COVER_N))*math.exp(-max(0.,ood-OOD_SUPPORT))/(1+spread/SPREAD_REF)
+        duration=math.expm1(float(mean[0]))
+        if not math.isfinite(conf) or not math.isfinite(duration):
+            return uncertain('NONFINITE_PREDICTION')
+    except (ValueError,TypeError,KeyError,OverflowError,AttributeError,IndexError):
+        return uncertain('INVALID_MODEL_STATE')
     conf=round(max(0.,min(1.,conf)),4)
-    return {'action':a,'prediction':dict(zip(TARGETS,np.round(mean,4).tolist()))|{'duration_s':round(math.expm1(float(mean[0])),3)},
+    return {'action':a,'prediction':dict(zip(TARGETS,np.round(mean,4).tolist()))|{'duration_s':round(duration,3)},
             'coverage':cov,'model_spread':round(spread,4),'confidence':conf,'cause':'SELF_CAUSED','authority':'HYPOTHESIS',
             'label':'SIMULATION_SUPPORTED' if conf>=CF_MIN and cov['in_support'] else 'SIMULATION_UNCERTAIN'}
 
 def for_event(store,event_id,a):
-    """Counterfactual for a stored event's own state under another action (used by Sleep B route alternatives)."""
+    """Route alternative for a valid stored own state; malformed state is not simulated."""
     row=store.one("SELECT expected,created FROM actions WHERE event_id=? AND expected LIKE ? ORDER BY created DESC LIMIT 1",(event_id,'%"forecast"%'))
     if not row:return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
-    fc=json.loads(row['expected']).get('forecast') or {}
-    return counterfactual(store,state_vec(fc.get('input_chars',0),fc.get('resource_state','NORMAL'),(row['created']%86400)/3600),a)
+    try:
+        exp=json.loads(row['expected']);fc=exp.get('forecast') or {}
+        if type(fc) is not dict or not _finite_nonnegative(fc.get('input_chars')) or not _finite_nonnegative(row['created']):
+            raise ValueError('invalid observed state')
+        s=state_vec(fc['input_chars'],fc.get('resource_state','NORMAL'),(row['created']%86400)/3600)
+        if not all(math.isfinite(v) for v in s):raise ValueError('nonfinite observed state')
+    except (ValueError,TypeError,KeyError,AttributeError,OverflowError):
+        return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN',
+                'reason':'INVALID_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
+    return counterfactual(store,s,a)
 
 def report(store):
     st=load(store)
