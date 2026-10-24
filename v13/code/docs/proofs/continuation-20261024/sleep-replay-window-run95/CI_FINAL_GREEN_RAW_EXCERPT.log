@@ -1,0 +1,11 @@
+# Run95 final GREEN — bounded raw CI excerpt
+
+Commit 9064a398f188415ef21ecb06825ea44fd064eff6. Actions run 40136868301/job 121000139969 SUCCESS. Full raw job logs retained in Actions. Selected exact lines:
+
+2026-10-24T22:03:22.1306133Z test_equal_timestamps_use_deterministic_id_tiebreak (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_equal_timestamps_use_deterministic_id_tiebreak) ... ok
+2026-10-24T22:03:22.1454885Z test_first_sync_over_capacity_keeps_newest_rows (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_first_sync_over_capacity_keeps_newest_rows) ... ok
+2026-10-24T22:03:22.1650390Z test_new_human_corrections_are_not_starved_after_capacity (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_new_human_corrections_are_not_starved_after_capacity) ... ok
+2026-10-24T22:03:22.1843859Z test_retired_in_window_and_protected_replay_history_are_preserved (tests.test_sleep_replay_window_run95.SleepReplayWindowRun95.test_retired_in_window_and_protected_replay_history_are_preserved) ... ok
+2026-10-24T22:03:23.1873229Z Ran 36 tests in 1.077s
+2026-10-24T22:03:23.1873710Z OK
+2026-10-24T22:03:23.2749995Z privacy scan b54342c12..HEAD: CLEAN
