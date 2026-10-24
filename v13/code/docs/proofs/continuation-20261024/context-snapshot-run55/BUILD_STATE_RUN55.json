@@ -1,0 +1,14 @@
+{
+  "schema": "V13_RUN55_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "owner": "context-snapshot-run55/* only",
+  "base": "a90acdc3ab3ab3fa7646a2d1634750f527d02853",
+  "prereg_commit": "dabcf2f6e68a6cdd8a1c111957016e9af8f62fd0",
+  "upstream_history_blob": "a7138080e19b439331bf4c5da68e7e62f823f169",
+  "upstream_store_blob": "0779d986fb8aee8aa01c5df5f656889d4bd56348",
+  "status": "ISOLATED_TRANSACTIONAL_HISTORY_CANDIDATE_NOT_INTEGRATED",
+  "tests": {"exploratory_before_prereg": "12/12 PASS", "final": "15/15 PASS", "optimized": "15/15 PASS", "sqlite_thread_writer": "PASS", "sqlite_process_writer": "PASS", "linux": "PASS_SYNTHETIC_SQLITE", "real_store": "NOT_RUN", "runtime": "NOT_RUN", "redmi": "NOT_RUN", "full_repo": "NOT_RUN", "official_privacy_scan": "NOT_RUN"},
+  "gates": {"STEP2": "UTILITY_FAIL", "B3_L1": "FAIL", "Body_JEPA": "UNAVAILABLE", "jepa_weight": 0, "full_V13": "INCOMPLETE"},
+  "remaining": ["Real Store/Runtime concurrent revocation", "Consumer-time source validation after return", "Latency impact of BEGIN IMMEDIATE", "Full checkout independent review and official privacy scan"],
+  "next": "In complete PR88 checkout run real Store test, official privacy scanner and full suite; keep opt-in candidate disabled until reviewed"
+}
