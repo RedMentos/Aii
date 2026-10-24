@@ -5,6 +5,7 @@ predictor. Only explicitly permitted completed actions can train that predictor;
 own outputs never become semantic truth. RECORD_ONLY performs no weight updates.
 """
 import json
+import math
 import statistics
 from .common import digest,dumps,now,Unavailable
 from .contracts import packet
@@ -24,22 +25,44 @@ class WorldState:
         # Strict session/profile isolation. Interrupted actions are not successful
         # latency samples; their failure count is shown separately.
         rows=self.s.rows("SELECT a.* FROM actions a JOIN events e ON e.id=a.event_id WHERE e.session_id=? ORDER BY a.created DESC LIMIT 256",(self.r.session,))
-        samples=[];failures=0
+        samples=[];failures=0;rejected=0
         for row in rows:
             if row['event_id']==event['event_id']:continue
-            expected=json.loads(row['expected']);old=expected.get('forecast',{})
-            if old.get('profile',{}).get('id')!=profile['id']:continue
+            try:
+                expected=json.loads(row['expected'])
+                if not isinstance(expected,dict):raise ValueError('invalid expected shape')
+                old=expected.get('forecast',{})
+                if not isinstance(old,dict):raise ValueError('invalid forecast shape')
+                previous_profile=old.get('profile',{})
+                if not isinstance(previous_profile,dict):raise ValueError('invalid profile shape')
+            except (ValueError,TypeError):
+                rejected+=1;continue
+            if previous_profile.get('id')!=profile['id']:continue
             if row['status']!='FINAL':failures+=1;continue
-            actual=json.loads(row['outcome'] or '{}')
-            if actual.get('role')!=role or not isinstance(actual.get('action_duration_s'),(float,int)):continue
-            samples.append({'action_id':row['id'],'event_id':row['event_id'],'duration_s':actual['action_duration_s'],'input_chars':old['input_chars']})
+            try:
+                actual=json.loads(row['outcome'] or '{}')
+                if not isinstance(actual,dict):raise ValueError('invalid outcome shape')
+            except (ValueError,TypeError):
+                rejected+=1;continue
+            if actual.get('role')!=role:continue
+            duration=actual.get('action_duration_s');chars=old.get('input_chars')
+            # Historical SQLite JSON is untrusted, including Python's permissive NaN/Infinity parsing.
+            # Bounds only reject impossible/corrupt samples; they are not model timing calibrations.
+            try:
+                valid_duration=(type(duration) in (int,float) and 0<=duration<=1e9 and math.isfinite(duration))
+                valid_chars=(type(chars) is int and 0<=chars<=1_000_000_000)
+            except (OverflowError,TypeError,ValueError):
+                valid_duration=valid_chars=False
+            if not (valid_duration and valid_chars):
+                rejected+=1;continue
+            samples.append({'action_id':row['id'],'event_id':row['event_id'],'duration_s':duration,'input_chars':chars})
             if len(samples)>=32:break
         enough=len(samples)>=3
         lengths=[x['input_chars'] for x in samples]
         covered=bool(lengths and min(lengths)*.5<=length<=max(lengths)*2)
         values=[x['duration_s'] for x in samples]
         result={'method':'EMPIRICAL_TIMING_V1','profile':profile,'input_chars':length,'sample_count':len(samples),'failed_action_count':failures,
-                'sample_action_ids':[x['action_id'] for x in samples],'covered':covered,'prediction_authority':'HYPOTHESIS',
+                'sample_action_ids':[x['action_id'] for x in samples],'covered':covered,'rejected_sample_count':rejected,'prediction_authority':'HYPOTHESIS',
                 'duration_median_s':statistics.median(values) if enough and covered else None,
                 'observed_range_s':[min(values),max(values)] if values else None,'confidence_calibrated':False,
                 'status':'SUPPORTED_BY_RECENT_OBSERVATIONS' if enough and covered else 'INSUFFICIENT_COVERAGE'}

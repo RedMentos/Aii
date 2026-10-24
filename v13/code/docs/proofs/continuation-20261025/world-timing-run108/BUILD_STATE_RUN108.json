@@ -1,0 +1,42 @@
+{
+  "run": 108,
+  "utc_date": "2026-10-25",
+  "branch": "codex/world-timing-finite-run108-20261025",
+  "pr": 139,
+  "base_commit": "81f7d5f837530d38e8f2ee5c150905c9bcd8f03c",
+  "owner": "world.py forecast sampling only; independent of Run106 episodes.py and Run107 episodic_route.py",
+  "state": "ISOLATED_REVIEW_CANDIDATE_NOT_MERGED",
+  "finding": "Persisted action timing accepted negative/bool/nonfinite durations and malformed/invalid historical input lengths; NaN/Infinity caused packet serialization failure",
+  "red": {
+    "workflow_run": 40143470330,
+    "job": 121019837679,
+    "tests": 16,
+    "failures": 1,
+    "errors": 3
+  },
+  "green": {
+    "workflow_run": 40143541411,
+    "job": 121020056328,
+    "tests": 16,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS"
+  },
+  "implementation": "Skip malformed expected/outcome JSON and invalid timing/input lengths; no original action mutation; rejected_sample_count in F4 forecast telemetry",
+  "primary_source": {
+    "url": "https://docs.python.org/3/library/json.html#infinite-and-nan-number-values",
+    "access_date": "2026-10-25",
+    "claim": "Python json.loads accepts NaN/Infinity by default while project dumps(allow_nan=False) rejects them"
+  },
+  "evidence_level": "GitHub Linux actual SQLite Runtime; synthetic timing fixtures, no native timing or Redmi",
+  "claim_limit": "Only F4 forecast sample admission hardened; WorldState.observe/recover corrupted persisted outcomes remain a separate next package",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_system": "INCOMPLETE"
+  },
+  "next": "Run109 independently preregister WorldState.observe/recover invalid outcome handling and fail-closed restart behavior; no native gate promotion."
+}
