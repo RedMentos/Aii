@@ -106,8 +106,15 @@ def training_rows(store,component,revision,human_keys):
             p=json.loads(row['payload'])
             if not isinstance(p,dict) or p.get('event_id')!=x.get('event_id') or p.get('component')!=component or p.get('context_revision')!=revision or p.get('context_ref',{}).get('sha256')!=x['context_sha256']:
                 continue
+            context_ref=p.get('context_ref')
+            if type(context_ref) is not dict or context_ref not in (p.get('provenance') or []):
+                continue
+            event=store.one('SELECT packet FROM events WHERE id=?',(x['event_id'],))
+            if not event or json.loads(event['packet']).get('source_ref')!=context_ref:
+                continue  # fast-head context is the original user event, not a same-hash substitute
+            store.read_source(context_ref)  # includes source deletion, blob digest and full extent
             out[x['context_sha256']]=({'value':x['value'],'source_id':x['source_id'],'event_id':x['event_id'],'permission':'learn','authority':AUTHORITY},p)
-        except (ValueError,TypeError,KeyError,AttributeError):
+        except (ValueError,TypeError,KeyError,AttributeError,OSError,UnicodeError):
             continue
     return [(k,row,p) for k,(row,p) in out.items()]
 
