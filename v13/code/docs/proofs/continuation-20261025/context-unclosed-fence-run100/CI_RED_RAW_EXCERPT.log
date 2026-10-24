@@ -1,0 +1,18 @@
+# Run100 RED, original Actions job 121007053607 (run 40139176244)
+# Full original job log retained in GitHub Actions. Below are unmodified selected lines.
+# Tests-only commit 73c7e45aec497b12707bcd311f28b8844ed6a5a3; before production fix.
+2026-10-24T22:35:15.3246097Z test_closed_fence_still_compresses_and_keeps_code (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_closed_fence_still_compresses_and_keeps_code) ... ok
+2026-10-24T22:35:15.3251597Z test_late_unclosed_python_fence_stays_raw (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_late_unclosed_python_fence_stays_raw) ... FAIL
+2026-10-24T22:35:15.3253635Z test_ordinary_prose_still_compresses (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_ordinary_prose_still_compresses) ... ok
+2026-10-24T22:35:15.3262147Z test_two_closed_fences_still_compress (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_two_closed_fences_still_compress) ... ok
+2026-10-24T22:35:15.3282250Z test_unclosed_fence_with_numbers_stays_raw_not_numeric_only (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_unclosed_fence_with_numbers_stays_raw_not_numeric_only) ... FAIL
+2026-10-24T22:35:15.3285978Z test_english_curly_double_quote_survives_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_english_curly_double_quote_survives_compression) ... ok
+2026-10-24T22:35:15.3287402Z test_existing_short_ascii_and_german_quotes_remain_exact (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_existing_short_ascii_and_german_quotes_remain_exact) ... ok
+2026-10-24T22:35:15.3288697Z test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) ... ok
+2026-10-24T22:35:15.3289959Z test_oversized_quote_forces_raw_not_lossy_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_oversized_quote_forces_raw_not_lossy_compression) ... ok
+2026-10-24T22:35:15.8011716Z FAIL: test_late_unclosed_python_fence_stays_raw (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_late_unclosed_python_fence_stays_raw)
+2026-10-24T22:35:15.8014472Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_unclosed_fence_run100.py", line 17, in test_late_unclosed_python_fence_stays_raw
+2026-10-24T22:35:15.8018209Z FAIL: test_unclosed_fence_with_numbers_stays_raw_not_numeric_only (tests.test_context_unclosed_fence_run100.ContextUnclosedFenceRun100.test_unclosed_fence_with_numbers_stays_raw_not_numeric_only)
+2026-10-24T22:35:15.8021495Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_unclosed_fence_run100.py", line 24, in test_unclosed_fence_with_numbers_stays_raw_not_numeric_only
+2026-10-24T22:35:15.8023492Z Ran 30 tests in 0.477s
+2026-10-24T22:35:15.8317480Z ##[error]Process completed with exit code 1.
