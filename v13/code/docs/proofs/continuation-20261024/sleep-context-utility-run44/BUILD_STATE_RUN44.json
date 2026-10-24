@@ -1,0 +1,46 @@
+{
+  "schema": "V13_RUN44_SYNTHETIC_UTILITY_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base_commit": "40bbd200d848d6e65639ffe57d95f0157228044b",
+  "prereg_commit": "482d6d107ddd4404b76c2f0340d1e486a9b1c7af",
+  "owner": "Codex Run44: only sleep-context-utility-run44/*",
+  "status": "FAIL_SYNTHETIC_NOT_INTEGRATED",
+  "dependency_run42_blob": "8dcd4b36cbe58f06ea330a510f1735b37f0ad600",
+  "source_git_blob": "788fd209aae8ba4bb4af7ed0605159ca15769555",
+  "tests_git_blob": "634099fc5ff3532696e7bfbe05538d529f8e9468",
+  "evidence_archive_sha256": "9d35b4e04d1da6ba6e8eae8e148965c20c4241bbeeba99f307644b4c1e46f3d4",
+  "metrics": {
+    "context": 0.40625,
+    "no_context": 0.1171875,
+    "shuffled_context": 0.421875,
+    "untrained": 0.140625,
+    "synthetic_pass": false
+  },
+  "tests": {
+    "synthetic_path": "8/8 PASS",
+    "optimized_python": "8/8 PASS",
+    "compileall": "PASS",
+    "full_repo": "NOT_RUN",
+    "native_model": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "failed_attempts": [
+    "First evaluation consumed generator tuples instead of staged export; corrected without changing seeds/hyperparameters; both negative metrics retained",
+    "Independent review replaced security-sensitive asserts with explicit RuntimeError checks; python -O evaluation still FAIL_SYNTHETIC"
+  ],
+  "limits": [
+    "History provider in micro-cohort is a synthetic mock; native_history source validation is NOT exercised",
+    "Toy 1-layer transformer is not C3 or any V13 body",
+    "No full checkout due DNS; no official privacy scanner",
+    "No claim of actual model utility; no source, weight, Age, or production changes"
+  ],
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "next_command": "In a full checkout decode run44-source-evidence.tar.xz.b64, run python -m unittest discover -s tests -v and python scripts/sleep_context_utility.py; keep FAIL_SYNTHETIC, then independently preregister a key-binding architecture ablation with actual source-verified Store/native_history and consumer-time revocation before any production training.",
+  "user_decision_required": false
+}
