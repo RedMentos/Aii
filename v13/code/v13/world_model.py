@@ -78,6 +78,13 @@ def ridge(X,Y,lam=RIDGE):
     X=np.asarray(X,float);Y=np.asarray(Y,float);A=X.T@X+lam*np.eye(X.shape[1])
     return np.linalg.solve(A,X.T@Y)
 
+def _align_predict(Xtrain,Ytrain,Xtest,lam=1.):
+    """Ridge prediction; dual form avoids a large latent-dimension Gram solve."""
+    if Xtrain.shape[1] > Xtrain.shape[0]:
+        gram=Xtrain@Xtrain.T+lam*np.eye(Xtrain.shape[0])
+        return (Xtest@Xtrain.T)@np.linalg.solve(gram,Ytrain)
+    return Xtest@ridge(Xtrain,Ytrain,lam)
+
 def _split(n):
     """Deterministic hashed 1-in-4 hold-out (a plain i%4 split can align with periodic action patterns)."""
     test=[i for i in range(n) if ((i*2654435761)%2**32>>16)%4==3];return [i for i in range(n) if i not in set(test)],test
@@ -98,9 +105,18 @@ def fit(store,rng_seed=0):
     align={'status':'UNAVAILABLE','reason':'no learned latent world prediction stored with these actions'}
     L=[t['latent'] for t in T];dims={len(l) for l in L if l}
     if all(l is not None for l in L) and len(dims)==1:
-        Xl=np.hstack([np.ones((n,1)),np.array(L,float)]);Wl=ridge(Xl[tr],Y[tr],1.)
-        res=((Xl[te]@Wl-Y[te])**2).sum(0);tot=((Y[te]-Y[tr].mean(0))**2).sum(0)+1e-12
-        align={'status':'MEASURED','r2':dict(zip(TARGETS,[round(float(1-a/b),4) for a,b in zip(res,tot)]))}
+        try:
+            Xl=np.hstack([np.ones((n,1)),np.array(L,float)])
+            with np.errstate(over='raise',invalid='raise',divide='raise'):
+                prediction=_align_predict(Xl[tr],Y[tr],Xl[te],1.)
+                if not np.isfinite(prediction).all():raise FloatingPointError('nonfinite latent prediction')
+                res=((prediction-Y[te])**2).sum(0)
+                tot=((Y[te]-Y[tr].mean(0))**2).sum(0)+1e-12
+                r2=1.-res/tot
+                if not np.isfinite(r2).all():raise FloatingPointError('nonfinite state-align R2')
+            align={'status':'MEASURED','r2':dict(zip(TARGETS,[round(float(v),4) for v in r2]))}
+        except (FloatingPointError,np.linalg.LinAlgError,ValueError,OverflowError):
+            align={'status':'UNAVAILABLE','reason':'NUMERIC_UNSTABLE_LATENT'}
     st.update(status='FITTED',forward=[W.tolist() for W in fw],inverse=Wi.tolist(),
               states={a:[t['s'] for t in T if t['a']==a][-256:] for a in ACTIONS},
               metrics={'forward_mae':dict(zip(TARGETS,np.round(mae,4).tolist())),'forward_baseline_mae':dict(zip(TARGETS,np.round(base,4).tolist())),
