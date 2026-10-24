@@ -1,0 +1,20 @@
+{
+  "archive_sha256": "bb11590b4670638a55c6bda4621bb7f596bdce9da2d92be23dba5af84885bacb",
+  "files": {
+    "adversarial-red.log": "5e6fc4fe1c583ce9ce7da2c28aa0f0aa6c26dc755195cffbc831562917122242",
+    "crash-repeat.log": "beb8c08c2ab2c969adbe06e2d07d608cff9708ebf85e97ddfad61994a01261ee",
+    "crash-retry-first.log": "4f7ca0782d3cf28d215e2c69033d520f22a39bce2a095a0a2a1ccab819279c48",
+    "optimizer_resume_run58/BUILD_STATE_RUN58.json": "3c865e524931e486cddd5cae08957988dbb7d957813516896f18d78d4f7020cd",
+    "optimizer_resume_run58/PREREG_RUN58.md": "da19fa52af9ed8698a2c6aa27dcd99a1a21778e7df16d0749124598d36e53abc",
+    "optimizer_resume_run58/README_RUN58.md": "75a393167c84676d4610efe74786008cb25c87845ed2348ee6f749c78d71278e",
+    "optimizer_resume_run58/optimizer_resume.py": "50e52f247d11f769d584bf89e1ada2f01b0c91971d028210100425a7b5de38fe",
+    "optimizer_resume_run58/shadow_learning.py": "a988fc6853ca88ed5f23a40db90e55149122db7a80b66a55360967e580796feb",
+    "optimizer_resume_run58/test_optimizer_resume.py": "c571b1c266aa619529c26d60d5d6cc3bc752215c8eb3d003111dd33eee6c16bd",
+    "optimizer_resume_run58/upstream_run56/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "optimizer_resume_run58/upstream_run56/shadow_commit.py": "f848c80f14353232135c4a9be814bf101d5ab59d01f5dad3b4290a7e8400f9d5",
+    "test-final.log": "2deede1a29bc001ac0beeb73a9432f95ba84520d7127ecb19d56c5139dc61c04",
+    "test-first.log": "0ccc21e4ee89791fb9c5329f91999d0a23c6f8ad0c92c5e38ff5100589ea0155",
+    "test-optimized-final.log": "c0add588aca7a6d0465e3c2d2f75e984cffca6678cd469df4d179990e4ecde39"
+  },
+  "size": 11940
+}
