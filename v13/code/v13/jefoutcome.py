@@ -48,17 +48,26 @@ def after_turn(r,e,meta,status,focal_run):
     """Record outcome labels for the head decisions of a FINAL turn (never changes the answer)."""
     if status!='FINAL' or not focal_run:return {}
     try:
-        t=targets(meta,focal_run.get('coalition') or [],meta.get('memory_ids') or []);rows=[]
+        t=targets(meta,focal_run.get('coalition') or [],meta.get('memory_ids') or [])
+        retained=(r.store.state(KEY)[0] or {}).get('labels',[])
+        seen={(x['event_id'],x['component']) for x in retained}
+        rows=[]
         for comp,value in t.items():
+            if (e['event_id'],comp) in seen:continue  # no duplicate source creation on normal replay
             d=_decision(r.store,e['event_id'],comp)
             if not d:continue
             ref=r.store.source(value,AUTHORITY)
             rows.append({'event_id':e['event_id'],'component':comp,'value':value,'baseline':d['baseline'],'decision_packet_id':d['packet_id'],
                          'context_sha256':d['context_ref']['sha256'],'context_revision':d['context_revision'],'source_id':ref['source_id']})
-        if rows:
-            def f(st):st['labels']=(st['labels']+rows)[-MAX:]
-            _mutate(r.store,f);r.store.log('jef_outcome_labels',e['event_id'],{'n':len(rows)})
-        return {x['component']:x['value'] for x in rows}
+        if not rows:return {}
+        def f(st):
+            existing={(x['event_id'],x['component']) for x in st['labels']}
+            fresh=[x for x in rows if (x['event_id'],x['component']) not in existing]
+            if fresh:st['labels']=(st['labels']+fresh)[-MAX:]
+            return fresh
+        committed=_mutate(r.store,f)  # CAS recheck also handles concurrent FINAL callbacks
+        if committed:r.store.log('jef_outcome_labels',e['event_id'],{'n':len(committed)})
+        return {x['component']:x['value'] for x in committed}
     except Exception as exc:
         r.store.log('jef_outcome_unavailable',e['event_id'],{'error':type(exc).__name__});return {}
 
