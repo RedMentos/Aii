@@ -62,5 +62,10 @@
   ],
   "next": "Apply reviewed patch to exact Run16 bundle in full current checkout, verify Git blob hashes, run complete tests and official privacy scanner; recheck native owner/assets/RAM before serial four-seed cohort and externally publish closed receipt; then generated-answer ablation.",
   "user_decision_required": false,
-  "drive_backup": "REJECTED_ANYONE_WRITABLE_DESTINATION_NOT_RETRIED"
+  "drive_backup": "REJECTED_ANYONE_WRITABLE_DESTINATION_NOT_RETRIED",
+  "remote_patch_git_blob": "bbbfb43b909b113f89b5612783eb6f03bed4976e",
+  "remote_patch_sha256_verified": "d8674b26c583b28796ca5578203a9685a95c67b56df30a55ad8143d33d321086",
+  "remote_patch_applies_to_run16": true,
+  "reconstructed_source_blobs_match": true,
+  "remote_review_pull_request": 53
 }
