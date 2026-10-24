@@ -1,0 +1,16 @@
+# Run88 preregistered RED, verbatim GitHub Actions log excerpts
+# Source: https://github.com/RedMentos/Aii/actions/runs/40134858652
+# Job 120994105793, conclusion FAILURE; pre-fix head d8ddd5b078f61382329de1dd4cbf66b35fbece5e
+# Entire original raw job log remains in GitHub Actions; this excerpt is intentionally bounded.
+2026-10-24T21:35:17.6904539Z [36;1m  tests.test_operator_search_literal_run88 \[0m
+2026-10-24T21:35:25.2956254Z test_backslash_is_literal_and_ascii_case_insensitive_is_preserved (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_backslash_is_literal_and_ascii_case_insensitive_is_preserved) ... ok
+2026-10-24T21:35:25.3095733Z test_percent_is_literal_not_any_substring (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_percent_is_literal_not_any_substring) ... FAIL
+2026-10-24T21:35:25.3252778Z test_underscore_is_literal_not_any_character (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_underscore_is_literal_not_any_character) ... FAIL
+2026-10-24T21:35:29.8580192Z FAIL: test_percent_is_literal_not_any_substring (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_percent_is_literal_not_any_substring)
+2026-10-24T21:35:29.8591449Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_operator_search_literal_run88.py", line 40, in test_percent_is_literal_not_any_substring
+2026-10-24T21:35:29.8593826Z AssertionError: Lists differ: ['100 percent done', '100% done'] != ['100% done']
+2026-10-24T21:35:29.8597412Z FAIL: test_underscore_is_literal_not_any_character (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_underscore_is_literal_not_any_character)
+2026-10-24T21:35:29.8599623Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_operator_search_literal_run88.py", line 35, in test_underscore_is_literal_not_any_character
+2026-10-24T21:35:29.8601252Z AssertionError: Lists differ: ['alphaX1', 'alpha_1'] != ['alpha_1']
+2026-10-24T21:35:29.8604084Z Ran 380 tests in 11.003s
+2026-10-24T21:35:29.8604332Z FAILED (failures=2)
