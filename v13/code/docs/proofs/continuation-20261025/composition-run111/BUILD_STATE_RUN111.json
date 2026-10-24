@@ -1,0 +1,60 @@
+{
+  "run": 111,
+  "utc_date": "2026-10-25",
+  "branch": "codex/ds2-composition-run111-20261025",
+  "pr": 142,
+  "base_commit": "bfd3f66d4b314093324f4fce638f02afb8c4a1a6",
+  "owner": "new sandbox_composition.py lab-only + tests/bench/evidence, no runtime/native edits",
+  "state": "ISOLATED_REVIEW_CANDIDATE_TOY_COMPOSITION_LOCKED_PASS_NOT_RUNTIME",
+  "preregistration": "20 fresh seeds 200..219, 600 paired action observations, three completely heldout object/support phrases, three baselines",
+  "red": {
+    "workflow_run": 40144196185,
+    "job": 121021957101,
+    "tests": 8,
+    "errors": 1,
+    "failures": 0,
+    "note": "missing module expected, original DS1 tests passed"
+  },
+  "green": {
+    "workflow_run": 40144242958,
+    "job": 121022093649,
+    "tests": 12,
+    "errors": 0,
+    "failures": 0,
+    "privacy": "CLEAN"
+  },
+  "independent_review": {
+    "workflow_run": 40144301486,
+    "job": 121022262172,
+    "result": "PASS",
+    "privacy": "CLEAN",
+    "raw_report_sha256": "dad84e7e6243aa78e60dd56a17a3e6fae34cb6f90184ea5040cabc988581bb7a"
+  },
+  "metrics": {
+    "mean_heldout_kl": {
+      "pair": 0.230944,
+      "object": 0.250245,
+      "factor": 0.072258
+    },
+    "factor_wins_pair": 20,
+    "factor_wins_object": 20
+  },
+  "preregistered_verdict": {
+    "H1_vs_pair": true,
+    "H2_vs_object": true,
+    "H3_mean_kl": true,
+    "H4_holdout_integrity": true,
+    "all_pass": true
+  },
+  "evidence_level": "GitHub Linux toy-world 20-seed synthetic controlled interaction, no native/Redmi/vision",
+  "claim_limit": "Synthetic additive hidden outcome generator, not natural-language composition, physical grounding, trained JEPA, AGI or full-system acceptance",
+  "inherited_negative": "Run110 DS2 H2_new_word FAIL (median 733 > locked 700), unchanged",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_system": "INCOMPLETE"
+  },
+  "next": "Run112 independent integration of Run107 episodic route source integrity with current Run108-111 chain; run broad focused+phone ZIP proofs; Run106 episodes.py remains owned separately."
+}

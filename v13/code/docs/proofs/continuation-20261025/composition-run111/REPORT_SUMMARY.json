@@ -1,0 +1,18 @@
+{
+  "raw_report_sha256": "dad84e7e6243aa78e60dd56a17a3e6fae34cb6f90184ea5040cabc988581bb7a",
+  "compressed_base64_chars": 2488,
+  "all_pass": true,
+  "factor_wins_object": 20,
+  "factor_wins_pair": 20,
+  "mean_heldout_kl": {
+    "factor": 0.072258,
+    "object": 0.250245,
+    "pair": 0.230944
+  },
+  "verdict": {
+    "H1_vs_pair": true,
+    "H2_vs_object": true,
+    "H3_mean_kl": true,
+    "H4_holdout_integrity": true
+  }
+}

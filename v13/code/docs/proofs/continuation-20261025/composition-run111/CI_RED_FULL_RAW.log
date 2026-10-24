@@ -1,0 +1,223 @@
+﻿2026-10-24T23:48:09.3477592Z Current runner version: '2.338.0'
+2026-10-24T23:48:09.3505414Z ##[group]Runner Image Provisioner
+2026-10-24T23:48:09.3506359Z Hosted Compute Agent
+2026-10-24T23:48:09.3507084Z Version: 20261021.618
+2026-10-24T23:48:09.3507702Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-24T23:48:09.3508483Z Build Date: 2026-10-21T00:45:21Z
+2026-10-24T23:48:09.3509166Z Worker ID: {baef80b1-227d-414e-9c09-3282e0da45ac}
+2026-10-24T23:48:09.3509942Z Region: westcentralus
+2026-10-24T23:48:09.3510582Z Cloud: Azure
+2026-10-24T23:48:09.3511380Z ##[endgroup]
+2026-10-24T23:48:09.3513368Z ##[group]Operating System
+2026-10-24T23:48:09.3514026Z Ubuntu
+2026-10-24T23:48:09.3514573Z 26.04.1
+2026-10-24T23:48:09.3515163Z LTS
+2026-10-24T23:48:09.3515662Z ##[endgroup]
+2026-10-24T23:48:09.3516235Z ##[group]Runner Image
+2026-10-24T23:48:09.3516850Z Image: ubuntu-26.04
+2026-10-24T23:48:09.3517444Z Version: 20261012.163.1
+2026-10-24T23:48:09.3518801Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-24T23:48:09.3520387Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-24T23:48:09.3521782Z ##[endgroup]
+2026-10-24T23:48:09.3523025Z ##[group]GITHUB_TOKEN Permissions
+2026-10-24T23:48:09.3525064Z Contents: read
+2026-10-24T23:48:09.3525655Z Metadata: read
+2026-10-24T23:48:09.3526301Z ##[endgroup]
+2026-10-24T23:48:09.3528549Z Secret source: Actions
+2026-10-24T23:48:09.3529600Z Cache mode: write
+2026-10-24T23:48:09.3530301Z Prepare workflow directory
+2026-10-24T23:48:09.3946831Z Prepare all required actions
+2026-10-24T23:48:09.3997683Z Getting action download info
+2026-10-24T23:48:09.6499894Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-24T23:48:09.8895088Z Complete job name: composition
+2026-10-24T23:48:09.9876567Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-24T23:48:09.9877703Z with:
+2026-10-24T23:48:09.9878197Z   persist-credentials: false
+2026-10-24T23:48:09.9878719Z   fetch-depth: 50
+2026-10-24T23:48:09.9879178Z   repository: RedMentos/Aii
+2026-10-24T23:48:09.9883182Z   token: ***
+2026-10-24T23:48:09.9883631Z   ssh-strict: true
+2026-10-24T23:48:09.9884081Z   ssh-user: git
+2026-10-24T23:48:09.9884501Z   clean: true
+2026-10-24T23:48:09.9884948Z   sparse-checkout-cone-mode: true
+2026-10-24T23:48:09.9885489Z   fetch-tags: false
+2026-10-24T23:48:09.9885940Z   show-progress: true
+2026-10-24T23:48:09.9886391Z   lfs: false
+2026-10-24T23:48:09.9886804Z   submodules: false
+2026-10-24T23:48:09.9887262Z   set-safe-directory: true
+2026-10-24T23:48:09.9888039Z ##[endgroup]
+2026-10-24T23:48:10.0987255Z Syncing repository: RedMentos/Aii
+2026-10-24T23:48:10.0989804Z ##[group]Getting Git version info
+2026-10-24T23:48:10.0991206Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-24T23:48:10.0992757Z [command]/usr/bin/git version
+2026-10-24T23:48:10.1019697Z git version 2.55.0
+2026-10-24T23:48:10.1041673Z ##[endgroup]
+2026-10-24T23:48:10.1059377Z Temporarily overriding HOME='/home/runner/work/_temp/081230da-24d2-47e4-a15b-b4c1cab14cdd' before making global git config changes
+2026-10-24T23:48:10.1061936Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:48:10.1065919Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:48:10.1146109Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-24T23:48:10.1152214Z ##[group]Initializing the repository
+2026-10-24T23:48:10.1158113Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-24T23:48:10.1295806Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-24T23:48:10.1298080Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-24T23:48:10.1299869Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-24T23:48:10.1301610Z hint: call:
+2026-10-24T23:48:10.1303250Z hint:
+2026-10-24T23:48:10.1304798Z hint: 	git config --global init.defaultBranch <name>
+2026-10-24T23:48:10.1306255Z hint:
+2026-10-24T23:48:10.1307755Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-24T23:48:10.1309889Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-24T23:48:10.1312052Z hint:
+2026-10-24T23:48:10.1313246Z hint: 	git branch -m <name>
+2026-10-24T23:48:10.1314278Z hint:
+2026-10-24T23:48:10.1315554Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-24T23:48:10.1317514Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-24T23:48:10.1321378Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-24T23:48:10.1379148Z ##[endgroup]
+2026-10-24T23:48:10.1380701Z ##[group]Disabling automatic garbage collection
+2026-10-24T23:48:10.1382591Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-24T23:48:10.1423913Z ##[endgroup]
+2026-10-24T23:48:10.1425330Z ##[group]Setting up auth
+2026-10-24T23:48:10.1432065Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:48:10.1476371Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:48:10.2022539Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:48:10.2064575Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:48:10.2383072Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-24T23:48:10.2436351Z ##[endgroup]
+2026-10-24T23:48:10.2437374Z ##[group]Fetching the repository
+2026-10-24T23:48:10.2446944Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=50 origin +f9e98d680c341df0774833fd5d0a335a74718e74:refs/remotes/pull/142/merge
+2026-10-24T23:48:16.7163929Z From https://github.com/RedMentos/Aii
+2026-10-24T23:48:16.7167092Z  * [new ref]         f9e98d680c341df0774833fd5d0a335a74718e74 -> pull/142/merge
+2026-10-24T23:48:16.7172783Z ##[endgroup]
+2026-10-24T23:48:16.7174573Z ##[group]Determining the checkout info
+2026-10-24T23:48:16.7176227Z ##[endgroup]
+2026-10-24T23:48:16.7178633Z [command]/usr/bin/git sparse-checkout disable
+2026-10-24T23:48:16.7481610Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-24T23:48:16.7518375Z ##[group]Checking out the ref
+2026-10-24T23:48:16.7523442Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/142/merge
+2026-10-24T23:48:17.7888610Z Updating files:  50% (1709/3395)
+2026-10-24T23:48:17.8652764Z Updating files:  51% (1732/3395)
+2026-10-24T23:48:17.9337000Z Updating files:  52% (1766/3395)
+2026-10-24T23:48:17.9370457Z Updating files:  53% (1800/3395)
+2026-10-24T23:48:17.9398245Z Updating files:  54% (1834/3395)
+2026-10-24T23:48:17.9437336Z Updating files:  55% (1868/3395)
+2026-10-24T23:48:17.9484014Z Updating files:  56% (1902/3395)
+2026-10-24T23:48:17.9505215Z Updating files:  57% (1936/3395)
+2026-10-24T23:48:17.9531384Z Updating files:  58% (1970/3395)
+2026-10-24T23:48:17.9554552Z Updating files:  59% (2004/3395)
+2026-10-24T23:48:17.9583180Z Updating files:  60% (2037/3395)
+2026-10-24T23:48:17.9612924Z Updating files:  61% (2071/3395)
+2026-10-24T23:48:17.9633862Z Updating files:  62% (2105/3395)
+2026-10-24T23:48:17.9655824Z Updating files:  63% (2139/3395)
+2026-10-24T23:48:17.9700436Z Updating files:  64% (2173/3395)
+2026-10-24T23:48:17.9737953Z Updating files:  65% (2207/3395)
+2026-10-24T23:48:17.9772323Z Updating files:  66% (2241/3395)
+2026-10-24T23:48:17.9814085Z Updating files:  67% (2275/3395)
+2026-10-24T23:48:17.9838487Z Updating files:  68% (2309/3395)
+2026-10-24T23:48:17.9860549Z Updating files:  69% (2343/3395)
+2026-10-24T23:48:17.9885937Z Updating files:  70% (2377/3395)
+2026-10-24T23:48:17.9922306Z Updating files:  71% (2411/3395)
+2026-10-24T23:48:17.9942543Z Updating files:  72% (2445/3395)
+2026-10-24T23:48:17.9963967Z Updating files:  73% (2479/3395)
+2026-10-24T23:48:17.9985196Z Updating files:  74% (2513/3395)
+2026-10-24T23:48:18.0014844Z Updating files:  75% (2547/3395)
+2026-10-24T23:48:18.0041870Z Updating files:  76% (2581/3395)
+2026-10-24T23:48:18.0070077Z Updating files:  77% (2615/3395)
+2026-10-24T23:48:18.0098218Z Updating files:  78% (2649/3395)
+2026-10-24T23:48:18.0126371Z Updating files:  79% (2683/3395)
+2026-10-24T23:48:18.0158345Z Updating files:  80% (2716/3395)
+2026-10-24T23:48:18.0191427Z Updating files:  81% (2750/3395)
+2026-10-24T23:48:18.0219517Z Updating files:  82% (2784/3395)
+2026-10-24T23:48:18.0250303Z Updating files:  83% (2818/3395)
+2026-10-24T23:48:18.0892035Z Updating files:  84% (2852/3395)
+2026-10-24T23:48:18.0918616Z Updating files:  85% (2886/3395)
+2026-10-24T23:48:18.0940870Z Updating files:  86% (2920/3395)
+2026-10-24T23:48:18.0960453Z Updating files:  87% (2954/3395)
+2026-10-24T23:48:18.0985046Z Updating files:  88% (2988/3395)
+2026-10-24T23:48:18.1005631Z Updating files:  89% (3022/3395)
+2026-10-24T23:48:18.1027451Z Updating files:  90% (3056/3395)
+2026-10-24T23:48:18.1050184Z Updating files:  91% (3090/3395)
+2026-10-24T23:48:18.1071597Z Updating files:  92% (3124/3395)
+2026-10-24T23:48:18.1095813Z Updating files:  93% (3158/3395)
+2026-10-24T23:48:18.1129362Z Updating files:  94% (3192/3395)
+2026-10-24T23:48:18.1154690Z Updating files:  95% (3226/3395)
+2026-10-24T23:48:18.1181701Z Updating files:  96% (3260/3395)
+2026-10-24T23:48:18.1211891Z Updating files:  97% (3294/3395)
+2026-10-24T23:48:18.1259067Z Updating files:  98% (3328/3395)
+2026-10-24T23:48:18.1292481Z Updating files:  99% (3362/3395)
+2026-10-24T23:48:18.1293441Z Updating files: 100% (3395/3395)
+2026-10-24T23:48:18.1293860Z Updating files: 100% (3395/3395), done.
+2026-10-24T23:48:18.1332838Z Note: switching to 'refs/remotes/pull/142/merge'.
+2026-10-24T23:48:18.1333263Z 
+2026-10-24T23:48:18.1333545Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-24T23:48:18.1334576Z changes and commit them, and you can discard any commits you make in this
+2026-10-24T23:48:18.1335504Z state without impacting any branches by switching back to a branch.
+2026-10-24T23:48:18.1335958Z 
+2026-10-24T23:48:18.1336224Z If you want to create a new branch to retain commits you create, you may
+2026-10-24T23:48:18.1336935Z do so (now or later) by using -c with the switch command. Example:
+2026-10-24T23:48:18.1337288Z 
+2026-10-24T23:48:18.1337441Z   git switch -c <new-branch-name>
+2026-10-24T23:48:18.1337748Z 
+2026-10-24T23:48:18.1337893Z Or undo this operation with:
+2026-10-24T23:48:18.1338120Z 
+2026-10-24T23:48:18.1338238Z   git switch -
+2026-10-24T23:48:18.1338455Z 
+2026-10-24T23:48:18.1338941Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-24T23:48:18.1339464Z 
+2026-10-24T23:48:18.1340040Z HEAD is now at f9e98d6 Merge f764a2a790008987e4ec7733268fc4efbd1aafd0 into bfd3f66d4b314093324f4fce638f02afb8c4a1a6
+2026-10-24T23:48:18.1444333Z ##[endgroup]
+2026-10-24T23:48:18.1505382Z [command]/usr/bin/git log -1 --format=%H
+2026-10-24T23:48:18.1535709Z f9e98d680c341df0774833fd5d0a335a74718e74
+2026-10-24T23:48:18.1546919Z ##[group]Removing auth
+2026-10-24T23:48:18.1551435Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:48:18.1587585Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:48:18.1890111Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:48:18.1917938Z http.https://github.com/.extraheader
+2026-10-24T23:48:18.1958764Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-24T23:48:18.1999365Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:48:18.2298963Z ##[endgroup]
+2026-10-24T23:48:18.2532276Z ##[group]Run set -euo pipefail
+2026-10-24T23:48:18.2532782Z [36;1mset -euo pipefail[0m
+2026-10-24T23:48:18.2533359Z [36;1mpython3 -m compileall -q tests/test_sandbox_composition_run111.py scripts/sandbox_composition_bench_run111.py[0m
+2026-10-24T23:48:18.2534499Z [36;1mpython3 -m unittest -v tests.test_sandbox_composition_run111 tests.test_sandbox[0m
+2026-10-24T23:48:18.2731510Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:48:18.2731925Z ##[endgroup]
+2026-10-24T23:48:18.4202792Z test_sandbox_composition_run111 (unittest.loader._FailedTest.test_sandbox_composition_run111) ... ERROR
+2026-10-24T23:48:18.4204795Z test_digamma_matches_known_values (tests.test_sandbox.SandboxTests.test_digamma_matches_known_values) ... ok
+2026-10-24T23:48:18.4206600Z test_eig_shrinks_with_evidence_and_is_zero_free (tests.test_sandbox.SandboxTests.test_eig_shrinks_with_evidence_and_is_zero_free) ... ok
+2026-10-24T23:48:18.8330231Z test_every_policy_runs_and_is_seed_deterministic (tests.test_sandbox.SandboxTests.test_every_policy_runs_and_is_seed_deterministic) ... ok
+2026-10-24T23:48:18.9037859Z test_learning_lowers_model_error (tests.test_sandbox.SandboxTests.test_learning_lowers_model_error) ... ok
+2026-10-24T23:48:18.9039234Z test_noisy_tv_eig_also_vanishes (tests.test_sandbox.SandboxTests.test_noisy_tv_eig_also_vanishes)
+2026-10-24T23:48:18.9040343Z Unlike prediction error, information gain on pure noise goes to zero once the noise is known. ... ok
+2026-10-24T23:48:18.9041775Z test_path_reaches_neighbour_cell (tests.test_sandbox.SandboxTests.test_path_reaches_neighbour_cell) ... ok
+2026-10-24T23:48:18.9043097Z test_tables_are_distributions (tests.test_sandbox.SandboxTests.test_tables_are_distributions) ... ok
+2026-10-24T23:48:18.9043931Z 
+2026-10-24T23:48:18.9044117Z ======================================================================
+2026-10-24T23:48:18.9044953Z ERROR: test_sandbox_composition_run111 (unittest.loader._FailedTest.test_sandbox_composition_run111)
+2026-10-24T23:48:18.9045806Z ----------------------------------------------------------------------
+2026-10-24T23:48:18.9046589Z ImportError: Failed to import test module: test_sandbox_composition_run111
+2026-10-24T23:48:18.9047169Z Traceback (most recent call last):
+2026-10-24T23:48:18.9047745Z   File "/usr/lib/python3.14/unittest/loader.py", line 137, in loadTestsFromName
+2026-10-24T23:48:18.9048329Z     module = __import__(module_name)
+2026-10-24T23:48:18.9049085Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sandbox_composition_run111.py", line 6, in <module>
+2026-10-24T23:48:18.9049924Z     from v13 import sandbox_composition as C
+2026-10-24T23:48:18.9050739Z ImportError: cannot import name 'sandbox_composition' from 'v13' (/home/runner/work/Aii/Aii/v13/code/v13/__init__.py)
+2026-10-24T23:48:18.9051675Z 
+2026-10-24T23:48:18.9051680Z 
+2026-10-24T23:48:18.9051910Z ----------------------------------------------------------------------
+2026-10-24T23:48:18.9052484Z Ran 8 tests in 0.484s
+2026-10-24T23:48:18.9052688Z 
+2026-10-24T23:48:18.9052839Z FAILED (errors=1)
+2026-10-24T23:48:18.9181939Z ##[error]Process completed with exit code 1.
+2026-10-24T23:48:18.9525422Z Post job cleanup.
+2026-10-24T23:48:19.0423687Z [command]/usr/bin/git version
+2026-10-24T23:48:19.0473659Z git version 2.55.0
+2026-10-24T23:48:19.0518264Z Temporarily overriding HOME='/home/runner/work/_temp/67b0d0e8-b3a3-421f-a9f4-2f29cfcfecc7' before making global git config changes
+2026-10-24T23:48:19.0519585Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:48:19.0525118Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:48:19.0576861Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:48:19.0623676Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:48:19.0974726Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:48:19.1052040Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:48:19.1545854Z Cleaning up orphan processes
+2026-10-24T23:48:19.1947638Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
