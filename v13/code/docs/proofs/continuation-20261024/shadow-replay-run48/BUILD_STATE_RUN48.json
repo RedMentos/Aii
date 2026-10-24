@@ -1,0 +1,51 @@
+{
+  "schema": "V13_RUN48_SHADOW_REPLAY_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base_commit": "cfa41e98e422370126f359746b7c6df046323fbe",
+  "prereg_commit": "a85154aa3eabd9e306d81b9d033369e14b055007",
+  "owner": "Codex Run48 only shadow-replay-run48/*",
+  "status": "SYNTHETIC_SHADOW_READY_NO_COMMIT",
+  "source_blobs": {
+    "history": "05455f297205b40fe8e0f818c4657f1fedcd9fa3",
+    "run42": "8dcd4b36cbe58f06ea330a510f1735b37f0ad600",
+    "run46": "1c0a712e2e4ffe9b46b771f4620fecbe9c1b716a",
+    "run47": "bb5c9072c212530be26eaea3811964e4a7b1ac3f"
+  },
+  "source_shadow_git_blob": "ea0e757b2376d7d0ec6fe452dfd1266d0854b388",
+  "test_git_blob": "1be71e73361371cbd8d7295d1e38ab1d2b3a4318",
+  "evidence_archive_sha256": "49c049e211c40a5ffa8d6c77f30fdcb2e7aa7263fb0ffb48cbb3619d4078e7c2",
+  "metrics": {
+    "train_n": 128,
+    "heldout_n": 128,
+    "heldout": 0.984375,
+    "untrained": 0.0625,
+    "base_weights_unchanged": true,
+    "source_revoked_after_training": "SOURCE_REVOKED_ROLLBACK",
+    "cancelled": "CANCELLED_NO_COMMIT"
+  },
+  "tests": {
+    "synthetic_shadow": "9/9 PASS",
+    "optimized_python": "9/9 PASS",
+    "offline_bootstrap": "PASS",
+    "compileall": "PASS",
+    "real_runtime": "NOT_RUN",
+    "native_model": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Synthetic Store and key-binding toy model, not native C3/Bodies or JEPA",
+    "No production training or persistence of weights; model candidate discarded",
+    "Native retention/rollback and full train runner proof NOT RUN",
+    "Full checkout blocked by container GitHub DNS; official privacy scan unavailable",
+    "No user approval or Age promotion"
+  ],
+  "next_command": "In full checkout cd v13/code/docs/proofs/continuation-20261024/shadow-replay-run48; decode run48-owned-source-evidence.tar.xz.b64; python scripts/bootstrap.py; python -m unittest discover -s tests -p test_shadow_replay.py -v; python scripts/shadow_replay.py; then independently replace fake Store with real Runtime and native C3 learning under WP-I retention and human approval gates.",
+  "user_decision_required": false
+}

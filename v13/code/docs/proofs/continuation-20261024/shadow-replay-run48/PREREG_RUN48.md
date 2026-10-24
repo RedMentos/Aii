@@ -1,0 +1,9 @@
+# Run48 preregistration — verified Sleep replay -> shadow-only train/retention/rollback micro path
+
+Parent Run47 `cfa41e98e422370126f359746b7c6df046323fbe`. Own only `v13/code/docs/proofs/continuation-20261024/shadow-replay-run48/`. Do not alter frozen production, Run42–47, original native cohorts or gates.
+
+Build a synthetic end-to-end **shadow** learner: real unmodified native_history function with fake Store source refs -> exact Run42 Sleep staging -> Run47 consumer-time revalidation -> parse only verified JSONL rows -> train an isolated copy of Run46's 3,081-parameter key-binding learner -> evaluate fresh heldout rows -> revalidate all source refs before reporting a shadow candidate. Never mutate original model weights or persist a trainable artifact; no Age/approval promotion. Use 128 train sessions and 128 heldout sessions, each with three random K/V associations and one query, seeds train=20261024, heldout=20261025, Run46 optimizer settings (300 steps, lr .005, batch min(64,n), CPU 1 thread). Predeclared utility PASS_SYNTHETIC if shadow heldout >= .70 and untrained <= .30; this does NOT promote V13 gates.
+
+Tests: source-valid pipeline yields 128 verified candidates; a revoked prior or transitive source before consumption rejects entire batch; a source revoked **after** shadow training but before final revalidation yields SOURCE_REVOKED_ROLLBACK and base model SHA unchanged; cancellation before training yields no candidate; corrupted candidate rejects; no explicit human approval means NO_COMMIT even on utility pass. Record all raw results, failures and source hashes. Do not call real model inference or perform heavy native jobs.
+
+Original STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0 and full V13 INCOMPLETE unchanged. Real Store, native C3/B1/B2 learning, retention and rollback remain separate required proofs.
