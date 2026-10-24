@@ -12,7 +12,7 @@ Exact preregistered field sets for manifest, binding, report, rows and loss; exa
 
 ## Verification
 - Baseline 58/58 software/synthetic PASS, source blobs matched remote.
-- Adversarial red: 5 of 6 initial tests failed as expected; one passed.
+- Adversarial red: 4 genuine guard failures, 1 test-fixture error (Infinity instead of 1e999), 1 pass; original raw log retained.
 - Initial patch: 62/64 PASS, with two inherited error-order regressions; corrected.
 - Final: **66/66 focused software/synthetic PASS**, compileall PASS.
 - Full checkout, full repository suite and official git-based privacy scan NOT RUN (container git DNS failure); changed files scoped-review only.
