@@ -84,7 +84,7 @@ def _source_bound(store, m):
 def suggest(store,text,session):
     """Best matching active human route correction, or None."""
     best=None
-    for m in store.rows("SELECT m.id,m.event_id,m.source_id,m.key_text,m.value,m.created FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.kind='route' AND m.active=1 AND s.deleted=0 AND (m.scope='global' OR m.session_id=?) ORDER BY m.created DESC LIMIT ?",(session,LIMIT)):
+    for m in store.rows("SELECT m.id,m.event_id,m.source_id,m.session_id,m.scope,m.key_text,m.value,m.created FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.kind='route' AND m.active=1 AND s.deleted=0 AND (m.scope='global' OR m.session_id=?) ORDER BY m.created DESC LIMIT ?",(session,LIMIT)):
         if m['value'] not in ROUTES:continue
         rel=relevance(text,m['key_text'])
         if rel>=MIN_RELEVANCE and (best is None or rel>best['relevance']):
