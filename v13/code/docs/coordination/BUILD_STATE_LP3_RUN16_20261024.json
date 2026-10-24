@@ -1,0 +1,32 @@
+{
+  "schema": "V13_BUILD_STATE_DELTA_RUN16_V1",
+  "base_remote_commit": "b6d1cbaf43f9099a902cd252ae9af133497f6610",
+  "scope": "LP3_SERIAL_COHORT_WRAPPER_SOFTWARE_CANDIDATE",
+  "github_source_storage": "BUNDLED_NOT_YET_INSTALLED",
+  "implemented": [
+    "read-only default",
+    "opt-in local advisory flock",
+    "external owner and RAM attestations",
+    "owned-child process timeout",
+    "write-once external logs/status/receipt",
+    "fail-preserving audit"
+  ],
+  "software_tests": {
+    "previous": 89,
+    "current": 102,
+    "new": 13,
+    "failures": 0,
+    "compileall": "PASS"
+  },
+  "native_lp3": "NOT_RUN",
+  "full_repo_suite": "NOT_RUN",
+  "official_privacy_scan_full_branch": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "next": "Integrate reviewed source in full checkout; full suite/privacy scan; global owner/asset/RAM verification; serial four-seed native cohort; independent receipt publication; generated-answer ablation."
+}
