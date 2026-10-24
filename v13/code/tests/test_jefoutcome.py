@@ -80,6 +80,33 @@ class Store(unittest.TestCase):
         (self.r.store.home/'data/blobs'/h).write_bytes(b'corrupted fixture')
         self.assertEqual(jo.training_rows(self.r.store,'memory',rev,set()),[])
 
+
+    def test_deleted_decision_context_source_cannot_train(self):
+        e,rev=self._one_trainable_memory_outcome()
+        ref=jo._decision(self.r.store,e['event_id'],'memory')['context_ref']
+        with self.r.store.tx() as db:
+            db.execute('UPDATE sources SET deleted=1 WHERE id=?',(ref['source_id'],))
+        self.assertEqual(jo.training_rows(self.r.store,'memory',rev,set()),[])
+
+    def test_corrupt_decision_context_blob_cannot_train(self):
+        e,rev=self._one_trainable_memory_outcome()
+        ref=jo._decision(self.r.store,e['event_id'],'memory')['context_ref']
+        (self.r.store.home/'data/blobs'/ref['sha256']).write_bytes(b'corrupt context fixture')
+        self.assertEqual(jo.training_rows(self.r.store,'memory',rev,set()),[])
+
+    def test_same_content_foreign_context_source_cannot_train(self):
+        e,rev=self._one_trainable_memory_outcome()
+        decision=jo._decision(self.r.store,e['event_id'],'memory')
+        original=decision['context_ref']
+        replacement=self.r.store.source(self.r.store.read_source(original),'USER')
+        self.assertEqual(replacement['sha256'],original['sha256'])
+        self.assertNotEqual(replacement['source_id'],original['source_id'])
+        decision['context_ref']=replacement
+        with self.r.store.tx() as db:
+            db.execute('UPDATE packets SET payload=? WHERE id=?',
+                       (json.dumps(decision,ensure_ascii=False,separators=(',',':')),decision['packet_id']))
+        self.assertEqual(jo.training_rows(self.r.store,'memory',rev,set()),[])
+
     def test_human_agreement_and_route_correction_flip(self):
         e,_=self.labelled('Plan Aurora',{'wake_decision':{'action':'both'},'memory_ids':['m1']},[],['m1'])
         self.r.memory.feedback(e['event_id'],'memory','skip','learn');self.assertEqual(jo.report(self.r)['heads']['memory']['human_agreement'],1.)
