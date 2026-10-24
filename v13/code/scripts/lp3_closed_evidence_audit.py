@@ -20,6 +20,16 @@ HF_ASSETS = ('model.safetensors', 'config.json', 'generation_config.json',
 PINNED_WEIGHT = '1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e'
 PARAMS = {'seeds': list(SEEDS), 'steps': 30, 'temperature': 0.1, 'lr': 0.001,
           'items': 16, 'holdout': 48, 'min_similarity': 0.35, 'min_margin': 0.03}
+# Exact keys emitted by the preregistered LP3 runner. Extra fields cannot
+# silently claim native execution, authority, or gate promotion.
+MANIFEST_FIELDS = frozenset(('schema', 'params', 'master_sha256', 'runtime_enabled',
+    'phone_measured', 'body_jepa_gate_pass', 'step2_gate_pass', 'script_sha256',
+    'lp2_fixture_sha256', 'master_scope', 'snapshot_binding'))
+BINDING_FIELDS = frozenset(('repo', 'revision', 'assets_sha256',
+    'fixture_dependencies_sha256', 'upstream_nonweight_asset_identity'))
+ROW_FIELDS = frozenset(('seed', 'expected', 'outputs', 'near_outputs',
+    'near_raw_nonabstain', 'near_pred_nonabstain', 'good_loss', 'wrong_loss')) | frozenset(ARMS)
+LOSS_FIELDS = frozenset(('steps', 'initial_nce', 'final_nce'))
 
 class EvidenceError(ValueError):
     pass
@@ -43,8 +53,8 @@ def validate_binding(manifest):
     if manifest.get('master_scope') != 'Linux_HF_FP32_FROZEN_ENCODER':
         raise EvidenceError('master scope mismatch')
     binding = manifest.get('snapshot_binding')
-    if not isinstance(binding, dict):
-        raise EvidenceError('missing snapshot binding')
+    if not isinstance(binding, dict) or set(binding) != BINDING_FIELDS:
+        raise EvidenceError('missing or unexpected snapshot binding fields')
     if binding.get('repo') != 'LiquidAI/LFM2.5-350M' or binding.get('revision') != '55e5a53e8637c4522a0577040fe68682db3fbbb6':
         raise EvidenceError('snapshot identity mismatch')
     assets = binding.get('assets_sha256')
@@ -86,10 +96,18 @@ def unique_pairs(pairs):
     return result
 
 
+def finite_json_float(value):
+    # JSON exponents such as 1e999 bypass parse_constant in Python's decoder.
+    number = float(value)
+    if not math.isfinite(number):
+        raise EvidenceError('nonfinite JSON float')
+    return number
+
+
 def read_json(path):
     try:
         return json.loads(safe_file(path).read_text(encoding='utf-8'),
-                          object_pairs_hook=unique_pairs,
+                          object_pairs_hook=unique_pairs, parse_float=finite_json_float,
                           parse_constant=lambda x: (_ for _ in ()).throw(EvidenceError(f'nonfinite JSON: {x}')))
     except (UnicodeError, json.JSONDecodeError) as exc:
         raise EvidenceError(f'invalid JSON: {path.name}') from exc
@@ -134,8 +152,18 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
         raise EvidenceError('unregistered extra seed present')
     if any('.tmp-' in p.name for p in run.iterdir()):
         raise EvidenceError('interrupted temporary evidence present')
+    # Preserve precise legacy failure diagnoses before the new closed-set guard.
+    if receipt is not None:
+        outside_attempt(receipt, run)
+    allowed = expected_seeds | {'run_manifest.json', 'report.json'}
+    for name in sorted(allowed):
+        safe_file(run / name)
+    if {p.name for p in run.iterdir()} != allowed:
+        raise EvidenceError('unregistered attempt entries')
     manifest = read_json(run / 'run_manifest.json')
     report = read_json(run / 'report.json')
+    if not isinstance(manifest, dict) or set(manifest) != MANIFEST_FIELDS:
+        raise EvidenceError('manifest fields mismatch')
     if manifest.get('schema') != 'V13_LP3_MEMORY_KEY_V1' or manifest.get('params') != PARAMS:
         raise EvidenceError('manifest schema/protocol mismatch')
     if manifest.get('master_sha256') != PINNED_WEIGHT:
@@ -160,11 +188,15 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
         if len(facts) != 16 or len(tasks) != 48:
             raise EvidenceError('fixture count mismatch')
         fixture_expected = [facts[i][1] for i, _ in tasks]
+    if not isinstance(report, dict) or set(report) != MANIFEST_FIELDS | {'rows', 'verdict'}:
+        raise EvidenceError('report fields mismatch')
     if {k: v for k, v in report.items() if k not in ('rows', 'verdict')} != manifest:
         raise EvidenceError('report/manifest binding mismatch')
     rows = report.get('rows')
     if not isinstance(rows, list) or len(rows) != len(SEEDS):
         raise EvidenceError('missing or extra rows')
+    if any(not isinstance(r, dict) or set(r) != ROW_FIELDS for r in rows):
+        raise EvidenceError('row fields mismatch')
     if [r.get('seed') for r in rows] != list(SEEDS):
         raise EvidenceError('wrong seed ordering or duplicate')
     for row, seed in zip(rows, SEEDS):
@@ -213,7 +245,9 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
                 raise EvidenceError('near-miss aggregate mismatch')
         for key in ('good_loss', 'wrong_loss'):
             value = row.get(key, {})
-            if (not isinstance(value, dict) or type(value.get('steps')) is not int or
+            if (not isinstance(value, dict) or set(value) != LOSS_FIELDS):
+                raise EvidenceError('training loss fields mismatch')
+            if (type(value.get('steps')) is not int or
                 value['steps'] != 30 or
                 any(type(value.get(k)) not in (int, float) or
                     not math.isfinite(value[k]) or value[k] < 0

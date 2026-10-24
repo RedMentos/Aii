@@ -1,0 +1,73 @@
+FFFFF.                                                                   [100%]
+=================================== FAILURES ===================================
+______ TestRun13Review.test_loss_cannot_add_unregistered_training_metric _______
+
+self = <test_lp3_review_run13.TestRun13Review testMethod=test_loss_cannot_add_unregistered_training_metric>
+
+    def test_loss_cannot_add_unregistered_training_metric(self):
+        self.rows[0]['good_loss']['gradient_attribution'] = 1.0
+        self.save()
+>       with self.assertRaisesRegex(self.auditor.EvidenceError, 'loss fields'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: EvidenceError not raised
+
+tests/test_lp3_review_run13.py:40: AssertionError
+_______ TestRun13Review.test_manifest_cannot_add_unsupported_gate_claim ________
+
+self = <test_lp3_review_run13.TestRun13Review testMethod=test_manifest_cannot_add_unsupported_gate_claim>
+
+    def test_manifest_cannot_add_unsupported_gate_claim(self):
+        self.manifest['canonical_architecture_complete'] = True
+        self.save()
+>       with self.assertRaisesRegex(self.auditor.EvidenceError, 'manifest fields'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: EvidenceError not raised
+
+tests/test_lp3_review_run13.py:28: AssertionError
+_ TestRun13Review.test_nonfinite_exponent_is_rejected_even_when_json_parser_accepts _
+lp3_audit.EvidenceError: nonfinite JSON: Infinity
+
+During handling of the above exception, another exception occurred:
+
+self = <test_lp3_review_run13.TestRun13Review testMethod=test_nonfinite_exponent_is_rejected_even_when_json_parser_accepts>
+
+    def test_nonfinite_exponent_is_rejected_even_when_json_parser_accepts(self):
+        # json.loads('1e999') returns float('inf'), bypassing parse_constant.
+        self.assertEqual(json.loads('1e999'), float('inf'))
+        self.rows[0]['good_loss']['initial_nce'] = float('inf')
+        self.save()
+>       with self.assertRaisesRegex(self.auditor.EvidenceError, 'loss'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: "loss" does not match "nonfinite JSON: Infinity"
+
+tests/test_lp3_review_run13.py:53: AssertionError
+________ TestRun13Review.test_seed_cannot_add_unregistered_native_claim ________
+
+self = <test_lp3_review_run13.TestRun13Review testMethod=test_seed_cannot_add_unregistered_native_claim>
+
+    def test_seed_cannot_add_unregistered_native_claim(self):
+        self.rows[0]['redmi_measured'] = True
+        self.save()
+>       with self.assertRaisesRegex(self.auditor.EvidenceError, 'row fields'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: EvidenceError not raised
+
+tests/test_lp3_review_run13.py:34: AssertionError
+___________ TestRun13Review.test_unknown_attempt_file_is_not_closed ____________
+
+self = <test_lp3_review_run13.TestRun13Review testMethod=test_unknown_attempt_file_is_not_closed>
+
+    def test_unknown_attempt_file_is_not_closed(self):
+        (self.run / 'report-unsigned-copy.json').write_text('{"verdict":"PASS"}')
+>       with self.assertRaisesRegex(self.auditor.EvidenceError, 'unregistered attempt entries'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: EvidenceError not raised
+
+tests/test_lp3_review_run13.py:45: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_lp3_review_run13.py::TestRun13Review::test_loss_cannot_add_unregistered_training_metric - AssertionError: EvidenceError not raised
+FAILED tests/test_lp3_review_run13.py::TestRun13Review::test_manifest_cannot_add_unsupported_gate_claim - AssertionError: EvidenceError not raised
+FAILED tests/test_lp3_review_run13.py::TestRun13Review::test_nonfinite_exponent_is_rejected_even_when_json_parser_accepts - AssertionError: "loss" does not match "nonfinite JSON: Infinity"
+FAILED tests/test_lp3_review_run13.py::TestRun13Review::test_seed_cannot_add_unregistered_native_claim - AssertionError: EvidenceError not raised
+FAILED tests/test_lp3_review_run13.py::TestRun13Review::test_unknown_attempt_file_is_not_closed - AssertionError: EvidenceError not raised
+5 failed, 1 passed in 0.07s
