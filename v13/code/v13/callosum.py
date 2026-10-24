@@ -117,7 +117,7 @@ class Callosum:
         for k,v in (comp or {}).items():q['parts'][k]=round(q['parts'].get(k,v)+sc*RATE*(v-q['parts'].get(k,v)),4)
     def outcome(self,event_id,coalition_ids,status):
         """Score every message of a finished turn by what the receiver's next offer did."""
-        st,_=self._load();msgs=st['pending'].get(event_id) or []
+        st,_=self._load();msgs=[m for m in (st['pending'].get(event_id) or []) if not m.get('scored')]
         if not msgs:return {'scored':0}
         scored=[]
         for m in msgs:
@@ -131,14 +131,16 @@ class Callosum:
             util=comp['task_gain']+comp['uncertainty_reduction']+comp['source_recovery_gain']-comp['latency_cost']-comp['memory_cost']-(0. if status=='FINAL' else .5)
             scored.append((m,util,comp))
         sc=step(self.n,PATH)  # WP-U6 §12.7
+        from .callosum_outcome_once import apply_once
         def fn(st):
-            for m,util,comp in scored:self._update(st,m['direction'],m['channel'],util,comp,sc)
-            for m in st['pending'].get(event_id,[]):m['scored']=True
-        self._mutate(fn)
-        if self.n is not None and scored:
-            try:self.n.touch(PATH,event_id,activity=min(1.,len(scored)/2),detail={'channels':[m['channel'] for m,_,_ in scored]})
+            pending=st['pending'].get(event_id) or []
+            return apply_once(pending,scored,lambda m,u,c:self._update(st,m['direction'],m['channel'],u,c,sc))
+        applied=self._mutate(fn)  # only the winning CAS may count an outcome
+        if self.n is not None and applied:
+            channels={m['msg']:m['channel'] for m,_,_ in scored}
+            try:self.n.touch(PATH,event_id,activity=min(1.,len(applied)/2),detail={'channels':[channels[mid] for mid,_ in applied]})
             except Exception:pass
-        return {'scored':len(scored),'utilities':[round(u,3) for _,u,_ in scored]}
+        return {'scored':len(applied),'utilities':[round(u,3) for _,u in applied]}
     def on_rating(self,event_id,utility):
         u=max(0.,min(1.,float(utility)));sc=step(self.n,PATH)
         def fn(st):
