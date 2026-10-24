@@ -127,8 +127,8 @@ def audit(run, *, source=None, lp2=None, lora=None, receipt=None, receipt_sha256
     run = Path(run)
     if not run.is_dir() or run.is_symlink():
         raise EvidenceError('attempt directory missing or symlinked')
-    if any(run.glob('failed-seed-*')):
-        raise EvidenceError('failed seed marker present; cohort not closed')
+    if any(run.glob('failed-*')):
+        raise EvidenceError('failed seed or input marker present; cohort not closed')
     expected_seeds = {f'seed-{s}.json' for s in SEEDS}
     if any(p.name not in expected_seeds for p in run.glob('seed-*.json')):
         raise EvidenceError('unregistered extra seed present')

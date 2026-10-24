@@ -1,0 +1,5 @@
+----------------------------------------------------------------------
+Ran 52 tests in 3.058s
+
+OK
+{"verdict": "LP3_MEMORY_KEY_NOT_SUPPORTED", "report_sha256": "e7f204517d4e1dfb5afe7068cc82bd08558c34c7fc969f71f8ff7d27654d3a3c", "rows": 4}

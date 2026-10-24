@@ -113,6 +113,11 @@ class TestLP3EvidenceAudit(unittest.TestCase):
         with self.assertRaisesRegex(audit.EvidenceError, 'failed seed'):
             audit.audit(self.run)
 
+    def test_postflight_binding_failure_marker_refused(self):
+        (self.run / 'failed-input-binding.json').write_text('{"stage":"POSTFLIGHT_RECHECK"}')
+        with self.assertRaisesRegex(audit.EvidenceError, 'failed seed or input marker'):
+            audit.audit(self.run)
+
     def test_wrong_expected_order_refused(self):
         self.rows[0]['expected'][32], self.rows[0]['expected'][33] = self.rows[0]['expected'][33], self.rows[0]['expected'][32]
         self.save()
