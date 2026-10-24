@@ -531,7 +531,19 @@ class SleepRuntime:
             if self.last_resource is not None:self.scheduler.post('RESOURCE_CHANGE',payload={'from':self.last_resource,'to':state})
             self.last_resource=state
         if policy['enabled']:
-            idle=self.idle_seconds();st,_=self.cycle.queue.load();now=self.clock()
+            idle=self.idle_seconds();st,v=self.cycle.queue.load();now=self.clock()
+            if idle>=policy['wake_replay_idle_s'] and state not in ('CRITICAL','PRESSURE'):
+                # Memory.feedback appends durable replay rows but does not touch
+                # the derived Sleep schedule. Index before checking wake due,
+                # and never post from a CAS-lost/unpersisted schedule.
+                prior={rid:it.get('retired') for rid,it in st['items'].items()}
+                added,_=self.cycle.queue.sync(st,policy)
+                changed=bool(added) or len(prior)!=len(st['items']) or any(
+                    rid not in st['items'] or st['items'][rid].get('retired')!=retired
+                    for rid,retired in prior.items())
+                if changed:
+                    try:self.cycle.queue.save(st,v)
+                    except ValueError:st,_=self.cycle.queue.load()  # concurrent writer won
             if idle>=policy['sleep_idle_s'] and now-st['last_full']>=policy['sleep_interval_s']:
                 self.scheduler.post('IDLE',action='sleep_full',dedup='idle-sleep-full')
             elif idle>=policy['wake_replay_idle_s'] and self.cycle.queue.due(st,now,min_priority=policy['wake_min_priority']):

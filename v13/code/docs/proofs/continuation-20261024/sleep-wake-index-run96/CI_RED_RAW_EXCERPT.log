@@ -1,0 +1,14 @@
+# Run96 preregistered RED — exact bounded CI lines
+
+Actions run 40137033208/job 121000621192, test-only commit 8bc3639fab92c012ec87af2420ea36b643958288. One expected new SQLite/Runtime failure, three new negative controls PASS, 46 inherited Sleep/Age controls PASS. Full raw job log retained in Actions.
+
+2026-10-24T22:05:30.9636878Z test_busy_foreground_does_not_start_wake_or_index (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_busy_foreground_does_not_start_wake_or_index) ... ok
+2026-10-24T22:05:30.9758924Z test_cas_conflict_does_not_schedule_unpersisted_replay (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_cas_conflict_does_not_schedule_unpersisted_replay) ... ok
+2026-10-24T22:05:30.9875462Z test_disabled_sleep_does_not_index_or_post_background_wake (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_disabled_sleep_does_not_index_or_post_background_wake) ... ok
+2026-10-24T22:05:30.9986632Z test_new_correction_posts_wake_without_waiting_for_full_sleep (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_new_correction_posts_wake_without_waiting_for_full_sleep) ... FAIL
+2026-10-24T22:05:32.0151950Z FAIL: test_new_correction_posts_wake_without_waiting_for_full_sleep (tests.test_sleep_wake_index_run96.SleepWakeIndexRun96.test_new_correction_posts_wake_without_waiting_for_full_sleep)
+2026-10-24T22:05:32.0153810Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_wake_index_run96.py", line 49, in test_new_correction_posts_wake_without_waiting_for_full_sleep
+2026-10-24T22:05:32.0154875Z AssertionError: 'REPLAY_DUE' not found in ['IDLE']
+2026-10-24T22:05:32.0155510Z Ran 50 tests in 1.088s
+2026-10-24T22:05:32.0155793Z FAILED (failures=1)
+2026-10-24T22:05:32.0516636Z ##[error]Process completed with exit code 1.
