@@ -22,3 +22,12 @@ def validate_mix(mix, expected):
         raise ValueError('mix weight sum overflow') from exc
     if not math.isfinite(total) or total <= 0:
         raise ValueError('mix total must be finite and positive')
+
+
+def normalized_quota(mix, n):
+    """Compute replay quotas without overflow in n*weight before division."""
+    validate_mix(mix, ('recent', 'protected_old', 'failure'))
+    if type(n) is not int or n < 0:
+        raise ValueError('replay batch must be nonnegative integer')
+    total = math.fsum(mix.values())
+    return {key: n * (value / total) for key, value in mix.items()}
