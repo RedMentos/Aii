@@ -1,0 +1,426 @@
+﻿2026-10-24T23:40:06.5662813Z Current runner version: '2.338.0'
+2026-10-24T23:40:06.5688743Z ##[group]Runner Image Provisioner
+2026-10-24T23:40:06.5689913Z Hosted Compute Agent
+2026-10-24T23:40:06.5690643Z Version: 20261021.618
+2026-10-24T23:40:06.5691429Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-24T23:40:06.5692788Z Build Date: 2026-10-21T00:45:21Z
+2026-10-24T23:40:06.5693728Z Worker ID: {d451370b-2ea6-4555-9b9c-f1138140cf69}
+2026-10-24T23:40:06.5694456Z Region: southcentralus
+2026-10-24T23:40:06.5695129Z Cloud: Azure
+2026-10-24T23:40:06.5695716Z ##[endgroup]
+2026-10-24T23:40:06.5697378Z ##[group]Operating System
+2026-10-24T23:40:06.5698052Z Ubuntu
+2026-10-24T23:40:06.5698569Z 26.04.1
+2026-10-24T23:40:06.5699160Z LTS
+2026-10-24T23:40:06.5699707Z ##[endgroup]
+2026-10-24T23:40:06.5700288Z ##[group]Runner Image
+2026-10-24T23:40:06.5700908Z Image: ubuntu-26.04
+2026-10-24T23:40:06.5701842Z Version: 20261012.163.1
+2026-10-24T23:40:06.5703353Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-24T23:40:06.5704960Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-24T23:40:06.5705950Z ##[endgroup]
+2026-10-24T23:40:06.5707166Z ##[group]GITHUB_TOKEN Permissions
+2026-10-24T23:40:06.5709995Z Contents: read
+2026-10-24T23:40:06.5710669Z Metadata: read
+2026-10-24T23:40:06.5711386Z ##[endgroup]
+2026-10-24T23:40:06.5714112Z Secret source: Actions
+2026-10-24T23:40:06.5715208Z Cache mode: write
+2026-10-24T23:40:06.5716266Z Prepare workflow directory
+2026-10-24T23:40:06.6059109Z Prepare all required actions
+2026-10-24T23:40:06.6109762Z Getting action download info
+2026-10-24T23:40:06.8496243Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-24T23:40:07.0689878Z Complete job name: world
+2026-10-24T23:40:07.1599394Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-24T23:40:07.1600476Z with:
+2026-10-24T23:40:07.1601023Z   persist-credentials: false
+2026-10-24T23:40:07.1601792Z   fetch-depth: 50
+2026-10-24T23:40:07.1602274Z   repository: RedMentos/Aii
+2026-10-24T23:40:07.1606248Z   token: ***
+2026-10-24T23:40:07.1606678Z   ssh-strict: true
+2026-10-24T23:40:07.1607240Z   ssh-user: git
+2026-10-24T23:40:07.1607675Z   clean: true
+2026-10-24T23:40:07.1608121Z   sparse-checkout-cone-mode: true
+2026-10-24T23:40:07.1608663Z   fetch-tags: false
+2026-10-24T23:40:07.1609113Z   show-progress: true
+2026-10-24T23:40:07.1609567Z   lfs: false
+2026-10-24T23:40:07.1609986Z   submodules: false
+2026-10-24T23:40:07.1610436Z   set-safe-directory: true
+2026-10-24T23:40:07.1611187Z ##[endgroup]
+2026-10-24T23:40:07.2660050Z Syncing repository: RedMentos/Aii
+2026-10-24T23:40:07.2662913Z ##[group]Getting Git version info
+2026-10-24T23:40:07.2664381Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-24T23:40:07.2665984Z [command]/usr/bin/git version
+2026-10-24T23:40:07.2695774Z git version 2.55.0
+2026-10-24T23:40:07.2718393Z ##[endgroup]
+2026-10-24T23:40:07.2734443Z Temporarily overriding HOME='/home/runner/work/_temp/491ef86b-992f-4c7a-a076-c930f38ff128' before making global git config changes
+2026-10-24T23:40:07.2736773Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:40:07.2739147Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:40:07.2847019Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-24T23:40:07.2854022Z ##[group]Initializing the repository
+2026-10-24T23:40:07.2857325Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-24T23:40:07.3028932Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-24T23:40:07.3030757Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-24T23:40:07.3032713Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-24T23:40:07.3034010Z hint: call:
+2026-10-24T23:40:07.3035094Z hint:
+2026-10-24T23:40:07.3035922Z hint: 	git config --global init.defaultBranch <name>
+2026-10-24T23:40:07.3036978Z hint:
+2026-10-24T23:40:07.3037954Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-24T23:40:07.3039571Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-24T23:40:07.3040856Z hint:
+2026-10-24T23:40:07.3041580Z hint: 	git branch -m <name>
+2026-10-24T23:40:07.3042694Z hint:
+2026-10-24T23:40:07.3043449Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-24T23:40:07.3045072Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-24T23:40:07.3060993Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-24T23:40:07.3121255Z ##[endgroup]
+2026-10-24T23:40:07.3123027Z ##[group]Disabling automatic garbage collection
+2026-10-24T23:40:07.3125976Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-24T23:40:07.3167166Z ##[endgroup]
+2026-10-24T23:40:07.3168601Z ##[group]Setting up auth
+2026-10-24T23:40:07.3175888Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:40:07.3218308Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:40:07.3726379Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:40:07.3765047Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:40:07.4049731Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-24T23:40:07.4122271Z ##[endgroup]
+2026-10-24T23:40:07.4123873Z ##[group]Fetching the repository
+2026-10-24T23:40:07.4134199Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=50 origin +59dde599232bde053a1ed58674bac26575b3e4c5:refs/remotes/pull/140/merge
+2026-10-24T23:40:13.7492503Z From https://github.com/RedMentos/Aii
+2026-10-24T23:40:13.7494255Z  * [new ref]         59dde599232bde053a1ed58674bac26575b3e4c5 -> pull/140/merge
+2026-10-24T23:40:13.7498301Z ##[endgroup]
+2026-10-24T23:40:13.7499980Z ##[group]Determining the checkout info
+2026-10-24T23:40:13.7501439Z ##[endgroup]
+2026-10-24T23:40:13.7506104Z [command]/usr/bin/git sparse-checkout disable
+2026-10-24T23:40:13.7564051Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-24T23:40:13.7596790Z ##[group]Checking out the ref
+2026-10-24T23:40:13.7600501Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/140/merge
+2026-10-24T23:40:14.7804698Z Updating files:  50% (1708/3373)
+2026-10-24T23:40:14.8550957Z Updating files:  51% (1721/3373)
+2026-10-24T23:40:14.9322232Z Updating files:  52% (1754/3373)
+2026-10-24T23:40:14.9378372Z Updating files:  53% (1788/3373)
+2026-10-24T23:40:14.9409252Z Updating files:  54% (1822/3373)
+2026-10-24T23:40:14.9455702Z Updating files:  55% (1856/3373)
+2026-10-24T23:40:14.9498049Z Updating files:  56% (1889/3373)
+2026-10-24T23:40:14.9521948Z Updating files:  57% (1923/3373)
+2026-10-24T23:40:14.9553592Z Updating files:  58% (1957/3373)
+2026-10-24T23:40:14.9579264Z Updating files:  59% (1991/3373)
+2026-10-24T23:40:14.9612705Z Updating files:  60% (2024/3373)
+2026-10-24T23:40:14.9652767Z Updating files:  61% (2058/3373)
+2026-10-24T23:40:14.9677413Z Updating files:  62% (2092/3373)
+2026-10-24T23:40:14.9702642Z Updating files:  63% (2125/3373)
+2026-10-24T23:40:14.9732004Z Updating files:  64% (2159/3373)
+2026-10-24T23:40:14.9763228Z Updating files:  65% (2193/3373)
+2026-10-24T23:40:14.9795289Z Updating files:  66% (2227/3373)
+2026-10-24T23:40:14.9831019Z Updating files:  67% (2260/3373)
+2026-10-24T23:40:14.9863494Z Updating files:  68% (2294/3373)
+2026-10-24T23:40:14.9877624Z Updating files:  69% (2328/3373)
+2026-10-24T23:40:14.9897521Z Updating files:  70% (2362/3373)
+2026-10-24T23:40:14.9926141Z Updating files:  71% (2395/3373)
+2026-10-24T23:40:14.9961487Z Updating files:  72% (2429/3373)
+2026-10-24T23:40:14.9984648Z Updating files:  73% (2463/3373)
+2026-10-24T23:40:15.0015854Z Updating files:  74% (2497/3373)
+2026-10-24T23:40:15.0045389Z Updating files:  75% (2530/3373)
+2026-10-24T23:40:15.0076363Z Updating files:  76% (2564/3373)
+2026-10-24T23:40:15.0113411Z Updating files:  77% (2598/3373)
+2026-10-24T23:40:15.0153493Z Updating files:  78% (2631/3373)
+2026-10-24T23:40:15.0184892Z Updating files:  79% (2665/3373)
+2026-10-24T23:40:15.0225935Z Updating files:  80% (2699/3373)
+2026-10-24T23:40:15.0266801Z Updating files:  81% (2733/3373)
+2026-10-24T23:40:15.0303683Z Updating files:  82% (2766/3373)
+2026-10-24T23:40:15.0341447Z Updating files:  83% (2800/3373)
+2026-10-24T23:40:15.1137470Z Updating files:  84% (2834/3373)
+2026-10-24T23:40:15.1166543Z Updating files:  85% (2868/3373)
+2026-10-24T23:40:15.1193299Z Updating files:  86% (2901/3373)
+2026-10-24T23:40:15.1219728Z Updating files:  87% (2935/3373)
+2026-10-24T23:40:15.1250333Z Updating files:  88% (2969/3373)
+2026-10-24T23:40:15.1277398Z Updating files:  89% (3002/3373)
+2026-10-24T23:40:15.1305656Z Updating files:  90% (3036/3373)
+2026-10-24T23:40:15.1335041Z Updating files:  91% (3070/3373)
+2026-10-24T23:40:15.1362326Z Updating files:  92% (3104/3373)
+2026-10-24T23:40:15.1391503Z Updating files:  93% (3137/3373)
+2026-10-24T23:40:15.1432174Z Updating files:  94% (3171/3373)
+2026-10-24T23:40:15.1463374Z Updating files:  95% (3205/3373)
+2026-10-24T23:40:15.1497122Z Updating files:  96% (3239/3373)
+2026-10-24T23:40:15.1534224Z Updating files:  97% (3272/3373)
+2026-10-24T23:40:15.1581867Z Updating files:  98% (3306/3373)
+2026-10-24T23:40:15.1616694Z Updating files:  99% (3340/3373)
+2026-10-24T23:40:15.1617895Z Updating files: 100% (3373/3373)
+2026-10-24T23:40:15.1618781Z Updating files: 100% (3373/3373), done.
+2026-10-24T23:40:15.1658246Z Note: switching to 'refs/remotes/pull/140/merge'.
+2026-10-24T23:40:15.1659380Z 
+2026-10-24T23:40:15.1660169Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-24T23:40:15.1661072Z changes and commit them, and you can discard any commits you make in this
+2026-10-24T23:40:15.1662192Z state without impacting any branches by switching back to a branch.
+2026-10-24T23:40:15.1662795Z 
+2026-10-24T23:40:15.1663120Z If you want to create a new branch to retain commits you create, you may
+2026-10-24T23:40:15.1663879Z do so (now or later) by using -c with the switch command. Example:
+2026-10-24T23:40:15.1664325Z 
+2026-10-24T23:40:15.1664492Z   git switch -c <new-branch-name>
+2026-10-24T23:40:15.1664795Z 
+2026-10-24T23:40:15.1664953Z Or undo this operation with:
+2026-10-24T23:40:15.1665223Z 
+2026-10-24T23:40:15.1665360Z   git switch -
+2026-10-24T23:40:15.1665598Z 
+2026-10-24T23:40:15.1665964Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-24T23:40:15.1666514Z 
+2026-10-24T23:40:15.1667129Z HEAD is now at 59dde59 Merge 2c2424dc03d5c82ea459acc441aabb1f5ccc6f5d into 15aff0fd4224cd56cbd990063b0a18f12c6cca0a
+2026-10-24T23:40:15.1770340Z ##[endgroup]
+2026-10-24T23:40:15.1844746Z [command]/usr/bin/git log -1 --format=%H
+2026-10-24T23:40:15.1872358Z 59dde599232bde053a1ed58674bac26575b3e4c5
+2026-10-24T23:40:15.1885542Z ##[group]Removing auth
+2026-10-24T23:40:15.1890116Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:40:15.1925796Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:40:15.2248737Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:40:15.2276474Z http.https://github.com/.extraheader
+2026-10-24T23:40:15.2287570Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-24T23:40:15.2325274Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:40:15.2623818Z ##[endgroup]
+2026-10-24T23:40:15.2906739Z ##[group]Run set -euo pipefail
+2026-10-24T23:40:15.2907349Z [36;1mset -euo pipefail[0m
+2026-10-24T23:40:15.2907770Z [36;1mpython3 -m venv .venv[0m
+2026-10-24T23:40:15.2908670Z [36;1m.venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-24T23:40:15.3135874Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:40:15.3136224Z ##[endgroup]
+2026-10-24T23:40:18.2120858Z Collecting numpy==2.3.5
+2026-10-24T23:40:18.2532766Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-24T23:40:18.3026006Z Collecting prompt-toolkit==3.0.52
+2026-10-24T23:40:18.3134467Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-24T23:40:18.3439052Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-24T23:40:18.3549940Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-24T23:40:18.3720381Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-24T23:40:18.4883113Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 159.6 MB/s eta 0:00:00
+2026-10-24T23:40:18.5001497Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-24T23:40:18.5155002Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-24T23:40:18.5227563Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 118.6 MB/s eta 0:00:00
+2026-10-24T23:40:18.5592100Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-24T23:40:20.6414609Z 
+2026-10-24T23:40:20.6427318Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-24T23:40:20.7560028Z ##[group]Run set -euo pipefail
+2026-10-24T23:40:20.7560381Z [36;1mset -euo pipefail[0m
+2026-10-24T23:40:20.7560687Z [36;1m../../.venv/bin/python -m compileall -q v13 tests[0m
+2026-10-24T23:40:20.7561573Z [36;1m../../.venv/bin/python -m unittest -v tests.test_world_recovery_invalid_run109 tests.test_world_timing_finite_run108 tests.test_world_state tests.test_world_observed_role_run71 tests.integration_world[0m
+2026-10-24T23:40:20.7625260Z shell: /usr/bin/bash -e {0}
+2026-10-24T23:40:20.7625585Z ##[endgroup]
+2026-10-24T23:40:20.7868297Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:40:20.7870555Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:40:21.7043504Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:40:21.7044805Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-24T23:40:21.9123744Z test_infinite_or_nested_nonfinite_outcome_refused (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_infinite_or_nested_nonfinite_outcome_refused) ... 
+2026-10-24T23:40:21.9146092Z   test_infinite_or_nested_nonfinite_outcome_refused (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_infinite_or_nested_nonfinite_outcome_refused) (raw='{"role":"SOURCE_COPY","action_duration_s":Infinity}') ... ERROR
+2026-10-24T23:40:21.9173608Z   test_infinite_or_nested_nonfinite_outcome_refused (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_infinite_or_nested_nonfinite_outcome_refused) (raw='{"role":"SOURCE_COPY","action_duration_s":2.0,"debug":NaN}') ... ERROR
+2026-10-24T23:40:21.9436033Z test_invalid_first_row_does_not_block_valid_sibling_or_second_restart (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_invalid_first_row_does_not_block_valid_sibling_or_second_restart) ... ERROR
+2026-10-24T23:40:21.9700595Z test_malformed_outcome_and_expected_do_not_brick_restart (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_malformed_outcome_and_expected_do_not_brick_restart) ... ERROR
+2026-10-24T23:40:21.9960719Z test_nan_duration_does_not_brick_restart_or_create_observation (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_nan_duration_does_not_brick_restart_or_create_observation) ... ERROR
+2026-10-24T23:40:22.0235300Z test_negative_and_boolean_duration_not_accepted_as_world_observation (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_negative_and_boolean_duration_not_accepted_as_world_observation) ... FAIL
+2026-10-24T23:40:22.0588229Z test_valid_finite_prediction_error_and_authority_unchanged (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_valid_finite_prediction_error_and_authority_unchanged) ... ok
+2026-10-24T23:40:22.0822893Z test_invalid_historical_input_lengths_are_not_coverage_evidence (tests.test_world_timing_finite_run108.WorldTimingFiniteRun108.test_invalid_historical_input_lengths_are_not_coverage_evidence) ... ok
+2026-10-24T23:40:22.1026238Z test_malformed_expected_and_outcome_are_skipped_not_crashes (tests.test_world_timing_finite_run108.WorldTimingFiniteRun108.test_malformed_expected_and_outcome_are_skipped_not_crashes) ... ok
+2026-10-24T23:40:22.1231337Z test_negative_and_boolean_durations_do_not_count_as_measurements (tests.test_world_timing_finite_run108.WorldTimingFiniteRun108.test_negative_and_boolean_durations_do_not_count_as_measurements) ... ok
+2026-10-24T23:40:22.1434497Z test_nonfinite_nan_and_infinity_durations_fail_closed (tests.test_world_timing_finite_run108.WorldTimingFiniteRun108.test_nonfinite_nan_and_infinity_durations_fail_closed) ... ok
+2026-10-24T23:40:22.1748520Z test_valid_three_samples_and_restart_unchanged (tests.test_world_timing_finite_run108.WorldTimingFiniteRun108.test_valid_three_samples_and_restart_unchanged) ... ok
+2026-10-24T23:40:22.1949072Z test_corollary_forecast_precedes_observation (tests.test_world_state.WorldTests.test_corollary_forecast_precedes_observation) ... ok
+2026-10-24T23:40:22.2213580Z test_failed_and_ood_data_never_become_supported_forecast (tests.test_world_state.WorldTests.test_failed_and_ood_data_never_become_supported_forecast) ... ok
+2026-10-24T23:40:22.2578040Z test_forecast_is_prior_action_bound_and_restart_persistent (tests.test_world_state.WorldTests.test_forecast_is_prior_action_bound_and_restart_persistent) ... ok
+2026-10-24T23:40:22.2797212Z test_model_config_and_session_profiles_do_not_mix (tests.test_world_state.WorldTests.test_model_config_and_session_profiles_do_not_mix) ... ok
+2026-10-24T23:40:22.3269932Z test_restart_repairs_both_action_and_materialized_view_crash_windows (tests.test_world_state.WorldTests.test_restart_repairs_both_action_and_materialized_view_crash_windows) ... ok
+2026-10-24T23:40:22.3273583Z test_mismatched_final_role_rejected (tests.test_world_observed_role_run71.WorldRole.test_mismatched_final_role_rejected) ... ok
+2026-10-24T23:40:22.3276822Z test_missing_forecast_role_rejected (tests.test_world_observed_role_run71.WorldRole.test_missing_forecast_role_rejected) ... ok
+2026-10-24T23:40:22.3279916Z test_missing_observed_role_rejected (tests.test_world_observed_role_run71.WorldRole.test_missing_observed_role_rejected) ... ok
+2026-10-24T23:40:22.3284223Z test_nonfinal_failure_without_role_remains_failure (tests.test_world_observed_role_run71.WorldRole.test_nonfinal_failure_without_role_remains_failure) ... ok
+2026-10-24T23:40:22.3287500Z test_other_valid_role_supported (tests.test_world_observed_role_run71.WorldRole.test_other_valid_role_supported) ... ok
+2026-10-24T23:40:22.3290932Z test_valid_role_admitted (tests.test_world_observed_role_run71.WorldRole.test_valid_role_admitted) ... ok
+2026-10-24T23:40:22.3292347Z 
+2026-10-24T23:40:22.3292561Z ======================================================================
+2026-10-24T23:40:22.3294221Z ERROR: test_infinite_or_nested_nonfinite_outcome_refused (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_infinite_or_nested_nonfinite_outcome_refused) (raw='{"role":"SOURCE_COPY","action_duration_s":Infinity}')
+2026-10-24T23:40:22.3296023Z ----------------------------------------------------------------------
+2026-10-24T23:40:22.3296654Z Traceback (most recent call last):
+2026-10-24T23:40:22.3297761Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 54, in test_infinite_or_nested_nonfinite_outcome_refused
+2026-10-24T23:40:22.3298870Z     self.restart()
+2026-10-24T23:40:22.3299230Z     ~~~~~~~~~~~~^^
+2026-10-24T23:40:22.3299960Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 34, in restart
+2026-10-24T23:40:22.3300842Z     self.r = Runtime(self.home)
+2026-10-24T23:40:22.3301240Z              ~~~~~~~^^^^^^^^^^^
+2026-10-24T23:40:22.3302056Z   File "/home/runner/work/Aii/Aii/v13/code/v13/runtime.py", line 59, in __init__
+2026-10-24T23:40:22.3302731Z     self.world.recover()
+2026-10-24T23:40:22.3303103Z     ~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:40:22.3303666Z   File "/home/runner/work/Aii/Aii/v13/code/v13/world.py", line 153, in recover
+2026-10-24T23:40:22.3304348Z     for row in rows:self.observe(row['id'])
+2026-10-24T23:40:22.3304805Z                     ~~~~~~~~~~~~^^^^^^^^^^^
+2026-10-24T23:40:22.3305193Z   File "/home/runner/work/Aii/Aii/v13/code/v13/world.py", line 99, in observe
+2026-10-24T23:40:22.3305914Z     p=packet('PredictionOutcome','F4_WORLD',env['event_id'],env['brain_generation_id'],[env['source_ref']],action_id=aid,observation=outcome)
+2026-10-24T23:40:22.3306632Z   File "/home/runner/work/Aii/Aii/v13/code/v13/contracts.py", line 123, in packet
+2026-10-24T23:40:22.3308168Z     return validate(schema,dict(schema_version="1.0",packet_id=uid("pkt"),producer_component=producer,producer_version="0.1.0",event_id=event,created_monotonic_ns=time.monotonic_ns(),created_wall_time=now(),brain_generation_id=generation,provenance=provenance or [],**payload))
+2026-10-24T23:40:22.3309383Z   File "/home/runner/work/Aii/Aii/v13/code/v13/contracts.py", line 88, in validate
+2026-10-24T23:40:22.3309779Z     dumps(obj)
+2026-10-24T23:40:22.3309971Z     ~~~~~^^^^^
+2026-10-24T23:40:22.3310270Z   File "/home/runner/work/Aii/Aii/v13/code/v13/common.py", line 14, in dumps
+2026-10-24T23:40:22.3310859Z     def dumps(v): return json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(",",":"),allow_nan=False)
+2026-10-24T23:40:22.3311422Z                          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:40:22.3312369Z   File "/usr/lib/python3.14/json/__init__.py", line 242, in dumps
+2026-10-24T23:40:22.3312887Z     **kw).encode(obj)
+2026-10-24T23:40:22.3313274Z           ~~~~~~^^^^^
+2026-10-24T23:40:22.3313799Z   File "/usr/lib/python3.14/json/encoder.py", line 202, in encode
+2026-10-24T23:40:22.3314448Z     chunks = self.iterencode(o, _one_shot=True)
+2026-10-24T23:40:22.3315101Z   File "/usr/lib/python3.14/json/encoder.py", line 263, in iterencode
+2026-10-24T23:40:22.3315719Z     return _iterencode(o, 0)
+2026-10-24T23:40:22.3316270Z ValueError: Out of range float values are not JSON compliant: inf
+2026-10-24T23:40:22.3316917Z when serializing dict item 'action_duration_s'
+2026-10-24T23:40:22.3317432Z when serializing dict item 'observed'
+2026-10-24T23:40:22.3317911Z when serializing dict item 'observation'
+2026-10-24T23:40:22.3318236Z 
+2026-10-24T23:40:22.3318426Z ======================================================================
+2026-10-24T23:40:22.3319923Z ERROR: test_infinite_or_nested_nonfinite_outcome_refused (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_infinite_or_nested_nonfinite_outcome_refused) (raw='{"role":"SOURCE_COPY","action_duration_s":2.0,"debug":NaN}')
+2026-10-24T23:40:22.3321134Z ----------------------------------------------------------------------
+2026-10-24T23:40:22.3321472Z Traceback (most recent call last):
+2026-10-24T23:40:22.3322410Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 52, in test_infinite_or_nested_nonfinite_outcome_refused
+2026-10-24T23:40:22.3323061Z     aid = self.action()
+2026-10-24T23:40:22.3323504Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 21, in action
+2026-10-24T23:40:22.3324051Z     e = self.s.event(self.r.session, 'World restart timing')
+2026-10-24T23:40:22.3324483Z   File "/home/runner/work/Aii/Aii/v13/code/v13/store.py", line 457, in event
+2026-10-24T23:40:22.3324967Z     with self.tx() as c:return self._event_in_tx(c,session,text,authority)
+2026-10-24T23:40:22.3325329Z          ~~~~~~~^^
+2026-10-24T23:40:22.3325616Z   File "/usr/lib/python3.14/contextlib.py", line 141, in __enter__
+2026-10-24T23:40:22.3325981Z     return next(self.gen)
+2026-10-24T23:40:22.3326315Z   File "/home/runner/work/Aii/Aii/v13/code/v13/store.py", line 298, in tx
+2026-10-24T23:40:22.3326700Z     self.db.execute("BEGIN IMMEDIATE")
+2026-10-24T23:40:22.3326964Z     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:40:22.3327294Z sqlite3.ProgrammingError: Cannot operate on a closed database.
+2026-10-24T23:40:22.3327562Z 
+2026-10-24T23:40:22.3327670Z ======================================================================
+2026-10-24T23:40:22.3328618Z ERROR: test_invalid_first_row_does_not_block_valid_sibling_or_second_restart (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_invalid_first_row_does_not_block_valid_sibling_or_second_restart)
+2026-10-24T23:40:22.3329528Z ----------------------------------------------------------------------
+2026-10-24T23:40:22.3329860Z Traceback (most recent call last):
+2026-10-24T23:40:22.3330723Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 77, in test_invalid_first_row_does_not_block_valid_sibling_or_second_restart
+2026-10-24T23:40:22.3331490Z     self.restart()
+2026-10-24T23:40:22.3331912Z     ~~~~~~~~~~~~^^
+2026-10-24T23:40:22.3332338Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 34, in restart
+2026-10-24T23:40:22.3332830Z     self.r = Runtime(self.home)
+2026-10-24T23:40:22.3333075Z              ~~~~~~~^^^^^^^^^^^
+2026-10-24T23:40:22.3333426Z   File "/home/runner/work/Aii/Aii/v13/code/v13/runtime.py", line 59, in __init__
+2026-10-24T23:40:22.3333821Z     self.world.recover()
+2026-10-24T23:40:22.3334040Z     ~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:40:22.3334370Z   File "/home/runner/work/Aii/Aii/v13/code/v13/world.py", line 153, in recover
+2026-10-24T23:40:22.3334777Z     for row in rows:self.observe(row['id'])
+2026-10-24T23:40:22.3335055Z                     ~~~~~~~~~~~~^^^^^^^^^^^
+2026-10-24T23:40:22.3335420Z   File "/home/runner/work/Aii/Aii/v13/code/v13/world.py", line 99, in observe
+2026-10-24T23:40:22.3336149Z     p=packet('PredictionOutcome','F4_WORLD',env['event_id'],env['brain_generation_id'],[env['source_ref']],action_id=aid,observation=outcome)
+2026-10-24T23:40:22.3336858Z   File "/home/runner/work/Aii/Aii/v13/code/v13/contracts.py", line 123, in packet
+2026-10-24T23:40:22.3338130Z     return validate(schema,dict(schema_version="1.0",packet_id=uid("pkt"),producer_component=producer,producer_version="0.1.0",event_id=event,created_monotonic_ns=time.monotonic_ns(),created_wall_time=now(),brain_generation_id=generation,provenance=provenance or [],**payload))
+2026-10-24T23:40:22.3339296Z   File "/home/runner/work/Aii/Aii/v13/code/v13/contracts.py", line 88, in validate
+2026-10-24T23:40:22.3339684Z     dumps(obj)
+2026-10-24T23:40:22.3339877Z     ~~~~~^^^^^
+2026-10-24T23:40:22.3340175Z   File "/home/runner/work/Aii/Aii/v13/code/v13/common.py", line 14, in dumps
+2026-10-24T23:40:22.3340760Z     def dumps(v): return json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(",",":"),allow_nan=False)
+2026-10-24T23:40:22.3341483Z                          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:40:22.3342307Z   File "/usr/lib/python3.14/json/__init__.py", line 242, in dumps
+2026-10-24T23:40:22.3342654Z     **kw).encode(obj)
+2026-10-24T23:40:22.3342859Z           ~~~~~~^^^^^
+2026-10-24T23:40:22.3343133Z   File "/usr/lib/python3.14/json/encoder.py", line 202, in encode
+2026-10-24T23:40:22.3343510Z     chunks = self.iterencode(o, _one_shot=True)
+2026-10-24T23:40:22.3343883Z   File "/usr/lib/python3.14/json/encoder.py", line 263, in iterencode
+2026-10-24T23:40:22.3344235Z     return _iterencode(o, 0)
+2026-10-24T23:40:22.3344556Z ValueError: Out of range float values are not JSON compliant: nan
+2026-10-24T23:40:22.3344936Z when serializing dict item 'action_duration_s'
+2026-10-24T23:40:22.3345260Z when serializing dict item 'observed'
+2026-10-24T23:40:22.3345540Z when serializing dict item 'observation'
+2026-10-24T23:40:22.3345736Z 
+2026-10-24T23:40:22.3345865Z ======================================================================
+2026-10-24T23:40:22.3346691Z ERROR: test_malformed_outcome_and_expected_do_not_brick_restart (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_malformed_outcome_and_expected_do_not_brick_restart)
+2026-10-24T23:40:22.3347530Z ----------------------------------------------------------------------
+2026-10-24T23:40:22.3347866Z Traceback (most recent call last):
+2026-10-24T23:40:22.3348487Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 62, in test_malformed_outcome_and_expected_do_not_brick_restart
+2026-10-24T23:40:22.3349121Z     self.restart()
+2026-10-24T23:40:22.3349318Z     ~~~~~~~~~~~~^^
+2026-10-24T23:40:22.3349725Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 34, in restart
+2026-10-24T23:40:22.3350214Z     self.r = Runtime(self.home)
+2026-10-24T23:40:22.3350456Z              ~~~~~~~^^^^^^^^^^^
+2026-10-24T23:40:22.3350972Z   File "/home/runner/work/Aii/Aii/v13/code/v13/runtime.py", line 59, in __init__
+2026-10-24T23:40:22.3351374Z     self.world.recover()
+2026-10-24T23:40:22.3351885Z     ~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:40:22.3352240Z   File "/home/runner/work/Aii/Aii/v13/code/v13/world.py", line 153, in recover
+2026-10-24T23:40:22.3352635Z     for row in rows:self.observe(row['id'])
+2026-10-24T23:40:22.3352906Z                     ~~~~~~~~~~~~^^^^^^^^^^^
+2026-10-24T23:40:22.3353265Z   File "/home/runner/work/Aii/Aii/v13/code/v13/world.py", line 84, in observe
+2026-10-24T23:40:22.3353823Z     actual=json.loads(action['outcome']);forecast=json.loads(action['expected']).get('forecast',{})
+2026-10-24T23:40:22.3354347Z   File "/usr/lib/python3.14/json/__init__.py", line 352, in loads
+2026-10-24T23:40:22.3354688Z     return _default_decoder.decode(s)
+2026-10-24T23:40:22.3354942Z            ~~~~~~~~~~~~~~~~~~~~~~~^^^
+2026-10-24T23:40:22.3355252Z   File "/usr/lib/python3.14/json/decoder.py", line 345, in decode
+2026-10-24T23:40:22.3355629Z     obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+2026-10-24T23:40:22.3355930Z                ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:40:22.3356280Z   File "/usr/lib/python3.14/json/decoder.py", line 361, in raw_decode
+2026-10-24T23:40:22.3356633Z     obj, end = self.scan_once(s, idx)
+2026-10-24T23:40:22.3356882Z                ~~~~~~~~~~~~~~^^^^^^^^
+2026-10-24T23:40:22.3357347Z json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-10-24T23:40:22.3357756Z 
+2026-10-24T23:40:22.3357921Z ======================================================================
+2026-10-24T23:40:22.3358777Z ERROR: test_nan_duration_does_not_brick_restart_or_create_observation (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_nan_duration_does_not_brick_restart_or_create_observation)
+2026-10-24T23:40:22.3359643Z ----------------------------------------------------------------------
+2026-10-24T23:40:22.3360161Z Traceback (most recent call last):
+2026-10-24T23:40:22.3360806Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 44, in test_nan_duration_does_not_brick_restart_or_create_observation
+2026-10-24T23:40:22.3361455Z     self.restart()
+2026-10-24T23:40:22.3361975Z     ~~~~~~~~~~~~^^
+2026-10-24T23:40:22.3362432Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 34, in restart
+2026-10-24T23:40:22.3362926Z     self.r = Runtime(self.home)
+2026-10-24T23:40:22.3363161Z              ~~~~~~~^^^^^^^^^^^
+2026-10-24T23:40:22.3363507Z   File "/home/runner/work/Aii/Aii/v13/code/v13/runtime.py", line 59, in __init__
+2026-10-24T23:40:22.3363892Z     self.world.recover()
+2026-10-24T23:40:22.3364115Z     ~~~~~~~~~~~~~~~~~~^^
+2026-10-24T23:40:22.3364449Z   File "/home/runner/work/Aii/Aii/v13/code/v13/world.py", line 153, in recover
+2026-10-24T23:40:22.3364843Z     for row in rows:self.observe(row['id'])
+2026-10-24T23:40:22.3365125Z                     ~~~~~~~~~~~~^^^^^^^^^^^
+2026-10-24T23:40:22.3365509Z   File "/home/runner/work/Aii/Aii/v13/code/v13/world.py", line 99, in observe
+2026-10-24T23:40:22.3366197Z     p=packet('PredictionOutcome','F4_WORLD',env['event_id'],env['brain_generation_id'],[env['source_ref']],action_id=aid,observation=outcome)
+2026-10-24T23:40:22.3366897Z   File "/home/runner/work/Aii/Aii/v13/code/v13/contracts.py", line 123, in packet
+2026-10-24T23:40:22.3368058Z     return validate(schema,dict(schema_version="1.0",packet_id=uid("pkt"),producer_component=producer,producer_version="0.1.0",event_id=event,created_monotonic_ns=time.monotonic_ns(),created_wall_time=now(),brain_generation_id=generation,provenance=provenance or [],**payload))
+2026-10-24T23:40:22.3369229Z   File "/home/runner/work/Aii/Aii/v13/code/v13/contracts.py", line 88, in validate
+2026-10-24T23:40:22.3369616Z     dumps(obj)
+2026-10-24T23:40:22.3369805Z     ~~~~~^^^^^
+2026-10-24T23:40:22.3370246Z   File "/home/runner/work/Aii/Aii/v13/code/v13/common.py", line 14, in dumps
+2026-10-24T23:40:22.3370839Z     def dumps(v): return json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(",",":"),allow_nan=False)
+2026-10-24T23:40:22.3371381Z                          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:40:22.3372100Z   File "/usr/lib/python3.14/json/__init__.py", line 242, in dumps
+2026-10-24T23:40:22.3372432Z     **kw).encode(obj)
+2026-10-24T23:40:22.3372633Z           ~~~~~~^^^^^
+2026-10-24T23:40:22.3372903Z   File "/usr/lib/python3.14/json/encoder.py", line 202, in encode
+2026-10-24T23:40:22.3373262Z     chunks = self.iterencode(o, _one_shot=True)
+2026-10-24T23:40:22.3373630Z   File "/usr/lib/python3.14/json/encoder.py", line 263, in iterencode
+2026-10-24T23:40:22.3373988Z     return _iterencode(o, 0)
+2026-10-24T23:40:22.3374306Z ValueError: Out of range float values are not JSON compliant: nan
+2026-10-24T23:40:22.3374677Z when serializing dict item 'action_duration_s'
+2026-10-24T23:40:22.3374985Z when serializing dict item 'observed'
+2026-10-24T23:40:22.3375266Z when serializing dict item 'observation'
+2026-10-24T23:40:22.3375456Z 
+2026-10-24T23:40:22.3375565Z ======================================================================
+2026-10-24T23:40:22.3376454Z FAIL: test_negative_and_boolean_duration_not_accepted_as_world_observation (tests.test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_negative_and_boolean_duration_not_accepted_as_world_observation)
+2026-10-24T23:40:22.3377358Z ----------------------------------------------------------------------
+2026-10-24T23:40:22.3377692Z Traceback (most recent call last):
+2026-10-24T23:40:22.3378354Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_recovery_invalid_run109.py", line 70, in test_negative_and_boolean_duration_not_accepted_as_world_observation
+2026-10-24T23:40:22.3379053Z     self.assertEqual(self.outcomes(a), [])
+2026-10-24T23:40:22.3379333Z     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+2026-10-24T23:40:22.3379755Z AssertionError: Lists differ: [{'payload': '{"action_id":"act_daa4c204eb[872 chars]"}'}] != []
+2026-10-24T23:40:22.3380253Z 
+2026-10-24T23:40:22.3380362Z First list contains 1 additional elements.
+2026-10-24T23:40:22.3380631Z First extra element 0:
+2026-10-24T23:40:22.3383938Z {'payload': '{"action_id":"act_daa4c204eb9b4873a65092f40f4a207d","brain_generation_id":"gen_a6b2fde36ab542449d230695f8ec93df","created_monotonic_ns":106296592766,"created_wall_time":1792885222.020746,"event_id":"evt_4a48d4d73a654bfe9129793c67a7135e","observation":{"action_id":"act_daa4c204eb9b4873a65092f40f4a207d","causal_claim":false,"external_world_observation":false,"observed":{"action_duration_s":-5.0,"role":"SOURCE_COPY"},"prediction_packet_id":"pkt_7cad8e023ee7440fa80cb9eccbefeb7a","scored":false,"self_caused":true,"semantic_success":null,"status":"FINAL","timing_error_s":null},"packet_id":"pkt_b0fd1e5bc816498a9f87de8b9d43b9ea","producer_component":"F4_WORLD","producer_version":"0.1.0","provenance":[{"char_end":20,"char_start":0,"modality":"text","sha256":"f4b8595cf7e8428fe5b9dd51fd688762f3f7df9b68c293a94580b4656824455a","source_id":"src_86bf34c20f144f17946e93d1639799eb"}],"schema_version":"1.0"}'}
+2026-10-24T23:40:22.3386905Z 
+2026-10-24T23:40:22.3387067Z Diff is 927 characters long. Set self.maxDiff to None to see it.
+2026-10-24T23:40:22.3387328Z 
+2026-10-24T23:40:22.3387472Z ----------------------------------------------------------------------
+2026-10-24T23:40:22.3387797Z Ran 22 tests in 0.466s
+2026-10-24T23:40:22.3387929Z 
+2026-10-24T23:40:22.3388031Z FAILED (failures=1, errors=5)
+2026-10-24T23:40:22.3641097Z ##[error]Process completed with exit code 1.
+2026-10-24T23:40:22.3785420Z Post job cleanup.
+2026-10-24T23:40:22.4649425Z [command]/usr/bin/git version
+2026-10-24T23:40:22.4697962Z git version 2.55.0
+2026-10-24T23:40:22.4739317Z Temporarily overriding HOME='/home/runner/work/_temp/d8ae1bba-d631-4eca-bf89-b856b58451c7' before making global git config changes
+2026-10-24T23:40:22.4740714Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-24T23:40:22.4746604Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-24T23:40:22.4793210Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-24T23:40:22.4831301Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-24T23:40:22.5171444Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-24T23:40:22.5215351Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-24T23:40:22.5717281Z Cleaning up orphan processes
+2026-10-24T23:40:22.6105679Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

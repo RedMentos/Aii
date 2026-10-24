@@ -1,0 +1,38 @@
+{
+  "run": 109,
+  "utc_date": "2026-10-25",
+  "branch": "codex/world-recovery-invalid-run109-20261025",
+  "pr": 140,
+  "base_commit": "15aff0fd4224cd56cbd990063b0a18f12c6cca0a",
+  "owner": "world.py observe/recover only, serial after Run108; no Run106/107 overlap",
+  "state": "ISOLATED_REVIEW_CANDIDATE_NOT_MERGED",
+  "finding": "Runtime.__init__ world.recover crashed on malformed persisted action outcomes, NaN/Infinity and invalid timing; valid sibling recovery blocked",
+  "red": {
+    "workflow_run": 40143662515,
+    "job": 121020410581,
+    "tests": 22,
+    "failures": 1,
+    "errors": 5,
+    "note": "Nested subtest closed-DB secondary error preserved"
+  },
+  "green": {
+    "workflow_run": 40143722913,
+    "job": 121020587071,
+    "tests": 22,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS"
+  },
+  "implementation": "Strict JSON object and parse_constant refusal, finite timing check, originating event SourceRef check, reject/log without changing action or creating PredictionOutcome, continue other actions; latent score nonfinite guard",
+  "evidence_level": "GitHub Linux real SQLite restart, synthetic timing; no native model or Redmi",
+  "claim_limit": "Does not validate pre-existing PredictionOutcome packets during _refresh; independent follow-up if pursued",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_system": "INCOMPLETE"
+  },
+  "next": "Independent review and broad World/runtime suite, then substantive roadmap package (e.g. DS2 sandbox policy ablation); no native gate promotion."
+}
