@@ -1,0 +1,91 @@
+{
+  "run": 110,
+  "utc_date": "2026-10-25",
+  "branch": "codex/ds2-learning-goal-run110-20261025",
+  "pr": 141,
+  "base_commit": "7239df918faf03e80284ccde6394caed1d407bfa",
+  "owner": "Lab-only sandbox.py + DS2 tests/bench/evidence; no Runtime/STEP8 changes",
+  "state": "ISOLATED_REVIEW_CANDIDATE_DS2_LOCKED_H2_FAIL_NOT_PROMOTED",
+  "claude_ds1_source": {
+    "pr": 25,
+    "head": "662d1f02a0a5dc9e56050a93ee1cbde8470c7ab2",
+    "sandbox_blob": "673b8c057bfa385aadcb94b2de45e5c17cc3560e",
+    "tests_blob": "d527bbc2ae3bff0eec652cef8b6b3bf603e071a7",
+    "bench_blob": "816a48734dfca18c3d61e6f333fdd530458f3e6d",
+    "report_blob": "f67f117a14e3f96ae72b1e484ff2a906835d36ca",
+    "byte_exact_import_verified": true,
+    "full_pr25_merge": false
+  },
+  "red": {
+    "workflow_run": 40143898817,
+    "job": 121021107745,
+    "tests": 12,
+    "failures": 5,
+    "errors": 0
+  },
+  "green": {
+    "workflow_run": 40143933384,
+    "job": 121021215716,
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "synthetic_20_seed_bench": "COMPLETE"
+  },
+  "independent_review": {
+    "workflow_run": 40144052888,
+    "job": 121021539824,
+    "result": "PASS",
+    "privacy": "CLEAN",
+    "verified_report_sha256": "6d69690971739ee0beff0a0bf9d95804e463e376e31f690e45115cd3479"
+  },
+  "preregistered_verdict": {
+    "H1_hunger": true,
+    "H2_new_word": false,
+    "H3_no_noise_or_learning_collapse": true,
+    "H4_word_novelty_ablation": true,
+    "all_pass": false
+  },
+  "metrics": {
+    "lp_goal_novelty": {
+      "mean_hunger": 0.05371,
+      "new_kind_learned": 17,
+      "new_kind_median_steps": 733,
+      "noise_share": 0.10728,
+      "final_kl_learnable": 0.09948
+    },
+    "lp_goal": {
+      "mean_hunger": 0.04337,
+      "new_kind_learned": 16,
+      "new_kind_median_steps": 556.5
+    },
+    "lp": {
+      "mean_hunger": 0.20014,
+      "new_kind_learned": 19,
+      "new_kind_median_steps": 501
+    },
+    "efe": {
+      "mean_hunger": 0.04574,
+      "new_kind_learned": 7,
+      "new_kind_median_steps": 893
+    }
+  },
+  "interpretation": "Combined policy improves hunger vs LP and new-kind success vs EFE, but median delay 733 exceeds locked <=700; no tuning on same registered seeds or gate promotion.",
+  "evidence_level": "GitHub Linux Python toy-world simulation, 20 preregistered seeds; not native LLM/Redmi or physical embodiment",
+  "native_prereq_recheck": {
+    "date": "2026-10-25",
+    "cgroup_v2": "read-only",
+    "memory_max_bytes": 4294967296,
+    "transformers": false,
+    "gguf_count": 0,
+    "fixture_count": 0
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_system": "INCOMPLETE"
+  },
+  "next": "Continue independent canonical functional package (DS3 calibrated uncertainty -> action/abstention, or DS2 compositional lab), with new preregistration; preserve DS2 H2 FAIL and use fresh seeds if retesting a changed policy."
+}
