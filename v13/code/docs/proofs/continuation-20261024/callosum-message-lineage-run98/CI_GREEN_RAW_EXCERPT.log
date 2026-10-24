@@ -1,0 +1,19 @@
+# Run98 final GREEN — bounded raw CI lines
+
+Commit 470434e13149e14d72452a564f0d1e3be6ee0e0a. Actions run 40137994692/job 121003516937 SUCCESS. Ten real SQLite adversarial/positive cases, inherited Callosum/B3/Age controls; 39/39 PASS. compileall PASS, official privacy scanner CLEAN. Full raw job log retained by Actions.
+
+2026-10-24T22:18:51.3976201Z test_deleted_message_source_blocks_utility_credit (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_deleted_message_source_blocks_utility_credit) ... ok
+2026-10-24T22:18:51.4084933Z test_foreign_event_message_never_credits_receiver_offer (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_foreign_event_message_never_credits_receiver_offer) ... ok
+2026-10-24T22:18:51.4196464Z test_malformed_message_json_is_ignored_not_exception (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_malformed_message_json_is_ignored_not_exception) ... ok
+2026-10-24T22:18:51.4294100Z test_malformed_receiver_offer_json_cannot_abort_scoring (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_malformed_receiver_offer_json_cannot_abort_scoring) ... ok
+2026-10-24T22:18:51.4406465Z test_missing_message_packet_never_credits_receiver_offer (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_missing_message_packet_never_credits_receiver_offer) ... ok
+2026-10-24T22:18:51.4508555Z test_negative_native_duration_cannot_inflate_channel_utility (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_negative_native_duration_cannot_inflate_channel_utility) ... ok
+2026-10-24T22:18:51.4636089Z test_receiver_offer_from_wrong_generation_cannot_get_credit (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_receiver_offer_from_wrong_generation_cannot_get_credit) ... ok
+2026-10-24T22:18:51.4739443Z test_valid_message_credits_once_and_replay_is_idempotent (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_valid_message_credits_once_and_replay_is_idempotent) ... ok
+2026-10-24T22:18:51.4836391Z test_wrong_packet_kind_never_counts_as_callosum_message (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_wrong_packet_kind_never_counts_as_callosum_message) ... ok
+2026-10-24T22:18:51.4930974Z test_wrong_sender_receiver_message_does_not_get_credit (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_wrong_sender_receiver_message_does_not_get_credit) ... ok
+2026-10-24T22:18:51.5378337Z test_repeated_outcome_scores_once (tests.test_callosum_outcome_integration_run66.CallosumOutcomeIntegration.test_repeated_outcome_scores_once) ... ok
+2026-10-24T22:18:51.5725810Z test_promotion_needs_human_and_evidence_then_resource_mode_demotes (tests.test_b3degrade.Live.test_promotion_needs_human_and_evidence_then_resource_mode_demotes) ... ok
+2026-10-24T22:18:51.6608371Z Ran 39 tests in 0.292s
+2026-10-24T22:18:51.6608498Z OK
+2026-10-24T22:18:51.7422095Z privacy scan 5a059600a..HEAD: CLEAN
