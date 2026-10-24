@@ -1,0 +1,16 @@
+{
+  "schema": "V13_BUILD_STATE_DELTA_RUN12_V1",
+  "base_remote_commit": "643fffb38f5fffc28462a145666ff3b9d81378c0",
+  "scope": "LP3_INDEPENDENT_AUDITOR_CLAIM_INTEGRITY_ONLY",
+  "implemented": ["complete-or-none source fixture inputs", "strict numeric evidence counters and nonnegative finite NCE losses", "explicit candidate claim structural eligibility requires source fixtures plus supplied external receipt"],
+  "software_tests": {"focused_pass": 58, "failures": 0, "errors": 0, "compileall": "PASS", "new_tests": 6},
+  "failed_attempts_preserved": ["first-adversarial-red.log", "initial guard ordering test failure recorded in review note"],
+  "native_lp3": "NOT_RUN_PINNED_MASTER_AND_TRANSFORMERS_ABSENT_CURRENT_HOST",
+  "full_repo_suite": "NOT_RUN_NO_FULL_CHECKOUT",
+  "privacy_scan": "NOT_RUN_NO_FULL_CHECKOUT",
+  "redmi": "NOT_RUN",
+  "step2": "UTILITY_FAIL", "b3_l1": "FAIL", "body_jepa": "UNAVAILABLE", "jepa_weight": 0,
+  "canonical_architecture_complete": false, "user_full_scope_complete": false,
+  "user_decision_required": false,
+  "next": "Full-checkout independent review/full-suite/privacy scan; native prerequisites and owner verification; serial four-seed LP3 cohort; approved independent raw-evidence anchor; equal-budget generated-answer ablation."
+}

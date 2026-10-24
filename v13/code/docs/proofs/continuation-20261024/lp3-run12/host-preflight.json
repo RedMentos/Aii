@@ -1,0 +1,13 @@
+{
+  "scope": "CURRENT_CONTAINER_ONLY",
+  "utc": "2026-10-24",
+  "python": "3.13.5",
+  "memory_cgroup_bytes": "4294967296",
+  "torch_available": true,
+  "transformers_available": false,
+  "pinned_master_in_checked_roots": [],
+  "known_lp3_native_processes": [],
+  "native_lp3": "NOT_RUN",
+  "redmi": "NOT_MEASURED",
+  "claim_limit": "Process check is local namespace only; other hosts and external owners are unknown."
+}
