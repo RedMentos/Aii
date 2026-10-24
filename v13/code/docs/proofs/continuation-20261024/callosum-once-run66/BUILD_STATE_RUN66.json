@@ -1,0 +1,33 @@
+{
+  "schema": "V13_RUN66_CALLOSUM_OUTCOME_ONCE_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base": "0d48e8354f442c8badc86cca6074e46d8d166e51",
+  "owner": "callosum.py outcome only; callosum_outcome_once.py; two tests; callosum-once-run66 evidence",
+  "status": "PRODUCTION_BOUND_L0_UTILITY_ACCOUNTING_SOFTWARE_CANDIDATE",
+  "tests": {
+    "original": "RED reproduced 2 counts from one packet",
+    "focused": "10/10 PASS",
+    "optimized": "10/10 PASS",
+    "randomized": "1000/1000 PASS",
+    "compileall": "PASS",
+    "actual_Callosum_Store": "NOT RUN",
+    "full_repo": "NOT RUN",
+    "privacy_scan": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "No actual Store optimistic-CAS race proof",
+    "No real Callosum integration test executed",
+    "No B3 L1 or response utility proof"
+  ],
+  "next": "cd v13/code && python -m unittest -v tests.test_callosum_outcome_integration_run66; full suite, privacy scan, real Store CAS replay",
+  "user_decision_required": false
+}
