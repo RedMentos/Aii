@@ -1,0 +1,16 @@
+{
+  "schema": "V13_RUN36_STATE_V1",
+  "base": "9e1119162b3a8bf2f99341de7cb1d8afd1bcae5d",
+  "owner": "Codex Run36 isolated ContextOS pin and ACTIVE fallback review",
+  "file_ownership": "v13/code/docs/proofs/continuation-20261024/context-runtime-run36/ only",
+  "production_integrated": false,
+  "original_context_blob": "028376012e328624fb527a927bb0e2a1071a86a0",
+  "original_runtime_blob": "a691d27bd0772a4fa1f03d57ec90663237bf6825",
+  "tests": "10/10 PASS software/synthetic; compileall PASS; 2 initial failed attempts preserved",
+  "full_checkout_patch": "NOT_RUN",
+  "full_original_suite": "NOT_RUN",
+  "privacy_scan": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "gates": {"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"Z6a":"FAIL","Z8":"FAIL","canonical_architecture_complete":false,"user_full_scope_complete":false},
+  "next": "On full checkout verify original Git blobs, build candidate to new temp folder, independently review Runtime ACTIVE overflow and full ContextOS tests; continue other Canon work while blocked."
+}
