@@ -1,0 +1,50 @@
+--- a/v13/code/scripts/lp3_serial_cohort.py
++++ b/v13/code/scripts/lp3_serial_cohort.py
+@@ -196,31 +196,23 @@
+ 
+ 
+ def _cleanup_owned_group(pgid, grace=1.0):
+-    """Bounded cleanup for descendants that outlive the direct child.
+-
+-    Reaping the Popen leader alone does NOT prove its process group has exited.
+-    Never report a successful native cohort if any group member survived it.
+-    This only accepts a PGID returned from our own start_new_session child.
++    """Observe the *reaped* leader's old PGID; do not signal it.
++
++    Callers reach this function after proc.wait() reaped the leader. At that
++    point the numeric PID/PGID is not a durable ownership handle: once the
++    group becomes empty, a later process can reuse its numeric identifier.
++    A killpg here could target a foreign group under PID reuse. The still-
++    running leader path (_wait_owned_child/_reap_interrupted_owned_child)
++    retains its bounded group termination; after reaping, ONLY the fresh
++    owned cgroup-v2 subtree may be killed by CgroupV2Job.finish/abort.
++
++    A surviving group is still a cohort failure even if cgroup.kill later
++    clears it. This probe can conservatively report a reused group as
++    residue (fail closed); it never signals that group.
+     """
+-    if not _owned_group_exists(pgid):
+-        return {'owned_group_residue_detected': False, 'owned_group_absent': True}
+-    try:
+-        os.killpg(pgid, signal.SIGTERM)
+-    except ProcessLookupError:
+-        pass
+-    deadline = time.monotonic() + grace
+-    while time.monotonic() < deadline and _owned_group_exists(pgid):
+-        time.sleep(min(.05, max(0, deadline - time.monotonic())))
+-    if _owned_group_exists(pgid):
+-        try:
+-            os.killpg(pgid, signal.SIGKILL)
+-        except ProcessLookupError:
+-            pass
+-    deadline = time.monotonic() + grace
+-    while time.monotonic() < deadline and _owned_group_exists(pgid):
+-        time.sleep(min(.05, max(0, deadline - time.monotonic())))
+-    return {'owned_group_residue_detected': True,
+-            'owned_group_absent': not _owned_group_exists(pgid)}
++    residue = _owned_group_exists(pgid)
++    return {'owned_group_residue_detected': residue,
++            'owned_group_absent': not residue}
+ 
+ 
+ def check(master, candidate, fixture_root=None):
