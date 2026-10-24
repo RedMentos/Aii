@@ -1,0 +1,33 @@
+{
+  "schema": "V13_RUN71_WORLD_FINAL_ROLE_LINEAGE_V1",
+  "date": "2026-10-24",
+  "base": "e89bd2fbee9c009c6fd177c3b886fb8767b99aae",
+  "owner": "world_model.transitions FINAL role binding; Run64/70 fixture updates; Run71 SQLite tests",
+  "status": "PRODUCTION_BOUND_OBSERVED_ACTION_ROLE_SOFTWARE_CANDIDATE",
+  "tests": {
+    "original_extracted": "3/6 PASS; 3 RED",
+    "fixed_extracted": "6/6 PASS",
+    "combined_Run70_Run71": "11/11 PASS",
+    "optimized_combined": "11/11 PASS",
+    "compileall": "PASS",
+    "actual_v13_store": "NOT RUN",
+    "full_repo": "NOT RUN",
+    "official_privacy": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Actual Store integration not executed; extracted transitions synthetic SQLite only",
+    "Strict FINAL role match may exclude fallback cases rather than measuring them",
+    "No semantic utility or native evidence"
+  ],
+  "next": "cd v13/code && python -m unittest -v tests.test_world_observed_role_run71 tests.test_world_action_chronology_run70 tests.test_world_model_integration_run64 tests.test_world_align_finite_run65; full suite/privacy, real action cohort",
+  "user_decision_required": false
+}
