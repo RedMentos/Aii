@@ -1,0 +1,14 @@
+{
+  "schema": "V13_COMPLETION_LEDGER_DELTA_RUN11_V1",
+  "package": "WP-LP3_POSTFLIGHT_INPUT_CONSISTENCY",
+  "owner": "Codex isolated LP3 candidate/review",
+  "status": "IMPLEMENTED_SOFTWARE_TESTED_NOT_NATIVE",
+  "implementation": ["scripts/lp3_memory_key_candidate.py", "scripts/lp3_closed_evidence_audit.py"],
+  "tests": ["tests/test_lp3_preflight_binding.py", "tests/test_lp3_closed_evidence_audit.py", "tests/test_lp3_postflight_lifecycle.py"],
+  "persistence": "existing immutable run_manifest and seed-N.json; on postflight failure failed-input-binding.json and no report.json",
+  "telemetry": "stage/error_type/utc only on postflight failure; no personal input",
+  "proof_level": "SOFTWARE_SYNTHETIC_LINUX_CONTAINER_ONLY",
+  "real_weights": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "known_limits": ["no immutable model FD pinning", "full suite unavailable", "original STEP2/B3 gates remain negative"]
+}

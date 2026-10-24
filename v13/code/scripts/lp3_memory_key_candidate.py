@@ -72,6 +72,25 @@ def preflight_binding(master, expected_master_sha256, *, source_root=HERE):
             "assets_sha256": hashes, "fixture_dependencies_sha256": deps,
             "upstream_nonweight_asset_identity": "NOT_INDEPENDENTLY_VERIFIED"}
 
+
+def verify_postflight_binding(master, snapshot, script_sha256, *, source_root=HERE,
+                              script_path=None):
+    """Rehash *all* frozen inputs after native work, before publishing a report.
+
+    The first preflight proves only what was on disk before loading. A cache,
+    tokenizer, or fixture modified during a long native run must not produce a
+    closed cohort bound to the earlier bytes. This is a content-consistency
+    guard, not an adversarial immutable-filesystem or model-reexecution proof.
+    """
+    if not isinstance(snapshot, dict) or not isinstance(script_sha256, str):
+        raise ValueError('missing preflight source/snapshot binding')
+    if preflight_binding(master, PINNED_MASTER_SHA256, source_root=source_root) != snapshot:
+        raise ValueError('snapshot or fixture changed during native attempt')
+    source = Path(script_path) if script_path is not None else Path(__file__)
+    if _sha256_file(source) != script_sha256:
+        raise ValueError('candidate source changed during native attempt')
+    return True
+
 # Separate, unseen questions; five historical LP2 failures already occur in HELDOUT.
 HARDER = (
     (0, "I forgot what to call the feline I own. Remind me?"),
@@ -318,6 +337,15 @@ def main():
                           "utc": datetime.now(timezone.utc).isoformat()})
             raise
     audit_rows(rows)
+    # The model was loaded *after* preflight. Recheck the exact on-disk inputs
+    # before publishing report.json; a partial attempt remains inspectable.
+    try:
+        verify_postflight_binding(a.master, snapshot, binding['script_sha256'])
+    except (OSError, ValueError) as exc:
+        write_atomic(a.out / 'failed-input-binding.json',
+                     {'stage': 'POSTFLIGHT_RECHECK', 'error_type': type(exc).__name__,
+                      'utc': datetime.now(timezone.utc).isoformat()})
+        raise SystemExit(f'HARD_BLOCKER: postflight source/snapshot binding failed: {type(exc).__name__}') from exc
     result = dict(binding, rows=rows, verdict=verdict(rows))
     digest = write_atomic(a.out / 'report.json', result)
     print(json.dumps({"verdict": result['verdict'], "report_sha256": digest, "rows": len(rows)}))

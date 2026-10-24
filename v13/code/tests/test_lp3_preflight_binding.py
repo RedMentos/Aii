@@ -42,6 +42,65 @@ class TestPreflight(unittest.TestCase):
         self.assertEqual(set(r['fixture_dependencies_sha256']), {'lp2_assignment_objective.py', 'lora_bench.py'})
         self.assertEqual(r['upstream_nonweight_asset_identity'], 'NOT_INDEPENDENTLY_VERIFIED')
 
+    def test_postflight_unchanged_assets_sources_and_candidate(self):
+        candidate = self.src / 'candidate.py'
+        candidate.write_text('fixed candidate\n')
+        snapshot = mod.preflight_binding(self.master, self.weight_sha, source_root=self.src)
+        sha = mod._sha256_file(candidate)
+        self.assertTrue(mod.verify_postflight_binding(
+            self.master, snapshot, sha, source_root=self.src, script_path=candidate))
+        self.assertEqual(mod._sha256_file(candidate), sha)
+
+    def test_postflight_changed_weight_refused(self):
+        candidate = self.src / 'candidate.py'
+        candidate.write_text('fixed candidate\n')
+        snapshot = mod.preflight_binding(self.master, self.weight_sha, source_root=self.src)
+        (self.master / 'model.safetensors').write_bytes(b'changed after preflight')
+        with self.assertRaises(ValueError):
+            mod.verify_postflight_binding(self.master, snapshot, mod._sha256_file(candidate),
+                                          source_root=self.src, script_path=candidate)
+
+    def test_postflight_changed_tokenizer_refused(self):
+        candidate = self.src / 'candidate.py'
+        candidate.write_text('fixed candidate\n')
+        snapshot = mod.preflight_binding(self.master, self.weight_sha, source_root=self.src)
+        (self.master / 'tokenizer.json').write_text('{"changed": true}')
+        with self.assertRaisesRegex(ValueError, 'snapshot or fixture changed'):
+            mod.verify_postflight_binding(self.master, snapshot, mod._sha256_file(candidate),
+                                          source_root=self.src, script_path=candidate)
+
+    def test_postflight_changed_transitive_fixture_refused(self):
+        candidate = self.src / 'candidate.py'
+        candidate.write_text('fixed candidate\n')
+        snapshot = mod.preflight_binding(self.master, self.weight_sha, source_root=self.src)
+        (self.src / 'lora_bench.py').write_text('FACTS = [1]\n')
+        with self.assertRaisesRegex(ValueError, 'snapshot or fixture changed'):
+            mod.verify_postflight_binding(self.master, snapshot, mod._sha256_file(candidate),
+                                          source_root=self.src, script_path=candidate)
+
+    def test_postflight_changed_candidate_refused(self):
+        candidate = self.src / 'candidate.py'
+        candidate.write_text('fixed candidate\n')
+        snapshot = mod.preflight_binding(self.master, self.weight_sha, source_root=self.src)
+        original_sha = mod._sha256_file(candidate)
+        candidate.write_text('modified candidate\n')
+        with self.assertRaisesRegex(ValueError, 'candidate source changed'):
+            mod.verify_postflight_binding(self.master, snapshot, original_sha,
+                                          source_root=self.src, script_path=candidate)
+
+    def test_postflight_symlink_retarget_refused(self):
+        candidate = self.src / 'candidate.py'
+        candidate.write_text('fixed candidate\n')
+        snapshot = mod.preflight_binding(self.master, self.weight_sha, source_root=self.src)
+        original = self.master / 'config.json'
+        alternate = self.src / 'other_config.json'
+        alternate.write_text('{"other": true}')
+        original.unlink()
+        original.symlink_to(alternate)
+        with self.assertRaisesRegex(ValueError, 'snapshot or fixture changed'):
+            mod.verify_postflight_binding(self.master, snapshot, mod._sha256_file(candidate),
+                                          source_root=self.src, script_path=candidate)
+
     def test_wrong_master_rejected(self):
         with self.assertRaisesRegex(ValueError, 'preregistered'):
             mod.preflight_binding(self.master, '0' * 64, source_root=self.src)
