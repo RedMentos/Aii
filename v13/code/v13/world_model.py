@@ -100,26 +100,52 @@ def coverage(st,s,a):
     return {'samples':n,'ood_distance':round(ood,4),'in_support':ood<=OOD_SUPPORT}
 
 def counterfactual(store,s,a,st=None):
-    """Predicted consequence of action a in state s, with coverage, model disagreement and a confidence label."""
+    """Predicted consequence of action a, never a real outcome or authority."""
     st=st or load(store)
     if a not in ACTIONS:raise ValueError('Aktion '+'|'.join(ACTIONS))
-    if not st or st.get('status')!='FITTED':
-        return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_WORLD_MODEL','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
-    x=np.array([1.]+list(s)+onehot(a));preds=np.array([x@np.array(W) for W in st['forward']])
-    mean=preds.mean(0);spread=float(preds.std(0).mean());cov=coverage(st,s,a)
-    ood=cov['ood_distance'] if cov['ood_distance'] is not None else 1e9
-    conf=(1-math.exp(-cov['samples']/COVER_N))*math.exp(-max(0.,ood-OOD_SUPPORT))/(1+spread/SPREAD_REF)
+    def uncertain(reason):
+        return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN',
+                'reason':reason,'cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
+    if not isinstance(st,dict) or st.get('status')!='FITTED':return uncertain('NO_WORLD_MODEL')
+    try:
+        x=np.asarray([1.]+list(s)+onehot(a),dtype=float)
+        if x.shape!=(9,) or not np.isfinite(x).all():return uncertain('INVALID_STATE')
+        W=np.asarray(st['forward'],dtype=float)
+        if W.shape!=(5,9,3) or not np.isfinite(W).all():return uncertain('INVALID_MODEL_STATE')
+        preds=np.array([x@w for w in W]);mean=preds.mean(0);spread=float(preds.std(0).mean())
+        cov=coverage(st,s,a)
+        ood=cov['ood_distance'] if cov['ood_distance'] is not None else 1e9
+        if not np.isfinite(mean).all() or not math.isfinite(spread) or not math.isfinite(ood):
+            return uncertain('NONFINITE_PREDICTION')
+        if mean[0]<0 or not 0<=mean[1]<=1 or mean[2]<0:
+            return uncertain('IMPOSSIBLE_PREDICTED_OUTCOME')
+        conf=(1-math.exp(-cov['samples']/COVER_N))*math.exp(-max(0.,ood-OOD_SUPPORT))/(1+spread/SPREAD_REF)
+        duration=math.expm1(float(mean[0]))
+        if not math.isfinite(conf) or not math.isfinite(duration):return uncertain('NONFINITE_PREDICTION')
+    except (ValueError,TypeError,KeyError,OverflowError,AttributeError,IndexError):
+        return uncertain('INVALID_MODEL_STATE')
     conf=round(max(0.,min(1.,conf)),4)
-    return {'action':a,'prediction':dict(zip(TARGETS,np.round(mean,4).tolist()))|{'duration_s':round(math.expm1(float(mean[0])),3)},
+    return {'action':a,'prediction':dict(zip(TARGETS,np.round(mean,4).tolist()))|{'duration_s':round(duration,3)},
             'coverage':cov,'model_spread':round(spread,4),'confidence':conf,'cause':'SELF_CAUSED','authority':'HYPOTHESIS',
             'label':'SIMULATION_SUPPORTED' if conf>=CF_MIN and cov['in_support'] else 'SIMULATION_UNCERTAIN'}
 
 def for_event(store,event_id,a):
-    """Counterfactual for a stored event's own state under another action (used by Sleep B route alternatives)."""
+    """Counterfactual for a stored event's own verified state."""
     row=store.one("SELECT expected,created FROM actions WHERE event_id=? AND expected LIKE ? ORDER BY created DESC LIMIT 1",(event_id,'%"forecast"%'))
     if not row:return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
-    fc=json.loads(row['expected']).get('forecast') or {}
-    return counterfactual(store,state_vec(fc.get('input_chars',0),fc.get('resource_state','NORMAL'),(row['created']%86400)/3600),a)
+    try:
+        fc=json.loads(row['expected'])['forecast']
+        chars=fc['input_chars'];created=row['created']
+        if (type(fc) is not dict or type(chars) not in (int,float) or not math.isfinite(chars) or chars<0 or
+                type(created) not in (int,float) or not math.isfinite(created) or created<0 or
+                fc.get('resource_state','NORMAL') not in PRESSURE):
+            raise ValueError('invalid observed state')
+        state=state_vec(chars,fc.get('resource_state','NORMAL'),(created%86400)/3600)
+        if not all(math.isfinite(v) for v in state):raise ValueError('nonfinite state')
+    except (ValueError,TypeError,KeyError,OverflowError,AttributeError):
+        return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN',
+                'reason':'INVALID_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
+    return counterfactual(store,state,a)
 
 def report(store):
     st=load(store)
