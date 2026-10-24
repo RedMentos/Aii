@@ -1,0 +1,8 @@
+old_policy_rejected_nan= False
+old_sum= nan
+downstream_sample_exception= ValueError
+Traceback (most recent call last):
+  File "/mnt/data/v13_run63/evidence/original-red.py", line 11, in <module>
+    assert old_reject, 'RED: old policy accepted NaN and deferred failure to sampling'
+           ^^^^^^^^^^
+AssertionError: RED: old policy accepted NaN and deferred failure to sampling
