@@ -1,0 +1,12 @@
+{
+  "schema": "V13_RUN56_ISOLATED_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "owner": "shadow-commit-run56/* only",
+  "base": "4303ab074cb1ec2d2a8bffea7f1194e058f96dca",
+  "prereg_commit": "e91eee2c26377f3254397c410d6bac218f5d2bcc",
+  "status": "ISOLATED_SHADOW_RECEIPT_CANDIDATE_NOT_PRODUCTION",
+  "tests": {"initial": "15/15 PASS", "adversarial_red": "1/1 FAIL_OPEN_REPRODUCED", "final": "16/16 PASS", "optimized": "16/16 PASS", "concurrency_and_crash_repeats": "8x3 PASS", "compileall": "PASS", "evidence_class": "LINUX_SYNTHETIC_SQLITE_SUBPROCESS", "real_store": "NOT_RUN", "native_body": "NOT_RUN", "redmi": "NOT_RUN", "full_repo": "NOT_RUN", "official_privacy_scan": "NOT_RUN"},
+  "gates": {"STEP2": "UTILITY_FAIL", "B3_L1": "FAIL", "Body_JEPA": "UNAVAILABLE", "jepa_weight": 0, "full_V13": "INCOMPLETE"},
+  "limitations": ["No production Store schema migration", "No actual optimizer integration", "DB hash not an authenticated external anchor", "Consumer-time source race after verify", "No real training utility or retention proof"],
+  "next": "Full PR89 checkout: independently review and test actual Store/Runtime schema and revocation; official privacy scan and full suite; connect SHADOW replay only after validation"
+}
