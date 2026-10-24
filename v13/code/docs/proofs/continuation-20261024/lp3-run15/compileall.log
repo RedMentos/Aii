@@ -1,0 +1,1 @@
+python -m compileall -q scripts/lp3_native_readiness.py tests/test_lp3_readiness_review_run15.py: PASS

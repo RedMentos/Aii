@@ -1,0 +1,71 @@
+test_edited_candidate_constants_never_override_independent_registration (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_edited_candidate_constants_never_override_independent_registration) ... FAIL
+test_empty_asset_list_cannot_claim_native_readiness (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_empty_asset_list_cannot_claim_native_readiness) ... FAIL
+test_exact_git_blob_identity_and_positive_synthetic_control (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_exact_git_blob_identity_and_positive_synthetic_control) ... ERROR
+test_original_pr50_candidate_matches_independent_git_blob (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_original_pr50_candidate_matches_independent_git_blob) ... ERROR
+test_replaced_fixture_bytes_cannot_claim_registered_readiness (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_replaced_fixture_bytes_cannot_claim_registered_readiness) ... FAIL
+
+======================================================================
+ERROR: test_exact_git_blob_identity_and_positive_synthetic_control (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_exact_git_blob_identity_and_positive_synthetic_control)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run15_work/v13/code/tests/test_lp3_readiness_review_run15.py", line 78, in test_exact_git_blob_identity_and_positive_synthetic_control
+    with patch.object(mod, 'REGISTERED_MASTER_SHA256', digest), \
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/unittest/mock.py", line 1497, in __enter__
+    original, local = self.get_original()
+                      ~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.13/unittest/mock.py", line 1467, in get_original
+    raise AttributeError(
+        "%s does not have the attribute %r" % (target, name)
+    )
+AttributeError: <module 'lp3_readiness_run15' from '/mnt/data/v13_run15_work/v13/code/scripts/lp3_native_readiness.py'> does not have the attribute 'REGISTERED_MASTER_SHA256'
+
+======================================================================
+ERROR: test_original_pr50_candidate_matches_independent_git_blob (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_original_pr50_candidate_matches_independent_git_blob)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run15_work/v13/code/tests/test_lp3_readiness_review_run15.py", line 94, in test_original_pr50_candidate_matches_independent_git_blob
+    self.assertEqual(mod.git_blob_sha1(source), mod.REGISTERED_SOURCE_GIT_BLOBS[source.name])
+                     ^^^^^^^^^^^^^^^^^
+AttributeError: module 'lp3_readiness_run15' has no attribute 'git_blob_sha1'
+
+======================================================================
+FAIL: test_edited_candidate_constants_never_override_independent_registration (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_edited_candidate_constants_never_override_independent_registration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run15_work/v13/code/tests/test_lp3_readiness_review_run15.py", line 64, in test_edited_candidate_constants_never_override_independent_registration
+    self.assertEqual(report['status'], 'BLOCKED')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'LOCAL_ASSETS_READY_OWNER_UNVERIFIED' != 'BLOCKED'
+- LOCAL_ASSETS_READY_OWNER_UNVERIFIED
++ BLOCKED
+
+
+======================================================================
+FAIL: test_empty_asset_list_cannot_claim_native_readiness (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_empty_asset_list_cannot_claim_native_readiness)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run15_work/v13/code/tests/test_lp3_readiness_review_run15.py", line 42, in test_empty_asset_list_cannot_claim_native_readiness
+    self.assertEqual(report['status'], 'BLOCKED')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'LOCAL_ASSETS_READY_OWNER_UNVERIFIED' != 'BLOCKED'
+- LOCAL_ASSETS_READY_OWNER_UNVERIFIED
++ BLOCKED
+
+
+======================================================================
+FAIL: test_replaced_fixture_bytes_cannot_claim_registered_readiness (test_lp3_readiness_review_run15.TestRegisteredReadiness.test_replaced_fixture_bytes_cannot_claim_registered_readiness)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run15_work/v13/code/tests/test_lp3_readiness_review_run15.py", line 53, in test_replaced_fixture_bytes_cannot_claim_registered_readiness
+    self.assertEqual(report['status'], 'BLOCKED')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'LOCAL_ASSETS_READY_OWNER_UNVERIFIED' != 'BLOCKED'
+- LOCAL_ASSETS_READY_OWNER_UNVERIFIED
++ BLOCKED
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.010s
+
+FAILED (failures=3, errors=2)

@@ -1,0 +1,25 @@
+{
+  "schema": "V13_BUILD_STATE_DELTA_RUN15_V1",
+  "base_remote_commit": "0b4652359094b3497306f36fbe663f30858e338b",
+  "base_branch": "codex/lp3-typed-native-readiness-20261024",
+  "scope": "LP3_INDEPENDENT_REGISTERED_SOURCE_READINESS_HARDENING",
+  "source_authority": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+  "implemented": [
+    "Native readiness pins seven asset names, weight SHA256, revision and three exact Git source blobs independently of candidate input",
+    "Native readiness rejects source/fixture drift before claiming local assets ready, while preserving HF cache symlinks"
+  ],
+  "software_tests": {"previous_pass": 84, "focused_pass": 89, "failures": 0, "errors": 0, "compileall": "PASS", "new_tests": 5},
+  "failed_attempts_preserved": ["lp3-run15/adversarial_red.log: 3 false readiness claims plus 2 absent guards"],
+  "native_lp3": "NOT_RUN_PINNED_ASSETS_FIXTURES_TRANSFORMERS_ABSENT_CURRENT_HOST",
+  "full_repo_suite": "NOT_RUN_NO_FULL_CHECKOUT_GIT_DNS",
+  "official_privacy_scan_full_branch": "NOT_RUN_NO_FULL_CHECKOUT_GIT_DNS",
+  "redmi": "NOT_RUN",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "user_decision_required": false,
+  "next": "Independent full-checkout cross-review/full suite/real branch privacy scan; pinned master + source assets + global owner; serial registered LP3 four seeds; independently anchored receipt; separate equal-budget generated-answer ablation."
+}

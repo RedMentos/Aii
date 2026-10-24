@@ -1,0 +1,9 @@
+{
+  "schema": "V13_COMPLETION_LEDGER_DELTA_RUN15_V1",
+  "base_remote_commit": "0b4652359094b3497306f36fbe663f30858e338b",
+  "completed_software_only": ["LP3 native readiness independently binds registered candidate and transitive fixtures"],
+  "open": ["LP3 native four-seed experiment", "Full repo tests/real branch privacy scan", "Independent generated-answer ablation", "Original STEP2/B3/Body-JEPA/Redmi/full V13 acceptance"],
+  "authority": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false
+}
