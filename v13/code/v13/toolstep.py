@@ -211,46 +211,7 @@ class ToolStep:
                     denied_after=re.search(
                         r'^\s*(?:(?:is|was|would be|seems)\s+)?(?:wrong|incorrect|false|invalid|not\s+(?:correct|right|the\s+(?:correct\s+)?answer))\b',
                         after,re.I)
-                    ambiguous=(re.search(r'\b(?:either|or)\s*
-        for attempt in (0,1):  # telemetry whitelists fields, so the agreement count lives in a state (ids/numbers only)
-            st,v=self.r.store.state(KEY);st=st or {'compared':0,'agree':0,'tools':{}}
-            st['compared']+=1;st['agree']+=int(agree);t=st['tools'].setdefault(shadow['tool'],[0,0]);t[0]+=1;t[1]+=int(agree)
-            try:self.r.store.set_state(KEY,st,expected=v);break
-            except ValueError:
-                if attempt:raise
-        self.r.store.log('tool_shadow_outcome',e['event_id'],{})
-        return agree
-    def lead(self,result):
-        """cfg tool_answer_first: the executed eligibility decision opens the visible answer as a fixed sentence (the body
-        only explains it), so a 350M body that ignores the TOOL_RESULT layer can no longer replace the decision."""
-        if not self.r.cfg.get('tool_answer_first') or not result or result.get('tool')!='eligibility' or not isinstance(result.get('result'),dict):return None
-        from .agi import eligibility
-        return eligibility.answer_sentence(result['args'],result['result'])
-    def lead_final(self,result):
-        """UNKNOWN/NONE: the fixed text is the whole answer (no body continuation that could still pick an option)."""
-        if not self.lead(result) or result['result'].get('action') not in ('UNKNOWN','NONE'):return None
-        from .agi import eligibility
-        return eligibility.final_text(result['args'],result['result'])
-    def layer(self,result):
-        """Volatile context layer for the answering body: grounded tool output with its transaction id."""
-        args=result['args']
-        if result['tool']=='list_arith':  # R4 part 6 dev seed 7: as raw JSON args C3 350M ignored the value in 7/15 sums
-            from .agi import listarith
-            return {'tool':'list_arith','exact_result':result['result'],'recipe':f"{listarith.label(args)} = {result['result']}",
-                    'note':LIST_NOTE,'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
-        if result['tool']=='eligibility':  # Thread Q: readable decision line, like list_arith (raw JSON gets ignored by C3 350M)
-            from .agi import eligibility
-            return {'tool':'eligibility','answer':eligibility.answer_sentence(args,result['result']),'details':eligibility.decision_line(result['result']),'rejected_values':result['result'].get('rejected',[]),
-                    'note':eligibility.FIRST_NOTE if self.lead(result) else eligibility.LIVE_NOTE,'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
-        return {'tool':result['tool'],'input':args,'output':result['result'],'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
-
-def report(store,limit=200):
-    st=store.state(KEY)[0] or {'compared':0,'agree':0,'tools':{}}
-    act=store.rows("SELECT id FROM telemetry WHERE kind='tool_step' ORDER BY id DESC LIMIT ?",(limit,))
-    return {'proposer':PROPOSER,'shadow_compared':st['compared'],'shadow_agreement':round(st['agree']/st['compared'],4) if st['compared'] else None,
-            'per_tool':st['tools'],'recent_active_calls':len(act),
-            'claim_limit':'Shadow agreement is evidence for the Age-1 tool right, not a permission; tools run only when the user enabled them and the Age right allows it'}
-,before,re.I) or
+                    ambiguous=(re.search(r'\b(?:either|or)\s*$',before,re.I) or
                                re.search(r'^\s*(?:or|/)\s*(?=[-+]?\d)',after,re.I))
                     if not (denied_before or denied_after or ambiguous):
                         agree=True;break
