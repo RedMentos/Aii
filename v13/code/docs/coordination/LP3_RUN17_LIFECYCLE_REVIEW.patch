@@ -1,0 +1,170 @@
+--- a/v13/code/scripts/lp3_serial_cohort.py
++++ b/v13/code/scripts/lp3_serial_cohort.py
+@@ -34,6 +34,15 @@
+     return hashlib.sha256(data).hexdigest()
+ 
+ 
++def sha256_file(path, chunk_size=1024 * 1024):
++    """Bounded-memory digest for potentially large native stdout/stderr logs."""
++    h = hashlib.sha256()
++    with Path(path).open('rb') as stream:
++        for chunk in iter(lambda: stream.read(chunk_size), b''):
++            h.update(chunk)
++    return h.hexdigest()
++
++
+ def _distinct_paths(out, evidence_dir, lock_path, master):
+     """Reject nested outputs, symlinked targets and existing attempt data."""
+     out, evidence_dir, lock_path, master = map(Path, (out, evidence_dir, lock_path, master))
+@@ -106,7 +115,33 @@
+                     os.killpg(proc.pid, signal.SIGKILL)
+                 except ProcessLookupError:
+                     pass
+-            return proc.wait(), True
++            # SIGKILL does not guarantee an immediate reap (e.g. D-state).
++            # Never wait without a bound while holding the shared launch lock.
++            return proc.wait(timeout=grace), True
++
++
++def _reap_interrupted_owned_child(proc, grace=5):
++    """Stop/reap our own still-running child before the advisory lock is released.
++
++    The group was created by Popen(start_new_session=True); this function must
++    never be used for a PID that did not come from this launch. A bounded wait
++    prevents an interrupted wrapper from waiting forever after SIGKILL.
++    """
++    if proc.poll() is not None:
++        return proc.returncode
++    try:
++        os.killpg(proc.pid, signal.SIGTERM)
++    except ProcessLookupError:
++        pass
++    try:
++        return proc.wait(timeout=grace)
++    except subprocess.TimeoutExpired:
++        if proc.poll() is None:
++            try:
++                os.killpg(proc.pid, signal.SIGKILL)
++            except ProcessLookupError:
++                pass
++        return proc.wait(timeout=grace)
+ 
+ 
+ def check(master, candidate, fixture_root=None):
+@@ -160,10 +195,21 @@
+                                         start_new_session=True, close_fds=True)
+                 record['native_process_launched'] = True
+                 record['native_execution_verified'] = False  # audit cannot prove inference
+-                rc, timed_out = _wait_owned_child(proc, timeout)
+-                log.flush(); os.fsync(log.fileno())
++                try:
++                    rc, timed_out = _wait_owned_child(proc, timeout)
++                except BaseException:
++                    # KeyboardInterrupt, signal interruption, or unexpected wait
++                    # errors must not release flock while our child still runs.
++                    record['owned_child_cleanup_attempted'] = True
++                    try:
++                        record['owned_child_cleanup_returncode'] = _reap_interrupted_owned_child(proc)
++                    except BaseException as cleanup_exc:
++                        record['owned_child_cleanup_error_type'] = type(cleanup_exc).__name__
++                    raise
++                finally:
++                    log.flush(); os.fsync(log.fileno())
+             record.update({'native_returncode': rc, 'timed_out': timed_out,
+-                           'native_log_sha256': sha256_bytes((evidence_dir / 'native.stdout-stderr.log').read_bytes())})
++                           'native_log_sha256': sha256_file(evidence_dir / 'native.stdout-stderr.log')})
+             if rc != 0 or timed_out:
+                 record['status'] = 'NATIVE_ATTEMPT_FAILED_PRESERVED'
+             else:
+@@ -184,6 +230,9 @@
+         except BaseException as exc:
+             record.update({'status': 'WRAPPER_OR_AUDIT_FAILED_PRESERVED',
+                            'error_type': type(exc).__name__})
++            log_path = evidence_dir / 'native.stdout-stderr.log'
++            if log_path.is_file():
++                record['native_log_sha256'] = sha256_file(log_path)
+             raise
+         finally:
+             record['ended_utc'] = utc()
+--- a/v13/code/tests/test_lp3_serial_cohort.py
++++ b/v13/code/tests/test_lp3_serial_cohort.py
+@@ -157,6 +157,77 @@
+         self.assertFalse(self.evidence.exists())
+ 
+ 
+-if __name__ == '__main__':
+-    unittest.main()
++# Run17 independent adversarial review: interrupted wait must not leave a native child alive.
++class SerialCohortInterruptionTests(unittest.TestCase):
++    setUp = SerialCohortTests.setUp
++    call = SerialCohortTests.call
++    def test_interrupted_wait_reaps_owned_child_before_unlock(self):
++        import signal
++        self.candidate.write_text('import time\ntime.sleep(30)\n')
++        original_popen = mod.subprocess.Popen
++        children = []
++        def capture(*args, **kwargs):
++            proc = original_popen(*args, **kwargs)
++            children.append(proc)
++            return proc
++        try:
++            with patch.object(mod, 'check', return_value=self.ready), \
++                 patch.object(mod.subprocess, 'Popen', side_effect=capture), \
++                 patch.object(mod, '_wait_owned_child', side_effect=KeyboardInterrupt):
++                with self.assertRaises(KeyboardInterrupt):
++                    self.call()
++            self.assertEqual(len(children), 1)
++            self.assertIsNotNone(children[0].poll(), 'interrupted launch leaked an owned native child')
++            status = json.loads((self.evidence / 'launch_status.json').read_text())
++            self.assertEqual(status['status'], 'WRAPPER_OR_AUDIT_FAILED_PRESERVED')
++            self.assertTrue(status['owned_child_cleanup_attempted'])
++            self.assertIn('native_log_sha256', status)
++        finally:
++            for proc in children:
++                if proc.poll() is None:
++                    os.killpg(proc.pid, signal.SIGKILL)
++                    proc.wait(timeout=5)
++
++class SerialCohortBoundedWaitTests(unittest.TestCase):
++    def test_timeout_escalation_keeps_final_wait_bounded(self):
++        from subprocess import TimeoutExpired
++        class FakeProc:
++            pid = 912345
++            def __init__(self):
++                self.timeouts = []
++            def poll(self):
++                return None
++            def wait(self, timeout=None):
++                self.timeouts.append(timeout)
++                if len(self.timeouts) < 3:
++                    raise TimeoutExpired('synthetic', timeout)
++                return -9
++        proc = FakeProc()
++        with patch.object(mod.os, 'killpg') as killpg:
++            rc, timed_out = mod._wait_owned_child(proc, timeout=1, grace=0.5)
++        self.assertEqual((rc, timed_out), (-9, True))
++        self.assertEqual(proc.timeouts, [1, 0.5, 0.5])
++        self.assertEqual(killpg.call_count, 2)
++
++class SerialCohortStreamingHashTests(unittest.TestCase):
++    setUp = SerialCohortTests.setUp
++    call = SerialCohortTests.call
++
++    def test_native_log_digest_does_not_load_entire_log_into_memory(self):
++        import hashlib
++        self.candidate.write_text('import sys\nsys.stdout.write("L" * 131072)\n')
++        original = Path.read_bytes
++        def forbid_log_read_bytes(path):
++            if path.name == 'native.stdout-stderr.log':
++                raise AssertionError('unbounded native log read_bytes')
++            return original(path)
++        with patch.object(mod, 'check', return_value=self.ready), \
++             patch.object(mod, 'audit', return_value=self.good_audit), \
++             patch.object(mod, 'receipt_for', return_value={'schema': 'synthetic'}), \
++             patch.object(Path, 'read_bytes', forbid_log_read_bytes):
++            result = self.call()
++        self.assertEqual(result['native_log_sha256'], hashlib.sha256(b'L' * 131072).hexdigest())
++
++
++if __name__ == '__main__':
++    unittest.main()
