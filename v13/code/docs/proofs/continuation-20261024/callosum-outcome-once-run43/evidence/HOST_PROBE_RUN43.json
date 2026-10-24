@@ -1,0 +1,30 @@
+{
+  "date_utc": "2026-10-24T18:06:04.991234+00:00",
+  "platform": "Linux",
+  "python": "3.13.5",
+  "memory_cgroup_limit_bytes": "4294967296",
+  "cgroup_v2_mount_options": [
+    "ro",
+    "nosuid",
+    "nodev",
+    "noexec",
+    "relatime",
+    "nsdelegate"
+  ],
+  "torch_available": true,
+  "transformers_available": false,
+  "git_remote_dns": false,
+  "git_remote_error": "Could not resolve host: github.com",
+  "available_repo_checkout": false,
+  "cgroup_delegated_writable": false,
+  "native_model_run": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "global_process_owner": "UNCONFIRMED",
+  "model_search_scopes": [
+    "/mnt/data",
+    "/home/oai/share",
+    "/home/oai/.cache/huggingface"
+  ],
+  "model_candidates_found_in_scopes": 0,
+  "registered_model_presence_global": "UNVERIFIED"
+}
