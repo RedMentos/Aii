@@ -16,7 +16,7 @@ class Store:
         x=self.db.execute(q,args).fetchone()
         return dict(x) if x else None
     def action(self,id,when,event='e1'):
-        self.db.execute('INSERT INTO actions VALUES (?,?,?,?,?,?)',(id,event,'FINAL',json.dumps({'forecast':{'input_chars':50}}),json.dumps({'action_duration_s':2,'characters':5}),when))
+        self.db.execute('INSERT INTO actions VALUES (?,?,?,?,?,?)',(id,event,'FINAL',json.dumps({'forecast':{'input_chars':50,'profile':{'role':'C3_LANGUAGE'}}}),json.dumps({'action_duration_s':2,'characters':5,'role':'C3_LANGUAGE'}),when))
     def selection(self,route,when,event='e1'):
         self.db.execute('INSERT INTO packets VALUES (?,?,?,?)',('ActionSelection',event,json.dumps({'route_hint':route}),when))
     def close(self):self.db.close()
