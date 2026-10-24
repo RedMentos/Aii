@@ -1,0 +1,36 @@
+# Run98 preregistered RED — bounded exact CI lines
+
+Actions run 40137753355/job 121002786853, test-only commit 10fb81a999fdee4357b7df37f06ee1b00a7a5dad. Six adversarial Callosum lineage cases RED (5 FAIL, 1 ERROR), valid message once-control PASS. **Separate inherited B3 degrade test also FAIL in this CI run**, independently PASS when isolated and in composed local suite; must not conceal, investigate as possible flaky resource mode. Full raw CI log retained.
+
+2026-10-24T22:15:35.9902923Z test_deleted_message_source_blocks_utility_credit (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_deleted_message_source_blocks_utility_credit) ... FAIL
+2026-10-24T22:15:36.0028157Z test_foreign_event_message_never_credits_receiver_offer (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_foreign_event_message_never_credits_receiver_offer) ... FAIL
+2026-10-24T22:15:36.0154257Z test_malformed_message_json_is_ignored_not_exception (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_malformed_message_json_is_ignored_not_exception) ... ERROR
+2026-10-24T22:15:36.0270563Z test_missing_message_packet_never_credits_receiver_offer (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_missing_message_packet_never_credits_receiver_offer) ... FAIL
+2026-10-24T22:15:36.0406293Z test_valid_message_credits_once_and_replay_is_idempotent (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_valid_message_credits_once_and_replay_is_idempotent) ... ok
+2026-10-24T22:15:36.0508959Z test_wrong_packet_kind_never_counts_as_callosum_message (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_wrong_packet_kind_never_counts_as_callosum_message) ... FAIL
+2026-10-24T22:15:36.0626179Z test_wrong_sender_receiver_message_does_not_get_credit (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_wrong_sender_receiver_message_does_not_get_credit) ... FAIL
+2026-10-24T22:15:36.1502763Z test_promotion_needs_human_and_evidence_then_resource_mode_demotes (tests.test_b3degrade.Live.test_promotion_needs_human_and_evidence_then_resource_mode_demotes) ... FAIL
+2026-10-24T22:15:36.2586077Z ERROR: test_malformed_message_json_is_ignored_not_exception (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_malformed_message_json_is_ignored_not_exception)
+2026-10-24T22:15:36.2591731Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_callosum_message_lineage_run98.py", line 82, in test_malformed_message_json_is_ignored_not_exception
+2026-10-24T22:15:36.2600047Z json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-10-24T22:15:36.2601443Z FAIL: test_deleted_message_source_blocks_utility_credit (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_deleted_message_source_blocks_utility_credit)
+2026-10-24T22:15:36.2603509Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_callosum_message_lineage_run98.py", line 92, in test_deleted_message_source_blocks_utility_credit
+2026-10-24T22:15:36.2606283Z AssertionError: 1 != 0
+2026-10-24T22:15:36.2607629Z FAIL: test_foreign_event_message_never_credits_receiver_offer (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_foreign_event_message_never_credits_receiver_offer)
+2026-10-24T22:15:36.2609731Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_callosum_message_lineage_run98.py", line 58, in test_foreign_event_message_never_credits_receiver_offer
+2026-10-24T22:15:36.2612742Z AssertionError: 1 != 0
+2026-10-24T22:15:36.2614002Z FAIL: test_missing_message_packet_never_credits_receiver_offer (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_missing_message_packet_never_credits_receiver_offer)
+2026-10-24T22:15:36.2616128Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_callosum_message_lineage_run98.py", line 50, in test_missing_message_packet_never_credits_receiver_offer
+2026-10-24T22:15:36.2619184Z AssertionError: 1 != 0
+2026-10-24T22:15:36.2620396Z FAIL: test_wrong_packet_kind_never_counts_as_callosum_message (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_wrong_packet_kind_never_counts_as_callosum_message)
+2026-10-24T22:15:36.2622597Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_callosum_message_lineage_run98.py", line 65, in test_wrong_packet_kind_never_counts_as_callosum_message
+2026-10-24T22:15:36.2625532Z AssertionError: 1 != 0
+2026-10-24T22:15:36.2626883Z FAIL: test_wrong_sender_receiver_message_does_not_get_credit (tests.test_callosum_message_lineage_run98.CallosumMessageLineageRun98.test_wrong_sender_receiver_message_does_not_get_credit)
+2026-10-24T22:15:36.2629114Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_callosum_message_lineage_run98.py", line 72, in test_wrong_sender_receiver_message_does_not_get_credit
+2026-10-24T22:15:36.2632074Z AssertionError: 1 != 0
+2026-10-24T22:15:36.2633155Z FAIL: test_promotion_needs_human_and_evidence_then_resource_mode_demotes (tests.test_b3degrade.Live.test_promotion_needs_human_and_evidence_then_resource_mode_demotes)
+2026-10-24T22:15:36.2635157Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_b3degrade.py", line 82, in test_promotion_needs_human_and_evidence_then_resource_mode_demotes
+2026-10-24T22:15:36.2637502Z AssertionError: 'L1' != 'EXACT_SYMBOLIC'
+2026-10-24T22:15:36.2638782Z Ran 36 tests in 0.313s
+2026-10-24T22:15:36.2639062Z FAILED (failures=6, errors=1)
+2026-10-24T22:15:36.2884486Z ##[error]Process completed with exit code 1.

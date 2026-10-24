@@ -1,0 +1,3 @@
+# Run98 intermediate regression evidence
+
+Candidate commit bb5ec65f5eedd1cb082882a58ac73055fdbd977c, Actions run 40137855991/job 121003095968: 7/7 new preregistered B3 lineage cases PASS; historical Run66 synthetic CAS test ERROR because its four-column fake SQLite store had no events table or generation/source fields. No production fallback was added. Instead, historical test kept its idempotence assertions and fixture was upgraded to source-bound schema in commit 9c4a1cf2b898e0d6160deb140bbcd631339c39a9. Initial RED run 40137753355 additionally showed one intermittent inherited b3degrade resource-mode failure; separate local isolated/composed runs PASS, and final CI PASS. Full raw logs retained in Actions; no failure erased.

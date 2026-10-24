@@ -116,20 +116,59 @@ class Callosum:
         q['n']+=1;q['v']+=(sc*RATE if q['n']>1 else 1.)*(util-q['v']);q['hist']=(q['hist']+[round(util,3)])[-WINDOW:]
         for k,v in (comp or {}).items():q['parts'][k]=round(q['parts'].get(k,v)+sc*RATE*(v-q['parts'].get(k,v)),4)
     def outcome(self,event_id,coalition_ids,status):
-        """Score every message of a finished turn by what the receiver's next offer did."""
+        """Score only a source-valid MessagePacket and its subsequent receiver offer."""
         st,_=self._load();msgs=[m for m in (st['pending'].get(event_id) or []) if not m.get('scored')]
         if not msgs:return {'scored':0}
-        scored=[]
+        ev=self.s.one('SELECT generation_id FROM events WHERE id=?',(event_id,))
+        if not ev:return {'scored':0}
+        generation=ev['generation_id'];scored=[]
         for m in msgs:
-            row=self.s.one("SELECT rowid FROM packets WHERE id=?",(m['msg'],))
-            off=self.s.one("SELECT payload FROM packets WHERE kind='OfferPacket' AND event_id=? AND rowid>? AND json_extract(payload,'$.role')=? ORDER BY rowid LIMIT 1",(event_id,row['rowid'] if row else 0,m['receiver']))
-            if not off:continue
-            p=json.loads(off['payload']);dur=(p.get('native_metrics') or {}).get('duration_s') or 0.
-            msg=self.s.one("SELECT payload FROM packets WHERE id=?",(m['msg'],));nbytes=json.loads(msg['payload']).get('bytes',0) if msg else 0
-            comp={'task_gain':1. if p['packet_id'] in coalition_ids else 0.,'uncertainty_reduction':0. if p['offer'].get('needs_reentry') else .5,
-                  'source_recovery_gain':.25 if p['evidence_refs'] else 0.,'latency_cost':min(1.,dur/LAT_S)*.25,'memory_cost':min(1.,nbytes/BYTES)*.25}
-            util=comp['task_gain']+comp['uncertainty_reduction']+comp['source_recovery_gain']-comp['latency_cost']-comp['memory_cost']-(0. if status=='FINAL' else .5)
-            scored.append((m,util,comp))
+            pair=next((p for p,name in DIRECTIONS.items() if name==m.get('direction')),None)
+            if not pair or m.get('receiver')!=pair[1]:continue
+            msg=self.s.one("SELECT rowid,kind,event_id,generation_id,payload FROM packets WHERE id=?",(m.get('msg'),))
+            if not msg or msg['kind']!='MessagePacket' or msg['event_id']!=event_id or msg['generation_id']!=generation:
+                continue  # never fall back to rowid=0 for a missing message
+            try:
+                mp=json.loads(msg['payload'])
+                refs=mp['source_refs']
+                if (mp['packet_id']!=m['msg'] or mp['event_id']!=event_id or
+                    mp['brain_generation_id']!=generation or mp['sender']!=pair[0] or
+                    mp['receiver']!=pair[1] or mp['channel']!=m['channel'] or
+                    not isinstance(refs,list) or refs!=mp['provenance']):
+                    continue
+                for ref in refs:self.s.read_source(ref)  # deleted/digest/span must fail closed
+            except (ValueError,TypeError,KeyError,AttributeError,OSError,UnicodeError):
+                continue
+            # SQLite json_extract over malformed payloads would abort the whole
+            # cycle; inspect the first subsequent receiver offer in Python.
+            offers=self.s.rows("SELECT id,generation_id,payload FROM packets WHERE kind='OfferPacket' AND event_id=? AND rowid>? ORDER BY rowid",
+                               (event_id,msg['rowid']))
+            for row in offers:
+                try:
+                    p=json.loads(row['payload'])
+                    if p.get('role')!=pair[1]:continue
+                    if (p['packet_id']!=row['id'] or p['event_id']!=event_id or
+                        p['brain_generation_id']!=generation or row['generation_id']!=generation):
+                        break
+                    evidence=p['evidence_refs'];provenance=p['provenance']
+                    if not isinstance(evidence,list) or not isinstance(provenance,list):break
+                    for ref in evidence+provenance:self.s.read_source(ref)
+                    dur=(p.get('native_metrics') or {}).get('duration_s') or 0.
+                    nbytes=mp.get('bytes',0)
+                    if (isinstance(dur,bool) or not isinstance(dur,(int,float)) or
+                        not math.isfinite(dur) or dur<0 or isinstance(nbytes,bool) or
+                        not isinstance(nbytes,(int,float)) or not math.isfinite(nbytes) or nbytes<0):
+                        break
+                    comp={'task_gain':1. if p['packet_id'] in coalition_ids else 0.,
+                          'uncertainty_reduction':0. if p['offer'].get('needs_reentry') else .5,
+                          'source_recovery_gain':.25 if evidence else 0.,
+                          'latency_cost':min(1.,dur/LAT_S)*.25,
+                          'memory_cost':min(1.,nbytes/BYTES)*.25}
+                    util=comp['task_gain']+comp['uncertainty_reduction']+comp['source_recovery_gain']-comp['latency_cost']-comp['memory_cost']-(0. if status=='FINAL' else .5)
+                    scored.append((m,util,comp))
+                    break
+                except (ValueError,TypeError,KeyError,AttributeError,OSError,UnicodeError):
+                    break  # first matching receiver offer is corrupt: no later substitution
         sc=step(self.n,PATH)  # WP-U6 §12.7
         from .callosum_outcome_once import apply_once
         def fn(st):
