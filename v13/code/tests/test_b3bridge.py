@@ -28,6 +28,21 @@ class MathTests(unittest.TestCase):
             for i in range(min(4,flat.size)):
                 old=flat[i];flat[i]=old+1e-5;lp=b.loss_and_grads(H,mask,Xr,y,**kw)[0];flat[i]=old-1e-5;lm=b.loss_and_grads(H,mask,Xr,y,**kw)[0];flat[i]=old
                 self.assertAlmostEqual(gr[k].reshape(-1)[i],(lp-lm)/2e-5,places=4,msg=k)
+    def test_aux_gradients_and_receive_unchanged(self):
+        H,mask,Xr,y=toy(n=10,T=5,d=6);g=np.random.default_rng(3);A=g.normal(size=(10,2))
+        b=BB.Bridge(6,K=3,r=2,h=3,classes=2,seed=1,aux=2);b.fit_head(Xr,y,steps=5);b.in_mu=H.reshape(-1,6).mean(0);b.in_sd=H.reshape(-1,6).std(0)
+        b.p['Wu']=g.normal(size=b.p['Wu'].shape);b.p['Wa']=g.normal(size=b.p['Wa'].shape);b.p['gamma']=np.array([.3])
+        kw=dict(lam_var=.3,lam_cov=.2,lam_slot=.4,l2=1e-3,aux=A,lam_aux=.7);_,gr,part=b.loss_and_grads(H,mask,Xr,y,**kw)
+        self.assertIn('aux_mse',part)
+        for k in b.p:
+            flat=b.p[k].reshape(-1)
+            for i in range(min(4,flat.size)):
+                old=flat[i];flat[i]=old+1e-5;lp=b.loss_and_grads(H,mask,Xr,y,**kw)[0];flat[i]=old-1e-5;lm=b.loss_and_grads(H,mask,Xr,y,**kw)[0];flat[i]=old
+                self.assertAlmostEqual(gr[k].reshape(-1)[i],(lp-lm)/2e-5,places=4,msg=k)
+        L=b.logits(H,mask,Xr);b.p['Wa']=b.p['Wa']*0+9.;self.assertTrue(np.array_equal(L,b.logits(H,mask,Xr)))  # aux head never reaches the receiver
+        with tempfile.TemporaryDirectory() as t:
+            b.save(Path(t)/'a','s','r');b2=BB.Bridge.load(Path(t)/'a','s','r');self.assertEqual(b2.aux,2);self.assertTrue(np.array_equal(b2.logits(H,mask,Xr),L))
+        b0=BB.Bridge(6,K=3,r=2,h=3,classes=2,seed=1);self.assertNotIn('Wa',b0.p);self.assertEqual(b0.aux,0)
     def test_cka(self):
         X=np.random.default_rng(0).normal(size=(50,4));self.assertAlmostEqual(BB.linear_cka(X,X@np.diag([2,1,3,1])),BB.linear_cka(X,X@np.diag([2,1,3,1])))
         self.assertAlmostEqual(BB.linear_cka(X,X),1.,places=6);self.assertLess(BB.linear_cka(X,np.random.default_rng(1).normal(size=(50,4))),.3)

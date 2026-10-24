@@ -28,6 +28,7 @@ from .contracts import packet
 
 KEY='N9_SELF';REVISION='n9-self-v1'
 CLASSES=('SELF','EXTERNAL','MIXED','UNCLEAR')
+FAR_K=20.   # BOOT (corollary candidate 2 calibration): a residual beyond FAR_K x tolerance of the nearest own prediction is UNCLEAR
 ATTENUATION=.6        # BOOT: share of self-caused interoceptive change removed from salience (never from safety)
 DELAY_FACTOR=3.       # BOOT: an outcome up to 3x the predicted window still counts as delayed self outcome
 DEFAULT_WINDOW_S=120. # BOOT
@@ -91,7 +92,9 @@ def attribute(open_corollaries,obs):
             if pred['channel']!=ch:continue
             pw=pred.get('window_s',w);delayed=t>start+pw
             if t>start+pw*DELAY_FACTOR:continue
-            ok,res=_match(pred,obs['value']);cands.append({'action_id':c['action_id'],'matched':ok,'residual':res,'delayed':delayed})
+            ok,res=_match(pred,obs['value']);tol=pred.get('tolerance');pv=pred.get('value')
+            tol=(abs(pv)*.5 if isinstance(pv,(int,float)) and not isinstance(pv,bool) else None) if tol is None else tol
+            cands.append({'action_id':c['action_id'],'matched':ok,'residual':res,'delayed':delayed,'tolerance':tol})
     if not cands:
         side=[c['action_id'] for c in open_corollaries if c['issued_at']<=t<=c['issued_at']+c.get('window_s',DEFAULT_WINDOW_S) and ch in c.get('affected',[])]
         if side:return {'class':'UNCLEAR','reason':'unexpected_side_effect','action_ids':side,'residual':None}
@@ -100,6 +103,12 @@ def attribute(open_corollaries,obs):
     if len({x['action_id'] for x in hits})>1:return {'class':'UNCLEAR','reason':'ambiguous_causality','action_ids':sorted({x['action_id'] for x in hits}),'residual':None}
     if hits:
         h=hits[0];return {'class':'SELF','reason':'delayed_predicted_outcome' if h['delayed'] else 'predicted_outcome','action_ids':[h['action_id']],'residual':h['residual'],'delayed':h['delayed']}
+    num=[x for x in cands if isinstance(x['residual'],(int,float)) and not isinstance(x['residual'],bool)]
+    if num:  # thread L 2026-10-12, preregistered corollary candidate 3 PASS (bench-results/corollary-unclear-20261012)
+        c=min(num,key=lambda x:abs(x['residual']))  # residual against the nearest own prediction, not the first open action
+        if abs(c['residual'])>FAR_K*c['tolerance']:  # far outside every own prediction: neither own error nor proven foreign
+            return {'class':'UNCLEAR','reason':'far_outside_own_prediction','action_ids':[],'residual':None,'own_residual':c['residual'],'ceiling_k':FAR_K}
+        return {'class':'MIXED','reason':'partial_or_mismatched_outcome','action_ids':[c['action_id']],'residual':c['residual'],'delayed':c['delayed']}
     c=cands[0];return {'class':'MIXED','reason':'partial_or_mismatched_outcome','action_ids':[c['action_id']],'residual':c['residual'],'delayed':c['delayed']}
 
 class SelfSystem:

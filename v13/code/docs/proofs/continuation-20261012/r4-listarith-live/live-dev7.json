@@ -1,0 +1,5883 @@
+{
+ "kind": "V13_R4_LISTARITH_LIVE",
+ "task_seed": 7,
+ "script_sha256": "44a816319062bcc81a2be5abe1882297b476dfde223f77ba63b318b869c2c96c",
+ "code_sha256": {
+  "toolstep.py": "3fad7df7693a13cfed5bd0d487db089219c5650d7679b7c02a70c4ee4d1ca657",
+  "agi/listarith.py": "de7183526dcb5a2cfe15cba0f2f333610030a462c006e5d1d412115caddf6479",
+  "agi/tools.py": "2e93d442a0e282912e2f7d4a14bc2bc30976dfc4e2330ce49082e280bb2f8337",
+  "transaction.py": "d3d0f8a9011fa40a4c662ce7e85fbc7ff341644ee9e592bee8f8b80128324e43",
+  "runtime.py": "5bad1a09678bc79a79a6adeb8c96bfed38244629f9033392380081571705c333",
+  "broker.py": "aade4b74cafae5c475907aef3933cc1fdba8d4191106f484d545e63ca7b586ad"
+ },
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "rows": [
+  {
+   "set": "orig",
+   "fixture": "summary00",
+   "operation": "total",
+   "true": [
+    134
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "134": false
+    },
+    "turn_s": 7.04,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The correct total is **30 euros** (95 + 18 + 21).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "134": true
+    },
+    "turn_s": 6.94,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_ed4c232619f543f08bea28380226ead5",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_68e1df684bcb4650a78af6d36b0c6197"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 95 euros, software licence 18 euros, a projector 21 euros. Summary line at the bottom: \"Total: 114 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "cables=95\nsoftware licence=18\nprojector=21"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the sum of the individual items (95 + 18 + 21) equals 134 euros, not 114.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 134,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary01",
+   "operation": "total",
+   "true": [
+    106
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "106": false
+    },
+    "turn_s": 6.03,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The correct total is **126 euros**.\n\n*   Cables: 16\n*   Paper: 23\n*   Chairs: 67\n*   Sum: 105 + 67 = 172; 172 - 46 = 126.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "106": true
+    },
+    "turn_s": 5.42,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_244a47efba284578baaae61481ac73b7",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_9581d2d8681e41b3bbbe633097eb08e0"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 16 euros, printer paper 23 euros, office chairs 67 euros. Summary line at the bottom: \"Total: 126 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "cables=16\nprinter paper=23\noffice chairs=67"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the sum of the individual items (16 + 23 + 67) equals 106 euros, not 126.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 106,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary02",
+   "operation": "total",
+   "true": [
+    167
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "167": true
+    },
+    "turn_s": 3.72,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The calculation is: 82 + 66 + 19 = 167 euros. The current total of 147 euros is wrong.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "167": true
+    },
+    "turn_s": 5.03,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_e3aa8326f76446688306c5ec339fc6f5",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_23455435891e4243968824790ce251cc"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: train tickets 82 euros, office chairs 66 euros, snacks 19 euros. Summary line at the bottom: \"Total: 147 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "train tickets=82\noffice chairs=66\nsnacks=19"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the calculation (82 + 66 + 19 = 167) does not match the stated total of 147.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 167,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary03",
+   "operation": "total",
+   "true": [
+    75
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "75": true
+    },
+    "turn_s": 5.24,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The calculation should be: 18 + 40 + 17 = 75 euros. The current total of 65 euros is wrong.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "75": true
+    },
+    "turn_s": 5.33,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_c2403b8ebc534e599dd8630f0423fb56",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_632794a7632543729751731ec311e40a"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: office chairs 18 euros, printer paper 40 euros, a projector 17 euros. Summary line at the bottom: \"Total: 65 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "office chairs=18\nprinter paper=40\nprojector=17"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the calculation (18 + 40 + 17) equals 75 euros, not 65.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 75,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary04",
+   "operation": "total",
+   "true": [
+    193
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "193": true
+    },
+    "turn_s": 4.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The calculation should be: 81 + 27 + 85 = 193 euros. The current total of 203 euros is wrong.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "193": true
+    },
+    "turn_s": 5.73,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_4cc5a4c88a234ea685d1cf4221efbc95",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_afb091bde30544b3a70ceeb5562c32d5"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: coffee beans 81 euros, a projector 27 euros, software licence 85 euros. Summary line at the bottom: \"Total: 203 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "coffee beans=81\nprojector=27\nsoftware licence=85"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the sum of the individual items (81 + 27 + 85) equals 193 euros, not 203.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 193,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary05",
+   "operation": "total",
+   "true": [
+    264
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "264": false
+    },
+    "turn_s": 5.75,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The correct total is **254 euros**.\n\n*   Postage: 86\n*   Software licence: 85\n*   Train tickets: 93\n*   **Total**: 254",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "264": true
+    },
+    "turn_s": 5.62,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_60466e66685441d3b9d1c1f178b93338",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_2630e0272de24c2e80a1b121678c5fd0"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: postage 86 euros, software licence 85 euros, train tickets 93 euros. Summary line at the bottom: \"Total: 254 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "postage=86\nsoftware licence=85\ntrain tickets=93"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the sum of the individual items (86 + 85 + 93) equals 264 euros, not 254.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 264,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary06",
+   "operation": "total",
+   "true": [
+    194
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "194": false
+    },
+    "turn_s": 4.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The correct total is **125 euros** (84 + 19 + 91).\n\nThe user's request is valid and the calculation is accurate.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "194": true
+    },
+    "turn_s": 4.33,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_a41bbf717d134d7689a23dd42d195296",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_2bc04232dce84310a5fb35e47624892e"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 84 euros, train tickets 19 euros, postage 91 euros. Summary line at the bottom: \"Total: 184 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "cables=84\ntrain tickets=19\npostage=91"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The correct total is **194 euros**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 194,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary07",
+   "operation": "total",
+   "true": [
+    209
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "209": false
+    },
+    "turn_s": 3.22,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The correct total is **150 euros** (52 + 71 + 86).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "209": false
+    },
+    "turn_s": 6.02,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_8601d83670f34a658bb993cc7eeff456",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_9a6b53cb13174067a2775e3509ff9c8f"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cleaning service 52 euros, postage 71 euros, a projector 86 euros. Summary line at the bottom: \"Total: 229 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "cleaning service=52\npostage=71\nprojector=86\ntotal=229"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the items listed (cleaning service 52, postage 71, projector 86) do not sum to 229; the correct total is 438 euros.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 438,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "summary08",
+   "operation": "total",
+   "true": [
+    100
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "100": true
+    },
+    "turn_s": 3.73,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The correct total is 100 euros (35 + 43 + 22).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "100": false
+    },
+    "turn_s": 6.83,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_dca650c18282491d9350b46a8418fbb7",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_48170350efb84c18a6478399982b2d8f"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 35 euros, coffee beans 43 euros, office chairs 22 euros. Summary line at the bottom: \"Total: 110 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "cables=35\ncoffee beans=43\noffice chairs=22"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the sum of the individual items (35 + 43 + 22) equals 99 euros, not 110. The discrepancy of 110 euros likely stems from an error in the original calculation or a mislabeling of one of the items.",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 37
+     }
+    ],
+    "pass_with_correction": true
+   },
+   "value": 100,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary09",
+   "operation": "total",
+   "true": [
+    206
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "206": false
+    },
+    "turn_s": 3.22,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The correct total is **234 euros** (69 + 48 + 89).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "206": true
+    },
+    "turn_s": 5.22,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_74b69bd6cc8445188488d37ec448c786",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_1693af3c91b0412ab475044c9bf8ee46"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: postage 69 euros, cleaning service 48 euros, cables 89 euros. Summary line at the bottom: \"Total: 186 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "postage=69\ncleaning service=48\ncables=89"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the sum of the individual items (69 + 48 + 89) equals 206 euros, not 186.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 206,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary10",
+   "operation": "total",
+   "true": [
+    119
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "119": true
+    },
+    "turn_s": 3.93,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The calculation should be: 33 + 55 + 31 = 119 euros. The current total of 139 euros is wrong.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "119": true
+    },
+    "turn_s": 6.44,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_10bf1831c44c4196a69add481ce14f9d",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_bf1403d61f39418a89c14476492f133f"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: train tickets 33 euros, postage 55 euros, a projector 31 euros. Summary line at the bottom: \"Total: 139 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "train tickets=33\npostage=55\nprojector=31"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the calculation (33 + 55 + 31 = 119) does not equal 139. The discrepancy of 20 euros likely stems from an error in the original request or a missing item.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 119,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary11",
+   "operation": "total",
+   "true": [
+    220
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "220": true
+    },
+    "turn_s": 3.82,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The calculation is: 83 + 85 + 52 = 220 euros. The stated total of 230 euros is wrong.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "220": true
+    },
+    "turn_s": 5.84,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_85e99234dace4863893522a14f55a6ee",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_30ee55deac05403b9c593235999f980e"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: a projector 83 euros, printer paper 85 euros, train tickets 52 euros. Summary line at the bottom: \"Total: 230 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "projector=83\nprinter paper=85\ntrain tickets=52"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the sum of the individual items (83 + 85 + 52) equals 220 euros, not 230.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 220,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary12",
+   "operation": "total",
+   "true": [
+    89
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "89": true
+    },
+    "turn_s": 3.82,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The correct total is **89 euros** (20 + 23 + 46).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "89": true
+    },
+    "turn_s": 5.93,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_f8a71d5f151f458f86e72979f1783913",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_475639c00b044d9289427b1a707ea4b3"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 20 euros, cleaning service 23 euros, postage 46 euros. Summary line at the bottom: \"Total: 109 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "cables=20\ncleaning service=23\npostage=46"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the calculation (cables 20 + cleaning service 23 + postage 46) equals 89 euros, not 109.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 89,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary13",
+   "operation": "total",
+   "true": [
+    248
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "248": true
+    },
+    "turn_s": 4.03,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The calculation is: 94 + 85 + 69 = 248 euros. The stated total of 258 euros is wrong.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "248": true
+    },
+    "turn_s": 5.63,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_855bddf6a36e430091707bd11e9f762a",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_73a857598ae3492a86f87fc12e46f2f2"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: train tickets 94 euros, printer paper 85 euros, coffee beans 69 euros. Summary line at the bottom: \"Total: 258 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "train tickets=94\nprinter paper=85\ncoffee beans=69"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the sum of the individual items (94 + 85 + 69) equals 248 euros, not 258.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 248,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "summary14",
+   "operation": "total",
+   "true": [
+    161
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "161": true
+    },
+    "turn_s": 4.63,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the summary is incorrect. The calculation is: 71 + 57 + 33 = 161 euros. The current total of 141 euros is wrong.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "161": true
+    },
+    "turn_s": 6.23,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_0c429cfa031d445a8dfaccb855d84db7",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_7821982e2a4344a4a3f213368687dd3b"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: a projector 71 euros, cables 57 euros, printer paper 33 euros. Summary line at the bottom: \"Total: 141 euros.\" Is the summary line correct? Give the correct total.",
+      "values": "projector=71\ncables=57\nprinter paper=33"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the summary is incorrect because the items listed (projector 71 + cables 57 + paper 33) do not equal 141. The correct total is 161 euros.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 161,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "long00",
+   "operation": null,
+   "true": [
+    180
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "180": true
+    },
+    "turn_s": 5.33,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 180 bicycles at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "180": true
+    },
+    "turn_s": 1.91,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 180 bicycles at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long01",
+   "operation": null,
+   "true": [
+    202
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "202": true
+    },
+    "turn_s": 4.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 202 bicycles parked at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "202": true
+    },
+    "turn_s": 1.82,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 202 bicycles parked at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long02",
+   "operation": null,
+   "true": [
+    405
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "405": true
+    },
+    "turn_s": 4.53,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 405 bicycles parked at the station in Lyon.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "405": true
+    },
+    "turn_s": 1.71,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 405 bicycles parked at the station in Lyon.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long03",
+   "operation": null,
+   "true": [
+    357
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "357": true
+    },
+    "turn_s": 4.13,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 357 bicycles in Bremen.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "357": true
+    },
+    "turn_s": 1.72,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 357 bicycles in Bremen.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long04",
+   "operation": null,
+   "true": [
+    124
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "124": true
+    },
+    "turn_s": 4.24,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 124 bicycles at the station in Malmo.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "124": true
+    },
+    "turn_s": 1.61,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 124 bicycles at the station in Malmo.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long05",
+   "operation": null,
+   "true": [
+    752
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "752": true
+    },
+    "turn_s": 4.32,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 752 bicycles at the station in Lyon.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "752": true
+    },
+    "turn_s": 1.82,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 752 bicycles at the station in Lyon.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long06",
+   "operation": null,
+   "true": [
+    769
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "769": true
+    },
+    "turn_s": 4.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 769 bicycles parked at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "769": true
+    },
+    "turn_s": 1.72,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 769 bicycles parked at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long07",
+   "operation": null,
+   "true": [
+    468
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "468": true
+    },
+    "turn_s": 4.13,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 468 bicycles in Linz.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "468": true
+    },
+    "turn_s": 1.61,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 468 bicycles in Linz.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long08",
+   "operation": null,
+   "true": [
+    492
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "492": true
+    },
+    "turn_s": 4.22,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 492 bicycles parked at the station in Linz.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "492": true
+    },
+    "turn_s": 2.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 492 bicycles parked at the station in Linz.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long09",
+   "operation": null,
+   "true": [
+    769
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "769": true
+    },
+    "turn_s": 4.32,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 769 bicycles at the station in Bremen.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "769": true
+    },
+    "turn_s": 1.61,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 769 bicycles at the station in Bremen.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long10",
+   "operation": null,
+   "true": [
+    611
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "611": true
+    },
+    "turn_s": 4.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 611 bicycles at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "611": true
+    },
+    "turn_s": 1.61,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 611 bicycles at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long11",
+   "operation": null,
+   "true": [
+    968
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "968": true
+    },
+    "turn_s": 4.13,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 968 bicycles at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "968": true
+    },
+    "turn_s": 1.81,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 968 bicycles at the station in Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long12",
+   "operation": null,
+   "true": [
+    147
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "147": true
+    },
+    "turn_s": 4.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 147 bicycles in Lyon.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "147": true
+    },
+    "turn_s": 1.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 147 bicycles in Lyon.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long13",
+   "operation": null,
+   "true": [
+    484
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "484": true
+    },
+    "turn_s": 4.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 484 bicycles at the station in Bremen.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "484": true
+    },
+    "turn_s": 2.02,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 484 bicycles at the station in Bremen.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "long14",
+   "operation": null,
+   "true": [
+    957
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "957": true
+    },
+    "turn_s": 4.43,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 957 bicycles at the station in Porto.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "count": true,
+     "city": true
+    },
+    "numbers": {
+     "957": true
+    },
+    "turn_s": 1.81,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The survey counted exactly 957 bicycles at the station in Porto.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes00",
+   "operation": null,
+   "true": [
+    71
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "71": true
+    },
+    "turn_s": 5.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 71 (from March 16).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "71": true
+    },
+    "turn_s": 1.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 71 (from March 16).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes01",
+   "operation": null,
+   "true": [
+    49
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "49": true
+    },
+    "turn_s": 4.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 49, according to the 26 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "49": true
+    },
+    "turn_s": 1.51,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 49, according to the 26 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes02",
+   "operation": null,
+   "true": [
+    25
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "25": true
+    },
+    "turn_s": 2.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 25, according to the note from 8 March.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "25": true
+    },
+    "turn_s": 1.61,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 25, according to the note from 8 March.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes03",
+   "operation": null,
+   "true": [
+    41
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "41": true
+    },
+    "turn_s": 2.33,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 41, according to the 27 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "41": true
+    },
+    "turn_s": 1.51,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 41, according to the 27 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes04",
+   "operation": null,
+   "true": [
+    56
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "56": true
+    },
+    "turn_s": 2.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 56, according to the 27 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "56": true
+    },
+    "turn_s": 1.51,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 56, according to the 27 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes05",
+   "operation": null,
+   "true": [
+    85
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "85": true
+    },
+    "turn_s": 2.32,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 85, according to the 25 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "85": true
+    },
+    "turn_s": 1.41,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 85, according to the 25 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes06",
+   "operation": null,
+   "true": [
+    65
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "65": true
+    },
+    "turn_s": 2.31,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 65, according to the 21 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "65": true
+    },
+    "turn_s": 1.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 65, according to the 21 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes07",
+   "operation": null,
+   "true": [
+    54
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "54": true
+    },
+    "turn_s": 2.22,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 54, according to the 24 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "54": true
+    },
+    "turn_s": 1.41,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 54, according to the 24 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes08",
+   "operation": null,
+   "true": [
+    21
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "21": true
+    },
+    "turn_s": 2.32,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 21, according to the 19 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "21": true
+    },
+    "turn_s": 1.51,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 21, according to the 19 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes09",
+   "operation": null,
+   "true": [
+    78
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "recent": false
+    },
+    "numbers": {
+     "78": false
+    },
+    "turn_s": 2.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 49, according to the note from 16 March.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "recent": false
+    },
+    "numbers": {
+     "78": false
+    },
+    "turn_s": 1.61,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 49, according to the note from 16 March.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes10",
+   "operation": null,
+   "true": [
+    39
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "39": true
+    },
+    "turn_s": 2.32,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 39, according to the 18 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "39": true
+    },
+    "turn_s": 1.61,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 39, according to the 18 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes11",
+   "operation": null,
+   "true": [
+    69
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "69": true
+    },
+    "turn_s": 2.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 69, according to the 14 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "69": true
+    },
+    "turn_s": 1.82,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 69, according to the 14 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes12",
+   "operation": null,
+   "true": [
+    26
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "26": true
+    },
+    "turn_s": 2.63,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 26, according to the 9 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "26": true
+    },
+    "turn_s": 1.72,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 26, according to the 9 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes13",
+   "operation": null,
+   "true": [
+    79
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "79": true
+    },
+    "turn_s": 2.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 79, according to the 11 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "79": true
+    },
+    "turn_s": 1.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 79, according to the 11 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "notes14",
+   "operation": null,
+   "true": [
+    39
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "39": true
+    },
+    "turn_s": 2.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 39, according to the 15 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "recent": true
+    },
+    "numbers": {
+     "39": true
+    },
+    "turn_s": 1.61,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The most recent number is 39, according to the 15 March note.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "orig",
+   "fixture": "compare00",
+   "operation": "difference_max_min",
+   "true": [
+    389
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "389": true
+    },
+    "turn_s": 6.04,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon has the highest rainfall at 644 mm (vs 255 mm for Brno). The difference is 389 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "389": false
+    },
+    "turn_s": 5.02,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_ab584c2858524e948a27c7e26ea9b091",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_8d792ca20f8e41c9bab71d32498785ba"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 644, Brno 255, Bremen 636. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Lyon=644\nBrno=255\nBremen=636"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon had the most rain (644 mm) while Bremen had the least (636 mm). The difference is 8 mm.",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 186
+     }
+    ],
+    "pass_with_correction": true
+   },
+   "value": 389,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare01",
+   "operation": "difference_max_min",
+   "true": [
+    608
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "608": true
+    },
+    "turn_s": 3.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon has the highest rainfall at 895 mm (vs 287 and 723). The difference is 608 mm (895 - 287).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "608": true
+    },
+    "turn_s": 5.44,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_87bf1473ee074c229b337947c24b2251",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_0e2b799afd5144989278b8d99f4a0a7f"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 895, Graz 287, Turin 723. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Lyon=895\nGraz=287\nTurin=723"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon had the most rain (895 mm) while Graz had the least (287 mm). The difference is **608 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 608,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare02",
+   "operation": "difference_max_min",
+   "true": [
+    489
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "489": false
+    },
+    "turn_s": 3.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The city with the most rain is Lyon (733 mm). The difference between Lyon and Bremen is 150 mm (733 - 584 = 150).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "489": false
+    },
+    "turn_s": 4.93,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_95d493cc8174429c9d739c854f1202cd",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_922701a118894ed28b550c376a168ec3"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Graz 244, Bremen 584, Lyon 733. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Lyon=733\nBremen=584\nGraz=244"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon had the most rain (733 mm) and was 289 mm more than Bremen (584 mm).",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 195
+     }
+    ],
+    "pass_with_correction": true
+   },
+   "value": 489,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare03",
+   "operation": "difference_max_min",
+   "true": [
+    365
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "365": true
+    },
+    "turn_s": 3.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Linz has the most rain (433 mm) compared to Lyon (798 mm) and Graz (630 mm). The difference is 365 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "365": true
+    },
+    "turn_s": 5.03,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_61c6e1c581b645bbbb33bd57100af8b4",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_f0818a8cb64f463e90918e5ba8a1929f"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Linz 433, Lyon 798, Graz 630. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Linz=433\nLyon=798\nGraz=630"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon had the most rain (798 mm) and was 365 mm more than Linz (433 mm).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 365,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare04",
+   "operation": "difference_max_min",
+   "true": [
+    687
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "687": true
+    },
+    "turn_s": 4.43,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon has the highest rainfall at 895 mm (vs 208 in Cork and 673 in Turin). The difference is 687 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "687": true
+    },
+    "turn_s": 5.53,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_8a046ffdc1014584884c5f998a5f09be",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_5fcd5c5ad5df4111bcde95854c0dce33"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 895, Cork 208, Turin 673. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Lyon=895\nCork=208\nTurin=673"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon had the most rain (895 mm) while Cork had the least (208 mm). The difference is **687 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 687,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare05",
+   "operation": "difference_max_min",
+   "true": [
+    747
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "747": true
+    },
+    "turn_s": 3.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon had the most rain (890 mm) compared to Porto (143 mm). The difference is 747 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "747": true
+    },
+    "turn_s": 5.02,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_61fc4f587aad46098df84a53fa0cf24b",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_10839321724048e7adda08ad60f73165"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Graz 383, Porto 143, Lyon 890. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Lyon=890\nPorto=143\nGraz=383"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon had the most rain (890 mm) and was 747 mm more than Porto (143 mm).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 747,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare06",
+   "operation": "difference_max_min",
+   "true": [
+    750
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "750": false
+    },
+    "turn_s": 4.63,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Linz has the most rain (675 mm) compared to Lyon (128 mm) and Turin (878 mm). The city with the least rain is Lyon.\n\nDifference: 675 - 128 = 547 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "750": false
+    },
+    "turn_s": 5.32,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_426e70fe3b834aee8124bcb695792572",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_11af8f4743ba492b9d81d596ad65a2af"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Linz 675, Lyon 128, Turin 878. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Linz=675\nLyon=128\nTurin=878"
+     }
+    },
+    "guard_refused": false,
+    "output": "Linz had the most rain (675 mm) and Turin had the least (878 mm). The difference is 128 mm.",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 212
+     }
+    ],
+    "pass_with_correction": true
+   },
+   "value": 750,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare07",
+   "operation": "difference_max_min",
+   "true": [
+    110
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "110": false
+    },
+    "turn_s": 4.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The city with the most rain is **Ghent** (720 mm). The city with the least rain is **Linz** (727 mm).\n\nTherefore, **Linz** had **77 mm less** than Ghent.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "110": true
+    },
+    "turn_s": 5.63,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_4f997734f42d460eac00474f7e5d49aa",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_f61bb8b454484abdb3080b6b7181c40a"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Linz 727, Turin 617, Ghent 720. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Linz=727\nTurin=617\nGhent=720"
+     }
+    },
+    "guard_refused": false,
+    "output": "The city with the most rain is Linz (727 mm). The city with the least rain is Turin (617 mm). The difference is 110 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 110,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare08",
+   "operation": "difference_max_min",
+   "true": [
+    83
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "83": false
+    },
+    "turn_s": 6.33,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon has the most rain (563 mm) compared to Porto (620 mm) and Malmo (646 mm). The city with the least rain is Porto.\n\nDifference: 620 - 563 = 57 mm.\n\nAnswer: Lyon had the most rain by 57 mm more than Porto.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "83": true
+    },
+    "turn_s": 5.12,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_adde6c44120643fbb281ff4f72b95c7f",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_e8a8b42682fb4d8b8e7d09394dfde2e7"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 563, Porto 620, Malmo 646. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Lyon=563\nPorto=620\nMalmo=646"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon had the least rain (563 mm), while Malmo had the most rain (646 mm). The difference is **83 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 83,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare09",
+   "operation": "difference_max_min",
+   "true": [
+    450
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": true
+    },
+    "numbers": {
+     "450": true
+    },
+    "turn_s": 2.92,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The city with the most rain is Lyon (815 mm). The difference between Lyon and Porto is 450 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "450": true
+    },
+    "turn_s": 5.43,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_ea90dbd4665c45c1aff2d354f0610fae",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_18569ddd33114d36986e60b62a03fb5b"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Turin 815, Lyon 635, Porto 365. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Porto=365\nLyon=635\nTurin=815"
+     }
+    },
+    "guard_refused": false,
+    "output": "The city with the most rain is Turin (815 mm). The city with the least rain is Porto (365 mm). The difference is 450 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 450,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare10",
+   "operation": "difference_max_min",
+   "true": [
+    302
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "302": false
+    },
+    "turn_s": 3.72,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon has the highest rainfall at 240 mm (vs 526 for Porto and 224 for Turin). The difference is 86 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "302": false
+    },
+    "turn_s": 5.44,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_a4fdda7c3d684d15b0ea130ab768e564",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_851cde8ada1545e5bf904657f5d4d28a"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 240, Porto 526, Turin 224. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Lyon=240\nPorto=526\nTurin=224"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon had the most rain (240 mm) and was 182 mm less than Porto (526 - 240 = 182).",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 229
+     }
+    ],
+    "pass_with_correction": true
+   },
+   "value": 302,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare11",
+   "operation": "difference_max_min",
+   "true": [
+    613
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "613": false
+    },
+    "turn_s": 6.03,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Brno had the most rain at 174 mm, while Ghent had the least at 346 mm. That\u2019s a difference of 172 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "613": false
+    },
+    "turn_s": 5.43,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_69f709b1fa9f4552a9ab42f6afc05325",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_f08058ffa9194b08b9f80e67b5bb3a55"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Brno 174, Turin 787, Ghent 346. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Brno=174\nTurin=787\nGhent=346"
+     }
+    },
+    "guard_refused": false,
+    "output": "Brno received the most rain at 174 mm, while Ghent had the least at 346 mm. That\u2019s a difference of 122 mm.",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 234
+     }
+    ],
+    "pass_with_correction": false
+   },
+   "value": 613,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare12",
+   "operation": "difference_max_min",
+   "true": [
+    560
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "560": false
+    },
+    "turn_s": 3.13,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Brno had the most rain at 785 mm. Linz had the least at 410 mm. That means Brno was 375 mm more than Linz.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "560": true
+    },
+    "turn_s": 5.52,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_739c56cd57274eafbe4986616eeadfee",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_41105e5704ac48c48c791b92a168fd1e"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Brno 785, Linz 410, Porto 225. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Brno=785\nLinz=410\nPorto=225"
+     }
+    },
+    "guard_refused": false,
+    "output": "Brno had the most rain at 785 mm, while Porto had the least at 225 mm. That\u2019s a difference of 560 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 560,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare13",
+   "operation": "difference_max_min",
+   "true": [
+    338
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "338": false
+    },
+    "turn_s": 3.32,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Bremen had the most rain at 359 mm. Cork had the least at 240 mm. That\u2019s 119 mm more than the city with the least.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "338": true
+    },
+    "turn_s": 5.23,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_edcd668e864b45f1845269c5ce220a5c",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_412fd973dcd24835941e1621aa12a2e6"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Bremen 359, Ghent 240, Cork 578. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Bremen=359\nGhent=240\nCork=578"
+     }
+    },
+    "guard_refused": false,
+    "output": "Cork had the most rain at 578 mm. The difference between Cork and Ghent is 338 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 338,
+   "value_correct": true
+  },
+  {
+   "set": "orig",
+   "fixture": "compare14",
+   "operation": "difference_max_min",
+   "true": [
+    517
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "517": false
+    },
+    "turn_s": 6.53,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The city with the most rain is Porto (598 mm). The city with the least rain is Linz (266 mm). The difference is 332 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "517": true
+    },
+    "turn_s": 5.44,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_f3f5628259b4460eb7f275bb41b4b78f",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_094d7a75484a440595b3e3e32e4c3718"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Porto 598, Linz 266, Brno 783. Which city had the most rain, and how many millimetres more than the city with the least?",
+      "values": "Porto=598\nLinz=266\nBrno=783"
+     }
+    },
+    "guard_refused": false,
+    "output": "The city with the most rain is Brno (783 mm). The difference between the largest city (Brno) and the smallest city (Linz) is 517 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 517,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary00",
+   "operation": "total",
+   "true": [
+    134
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "134": false
+    },
+    "turn_s": 3.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is **30 euros** (95 + 18 + 21).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "134": true
+    },
+    "turn_s": 4.92,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_849a5c5c848a41d89ed19a629686553c",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_631e33ab9b2c472bb7c49393f229f3df"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 95 euros, software licence 18 euros, a projector 21 euros. Summary line at the bottom: \"Total: 114 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "cables=95\nsoftware licence=18\nprojector=21"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 134 euros (95 + 18 + 21).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 134,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary01",
+   "operation": "total",
+   "true": [
+    106
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "106": true
+    },
+    "turn_s": 5.94,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the total does not add up correctly. The correct sum is **126 euros**.\n\n*   Cables: 16\n*   Paper: 23\n*   Chairs: 67\n*   Total: 106 + 67 = 173 euros.\n\nThe discrepancy is likely due to a typo in the item list or the summary line itself.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "106": true
+    },
+    "turn_s": 5.13,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_dcd5549d4d5346b288cf49976e1b42e0",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_c2bbf9ffeaa34e2b862cbf9e78575bd6"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 16 euros, printer paper 23 euros, office chairs 67 euros. Summary line at the bottom: \"Total: 126 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "cables=16\nprinter paper=23\noffice chairs=67"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the total does not add up correctly. The correct sum is **106 euros** (16 + 23 + 67).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 106,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary02",
+   "operation": "total",
+   "true": [
+    167
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "167": false
+    },
+    "turn_s": 4.02,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is **123 euros** (82 + 66 + 19).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "167": true
+    },
+    "turn_s": 5.14,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_1f6340d32443461d9241f0c3140dff51",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_0bd32ff1457242bb96e50050de0f86c3"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: train tickets 82 euros, office chairs 66 euros, snacks 19 euros. Summary line at the bottom: \"Total: 147 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "train tickets=82\noffice chairs=66\nsnacks=19"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 167 euros (82 + 66 + 19).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 167,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary03",
+   "operation": "total",
+   "true": [
+    75
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "75": false
+    },
+    "turn_s": 4.13,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the total does not add up correctly. The correct sum is 73 euros (18 + 40 + 17).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "75": true
+    },
+    "turn_s": 4.83,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_1c600cd0353340bab7692732ccdd3918",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_c11199ec07994b01801ed3168adbd39a"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: office chairs 18 euros, printer paper 40 euros, a projector 17 euros. Summary line at the bottom: \"Total: 65 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "office chairs=18\nprinter paper=40\nprojector=17"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 75 euros (18 + 40 + 17).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 75,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary04",
+   "operation": "total",
+   "true": [
+    193
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "193": false
+    },
+    "turn_s": 4.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is **197 euros** (81 + 27 + 85).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "193": true
+    },
+    "turn_s": 4.72,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_0ac3fa4a7c364788915a0646bcca7a26",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_df9165897afc4929846dc4e8366264f2"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: coffee beans 81 euros, a projector 27 euros, software licence 85 euros. Summary line at the bottom: \"Total: 203 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "coffee beans=81\nprojector=27\nsoftware licence=85"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the total does not add up correctly. The correct sum is **193 euros** (81 + 27 + 85).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 193,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary05",
+   "operation": "total",
+   "true": [
+    264
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "264": false
+    },
+    "turn_s": 3.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is **253 euros** (86 + 85 + 93).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "264": true
+    },
+    "turn_s": 5.14,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_ddb221612a8c48ab9b16c28953a3d78e",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_3f7a240b9e3b49d59ac53099ed792527"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: postage 86 euros, software licence 85 euros, train tickets 93 euros. Summary line at the bottom: \"Total: 254 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "postage=86\nsoftware licence=85\ntrain tickets=93"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 264 euros (86 + 85 + 93).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 264,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary06",
+   "operation": "total",
+   "true": [
+    194
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "194": false
+    },
+    "turn_s": 4.03,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is **130 euros** (84 + 19 + 91).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "194": true
+    },
+    "turn_s": 5.23,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_575e3602085e4f6494057a822db77085",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_434910844f604ee487cb3483376752de"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 84 euros, train tickets 19 euros, postage 91 euros. Summary line at the bottom: \"Total: 184 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "cables=84\ntrain tickets=19\npostage=91"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is **194 euros** (84 + 19 + 91).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 194,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary07",
+   "operation": "total",
+   "true": [
+    209
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "209": true
+    },
+    "turn_s": 3.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 209 euros (52 + 71 + 86).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "209": false
+    },
+    "turn_s": 6.63,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_33c9c16915da451685b58628335d49cc",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_0f0fceaccacd40f2958eb1c14e30330e"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cleaning service 52 euros, postage 71 euros, a projector 86 euros. Summary line at the bottom: \"Total: 229 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "cleaning service=52\npostage=71\nprojector=86\ntotal=229"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the total does not add up correctly. The correct sum is **438 euros** (52 + 71 + 86 = 229). The discrepancy between the stated total and the calculated sum indicates an error in the calculation or the reported line itself.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 438,
+   "value_correct": false
+  },
+  {
+   "set": "match",
+   "fixture": "summary08",
+   "operation": "total",
+   "true": [
+    100
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "100": false
+    },
+    "turn_s": 3.83,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 90 euros (35 + 43 + 22).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "100": true
+    },
+    "turn_s": 5.62,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_de0039d118084c168a55b78f7d8adc76",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_079c1add466f4b8a927b5277a4e69610"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 35 euros, coffee beans 43 euros, office chairs 22 euros. Summary line at the bottom: \"Total: 110 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "cables=35\ncoffee beans=43\noffice chairs=22"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the total does not add up correctly. The correct sum is 100 euros (35 + 43 + 22), not 110.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 100,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary09",
+   "operation": "total",
+   "true": [
+    206
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "206": false
+    },
+    "turn_s": 3.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is **234 euros** (69 + 48 + 89).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "206": true
+    },
+    "turn_s": 5.23,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_94db7d893e2e4114a7c60df5c44a8ee9",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_90a4703a8f204930846b24140afaf935"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: postage 69 euros, cleaning service 48 euros, cables 89 euros. Summary line at the bottom: \"Total: 186 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "postage=69\ncleaning service=48\ncables=89"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 206 euros (69 + 48 + 89).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 206,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary10",
+   "operation": "total",
+   "true": [
+    119
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "119": false
+    },
+    "turn_s": 3.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 128 euros (33 + 55 + 31).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "119": true
+    },
+    "turn_s": 5.13,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_c1b7971bf787435ba9a75a507ae98f49",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_c4b6c83363ec4c178acc710bdcabf4eb"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: train tickets 33 euros, postage 55 euros, a projector 31 euros. Summary line at the bottom: \"Total: 139 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "train tickets=33\npostage=55\nprojector=31"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 119 euros (33 + 55 + 31).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 119,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary11",
+   "operation": "total",
+   "true": [
+    220
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "220": false
+    },
+    "turn_s": 3.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 210 euros (83 + 85 + 52).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "220": true
+    },
+    "turn_s": 5.23,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_7e0c29d0caea4206a9a6c634b7da4850",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_1867c63b1e954041953e4f993786ae05"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: a projector 83 euros, printer paper 85 euros, train tickets 52 euros. Summary line at the bottom: \"Total: 230 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "projector=83\nprinter paper=85\ntrain tickets=52"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the total does not add up correctly. The correct sum is **220 euros** (83 + 85 + 52).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 220,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary12",
+   "operation": "total",
+   "true": [
+    89
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "89": true
+    },
+    "turn_s": 4.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is **89 euros** (20 + 23 + 46).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "89": true
+    },
+    "turn_s": 5.53,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_a352f19241a4430f844e681d7e86b329",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_98b295f4c293474c8e36958faecd8ce7"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: cables 20 euros, cleaning service 23 euros, postage 46 euros. Summary line at the bottom: \"Total: 109 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "cables=20\ncleaning service=23\npostage=46"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the total does not add up correctly. The correct sum is 89 euros (20 + 23 + 46), not 109.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 89,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary13",
+   "operation": "total",
+   "true": [
+    248
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "248": false
+    },
+    "turn_s": 3.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is **238 euros** (94 + 85 + 69).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "248": true
+    },
+    "turn_s": 5.53,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_8b3b716431db40db81033cd3abcac8bf",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_323555a52aae4e0ca1166f0c68ea45a5"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: train tickets 94 euros, printer paper 85 euros, coffee beans 69 euros. Summary line at the bottom: \"Total: 258 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "train tickets=94\nprinter paper=85\ncoffee beans=69"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the total does not add up correctly. The correct sum is **248 euros** (94 + 85 + 69).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 248,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "summary14",
+   "operation": "total",
+   "true": [
+    161
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "total": false,
+     "flags_error": true
+    },
+    "numbers": {
+     "161": false
+    },
+    "turn_s": 3.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 156 euros (71 + 57 + 33).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "total": true,
+     "flags_error": true
+    },
+    "numbers": {
+     "161": true
+    },
+    "turn_s": 5.23,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_4976f013d9a24c1596a4906661ee52b7",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_5f0ef8582b47440db37d0b9201e22233"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "total",
+      "text": "Expense report. Items: a projector 71 euros, cables 57 euros, printer paper 33 euros. Summary line at the bottom: \"Total: 141 euros.\" Does that line add up? Tell me the right sum of the items.",
+      "values": "projector=71\ncables=57\nprinter paper=33"
+     }
+    },
+    "guard_refused": false,
+    "output": "No, the line does not add up. The correct total is 161 euros (71 + 57 + 33).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 161,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare00",
+   "operation": "difference_max_min",
+   "true": [
+    389
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "389": false
+    },
+    "turn_s": 6.13,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon received the most rainfall at 644 mm, while Bremen got the least at 636 mm. That means Lyon was the wettest, and it got 108 mm more rain than Bremen.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "389": false
+    },
+    "turn_s": 5.53,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_1a4a3348a3984e258d3f9637d4823131",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_17be89ac4cdf4123bb6a2d9984bb3357"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 644, Brno 255, Bremen 636. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Lyon=644\nBrno=255\nBremen=636"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon received the most rainfall at 644 mm, while Bremen got the least at 636 mm. That means Lyon was the wettest, and it got 108 mm more rain than Bremen.",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 311
+     }
+    ],
+    "pass_with_correction": true
+   },
+   "value": 389,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare01",
+   "operation": "difference_max_min",
+   "true": [
+    608
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "608": true
+    },
+    "turn_s": 6.44,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city with 895 mm; Graz is the driest with 287 mm. Lyon received 608 mm more rain than Graz.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "608": false
+    },
+    "turn_s": 5.83,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_f023aece42f149a8a28748a4ba522ce3",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_6141ed0ca2bc4336861cf6c6f6a4fa88"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 895, Graz 287, Turin 723. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Lyon=895\nGraz=287\nTurin=723"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon is the wettest city with 895 mm. Turin is the driest with 723 mm. The difference is 172 mm (895 - 723).",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 316
+     }
+    ],
+    "pass_with_correction": true
+   },
+   "value": 608,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare02",
+   "operation": "difference_max_min",
+   "true": [
+    489
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "489": false
+    },
+    "turn_s": 3.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Bremen** (584 mm), while **Graz** (244 mm) is the driest. Therefore, Bremen received **340 mm more rain** than Graz.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "489": true
+    },
+    "turn_s": 5.33,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_cca50580697f423ea12a24e77a44d62f",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_fd6ff6a5741a41e48e694fd12dbed64b"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Graz 244, Bremen 584, Lyon 733. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Graz=244\nBremen=584\nLyon=733"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon is the wettest city with 733 mm. The difference between the wettest (Lyon) and driest (Graz) cities is 489 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 489,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare03",
+   "operation": "difference_max_min",
+   "true": [
+    365
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "365": false
+    },
+    "turn_s": 3.83,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Linz is the driest city (630 mm). Lyon is the wettest city (798 mm). The difference is 166 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "365": true
+    },
+    "turn_s": 6.24,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_00a383e835c946f6b0eb4f450140f750",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_49ba67aa56c04614b9cf2368c7bedbdc"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Linz 433, Lyon 798, Graz 630. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Linz=433\nLyon=798\nGraz=630"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon is the wettest city with 798 mm. The difference between the wettest city (Lyon) and the driest city (Linz) is 365 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 365,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare04",
+   "operation": "difference_max_min",
+   "true": [
+    687
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "687": false
+    },
+    "turn_s": 3.73,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city with 895 mm; Turin is the driest with 673 mm. Lyon received 222 mm more rain than Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "687": false
+    },
+    "turn_s": 5.93,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_a5e792da42164796b963cc4790cf901f",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_f9179ca52ba14a5eac94d9c5451acdd8"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 895, Cork 208, Turin 673. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Lyon=895\nCork=208\nTurin=673"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon is the wettest city with 895 mm. Turin is the driest with 673 mm. The difference is 222 mm (895 - 673).",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 329
+     }
+    ],
+    "pass_with_correction": true
+   },
+   "value": 687,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare05",
+   "operation": "difference_max_min",
+   "true": [
+    747
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "747": false
+    },
+    "turn_s": 3.72,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Lyon** (890 mm). The driest city is **Graz** (383 mm). Lyon received 507 mm more rain than Graz.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "747": true
+    },
+    "turn_s": 5.53,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_994beadb4b7f43069ed6634d1dbb5ff1",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_293a6e61d0e44f50af8049e1fbbd12c3"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Graz 383, Porto 143, Lyon 890. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Graz=383\nPorto=143\nLyon=890"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon is the wettest city with 890 mm. The difference between the wettest city (Lyon) and the driest city (Porto) is 747 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 747,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare06",
+   "operation": "difference_max_min",
+   "true": [
+    750
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "750": false
+    },
+    "turn_s": 4.22,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Linz** (675 mm). The driest city is **Turin** (878 mm), so Linz received 203 mm less rain than Turin.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "750": false
+    },
+    "turn_s": 5.93,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_01bb2e1a2e594f52b0ee6b4dc324d505",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_5ce862c56d6442e5abe123b53a5e641d"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Linz 675, Lyon 128, Turin 878. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Linz=675\nLyon=128\nTurin=878"
+     }
+    },
+    "guard_refused": false,
+    "output": "Linz is the wettest city with 675 mm. Turin is the driest with 878 mm. The difference is 203 mm (878 - 675).",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 338
+     }
+    ],
+    "pass_with_correction": true
+   },
+   "value": 750,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare07",
+   "operation": "difference_max_min",
+   "true": [
+    110
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "110": false
+    },
+    "turn_s": 5.73,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Linz received the most rainfall, while Ghent had the least. The difference between the wettest and driest cities is not specified in the data provided.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "110": true
+    },
+    "turn_s": 5.13,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_1b96059c764242c5ab36fe721c88c0cd",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_fef52b3fba554041b53353a6ef55f591"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Linz 727, Turin 617, Ghent 720. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Linz=727\nTurin=617\nGhent=720"
+     }
+    },
+    "guard_refused": false,
+    "output": "Linz received the most rainfall, while Ghent had the least. The difference was 110 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 110,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare08",
+   "operation": "difference_max_min",
+   "true": [
+    83
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "83": true
+    },
+    "turn_s": 6.73,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Malmo** (646 mm). The driest city is **Lyon** (563 mm). Malmo received 83 mm more rain than Lyon.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "83": true
+    },
+    "turn_s": 4.83,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_c85d5ddf4faa43c19341e0caf78634d9",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_3afebdac307545e5aefb038f6f597f28"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 563, Porto 620, Malmo 646. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Lyon=563\nPorto=620\nMalmo=646"
+     }
+    },
+    "guard_refused": false,
+    "output": "Malmo is the wettest city with 646 mm. The difference between Malmo and Lyon is 83 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 83,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare09",
+   "operation": "difference_max_min",
+   "true": [
+    450
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "450": false
+    },
+    "turn_s": 4.22,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Lyon** (635 mm), while Porto is the driest at 365 mm. Therefore, Lyon received **270 mm more rain** than Porto.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "450": true
+    },
+    "turn_s": 5.83,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_ee427800ec3143259212a020439e2d74",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_81ecaedd2e024b28a98a4dbc7791810b"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Turin 815, Lyon 635, Porto 365. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Turin=815\nLyon=635\nPorto=365"
+     }
+    },
+    "guard_refused": false,
+    "output": "The wettest city is Turin (815 mm). The driest city is Porto (365 mm). Turin received 450 mm more rain than Porto.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 450,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare10",
+   "operation": "difference_max_min",
+   "true": [
+    302
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "302": false
+    },
+    "turn_s": 3.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city with 240 mm; Porto is the driest with 526 mm. The difference is 286 mm (Porto minus Lyon).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "302": false
+    },
+    "turn_s": 5.23,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_8960953e1490411d8c80d37e85257e59",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_0914442d60de476c92c9949e9cb84f9d"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Lyon 240, Porto 526, Turin 224. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Lyon=240\nPorto=526\nTurin=224"
+     }
+    },
+    "guard_refused": false,
+    "output": "Lyon is the wettest city with 240 mm. The difference between the wettest city (Lyon) and the driest city (Turin) is 180 mm.",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 355
+     }
+    ],
+    "pass_with_correction": false
+   },
+   "value": 302,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare11",
+   "operation": "difference_max_min",
+   "true": [
+    613
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "613": false
+    },
+    "turn_s": 6.43,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Brno received the most rainfall at 174 mm, while Ghent had the least at 346 mm. That means Brno was the wettest, and it got 128 mm more than Ghent.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "613": false
+    },
+    "turn_s": 6.13,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_efd25f99c04a430eb7cea234963f565a",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_79241c9825544a16b161a8606e93f6bd"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Brno 174, Turin 787, Ghent 346. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Brno=174\nTurin=787\nGhent=346"
+     }
+    },
+    "guard_refused": false,
+    "output": "Brno received the most rainfall at 174 mm, while Ghent had the least at 346 mm. That means Brno was the wettest, and it got 122 mm more than Ghent.",
+    "correction": [
+     {
+      "applied": true,
+      "kind": "CORRECTION",
+      "message_id": 360
+     }
+    ],
+    "pass_with_correction": false
+   },
+   "value": 613,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare12",
+   "operation": "difference_max_min",
+   "true": [
+    560
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "560": true
+    },
+    "turn_s": 3.92,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Brno received the most rainfall at 785 mm, while Porto got the least at 225 mm. That means Brno was the wettest, and it got 560 mm more than Porto.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "560": true
+    },
+    "turn_s": 6.22,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_c7313f2c33f04f57aa37a6e60c2e2c6a",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_543829aa3e7b4965b5c1c44d8b3f72e0"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Brno 785, Linz 410, Porto 225. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Brno=785\nLinz=410\nPorto=225"
+     }
+    },
+    "guard_refused": false,
+    "output": "Brno received the most rainfall at 785 mm, while Porto got the least at 225 mm. That means Brno was the wettest, and it got 560 mm more than Porto.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 560,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare13",
+   "operation": "difference_max_min",
+   "true": [
+    338
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "338": false
+    },
+    "turn_s": 3.44,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Bremen received the most rain at 359 mm, while Cork got the least at 578 mm. That means Cork was the driest, and Bremen got 239 mm more than it did.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "338": true
+    },
+    "turn_s": 5.73,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_d2fc3347179e47f29a2bb5f4772b991d",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_c4118eb20d2e49478516e06757289aec"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Bremen 359, Ghent 240, Cork 578. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Bremen=359\nGhent=240\nCork=578"
+     }
+    },
+    "guard_refused": false,
+    "output": "Cork received the most rain at 578 mm, making it the wettest city. It got 338 mm more than the driest city (Ghent with 240 mm).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 338,
+   "value_correct": true
+  },
+  {
+   "set": "match",
+   "fixture": "compare14",
+   "operation": "difference_max_min",
+   "true": [
+    517
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "517": true
+    },
+    "turn_s": 6.44,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Brno** (783 mm). The driest city is **Linz** (266 mm). Brno received 517 mm more rain than Linz.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "517": true
+    },
+    "turn_s": 5.43,
+    "status": null,
+    "tool_call": {
+     "action_tx": "atx_c32afcbd3a8148eba43f2c913c7e125e",
+     "status": "EXECUTED",
+     "tool": "list_arith",
+     "tx": "tool_b51bb53235e347d1805679f24f7b5868"
+    },
+    "tool_shadow": null,
+    "proposal": {
+     "tool": "list_arith",
+     "policy": "APPROVED",
+     "args": {
+      "operation": "difference_max_min",
+      "text": "Monthly rainfall in millimetres: Porto 598, Linz 266, Brno 783. Which city was the wettest, and how much more rain did it get than the driest city?",
+      "values": "Porto=598\nLinz=266\nBrno=783"
+     }
+    },
+    "guard_refused": false,
+    "output": "The wettest city is Brno (783 mm), while the driest is Linz (266 mm). The difference is **517 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": 517,
+   "value_correct": true
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare00",
+   "operation": null,
+   "true": [
+    389
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "389": true
+    },
+    "turn_s": 3.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (644 mm), exceeding Bremen by 389 mm. Brno is the driest city (255 mm).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "389": true
+    },
+    "turn_s": 2.32,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (644 mm), exceeding Bremen by 389 mm. Brno is the driest city (255 mm).",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare01",
+   "operation": null,
+   "true": [
+    608
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "608": false
+    },
+    "turn_s": 2.63,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (895 mm), exceeding Turin by 123 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "608": false
+    },
+    "turn_s": 1.92,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (895 mm), exceeding Turin by 123 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare02",
+   "operation": null,
+   "true": [
+    489
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "489": false
+    },
+    "turn_s": 3.32,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Lyon** (733 mm). The driest city is **Bremen** (584 mm). The difference is **149 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "489": false
+    },
+    "turn_s": 2.92,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Lyon** (733 mm). The driest city is **Bremen** (584 mm). The difference is **149 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare03",
+   "operation": null,
+   "true": [
+    365
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "365": false
+    },
+    "turn_s": 3.43,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Linz is the wettest city (433 mm). The driest city is Graz (630 mm), so Linz exceeded Graz by 207 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "365": false
+    },
+    "turn_s": 2.51,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Linz is the wettest city (433 mm). The driest city is Graz (630 mm), so Linz exceeded Graz by 207 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare04",
+   "operation": null,
+   "true": [
+    687
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "687": true
+    },
+    "turn_s": 3.22,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (895 mm). The driest city is Cork (208 mm), so the difference is 687 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "687": true
+    },
+    "turn_s": 2.95,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (895 mm). The driest city is Cork (208 mm), so the difference is 687 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare05",
+   "operation": null,
+   "true": [
+    747
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "747": false
+    },
+    "turn_s": 3.53,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Lyon** (890 mm). The driest city is **Graz** (383 mm). The difference is **507 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "747": false
+    },
+    "turn_s": 2.83,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Lyon** (890 mm). The driest city is **Graz** (383 mm). The difference is **507 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare06",
+   "operation": null,
+   "true": [
+    750
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "750": false
+    },
+    "turn_s": 4.03,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Linz** (675 mm). The driest city is **Turin** (878 mm), so Linz exceeded the driest city by **203 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "750": false
+    },
+    "turn_s": 3.03,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Linz** (675 mm). The driest city is **Turin** (878 mm), so Linz exceeded the driest city by **203 mm**.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare07",
+   "operation": null,
+   "true": [
+    110
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "110": false
+    },
+    "turn_s": 4.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Ghent** (720 mm). The driest city is **Linz** (727 mm), so the difference is **-7 mm**.\n\n*Note: This calculation assumes the provided figures are accurate for the specific locations requested.*",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "110": false
+    },
+    "turn_s": 3.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Ghent** (720 mm). The driest city is **Linz** (727 mm), so the difference is **-7 mm**.\n\n*Note: This calculation assumes the provided figures are accurate for the specific locations requested.*",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare08",
+   "operation": null,
+   "true": [
+    83
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "83": false
+    },
+    "turn_s": 3.12,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (563 mm). Malmo is the driest city (620 mm). The difference is 57 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "83": false
+    },
+    "turn_s": 2.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (563 mm). Malmo is the driest city (620 mm). The difference is 57 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare09",
+   "operation": null,
+   "true": [
+    450
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "450": false
+    },
+    "turn_s": 3.73,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Lyon** (exceeding Turin by 180 mm).\n\n*Note: This answer is based on the provided data. Actual historical records may vary.*",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "450": false
+    },
+    "turn_s": 2.73,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Lyon** (exceeding Turin by 180 mm).\n\n*Note: This answer is based on the provided data. Actual historical records may vary.*",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare10",
+   "operation": null,
+   "true": [
+    302
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "302": false
+    },
+    "turn_s": 3.13,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (240 mm). The driest city is Turin (224 mm), so the difference is 16 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "302": false
+    },
+    "turn_s": 2.52,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Lyon is the wettest city (240 mm). The driest city is Turin (224 mm), so the difference is 16 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare11",
+   "operation": null,
+   "true": [
+    613
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "613": false
+    },
+    "turn_s": 5.43,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Brno had the highest rainfall at 174 mm, while Ghent was the driest at 346 mm. That means Brno exceeded Ghent by 127 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": false,
+     "diff": false
+    },
+    "numbers": {
+     "613": false
+    },
+    "turn_s": 2.63,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Brno had the highest rainfall at 174 mm, while Ghent was the driest at 346 mm. That means Brno exceeded Ghent by 127 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare12",
+   "operation": null,
+   "true": [
+    560
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "560": true
+    },
+    "turn_s": 3.13,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Brno had the highest rainfall at 785 mm, while Porto was the driest at 225 mm. That means Brno exceeded Porto by 560 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "560": true
+    },
+    "turn_s": 2.32,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Brno had the highest rainfall at 785 mm, while Porto was the driest at 225 mm. That means Brno exceeded Porto by 560 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare13",
+   "operation": null,
+   "true": [
+    338
+   ],
+   "c3_alone": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "338": false
+    },
+    "turn_s": 4.02,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Bremen received the most rainfall at 359 mm, while Cork had the least at 578 mm. That means Bremen was the wettest, exceeding the driest city by 239 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": false,
+    "assertions": {
+     "city": true,
+     "diff": false
+    },
+    "numbers": {
+     "338": false
+    },
+    "turn_s": 3.42,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "Bremen received the most rainfall at 359 mm, while Cork had the least at 578 mm. That means Bremen was the wettest, exceeding the driest city by 239 mm.",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  },
+  {
+   "set": "nomatch",
+   "fixture": "compare14",
+   "operation": null,
+   "true": [
+    517
+   ],
+   "c3_alone": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "517": true
+    },
+    "turn_s": 7.55,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Brno** (783 mm). The driest city is **Linz** (266 mm). The difference is **517 mm**.\n\n*Note: This answer is based on the provided data points. Actual historical data may vary.*",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "tool_active": {
+    "pass": true,
+    "assertions": {
+     "city": true,
+     "diff": true
+    },
+    "numbers": {
+     "517": true
+    },
+    "turn_s": 3.62,
+    "status": null,
+    "tool_call": null,
+    "tool_shadow": null,
+    "proposal": null,
+    "guard_refused": false,
+    "output": "The wettest city is **Brno** (783 mm). The driest city is **Linz** (266 mm). The difference is **517 mm**.\n\n*Note: This answer is based on the provided data points. Actual historical data may vary.*",
+    "correction": [],
+    "pass_with_correction": false
+   },
+   "value": null,
+   "value_correct": false
+  }
+ ]
+}

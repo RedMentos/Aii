@@ -1,0 +1,16 @@
+{
+ "kind": "B3_L1_DIAGNOSIS_PREREGISTRATION",
+ "date": "2026-10-20",
+ "script": "code/scripts/b3_l1_diagnose.py",
+ "data": "cached B1/B2 states of attempt 3 (bench-results/b3-l1-v3-20261012/states.npz, sha256 df80c17b7eaaa01adf0c8690b8a343f65818d67e55e71644cd68f6208dc587d2), same 600 rows, same 5 paired seeds and fit/select/test splits, private view only",
+ "status": "EXPLORATORY re-analysis of data already seen by attempt 3. It can explain the FAIL; it can never produce a canon L1 PASS. Any PASS-like diagnostic result only licenses a new confirmatory attempt on fresh data (new data seed) with its own preregistration.",
+ "unchanged": ["v13/b3bridge.py (Bridge, l1_gate, utility, BYTES_W, BYTES_NORM)", "attempt-3 data generator and splits", "gate thresholds"],
+ "hypotheses": {
+  "H1_bytes": "The byte term is not the cause: |cost(LATENT 64 B) - cost(SYMBOLIC)| < 0.005 utility, smaller than every observed accuracy gap.",
+  "H2_head_asymmetry": "Canon LATENT is scored through a FROZEN NO_MESSAGE readout plus a message-only residual (B3-H2), while EXACT/SYMBOLIC/SYMBOLIC_ATTR/CONTROL get a jointly REFIT head on [receiver state, feature]. Tasks escalate/apologize need the receiver-private threshold re-weighted once the sender quantity is known. Test: LATENT_REFIT = same trained bridge message (BF16, unchanged encoder) with a refit head exactly like the baselines; and SYMBOLIC_ATTR_RESID / SCALAR_RESID = baselines forced through the same frozen-head residual. H2 is supported if LATENT_REFIT - LATENT >= 3 points on >= 2 of 3 tasks, or if the residual constraint costs the baselines >= 3 points on >= 2 of 3 tasks.",
+  "H3_supervision": "The bridge only sees one binary/ternary task label on 360 items, while SYMBOLIC_ATTR/SCALAR use privileged U/F labels. Test: linear probe R^2 of U and F (ridge, fit split -> test split) from the bridge message Z vs from sender PCA-16 pooled state. H3 is supported if R^2(Z) < R^2(sender PCA-16) - 0.1 for the quantity the task depends on.",
+  "H4_ceiling": "ORACLE_UF (true U, F as two numbers, refit head) bounds what any message about the sender can add; reported per task."
+ },
+ "diagnostic_gate": "l1_gate is additionally evaluated with LATENT := LATENT_REFIT (SYMBOLIC = label word, and = attribute words, as in attempt 3). Reported as 'diagnostic', never as canon verdict; no bridge manifest is written, B3_LATENT stays unavailable, runtime unchanged.",
+ "outputs": "bench-results/b3-l1-diagnose-20261020/report.json + README.md"
+}

@@ -65,9 +65,14 @@ class EffortPolicy(unittest.TestCase):
     def test_hard_limits_bind_user_override(self):
         s=sig('Vergleiche A und B','both')
         for limits,reason in (({'direct':True},'EXACT_OR_FIXED_OUTPUT'),({'observers':False},'OBSERVERS_OFF'),
-                              ({'resource_state':'PRESSURE'},'RESOURCE_PRESSURE'),({'observer_window_s':.5},'DEADLINE_NO_BODY')):
+                              ({'resource_state':'CRITICAL'},'RESOURCE_RED'),({'observer_window_s':.5},'DEADLINE_NO_BODY')):
             p=effort.decide('max',s,cfg=CFG,**limits)
             self.assertEqual(p['wake'],'none',reason);self.assertIn(reason,p['constraints']);self.assertEqual(p['max_reentry'],0);self.assertFalse(p['verify'])
+        p=effort.decide('max',s,cfg=CFG,resource_state='PRESSURE')  # §97.2 ORANGE: single-body observer, not none
+        self.assertEqual(p['wake'],p['one_body']);self.assertEqual(p['wake_ceiling'],'one');self.assertIn('RESOURCE_ORANGE',p['constraints']);self.assertEqual(p['max_reentry'],0)
+        self.assertLessEqual(p['focal_cycles'],1)
+        y=effort.decide('max',s,cfg=CFG,resource_mode='YELLOW');g=effort.decide('max',s,cfg=CFG)
+        self.assertEqual(y['wake'],'both');self.assertLess(y['observer_scale'],g['observer_scale']);self.assertLessEqual(y['focal_cycles'],2)
         p=effort.decide('max',s,cfg=CFG,observer_window_s=3.)
         self.assertEqual(p['wake'],'detail');self.assertIn('DEADLINE_ONE_BODY',p['constraints'])
         p=effort.decide('max',s,cfg={'max_reentry':0,'focal_slots':2})
@@ -95,7 +100,8 @@ class EffortPolicy(unittest.TestCase):
             try:
                 limits=effort.age_limits(AgeControl(store,cfg),'NORMAL')
                 self.assertEqual((limits['stage'],limits['autonomous_effort_max'],limits['deliberation'],limits['tools']),(0,'low',False,False))
-                self.assertEqual(effort.age_limits(AgeControl(store,cfg),'PRESSURE')['resource_mode'],'RED')
+                self.assertEqual(effort.age_limits(AgeControl(store,cfg),'PRESSURE')['resource_mode'],'ORANGE')
+                self.assertEqual(effort.age_limits(AgeControl(store,cfg),'CRITICAL')['resource_mode'],'RED')
             finally:store.close()
 
     def test_learned_wake_only_inside_ceiling_and_never_over_user_mode(self):

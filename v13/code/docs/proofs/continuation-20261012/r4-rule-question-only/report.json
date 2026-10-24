@@ -1,0 +1,192 @@
+{
+ "prereg_sha256": "348db33f4a09289dd47b8fbe55ae3cd8e300ae709cf96a1b67101ceaad11fe4b",
+ "family_d": {
+  "R0": {
+   "macro_f1": 0.4833,
+   "f1": {
+    "none": 0.5541,
+    "total": 0.6099,
+    "difference_max_min": 0.2857
+   },
+   "false_alarm_rate": 0.2381,
+   "op_confusion_rate": 0.0417,
+   "missed_rate": 0.5764,
+   "confusion": [
+    [
+     64,
+     20,
+     0
+    ],
+    [
+     29,
+     43,
+     0
+    ],
+    [
+     54,
+     6,
+     12
+    ]
+   ]
+  },
+  "R1": {
+   "macro_f1": 0.4857,
+   "f1": {
+    "none": 0.5714,
+    "total": 0.6,
+    "difference_max_min": 0.2857
+   },
+   "false_alarm_rate": 0.1429,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.6667,
+   "confusion": [
+    [
+     72,
+     12,
+     0
+    ],
+    [
+     36,
+     36,
+     0
+    ],
+    [
+     60,
+     0,
+     12
+    ]
+   ]
+  },
+  "R2": {
+   "macro_f1": 0.7944,
+   "f1": {
+    "none": 0.75,
+    "total": 0.8333,
+    "difference_max_min": 0.8
+   },
+   "false_alarm_rate": 0.1429,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.25,
+   "confusion": [
+    [
+     72,
+     12,
+     0
+    ],
+    [
+     12,
+     60,
+     0
+    ],
+    [
+     24,
+     0,
+     48
+    ]
+   ]
+  }
+ },
+ "family_b_exposed_reported_only": {
+  "R0": {
+   "macro_f1": 0.3751,
+   "f1": {
+    "none": 0.5769,
+    "total": 0.5484,
+    "difference_max_min": 0.0
+   },
+   "false_alarm_rate": 0.1071,
+   "op_confusion_rate": 0.0625,
+   "missed_rate": 0.7014,
+   "confusion": [
+    [
+     75,
+     9,
+     0
+    ],
+    [
+     38,
+     34,
+     0
+    ],
+    [
+     63,
+     9,
+     0
+    ]
+   ]
+  },
+  "R1": {
+   "macro_f1": 0.3611,
+   "f1": {
+    "none": 0.5833,
+    "total": 0.5,
+    "difference_max_min": 0.0
+   },
+   "false_alarm_rate": 0.0,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.8333,
+   "confusion": [
+    [
+     84,
+     0,
+     0
+    ],
+    [
+     48,
+     24,
+     0
+    ],
+    [
+     72,
+     0,
+     0
+    ]
+   ]
+  },
+  "R2": {
+   "macro_f1": 0.5296,
+   "f1": {
+    "none": 0.6364,
+    "total": 0.6667,
+    "difference_max_min": 0.2857
+   },
+   "false_alarm_rate": 0.0,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.6667,
+   "confusion": [
+    [
+     84,
+     0,
+     0
+    ],
+    [
+     36,
+     36,
+     0
+    ],
+    [
+     60,
+     0,
+     12
+    ]
+   ]
+  }
+ },
+ "r4_task_check": {
+  "R0": {
+   "changed": 0,
+   "examples": []
+  },
+  "R1": {
+   "changed": 0,
+   "examples": []
+  },
+  "R2": {
+   "changed": 0,
+   "examples": []
+  }
+ },
+ "adopted": null,
+ "verdict": "NOT_SUPPORTED",
+ "model_involved": false
+}

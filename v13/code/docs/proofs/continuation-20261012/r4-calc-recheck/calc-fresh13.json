@@ -1,0 +1,1900 @@
+{
+ "kind": "V13_R4_CALC_RECHECK",
+ "task_seed": 13,
+ "script_sha256": "4796ad9f97929506d697f80824223b9de2ba299b212b5066bb9b7920aa73bb50",
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "expr_system": "Write the calculation that gives the number the question asks for, as one arithmetic expression. Use only numbers copied exactly from the text and the operators + - * /. Never write names, the result itself or an equals sign. A total adds all listed amounts. \"How much more\" is the larger number minus the smaller one. Example: \"Items: pens 12 euros, ink 30 euros. Give the total.\" -> {\"expression\": \"12 + 30\"}. Example: \"Rain: Oslo 31, Rome 75, Pisa 52. How much more in the wettest city than the driest?\" -> {\"expression\": \"75 - 31\"}. Return JSON only.",
+ "result_template": "\n\nExact local calculator result: {expression} = {value}. If the text states a different number for this, say clearly that it is wrong. Answer every part of the question.",
+ "rows": [
+  {
+   "fixture": "summary00",
+   "pass1": {
+    "pass": true,
+    "turn_s": 6.94,
+    "status": null,
+    "features": {
+     "min_logprob": -2.197564125061035,
+     "mean_logprob": -0.37887431013138645,
+     "p10_logprob": -1.1310434341430664,
+     "share_below_half": 0.18604651162790697,
+     "digit_min_logprob": -0.03412789851427078,
+     "tokens": 43.0
+    },
+    "output": "No, the summary is incorrect. The calculation should be: 95 + 41 + 30 = 166 euros. The current total of 156 euros is wrong."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"95 + 41 + 30\"}",
+    "expression": "95 + 41 + 30",
+    "value": 166,
+    "error": null,
+    "s": 1.2
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.63,
+    "status": null,
+    "features": {
+     "min_logprob": -1.52379310131073,
+     "mean_logprob": -0.34421388955143767,
+     "p10_logprob": -1.0550971031188965,
+     "share_below_half": 0.14285714285714285,
+     "digit_min_logprob": -0.0015220894711092114,
+     "tokens": 21.0
+    },
+    "output": "The summary line should reflect the actual total from the calculation. The correct total is 166 euros."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary01",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.53,
+    "status": null,
+    "features": {
+     "min_logprob": -1.3433061838150024,
+     "mean_logprob": -0.32805708853893206,
+     "p10_logprob": -1.1999410390853882,
+     "share_below_half": 0.20689655172413793,
+     "digit_min_logprob": -1.2887924909591675,
+     "tokens": 29.0
+    },
+    "output": "No, the summary is incorrect. The correct total is 176 euros (80 + 39 + 49)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"80 + 39 + 49\"}",
+    "expression": "80 + 39 + 49",
+    "value": 168,
+    "error": null,
+    "s": 0.5
+   },
+   "pass3": {
+    "pass": true,
+    "turn_s": 5.93,
+    "status": null,
+    "features": {
+     "min_logprob": -1.727096438407898,
+     "mean_logprob": -0.3423840371288836,
+     "p10_logprob": -1.3181607723236084,
+     "share_below_half": 0.19444444444444445,
+     "digit_min_logprob": -0.03368980064988136,
+     "tokens": 36.0
+    },
+    "output": "The summary line should reflect the correct total. The calculation shows 80 + 39 + 49 equals 168 euros. The provided total of 148 euros appears incorrect."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary02",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.42,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5446367263793945,
+     "mean_logprob": -0.33990205135053436,
+     "p10_logprob": -0.9942280054092407,
+     "share_below_half": 0.1724137931034483,
+     "digit_min_logprob": -0.594785213470459,
+     "tokens": 29.0
+    },
+    "output": "No, the summary is incorrect. The correct total is 109 euros (47 + 30 + 22)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"47 + 30 + 22\"}",
+    "expression": "47 + 30 + 22",
+    "value": 99,
+    "error": null,
+    "s": 0.47
+   },
+   "pass3": {
+    "pass": true,
+    "turn_s": 6.13,
+    "status": null,
+    "features": {
+     "min_logprob": -1.3442376852035522,
+     "mean_logprob": -0.273644276896853,
+     "p10_logprob": -1.1172128915786743,
+     "share_below_half": 0.16666666666666666,
+     "digit_min_logprob": -0.002780723851174116,
+     "tokens": 36.0
+    },
+    "output": "The summary line should reflect the actual total. The calculation is 47 + 30 + 22 = 99 euros. The reported total of 109 euros is incorrect."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary03",
+   "pass1": {
+    "pass": true,
+    "turn_s": 9.25,
+    "status": null,
+    "features": {
+     "min_logprob": -2.4292285442352295,
+     "mean_logprob": -0.774856218150119,
+     "p10_logprob": -1.7639926671981812,
+     "share_below_half": 0.46296296296296297,
+     "digit_min_logprob": -0.4825838506221771,
+     "tokens": 108.0
+    },
+    "output": "No, the summary is incorrect. The correct total is **142 euros** (44 + 57 + 41).\n\nThe discrepancy arises because the user's request does not explicitly state that the \"Total\" line must be calculated from the individual item prices; it only lists the items and their values. Therefore, the summary line cannot be derived solely from the provided numbers without making an assumption about how the tota"
+   },
+   "expression": {
+    "raw": "{\"expression\": \"44 + 57 + 41\"}",
+    "expression": "44 + 57 + 41",
+    "value": 142,
+    "error": null,
+    "s": 0.51
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.23,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5754858255386353,
+     "mean_logprob": -0.40568289284904796,
+     "p10_logprob": -1.2816866636276245,
+     "share_below_half": 0.23809523809523808,
+     "digit_min_logprob": -0.014626194722950459,
+     "tokens": 21.0
+    },
+    "output": "The summary line should reflect the actual total from the calculations. The correct total is 142 euros."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary04",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.22,
+    "status": null,
+    "features": {
+     "min_logprob": -1.3476502895355225,
+     "mean_logprob": -0.30164687493555087,
+     "p10_logprob": -0.939967691898346,
+     "share_below_half": 0.13793103448275862,
+     "digit_min_logprob": -0.5094389319419861,
+     "tokens": 29.0
+    },
+    "output": "No, the summary is incorrect. The correct total is 202 euros (67 + 93 + 52)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"67 + 93 + 52\"}",
+    "expression": "67 + 93 + 52",
+    "value": 212,
+    "error": null,
+    "s": 0.47
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.53,
+    "status": null,
+    "features": {
+     "min_logprob": -1.336918830871582,
+     "mean_logprob": -0.35775526662889334,
+     "p10_logprob": -1.063499093055725,
+     "share_below_half": 0.19047619047619047,
+     "digit_min_logprob": -0.006162579171359539,
+     "tokens": 21.0
+    },
+    "output": "The summary line should reflect the actual total from the calculation. The correct total is 212 euros."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary05",
+   "pass1": {
+    "pass": true,
+    "turn_s": 5.83,
+    "status": null,
+    "features": {
+     "min_logprob": -1.3729097843170166,
+     "mean_logprob": -0.34742178623164366,
+     "p10_logprob": -1.093542218208313,
+     "share_below_half": 0.23333333333333334,
+     "digit_min_logprob": -0.7520819306373596,
+     "tokens": 30.0
+    },
+    "output": "No, the summary is incorrect. The correct total is **201 euros** (82 + 90 + 29)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"82 + 90 + 29\"}",
+    "expression": "82 + 90 + 29",
+    "value": 201,
+    "error": null,
+    "s": 0.48
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.83,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5454516410827637,
+     "mean_logprob": -0.3802073015498796,
+     "p10_logprob": -1.1386374235153198,
+     "share_below_half": 0.23809523809523808,
+     "digit_min_logprob": -0.013758339919149876,
+     "tokens": 21.0
+    },
+    "output": "The summary line should reflect the actual total from the calculation. The correct total is 201 euros."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary06",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.93,
+    "status": null,
+    "features": {
+     "min_logprob": -1.420974612236023,
+     "mean_logprob": -0.3411139976838361,
+     "p10_logprob": -1.1939777135849,
+     "share_below_half": 0.16666666666666666,
+     "digit_min_logprob": -0.5155282020568848,
+     "tokens": 30.0
+    },
+    "output": "No, the summary is incorrect. The correct total is **114 euros** (49 + 37 + 34)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"49 + 37 + 34\"}",
+    "expression": "49 + 37 + 34",
+    "value": 120,
+    "error": null,
+    "s": 0.56
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 6.02,
+    "status": null,
+    "features": {
+     "min_logprob": -1.6306055784225464,
+     "mean_logprob": -0.2748430287488129,
+     "p10_logprob": -1.2441072463989258,
+     "share_below_half": 0.13513513513513514,
+     "digit_min_logprob": -0.245859757065773,
+     "tokens": 37.0
+    },
+    "output": "The summary line should reflect the actual total. The calculation shows 49 + 37 + 34 equals 120, not 130. The correct total is 120 euros."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary07",
+   "pass1": {
+    "pass": true,
+    "turn_s": 6.03,
+    "status": null,
+    "features": {
+     "min_logprob": -2.5477230548858643,
+     "mean_logprob": -0.3191943288113093,
+     "p10_logprob": -0.8237045407295227,
+     "share_below_half": 0.16666666666666666,
+     "digit_min_logprob": -0.010289255529642105,
+     "tokens": 42.0
+    },
+    "output": "No, the summary is incorrect. The calculation is: 45 + 89 + 47 = 181 euros. The stated total of 201 euros is wrong."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"45 + 89 + 47\"}",
+    "expression": "45 + 89 + 47",
+    "value": 181,
+    "error": null,
+    "s": 0.5
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.73,
+    "status": null,
+    "features": {
+     "min_logprob": -1.1761186122894287,
+     "mean_logprob": -0.3201322794969504,
+     "p10_logprob": -1.030954360961914,
+     "share_below_half": 0.19047619047619047,
+     "digit_min_logprob": -0.004111146088689566,
+     "tokens": 21.0
+    },
+    "output": "The summary line should reflect the actual total from the calculation. The correct total is 181 euros."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary08",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.53,
+    "status": null,
+    "features": {
+     "min_logprob": -1.4461076259613037,
+     "mean_logprob": -0.3407258508374572,
+     "p10_logprob": -1.1233450174331665,
+     "share_below_half": 0.20689655172413793,
+     "digit_min_logprob": -1.312643051147461,
+     "tokens": 29.0
+    },
+    "output": "No, the summary is incorrect. The correct total is 150 euros (84 + 42 + 36)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"84 + 42 + 36\"}",
+    "expression": "84 + 42 + 36",
+    "value": 162,
+    "error": null,
+    "s": 0.53
+   },
+   "pass3": {
+    "pass": true,
+    "turn_s": 6.13,
+    "status": null,
+    "features": {
+     "min_logprob": -1.8249603509902954,
+     "mean_logprob": -0.33787932042768415,
+     "p10_logprob": -0.9457426071166992,
+     "share_below_half": 0.15151515151515152,
+     "digit_min_logprob": -0.0026127228047698736,
+     "tokens": 33.0
+    },
+    "output": "The summary line should reflect the accurate total. The correct total is 162 euros. The provided figure of 172 euros appears incorrect based on the listed items."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary09",
+   "pass1": {
+    "pass": true,
+    "turn_s": 6.33,
+    "status": null,
+    "features": {
+     "min_logprob": -2.2722604274749756,
+     "mean_logprob": -0.36339532823957027,
+     "p10_logprob": -0.9753578305244446,
+     "share_below_half": 0.16279069767441862,
+     "digit_min_logprob": -0.03186136111617088,
+     "tokens": 43.0
+    },
+    "output": "No, the summary is incorrect. The calculation should be: 95 + 92 + 71 = 258 euros. The current total of 278 euros is wrong."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"95 + 92 + 71\"}",
+    "expression": "95 + 92 + 71",
+    "value": 258,
+    "error": null,
+    "s": 0.51
+   },
+   "pass3": {
+    "pass": true,
+    "turn_s": 6.03,
+    "status": null,
+    "features": {
+     "min_logprob": -1.948814868927002,
+     "mean_logprob": -0.3692999053464866,
+     "p10_logprob": -1.2723145484924316,
+     "share_below_half": 0.2222222222222222,
+     "digit_min_logprob": -0.7018219232559204,
+     "tokens": 36.0
+    },
+    "output": "The summary line should reflect the correct total. The calculation shows 95 + 92 + 71 equals 258 euros. The stated total of 278 euros appears incorrect."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary10",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.72,
+    "status": null,
+    "features": {
+     "min_logprob": -1.4246866703033447,
+     "mean_logprob": -0.2996605073050636,
+     "p10_logprob": -0.8526694178581238,
+     "share_below_half": 0.1724137931034483,
+     "digit_min_logprob": -0.7829065322875977,
+     "tokens": 29.0
+    },
+    "output": "No, the summary is incorrect. The correct total is 150 euros (40 + 30 + 75)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"40 + 30 + 75\"}",
+    "expression": "40 + 30 + 75",
+    "value": 145,
+    "error": null,
+    "s": 0.47
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.52,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5279830694198608,
+     "mean_logprob": -0.39175156679093126,
+     "p10_logprob": -1.2079085111618042,
+     "share_below_half": 0.23809523809523808,
+     "digit_min_logprob": -0.003264086088165641,
+     "tokens": 21.0
+    },
+    "output": "The summary line should reflect the actual total from the calculation. The correct total is 145 euros."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary11",
+   "pass1": {
+    "pass": true,
+    "turn_s": 6.63,
+    "status": null,
+    "features": {
+     "min_logprob": -2.1527984142303467,
+     "mean_logprob": -0.30929925238229944,
+     "p10_logprob": -0.7716765999794006,
+     "share_below_half": 0.14285714285714285,
+     "digit_min_logprob": -0.02020445093512535,
+     "tokens": 42.0
+    },
+    "output": "No, the summary is incorrect. The calculation is: 44 + 56 + 37 = 137 euros. The stated total of 147 euros is wrong."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"44 + 56 + 37\"}",
+    "expression": "44 + 56 + 37",
+    "value": 137,
+    "error": null,
+    "s": 0.5
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.52,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5159776210784912,
+     "mean_logprob": -0.4054342044983059,
+     "p10_logprob": -1.3560919761657715,
+     "share_below_half": 0.23809523809523808,
+     "digit_min_logprob": -0.010828198865056038,
+     "tokens": 21.0
+    },
+    "output": "The summary line should reflect the actual total from the calculation. The correct total is 137 euros."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary12",
+   "pass1": {
+    "pass": true,
+    "turn_s": 5.73,
+    "status": null,
+    "features": {
+     "min_logprob": -1.3604718446731567,
+     "mean_logprob": -0.3205005759205354,
+     "p10_logprob": -1.0409637689590454,
+     "share_below_half": 0.2,
+     "digit_min_logprob": -0.9145247936248779,
+     "tokens": 30.0
+    },
+    "output": "No, the summary is incorrect. The correct total is **205 euros** (75 + 39 + 91)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"75 + 39 + 91\"}",
+    "expression": "75 + 39 + 91",
+    "value": 205,
+    "error": null,
+    "s": 0.5
+   },
+   "pass3": {
+    "pass": true,
+    "turn_s": 6.23,
+    "status": null,
+    "features": {
+     "min_logprob": -1.6377410888671875,
+     "mean_logprob": -0.29502928491099384,
+     "p10_logprob": -0.9632529020309448,
+     "share_below_half": 0.15217391304347827,
+     "digit_min_logprob": -0.028071025386452675,
+     "tokens": 46.0
+    },
+    "output": "The summary line should reflect the actual total. The calculation shows 75 + 39 + 91 equals 205 euros. If the text claims a different amount, that is incorrect. The correct total is 205 euros."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary13",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.32,
+    "status": null,
+    "features": {
+     "min_logprob": -1.4476544857025146,
+     "mean_logprob": -0.35441450244478145,
+     "p10_logprob": -0.9670540690422058,
+     "share_below_half": 0.20689655172413793,
+     "digit_min_logprob": -1.2890667915344238,
+     "tokens": 29.0
+    },
+    "output": "No, the summary is incorrect. The correct total is 219 euros (86 + 84 + 55)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"86 + 84 + 55\"}",
+    "expression": "86 + 84 + 55",
+    "value": 225,
+    "error": null,
+    "s": 0.48
+   },
+   "pass3": {
+    "pass": true,
+    "turn_s": 5.82,
+    "status": null,
+    "features": {
+     "min_logprob": -1.21600341796875,
+     "mean_logprob": -0.2748244961861385,
+     "p10_logprob": -1.0807762145996094,
+     "share_below_half": 0.19444444444444445,
+     "digit_min_logprob": -0.0034266344737261534,
+     "tokens": 36.0
+    },
+    "output": "The summary line should reflect the actual total. The calculation is 86 + 84 + 55 = 225 euros. The reported total of 215 euros is incorrect."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "summary14",
+   "pass1": {
+    "pass": true,
+    "turn_s": 6.33,
+    "status": null,
+    "features": {
+     "min_logprob": -2.395881414413452,
+     "mean_logprob": -0.35264456131162225,
+     "p10_logprob": -0.866023063659668,
+     "share_below_half": 0.19047619047619047,
+     "digit_min_logprob": -0.034484438598155975,
+     "tokens": 42.0
+    },
+    "output": "No, the summary is incorrect. The calculation is: 83 + 26 + 40 = 149 euros. The current total of 139 euros is wrong."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"83 + 26 + 40\"}",
+    "expression": "83 + 26 + 40",
+    "value": 149,
+    "error": null,
+    "s": 0.49
+   },
+   "pass3": {
+    "pass": true,
+    "turn_s": 6.22,
+    "status": null,
+    "features": {
+     "min_logprob": -1.734192132949829,
+     "mean_logprob": -0.32970034585782315,
+     "p10_logprob": -1.3169820308685303,
+     "share_below_half": 0.16666666666666666,
+     "digit_min_logprob": -0.12069874256849289,
+     "tokens": 36.0
+    },
+    "output": "The summary line should reflect the actual total. The calculation shows 83 + 26 + 40 equals 149 euros. The stated total of 139 euros is incorrect."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "long00",
+   "pass1": {
+    "pass": true,
+    "turn_s": 3.92,
+    "status": null,
+    "features": {
+     "min_logprob": -0.4805309474468231,
+     "mean_logprob": -0.09267664956622376,
+     "p10_logprob": -0.22122551500797272,
+     "share_below_half": 0.0,
+     "digit_min_logprob": -5.722209607483819e-05,
+     "tokens": 13.0
+    },
+    "output": "The survey counted exactly 559 bicycles in Linz."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"559\"}",
+    "expression": "559",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.51
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long01",
+   "pass1": {
+    "pass": true,
+    "turn_s": 3.72,
+    "status": null,
+    "features": {
+     "min_logprob": -0.5580881834030151,
+     "mean_logprob": -0.0831436751612576,
+     "p10_logprob": -0.19620369374752045,
+     "share_below_half": 0.0,
+     "digit_min_logprob": -5.757974577136338e-05,
+     "tokens": 12.0
+    },
+    "output": "The survey counted exactly 249 bicycles in Graz."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"249\"}",
+    "expression": "249",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.42
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long02",
+   "pass1": {
+    "pass": true,
+    "turn_s": 4.42,
+    "status": null,
+    "features": {
+     "min_logprob": -0.6363349556922913,
+     "mean_logprob": -0.12348200637103446,
+     "p10_logprob": -0.42505040764808655,
+     "share_below_half": 0.0,
+     "digit_min_logprob": -0.0001328079670201987,
+     "tokens": 16.0
+    },
+    "output": "The survey counted exactly 601 bicycles at the station in Linz."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"601\"}",
+    "expression": "601",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.41
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long03",
+   "pass1": {
+    "pass": true,
+    "turn_s": 4.13,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5692471265792847,
+     "mean_logprob": -0.13140921848999618,
+     "p10_logprob": -0.26452168822288513,
+     "share_below_half": 0.058823529411764705,
+     "digit_min_logprob": -3.325994475744665e-05,
+     "tokens": 17.0
+    },
+    "output": "The survey counted exactly 693 bicycles parked at the station in Turin."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"693\"}",
+    "expression": "693",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.38
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long04",
+   "pass1": {
+    "pass": true,
+    "turn_s": 5.23,
+    "status": null,
+    "features": {
+     "min_logprob": -1.3836168050765991,
+     "mean_logprob": -0.4878313895001506,
+     "p10_logprob": -1.0973422527313232,
+     "share_below_half": 0.15384615384615385,
+     "digit_min_logprob": -0.011459131725132465,
+     "tokens": 13.0
+    },
+    "output": "The survey counted exactly 505 bicycles in Graz."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"505\"}",
+    "expression": "505",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.39
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long05",
+   "pass1": {
+    "pass": true,
+    "turn_s": 5.02,
+    "status": null,
+    "features": {
+     "min_logprob": -1.1179853677749634,
+     "mean_logprob": -0.11820551776418142,
+     "p10_logprob": -0.34640932083129883,
+     "share_below_half": 0.0625,
+     "digit_min_logprob": -1.8477610865375027e-05,
+     "tokens": 16.0
+    },
+    "output": "The survey counted exactly 722 bicycles at the station in Brno."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"722\"}",
+    "expression": "722",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.39
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long06",
+   "pass1": {
+    "pass": true,
+    "turn_s": 5.02,
+    "status": null,
+    "features": {
+     "min_logprob": -1.1196750402450562,
+     "mean_logprob": -0.4220982937799168,
+     "p10_logprob": -0.9160690307617188,
+     "share_below_half": 0.2857142857142857,
+     "digit_min_logprob": -0.008258495479822159,
+     "tokens": 14.0
+    },
+    "output": "The survey counted exactly 555 bicycles in Ghent."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"555\"}",
+    "expression": "555",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.38
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long07",
+   "pass1": {
+    "pass": true,
+    "turn_s": 5.02,
+    "status": null,
+    "features": {
+     "min_logprob": -0.9052482843399048,
+     "mean_logprob": -0.12111139111546738,
+     "p10_logprob": -0.42217740416526794,
+     "share_below_half": 0.06666666666666667,
+     "digit_min_logprob": -1.7881409348774469e-06,
+     "tokens": 15.0
+    },
+    "output": "The survey counted exactly 124 bicycles at the station in Cork."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"124\"}",
+    "expression": "124",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.45
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long08",
+   "pass1": {
+    "pass": true,
+    "turn_s": 5.13,
+    "status": null,
+    "features": {
+     "min_logprob": -1.665464162826538,
+     "mean_logprob": -0.5386831825599074,
+     "p10_logprob": -1.2839466333389282,
+     "share_below_half": 0.3076923076923077,
+     "digit_min_logprob": -0.01221263874322176,
+     "tokens": 13.0
+    },
+    "output": "The survey counted exactly 416 bicycles in Graz."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"416\"}",
+    "expression": "416",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.41
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long09",
+   "pass1": {
+    "pass": true,
+    "turn_s": 4.82,
+    "status": null,
+    "features": {
+     "min_logprob": -1.1899058818817139,
+     "mean_logprob": -0.14230044968420477,
+     "p10_logprob": -0.7211069464683533,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -2.8849064619862475e-05,
+     "tokens": 17.0
+    },
+    "output": "The survey counted exactly 343 bicycles parked at the station in Bremen."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"343\"}",
+    "expression": "343",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.4
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long10",
+   "pass1": {
+    "pass": true,
+    "turn_s": 3.92,
+    "status": null,
+    "features": {
+     "min_logprob": -0.751244843006134,
+     "mean_logprob": -0.08592924441450123,
+     "p10_logprob": -0.27486634254455566,
+     "share_below_half": 0.0625,
+     "digit_min_logprob": -6.723630212945864e-05,
+     "tokens": 16.0
+    },
+    "output": "The survey counted exactly 489 bicycles at the station in Linz."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"489\"}",
+    "expression": "489",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.44
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long11",
+   "pass1": {
+    "pass": true,
+    "turn_s": 3.82,
+    "status": null,
+    "features": {
+     "min_logprob": -0.9286593794822693,
+     "mean_logprob": -0.11388238007705999,
+     "p10_logprob": -0.3266838490962982,
+     "share_below_half": 0.06666666666666667,
+     "digit_min_logprob": -2.8729851692332886e-05,
+     "tokens": 15.0
+    },
+    "output": "The survey counted exactly 942 bicycles at the station in Bremen."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"942\"}",
+    "expression": "942",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.44
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long12",
+   "pass1": {
+    "pass": true,
+    "turn_s": 3.92,
+    "status": null,
+    "features": {
+     "min_logprob": -1.147882103919983,
+     "mean_logprob": -0.15124000081353492,
+     "p10_logprob": -0.7149956226348877,
+     "share_below_half": 0.13333333333333333,
+     "digit_min_logprob": -0.00012803896970581263,
+     "tokens": 15.0
+    },
+    "output": "The survey counted exactly 817 bicycles at the station in Porto."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"817\"}",
+    "expression": "817",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.4
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long13",
+   "pass1": {
+    "pass": true,
+    "turn_s": 3.93,
+    "status": null,
+    "features": {
+     "min_logprob": -0.5790993571281433,
+     "mean_logprob": -0.13781481460894915,
+     "p10_logprob": -0.5129894018173218,
+     "share_below_half": 0.0,
+     "digit_min_logprob": -8.940736734075472e-06,
+     "tokens": 12.0
+    },
+    "output": "The survey counted exactly 168 bicycles in Porto."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"168\"}",
+    "expression": "168",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.45
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "long14",
+   "pass1": {
+    "pass": true,
+    "turn_s": 5.42,
+    "status": null,
+    "features": {
+     "min_logprob": -1.4905182123184204,
+     "mean_logprob": -0.5553514642569308,
+     "p10_logprob": -1.2911128997802734,
+     "share_below_half": 0.38461538461538464,
+     "digit_min_logprob": -0.007086591795086861,
+     "tokens": 13.0
+    },
+    "output": "The survey counted exactly 979 bicycles in Graz."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"979\"}",
+    "expression": "979",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.4
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes00",
+   "pass1": {
+    "pass": true,
+    "turn_s": 4.34,
+    "status": null,
+    "features": {
+     "min_logprob": -1.108015775680542,
+     "mean_logprob": -0.19144908184590542,
+     "p10_logprob": -1.0442030429840088,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -6.926299829501659e-05,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 47, according to the 18 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"47\"}",
+    "expression": "47",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.29
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes01",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.01,
+    "status": null,
+    "features": {
+     "min_logprob": -0.6684141159057617,
+     "mean_logprob": -0.14225943888718842,
+     "p10_logprob": -0.4958944022655487,
+     "share_below_half": 0.0,
+     "digit_min_logprob": -0.2652689814567566,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 37, according to the 6 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"33\"}",
+    "expression": "33",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.31
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes02",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.32,
+    "status": null,
+    "features": {
+     "min_logprob": -0.7190325856208801,
+     "mean_logprob": -0.12840482644006604,
+     "p10_logprob": -0.5086195468902588,
+     "share_below_half": 0.058823529411764705,
+     "digit_min_logprob": -0.18109166622161865,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 68, according to the 9 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"43\"}",
+    "expression": "43",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.29
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes03",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.01,
+    "status": null,
+    "features": {
+     "min_logprob": -0.9032885432243347,
+     "mean_logprob": -0.18311505346783258,
+     "p10_logprob": -0.8215158581733704,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -0.4487799406051636,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 42, according to the 27 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"20\"}",
+    "expression": "20",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.31
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes04",
+   "pass1": {
+    "pass": true,
+    "turn_s": 4.83,
+    "status": null,
+    "features": {
+     "min_logprob": -1.4325151443481445,
+     "mean_logprob": -0.5356722081178305,
+     "p10_logprob": -1.3589743375778198,
+     "share_below_half": 0.375,
+     "digit_min_logprob": -0.0728461891412735,
+     "tokens": 16.0
+    },
+    "output": "The most recent note is from March 10 (62 members)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"62\"}",
+    "expression": "62",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.34
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes05",
+   "pass1": {
+    "pass": true,
+    "turn_s": 4.22,
+    "status": null,
+    "features": {
+     "min_logprob": -0.8565815091133118,
+     "mean_logprob": -0.14268382311371064,
+     "p10_logprob": -0.7330572009086609,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -0.05103045329451561,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 55, according to the 9 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"40\"}",
+    "expression": "40",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.31
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes06",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.22,
+    "status": null,
+    "features": {
+     "min_logprob": -0.9770797491073608,
+     "mean_logprob": -0.1527964961272082,
+     "p10_logprob": -0.7972888350486755,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -0.15277884900569916,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 32, according to the 17 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"29\"}",
+    "expression": "29",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.31
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes07",
+   "pass1": {
+    "pass": true,
+    "turn_s": 5.03,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5672731399536133,
+     "mean_logprob": -0.5480858562550566,
+     "p10_logprob": -1.354705810546875,
+     "share_below_half": 0.375,
+     "digit_min_logprob": -0.08076300472021103,
+     "tokens": 16.0
+    },
+    "output": "The most recent note is from March 12 (41 members)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"41\"}",
+    "expression": "41",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.29
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes08",
+   "pass1": {
+    "pass": true,
+    "turn_s": 4.22,
+    "status": null,
+    "features": {
+     "min_logprob": -1.2303978204727173,
+     "mean_logprob": -0.19237533873114182,
+     "p10_logprob": -1.03994882106781,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -0.3992515206336975,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 47, according to the 15 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"36\"}",
+    "expression": "36",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.31
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes09",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.01,
+    "status": null,
+    "features": {
+     "min_logprob": -1.0147613286972046,
+     "mean_logprob": -0.16479119066062756,
+     "p10_logprob": -0.9133267998695374,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -0.13713526725769043,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 48, according to the 25 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"39\"}",
+    "expression": "39",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.26
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes10",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.01,
+    "status": null,
+    "features": {
+     "min_logprob": -0.9622952938079834,
+     "mean_logprob": -0.15772499308171545,
+     "p10_logprob": -0.9026516675949097,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -0.013063451275229454,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 32, according to the 16 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"11\"}",
+    "expression": "11",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.3
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes11",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.21,
+    "status": null,
+    "features": {
+     "min_logprob": -1.0401036739349365,
+     "mean_logprob": -0.1891036849868295,
+     "p10_logprob": -1.0361236333847046,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -0.0025102386716753244,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 24, according to the 19 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"24\"}",
+    "expression": "24",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.29
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes12",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.11,
+    "status": null,
+    "features": {
+     "min_logprob": -0.8533434867858887,
+     "mean_logprob": -0.1332178656293245,
+     "p10_logprob": -0.4667729437351227,
+     "share_below_half": 0.058823529411764705,
+     "digit_min_logprob": -0.13811810314655304,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 62, according to the 24 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"41\"}",
+    "expression": "41",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.28
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes13",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.12,
+    "status": null,
+    "features": {
+     "min_logprob": -1.1857414245605469,
+     "mean_logprob": -0.20812494364506218,
+     "p10_logprob": -1.1793476343154907,
+     "share_below_half": 0.11764705882352941,
+     "digit_min_logprob": -0.00018032030493486673,
+     "tokens": 17.0
+    },
+    "output": "The most recent number is 81, according to the 23 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"81\"}",
+    "expression": "81",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.27
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "notes14",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.11,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5024720430374146,
+     "mean_logprob": -0.30219218313126667,
+     "p10_logprob": -1.2182725667953491,
+     "share_below_half": 0.15789473684210525,
+     "digit_min_logprob": -0.007778719998896122,
+     "tokens": 19.0
+    },
+    "output": "The most recent number is 38, as it comes from the 22 March note."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"38\"}",
+    "expression": "38",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.34
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare00",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.23,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5916624069213867,
+     "mean_logprob": -0.34101966205594963,
+     "p10_logprob": -1.239785075187683,
+     "share_below_half": 0.20689655172413793,
+     "digit_min_logprob": -0.018684713169932365,
+     "tokens": 29.0
+    },
+    "output": "Cork had the most rain (849 mm) compared to Bremen (612 mm) by 237 mm."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"849 + 612 + 538\"}",
+    "expression": "849 + 612 + 538",
+    "value": 1999,
+    "error": null,
+    "s": 0.4
+   },
+   "pass3": {
+    "pass": true,
+    "turn_s": 5.93,
+    "status": null,
+    "features": {
+     "min_logprob": -0.9998518824577332,
+     "mean_logprob": -0.13695005161911158,
+     "p10_logprob": -0.4794626235961914,
+     "share_below_half": 0.07142857142857142,
+     "digit_min_logprob": -0.24725627899169922,
+     "tokens": 28.0
+    },
+    "output": "Cork had the most rain with 849 mm. Graz had the least at 538 mm. The difference is 311 mm."
+   },
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare01",
+   "pass1": {
+    "pass": false,
+    "turn_s": 6.02,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5268378257751465,
+     "mean_logprob": -0.34302265524675024,
+     "p10_logprob": -1.0318905115127563,
+     "share_below_half": 0.25,
+     "digit_min_logprob": -0.9456740617752075,
+     "tokens": 40.0
+    },
+    "output": "Malmo had the most rain (122 mm) compared to Turin (196 mm). The difference is 74 mm (196 - 122)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"122 + 722 + 196\"}",
+    "expression": "122 + 722 + 196",
+    "value": 1040,
+    "error": null,
+    "s": 0.38
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 6.32,
+    "status": null,
+    "features": {
+     "min_logprob": -1.4667339324951172,
+     "mean_logprob": -0.228582516450435,
+     "p10_logprob": -0.796445369720459,
+     "share_below_half": 0.10416666666666667,
+     "digit_min_logprob": -0.6006436347961426,
+     "tokens": 48.0
+    },
+    "output": "Malmo had the most rain with 122 mm. Turin had the least at 196 mm. The difference is 122 minus 196, which equals -74 mm. That means Malmo was 74 mm more than Turin."
+   },
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare02",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.82,
+    "status": null,
+    "features": {
+     "min_logprob": -1.7656973600387573,
+     "mean_logprob": -0.30452288850126313,
+     "p10_logprob": -0.9439548850059509,
+     "share_below_half": 0.12195121951219512,
+     "digit_min_logprob": -0.5702313184738159,
+     "tokens": 41.0
+    },
+    "output": "The city with the most rain is **Graz** (878 mm). The difference between Graz and Porto is **113 mm** (878 - 685)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"Graz 878\"}",
+    "expression": "Graz 878",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.42
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare03",
+   "pass1": {
+    "pass": false,
+    "turn_s": 2.81,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5366135835647583,
+     "mean_logprob": -0.299117666869389,
+     "p10_logprob": -0.8981721997261047,
+     "share_below_half": 0.15151515151515152,
+     "digit_min_logprob": -0.20837198197841644,
+     "tokens": 33.0
+    },
+    "output": "Ghent has the most rain (637 mm) while Graz has the least (537 mm). The difference is 100 mm."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"Ghent + Porto + Graz\"}",
+    "expression": "Ghent + Porto + Graz",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.37
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare04",
+   "pass1": {
+    "pass": false,
+    "turn_s": 2.72,
+    "status": null,
+    "features": {
+     "min_logprob": -1.9733940362930298,
+     "mean_logprob": -0.34377302057785736,
+     "p10_logprob": -0.869101345539093,
+     "share_below_half": 0.1935483870967742,
+     "digit_min_logprob": -0.24692149460315704,
+     "tokens": 31.0
+    },
+    "output": "Lyon had the most rain (477 mm) compared to Graz (251 mm). The difference is 226 mm."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"75 - 31\"}",
+    "expression": "75 - 31",
+    "value": 44,
+    "error": null,
+    "s": 0.33
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.62,
+    "status": null,
+    "features": {
+     "min_logprob": -1.2916576862335205,
+     "mean_logprob": -0.14142324144984678,
+     "p10_logprob": -0.49587953090667725,
+     "share_below_half": 0.034482758620689655,
+     "digit_min_logprob": -0.0022306866012513638,
+     "tokens": 29.0
+    },
+    "output": "Porto had the most rain with 75 mm, while Graz had the least at 251 mm. The difference is 44 mm."
+   },
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare05",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.53,
+    "status": null,
+    "features": {
+     "min_logprob": -2.082270383834839,
+     "mean_logprob": -0.4234694351291637,
+     "p10_logprob": -1.0013972520828247,
+     "share_below_half": 0.21875,
+     "digit_min_logprob": -0.9745836853981018,
+     "tokens": 32.0
+    },
+    "output": "Turin had the most rain (797 mm) while Bremen had the least (838 mm). The difference is 41 mm."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"453 + 838\"}",
+    "expression": "453 + 838",
+    "value": 1291,
+    "error": null,
+    "s": 0.37
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.53,
+    "status": null,
+    "features": {
+     "min_logprob": -1.3684146404266357,
+     "mean_logprob": -0.15589378614391408,
+     "p10_logprob": -0.6040855646133423,
+     "share_below_half": 0.034482758620689655,
+     "digit_min_logprob": -0.6302119493484497,
+     "tokens": 29.0
+    },
+    "output": "Turin had the most rain with 797 mm. Bremen had the least at 838 mm. The difference is 1291 mm."
+   },
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare06",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.42,
+    "status": null,
+    "features": {
+     "min_logprob": -1.5082448720932007,
+     "mean_logprob": -0.29719670182385016,
+     "p10_logprob": -0.8159937858581543,
+     "share_below_half": 0.16666666666666666,
+     "digit_min_logprob": -0.5724742412567139,
+     "tokens": 30.0
+    },
+    "output": "Malmo had the most rain (829 mm) and was 587 mm more than Linz (236 mm)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"Porto + Malmo + Linz\"}",
+    "expression": "Porto + Malmo + Linz",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.38
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare07",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.32,
+    "status": null,
+    "features": {
+     "min_logprob": -2.5659258365631104,
+     "mean_logprob": -0.2775895060652702,
+     "p10_logprob": -0.8658887147903442,
+     "share_below_half": 0.1388888888888889,
+     "digit_min_logprob": -2.5659258365631104,
+     "tokens": 36.0
+    },
+    "output": "Bremen had the most rain at 157 mm. Cork had the least at 659 mm. That means it was 398 mm more than the city with the least."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"757 - 157\"}",
+    "expression": "757 - 157",
+    "value": 600,
+    "error": null,
+    "s": 0.32
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 3.42,
+    "status": null,
+    "features": {
+     "min_logprob": -1.4448933601379395,
+     "mean_logprob": -0.1338413809867315,
+     "p10_logprob": -0.2810504734516144,
+     "share_below_half": 0.03571428571428571,
+     "digit_min_logprob": -0.05518930405378342,
+     "tokens": 28.0
+    },
+    "output": "Bremen had the most rain at 157 mm. Cork had the least at 659 mm. The difference is 600 mm."
+   },
+   "expression_correct": true
+  },
+  {
+   "fixture": "compare08",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.91,
+    "status": null,
+    "features": {
+     "min_logprob": -1.4169549942016602,
+     "mean_logprob": -0.23116997359484698,
+     "p10_logprob": -0.619615912437439,
+     "share_below_half": 0.07692307692307693,
+     "digit_min_logprob": -0.09700717031955719,
+     "tokens": 39.0
+    },
+    "output": "Bremen had the most rain at 893 mm. The city with the least was Graz with 464 mm. That means it had 429 mm more than the city with the least."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"573 - 893\"}",
+    "expression": "573 - 893",
+    "value": -320,
+    "error": null,
+    "s": 0.33
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 3.02,
+    "status": null,
+    "features": {
+     "min_logprob": -1.2080386877059937,
+     "mean_logprob": -0.15277861146470936,
+     "p10_logprob": -0.7245408296585083,
+     "share_below_half": 0.10714285714285714,
+     "digit_min_logprob": -0.00031511980341747403,
+     "tokens": 28.0
+    },
+    "output": "Bremen had the most rain with 893 mm. Lyon had the least at 573 mm. The difference is 320 mm."
+   },
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare09",
+   "pass1": {
+    "pass": false,
+    "turn_s": 2.62,
+    "status": null,
+    "features": {
+     "min_logprob": -2.1287412643432617,
+     "mean_logprob": -0.253307392293738,
+     "p10_logprob": -0.5501353144645691,
+     "share_below_half": 0.0967741935483871,
+     "digit_min_logprob": -2.1287412643432617,
+     "tokens": 31.0
+    },
+    "output": "Brno had the most rain at 169 mm, while Cork had the least at 639 mm. That\u2019s a difference of 370 mm."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"169 + 555 + 639\"}",
+    "expression": "169 + 555 + 639",
+    "value": 1363,
+    "error": null,
+    "s": 0.41
+   },
+   "pass3": {
+    "pass": true,
+    "turn_s": 4.22,
+    "status": null,
+    "features": {
+     "min_logprob": -1.7165746688842773,
+     "mean_logprob": -0.266846721766059,
+     "p10_logprob": -1.0196574926376343,
+     "share_below_half": 0.17777777777777778,
+     "digit_min_logprob": -0.9829425811767578,
+     "tokens": 45.0
+    },
+    "output": "Brno had the most rain with 169 mm. Cork had the least with 639 mm. The difference is 169 - 639 = -470 mm. That means Cork was significantly wetter than Brno."
+   },
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare10",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.52,
+    "status": null,
+    "features": {
+     "min_logprob": -1.608921766281128,
+     "mean_logprob": -0.3268683690275793,
+     "p10_logprob": -1.0398247241973877,
+     "share_below_half": 0.1875,
+     "digit_min_logprob": -0.1354413777589798,
+     "tokens": 32.0
+    },
+    "output": "Malmo had the most rain (788 mm) compared to Brno (310 mm). The difference is 478 mm."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"Malmo + Ghent + Brno\"}",
+    "expression": "Malmo + Ghent + Brno",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.43
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare11",
+   "pass1": {
+    "pass": true,
+    "turn_s": 2.83,
+    "status": null,
+    "features": {
+     "min_logprob": -1.534640908241272,
+     "mean_logprob": -0.35758255681412265,
+     "p10_logprob": -1.024030089378357,
+     "share_below_half": 0.28125,
+     "digit_min_logprob": -0.38605812191963196,
+     "tokens": 32.0
+    },
+    "output": "Ghent has the most rain (884 mm) compared to Linz (524 mm). The difference is 360 mm."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"884 + 589 + 524\"}",
+    "expression": "884 + 589 + 524",
+    "value": 1997,
+    "error": null,
+    "s": 0.37
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.32,
+    "status": null,
+    "features": {
+     "min_logprob": -1.495676040649414,
+     "mean_logprob": -0.1747615170170699,
+     "p10_logprob": -0.7249034643173218,
+     "share_below_half": 0.1,
+     "digit_min_logprob": -1.495676040649414,
+     "tokens": 30.0
+    },
+    "output": "Ghent had the most rain with 884 mm. Brno had the least at 589 mm. The difference is 295 mm."
+   },
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare12",
+   "pass1": {
+    "pass": true,
+    "turn_s": 6.12,
+    "status": null,
+    "features": {
+     "min_logprob": -1.4613105058670044,
+     "mean_logprob": -0.24077903729206204,
+     "p10_logprob": -0.7659470438957214,
+     "share_below_half": 0.14285714285714285,
+     "digit_min_logprob": -0.6359052062034607,
+     "tokens": 42.0
+    },
+    "output": "Malmo had the least rain (498 mm). Turin had the most rain (593 mm). The difference is 95 mm (593 - 498)."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"498 + 520 + 593\"}",
+    "expression": "498 + 520 + 593",
+    "value": 1611,
+    "error": null,
+    "s": 0.36
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 5.93,
+    "status": null,
+    "features": {
+     "min_logprob": -1.3211779594421387,
+     "mean_logprob": -0.2088261023794725,
+     "p10_logprob": -0.7533754110336304,
+     "share_below_half": 0.14285714285714285,
+     "digit_min_logprob": -0.7533754110336304,
+     "tokens": 35.0
+    },
+    "output": "Malmo had the most rain with 498 mm. Graz had the least at 520 mm. The difference is 22 mm more than Graz compared to Malmo."
+   },
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare13",
+   "pass1": {
+    "pass": true,
+    "turn_s": 6.94,
+    "status": null,
+    "features": {
+     "min_logprob": -1.6053322553634644,
+     "mean_logprob": -0.2630982058348039,
+     "p10_logprob": -0.8002150654792786,
+     "share_below_half": 0.12962962962962962,
+     "digit_min_logprob": -0.43351152539253235,
+     "tokens": 54.0
+    },
+    "output": "Cork had the most rain (356 mm) compared to Graz (320 mm) and Linz (103 mm). The difference is 356 - 103 = 253 mm more than Linz."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"Linz + (Graz - Linz)\"}",
+    "expression": "Linz + (Graz - Linz)",
+    "value": null,
+    "error": "ValueError",
+    "s": 0.44
+   },
+   "pass3": null,
+   "expression_correct": false
+  },
+  {
+   "fixture": "compare14",
+   "pass1": {
+    "pass": false,
+    "turn_s": 5.12,
+    "status": null,
+    "features": {
+     "min_logprob": -0.6214178204536438,
+     "mean_logprob": -0.1069983614727486,
+     "p10_logprob": -0.48232486844062805,
+     "share_below_half": 0.0,
+     "digit_min_logprob": -0.20164313912391663,
+     "tokens": 30.0
+    },
+    "output": "Bremen had the least rain at 407 mm. Lyon had the most at 643 mm, which is 236 mm more than Bremen."
+   },
+   "expression": {
+    "raw": "{\"expression\": \"407 + 643 + 312\"}",
+    "expression": "407 + 643 + 312",
+    "value": 1362,
+    "error": null,
+    "s": 0.36
+   },
+   "pass3": {
+    "pass": false,
+    "turn_s": 3.72,
+    "status": null,
+    "features": {
+     "min_logprob": -0.5852497816085815,
+     "mean_logprob": -0.09458545324563976,
+     "p10_logprob": -0.24116875231266022,
+     "share_below_half": 0.0,
+     "digit_min_logprob": -0.19558624923229218,
+     "tokens": 34.0
+    },
+    "output": "Bremen had the least rain at 407 mm. Lyon had the most at 643 mm. The difference is 643 - 407 = 236 mm."
+   },
+   "expression_correct": false
+  }
+ ]
+}

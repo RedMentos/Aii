@@ -1,0 +1,37 @@
+{
+ "schema": "v13.body_sizes/1",
+ "source": "bench-results/ram-budget-20261012/cloud.json (thread P, branch claude/project-thread-s6dg4n; llama.cpp b10964, runner default flags, Linux x86_64)",
+ "size_rule": "Pss_Anon after work + hot_file_mib (cgroup squeeze: C3+B1+B2 run at 2000 MiB, Anon sum 1869, 1750 OOM)",
+ "entries": {
+  "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d": {
+   "file": "LFM2.5-350M-QAD-Q4_0.gguf",
+   "size_bytes": 219312832,
+   "role": "C3_LANGUAGE",
+   "anon_mib": 278.7,
+   "pss_mib": 497.8,
+   "hot_file_mib": 64.0,
+   "size_mib": 342.7,
+   "evidence": "CLOUD_X86_LOWER_BOUND"
+  },
+  "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1": {
+   "file": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+   "size_bytes": 695755488,
+   "role": "B1_DETAIL",
+   "anon_mib": 739.7,
+   "pss_mib": 1406.1,
+   "hot_file_mib": 64.0,
+   "size_mib": 803.7,
+   "evidence": "CLOUD_X86_LOWER_BOUND"
+  },
+  "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf": {
+   "file": "Qwen3.5-0.8B-Q4_0.gguf",
+   "size_bytes": 563036064,
+   "role": "B2_GIST",
+   "anon_mib": 850.2,
+   "pss_mib": 1391.2,
+   "hot_file_mib": 64.0,
+   "size_mib": 914.2,
+   "evidence": "CLOUD_X86_LOWER_BOUND"
+  }
+ }
+}

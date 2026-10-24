@@ -12,7 +12,8 @@ Age right `simple_tool_choice`, Age 1). V13 choosing a tool for a user question 
   proposed -> WP-T7: a WRITE_LOCAL tool the user enabled (BOOT: `sandbox_note` for "save a note ...") needs a per-call
               approval. The call is registered as PROPOSED with a dry-run preview, the body is told it has not happened,
               and the output broker shows the preview with `:tx approve <id>` (undo afterwards with `:tx undo <id>`).
-The proposer is a BOOT regex, not learned; Needle/C2 tool choice replaces it later (§57, c2-benchmark).
+R4 part 6: a question over listed values ("how many ... more ... than", "total") becomes `list_arith`: C3 only reads typed values,
+the recipe in agi/listarith.py computes (measured: r4-typed-recipe BEFUND). The proposer is a BOOT regex, not learned; Needle/C2 tool choice replaces it later (§57, c2-benchmark).
 """
 import json
 import re
@@ -21,8 +22,8 @@ from .common import dumps
 from .contracts import packet
 
 PROPOSER='boot-arith-note-v3';KEY='TOOL_SHADOW_AGREEMENT'
-LIST_PROPOSER='boot-listarith-v1';LIST_READ_SECONDS=45  # Thread K R4 part 6, unchanged
-LIST_NOTE='Use this exact number in the answer. If the text states a different number for it, say clearly that it is wrong.'
+LIST_PROPOSER='boot-listarith-v1';LIST_READ_SECONDS=45  # R4 part 6: C3 value read for list_arith
+LIST_NOTE='Use this exact number in the answer. If the text states a different number for it, say clearly that it is wrong.'  # wording of r4_typed_recipe RESULT_TEMPLATE
 WORD_OPS=[(r'\bmultiplied by\b|\btimes\b|×','*'),(r'\bdivided by\b|÷','/'),(r'\bplus\b','+'),(r'\bminus\b','-'),(r'\bto the power of\b|\^','**')]
 NUM=r'\d+(?:[.,]\d+)?'
 PERCENT=re.compile(r'('+NUM+r')\s*%\s*of\s*('+NUM+r')',re.I)
@@ -93,13 +94,13 @@ class ToolStep:
              tool=p['tool'],args=p['args'],policy_status=status,policy_reason=why,contract=steps,confidence=p['confidence'],proposer=p['proposer'],truth_authority=0))
         p['packet_id']=pk['packet_id'];return p
     def _propose_list(self,e,text):
-        """Thread K: model reads typed listed values; a BOOT rule selects the exact recipe."""
+        """R4 part 6: question over listed values (BOOT wording rule) -> C3 reads typed values -> list_arith proposal."""
         from .agi import listarith
         op=listarith.operation(text)
-        if not op or 'list_arith' not in self._registry().box.load()[0]['enabled']:return None
+        if not op or 'list_arith' not in self._registry().box.load()[0]['enabled']:return None  # the C3 read costs a model call: only after the user enabled the tool
         try:
             values=listarith.read_values(self.r.pool.get('C3_LANGUAGE'),text,self.r.cancel_event,time.monotonic()+LIST_READ_SECONDS)
-            listarith.compute(op,values,text)
+            listarith.compute(op,values,text)  # guard before proposing: every value must be an exact number of the user text
         except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'list_read','error':type(exc).__name__});return None
         return {'tool':'list_arith','args':{'operation':op,'text':str(text),'values':listarith.encode(values)},'confidence':.8,'span':[0,len(str(text))],'proposer':LIST_PROPOSER}
     def _forecast(self,e,p):
@@ -151,11 +152,12 @@ class ToolStep:
         return agree
     def layer(self,result):
         """Volatile context layer for the answering body: grounded tool output with its transaction id."""
-        if result['tool']=='list_arith':
+        args=result['args']
+        if result['tool']=='list_arith':  # R4 part 6 dev seed 7: as raw JSON args C3 350M ignored the value in 7/15 sums
             from .agi import listarith
-            return {'tool':'list_arith','exact_result':result['result'],'recipe':f"{listarith.label(result['args'])} = {result['result']}",
+            return {'tool':'list_arith','exact_result':result['result'],'recipe':f"{listarith.label(args)} = {result['result']}",
                     'note':LIST_NOTE,'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
-        return {'tool':result['tool'],'input':result['args'],'output':result['result'],'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
+        return {'tool':result['tool'],'input':args,'output':result['result'],'transaction':result['action_tx'] or result['tx'],'source':'TOOL_RESULT (executed locally, exact)'}
 
 def report(store,limit=200):
     st=store.state(KEY)[0] or {'compared':0,'agree':0,'tools':{}}
