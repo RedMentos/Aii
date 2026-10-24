@@ -1,0 +1,8 @@
+# Run89 prereg — extracted phone ZIP multi-chat provenance and export isolation
+
+Date 2026-10-24. Base Run88 PR121 `024c4519048c7b0169be146b7bc4b92ca585b09f`, selected Linux 380/380 and extracted ZIP 78/78 PASS. Owner: new `v13/code/tests/test_phone_chat_sessions_run89.py`, one extracted-ZIP CI invocation, new Run89 evidence. Runtime files unchanged unless real test-first RED identifies a defect; do not mutate any other owner's files.
+
+## Acceptance
+With actual Runtime + Operator + SQLite in a new temporary home, create two separate chats using `:new`, generate distinct deterministic exact-source-copy turns, and verify each chat's `:export chat json` contains only its own user and FINAL assistant messages. `:open <id>` must restore prior chat, and after process-level Runtime restart the selected session must remain the one explicitly opened. `:chats` lists both. Global `:search` may list both but every row must carry its exact session_id; literal percent search must not return a similar nonliteral cross-chat string. SourceRef reads must return exact original user bytes. No model/native inference, no learning, no paid tool or network.
+
+Execute from extracted ZIP before upload. Preserve RED and GREEN logs and keep original STEP2/B3/Body-JEPA negative gates and all canon requirements. This is a software proof of local multi-chat isolation, not semantic intelligence or phone hardware acceptance.
