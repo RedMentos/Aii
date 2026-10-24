@@ -62,6 +62,22 @@ class JEFCacheLineageRun97(Base):
                      lambda p: p.__setitem__("state_version", 2))
         self.assertEqual(self.j.bridge_view("B1_DETAIL", event, 1), ({}, []))
 
+    def test_tampered_original_blob_digest_blocks_active_bridge(self):
+        event, _, _ = self.prepare()
+        blob = self.r.store.home / "data/blobs" / event["source_ref"]["sha256"]
+        blob.write_bytes(b"tampered after capture")
+        self.assertEqual(self.j.bridge_view("B1_DETAIL", event, 1), ({}, []))
+
+    def test_non_body_role_cannot_receive_active_extra_fields(self):
+        event, _, _ = self.prepare()
+        self.j._mutate(
+            lambda st: st["fields"].__setitem__(
+                "C3_LANGUAGE|body_state",
+                {"with": [4., 5], "without": [1., 5]},
+            )
+        )
+        self.assertEqual(self.j.bridge_view("C3_LANGUAGE", event, 1), ({}, []))
+
     def test_malformed_cache_json_fails_closed_not_exception(self):
         event, _, cache = self.prepare()
         with self.r.store.tx() as c:
