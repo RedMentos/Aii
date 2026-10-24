@@ -54,8 +54,9 @@ class EpisodicRouteSourceRun107(unittest.TestCase):
         self.assertIsNone(ER.suggest(self.s, QUERY, self.r.session))
 
     def test_missing_originating_event_rejected(self):
-        # Do not delete the event (FK/immutable history); change only mutable memory lineage.
-        self.mutate("UPDATE memories SET event_id=? WHERE id=?", ('evt_not_real', self.mid))
+        # FK-safe mutation: point to a different real event while retaining the old MemoryRecord.
+        other = self.s.event(self.r.session, 'Unrelated user request')
+        self.mutate("UPDATE memories SET event_id=? WHERE id=?", (other['event_id'], self.mid))
         self.assertIsNone(ER.suggest(self.s, QUERY, self.r.session))
 
     def test_read_only_valid_route_restart_and_global_scope(self):
