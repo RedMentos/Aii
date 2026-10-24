@@ -1,0 +1,7 @@
+# Run54 preregistration — stage Context OS native_history guard in actual source (draft only)
+
+Base exact Run53 head `21a5a70fbddaf6162c01e83c60ffab7b378c95ca`; source review Run53 original history.py Git blob `05455f297205b40fe8e0f818c4657f1fedcd9fa3`, tested patched blob `e51d4a6efab3b07dc460fe5482c7370318d76db0`, readable patch blob `4163c6c92543082e382b4bb35f884c1edc4435fb`. Owner exclusively `v13/code/v13/history.py` and `v13/code/docs/proofs/continuation-20261024/context-history-integration-run54/*`. Other owners, Canon, Run49, learning/age rules, registered native cohorts untouched.
+
+Objective: stage **exact byte-identical** Run53 tested history.py in the actual repository source on a new draft review branch, with no merge, no runtime activation and no source fallback. Require original blob exact match before edit; after edit remote Git blob MUST equal tested patched blob. Do not force push. Preserve raw red/green tests from Run53, original negative gates. Full checkout/official privacy scan and real Store runtime regression are still required for merge; no claim of full integration.
+
+Run54 checks: source hash before and after, no other production file changes, check new branch PR diff against parent; inherited Run53 21/21 synthetic SQLite PASS. Record that full suite, actual Store, native and Redmi NOT RUN; exact next command in full checkout. Do not promote STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 INCOMPLETE.

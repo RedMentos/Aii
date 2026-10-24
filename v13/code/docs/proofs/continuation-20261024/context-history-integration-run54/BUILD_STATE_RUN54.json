@@ -1,0 +1,35 @@
+{
+  "schema": "V13_RUN54_DRAFT_PRODUCTION_SOURCE_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "owner": "Run54 v13/code/v13/history.py and context-history-integration-run54/* only",
+  "parent": "21a5a70fbddaf6162c01e83c60ffab7b378c95ca",
+  "prereg_commit": "a3c159287ae504142b9ad83ceb9ef5028a1e8a48",
+  "before_source_blob": "05455f297205b40fe8e0f818c4657f1fedcd9fa3",
+  "after_source_blob": "a7138080e19b439331bf4c5da68e7e62f823f169",
+  "source_commit": "cb43346f9664225bd94836ba87d21df548cc39be",
+  "source_status": "DRAFT_BRANCH_ONLY_NOT_MERGED",
+  "expected_hash_correction": "Prereg intermediate e51d4a6... was calculated before adding user text/source metadata checks. Final Run53 tested 21/21 blob is a7138080...; GitHub remote matches bytewise.",
+  "tests": {
+    "exact_final_source_local_synthetic_sqlite": "21/21 PASS",
+    "optimized": "21/21 PASS",
+    "source_sha_remote": "VERIFIED",
+    "actual_store": "NOT_RUN",
+    "full_repo": "NOT_RUN",
+    "official_privacy_scan": "NOT_RUN",
+    "native": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Does real Store.native_history with active fixed rules and full SourceRef schema preserve all existing tests?",
+    "Concurrent source revocation after revalidation requires consumption-time recheck",
+    "Full repository CI/privacy scanner and actual Android replay pending"
+  ],
+  "next": "In full checkout on Run54 branch: python -m unittest discover -s v13/code/tests -v; run official privacy scanner; verify actual Store user metadata source_ref and legacy migration, then independent review before merge."
+}
