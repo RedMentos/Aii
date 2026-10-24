@@ -1,0 +1,18 @@
+# Run87 bounded verbatim raw GitHub Actions log excerpt
+# Full job log: https://github.com/RedMentos/Aii/actions/runs/40134710679 (job 120993658262)
+2026-10-24T21:33:28.8310058Z Ran 377 tests in 9.169s
+2026-10-24T21:33:29.2356211Z privacy scan fbf786b5b..HEAD: CLEAN
+2026-10-24T21:33:29.2454622Z [36;1m    print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))[0m
+2026-10-24T21:33:29.2455411Z [36;1mstat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-24T21:33:30.7165479Z {"bytes": 12542210, "canonical_gate_pass": false, "files": 811, "native_models_launched": false, "phone_measured": false, "sha256": "9fe8005c7cc63cc82a45fed6d64e94e6b4146cc2e7edde7ff8e7dc4703edc6d4", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run83.zip"}
+2026-10-24T21:33:30.8967152Z PHONE_SOURCE_MANIFEST_PASS 810
+2026-10-24T21:33:30.9137787Z PHONE_SOURCE_BYTES=12542210
+2026-10-24T21:33:30.9583701Z [36;1mprint('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)[0m
+2026-10-24T21:33:31.2179929Z INDEPENDENT_PHONE_ARCHIVE_PASS 810 9fe8005c7cc63cc82a45fed6d64e94e6b4146cc2e7edde7ff8e7dc4703edc6d4
+2026-10-24T21:33:31.2278834Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-24T21:33:37.8572650Z test_two_separate_ask_processes_keep_exact_source_and_final_history (tests.test_phone_cli_run87.PhoneCliRun87.test_two_separate_ask_processes_keep_exact_source_and_final_history) ... ok
+2026-10-24T21:33:47.1217512Z Ran 75 tests in 14.544s
+2026-10-24T21:33:47.8207197Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS
+2026-10-24T21:33:49.4405748Z SHA256 digest of uploaded artifact zip is ec505be4a244021caada03d2b3c6eb2c5ca4a0680fe7ebfdcd23d592ce117d06
+2026-10-24T21:33:49.9072622Z Artifact V13-Phone-source-6c6953f04234e68b971f1f0423e66350cd6b9460.zip successfully finalized. Artifact ID 12576297278
+2026-10-24T21:33:49.9074012Z Artifact V13-Phone-source-6c6953f04234e68b971f1f0423e66350cd6b9460 has been successfully uploaded! Final size is 12542362 bytes. Artifact ID is 12576297278

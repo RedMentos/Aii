@@ -157,6 +157,7 @@ jobs:
             tests.test_age \
             tests.test_standstill \
             tests.test_phone_operator_journey_run86 \
+            tests.test_phone_cli_run87 \
             tests.test_package_source
           "$GITHUB_WORKSPACE/.venv/bin/python" - <<'PY'
           import os
