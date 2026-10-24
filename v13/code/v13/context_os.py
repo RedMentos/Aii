@@ -53,7 +53,7 @@ SUMMARY_USER=140;SUMMARY_ASSISTANT=200;SPAN_MAX=12;SPAN_CHARS=400  # BOOT compre
 LEARNED_MAX=.25;POLICY_RATE=.2;LEARNED_MIN_N=3  # BOOT, as WP-N5
 VOLATILE_HEAD='Context for the next message (reference material, not a question):'
 CODE=re.compile(r'```[\s\S]*?```|`[^`\n]+`')
-QUOTE=re.compile(r'"[^"\n]{1,80}"|„[^“\n]{1,80}“')
+QUOTE=re.compile(r'"[^"\n]+"|„[^“\n]+“|“[^”\n]+”')
 URL=re.compile(r'https?://\S+')
 NUMBER=re.compile(r'(?<![\w.])[-+]?\d[\d.,:/-]*\d(?:%|[a-zA-Z]{0,3})?|(?<![\w.])\d(?:%|[a-zA-Z]{0,3})?(?![\w])')
 LITERAL=re.compile(r'\b(exact(ly)?|verbatim|literal(ly)?|word for word|quote|exakt|wörtlich|genau so|zitier\w*|wortgleich)\b',re.I)
