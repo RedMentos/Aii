@@ -58,10 +58,10 @@ def validate_policy(p):
         if isinstance(v,bool) or not isinstance(v,(int,float)) or not lo<=v<=hi:raise ValueError(f'{k}: Bereich {lo}..{hi}')
         if isinstance(d,int) and not isinstance(v,int):raise ValueError(k+' muss ganzzahlig sein')
     if not isinstance(p['enabled'],bool):raise ValueError('enabled true|false')
-    q=p['quiet_hours']
-    if q is not None and not (isinstance(q,list) and len(q)==2 and all(isinstance(h,int) and 0<=h<=23 for h in q)):raise ValueError('quiet_hours [Start,Ende] in Stunden')
-    m=p['mix']
-    if set(m)!=set(MIX) or any(isinstance(v,bool) or not isinstance(v,(int,float)) or v<0 for v in m.values()) or sum(m.values())<=0:raise ValueError('mix recent/protected_old/failure >=0')
+    # §94: malformed persisted/operator policies must fail before replay sampling.
+    from .sleep_policy_finite import validate_quiet_hours,validate_mix
+    validate_quiet_hours(p['quiet_hours'])
+    validate_mix(p['mix'],MIX)
     for k,v in LOCKED.items():
         if p.get(k)!=v:raise ValueError(k+' ist gesperrt')
     return p
