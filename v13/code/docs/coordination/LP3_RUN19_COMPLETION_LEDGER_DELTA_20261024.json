@@ -1,0 +1,19 @@
+{
+  "schema": "V13_LP3_RUN19_COMPLETION_DELTA_V1",
+  "date": "2026-10-24",
+  "feature_id": "WP-LP3_SERIAL_LAUNCH_SIGTERM",
+  "canon_source": "V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md; original LP3 preregistration unchanged",
+  "implementation_files": ["isolated LP3_RUN19_CODE_ONLY.tar.xz.base64 (patch against exact Run18 blob)", "test_lp3_serial_sigterm_run19.py inside archive"],
+  "runtime_owner": "NOT_INSTALLED",
+  "state_owner": "isolated candidate only",
+  "schema_id": "V13_LP3_SERIAL_LAUNCH_V1 (unchanged)",
+  "persistence": "failure status/log persisted for tested SIGTERM; SIGKILL/finalization crash gap open",
+  "current_mode": "OFF_BY_DEFAULT_SOFTWARE_CANDIDATE",
+  "hardware_proof": "LINUX_SYNTHETIC_ONLY; NO_HF; NO_REDMI",
+  "unit_tests": "5/5 new PASS; assembled 151 with 1 inherited timeout failure, NOT PASS",
+  "integration_tests": "external Linux wrapper SIGTERM synthetic PASS; escaped-session descendant FAIL-OPEN",
+  "benchmark": "NO_NATIVE_COHORT",
+  "gate_status": "BLOCKED_UNSAFE_DETACHED_DESCENDANT",
+  "known_limitations": ["escaped session receipt false-success", "no kernel job containment", "full checkout/privacy scanner unavailable", "native model assets and fixtures absent", "global owner and RAM fit unverified"],
+  "original_gates": {"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"canonical_architecture_complete":false,"user_full_scope_complete":false}
+}
