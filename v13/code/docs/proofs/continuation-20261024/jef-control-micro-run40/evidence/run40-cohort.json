@@ -1,0 +1,30 @@
+{
+  "age_action_authority": false,
+  "authority": "SYNTHETIC_SHADOW_NO_AGE_ACTION",
+  "baseline": {
+    "report_brier": 0.3195595145225525,
+    "route_accuracy": 0.3359375
+  },
+  "candidate": {
+    "report_brier": 2.5447011466894764e-06,
+    "route_accuracy": 1.0
+  },
+  "head_deltas": {
+    "halt": 5.573758125305176,
+    "report": 4.620363235473633,
+    "route": 7.919677734375,
+    "wake": 6.171565532684326
+  },
+  "heldout_rows": 128,
+  "lr": 0.03,
+  "native_jef_gate_pass": false,
+  "schema": "V13_JEF_CONTROL_MICRO_SHADOW_V1",
+  "seed": 20261024,
+  "steps": 200,
+  "synthetic_criterion_pass": false,
+  "train_rows": 512,
+  "wrong_target": {
+    "report_brier": 0.06493460386991501,
+    "route_accuracy": 0.625
+  }
+}
