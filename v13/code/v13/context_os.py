@@ -240,8 +240,9 @@ class ContextOS:
         aggr=clamp(k['cache_compression_aggressiveness']+self._shift(st,'compress'))
         for s in unpinned[:round(aggr*len(unpinned))]:
             if try_compress(s):decisions.append('compress')
-        # budget pressure: compress, then point, unpinned first; the newest turn is never dropped by policy
-        for group in (unpinned,[s for s in state[:-1] if s[3]]):
+        # budget pressure: only unpinned turns may be compressed or pointed.
+        # Exact-recent pinned turns stay RAW; an impossible budget fails closed below.
+        for group in (unpinned,):
             for s in group:
                 if size()<=budget:break
                 if try_compress(s):decisions.append('compress_budget')
@@ -280,7 +281,11 @@ class ContextOS:
         if planned is None:
             if layout=='stable_prefix' and vtext:planned=[{'role':'system','content':stable}]+hist+tail
             else:planned=[{'role':'system','content':stable+vtext}]+hist+[{'role':'user','content':query}]
-        applied=st['mode']=='ACTIVE'
+        budget_unmet=sum(len(m['content']) for m in planned)>budget
+        if budget_unmet:
+            decisions.append('budget_unmet_fallback')
+            reason='exact_pin_budget_unmet'
+        applied=st['mode']=='ACTIVE' and not budget_unmet
         fp_legacy,fp_planned=fingerprint(legacy),fingerprint(planned);last=st['last'].get(role,{})
         cache={'layout_requested':st['layout'],'layout':layout,'fallback_reason':reason,'prompt_cache':'cache_prompt',
                'est_prompt_chars_legacy':sum(c for _,c in fp_legacy),'est_prompt_chars_planned':sum(c for _,c in fp_planned),
@@ -293,7 +298,7 @@ class ContextOS:
         def fn(st2):
             st2['last'][role]={'legacy':fp_legacy,'planned':fp_planned,'event_id':event_id,'packet_id':p['packet_id'],'decisions':sorted(set(decisions)),'applied':applied}
             st2['recall']=(st2['recall']+[recall])[-RECALL_WINDOW:];st2['plans']+=1
-            if st2['layout']=='append_only' and sum(len(m['content']) for m in planned)<=TRANSCRIPT_MAX_CHARS:
+            if not budget_unmet and st2['layout']=='append_only' and sum(len(m['content']) for m in planned)<=TRANSCRIPT_MAX_CHARS:
                 st2.setdefault('transcripts',{})[role]={'event_id':event_id,'system':stable,'messages':planned}
             else:st2.get('transcripts',{}).pop(role,None)
         self._mutate(fn)
