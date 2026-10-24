@@ -40,3 +40,12 @@ Sources: Theo, "If you have a Claude sub, watch this" (youtu.be/D8PikZ1KhUo, wor
 - Subagents start cold: restate in their prompt the file ownership, the shared-folder rules (re-read before edit, small edits, no parallel writes to status files) and the expected return format. Run independent subagents in parallel in the background.
 - Model choice for subagents (user request 2026-10-12): Haiku for simple searches, file sweeps, transcript/log reading and source lookups; Sonnet for normal implementation, tests and refactors; Opus for hard designs, research synthesis, architecture decisions and reviews. Pick the cheapest model that can do the job reliably; escalate when it fails.
 - On failure, ask the agent why (or read its trace) before re-running; record the cause, not just the retry.
+
+## Cross-review between Claude and GPT/Codex (user request 2026-10-21)
+
+The user wants Claude and GPT/Codex to check each other's work. This is a standing rule for both sides:
+
+- Before building on the other side's latest work, review it first: run the full suite, read the runtime-code diff (`v13/code/v13/`), try at least one counterexample per new guard or gate, check that every FAIL stays FAIL and that SHADOW/synthetic/Linux/Redmi evidence levels stay separate, check that preregistrations were committed before their runs, and run `python v13/code/scripts/public_repo_privacy_scan.py --base <last reviewed commit> --head <their branch>` (must print CLEAN).
+- Also check the goal: no harm to people; new tools or modules default off and only run with the user's conscious, unmanipulated permission; unmeasured SHADOW parts get no decision authority.
+- Record each round at the top of `v13/PRUEFUNG_CLAUDE_FUER_GPT.md` (or `v13/PRUEFUNG_GPT_FUER_CLAUDE.md`): reviewed commits, commands with output, findings (bug / note / OK) and what you changed. Fix confirmed small bugs with a test; leave larger findings as open points for the other side or the user.
+- Never overwrite the other side: `git fetch` before every push, merge foreign commits instead of replacing them, no force-push, and name in the handoff what came from whom. The repo is public: nothing private (tokens, personal data, private chats, device identifiers) in git; private material goes to Drive only. Back up each round to git and Drive.

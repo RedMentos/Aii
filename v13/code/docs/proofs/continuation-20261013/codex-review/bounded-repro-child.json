@@ -1,0 +1,18 @@
+{
+  "schema": "V13_TOOL_FORECAST_DEVICE_REPORT_V1",
+  "status": "PARITY",
+  "device": {
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "android": false,
+    "cpu_count": 9
+  },
+  "receiver_authority": 0,
+  "learn_authority": 0,
+  "mode_after": "unchanged (switch on with :toolforecast shadow)",
+  "build": {
+    "binary_sha256": "SYNTHETIC_NOT_EXECUTED",
+    "identity_key": {}
+  }
+}
