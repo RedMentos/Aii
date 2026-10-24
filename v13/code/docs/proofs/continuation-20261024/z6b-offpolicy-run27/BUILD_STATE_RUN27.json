@@ -1,0 +1,22 @@
+{
+  "schema": "V13_RUN27_STATE_V1",
+  "base": "1f87ed6aa17b137419e903e42f271635883b07bb",
+  "owner": "Codex Run27 isolated Z6b off-policy analysis",
+  "production_integrated": false,
+  "tests": "10/10 PASS software",
+  "retrospective": "44/60 selected vs 42/60 disabled; 9/60 wake; p=0.625; noncausal",
+  "new_native": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "positive_cgroup": "UNVERIFIED",
+  "full_suite": "NOT_RUN",
+  "privacy_scan": "NOT_RUN",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Independent full-checkout review and preregistered live C3-first selective-wake test; continue another independent canonical organ package if native prerequisites blocked."
+}
