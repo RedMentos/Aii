@@ -1,0 +1,14 @@
+{
+  "schema":"V13_RUN39_STATE_V1",
+  "base":"bfc7e6e1a3c9f235333d75ac599242bde258a970",
+  "preregistered_commit":"f06ea49202252ca118c24b2f29ca34d466c75fca",
+  "owner":"Codex Run39 isolated Body-JEPA synthetic resume",
+  "file_ownership":"v13/code/docs/proofs/continuation-20261024/body-jepa-resume-run39/ only",
+  "production_integrated":false,
+  "preregistered_criterion":"PASS_SYNTHETIC_ONLY",
+  "tests":"9/9 software/PyTorch CPU synthetic PASS; compileall PASS",
+  "optimizer_resume":"BITWISE_EQUAL_SYNTHETIC_ONLY",
+  "native_body_weights":"NOT_RUN", "redmi":"NOT_RUN", "full_repo_suite":"NOT_RUN", "privacy_scan":"NOT_RUN",
+  "gates":{"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"Z6a":"FAIL","Z8":"FAIL","canonical_architecture_complete":false,"user_full_scope_complete":false},
+  "next":"Fresh-process restore and crash-injection review; full Canon/BodyTrainPort integration, native pinned body retention proof, full suite/privacy/Redmi."
+}

@@ -1,0 +1,7 @@
+{
+  "schema": "V13_BODY_JEPA_SYNTHETIC_RESUME_V1",
+  "bitwise_equal": true,
+  "full_mse": 0.00030293711461126804,
+  "resumed_mse": 0.00030293711461126804,
+  "authority": "SYNTHETIC_SANDBOX_NO_AGE_ACTION"
+}

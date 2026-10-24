@@ -1,0 +1,7 @@
+# Run39 preregistration — exact synthetic JEPA optimizer/RNG resume
+
+Committed before implementing or executing Run39 tests. Parent PR #74 bfc7e6e1a3c9f235333d75ac599242bde258a970. Canon §13.1–13.4 and §13H, Age0 and all original gates remain unchanged. No native B1/B2 weights or production writes.
+
+Reproduce Run38 CPU-only PyTorch ObjectiveAdapter with its fixed generator, data and optimizer. Compare uninterrupted 160 optimizer steps against an interrupted session after exactly 60 steps, hash-bound checkpoint, reload in a fresh MicroLearner/Adam and complete remaining 100 steps. Also test wrong-target negative-control resume after 60+100 steps. Store exact model weights, Adam step, exp_avg, exp_avg_sq for student/predictor parameters, and both independent RNG states in NPZ with allow_pickle=False; bind schema, source revision, train-step count, dataset digest, wrong-target mode, bytes and SHA-256. Refuse overwrite, malformed keys, shape/dtype/nonfinite tensor, dataset mismatch and corrupted digest. One CPU job at a time, one torch thread.
+
+PASS_SYNTHETIC_ONLY iff every model parameter and every optimizer moment/step is bitwise equal after uninterrupted vs resumed 160 steps for both normal and shuffled-target arms, heldout MSE exactly equal, target gradients absent, corrupt/missing/mismatched data rejected, and no production or Age authority. Failures remain recorded, no retuning. The checkpoint must not claim Android/native training, retention across user sessions, full Body-JEPA, jepa_weight promotion or AGI.
