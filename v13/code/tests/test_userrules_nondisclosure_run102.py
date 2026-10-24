@@ -60,6 +60,19 @@ class UserRulesNondisclosureRun102(unittest.TestCase):
     def test_existing_disclose_control_stays_denied(self):
         self.check_prohibition("Do not disclose my phone number.")
 
+    # Independent post-GREEN review: additional common disclosure verbs.
+    def test_show_phone_number_cannot_be_sent(self):
+        self.check_prohibition("Do not show my phone number.")
+
+    def test_display_phone_number_cannot_be_sent(self):
+        self.check_prohibition("Do not display my phone number.")
+
+    def test_distribute_phone_number_cannot_be_sent(self):
+        self.check_prohibition("Do not distribute my phone number.")
+
+    def test_circulate_phone_number_cannot_be_sent(self):
+        self.check_prohibition("Do not circulate my phone number.")
+
     def test_unclear_private_message_request_still_asks(self):
         with tempfile.TemporaryDirectory() as td:
             r = Runtime(Path(td))
