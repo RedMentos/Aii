@@ -12,7 +12,7 @@
     "run23_serial_launcher_blob": "21f0c6952f1c279909157f95750da5154f319a1b",
     "patch_blob": "a6fc17b624e52e4225360200b35dd0b99c56a21a",
     "test_blob": "83eabc998ee8417fd8fe2aaee5c3bf1ee96f58c3",
-    "run21_join_helper_blob": "",
+    "run21_join_helper_blob": "b7c9318c95420ddfc08f9b3e5389b17bddd71b66",
     "run23_join_helper_blob": "1460e89de2f6d9727dbdc0eb22f1c11d4f64bed4"
   },
   "finding": "CPython -I -S disables Python site hooks, but does not disable ELF loader LD_PRELOAD/LD_AUDIT/LD_LIBRARY_PATH constructors before cgroup membership; reproduced with a private gcc shared-library constructor writing a sentinel before the helper fails to open fake cgroup.procs.",
