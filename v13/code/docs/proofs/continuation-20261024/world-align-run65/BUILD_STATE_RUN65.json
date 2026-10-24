@@ -1,0 +1,38 @@
+{
+  "schema": "V13_RUN65_WORLD_ALIGN_FINITE_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base": "db29745e408b9fde751e8d54ce7a1af45030483e",
+  "owner": "world_model.py numeric state-align only, test_world_align_finite_run65.py, world-align-run65 evidence",
+  "source": {
+    "prior": "45bb69dcf6f8252ac304bda2c95a616412f115d1",
+    "new": "6e02ff7e8547dd4ef2912b1e168feacd29f9f0ea"
+  },
+  "tests": {
+    "inherited": "14/14 PASS",
+    "new": "5/5 PASS",
+    "combined": "19/19 PASS",
+    "optimized": "19/19 PASS",
+    "randomized": "200/200 PASS",
+    "compileall": "PASS",
+    "full_repo": "NOT RUN",
+    "privacy_scan": "NOT RUN",
+    "actual_store": "NOT RUN",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "status": "BRANCH_INTEGRATED_NUMERIC_GUARD_SYNTHETIC_ONLY",
+  "limitations": [
+    "Test fixture ResourceWarnings for unclosed SQLite connections",
+    "Full production Store/Runtime and native utility unverified",
+    "Other World-Model numeric paths need independent review"
+  ],
+  "next": "cd v13/code && python -m unittest -v tests.test_world_model_integration_run64 tests.test_world_align_finite_run65; full suite and official privacy scan; actual Store restart/source checks",
+  "user_decision_required": false
+}
