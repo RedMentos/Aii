@@ -15,8 +15,8 @@ Guarantees (each covered by tests/test_userrules.py):
   G5 a tool whose effects are not declared is always asked while any rule or open question exists.
   G6 FORBID refuses even a call the user approves; the rule must be switched off first (`:regel aus`).
 A learned JEF/JEPA reader may later be added only as a stricter second opinion: it may add caution, never remove it.
-Enforced today: every call through agi.tools.ToolRegistry (all tools). Not yet enforced: memory/learning (LEARN), which
-is said plainly in the notice when a rule touches it.
+Enforced today: every call through agi.tools.ToolRegistry (all tools), plus explicit Memory.feedback and
+Memory.retrieval_feedback. Other autonomous/passive learning paths are NOT yet covered, as the notice states.
 """
 import re
 import time
@@ -308,7 +308,7 @@ def notice(r):
     if r.get('known'):return f'[Regel {r["id"]} gilt schon] „{r["text"]}“'
     lead={'FORBID':'Verbot','ASK_FIRST':'Erst fragen'}.get(r['kind'])
     gap=[LABEL[a] for a in r['actions'] if a=='LEARN']
-    note=(' Hinweis: Für '+', '.join(gap)+' gibt es noch keine Sperre; die Regel gilt für alle Werkzeug-Aktionen.') if gap else ''
+    note=(' Hinweis: Explizites Memory-Feedback ist gesperrt; andere Lernpfade sind noch nicht vollständig durch diese Regel abgesichert.') if gap else ''
     if r['kind']=='UNCLEAR':
         why={'HEDGE':'du klingst unsicher','SOMEONE_ELSE':'das hat jemand anderes gesagt','QUESTION':'es ist eine Frage',
              'ABOUT_YOURSELF':'es klingt wie ein Satz über dich','UNCLEAR_OBJECT':'ich weiß nicht, was mit „das/es“ gemeint ist',
