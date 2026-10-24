@@ -1,0 +1,15 @@
+test_bounds_zero_and_one_allowed (test_world_counterfactual_domain.OutcomeDomain.test_bounds_zero_and_one_allowed) ... ok
+test_guard_negative_duration_uncertain (test_world_counterfactual_domain.OutcomeDomain.test_guard_negative_duration_uncertain) ... ok
+test_guard_negative_log_chars_uncertain (test_world_counterfactual_domain.OutcomeDomain.test_guard_negative_log_chars_uncertain) ... ok
+test_guard_success_above_one_uncertain (test_world_counterfactual_domain.OutcomeDomain.test_guard_success_above_one_uncertain) ... ok
+test_guard_success_below_zero_uncertain (test_world_counterfactual_domain.OutcomeDomain.test_guard_success_below_zero_uncertain) ... ok
+test_invalid_action_rejected (test_world_counterfactual_domain.OutcomeDomain.test_invalid_action_rejected) ... ok
+test_no_model_stays_uncertain (test_world_counterfactual_domain.OutcomeDomain.test_no_model_stays_uncertain) ... ok
+test_nonfinite_input_already_rejected (test_world_counterfactual_domain.OutcomeDomain.test_nonfinite_input_already_rejected) ... ok
+test_original_negative_duration_supported_red (test_world_counterfactual_domain.OutcomeDomain.test_original_negative_duration_supported_red) ... ok
+test_valid_prediction_unchanged (test_world_counterfactual_domain.OutcomeDomain.test_valid_prediction_unchanged) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.003s
+
+OK
