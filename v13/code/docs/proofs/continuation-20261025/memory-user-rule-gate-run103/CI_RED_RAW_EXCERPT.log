@@ -1,0 +1,38 @@
+# Run103 original test-first RED: GitHub Actions run 40140602194 job 121011344805
+# Tests-only commit 71d415cacf13c18a582fc90b3f2e39c27c696eb1. Full original Actions log retained.
+# 9 expected fail-open SQLite cases; positive controls passed. Exact selected original lines:
+2026-10-24T22:55:55.2828034Z test_ask_first_never_auto_approves_memory_write (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_ask_first_never_auto_approves_memory_write) ... FAIL
+2026-10-24T22:55:55.3006494Z test_explicitly_switched_off_rule_allows_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_explicitly_switched_off_rule_allows_feedback) ... ok
+2026-10-24T22:55:55.3175976Z test_forget_remains_available_under_no_learn_rule (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_forget_remains_available_under_no_learn_rule) ... ok
+2026-10-24T22:55:55.3333994Z test_no_learn_conversation_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_learn_conversation_blocks_feedback) ... FAIL
+2026-10-24T22:55:55.3643114Z test_no_remember_rule_blocks_record_and_learn (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_remember_rule_blocks_record_and_learn) ... 
+2026-10-24T22:55:55.3644765Z   test_no_remember_rule_blocks_record_and_learn (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_remember_rule_blocks_record_and_learn) (permission='record') ... FAIL
+2026-10-24T22:55:55.3803802Z   test_no_remember_rule_blocks_record_and_learn (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_remember_rule_blocks_record_and_learn) (permission='learn') ... FAIL
+2026-10-24T22:55:55.3980346Z test_no_rule_still_allows_explicit_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_rule_still_allows_explicit_feedback) ... ok
+2026-10-24T22:55:55.4159256Z test_no_store_personal_details_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_store_personal_details_blocks_feedback) ... FAIL
+2026-10-24T22:55:55.4358405Z test_no_train_messages_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_train_messages_blocks_feedback) ... FAIL
+2026-10-24T22:55:55.4536853Z test_retrieval_feedback_refused_without_side_effects (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_retrieval_feedback_refused_without_side_effects) ... FAIL
+2026-10-24T22:55:55.4809969Z test_rule_survives_restart_and_still_blocks (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_rule_survives_restart_and_still_blocks) ... FAIL
+2026-10-24T22:55:55.4988174Z test_unreadable_rule_state_fails_closed (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_unreadable_rule_state_fails_closed) ... FAIL
+2026-10-24T22:55:55.5164904Z test_unrelated_send_rule_does_not_block_memory_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_unrelated_send_rule_does_not_block_memory_feedback) ... ok
+2026-10-24T22:55:57.2496138Z FAIL: test_ask_first_never_auto_approves_memory_write (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_ask_first_never_auto_approves_memory_write)
+2026-10-24T22:55:57.2498936Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_memory_user_rule_gate_run103.py", line 66, in test_ask_first_never_auto_approves_memory_write
+2026-10-24T22:55:57.2505103Z FAIL: test_no_learn_conversation_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_learn_conversation_blocks_feedback)
+2026-10-24T22:55:57.2507806Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_memory_user_rule_gate_run103.py", line 57, in test_no_learn_conversation_blocks_feedback
+2026-10-24T22:55:57.2513975Z FAIL: test_no_remember_rule_blocks_record_and_learn (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_remember_rule_blocks_record_and_learn) (permission='record')
+2026-10-24T22:55:57.2517053Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_memory_user_rule_gate_run103.py", line 54, in test_no_remember_rule_blocks_record_and_learn
+2026-10-24T22:55:57.2523033Z FAIL: test_no_remember_rule_blocks_record_and_learn (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_remember_rule_blocks_record_and_learn) (permission='learn')
+2026-10-24T22:55:57.2525818Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_memory_user_rule_gate_run103.py", line 54, in test_no_remember_rule_blocks_record_and_learn
+2026-10-24T22:55:57.2532052Z FAIL: test_no_store_personal_details_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_store_personal_details_blocks_feedback)
+2026-10-24T22:55:57.2534700Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_memory_user_rule_gate_run103.py", line 63, in test_no_store_personal_details_blocks_feedback
+2026-10-24T22:55:57.2540513Z FAIL: test_no_train_messages_blocks_feedback (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_no_train_messages_blocks_feedback)
+2026-10-24T22:55:57.2543034Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_memory_user_rule_gate_run103.py", line 60, in test_no_train_messages_blocks_feedback
+2026-10-24T22:55:57.2549139Z FAIL: test_retrieval_feedback_refused_without_side_effects (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_retrieval_feedback_refused_without_side_effects)
+2026-10-24T22:55:57.2551844Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_memory_user_rule_gate_run103.py", line 75, in test_retrieval_feedback_refused_without_side_effects
+2026-10-24T22:55:57.2555353Z FAIL: test_rule_survives_restart_and_still_blocks (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_rule_survives_restart_and_still_blocks)
+2026-10-24T22:55:57.2557958Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_memory_user_rule_gate_run103.py", line 86, in test_rule_survives_restart_and_still_blocks
+2026-10-24T22:55:57.2561843Z FAIL: test_unreadable_rule_state_fails_closed (tests.test_memory_user_rule_gate_run103.MemoryUserRuleGateRun103.test_unreadable_rule_state_fails_closed)
+2026-10-24T22:55:57.2564384Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_memory_user_rule_gate_run103.py", line 95, in test_unreadable_rule_state_fails_closed
+2026-10-24T22:55:57.2567354Z Ran 76 tests in 1.996s
+2026-10-24T22:55:57.2567744Z FAILED (failures=9, skipped=2)
+2026-10-24T22:55:57.2875994Z ##[error]Process completed with exit code 1.
