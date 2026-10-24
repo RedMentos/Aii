@@ -1,0 +1,15 @@
+test_direct_sigterm_reaps_child_and_closes_failure_evidence (test_lp3_serial_sigterm_run19.DirectSigtermReview.test_direct_sigterm_reaps_child_and_closes_failure_evidence) ... FAIL
+
+======================================================================
+FAIL: test_direct_sigterm_reaps_child_and_closes_failure_evidence (test_lp3_serial_sigterm_run19.DirectSigtermReview.test_direct_sigterm_reaps_child_and_closes_failure_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run19/v13/code/tests/test_lp3_serial_sigterm_run19.py", line 63, in test_direct_sigterm_reaps_child_and_closes_failure_evidence
+    self.assertFalse(live(child_pid), 'SIGTERM left owned child alive')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false : SIGTERM left owned child alive
+
+----------------------------------------------------------------------
+Ran 1 test in 6.894s
+
+FAILED (failures=1)

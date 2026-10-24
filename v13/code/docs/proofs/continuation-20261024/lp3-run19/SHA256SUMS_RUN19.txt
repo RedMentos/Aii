@@ -1,0 +1,18 @@
+# Run19 SHA-256 of exact raw local bytes, GitHub readback verified by Git blob SHA-1
+e792e0b281a2ffa8f6a0d3388e855cdc3263412d6f9a7597541b8e5c42e8ff9f  v13/code/docs/proofs/continuation-20261024/lp3-run19/LP3_RUN19_CODE_ONLY.tar.xz.base64
+# decoded tar.xz sha256 4c5b3314363128c2b284335e15ad25ea0a1614ea0bd04506caf971214d4e1cef
+# exact candidate source reconstructed from base Run18 and patch: git blob 394deb439b1305534dcb3f51c916a0250f79c4c1
+0fe00dfae08231cfdf11de39483d96087a17a2200efb2a5d44bee3a38323746b  v13/code/docs/coordination/BUILD_STATE_LP3_RUN19_20261024.json
+968b120aafe89d7699e2dca4a9a170132f658201afecd64c9b3a0ff0cc0205ab  v13/code/docs/proofs/continuation-20261024/lp3-run19/run19_red.log
+68239ce2a06ffb62a95b9431f1bc394b574b0ae00d9b389934910bd32d7304a9  v13/code/docs/proofs/continuation-20261024/lp3-run19/run19_green_final.log
+55061c4acfe61e85a69469db806c7384b8d85ca56213d8e14984e6379832c53c  v13/code/docs/proofs/continuation-20261024/lp3-run19/run19_detached_red.log
+ffd585daf9a727e12b7c7d52ab3f2acddb7bbc9078b57eb0242a867a563b84c5  v13/code/docs/proofs/continuation-20261024/lp3-run19/run19_suite_final.log
+ab561b4916b1c1ca20711bc4cbf9688f8e85dcd3ac7894a8ac22a26d40e6005d  v13/code/docs/proofs/continuation-20261024/lp3-run19/run19_native_readiness.json
+# verified Git blob readback:
+# code archive bfb8a222e10f55657c3e08891e61de2dd4141caa
+# BUILD_STATE 85c4e1497288bfdefba1c8316f54a852842a4766
+# RED 0e546390f7a01217c05c7a498a62142e4ad25b90
+# GREEN be4fa628dbce05f4951716fa217a24fa77d45abc
+# detached FAIL 16d9e7ff198228e177e5ccaf64b12842ba88dc94
+# full focused suite FAIL 391dfbf642ec515d3c60504eadefee05c76f22c3
+# native readiness 9f174bee7e07246264c518a1e8a4f1d323751db4
