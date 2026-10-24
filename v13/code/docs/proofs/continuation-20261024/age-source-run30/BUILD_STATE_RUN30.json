@@ -1,0 +1,22 @@
+{
+  "schema": "V13_RUN30_STATE_V1",
+  "base": "f6938f4b9f8cbd42a117d725264f5cc9bd4f1abb",
+  "owner": "Codex Run30 isolated Age source-noise signal",
+  "production_integrated": false,
+  "tests": "8/8 PASS software",
+  "cohort": "FAIL: 40/100 shift detected, 0/100 false shift; threshold 90/100 and <=5/100",
+  "age_reopen_original": "FAIL_UNCHANGED",
+  "native_model": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "full_suite": "NOT_RUN",
+  "privacy_scan": "NOT_RUN",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Preserve failed v1 and preregister v2 majority independent-source signal on fresh seeds, then integrate only after AgeControl actual outcome evidence."
+}

@@ -1,0 +1,5 @@
+# Run30 preregistration — independent cross-source noise signal (Age WP-Z8)
+
+Written before running the 100-seed synthetic cohort. Candidate is SHADOW only, no AgeControl or product policy changes. Binary comparable case labels; baseline and current window each require >=2 distinct qualified source IDs agreeing per case; source quality >=0.7. A shift candidate requires >=3 changed cases and >=80% of comparable cases changed; conflicting votes are noise candidates, not shift. Invalid/missing provenance produces INSUFFICIENT_EVIDENCE.
+
+Synthetic cohort: seeds 0..99, five stable comparable cases, four independent sources per case/window, 10% independent adversarial label flips under NOISE, coherent all-five-case label shift under SHIFT with the same noise. Each seed: noise and shift separate. Pass criteria: >=90/100 SHIFT detections; <=5/100 false SHIFT detections in NOISE. No tuning thresholds after seeing results. No claim of model utility, independent real-world source identity or G-AGE-REOPEN-001 PASS. Existing K1–K7 and failed verdicts remain binding.
