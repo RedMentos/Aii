@@ -1,0 +1,30 @@
+test_group_residue_rejects_receipt_without_signaling_numeric_pgid (test_lp3_run21_postreap_review.PostReapEndToEndReview.test_group_residue_rejects_receipt_without_signaling_numeric_pgid) ... FAIL
+test_reaped_leader_absent_group_is_clean_without_signals (test_lp3_run21_postreap_review.PostReapOwnershipReview.test_reaped_leader_absent_group_is_clean_without_signals) ... ok
+test_reaped_leader_group_must_never_receive_signals_by_numeric_pgid (test_lp3_run21_postreap_review.PostReapOwnershipReview.test_reaped_leader_group_must_never_receive_signals_by_numeric_pgid) ... ok
+test_advisory_lock_rejects_competing_local_owner (test_lp3_serial_cohort.SerialCohortTests.test_advisory_lock_rejects_competing_local_owner) ... ok
+test_default_cli_read_only_blocks_missing_assets (test_lp3_serial_cohort.SerialCohortTests.test_default_cli_read_only_blocks_missing_assets) ... ok
+test_existing_attempt_never_reused (test_lp3_serial_cohort.SerialCohortTests.test_existing_attempt_never_reused) ... ok
+test_failed_audit_preserves_log_and_failure_status (test_lp3_serial_cohort.SerialCohortTests.test_failed_audit_preserves_log_and_failure_status) ... ok
+test_lock_symlink_refused (test_lp3_serial_cohort.SerialCohortTests.test_lock_symlink_refused) ... ok
+test_no_native_if_other_local_process (test_lp3_serial_cohort.SerialCohortTests.test_no_native_if_other_local_process) ... ok
+test_no_native_if_readiness_blocked (test_lp3_serial_cohort.SerialCohortTests.test_no_native_if_readiness_blocked) ... ok
+test_no_native_if_source_registration_mismatch (test_lp3_serial_cohort.SerialCohortTests.test_no_native_if_source_registration_mismatch) ... ok
+test_no_operator_attestation_no_side_effects (test_lp3_serial_cohort.SerialCohortTests.test_no_operator_attestation_no_side_effects) ... ok
+test_nonzero_native_child_preserved_no_receipt (test_lp3_serial_cohort.SerialCohortTests.test_nonzero_native_child_preserved_no_receipt) ... ok
+test_symlink_and_nested_output_rejected (test_lp3_serial_cohort.SerialCohortTests.test_symlink_and_nested_output_rejected) ... ok
+test_synthetic_success_is_unpublished_local_receipt_only (test_lp3_serial_cohort.SerialCohortTests.test_synthetic_success_is_unpublished_local_receipt_only) ... ok
+test_timeout_kills_only_owned_process_group (test_lp3_serial_cohort.SerialCohortTests.test_timeout_kills_only_owned_process_group) ... ok
+
+======================================================================
+FAIL: test_group_residue_rejects_receipt_without_signaling_numeric_pgid (test_lp3_run21_postreap_review.PostReapEndToEndReview.test_group_residue_rejects_receipt_without_signaling_numeric_pgid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run21_work/v13/code/tests/test_lp3_run21_postreap_review.py", line 50, in test_group_residue_rejects_receipt_without_signaling_numeric_pgid
+    self.assertFalse(record.get('local_lock_poisoned', False))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 16 tests in 3.613s
+
+FAILED (failures=1)
