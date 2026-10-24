@@ -1,0 +1,76 @@
+RUN17 SOFTWARE/SYNTHETIC RAW FAILURE LOGS (2026-10-24)
+All failures were deliberately reproduced before their corresponding fixes.
+No native HF model or Redmi hardware was used.
+
+===== run17_red.log =====
+======================================================================
+FAIL: test_interrupted_wait_reaps_owned_child_before_unlock (test_lp3_serial_cohort.SerialCohortInterruptionTests.test_interrupted_wait_reaps_owned_child_before_unlock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run17_workspace/v13/code/tests/test_lp3_serial_cohort.py", line 182, in test_interrupted_wait_reaps_owned_child_before_unlock
+    self.assertIsNotNone(children[0].poll(), 'interrupted launch leaked an owned native child')
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : interrupted launch leaked an owned native child
+
+----------------------------------------------------------------------
+Ran 27 tests in 5.413s
+
+FAILED (failures=1)
+===== run17_red2.log =====
+======================================================================
+FAIL: test_timeout_escalation_keeps_final_wait_bounded (test_lp3_serial_cohort.SerialCohortBoundedWaitTests.test_timeout_escalation_keeps_final_wait_bounded)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run17_workspace/v13/code/tests/test_lp3_serial_cohort.py", line 213, in test_timeout_escalation_keeps_final_wait_bounded
+    self.assertEqual(proc.timeouts, [1, 0.5, 0.5])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [1, 0.5, None] != [1, 0.5, 0.5]
+
+First differing element 2:
+None
+0.5
+
+- [1, 0.5, None]
++ [1, 0.5, 0.5]
+
+----------------------------------------------------------------------
+Ran 15 tests in 2.787s
+
+FAILED (failures=1)
+===== run17_red3.log =====
+======================================================================
+FAIL: test_native_log_digest_does_not_load_entire_log_into_memory (test_lp3_serial_cohort.SerialCohortStreamingHashTests.test_native_log_digest_does_not_load_entire_log_into_memory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run17_workspace/v13/code/scripts/lp3_serial_cohort.py", line 203, in run_once
+    'native_log_sha256': sha256_bytes((evidence_dir / 'native.stdout-stderr.log').read_bytes())})
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/mnt/data/v13_run17_workspace/v13/code/tests/test_lp3_serial_cohort.py", line 226, in forbid_log_read_bytes
+    raise AssertionError('unbounded native log read_bytes')
+AssertionError: unbounded native log read_bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/data/v13_run17_workspace/v13/code/tests/test_lp3_serial_cohort.py", line 232, in test_native_log_digest_does_not_load_entire_log_into_memory
+    result = self.call()
+  File "/mnt/data/v13_run17_workspace/v13/code/tests/test_lp3_serial_cohort.py", line 45, in call
+    return mod.run_once(**options)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/v13_run17_workspace/v13/code/scripts/lp3_serial_cohort.py", line 226, in run_once
+    record['native_log_sha256'] = sha256_bytes(log_path.read_bytes())
+                                               ~~~~~~~~~~~~~~~~~~~^^
+  File "/mnt/data/v13_run17_workspace/v13/code/tests/test_lp3_serial_cohort.py", line 226, in forbid_log_read_bytes
+    raise AssertionError('unbounded native log read_bytes')
+AssertionError: unbounded native log read_bytes
+
+----------------------------------------------------------------------
+Ran 16 tests in 3.504s
+
+FAILED (failures=1)
+===== run17_final_tests.log =====
+----------------------------------------------------------------------
+Ran 105 tests in 6.541s
+
+OK
+{"verdict": "LP3_MEMORY_KEY_NOT_SUPPORTED", "report_sha256": "e7f204517d4e1dfb5afe7068cc82bd08558c34c7fc969f71f8ff7d27654d3a3c", "rows": 4}
