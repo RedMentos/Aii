@@ -1,0 +1,21 @@
+{
+  "schema": "V13_RUN29_STATE_V1",
+  "base": "b638ccc942ef4e545f8a26a38a59ff0f8af312c1",
+  "owner": "Codex Run29 isolated World-Model SQLite tests",
+  "production_integrated": false,
+  "tests": "7/7 PASS Linux SQLite synthetic",
+  "real_sqlite_path": "TESTED_WITH_SYNTHETIC_ACTIONS",
+  "native_llm": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "full_suite": "NOT_RUN",
+  "privacy_scan": "NOT_RUN",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Independent full checkout review and original world tests, skipped-row telemetry, then preregister real action outcomes and body/world JEPA ablations."
+}
