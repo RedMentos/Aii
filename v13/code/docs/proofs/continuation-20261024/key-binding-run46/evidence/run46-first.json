@@ -1,0 +1,20 @@
+{
+  "claim": "SYNTHETIC_ONLY_NOT_V13_NATIVE",
+  "heldout_n": 256,
+  "heldout_seed": 20261025,
+  "jepa_weight": 0,
+  "metrics": {
+    "context": 1.0,
+    "no_context": 0.10546875,
+    "shuffled_context": 0.42578125,
+    "uniform_attention": 0.42578125,
+    "untrained": 0.0546875
+  },
+  "original_gates_unchanged": true,
+  "parameters": 3081,
+  "schema": "V13_RUN46_SYNTHETIC_KEY_BINDING_V1",
+  "steps": 300,
+  "synthetic_pass": true,
+  "train_n": 512,
+  "train_seed": 20261024
+}
