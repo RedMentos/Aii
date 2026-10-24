@@ -1,0 +1,40 @@
+======================================================================
+FAIL: test_wrap_rejects_nonempty_dynamic_loader_variables (test_lp3_run23_loader_env.LoaderPrejoinCounterexample.test_wrap_rejects_nonempty_dynamic_loader_variables) (key='LD_PRELOAD')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run23/red-repro/v13/code/tests/test_lp3_run23_loader_env.py", line 59, in test_wrap_rejects_nonempty_dynamic_loader_variables
+    with self.assertRaisesRegex(cg.ContainmentBlocked, 'prejoin dynamic loader'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContainmentBlocked not raised
+
+======================================================================
+FAIL: test_wrap_rejects_nonempty_dynamic_loader_variables (test_lp3_run23_loader_env.LoaderPrejoinCounterexample.test_wrap_rejects_nonempty_dynamic_loader_variables) (key='LD_AUDIT')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run23/red-repro/v13/code/tests/test_lp3_run23_loader_env.py", line 59, in test_wrap_rejects_nonempty_dynamic_loader_variables
+    with self.assertRaisesRegex(cg.ContainmentBlocked, 'prejoin dynamic loader'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContainmentBlocked not raised
+
+======================================================================
+FAIL: test_wrap_rejects_nonempty_dynamic_loader_variables (test_lp3_run23_loader_env.LoaderPrejoinCounterexample.test_wrap_rejects_nonempty_dynamic_loader_variables) (key='LD_LIBRARY_PATH')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run23/red-repro/v13/code/tests/test_lp3_run23_loader_env.py", line 59, in test_wrap_rejects_nonempty_dynamic_loader_variables
+    with self.assertRaisesRegex(cg.ContainmentBlocked, 'prejoin dynamic loader'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContainmentBlocked not raised
+
+======================================================================
+FAIL: test_wrap_rejects_nonempty_dynamic_loader_variables (test_lp3_run23_loader_env.LoaderPrejoinCounterexample.test_wrap_rejects_nonempty_dynamic_loader_variables) (key='LD_FUTURE_INJECTOR')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run23/red-repro/v13/code/tests/test_lp3_run23_loader_env.py", line 59, in test_wrap_rejects_nonempty_dynamic_loader_variables
+    with self.assertRaisesRegex(cg.ContainmentBlocked, 'prejoin dynamic loader'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContainmentBlocked not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.104s
+
+FAILED (failures=4)
