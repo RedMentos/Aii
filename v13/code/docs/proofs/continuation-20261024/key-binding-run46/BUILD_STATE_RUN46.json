@@ -1,0 +1,66 @@
+{
+  "schema": "V13_RUN46_KEY_BINDING_CHECKPOINT_V1",
+  "date": "2026-10-24",
+  "base_commit": "f58877055b4abbb1e2475b85e625befd199c2bd8",
+  "prereg_commit": "53e9ced313aa40cced95510fc3121d787abf3616",
+  "owner": "Codex Run46 only key-binding-run46/*",
+  "status": "PASS_SYNTHETIC_NOT_NATIVE_NOT_INTEGRATED",
+  "dependencies": {
+    "run44_blob": "5b7a7a1f8db720c78feaa6e2efd9f1d0e110ad8b",
+    "run42_blob": "8dcd4b36cbe58f06ea330a510f1735b37f0ad600"
+  },
+  "metrics": {
+    "context": 1,
+    "no_context": 0.10546875,
+    "shuffled_context": 0.42578125,
+    "uniform_attention": 0.42578125,
+    "untrained": 0.0546875
+  },
+  "posthoc_heldout": [
+    {
+      "seed": 20261026,
+      "context": 1,
+      "shuffled": 0.3515625,
+      "uniform": 0.484375
+    },
+    {
+      "seed": 20261027,
+      "context": 1,
+      "shuffled": 0.3984375,
+      "uniform": 0.46875
+    },
+    {
+      "seed": 20261028,
+      "context": 1,
+      "shuffled": 0.4140625,
+      "uniform": 0.4453125
+    }
+  ],
+  "model_parameters": 3081,
+  "train_steps": 300,
+  "tests": {
+    "synthetic": "7/7 PASS",
+    "optimized_python": "7/7 PASS",
+    "offline_bootstrap": "PASS",
+    "compileall": "PASS",
+    "native_model": "NOT_RUN",
+    "full_repo": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Toy key/value task; no actual LLM/JEPA/C3/Body learning",
+    "Run44 staging uses synthetic Store history provider, not real Runtime",
+    "No training consumer-time revocation check",
+    "Full checkout unavailable in local container due DNS; no official privacy scan",
+    "No native model, Redmi or retention evidence"
+  ],
+  "next_command": "From full checkout cd v13/code/docs/proofs/continuation-20261024/key-binding-run46; python scripts/bootstrap_vendor.py; python -m unittest discover -s tests -v; python scripts/key_binding.py; python scripts/review_holdout.py; then independently design real source-validated C3 learning integration with retention and rollback before any Age/weight promotion.",
+  "user_decision_required": false
+}
