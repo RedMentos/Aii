@@ -17,6 +17,6 @@ Git blob SHA-1 is over the exact remote file bytes; all blobs below were read ba
 | docs/coordination/LP3_RUN14_OPEN_QUESTIONS_20261024.md | 7b818e6bd7a9e9cc226c0dbdebeb97124159bc1e | remote only |
 | docs/coordination/LP3_RUN14_REVIEW_RESEARCH_20261024.md | a0c84f41aab4a2f3ce5891d141f7e992b97c5d8c | remote only |
 
-Local focused source ZIP SHA-256: `2e4ba9745caee546d18a416897416091b4e86821a664829346c3eb5c77a9d782`.
+Local focused source ZIP SHA-256: `bb9f60d1385834c37325aeb9841c7dfa10ee1a9ac0fbd7c8113361f29253ec16`.
 
 No native model/Redmi or full suite/privacy-scan proof is claimed. STEP2/B3 negative gates unchanged.
