@@ -1,0 +1,85 @@
+{
+  "schema": "V13_RUN273_FOCAL_MEMORY_AUTHORITY_CHECKPOINT_V1",
+  "utc": "2026-10-25T11:20:00Z",
+  "base": "eabaf2ae4928a9daacba8b76bafe33243009c9fd",
+  "base_pr": 272,
+  "parent_ci": {
+    "pr270": {
+      "run": 40187802482,
+      "tests": 78,
+      "privacy": "CLEAN",
+      "artifact": 12597155710
+    },
+    "pr271": {
+      "run": 40187989062,
+      "tests": 99,
+      "privacy": "CLEAN",
+      "artifact": 12597066691
+    },
+    "pr272": {
+      "run": 40188129508,
+      "tests": 31,
+      "privacy": "CLEAN",
+      "artifact": 12597221607
+    }
+  },
+  "branch": "codex/focal-memory-authority-run273-20261025",
+  "owner": {
+    "production": [
+      "v13/code/v13/focal.py"
+    ],
+    "tests": [
+      "v13/code/tests/test_focal_memory_authority_run273.py"
+    ],
+    "proofs": [
+      "v13/code/docs/proofs/continuation-20261025/focal-memory-authority-run273/*"
+    ],
+    "ci": [
+      ".github/workflows/run273-focal-memory-authority.yml"
+    ]
+  },
+  "source_blob": "dcc0569c8776965b4da1234ecd76b322bf6b1df3",
+  "test_blob": "d62d75c4ba130e44ce927079c0870e05dbdb9c4d",
+  "scope": "LINUX_ACTUAL_RUNTIME_SQLITE_SYNTHETIC_TEXT_NO_NATIVE_MODEL_NO_REDMi",
+  "tests": {
+    "red": {
+      "tests": 7,
+      "failures": 6,
+      "exit": 1
+    },
+    "green_initial": {
+      "tests": 40,
+      "errors": 1,
+      "reason": "mistyped tests.test_workspace_learning; actual module tests.test_workspace_learn",
+      "exit": 1
+    },
+    "green_corrected": {
+      "tests": 43,
+      "exit": 0
+    },
+    "focused": {
+      "tests": 46,
+      "exit": 0
+    },
+    "fullsuite": {
+      "status": "NOT_RUN_IN_RUN273"
+    }
+  },
+  "raw_sha256": {
+    "red": "84913c6f456debb6918cf80f72a6ffcafef680cc0ea029759c32b745d94161c2",
+    "green_initial": "9bfc3e1e356987b58f7bd78b9cc2683ebecb64631e6543ca84d7ac15d143010e",
+    "green_corrected": "0c4019882e4dec4d9838beb54ad22ed6046cbf27a2f3080858437a557a2e79eb",
+    "focused": "6dc31f7e074bb422349d22bdac61fb5fb1eb568386fbe9ad5b9817604a3ad99e"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "changes": "B4 Workspace MEMORY slot reload now requires exact memory source_ref and current F1/F5 human authority; no change to BODY offer semantics or workspace capacity/plasticity.",
+  "original_canon_modified": false,
+  "model_hashes_modified": false,
+  "next": "Create PR273 against PR272, inspect exact-head CI and privacy. Continue separate canonical path; full-system utility and Redmi native proofs remain open."
+}
