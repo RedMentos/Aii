@@ -1,0 +1,48 @@
+{
+  "run": "Run383",
+  "date_utc": "2026-10-25T22:27:33Z",
+  "owner": "Codex independent native C3 JSON answer-field factorial",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/c3-native-json-answer-ablation-run383-20261025",
+  "base_branch": "codex/c3-native-prompt-ablation-run382-20261025",
+  "base_sha": "32eacff602720bfd65148e5f786f016f4b473506",
+  "pr": 378,
+  "prereg_commit": "f244b9ddbaa77297e1dc9105c9dc4e981f2117f9",
+  "pre_native_head": "50740edb326ca2e9c88fcfa4ce1beee99b32af2d",
+  "status": "AWAITING_NATIVE_GITHUB_ACTIONS",
+  "model": {
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "bytes": 219312832,
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "license": "LFM Open License 1.0"
+  },
+  "runner": {
+    "tag": "b10964",
+    "bytes": 16825086,
+    "sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
+  },
+  "arms": [
+    "baseline",
+    "min_length",
+    "explicit_json",
+    "combined"
+  ],
+  "cases": 12,
+  "planned_calls": 48,
+  "minimum_exact_gain": 2,
+  "minimum_empty_reduction": 2,
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_UNRESOLVED",
+    "Body-JEPA_NOT_PROVEN",
+    "jepa_weight=0",
+    "Redmi_NATIVE_NOT_MEASURED",
+    "whole_V13_INCOMPLETE",
+    "Run367_full_suite_RED",
+    "G-AGE-REOPEN-001_FAIL",
+    "Run382_prompt_utility_FAIL"
+  ],
+  "native_evidence": "PENDING_NOT_MEASURED",
+  "next_command": "Inspect PR378 exact-head native Actions, source-only tests and 48-call report; download raw ZIP, CRC/SHA and private backup; retain negative result without retuning.",
+  "blocked": "No Redmi; native Linux proof pending; production solver unchanged."
+}
