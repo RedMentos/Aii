@@ -1,4 +1,4 @@
-name: V13 Run373 pinned C3 350M Linux-native AG12 field-confidence diagnostic
+name: V13 Run382 pinned C3 350M Linux-native prompt utility ablation
 on:
   pull_request:
     paths:
