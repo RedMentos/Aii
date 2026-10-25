@@ -1,0 +1,67 @@
+{
+  "run": "Run393",
+  "date": "2026-10-26",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/step2-z2c-access-utility-run393-20261026",
+  "pr": 388,
+  "base": {
+    "branch": "codex/ag2-preaction-restart-run391-20261026",
+    "sha": "752873ba8a9ff7a57536831007257ac54c6b9c32",
+    "integration": "sibling to Run392, stacked review only, not main"
+  },
+  "plan_commit": "accffc2b177c5f189196f43c6fbd6a68908d999d",
+  "analyzer_commit": "56603b94a4a3d9c48d90f3dea566e38444c189fa",
+  "tests_commit": "4bc1babccf7564e31bc0823a0c8aa488ac98f889",
+  "workflow_commit": "aaaee5e4cfe9bf9d02a73212a2a1619ff5b067bd",
+  "source_blobs_verified": {
+    "analyzer": "5a984701da6c23fa8f92fe78c752f14f0f235022",
+    "tests": "5a20e01b9f62682d65e3c946eb2bb37a5b13353f",
+    "workflow": "4502611dd5f472c0e7a824dddd7ba10cfe5deb5a",
+    "plan": "92cfa151f639fc06e4e64a70119bcb0c92f6088a"
+  },
+  "evidence": {
+    "head": "aaaee5e4cfe9bf9d02a73212a2a1619ff5b067bd",
+    "run": 40244509688,
+    "artifact": 12617704319,
+    "zip_sha256": "a058a85d3bbf079de5dccc3d827c324a9b1c0138b12a9381a741dcd268985562",
+    "report_sha256": "f3e074d7e733281b734b9173a117cb56d99f44668f0265d8a59e7171e3334161",
+    "tests": "8/8 PASS",
+    "privacy": "CLEAN",
+    "native_rerun": false,
+    "raw_integrity": "ZIP CRC PASS; all eight internal member SHA256 checks PASS; private Library copy re-materialized byte-identical"
+  },
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run393_STEP2_20261026/RAW.zip",
+  "findings": {
+    "pointer_gained_access": "77/96 paired source rows; mean utility delta +0.277 in gained subset",
+    "pointer_both_exact_gain": "19/24; mean utility delta +0.382",
+    "both_exact_vs_control_mean": 0.3055555555555555,
+    "ci95": [
+      0.21388888888888888,
+      0.38333333333333336
+    ],
+    "both_exact_vs_best_single_mean": 0.3,
+    "both_exact_vs_shared_body_mean": 0.29444444444444445,
+    "wrong_committed_tool": 0,
+    "wrong_rule_rows": 0,
+    "causal_claim": false
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "G-B-TIMESCALE-DIVERGENCE-001 not proven",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED (3160 tests, 1 fail, 70 errors)",
+    "No new heldout/native/Redmi proof",
+    "Age0/approval unchanged",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "New source-disjoint long-rule-note and revised-rule fixtures must be preregistered before fresh native inference",
+    "Shared-body two-state control with pointer and same token/info budget missing",
+    "Latency/RSS and per-body complementary error profiles on fresh episodes missing",
+    "Run392 independent full-suite resource-mode diagnostic still in progress at time of this checkpoint"
+  ],
+  "next_command": "git fetch origin codex/step2-z2c-access-utility-run393-20261026 && git checkout -b review-run393 origin/codex/step2-z2c-access-utility-run393-20261026 && cd v13/code && python -m unittest -v tests.test_run393_step2_access_utility && python scripts/run393_step2_access_utility.py --output /tmp/run393-report.json",
+  "next_package": "Preregister fresh STEP2 long-note/revised-rule native control cohort; separately finish Run392 source-wide resource-mode diagnosis. No original registered source/model/seed hashes may change."
+}
