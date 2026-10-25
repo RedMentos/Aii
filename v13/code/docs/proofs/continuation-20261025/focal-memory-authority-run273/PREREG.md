@@ -1,0 +1,7 @@
+# Run273 preregistration — B4 focal persisted MEMORY slot authority
+
+Base: PR272 head `eabaf2ae4928a9daacba8b76bafe33243009c9fd`. Depends on PR270 F1/F5 source validator, PR271 ContextOS warm fix, PR272 JEF continuity. Disjoint owner: Run273 owns `v13/code/v13/focal.py`, `v13/code/tests/test_focal_memory_authority_run273.py`, `v13/code/docs/proofs/continuation-20261025/focal-memory-authority-run273/*` and optional new CI workflow only.
+
+RED hypothesis: `Workspace._text` reloads persisted MEMORY slots by active memory id and mutable value, without rechecking the original F5 HumanDecision/feedback. `Workspace.load` checks only source readability, so a revoked decision can still reenter C4 Focal even when ordinary recall, warm ContextOS and JEF refuse it.
+
+Controls: actual Store/Runtime SQLite with synthetic text, a genuine Memory.feedback correction, Focal.item and Workspace.save/load across two turns. Confirm valid slot, restart and no model weights; then delete HumanDecision, delete feedback, change source kind, duplicate decision, retarget persisted source_ref to a different still-readable source. Every invalid slot must be dropped. Independent valid slot must survive. Reuse the single F1/F5 validator; no new memory authority policy. Preserve all RED/harness errors, tests and raw hashes. Original gates unchanged: STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 INCOMPLETE. No native/Redmi proof.
