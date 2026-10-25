@@ -1,0 +1,49 @@
+{
+  "run": "Run394",
+  "stage": "FIXTURES_GREEN_PRE_NATIVE",
+  "date": "2026-10-26",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/step2-fresh-longnotes-run394-20261026",
+  "pr": 389,
+  "base": {
+    "branch": "codex/step2-z2c-access-utility-run393-20261026",
+    "sha": "6b9cfc65d4d9766325cd3e114ace676bc64f5816",
+    "integration": "stacked review only, not main"
+  },
+  "plan_commit": "0f4fe33ba259457174562c3961271093a42bce4f",
+  "source_commit": "eba1d3234acf5c12b6fc2b904538465c9231b820",
+  "tests_commit": "37442c3d1b6d2d06c39d1d675a7e9f10d451fbf9",
+  "workflow_commit": "dc6ee2f262f4680851a55f6fa8ce35320a2d6b9b",
+  "evidence": {
+    "head": "dc6ee2f262f4680851a55f6fa8ce35320a2d6b9b",
+    "run": 40244851077,
+    "artifact": 12618715339,
+    "zip_sha256": "9fbfcf393c69819e77efde9c98d2d4365105512e7930857e263175c70a165a0c",
+    "tests": "7/7 PASS, compileall PASS, privacy CLEAN",
+    "raw_integrity": "ZIP CRC PASS, all eight internal member SHA256 checks PASS, private Library copy byte-identical"
+  },
+  "fixture_hashes": {
+    "pilot": "3a3ec213d467d2427c5bb76155f61700595f9399d1148d87e55d88c97cde787b",
+    "full": "62869377ec86a18773d865a2865004f644b277bb641045e04f2b3adb9fec467e"
+  },
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run394_STEP2_20261026/FIXTURES_RAW.zip",
+  "scope": "Six new source-disjoint long-note/revised-rule fixtures, O/P/S arms, seed20 pilot; source-only proof, native not run yet",
+  "negative_gates": [
+    "Native pilot NOT RUN",
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "No Redmi/phone proof",
+    "Run389 full suite RED",
+    "Age0/approval unchanged",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Install pinned public models and pinned native runner in isolated Linux CI; preserve exact model/source hashes",
+    "Run 42 real native pilot rows O/P/S seed20 Alder+Delta, serially; keep all failures and raw",
+    "After pilot, full 378-row cohort only if structural/negative gates allow, no promotion without §99 controls"
+  ],
+  "next_command": "python3 -m v13.bootstrap --home \"$RUNNER_TEMP/run394-installed\" && PYTHONPATH=v13/code python3 v13/code/scripts/run394_step2_fresh.py --installed-home \"$RUNNER_TEMP/run394-installed\" --work \"$RUNNER_TEMP/run394-native\" --pilot --arms O P S --seeds 20",
+  "next_prerequisites": "Pinned public model artifacts from existing v13/models.py catalog and native llama.cpp runner; isolated CI RAM/disk/time; no paid provisioning or private data"
+}
