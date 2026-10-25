@@ -8,7 +8,9 @@ import sys
 import unittest
 import zipfile
 
-sys.path.insert(0,str(Path(__file__).parent))
+SCRIPTS=Path(__file__).resolve().parents[1]/"scripts"
+if not SCRIPTS.exists(): SCRIPTS=Path(__file__).resolve().parent
+sys.path.insert(0,str(SCRIPTS))
 from age0d_run147_independent_audit_run148 import audit_zip,sha,independent_checker,independent_label
 
 ARTIFACT=Path(os.environ.get('RUN147_ARTIFACT','/mnt/data/RUN147_native.zip'))
