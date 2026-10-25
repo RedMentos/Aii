@@ -1,0 +1,48 @@
+{
+  "schema": "V13_RUN278_BRANCH_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "run278_sleep_digest_view",
+  "base_branch": "codex/offline-phone-diagnostic-run277-20261025",
+  "base_commit": "93b15be78b000c2621b494d1623795e0e86afad6",
+  "tested_commit": "c493b127f655b2bcb9b07a43904ebdd368bf2e28",
+  "source_file": "v13/code/v13/sleep_offline.py",
+  "source_blob_sha": "e51766478fee915824853da7c8e73785b12e91b3",
+  "test_blob_sha": "947286a7e2debd2795c77bf1efe1a2fa98000fe5",
+  "canon_blob_sha": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "original_build_state_blob_sha": "fdf0827d7c4af5cdb85b69cbe651ed52784a07b5",
+  "red": {
+    "run_id": 40191638988,
+    "tests": 24,
+    "failed": 4,
+    "passed": 20,
+    "artifact_id": 12598247205,
+    "artifact_sha256": "7060f38357de37e84c87ea184283df0709f12c2de4d64c032d030d3f326bac8d"
+  },
+  "green": {
+    "run_id": 40191704283,
+    "tests": 24,
+    "passed": 24,
+    "failed": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS",
+    "artifact_id": 12597738376,
+    "artifact_sha256": "c2873e60a095a498b6e744605c984aef5442450385f0b62a5e59121192c7e129"
+  },
+  "evidence_scope": "LINUX_SOFTWARE_RUNTIME_SQLITE_OPERATOR_NO_NATIVE",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "Redmi": "NOT_MEASURED"
+  },
+  "parent_pr277_ci": "FAIL_OFFLINE_DEPENDENCY_INSTALL",
+  "full_suite": "NOT_RUN",
+  "native": "NOT_RUN",
+  "next_step": "Create separate branch from verified Run278 head; RED-first F5 authority regression for episodic_route.suggest after feedback deletion, then minimal source-bound fix and exact-head CI.",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_episodic_route_f5_authority_run279",
+  "no_force_push": true,
+  "source_and_raw_evidence_saved_in": "PR278 GitHub branch + GitHub Actions artifacts",
+  "private_drive_backup": "NOT_ATTEMPTED_REJECTED_DESTINATION"
+}
