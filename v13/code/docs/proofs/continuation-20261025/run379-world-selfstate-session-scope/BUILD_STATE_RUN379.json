@@ -1,0 +1,59 @@
+{
+  "run": "Run379",
+  "date_utc": "2026-10-25T22:10:00Z",
+  "owner": "Codex automation independent WorldState session accounting",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/world-selfstate-session-scope-run379-20261025",
+  "base_branch": "codex/ag5-curiosity-finite-errors-run376-20261025",
+  "base_sha": "29669bbe05049199feb7cda2be233d11f08e3362",
+  "pr": 374,
+  "source_test_verified_head": "f82248faea0c6d0f0edc518292931ca7afa6ce64",
+  "source_blob_sha": "504c9f7fab013be04051adcdb3d67120b4fb4ddc",
+  "source_sha256_before": "f7d0a1af971565b6ac8d3ff5b5f6451dd068808ef21419b0e64c7e78cba7e9e3",
+  "test_sha256": "3377216f1b246e83838b41c78900ebb04240646a94c7ebcfd94589761e2430f9",
+  "red": {
+    "actions_run": 40238849034,
+    "job": 121306108635,
+    "tests": 12,
+    "passed": 11,
+    "failed": 1,
+    "observed": "session A expected 1 unfinished action, received 3",
+    "raw_artifact": 12615932337,
+    "raw_zip_sha256": "29119697ae2c40af433c458edf141bcac94d0cd24912acd8ae42acf68bbcd485"
+  },
+  "green": {
+    "actions_run": 40238913441,
+    "job": 121306303937,
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "raw_artifact": 12615848946,
+    "privacy": "CLEAN",
+    "inherited_actions_success": [
+      40238913450,
+      40238913436,
+      40238913447,
+      40238913448
+    ],
+    "raw_zip_sha256": "2dad9b1f985de1af60a627b7c88dbc80456866a65dfd174a720d12d7f1545f7a"
+  },
+  "scope": "Runtime/SQLite synthetic action session accounting only",
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_UNRESOLVED",
+    "Body-JEPA_NOT_PROVEN",
+    "jepa_weight=0",
+    "Redmi_NATIVE_NOT_MEASURED",
+    "whole_V13_INCOMPLETE",
+    "Run367_full_suite_RED"
+  ],
+  "raw_zip_private_backup": "VERIFIED_CRC_4_OF_4_SHA_PRIVATE_BYTE_MATCH",
+  "remote_bytes": "VERIFIED via GitHub fetch_file",
+  "next_command": "Review exact PR374 HEAD and run test_world_selfstate_session_run379 + inherited World tests; independently validate artifact ZIP; then address AG8 shield invalid metric acceptance on separate branch.",
+  "blocked": "Redmi device/native model proof not available; full Run367 suite remains RED.",
+  "private_backup_paths": [
+    "/V13/Backups/Run379-380-20261025/V13_Actions_12615932337.zip",
+    "/V13/Backups/Run379-380-20261025/V13_Actions_12615848946.zip"
+  ],
+  "raw_verification": "CRC PASS, internal 4/4 SHA PASS, GitHub exact-head matches, Library re-materialized byte-identical"
+}

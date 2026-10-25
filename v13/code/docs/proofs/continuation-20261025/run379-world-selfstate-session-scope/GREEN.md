@@ -1,0 +1,11 @@
+# Run379 GREEN evidence and independent scope review
+
+2026-10-25 22:10 UTC. Exact production/test HEAD `f82248faea0c6d0f0edc518292931ca7afa6ce64` (review PR #374; stacked on verified Run376/PR371, not main). Only production edit: `WorldState.self_state()` now counts DISPATCHED and OUTCOME_UNKNOWN actions through an `events` join with `e.session_id=?`, bound to the current Runtime session. No new state, schema, permission or learning authority.
+
+**GREEN Actions 40238913441**, job **121306303937**, actual Runtime/SQLite: **12/12 PASS**, 0 failures, 0 errors, 0 skips, 0.630s; inherited `tests.test_world_state` and Run343 recovery all PASS. `compileall` PASS, official public repo privacy scan **CLEAN**. Inherited source-bound World Actions: Run108 **40238913450 SUCCESS**, Run109 **40238913436 SUCCESS**, Run343 **40238913447 SUCCESS**, Run349 **40238913448 SUCCESS**. Source-bound general workflow 40238913470 still independent; do not claim full-suite green. RED Actions 40238849034 deliberately failed 1/12 at 3 != 1, inherited 11 PASS, and raw artifact 12615932337 preserved.
+
+GREEN raw Actions artifact **12615848946**, 5 files, retained 30 days, including exact-head source/test hashes, unittest transcript, privacy scan and manifest. Remote file bytes and GitHub workflow results were fetched back through connector. Neither RED nor GREEN ZIP has yet been independently downloaded/CRC-checked or privately byte-backed-up; do not upgrade evidence to that level. Linux CI synthetic local actions only; not Redmi, native models, B3, Body-JEPA or utility gain. All original negative gates remain.
+
+Independent review: session A/B/C checks cover DISPATCHED and OUTCOME_UNKNOWN, terminal B action, fresh session zero, restart and store integrity. Original single-session baseline preserved. No attempt to change global pending replay/memory counters without a separate contract.
+
+Next: persist BUILD_STATE_RUN379.json and private lightweight handoff; continue an independent substantive AG8 regression-shield validation package (separate file owner) rather than stopping at this checkpoint.
