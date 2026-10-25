@@ -1,0 +1,9 @@
+# Run277 preregistration — optional offline source-only phone diagnostic
+
+Base: PR276 exact head `09ff9192a972ef46626f10b599f49785f78a7661`; all PR270–276 dependencies remain draft/unintegrated. Run277 owns only `v13/code/setup.sh`, `v13/code/tests/test_offline_phone_diagnostic_run277.py`, `v13/code/docs/proofs/continuation-20261025/offline-phone-diagnostic-run277/*`, and optional new CI workflow. Do not edit native/model registries or other owners.
+
+RED: current verified Run276 source-only ZIP passes 988/988 source hash checks but invoking setup.sh without network fails at pinned needle3 download (URLError DNS); no bounded operator diagnostic path exists. This is a missing-prerequisite fact, not an installer defect or a native pass.
+
+Implementation: add explicit opt-in `V13_SOURCE_ONLY_DIAGNOSTIC=1` to setup.sh. After mandatory source integrity check, initialize local Age-0 state and CLI launcher but skip model downloads/native build, skip full selftest/probe, run real `v13 doctor`, label results SOURCE_ONLY/NO_NATIVE/NO_REDMi and list omitted proofs. Default setup behavior must remain byte-for-byte equivalent in control flow; do not silently fallback when a normal model download fails. Never promote gates, never claim a model inference, JEPA or Redmi proof.
+
+Tests: RED before edit, source-only ZIP built by existing package_source.py and checked with existing verify_phone_zip_current_run268.py; extract ZIP to fresh directory; run setup.sh with PIP_NO_INDEX=1, no network, isolated V13_HOME, V13_NO_AUTOSTART=1, and diagnostic opt-in; assert no model download/runner installation and doctor status, persistence and explicit original negative gates. Verify ordinary mode still attempts normal bootstrap in a mock/stub test rather than expensive downloads. Retain raw logs, source/member SHA, CI privacy. Original gates STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 INCOMPLETE.
