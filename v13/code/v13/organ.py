@@ -21,14 +21,42 @@ restore    needs the same model revision as at snapshot time (else: first :body 
 import json
 import contextlib
 import os
+import re
 import shutil
 import time
 from pathlib import Path
 from .common import atomic_write,digest,dumps,file_hash,uid
 from .bodyport import bridge_key,direction_roles
+from .models import ROLES,OPTIONAL_ROLES
 
 REVISION='v13-organ-checkpoint-v1'
 DIR='organs'
+MODEL_ROLES=frozenset(ROLES)|frozenset(OPTIONAL_ROLES)
+SNAPSHOT_ID=re.compile(r'organ_[0-9a-f]{32}\Z')
+
+
+def _require_role(role):
+    # The operator supplies this string. Never use arbitrary role text in a path.
+    if type(role) is not str or role not in MODEL_ROLES:
+        raise ValueError('Unbekannte Organ-Rolle')
+    return role
+
+
+def _organ_root(r):
+    root=r.home/DIR
+    # A symlink would redirect even a correctly spelled role outside the
+    # intended checkpoint namespace.
+    if root.is_symlink() or not root.resolve().is_relative_to(r.home.resolve()):
+        raise ValueError('Organ-Verzeichnis außerhalb des Brain-Verzeichnisses')
+    return root
+
+
+def _snapshot_folder(r,role,sid):
+    root=_organ_root(r);folder=root/role/sid
+    if ((root/role).is_symlink() or folder.is_symlink() or
+            not folder.resolve().is_relative_to(root.resolve())):
+        raise ValueError('Organ-Sicherungspfad außerhalb des Organ-Verzeichnisses')
+    return folder
 
 
 def _spec(r,role):
@@ -62,6 +90,7 @@ def _assets(r,role):
 
 
 def members(r,role):
+    role=_require_role(role)
     return {'role':role,'model':_spec(r,role),'components':_components(r,role),'bridges':_bridges(r,role),'assets':_assets(r,role)}
 
 
@@ -91,7 +120,8 @@ def _saved_component(folder,man,name,e):
 
 def snapshot(r,role,clock=time.time):
     if not r.idle():raise ValueError('Erst :stillstand (oder warten, bis nichts läuft); sonst ist die Sicherung nicht in sich stimmig.')
-    m=members(r,role);sid=uid('organ');folder=r.home/DIR/role/sid;(folder/'files').mkdir(parents=True)
+    role=_require_role(role)
+    m=members(r,role);sid=uid('organ');folder=_snapshot_folder(r,role,sid);(folder/'files').mkdir(parents=True)
     component_files={name:'components/'+digest(name)+'.bin' for name in m['components']}
     for name,e in m['components'].items():
         src=r.home/e['path']
@@ -106,17 +136,26 @@ def snapshot(r,role,clock=time.time):
 
 
 def _load(r,sid):
-    hits=list((r.home/DIR).glob('*/'+sid+'/manifest.json')) if (r.home/DIR).is_dir() else []
+    if type(sid) is not str or not SNAPSHOT_ID.fullmatch(sid):
+        raise ValueError('Ungültige Organ-Sicherungs-ID')
+    root=_organ_root(r)
+    hits=list(root.glob('*/'+sid+'/manifest.json')) if root.is_dir() else []
     if len(hits)!=1:raise ValueError('Unbekannte Organ-Sicherung: '+str(sid))
-    man=json.loads(hits[0].read_text())
+    p=hits[0]
+    if (p.is_symlink() or p.parent.is_symlink() or p.parent.parent.is_symlink() or
+            not p.resolve().is_relative_to(root.resolve())):
+        raise ValueError('Organ-Sicherungspfad außerhalb des Organ-Verzeichnisses')
+    man=json.loads(p.read_text())
     if man.get('revision')!=REVISION or digest(dumps({k:v for k,v in man.items() if k!='hash'}))!=man.get('hash'):
         raise RuntimeError('Organ-Sicherung beschädigt: '+sid)
-    return man,hits[0].parent
+    if man.get('id')!=sid or man.get('role')!=p.parent.parent.name or man.get('role') not in MODEL_ROLES:
+        raise RuntimeError('Organ-Sicherungs-Identität passt nicht zum Pfad')
+    return man,p.parent
 
 
 def listing(r):
-    out=[]
-    for p in sorted((r.home/DIR).glob('*/*/manifest.json')) if (r.home/DIR).is_dir() else []:
+    out=[];root=_organ_root(r)
+    for p in sorted(root.glob('*/*/manifest.json')) if root.is_dir() else []:
         try:m=json.loads(p.read_text());out.append({k:m.get(k) for k in ('id','role','created','generation')}|{'components':sorted(m.get('components',{}))})
         except Exception:out.append({'id':p.parent.name,'error':'UNREADABLE'})
     return out
