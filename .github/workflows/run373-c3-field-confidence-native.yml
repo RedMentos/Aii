@@ -117,7 +117,7 @@ jobs:
             echo "rc=$version_rc" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          timeout 240s "$RUNNER_TEMP/run373venv/bin/python" -m scripts.run373_c3_native_solver_smoke \
+          timeout 240s "$RUNNER_TEMP/run373venv/bin/python" -m scripts.run373_c3_field_confidence_native \
             --home "$RUNNER_TEMP/run373/home" --model "$RUNNER_TEMP/run373/model.gguf" \
             --binary "$RUNNER_TEMP/run373/llama-server" \
             --report "$RUNNER_TEMP/RUN373_NATIVE_REPORT.json" \
