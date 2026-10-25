@@ -1,0 +1,75 @@
+name: V13 Run292 latewatch honors learned wake none (SQLite software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/latewatch.py'
+      - 'v13/code/tests/test_run292_latewatch_wake_veto.py'
+      - '.github/workflows/run292-latewatch-wake-veto.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  latewatch-veto:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Exact source and unchanged Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN292_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/v13/latewatch.py v13/code/tests/test_run292_latewatch_wake_veto.py | tee "$RUNNER_TEMP/RUN292_BLOBS.txt"
+          python3 -m compileall -q v13/code/v13 v13/code/tests
+      - name: Exact-head latewatch and readout software regressions
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run292venv"
+          "$RUNNER_TEMP/run292venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          deps=$?
+          if [[ "$deps" != "0" ]]; then echo "$deps" > "$RUNNER_TEMP/RUN292_TEST_EXIT.txt"; echo "rc=$deps" >> "$GITHUB_OUTPUT"; exit 0; fi
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run292venv/bin/python" -m unittest -v \
+            tests.test_run292_latewatch_wake_veto \
+            tests.test_latewatch tests.test_latewatch_final_tail_run116 \
+            tests.test_late_correction tests.test_readout_worker \
+            tests.test_executive_readouts 2>&1 | tee "$RUNNER_TEMP/RUN292_TEST_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN292_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN292_PRIVACY.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN292_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Preserve closed raw RED/GREEN evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run292-Latewatch-WakeVeto-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN292_HEAD.txt
+            ${{ runner.temp }}/RUN292_BLOBS.txt
+            ${{ runner.temp }}/RUN292_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN292_TEST_RAW.log
+            ${{ runner.temp }}/RUN292_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN292_PRIVACY.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual exits
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
