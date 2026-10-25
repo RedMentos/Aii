@@ -1,0 +1,68 @@
+name: V13 Run187 independent raw C3 final-answer audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run187-c3-independent-audit.yml'
+      - 'v13/code/scripts/run187_c3_final_independent_audit.py'
+      - 'v13/code/tests/test_run187_c3_final_independent_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run187-c3-independent/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent-raw-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify frozen source and synthetic audit tests
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run187"
+          test "$(git hash-object v13/code/scripts/gist_utility_bench.py)" = 'f2b6d00cbe100152bb77a3b04187324eb379abd6'
+          test "$(git hash-object v13/code/scripts/run186_c3_gist_final_utility.py)" = '4ed00028bf3b40ca3f124757a54a5de10413131c'
+          python3 -m pip install --disable-pip-version-check --no-input numpy==2.3.5 prompt-toolkit==3.0.52
+          python3 -m compileall -q v13/code/scripts/run187_c3_final_independent_audit.py v13/code/tests/test_run187_c3_final_independent_audit.py
+          python3 -m unittest discover -s v13/code/tests -p test_run187_c3_final_independent_audit.py -v 2>&1 | tee "$RUNNER_TEMP/run187/software.log"
+      - name: Fetch and hash-check immutable native B2 and C3 artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for pair in '12589259384 b2' '12589624346 c3'; do
+            set -- $pair
+            curl --fail --silent --show-error --location --retry 2 --max-time 120 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/$1/zip" \
+              -o "$RUNNER_TEMP/run187/$2.zip"
+          done
+          echo 'cb0786ec15734efe4b3dda2607218dccf98cb96015d2852349a44b8c689982fb  '"$RUNNER_TEMP/run187/b2.zip" | sha256sum -c -
+          echo 'eca63cb1482282cda517216b6049188fc9d6c9bbdd219564ccae9b108f631667  '"$RUNNER_TEMP/run187/c3.zip" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/run187/b2" "$RUNNER_TEMP/run187/c3"
+          unzip -q "$RUNNER_TEMP/run187/b2.zip" -d "$RUNNER_TEMP/run187/b2"
+          unzip -q "$RUNNER_TEMP/run187/c3.zip" -d "$RUNNER_TEMP/run187/c3"
+          echo 'ea379b52c7b95c2bb30cd6725f539f443521a64210fdf6bf6fa726c413126880  '"$RUNNER_TEMP/run187/b2/report/report.json" | sha256sum -c -
+          echo '2d9828c2e688b65e50df1849a77fc9bbaf4dd56f59ae423e7b62722f7fc10219  '"$RUNNER_TEMP/run187/c3/final/report.json" | sha256sum -c -
+          PYTHONPATH=v13/code python3 v13/code/scripts/run187_c3_final_independent_audit.py \
+            --native-report "$RUNNER_TEMP/run187/c3/final/report.json" \
+            --b2-report "$RUNNER_TEMP/run187/b2/report/report.json" \
+            --output "$RUNNER_TEMP/run187/independent.json" 2>&1 | tee "$RUNNER_TEMP/run187/audit.log"
+          echo 'b618accc7fa9b0907adb7fda5ba11c74d81eacf33db806a3d0b109188504e7e7  '"$RUNNER_TEMP/run187/independent.json" | sha256sum -c -
+          echo RUN187_C3_FINAL_RAW_AUDIT_PASS_CANDIDATE_ONLY_NO_GATE_PROMOTION
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base c0c154aebf9ddab96a8414ad5c7febdb729af043 --head HEAD
+      - name: Preserve independent raw audit and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run187-Independent-C3-Final-Raw-Audit
+          path: |
+            ${{ runner.temp }}/run187/*.log
+            ${{ runner.temp }}/run187/independent.json
+          if-no-files-found: warn
+          retention-days: 14
