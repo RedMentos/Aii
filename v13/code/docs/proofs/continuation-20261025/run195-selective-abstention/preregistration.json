@@ -1,0 +1,30 @@
+{
+  "decision_rule": "Fresh coverage >= 70%, selective error rate <= 20%, and at least 10 percentage points below raw C3 error rate.",
+  "feature": "digit_min_logprob",
+  "fresh_capture_sha256": "96efd0d65bdb13005336661e0cb09fc7d1f41a1e62ec77c0b512ebf74078b5a1",
+  "fresh_seed": 11,
+  "holdout_blind": false,
+  "known_prior_seed11_summary": true,
+  "min_coverage": 0.7,
+  "phase": "PREREGISTERED",
+  "production_authority": 0,
+  "schema": "V13_RUN195_SELECTIVE_ABSTENTION_V1",
+  "script_sha256": "a2613d698b5258416294b37d3d7e0e7a1f106f6458b7c0c8937d729289bbbaae",
+  "threshold": 0.5803461074829102,
+  "train_capture_sha256": "5095bae1ce531aca4b72b292c4d9a1ac9d1138b8a4a3dca84f8c2d86f7607cf5",
+  "train_metrics": {
+    "abstained": 17,
+    "answered": 43,
+    "correct_abstained": 3,
+    "correct_answered": 38,
+    "coverage": 0.7166666666666667,
+    "n": 60,
+    "raw_c3_correct": 41,
+    "raw_c3_error_rate": 0.31666666666666665,
+    "raw_c3_wrong": 19,
+    "selective_error_rate": 0.11627906976744186,
+    "wrong_abstained": 14,
+    "wrong_answered": 5
+  },
+  "train_seed": 7
+}
