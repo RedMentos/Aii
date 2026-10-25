@@ -1,0 +1,32 @@
+name: V13 Run162 FP32 isolated master export synthetic review
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run162-fp32-export.yml'
+      - 'v13/code/scripts/body_fp32_master_export_run162.py'
+      - 'v13/code/scripts/body_gguf_dtype_audit_run160.py'
+      - 'v13/code/tests/test_body_fp32_master_export_run162.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run162-fp32-export/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Isolated NumPy
+        run: python -m pip install numpy==2.3.5
+      - name: Full-hash synthetic FP32 master extraction and parser regressions
+        run: |
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_body_fp32_master_export_run162.py -v
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_body_gguf_dtype_audit_run160.py -v
+          python -m compileall -q v13/code/scripts/body_fp32_master_export_run162.py v13/code/scripts/body_gguf_dtype_audit_run160.py v13/code/tests/test_body_fp32_master_export_run162.py
+      - name: Official public repo privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 0858a8b5e8a97a7e21ae7df1a63ada55e7a7dbfe --head HEAD
