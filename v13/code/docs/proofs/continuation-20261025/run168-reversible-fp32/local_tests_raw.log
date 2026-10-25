@@ -1,0 +1,10 @@
+test_existing_output_not_overwritten (test_body_fp32_gguf_reversible_run168.ReversibleTests.test_existing_output_not_overwritten) ... ok
+test_forged_authority_fails_before_output (test_body_fp32_gguf_reversible_run168.ReversibleTests.test_forged_authority_fails_before_output) ... ok
+test_micro_digest_tamper_fails_before_output (test_body_fp32_gguf_reversible_run168.ReversibleTests.test_micro_digest_tamper_fails_before_output) ... ok
+test_private_patch_only_f32_and_exact_rollback (test_body_fp32_gguf_reversible_run168.ReversibleTests.test_private_patch_only_f32_and_exact_rollback) ... ok
+test_wrong_source_sha_fails_before_output (test_body_fp32_gguf_reversible_run168.ReversibleTests.test_wrong_source_sha_fails_before_output) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.246s
+
+OK
