@@ -1,0 +1,55 @@
+name: V13 Run183 frozen STEP2 C3 answer arithmetic SHADOW replay
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run183-age0d-step2-replay.yml'
+      - 'v13/code/scripts/run183_step2_arithmetic_shadow_replay.py'
+      - 'v13/code/tests/test_run183_step2_arithmetic_shadow_replay.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run183-age0d-replay/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  historical-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-bound synthetic tests and historical C3 answer replay
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run183"
+          test "$(git hash-object v13/bench-results/step2-two-body-20261009/step2_utility.json)" = '83b7eb7007dc0efc3a083d6d9b260ba06cbd6143'
+          test "$(git hash-object v13/code/scripts/run183_step2_arithmetic_shadow_replay.py)" = '3ef654ac5af5b8fa805064801b36246a8ebcbb64'
+          test "$(git hash-object v13/code/tests/test_run183_step2_arithmetic_shadow_replay.py)" = '9bb1ba774b37aab75f586a7953660709ad248018'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261025/run183-age0d-replay/PREREG.md)" = '8660c03c412aa82e545a078a99bb6166b6e59e62'
+          python3 -m compileall -q v13/code/scripts/run183_step2_arithmetic_shadow_replay.py v13/code/tests/test_run183_step2_arithmetic_shadow_replay.py
+          python3 -m unittest discover -s v13/code/tests -p test_run183_step2_arithmetic_shadow_replay.py -v 2>&1 | tee "$RUNNER_TEMP/run183/software.log"
+          python3 - <<'PY'
+          import json
+          p='v13/bench-results/step2-two-body-20261009/step2_utility.json'
+          j=json.load(open(p))
+          assert j['fixture_sha256']=='69e7ab3b6fd8a53403aa19a2f81433dd6c16db8b05ec7f751eee205f78ab83cf'
+          assert j['status']=='UTILITY_FAIL' and len(j['rows'])==70
+          PY
+          python3 v13/code/scripts/run183_step2_arithmetic_shadow_replay.py \
+            --dataset v13/bench-results/step2-two-body-20261009/step2_utility.json \
+            --output "$RUNNER_TEMP/run183/replay.json" 2>&1 | tee "$RUNNER_TEMP/run183/replay-stdout.log"
+          echo RUN183_HISTORICAL_NATIVE_C3_REPLAY_SHADOW_ONLY_NO_STEP2_PROMOTION
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base f97331951de30f3d5e8d8f24beb59e5ad1df8d10 --head HEAD
+      - name: Preserve closed 70-row replay and original software log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run183-Step2-Age0d-Historical-Raw
+          path: |
+            ${{ runner.temp }}/run183/software.log
+            ${{ runner.temp }}/run183/replay-stdout.log
+            ${{ runner.temp }}/run183/replay.json
+          if-no-files-found: warn
+          retention-days: 14

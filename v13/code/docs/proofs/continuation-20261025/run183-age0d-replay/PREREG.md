@@ -1,0 +1,17 @@
+# Run183 — prospective AGE0d source-arithmetic replay on frozen real STEP2 C3 answers
+
+Parent: Run182 branch-scoped AGE0d SHADOW candidate `f97331951de30f3d5e8d8f24beb59e5ad1df8d10` (PR211). New owner: `scripts/run183_step2_arithmetic_shadow_replay.py`, `tests/test_run183_step2_arithmetic_shadow_replay.py`, this proof and focused CI. Disjoint from Run181's ongoing serialized native B2 utility owner; **no new native model job**. Existing STEP2 evidence and all frozen Runtime/C3/B1/B2/age/learning sources remain unchanged. Preregister before running the 70-row replay.
+
+## Fixed source, test and acceptance
+
+Input is the exact historical Linux-native STEP2 70-row cohort at `v13/bench-results/step2-two-body-20261009/step2_utility.json`, Git blob `83b7eb7007dc0efc3a083d6d9b260ba06cbd6143`, 10 deterministic synthetic fixtures × 7 fixed B1/B2/C3 variants. Internal fixture SHA-256 `69e7ab3b6fd8a53403aa19a2f81433dd6c16db8b05ec7f751eee205f78ab83cf`. Historical status `UTILITY_FAIL` must remain. The replay reads the actual saved `raw_answer` JSON strings from native C3 outputs; it does not call a model, rewrite answers, or expose the fixture oracle to the checker.
+
+Question: Can a deterministic answer-aware SHADOW checker detect an explicit **wrong remaining budget** in an answer by reading only the exact prior/current project source and option costs? Source rule: use the one budget in prior, except a single explicit `Updated rules, overriding the earlier rules: budget ...` in current takes precedence. Require exactly two unique Option A/B costs and two unique A/B answer entries with integer `remaining`. Missing budget (Juno), duplicate entities, malformed JSON, ambiguous rules or non-integer claims abstain. For detected mismatches, bind exact source offsets/quotes for budget and option costs. The checker never receives the hidden oracle; offline calibration alone compares classifications to frozen oracle `remaining` values and refuses source/oracle disagreement.
+
+Precommitted outcome `AGE0D_ARITHMETIC_REPLAY_SUPPORTED` requires **at least 35 scorable** rows, **coverage >=50%** of scorable rows, **false-positive rate <=10%** among scorable correct answers and **recall >=50%** among scorable wrong remaining-budget answers (abstentions count against recall). Otherwise `AGE0D_ARITHMETIC_REPLAY_FAIL`. If a denominator is zero, criterion fails. Preserve all 70 case classifications, TP/FP/FN/TN/abstain/unscorable counts, exact source refs and dataset SHA. Even a supported result remains **SHADOW ONLY**; no delivery, learning, Age reopening or STEP2 promotion. This cohort is synthetic project tasks, not broad real-world C3 quality.
+
+Local software tests: 9/9 PASS after correcting an initial status-classification defect (the first run failed 1/9 because a correct answer was labelled `ABSTAIN` instead of `SHADOW_AGREES`). The original failing log is retained. This is software evidence, not the historical replay result. No post hoc threshold changes allowed.
+
+## Gates and next step
+
+`STEP2=UTILITY_FAIL`, `B3_L1=FAIL`, `Body_JEPA=UNAVAILABLE`, `jepa_weight=0`, `DS2_H2=FAIL`, `V13=INCOMPLETE`. Run173 orphan failure, generic Phone-source hash mismatch, AGE0c 100% false alarm and `:self correction` SHADOW default all remain. Next: source-bound CI executes the frozen 70-row replay, stores closed raw classifications and an independent review of false positives/abstentions. Do not integrate into live correction or retry rejected Drive destination.
