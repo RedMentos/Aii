@@ -228,7 +228,7 @@ class WorldState:
                'learning':{'mode':r.cfg['learning_mode'],'active_artifact_count':len(self.s.generation()['hashes']),'body_learning':False},
                'resources':r.resources(),'teacher':{'enabled':r.cfg['teacher_enabled'],'revision':r.models.revision('TEACHER')},
                'memory':{'active_corrections':self.s.one('SELECT COUNT(*) AS n FROM memories WHERE active=1')['n'],'pending_replay':self.s.one("SELECT COUNT(*) AS n FROM replay WHERE status='PENDING'")['n']},
-               'unfinished_actions':self.s.one("SELECT COUNT(*) AS n FROM actions WHERE status IN ('DISPATCHED','OUTCOME_UNKNOWN')")['n'],
+               'unfinished_actions':self.s.one("SELECT COUNT(*) AS n FROM actions a JOIN events e ON e.id=a.event_id WHERE e.session_id=? AND a.status IN ('DISPATCHED','OUTCOME_UNKNOWN')",(r.session,))['n'],
                'calibration':{'native_control_confidence':False,'native_route_agreement_active':'control_calibration' in self.s.components(),
                               'native_route_agreement_scope':'HELD_OUT_NATIVE_ROUTE_AGREEMENT_ONLY','semantic_truth_authority':False,'timing_forecast':False}}
         self.s.set_state('SELF_MODEL:'+r.session,state);return state
