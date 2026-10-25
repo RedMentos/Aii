@@ -1,0 +1,55 @@
+name: V13 Run133 HX persisted approval and evidence freshness
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run133-hx-approval.yml"
+      - "v13/code/v13/agi/harness.py"
+      - "v13/code/v13/agi/experience.py"
+      - "v13/code/tests/test_hx_approval_run133.py"
+      - "v13/code/docs/proofs/continuation-20261025/hx-approval-run133/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run133-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy and frozen Runtime
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+          test "$(git hash-object v13/code/v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+  software:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      NO_MODEL_DOWNLOADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Model-free isolated dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run133"
+          "$RUNNER_TEMP/run133/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: New adversarial and inherited Claude HX/Growth
+        run: |
+          set -euo pipefail
+          cd v13/code
+          export PYTHONPATH="$PWD"
+          "$RUNNER_TEMP/run133/bin/python" -m compileall -q v13 tests
+          for pattern in test_hx_approval_run133.py test_harness_hx.py test_growth.py; do
+            echo "RUN133_SUITE=$pattern"
+            "$RUNNER_TEMP/run133/bin/python" -m unittest discover -s tests -p "$pattern" -v
+          done
+          echo "RUN133_LINUX_SHADOW_PASS; NO_LIVE_HX_OR_NATIVE_PROOF"
