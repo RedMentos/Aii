@@ -1,0 +1,60 @@
+name: V13 Run266 WorldModel terminal outcome candidate (ephemeral patch only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/docs/coordination/WORLD_TERMINAL_RUN266.patch'
+      - '.github/workflows/run266-world-terminal-candidate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  terminal-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Verify unchanged owner source and apply candidate only in CI worktree
+        run: |
+          set -euo pipefail
+          echo "EXACT_HEAD=$(git rev-parse HEAD)" | tee "$RUNNER_TEMP/RUN266_PRECHECK.log"
+          echo "WORLD_BLOB=$(git hash-object v13/code/v13/world_model.py)" | tee -a "$RUNNER_TEMP/RUN266_PRECHECK.log"
+          test "$(git hash-object v13/code/v13/world_model.py)" = "db62c761a9b1f3364c951ad6ac82a71f3a71d84f"
+          git apply --check --verbose v13/code/docs/coordination/WORLD_TERMINAL_RUN266.patch 2>&1 | tee -a "$RUNNER_TEMP/RUN266_PRECHECK.log"
+          git apply v13/code/docs/coordination/WORLD_TERMINAL_RUN266.patch
+          git hash-object v13/code/v13/world_model.py | tee "$RUNNER_TEMP/RUN266_CANDIDATE_BLOB.log"
+          git diff -- v13/code/v13/world_model.py > "$RUNNER_TEMP/RUN266_EPHEMERAL_DIFF.patch"
+      - name: Isolated pinned software prerequisites
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run266"
+          "$RUNNER_TEMP/run266/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Actual Store source-bound terminal outcome tests on ephemeral patch
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run266/bin/python" -m unittest -v test_world_terminal_failure_run261 test_world_fitted_source_lineage_20261025 test_world_model test_world_event_source_integrity_20261025 test_runtime_world_observation_run218 2>&1 | tee "$RUNNER_TEMP/RUN266_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN266_EXIT.txt"
+          echo "RUN266_EXIT=$rc"
+          exit 0
+      - name: Official privacy scan of committed branch (not ephemeral worktree)
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 23c001652193f4edeaa5342363a7a44ddec527d6 --head HEAD --no-worktree
+      - name: Preserve all candidate raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run266-Terminal-Candidate-Raw
+          path: |
+            ${{ runner.temp }}/RUN266_PRECHECK.log
+            ${{ runner.temp }}/RUN266_CANDIDATE_BLOB.log
+            ${{ runner.temp }}/RUN266_EPHEMERAL_DIFF.patch
+            ${{ runner.temp }}/RUN266_RAW.log
+            ${{ runner.temp }}/RUN266_EXIT.txt
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual focused test result
+        run: test "$(cat "$RUNNER_TEMP/RUN266_EXIT.txt")" = "0"
