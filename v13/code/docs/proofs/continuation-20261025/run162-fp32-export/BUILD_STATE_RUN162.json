@@ -1,0 +1,26 @@
+{
+  "schema": "V13_RUN162_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_commit": "0858a8b5e8a97a7e21ae7df1a63ada55e7a7dbfe",
+  "owner": "Codex Run162 limited GGUF parser layout extension, new exporter/test/workflow/proof only",
+  "local_tests": "10/10 synthetic FP32 export PASS, compileall PASS; real pinned full model not available locally",
+  "evidence_class": "SOFTWARE_SYNTHETIC_ONLY",
+  "model_sha_verified": "SYNTHETIC_FIXTURE_ONLY",
+  "actual_B1": "PENDING_RUN161_FULLHASH",
+  "candidate": "Full-SHA bound, <=8 one-dimensional F32 tensors, <=16MiB each, separate private NPZ with exact float32 roundtrip; no training authority",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Run161 must independently verify pinned B1 full SHA before any real slice export.",
+    "Native training gradient path, separate master lifecycle, EMA, requantization, model integration, retention and Redmi remain unavailable.",
+    "No weight bytes may be uploaded to public GitHub or shared backups."
+  ],
+  "next_command": "PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_body_fp32_master_export_run162.py -v",
+  "next_step": "Verify exact remote source blobs and CI; if Run161 fullhash succeeds, schedule serialized private real B1 FP32 slice extraction and read-only roundtrip proof."
+}
