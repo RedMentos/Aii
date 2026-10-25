@@ -1,0 +1,319 @@
+name: V13 Run334 fresh C3 fact learning three-arm native early-stop diagnostic
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/native_c3_freshcohort_run334.py'
+      - 'v13/code/scripts/audit_native_c3_freshcohort_run334.py'
+      - 'v13/code/tests/test_native_c3_freshcohort_run334.py'
+      - 'v13/code/tests/test_audit_native_c3_freshcohort_run334.py'
+      - '.github/workflows/run334-native-c3-freshcohort.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/run334-c3-freshcohort-learning/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-two-epoch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    env:
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_PROGRESS_BARS: '1'
+      PIP_NO_CACHE_DIR: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source, immutable Canon and fixed synthetic cohort
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN330_HEAD.txt"
+          git diff --quiet e20a9768c1d4e63ae00b7e78cd32db1057c9cd28 HEAD -- v13/code/scripts/audit_native_weight_delta_run328.py v13/code/scripts/native_lfm2_epoch_eval_run320.py v13/code/scripts/audit_native_lfm2_epoch_eval_run321.py v13/code/scripts/native_answer_finetune.cpp
+          echo "0bcc0fe92de2bd740b4f2b27b47b325c94827c67f32e519360c6e548cb2b94fb  v13/code/docs/proofs/continuation-20261025/run334-c3-freshcohort-learning/RUN334_FRESH_COHORT.json" | sha256sum -c -
+          echo "313bc41c447640241b00319932469345c801f089dae0b949f1f6ebda26d3d53f  v13/code/scripts/lora_bench.py" | sha256sum -c -
+          echo "dfb46beb7b5be571c364ac3cab04379d411fd54ae5d0005d094f1f5a11e94397  v13/code/scripts/native_lfm2_finetune_bench.py" | sha256sum -c -
+          echo "401b95c5c6f4262eb8ea58bdab0af2b79f5d7032951ba45198ab2e13f102858c  v13/code/scripts/native_answer_finetune.cpp" | sha256sum -c -
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; uname -a; free -h; df -h "$RUNNER_TEMP"; python3 --version; } | tee "$RUNNER_TEMP/RUN330_HOST.txt"
+      - name: Isolated Python dependencies for pinned conversion
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run330venv"
+          {
+            "$RUNNER_TEMP/run330venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              --index-url https://download.pytorch.org/whl/cpu 'torch==2.8.0'
+            "$RUNNER_TEMP/run330venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              'numpy==2.3.5' 'safetensors==0.6.2' \
+              'transformers==5.3.0' 'jinja2==3.1.6' 'sentencepiece==0.2.1' 'protobuf==6.33.0'
+          } 2>&1 | tee "$RUNNER_TEMP/RUN330_DEPS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          "$RUNNER_TEMP/run330venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN330_PIP_FREEZE.txt" || true
+          echo "$rc" > "$RUNNER_TEMP/RUN330_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Source-only frozen selector/receipt and negative tests
+        id: software
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN330_DEPS_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN330_SOFTWARE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run330venv/bin/python" -m unittest -v \
+            tests.test_native_lfm2_epoch_eval_run320 \
+            tests.test_run330_exact_recipe \
+            tests.test_native_all_loss_run329 \
+            tests.test_native_answer_epoch_run319 \
+            tests.test_native_lfm2_finetune_bench 2>&1 | tee "$RUNNER_TEMP/RUN330_SOFTWARE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN330_SOFTWARE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run332 adversarial header parser tests (source-only, non-promoting)
+        id: header_tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_native_gguf_header_run332 \
+            2>&1 | tee "$RUNNER_TEMP/RUN332_SOURCE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN332_SOURCE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run333 synthetic metadata compatibility and tensor-integrity adversarial tests
+        id: compat_tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run330venv/bin/python" -m unittest -v tests.test_native_weight_delta_run333 \
+            2>&1 | tee "$RUNNER_TEMP/RUN333_SOURCE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN333_SOURCE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run334 fresh cohort and independent raw-audit adversarial tests
+        id: fresh_tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run330venv/bin/python" -m unittest -v \
+            tests.test_native_c3_freshcohort_run334 \
+            tests.test_audit_native_c3_freshcohort_run334 \
+            2>&1 | tee "$RUNNER_TEMP/RUN334_SOURCE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN334_SOURCE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download exact official b10964 source and build native epoch trainer
+        id: compile
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN330_SOFTWARE_EXIT.txt")" != "0" || "$(cat "$RUNNER_TEMP/RUN334_SOURCE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN330_COMPILE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          curl --fail --location --retry 3 --connect-timeout 30 --max-time 300 \
+            'https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz' \
+            -o "$RUNNER_TEMP/llama-b10964-source.tar.gz" 2>&1 | tee "$RUNNER_TEMP/RUN330_SOURCE_DOWNLOAD_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            echo "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe  $RUNNER_TEMP/llama-b10964-source.tar.gz" | sha256sum -c -
+            rc=$?
+          fi
+          if [[ "$rc" == "0" ]]; then
+            tar -xzf "$RUNNER_TEMP/llama-b10964-source.tar.gz" -C "$RUNNER_TEMP"
+            rc=$?
+          fi
+          if [[ "$rc" == "0" ]]; then
+            timeout 1100s bash scripts/build_native_all_loss_run329.sh \
+              "$RUNNER_TEMP/llama.cpp-b10964" "$RUNNER_TEMP/run330candidate" 2 \
+              2>&1 | tee "$RUNNER_TEMP/RUN330_COMPILE_RAW.log"
+            rc=${PIPESTATUS[0]}
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN330_COMPILE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Acquire pinned public HF weights and convert true FP32 master
+        id: model
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN330_COMPILE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN330_MODEL_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export HF_DIR="$RUNNER_TEMP/run324hf" MASTER="$RUNNER_TEMP/run324-f32.gguf"
+          "$RUNNER_TEMP/run330venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN330_HF_DOWNLOAD_RAW.log"
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id='LiquidAI/LFM2.5-350M',
+              revision='9e6c6ccf47cd318696e137d381a7ded8fe4df09f',
+              local_dir=os.environ['HF_DIR'],
+              allow_patterns=['*.safetensors','config.json','tokenizer*','special_tokens_map.json','chat_template.jinja','generation_config.json'])
+          PY
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            echo "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e  $HF_DIR/model.safetensors" | sha256sum -c -
+            rc=$?
+          fi
+          if [[ "$rc" == "0" ]]; then
+            find "$HF_DIR" -type f ! -path '*/.cache/*' -print0 | sort -z | xargs -0 -r sha256sum > "$RUNNER_TEMP/RUN330_HF_SHA256SUMS.txt"
+            timeout 500s "$RUNNER_TEMP/run330venv/bin/python" "$RUNNER_TEMP/llama.cpp-b10964/convert_hf_to_gguf.py" \
+              "$HF_DIR" --outtype f32 --outfile "$MASTER" 2>&1 | tee "$RUNNER_TEMP/RUN330_CONVERT_RAW.log"
+            rc=${PIPESTATUS[0]}
+          fi
+          if [[ "$rc" == "0" ]]; then
+            export SOURCE_MANIFEST="$RUNNER_TEMP/RUN330_SOURCE_MANIFEST.json"
+            "$RUNNER_TEMP/run330venv/bin/python" - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          def digest(p):
+              h=hashlib.sha256()
+              with open(p,'rb') as f:
+                  for b in iter(lambda:f.read(1<<20),b''):h.update(b)
+              return h.hexdigest()
+          p=Path(os.environ['MASTER'])
+          assert p.is_file() and p.stat().st_size > 500_000_000
+          assert digest(p) == '5d200c19f13483e66b39d9feb3353032581882f3eb10cc8752f027d4688d6e6f', 'FP32 master hash differs from Run324 verified bytes'
+          m={'hf_repo':'LiquidAI/LFM2.5-350M',
+             'hf_revision':'9e6c6ccf47cd318696e137d381a7ded8fe4df09f',
+             'model_license':'LFM Open License v1.0',
+             'conversion_outtype':'f32',
+             'llama_source_sha256':'4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe',
+             'master_sha256':digest(p),'master_bytes':p.stat().st_size,
+             'hf_sha256_manifest':digest(os.environ['RUNNER_TEMP']+'/RUN330_HF_SHA256SUMS.txt')}
+          Path(os.environ['SOURCE_MANIFEST']).write_text(json.dumps(m,sort_keys=True,indent=2)+'\n')
+          print(json.dumps(m,sort_keys=True))
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN330_MODEL_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Fetch exact pinned official b10964 release llama-server
+        id: server
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN330_MODEL_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN330_SERVER_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          curl --fail --location --retry 3 --connect-timeout 30 --max-time 300 \
+            'https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz' \
+            -o "$RUNNER_TEMP/llama-b10964-release.tar.gz" 2>&1 | tee "$RUNNER_TEMP/RUN330_SERVER_DOWNLOAD_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            echo "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443  $RUNNER_TEMP/llama-b10964-release.tar.gz" | sha256sum -c -
+            rc=$?
+          fi
+          if [[ "$rc" == "0" ]]; then
+            mkdir "$RUNNER_TEMP/run330release"
+            tar -xzf "$RUNNER_TEMP/llama-b10964-release.tar.gz" -C "$RUNNER_TEMP/run330release"
+            find "$RUNNER_TEMP/run330release" -type f -name llama-server -print -quit > "$RUNNER_TEMP/RUN330_SERVER_PATH.txt"
+            test -s "$RUNNER_TEMP/RUN330_SERVER_PATH.txt"
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN330_SERVER_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run334 actual three-arm C3 native two-epoch learning on frozen fresh cohort
+        id: fresh_native
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN330_SERVER_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN334_NATIVE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          export LD_LIBRARY_PATH="$RUNNER_TEMP/llama.cpp-b10964/build/bin:${LD_LIBRARY_PATH:-}"
+          SERVER="$(cat "$RUNNER_TEMP/RUN330_SERVER_PATH.txt")"
+          timeout 3000s "$RUNNER_TEMP/run330venv/bin/python" scripts/native_c3_freshcohort_run334.py \
+            --tool-dir "$RUNNER_TEMP/llama.cpp-b10964/build/bin" \
+            --server "$SERVER" --master "$RUNNER_TEMP/run324-f32.gguf" \
+            --source-manifest "$RUNNER_TEMP/RUN330_SOURCE_MANIFEST.json" \
+            --out-dir "$RUNNER_TEMP/run334eval" \
+            2>&1 | tee "$RUNNER_TEMP/RUN334_NATIVE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN334_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run334 independent exact raw-score and train-stream postflight audit
+        id: fresh_audit
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN334_NATIVE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN334_AUDIT_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run330venv/bin/python" \
+            scripts/audit_native_c3_freshcohort_run334.py \
+            --report "$RUNNER_TEMP/run334eval/RUN334_REPORT.json" \
+            --root "$RUNNER_TEMP/run334eval" \
+            --out "$RUNNER_TEMP/RUN334_INDEPENDENT_AUDIT.json" \
+            2>&1 | tee "$RUNNER_TEMP/RUN334_AUDIT_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN334_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN330_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN330_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence hashes without publishing model weights
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f \( -name 'RUN330_*' -o -name 'RUN334_*' \) ! -name 'RUN334_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN334_SHA256SUMS.txt
+          if [[ -d run334eval ]]; then
+            find run334eval -type f \( -name '*.json' -o -name '*.log' -o -name '*.train.txt' \) -print0 | sort -z | xargs -0 -r sha256sum >> RUN334_SHA256SUMS.txt
+          fi
+      - name: Preserve complete synthetic raw training streams, receipts and all failures, no weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run334-Fresh-C3-Native-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN330_*
+            ${{ runner.temp }}/RUN334_*
+            ${{ runner.temp }}/run334eval/RUN334_REPORT.json
+            ${{ runner.temp }}/run334eval/*.train.txt
+            ${{ runner.temp }}/run334eval/*.log
+            ${{ runner.temp }}/run334eval/*/*.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce source, fresh tests, three actual native arms, independent audit and privacy
+        if: always()
+        run: |
+          test "${{ steps.deps.outputs.rc }}" = "0"
+          test "${{ steps.software.outputs.rc }}" = "0"
+          test "${{ steps.header_tests.outputs.rc }}" = "0"
+          test "${{ steps.compat_tests.outputs.rc }}" = "0"
+          test "${{ steps.fresh_tests.outputs.rc }}" = "0"
+          test "${{ steps.compile.outputs.rc }}" = "0"
+          test "${{ steps.model.outputs.rc }}" = "0"
+          test "${{ steps.server.outputs.rc }}" = "0"
+          test "${{ steps.fresh_native.outputs.rc }}" = "0"
+          test "${{ steps.fresh_audit.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
