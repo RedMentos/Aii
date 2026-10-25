@@ -4,12 +4,13 @@ Synthetic timings only; no native models, no learning authority promotion.
 """
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 import tempfile
 import unittest
 
 from v13.runtime import Runtime
 from v13.fastforward import FastForward, features, KEY
+from v13 import fastforward as F
 
 
 class FastForwardOutcomeOnceRun312(unittest.TestCase):
@@ -84,6 +85,24 @@ class FastForwardOutcomeOnceRun312(unittest.TestCase):
         self.assertEqual(f._load(), (state, version))
         self.assertEqual(n.touch.call_count, 1)
         self.assertEqual(n.signal.call_count, 1)
+
+    def test_receipt_serialization_failure_rolls_back_predictor_atomically(self):
+        eid = self.event("run312 atomic crash window")
+        before = self.f._load()
+        real_dumps = F.dumps
+        def fail_receipt(value):
+            if isinstance(value, dict) and "fingerprint" in value:
+                raise RuntimeError("injected receipt serialization failure")
+            return real_dumps(value)
+        with patch.object(F, "dumps", side_effect=fail_receipt):
+            with self.assertRaisesRegex(RuntimeError, "injected receipt"):
+                self.f.learn(eid, self.x, 2.0, "FINAL", 20)
+        self.assertEqual(self.f._load(), before)
+        self.assertEqual(self.r.store.one(
+            "SELECT COUNT(*) AS n FROM states WHERE key LIKE 'F_FAST_FORWARD_RECEIPT_%'")["n"], 0)
+        self.assertEqual(self.r.store.integrity(True), [])
+        self.f.learn(eid, self.x, 2.0, "FINAL", 20)
+        self.assertEqual(self.f.report()["trained_on"], 1)
 
     def test_distinct_events_still_update_predictor(self):
         first = self.event("run312 distinct A")
