@@ -1,0 +1,32 @@
+{
+  "schema": "V13_RUN368_BRANCH_SCOPED_CHECKPOINT_V1",
+  "owner": "codex/ag12-embedded-holdout-20261025",
+  "parent": "codex/fullsuite-after-run366-20261025@9df12a9d9032805aab7921da9b6c104ccfb3e654",
+  "review_pr": 363,
+  "tested_source_head": "501a9f18aa0cdb8889b84344d85d6617d3dfc83f",
+  "source_sha256": {
+    "v13/code/v13/agi/generality.py": "66d089ea1b2d474029f55e42b611e9030501a140ea216eedd90b7289b931e56c",
+    "v13/code/v13/agi/teacher.py": "4ff84014b4bdc8560f32675852f62ef4158251f47d4cc064b29bf6c23fd4df32"
+  },
+  "tests": "36/36 PASS, inherited 30 PASS, registered suite hash unchanged, privacy CLEAN, focused source-bound SUCCESS",
+  "red_run": 40232384911,
+  "green_run": 40232602273,
+  "focused_run": 40232602281,
+  "red_zip_sha256": "714e3d8439b27b833f9f3f6240913c1d0c7a804b218ee5d009f2b9d54b149704",
+  "green_zip_sha256": "3fd2adb55842d8e0eb780ad05ec14f59d520be85474a6c1a0e5bd5eb4fd401c8",
+  "private_backup_red": "/V13/checkpoints/2026-10-25/V13_Run368_EmbeddedHoldout_RED_raw_sha714e3d84.zip",
+  "private_backup_green": "/V13/checkpoints/2026-10-25/V13_Run368_EmbeddedHoldout_GREEN_FINAL_raw_sha3fd2adb5.zip",
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED"
+  },
+  "remaining": "Run367 full-suite exact-head pending; native/Redmi/whole V13 acceptance open",
+  "next_package": "Close Run367 full-suite and choose highest-priority independent functional/native work",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_agi_embedded_holdout_run368 tests.test_agi_solver tests.test_agi_live tests.test_agi_trainers",
+  "status": "BRANCH_SCOPED_GREEN_NOT_MERGED"
+}
