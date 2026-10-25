@@ -1,0 +1,61 @@
+name: V13 Run340 coordinator terminal resident cleanup source-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run340-cancel-resident-finalizer.yml'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_cancel_resident_finalizer_run340.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run340-cancel-resident-finalizer/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  coordinator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source and isolated model-free deps
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN340_HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run340venv"
+          "$RUNNER_TEMP/run340venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          sha256sum v13/code/v13/runtime.py v13/code/tests/test_cancel_resident_finalizer_run340.py v13/code/tests/test_cancel_resident_cleanup_run284.py | tee "$RUNNER_TEMP/RUN340_SOURCE_SHA256SUMS.txt"
+      - name: Real coordinator and SQLite lifecycle with inert fake PIDs
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/run340venv/bin/python" -m compileall -q v13 tests
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run340venv/bin/python" -m unittest -v \
+            tests.test_cancel_resident_cleanup_run284 \
+            tests.test_cancel_resident_finalizer_run340 \
+            2>&1 | tee "$RUNNER_TEMP/RUN340_TESTS_RAW.log"
+      - name: Official public privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN340_PRIVACY_RAW.log"
+      - name: Close raw source-only receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN340_*' ! -name RUN340_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN340_SHA256SUMS.txt
+      - name: Preserve all PASS and RED raw receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run340-Coordinator-Cleanup-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN340_*
+          if-no-files-found: warn
+          retention-days: 30
