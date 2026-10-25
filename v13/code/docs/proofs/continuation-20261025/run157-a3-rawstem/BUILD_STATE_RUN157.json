@@ -1,0 +1,28 @@
+{
+  "schema": "V13_RUN157_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_commit": "a364096a49730a9e9a2ed59039f08d5125d64782",
+  "owner": "Codex Run157 only new script/tests/workflow/proof; frozen student_worker, Run152/156, Runtime untouched",
+  "finding": "Local faithful raw-stem source replica: 97 training groups, 31 held-out ID; support floor 0.94925597; 31/31 ID accepted, 0/64 far-domain accepted, 64/64 unseen critical budget substitutions accepted. Similarity cannot certify fact correctness.",
+  "local_tests": "5/5 PASS with local copy of exact raw_features/split algorithm; full repository CI on actual frozen worker pending",
+  "source_definition_sha256": "2671fe0644ba55a83b4922f70c9ba3e11b6b1bbf43daa6a7e7ae3aa7df02fda1",
+  "source_texts_sha256": "556ded9c4ed126166fe21402e5c1c2b515ac5661f3c25c704ece4c7174c8e837",
+  "result_sha256": "e64b8de86c60c885dec582e9c7685a49d1819e90a9629ec4dbc2b8c3e0e1a43e",
+  "evidence_class": "MODEL_FREE_RAW_STEM_SOFTWARE_ONLY_LOCAL_REPLICA",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "CI must confirm actual frozen worker raw_features/split match local replica; no teacher features or real OOD truth.",
+    "Factual novelty should not be conflated with distributional support; any learning/decision authority requires independent source verification.",
+    "Native teacher target and Redmi source-group holdout remain untested."
+  ],
+  "next_command": "PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_a3_rawstem_source_probe_run157.py -v",
+  "next_step": "Verify exact-head CI and remote blobs; run fresh source-group teacher-target evaluation with registered hashes and ablation before any A3 integration."
+}
