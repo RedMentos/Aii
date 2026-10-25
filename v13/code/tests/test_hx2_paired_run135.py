@@ -79,6 +79,13 @@ class HX2Pairs(unittest.TestCase):
         self.assertEqual(out['signal'],'NOT_SUPPORTED_OR_UNMEASURED')
         self.assertEqual(out['gate'],'UNVERIFIED')
 
+    def test_tiny_cohort_cannot_create_positive_diagnostic(self):
+        def gen(prompt,arm,seed):
+            return {'reference':'quality=1','guided':'quality=3','unguided':'quality=2'}[arm]
+        out=compare(tasks(6),gen,quality_judge,seed=13525)
+        self.assertEqual(out['signal'],'NOT_SUPPORTED_OR_UNMEASURED')
+        self.assertEqual(out['gate'],'UNVERIFIED')
+
     def test_synthetic_positive_is_never_gate_pass(self):
         def gen(prompt,arm,seed):return {'reference':'quality=1','guided':'quality=3','unguided':'quality=2'}[arm]
         out=compare(tasks(60),gen,quality_judge,seed=13525)
