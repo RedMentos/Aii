@@ -25,7 +25,7 @@ jobs:
       - name: Actual JEF source-bound state and operator regressions
         working-directory: v13/code
         run: |
-          python -m unittest -v tests.test_executive_goal_session_lineage_run212 tests.test_executive
+          PYTHONPATH=tests:. python -m unittest -v tests.test_executive_goal_session_lineage_run212 tests.test_executive
           python -m compileall -q v13/executive.py tests/test_executive_goal_session_lineage_run212.py
       - name: Official public repository privacy scan
         run: python v13/code/scripts/public_repo_privacy_scan.py --base 95d3ba42d77c9fbed941325a3c72e5d321e0b4d3 --head HEAD --no-worktree
