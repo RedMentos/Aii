@@ -13,6 +13,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -22,5 +24,14 @@ jobs:
           python -m unittest -v tests.test_run196_r4_stratified_future tests.test_run197_r4_future_manifest
           python scripts/run197_r4_future_manifest.py manifest scripts/utility_bench2.py scripts/utility_bench.py /tmp/run197_future_tasks.json
           python -m compileall -q scripts/run196_r4_stratified_future.py scripts/run197_r4_future_manifest.py
+          sha256sum /tmp/run197_future_tasks.json
+      - name: Official public repository privacy scan (review delta)
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 975df38b8ea164885784629be310694bf5b7022b --head HEAD
+      - name: Preserve generated future task manifest (not native evidence)
+        uses: actions/upload-artifact@v4
+        with:
+          name: run197-future-task-manifest
+          path: /tmp/run197_future_tasks.json
+          retention-days: 30
       - name: Scope warning
         run: echo 'SOURCE/SYNTHETIC ONLY - no native model inference or Redmi evidence'
