@@ -1,0 +1,19 @@
+{
+  "schema": "V13_RUN147_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex Run147 registered C3 native varied-phrasing cohort; new script/test/workflow/proofs only",
+  "base_pr": 177,
+  "seed": 14725,
+  "n": 96,
+  "task_sha256": "3fc7e9da001e9851163813e758aacb31d5fb4d293e5bce78da1fe46b2c864836",
+  "prompt_sha256": "e2a94802abbfc212fead6e70427ab6ac92b84541aabb762043a8ff29101b980d",
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+  "local_software_tests": "3/3 PASS, 96/96 source-bound truth controls, 0 exact question overlaps with Run136/139/142",
+  "native_run": "PENDING_CI",
+  "redmi": "NOT RUN",
+  "age0d_delivery": "OFF",
+  "gate": "UNVERIFIED",
+  "gates": {"STEP2": "UTILITY_FAIL", "B3_L1": "FAIL", "Body_JEPA": "UNAVAILABLE", "jepa_weight": 0, "DS2_H2": "FAIL", "V13": "INCOMPLETE"},
+  "next_step": "Wait for exact-head native CI; download raw artifact, independently recompute rows/provenance/format labels, preserve failures, then continue canonical utility path."
+}
