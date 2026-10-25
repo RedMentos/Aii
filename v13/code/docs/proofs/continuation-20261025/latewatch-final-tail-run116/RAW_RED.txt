@@ -1,0 +1,28 @@
+SOURCE GitHub Actions run 40145608760 job 121026168671, commit e4444fc27450deb165ba646d58f854e2b4a4314e
+RAW TEST LOG:
+test_finish_completed_correct_tail_is_not_a_conflict (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_finish_completed_correct_tail_is_not_a_conflict) ... ok
+2026-10-25T00:10:03.3924055Z test_finish_records_completed_numeric_conflict_without_active_cut (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_finish_records_completed_numeric_conflict_without_active_cut) ... ERROR
+2026-10-25T00:10:03.3927621Z test_partial_tail_is_still_ignored_but_completed_tail_is_checked (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_partial_tail_is_still_ignored_but_completed_tail_is_checked) ... ERROR
+2026-10-25T00:10:03.3929565Z 
+2026-10-25T00:10:03.3930179Z ======================================================================
+2026-10-25T00:10:03.3932155Z ERROR: test_finish_records_completed_numeric_conflict_without_active_cut (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_finish_records_completed_numeric_conflict_without_active_cut)
+2026-10-25T00:10:03.3933797Z ----------------------------------------------------------------------
+2026-10-25T00:10:03.3934469Z Traceback (most recent call last):
+2026-10-25T00:10:03.3935695Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_latewatch_final_tail_run116.py", line 41, in test_finish_records_completed_numeric_conflict_without_active_cut
+2026-10-25T00:10:03.3937058Z     self.assertEqual(w.info["reason"], "RESULT_CONFLICT")
+2026-10-25T00:10:03.3937642Z                      ~~~~~~^^^^^^^^^^
+2026-10-25T00:10:03.3938102Z KeyError: 'reason'
+2026-10-25T00:10:03.3938328Z 
+2026-10-25T00:10:03.3938539Z ======================================================================
+2026-10-25T00:10:03.3940105Z ERROR: test_partial_tail_is_still_ignored_but_completed_tail_is_checked (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_partial_tail_is_still_ignored_but_completed_tail_is_checked)
+2026-10-25T00:10:03.3941954Z ----------------------------------------------------------------------
+2026-10-25T00:10:03.3942678Z Traceback (most recent call last):
+2026-10-25T00:10:03.3943749Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_latewatch_final_tail_run116.py", line 22, in test_partial_tail_is_still_ignored_but_completed_tail_is_checked
+2026-10-25T00:10:03.3944949Z     self.assertEqual(lw.disagreement(OFFER, WRONG, SOURCE, final=True), "RESULT_CONFLICT")
+2026-10-25T00:10:03.3945634Z                      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:10:03.3946201Z TypeError: disagreement() got an unexpected keyword argument 'final'
+2026-10-25T00:10:03.3946602Z 
+2026-10-25T00:10:03.3947113Z ----------------------------------------------------------------------
+2026-10-25T00:10:03.3947597Z Ran 3 tests in 0.020s
+2026-10-25T00:10:03.3947789Z 
+2026-10-25T00:10:03.3947913Z FAILED (errors=2)
