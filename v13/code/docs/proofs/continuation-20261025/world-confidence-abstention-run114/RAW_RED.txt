@@ -1,0 +1,46 @@
+SOURCE: GitHub Actions run 40145166959, job 121024833807, commit fd9cccec68abeb32b1d7b1fd6367353b083915b0
+UNEDITED CI LOG SECTION (timestamps retained):
+test_all_abstentions_cannot_generate_rank_or_false_success (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_all_abstentions_cannot_generate_rank_or_false_success) ... ERROR
+2026-10-25T00:03:23.7700890Z test_one_abstention_keeps_exact_denominator_and_reason (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_one_abstention_keeps_exact_denominator_and_reason) ... ERROR
+2026-10-25T00:03:23.7943563Z test_real_world_model_guard_preserved (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_real_world_model_guard_preserved) ... ERROR
+2026-10-25T00:03:23.8005532Z /usr/lib/python3.14/unittest/case.py:668: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpporbzeyq/data/coordinator.lock' mode='a+' encoding='UTF-8'>
+2026-10-25T00:03:23.8007332Z   with outcome.testPartExecutor(self):
+2026-10-25T00:03:23.8008187Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T00:03:23.8009137Z 
+2026-10-25T00:03:23.8009402Z ======================================================================
+2026-10-25T00:03:23.8011102Z ERROR: test_all_abstentions_cannot_generate_rank_or_false_success (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_all_abstentions_cannot_generate_rank_or_false_success)
+2026-10-25T00:03:23.8013150Z ----------------------------------------------------------------------
+2026-10-25T00:03:23.8013840Z Traceback (most recent call last):
+2026-10-25T00:03:23.8015121Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_confidence_abstention_run114.py", line 60, in test_all_abstentions_cannot_generate_rank_or_false_success
+2026-10-25T00:03:23.8016408Z     r = A.run_seed(13)
+2026-10-25T00:03:23.8017267Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/ablation_world_model_confidence.py", line 81, in run_seed
+2026-10-25T00:03:23.8018439Z     pred=[cf['prediction'][t] for t in WM.TARGETS];err=_mean([abs(p-t) for p,t in zip(pred,q['truth'])])
+2026-10-25T00:03:23.8019299Z           ~~~~~~~~~~~~~~~~^^^
+2026-10-25T00:03:23.8019636Z TypeError: 'NoneType' object is not subscriptable
+2026-10-25T00:03:23.8019904Z 
+2026-10-25T00:03:23.8020044Z ======================================================================
+2026-10-25T00:03:23.8021388Z ERROR: test_one_abstention_keeps_exact_denominator_and_reason (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_one_abstention_keeps_exact_denominator_and_reason)
+2026-10-25T00:03:23.8022458Z ----------------------------------------------------------------------
+2026-10-25T00:03:23.8022882Z Traceback (most recent call last):
+2026-10-25T00:03:23.8023603Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_confidence_abstention_run114.py", line 43, in test_one_abstention_keeps_exact_denominator_and_reason
+2026-10-25T00:03:23.8024260Z     r = A.run_seed(13)
+2026-10-25T00:03:23.8024705Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/ablation_world_model_confidence.py", line 81, in run_seed
+2026-10-25T00:03:23.8025398Z     pred=[cf['prediction'][t] for t in WM.TARGETS];err=_mean([abs(p-t) for p,t in zip(pred,q['truth'])])
+2026-10-25T00:03:23.8025849Z           ~~~~~~~~~~~~~~~~^^^
+2026-10-25T00:03:23.8026121Z TypeError: 'NoneType' object is not subscriptable
+2026-10-25T00:03:23.8026341Z 
+2026-10-25T00:03:23.8026458Z ======================================================================
+2026-10-25T00:03:23.8027177Z ERROR: test_real_world_model_guard_preserved (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_real_world_model_guard_preserved)
+2026-10-25T00:03:23.8027936Z ----------------------------------------------------------------------
+2026-10-25T00:03:23.8028287Z Traceback (most recent call last):
+2026-10-25T00:03:23.8029159Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_confidence_abstention_run114.py", line 74, in test_real_world_model_guard_preserved
+2026-10-25T00:03:23.8030036Z     r = A.run_seed(13)
+2026-10-25T00:03:23.8030519Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/ablation_world_model_confidence.py", line 81, in run_seed
+2026-10-25T00:03:23.8031230Z     pred=[cf['prediction'][t] for t in WM.TARGETS];err=_mean([abs(p-t) for p,t in zip(pred,q['truth'])])
+2026-10-25T00:03:23.8031685Z           ~~~~~~~~~~~~~~~~^^^
+2026-10-25T00:03:23.8031974Z TypeError: 'NoneType' object is not subscriptable
+2026-10-25T00:03:23.8032198Z 
+2026-10-25T00:03:23.8032349Z ----------------------------------------------------------------------
+2026-10-25T00:03:23.8032681Z Ran 3 tests in 0.105s
+2026-10-25T00:03:23.8032819Z 
+2026-10-25T00:03:23.8032907Z FAILED (errors=3)
