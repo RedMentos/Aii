@@ -3,7 +3,7 @@ import pathlib
 import sys
 import unittest
 import numpy as np
-sys.path.insert(0,str(pathlib.Path(__file__).resolve().parent))
+sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1] / 'scripts'))
 import run171_b1_future_states as M
 
 class FakeTap:
