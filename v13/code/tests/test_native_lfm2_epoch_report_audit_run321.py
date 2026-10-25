@@ -11,8 +11,8 @@ def fake_eval(facts=0, para=0, probes=0):
         result = []
         for i, (q, keys) in enumerate(pairs):
             ans = str(keys[0]) if i < positive else ""
-            result.append({"q": q, "a": ans, field: R.hit(ans, keys),
-                           "strict": R.hit(R.first_sentence(ans), keys)})
+            result.append({"q": q, "a": ans, field: A.hit(ans, keys),
+                           "strict": A.hit(A.first_sentence(ans), keys)})
         return result
     f = rows([(q, keys) for q, _, keys in R.FACTS], facts)
     p = rows(list(R.PARAPHRASES), para)
