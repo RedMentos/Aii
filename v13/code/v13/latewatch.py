@@ -53,10 +53,10 @@ def complete(partial):
     """The partial answer without a number that may still be growing at its end (the next check sees it whole)."""
     return _TAIL.sub('',partial or '')
 
-def disagreement(offer,partial,source):
-    """Pure check of one late offer against the partial answer. Returns a reason or None."""
+def disagreement(offer,partial,source,final=False):
+    """Check a late offer; only a completed stream may score its numeric tail."""
     o=(offer or {}).get('offer',{});src=nums(source)
-    body_new=nums(o.get('summary',''))-src;out_new=nums(complete(partial))-src
+    body_new=nums(o.get('summary',''))-src;out_new=nums(partial if final else complete(partial))-src
     if len(partial)>=MIN_CHARS and body_new and out_new and not body_new&out_new:return 'RESULT_CONFLICT'
     if len(partial)>=REENTRY_CHARS and o.get('needs_reentry') and o.get('quotes'):return 'BODY_REENTRY'
     return None
@@ -113,7 +113,7 @@ class Watcher:
         if not self.decided:
             self.done.wait(max(0.,min(JOIN_S,deadline-time.monotonic())))
             if self.offer is not None and not self.decided:
-                reason=disagreement(self.offer,output,self.r.store.read_source(self.e['source_ref']))
+                reason=disagreement(self.offer,output,self.r.store.read_source(self.e['source_ref']),final=True)
                 self._close('AFTER_OUTPUT',len(output),reason)
             elif self.offer is None:self._close('NO_OFFER' if self.done.is_set() else 'STILL_RUNNING',len(output))
             if self.error:self.info['error']=self.error
