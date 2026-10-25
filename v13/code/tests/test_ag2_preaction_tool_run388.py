@@ -68,7 +68,7 @@ class PreActionToolRun388(unittest.TestCase):
 
     def test_postcopy_hard_block_discards_not_learns(self):
         t = self.registry(lambda value: value)
-        with mock.patch.object(Transactions, "execute", return_value={"state": "CANCELLED", "error": "HARD_BLOCK:fixture"}):
+        with mock.patch.object(Transactions, "execute", new=lambda _self, tid, _fn: {"id": tid, "state": "CANCELLED", "error": "HARD_BLOCK:fixture"}):
             tx = t.call("measure", {"value": 3})
         self.assertEqual(tx["status"], "DENIED")
         self.assertEqual(self.g.report()["open"], 0)
