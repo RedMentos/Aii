@@ -5,6 +5,12 @@ from .common import safe_text
 from .operator import Operator
 from .phone_halt import watch as watch_buttons
 
+def show_startup_stop(r,emit):
+    """Display already-applied preworker phone STOP once, without changing the stop."""
+    messages=list(getattr(r,'_startup_phone_halt',()))
+    for message in messages:emit(message)
+    r._startup_phone_halt=[]
+
 def typing():
     """True while the operator has unsent text in the input line (readline only)."""
     try:
@@ -31,6 +37,7 @@ def plain(r):
         for x in held+[t]:print('\n[V13] '+safe_text(x),flush=True)
         held.clear()
     r.notify=notify
+    show_startup_stop(r,notify)
     watch_buttons(r)  # WP-UI1: Termux home-screen stop requests, ON-only
     def render():
         while not done.wait(.1):
@@ -68,6 +75,7 @@ def chat(r,force_plain=False):
         with notice_lock:notices.append(safe_text(text));del notices[:-8]
         if app:app.invalidate()
     r.notify=notice
+    show_startup_stop(r,notice)
     watch_buttons(r)  # WP-UI1: same stop watcher in prompt-toolkit UI
     transcript=TextArea(text='',read_only=True,scrollbar=True,wrap_lines=True,focusable=True)
     def accept(buffer):
