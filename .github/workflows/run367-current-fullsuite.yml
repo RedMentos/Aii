@@ -1,0 +1,140 @@
+name: V13 Run367 current exact-head full Python suite after AG12 finite confidence
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run367-current-fullsuite.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/run367-current-fullsuite/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  full-suite:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source, immutable Canon, host and provenance
+        id: source
+        run: |
+          set -uo pipefail
+          set +e
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN367_HEAD.txt"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          rc=$?
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee" || rc=2
+          { date -u -Iseconds; uname -a; free -h; df -h "$RUNNER_TEMP"; python3 --version; } | tee "$RUNNER_TEMP/RUN367_HOST.txt"
+          sha256sum v13/code/v13/agi/base.py v13/code/v13/agi/solver.py v13/code/v13/organ.py v13/code/tests/test_agi_solver_finite_run366.py v13/code/tests/test_organ_path_safety_run365.py | tee "$RUNNER_TEMP/RUN367_SOURCE_SHA256SUMS.txt"
+          echo "$rc" > "$RUNNER_TEMP/RUN367_SOURCE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Isolated pinned CPU-only dependencies, no models
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run367venv"
+          {
+            "$RUNNER_TEMP/run367venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+            "$RUNNER_TEMP/run367venv/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.1+cpu'
+          } 2>&1 | tee "$RUNNER_TEMP/RUN367_DEPS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          "$RUNNER_TEMP/run367venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN367_PIP_FREEZE.txt" || true
+          echo "$rc" > "$RUNNER_TEMP/RUN367_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Retrieve exact historical Run147 native artifact (read-only, fail closed)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --retry-delay 1 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12585363362/zip" \
+            -o "$RUNNER_TEMP/RUN147_native.zip"
+          echo "ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676  $RUNNER_TEMP/RUN147_native.zip" | sha256sum -c -
+          sha256sum "$RUNNER_TEMP/RUN147_native.zip" | tee "$RUNNER_TEMP/RUN367_RUN147_SHA256SUMS.txt"
+          python3 - <<'PY'
+          import os,zipfile
+          p=os.path.join(os.environ['RUNNER_TEMP'],'RUN147_native.zip')
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None, 'Run147 artifact CRC failed'
+              assert set(z.namelist())=={'RUN147_C3_VARIED_NATIVE_REPORT.json','RUN147_VARIED_NATIVE_RAW.log'}, 'Run147 artifact members changed'
+          print('RUN147_EXACT_ARCHIVE_CRC_AND_MEMBERS_PASS')
+          PY
+          echo "RUN147_ARTIFACT=$RUNNER_TEMP/RUN147_native.zip" >> "$GITHUB_ENV"
+      - name: Full compile and unittest discovery, preserve all failures
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "${{ steps.deps.outputs.rc }}" != "0" || "${{ steps.source.outputs.rc }}" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN367_SUITE_EXIT.txt"
+            echo "rc=2" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          "$RUNNER_TEMP/run367venv/bin/python" -m compileall -q v13 tests 2>&1 | tee "$RUNNER_TEMP/RUN367_COMPILE_RAW.log"
+          compile_rc=${PIPESTATUS[0]}
+          if [[ "$compile_rc" != "0" ]]; then
+            echo "$compile_rc" > "$RUNNER_TEMP/RUN367_SUITE_EXIT.txt"
+            echo "rc=$compile_rc" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          timeout 900s "$RUNNER_TEMP/run367venv/bin/python" -m unittest discover -s tests -p 'test_*.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/RUN367_FULL_SUITE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN367_SUITE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          grep -E 'Ran [0-9]+ tests|FAILED \(|^OK$|^ERROR:|^FAIL:' "$RUNNER_TEMP/RUN367_FULL_SUITE_RAW.log" | tail -n 80 || true
+          exit 0
+      - name: Official privacy scan on exact review diff
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN367_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN367_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN367_*' ! -name RUN367_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN367_SHA256SUMS.txt
+      - name: Preserve complete source-only failures and PASS evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run367-ExactHead-FullSuite-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN367_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce exact source, dependencies, complete suite and privacy
+        if: always()
+        run: |
+          test "${{ steps.source.outputs.rc }}" = "0"
+          test "${{ steps.deps.outputs.rc }}" = "0"
+          test "${{ steps.suite.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
