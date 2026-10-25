@@ -1,0 +1,29 @@
+name: Run198 Context OS inline literal candidate (software only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/context_inline_guard_run198.py'
+      - 'v13/code/tests/test_context_inline_guard_run198.py'
+      - '.github/workflows/run198-context-inline-code.yml'
+  workflow_dispatch:
+jobs:
+  context:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test actual frozen Context OS plus isolated candidate
+        run: |
+          cd v13/code
+          python -m unittest -v tests.test_context_inline_guard_run198 tests.test_context_unclosed_fence_run100 tests.test_context_exact_quotes_run93
+          python -m compileall -q scripts/context_inline_guard_run198.py tests/test_context_inline_guard_run198.py
+      - name: Official public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base f67658861eefabdb980b6edc4a3cefe7c1e72aab --head HEAD
+      - name: Scope
+        run: echo 'SHADOW CANDIDATE ONLY; production ContextOS and gates unchanged'
