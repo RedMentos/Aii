@@ -1,0 +1,30 @@
+{
+  "schema": "V13_RUN152_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex Run152 independent A3 support-floor candidate, tests, CI and proof only; student_worker.py frozen and unchanged",
+  "base_pr": 181,
+  "base_commit": "51a2824ec40844057286ebf5234b9a56c83f191c",
+  "source_blob_sha": "e7b069d406d945e7a32971bd6c4addb50ef39c90",
+  "test_blob_sha": "9935213a61a8299c91f92651565aa688971f2b51",
+  "finding": "Existing student_worker.train support_floor derives from heldout raw[vi] @ raw[ti].T; validation data affects threshold",
+  "candidate": "Train-only leave-one-out nearest neighbor 5th percentile minus 0.02, clamped 0.5..0.99; no heldout text featurized; no weights updated",
+  "local_tests": "7 PASS, 1 SKIP (real worker absent in scratch); first synthetic test failed due unrelated near fixture, preserved and corrected",
+  "ci_expected": "8 PASS including real student_worker integration",
+  "evidence_class": "SYNTHETIC_SOFTWARE_CANDIDATE_NOT_INTEGRATED",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "blockers": [
+    "Need independent review of train-only floor and fresh OOD teacher data for calibration",
+    "Frozen student_worker not changed, no active A3 path changed",
+    "No native Body-JEPA or Redmi proof"
+  ],
+  "next_command": "PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_a3_trainonly_support_floor_run152.py -v",
+  "next_step": "Verify exact-head CI, preserve red/green evidence, then design a fresh source-group-heldout OOD evaluation before any student_worker integration."
+}
