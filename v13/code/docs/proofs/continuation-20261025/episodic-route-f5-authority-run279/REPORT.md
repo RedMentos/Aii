@@ -22,7 +22,7 @@
 
 ## Other current-chain evidence and blockers
 - PR277 exact-head CI `40189028071` remains FAIL due offline dependency installation; separate review comment `6397422423` retained.
-- PR269 full registered actual-weight Linux acceptance `40186761125` completed **20/20 stages attempted**, **12 PASS / 8 FAIL**, final `IMPLEMENTED_PATHS_PARTIAL`, exit 2. Native weights/runner were downloaded and hash-verified; this is a real negative native result, not a missing-cache inference. Raw artifact `12597232047` SHA256 `eac321b4f8119f0ce10cbd65c050c87e56f11b94ec8d56322f450014f13054d0`. No Redmi.
+- PR269 full registered actual-weight Linux acceptance `40186761125` completed **20/20 stages attempted**, **12 PASS / 8 FAIL**, final `IMPLEMENTED_PATHS_PARTIAL`, exit 2. Native weights/runner were downloaded and hash-verified; this is a real negative native result, not a missing-cache inference. Raw artifact `12597232047` SHA256 `eac321b4f8119f0ce10cbd65c050c87e56f11b94ec8d56322f450014f13054d0`. No Redmi. An initial proof draft incorrectly counted 11 PASS / 9 FAIL; reinspection of all 20 raw stage statuses corrected this to 12 PASS / 8 FAIL, without deleting the draft commit.
 - Original gates remain STEP2 `UTILITY_FAIL`, B3 L1 `FAIL`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, V13 `INCOMPLETE`.
 
 ## Exact next package
