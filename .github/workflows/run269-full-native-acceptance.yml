@@ -1,0 +1,88 @@
+name: V13 Run269 full registered native acceptance Linux
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run269-full-native-acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  full-native-acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Exact source and fresh host prerequisite
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(git hash-object v13/code/v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+          {
+            date -u -Iseconds
+            uname -a
+            python3 --version
+            free -h
+            df -h "$RUNNER_TEMP"
+            cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+          } | tee "$RUNNER_TEMP/RUN269_PREFLIGHT.log"
+      - name: Pinned isolated CPU dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run269venv"
+          "$RUNNER_TEMP/run269venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Download and hash-verify all registered native models and runner
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run269installed"
+          timeout 1800s "$RUNNER_TEMP/run269venv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN269_BOOTSTRAP.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN269_BOOTSTRAP_EXIT.txt"
+          echo "RUN269_BOOTSTRAP_EXIT=$rc"
+          exit 0
+      - name: Full actual-weight acceptance (not quick, all registered stages)
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN269_BOOTSTRAP_EXIT.txt")" != "0" ]]; then echo 2 > "$RUNNER_TEMP/RUN269_ACCEPTANCE_EXIT.txt"; exit 0; fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run269installed"
+          timeout 2400s "$RUNNER_TEMP/run269venv/bin/python" scripts/acceptance.py --installed-home "$V13_HOME" --archive-dir "$RUNNER_TEMP/run269-archive" 2>&1 | tee "$RUNNER_TEMP/RUN269_ACCEPTANCE.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN269_ACCEPTANCE_EXIT.txt"
+          echo "RUN269_ACCEPTANCE_EXIT=$rc"
+          exit 0
+      - name: Official public repo privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base ab9facf5f2da18cdaec3cbfced86b7671db5aa1d --head HEAD --no-worktree
+      - name: Preserve all stage reports, logs, interruption evidence and exit codes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run269-Full-Native-Acceptance-Raw
+          path: |
+            ${{ runner.temp }}/RUN269_PREFLIGHT.log
+            ${{ runner.temp }}/RUN269_BOOTSTRAP.log
+            ${{ runner.temp }}/RUN269_BOOTSTRAP_EXIT.txt
+            ${{ runner.temp }}/RUN269_ACCEPTANCE.log
+            ${{ runner.temp }}/RUN269_ACCEPTANCE_EXIT.txt
+            ${{ runner.temp }}/run269-archive/
+            ${{ runner.temp }}/run269installed/exports/acceptance-*/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual registered acceptance exit
+        run: |
+          test "$(cat "$RUNNER_TEMP/RUN269_BOOTSTRAP_EXIT.txt")" = "0"
+          test "$(cat "$RUNNER_TEMP/RUN269_ACCEPTANCE_EXIT.txt")" = "0"
