@@ -18,7 +18,7 @@ GATES = {'STEP2':'UTILITY_FAIL','B3_L1':'FAIL','Body_JEPA':'UNAVAILABLE',
          'jepa_weight':0,'DS2_H2':'FAIL','V13':'INCOMPLETE'}
 NAMES = ['blk.0.attn_norm.weight','blk.0.ffn_norm.weight',
          'blk.1.attn_norm.weight','blk.1.ffn_norm.weight']
-HEX = re.compile(r'[0-9a-f]{64}\\Z')
+HEX = re.compile(r'[0-9a-f]{64}\Z')
 
 
 def check(ok, reason):
