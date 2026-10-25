@@ -6,6 +6,6 @@ Test-first RED Actions 40148205182: one missing-notice FAIL, one missing-helper 
 
 Independent local verification: actual artifact downloaded via GitHub connector, both SHA-256 and CRC verified, required WP-UI1/Canon/preworker/notice files present, 30/30 Linux tests rerun on Python 3.13.5 PASS. A private Library copy of the wrapper exists at `/V13_Run125_20261025/V13_Phone_Run125_Artifact_Wrapper.zip`, size 12,620,608 bytes. Direct container_path Library uploads failed with `container_session_unavailable`; no rejected Drive retry.
 
-Official urlTermux:Widget READMEhttps://github.com/termux/termux-widget/blob/master/README.md confirms `~/.shortcuts/` foreground scripts, `~/.shortcuts/tasks/` background scripts, and executable permissions; this is documentation consistency, not device execution proof.
+Official Termux:Widget README (https://github.com/termux/termux-widget/blob/master/README.md) confirms `~/.shortcuts/` foreground scripts, `~/.shortcuts/tasks/` background scripts, and executable permissions; this is documentation consistency, not device execution proof.
 
 No native models, no actual Android/Redmi test, no Body-JEPA or generated-answer utility proof. Canon blob unchanged; all negative gates retained. Next: bounded full-suite regression audit with pinned CPU-only torch.
