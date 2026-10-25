@@ -1,0 +1,35 @@
+2026-10-25T08:44:48.4429685Z test_fractional_or_float_character_counts_are_not_observed_states (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_fractional_or_float_character_counts_are_not_observed_states) ... ok
+2026-10-25T08:44:48.4438441Z test_genuine_integer_counts_preserve_existing_counterfactual_path (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_genuine_integer_counts_preserve_existing_counterfactual_path) ... ok
+2026-10-25T08:44:48.4458732Z test_non_numeric_and_nonfinite_counts_fail_closed (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_non_numeric_and_nonfinite_counts_fail_closed) ... ok
+2026-10-25T08:44:48.4466919Z test_explicit_zero_and_positive_integer_counts_are_preserved (tests.test_world_observation_integrity_run202.WorldObservationIntegrityRun202.test_explicit_zero_and_positive_integer_counts_are_preserved) ... ok
+2026-10-25T08:44:48.4471012Z test_fractional_input_character_count_not_a_valid_observed_state (tests.test_world_observation_integrity_run202.WorldObservationIntegrityRun202.test_fractional_input_character_count_not_a_valid_observed_state) ... ok
+2026-10-25T08:44:48.4494264Z test_missing_or_untyped_output_characters_cannot_become_zero (tests.test_world_observation_integrity_run202.WorldObservationIntegrityRun202.test_missing_or_untyped_output_characters_cannot_become_zero) ... ok
+2026-10-25T08:44:48.4497785Z test_nonfinal_observation_also_requires_actual_characters (tests.test_world_observation_integrity_run202.WorldObservationIntegrityRun202.test_nonfinal_observation_also_requires_actual_characters) ... ok
+2026-10-25T08:44:48.5107048Z test_confidence_follows_coverage_not_frequency (tests.test_world_model.Counterfactuals.test_confidence_follows_coverage_not_frequency) ... ok
+2026-10-25T08:44:48.5513276Z test_dream_route_alternative_carries_counterfactual_and_priority (tests.test_world_model.Counterfactuals.test_dream_route_alternative_carries_counterfactual_and_priority) ... ok
+2026-10-25T08:44:48.6505484Z test_learn_medium_fits_world_and_keeps_curiosity_age_gated (tests.test_world_model.LiveGoals.test_learn_medium_fits_world_and_keeps_curiosity_age_gated) ... ok
+2026-10-25T08:44:48.6713022Z test_unresolved_turn_opens_user_goal_and_later_answer_closes_it (tests.test_world_model.LiveGoals.test_unresolved_turn_opens_user_goal_and_later_answer_closes_it) ... ok
+2026-10-25T08:44:48.6938629Z test_forward_inverse_outcome_and_align_unavailable_without_latent (tests.test_world_model.Objectives.test_forward_inverse_outcome_and_align_unavailable_without_latent) ... ok
+2026-10-25T08:44:48.7111600Z test_too_few_transitions_is_honest (tests.test_world_model.Objectives.test_too_few_transitions_is_honest) ... ok
+2026-10-25T08:44:48.7341567Z test_corollary_forecast_precedes_observation (tests.test_world_state.WorldTests.test_corollary_forecast_precedes_observation) ... ok
+2026-10-25T08:44:48.7640909Z test_failed_and_ood_data_never_become_supported_forecast (tests.test_world_state.WorldTests.test_failed_and_ood_data_never_become_supported_forecast) ... ok
+2026-10-25T08:44:48.8222738Z test_forecast_is_prior_action_bound_and_restart_persistent (tests.test_world_state.WorldTests.test_forecast_is_prior_action_bound_and_restart_persistent) ... ok
+2026-10-25T08:44:48.8459748Z test_model_config_and_session_profiles_do_not_mix (tests.test_world_state.WorldTests.test_model_config_and_session_profiles_do_not_mix) ... ok
+2026-10-25T08:44:48.8899737Z test_restart_repairs_both_action_and_materialized_view_crash_windows (tests.test_world_state.WorldTests.test_restart_repairs_both_action_and_materialized_view_crash_windows) ... ok
+2026-10-25T08:44:48.8900893Z 
+2026-10-25T08:44:48.8901100Z ----------------------------------------------------------------------
+2026-10-25T08:44:48.8901557Z Ran 18 tests in 0.452s
+2026-10-25T08:44:48.8901724Z 
+2026-10-25T08:44:48.8901808Z OK
+2026-10-25T08:44:48.9612369Z ##[group]Run python v13/code/scripts/public_repo_privacy_scan.py --base 9172c44ca01c598df886c864b12391f6be7182b9 --head HEAD --no-worktree
+2026-10-25T08:44:48.9613374Z [36;1mpython v13/code/scripts/public_repo_privacy_scan.py --base 9172c44ca01c598df886c864b12391f6be7182b9 --head HEAD --no-worktree[0m
+2026-10-25T08:44:48.9674179Z shell: /usr/bin/bash -e {0}
+2026-10-25T08:44:48.9674450Z env:
+2026-10-25T08:44:48.9674736Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:44:48.9675212Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-25T08:44:48.9675676Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:44:48.9676080Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:44:48.9676481Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:44:48.9676890Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-25T08:44:48.9677237Z ##[endgroup]
+2026-10-25T08:44:49.0099911Z privacy scan 9172c44ca..HEAD: CLEAN
