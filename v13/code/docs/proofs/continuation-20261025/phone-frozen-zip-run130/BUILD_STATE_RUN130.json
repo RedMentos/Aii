@@ -1,0 +1,60 @@
+{
+  "schema": "V13_RUN130_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "pr": 161,
+  "branch": "codex/phone-frozen-sourcezip-run130-20261025",
+  "base_pr": 159,
+  "base_sha": "ad3183796f9a06c7bea9c2e956a43c623e042dcb",
+  "source_under_test": "b4c5ca58215de7d7877701875f81262c2f5e2a85",
+  "owner": "Source-only packaging workflow and proof; no production edits",
+  "workflow_run": 40153920750,
+  "software_job": 121051117845,
+  "privacy": "CLEAN",
+  "source_tests": {
+    "passed": 33,
+    "total": 33
+  },
+  "extracted_actions_tests": {
+    "passed": 33,
+    "total": 33
+  },
+  "independent_linux_extracted_tests": {
+    "passed": 33,
+    "total": 33
+  },
+  "source_zip": {
+    "name": "V13-Phone-Run130.zip",
+    "bytes": 12621079,
+    "sha256": "2b4654e66733928b321bd2b149e17fb500a63fe36da802df0aa9e93fa84ccf05",
+    "manifest_files": 852,
+    "crc": "PASS",
+    "frozen_runtime_blob": "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+  },
+  "artifact": {
+    "id": 12583537489,
+    "wrapper_bytes": 12621233,
+    "wrapper_sha256": "3b6f5427d3c599076a669e0466504c2fefc7a10dc9d388483a33d4af557afe69",
+    "expires_utc": "2026-11-24T02:18:52Z"
+  },
+  "private_backup": {
+    "path": "/V13_Run130_20261025/V13_Run130_Artifact_Wrapper.zip",
+    "library_file_id": "libfile_83d06bfa2ac081918433fcc50c280b9e",
+    "readback": "BYTE_IDENTICAL"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "blockers": [
+    "Redmi NOT RUN",
+    "Native model/cgroup NOT RUN",
+    "Run127 custom path quote not integrated",
+    "Run129 full suite pending"
+  ],
+  "exact_next_step": "Consume Run129 raw full-suite result; preserve failures; integrate verified Run127 only after owner release, or independently run registered bounded native C3 smoke serially.",
+  "backup": "GitHub PR #161 and private Library byte-identical wrapper; rejected Drive not used"
+}
