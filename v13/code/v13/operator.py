@@ -240,7 +240,14 @@ class Operator:
             # SQLite LIKE treats % and _ as wildcards; operator search is literal text.
             literal=' '.join(args).replace('\\','\\\\').replace('%','\\%').replace('_','\\_')
             return dumps(s.rows("SELECT session_id,event_id,role,text FROM messages WHERE text LIKE ? ESCAPE '\\' ORDER BY id DESC LIMIT 30",('%'+literal+'%',)))
-        if cmd=='memory':return dumps(s.rows('SELECT id,kind,scope,key_text,value FROM memories WHERE active=1 AND (session_id=? OR scope=?)',(r.session,'global')))
+        if cmd=='memory':
+            rows=s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id "
+                        "WHERE m.active=1 AND s.deleted=0 AND (m.session_id=? OR m.scope='global')",
+                        (r.session,))
+            # Operator-visible facts must obey the same live human F5 authority
+            # as C3 recall, C1 continuity, B4 re-entry and Sleep.
+            rows=r.memory._verified_rows(rows)
+            return dumps([{k:m[k] for k in ('id','kind','scope','key_text','value')} for m in rows])
         if cmd=='experience':
             last=r.last_answer();eid=args[0] if len(args)==1 else (last['event_id'] if not args and last else None)
             if not eid:raise ValueError(':experience [Event-ID]; erst eine Antwort erzeugen')
