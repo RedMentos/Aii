@@ -25,7 +25,7 @@ class PreActionGrounding:
         aid, _ = self.grounding.expect(
             "tool:" + tx["tool"],
             dumps(tx["args"])[:120],
-            {"tool": tx["tool"], "action_tx": tx.get("action_tx")},
+            {"tool": tx["tool"], "action_tx": tx.get("action_tx"), "event_id": tx.get("event_id") or "operator", "origin": tx.get("origin")},
             modality="tool",
             predicted=predicted,
         )
@@ -95,6 +95,8 @@ class PreActionGrounding:
                     tx.get("id") == tid
                     and record.get("kind") == "tool:" + tx["tool"]
                     and action.get("tool") == tx["tool"]
+                    and action.get("event_id") == tx.get("event_id")
+                    and action.get("origin") == tx.get("origin")
                     and record.get("ctx") == dumps(tx["args"])[:120]
                 )
             except (KeyError, TypeError, ValueError):
