@@ -1,0 +1,36 @@
+name: V13 Run140 Widget guide fallback EOF and pager failure
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run140-widget-guide.yml"
+      - "v13/code/KNOEPFE_EINRICHTEN.sh"
+      - "v13/code/tests/test_widget_guide_fallback_run140.py"
+      - "v13/code/docs/proofs/continuation-20261025/widget-guide-fallback-run140/**"
+permissions:
+  contents: read
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - run: python3 v13/code/scripts/public_repo_privacy_scan.py --base "$(git rev-parse HEAD^1)" --head HEAD --no-worktree
+  software:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Frozen Runtime and guide/stop regressions
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/v13/runtime.py)" = a691d27bd0772a4fa1f03d57ec90663237bf6825
+          test "$(git hash-object v13/code/KNOEPFE_EINRICHTEN.sh)" = 9f9fed1f0fa22f5a2168cc4e41257a2adabd3abd
+          bash -n v13/code/KNOEPFE_EINRICHTEN.sh
+          cd v13/code
+          PYTHONPATH=. python3 -m unittest -v tests.test_widget_guide_fallback_run140 tests.test_widget_installer_quoting_run127 tests.test_phone_halt tests.test_phone_prestart_run128
