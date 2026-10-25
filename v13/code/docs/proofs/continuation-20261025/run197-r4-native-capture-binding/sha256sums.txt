@@ -1,0 +1,8 @@
+d01fb11ee9879e31a7e6a708416024e9ac84127e33087d8947dd8fb6c11f03b7  ./.github/workflows/run197-r4-source-binding.yml
+fb24006b973533b574f9ea70d6d8fb43cb6b02b18a514b06c8188c708148612c  ./tests_final.log
+a5d76bbd73eb79473e085b9a26c62cd4bbd59fb0ca5f69499be7a58c28c017a6  ./tests_initial.log
+7ef95f76b943dd9a1a3a47b7026df68358258a9fc86cb76eb53bfeb8f67f6954  ./v13/code/docs/proofs/continuation-20261025/run197-r4-native-capture-binding/BUILD_STATE.md
+fb24006b973533b574f9ea70d6d8fb43cb6b02b18a514b06c8188c708148612c  ./v13/code/docs/proofs/continuation-20261025/run197-r4-native-capture-binding/tests_final.log
+a5d76bbd73eb79473e085b9a26c62cd4bbd59fb0ca5f69499be7a58c28c017a6  ./v13/code/docs/proofs/continuation-20261025/run197-r4-native-capture-binding/tests_initial.log
+0e7716a56f2c4effc3afe13ab5c254b3d127f0c1c67a75d1a548203d049462ce  ./v13/code/scripts/run197_r4_future_manifest.py
+2804e0eebd8240169639e81d62093b4b78841bb4919a31656b0f245f9ef5f339  ./v13/code/tests/test_run197_r4_future_manifest.py
