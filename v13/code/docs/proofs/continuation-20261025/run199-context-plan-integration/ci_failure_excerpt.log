@@ -1,0 +1,81 @@
+# Run199 initial actual-source CI failure (unmodified timestamped lines)
+# Run 40174459291, job 121112033129
+# Full original log: https://github.com/RedMentos/Aii/actions/runs/40174459291/job/121112033129
+
+2026-10-25T07:53:24.4120239Z ERROR: test_candidate_preserves_raw_literal_in_planned_view (tests.test_context_inline_plan_run199.PlanIntegration.test_candidate_preserves_raw_literal_in_planned_view)
+2026-10-25T07:53:24.4121401Z ----------------------------------------------------------------------
+2026-10-25T07:53:24.4121794Z Traceback (most recent call last):
+2026-10-25T07:53:24.4127498Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_inline_plan_run199.py", line 48, in test_candidate_preserves_raw_literal_in_planned_view
+2026-10-25T07:53:24.4128235Z     result = self.plan()
+2026-10-25T07:53:24.4128488Z              ^^^^^^^^^^^
+2026-10-25T07:53:24.4129004Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_inline_plan_run199.py", line 37, in plan
+2026-10-25T07:53:24.4129608Z     return self.c.plan(eid,'C3_LANGUAGE','SYS',[],history(),q)
+2026-10-25T07:53:24.4129975Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4130429Z   File "/home/runner/work/Aii/Aii/v13/code/v13/context_os.py", line 278, in plan
+2026-10-25T07:53:24.4131005Z     c,spans,_=compress(m['content'],SUMMARY_USER if m['role']=='user' else SUMMARY_ASSISTANT)
+2026-10-25T07:53:24.4131488Z               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4132095Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 52, in compress_candidate
+2026-10-25T07:53:24.4132622Z     return C.compress(text, cap)
+2026-10-25T07:53:24.4132871Z            ^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4133386Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 52, in compress_candidate
+2026-10-25T07:53:24.4133926Z     return C.compress(text, cap)
+2026-10-25T07:53:24.4134175Z            ^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4134993Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 52, in compress_candidate
+2026-10-25T07:53:24.4135557Z     return C.compress(text, cap)
+2026-10-25T07:53:24.4135798Z            ^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4136056Z   [Previous line repeated 968 more times]
+2026-10-25T07:53:24.4136631Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 50, in compress_candidate
+2026-10-25T07:53:24.4137170Z     if unsafe_inline_delimiters(text):
+2026-10-25T07:53:24.4137448Z        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4138007Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 22, in unsafe_inline_delimiters
+2026-10-25T07:53:24.4138588Z     without_fences = re.sub(r'```[\s\S]*?```', '', text)
+2026-10-25T07:53:24.4138913Z                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4139630Z   File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/re/__init__.py", line 185, in sub
+2026-10-25T07:53:24.4140150Z     return _compile(pattern, flags).sub(repl, string, count)
+2026-10-25T07:53:24.4140476Z            ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4140937Z   File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/re/__init__.py", line 274, in _compile
+2026-10-25T07:53:24.4141421Z     if isinstance(flags, RegexFlag):
+2026-10-25T07:53:24.4141679Z        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4142054Z RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-10-25T07:53:24.4142372Z 
+2026-10-25T07:53:24.4142634Z ======================================================================
+2026-10-25T07:53:24.4143501Z ERROR: test_explicit_human_active_candidate_still_has_no_automatic_promotion (tests.test_context_inline_plan_run199.PlanIntegration.test_explicit_human_active_candidate_still_has_no_automatic_promotion)
+2026-10-25T07:53:24.4144381Z ----------------------------------------------------------------------
+2026-10-25T07:53:24.4145336Z Traceback (most recent call last):
+2026-10-25T07:53:24.4146316Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_inline_plan_run199.py", line 60, in test_explicit_human_active_candidate_still_has_no_automatic_promotion
+2026-10-25T07:53:24.4147024Z     result = self.plan()
+2026-10-25T07:53:24.4147263Z              ^^^^^^^^^^^
+2026-10-25T07:53:24.4147719Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_context_inline_plan_run199.py", line 37, in plan
+2026-10-25T07:53:24.4148270Z     return self.c.plan(eid,'C3_LANGUAGE','SYS',[],history(),q)
+2026-10-25T07:53:24.4148632Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4149072Z   File "/home/runner/work/Aii/Aii/v13/code/v13/context_os.py", line 278, in plan
+2026-10-25T07:53:24.4149630Z     c,spans,_=compress(m['content'],SUMMARY_USER if m['role']=='user' else SUMMARY_ASSISTANT)
+2026-10-25T07:53:24.4150114Z               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4150727Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 52, in compress_candidate
+2026-10-25T07:53:24.4151263Z     return C.compress(text, cap)
+2026-10-25T07:53:24.4151511Z            ^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4152020Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 52, in compress_candidate
+2026-10-25T07:53:24.4152536Z     return C.compress(text, cap)
+2026-10-25T07:53:24.4152780Z            ^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4153272Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 52, in compress_candidate
+2026-10-25T07:53:24.4153785Z     return C.compress(text, cap)
+2026-10-25T07:53:24.4154025Z            ^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4154275Z   [Previous line repeated 968 more times]
+2026-10-25T07:53:24.4155219Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 50, in compress_candidate
+2026-10-25T07:53:24.4155766Z     if unsafe_inline_delimiters(text):
+2026-10-25T07:53:24.4156035Z        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4156583Z   File "/home/runner/work/Aii/Aii/v13/code/scripts/context_inline_guard_run198.py", line 22, in unsafe_inline_delimiters
+2026-10-25T07:53:24.4157166Z     without_fences = re.sub(r'```[\s\S]*?```', '', text)
+2026-10-25T07:53:24.4157487Z                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4157969Z   File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/re/__init__.py", line 185, in sub
+2026-10-25T07:53:24.4158493Z     return _compile(pattern, flags).sub(repl, string, count)
+2026-10-25T07:53:24.4158828Z            ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4159286Z   File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/re/__init__.py", line 274, in _compile
+2026-10-25T07:53:24.4159993Z     if isinstance(flags, RegexFlag):
+2026-10-25T07:53:24.4160258Z        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T07:53:24.4160644Z RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-10-25T07:53:24.4160979Z 
+2026-10-25T07:53:24.4161128Z ----------------------------------------------------------------------
+2026-10-25T07:53:24.4161461Z Ran 18 tests in 0.296s
+2026-10-25T07:53:24.4161596Z 
+2026-10-25T07:53:24.4161687Z FAILED (errors=2)
