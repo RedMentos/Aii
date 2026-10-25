@@ -94,5 +94,38 @@ class WorldModulatorAtomicityRun349(unittest.TestCase):
         self.assertEqual(len(self.packets("PredictionOutcome")), 1)
 
 
+    def test_abort_modulator_insert_never_publishes_orphan_outcome(self):
+        with self.r.store.tx() as c:
+            c.execute("""
+                CREATE TRIGGER run349_abort_modulator
+                BEFORE INSERT ON packets
+                WHEN NEW.kind='ModulatorPacket'
+                BEGIN SELECT RAISE(ABORT, 'injected modulator failure'); END
+            """)
+        with self.assertRaises(sqlite3.DatabaseError):
+            self.observe()
+        self.assertEqual(self.packets("ModulatorPacket"), [])
+        self.assertEqual(self.packets("PredictionOutcome"), [])
+        with self.r.store.tx() as c:
+            c.execute("DROP TRIGGER run349_abort_modulator")
+        self.assertEqual(self.observe()["status"], "FINAL")
+        self.assertEqual(len(self.packets("ModulatorPacket")), 1)
+        self.assertEqual(len(self.packets("PredictionOutcome")), 1)
+
+    def test_crash_after_pair_commit_recovers_materialized_view_once(self):
+        with patch.object(self.r.world, "_refresh", side_effect=RuntimeError("injected view crash")):
+            with self.assertRaisesRegex(RuntimeError, "injected view crash"):
+                self.observe()
+        self.assertEqual(len(self.packets("ModulatorPacket")), 1)
+        self.assertEqual(len(self.packets("PredictionOutcome")), 1)
+        self.r.close()
+        self.r = Runtime(self.home)
+        self.r.sleep.cycle.set_policy("enabled", "off")
+        self.assertEqual(self.r.world.world_state()["observed_action_count"], 1)
+        self.observe()
+        self.assertEqual(len(self.packets("ModulatorPacket")), 1)
+        self.assertEqual(len(self.packets("PredictionOutcome")), 1)
+
+
 if __name__ == "__main__":
     unittest.main()
