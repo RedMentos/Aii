@@ -1,0 +1,56 @@
+name: V13 Run337 independent downloaded C3 raw ZIP audit source-only
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/verify_run336_artifact.py'
+      - 'v13/code/tests/test_verify_run336_artifact.py'
+      - '.github/workflows/run337-independent-c3-raw-audit.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/run337-independent-c3-raw-audit/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source and host receipt
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN337_HEAD.txt"
+          date -u -Iseconds | tee "$RUNNER_TEMP/RUN337_UTC.txt"
+          python3 --version | tee "$RUNNER_TEMP/RUN337_PYTHON.txt"
+          sha256sum v13/code/scripts/verify_run336_artifact.py v13/code/tests/test_verify_run336_artifact.py | tee "$RUNNER_TEMP/RUN337_SOURCE_SHA256SUMS.txt"
+      - name: Twelve synthetic adversarial archive and gate tests
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_verify_run336_artifact \
+            2>&1 | tee "$RUNNER_TEMP/RUN337_TESTS_RAW.log"
+      - name: Public repository privacy check
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN337_PRIVACY_RAW.log"
+      - name: Close raw source-only evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN337_*' ! -name RUN337_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN337_SHA256SUMS.txt
+      - name: Preserve all source-only raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run337-Independent-C3-Raw-Audit-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN337_*
+          if-no-files-found: warn
+          retention-days: 30
