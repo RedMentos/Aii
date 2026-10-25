@@ -78,6 +78,16 @@ def evaluate(rows):
     return out
 
 
+def classify(diagnostics, native_valid):
+    if not native_valid:
+        return "B1_NATIVE_DIAGNOSTIC_INVALID"
+    # A correct baseline alone is not evidence that a new source placement helps.
+    if (not diagnostics["baseline"]["candidate_signal_only"] and
+            any(diagnostics[arm]["candidate_signal_only"] for arm in ARMS[1:])):
+        return "B1_NATIVE_PROMPT_SIGNAL_ONLY"
+    return "B1_NATIVE_PROMPT_NOT_SUPPORTED"
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--installed-home", type=Path, required=True)
@@ -150,11 +160,7 @@ def main(argv=None):
     report["native_valid"] = (len(report["rows"]) == len(ARMS) * len(QUESTIONS)
                               and all(v["native_complete"] for v in report["diagnostics"].values())
                               and bool(report.get("model_sha256")) and bool(report.get("runner_sha256")))
-    report["status"] = ("B1_NATIVE_PROMPT_SIGNAL_ONLY"
-                        if report["native_valid"] and any(v["candidate_signal_only"]
-                                                          for v in report["diagnostics"].values())
-                        else "B1_NATIVE_PROMPT_NOT_SUPPORTED" if report["native_valid"]
-                        else "B1_NATIVE_DIAGNOSTIC_INVALID")
+    report["status"] = classify(report["diagnostics"], report["native_valid"])
     save()
     print(dumps({"status": report["status"], "diagnostics": report["diagnostics"],
                  "native_valid": report["native_valid"]}))
