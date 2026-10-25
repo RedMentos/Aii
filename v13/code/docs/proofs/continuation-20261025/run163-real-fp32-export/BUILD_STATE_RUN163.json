@@ -1,0 +1,31 @@
+{
+  "schema": "V13_RUN163_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_commit": "001e7af6748186b4c1c21ad357a06680079aef44",
+  "owner": "Codex Run163 new serialized workflow and proof only; no source/runtime/model modifications",
+  "registered_model_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+  "registered_model_bytes": 695755488,
+  "selected_fp32": [
+    "blk.0.attn_norm.weight",
+    "blk.0.ffn_norm.weight"
+  ],
+  "prerequisites": {
+    "Run161_fullhash": "VERIFIED_LINUX_CI",
+    "Run162_synthetic": "10_PASS_PLUS_8_PARSER_PASS",
+    "Run159_fullsuite": "IN_PROGRESS_OR_PENDING"
+  },
+  "ci": "WAITING_FOR_SERIAL_HEAVY_SLOT",
+  "evidence_class": "PENDING_REAL_MODEL_READ_ONLY_FP32_EXPORT",
+  "train_master_authority": 0,
+  "body_training_authority": 0,
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "next_command": "After Run159 heavy full suite finishes, open PR against codex/run162-fp32-master-extract-20261025 to trigger serialized Run163 workflow",
+  "next_step": "Verify exact real B1 tensor SHA/shape/roundtrip, preserve report only, then design actual native gradient path without promoting Body-JEPA."
+}
