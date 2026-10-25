@@ -17,6 +17,9 @@ V13_PYTHON="$(command -v python3 || command -v python)"
 import sys
 if sys.version_info < (3,10):raise SystemExit('Python >=3.10 erforderlich')
 PY
+# Verify extracted source bytes before pip, V13 imports, bootstrap or model probe.
+# This is an integrity check, not a publisher signature. Never ignore failure.
+"$V13_PYTHON" -I -S "$V13_APP_DIR/scripts/verify_installed_source_run194.py" --root "$V13_APP_DIR"
 if ! "$V13_PYTHON" -c 'import numpy' 2>/dev/null; then
   "$V13_PYTHON" -m pip install 'numpy>=1.24,<3'
 fi
