@@ -1,0 +1,18 @@
+=== RUN140 independent extracted Linux test-first RED ===
+test_failed_more_remains_nonzero ... FAIL
+AssertionError: 1 != 42
+test_successful_more_then_eof_is_success ... FAIL
+AssertionError: 1 != 0
+Ran 2 tests in 0.060s
+FAILED (failures=2)
+
+=== RUN140 local Linux GREEN ===
+test_failed_more_remains_nonzero ... ok
+test_successful_more_then_eof_is_success ... ok
+test_apostrophe_in_source_folder_does_not_break_guide_button ... ok
+test_apostrophe_spaces_and_semicolon_are_literal_stop_path ... ok
+test_malicious_looking_path_is_data_not_shell_code ... ok
+Ran 5 tests in 0.214s
+OK
+bash -n KNOEPFE_EINRICHTEN.sh PASS
+source Git blob 9f9fed1f0fa22f5a2168cc4e41257a2adabd3abd

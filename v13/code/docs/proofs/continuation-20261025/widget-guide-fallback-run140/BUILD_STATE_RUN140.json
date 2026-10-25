@@ -1,0 +1,24 @@
+{
+  "schema": "V13_RUN140_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "pr": 171,
+  "base_sha": "151a01994f16fd9cd513f4b466c19cd295178500",
+  "owner": "Widget guide fallback only, new tests/workflow/proofs",
+  "red": "2/2 test-first FAIL on extracted Run138",
+  "green": "5/5 local Linux PASS",
+  "installer_blob": "9f9fed1f0fa22f5a2168cc4e41257a2adabd3abd",
+  "test_blob": "cfe112912f7cc7d17c308c488eaad036f861f482",
+  "frozen_runtime_blob": "a691d27bd0772a4fa1f03d57ec90663237bf6825",
+  "native": "NOT RUN, Run139 independent",
+  "redmi": "NOT RUN",
+  "full_suite": "NOT RUN, Run129 inherited 4 FAIL 1 ERROR",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "next_step": "Run141 exact source-only phone ZIP from Run140 head, independently extract and test forced pager fallback and stop paths."
+}

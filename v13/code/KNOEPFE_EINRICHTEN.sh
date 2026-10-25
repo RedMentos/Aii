@@ -46,7 +46,7 @@ echo 'Enter schließt das Fenster.'; read -r _"
 
 write "V13 Befehle" "f=$GUIDE_SHELL
 [ -r \"\$f\" ] || { echo \"Befehlsliste fehlt: \$f (Programmordner verschoben? Dann KNOEPFE_EINRICHTEN.sh dort neu starten.)\"; read -r _; exit 1; }
-if command -v less >/dev/null; then LESSCHARSET=utf-8 less -R -M -- \"\$f\"; else more -- \"\$f\"; echo; echo 'Enter schließt das Fenster.'; read -r _; fi"
+if command -v less >/dev/null; then LESSCHARSET=utf-8 less -R -M -- \"\$f\"; else more -- \"\$f\" || exit \$?; echo; echo 'Enter schließt das Fenster.'; read -r _ || :; fi"
 
 stop_button() {  # stop_button <DATEI> <Text>
   local msg_shell
