@@ -1,0 +1,11 @@
+# Run123 — selective WP-UI1 Termux Widget safety + command guide integration
+
+2026-10-25 UTC. Exact base: Run122 PR #153 head `af9335c6c70fb10704d86dd2d16887f2148d4a74`; verified source-only artifact 12580984168 and extracted 20/20 Linux tests. The current integration chain **does not contain** the Claude WP-UI1 files, despite the ROADMAP's historical 2026-10-22 description. Source to review: `claude/project-thread-e53fle` (phone_halt.py blob 6460aa8a71266f75f50558f9480d7332b5302529, test_phone_halt.py 707cec00a61d62437289a5082caed05a54fc0866, installer 73c43485f929a81add056e0b0d0c8a3a0136cab0, befehle.py 8e251afca407aa2046b48d5c464a0139add09e05, guide 3047919c1786a6d0295b8d3aec4cb2e92fda8e50). Read-only review of Claude UI shows two watch_buttons calls (plain + prompt-toolkit) and one :befehle dispatch.
+
+**Owner:** new `v13/phone_halt.py`, `v13/befehle.py`, `tests/test_phone_halt.py`, `KNOEPFE_EINRICHTEN.sh`, `docs/BEFEHLE.md`, `docs/HANDY_OBERFLAECHE.md`, narrowly owned `v13/ui.py` and `v13/operator.py` only; new workflow/proofs. No Runtime/Store/standstill/age/learning/model/Canon edits, no overlap with Run121 __main__.py. No concurrent native jobs.
+
+**Test-first:** import exact Claude six-test file and run on integrated source before implementation; expected missing `v13.phone_halt` / installer / guide errors, preserve full raw RED. Then selectively import exact upstream files, apply only the two UI watcher hooks and one operator :befehle command/help entry, run all six new tests + inherited real CLI/standstill tests, official privacy scan and independent review. Stop buttons only switch ON, never OFF; handled file cannot reapply after explicit human release. No external communications or tool execution.
+
+**Open safety review:** Runtime worker starts before UI watcher; a pending persisted queue could begin before a startup stop-file is applied. Do not claim stop-before-worker-start or Redmi real-time latency until separately measured/closed. If this is reproduced fail-open, leave candidate unactivated and record blocker rather than weakening stop semantics.
+
+**Gates unchanged:** STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; DS2 H2 FAIL; V13 INCOMPLETE. Linux software only, not native/Redmi.
