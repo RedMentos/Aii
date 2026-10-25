@@ -203,19 +203,34 @@ class ContextOS:
         return bool(self._load()[0]['capabilities'].get(role,{}).get(cap,{}).get('value'))
     # -- warm memory (§9.1) ----------------------------------------------------------------------------
     def warm(self,query,session,recalled,threshold=WARM_ADMIT):
-        """Reactivate warm memories the recall did not return. Applied only in ACTIVE; SHADOW just reports them."""
+        """Reactivate only still-human-authorized F1 memories in warm order.
+
+        Warm candidates bypass normal lexical recall by design, but must never
+        bypass its F5 HumanDecision/feedback/source lineage. Validate the full
+        eligible pool before applying the two-slot cap, so a revoked first item
+        cannot starve a valid later item. Neither SHADOW nor ACTIVE can surface
+        an invalid correction, and the persisted warm state is not rewritten.
+        """
         st,_=self._load();self._decay(st);have={str(m['id']) for m in recalled};gain=st['knobs']['prefetch_gain'];out=[]
+        candidates=[]
         for mid,a in sorted(st['warm'].items(),key=lambda kv:-kv[1]):
-            if str(mid) in have or len(out)>=WARM_PREFETCH_MAX:continue
+            if str(mid) in have:continue
             r=self.s.one("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.id=? AND m.active=1 AND s.deleted=0 AND m.kind IN ('fact','style','preference') AND (m.session_id=? OR m.scope='global')",(mid,session))
             if not r:continue
             rel=relevance(query,r['key_text'])
             if a*(rel+gain)<threshold:continue
-            r=dict(r);ref={'source_id':r['source_id'],'sha256':r['hash'],'char_start':0,'char_end':r['chars'],'modality':'text'}
-            try:value=self.s.read_source(ref)
-            except ValueError:continue
-            if value!=r['value']:continue
-            r.update(source_ref=ref,value=value,retrieval_score=rel,retrieval_policy=None,warm_activation=a);out.append(r)
+            candidates.append((dict(r),rel,a))
+        if candidates:
+            from .memory import Memory
+            verified={m['id'] for m in Memory(self.s,self.cfg)._verified_rows([r for r,_,_ in candidates])}
+            for r,rel,a in candidates:
+                if r['id'] not in verified:continue
+                ref={'source_id':r['source_id'],'sha256':r['hash'],'char_start':0,'char_end':r['chars'],'modality':'text'}
+                try:value=self.s.read_source(ref)
+                except ValueError:continue
+                if value!=r['value']:continue
+                r.update(source_ref=ref,value=value,retrieval_score=rel,retrieval_policy=None,warm_activation=a);out.append(r)
+                if len(out)>=WARM_PREFETCH_MAX:break
         return {'items':out,'applied':st['mode']=='ACTIVE','ids':[m['id'] for m in out]}
     # -- plan ------------------------------------------------------------------------------------------
     def _shift(self,st,key):
