@@ -16,7 +16,8 @@
     "job": 121306923712,
     "tests": 15,
     "expected_failures": 7,
-    "artifact": 12616045734
+    "artifact": 12616045734,
+    "raw_zip_sha256": "6cf44ccc87becfe93db15cd02cc40d5c7aa0380ede31159ad58ec17e0b54589b"
   },
   "green": {
     "initial_run": 40239218990,
@@ -25,7 +26,8 @@
     "tests": 17,
     "passed": 17,
     "artifact": 12616425984,
-    "privacy": "CLEAN"
+    "privacy": "CLEAN",
+    "raw_zip_sha256": "c63b87b368f742cb87109518aac2e278dab47472c3d14062c7f0e645fb5a92bf"
   },
   "independent_historical_failure": {
     "workflow": "Run132 frozen Runtime hash",
@@ -34,7 +36,7 @@
     "reason": "frozen Runtime source hash mismatch; no HX test executed"
   },
   "scope": "Actual Runtime/SQLite software shield and synthetic evaluator scores only",
-  "raw_zip_private_backup": "NOT_VERIFIED",
+  "raw_zip_private_backup": "VERIFIED_CRC_4_OF_4_SHA_PRIVATE_BYTE_MATCH",
   "negative_gates": [
     "STEP2_UTILITY_FAIL",
     "B3_L1_UNRESOLVED",
@@ -45,5 +47,10 @@
     "Run367_full_suite_RED"
   ],
   "next_command": "Review PR375 exact head and AG8 17-test CI; independently download/verify raw artifacts; start separately preregistered Age reopen source-quality utility ablation without changing active cohorts.",
-  "blocked": "No Redmi/native training proof in this run; GitHub Actions raw ZIP bytes not accessible via connector for independent CRC verification."
+  "blocked": "Redmi/native training proof unavailable; frozen Run132 source mismatch and Run367 full-suite RED retained.",
+  "private_backup_paths": [
+    "/V13/Backups/Run379-380-20261025/V13_Actions_12616045734.zip",
+    "/V13/Backups/Run379-380-20261025/V13_Actions_12616425984.zip"
+  ],
+  "raw_verification": "CRC PASS, internal 4/4 SHA PASS, GitHub exact-head matches, Library re-materialized byte-identical"
 }
