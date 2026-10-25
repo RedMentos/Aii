@@ -116,7 +116,9 @@ def decide(rules, options, current, quotes=()):
     for o in options:
         current_statements = [c for c in option_clauses(o['entity'], current) if _option_statement(c)]
         if current_statements and not all(_option_matches(o, c) for c in current_statements):
-            rejected.append(o['entity']+':conflicts_current')
+            # Keep the original option_not_stated diagnostic for existing callers.
+            # The additional conflicts_current tag identifies stale-source precedence.
+            rejected.extend((o['entity']+':option_not_stated', o['entity']+':conflicts_current'))
         elif not current_statements and not option_stated(o, texts):
             rejected.append(o['entity']+':option_not_stated')
     if any(r.endswith(('option_not_stated', 'conflicts_current')) and
