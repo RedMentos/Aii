@@ -1,5 +1,6 @@
 """Run322 frozen-source/tokenizer compatibility fixture tests; no model or native calls."""
 import copy
+from collections import UserDict
 import json
 from pathlib import Path
 import tempfile
@@ -59,6 +60,7 @@ class Run322TokenizerCompatibility(unittest.TestCase):
     def test_invalid_or_nondiscrete_ids_fail(self):
         self.assertEqual(P.normalize_ids([[1, 2, 3]]), [1, 2, 3])
         self.assertEqual(P.normalize_ids({"input_ids": [1, 2, 3]}), [1, 2, 3])
+        self.assertEqual(P.normalize_ids(UserDict({"input_ids": [1, 2, 3]})), [1, 2, 3])
         for ids in ([], [-1], [65536], [True], [1.0], ["1"], [1] * 2049):
             with self.subTest(ids=str(ids)[:20]), self.assertRaises(ValueError):
                 P.normalize_ids(ids)
