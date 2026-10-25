@@ -1,0 +1,154 @@
+name: V13 Run282 serial actual-weight STEP1 four-stage diagnostic
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run282-native-step1-retest.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/native-step1-retest-run282/PREREG.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-step1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Exact head, registered cohort and fresh Linux prerequisite
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          test "$(git hash-object v13/code/v13/bootstrap.py)" = "dc23e192bcd01589475692666ebb6568c80d078b"
+          test "$(git hash-object v13/code/scripts/acceptance.py)" = "432b2e33eb53142b0d4246813b96fc791b0900f0"
+          {
+            git rev-parse HEAD
+            git hash-object v13/code/v13/proofs.py
+            git hash-object v13/code/tests/integration_executive.py
+            date -u -Iseconds
+            uname -a
+            python3 --version
+            free -h
+            df -h "$RUNNER_TEMP"
+            cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+          } | tee "$RUNNER_TEMP/RUN282_PREFLIGHT.log"
+      - name: Pinned isolated CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run282venv"
+          timeout 180s "$RUNNER_TEMP/run282venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Download and hash-verify registered public native models and runner
+        id: bootstrap
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run282installed"
+          timeout 1800s "$RUNNER_TEMP/run282venv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN282_BOOTSTRAP.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN282_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Registered actual-weight first four stages, no full-acceptance claim
+        id: acceptance
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN282_BOOTSTRAP_EXIT.txt")" != "0" ]]; then echo 99 > "$RUNNER_TEMP/RUN282_ACCEPTANCE_EXIT.txt"; exit 0; fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run282installed"
+          timeout 900s "$RUNNER_TEMP/run282venv/bin/python" scripts/acceptance.py --installed-home "$V13_HOME" --archive-dir "$RUNNER_TEMP/run282-archive" --stage-limit 4 2>&1 | tee "$RUNNER_TEMP/RUN282_ACCEPTANCE.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN282_ACCEPTANCE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Verify bounded stage results while preserving DIAGNOSTIC_INCOMPLETE
+        id: stagecheck
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN282_STAGE_CHECK.log"
+          import json, os
+          from pathlib import Path
+          tmp=Path(os.environ['RUNNER_TEMP'])
+          path=tmp/'run282-archive'/'acceptance.json'
+          result={'schema':'V13_RUN282_SERIAL_NATIVE_STEP1_DIAGNOSTIC_V1',
+                  'evidence_scope':'LINUX_NATIVE_ACTUAL_REGISTERED_WEIGHTS_NOT_REDMi',
+                  'full_acceptance_claim':False,
+                  'bootstrap_exit':(tmp/'RUN282_BOOTSTRAP_EXIT.txt').read_text().strip(),
+                  'acceptance_exit':(tmp/'RUN282_ACCEPTANCE_EXIT.txt').read_text().strip()}
+          try:
+              report=json.loads(path.read_text())
+              rows=report.get('stages',[])
+              result['status']=report.get('status')
+              result['stages']=[{'name':x.get('name'),'status':x.get('status'),'exit_code':x.get('exit_code')} for x in rows]
+              expected=['jef-modes','experience','learning','executive']
+              good=(result['bootstrap_exit']=='0' and result['acceptance_exit']=='2'
+                    and result['status']=='DIAGNOSTIC_INCOMPLETE'
+                    and [x['name'] for x in result['stages']]==expected
+                    and all(x['status']=='PASS' and x['exit_code']==0 for x in result['stages']))
+              for stage in ('jef-modes','executive'):
+                  stage_path=tmp/'run282-archive'/(stage+'.json')
+                  detail=json.loads(stage_path.read_text())
+                  result[stage+'_checks']=detail.get('checks',{})
+                  good=good and all(detail.get('checks',{}).values())
+              result['four_stage_diagnostic_pass']=bool(good)
+          except Exception as exc:
+              result['error']=type(exc).__name__+': '+str(exc)[:300]
+              result['four_stage_diagnostic_pass']=False
+          (tmp/'RUN282_STAGE_SUMMARY.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(result,sort_keys=True))
+          raise SystemExit(0 if result['four_stage_diagnostic_pass'] else 2)
+          PY
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN282_STAGE_CHECK_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN282_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN282_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload closed native stage reports, model hashes and failed attempts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run282-NativeSTEP1-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN282_PREFLIGHT.log
+            ${{ runner.temp }}/RUN282_BOOTSTRAP.log
+            ${{ runner.temp }}/RUN282_BOOTSTRAP_EXIT.txt
+            ${{ runner.temp }}/RUN282_ACCEPTANCE.log
+            ${{ runner.temp }}/RUN282_ACCEPTANCE_EXIT.txt
+            ${{ runner.temp }}/RUN282_STAGE_CHECK.log
+            ${{ runner.temp }}/RUN282_STAGE_CHECK_EXIT.txt
+            ${{ runner.temp }}/RUN282_STAGE_SUMMARY.json
+            ${{ runner.temp }}/RUN282_PRIVACY_RAW.log
+            ${{ runner.temp }}/RUN282_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/run282-archive/
+            ${{ runner.temp }}/run282installed/exports/acceptance-*/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce bounded diagnostic and privacy only, not full acceptance
+        if: always()
+        run: |
+          test "${{ steps.bootstrap.outputs.rc }}" = "0"
+          test "${{ steps.stagecheck.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
