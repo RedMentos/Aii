@@ -1,0 +1,15 @@
+# Run348 final GREEN and independent review (2026-10-25)
+
+## Verified source-only result
+- Original prereg: `e37aa4a869142594d6fb3b9bce547699ec0d61ca`; original RED head `667735caa1d9fb3ed8c4593ac6ae451cf6c69c78`, Actions `40224037393`: **14 original PASS, 4 new RED** (2 failures + 2 errors). RED ZIP SHA256 `7650ec671bca86f0fce6bbe66c9f4cb27a74291424fb7b0234503758686c6004`, CRC and 3/3 manifest hashes verified.
+- First GREEN head `daa4a33e59aff64a59e897c6bca3d8c392b3c31b`, Actions `40224191658`: **18/18 PASS**, privacy CLEAN. ZIP SHA256 `0d867157128ee2f75b9bb42e9f89e56e153c006818967794d02e1750d8012933`, CRC and 4/4 manifest hashes verified.
+- Independent counterexample found after GREEN: second STANDSTILL CAS failure **after** the queue resumed left a pending receipt while the status text incorrectly claimed the queue remained paused. RED2 head `4bcc600f48190403bea6af680399579051f54498`, Actions `40224292558`: **18/19 PASS, 1 expected RED**. ZIP SHA256 `28ec9e5e53842626a4e4b93a78b0547467da5bf32622800dc2b8f867a97d3e34`, CRC and 3/3 manifest hashes verified.
+- Final GREEN head `451d2c0650a13d18cdcd48b65793caaea22a16d2`, Actions `40224394314`, job `121262570983`: **19/19 PASS** real Runtime/SQLite tests (original 14 plus five Run348), privacy scan `6e79f15cc..HEAD: CLEAN`. Source-only, no native inference. Raw artifact `12611170116`, downloaded ZIP SHA256 `7116109b0f4670c353d81fac697909e795b5b7ff60943574a6c737c744beeb5f`, CRC PASS, 4/4 manifest hashes verified. Embedded HEAD matches; source SHA256 `f58dc53460ceb21ea2d124c05b32390ced168938afb7e5517cd017c01808be9d`; test SHA256 `c7bd684bf110388319c23ff2343c520b48db8aa58c23bc1de9356a94bf18970c`.
+- Private Library backup verified: `/V13/checkpoints/2026-10-25/V13_Run348_Standstill_Release_GREEN_FINAL_raw_sha7116109b.zip`. RED/RED2/first GREEN ZIPs also saved separately under same private folder.
+
+## Scope and limitations
+`:stillstand aus` now persists explicit release intent before any guard is relaxed, retains the ownership map for interrupted/restarted/re-engaged releases, resumes the queue last, and reports a post-resume partial release accurately. The queue is **not automatically resumed** on restart while a pending release is still paused. This does not prove process-level safety against uncooperative external native children or Redmi behavior; all prior age/learning/approval restrictions remain unchanged.
+
+Historical SourceHandoff/hash-bound candidate tests and whole-system gates are **not** relabeled green. STEP2 UTILITY_FAIL, B3 L1 FAIL in original registered scope, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi MISSING, AG6 and V13 INCOMPLETE remain. Review branch is not production main.
+
+Next independent canonical package: WorldState's `ModulatorPacket` and `PredictionOutcome` are currently two separate SQLite commits. Inject a failure on the latter after the former, prove the duplicated digital prediction-error modulator on retry, then make them one atomic receipt transaction with a real SQLite crash-window test. Preserve all prior receipts and avoid model/learning changes.
