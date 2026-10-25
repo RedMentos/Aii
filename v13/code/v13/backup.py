@@ -65,8 +65,9 @@ def backup(store,destination=None):
                 src=home/name
                 if src.exists():shutil.copytree(src,stage/name)
             generation=store.generation_id
-        with sqlite3.connect(db) as snapshot:
-            _verify_live_source_blobs(stage,snapshot)
+        snapshot=sqlite3.connect(db)
+        try:_verify_live_source_blobs(stage,snapshot)
+        finally:snapshot.close()
         hashes={str(p.relative_to(stage)):file_hash(p) for p in stage.rglob('*') if p.is_file()};atomic_write(stage/'backup_manifest.json',dumps({'format':1,'hashes':hashes,'models_included':False,'active_generation':generation}))
         pending=out.with_suffix('.partial');out.parent.mkdir(parents=True,exist_ok=True)
         try:
