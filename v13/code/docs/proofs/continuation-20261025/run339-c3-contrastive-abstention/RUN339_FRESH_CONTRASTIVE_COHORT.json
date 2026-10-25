@@ -1,0 +1,159 @@
+{
+  "authority": "SYNTHETIC_TEST_ONLY",
+  "facts": [
+    {
+      "a": "quartz",
+      "id": "F1",
+      "keys": [
+        "quartz"
+      ],
+      "q": "In the fictional Aerwyn registry, what is the access word for node TAV?"
+    },
+    {
+      "a": "February",
+      "id": "F2",
+      "keys": [
+        "february"
+      ],
+      "q": "Which fictional month is Project SEDAL scheduled to launch?"
+    },
+    {
+      "a": "58 crates",
+      "id": "F3",
+      "keys": [
+        "58"
+      ],
+      "q": "In the invented ledger, how many crates can depot LORIN hold?"
+    },
+    {
+      "a": "ibis",
+      "id": "F4",
+      "keys": [
+        "ibis"
+      ],
+      "q": "Which invented bird is the emblem of district VASEN?"
+    },
+    {
+      "a": "R84M",
+      "id": "F5",
+      "keys": [
+        "r84m"
+      ],
+      "q": "What is the fictional station code for EDRIN?"
+    },
+    {
+      "a": "violet",
+      "id": "F6",
+      "keys": [
+        "violet"
+      ],
+      "q": "Which color marks fictional archive KELRO?"
+    },
+    {
+      "a": "Madden",
+      "id": "F7",
+      "keys": [
+        "madden"
+      ],
+      "q": "What is the fictional owner surname for vault HUSAR?"
+    },
+    {
+      "a": "29",
+      "id": "F8",
+      "keys": [
+        "29"
+      ],
+      "q": "How many invented panels does array NEXIL contain?"
+    }
+  ],
+  "near_miss": [
+    {
+      "a": "I do not know the answer for that fictional item.",
+      "id": "N1",
+      "leak_keys": [
+        "quartz"
+      ],
+      "q": "What access word belongs to fictional Aerwyn node TAF?"
+    },
+    {
+      "a": "I do not know the answer for that fictional item.",
+      "id": "N2",
+      "leak_keys": [
+        "february"
+      ],
+      "q": "What month is fictional SEDEN project launching?"
+    },
+    {
+      "a": "I do not know the answer for that fictional item.",
+      "id": "N3",
+      "leak_keys": [
+        "58"
+      ],
+      "q": "How many crates can the fictional LOREN depot hold?"
+    },
+    {
+      "a": "I do not know the answer for that fictional item.",
+      "id": "N4",
+      "leak_keys": [
+        "ibis"
+      ],
+      "q": "Which bird marks the invented district VASIN?"
+    },
+    {
+      "a": "I do not know the answer for that fictional item.",
+      "id": "N5",
+      "leak_keys": [
+        "r84m"
+      ],
+      "q": "What code is assigned to fictional station EDRAN?"
+    }
+  ],
+  "paraphrases": [
+    {
+      "id": "P1",
+      "keys": [
+        "quartz"
+      ],
+      "q": "What secret word belongs to invented Aerwyn node TAV?"
+    },
+    {
+      "id": "P2",
+      "keys": [
+        "february"
+      ],
+      "q": "During which month is the made-up SEDAL project launching?"
+    },
+    {
+      "id": "P3",
+      "keys": [
+        "58"
+      ],
+      "q": "What is the crate capacity of fictional LORIN depot?"
+    },
+    {
+      "id": "P4",
+      "keys": [
+        "ibis"
+      ],
+      "q": "Name the bird pictured on fictional VASEN district emblem."
+    },
+    {
+      "id": "P5",
+      "keys": [
+        "r84m"
+      ],
+      "q": "Recall the invented identifier assigned to EDRIN station."
+    },
+    {
+      "id": "P6",
+      "keys": [
+        "violet"
+      ],
+      "q": "What hue is assigned to the made-up KELRO archive?"
+    }
+  ],
+  "retention_probes_source": "frozen original lora_bench.PROBES (12), not used for training",
+  "schema": "V13_RUN339_FRESH_SYNTHETIC_C3_CONTRASTIVE_COHORT_V1",
+  "seed": 53,
+  "source_scope": "NEW_DISJOINT_FROM_RUN320_RUN334_NOT_PRODUCTION_FACTS"
+}
