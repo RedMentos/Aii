@@ -48,5 +48,28 @@ class ContextUnbalancedLiteralsRun350(unittest.TestCase):
         self.assertEqual(out, original)
 
 
+    def test_complete_other_literal_protects_its_inner_unpaired_delimiter(self):
+        for literal in ('"a single ` inside a complete quote"',
+                        '`print("unfinished)`',
+                        '„ein ` innerhalb eines ganzen Zitats“'):
+            with self.subTest(literal=literal):
+                original, (out, spans, ok) = trial(literal)
+                self.assertTrue(ok)
+                self.assertNotEqual(out, original)
+                self.assertIn(literal, spans)
+                self.assertIn(literal, out)
+
+    def test_old_unbalanced_source_turn_is_not_silently_compressed_in_plan(self):
+        from tests.test_context_exact_pin_run73 import FakeStore, history
+        store = FakeStore()
+        planner = C.ContextOS(store, {"context_tokens": 4096, "answer_tokens": 128})
+        hist = history(n=10, chars=150)
+        hist[0]["text"] = "First sentence. " + FILL + "`unclosed literal tail"
+        result = planner.plan("new-event", "B1_DETAIL", "SYSTEM", [], hist, "What next?")
+        item = next(x for x in result["plan"]["items"] if x["item_id"] == "turn0")
+        self.assertEqual(item["form"], "RAW")
+        self.assertIn("`unclosed literal tail", result["planned"][1]["content"])
+
+
 if __name__ == "__main__":
     unittest.main()
