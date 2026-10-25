@@ -1,0 +1,303 @@
+﻿2026-10-25T00:47:56.4283777Z Current runner version: '2.338.0'
+2026-10-25T00:47:56.4308581Z ##[group]Runner Image Provisioner
+2026-10-25T00:47:56.4309544Z Hosted Compute Agent
+2026-10-25T00:47:56.4310156Z Version: 20261021.618
+2026-10-25T00:47:56.4310762Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T00:47:56.4311494Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T00:47:56.4312149Z Worker ID: {6f5cf7b8-e6fb-46d8-b298-18c3ac6f46b2}
+2026-10-25T00:47:56.4312807Z Region: westus3
+2026-10-25T00:47:56.4313391Z Cloud: Azure
+2026-10-25T00:47:56.4313902Z ##[endgroup]
+2026-10-25T00:47:56.4315441Z ##[group]Operating System
+2026-10-25T00:47:56.4316084Z Ubuntu
+2026-10-25T00:47:56.4316573Z 26.04.1
+2026-10-25T00:47:56.4317128Z LTS
+2026-10-25T00:47:56.4317622Z ##[endgroup]
+2026-10-25T00:47:56.4318153Z ##[group]Runner Image
+2026-10-25T00:47:56.4318733Z Image: ubuntu-26.04
+2026-10-25T00:47:56.4319265Z Version: 20261012.163.1
+2026-10-25T00:47:56.4320591Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-25T00:47:56.4322084Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-25T00:47:56.4323026Z ##[endgroup]
+2026-10-25T00:47:56.4324374Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T00:47:56.4326509Z Contents: read
+2026-10-25T00:47:56.4327137Z Metadata: read
+2026-10-25T00:47:56.4327710Z ##[endgroup]
+2026-10-25T00:47:56.4329801Z Secret source: Actions
+2026-10-25T00:47:56.4330765Z Cache mode: write
+2026-10-25T00:47:56.4331416Z Prepare workflow directory
+2026-10-25T00:47:56.4940213Z Prepare all required actions
+2026-10-25T00:47:56.4990615Z Getting action download info
+2026-10-25T00:47:56.8070746Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-25T00:47:57.3539598Z Complete job name: software
+2026-10-25T00:47:57.4569295Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-25T00:47:57.4571133Z with:
+2026-10-25T00:47:57.4572122Z   persist-credentials: false
+2026-10-25T00:47:57.4573298Z   repository: RedMentos/Aii
+2026-10-25T00:47:57.4582016Z   token: ***
+2026-10-25T00:47:57.4582954Z   ssh-strict: true
+2026-10-25T00:47:57.4583884Z   ssh-user: git
+2026-10-25T00:47:57.4584906Z   clean: true
+2026-10-25T00:47:57.4585869Z   sparse-checkout-cone-mode: true
+2026-10-25T00:47:57.4586969Z   fetch-depth: 1
+2026-10-25T00:47:57.4587887Z   fetch-tags: false
+2026-10-25T00:47:57.4588867Z   show-progress: true
+2026-10-25T00:47:57.4589819Z   lfs: false
+2026-10-25T00:47:57.4590704Z   submodules: false
+2026-10-25T00:47:57.4591730Z   set-safe-directory: true
+2026-10-25T00:47:57.4592919Z env:
+2026-10-25T00:47:57.4593787Z   HF_HUB_OFFLINE: 1
+2026-10-25T00:47:57.4594852Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T00:47:57.4595896Z   NEEDLE_TELEMETRY: 0
+2026-10-25T00:47:57.4596847Z   DO_NOT_TRACK: 1
+2026-10-25T00:47:57.4597942Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T00:47:57.4598899Z ##[endgroup]
+2026-10-25T00:47:57.5675429Z Syncing repository: RedMentos/Aii
+2026-10-25T00:47:57.5679536Z ##[group]Getting Git version info
+2026-10-25T00:47:57.5680900Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-25T00:47:57.5683318Z [command]/usr/bin/git version
+2026-10-25T00:47:57.5684718Z git version 2.55.0
+2026-10-25T00:47:57.5707207Z ##[endgroup]
+2026-10-25T00:47:57.5724301Z Temporarily overriding HOME='/home/runner/work/_temp/4bb6112e-8ae1-461e-a7e5-e1a197477169' before making global git config changes
+2026-10-25T00:47:57.5728604Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T00:47:57.5732020Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T00:47:57.5885662Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-25T00:47:57.5889352Z ##[group]Initializing the repository
+2026-10-25T00:47:57.5898072Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-25T00:47:57.6113625Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-25T00:47:57.6117665Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-25T00:47:57.6121054Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-25T00:47:57.6123567Z hint: call:
+2026-10-25T00:47:57.6125010Z hint:
+2026-10-25T00:47:57.6127021Z hint: 	git config --global init.defaultBranch <name>
+2026-10-25T00:47:57.6129061Z hint:
+2026-10-25T00:47:57.6131014Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-25T00:47:57.6154684Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-25T00:47:57.6156973Z hint:
+2026-10-25T00:47:57.6158126Z hint: 	git branch -m <name>
+2026-10-25T00:47:57.6159888Z hint:
+2026-10-25T00:47:57.6161451Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-25T00:47:57.6164188Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-25T00:47:57.6167859Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-25T00:47:57.6499942Z ##[endgroup]
+2026-10-25T00:47:57.6502735Z ##[group]Disabling automatic garbage collection
+2026-10-25T00:47:57.6505489Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-25T00:47:57.6924646Z ##[endgroup]
+2026-10-25T00:47:57.6927006Z ##[group]Setting up auth
+2026-10-25T00:47:57.6931645Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T00:47:57.6968591Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T00:47:57.7377973Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T00:47:57.7409929Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T00:47:57.7640905Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-25T00:47:57.8470208Z ##[endgroup]
+2026-10-25T00:47:57.8473384Z ##[group]Fetching the repository
+2026-10-25T00:47:57.8482768Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +5b1ef32a70582b5ce5e86a497e7332f701911d08:refs/remotes/pull/155/merge
+2026-10-25T00:48:05.9542312Z From https://github.com/RedMentos/Aii
+2026-10-25T00:48:05.9544710Z  * [new ref]         5b1ef32a70582b5ce5e86a497e7332f701911d08 -> pull/155/merge
+2026-10-25T00:48:05.9548259Z ##[endgroup]
+2026-10-25T00:48:05.9549475Z ##[group]Determining the checkout info
+2026-10-25T00:48:05.9550446Z ##[endgroup]
+2026-10-25T00:48:05.9554452Z [command]/usr/bin/git sparse-checkout disable
+2026-10-25T00:48:05.9604326Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-25T00:48:05.9650032Z ##[group]Checking out the ref
+2026-10-25T00:48:05.9653796Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/155/merge
+2026-10-25T00:48:06.9984142Z Updating files:  45% (1564/3461)
+2026-10-25T00:48:07.0029011Z Updating files:  46% (1593/3461)
+2026-10-25T00:48:07.0058546Z Updating files:  47% (1627/3461)
+2026-10-25T00:48:07.0285632Z Updating files:  48% (1662/3461)
+2026-10-25T00:48:07.1083894Z Updating files:  49% (1696/3461)
+2026-10-25T00:48:07.2017269Z Updating files:  50% (1731/3461)
+2026-10-25T00:48:07.2917290Z Updating files:  51% (1766/3461)
+2026-10-25T00:48:07.3063612Z Updating files:  52% (1800/3461)
+2026-10-25T00:48:07.3089319Z Updating files:  53% (1835/3461)
+2026-10-25T00:48:07.3125094Z Updating files:  54% (1869/3461)
+2026-10-25T00:48:07.3151862Z Updating files:  55% (1904/3461)
+2026-10-25T00:48:07.3162866Z Updating files:  56% (1939/3461)
+2026-10-25T00:48:07.3181492Z Updating files:  57% (1973/3461)
+2026-10-25T00:48:07.3195987Z Updating files:  58% (2008/3461)
+2026-10-25T00:48:07.3217891Z Updating files:  59% (2042/3461)
+2026-10-25T00:48:07.3241570Z Updating files:  60% (2077/3461)
+2026-10-25T00:48:07.3252991Z Updating files:  61% (2112/3461)
+2026-10-25T00:48:07.3265457Z Updating files:  62% (2146/3461)
+2026-10-25T00:48:07.3287555Z Updating files:  63% (2181/3461)
+2026-10-25T00:48:07.3302765Z Updating files:  64% (2216/3461)
+2026-10-25T00:48:07.3320571Z Updating files:  65% (2250/3461)
+2026-10-25T00:48:07.3342329Z Updating files:  66% (2285/3461)
+2026-10-25T00:48:07.3351821Z Updating files:  67% (2319/3461)
+2026-10-25T00:48:07.3361277Z Updating files:  68% (2354/3461)
+2026-10-25T00:48:07.3372131Z Updating files:  69% (2389/3461)
+2026-10-25T00:48:07.3388567Z Updating files:  70% (2423/3461)
+2026-10-25T00:48:07.3405419Z Updating files:  71% (2458/3461)
+2026-10-25T00:48:07.3417612Z Updating files:  72% (2492/3461)
+2026-10-25T00:48:07.3432006Z Updating files:  73% (2527/3461)
+2026-10-25T00:48:07.3452477Z Updating files:  74% (2562/3461)
+2026-10-25T00:48:07.3477705Z Updating files:  75% (2596/3461)
+2026-10-25T00:48:07.3497453Z Updating files:  76% (2631/3461)
+2026-10-25T00:48:07.3522810Z Updating files:  77% (2665/3461)
+2026-10-25T00:48:07.3545182Z Updating files:  78% (2700/3461)
+2026-10-25T00:48:07.3569926Z Updating files:  79% (2735/3461)
+2026-10-25T00:48:07.3599268Z Updating files:  80% (2769/3461)
+2026-10-25T00:48:07.3627519Z Updating files:  81% (2804/3461)
+2026-10-25T00:48:07.3648851Z Updating files:  82% (2839/3461)
+2026-10-25T00:48:07.3674303Z Updating files:  83% (2873/3461)
+2026-10-25T00:48:07.4465075Z Updating files:  84% (2908/3461)
+2026-10-25T00:48:07.4483444Z Updating files:  85% (2942/3461)
+2026-10-25T00:48:07.4500324Z Updating files:  86% (2977/3461)
+2026-10-25T00:48:07.4514976Z Updating files:  87% (3012/3461)
+2026-10-25T00:48:07.4534669Z Updating files:  88% (3046/3461)
+2026-10-25T00:48:07.4550149Z Updating files:  89% (3081/3461)
+2026-10-25T00:48:07.4566839Z Updating files:  90% (3115/3461)
+2026-10-25T00:48:07.4583091Z Updating files:  91% (3150/3461)
+2026-10-25T00:48:07.4599513Z Updating files:  92% (3185/3461)
+2026-10-25T00:48:07.4617885Z Updating files:  93% (3219/3461)
+2026-10-25T00:48:07.4648377Z Updating files:  94% (3254/3461)
+2026-10-25T00:48:07.4669298Z Updating files:  95% (3288/3461)
+2026-10-25T00:48:07.4693189Z Updating files:  96% (3323/3461)
+2026-10-25T00:48:07.4717973Z Updating files:  97% (3358/3461)
+2026-10-25T00:48:07.4760194Z Updating files:  98% (3392/3461)
+2026-10-25T00:48:07.4789468Z Updating files:  99% (3427/3461)
+2026-10-25T00:48:07.4790066Z Updating files: 100% (3461/3461)
+2026-10-25T00:48:07.4790724Z Updating files: 100% (3461/3461), done.
+2026-10-25T00:48:07.4826957Z Note: switching to 'refs/remotes/pull/155/merge'.
+2026-10-25T00:48:07.4827788Z 
+2026-10-25T00:48:07.4828719Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-25T00:48:07.4829619Z changes and commit them, and you can discard any commits you make in this
+2026-10-25T00:48:07.4830516Z state without impacting any branches by switching back to a branch.
+2026-10-25T00:48:07.4830947Z 
+2026-10-25T00:48:07.4831289Z If you want to create a new branch to retain commits you create, you may
+2026-10-25T00:48:07.4832099Z do so (now or later) by using -c with the switch command. Example:
+2026-10-25T00:48:07.4832579Z 
+2026-10-25T00:48:07.4832851Z   git switch -c <new-branch-name>
+2026-10-25T00:48:07.4833196Z 
+2026-10-25T00:48:07.4833399Z Or undo this operation with:
+2026-10-25T00:48:07.4833672Z 
+2026-10-25T00:48:07.4833845Z   git switch -
+2026-10-25T00:48:07.4834305Z 
+2026-10-25T00:48:07.4834591Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-25T00:48:07.4834912Z 
+2026-10-25T00:48:07.4835306Z HEAD is now at 5b1ef32 Merge 767a48fa526ce13ee30888b718e33db5f0c68991 into d3aa8dde0f521ecd3f4920820743a3d3bbad12bc
+2026-10-25T00:48:07.4895279Z ##[endgroup]
+2026-10-25T00:48:07.4940590Z [command]/usr/bin/git log -1 --format=%H
+2026-10-25T00:48:07.4962507Z 5b1ef32a70582b5ce5e86a497e7332f701911d08
+2026-10-25T00:48:07.4973551Z ##[group]Removing auth
+2026-10-25T00:48:07.4977739Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T00:48:07.5010457Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T00:48:07.5252479Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T00:48:07.5271896Z http.https://github.com/.extraheader
+2026-10-25T00:48:07.5274789Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-25T00:48:07.5315894Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T00:48:07.5540706Z ##[endgroup]
+2026-10-25T00:48:07.5737136Z ##[group]Run python3 -m venv "$RUNNER_TEMP/run124"
+2026-10-25T00:48:07.5737765Z [36;1mpython3 -m venv "$RUNNER_TEMP/run124"[0m
+2026-10-25T00:48:07.5738522Z [36;1m"$RUNNER_TEMP/run124/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-25T00:48:07.5858065Z shell: /usr/bin/bash -e {0}
+2026-10-25T00:48:07.5858443Z env:
+2026-10-25T00:48:07.5858899Z   HF_HUB_OFFLINE: 1
+2026-10-25T00:48:07.5859226Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T00:48:07.5859568Z   NEEDLE_TELEMETRY: 0
+2026-10-25T00:48:07.5859897Z   DO_NOT_TRACK: 1
+2026-10-25T00:48:07.5860206Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T00:48:07.5860595Z ##[endgroup]
+2026-10-25T00:48:11.3238841Z Collecting numpy==2.3.5
+2026-10-25T00:48:11.3514630Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-25T00:48:11.3911571Z Collecting prompt-toolkit==3.0.52
+2026-10-25T00:48:11.3947545Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-25T00:48:11.4200482Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-25T00:48:11.4235848Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-25T00:48:11.4452459Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-25T00:48:11.6309049Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 91.4 MB/s eta 0:00:00
+2026-10-25T00:48:11.6342036Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-25T00:48:11.6418882Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-25T00:48:11.6501652Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 85.3 MB/s eta 0:00:00
+2026-10-25T00:48:11.6871660Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-25T00:48:13.6863414Z 
+2026-10-25T00:48:13.6896292Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-25T00:48:13.7896241Z ##[group]Run set -euo pipefail
+2026-10-25T00:48:13.7896690Z [36;1mset -euo pipefail[0m
+2026-10-25T00:48:13.7897031Z [36;1mcd v13/code[0m
+2026-10-25T00:48:13.7897377Z [36;1mexport PYTHONPATH="$PWD"[0m
+2026-10-25T00:48:13.7897862Z [36;1m"$RUNNER_TEMP/run124/bin/python" -m compileall -q v13 tests[0m
+2026-10-25T00:48:13.7898649Z [36;1mfor pattern in test_phone_halt_preworker_run124.py test_phone_halt.py test_cli_standstill_run121.py test_phone_operator_journey_run86.py test_standstill.py; do[0m
+2026-10-25T00:48:13.7899364Z [36;1m  echo "RUN124_SUITE=$pattern"[0m
+2026-10-25T00:48:13.7899869Z [36;1m  "$RUNNER_TEMP/run124/bin/python" -m unittest discover -s tests -p "$pattern" -v[0m
+2026-10-25T00:48:13.7900374Z [36;1mdone[0m
+2026-10-25T00:48:13.7900799Z [36;1mecho 'RUN124_PREWORKER_LINUX_SOFTWARE_PASS; NO_NATIVE_OR_REDMI_PROOF'[0m
+2026-10-25T00:48:13.7940816Z shell: /usr/bin/bash -e {0}
+2026-10-25T00:48:13.7941235Z env:
+2026-10-25T00:48:13.7941537Z   HF_HUB_OFFLINE: 1
+2026-10-25T00:48:13.7941999Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T00:48:13.7942336Z   NEEDLE_TELEMETRY: 0
+2026-10-25T00:48:13.7942689Z   DO_NOT_TRACK: 1
+2026-10-25T00:48:13.7943120Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T00:48:13.7943428Z ##[endgroup]
+2026-10-25T00:48:14.7465819Z RUN124_SUITE=test_phone_halt_preworker_run124.py
+2026-10-25T00:48:14.9134937Z test_notaus_pending_applies_before_runtime_returns (test_phone_halt_preworker_run124.PreworkerPhoneHaltRun124.test_notaus_pending_applies_before_runtime_returns) ... ok
+2026-10-25T00:48:14.9375215Z test_preexisting_human_stop_parts_survive_widget_release (test_phone_halt_preworker_run124.PreworkerPhoneHaltRun124.test_preexisting_human_stop_parts_survive_widget_release) ... ok
+2026-10-25T00:48:15.0766199Z test_preexisting_stillstand_blocks_recovered_turn_before_worker (test_phone_halt_preworker_run124.PreworkerPhoneHaltRun124.test_preexisting_stillstand_blocks_recovered_turn_before_worker) ... ok
+2026-10-25T00:48:15.0774847Z 
+2026-10-25T00:48:15.0784606Z ----------------------------------------------------------------------
+2026-10-25T00:48:15.0804992Z Ran 3 tests in 0.181s
+2026-10-25T00:48:15.0834475Z 
+2026-10-25T00:48:15.0844571Z OK
+2026-10-25T00:48:15.1056656Z RUN124_SUITE=test_phone_halt.py
+2026-10-25T00:48:15.2430938Z test_button_never_releases_and_handled_file_does_not_reapply (test_phone_halt.ButtonTests.test_button_never_releases_and_handled_file_does_not_reapply) ... ok
+2026-10-25T00:48:15.3198223Z test_notaus_button_blocks_tools_in_running_chat (test_phone_halt.ButtonTests.test_notaus_button_blocks_tools_in_running_chat) ... ok
+2026-10-25T00:48:15.3546629Z test_stillstand_button_waiting_at_start_is_applied_before_first_input (test_phone_halt.ButtonTests.test_stillstand_button_waiting_at_start_is_applied_before_first_input) ... ok
+2026-10-25T00:48:15.3555044Z test_befehle_command_shows_guide_and_filters (test_phone_halt.GuideTests.test_befehle_command_shows_guide_and_filters) ... ok
+2026-10-25T00:48:15.3564790Z test_every_operator_command_is_explained (test_phone_halt.GuideTests.test_every_operator_command_is_explained) ... ok
+2026-10-25T00:48:15.4507517Z test_installer_writes_five_buttons_and_stop_buttons_only_drop_request_files (test_phone_halt.InstallerTests.test_installer_writes_five_buttons_and_stop_buttons_only_drop_request_files) ... ok
+2026-10-25T00:48:15.4508295Z 
+2026-10-25T00:48:15.4508492Z ----------------------------------------------------------------------
+2026-10-25T00:48:15.4509060Z Ran 6 tests in 0.250s
+2026-10-25T00:48:15.4509253Z 
+2026-10-25T00:48:15.4509359Z OK
+2026-10-25T00:48:15.4707181Z RUN124_SUITE=test_cli_standstill_run121.py
+2026-10-25T00:48:15.7273446Z test_persisted_pause_refuses_ask_without_queue_side_effect (test_cli_standstill_run121.CliStandstillRun121.test_persisted_pause_refuses_ask_without_queue_side_effect) ... ok
+2026-10-25T00:48:16.3487540Z test_persisted_standstill_refuses_then_human_release_allows_ask (test_cli_standstill_run121.CliStandstillRun121.test_persisted_standstill_refuses_then_human_release_allows_ask) ... ok
+2026-10-25T00:48:16.3488773Z 
+2026-10-25T00:48:16.3489049Z ----------------------------------------------------------------------
+2026-10-25T00:48:16.3489904Z Ran 2 tests in 0.782s
+2026-10-25T00:48:16.3490219Z 
+2026-10-25T00:48:16.3491207Z OK
+2026-10-25T00:48:16.3691854Z RUN124_SUITE=test_phone_operator_journey_run86.py
+2026-10-25T00:48:16.4857383Z test_local_operator_origin_and_record_only_default (test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_local_operator_origin_and_record_only_default) ... ok
+2026-10-25T00:48:16.6396292Z test_paused_fifo_exact_sources_export_and_second_restart (test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_paused_fifo_exact_sources_export_and_second_restart) ... ok
+2026-10-25T00:48:16.9058519Z test_standstill_persists_and_blocks_turn_until_local_release (test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_standstill_persists_and_blocks_turn_until_local_release) ... ok
+2026-10-25T00:48:16.9060016Z 
+2026-10-25T00:48:16.9060366Z ----------------------------------------------------------------------
+2026-10-25T00:48:16.9061110Z Ran 3 tests in 0.440s
+2026-10-25T00:48:16.9061509Z 
+2026-10-25T00:48:16.9062158Z OK
+2026-10-25T00:48:16.9360574Z RUN124_SUITE=test_standstill.py
+2026-10-25T00:48:17.0985235Z test_all_parts_stop_and_idle_runtime_is_confirmed_still (test_standstill.EngageTests.test_all_parts_stop_and_idle_runtime_is_confirmed_still) ... ok
+2026-10-25T00:48:18.2168363Z test_engage_waits_for_a_scheduler_tick_in_progress (test_standstill.EngageTests.test_engage_waits_for_a_scheduler_tick_in_progress) ... ok
+2026-10-25T00:48:18.3328093Z test_job_that_ignores_cancel_is_reported_never_claimed_stopped (test_standstill.EngageTests.test_job_that_ignores_cancel_is_reported_never_claimed_stopped) ... ok
+2026-10-25T00:48:18.8676411Z test_queued_turn_is_not_answered_while_still (test_standstill.EngageTests.test_queued_turn_is_not_answered_while_still) ... ok
+2026-10-25T00:48:18.9025510Z test_running_job_that_honours_cancel_is_confirmed_stopped (test_standstill.EngageTests.test_running_job_that_honours_cancel_is_confirmed_stopped) ... ok
+2026-10-25T00:48:20.2302572Z test_scheduler_tick_and_background_do_not_run_during_standstill (test_standstill.EngageTests.test_scheduler_tick_and_background_do_not_run_during_standstill) ... ok
+2026-10-25T00:48:20.2650877Z test_release_only_undoes_what_standstill_set (test_standstill.ReleaseTests.test_release_only_undoes_what_standstill_set) ... ok
+2026-10-25T00:48:20.2993638Z test_release_reports_background_that_resumes (test_standstill.ReleaseTests.test_release_reports_background_that_resumes) ... ok
+2026-10-25T00:48:20.3127224Z test_release_without_standstill_changes_nothing (test_standstill.ReleaseTests.test_release_without_standstill_changes_nothing) ... ok
+2026-10-25T00:48:20.5286463Z test_repeated_engage_keeps_first_record (test_standstill.ReleaseTests.test_repeated_engage_keeps_first_record) ... ok
+2026-10-25T00:48:20.5631453Z test_user_notaus_before_standstill_survives_release (test_standstill.ReleaseTests.test_user_notaus_before_standstill_survives_release) ... ok
+2026-10-25T00:48:20.8048783Z test_restart_stays_still (test_standstill.RestartTests.test_restart_stays_still) ... ok
+2026-10-25T00:48:20.8188981Z test_bad_argument (test_standstill.TextTests.test_bad_argument) ... ok
+2026-10-25T00:48:20.8325196Z test_notaus_says_learning_continues_and_points_to_standstill (test_standstill.TextTests.test_notaus_says_learning_continues_and_points_to_standstill) ... ok
+2026-10-25T00:48:20.8326252Z 
+2026-10-25T00:48:20.8326966Z ----------------------------------------------------------------------
+2026-10-25T00:48:20.8327603Z Ran 14 tests in 3.778s
+2026-10-25T00:48:20.8327817Z 
+2026-10-25T00:48:20.8327984Z OK
+2026-10-25T00:48:20.8574965Z RUN124_PREWORKER_LINUX_SOFTWARE_PASS; NO_NATIVE_OR_REDMI_PROOF
+2026-10-25T00:48:20.8698932Z Post job cleanup.
+2026-10-25T00:48:20.9563609Z [command]/usr/bin/git version
+2026-10-25T00:48:20.9603874Z git version 2.55.0
+2026-10-25T00:48:20.9639765Z Temporarily overriding HOME='/home/runner/work/_temp/c15d8c19-83d5-4363-b9dc-8abd766f41c7' before making global git config changes
+2026-10-25T00:48:20.9641094Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T00:48:20.9642490Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T00:48:20.9681691Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T00:48:20.9712976Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T00:48:20.9991181Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T00:48:21.0039305Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T00:48:21.0479839Z Cleaning up orphan processes
+2026-10-25T00:48:21.0807535Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

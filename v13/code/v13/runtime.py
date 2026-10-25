@@ -68,7 +68,20 @@ class Runtime:
         bodies.attach(self)  # WP-N11: AG0 slot routing + AG13 body residency in the RunnerPool
         from .sleep import SleepRuntime
         self.sleep=SleepRuntime(self)  # WP-E: G13 wake scheduler + §94 sleep phases
-        self.worker=threading.Thread(target=self._worker,name='V13-coordinator',daemon=True);self.worker.start()
+        # WP-UI1: a pending phone STOP must bind before a recovered queued turn
+        # can run. The UI watcher starts later; that is too late for this gate.
+        # Use the exact typed stop functions; never clear a user's prior stops.
+        from . import phone_halt
+        try:
+            self._startup_phone_halt=phone_halt.apply_once(self)
+        except BaseException:
+            # Fail closed: no coordinator thread may start after failed STOP preflight.
+            with contextlib.suppress(Exception):self.store.close()
+            raise
+        self.worker=threading.Thread(target=self._worker,name='V13-coordinator',daemon=True)
+        # standstill._watch may create a _SeenEvent before worker exists.
+        if hasattr(self.wake,'worker'):self.wake.worker=self.worker
+        self.worker.start()
     def notice(self,text):self.notify(safe_text(text))
     def resources(self):return snapshot(self.home,self.pool.pids()+self.needle.pids()+self.memory.semantic_keys.encoder.pids())
     def revisions(self):return {role:self.models.revision(role) for role in ROLES}
