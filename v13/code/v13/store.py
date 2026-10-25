@@ -401,9 +401,15 @@ class Store:
             # resurrected by a later approval, even if its update was not yet
             # included in the forget path's candidate quarantine.
             for sid in source_ids:
-                source=c.execute('SELECT deleted FROM sources WHERE id=?',(sid,)).fetchone()
+                source=c.execute('SELECT deleted,hash FROM sources WHERE id=?',(sid,)).fetchone()
                 if not source or source['deleted']:
                     raise ValueError('Update-Source-Lineage gelöscht/fehlt: '+sid)
+                try:
+                    source_bytes=self.blob_bytes(source['hash'])
+                except (FileNotFoundError,ValueError) as exc:
+                    raise ValueError('Update-Source-Lineage-Blob fehlt/beschädigt: '+sid) from exc
+                if digest(source_bytes)!=source['hash']:
+                    raise ValueError('Update-Source-Lineage-Hash falsch: '+sid)
             active=json.loads(c.execute("SELECT value FROM meta WHERE key='active_generation'").fetchone()[0])
             if active!=r["base_generation"]:raise ValueError("Generation konkurrierend geändert")
             ids=[entry['update_id'] for entry in components.values() if entry.get('update_id')]
