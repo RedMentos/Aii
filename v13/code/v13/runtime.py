@@ -195,11 +195,22 @@ class Runtime:
                         # leave inactive B1/B2/C3 native residents running.
                         # FINAL keeps residents for legitimate next-turn reuse.
                         if turn_terminal_status!='FINAL':
-                            for component,release in (('pool',self.pool.unload),('needle',self.needle.unload)):
-                                try:release()
-                                except Exception as exc:
-                                    try:self.store.log('turn_resident_cleanup_failed',payload['event_id'],{'component':component,'error':type(exc).__name__})
-                                    except Exception:pass
+                            def cleanup_error(component,exc):
+                                try:self.store.log('turn_resident_cleanup_failed',payload['event_id'],{'component':component,'error':type(exc).__name__})
+                                except Exception:pass
+                            try:self.pool.unload()
+                            except Exception as exc:
+                                cleanup_error('pool',exc)
+                                # A broken one-role unload must not prevent
+                                # independent remaining resident roles from
+                                # being released. The failed role stays RED.
+                                try:
+                                    for role in dict.fromkeys(self.pool.resident_roles()):
+                                        try:self.pool.unload(role)
+                                        except Exception as child_exc:cleanup_error('pool:'+role,child_exc)
+                                except Exception as child_exc:cleanup_error('pool_inventory',child_exc)
+                            try:self.needle.unload()
+                            except Exception as exc:cleanup_error('needle',exc)
                         self.turn_event=None
                     if hasattr(self._session_local,'session_id'):del self._session_local.session_id
                     with self.lock:self.current=None;self.jobs.task_done();self.status='Pausiert' if self.paused else 'Bereit'
