@@ -1,0 +1,43 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_V1",
+  "date": "2026-10-25",
+  "package": "Run348 standstill explicit release crash recovery",
+  "owner": "codex/run348-standstill-release-recovery-20261025",
+  "base_ref": "assistant/run347-ds2-bounded-coverage-20261025",
+  "base_sha": "6e79f15cc95535b7a9c25b9e4602d94936ef4ddd",
+  "source_test_head": "451d2c0650a13d18cdcd48b65793caaea22a16d2",
+  "source_sha256": "f58dc53460ceb21ea2d124c05b32390ced168938afb7e5517cd017c01808be9d",
+  "test_sha256": "c7bd684bf110388319c23ff2343c520b48db8aa58c23bc1de9356a94bf18970c",
+  "proof": {
+    "workflow_run": 40224394314,
+    "job": 121262570983,
+    "tests": "19/19 PASS Runtime/SQLite",
+    "privacy": "CLEAN",
+    "artifact_id": 12611170116,
+    "raw_zip_sha256": "7116109b0f4670c353d81fac697909e795b5b7ff60943574a6c737c744beeb5f",
+    "manifest": "4/4 PASS",
+    "crc": "PASS",
+    "private_backup": "/V13/checkpoints/2026-10-25/V13_Run348_Standstill_Release_GREEN_FINAL_raw_sha7116109b.zip"
+  },
+  "negative_gates": {
+    "STEP2_EXIT": "UTILITY_FAIL",
+    "B3_L1_ORIGINAL": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "MISSING",
+    "AG6": "NOT_PROMOTED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "External native process halt and Redmi standstill timing still unmeasured",
+    "Whole-suite legacy frozen-source hash tests are separately RED; do not change their registered hashes",
+    "Run347 DS2 lab 20-seed policy candidate NOT_SUPPORTED (not part of this patch)"
+  ],
+  "next": {
+    "package": "Run349 WorldState digital modulator and outcome atomicity",
+    "prerequisites": "Read current remote heads, AGENTS, source, prior WorldState action receipt tests; do not edit active owners; create new branch from newest verified review head",
+    "exact_next_command": "python3 -m unittest -v tests.test_world_state tests.test_world_multiaction_recovery_run343 tests.test_world_modulator_atomicity_run349",
+    "required_proof": "RED SQLite trigger failure after ModulatorPacket; GREEN single atomic pair with restart/replay idempotency; exact-head CI + privacy + raw SHA; no native/Redmi promotion"
+  }
+}
