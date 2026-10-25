@@ -59,6 +59,29 @@ class TerminalFailureLineage(unittest.TestCase):
         self.assertEqual(len(st['training_bindings']), 24)
         self.assertIsNotNone(W.load(self.r.store))
 
+    def test_nonterminal_dispatched_with_outcome_is_not_observed(self):
+        ev = self.r.store.event(self.r.session, 'Unfinished action is not an outcome')
+        eid = ev['event_id']
+        generation = ev['brain_generation_id']
+        with self.r.store.tx() as c:
+            c.execute('INSERT INTO packets VALUES (?,?,?,?,?,?)',
+                      ('run261-unfinished-selection', 'ActionSelection', eid,
+                       generation, json.dumps({'route_hint': 'simple'}), time.time()))
+        aid = self.r.store.start_action(
+            eid, generation,
+            forecast={'input_chars': 33, 'resource_state': 'NORMAL',
+                      'profile': {'role': 'C3_LANGUAGE'}})
+        # Corrupted/incomplete write: an outcome payload is present but the
+        # lifecycle still says DISPATCHED. No terminal ActionOutcome exists.
+        with self.r.store.tx() as c:
+            c.execute('UPDATE actions SET outcome=? WHERE id=?',
+                      (json.dumps({'action_duration_s': 0.5,
+                                   'characters': 20, 'role': 'C3_LANGUAGE'}), aid))
+        observed = W.transitions(self.r.store)
+        self.assertEqual(len(observed), 24,
+                         'Nonterminal DISPATCHED is not a grounded outcome')
+        self.assertNotIn(aid, [t['action_id'] for t in observed])
+
     def test_error_outcome_mutation_invalidates_bound_fit(self):
         st = W.fit(self.r.store, rng_seed=17)
         self.assertEqual(st['status'], 'FITTED')
