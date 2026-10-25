@@ -38,8 +38,15 @@ class Ablation99Tests(unittest.TestCase):
     def test_proceduralization_v13_is_cheaper_than_deliberation_and_safer_than_static(self):
         st=A.proc_stream(13,300)
         v=A.run_proc(st,'v13',self.base/'p');full=A.run_proc(st,'full_deliberation');static=A.run_proc(st,'static_shortcut')
-        self.assertEqual(full['fast_path_share'],0.);self.assertLess(v['cost_per_turn'],full['cost_per_turn'])
-        self.assertLess(v['error_after_drift'],static['error_after_drift']);self.assertLess(v['salient_error'],static['salient_error'])
+        # Run342 canonical gate: predicted-only READY is NOT measured paired
+        # latency/energy evidence. Synthetic V13 must pay deliberation cost,
+        # even with explicit ACTIVE permission; no fictitious speedup.
+        self.assertEqual(full['fast_path_share'],0.)
+        self.assertEqual(v['fast_path_share'],0.)
+        self.assertEqual(v['cost_per_turn'],full['cost_per_turn'])
+        self.assertGreater(static['fast_path_share'],0.)
+        self.assertLess(v['error_after_drift'],static['error_after_drift'])
+        self.assertLess(v['salient_error'],static['salient_error'])
     def test_age_arms_use_their_plasticity(self):
         st=A.age_stream(13)[:300]
         self.assertEqual(A.run_age(st,'fixed_conservative')['mean_plasticity']['learn'],.45)
