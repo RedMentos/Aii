@@ -7,26 +7,10 @@ from unittest.mock import patch
 from v13.runtime import Runtime
 from v13 import context_os as C
 from scripts import context_inline_guard_run198 as G
+from tests.context_legacy_compress import legacy_compress_run199
 
 FILL = 'Ordinary history text for context planning and compression. ' * 12
 BAD = 'Late unclosed `source_ref_sensitive ' + FILL
-
-# Historical Run199 RED baseline, pinned to the pre-Run350 compress algorithm
-# (source SHA256 832aaea23c3790c42720d5b7174b1a90f9ec677d60005b3424d9a93d85a8ecb2).
-# This is test-only evidence of the old bug, never production compression.
-def legacy_compress_run199(text, cap):
-    spans = C.exact_spans(text)
-    if text.count('```') % 2:
-        return text, spans, False
-    if sum(len(x) for x in spans) > C.SPAN_CHARS or len(spans) > C.SPAN_MAX:
-        return text, spans, False
-    head = C.first_sentence(text, cap)
-    missing = [x for x in spans if x not in head]
-    out = '[compressed earlier turn; exact source kept] ' + head + (
-        (' | exact: ' + ' ; '.join(missing)) if missing else '')
-    ok = len(out) < len(text) and all(x in out for x in spans)
-    return (out, spans, True) if ok else (text, spans, False)
-
 
 def history():
     out = []
