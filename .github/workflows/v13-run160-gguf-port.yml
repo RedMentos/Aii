@@ -1,7 +1,5 @@
 name: V13 Run160 BodyTrainPort GGUF dtype prefix audit
 on:
-  push:
-    branches: ['codex/run160-body-gguf-dtype-audit-20261025']
   pull_request:
     paths:
       - 'v13/code/scripts/body_gguf_dtype_audit_run160.py'
