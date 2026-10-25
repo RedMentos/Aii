@@ -11,6 +11,7 @@ Blueprint §7.2: the world model is not a fourth body but state + predictors on 
 action/state coverage, a self-caused vs external tag and a counterfactual confidence. Prediction ≠ causality:
 counterfactual() answers are always tagged SIMULATION and never become fact.
 """
+import math
 import time
 from ..common import dumps
 from .base import StateBox,new_id
@@ -18,6 +19,7 @@ from .base import StateBox,new_id
 KEY='G2_GROUNDING';REVISION='g2-grounding-v1'
 MODALITIES={'text':True,'tool':True,'screen':False,'camera':False,'audio':False,'effector':False}  # A-plane ports (§4A); off until STEP8
 HISTORY=512;MAX_KEYS=1024
+STEP8_GATED=frozenset({'screen','camera','audio','effector'})
 
 class FrequencyPredictor:
     """Baseline: most frequent outcome per (kind, context_key); confidence = its share. Not a world model."""
@@ -43,10 +45,13 @@ class Grounding:
     def expect(self,kind,context_key,action,modality='text',predicted=None):
         """Before acting: store the prediction (from a supplied model or the baseline)."""
         st=self.box.load()[0]
-        if not st['modalities'].get(modality):raise PermissionError('Modalität aus: '+modality)
+        if modality in STEP8_GATED or not st['modalities'].get(modality):raise PermissionError('Modalität aus: '+modality)
         pred=predicted if predicted is not None else FrequencyPredictor(st['table']).predict(kind,context_key)
         aid=new_id('ground')
         def f(st):
+            # The modality may have been disabled after the initial prediction read.
+            # Recheck against the state used by the optimistic SQLite write.
+            if modality in STEP8_GATED or not st['modalities'].get(modality):raise PermissionError('Modalität aus: '+modality)
             st['open'][aid]={'id':aid,'kind':kind,'ctx':context_key,'action':action,'modality':modality,'predicted':pred,'created':self.clock()}
             if len(st['open'])>HISTORY:st['open'].pop(next(iter(st['open'])))
         self.box.mutate(f);return aid,pred
@@ -67,8 +72,12 @@ class Grounding:
         return rec
     def counterfactual(self,kind,context_key,coverage_full=20):
         """'What if I did kind here?' without acting. Confidence shrinks with low action coverage (§7.2.2)."""
+        if type(coverage_full) not in (int,float):raise ValueError('coverage_full: positive finite number required')
+        try:denom=float(coverage_full)
+        except OverflowError as exc:raise ValueError('coverage_full: positive finite number required') from exc
+        if not math.isfinite(denom) or denom<=0:raise ValueError('coverage_full: positive finite number required')
         p=FrequencyPredictor(self.box.load()[0]['table']).predict(kind,context_key)
-        cov=min(1.,p['coverage']/coverage_full)
+        cov=min(1.,p['coverage']/denom)
         return p|{'counterfactual_confidence':round(p['confidence']*cov,4),'coverage_share':round(cov,4),'authority':'SIMULATION_NOT_FACT',
                   'ood':p['coverage']==0}
     def from_tool(self,tx):
@@ -78,7 +87,11 @@ class Grounding:
         return self.observe(aid,{'status':tx['status'],'result':tx['result']})
     def set_modality(self,name,on):
         if name not in MODALITIES:raise ValueError('Unbekannte Modalität')
-        def f(st):st['modalities'][name]=bool(on)
+        if type(on) is not bool:raise ValueError('Modalität: bool required')
+        # This AG2 baseline has no STEP8 sensor/effector approval or device port.
+        # A separate, permission-bound STEP8 integration must own activation.
+        if on and name in STEP8_GATED:raise PermissionError('STEP8-Modus nicht freigegeben: '+name)
+        def f(st):st['modalities'][name]=on
         self.box.mutate(f)
     def samples(self,limit=256):
         """Grounded training pairs for a world predictor (context, action, actual outcome)."""

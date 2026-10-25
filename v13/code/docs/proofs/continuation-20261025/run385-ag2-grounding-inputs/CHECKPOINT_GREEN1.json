@@ -1,0 +1,34 @@
+{
+  "run": "Run385",
+  "phase": "GREEN_1_BEFORE_PERSISTED_FLAG_HARDENING",
+  "owner": "GPT scheduled continuation",
+  "base_ref": "codex/ag9-native-selective-risk-audit-run384-20261025",
+  "base_sha": "83104a9364331f5c84db3a568b0558c3e0fb064b",
+  "branch": "codex/ag2-grounding-modality-guard-run385-20261025",
+  "source_commit": "72b648c652d7030b7504205cd9c5c7cf4d47d5f3",
+  "source_blob_sha": "5d299b0a3771e459f00fbd4e8a459c7d6a318f2d",
+  "red": {
+    "workflow_run": 40241018712,
+    "head": "a78d5fe170fe8f3ed4cb5267cfe437d7a6bbdaeb",
+    "tests": "16 tests; 18 failures and 4 errors, expected defects; inherited G2/G10/AG live PASS",
+    "artifact_id": 12616023157,
+    "artifact_zip_sha256": "50e7d759d70394f2e0dc312baed0f7e739dc0d86e6860d5ffad0b7c0bcc54063"
+  },
+  "green": {
+    "workflow_run": 40241091028,
+    "head": "72b648c652d7030b7504205cd9c5c7cf4d47d5f3",
+    "tests": "16/16 PASS, compileall PASS, privacy CLEAN",
+    "artifact_id": 12616277732,
+    "artifact_zip_sha256": "227941b4b15befa90ef9c86ee22eb6f6ac9efbf5250c6af7a14b75a5e68a14aa"
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0 gates unchanged",
+    "Redmi proof missing",
+    "whole V13 incomplete"
+  ],
+  "next": "Test persisted preexisting STEP8 flag bypass, then reject in expect; rerun exact-head CI and save final BUILD_STATE.",
+  "pr": "https://github.com/RedMentos/Aii/pull/380"
+}
