@@ -1,0 +1,74 @@
+=== TEST-FIRST RED / Linux Python 3.13.5 ===
+test_age0d_answer_arithmetic_run134 (unittest.loader._FailedTest.test_age0d_answer_arithmetic_run134) ... ERROR
+
+======================================================================
+ERROR: test_age0d_answer_arithmetic_run134 (unittest.loader._FailedTest.test_age0d_answer_arithmetic_run134)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_age0d_answer_arithmetic_run134
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+  File "/mnt/data/v13_run134_workspace/source/V13-Phone/tests/test_age0d_answer_arithmetic_run134.py", line 5, in <module>
+    from v13.agi.answer_arithmetic_shadow import evaluate
+ModuleNotFoundError: No module named 'v13.agi.answer_arithmetic_shadow'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+
+=== GREEN / local 5 focused ===
+test_ambiguity_and_source_mismatch_abstain (tests.test_age0d_answer_arithmetic_run134.AnswerVisibleArithmetic.test_ambiguity_and_source_mismatch_abstain) ... ok
+test_bounds (tests.test_age0d_answer_arithmetic_run134.AnswerVisibleArithmetic.test_bounds) ... ok
+test_fresh_synthetic_cohort (tests.test_age0d_answer_arithmetic_run134.AnswerVisibleArithmetic.test_fresh_synthetic_cohort) ... ok
+test_signed_decimal_multiply_divide (tests.test_age0d_answer_arithmetic_run134.AnswerVisibleArithmetic.test_signed_decimal_multiply_divide) ... ok
+test_supported_right_and_wrong (tests.test_age0d_answer_arithmetic_run134.AnswerVisibleArithmetic.test_supported_right_and_wrong) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.003s
+
+OK
+RUN134_SYNTHETIC_COHORT correct_false_alarms=0/100 wrong_detected=100/100 seed=13425
+
+=== Independent reviewer first FAIL (real coverage gap) ===
+Traceback (most recent call last):
+  File "/mnt/data/v13_run134_workspace/independent_review.py", line 14, in <module>
+    assert g['status']=='CORRECT',(q,g)
+AssertionError: ('What is 68556 times -39215?', {'status': 'ABSTAIN', 'reason': 'unsupported_or_ambiguous', 'authority': 'SHADOW_ONLY', 'may_deliver': False})
+
+=== Independent reviewer second FAIL (review expectation error) ===
+Traceback (most recent call last):
+  File "/mnt/data/v13_run134_workspace/independent_review.py", line 19, in <module>
+    assert g['status']=='ABSTAIN',(answer,g)
+AssertionError: ('3 + 4 = 8.5', {'status': 'MISMATCH', 'reason': 'exact_single_operation_check', 'authority': 'SHADOW_ONLY', 'may_deliver': False, 'expected': '7', 'claimed': '8.5', 'question_span': '3 plus 4', 'answer_span': '8.5'})
+
+=== Independent reviewer final GREEN ===
+INDEPENDENT_PROPERTY_REVIEW_PASS {'correct': 5000, 'mismatch': 5000, 'abstain_bad': 6} seed=5341134
+
+=== Combined local AGE0/LateWatch GREEN ===
+test_ambiguity_and_source_mismatch_abstain ... ok
+test_bounds ... ok
+test_fresh_synthetic_cohort ... ok
+test_signed_decimal_multiply_divide ... ok
+test_supported_right_and_wrong ... ok
+test_disagreement ... ok
+test_number_parsing ... ok
+test_residency_never_evicts_c3 ... ok
+test_active_cuts_and_revises ... ok
+test_off_and_no_residency_run_no_body ... ok
+test_shadow_records_without_touching_the_answer ... ok
+test_deliver_still_obeys_dedup_rate_limit_and_pause ... ok
+test_late_correction_right_does_not_open_other_self_messages ... ok
+test_operator_command ... ok
+test_unreadable_mode_falls_back_to_off ... ok
+test_agreeing_offer_gives_no_correction_in_any_mode ... ok
+test_certainty_is_medium_only_with_two_independent_signs ... ok
+test_default_shadow_keeps_held_finding_and_logs_what_would_be_said ... ok
+test_deliver_at_age0_reaches_the_user_with_uncertainty ... ok
+test_off_is_the_old_path_without_log ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 7.570s
+
+OK
+RUN134_SYNTHETIC_COHORT correct_false_alarms=0/100 wrong_detected=100/100 seed=13425

@@ -1,0 +1,11 @@
+# Run134 — WP-AGE0d answer-visible deterministic arithmetic check (SHADOW candidate)
+
+Date UTC: 2026-10-25. Base exact verified Run133 PR #163 head `6c8543ad25804003bcc859fdd1b9fe6136f66637`. Scope: new `v13/code/v13/agi/answer_arithmetic_shadow.py`, new `v13/code/tests/test_age0d_answer_arithmetic_run134.py`, isolated CI workflow and this evidence folder ONLY. No edits to frozen Runtime, Age, C2/C3, HX1/HX3, live self-messaging, registered cohorts, Canon or gate ledger. No model/native/Redmi run; Run131 native owner is independent.
+
+Hypothesis: An answer-visible *read-only* checker can distinguish explicitly supported single-operation arithmetic answers from incorrect answers without using `needs_reentry` or echo-only body offers. Check only tightly specified English one-operation questions with source-bound operands and a single clearly marked answer number. Unsupported or ambiguous forms abstain; no automatic correction, interruption, state mutation, tool call or promotion to `deliver`.
+
+Predeclared software checks: (1) exact 2+3 and 9-4 true/false pairs; (2) negative, decimals, zero division, signed/unicode minus; (3) answer echo/extra numbers, unrelated numbers, multi-question and prompt injection abstain; (4) length and magnitude budgets; (5) no effects on Runtime/permissions; (6) deterministic held-out synthetic cohort with fixed seed 13425 and 100 correct/100 deliberately wrong cases, report false-alarm and detection separately, with the synthetic claim limit. Preserve test-first RED and final GREEN logs; independently inspect source and raw outputs; run official privacy scanner in CI.
+
+Acceptance for **candidate only**: all focused tests pass; supported correct answers never flagged in the 100-case synthetic cohort; at least 90/100 wrong cases flagged; unsupported forms abstain. This does not establish real-model error-detection utility, AGE0d completion, permission to deliver, STEP2/B3/JEPA, or V13 completion. A future preregistered fresh C3+correct/incorrect real-answer evaluation and human-reviewed false-alarm threshold are required before any consumer integration.
+
+Original gates: STEP2=UTILITY_FAIL, B3 L1=FAIL, Body-JEPA=UNAVAILABLE, jepa_weight=0, DS2 H2=FAIL, V13=INCOMPLETE.

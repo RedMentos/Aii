@@ -1,0 +1,46 @@
+{
+  "schema": "V13_RUN134_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "isolated WP-AGE0d arithmetic module, test, workflow and evidence only",
+  "base_sha": "6c8543ad25804003bcc859fdd1b9fe6136f66637",
+  "prereg_sha": "2d8a5cf9a986657d7935abc4dff32341e31f088c",
+  "pr": 165,
+  "remote_module_blob": "3cec2c4b6883e3f02f449cc74cf44d5584a6affb",
+  "remote_test_blob": "7022699b8dc63622a910a7dd785cb2cf0188ac99",
+  "software_tests": {
+    "new": "5/5 PASS",
+    "combined": "20/20 PASS",
+    "python": "3.13.5",
+    "compileall": "PASS"
+  },
+  "independent_review": {
+    "seed": 5341134,
+    "correct": 5000,
+    "deliberately_wrong": 5000,
+    "malformed": 6,
+    "verdict": "PASS",
+    "first_fail": "9-digit output bound fixed",
+    "second_fail": "review expectation corrected"
+  },
+  "synthetic": {
+    "seed": 13425,
+    "correct_false_alarms": "0/100",
+    "wrong_detected": "100/100",
+    "claim_limit": "synthetic narrow grammar, not model-generated"
+  },
+  "linux_native": "NOT RUN",
+  "redmi": "NOT RUN",
+  "runtime_consumer": "OFF / NOT INTEGRATED",
+  "full_suite": "NOT RUN; inherited Run129 2241 tests 4 FAIL 1 ERROR 11 SKIP",
+  "private_library": "UPLOAD_FAILED container_session_unavailable",
+  "drive": "REJECTED destination NOT RETRIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "exact_next_step": "Wait for independent Run131 native owner release, then preregister fresh real C3 answer-visible false alarm cohort; meanwhile cross-review HX and independent Canon packages."
+}
