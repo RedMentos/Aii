@@ -10,6 +10,44 @@ from pathlib import Path
 import shutil
 import numpy as np
 from scripts.body_fp32_export_verify_run163 import verify, digest, GATES
+from scripts.body_gguf_dtype_audit_run160 import parse, MAX_PREFIX
+
+# GGML v3 block sizes/type sizes; fail closed on unknown types.
+# Primary: ggml-org/ggml src/ggml-common.h and ggml.c type traits.
+GGML_BLOCKS = {
+    'F32': (1, 4), 'F16': (1, 2), 'BF16': (1, 2),
+    'Q4_0': (32, 18), 'Q4_1': (32, 20),
+    'Q5_0': (32, 22), 'Q5_1': (32, 24), 'Q8_0': (32, 34),
+    'Q2_K': (256, 84), 'Q3_K': (256, 110), 'Q4_K': (256, 144),
+    'Q5_K': (256, 176), 'Q6_K': (256, 210), 'Q8_K': (256, 292),
+}
+
+
+def validate_all_tensor_spans(model):
+    """Reject any GGUF tensor overlap, including quantized aliases of selected F32."""
+    with model.open('rb') as f:
+        meta = parse(f.read(MAX_PREFIX))
+    spans = []
+    for name, t in meta['tensors'].items():
+        kind = t['type']
+        if kind not in GGML_BLOCKS:
+            raise ValueError('unsupported_ggml_block_type')
+        block, unit = GGML_BLOCKS[kind]
+        n = 1
+        for dim in t['dims']:
+            n *= dim
+        if t['dims'][0] % block or n % block:
+            raise ValueError('ggml_block_shape')
+        size = n // block * unit
+        start = meta['tensor_data_start'] + t['offset']
+        end = start + size
+        if end > model.stat().st_size:
+            raise ValueError('ggml_tensor_out_of_bounds')
+        spans.append((start, end, name, kind))
+    spans.sort()
+    if any(a[1] > b[0] for a, b in zip(spans, spans[1:])):
+        raise ValueError('ggml_tensor_span_overlap')
+    return {name: (start, end, kind) for start, end, name, kind in spans}
 
 MAX_BYTES = 16 * 1024 * 1024
 
@@ -47,6 +85,7 @@ def patch_rollback(model, master, source_report, micro_candidate, micro_report,
             m.get('gates') != GATES or
             m.get('synthetic_objective') != 'QUADRATIC_W0_PLUS_0P01_NOT_JEPA'):
         raise ValueError('micro_binding_or_authority')
+    all_spans = validate_all_tensor_spans(model)
     rows = r['selected_tensors']
     if len(rows) != a['selected_count'] or len(rows) != m.get('selected_tensors'):
         raise ValueError('selection_count')
@@ -59,6 +98,8 @@ def patch_rollback(model, master, source_report, micro_candidate, micro_report,
             raise ValueError('micro_npz_names')
         for row in rows:
             name = row['name']; pos = row['offset_in_gguf']; size = row['bytes']
+            if all_spans.get(name) != (pos, pos + size, 'F32'):
+                raise ValueError('selected_span_not_exclusive_f32')
             if size > MAX_BYTES or pos < 0 or pos + size > model.stat().st_size:
                 raise ValueError('span_bounds')
             original = baseline[name]
@@ -110,6 +151,7 @@ def patch_rollback(model, master, source_report, micro_candidate, micro_report,
             'private_patched_sha256_before_rollback': patched_sha,
             'private_restored_sha256': expected_sha,
             'selected_spans': len(patches), 'updated_l2': update_l2,
+            'all_gguf_tensor_spans_nonoverlap': True,
             'unselected_bytes_identical': True, 'source_model_unchanged': True,
             'private_rollback_exact': True, 'quantized_tensors_touched': 0,
             'body_training_authority': 0, 'jepa_weight': 0, 'gates': GATES,
