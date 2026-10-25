@@ -152,12 +152,34 @@ class FastForward:
         return {'status':'KEPT' if kept else 'REVERTED','samples':len(buf),'heldout_error_before':round(before,4),'heldout_error_after':round(after,4)}
     # -- proceduralization ----------------------------------------------------------------------------
     def procedural(self,key,sig=None):
-        """Should the compiled policy set the wake decision for this turn? Never on salient/novel turns."""
+        """Propose a compiled wake, but never execute a predictor-only shortcut.
+
+        READY is a shadow-candidate lifecycle state, not the canonical utility
+        gate. §85.6/G-PROCEDURALIZATION-004 additionally requires measured
+        latency/energy gains, noninferior accuracy, error reopening, and
+        source/rule preservation. Explicit human ACTIVE permission does not
+        substitute for those measurements. No current writer issues this
+        complete measured receipt, so existing READY procedures remain shadow.
+        """
         st,_=self._load();p=st['procs'].get(key);sig=sig or {}
         calm=all(sig.get(k,0.)<v for k,v in CALM.items())
-        if not p or p['stage'] not in ('READY',) or not p.get('compiled'):return {'apply':False,'stage':p['stage'] if p else None,'key':key}
-        return {'apply':st['mode']=='ACTIVE' and calm,'wake':p['compiled']['wake'],'stage':p['stage'],'key':key,'calm':calm,
-                'reason':None if calm else 'salience_reopens_focal'}
+        if not p or p['stage']!='READY' or not p.get('compiled'):
+            return {'apply':False,'stage':p['stage'] if p else None,'key':key}
+        gate=p.get('gate')
+        measured=(isinstance(gate,dict)
+                  and gate.get('canonical_gate_pass') is True
+                  and gate.get('latency_evidence')=='MEASURED_PAIRED_ABLATION'
+                  and gate.get('energy_evidence')=='MEASURED_PAIRED_ABLATION'
+                  and gate.get('accuracy_noninferior') is True
+                  and gate.get('reopen_on_error_preserved') is True
+                  and gate.get('source_rule_constraints_preserved') is True)
+        apply=st['mode']=='ACTIVE' and calm and measured
+        reason=('salience_reopens_focal' if not calm else
+                'CANONICAL_PROCEDURAL_GATE_UNVERIFIED' if not measured else
+                'SHADOW_MODE' if st['mode']!='ACTIVE' else None)
+        return {'apply':apply,'wake':p['compiled']['wake'],'stage':p['stage'],
+                'key':key,'calm':calm,'reason':reason,
+                'canonical_gate_verified':measured}
     def record_turn(self,key,wake,status,duration_s,surprise=0.,predicted_fast_s=None,applied=False):
         """After a deliberative or procedural turn: lifecycle OBSERVE -> SHADOW -> READY, reopen on failure/surprise."""
         def fn(st):
