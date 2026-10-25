@@ -59,7 +59,13 @@ class TeacherDistillation:
     def dataset(self,capability=None,since=0.,limit=256):
         """Distillation examples for AG6/WP-S6. Holdout-guarded; traces are references, so a gate must still test them."""
         rows=[t for t in self.box.load()[0]['traces'] if t['created']>=since and (capability is None or t['capability']==capability) and t['teacher_answer']][-limit:]
-        if self.g is not None and rows:self.g.guard_training([t['prompt'] for t in rows])
+        if self.g is not None and rows:
+            # AG6 consumes targets, reasoning and rejected responses too.
+            # A safe request prompt does not make those returned fields safe.
+            training_texts=[]
+            for t in rows:
+                training_texts.extend(t[k] for k in ('prompt','teacher_answer','reasoning','own_answer') if t.get(k))
+            self.g.guard_training(training_texts)
         return [{'prompt':t['prompt'],'target':t['teacher_answer'],'reasoning':t['reasoning'],'rejected':t['own_answer'],
                  'trace_id':t['id'],'authority':t['authority']} for t in rows]
     def trial(self,capability,student_ok,teacher_present):
