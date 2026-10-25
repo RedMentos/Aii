@@ -1,0 +1,45 @@
+name: V13 Run116 LateWatch finished numeric tail
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run116-latewatch-tail.yml"
+      - "v13/code/v13/latewatch.py"
+      - "v13/code/tests/test_latewatch_final_tail_run116.py"
+      - "v13/code/docs/proofs/continuation-20261025/latewatch-final-tail-run116/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run116-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Isolated software test dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: New and inherited LateWatch regressions
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python -m compileall -q v13/latewatch.py tests/test_latewatch_final_tail_run116.py tests/test_latewatch.py
+          ../../.venv/bin/python -m unittest discover -s tests -p 'test_latewatch_final_tail_run116.py' -v
+          ../../.venv/bin/python -m unittest discover -s tests -p 'test_latewatch.py' -v
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
