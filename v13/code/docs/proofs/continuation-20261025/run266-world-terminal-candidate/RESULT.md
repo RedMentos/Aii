@@ -1,0 +1,10 @@
+# Run266 independently reviewed terminal outcome patch candidate (2026-10-25)
+
+- Exact tested head `d43142c26466d9394703c4af266312df37d29856` (PR266; parent PR261 RED source), with original production `world_model.py` blob `db62c761a9b1f3364c951ad6ac82a71f3a71d84f` checked before any patch.
+- GitHub Actions run https://github.com/RedMentos/Aii/actions/runs/40186500943, job `121148284810`: **24 tests PASS, 0 FAIL, 0 ERROR**, 1.656s, actual unittest exit 0, official privacy **CLEAN**.
+- Closed raw artifact ID `12595759379`, ZIP SHA256 `6da3ae4c5c803ad60ae54f7438b0e7d52f79d5202d35e9263109740a482d4e36`. Includes preflight exact head/owner blob, ephemeral patch diff and patched blob, full test log and true exit code.
+- Original Run261 actual Store **16 tests, 3 RED FAIL**, exit 1, artifact `12595602946` SHA256 `45808be76988bfeea9e4266a4cee21f9f121f191d13773f740f6d92cc9a46f72` remains preserved. Run266 original failed preflight attempts and corrected truncated SHA are documented in `FAILED_PREFLIGHT.md`.
+- Minimal candidate: allow observed terminal statuses FINAL/ERROR/DEADLINE/CANCELLED/INTERRUPTED in both `transitions()` and `_action_binding()`, reject nonterminal DISPATCHED even with outcome, retain source+route+outcome hash and revocation checks. New Run261 failure tests and existing WorldModel source-integrity/Runtime observation suites all passed **only in the ephemeral patched checkout**.
+- **No production WorldModel source was changed or merged**. The PR259 owner must independently review and integrate the patch on a reconciled branch; then run full suite on exact integrated head. A candidate PASS does not establish real native utility, causal prediction, phone performance or training.
+- Current original gates: STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; V13 INCOMPLETE.
+- Next: notify PR259 owner with PR266 and closed evidence, then reconcile with PR264 synthetic-only compatibility fix and rerun full suite; keep unverified original gates.
