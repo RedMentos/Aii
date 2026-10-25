@@ -66,11 +66,11 @@ class ExecutiveOpenQuestionLineageRun215(unittest.TestCase):
         self.assertNotIn('RUN215_UNRELATED', json.dumps(self.x.report_context(self.a)))
 
     def test_valid_question_remains_source_bound_after_store_restart(self):
-        expected = self.x.report_context(self.a)['open_questions']
+        expected = self.x.report_context(self.a)['unresolved_observer_hypotheses']
         self.s.close()
         self.s = Store(self.home)
         self.x = Executive(self.s)
-        self.assertEqual(self.x.report_context(self.a)['open_questions'], expected)
+        self.assertEqual(self.x.report_context(self.a)['unresolved_observer_hypotheses'], expected)
         self.assertEqual(self.x.view(self.a)['open_questions'][0]['source_ref'],
                          self.ea['source_ref'])
 
