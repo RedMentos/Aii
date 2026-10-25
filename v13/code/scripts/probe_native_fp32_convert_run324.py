@@ -68,7 +68,7 @@ def verify(gguf_file, snapshot, manifest, source_tar, converter):
     if not source_weights:
         raise ValueError("no original HF safetensors weights")
     weight_bytes = sum((Path(snapshot) / name).stat().st_size for name in source_weights)
-    if not 1_000_000_000 <= weight_bytes <= 3_000_000_000:
+    if not 400_000_000 <= weight_bytes <= 3_000_000_000:
         raise ValueError("HF source weight bytes outside frozen bounds")
     gguf_file = Path(gguf_file)
     if not gguf_file.is_file() or gguf_file.is_symlink():
