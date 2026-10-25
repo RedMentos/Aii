@@ -1,0 +1,73 @@
+{
+  "schema": "V13_RUN153_INDEPENDENT_NATIVE_AUDIT_V1",
+  "source_artifact_sha256": "0f19525d8e8abd62ca328ce752a0e8f8b619ca27ced71a42f3bd5c78d53edbe4",
+  "evidence_class": "READ_ONLY_SOFTWARE_REAUDIT_OF_RUN151_LINUX_NATIVE",
+  "integrity": "PASS",
+  "rows": 288,
+  "v2_supported": 244,
+  "v3_supported": 276,
+  "v3_only_new_ids": [
+    4,
+    16,
+    41,
+    61,
+    65,
+    74,
+    93,
+    103,
+    164,
+    167,
+    175,
+    179,
+    181,
+    186,
+    190,
+    192,
+    196,
+    213,
+    216,
+    217,
+    219,
+    220,
+    229,
+    244,
+    247,
+    252,
+    253,
+    259,
+    269,
+    277,
+    281,
+    282
+  ],
+  "original_strict_label_correct": 217,
+  "original_strict_label_wrong": 28,
+  "source_mismatched_strict_label_ids": [
+    243
+  ],
+  "source_bound_strict_correct": 217,
+  "source_bound_strict_wrong": 27,
+  "v3_statuses": {
+    "CORRECT": 245,
+    "MISMATCH": 31,
+    "ABSTAIN": 12
+  },
+  "K1_original": "PASS_AUTOMATED",
+  "K2_original": "PASS_AUTOMATED",
+  "K3_original": "PASS",
+  "overall_gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "strict format labels are automated, not human adjudication",
+    "Run151 native was single C3 on Linux, not Redmi or end-to-end V13",
+    "32 v3-only classifications were not labelled by original strict labeler",
+    "source-mismatched echoed equation must be excluded from grounded labels"
+  ]
+}

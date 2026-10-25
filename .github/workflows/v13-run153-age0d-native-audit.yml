@@ -1,0 +1,60 @@
+name: V13 Run153 independent Run151 Linux-native evidence audit
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run153-age0d-native-audit.yml"
+      - "v13/code/scripts/age0d_run151_independent_audit_run153.py"
+      - "v13/code/tests/test_age0d_run151_independent_audit_run153.py"
+      - "v13/code/docs/proofs/continuation-20261025/age0d-native-crossreview-run153/**"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  audit:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Download exact closed Run151 native artifact (read only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --retry-delay 1 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12585869006/zip" \
+            -o "$RUNNER_TEMP/RUN151_native.zip"
+          echo "0f19525d8e8abd62ca328ce752a0e8f8b619ca27ced71a42f3bd5c78d53edbe4  $RUNNER_TEMP/RUN151_native.zip" | sha256sum -c -
+      - name: Independent source-bound audit and nine adversarial tests
+        env:
+          RUN151_ARTIFACT: ${{ runner.temp }}/RUN151_native.zip
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q v13/code/scripts/age0d_run151_independent_audit_run153.py v13/code/tests/test_age0d_run151_independent_audit_run153.py
+          python3 v13/code/scripts/age0d_run151_independent_audit_run153.py --artifact "$RUN151_ARTIFACT" --output "$RUNNER_TEMP/RUN153_AUDIT.json"
+          PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p 'test_age0d_run151_independent_audit_run153.py' -v
+          python3 - "$RUNNER_TEMP/RUN153_AUDIT.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['integrity']=='PASS' and r['rows']==288
+          assert (r['v2_supported'],r['v3_supported'])==(244,276)
+          assert r['source_mismatched_strict_label_ids']==[243]
+          assert r['overall_gate']=='UNVERIFIED'
+          print('RUN153_INDEPENDENT_AUDIT_PASS_NO_GATE_PROMOTION')
+          PY
