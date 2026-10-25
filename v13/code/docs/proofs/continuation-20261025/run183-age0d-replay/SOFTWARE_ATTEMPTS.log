@@ -1,0 +1,39 @@
+=== ATTEMPT 1 — EXPECTED FAILURE, PRE-FIX ===
+test_correct_source_arithmetic_no_alarm (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_correct_source_arithmetic_no_alarm) ... ok
+test_duplicate_answer_entity_abstains (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_duplicate_answer_entity_abstains) ... ok
+test_inconsistent_frozen_oracle_is_rejected (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_inconsistent_frozen_oracle_is_rejected) ... ok
+test_no_rights_on_any_path (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_no_rights_on_any_path) ... ok
+test_noninteger_remaining_abstains (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_noninteger_remaining_abstains) ... ok
+test_oracle_is_only_used_by_offline_scoring (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_oracle_is_only_used_by_offline_scoring) ... FAIL
+test_unknown_budget_abstains (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_unknown_budget_abstains) ... ok
+test_updated_budget_overrides_prior (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_updated_budget_overrides_prior) ... ok
+test_wrong_remaining_has_exact_source_refs (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_wrong_remaining_has_exact_source_refs) ... ok
+
+======================================================================
+FAIL: test_oracle_is_only_used_by_offline_scoring (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_oracle_is_only_used_by_offline_scoring)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/v13_run183/v13/code/tests/test_run183_step2_arithmetic_shadow_replay.py", line 65, in test_oracle_is_only_used_by_offline_scoring
+    self.assertEqual(out['counts']['tn'],1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.002s
+
+FAILED (failures=1)
+=== ATTEMPT 2 — AFTER STATUS CLASSIFICATION FIX ===
+test_correct_source_arithmetic_no_alarm (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_correct_source_arithmetic_no_alarm) ... ok
+test_duplicate_answer_entity_abstains (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_duplicate_answer_entity_abstains) ... ok
+test_inconsistent_frozen_oracle_is_rejected (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_inconsistent_frozen_oracle_is_rejected) ... ok
+test_no_rights_on_any_path (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_no_rights_on_any_path) ... ok
+test_noninteger_remaining_abstains (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_noninteger_remaining_abstains) ... ok
+test_oracle_is_only_used_by_offline_scoring (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_oracle_is_only_used_by_offline_scoring) ... ok
+test_unknown_budget_abstains (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_unknown_budget_abstains) ... ok
+test_updated_budget_overrides_prior (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_updated_budget_overrides_prior) ... ok
+test_wrong_remaining_has_exact_source_refs (test_run183_step2_arithmetic_shadow_replay.ArithmeticTests.test_wrong_remaining_has_exact_source_refs) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.003s
+
+OK
