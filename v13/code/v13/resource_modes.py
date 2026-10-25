@@ -26,6 +26,7 @@ RED -> CRITICAL. A CRITICAL turn is still refused after the OOM/heat reflex (har
 forward below the floor risks the OOM it is meant to avoid); governor snapshot, rules,
 provenance log and cancel are untouched by every mode.
 """
+import math
 import time
 
 MODES=('GREEN','YELLOW','ORANGE','RED')
@@ -85,14 +86,42 @@ def boot_profile(cfg,device_info=None):
             'rss_mb':dict(RSS_BOOT_MB) if android else None,'rss_status':'BOOT_REDMI_TARGET' if android else 'OFF_NOT_ANDROID',
             'thermal_status':'BOOT_UNMEASURED','hysteresis':{'mem_fraction':MEM_HYSTERESIS,'temp_c':TEMP_HYSTERESIS_C}}
 
+def _finite_number(value, minimum=None):
+    """Only real, finite telemetry numbers; bool is not a measurement."""
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value) and (minimum is None or value >= minimum)
+    except (OverflowError, ValueError, TypeError):
+        return False
+
+
 def validate(p):
-    for k in ('mem_mb','temp_c'):
-        t=p[k]
-        if not all(isinstance(t[m],(int,float)) for m in ('RED','ORANGE','YELLOW')):raise ValueError('resource profile '+k)
-    if not p['mem_mb']['RED']<=p['mem_mb']['ORANGE']<=p['mem_mb']['YELLOW']:raise ValueError('mem thresholds must rise RED<=ORANGE<=YELLOW')
-    if not p['temp_c']['RED']>=p['temp_c']['ORANGE']>=p['temp_c']['YELLOW']:raise ValueError('temp thresholds must fall RED>=ORANGE>=YELLOW')
-    r=p.get('rss_mb')
-    if r is not None and not (isinstance(r.get('YELLOW'),(int,float)) and isinstance(r.get('ORANGE'),(int,float)) and 0<r['YELLOW']<=r['ORANGE']):raise ValueError('rss budget must rise 0<YELLOW<=ORANGE')
+    """Reject corrupted persisted thresholds rather than silently disabling backoff."""
+    if not isinstance(p, dict):
+        raise ValueError('resource profile must be a mapping')
+    for key in ('mem_mb', 'temp_c'):
+        values = p.get(key)
+        if not isinstance(values, dict) or any(
+            not _finite_number(values.get(m), 0 if key == 'mem_mb' else None)
+            for m in ('RED', 'ORANGE', 'YELLOW')
+        ):
+            raise ValueError('resource profile ' + key + ' must be finite')
+    if not p['mem_mb']['RED'] <= p['mem_mb']['ORANGE'] <= p['mem_mb']['YELLOW']:
+        raise ValueError('mem thresholds must rise RED<=ORANGE<=YELLOW')
+    if not p['temp_c']['RED'] >= p['temp_c']['ORANGE'] >= p['temp_c']['YELLOW']:
+        raise ValueError('temp thresholds must fall RED>=ORANGE>=YELLOW')
+    r = p.get('rss_mb')
+    if r is not None:
+        if not isinstance(r, dict) or any(not _finite_number(r.get(m), 0) or r[m] == 0 for m in ('YELLOW', 'ORANGE')):
+            raise ValueError('rss budget must be finite positive')
+        if r['YELLOW'] > r['ORANGE']:
+            raise ValueError('rss budget must rise 0<YELLOW<=ORANGE')
+    h = p.get('hysteresis')
+    if not isinstance(h, dict) or not _finite_number(h.get('mem_fraction'), 0) or not _finite_number(h.get('temp_c'), 0):
+        raise ValueError('resource hysteresis must be finite nonnegative')
+    if h['mem_fraction'] >= 1:
+        raise ValueError('resource memory hysteresis must be below 1')
     return p
 
 def calibrate(cfg,body_rss_mb,device_info,clock=time.time,thermal=None):
@@ -126,34 +155,85 @@ def measure_bodies(runtime):
             if m.get('rss_bytes'):out[role]=max(out.get(role,0.),m['rss_bytes']/1048576)
     return {k:round(v,1) for k,v in out.items()}
 
+def _invalid_process_memory(snapshot):
+    """Present invalid RSS/PSS is distinct from missing/unavailable metrics."""
+    processes = snapshot.get('processes')
+    if processes is None:
+        return False
+    if not isinstance(processes, (list, tuple)):
+        return True
+    for process in processes:
+        if not isinstance(process, dict):
+            return True
+        for key in ('pss_bytes', 'rss_bytes'):
+            value = process.get(key)
+            if value is not None and not _finite_number(value, 0):
+                return True
+    return False
+
+
 def total_rss_mb(snapshot):
-    """V13's own footprint: PSS where measured (shared mmap pages counted once), else RSS; None if unmeasured."""
-    vals=[(p.get('pss_bytes') or p.get('rss_bytes')) for p in snapshot.get('processes') or () if isinstance(p,dict)]
-    vals=[v for v in vals if v]
-    return sum(vals)/1048576 if vals else None
+    """Own measured PSS, else RSS; invalid/missing measurements never count as zero."""
+    if not isinstance(snapshot, dict) or _invalid_process_memory(snapshot):
+        return None
+    vals = []
+    for process in snapshot.get('processes') or ():
+        pss = process.get('pss_bytes')
+        rss = process.get('rss_bytes')
+        value = pss if pss else rss
+        if value:
+            vals.append(value)
+    if not vals:
+        return None
+    total = sum(vals)
+    return total / 1048576 if _finite_number(total, 0) else None
 
-def classify(snapshot,profile,previous='GREEN'):
-    """(mode, reasons) for one snapshot. Leaving a stricter mode needs the hysteresis margin.
 
-    Inputs: MemAvailable floor (RED/ORANGE/YELLOW), battery temperature (RED/ORANGE/YELLOW) and, where a
-    §73 budget is set, V13's total RSS/PSS (over hard backoff -> ORANGE, over soft budget -> YELLOW).
+def classify(snapshot, profile, previous='GREEN'):
+    """(mode, reasons) with finite telemetry checks before any safe-mode comparisons.
+
+    Present invalid readings fail closed as RED; absent readings retain the
+    existing unmeasured semantics. No missing sensor is fabricated as safe.
     """
-    mem=snapshot.get('mem_available_bytes');temp=snapshot.get('battery_temperature_c')
-    mem=None if mem is None else mem/1048576
-    rss=total_rss_mb(snapshot) if profile.get('rss_mb') else None
-    hm=profile['hysteresis']['mem_fraction'];ht=profile['hysteresis']['temp_c'];prev=RANK.get(previous,0)
+    try:
+        validate(profile)
+    except (KeyError, TypeError, ValueError):
+        return 'RED', ['INVALID_RESOURCE_PROFILE']
+    if not isinstance(snapshot, dict):
+        return 'RED', ['INVALID_RESOURCE_SNAPSHOT']
+    mem = snapshot.get('mem_available_bytes')
+    temp = snapshot.get('battery_temperature_c')
+    invalid = []
+    if mem is not None and not _finite_number(mem, 0):
+        invalid.append('INVALID_MEM_AVAILABLE')
+    if temp is not None and not _finite_number(temp):
+        invalid.append('INVALID_BATTERY_TEMPERATURE')
+    if profile.get('rss_mb') is not None and _invalid_process_memory(snapshot):
+        invalid.append('INVALID_PROCESS_MEMORY')
+    if invalid:
+        return 'RED', invalid
+    mem = None if mem is None else mem / 1048576
+    rss = total_rss_mb(snapshot) if profile.get('rss_mb') else None
+    hm = profile['hysteresis']['mem_fraction']
+    ht = profile['hysteresis']['temp_c']
+    prev = RANK.get(previous, 0)
     def hit(m):
-        r=[];held=RANK[m]<=prev  # already this strict: stay until the margin is cleared
-        lim=profile['mem_mb'][m]*(1+hm if held else 1.)
-        if mem is not None and mem<lim:r.append('MEM_BELOW_'+m)
-        tl=profile['temp_c'][m]-(ht if held else 0.)
-        if temp is not None and temp>=tl:r.append('TEMP_AT_'+m)
-        if rss is not None and m in profile['rss_mb'] and rss>profile['rss_mb'][m]*(1-hm if held else 1.):r.append('RSS_OVER_'+m)
-        return r
-    for m in ('RED','ORANGE','YELLOW'):
-        r=hit(m)
-        if r:return m,r
-    return 'GREEN',[]
+        reasons = []
+        held = RANK[m] <= prev
+        lim = profile['mem_mb'][m] * (1 + hm if held else 1.)
+        if mem is not None and mem < lim:
+            reasons.append('MEM_BELOW_' + m)
+        tl = profile['temp_c'][m] - (ht if held else 0.)
+        if temp is not None and temp >= tl:
+            reasons.append('TEMP_AT_' + m)
+        if rss is not None and m in profile['rss_mb'] and rss > profile['rss_mb'][m] * (1 - hm if held else 1.):
+            reasons.append('RSS_OVER_' + m)
+        return reasons
+    for mode in ('RED', 'ORANGE', 'YELLOW'):
+        reasons = hit(mode)
+        if reasons:
+            return mode, reasons
+    return 'GREEN', []
 
 def load_profile(store,cfg):
     p,_=store.state(STATE_KEY,None)
