@@ -24,17 +24,27 @@ def read_block(prompt,ready=None,read=input):
     return '\n'.join(lines)
 
 def plain(r):
-    op=Operator(r);done=threading.Event();seen={};held=[]
+    op=Operator(r);done=threading.Event();seen={};held=[];held_lock=threading.Lock()
+    def show_notices(items):
+        for x in items:print('\n[V13] '+safe_text(x),flush=True)
     def notify(t):
-        # WP-V5: notices wait while the operator is typing instead of overwriting the line.
-        if typing():held.append(t);return
-        for x in held+[t]:print('\n[V13] '+safe_text(x),flush=True)
-        held.clear()
+        # WP-V5: never overwrite unsent operator input. Notices from worker
+        # threads and the render thread share one FIFO, drained exactly once.
+        with held_lock:
+            if typing():held.append(t);return
+            ready=held+[t];held.clear()
+        show_notices(ready)
     r.notify=notify
     watch_buttons(r)  # WP-UI1: Termux home-screen stop requests, ON-only
     def render():
         while not done.wait(.1):
             if typing():continue
+            with held_lock:
+                if typing():continue
+                ready=held[:];held.clear()
+            # A notice must not remain hidden indefinitely merely because
+            # no second worker notification arrives after typing ends.
+            show_notices(ready)
             for m in r.store.history(r.session,8):
                 if m['role']=='user':continue
                 old=seen.get(m['id'],0);txt=m['text']

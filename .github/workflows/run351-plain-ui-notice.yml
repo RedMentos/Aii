@@ -1,0 +1,63 @@
+name: V13 Run351 plain Termux UI queued-notice delivery
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run351-plain-ui-notice.yml'
+      - 'v13/code/v13/ui.py'
+      - 'v13/code/tests/test_ui_plain_notice_run351.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run351-plain-ui-notice-flush/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ui:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact head, source SHA256 and isolated dependencies
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN351_HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run351venv"
+          "$RUNNER_TEMP/run351venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          sha256sum v13/code/v13/ui.py v13/code/tests/test_ui_plain_notice_run351.py | tee "$RUNNER_TEMP/RUN351_SOURCE_SHA256SUMS.txt"
+      - name: Real UI render thread and persistent chat regressions
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          "$RUNNER_TEMP/run351venv/bin/python" -m compileall -q v13/ui.py tests/test_ui_plain_notice_run351.py
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run351venv/bin/python" -m unittest -v \
+            tests.test_ui_plain_notice_run351 \
+            tests.test_chat_operator_persistence_run214 \
+            tests.test_phone_chat_sessions_run89 \
+            2>&1 | tee "$RUNNER_TEMP/RUN351_TESTS_RAW.log"
+          exit ${PIPESTATUS[0]}
+      - name: Public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN351_PRIVACY_RAW.log"
+      - name: Close raw receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN351_*' ! -name RUN351_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN351_SHA256SUMS.txt
+      - name: Preserve raw RED, PASS or failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run351-Plain-UI-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN351_*
+          if-no-files-found: warn
+          retention-days: 30
