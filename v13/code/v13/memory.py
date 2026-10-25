@@ -213,7 +213,7 @@ class Memory:
         top_k=self.cfg['memory_top_k'] if top_k is None else max(0,min(8,int(top_k)))  # WP-T1 memory head: skip/deep
         if not top_k:return []
         candidates=[]
-        rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 AND m.kind IN ('fact','style','preference') AND (m.session_id=? OR m.scope='global')",(session,))
+        rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id JOIN events e ON e.id=m.event_id AND e.session_id=m.session_id WHERE m.active=1 AND s.deleted=0 AND m.kind IN ('fact','style','preference') AND (m.session_id=? OR m.scope='global')",(session,))
         rows=self._verified_rows(rows)  # before local/global precedence and semantic ranking
         local={(r['kind'],r['key_text']):r['value'] for r in rows if r['scope']=='session' and r['session_id']==session}
         rows=[r for r in rows if r['scope']!='global' or (r['kind'],r['key_text']) not in local or local[(r['kind'],r['key_text'])]==r['value']]
