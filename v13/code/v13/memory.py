@@ -180,11 +180,41 @@ class Memory:
                   'target_policy':'Only explicit HumanDecision learning_permission=learn can authorize a supported typed objective; references never authorize themselves.'}
         metadata=path.with_suffix('.manifest.json');atomic_write(metadata,dumps(manifest))
         return {'dataset':str(path),'manifest':str(metadata),'records':count,'sha256':manifest['sha256']}
+    def _verified_rows(self,rows):
+        """Read-only key/role/scope/source lineage for lexical and learned recall.
+
+        MemoryRecord is immutable evidence of the human correction's original
+        cue. A mutable memory row must not retarget its value to another query.
+        One packet scan avoids a query per memory; duplicates fail closed.
+        """
+        if not rows:return rows
+        wanted={r['id'] for r in rows};records={}
+        for row in self.s.rows("SELECT payload FROM packets WHERE kind='MemoryRecord'"):
+            try:
+                record=json.loads(row['payload'])
+                if not isinstance(record,dict):continue
+                mid=record.get('memory_id')
+                if mid in wanted:
+                    records[mid]=None if mid in records else record
+            except (ValueError,TypeError):continue
+        verified=[]
+        for m in rows:
+            record=records.get(m['id'])
+            if not isinstance(record,dict):continue
+            if (record.get('event_id')!=m['event_id'] or record.get('kind')!=m['kind']
+                    or record.get('scope')!=m['scope'] or record.get('key')!=m['key_text']):continue
+            ref={'source_id':m['source_id'],'sha256':m['hash'],'char_start':0,
+                 'char_end':m['chars'],'modality':'text'}
+            if record.get('source_ref')!=ref:continue
+            verified.append(m)
+        return verified
+
     def recall(self,query,session,semantic=None,cancel=None,deadline=None,top_k=None):
         top_k=self.cfg['memory_top_k'] if top_k is None else max(0,min(8,int(top_k)))  # WP-T1 memory head: skip/deep
         if not top_k:return []
         candidates=[]
         rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 AND m.kind IN ('fact','style','preference') AND (m.session_id=? OR m.scope='global')",(session,))
+        rows=self._verified_rows(rows)  # before local/global precedence and semantic ranking
         local={(r['kind'],r['key_text']):r['value'] for r in rows if r['scope']=='session' and r['session_id']==session}
         rows=[r for r in rows if r['scope']!='global' or (r['kind'],r['key_text']) not in local or local[(r['kind'],r['key_text'])]==r['value']]
         sims=self._embedding_similarities(query,rows,cancel,deadline)
