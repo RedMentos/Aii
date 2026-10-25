@@ -111,5 +111,10 @@ class WorldModelConfidenceAblation(unittest.TestCase):
     def test_spearman_and_real_fit(self):
         self.assertAlmostEqual(WMC.spearman([1,2,3],[3,2,1]),-1.);self.assertAlmostEqual(WMC.spearman([1,1,2],[1,1,2]),1.)
         old=WMC.Q;WMC.Q=20
-        try:r=WMC.run_seed(13);self.assertEqual(r['fit_status'],'FITTED');self.assertEqual(r['labels']['supported_n']+r['labels']['uncertain_n'],20)
+        try:
+            r=WMC.run_seed(13)
+            self.assertEqual(r['fit_status'],'FITTED')
+            self.assertEqual(r['queries_n'],20)
+            self.assertEqual(r['evaluated_n']+r['abstained_n'],20)
+            self.assertEqual(r['labels']['supported_n']+r['labels']['uncertain_n'],r['evaluated_n'])
         finally:WMC.Q=old
