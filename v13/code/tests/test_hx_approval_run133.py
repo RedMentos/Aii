@@ -65,5 +65,24 @@ class HXAuthorityReview(unittest.TestCase):
         self.assertEqual(self.x.report()['by_status'],{'STALE':1})
 
 
+    def test_modified_approved_payload_cannot_apply(self):
+        out=self.approved()
+        modified=dict(out['proposal'])
+        modified['diff']={'tool_hint.list_note':NOTE+' Extra.'}
+        with self.assertRaises(PermissionError):
+            self.h.apply(modified,modified['diff'])
+        self.assertEqual(self.h.report()['active'],[])
+
+    def test_revoked_persisted_request_refuses_both_writers(self):
+        out=self.approved()
+        with self.s.tx() as c:
+            c.execute("UPDATE requests SET status='REJECTED' WHERE id=?",
+                      (out['proposal']['request_id'],))
+        with self.assertRaises(PermissionError):
+            self.h.apply(out['proposal'],out['settings'])
+        with self.assertRaises(PermissionError):
+            self.x.record(out['proposal'],'situation','lesson','evidence.txt','list_arith')
+
+
 if __name__=='__main__':
     unittest.main()
