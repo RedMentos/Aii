@@ -1,0 +1,45 @@
+{
+  "run": "Run219",
+  "date_utc": "2026-10-25",
+  "canonical_area": "Sleep A_OFFLINE/ContextOS digest source lineage through offline backup",
+  "branch": "codex/sleep-digest-backup-run219-20261025",
+  "base_verified": "0a414c1ad56094b59e890569beacff417971089c",
+  "tested_commit": "e6d24c9fc2b5a64b852b60447b20342b750bedf0",
+  "owner": "Run219 test-only SleepOffline/Runtime/Backup source lineage, no production owner overlap",
+  "owned_files": [
+    "v13/code/tests/test_sleep_context_backup_continuity_run219.py",
+    ".github/workflows/run219-sleep-digest-backup.yml",
+    "v13/code/docs/proofs/continuation-20261025/run219-sleep-digest-backup/"
+  ],
+  "implementation": "Two actual Runtime/SQLite deterministic-C3 integration tests: three-turn compressed digest and source-bound C3 context survive offline backup/restore exactly, post-snapshot turn does not leak into context or staged TTT; revoked earliest source after restore invalidates dependent digest and TTT input. All TTT remains CANDIDATE_NOT_TRAINED and learning RECORD_ONLY.",
+  "actual_source_ci": {
+    "run_id": 40179838856,
+    "job_id": 121128346403,
+    "head": "e6d24c9fc2b5a64b852b60447b20342b750bedf0",
+    "tests": "11/11 PASS (Run219 2, Run205 3, Run208 3, Run207 3)",
+    "compileall": "PASS",
+    "privacy_scan": "CLEAN",
+    "log_url": "https://github.com/RedMentos/Aii/actions/runs/40179838856/job/121128346403"
+  },
+  "source_blob_sha": {
+    "test_sleep_context_backup_continuity_run219.py": "bb0c081f764fa90b4ff163588ec95b761e23fa3d",
+    "run219-sleep-digest-backup.yml": "1b25b3039ad38b0f9e71b19b9bb443dc5336215c"
+  },
+  "evidence_kind": "Actual-source GitHub Linux Runtime/SQLite with deterministic C3 double, no native C3, TTT training or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Full latest chain source-only phone ZIP extracted smoke not yet rechecked.",
+    "Native/Redmi and full suite remain unproven.",
+    "Sleep TTT stage is candidate-only, no model-weight change or utility gain demonstrated."
+  ],
+  "next_step": "Run220 independent exact-head Termux source ZIP extraction and model-free smoke with original gate preservation, no phone claim. Use existing pinned scripts and no native/model owner overlap.",
+  "next_command": "Inspect v13/code/scripts/phone_source_zip.py and prior Run193/194 source ZIP tests, then preregister CI extraction/smoke on current chain.",
+  "no_authority_promotion": true
+}
