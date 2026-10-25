@@ -55,7 +55,7 @@ class LearningOperatorStatusRun302(unittest.TestCase):
         self.assertEqual(b["mode"], "APPROVED_COMMIT")
         self.assertTrue(b["mode_is_not_approval"])
         self.assertEqual(self.r.store.one("SELECT COUNT(*) n FROM updates")["n"], 0)
-        self.assertEqual(self.r.store.generation()["age"], 0) if "age" in self.r.store.generation() else None
+        self.assertEqual(json.loads(self.op.run(":status"))["age"], 0)
 
     def test_invalid_argument_is_rejected_without_mutating_mode(self):
         before = (self.home / "config/settings.json").read_bytes()
