@@ -38,6 +38,40 @@ def _finite_nonnegative(value):
     return type(value) in (int,float) and math.isfinite(value) and value >= 0
 
 
+def _valid_observed_event_source(store, event_id):
+    """Recheck live EventEnvelope source before treating an action as evidence.
+
+    Production Store has read_source(), which checks deletion, source SHA,
+    blob integrity and exact SourceRef bounds. Older minimal SQLite test
+    doubles lack that API and retain their legacy *synthetic-only* semantics.
+    This is an ingestion guard, not fitted-model source revocation.
+    """
+    reader = getattr(store, 'read_source', None)
+    if reader is None:
+        return True  # compatibility for test doubles, never a production grant
+    if not callable(reader):
+        return False
+    try:
+        event = store.one("SELECT source_id,packet FROM events WHERE id=?", (event_id,))
+        if not event:
+            return False
+        envelope = json.loads(event['packet'])
+        if type(envelope) is not dict:
+            return False
+        ref = envelope.get('source_ref')
+        provenance = envelope.get('provenance')
+        if (type(ref) is not dict or ref.get('source_id') != event['source_id']
+                or envelope.get('event_id') != event_id
+                or envelope.get('kind') != 'USER_TEXT'
+                or envelope.get('authority') != 'AUTHORITATIVE'
+                or type(provenance) is not list or ref not in provenance):
+            return False
+        text = reader(ref)
+        return isinstance(text, str) and bool(text)
+    except (ValueError, TypeError, KeyError, OSError, UnicodeError):
+        return False
+
+
 def transitions(store,limit=MAX_ROWS):
     """Only finite, nonnegative observed transitions may enter the world model.
 
@@ -47,6 +81,7 @@ def transitions(store,limit=MAX_ROWS):
     rows=store.rows("SELECT a.id,a.event_id,a.status,a.expected,a.outcome,a.created FROM actions a WHERE a.outcome IS NOT NULL AND a.expected LIKE ? ORDER BY a.created DESC LIMIT ?",('%"forecast"%',limit))
     out=[]
     for r in rows:
+        if not _valid_observed_event_source(store,r['event_id']):continue
         try:
             exp=json.loads(r['expected']);act=json.loads(r['outcome'] or '{}')
             if type(exp) is not dict or type(act) is not dict:continue
@@ -195,6 +230,9 @@ def for_event(store,event_id,a):
     """Route alternative for a valid stored own state; malformed state is not simulated."""
     row=store.one("SELECT expected,created FROM actions WHERE event_id=? AND expected LIKE ? ORDER BY created DESC LIMIT 1",(event_id,'%"forecast"%'))
     if not row:return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
+    if not _valid_observed_event_source(store,event_id):
+        return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN',
+                'reason':'INVALID_EVENT_SOURCE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
     try:
         exp=json.loads(row['expected']);fc=exp.get('forecast') or {}
         if type(fc) is not dict or type(fc.get('input_chars')) is not int or fc['input_chars']<0 or not _finite_nonnegative(row['created']):
