@@ -1,0 +1,53 @@
+name: V13 Run170 independent pinned Run169 metadata cross-audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run170-native-metadata-audit.yml'
+      - 'v13/code/scripts/run170_artifact_guard.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run170-native-artifact-audit/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  read-only-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Download immutable Run169 metadata ZIP and audit without model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run170"
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 20 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12588810042/zip" \
+            -o "$RUNNER_TEMP/run170/run169-metadata.zip"
+          echo '16c41e05a4cba14bc520759bab13543e123e2cf7ee4b6f10752306c3c2aed760  '${RUNNER_TEMP}'/run170/run169-metadata.zip' | sha256sum -c -
+          python -m compileall -q v13/code/scripts/run170_artifact_guard.py
+          python v13/code/scripts/run170_artifact_guard.py "$RUNNER_TEMP/run170/run169-metadata.zip" --selftest | tee "$RUNNER_TEMP/run170/report.json"
+          python - <<'PY'
+          import json,os,pathlib
+          d=json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'run170/report.json').read_text())
+          assert d['paired_identical']==3 and d['paired_total']==3
+          assert d['adversarial_mutations_refused']==10
+          assert not d['semantic_utility_proven'] and not d['predictive_jepa_proven']
+          assert d['gates']['STEP2']=='UTILITY_FAIL'
+          print('RUN170_METADATA_AUDIT_PASS_3_OF_3_UNCHANGED_NOT_JEPA')
+          PY
+      - name: Official privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 9b42893de8aa0655729cdd1b990c61cd8f8ca367 --head HEAD
+      - name: Upload metadata-only result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run170-Independent-Metadata-Audit
+          path: ${{ runner.temp }}/run170/report.json
+          if-no-files-found: warn
+          retention-days: 14
