@@ -1,0 +1,33 @@
+name: V13 Run157 actual A3 raw-stem source probe
+on:
+  push:
+    branches: ['codex/run157-a3-rawstem-source-probe-20261025']
+  pull_request:
+    paths:
+      - 'v13/code/scripts/a3_rawstem_source_probe_run157.py'
+      - 'v13/code/tests/test_a3_rawstem_source_probe_run157.py'
+      - '.github/workflows/v13-run157-a3-rawstem.yml'
+  workflow_dispatch:
+jobs:
+  rawstem:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Isolated NumPy
+        run: python -m pip install numpy==2.3.5
+      - name: Real frozen worker raw_features and split, no teacher
+        run: |
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p 'test_a3_rawstem_source_probe_run157.py' -v
+          python -m compileall -q v13/code/scripts/a3_rawstem_source_probe_run157.py v13/code/tests/test_a3_rawstem_source_probe_run157.py
+          PYTHONPATH=v13/code python v13/code/scripts/a3_rawstem_source_probe_run157.py --output /tmp/run157.json
+          python -c "import json; r=json.load(open('/tmp/run157.json')); assert r['gate']=='UNVERIFIED' and r['unseen_value_substitution']['ood_accepted']>0"
+      - name: Official public repo privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base a364096a49730a9e9a2ed59039f08d5125d64782 --head HEAD
