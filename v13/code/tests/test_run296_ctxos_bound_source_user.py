@@ -106,6 +106,19 @@ class BoundSourceLayout(unittest.TestCase):
         self.r.memory.feedback(e['event_id'], 'fact', '900 Euro', key='Projekt Kelmo16 Budget')
         self.assertEqual(self.plan()['plan']['layout'], 'legacy')
 
+    def test_compacted_away_source_cannot_be_resurrected_by_layout(self):
+        self.activate()
+        self.c.cfg = dict(self.r.cfg, context_tokens=800, answer_tokens=64)
+        eid = self.r.store.event(self.r.session, MATCH)['event_id']
+        actual = self.volatile(MATCH)[0][2][0]
+        vol = [('ACTIVE_VIEW', '\nStored user corrections:',
+                [{'topic': 'irrelevant', 'correction': 'x' * 1300}, actual]),
+               ('LATENT_STATE', '\nTask:', {'task_request': MATCH})]
+        p = self.c.plan(eid, 'B1_DETAIL', 'SYS', vol, [], MATCH)
+        self.assertIn('compact_active_view', p['plan']['decisions'])
+        self.assertEqual(p['plan']['layout'], 'legacy')
+        self.assertEqual(p['plan']['bound_source_refs'], [])
+
     def test_budget_overflow_never_applies_source_user_layout(self):
         self.activate()
         self.c.cfg = dict(self.r.cfg, context_tokens=120, answer_tokens=64)
