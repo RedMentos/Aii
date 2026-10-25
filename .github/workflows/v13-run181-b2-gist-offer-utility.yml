@@ -1,0 +1,94 @@
+name: V13 Run181 pinned B2 Gist-view offer utility 36x3
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run181-b2-gist-offer-utility.yml'
+      - 'v13/code/scripts/run181_gist_offer_audit.py'
+      - 'v13/code/tests/test_run181_gist_offer_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run181-gist-offer/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  pinned-gist-offer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source binding and paired auditor software tests
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run181"
+          test "$(git hash-object v13/code/scripts/gist_utility_bench.py)" = 'f2b6d00cbe100152bb77a3b04187324eb379abd6'
+          test "$(git hash-object v13/code/v13/gist.py)" = '025baa96db50664348f140d3f3a22263500ea6da'
+          test "$(git hash-object v13/code/v13/cognition.py)" = '1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf'
+          test "$(git hash-object v13/code/v13/episodes.py)" = '48354f1f1764d76228f923ebc89e567e73331f3e'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(git hash-object v13/code/scripts/run181_gist_offer_audit.py)" = '30b4f32893ec505e7c3035e76523389233121e9a'
+          test "$(git hash-object v13/code/tests/test_run181_gist_offer_audit.py)" = '008567bb99505736c99927ef17fb7da082a5be81'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261025/run181-gist-offer/PREREG.md)" = '3db7e4a5e55bbe4cfb808c0047b4a56fd95e2ae5'
+          python3 -m pip install --disable-pip-version-check --no-input numpy==2.3.5 prompt-toolkit==3.0.52
+          python3 -m compileall -q v13/code/scripts/gist_utility_bench.py v13/code/scripts/run181_gist_offer_audit.py v13/code/tests/test_run181_gist_offer_audit.py
+          PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_run181_gist_offer_audit.py -v 2>&1 | tee "$RUNNER_TEMP/run181/software.log"
+      - name: Download exact registered native runner
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+            https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz \
+            -o "$RUNNER_TEMP/run181/llama.tar.gz"
+          test "$(stat -c %s "$RUNNER_TEMP/run181/llama.tar.gz")" = 16825086
+          echo '9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443  '"$RUNNER_TEMP/run181/llama.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/run181/llama"
+          tar -xzf "$RUNNER_TEMP/run181/llama.tar.gz" -C "$RUNNER_TEMP/run181/llama"
+          server="$(find "$RUNNER_TEMP/run181/llama" -type f -name llama-server -print -quit)"
+          test -n "$server" && test -x "$server"
+          echo "RUN181_SERVER=$server" >> "$GITHUB_ENV"
+      - name: Download exact registered B2 weights
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+            https://huggingface.co/ggml-org/Qwen3.5-0.8B-GGUF/resolve/8fea620810c4afa23dd6443f999a48574c1611a3/Qwen3.5-0.8B-Q4_0.gguf \
+            -o "$RUNNER_TEMP/run181/B2.gguf"
+          test "$(stat -c %s "$RUNNER_TEMP/run181/B2.gguf")" = 563036064
+          echo '57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf  '"$RUNNER_TEMP/run181/B2.gguf" | sha256sum -c -
+      - name: Execute original frozen 36x3 native B2 offer utility and independent audit
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run181/home/bin" "$RUNNER_TEMP/run181/home/models/gist" "$RUNNER_TEMP/run181/report"
+          ln -s "$RUN181_SERVER" "$RUNNER_TEMP/run181/home/bin/llama-server"
+          ln -s "$RUNNER_TEMP/run181/B2.gguf" "$RUNNER_TEMP/run181/home/models/gist/Qwen3.5-0.8B-Q4_0.gguf"
+          export LD_LIBRARY_PATH="$(dirname "$RUN181_SERVER"):${LD_LIBRARY_PATH:-}"
+          PYTHONPATH=v13/code timeout --signal=INT --kill-after=10s 1500s \
+            python3 v13/code/scripts/gist_utility_bench.py \
+            --home "$RUNNER_TEMP/run181/home" --out "$RUNNER_TEMP/run181/report" \
+            2>&1 | tee "$RUNNER_TEMP/run181/native.log"
+          PYTHONPATH=v13/code python3 v13/code/scripts/run181_gist_offer_audit.py \
+            "$RUNNER_TEMP/run181/report/report.json" --output "$RUNNER_TEMP/run181/report/independent-audit.json" \
+            2>&1 | tee "$RUNNER_TEMP/run181/audit.log"
+          echo RUN181_NATIVE_B2_GIST_OFFER_PROXY_ONLY_NO_STEP2_PROMOTION
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base fdaa5c50fb68ccd8a7b43a25e137d380e5298edd --head HEAD
+      - name: Retain raw full/partial report and native failures, not weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run181-B2-Gist-Offer-Utility-Raw
+          path: |
+            ${{ runner.temp }}/run181/software.log
+            ${{ runner.temp }}/run181/native.log
+            ${{ runner.temp }}/run181/audit.log
+            ${{ runner.temp }}/run181/report/*.json
+            ${{ runner.temp }}/run181/report/*.log
+          if-no-files-found: warn
+          retention-days: 14
