@@ -1,0 +1,114 @@
+name: V13 Run277 current-chain offline phone diagnostic ZIP
+on:
+  pull_request:
+    paths:
+      - 'v13/code/setup.sh'
+      - 'v13/code/tests/test_offline_phone_diagnostic_run277.py'
+      - '.github/workflows/run277-offline-phone-diagnostic.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run277-phone-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  offline-phone:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Verify exact head and installer source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN277_HEAD.txt"
+          git hash-object v13/code/setup.sh | tee "$RUNNER_TEMP/RUN277_SETUP_BLOB.txt"
+          git hash-object v13/code/tests/test_offline_phone_diagnostic_run277.py | tee "$RUNNER_TEMP/RUN277_TEST_BLOB.txt"
+          test -s v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+      - name: Isolated pinned CPU-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run277venv"
+          timeout 180s "$RUNNER_TEMP/run277venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual extracted ZIP offline setup, doctor and tamper tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run277venv/bin/python" -m compileall -q v13 tests
+          compile_rc=$?
+          echo "$compile_rc" > "$RUNNER_TEMP/RUN277_COMPILE_EXIT.txt"
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run277venv/bin/python" -m unittest -v \
+            tests.test_offline_phone_diagnostic_run277 2>&1 | tee "$RUNNER_TEMP/RUN277_FOCUSED_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN277_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "compile_rc=$compile_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Build current-chain phone source ZIP with closed byte parity
+        id: zip
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run277venv/bin/python" scripts/package_source.py --root "$PWD" --out "$RUNNER_TEMP/V13-Run277-Phone.zip" --phone-install 2>&1 | tee "$RUNNER_TEMP/RUN277_PACKAGE_RAW.log"
+          package_rc=${PIPESTATUS[0]}
+          "$RUNNER_TEMP/run277venv/bin/python" scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Run277-Phone.zip" --root "$PWD" --out "$RUNNER_TEMP/RUN277_VERIFY.json" 2>&1 | tee "$RUNNER_TEMP/RUN277_VERIFY_RAW.log"
+          verify_rc=${PIPESTATUS[0]}
+          sha256sum "$RUNNER_TEMP/V13-Run277-Phone.zip" > "$RUNNER_TEMP/RUN277_ZIP_SHA256.txt"
+          echo "$package_rc" > "$RUNNER_TEMP/RUN277_PACKAGE_EXIT.txt"
+          echo "$verify_rc" > "$RUNNER_TEMP/RUN277_VERIFY_EXIT.txt"
+          echo "package_rc=$package_rc" >> "$GITHUB_OUTPUT"
+          echo "verify_rc=$verify_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official added-lines privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha || '09ff9192a972ef46626f10b599f49785f78a7661' }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN277_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN277_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload actual source ZIP and closed raw Linux-software evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run277-Phone-Source-ZIP-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/V13-Run277-Phone.zip
+            ${{ runner.temp }}/RUN277_HEAD.txt
+            ${{ runner.temp }}/RUN277_SETUP_BLOB.txt
+            ${{ runner.temp }}/RUN277_TEST_BLOB.txt
+            ${{ runner.temp }}/RUN277_COMPILE_EXIT.txt
+            ${{ runner.temp }}/RUN277_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN277_FOCUSED_RAW.log
+            ${{ runner.temp }}/RUN277_PACKAGE_EXIT.txt
+            ${{ runner.temp }}/RUN277_PACKAGE_RAW.log
+            ${{ runner.temp }}/RUN277_VERIFY_EXIT.txt
+            ${{ runner.temp }}/RUN277_VERIFY_RAW.log
+            ${{ runner.temp }}/RUN277_VERIFY.json
+            ${{ runner.temp }}/RUN277_ZIP_SHA256.txt
+            ${{ runner.temp }}/RUN277_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN277_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual test, ZIP and privacy results
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.compile_rc }}" = "0"
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.zip.outputs.package_rc }}" = "0"
+          test "${{ steps.zip.outputs.verify_rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
