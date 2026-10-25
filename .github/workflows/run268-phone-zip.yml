@@ -23,6 +23,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           test "$(git hash-object v13/code/v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+          test -s AGENTS.md
           test -s v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
           git rev-parse HEAD | tee "$RUNNER_TEMP/RUN268_SOURCE_HEAD.txt"
       - name: Pinned isolated Python dependencies for original packaging tests
@@ -61,6 +62,7 @@ jobs:
         with:
           name: V13-Run268-Verified-Phone-Source-ZIP
           path: |
+            ${{ github.workspace }}/AGENTS.md
             ${{ runner.temp }}/V13-Phone-Run268.zip
             ${{ runner.temp }}/RUN268_SOURCE_HEAD.txt
             ${{ runner.temp }}/RUN268_TEST.log
