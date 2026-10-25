@@ -1,0 +1,25 @@
+name: Run196 R4 prospective contract (software only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/run196_r4_stratified_future.py'
+      - 'v13/code/tests/test_run196_r4_stratified_future.py'
+      - '.github/workflows/run196-r4-prospective-contract.yml'
+  workflow_dispatch:
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run synthetic contract and adversarial tests
+        run: |
+          cd v13/code
+          python -m unittest -v tests.test_run196_r4_stratified_future
+          python -m compileall -q scripts/run196_r4_stratified_future.py tests/test_run196_r4_stratified_future.py
+      - name: Scope warning
+        run: echo 'SOFTWARE/SYNTHETIC ONLY - no native C3, Redmi or gate promotion'

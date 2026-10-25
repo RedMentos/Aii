@@ -1,0 +1,8 @@
+120d70637b14332ab684f05b26a2fe5e663deef5f2c63fcf504aba5f8f3ab957  ./.github/workflows/run196-r4-prospective-contract.yml
+e0c304cc300a5b45372544114d6e7aa0c4051a4fd1e9241916403ac6e3ebb037  ./tests_final.log
+87717eed51780f5d1e0d9653d27b18f8fe780c0ee05558418fde85de9be09762  ./tests_initial.log
+570975d4f29378fc81aa34c91b42339320e23a0f2f3f34783dae1d92d86f2519  ./v13/code/docs/proofs/continuation-20261025/run196-stratified-prospective/BUILD_STATE.md
+e0c304cc300a5b45372544114d6e7aa0c4051a4fd1e9241916403ac6e3ebb037  ./v13/code/docs/proofs/continuation-20261025/run196-stratified-prospective/tests_final.log
+87717eed51780f5d1e0d9653d27b18f8fe780c0ee05558418fde85de9be09762  ./v13/code/docs/proofs/continuation-20261025/run196-stratified-prospective/tests_initial.log
+c2ee5c7ce9863cb7f26222870091d1bf80561e68138d6ce287aeab44549310bf  ./v13/code/scripts/run196_r4_stratified_future.py
+2f30bac2abddf195776b431555da423f6f75b1e4492aeb4aefc0e6c87d190d66  ./v13/code/tests/test_run196_r4_stratified_future.py

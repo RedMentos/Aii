@@ -1,0 +1,22 @@
+test_duplicate_prompts_across_seeds_refused (tests.test_run196_r4_stratified_future.IndependentReview.test_duplicate_prompts_across_seeds_refused) ... ok
+test_forged_digit_feature_refused (tests.test_run196_r4_stratified_future.IndependentReview.test_forged_digit_feature_refused) ... ok
+test_one_seed_compare_failure_cannot_hide_in_aggregate (tests.test_run196_r4_stratified_future.IndependentReview.test_one_seed_compare_failure_cannot_hide_in_aggregate) ... ok
+test_cannot_evaluate_unsealed_candidate (tests.test_run196_r4_stratified_future.Protocol.test_cannot_evaluate_unsealed_candidate) ... ok
+test_changed_threshold_or_utility_refused (tests.test_run196_r4_stratified_future.Protocol.test_changed_threshold_or_utility_refused) ... ok
+test_compare_stratum_high_error_blocks_global_gain (tests.test_run196_r4_stratified_future.Protocol.test_compare_stratum_high_error_blocks_global_gain) ... ok
+test_correct_abstention_has_explicit_cost (tests.test_run196_r4_stratified_future.Protocol.test_correct_abstention_has_explicit_cost) ... ok
+test_manifest_prompt_hash_refusal (tests.test_run196_r4_stratified_future.Protocol.test_manifest_prompt_hash_refusal) ... ok
+test_missing_or_duplicate_task_refused (tests.test_run196_r4_stratified_future.Protocol.test_missing_or_duplicate_task_refused) ... ok
+test_nan_and_positive_logprob_refused (tests.test_run196_r4_stratified_future.Protocol.test_nan_and_positive_logprob_refused) ... ok
+test_no_digit_token_abstains (tests.test_run196_r4_stratified_future.Protocol.test_no_digit_token_abstains) ... ok
+test_prepare_and_seal_are_non_authoritative (tests.test_run196_r4_stratified_future.Protocol.test_prepare_and_seal_are_non_authoritative) ... ok
+test_refuse_overwrite (tests.test_run196_r4_stratified_future.Protocol.test_refuse_overwrite) ... ok
+test_seed7_and_seed11_rejected_as_unseen (tests.test_run196_r4_stratified_future.Protocol.test_seed7_and_seed11_rejected_as_unseen) ... ok
+test_success_is_prospective_criteria_only (tests.test_run196_r4_stratified_future.Protocol.test_success_is_prospective_criteria_only) ... ok
+test_tampered_model_hash_refused (tests.test_run196_r4_stratified_future.Protocol.test_tampered_model_hash_refused) ... ok
+test_tampered_task_binding_refused (tests.test_run196_r4_stratified_future.Protocol.test_tampered_task_binding_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.087s
+
+OK
