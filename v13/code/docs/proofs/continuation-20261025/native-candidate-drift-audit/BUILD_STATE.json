@@ -1,0 +1,49 @@
+{
+  "package": "Native-firing historical/live drift audit",
+  "date_utc": "2026-10-25",
+  "branch": "codex/native-candidate-drift-audit-20261025",
+  "pr": 256,
+  "base_verified": "0c8dbb233a4541edb4049e5fa19deac91190f8a7",
+  "owner": "read-only audit script/test/CI/proof only; historical snapshots and production untouched",
+  "result": {
+    "status": "DRIFT_DETECTED",
+    "candidate_gate": "FAIL_SOURCE_DRIFT",
+    "drift_files": [
+      "v13/runners.py"
+    ],
+    "drift_lines": 28,
+    "source_diff_sha256": "e72ac6d55f2f857196b77b805b1e1c7ce72cd411a55662c51086e24ee91ea1b1",
+    "manifest_sha256": "1a9833933f7d3b0e477e3333257db178e39777a3a5e04c04682804f2c01262e4",
+    "historical_expected_runner_sha256": "87312169d871bcb1498ad028df058b0ab6e100f6e51c011ead4b9ecfb1b831c5",
+    "current_live_runner_sha256": "18db214f930953a5f781aa8aaa2b4425e048fd8bacf7848793c112a4e06af798",
+    "other_three_live_files_byte_equal": true
+  },
+  "cause": "Exactly three reviewed Run177 commit dd122cf8f5c5 B2_GIST Qwen3.5 tap-identity edits (docstring, dimension 1024, tap_id) were applied to live runners.py but not appended to integrated_candidates._later. No other drift found.",
+  "ci": {
+    "first_run": 40184264019,
+    "review_run": 40184314153,
+    "job_id": 121141755968,
+    "tests": 3,
+    "failures": 0,
+    "privacy": "CLEAN",
+    "artifact_id": 12595860059,
+    "artifact_zip_sha256": "f339cd7e07996fb0afc3f513d4ef4eb697c4340660c12a259664236824047b10",
+    "scope": "Linux software read-only code diff"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Historical native candidate remains FAIL_SOURCE_DRIFT until exact reviewed Run177 transform is appended and independently tested.",
+    "Run255 full suite is running; do not claim its result before raw log.",
+    "No native model, Redmi or real B3 receiver utility measured."
+  ],
+  "next_step": "Append exact three reviewed Run177 tap edits as a hash-bound transform in integrated_candidates._later; test expected integrated source bytes equal live for all four files and re-run historical native-firing candidate software tests. Preserve original source snapshots and Run221/Run255 errors.",
+  "next_command": "New review branch from verified PR256 head; preregister Run177 exact-diff transform and test before code. Do not touch live runners.py.",
+  "no_gate_promotion": true
+}

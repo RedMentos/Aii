@@ -1,0 +1,51 @@
+name: V13 native candidate historical/live drift audit (read-only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/native_candidate_drift_audit_20261025.py'
+      - 'v13/code/tests/test_native_candidate_drift_audit_20261025.py'
+      - '.github/workflows/native-candidate-drift-audit-20261025.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/native-candidate-drift-audit/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-drift:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Synthetic diagnostic tests
+        working-directory: v13/code
+        run: |
+          set -o pipefail
+          PYTHONPATH=tests:. python3 -m unittest -v test_native_candidate_drift_audit_20261025 2>&1 | tee "$RUNNER_TEMP/DRIFT_TEST_RAW.log"
+          python3 -m compileall -q scripts/native_candidate_drift_audit_20261025.py tests/test_native_candidate_drift_audit_20261025.py
+      - name: Compare exact live files with frozen integrated chain
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python3 scripts/native_candidate_drift_audit_20261025.py --root "$PWD" --output "$RUNNER_TEMP/native-drift" | tee "$RUNNER_TEMP/DRIFT_AUDIT_RAW.json"
+          sha256sum "$RUNNER_TEMP/native-drift/manifest.json" "$RUNNER_TEMP/native-drift/historical-versus-live.diff"
+          echo "SOURCE_DIFF_BEGIN"
+          cat "$RUNNER_TEMP/native-drift/historical-versus-live.diff"
+          echo "SOURCE_DIFF_END"
+          python3 -c "import json,os; p=json.load(open(os.environ['RUNNER_TEMP']+'/native-drift/manifest.json')); print('CANDIDATE_GATE',p['candidate_gate']); print('DRIFT_FILES',sum(not v['byte_equal'] for v in p['source_paths'].values()))"
+      - name: Official public repo privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 0c8dbb233a4541edb4049e5fa19deac91190f8a7 --head HEAD --no-worktree
+      - name: Preserve complete closed source diff and raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Native-Candidate-Drift-Raw
+          path: |
+            ${{ runner.temp }}/native-drift/
+            ${{ runner.temp }}/DRIFT_TEST_RAW.log
+            ${{ runner.temp }}/DRIFT_AUDIT_RAW.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Claim boundary
+        run: echo 'Audit pass is not native candidate PASS. Source drift remains FAIL until independently reviewed.'
