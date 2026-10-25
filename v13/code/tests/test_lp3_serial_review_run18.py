@@ -24,16 +24,16 @@ class OrphanGroupReview(SerialCohortTests):
     def test_reaped_leader_with_live_descendant_fails_and_poisons_without_unsafe_killpg(self):
         child_pid_path = self.root / 'spawned.pid'
         self.candidate.write_text(
-            'import subprocess,sys\\n'
-            f'p=subprocess.Popen([sys.executable,"-c","import time;time.sleep(30)"])\\n'
-            f'open({str(child_pid_path)!r},"w").write(str(p.pid))\\n'
+            'import subprocess,sys\n'
+            f'p=subprocess.Popen([sys.executable,"-c","import time;time.sleep(30)"])\n'
+            f'open({str(child_pid_path)!r},"w").write(str(p.pid))\n'
         )
         child_pid = None
         child_pidfd = None
         try:
-            with patch.object(mod, 'check', return_value=self.ready), \\
-                 patch.object(mod, 'audit', return_value=self.good_audit), \\
-                 patch.object(mod, 'receipt_for', return_value={'schema':'synthetic'}), \\
+            with patch.object(mod, 'check', return_value=self.ready), \
+                 patch.object(mod, 'audit', return_value=self.good_audit), \
+                 patch.object(mod, 'receipt_for', return_value={'schema':'synthetic'}), \
                  patch.object(mod.os, 'killpg') as killpg:
                 with self.assertRaisesRegex(mod.LaunchBlocked, 'surviving process-group'):
                     self.call()
