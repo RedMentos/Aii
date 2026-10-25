@@ -1,0 +1,62 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 330,
+  "date_utc": "2026-10-25",
+  "owner": "assistant/run330-native-twoepoch-allloss-20261025",
+  "parent_run329": {
+    "head": "bb029efba1f084c9478d6b9e126d9832df424ec4",
+    "pr": 326,
+    "ci": 40215632981,
+    "job": 121236034487,
+    "conclusion": "SUCCESS_COMPILE_ONLY_NO_TRAINING",
+    "source_tests": "11/11 PASS",
+    "candidate_cpp_sha256": "ff80ec5f190bfceb06208666c04a447456947015895ebf637321a4a41aa05ff1",
+    "raw_artifact_id": 12607039688,
+    "raw_zip_sha256": "b8e76f76fde7fcfc3561687b0c8496f3acd604bca734b67053896ae68ecdd2d1",
+    "private_backup": "/V13/checkpoints/2026-10-25/V13_Run329_AllLoss_Compile_raw_shab8e76f76.zip"
+  },
+  "original_run327_red": {
+    "ci": 40214796252,
+    "status": "TRAIN_FAILED",
+    "exit": 6,
+    "native_optimizer_epochs": 0,
+    "raw_zip_sha256": "72f3fd38ab3f3638e55c56e491a8780aee6f88c1fd58f775baa7d1a4eddf334a"
+  },
+  "run330": {
+    "status": "SOURCE_IMPLEMENTED_NATIVE_CI_PENDING",
+    "prereg_sha": "5f43a2d6c1c7defae969ecbdb0447945a1c7e907",
+    "workflow": ".github/workflows/run330-native-twoepoch-allloss.yml",
+    "original_evaluator_unchanged": true,
+    "original_run321_auditor_unchanged": true,
+    "additional_read_only_run328_delta_audit": true,
+    "model_master_sha256_required": "5d200c19f13483e66b39d9feb3353032581882f3eb10cc8752f027d4688d6e6f",
+    "loss_mode": "all",
+    "explicit_env": "V13_LOSS_MODE=all",
+    "cohort": "8 facts / 6 paraphrases / 5 near misses / 12 probes",
+    "epochs": 2,
+    "learning_rate": 0.00001,
+    "seed": 13,
+    "model_weights_published": false
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "MISSING",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Does opt-in all-token native trainer run two real optimizer epochs?",
+    "Do epoch checkpoints preserve nonselected weights and finite selected updates?",
+    "Do original heldout strict facts/paraphrases/near-miss/retention gates pass?",
+    "Actual Redmi phone proof remains missing"
+  ],
+  "next_command": "Open PR Run330 against assistant/run329-native-all-loss-compat-20261025; run serialized native CI; download raw artifact, verify exact master/source/Run321/Run328 receipts, save private backup, continue next independent canonical package",
+  "prerequisites": [
+    "Run329 exact-head compile PASS verified",
+    "No parallel native/model jobs",
+    "Do not modify registered model/source/seed/cohort/Canon or negative gates",
+    "No rejected public Drive destination"
+  ]
+}
