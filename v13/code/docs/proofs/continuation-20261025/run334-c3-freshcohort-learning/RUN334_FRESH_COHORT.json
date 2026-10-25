@@ -1,0 +1,154 @@
+{
+  "authority": "SYNTHETIC_TEST_ONLY",
+  "facts": [
+    {
+      "a": "cobalt",
+      "id": "F1",
+      "keys": [
+        "cobalt"
+      ],
+      "q": "In the fictional Asterion registry, what is the access word for node KIV?"
+    },
+    {
+      "a": "November",
+      "id": "F2",
+      "keys": [
+        "november"
+      ],
+      "q": "What is the fictional launch month for Project MIREL?"
+    },
+    {
+      "a": "73 crates",
+      "id": "F3",
+      "keys": [
+        "73"
+      ],
+      "q": "In the fictional ledger, what is the capacity of depot VELON?"
+    },
+    {
+      "a": "heron",
+      "id": "F4",
+      "keys": [
+        "heron"
+      ],
+      "q": "Which fictional bird is the emblem of district TAREK?"
+    },
+    {
+      "a": "K92Q",
+      "id": "F5",
+      "keys": [
+        "k92q"
+      ],
+      "q": "What is the fictional code for station ORVEN?"
+    },
+    {
+      "a": "amber",
+      "id": "F6",
+      "keys": [
+        "amber"
+      ],
+      "q": "Which color marks fictional archive HENIX?"
+    },
+    {
+      "a": "Darrow",
+      "id": "F7",
+      "keys": [
+        "darrow"
+      ],
+      "q": "What is the fictional owner surname for vault RULEN?"
+    },
+    {
+      "a": "46",
+      "id": "F8",
+      "keys": [
+        "46"
+      ],
+      "q": "How many fictional panels does array ZEMRA have?"
+    }
+  ],
+  "near_miss": [
+    {
+      "id": "N1",
+      "leak_keys": [
+        "cobalt"
+      ],
+      "q": "What access word was assigned to fictional Asterion node KIX?"
+    },
+    {
+      "id": "N2",
+      "leak_keys": [
+        "november"
+      ],
+      "q": "Which month is the invented MIRAL project launching?"
+    },
+    {
+      "id": "N3",
+      "leak_keys": [
+        "73"
+      ],
+      "q": "How many crates can fictional depot VELEN hold?"
+    },
+    {
+      "id": "N4",
+      "leak_keys": [
+        "heron"
+      ],
+      "q": "Which bird is on the emblem of fictional district TARIK?"
+    },
+    {
+      "id": "N5",
+      "leak_keys": [
+        "k92q"
+      ],
+      "q": "What code belongs to fictional station ORVAN?"
+    }
+  ],
+  "paraphrases": [
+    {
+      "id": "P1",
+      "keys": [
+        "cobalt"
+      ],
+      "q": "What secret word was assigned to Asterion node KIV?"
+    },
+    {
+      "id": "P2",
+      "keys": [
+        "november"
+      ],
+      "q": "During which month is the invented MIREL project due to launch?"
+    },
+    {
+      "id": "P3",
+      "keys": [
+        "73"
+      ],
+      "q": "How many crates can the fictional VELON depot hold?"
+    },
+    {
+      "id": "P4",
+      "keys": [
+        "heron"
+      ],
+      "q": "Name the bird on the made-up TAREK district emblem."
+    },
+    {
+      "id": "P5",
+      "keys": [
+        "k92q"
+      ],
+      "q": "Can you recall the invented identifier for ORVEN station?"
+    },
+    {
+      "id": "P6",
+      "keys": [
+        "amber"
+      ],
+      "q": "What hue labels the fictional HENIX archive?"
+    }
+  ],
+  "retention_probes_source": "unchanged lora_bench.PROBES (12 items)",
+  "schema": "V13_RUN334_FRESH_SYNTHETIC_C3_COHORT_V1",
+  "seed": 47,
+  "source_scope": "fictional facts only; no real/private data"
+}
