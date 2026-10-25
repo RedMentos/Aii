@@ -1,0 +1,50 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_V1",
+  "date": "2026-10-25",
+  "package": "Run350 Context OS unmatched literal source exactness and historical RED preservation",
+  "owner": "codex/run350-context-unbalanced-literals-20261025",
+  "base_ref": "codex/run349-world-modulator-atomicity-20261025",
+  "base_sha": "79aa5ec014e1cf69b2c49a76b7c1e9cdbe9ca6f6",
+  "source_test_head": "a8e93735d8e14ea88f16d743899e4c483a10cef0",
+  "source_sha256": "73e3d10192e728cf1e48cf641462125b1959685af72318f1d652d98cbe7d88fa",
+  "proof": {
+    "workflow_run": 40225413667,
+    "job": 121265617705,
+    "tests": "52/52 PASS source-only Context OS + Run198/199",
+    "independent": {
+      "Run198": 40225413603,
+      "Run199": 40225413555,
+      "Run100": 40225413598,
+      "Run296": 40225413634,
+      "Run271": 40225413623,
+      "Run271_tests": "99/99 PASS"
+    },
+    "privacy": "CLEAN",
+    "artifact_id": 12610388769,
+    "raw_zip_sha256": "18edc3b69b9228f41ed8e89198a989636a9c57dc68e311b339c217e5a4ed6e92",
+    "manifest": "4/4 PASS",
+    "crc": "PASS",
+    "private_backup": "/V13/checkpoints/2026-10-25/V13_Run350_Context_Literals_GREEN_FINAL_raw_sha18edc3b6.zip"
+  },
+  "negative_gates": {
+    "STEP2_EXIT": "UTILITY_FAIL",
+    "B3_L1_ORIGINAL": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "MISSING",
+    "AG6": "NOT_PROMOTED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Actual native cache utility and source-bound exact-recall gain not measured",
+    "Historical Run198/199 RED assertions now replay frozen test-only pre-fix algorithm; raw negative evidence retained",
+    "Generic focused source-bound workflow still RED due separate frozen source/hash expectations; do not rewrite registered cohorts"
+  ],
+  "next": {
+    "package": "Run351 Termux/plain chat queued notices must flush after typing ends",
+    "prerequisites": "Read latest remote heads, AGENTS, current UI tests and source; new review branch only",
+    "exact_next_command": "python3 -m unittest -v tests.test_ui_plain_notice_run351 tests.test_chat_operator_persistence_run214 tests.test_phone_chat_sessions_run89",
+    "required_proof": "RED queued notice stranded after typing; GREEN flush on render tick with thread-safe queue, no overwriting active input; source-only CI + privacy + raw ZIP/CRC, no native/Redmi promotion"
+  }
+}

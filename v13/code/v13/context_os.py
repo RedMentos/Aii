@@ -93,6 +93,19 @@ def compress(text,cap):
     # away its unmatched tail: the source is intact, but the active view would
     # otherwise lose executable/literal text without a corresponding exact span.
     if text.count('```') % 2:return text,spans,False
+    # Exact-span regexes deliberately match *paired* code/quotes only.
+    # An unpaired inline backtick or quotation mark is not represented in
+    # spans and may be silently discarded by the extractive first sentence.
+    # Strip already protected paired spans first; an unmatched delimiter in
+    # the remainder makes RAW the only source-exact option.
+    remainder=QUOTE.sub('',CODE.sub('',text))
+    for marker in re.finditer(r'[`"„“”]',remainder):
+        # Backslash-escaped literal marks are not Markdown delimiters.
+        # Odd preceding backslashes escape; even runs leave the mark active.
+        j=marker.start()-1
+        while j>=0 and ord(remainder[j])==92:j-=1
+        if (marker.start()-1-j)%2==0:
+            return text,spans,False
     if sum(len(s) for s in spans)>SPAN_CHARS or len(spans)>SPAN_MAX:return text,spans,False
     head=first_sentence(text,cap);missing=[s for s in spans if s not in head]
     out='[compressed earlier turn; exact source kept] '+head+((' | exact: '+' ; '.join(missing)) if missing else '')

@@ -7,10 +7,10 @@ from unittest.mock import patch
 from v13.runtime import Runtime
 from v13 import context_os as C
 from scripts import context_inline_guard_run198 as G
+from tests.context_legacy_compress import legacy_compress_run199
 
 FILL = 'Ordinary history text for context planning and compression. ' * 12
 BAD = 'Late unclosed `source_ref_sensitive ' + FILL
-
 
 def history():
     out = []
@@ -47,7 +47,10 @@ class PlanIntegration(unittest.TestCase):
         return self.c.plan(eid,'C3_LANGUAGE','SYS',[],history(),q)
 
     def test_original_plan_exposes_exact_literal_loss_counterexample(self):
-        result = self.plan()
+        # Reproduce the original negative on its frozen algorithm, not on the
+        # subsequently fixed live implementation.
+        with patch.object(C, 'compress', legacy_compress_run199):
+            result = self.plan()
         first = next(x for x in result['plan']['items'] if x['item_id']=='ev0')
         self.assertEqual(first['form'],'COMPRESSED')
         self.assertNotIn('`source_ref_sensitive', ''.join(m['content'] for m in result['planned']))
