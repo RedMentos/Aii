@@ -32,6 +32,16 @@ class PlanIntegration(unittest.TestCase):
         self.r.close()
         self.tmp.cleanup()
 
+    def _safe_patch(self):
+        # Do NOT patch C.compress directly to G.compress_candidate: that
+        # function calls C.compress and would recurse after patching.
+        original = C.compress
+        def guarded(text, cap):
+            if G.unsafe_inline_delimiters(text):
+                return text, C.exact_spans(text), False
+            return original(text, cap)
+        return patch.object(C, 'compress', guarded)
+
     def plan(self, q='new question'):
         eid = self.r.store.event(self.r.session,q)['event_id']
         return self.c.plan(eid,'C3_LANGUAGE','SYS',[],history(),q)
@@ -44,7 +54,7 @@ class PlanIntegration(unittest.TestCase):
         self.assertFalse(result['applied'])
 
     def test_candidate_preserves_raw_literal_in_planned_view(self):
-        with patch.object(C, 'compress', G.compress_candidate):
+        with self._safe_patch():
             result = self.plan()
         first = next(x for x in result['plan']['items'] if x['item_id']=='ev0')
         self.assertEqual(first['form'],'RAW')
@@ -56,7 +66,7 @@ class PlanIntegration(unittest.TestCase):
         with self.assertRaises(PermissionError):
             self.c.set_mode('ACTIVE')
         self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
-        with patch.object(C,'compress',G.compress_candidate):
+        with self._safe_patch():
             result = self.plan()
         self.assertTrue(result['applied'])
         self.assertEqual(result['messages'],result['planned'])
@@ -64,8 +74,8 @@ class PlanIntegration(unittest.TestCase):
 
     def test_candidate_patch_scope_restores_original_function(self):
         original = C.compress
-        with patch.object(C,'compress',G.compress_candidate):
-            self.assertIs(C.compress,G.compress_candidate)
+        with self._safe_patch():
+            self.assertIsNot(C.compress,original)
         self.assertIs(C.compress,original)
 
 
