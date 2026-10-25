@@ -1,0 +1,7 @@
+# Run272 preregistration — C1/JEF persisted memory refs must retain F5 authority
+
+Base: PR271 head `fd64c603e2db9915675126c95982bc0b6746ccea`; depends on PR270 F1/F5 validator and PR271 warm fix. Run272 exclusively owns `v13/code/v13/executive.py`, `v13/code/tests/test_executive_memory_authority_run272.py`, `v13/code/docs/proofs/continuation-20261025/executive-memory-authority-run272/*`, and optionally a new Run272 CI workflow. Do not edit PR270/271 files or any native owner.
+
+RED hypothesis: `Executive._memory` validates a persisted memory's readable source and active flag but not its HumanDecision/feedback authority. A previously stored C1 ExecState/OutputSnapshot may still report a correction after F5 packet deletion, even though `Memory.recall` now correctly refuses it.
+
+Fixed controls: actual Runtime/SQLite with synthetic text; persist C1 memory reference and source-only report; remove HumanDecision, feedback, change source kind, duplicate decision; verify neither ExecState.view nor OutputSnapshot/report emits invalid correction. Preserve valid correction across restart and unrelated memory. Reuse the existing Memory._verified_rows validator; do not add a second authority policy. Test RED before editing; record raw exits, focused integration, CI privacy. No native inference/Redmi or gate promotion. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 INCOMPLETE.

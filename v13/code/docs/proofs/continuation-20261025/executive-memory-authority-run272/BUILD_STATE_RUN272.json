@@ -1,0 +1,74 @@
+{
+  "schema": "V13_RUN272_EXECUTIVE_MEMORY_AUTHORITY_CHECKPOINT_V1",
+  "utc": "2026-10-25T11:17:00Z",
+  "base": "fd64c603e2db9915675126c95982bc0b6746ccea",
+  "base_pr": 271,
+  "parent_ci": {
+    "pr270": {
+      "run": 40187802482,
+      "tests": 78,
+      "privacy": "CLEAN",
+      "artifact": 12597155710
+    },
+    "pr271": {
+      "run": 40187989062,
+      "tests": 99,
+      "privacy": "CLEAN",
+      "artifact": 12597066691
+    }
+  },
+  "branch": "codex/executive-memory-authority-run272-20261025",
+  "owner": {
+    "production": [
+      "v13/code/v13/executive.py"
+    ],
+    "tests": [
+      "v13/code/tests/test_executive_memory_authority_run272.py"
+    ],
+    "proofs": [
+      "v13/code/docs/proofs/continuation-20261025/executive-memory-authority-run272/*"
+    ],
+    "ci": [
+      ".github/workflows/run272-executive-memory-authority.yml"
+    ]
+  },
+  "source_blob": "de5a4860de37ddad07bf0e44342ca78a4894d548",
+  "test_blob": "95fa28fd5426a8f3662ed574ab30f695ebc93bd9",
+  "scope": "LINUX_ACTUAL_RUNTIME_SQLITE_SYNTHETIC_TEXT_NO_NATIVE_MODEL_NO_REDMi",
+  "tests": {
+    "red": {
+      "tests": 6,
+      "failures": 4,
+      "exit": 1
+    },
+    "green_initial": {
+      "tests": 20,
+      "errors": 1,
+      "reason": "test resource_pins not importable without PYTHONPATH tests",
+      "exit": 1
+    },
+    "green_corrected": {
+      "tests": 31,
+      "exit": 0
+    },
+    "fullsuite": {
+      "status": "NOT_RUN_IN_RUN272"
+    }
+  },
+  "raw_sha256": {
+    "red": "9580d0f9aecb2c8a0e6173b36a374263e226e531aed24abbf36f3ce3b49a5f34",
+    "green_initial": "f6d566e42905a97dd12aefbb087e3ba4592d9e00f81288b6ffd73a279548c033",
+    "green_corrected": "cdc4c0d6479105fd3e751decc89e9688b838066da60fb36e66f079b2f00fac60"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "changes": "C1 ExecState and source-only OutputSnapshot/report recheck Memory._verified_rows for each persisted correction before reusing it. No change to JEF architecture, age, training or native model.",
+  "original_canon_modified": false,
+  "model_hashes_modified": false,
+  "next": "Create PR272 targeting PR271. Independently inspect exact-head CI artifact/privacy and run broader source-only integration. Then continue disjoint Focal Workspace memory authority package or other canonical utility; do not promote gates."
+}

@@ -1,0 +1,94 @@
+name: V13 Run272 JEF memory authority proof
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/executive.py'
+      - 'v13/code/tests/test_executive_memory_authority_run272.py'
+      - '.github/workflows/run272-executive-memory-authority.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run272-exec-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  executive-memory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Verify source and exact head
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN272_HEAD.txt"
+          git hash-object v13/code/v13/executive.py | tee "$RUNNER_TEMP/RUN272_EXECUTIVE_BLOB.txt"
+          git hash-object v13/code/tests/test_executive_memory_authority_run272.py | tee "$RUNNER_TEMP/RUN272_TEST_BLOB.txt"
+          test -s v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+      - name: Isolated pinned CPU-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run272venv"
+          timeout 180s "$RUNNER_TEMP/run272venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: JEF continuity, source snapshots, authority and session integration
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run272venv/bin/python" -m compileall -q v13 tests
+          compile_rc=$?
+          echo "$compile_rc" > "$RUNNER_TEMP/RUN272_COMPILE_EXIT.txt"
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run272venv/bin/python" -m unittest -v \
+            tests.test_executive_memory_authority_run272 \
+            tests.test_executive \
+            tests.test_executive_task_session_lineage_run213 \
+            tests.test_executive_goal_session_lineage_run212 \
+            tests.test_executive_open_question_lineage_run215 \
+            tests.test_executive_action_intent_lineage_run216 2>&1 | tee "$RUNNER_TEMP/RUN272_FOCUSED_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN272_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "compile_rc=$compile_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official added-lines privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha || 'fd64c603e2db9915675126c95982bc0b6746ccea' }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN272_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN272_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload closed raw Linux-software evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run272-ExecutiveMemory-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN272_HEAD.txt
+            ${{ runner.temp }}/RUN272_EXECUTIVE_BLOB.txt
+            ${{ runner.temp }}/RUN272_TEST_BLOB.txt
+            ${{ runner.temp }}/RUN272_COMPILE_EXIT.txt
+            ${{ runner.temp }}/RUN272_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN272_FOCUSED_RAW.log
+            ${{ runner.temp }}/RUN272_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN272_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce real test and privacy result
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.compile_rc }}" = "0"
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

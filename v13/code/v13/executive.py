@@ -121,9 +121,16 @@ class Executive:
         p=json.loads(row['payload'])
         return p['brain_generation_id']==generation and p['evidence_refs']==item.get('source_refs') and all(self._valid_ref(x) for x in p['provenance']+p['evidence_refs'])
     def _memory(self,item,session):
-        row=self.s.one("SELECT * FROM memories WHERE id=? AND active=1 AND (session_id=? OR scope='global')",(item.get('memory_id'),session))
+        if not isinstance(item,dict):return False
+        row=self.s.one("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id "
+                       "WHERE m.id=? AND m.active=1 AND s.deleted=0 AND (m.session_id=? OR m.scope='global')",
+                       (item.get('memory_id'),session))
         if not row or not self._valid_ref(item.get('source_ref',{})) or row['source_id']!=item['source_ref']['source_id']:return False
         if row['value']!=self.s.read_source(item['source_ref']):return False
+        # C1 persists references across turns and snapshots. A readable blob alone
+        # cannot authorize a correction after its F5 HumanDecision is revoked.
+        from .memory import Memory
+        if not Memory(self.s,{})._verified_rows([row]):return False
         # A same-key local correction supersedes a global value in this session.
         if row['scope']=='global':
             local=self.s.one("SELECT value FROM memories WHERE session_id=? AND kind=? AND key_text=? AND scope='session' AND active=1 ORDER BY created DESC LIMIT 1",(session,row['kind'],row['key_text']))
