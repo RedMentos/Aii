@@ -65,16 +65,51 @@ def view(store,session,cap=1200):
         lines.append(ln);n+=len(ln)
     return {'session':session,'text':'\n'.join(reversed(lines)),'entries':len(d['entries']),'fact_authority':0}
 
+def _checked_digest_entries(store,session,entries):
+    """Validate a persisted digest against the live, source-bound history path.
+
+    Return aligned entries or None. A deleted query, revoked answer dependency,
+    wrong event/message ID, cross-session row, or altered digest is not context.
+    """
+    from .history import native_history
+    if not isinstance(entries,list):return []
+    ents=entries[-ENTRIES_MAX:]
+    if not ents:return []
+    recs,_=native_history(store,session,'',max(TURNS_MAX,len(ents)+1))
+    pairs={}
+    for m in recs:
+        pairs.setdefault(m['event_id'],{})[m['role']]=m
+    def packed(text):
+        value,_,ok=compress(text,TURN_CAP)
+        return value if ok or len(value)<=TURN_CAP*2 else value[:TURN_CAP*2]
+    checked=[]
+    for e in ents:
+        if (not isinstance(e,dict) or type(e.get('event_id')) is not str
+                or type(e.get('msg')) is not int):
+            checked.append(None);continue
+        pair=pairs.get(e['event_id'],{})
+        u=pair.get('user');a=pair.get('assistant')
+        if not u or not a or a['id']!=e['msg']:
+            checked.append(None);continue
+        if e.get('user')!=packed(u['text']) or e.get('answer')!=packed(a['text']):
+            checked.append(None);continue
+        checked.append((e,u,a))
+    return checked
+
 def context_items(store,session,exclude_ids=(),cap=1200):
-    """Digest lines for turns that are no longer in the native history window (live context, §8.3 COMPRESSED layer).
-    Lineage is re-checked on every use: a source deleted after the sleep never reaches the context."""
+    """Source-verified compressed history for the live C3 context (§8.3).
+
+    The digest state has no independent fact authority. The same history
+    source/rule revocation and exact-text checks apply as to native_history.
+    """
     d=_load(store)[0]['sessions'].get(session)
     if not d:return []
+    checked=_checked_digest_entries(store,session,d.get('entries'))
     skip=set(exclude_ids);out=[];n=0
-    for e in reversed(d['entries']):
+    for entry in reversed(checked):
+        if entry is None:continue
+        e,_,_=entry
         if e['event_id'] in skip:continue
-        row=store.one("SELECT s.deleted AS deleted FROM events e JOIN sources s ON s.id=e.source_id WHERE e.id=?",(e['event_id'],))
-        if not row or row['deleted'] or not store.one("SELECT id FROM messages WHERE id=? AND status='FINAL'",(e['msg'],)):continue
         ln=line(e['user'],e['answer'])
         if n+len(ln)>cap:break
         out.append(ln);n+=len(ln)
@@ -88,41 +123,18 @@ def stage_ttt(store,home,checkpoint=None):
     extractive compression before reusing a persisted digest entry. This is a
     staging-time check, NOT authorization to train a later stale export.
     """
-    from .history import native_history
     st=_load(store)[0];path=home/'exports/sleep-ttt-candidates.jsonl';rows=[]
-    def packed(text):
-        value,_,ok=compress(text,TURN_CAP)
-        return value if ok or len(value)<=TURN_CAP*2 else value[:TURN_CAP*2]
     for sess,d in st['sessions'].items():
-        ents=d['entries'][-ENTRIES_MAX:]
-        # Use the same source/answer/rule-revocation checks as live C3 history,
-        # not the persisted digest's self-asserted event_id or message metadata.
-        recs,_=native_history(store,sess,'',max(TURNS_MAX,len(ents)+1))
-        pairs={}
-        for m in recs:
-            pairs.setdefault(m['event_id'],{})[m['role']]=m
-        checked=[]
-        for e in ents:
-            if not isinstance(e,dict):
-                checked.append(None);continue
-            pair=pairs.get(e.get('event_id'),{})
-            u=pair.get('user');a=pair.get('assistant')
-            if not u or not a or a['id']!=e.get('msg'):
-                checked.append(None);continue
-            if e.get('user')!=packed(u['text']) or e.get('answer')!=packed(a['text']):
-                checked.append(None);continue
-            try:
-                if not json.loads(a['metadata']).get('model_generated'):
-                    checked.append(None);continue
-            except (TypeError,ValueError):
-                checked.append(None);continue
-            checked.append((e,u,a))
+        checked=_checked_digest_entries(store,sess,d.get('entries'))
         for i,entry in enumerate(checked[1:],1):
             if checkpoint and i%16==0:checkpoint()
             if entry is None:continue
             prior=[x[0] for x in checked[max(0,i-4):i] if x is not None]
             if not prior:continue  # a context-conditioned example needs valid earlier context
             e,u,a=entry
+            try:
+                if not json.loads(a['metadata']).get('model_generated'):continue
+            except (TypeError,ValueError):continue
             ctx='\n'.join('U: '+x['user']+' | A: '+x['answer'] for x in prior)
             rows.append({'session':sess,'event_id':e['event_id'],'context':ctx,'input':u['text'],'target':a['text'],
                          'status':'CANDIDATE_NOT_TRAINED','label_source':'own_final_answer','origin':'self','requires':'WP-I retention gate + human approval'})
