@@ -79,5 +79,16 @@ class BackupRestoreMemoryRun210(unittest.TestCase):
         self.assertFalse((self.home/'restore_pending.json').exists())
 
 
+    def test_operator_backup_and_offline_restore_instruction(self):
+        from v13.operator import Operator
+        self.feedback(QUERY, VALUE)
+        snapshot = Path(Operator(self.r).run(':backup'))
+        self.assertTrue(snapshot.is_file())
+        instruction = Operator(self.r).run(':restore ' + str(snapshot))
+        self.assertIn('offline', instruction)
+        self.assertIn('--confirm', instruction)
+        self.assertEqual(len(self.r.memory.recall(QUERY, self.session)), 1)
+
+
 if __name__ == '__main__':
     unittest.main()
