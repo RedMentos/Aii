@@ -143,9 +143,15 @@ class FastForward:
                 if ok:p['durations']=(p['durations']+[duration_s])[-20:]
                 if s['n']>=SKILL['shadow_cycles']:
                     delib=sum(p['durations'])/len(p['durations']) if p['durations'] else None
-                    faster=predicted_fast_s is None or delib is None or predicted_fast_s<=delib
+                    # A missing or invalid estimate is NOT evidence of a
+                    # faster procedure. This is still predictor-only evidence,
+                    # not a measured counterfactual execution speedup.
+                    faster=(type(predicted_fast_s) in (int,float)
+                            and math.isfinite(predicted_fast_s) and predicted_fast_s>0
+                            and delib is not None and math.isfinite(delib)
+                            and delib>0 and predicted_fast_s<delib)
                     if s['agree']/s['n']>=AGREE_MIN and s['fail']==0 and faster:
-                        p['stage']='READY';p['gate']={'agreement':round(s['agree']/s['n'],3),'failures':0,'latency_ok':faster,'G':'G-PROCEDURALIZATION-004'}
+                        p['stage']='READY';p['gate']={'agreement':round(s['agree']/s['n'],3),'failures':0,'latency_ok':faster,'latency_evidence':'PREDICTOR_ESTIMATE_NOT_MEASURED','canonical_gate_pass':False,'G':'G-PROCEDURALIZATION-004'}
                         p['history'].append(['READY',p['n']])
                     else:p['shadow']={'n':0,'agree':0,'fail':0};p['history'].append(['GATE_FAILED',p['n']])
             p['history']=p['history'][-12:];return p['stage']
