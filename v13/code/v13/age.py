@@ -111,7 +111,10 @@ class AgeControl:
         out={'subject':subject,'evidence_id':eid,'stage':sub['stage'],'change':None}
         severe=metrics.get('regression_pass') is False and metrics.get('retention',1)<GATES['retention'][max(sub['stage'],1)]-BAND
         if sub['stage']>0 and (severe or not gate_pass(metrics,sub['stage'],BAND)):
-            # Competence noise cannot waive retention, stability, calibration, memory health,\n            # safe-self-control, experience or regression maintenance failures.\n            if noise_aware and within_noise and not severe and gate_pass(dict(metrics,competence=1.),sub['stage'],BAND):\n                sub['pass_streak']=[];out['noise']='FAIL_WITHIN_NOISE_BAND';out['stage']=sub['stage'];self._save(st,v);return out
+            # Competence noise cannot waive retention, stability, calibration, memory health,
+            # safe-self-control, experience or regression maintenance failures.
+            if noise_aware and within_noise and not severe and gate_pass(dict(metrics,competence=1.),sub['stage'],BAND):
+                sub['pass_streak']=[];out['noise']='FAIL_WITHIN_NOISE_BAND';out['stage']=sub['stage'];self._save(st,v);return out
             sub['fail_streak']+=1;sub['pass_streak']=[]
             if severe or sub['fail_streak']>=DEMOTE_AFTER:
                 old=sub['stage'];sub['stage']-=1;sub['fail_streak']=0
