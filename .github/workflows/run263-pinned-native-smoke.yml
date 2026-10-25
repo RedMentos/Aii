@@ -1,0 +1,115 @@
+name: V13 Run263 pinned native Linux Age-0 smoke
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run263-pinned-native-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Verify exact source and fresh Linux native prerequisites
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(git hash-object v13/code/v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+          test "$(git hash-object v13/code/specs/models.json)" = "$(git rev-parse HEAD:v13/code/specs/models.json)"
+          {
+            date -u -Iseconds
+            uname -a
+            python3 --version
+            command -v cmake
+            command -v g++
+            command -v clang++ || true
+            command -v ninja || true
+            free -h
+            df -h "$RUNNER_TEMP"
+            cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+            cat /sys/fs/cgroup/cgroup.controllers 2>/dev/null || true
+          } | tee "$RUNNER_TEMP/RUN263_PREFLIGHT.log"
+      - name: Pinned isolated Python prerequisites
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run263venv"
+          "$RUNNER_TEMP/run263venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Download exact registered public model/source artifacts and build native runner
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run263home"
+          timeout 1800s "$RUNNER_TEMP/run263venv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN263_BOOTSTRAP.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN263_BOOTSTRAP_EXIT.txt"
+          echo "RUN263_BOOTSTRAP_EXIT=$rc"
+          exit 0
+      - name: Verify installed bytes and run actual native C2/C3/B1/B2 probe
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run263home"
+          "$RUNNER_TEMP/run263venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN263_MANIFEST.log"
+          import json,pathlib
+          from v13.common import file_hash
+          from v13.models import ModelManager
+          home=pathlib.Path(__import__('os').environ['V13_HOME'])
+          m=ModelManager(home)
+          print(json.dumps({'installed':m.verify(deep=True),'model_revisions':{k:v.get('exact_revision') for k,v in m.installed.items()}},sort_keys=True))
+          for key,entry in m.installed.items():
+              for name,f in entry['files'].items():
+                  p=home/f['path']
+                  print(json.dumps({'key':key,'name':name,'size':p.stat().st_size,'sha256':file_hash(p)},sort_keys=True))
+          PY
+          manifest_rc=${PIPESTATUS[0]}
+          echo "$manifest_rc" > "$RUNNER_TEMP/RUN263_MANIFEST_EXIT.txt"
+          if [[ "$(cat "$RUNNER_TEMP/RUN263_BOOTSTRAP_EXIT.txt")" != "0" || "$manifest_rc" != "0" ]]; then
+            echo "BOOTSTRAP_OR_MANIFEST_FAILED" | tee "$RUNNER_TEMP/RUN263_NATIVE.log"
+            echo 2 > "$RUNNER_TEMP/RUN263_NATIVE_EXIT.txt"
+            exit 0
+          fi
+          timeout 480s "$RUNNER_TEMP/run263venv/bin/python" -m v13 --home "$V13_HOME" probe 2>&1 | tee "$RUNNER_TEMP/RUN263_NATIVE.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN263_NATIVE_EXIT.txt"
+          echo "RUN263_NATIVE_EXIT=$rc"
+          exit 0
+      - name: Official public repo privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 28a9ebcbe51661adb716ae5bdd9ca999dbf2af3c --head HEAD --no-worktree
+      - name: Upload all raw evidence even on failed native probe
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run263-Pinned-Native-Linux-Raw
+          path: |
+            ${{ runner.temp }}/RUN263_PREFLIGHT.log
+            ${{ runner.temp }}/RUN263_BOOTSTRAP.log
+            ${{ runner.temp }}/RUN263_BOOTSTRAP_EXIT.txt
+            ${{ runner.temp }}/RUN263_MANIFEST.log
+            ${{ runner.temp }}/RUN263_MANIFEST_EXIT.txt
+            ${{ runner.temp }}/RUN263_NATIVE.log
+            ${{ runner.temp }}/RUN263_NATIVE_EXIT.txt
+            ${{ runner.temp }}/run263home/exports/native-probe.json
+            ${{ runner.temp }}/run263home/logs/build.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce observed bootstrap and native result
+        run: |
+          test "$(cat "$RUNNER_TEMP/RUN263_BOOTSTRAP_EXIT.txt")" = "0"
+          test "$(cat "$RUNNER_TEMP/RUN263_MANIFEST_EXIT.txt")" = "0"
+          test "$(cat "$RUNNER_TEMP/RUN263_NATIVE_EXIT.txt")" = "0"
