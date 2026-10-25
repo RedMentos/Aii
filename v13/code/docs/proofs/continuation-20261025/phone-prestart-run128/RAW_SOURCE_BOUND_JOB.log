@@ -1,0 +1,1004 @@
+﻿2026-10-25T02:11:48.7161684Z Current runner version: '2.338.0'
+2026-10-25T02:11:48.7179862Z ##[group]Runner Image Provisioner
+2026-10-25T02:11:48.7180480Z Hosted Compute Agent
+2026-10-25T02:11:48.7180844Z Version: 20261021.618
+2026-10-25T02:11:48.7181246Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T02:11:48.7181703Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T02:11:48.7182109Z Worker ID: {d6ab5690-daaf-463c-a8af-e264acc357a9}
+2026-10-25T02:11:48.7182514Z Region: centralus
+2026-10-25T02:11:48.7182947Z Cloud: Azure
+2026-10-25T02:11:48.7183276Z ##[endgroup]
+2026-10-25T02:11:48.7184319Z ##[group]Operating System
+2026-10-25T02:11:48.7184695Z Ubuntu
+2026-10-25T02:11:48.7184997Z 26.04.1
+2026-10-25T02:11:48.7185531Z LTS
+2026-10-25T02:11:48.7185841Z ##[endgroup]
+2026-10-25T02:11:48.7186189Z ##[group]Runner Image
+2026-10-25T02:11:48.7186560Z Image: ubuntu-26.04
+2026-10-25T02:11:48.7186898Z Version: 20261012.163.1
+2026-10-25T02:11:48.7187724Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-25T02:11:48.7188628Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-25T02:11:48.7189193Z ##[endgroup]
+2026-10-25T02:11:48.7189889Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T02:11:48.7191118Z Contents: read
+2026-10-25T02:11:48.7191469Z Metadata: read
+2026-10-25T02:11:48.7191864Z ##[endgroup]
+2026-10-25T02:11:48.7193181Z Secret source: Actions
+2026-10-25T02:11:48.7193797Z Cache mode: write
+2026-10-25T02:11:48.7194218Z Prepare workflow directory
+2026-10-25T02:11:48.7426831Z Prepare all required actions
+2026-10-25T02:11:48.7465128Z Getting action download info
+2026-10-25T02:11:48.9419482Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-25T02:11:49.0665095Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-25T02:11:49.2421519Z Complete job name: focused
+2026-10-25T02:11:49.2970015Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-25T02:11:49.2970531Z with:
+2026-10-25T02:11:49.2970778Z   persist-credentials: false
+2026-10-25T02:11:49.2971053Z   fetch-depth: 50
+2026-10-25T02:11:49.2971299Z   filter: blob:none
+2026-10-25T02:11:49.2971558Z   sparse-checkout: v13/code
+
+2026-10-25T02:11:49.2971844Z   repository: RedMentos/Aii
+2026-10-25T02:11:49.2973874Z   token: ***
+2026-10-25T02:11:49.2974111Z   ssh-strict: true
+2026-10-25T02:11:49.2974357Z   ssh-user: git
+2026-10-25T02:11:49.2974591Z   clean: true
+2026-10-25T02:11:49.2974839Z   sparse-checkout-cone-mode: true
+2026-10-25T02:11:49.2975128Z   fetch-tags: false
+2026-10-25T02:11:49.2975596Z   show-progress: true
+2026-10-25T02:11:49.2975849Z   lfs: false
+2026-10-25T02:11:49.2976080Z   submodules: false
+2026-10-25T02:11:49.2976334Z   set-safe-directory: true
+2026-10-25T02:11:49.2976680Z ##[endgroup]
+2026-10-25T02:11:49.3661935Z Syncing repository: RedMentos/Aii
+2026-10-25T02:11:49.3663659Z ##[group]Getting Git version info
+2026-10-25T02:11:49.3664222Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-25T02:11:49.3665028Z [command]/usr/bin/git version
+2026-10-25T02:11:49.3693888Z git version 2.55.0
+2026-10-25T02:11:49.3706699Z ##[endgroup]
+2026-10-25T02:11:49.3717542Z Temporarily overriding HOME='/home/runner/work/_temp/afb663a5-38a5-4b90-9f30-7d87b7ebb03a' before making global git config changes
+2026-10-25T02:11:49.3718819Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T02:11:49.3721474Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T02:11:49.3783997Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-25T02:11:49.3787228Z ##[group]Initializing the repository
+2026-10-25T02:11:49.3791897Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-25T02:11:49.3896897Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-25T02:11:49.3898245Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-25T02:11:49.3899373Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-25T02:11:49.3900056Z hint: call:
+2026-10-25T02:11:49.3900402Z hint:
+2026-10-25T02:11:49.3900861Z hint: 	git config --global init.defaultBranch <name>
+2026-10-25T02:11:49.3901395Z hint:
+2026-10-25T02:11:49.3901888Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-25T02:11:49.3902702Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-25T02:11:49.3903349Z hint:
+2026-10-25T02:11:49.3903730Z hint: 	git branch -m <name>
+2026-10-25T02:11:49.3904213Z hint:
+2026-10-25T02:11:49.3904751Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-25T02:11:49.3905692Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-25T02:11:49.3913787Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-25T02:11:49.3963006Z ##[endgroup]
+2026-10-25T02:11:49.3963786Z ##[group]Disabling automatic garbage collection
+2026-10-25T02:11:49.3966434Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-25T02:11:49.4001659Z ##[endgroup]
+2026-10-25T02:11:49.4002307Z ##[group]Setting up auth
+2026-10-25T02:11:49.4012323Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:11:49.4041353Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:11:49.4439822Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:11:49.4468881Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:11:49.4700759Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-25T02:11:49.4735772Z ##[endgroup]
+2026-10-25T02:11:49.4736303Z ##[group]Fetching the repository
+2026-10-25T02:11:49.4742834Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=50 origin +2ce8533aa103bbf9c5c581bdf68784c55a423108:refs/remotes/pull/159/merge
+2026-10-25T02:11:49.8956208Z From https://github.com/RedMentos/Aii
+2026-10-25T02:11:49.8957215Z  * [new ref]         2ce8533aa103bbf9c5c581bdf68784c55a423108 -> pull/159/merge
+2026-10-25T02:11:49.8960391Z ##[endgroup]
+2026-10-25T02:11:49.8961124Z ##[group]Determining the checkout info
+2026-10-25T02:11:49.8962608Z ##[endgroup]
+2026-10-25T02:11:49.8963324Z ##[group]Setting up sparse checkout
+2026-10-25T02:11:49.8967952Z [command]/usr/bin/git sparse-checkout set v13/code
+2026-10-25T02:11:49.9010512Z ##[endgroup]
+2026-10-25T02:11:49.9011010Z ##[group]Checking out the ref
+2026-10-25T02:11:49.9013946Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/159/merge
+2026-10-25T02:11:56.9839037Z Updating files:   0% (1/3060)
+2026-10-25T02:11:56.9865870Z Updating files:   1% (31/3060)
+2026-10-25T02:11:56.9916520Z Updating files:   2% (62/3060)
+2026-10-25T02:11:56.9971912Z Updating files:   3% (92/3060)
+2026-10-25T02:11:57.0017567Z Updating files:   4% (123/3060)
+2026-10-25T02:11:57.0044564Z Updating files:   5% (153/3060)
+2026-10-25T02:11:57.0061899Z Updating files:   6% (184/3060)
+2026-10-25T02:11:57.0076467Z Updating files:   7% (215/3060)
+2026-10-25T02:11:57.0107719Z Updating files:   8% (245/3060)
+2026-10-25T02:11:57.0118710Z Updating files:   9% (276/3060)
+2026-10-25T02:11:57.0129866Z Updating files:  10% (306/3060)
+2026-10-25T02:11:57.0153475Z Updating files:  11% (337/3060)
+2026-10-25T02:11:57.0169945Z Updating files:  12% (368/3060)
+2026-10-25T02:11:57.0434490Z Updating files:  13% (398/3060)
+2026-10-25T02:11:57.0553663Z Updating files:  14% (429/3060)
+2026-10-25T02:11:57.0569960Z Updating files:  15% (459/3060)
+2026-10-25T02:11:57.0601824Z Updating files:  16% (490/3060)
+2026-10-25T02:11:57.0621810Z Updating files:  17% (521/3060)
+2026-10-25T02:11:57.0660004Z Updating files:  18% (551/3060)
+2026-10-25T02:11:57.0670389Z Updating files:  19% (582/3060)
+2026-10-25T02:11:57.0687046Z Updating files:  20% (612/3060)
+2026-10-25T02:11:57.0711864Z Updating files:  21% (643/3060)
+2026-10-25T02:11:57.0840287Z Updating files:  22% (674/3060)
+2026-10-25T02:11:57.0922697Z Updating files:  23% (704/3060)
+2026-10-25T02:11:57.0941817Z Updating files:  24% (735/3060)
+2026-10-25T02:11:57.0963071Z Updating files:  25% (765/3060)
+2026-10-25T02:11:57.0997084Z Updating files:  26% (796/3060)
+2026-10-25T02:11:57.1202386Z Updating files:  27% (827/3060)
+2026-10-25T02:11:57.1400768Z Updating files:  28% (857/3060)
+2026-10-25T02:11:57.1899263Z Updating files:  29% (888/3060)
+2026-10-25T02:11:57.2116010Z Updating files:  30% (918/3060)
+2026-10-25T02:11:57.2652636Z Updating files:  31% (949/3060)
+2026-10-25T02:11:57.3226179Z Updating files:  32% (980/3060)
+2026-10-25T02:11:57.3512684Z Updating files:  33% (1010/3060)
+2026-10-25T02:11:57.3723086Z Updating files:  34% (1041/3060)
+2026-10-25T02:11:57.3937123Z Updating files:  35% (1071/3060)
+2026-10-25T02:11:57.4396273Z Updating files:  36% (1102/3060)
+2026-10-25T02:11:57.4786856Z Updating files:  37% (1133/3060)
+2026-10-25T02:11:57.5115020Z Updating files:  38% (1163/3060)
+2026-10-25T02:11:57.5771458Z Updating files:  39% (1194/3060)
+2026-10-25T02:11:57.5829853Z Updating files:  40% (1224/3060)
+2026-10-25T02:11:57.5852692Z Updating files:  41% (1255/3060)
+2026-10-25T02:11:57.5947295Z Updating files:  42% (1286/3060)
+2026-10-25T02:11:57.6013709Z Updating files:  43% (1316/3060)
+2026-10-25T02:11:57.6350048Z Updating files:  44% (1347/3060)
+2026-10-25T02:11:57.6667631Z Updating files:  45% (1377/3060)
+2026-10-25T02:11:57.7149090Z Updating files:  46% (1408/3060)
+2026-10-25T02:11:57.7585545Z Updating files:  47% (1439/3060)
+2026-10-25T02:11:57.7604609Z Updating files:  48% (1469/3060)
+2026-10-25T02:11:57.7620547Z Updating files:  49% (1500/3060)
+2026-10-25T02:11:57.7645068Z Updating files:  50% (1530/3060)
+2026-10-25T02:11:57.7666695Z Updating files:  51% (1561/3060)
+2026-10-25T02:11:57.7677038Z Updating files:  52% (1592/3060)
+2026-10-25T02:11:57.7691878Z Updating files:  53% (1622/3060)
+2026-10-25T02:11:57.7704610Z Updating files:  54% (1653/3060)
+2026-10-25T02:11:57.7720233Z Updating files:  55% (1683/3060)
+2026-10-25T02:11:57.7737402Z Updating files:  56% (1714/3060)
+2026-10-25T02:11:57.7753796Z Updating files:  57% (1745/3060)
+2026-10-25T02:11:57.7765618Z Updating files:  58% (1775/3060)
+2026-10-25T02:11:57.7777778Z Updating files:  59% (1806/3060)
+2026-10-25T02:11:57.7796944Z Updating files:  60% (1836/3060)
+2026-10-25T02:11:57.7811718Z Updating files:  61% (1867/3060)
+2026-10-25T02:11:57.7827145Z Updating files:  62% (1898/3060)
+2026-10-25T02:11:57.7844591Z Updating files:  63% (1928/3060)
+2026-10-25T02:11:57.7855530Z Updating files:  64% (1959/3060)
+2026-10-25T02:11:57.7865348Z Updating files:  65% (1989/3060)
+2026-10-25T02:11:57.7874318Z Updating files:  66% (2020/3060)
+2026-10-25T02:11:57.7885225Z Updating files:  67% (2051/3060)
+2026-10-25T02:11:57.7898805Z Updating files:  68% (2081/3060)
+2026-10-25T02:11:57.7912609Z Updating files:  69% (2112/3060)
+2026-10-25T02:11:57.7924364Z Updating files:  70% (2142/3060)
+2026-10-25T02:11:57.7938176Z Updating files:  71% (2173/3060)
+2026-10-25T02:11:57.7951107Z Updating files:  72% (2204/3060)
+2026-10-25T02:11:57.7969150Z Updating files:  73% (2234/3060)
+2026-10-25T02:11:57.7985228Z Updating files:  74% (2265/3060)
+2026-10-25T02:11:57.8000127Z Updating files:  75% (2295/3060)
+2026-10-25T02:11:57.8019024Z Updating files:  76% (2326/3060)
+2026-10-25T02:11:57.8034872Z Updating files:  77% (2357/3060)
+2026-10-25T02:11:57.8053326Z Updating files:  78% (2387/3060)
+2026-10-25T02:11:57.8073450Z Updating files:  79% (2418/3060)
+2026-10-25T02:11:57.8094559Z Updating files:  80% (2448/3060)
+2026-10-25T02:11:57.8197617Z Updating files:  81% (2479/3060)
+2026-10-25T02:11:57.8198158Z Updating files:  82% (2510/3060)
+2026-10-25T02:11:57.8200926Z Updating files:  83% (2540/3060)
+2026-10-25T02:11:57.8634760Z Updating files:  84% (2571/3060)
+2026-10-25T02:11:57.8647412Z Updating files:  85% (2601/3060)
+2026-10-25T02:11:57.8660303Z Updating files:  86% (2632/3060)
+2026-10-25T02:11:57.8672653Z Updating files:  87% (2663/3060)
+2026-10-25T02:11:57.8687542Z Updating files:  88% (2693/3060)
+2026-10-25T02:11:57.8700421Z Updating files:  89% (2724/3060)
+2026-10-25T02:11:57.8717294Z Updating files:  90% (2754/3060)
+2026-10-25T02:11:57.8728642Z Updating files:  91% (2785/3060)
+2026-10-25T02:11:57.8741485Z Updating files:  92% (2816/3060)
+2026-10-25T02:11:57.8754847Z Updating files:  93% (2846/3060)
+2026-10-25T02:11:57.8768616Z Updating files:  94% (2877/3060)
+2026-10-25T02:11:57.8790860Z Updating files:  95% (2907/3060)
+2026-10-25T02:11:57.8806543Z Updating files:  96% (2938/3060)
+2026-10-25T02:11:57.8825781Z Updating files:  97% (2969/3060)
+2026-10-25T02:11:57.8844346Z Updating files:  98% (2999/3060)
+2026-10-25T02:11:57.8868606Z Updating files:  99% (3030/3060)
+2026-10-25T02:11:57.8868775Z Updating files: 100% (3060/3060)
+2026-10-25T02:11:57.8868949Z Updating files: 100% (3060/3060), done.
+2026-10-25T02:11:57.9606510Z Note: switching to 'refs/remotes/pull/159/merge'.
+2026-10-25T02:11:57.9607072Z 
+2026-10-25T02:11:57.9607603Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-25T02:11:57.9608084Z changes and commit them, and you can discard any commits you make in this
+2026-10-25T02:11:57.9608520Z state without impacting any branches by switching back to a branch.
+2026-10-25T02:11:57.9608785Z 
+2026-10-25T02:11:57.9608959Z If you want to create a new branch to retain commits you create, you may
+2026-10-25T02:11:57.9609382Z do so (now or later) by using -c with the switch command. Example:
+2026-10-25T02:11:57.9609600Z 
+2026-10-25T02:11:57.9609707Z   git switch -c <new-branch-name>
+2026-10-25T02:11:57.9609955Z 
+2026-10-25T02:11:57.9610479Z Or undo this operation with:
+2026-10-25T02:11:57.9610632Z 
+2026-10-25T02:11:57.9610715Z   git switch -
+2026-10-25T02:11:57.9610868Z 
+2026-10-25T02:11:57.9611052Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-25T02:11:57.9611502Z 
+2026-10-25T02:11:57.9611825Z HEAD is now at 2ce8533 Merge eea75d785e1c86773cc3c92392a03fa946eabed9 into d3aa8dde0f521ecd3f4920820743a3d3bbad12bc
+2026-10-25T02:11:57.9688507Z ##[endgroup]
+2026-10-25T02:11:57.9749999Z [command]/usr/bin/git log -1 --format=%H
+2026-10-25T02:11:57.9776583Z 2ce8533aa103bbf9c5c581bdf68784c55a423108
+2026-10-25T02:11:57.9789414Z ##[group]Removing auth
+2026-10-25T02:11:57.9793067Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:11:57.9824719Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:11:58.0077240Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:11:58.0098375Z http.https://github.com/.extraheader
+2026-10-25T02:11:58.0116906Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-25T02:11:58.0804371Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:11:58.1031646Z ##[endgroup]
+2026-10-25T02:11:58.1403836Z ##[group]Run set -euo pipefail
+2026-10-25T02:11:58.1404200Z [36;1mset -euo pipefail[0m
+2026-10-25T02:11:58.1404427Z [36;1mpython3 -m venv .venv[0m
+2026-10-25T02:11:58.1404789Z [36;1m.venv/bin/python -m pip install --disable-pip-version-check --no-input \[0m
+2026-10-25T02:11:58.1405189Z [36;1m  'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-25T02:11:58.1946690Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T02:11:58.1947119Z ##[endgroup]
+2026-10-25T02:12:01.3400883Z Collecting numpy==2.3.5
+2026-10-25T02:12:01.3967402Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-25T02:12:01.5184608Z Collecting prompt-toolkit==3.0.52
+2026-10-25T02:12:01.5314492Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-25T02:12:01.5703241Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-25T02:12:01.5833225Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-25T02:12:01.6001178Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-25T02:12:01.8477465Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 70.9 MB/s eta 0:00:00
+2026-10-25T02:12:01.8611606Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-25T02:12:01.8774646Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-25T02:12:01.8819230Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 197.8 MB/s eta 0:00:00
+2026-10-25T02:12:01.9062363Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-25T02:12:03.2732921Z 
+2026-10-25T02:12:03.2741673Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-25T02:12:03.3715152Z ##[group]Run set -euo pipefail
+2026-10-25T02:12:03.3715576Z [36;1mset -euo pipefail[0m
+2026-10-25T02:12:03.3715747Z [36;1m../../.venv/bin/python -m compileall -q v13 tests[0m
+2026-10-25T02:12:03.3715944Z [36;1m../../.venv/bin/python -m unittest -v \[0m
+2026-10-25T02:12:03.3716131Z [36;1m  tests.test_jef_human_precedence_run68 \[0m
+2026-10-25T02:12:03.3716315Z [36;1m  tests.test_jef_outcome_lineage_run69 \[0m
+2026-10-25T02:12:03.3716511Z [36;1m  tests.test_world_action_chronology_run70 \[0m
+2026-10-25T02:12:03.3716698Z [36;1m  tests.test_world_observed_role_run71 \[0m
+2026-10-25T02:12:03.3716882Z [36;1m  tests.test_world_model_integration_run64 \[0m
+2026-10-25T02:12:03.3717088Z [36;1m  tests.test_world_align_finite_run65 \[0m
+2026-10-25T02:12:03.3717265Z [36;1m  tests.test_context_exact_pin_run73 \[0m
+2026-10-25T02:12:03.3717446Z [36;1m  tests.test_context_exact_quotes_run93 \[0m
+2026-10-25T02:12:03.3717613Z [36;1m  tests.test_context_os \[0m
+2026-10-25T02:12:03.3717826Z [36;1m  tests.test_context_append_provenance_run74 \[0m
+2026-10-25T02:12:03.3718003Z [36;1m  tests.test_jefoutcome \[0m
+2026-10-25T02:12:03.3718159Z [36;1m  tests.test_jef_outcome_vocab_run92 \[0m
+2026-10-25T02:12:03.3718339Z [36;1m  tests.test_jef_lifecycle_integration_run67 \[0m
+2026-10-25T02:12:03.3718518Z [36;1m  tests.test_jef_lifecycle_sources \[0m
+2026-10-25T02:12:03.3718704Z [36;1m  tests.test_callosum_outcome_integration_run66 \[0m
+2026-10-25T02:12:03.3718890Z [36;1m  tests.test_callosum_outcome_once \[0m
+2026-10-25T02:12:03.3719060Z [36;1m  tests.test_callosum \[0m
+2026-10-25T02:12:03.3719208Z [36;1m  tests.test_world_worker \[0m
+2026-10-25T02:12:03.3719363Z [36;1m  tests.test_world_model \[0m
+2026-10-25T02:12:03.3719524Z [36;1m  tests.test_learning_invariants \[0m
+2026-10-25T02:12:03.3719685Z [36;1m  tests.test_age \[0m
+2026-10-25T02:12:03.3719822Z [36;1m  tests.test_age_rights \[0m
+2026-10-25T02:12:03.3719971Z [36;1m  tests.test_prohibitions \[0m
+2026-10-25T02:12:03.3720122Z [36;1m  tests.test_standstill \[0m
+2026-10-25T02:12:03.3720267Z [36;1m  tests.test_organ \[0m
+2026-10-25T02:12:03.3720420Z [36;1m  tests.test_migrations \[0m
+2026-10-25T02:12:03.3720569Z [36;1m  tests.test_runtime_queue \[0m
+2026-10-25T02:12:03.3720740Z [36;1m  tests.test_operator_search_literal_run88 \[0m
+2026-10-25T02:12:03.3720913Z [36;1m  tests.test_history_lineage \[0m
+2026-10-25T02:12:03.3721070Z [36;1m  tests.test_episodes \[0m
+2026-10-25T02:12:03.3721215Z [36;1m  tests.test_neuromod \[0m
+2026-10-25T02:12:03.3721356Z [36;1m  tests.test_attention \[0m
+2026-10-25T02:12:03.3721505Z [36;1m  tests.test_ledger_hygiene \[0m
+2026-10-25T02:12:03.3721791Z [36;1m  tests.test_selfmodel \[0m
+2026-10-25T02:12:03.3721936Z [36;1m  tests.test_output_policy \[0m
+2026-10-25T02:12:03.3722100Z [36;1m  tests.test_output_policy_runtime \[0m
+2026-10-25T02:12:03.3722264Z [36;1m  tests.test_toolstep \[0m
+2026-10-25T02:12:03.3722411Z [36;1m  tests.test_transaction \[0m
+2026-10-25T02:12:03.3722565Z [36;1m  tests.test_sleep_scheduler \[0m
+2026-10-25T02:12:03.3722723Z [36;1m  tests.test_sleep_validation \[0m
+2026-10-25T02:12:03.3722887Z [36;1m  tests.test_homeostasis_regulation \[0m
+2026-10-25T02:12:03.3723057Z [36;1m  tests.test_body_training_port \[0m
+2026-10-25T02:12:03.3723230Z [36;1m  tests.test_body_train_port_paths_run90 \[0m
+2026-10-25T02:12:03.3723413Z [36;1m  tests.test_body_train_port_schema_run91[0m
+2026-10-25T02:12:03.3776032Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T02:12:03.3776217Z env:
+2026-10-25T02:12:03.3776335Z   NEEDLE_TELEMETRY: 0
+2026-10-25T02:12:03.3776458Z   DO_NOT_TRACK: 1
+2026-10-25T02:12:03.3776580Z ##[endgroup]
+2026-10-25T02:12:03.3958332Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:03.3959377Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:04.0103818Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:04.0104833Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:04.3366846Z test_learn_permission_also_blocks_lower_authority (tests.test_jef_human_precedence_run68.HumanPrecedence.test_learn_permission_also_blocks_lower_authority) ... ok
+2026-10-25T02:12:04.3368475Z test_no_human_decision_does_not_block (tests.test_jef_human_precedence_run68.HumanPrecedence.test_no_human_decision_does_not_block) ... ok
+2026-10-25T02:12:04.3370372Z test_record_permission_blocks_lower_authority (tests.test_jef_human_precedence_run68.HumanPrecedence.test_record_permission_blocks_lower_authority) ... ok
+2026-10-25T02:12:04.3371923Z test_stale_revision_does_not_claim_same_context (tests.test_jef_human_precedence_run68.HumanPrecedence.test_stale_revision_does_not_claim_same_context) ... ok
+2026-10-25T02:12:04.3480486Z test_chunked_exact_human_lookup (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_chunked_exact_human_lookup) ... ok
+2026-10-25T02:12:04.3487233Z test_deleted_human_source_does_not_claim_current_veto (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_deleted_human_source_does_not_claim_current_veto) ... ok
+2026-10-25T02:12:04.3491921Z test_deleted_self_label_source_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_deleted_self_label_source_is_rejected) ... ok
+2026-10-25T02:12:04.3497355Z test_forged_cross_event_human_decision_does_not_veto (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_cross_event_human_decision_does_not_veto) ... ok
+2026-10-25T02:12:04.3501580Z test_forged_self_component_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_self_component_is_rejected) ... ok
+2026-10-25T02:12:04.3505788Z test_forged_self_context_link_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_self_context_link_is_rejected) ... ok
+2026-10-25T02:12:04.3510036Z test_forged_self_event_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_self_event_is_rejected) ... ok
+2026-10-25T02:12:04.3514119Z test_forged_self_revision_is_rejected (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_forged_self_revision_is_rejected) ... ok
+2026-10-25T02:12:04.3519122Z test_human_unrelated_context_does_not_veto (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_human_unrelated_context_does_not_veto) ... ok
+2026-10-25T02:12:04.3523194Z test_no_human_allows_bound_self_label (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_no_human_allows_bound_self_label) ... ok
+2026-10-25T02:12:04.3546959Z test_old_human_record_outside_512_window_vetoes (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_old_human_record_outside_512_window_vetoes) ... ok
+2026-10-25T02:12:04.3549059Z test_record_mode_never_trains (tests.test_jef_outcome_lineage_run69.JefOutcomeLineage.test_record_mode_never_trains) ... ok
+2026-10-25T02:12:04.3554249Z test_future_selection_must_not_label_past_action (tests.test_world_action_chronology_run70.WorldActionChronology.test_future_selection_must_not_label_past_action) ... ok
+2026-10-25T02:12:04.3556693Z test_selection_after_one_action_before_another (tests.test_world_action_chronology_run70.WorldActionChronology.test_selection_after_one_action_before_another) ... ok
+2026-10-25T02:12:04.3558499Z test_tied_created_times_choose_latest_rowid (tests.test_world_action_chronology_run70.WorldActionChronology.test_tied_created_times_choose_latest_rowid) ... ok
+2026-10-25T02:12:04.3560348Z test_two_actions_bind_respective_prior_selection (tests.test_world_action_chronology_run70.WorldActionChronology.test_two_actions_bind_respective_prior_selection) ... ok
+2026-10-25T02:12:04.3562039Z test_unrelated_event_does_not_supply_selection (tests.test_world_action_chronology_run70.WorldActionChronology.test_unrelated_event_does_not_supply_selection) ... ok
+2026-10-25T02:12:04.3563454Z test_mismatched_final_role_rejected (tests.test_world_observed_role_run71.WorldRole.test_mismatched_final_role_rejected) ... ok
+2026-10-25T02:12:04.3564847Z test_missing_forecast_role_rejected (tests.test_world_observed_role_run71.WorldRole.test_missing_forecast_role_rejected) ... ok
+2026-10-25T02:12:04.3566322Z test_missing_observed_role_rejected (tests.test_world_observed_role_run71.WorldRole.test_missing_observed_role_rejected) ... ok
+2026-10-25T02:12:04.3567907Z test_nonfinal_failure_without_role_remains_failure (tests.test_world_observed_role_run71.WorldRole.test_nonfinal_failure_without_role_remains_failure) ... ok
+2026-10-25T02:12:04.3569244Z test_other_valid_role_supported (tests.test_world_observed_role_run71.WorldRole.test_other_valid_role_supported) ... ok
+2026-10-25T02:12:04.3570614Z test_valid_role_admitted (tests.test_world_observed_role_run71.WorldRole.test_valid_role_admitted) ... ok
+2026-10-25T02:12:04.3573675Z test_bad_durations_and_chars_skipped (tests.test_world_model_integration_run64.WorldRun64.test_bad_durations_and_chars_skipped) ... ok
+2026-10-25T02:12:04.3576278Z test_bad_input_chars_and_created_skipped (tests.test_world_model_integration_run64.WorldRun64.test_bad_input_chars_and_created_skipped) ... ok
+2026-10-25T02:12:04.3578331Z test_bad_latent_does_not_promote (tests.test_world_model_integration_run64.WorldRun64.test_bad_latent_does_not_promote) ... ok
+2026-10-25T02:12:04.3614048Z test_counterfactual_negative_chars_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_counterfactual_negative_chars_uncertain) ... ok
+2026-10-25T02:12:04.3615994Z test_counterfactual_negative_duration_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_counterfactual_negative_duration_uncertain) ... ok
+2026-10-25T02:12:04.3617580Z test_counterfactual_success_over_one_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_counterfactual_success_over_one_uncertain) ... ok
+2026-10-25T02:12:04.3621567Z test_for_event_bad_observed_state_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_for_event_bad_observed_state_uncertain) ... ok
+2026-10-25T02:12:04.3623155Z test_impossible_prediction_retains_finite_coverage_diagnostic (tests.test_world_model_integration_run64.WorldRun64.test_impossible_prediction_retains_finite_coverage_diagnostic) ... ok
+2026-10-25T02:12:04.3626527Z test_malformed_json_skipped (tests.test_world_model_integration_run64.WorldRun64.test_malformed_json_skipped) ... ok
+2026-10-25T02:12:04.3629270Z test_missing_route_skipped (tests.test_world_model_integration_run64.WorldRun64.test_missing_route_skipped) ... ok
+2026-10-25T02:12:04.3631307Z test_no_model_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_no_model_uncertain) ... ok
+2026-10-25T02:12:04.3632064Z test_nonfinite_model_uncertain (tests.test_world_model_integration_run64.WorldRun64.test_nonfinite_model_uncertain) ... ok
+2026-10-25T02:12:04.3688628Z test_sqlite_fit_with_valid_rows (tests.test_world_model_integration_run64.WorldRun64.test_sqlite_fit_with_valid_rows) ... ok
+2026-10-25T02:12:04.3691854Z test_valid_sqlite_transition (tests.test_world_model_integration_run64.WorldRun64.test_valid_sqlite_transition) ... ok
+2026-10-25T02:12:04.3694356Z test_valid_supported_prediction_unchanged (tests.test_world_model_integration_run64.WorldRun64.test_valid_supported_prediction_unchanged) ... ok
+2026-10-25T02:12:04.3745226Z test_dual_primal_parity (tests.test_world_align_finite_run65.WorldAlignFinite.test_dual_primal_parity) ... ok
+2026-10-25T02:12:04.3760673Z test_huge_finite_latent_is_not_measured (tests.test_world_align_finite_run65.WorldAlignFinite.test_huge_finite_latent_is_not_measured) ... ok
+2026-10-25T02:12:04.3773067Z test_no_latent_unavailable_unchanged (tests.test_world_align_finite_run65.WorldAlignFinite.test_no_latent_unavailable_unchanged) ... ok
+2026-10-25T02:12:04.3775694Z test_primal_branch_parity (tests.test_world_align_finite_run65.WorldAlignFinite.test_primal_branch_parity) ... ok
+2026-10-25T02:12:04.3789162Z test_small_valid_latent_measured_finite (tests.test_world_align_finite_run65.WorldAlignFinite.test_small_valid_latent_measured_finite) ... ok
+2026-10-25T02:12:04.3804010Z test_active_plan_fails_closed_when_exact_pin_cannot_fit (tests.test_context_exact_pin_run73.ContextExactPin.test_active_plan_fails_closed_when_exact_pin_cannot_fit) ... ok
+2026-10-25T02:12:04.3815746Z test_exact_numeric_code_in_pinned_turn_remains_verbatim (tests.test_context_exact_pin_run73.ContextExactPin.test_exact_numeric_code_in_pinned_turn_remains_verbatim) ... ok
+2026-10-25T02:12:04.3827767Z test_generous_budget_retains_active_utility (tests.test_context_exact_pin_run73.ContextExactPin.test_generous_budget_retains_active_utility) ... ok
+2026-10-25T02:12:04.3839225Z test_pinned_turns_remain_raw_under_budget_pressure (tests.test_context_exact_pin_run73.ContextExactPin.test_pinned_turns_remain_raw_under_budget_pressure) ... ok
+2026-10-25T02:12:04.3849831Z test_shadow_never_applies (tests.test_context_exact_pin_run73.ContextExactPin.test_shadow_never_applies) ... ok
+2026-10-25T02:12:04.3867288Z test_single_pinned_turn_larger_than_budget_fails_closed (tests.test_context_exact_pin_run73.ContextExactPin.test_single_pinned_turn_larger_than_budget_fails_closed) ... ok
+2026-10-25T02:12:04.3878988Z test_unapplied_budget_plan_never_seeds_native_append_transcript (tests.test_context_exact_pin_run73.ContextExactPin.test_unapplied_budget_plan_never_seeds_native_append_transcript) ... ok
+2026-10-25T02:12:04.3880690Z test_english_curly_double_quote_survives_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_english_curly_double_quote_survives_compression) ... ok
+2026-10-25T02:12:04.3883491Z test_existing_short_ascii_and_german_quotes_remain_exact (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_existing_short_ascii_and_german_quotes_remain_exact) ... ok
+2026-10-25T02:12:04.3886113Z test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) ... ok
+2026-10-25T02:12:04.3887618Z test_oversized_quote_forces_raw_not_lossy_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_oversized_quote_forces_raw_not_lossy_compression) ... ok
+2026-10-25T02:12:04.3888664Z test_compression_keeps_every_exact_span_and_is_shorter (tests.test_context_os.CompressionTests.test_compression_keeps_every_exact_span_and_is_shorter) ... ok
+2026-10-25T02:12:04.3889469Z test_exact_need_triggers (tests.test_context_os.CompressionTests.test_exact_need_triggers) ... ok
+2026-10-25T02:12:04.3890433Z test_too_many_spans_or_no_gain_stays_raw (tests.test_context_os.CompressionTests.test_too_many_spans_or_no_gain_stays_raw) ... ok
+2026-10-25T02:12:04.4060575Z test_boolean_cached_tokens_cannot_drive_cost_learning (tests.test_context_os.KnobAndLearningTests.test_boolean_cached_tokens_cannot_drive_cost_learning) ... ok
+2026-10-25T02:12:04.4165667Z test_negative_cached_tokens_cannot_drive_cost_learning (tests.test_context_os.KnobAndLearningTests.test_negative_cached_tokens_cannot_drive_cost_learning) ... ok
+2026-10-25T02:12:04.4267011Z test_negative_prompt_tokens_cannot_drive_cost_learning (tests.test_context_os.KnobAndLearningTests.test_negative_prompt_tokens_cannot_drive_cost_learning) ... ok
+2026-10-25T02:12:04.4367303Z test_observe_records_cache_reuse_and_cost_signal_only_when_applied (tests.test_context_os.KnobAndLearningTests.test_observe_records_cache_reuse_and_cost_signal_only_when_applied) ... ok
+2026-10-25T02:12:04.4472033Z test_plan_touches_eligibility_and_outcome_updates_prior_shadow (tests.test_context_os.KnobAndLearningTests.test_plan_touches_eligibility_and_outcome_updates_prior_shadow) ... ok
+2026-10-25T02:12:04.4649724Z test_risky_knob_raise_needs_stable_exact_recall (tests.test_context_os.KnobAndLearningTests.test_risky_knob_raise_needs_stable_exact_recall) ... ok
+2026-10-25T02:12:04.4756310Z test_valid_cache_counters_still_measure_cost (tests.test_context_os.KnobAndLearningTests.test_valid_cache_counters_still_measure_cost) ... ok
+2026-10-25T02:12:04.4858746Z test_active_mode_requires_explicit_human (tests.test_context_os.PlanTests.test_active_mode_requires_explicit_human) ... ok
+2026-10-25T02:12:04.4961211Z test_append_only_reenters_transcript_and_falls_back_on_mismatch (tests.test_context_os.PlanTests.test_append_only_reenters_transcript_and_falls_back_on_mismatch) ... ok
+2026-10-25T02:12:04.5063710Z test_budget_pressure_points_old_turns_but_never_drops_newest (tests.test_context_os.PlanTests.test_budget_pressure_points_old_turns_but_never_drops_newest) ... ok
+2026-10-25T02:12:04.5185028Z test_exact_need_restores_relevant_turn (tests.test_context_os.PlanTests.test_exact_need_restores_relevant_turn) ... ok
+2026-10-25T02:12:04.5288061Z test_oldest_unpinned_turn_is_compressed_newest_stays_raw (tests.test_context_os.PlanTests.test_oldest_unpinned_turn_is_compressed_newest_stays_raw) ... ok
+2026-10-25T02:12:04.5388699Z test_shadow_returns_legacy_messages_byte_identical (tests.test_context_os.PlanTests.test_shadow_returns_legacy_messages_byte_identical) ... ok
+2026-10-25T02:12:04.5497442Z test_stable_prefix_needs_declared_capability_and_reuses_prefix (tests.test_context_os.PlanTests.test_stable_prefix_needs_declared_capability_and_reuses_prefix) ... ok
+2026-10-25T02:12:04.5601551Z test_volatile_lists_are_compacted_to_the_global_share (tests.test_context_os.PlanTests.test_volatile_lists_are_compacted_to_the_global_share) ... ok
+2026-10-25T02:12:04.6001725Z test_turn_writes_context_plan_and_shadow_keeps_legacy_view (tests.test_context_os.RuntimeHookTests.test_turn_writes_context_plan_and_shadow_keeps_legacy_view) ... /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e149c60>
+2026-10-25T02:12:04.6003085Z   class Curiosity:
+2026-10-25T02:12:04.6003428Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6004083Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e149d50>
+2026-10-25T02:12:04.6004594Z   class Curiosity:
+2026-10-25T02:12:04.6004861Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6005715Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e149e40>
+2026-10-25T02:12:04.6006193Z   class Curiosity:
+2026-10-25T02:12:04.6006459Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6007454Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e149f30>
+2026-10-25T02:12:04.6007943Z   class Curiosity:
+2026-10-25T02:12:04.6008219Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6008795Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e14a110>
+2026-10-25T02:12:04.6009285Z   class Curiosity:
+2026-10-25T02:12:04.6009551Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6010134Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e14af20>
+2026-10-25T02:12:04.6010628Z   class Curiosity:
+2026-10-25T02:12:04.6010888Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6011484Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e1e4f40>
+2026-10-25T02:12:04.6011986Z   class Curiosity:
+2026-10-25T02:12:04.6012254Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6013047Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c5c99fe20>
+2026-10-25T02:12:04.6013570Z   class Curiosity:
+2026-10-25T02:12:04.6013846Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6014485Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e065990>
+2026-10-25T02:12:04.6015011Z   class Curiosity:
+2026-10-25T02:12:04.6015397Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6016031Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e065c60>
+2026-10-25T02:12:04.6016542Z   class Curiosity:
+2026-10-25T02:12:04.6016817Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6017415Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e09fc40>
+2026-10-25T02:12:04.6017900Z   class Curiosity:
+2026-10-25T02:12:04.6018170Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6018773Z /home/runner/work/Aii/Aii/v13/code/v13/agi/curiosity.py:17: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x743c4e09fd30>
+2026-10-25T02:12:04.6019276Z   class Curiosity:
+2026-10-25T02:12:04.6019549Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T02:12:04.6523364Z ok
+2026-10-25T02:12:04.6674667Z test_forgotten_memory_is_not_reactivated (tests.test_context_os.WarmTests.test_forgotten_memory_is_not_reactivated) ... ok
+2026-10-25T02:12:04.6782172Z test_warm_memory_reactivates_and_decays (tests.test_context_os.WarmTests.test_warm_memory_reactivates_and_decays) ... ok
+2026-10-25T02:12:04.6786939Z test_active_to_active_reentry_still_works (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_active_to_active_reentry_still_works) ... ok
+2026-10-25T02:12:04.6790374Z test_changed_prior_source_must_not_reenter (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_changed_prior_source_must_not_reenter) ... ok
+2026-10-25T02:12:04.6793504Z test_old_transcript_without_applied_proof_fails_closed (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_old_transcript_without_applied_proof_fails_closed) ... ok
+2026-10-25T02:12:04.6797078Z test_reentry_accepts_matching_real_shape_query_source_ref (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_reentry_accepts_matching_real_shape_query_source_ref) ... ok
+2026-10-25T02:12:04.6802226Z test_reentry_accepts_unchanged_three_turn_lineage (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_reentry_accepts_unchanged_three_turn_lineage) ... ok
+2026-10-25T02:12:04.6807019Z test_reentry_rejects_changed_earlier_source_metadata (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_reentry_rejects_changed_earlier_source_metadata) ... ok
+2026-10-25T02:12:04.6811589Z test_reentry_rejects_changed_earlier_turn_text (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_reentry_rejects_changed_earlier_turn_text) ... ok
+2026-10-25T02:12:04.6814494Z test_reentry_rejects_extra_message_in_latest_event (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_reentry_rejects_extra_message_in_latest_event) ... ok
+2026-10-25T02:12:04.6817840Z test_reentry_rejects_latest_user_source_ref_mismatch (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_reentry_rejects_latest_user_source_ref_mismatch) ... ok
+2026-10-25T02:12:04.6820773Z test_reentry_rejects_legacy_transcript_without_history_binding (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_reentry_rejects_legacy_transcript_without_history_binding) ... ok
+2026-10-25T02:12:04.6823605Z test_shadow_counterfactual_append_remains_available (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_shadow_counterfactual_append_remains_available) ... ok
+2026-10-25T02:12:04.6826835Z test_shadow_to_active_must_not_reenter_hypothetical_prompt (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_shadow_to_active_must_not_reenter_hypothetical_prompt) ... ok
+2026-10-25T02:12:04.6829555Z test_unrelated_event_does_not_reenter (tests.test_context_append_provenance_run74.ContextAppendProvenance.test_unrelated_event_does_not_reenter) ... ok
+2026-10-25T02:12:04.6941192Z test_controller_restart_keeps_exact_history_binding (tests.test_context_append_provenance_run74.NativeHistoryReentryIntegration.test_controller_restart_keeps_exact_history_binding) ... ok
+2026-10-25T02:12:04.7053729Z test_corrupt_older_source_metadata_rebuilds_without_stale_prompt (tests.test_context_append_provenance_run74.NativeHistoryReentryIntegration.test_corrupt_older_source_metadata_rebuilds_without_stale_prompt) ... ok
+2026-10-25T02:12:04.7159753Z test_deleted_older_source_rebuilds_without_stale_prompt (tests.test_context_append_provenance_run74.NativeHistoryReentryIntegration.test_deleted_older_source_rebuilds_without_stale_prompt) ... ok
+2026-10-25T02:12:04.7264779Z test_native_history_source_ref_allows_valid_active_append (tests.test_context_append_provenance_run74.NativeHistoryReentryIntegration.test_native_history_source_ref_allows_valid_active_append) ... ok
+2026-10-25T02:12:04.7621590Z test_stage_grows_with_traces (tests.test_jefoutcome.Lifecycle.test_stage_grows_with_traces) ... ok
+2026-10-25T02:12:04.7730173Z test_changed_outcome_value_without_changed_source_cannot_train (tests.test_jefoutcome.Store.test_changed_outcome_value_without_changed_source_cannot_train) ... ok
+2026-10-25T02:12:04.7830595Z test_corrupt_decision_context_blob_cannot_train (tests.test_jefoutcome.Store.test_corrupt_decision_context_blob_cannot_train) ... ok
+2026-10-25T02:12:04.7930048Z test_corrupt_outcome_blob_cannot_train (tests.test_jefoutcome.Store.test_corrupt_outcome_blob_cannot_train) ... ok
+2026-10-25T02:12:04.8030359Z test_deleted_decision_context_source_cannot_train (tests.test_jefoutcome.Store.test_deleted_decision_context_source_cannot_train) ... ok
+2026-10-25T02:12:04.8144940Z test_distinct_final_events_keep_distinct_outcome_labels (tests.test_jefoutcome.Store.test_distinct_final_events_keep_distinct_outcome_labels) ... ok
+2026-10-25T02:12:04.8254250Z test_human_agreement_and_route_correction_flip (tests.test_jefoutcome.Store.test_human_agreement_and_route_correction_flip) ... ok
+2026-10-25T02:12:04.8354423Z test_labels_are_stored_against_the_head_decision (tests.test_jefoutcome.Store.test_labels_are_stored_against_the_head_decision) ... ok
+2026-10-25T02:12:04.8452336Z test_repeated_final_outcome_keeps_one_label_and_source (tests.test_jefoutcome.Store.test_repeated_final_outcome_keeps_one_label_and_source) ... ok
+2026-10-25T02:12:04.8550888Z test_replayed_final_cannot_undo_route_correction (tests.test_jefoutcome.Store.test_replayed_final_cannot_undo_route_correction) ... ok
+2026-10-25T02:12:04.8664252Z test_replayed_final_different_target_does_not_relabel (tests.test_jefoutcome.Store.test_replayed_final_different_target_does_not_relabel) ... ok
+2026-10-25T02:12:04.8765984Z test_same_content_foreign_context_source_cannot_train (tests.test_jefoutcome.Store.test_same_content_foreign_context_source_cannot_train) ... ok
+2026-10-25T02:12:04.8872697Z test_same_text_user_source_cannot_impersonate_outcome_authority (tests.test_jefoutcome.Store.test_same_text_user_source_cannot_impersonate_outcome_authority) ... ok
+2026-10-25T02:12:04.8993150Z test_training_rows_only_in_learn_mode_and_never_over_human_labels (tests.test_jefoutcome.Store.test_training_rows_only_in_learn_mode_and_never_over_human_labels) ... ok
+2026-10-25T02:12:04.8993824Z test_derivation (tests.test_jefoutcome.Targets.test_derivation) ... ok
+2026-10-25T02:12:04.9293887Z test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) ... ok
+2026-10-25T02:12:04.9297316Z test_exact_lineage_can_claim_observed_update (tests.test_jef_lifecycle_integration_run67.LifecycleIntegration.test_exact_lineage_can_claim_observed_update) ... ok
+2026-10-25T02:12:04.9299853Z test_invalid_manifest_never_claims_promotion (tests.test_jef_lifecycle_integration_run67.LifecycleIntegration.test_invalid_manifest_never_claims_promotion) ... ok
+2026-10-25T02:12:04.9302676Z test_substring_collision_does_not_claim_promotion (tests.test_jef_lifecycle_integration_run67.LifecycleIntegration.test_substring_collision_does_not_claim_promotion) ... ok
+2026-10-25T02:12:04.9303400Z test_duplicate_ids_one_update (tests.test_jef_lifecycle_sources.LifecycleSources.test_duplicate_ids_one_update) ... ok
+2026-10-25T02:12:04.9304033Z test_empty_source_ids_no_matches (tests.test_jef_lifecycle_sources.LifecycleSources.test_empty_source_ids_no_matches) ... ok
+2026-10-25T02:12:04.9304747Z test_empty_string_source_ref_ignored (tests.test_jef_lifecycle_sources.LifecycleSources.test_empty_string_source_ref_ignored) ... ok
+2026-10-25T02:12:04.9305463Z test_exact_match (tests.test_jef_lifecycle_sources.LifecycleSources.test_exact_match) ... ok
+2026-10-25T02:12:04.9305831Z test_input_unchanged (tests.test_jef_lifecycle_sources.LifecycleSources.test_input_unchanged) ... ok
+2026-10-25T02:12:04.9306217Z test_malformed_json_ignored (tests.test_jef_lifecycle_sources.LifecycleSources.test_malformed_json_ignored) ... ok
+2026-10-25T02:12:04.9306654Z test_mixed_nonstring_source_ids_ignored (tests.test_jef_lifecycle_sources.LifecycleSources.test_mixed_nonstring_source_ids_ignored) ... ok
+2026-10-25T02:12:04.9307118Z test_multiple_updates_exact_subset (tests.test_jef_lifecycle_sources.LifecycleSources.test_multiple_updates_exact_subset) ... ok
+2026-10-25T02:12:04.9307566Z test_nonlist_source_ids_ignored (tests.test_jef_lifecycle_sources.LifecycleSources.test_nonlist_source_ids_ignored) ... ok
+2026-10-25T02:12:04.9308004Z test_nonmapping_manifest_ignored (tests.test_jef_lifecycle_sources.LifecycleSources.test_nonmapping_manifest_ignored) ... ok
+2026-10-25T02:12:04.9308444Z test_substring_collision_not_match (tests.test_jef_lifecycle_sources.LifecycleSources.test_substring_collision_not_match) ... ok
+2026-10-25T02:12:04.9308901Z test_unrelated_manifest_text_not_match (tests.test_jef_lifecycle_sources.LifecycleSources.test_unrelated_manifest_text_not_match) ... ok
+2026-10-25T02:12:04.9312754Z test_repeated_outcome_scores_once (tests.test_callosum_outcome_integration_run66.CallosumOutcomeIntegration.test_repeated_outcome_scores_once) ... ok
+2026-10-25T02:12:04.9313435Z test_duplicate_packet_id (tests.test_callosum_outcome_once.OutcomeOnce.test_duplicate_packet_id) ... ok
+2026-10-25T02:12:04.9314390Z test_duplicate_with_one_already_scored_repairs_flags_without_update (tests.test_callosum_outcome_once.OutcomeOnce.test_duplicate_with_one_already_scored_repairs_flags_without_update) ... ok
+2026-10-25T02:12:04.9315173Z test_empty_scores_no_marks (tests.test_callosum_outcome_once.OutcomeOnce.test_empty_scores_no_marks) ... ok
+2026-10-25T02:12:04.9315774Z test_missing_pending_noop (tests.test_callosum_outcome_once.OutcomeOnce.test_missing_pending_noop) ... ok
+2026-10-25T02:12:04.9316395Z test_only_matching_messages_marked (tests.test_callosum_outcome_once.OutcomeOnce.test_only_matching_messages_marked) ... ok
+2026-10-25T02:12:04.9317040Z test_previous_utility_not_mutated_on_replay (tests.test_callosum_outcome_once.OutcomeOnce.test_previous_utility_not_mutated_on_replay) ... ok
+2026-10-25T02:12:04.9317463Z test_replay_idempotence (tests.test_callosum_outcome_once.OutcomeOnce.test_replay_idempotence) ... ok
+2026-10-25T02:12:04.9317876Z test_scored_other_packet_not_reused (tests.test_callosum_outcome_once.OutcomeOnce.test_scored_other_packet_not_reused) ... ok
+2026-10-25T02:12:04.9318257Z test_single_update (tests.test_callosum_outcome_once.OutcomeOnce.test_single_update) ... ok
+2026-10-25T02:12:04.9318630Z test_stale_precomputed_score_noop (tests.test_callosum_outcome_once.OutcomeOnce.test_stale_precomputed_score_noop) ... ok
+2026-10-25T02:12:04.9319178Z test_probabilities_keep_baselines_and_block_latent (tests.test_callosum.GainTests.test_probabilities_keep_baselines_and_block_latent) ... ok
+2026-10-25T02:12:04.9319629Z test_signed_gain_amplify_suppress_neutral (tests.test_callosum.GainTests.test_signed_gain_amplify_suppress_neutral) ... ok
+2026-10-25T02:12:04.9427687Z test_receiver_revision_change_degrades_to_configured (tests.test_callosum.PolicyTests.test_receiver_revision_change_degrades_to_configured) ... ok
+2026-10-25T02:12:04.9535557Z test_shadow_proposes_active_applies_and_never_below_no_message (tests.test_callosum.PolicyTests.test_shadow_proposes_active_applies_and_never_below_no_message) ... ok
+2026-10-25T02:12:04.9651924Z test_message_fields_outcome_rating_and_doctor (tests.test_callosum.UtilityTests.test_message_fields_outcome_rating_and_doctor) ... ok
+2026-10-25T02:12:04.9780855Z test_world_feedback_requires_completed_action_and_never_retrieves_as_fact (tests.test_world_worker.WorldBinding.test_world_feedback_requires_completed_action_and_never_retrieves_as_fact) ... ok
+2026-10-25T02:12:05.0000320Z test_actual_role_features_and_target_ema_map_only_state_rows (tests.test_world_worker.WorldMath.test_actual_role_features_and_target_ema_map_only_state_rows) ... ok
+2026-10-25T02:12:05.0806888Z test_degenerate_targets_cannot_pass_or_mix_source_action_splits (tests.test_world_worker.WorldMath.test_degenerate_targets_cannot_pass_or_mix_source_action_splits) ... ok
+2026-10-25T02:12:05.0936426Z test_measured_geometry_penalty_has_correct_nonzero_gradient (tests.test_world_worker.WorldMath.test_measured_geometry_penalty_has_correct_nonzero_gradient) ... ok
+2026-10-25T02:12:05.0965916Z test_source_and_action_support_refuses_novelty_duplicates_and_legacy_artifacts (tests.test_world_worker.WorldMath.test_source_and_action_support_refuses_novelty_duplicates_and_legacy_artifacts) ... ok
+2026-10-25T02:12:05.0995768Z test_unknown_roles_and_zero_measurements_are_refused (tests.test_world_worker.WorldMath.test_unknown_roles_and_zero_measurements_are_refused) ... ok
+2026-10-25T02:12:05.1025834Z test_world_telemetry_retains_gate_measurements_without_content (tests.test_world_worker.WorldMath.test_world_telemetry_retains_gate_measurements_without_content) ... ok
+2026-10-25T02:12:05.1176459Z test_confidence_follows_coverage_not_frequency (tests.test_world_model.Counterfactuals.test_confidence_follows_coverage_not_frequency) ... ok
+2026-10-25T02:12:05.1356084Z test_dream_route_alternative_carries_counterfactual_and_priority (tests.test_world_model.Counterfactuals.test_dream_route_alternative_carries_counterfactual_and_priority) ... ok
+2026-10-25T02:12:05.1625874Z test_learn_medium_fits_world_and_keeps_curiosity_age_gated (tests.test_world_model.LiveGoals.test_learn_medium_fits_world_and_keeps_curiosity_age_gated) ... ok
+2026-10-25T02:12:05.1750101Z test_unresolved_turn_opens_user_goal_and_later_answer_closes_it (tests.test_world_model.LiveGoals.test_unresolved_turn_opens_user_goal_and_later_answer_closes_it) ... ok
+2026-10-25T02:12:05.1922832Z test_forward_inverse_outcome_and_align_unavailable_without_latent (tests.test_world_model.Objectives.test_forward_inverse_outcome_and_align_unavailable_without_latent) ... ok
+2026-10-25T02:12:05.2031930Z test_too_few_transitions_is_honest (tests.test_world_model.Objectives.test_too_few_transitions_is_honest) ... ok
+2026-10-25T02:12:05.2033178Z test_item_origin_and_mix (tests.test_learning_invariants.DataMixBeforeTraining.test_item_origin_and_mix) ... ok
+2026-10-25T02:12:05.2146048Z test_weight_consolidation_refuses_self_only_and_trims_mixed (tests.test_learning_invariants.DataMixBeforeTraining.test_weight_consolidation_refuses_self_only_and_trims_mixed) ... ok
+2026-10-25T02:12:05.2262940Z test_loss_is_never_negative_even_for_bad_outcomes (tests.test_learning_invariants.PredictorInvariants.test_loss_is_never_negative_even_for_bad_outcomes) ... ok
+2026-10-25T02:12:05.2267051Z test_optimizer_is_isolated_from_its_inputs (tests.test_learning_invariants.PredictorInvariants.test_optimizer_is_isolated_from_its_inputs) ... ok
+2026-10-25T02:12:05.2269797Z test_target_is_stop_gradient_ema_and_moves (tests.test_learning_invariants.PredictorInvariants.test_target_is_stop_gradient_ema_and_moves) ... ok
+2026-10-25T02:12:05.2361562Z test_capability_stage_scaffolds_even_if_system_is_mature (tests.test_age.AgeChecks.test_capability_stage_scaffolds_even_if_system_is_mature) ... ok
+2026-10-25T02:12:05.2436075Z test_continuous_maturity_changes_budgets_smoothly_within_stage (tests.test_age.AgeChecks.test_continuous_maturity_changes_budgets_smoothly_within_stage) ... ok
+2026-10-25T02:12:05.2506575Z test_default_build_stays_age0_but_records_proposal (tests.test_age.AgeChecks.test_default_build_stays_age0_but_records_proposal) ... ok
+2026-10-25T02:12:05.2590461Z test_gist_resolution_grows_with_maturity_but_refines_on_novelty (tests.test_age.AgeChecks.test_gist_resolution_grows_with_maturity_but_refines_on_novelty) ... ok
+2026-10-25T02:12:05.2666473Z test_hysteresis_band_and_demotion (tests.test_age.AgeChecks.test_hysteresis_band_and_demotion) ... ok
+2026-10-25T02:12:05.2739894Z test_promotion_needs_several_distinct_passes (tests.test_age.AgeChecks.test_promotion_needs_several_distinct_passes) ... ok
+2026-10-25T02:12:05.2818371Z test_reopenable_plasticity (tests.test_age.AgeChecks.test_reopenable_plasticity) ... ok
+2026-10-25T02:12:05.2931958Z test_restart_persists_state (tests.test_age.AgeChecks.test_restart_persists_state) ... ok
+2026-10-25T02:12:05.3014186Z test_rights_are_masked_by_rules_permissions_resources_and_structural_lock (tests.test_age.AgeChecks.test_rights_are_masked_by_rules_permissions_resources_and_structural_lock) ... ok
+2026-10-25T02:12:05.3089560Z test_severe_regression_demotes_immediately (tests.test_age.AgeChecks.test_severe_regression_demotes_immediately) ... ok
+2026-10-25T02:12:05.3167850Z test_user_cap_is_binding_and_not_self_overridable (tests.test_age.AgeChecks.test_user_cap_is_binding_and_not_self_overridable) ... ok
+2026-10-25T02:12:05.3243374Z test_user_freeze_and_lower (tests.test_age.AgeChecks.test_user_freeze_and_lower) ... ok
+2026-10-25T02:12:05.3361228Z test_operator_age_shows_real_state (tests.test_age.AgeOperatorChecks.test_operator_age_shows_real_state) ... ok
+2026-10-25T02:12:05.3476878Z test_age_stage_changes_allowed_paths (tests.test_age_rights.AgeStageChangesAllowedPaths.test_age_stage_changes_allowed_paths) ... ok
+2026-10-25T02:12:05.3554347Z test_gist_without_adaptive_right_keeps_base_grouping (tests.test_age_rights.AgeStageChangesAllowedPaths.test_gist_without_adaptive_right_keeps_base_grouping) ... ok
+2026-10-25T02:12:05.3664291Z test_exec_state_flags_come_from_age (tests.test_age_rights.LiveFeed.test_exec_state_flags_come_from_age) ... ok
+2026-10-25T02:12:05.3782681Z test_turn_feed_records_system_and_capabilities_rate_limited (tests.test_age_rights.LiveFeed.test_turn_feed_records_system_and_capabilities_rate_limited) ... ok
+2026-10-25T02:12:05.3895483Z test_announce_all_turns_even_read_only_calls_into_proposals (tests.test_prohibitions.AnnounceTests.test_announce_all_turns_even_read_only_calls_into_proposals) ... ok
+2026-10-25T02:12:05.4264862Z test_announce_mode_shows_the_action_first_and_does_nothing_until_approved (tests.test_prohibitions.LiveTurnTests.test_announce_mode_shows_the_action_first_and_does_nothing_until_approved) ... ok
+2026-10-25T02:12:05.4631827Z test_user_text_asking_for_an_exception_does_not_lift_the_prohibition (tests.test_prohibitions.LiveTurnTests.test_user_text_asking_for_an_exception_does_not_lift_the_prohibition) ... ok
+2026-10-25T02:12:05.4762099Z test_notaus_blocks_every_call_and_approval_undo_stays (tests.test_prohibitions.NotausTests.test_notaus_blocks_every_call_and_approval_undo_stays) ... ok
+2026-10-25T02:12:05.4762808Z test_last_gate_blocks_even_a_forged_upstream_approval (tests.test_prohibitions.PolicyTests.test_last_gate_blocks_even_a_forged_upstream_approval)
+2026-10-25T02:12:05.4869652Z A learned head / buggy C5 / model claiming APPROVED: the check right before the effect still holds. ... ok
+2026-10-25T02:12:05.4976430Z test_model_proposed_exception_is_denied_for_every_origin_and_approval (tests.test_prohibitions.PolicyTests.test_model_proposed_exception_is_denied_for_every_origin_and_approval) ... ok
+2026-10-25T02:12:05.5085425Z test_per_call_approval_cannot_override_a_prohibition (tests.test_prohibitions.PolicyTests.test_per_call_approval_cannot_override_a_prohibition) ... ok
+2026-10-25T02:12:05.5192459Z test_prohibition_is_the_first_policy_step_and_beats_confirmation (tests.test_prohibitions.PolicyTests.test_prohibition_is_the_first_policy_step_and_beats_confirmation) ... ok
+2026-10-25T02:12:05.5301608Z test_without_prohibition_the_same_call_runs (tests.test_prohibitions.PolicyTests.test_without_prohibition_the_same_call_runs) ... ok
+2026-10-25T02:12:05.5413692Z test_default_is_empty_and_nothing_is_blocked (tests.test_prohibitions.TableTests.test_default_is_empty_and_nothing_is_blocked) ... ok
+2026-10-25T02:12:05.5531886Z test_every_change_is_echoed_in_plain_german (tests.test_prohibitions.TableTests.test_every_change_is_echoed_in_plain_german) ... ok
+2026-10-25T02:12:05.5640791Z test_exact_matching_no_interpretation (tests.test_prohibitions.TableTests.test_exact_matching_no_interpretation) ... ok
+2026-10-25T02:12:05.5751413Z test_only_an_explicit_human_can_change_the_table (tests.test_prohibitions.TableTests.test_only_an_explicit_human_can_change_the_table) ... ok
+2026-10-25T02:12:05.5859909Z test_scopes (tests.test_prohibitions.TableTests.test_scopes) ... ok
+2026-10-25T02:12:05.5969243Z test_unreadable_state_fails_closed_and_a_human_write_repairs_it (tests.test_prohibitions.TableTests.test_unreadable_state_fails_closed_and_a_human_write_repairs_it) ... ok
+2026-10-25T02:12:05.6086480Z test_prohibited_tool_is_not_run_in_shadow_either (tests.test_prohibitions.ToolStepTests.test_prohibited_tool_is_not_run_in_shadow_either) ... ok
+2026-10-25T02:12:05.6389662Z test_all_parts_stop_and_idle_runtime_is_confirmed_still (tests.test_standstill.EngageTests.test_all_parts_stop_and_idle_runtime_is_confirmed_still) ... ok
+2026-10-25T02:12:06.7550725Z test_engage_waits_for_a_scheduler_tick_in_progress (tests.test_standstill.EngageTests.test_engage_waits_for_a_scheduler_tick_in_progress) ... ok
+2026-10-25T02:12:06.8779561Z test_job_that_ignores_cancel_is_reported_never_claimed_stopped (tests.test_standstill.EngageTests.test_job_that_ignores_cancel_is_reported_never_claimed_stopped) ... ok
+2026-10-25T02:12:07.4078853Z test_queued_turn_is_not_answered_while_still (tests.test_standstill.EngageTests.test_queued_turn_is_not_answered_while_still) ... ok
+2026-10-25T02:12:07.4393290Z test_running_job_that_honours_cancel_is_confirmed_stopped (tests.test_standstill.EngageTests.test_running_job_that_honours_cancel_is_confirmed_stopped) ... ok
+2026-10-25T02:12:08.7724170Z test_scheduler_tick_and_background_do_not_run_during_standstill (tests.test_standstill.EngageTests.test_scheduler_tick_and_background_do_not_run_during_standstill) ... ok
+2026-10-25T02:12:08.8021974Z test_release_only_undoes_what_standstill_set (tests.test_standstill.ReleaseTests.test_release_only_undoes_what_standstill_set) ... ok
+2026-10-25T02:12:08.8319981Z test_release_reports_background_that_resumes (tests.test_standstill.ReleaseTests.test_release_reports_background_that_resumes) ... ok
+2026-10-25T02:12:08.8427878Z test_release_without_standstill_changes_nothing (tests.test_standstill.ReleaseTests.test_release_without_standstill_changes_nothing) ... ok
+2026-10-25T02:12:09.0737603Z test_repeated_engage_keeps_first_record (tests.test_standstill.ReleaseTests.test_repeated_engage_keeps_first_record) ... ok
+2026-10-25T02:12:09.1060348Z test_user_notaus_before_standstill_survives_release (tests.test_standstill.ReleaseTests.test_user_notaus_before_standstill_survives_release) ... ok
+2026-10-25T02:12:09.3407025Z test_restart_stays_still (tests.test_standstill.RestartTests.test_restart_stays_still) ... ok
+2026-10-25T02:12:09.3514538Z test_bad_argument (tests.test_standstill.TextTests.test_bad_argument) ... ok
+2026-10-25T02:12:09.3617533Z test_notaus_says_learning_continues_and_points_to_standstill (tests.test_standstill.TextTests.test_notaus_says_learning_continues_and_points_to_standstill) ... ok
+2026-10-25T02:12:09.3724065Z test_component_added_after_snapshot_is_removed_on_restore (tests.test_organ.OrganTests.test_component_added_after_snapshot_is_removed_on_restore) ... ok
+2026-10-25T02:12:09.3828202Z test_damaged_backup_is_refused (tests.test_organ.OrganTests.test_damaged_backup_is_refused) ... ok
+2026-10-25T02:12:09.3929795Z test_membership_is_per_role (tests.test_organ.OrganTests.test_membership_is_per_role) ... ok
+2026-10-25T02:12:09.4030623Z test_model_change_refuses_restore (tests.test_organ.OrganTests.test_model_change_refuses_restore) ... ok
+2026-10-25T02:12:09.4133808Z test_operator_check_text (tests.test_organ.OrganTests.test_operator_check_text) ... ok
+2026-10-25T02:12:09.4239542Z test_refused_commit_leaves_bridges_untouched (tests.test_organ.OrganTests.test_refused_commit_leaves_bridges_untouched) ... ok
+2026-10-25T02:12:09.4342545Z test_restore_brings_back_a_deleted_artifact_file (tests.test_organ.OrganTests.test_restore_brings_back_a_deleted_artifact_file) ... ok
+2026-10-25T02:12:09.4458843Z test_restore_puts_back_one_organ_and_leaves_the_other (tests.test_organ.OrganTests.test_restore_puts_back_one_organ_and_leaves_the_other) ... ok
+2026-10-25T02:12:09.4755828Z test_snapshot_refused_while_busy_works_in_standstill (tests.test_organ.OrganTests.test_snapshot_refused_while_busy_works_in_standstill) ... ok
+2026-10-25T02:12:09.4932316Z test_failed_actual_ddl_rolls_back_and_retry_resumes_last_committed_version (tests.test_migrations.Migrations.test_failed_actual_ddl_rolls_back_and_retry_resumes_last_committed_version) ... ok
+2026-10-25T02:12:09.5066472Z test_fresh_two_migrations_restart_and_immutable_history (tests.test_migrations.Migrations.test_fresh_two_migrations_restart_and_immutable_history) ... ok
+2026-10-25T02:12:09.5177767Z test_future_version_rejection_changes_no_database_and_releases_lock (tests.test_migrations.Migrations.test_future_version_rejection_changes_no_database_and_releases_lock) ... ok
+2026-10-25T02:12:09.5298028Z test_legacy_one_data_is_upgraded_without_rewriting_generation (tests.test_migrations.Migrations.test_legacy_one_data_is_upgraded_without_rewriting_generation) ... ok
+2026-10-25T02:12:09.5486351Z test_malformed_one_and_two_are_rejected_without_silent_repair (tests.test_migrations.Migrations.test_malformed_one_and_two_are_rejected_without_silent_repair) ... ok
+2026-10-25T02:12:09.5619620Z test_migration_journal_corruption_rejected_by_doctor_and_startup (tests.test_migrations.Migrations.test_migration_journal_corruption_rejected_by_doctor_and_startup) ... ok
+2026-10-25T02:12:09.5960081Z test_version_one_backup_verified_then_upgraded_before_restore (tests.test_migrations.Migrations.test_version_one_backup_verified_then_upgraded_before_restore) ... ok
+2026-10-25T02:12:09.6029481Z test_actual_sql_abort_leaves_no_accepted_event (tests.test_migrations.PersistentQueue.test_actual_sql_abort_leaves_no_accepted_event) ... ok
+2026-10-25T02:12:09.6097054Z test_atomic_bounds_no_event_or_source_when_admission_rejected (tests.test_migrations.PersistentQueue.test_atomic_bounds_no_event_or_source_when_admission_rejected) ... ok
+2026-10-25T02:12:09.6202928Z test_completed_output_crash_window_not_reexecuted (tests.test_migrations.PersistentQueue.test_completed_output_crash_window_not_reexecuted) ... ok
+2026-10-25T02:12:09.6294083Z test_concurrent_admission_capacity_and_duplicate_retry (tests.test_migrations.PersistentQueue.test_concurrent_admission_capacity_and_duplicate_retry) ... ok
+2026-10-25T02:12:09.6445450Z test_fifo_pause_finish_and_dedup_survive_restart (tests.test_migrations.PersistentQueue.test_fifo_pause_finish_and_dedup_survive_restart) ... ok
+2026-10-25T02:12:09.6858820Z test_process_exit_preserves_pending_pause_and_partial_without_reexecution (tests.test_migrations.PersistentQueue.test_process_exit_preserves_pending_pause_and_partial_without_reexecution) ... ok
+2026-10-25T02:12:09.6928151Z test_source_revoked_cannot_be_claimed (tests.test_migrations.PersistentQueue.test_source_revoked_cannot_be_claimed) ... ok
+2026-10-25T02:12:09.7219500Z test_failed_turn_is_terminal_and_following_real_source_copy_runs (tests.test_runtime_queue.DurableRuntimeQueue.test_failed_turn_is_terminal_and_following_real_source_copy_runs) ... ok
+2026-10-25T02:12:09.7791504Z test_paused_restart_preserves_pending_fifo_and_no_duplicate_outputs (tests.test_runtime_queue.DurableRuntimeQueue.test_paused_restart_preserves_pending_fifo_and_no_duplicate_outputs) ... ok
+2026-10-25T02:12:09.8044524Z test_restart_queue_expiry_is_visible_and_never_generates_late_answer (tests.test_runtime_queue.DurableRuntimeQueue.test_restart_queue_expiry_is_visible_and_never_generates_late_answer) ... ok
+2026-10-25T02:12:09.8144924Z test_backslash_is_literal_and_ascii_case_insensitive_is_preserved (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_backslash_is_literal_and_ascii_case_insensitive_is_preserved) ... ok
+2026-10-25T02:12:09.8245225Z test_percent_is_literal_not_any_substring (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_percent_is_literal_not_any_substring) ... ok
+2026-10-25T02:12:09.8344027Z test_underscore_is_literal_not_any_character (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_underscore_is_literal_not_any_character) ... ok
+2026-10-25T02:12:09.8460184Z test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat (tests.test_history_lineage.HistoryLineage.test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat) ... ok
+2026-10-25T02:12:09.8535397Z test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported (tests.test_history_lineage.HistoryLineage.test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported) ... ok
+2026-10-25T02:12:09.8639125Z test_correction_episode_is_staging_candidate_plain_is_fast (tests.test_episodes.Admission.test_correction_episode_is_staging_candidate_plain_is_fast) ... ok
+2026-10-25T02:12:09.8740601Z test_strength_decays_and_forgetting_is_only_a_proposal (tests.test_episodes.Admission.test_strength_decays_and_forgetting_is_only_a_proposal) ... ok
+2026-10-25T02:12:09.8862298Z test_correlation_never_becomes_causation_by_counting (tests.test_episodes.Graph.test_correlation_never_becomes_causation_by_counting) ... ok
+2026-10-25T02:12:09.8975137Z test_recall_co_retrieval_spread_and_forget_cleanup (tests.test_episodes.Graph.test_recall_co_retrieval_spread_and_forget_cleanup) ... ok
+2026-10-25T02:12:09.9076432Z test_full_sleep_closes_open_episodes (tests.test_episodes.LiveHook.test_full_sleep_closes_open_episodes) ... ok
+2026-10-25T02:12:09.9180124Z test_observe_turn_reads_turn_products_and_operator (tests.test_episodes.LiveHook.test_observe_turn_reads_turn_products_and_operator) ... ok
+2026-10-25T02:12:09.9285759Z test_goal_shift_and_semantic_vectors (tests.test_episodes.Segmentation.test_goal_shift_and_semantic_vectors) ... ok
+2026-10-25T02:12:09.9396648Z test_pause_correction_failure_and_max_events (tests.test_episodes.Segmentation.test_pause_correction_failure_and_max_events) ... ok
+2026-10-25T02:12:09.9498276Z test_same_topic_stays_and_topic_plus_route_change_cuts (tests.test_episodes.Segmentation.test_same_topic_stays_and_topic_plus_route_change_cuts) ... ok
+2026-10-25T02:12:09.9597699Z test_surprise_alone_never_cuts (tests.test_episodes.Segmentation.test_surprise_alone_never_cuts) ... ok
+2026-10-25T02:12:09.9700497Z test_forgotten_or_inactive_neighbour_is_skipped (tests.test_episodes.Spread.test_forgotten_or_inactive_neighbour_is_skipped) ... ok
+2026-10-25T02:12:09.9949390Z test_live_turn_runs_spread_hook_and_operator (tests.test_episodes.Spread.test_live_turn_runs_spread_hook_and_operator) ... ok
+2026-10-25T02:12:10.0064961Z test_spread_added_memory_does_not_strengthen_its_own_edge (tests.test_episodes.Spread.test_spread_added_memory_does_not_strengthen_its_own_edge) ... ok
+2026-10-25T02:12:10.0171972Z test_spread_needs_repeated_edges_shadow_reports_on_applies (tests.test_episodes.Spread.test_spread_needs_repeated_edges_shadow_reports_on_applies) ... ok
+2026-10-25T02:12:10.0277897Z test_staging_events_lists_candidate_episodes_only (tests.test_episodes.Spread.test_staging_events_lists_candidate_episodes_only) ... ok
+2026-10-25T02:12:10.0384690Z test_provisional_or_dream_confirmations_do_not_count (tests.test_neuromod.ConsolidationTagTests.test_provisional_or_dream_confirmations_do_not_count) ... ok
+2026-10-25T02:12:10.0488827Z test_single_surprise_never_tags_and_confirmations_plus_stability_do (tests.test_neuromod.ConsolidationTagTests.test_single_surprise_never_tags_and_confirmations_plus_stability_do) ... ok
+2026-10-25T02:12:10.0589448Z test_budget_scales_by_gain_times_factor_and_observe_validates_it (tests.test_neuromod.GateTests.test_budget_scales_by_gain_times_factor_and_observe_validates_it) ... ok
+2026-10-25T02:12:10.0691053Z test_learner_training_config_uses_gate_and_record_only_stays_closed (tests.test_neuromod.GateTests.test_learner_training_config_uses_gate_and_record_only_stays_closed) ... ok
+2026-10-25T02:12:10.0793278Z test_retention_failures_reopen_age_plasticity (tests.test_neuromod.GateTests.test_retention_failures_reopen_age_plasticity) ... ok
+2026-10-25T02:12:10.0902362Z test_veto_blocks_budget_decays_and_can_be_cleared (tests.test_neuromod.GateTests.test_veto_blocks_budget_decays_and_can_be_cleared) ... ok
+2026-10-25T02:12:10.1034992Z test_delta_meta_and_modes (tests.test_neuromod.LocalErrorAndMeta.test_delta_meta_and_modes) ... ok
+2026-10-25T02:12:10.1141288Z test_credit_map_projects_unpathed_modulator_onto_eligible_paths_of_same_event (tests.test_neuromod.ModulatorTests.test_credit_map_projects_unpathed_modulator_onto_eligible_paths_of_same_event) ... ok
+2026-10-25T02:12:10.1244038Z test_epistemic_and_instrumental_stay_separate_and_dream_never_modulates (tests.test_neuromod.ModulatorTests.test_epistemic_and_instrumental_stay_separate_and_dream_never_modulates) ... ok
+2026-10-25T02:12:10.1347198Z test_existing_learner_packets_feed_the_bus (tests.test_neuromod.ModulatorTests.test_existing_learner_packets_feed_the_bus) ... ok
+2026-10-25T02:12:10.1450674Z test_provisional_counts_half_and_bad_channels_are_rejected (tests.test_neuromod.ModulatorTests.test_provisional_counts_half_and_bad_channels_are_rejected) ... ok
+2026-10-25T02:12:10.1559227Z test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path (tests.test_neuromod.SleepAndHookTests.test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path) ... ok
+2026-10-25T02:12:10.1667518Z test_sleep_c_reports_neuromodulation_and_operator_command (tests.test_neuromod.SleepAndHookTests.test_sleep_c_reports_neuromodulation_and_operator_command) ... ok
+2026-10-25T02:12:10.1822554Z test_sleep_ends_fast_traces_keeps_tags_and_prunes_dead_paths (tests.test_neuromod.SleepAndHookTests.test_sleep_ends_fast_traces_keeps_tags_and_prunes_dead_paths) ... ok
+2026-10-25T02:12:10.1935069Z test_detailed_trace_cap_keeps_latest_mandatory_human_observations (tests.test_neuromod.TraceTests.test_detailed_trace_cap_keeps_latest_mandatory_human_observations) ... ok
+2026-10-25T02:12:10.2095199Z test_detailed_traces_are_selective (tests.test_neuromod.TraceTests.test_detailed_traces_are_selective) ... ok
+2026-10-25T02:12:10.2203353Z test_sync_is_restart_stable_and_counts_each_packet_once (tests.test_neuromod.TraceTests.test_sync_is_restart_stable_and_counts_each_packet_once) ... ok
+2026-10-25T02:12:10.2309017Z test_trace_grows_with_activity_and_decays_per_event_on_two_timescales (tests.test_neuromod.TraceTests.test_trace_grows_with_activity_and_decays_per_event_on_two_timescales) ... ok
+2026-10-25T02:12:10.2408928Z test_unknown_path_keeps_only_floor_and_human_label_opens_gate (tests.test_neuromod.TraceTests.test_unknown_path_keeps_only_floor_and_human_label_opens_gate) ... ok
+2026-10-25T02:12:10.2513202Z test_budget_priority_and_canonical_statuses (tests.test_attention.AdmissionTests.test_budget_priority_and_canonical_statuses) ... ok
+2026-10-25T02:12:10.2617101Z test_contract_rejects_bad_requests (tests.test_attention.AdmissionTests.test_contract_rejects_bad_requests) ... ok
+2026-10-25T02:12:10.2727150Z test_expired_foreign_and_teacher_rules (tests.test_attention.AdmissionTests.test_expired_foreign_and_teacher_rules) ... ok
+2026-10-25T02:12:10.2830378Z test_pressure_shrinks_budget_and_providers_can_refuse (tests.test_attention.AdmissionTests.test_pressure_shrinks_budget_and_providers_can_refuse) ... ok
+2026-10-25T02:12:10.2935755Z test_edges_and_restart (tests.test_attention.GainTests.test_edges_and_restart) ... ok
+2026-10-25T02:12:10.3107346Z test_gain_relaxes_to_base_per_experience_event (tests.test_attention.GainTests.test_gain_relaxes_to_base_per_experience_event) ... ok
+2026-10-25T02:12:10.3214192Z test_gains_are_bounded_and_interrupt_needs_strong_salience (tests.test_attention.GainTests.test_gains_are_bounded_and_interrupt_needs_strong_salience) ... ok
+2026-10-25T02:12:10.3318290Z test_neuromod_channels_map_onto_salience_and_caution (tests.test_attention.GainTests.test_neuromod_channels_map_onto_salience_and_caution) ... ok
+2026-10-25T02:12:10.3419948Z test_salience_and_caution_are_separate_and_shape_couplings_differently (tests.test_attention.GainTests.test_salience_and_caution_are_separate_and_shape_couplings_differently) ... ok
+2026-10-25T02:12:10.3525644Z test_operator (tests.test_attention.InterfaceTests.test_operator) ... ok
+2026-10-25T02:12:10.3633095Z test_rank_for_focal_loop_and_offer_features (tests.test_attention.InterfaceTests.test_rank_for_focal_loop_and_offer_features) ... ok
+2026-10-25T02:12:10.3736566Z test_grant_touches_eligibility_and_outcome_modulates_policy_path (tests.test_attention.LearningTests.test_grant_touches_eligibility_and_outcome_modulates_policy_path) ... ok
+2026-10-25T02:12:10.3873792Z test_learned_prior_is_shadow_until_explicit_human_switch (tests.test_attention.LearningTests.test_learned_prior_is_shadow_until_explicit_human_switch) ... ok
+2026-10-25T02:12:10.3983440Z test_action_gain_scales_c5_focal_support (tests.test_attention.LiveHookTests.test_action_gain_scales_c5_focal_support) ... ok
+2026-10-25T02:12:10.4092331Z test_cue_coverage_labels_only_spans_with_exact_cues (tests.test_attention.LiveHookTests.test_cue_coverage_labels_only_spans_with_exact_cues) ... ok
+2026-10-25T02:12:10.4353266Z test_live_turn_runs_attention_hooks (tests.test_attention.LiveHookTests.test_live_turn_runs_attention_hooks) ... ok
+2026-10-25T02:12:10.4458238Z test_recent_modulators_feed_gain_decayed_and_session_scoped (tests.test_attention.LiveHookTests.test_recent_modulators_feed_gain_decayed_and_session_scoped) ... ok
+2026-10-25T02:12:10.4560266Z test_source_outcome_books_once_and_updates_policy (tests.test_attention.LiveHookTests.test_source_outcome_books_once_and_updates_policy) ... ok
+2026-10-25T02:12:10.4667211Z test_a4_never_drops_a_chunk_and_requests_bounded_highres (tests.test_attention.PerceptionTests.test_a4_never_drops_a_chunk_and_requests_bounded_highres) ... ok
+2026-10-25T02:12:10.4770191Z test_teacher_hint_is_capped (tests.test_attention.PerceptionTests.test_teacher_hint_is_capped) ... ok
+2026-10-25T02:12:11.3333053Z test_every_module_has_a_row_and_auto_rows_never_pass (tests.test_ledger_hygiene.LedgerHygiene.test_every_module_has_a_row_and_auto_rows_never_pass) ... ok
+2026-10-25T02:12:11.3484942Z test_knob_bindings_resolve (tests.test_ledger_hygiene.LedgerHygiene.test_knob_bindings_resolve) ... ok
+2026-10-25T02:12:11.3485780Z test_ambiguous_causality (tests.test_selfmodel.AttributionTests.test_ambiguous_causality) ... ok
+2026-10-25T02:12:11.3486380Z test_delayed_outcome (tests.test_selfmodel.AttributionTests.test_delayed_outcome) ... ok
+2026-10-25T02:12:11.3487137Z test_missing_corollary_degrades_monitoring_measurably (tests.test_selfmodel.AttributionTests.test_missing_corollary_degrades_monitoring_measurably) ... ok
+2026-10-25T02:12:11.3488059Z test_nearest_prediction_and_far_values_abstain (tests.test_selfmodel.AttributionTests.test_nearest_prediction_and_far_values_abstain) ... ok
+2026-10-25T02:12:11.3488843Z test_partial_action_failure (tests.test_selfmodel.AttributionTests.test_partial_action_failure) ... ok
+2026-10-25T02:12:11.3489521Z test_same_external_event_without_self_action (tests.test_selfmodel.AttributionTests.test_same_external_event_without_self_action) ... ok
+2026-10-25T02:12:11.3490680Z test_same_observation_following_self_action (tests.test_selfmodel.AttributionTests.test_same_observation_following_self_action) ... ok
+2026-10-25T02:12:11.3491419Z test_unexpected_side_effect (tests.test_selfmodel.AttributionTests.test_unexpected_side_effect) ... ok
+2026-10-25T02:12:11.3491964Z test_calm_body (tests.test_selfmodel.InteroceptionTests.test_calm_body) ... ok
+2026-10-25T02:12:11.3492517Z test_missing_sensors_stay_none (tests.test_selfmodel.InteroceptionTests.test_missing_sensors_stay_none) ... ok
+2026-10-25T02:12:11.3493262Z test_pressure_heat_and_low_battery_modulate (tests.test_selfmodel.InteroceptionTests.test_pressure_heat_and_low_battery_modulate) ... ok
+2026-10-25T02:12:11.3494176Z test_self_caused_load_is_attenuated_in_salience_not_in_signal (tests.test_selfmodel.InteroceptionTests.test_self_caused_load_is_attenuated_in_salience_not_in_signal) ... ok
+2026-10-25T02:12:11.3893882Z test_turn_issues_corollary_and_attributes_own_outcome (tests.test_selfmodel.RuntimeHookTests.test_turn_issues_corollary_and_attributes_own_outcome) ... ok
+2026-10-25T02:12:11.4010873Z test_auto_self_edit_only_with_age_right_and_context_policy (tests.test_selfmodel.SystemTests.test_auto_self_edit_only_with_age_right_and_context_policy) ... ok
+2026-10-25T02:12:11.4117783Z test_issue_observe_writes_packets_and_world_error_modulator (tests.test_selfmodel.SystemTests.test_issue_observe_writes_packets_and_world_error_modulator) ... ok
+2026-10-25T02:12:11.4224692Z test_late_disagreeing_offer_becomes_held_finding (tests.test_selfmodel.SystemTests.test_late_disagreeing_offer_becomes_held_finding) ... ok
+2026-10-25T02:12:11.4398044Z test_model_aggregates_and_fails_soft (tests.test_selfmodel.SystemTests.test_model_aggregates_and_fails_soft) ... ok
+2026-10-25T02:12:11.4504214Z test_self_edit_needs_human_and_rolls_back (tests.test_selfmodel.SystemTests.test_self_edit_needs_human_and_rolls_back) ... ok
+2026-10-25T02:12:11.4609905Z test_self_message_rate_limit_when_allowed (tests.test_selfmodel.SystemTests.test_self_message_rate_limit_when_allowed) ... ok
+2026-10-25T02:12:11.4712411Z test_self_messages_are_gated_held_at_age0_deduped (tests.test_selfmodel.SystemTests.test_self_messages_are_gated_held_at_age0_deduped) ... ok
+2026-10-25T02:12:11.4798450Z test_duplicate_conflict_and_duplicate_id_are_rejected (tests.test_output_policy.FixedOutputPolicy.test_duplicate_conflict_and_duplicate_id_are_rejected) ... ok
+2026-10-25T02:12:11.4881857Z test_missing_or_changed_preview_and_before_diff_are_rejected (tests.test_output_policy.FixedOutputPolicy.test_missing_or_changed_preview_and_before_diff_are_rejected) ... ok
+2026-10-25T02:12:11.4971546Z test_model_rollback_preserves_latest_rule_generation (tests.test_output_policy.FixedOutputPolicy.test_model_rollback_preserves_latest_rule_generation) ... ok
+2026-10-25T02:12:11.5073386Z test_multiple_corrupt_rules_are_explicitly_removed_in_one_reviewed_diff (tests.test_output_policy.FixedOutputPolicy.test_multiple_corrupt_rules_are_explicitly_removed_in_one_reviewed_diff) ... ok
+2026-10-25T02:12:11.5163173Z test_new_diff_supersedes_removed_rule_only_after_approval (tests.test_output_policy.FixedOutputPolicy.test_new_diff_supersedes_removed_rule_only_after_approval) ... ok
+2026-10-25T02:12:11.5267082Z test_operator_diff_is_reviewable_and_never_implicitly_activates (tests.test_output_policy.FixedOutputPolicy.test_operator_diff_is_reviewable_and_never_implicitly_activates) ... ok
+2026-10-25T02:12:11.5334796Z test_policy_telemetry_keeps_ids_and_counts_without_answer_text (tests.test_output_policy.FixedOutputPolicy.test_policy_telemetry_keeps_ids_and_counts_without_answer_text) ... ok
+2026-10-25T02:12:11.5457919Z test_restart_and_exact_matching_preserve_utf8_without_normalization (tests.test_output_policy.FixedOutputPolicy.test_restart_and_exact_matching_preserve_utf8_without_normalization) ... ok
+2026-10-25T02:12:11.5537206Z test_revoked_source_rechecked_on_every_match (tests.test_output_policy.FixedOutputPolicy.test_revoked_source_rechecked_on_every_match) ... ok
+2026-10-25T02:12:11.5610890Z test_source_tamper_before_approval_rejects_without_generation_change (tests.test_output_policy.FixedOutputPolicy.test_source_tamper_before_approval_rejects_without_generation_change) ... ok
+2026-10-25T02:12:11.5686867Z test_stale_rule_request_cannot_activate_and_transaction_keeps_pending (tests.test_output_policy.FixedOutputPolicy.test_stale_rule_request_cannot_activate_and_transaction_keeps_pending) ... ok
+2026-10-25T02:12:11.5792105Z test_tampered_active_rule_fails_closed_even_for_unrelated_input (tests.test_output_policy.FixedOutputPolicy.test_tampered_active_rule_fails_closed_even_for_unrelated_input) ... ok
+2026-10-25T02:12:11.5966336Z test_utf8_bounds_control_safety_and_fixed_rule_count (tests.test_output_policy.FixedOutputPolicy.test_utf8_bounds_control_safety_and_fixed_rule_count) ... ok
+2026-10-25T02:12:11.6045776Z test_wrong_authority_unknown_schema_and_partial_source_are_rejected (tests.test_output_policy.FixedOutputPolicy.test_wrong_authority_unknown_schema_and_partial_source_are_rejected) ... ok
+2026-10-25T02:12:11.6396166Z test_all_invisible_transport_output_becomes_visible_system_report (tests.test_output_policy_runtime.OutputPolicyRuntime.test_all_invisible_transport_output_becomes_visible_system_report) ... ok
+2026-10-25T02:12:11.6738291Z test_fixed_turn_has_no_foreground_or_background_native_calls (tests.test_output_policy_runtime.OutputPolicyRuntime.test_fixed_turn_has_no_foreground_or_background_native_calls) ... ok
+2026-10-25T02:12:11.7259827Z test_pending_or_unmatched_rule_keeps_regular_route (tests.test_output_policy_runtime.OutputPolicyRuntime.test_pending_or_unmatched_rule_keeps_regular_route) ... ok
+2026-10-25T02:12:11.7849957Z test_restart_repeat_preserves_exact_answer_and_approved_source (tests.test_output_policy_runtime.OutputPolicyRuntime.test_restart_repeat_preserves_exact_answer_and_approved_source) ... ok
+2026-10-25T02:12:11.8173850Z test_rule_removal_excludes_old_answer_from_native_history (tests.test_output_policy_runtime.OutputPolicyRuntime.test_rule_removal_excludes_old_answer_from_native_history) ... ok
+2026-10-25T02:12:11.8438218Z test_tampered_active_source_fail_closed_and_no_model_generated_claim (tests.test_output_policy_runtime.OutputPolicyRuntime.test_tampered_active_source_fail_closed_and_no_model_generated_claim) ... ok
+2026-10-25T02:12:11.8740961Z test_visible_transport_keeps_spacing_multilingual_and_counts_controls (tests.test_output_policy_runtime.OutputPolicyRuntime.test_visible_transport_keeps_spacing_multilingual_and_counts_controls) ... ok
+2026-10-25T02:12:11.8858388Z test_age0_refuses_system_tool_choice_and_gate_suppresses_with_reason (tests.test_toolstep.PolicyTests.test_age0_refuses_system_tool_choice_and_gate_suppresses_with_reason) ... ok
+2026-10-25T02:12:11.8989300Z test_approved_tool_wins_c5_and_runs_as_transaction (tests.test_toolstep.PolicyTests.test_approved_tool_wins_c5_and_runs_as_transaction) ... ok
+2026-10-25T02:12:11.9096196Z test_direct_output_suppresses_tool (tests.test_toolstep.PolicyTests.test_direct_output_suppresses_tool) ... ok
+2026-10-25T02:12:11.9098654Z test_arithmetic_forms_and_non_arithmetic (tests.test_toolstep.ProposerTests.test_arithmetic_forms_and_non_arithmetic) ... ok
+2026-10-25T02:12:11.9365614Z test_live_turn_plans_tool_without_errors (tests.test_toolstep.ShadowTests.test_live_turn_plans_tool_without_errors) ... ok
+2026-10-25T02:12:11.9486524Z test_shadow_computes_pure_tools_only_and_compares (tests.test_toolstep.ShadowTests.test_shadow_computes_pure_tools_only_and_compares) ... ok
+2026-10-25T02:12:11.9593203Z test_schema_namespace_and_shell_strings (tests.test_transaction.ContractTests.test_schema_namespace_and_shell_strings) ... ok
+2026-10-25T02:12:11.9698160Z test_secrets_are_handles_resolved_only_in_executor (tests.test_transaction.ContractTests.test_secrets_are_handles_resolved_only_in_executor) ... ok
+2026-10-25T02:12:11.9832302Z test_write_tool_needs_approval_runs_sandboxed_and_undoes (tests.test_transaction.ContractTests.test_write_tool_needs_approval_runs_sandboxed_and_undoes) ... ok
+2026-10-25T02:12:11.9941646Z test_operator (tests.test_transaction.OutputCommitTests.test_operator) ... ok
+2026-10-25T02:12:12.0289672Z test_turn_commits_before_first_byte_and_corrections_append (tests.test_transaction.OutputCommitTests.test_turn_commits_before_first_byte_and_corrections_append) ... ok
+2026-10-25T02:12:12.0402784Z test_approval_after_turn_end_reaches_grounding (tests.test_transaction.ProvisionalTests.test_approval_after_turn_end_reaches_grounding) ... ok
+2026-10-25T02:12:12.0506693Z test_ttl_expiry (tests.test_transaction.ProvisionalTests.test_ttl_expiry) ... ok
+2026-10-25T02:12:12.0617312Z test_turn_outcome_waits_for_final_and_revision_tombstones (tests.test_transaction.ProvisionalTests.test_turn_outcome_waits_for_final_and_revision_tombstones) ... ok
+2026-10-25T02:12:12.0730980Z test_copy_committed_before_side_effect_and_order (tests.test_transaction.TransactionTests.test_copy_committed_before_side_effect_and_order) ... ok
+2026-10-25T02:12:12.0840077Z test_crash_during_execution_becomes_unknown_never_rerun (tests.test_transaction.TransactionTests.test_crash_during_execution_becomes_unknown_never_rerun) ... ok
+2026-10-25T02:12:12.0949754Z test_idempotency_key_deduplicates (tests.test_transaction.TransactionTests.test_idempotency_key_deduplicates) ... ok
+2026-10-25T02:12:12.3618639Z test_idle_wake_triggers_autonomous_full_sleep (tests.test_sleep_scheduler.RuntimeIntegration.test_idle_wake_triggers_autonomous_full_sleep) ... ok
+2026-10-25T02:12:12.4352594Z test_operator_request_runs_in_background_and_survives_restart (tests.test_sleep_scheduler.RuntimeIntegration.test_operator_request_runs_in_background_and_survives_restart) ... ok
+2026-10-25T02:12:12.4458301Z test_submit_cancels_running_sleep (tests.test_sleep_scheduler.RuntimeIntegration.test_submit_cancels_running_sleep) ... ok
+2026-10-25T02:12:12.4572973Z test_cancel_interrupts_and_keeps_progress (tests.test_sleep_scheduler.SafetyTests.test_cancel_interrupts_and_keeps_progress) ... ok
+2026-10-25T02:12:12.4675701Z test_locked_policy_and_bounds (tests.test_sleep_scheduler.SafetyTests.test_locked_policy_and_bounds) ... ok
+2026-10-25T02:12:12.4782901Z test_resource_drop_mid_sleep_stops_replay (tests.test_sleep_scheduler.SafetyTests.test_resource_drop_mid_sleep_stops_replay) ... ok
+2026-10-25T02:12:12.4888618Z test_resource_red_skips_and_yellow_runs_only_homeostasis (tests.test_sleep_scheduler.SafetyTests.test_resource_red_skips_and_yellow_runs_only_homeostasis) ... ok
+2026-10-25T02:12:12.4999625Z test_background_waits_for_idle_and_resources (tests.test_sleep_scheduler.SchedulerTests.test_background_waits_for_idle_and_resources) ... ok
+2026-10-25T02:12:12.5103587Z test_due_time_ttl_dedup_and_restart_recovery (tests.test_sleep_scheduler.SchedulerTests.test_due_time_ttl_dedup_and_restart_recovery) ... ok
+2026-10-25T02:12:12.5208652Z test_priority_order_and_foreground_preemption (tests.test_sleep_scheduler.SchedulerTests.test_priority_order_and_foreground_preemption) ... ok
+2026-10-25T02:12:12.6300772Z test_quiet_hours_and_capacity (tests.test_sleep_scheduler.SchedulerTests.test_quiet_hours_and_capacity) ... ok
+2026-10-25T02:12:12.6414533Z test_self_initiative_is_age_gated_but_user_is_not (tests.test_sleep_scheduler.SchedulerTests.test_self_initiative_is_age_gated_but_user_is_not) ... ok
+2026-10-25T02:12:12.6563365Z test_candidate_consolidation_only_stages (tests.test_sleep_scheduler.SleepATests.test_candidate_consolidation_only_stages) ... ok
+2026-10-25T02:12:12.6677849Z test_forgotten_source_retires_item (tests.test_sleep_scheduler.SleepATests.test_forgotten_source_retires_item) ... ok
+2026-10-25T02:12:12.6820056Z test_mix_interleaves_new_and_protected_old (tests.test_sleep_scheduler.SleepATests.test_mix_interleaves_new_and_protected_old) ... ok
+2026-10-25T02:12:12.6944182Z test_rehearsal_passes_and_spaces_out_without_writing_facts (tests.test_sleep_scheduler.SleepATests.test_rehearsal_passes_and_spaces_out_without_writing_facts) ... ok
+2026-10-25T02:12:12.7052196Z test_retention_failure_raises_priority_and_flags_regression_for_old_items (tests.test_sleep_scheduler.SleepATests.test_retention_failure_raises_priority_and_flags_regression_for_old_items) ... ok
+2026-10-25T02:12:12.7155798Z test_autonomous_dream_needs_age_right (tests.test_sleep_scheduler.SleepBCTests.test_autonomous_dream_needs_age_right) ... ok
+2026-10-25T02:12:12.7266621Z test_dream_writes_hypotheses_only (tests.test_sleep_scheduler.SleepBCTests.test_dream_writes_hypotheses_only) ... ok
+2026-10-25T02:12:12.7386584Z test_homeostasis_decay_ttl_and_cleanup (tests.test_sleep_scheduler.SleepBCTests.test_homeostasis_decay_ttl_and_cleanup) ... ok
+2026-10-25T02:12:12.7533160Z test_world_and_skill_hypotheses (tests.test_sleep_scheduler.SleepBCTests.test_world_and_skill_hypotheses) ... ok
+2026-10-25T02:12:12.7696063Z test_gate_measures_saturation_and_drift_and_holds_slow_consolidation (tests.test_sleep_validation.Homeostasis.test_gate_measures_saturation_and_drift_and_holds_slow_consolidation) ... ok
+2026-10-25T02:12:12.7806461Z test_sleep_c_runs_the_gate (tests.test_sleep_validation.Homeostasis.test_sleep_c_runs_the_gate) ... ok
+2026-10-25T02:12:12.7920977Z test_route_alternative_becomes_supported_by_later_human_route (tests.test_sleep_validation.HypothesisValidation.test_route_alternative_becomes_supported_by_later_human_route) ... ok
+2026-10-25T02:12:12.8042468Z test_world_relation_retires_when_a_fact_is_superseded (tests.test_sleep_validation.HypothesisValidation.test_world_relation_retires_when_a_fact_is_superseded) ... ok
+2026-10-25T02:12:12.8151271Z test_conflicting_evidence_blocks_learning_until_verified (tests.test_homeostasis_regulation.Live.test_conflicting_evidence_blocks_learning_until_verified) ... ok
+2026-10-25T02:12:12.8279276Z test_gain_reaches_the_gate_only_when_active (tests.test_homeostasis_regulation.Live.test_gain_reaches_the_gate_only_when_active) ... ok
+2026-10-25T02:12:12.8280287Z test_dead_useful_path_reopens_dead_useless_does_not (tests.test_homeostasis_regulation.Regulate.test_dead_useful_path_reopens_dead_useless_does_not) ... ok
+2026-10-25T02:12:12.8283411Z test_dominant_path_is_damped_and_specialisation_stays_bounded (tests.test_homeostasis_regulation.Regulate.test_dominant_path_is_damped_and_specialisation_stays_bounded) ... ok
+2026-10-25T02:12:12.8284318Z test_moves_only_part_of_the_way_per_night (tests.test_homeostasis_regulation.Regulate.test_moves_only_part_of_the_way_per_night) ... ok
+2026-10-25T02:12:12.8285045Z test_route_dominance_is_monitor_only (tests.test_homeostasis_regulation.Regulate.test_route_dominance_is_monitor_only) ... ok
+2026-10-25T02:12:12.8286106Z test_update_budget_normalised_and_first_night_does_not_judge_dominance (tests.test_homeostasis_regulation.Regulate.test_update_budget_normalised_and_first_night_does_not_judge_dominance) ... ok
+2026-10-25T02:12:12.8287074Z test_absent_port_has_zero_authority (tests.test_body_training_port.BodyTrainingPortContract.test_absent_port_has_zero_authority) ... ok
+2026-10-25T02:12:12.8293986Z test_bound_artifacts_still_do_not_grant_training_authority (tests.test_body_training_port.BodyTrainingPortContract.test_bound_artifacts_still_do_not_grant_training_authority) ... ok
+2026-10-25T02:12:12.8298634Z test_quantized_inference_file_cannot_be_master (tests.test_body_training_port.BodyTrainingPortContract.test_quantized_inference_file_cannot_be_master) ... ok
+2026-10-25T02:12:12.8307140Z test_tamper_and_nontrainable_dtype_fail_closed (tests.test_body_training_port.BodyTrainingPortContract.test_tamper_and_nontrainable_dtype_fail_closed) ... ok
+2026-10-25T02:12:12.8314175Z test_capability_profile_cannot_promote_bound_descriptor (tests.test_body_training_port.CapabilityIntegration.test_capability_profile_cannot_promote_bound_descriptor) ... ok
+2026-10-25T02:12:12.8321126Z test_exception_rejects_quantized_slices_and_non_fp32_master (tests.test_body_training_port.Fp32SliceRequantizerException.test_exception_rejects_quantized_slices_and_non_fp32_master) ... ok
+2026-10-25T02:12:12.8327188Z test_fp32_slices_need_no_requantizer_but_keep_zero_authority (tests.test_body_training_port.Fp32SliceRequantizerException.test_fp32_slices_need_no_requantizer_but_keep_zero_authority) ... ok
+2026-10-25T02:12:12.8331508Z test_descriptor_dotdot_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_dotdot_escape_is_rejected) ... ok
+2026-10-25T02:12:12.8335812Z test_descriptor_symlink_outside_home_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_symlink_outside_home_is_rejected) ... ok
+2026-10-25T02:12:12.8342032Z test_external_artifact_symlink_with_matching_hash_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_external_artifact_symlink_with_matching_hash_is_rejected) ... ok
+2026-10-25T02:12:12.8347041Z test_parent_directory_symlink_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_parent_directory_symlink_escape_is_rejected) ... ok
+2026-10-25T02:12:12.8353328Z test_regular_bound_port_remains_non_authoritative (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_regular_bound_port_remains_non_authoritative) ... ok
+2026-10-25T02:12:12.8359097Z test_native_capability_diagnostic_survives_malformed_descriptor (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_native_capability_diagnostic_survives_malformed_descriptor) ... ok
+2026-10-25T02:12:12.8363487Z test_unhashable_fp32_exception_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_fp32_exception_ids_return_reason_not_typeerror) ... ok
+2026-10-25T02:12:12.8368046Z test_unhashable_master_dtype_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_master_dtype_return_reason_not_typeerror) ... ok
+2026-10-25T02:12:12.8372302Z test_unhashable_trainable_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_trainable_ids_return_reason_not_typeerror) ... ok
+2026-10-25T02:12:12.8372890Z 
+2026-10-25T02:12:12.8373026Z ----------------------------------------------------------------------
+2026-10-25T02:12:12.8373320Z Ran 401 tests in 8.501s
+2026-10-25T02:12:12.8373439Z 
+2026-10-25T02:12:12.8373513Z OK
+2026-10-25T02:12:12.9294266Z ##[group]Run set -euo pipefail
+2026-10-25T02:12:12.9294478Z [36;1mset -euo pipefail[0m
+2026-10-25T02:12:12.9294676Z [36;1m.venv/bin/python v13/code/scripts/public_repo_privacy_scan.py \[0m
+2026-10-25T02:12:12.9294988Z [36;1m  --base "d3aa8dde0f521ecd3f4920820743a3d3bbad12bc" --head HEAD --no-worktree[0m
+2026-10-25T02:12:12.9345043Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T02:12:12.9345245Z ##[endgroup]
+2026-10-25T02:12:13.6614028Z privacy scan d3aa8dde0..HEAD: CLEAN
+2026-10-25T02:12:13.6854577Z ##[group]Run set -euo pipefail
+2026-10-25T02:12:13.6854946Z [36;1mset -euo pipefail[0m
+2026-10-25T02:12:13.6855550Z [36;1m../../.venv/bin/python scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run83.zip" --phone-install | tee "$RUNNER_TEMP/v13-phone-packager.jsonl"[0m
+2026-10-25T02:12:13.6855963Z [36;1munzip -tqq "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-25T02:12:13.6856160Z [36;1m../../.venv/bin/python - <<'PY'[0m
+2026-10-25T02:12:13.6856323Z [36;1mimport json,os,zipfile[0m
+2026-10-25T02:12:13.6856526Z [36;1mp=os.path.join(os.environ['RUNNER_TEMP'],'V13-Phone-Run83.zip')[0m
+2026-10-25T02:12:13.6856748Z [36;1mwith zipfile.ZipFile(p) as z:[0m
+2026-10-25T02:12:13.6856911Z [36;1m    names=set(z.namelist())[0m
+2026-10-25T02:12:13.6857059Z [36;1m    required={[0m
+2026-10-25T02:12:13.6857197Z [36;1m        'V13-Phone/setup.sh',[0m
+2026-10-25T02:12:13.6857354Z [36;1m        'V13-Phone/STARTEN.sh',[0m
+2026-10-25T02:12:13.6857640Z [36;1m        'V13-Phone/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md',[0m
+2026-10-25T02:12:13.6857902Z [36;1m        'V13-Phone/WORKSPACE_FILES.json',[0m
+2026-10-25T02:12:13.6858065Z [36;1m    }[0m
+2026-10-25T02:12:13.6858187Z [36;1m    missing=required-names[0m
+2026-10-25T02:12:13.6858426Z [36;1m    if missing:raise SystemExit('Missing phone source entries: '+repr(sorted(missing)))[0m
+2026-10-25T02:12:13.6858722Z [36;1m    manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))[0m
+2026-10-25T02:12:13.6858986Z [36;1m    if manifest['schema_version']!=1 or len(manifest['files'])<100:[0m
+2026-10-25T02:12:13.6859252Z [36;1m        raise SystemExit('Invalid or incomplete phone source manifest')[0m
+2026-10-25T02:12:13.6859548Z [36;1m    if any(x.endswith(('.gguf','.safetensors','.sqlite','.db','.env')) for x in names):[0m
+2026-10-25T02:12:13.6859839Z [36;1m        raise SystemExit('Private/model payload in phone source ZIP')[0m
+2026-10-25T02:12:13.6860092Z [36;1m    print('PHONE_SOURCE_MANIFEST_PASS',len(manifest['files']))[0m
+2026-10-25T02:12:13.6860290Z [36;1mPY[0m
+2026-10-25T02:12:13.6860434Z [36;1msha256sum "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-25T02:12:13.6860670Z [36;1mstat -c 'PHONE_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run83.zip"[0m
+2026-10-25T02:12:13.6911675Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T02:12:13.6911890Z ##[endgroup]
+2026-10-25T02:12:13.7577407Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:13.7578396Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:14.9308225Z {"bytes": 12620898, "canonical_gate_pass": false, "files": 853, "native_models_launched": false, "phone_measured": false, "sha256": "226d26dba81e8babda701f56b8f3b0d88cc27c0d7543accd387a48dac0b27129", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run83.zip"}
+2026-10-25T02:12:15.1183401Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:15.1184024Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:15.1292606Z PHONE_SOURCE_MANIFEST_PASS 852
+2026-10-25T02:12:15.1422601Z 226d26dba81e8babda701f56b8f3b0d88cc27c0d7543accd387a48dac0b27129  /home/runner/work/_temp/V13-Phone-Run83.zip
+2026-10-25T02:12:15.1447258Z PHONE_SOURCE_BYTES=12620898
+2026-10-25T02:12:15.1477817Z ##[group]Run set -euo pipefail
+2026-10-25T02:12:15.1478021Z [36;1mset -euo pipefail[0m
+2026-10-25T02:12:15.1478170Z [36;1m../../.venv/bin/python - <<'PY'[0m
+2026-10-25T02:12:15.1478334Z [36;1mimport json,os[0m
+2026-10-25T02:12:15.1478475Z [36;1mfrom pathlib import Path[0m
+2026-10-25T02:12:15.1478700Z [36;1mfrom scripts.phone_release_audit_candidate import verify_archive,sha256[0m
+2026-10-25T02:12:15.1479080Z [36;1mtemp=Path(os.environ['RUNNER_TEMP'])[0m
+2026-10-25T02:12:15.1479261Z [36;1marchive=temp/'V13-Phone-Run83.zip'[0m
+2026-10-25T02:12:15.1479533Z [36;1mpackager=json.loads((temp/'v13-phone-packager.jsonl').read_text().strip().splitlines()[-1])[0m
+2026-10-25T02:12:15.1479795Z [36;1mfiles=verify_archive(archive)[0m
+2026-10-25T02:12:15.1479951Z [36;1mactual=sha256(archive)[0m
+2026-10-25T02:12:15.1480180Z [36;1mif len(files)<100 or len(files)+1!=packager['files'] or actual!=packager['sha256']:[0m
+2026-10-25T02:12:15.1480523Z [36;1m    raise SystemExit('Independent archive verification disagrees with packager')[0m
+2026-10-25T02:12:15.1480809Z [36;1mprint('INDEPENDENT_PHONE_ARCHIVE_PASS',len(files),actual)[0m
+2026-10-25T02:12:15.1481001Z [36;1mPY[0m
+2026-10-25T02:12:15.1530713Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T02:12:15.1530907Z ##[endgroup]
+2026-10-25T02:12:15.1705915Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:15.1706527Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T02:12:15.3687929Z INDEPENDENT_PHONE_ARCHIVE_PASS 852 226d26dba81e8babda701f56b8f3b0d88cc27c0d7543accd387a48dac0b27129
+2026-10-25T02:12:15.3782375Z ##[group]Run set -euo pipefail
+2026-10-25T02:12:15.3782591Z [36;1mset -euo pipefail[0m
+2026-10-25T02:12:15.3782760Z [36;1munpack="$RUNNER_TEMP/v13-phone-extracted-run84"[0m
+2026-10-25T02:12:15.3782949Z [36;1mmkdir -p "$unpack"[0m
+2026-10-25T02:12:15.3783126Z [36;1munzip -q "$RUNNER_TEMP/V13-Phone-Run83.zip" -d "$unpack"[0m
+2026-10-25T02:12:15.3783317Z [36;1mcd "$unpack/V13-Phone"[0m
+2026-10-25T02:12:15.3783524Z [36;1m"$GITHUB_WORKSPACE/.venv/bin/python" -m compileall -q v13 scripts tests[0m
+2026-10-25T02:12:15.3783785Z [36;1m"$GITHUB_WORKSPACE/.venv/bin/python" -m unittest -v \[0m
+2026-10-25T02:12:15.3783970Z [36;1m  tests.test_context_os \[0m
+2026-10-25T02:12:15.3784116Z [36;1m  tests.test_jefoutcome \[0m
+2026-10-25T02:12:15.3784261Z [36;1m  tests.test_history_lineage \[0m
+2026-10-25T02:12:15.3784410Z [36;1m  tests.test_age \[0m
+2026-10-25T02:12:15.3784543Z [36;1m  tests.test_standstill \[0m
+2026-10-25T02:12:15.3784730Z [36;1m  tests.test_phone_operator_journey_run86 \[0m
+2026-10-25T02:12:15.3784899Z [36;1m  tests.test_phone_cli_run87 \[0m
+2026-10-25T02:12:15.3785069Z [36;1m  tests.test_operator_search_literal_run88 \[0m
+2026-10-25T02:12:15.3785385Z [36;1m  tests.test_phone_chat_sessions_run89 \[0m
+2026-10-25T02:12:15.3785569Z [36;1m  tests.test_body_training_port \[0m
+2026-10-25T02:12:15.3785739Z [36;1m  tests.test_body_train_port_paths_run90 \[0m
+2026-10-25T02:12:15.3785920Z [36;1m  tests.test_body_train_port_schema_run91 \[0m
+2026-10-25T02:12:15.3786097Z [36;1m  tests.test_jef_outcome_vocab_run92 \[0m
+2026-10-25T02:12:15.3786273Z [36;1m  tests.test_context_exact_quotes_run93 \[0m
+2026-10-25T02:12:15.3786437Z [36;1m  tests.test_package_source[0m
+2026-10-25T02:12:15.3786605Z [36;1m"$GITHUB_WORKSPACE/.venv/bin/python" - <<'PY'[0m
+2026-10-25T02:12:15.3786769Z [36;1mimport os[0m
+2026-10-25T02:12:15.3786894Z [36;1mfrom pathlib import Path[0m
+2026-10-25T02:12:15.3787041Z [36;1mfrom v13.runtime import Runtime[0m
+2026-10-25T02:12:15.3787243Z [36;1mhome=Path(os.environ['RUNNER_TEMP'])/'v13-phone-run84-home'[0m
+2026-10-25T02:12:15.3787438Z [36;1mr=Runtime(home)[0m
+2026-10-25T02:12:15.3787566Z [36;1mtry:[0m
+2026-10-25T02:12:15.3787726Z [36;1m    e=r.store.event(r.session,'source zip persistence check')[0m
+2026-10-25T02:12:15.3787919Z [36;1m    ref=e['source_ref'][0m
+2026-10-25T02:12:15.3788111Z [36;1m    assert r.store.read_source(ref)=='source zip persistence check'[0m
+2026-10-25T02:12:15.3788307Z [36;1mfinally:[0m
+2026-10-25T02:12:15.3788424Z [36;1m    r.close()[0m
+2026-10-25T02:12:15.3788662Z [36;1mr=Runtime(home)[0m
+2026-10-25T02:12:15.3788786Z [36;1mtry:[0m
+2026-10-25T02:12:15.3788947Z [36;1m    assert r.store.read_source(ref)=='source zip persistence check'[0m
+2026-10-25T02:12:15.3789178Z [36;1m    print('EXTRACTED_PHONE_RUNTIME_RESTART_PASS')[0m
+2026-10-25T02:12:15.3789345Z [36;1mfinally:[0m
+2026-10-25T02:12:15.3789456Z [36;1m    r.close()[0m
+2026-10-25T02:12:15.3789574Z [36;1mPY[0m
+2026-10-25T02:12:15.3838219Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T02:12:15.3838407Z ##[endgroup]
+2026-10-25T02:12:16.5319446Z test_compression_keeps_every_exact_span_and_is_shorter (tests.test_context_os.CompressionTests.test_compression_keeps_every_exact_span_and_is_shorter) ... ok
+2026-10-25T02:12:16.5320328Z test_exact_need_triggers (tests.test_context_os.CompressionTests.test_exact_need_triggers) ... ok
+2026-10-25T02:12:16.5320952Z test_too_many_spans_or_no_gain_stays_raw (tests.test_context_os.CompressionTests.test_too_many_spans_or_no_gain_stays_raw) ... ok
+2026-10-25T02:12:16.5482485Z test_boolean_cached_tokens_cannot_drive_cost_learning (tests.test_context_os.KnobAndLearningTests.test_boolean_cached_tokens_cannot_drive_cost_learning) ... ok
+2026-10-25T02:12:16.5577634Z test_negative_cached_tokens_cannot_drive_cost_learning (tests.test_context_os.KnobAndLearningTests.test_negative_cached_tokens_cannot_drive_cost_learning) ... ok
+2026-10-25T02:12:16.5667583Z test_negative_prompt_tokens_cannot_drive_cost_learning (tests.test_context_os.KnobAndLearningTests.test_negative_prompt_tokens_cannot_drive_cost_learning) ... ok
+2026-10-25T02:12:16.5758881Z test_observe_records_cache_reuse_and_cost_signal_only_when_applied (tests.test_context_os.KnobAndLearningTests.test_observe_records_cache_reuse_and_cost_signal_only_when_applied) ... ok
+2026-10-25T02:12:16.5857128Z test_plan_touches_eligibility_and_outcome_updates_prior_shadow (tests.test_context_os.KnobAndLearningTests.test_plan_touches_eligibility_and_outcome_updates_prior_shadow) ... ok
+2026-10-25T02:12:16.6027851Z test_risky_knob_raise_needs_stable_exact_recall (tests.test_context_os.KnobAndLearningTests.test_risky_knob_raise_needs_stable_exact_recall) ... ok
+2026-10-25T02:12:16.6116789Z test_valid_cache_counters_still_measure_cost (tests.test_context_os.KnobAndLearningTests.test_valid_cache_counters_still_measure_cost) ... ok
+2026-10-25T02:12:16.6209205Z test_active_mode_requires_explicit_human (tests.test_context_os.PlanTests.test_active_mode_requires_explicit_human) ... ok
+2026-10-25T02:12:16.6310277Z test_append_only_reenters_transcript_and_falls_back_on_mismatch (tests.test_context_os.PlanTests.test_append_only_reenters_transcript_and_falls_back_on_mismatch) ... ok
+2026-10-25T02:12:16.6402254Z test_budget_pressure_points_old_turns_but_never_drops_newest (tests.test_context_os.PlanTests.test_budget_pressure_points_old_turns_but_never_drops_newest) ... ok
+2026-10-25T02:12:16.6489916Z test_exact_need_restores_relevant_turn (tests.test_context_os.PlanTests.test_exact_need_restores_relevant_turn) ... ok
+2026-10-25T02:12:16.6579324Z test_oldest_unpinned_turn_is_compressed_newest_stays_raw (tests.test_context_os.PlanTests.test_oldest_unpinned_turn_is_compressed_newest_stays_raw) ... ok
+2026-10-25T02:12:16.6669974Z test_shadow_returns_legacy_messages_byte_identical (tests.test_context_os.PlanTests.test_shadow_returns_legacy_messages_byte_identical) ... ok
+2026-10-25T02:12:16.6765098Z test_stable_prefix_needs_declared_capability_and_reuses_prefix (tests.test_context_os.PlanTests.test_stable_prefix_needs_declared_capability_and_reuses_prefix) ... ok
+2026-10-25T02:12:16.6855103Z test_volatile_lists_are_compacted_to_the_global_share (tests.test_context_os.PlanTests.test_volatile_lists_are_compacted_to_the_global_share) ... ok
+2026-10-25T02:12:16.7926626Z test_turn_writes_context_plan_and_shadow_keeps_legacy_view (tests.test_context_os.RuntimeHookTests.test_turn_writes_context_plan_and_shadow_keeps_legacy_view) ... ok
+2026-10-25T02:12:16.8132965Z test_forgotten_memory_is_not_reactivated (tests.test_context_os.WarmTests.test_forgotten_memory_is_not_reactivated) ... ok
+2026-10-25T02:12:16.8223618Z test_warm_memory_reactivates_and_decays (tests.test_context_os.WarmTests.test_warm_memory_reactivates_and_decays) ... ok
+2026-10-25T02:12:16.8527228Z test_stage_grows_with_traces (tests.test_jefoutcome.Lifecycle.test_stage_grows_with_traces) ... ok
+2026-10-25T02:12:16.8627062Z test_changed_outcome_value_without_changed_source_cannot_train (tests.test_jefoutcome.Store.test_changed_outcome_value_without_changed_source_cannot_train) ... ok
+2026-10-25T02:12:16.8724371Z test_corrupt_decision_context_blob_cannot_train (tests.test_jefoutcome.Store.test_corrupt_decision_context_blob_cannot_train) ... ok
+2026-10-25T02:12:16.8820293Z test_corrupt_outcome_blob_cannot_train (tests.test_jefoutcome.Store.test_corrupt_outcome_blob_cannot_train) ... ok
+2026-10-25T02:12:16.8916411Z test_deleted_decision_context_source_cannot_train (tests.test_jefoutcome.Store.test_deleted_decision_context_source_cannot_train) ... ok
+2026-10-25T02:12:16.9018731Z test_distinct_final_events_keep_distinct_outcome_labels (tests.test_jefoutcome.Store.test_distinct_final_events_keep_distinct_outcome_labels) ... ok
+2026-10-25T02:12:16.9122996Z test_human_agreement_and_route_correction_flip (tests.test_jefoutcome.Store.test_human_agreement_and_route_correction_flip) ... ok
+2026-10-25T02:12:16.9218660Z test_labels_are_stored_against_the_head_decision (tests.test_jefoutcome.Store.test_labels_are_stored_against_the_head_decision) ... ok
+2026-10-25T02:12:16.9312345Z test_repeated_final_outcome_keeps_one_label_and_source (tests.test_jefoutcome.Store.test_repeated_final_outcome_keeps_one_label_and_source) ... ok
+2026-10-25T02:12:16.9405417Z test_replayed_final_cannot_undo_route_correction (tests.test_jefoutcome.Store.test_replayed_final_cannot_undo_route_correction) ... ok
+2026-10-25T02:12:16.9499342Z test_replayed_final_different_target_does_not_relabel (tests.test_jefoutcome.Store.test_replayed_final_different_target_does_not_relabel) ... ok
+2026-10-25T02:12:16.9596389Z test_same_content_foreign_context_source_cannot_train (tests.test_jefoutcome.Store.test_same_content_foreign_context_source_cannot_train) ... ok
+2026-10-25T02:12:16.9693971Z test_same_text_user_source_cannot_impersonate_outcome_authority (tests.test_jefoutcome.Store.test_same_text_user_source_cannot_impersonate_outcome_authority) ... ok
+2026-10-25T02:12:16.9815734Z test_training_rows_only_in_learn_mode_and_never_over_human_labels (tests.test_jefoutcome.Store.test_training_rows_only_in_learn_mode_and_never_over_human_labels) ... ok
+2026-10-25T02:12:16.9816390Z test_derivation (tests.test_jefoutcome.Targets.test_derivation) ... ok
+2026-10-25T02:12:17.0043464Z test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat (tests.test_history_lineage.HistoryLineage.test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat) ... ok
+2026-10-25T02:12:17.0122488Z test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported (tests.test_history_lineage.HistoryLineage.test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported) ... ok
+2026-10-25T02:12:17.0203742Z test_capability_stage_scaffolds_even_if_system_is_mature (tests.test_age.AgeChecks.test_capability_stage_scaffolds_even_if_system_is_mature) ... ok
+2026-10-25T02:12:17.0275569Z test_continuous_maturity_changes_budgets_smoothly_within_stage (tests.test_age.AgeChecks.test_continuous_maturity_changes_budgets_smoothly_within_stage) ... ok
+2026-10-25T02:12:17.0345110Z test_default_build_stays_age0_but_records_proposal (tests.test_age.AgeChecks.test_default_build_stays_age0_but_records_proposal) ... ok
+2026-10-25T02:12:17.0426618Z test_gist_resolution_grows_with_maturity_but_refines_on_novelty (tests.test_age.AgeChecks.test_gist_resolution_grows_with_maturity_but_refines_on_novelty) ... ok
+2026-10-25T02:12:17.0499224Z test_hysteresis_band_and_demotion (tests.test_age.AgeChecks.test_hysteresis_band_and_demotion) ... ok
+2026-10-25T02:12:17.0569502Z test_promotion_needs_several_distinct_passes (tests.test_age.AgeChecks.test_promotion_needs_several_distinct_passes) ... ok
+2026-10-25T02:12:17.0643461Z test_reopenable_plasticity (tests.test_age.AgeChecks.test_reopenable_plasticity) ... ok
+2026-10-25T02:12:17.0749409Z test_restart_persists_state (tests.test_age.AgeChecks.test_restart_persists_state) ... ok
+2026-10-25T02:12:17.0825774Z test_rights_are_masked_by_rules_permissions_resources_and_structural_lock (tests.test_age.AgeChecks.test_rights_are_masked_by_rules_permissions_resources_and_structural_lock) ... ok
+2026-10-25T02:12:17.0895196Z test_severe_regression_demotes_immediately (tests.test_age.AgeChecks.test_severe_regression_demotes_immediately) ... ok
+2026-10-25T02:12:17.0968282Z test_user_cap_is_binding_and_not_self_overridable (tests.test_age.AgeChecks.test_user_cap_is_binding_and_not_self_overridable) ... ok
+2026-10-25T02:12:17.1037860Z test_user_freeze_and_lower (tests.test_age.AgeChecks.test_user_freeze_and_lower) ... ok
+2026-10-25T02:12:17.1139058Z test_operator_age_shows_real_state (tests.test_age.AgeOperatorChecks.test_operator_age_shows_real_state) ... ok
+2026-10-25T02:12:17.1431105Z test_all_parts_stop_and_idle_runtime_is_confirmed_still (tests.test_standstill.EngageTests.test_all_parts_stop_and_idle_runtime_is_confirmed_still) ... ok
+2026-10-25T02:12:18.2569370Z test_engage_waits_for_a_scheduler_tick_in_progress (tests.test_standstill.EngageTests.test_engage_waits_for_a_scheduler_tick_in_progress) ... ok
+2026-10-25T02:12:18.3789505Z test_job_that_ignores_cancel_is_reported_never_claimed_stopped (tests.test_standstill.EngageTests.test_job_that_ignores_cancel_is_reported_never_claimed_stopped) ... ok
+2026-10-25T02:12:18.9088715Z test_queued_turn_is_not_answered_while_still (tests.test_standstill.EngageTests.test_queued_turn_is_not_answered_while_still) ... ok
+2026-10-25T02:12:18.9398643Z test_running_job_that_honours_cancel_is_confirmed_stopped (tests.test_standstill.EngageTests.test_running_job_that_honours_cancel_is_confirmed_stopped) ... ok
+2026-10-25T02:12:20.2728215Z test_scheduler_tick_and_background_do_not_run_during_standstill (tests.test_standstill.EngageTests.test_scheduler_tick_and_background_do_not_run_during_standstill) ... ok
+2026-10-25T02:12:20.3030555Z test_release_only_undoes_what_standstill_set (tests.test_standstill.ReleaseTests.test_release_only_undoes_what_standstill_set) ... ok
+2026-10-25T02:12:20.3328102Z test_release_reports_background_that_resumes (tests.test_standstill.ReleaseTests.test_release_reports_background_that_resumes) ... ok
+2026-10-25T02:12:20.3429318Z test_release_without_standstill_changes_nothing (tests.test_standstill.ReleaseTests.test_release_without_standstill_changes_nothing) ... ok
+2026-10-25T02:12:20.5739539Z test_repeated_engage_keeps_first_record (tests.test_standstill.ReleaseTests.test_repeated_engage_keeps_first_record) ... ok
+2026-10-25T02:12:20.6051123Z test_user_notaus_before_standstill_survives_release (tests.test_standstill.ReleaseTests.test_user_notaus_before_standstill_survives_release) ... ok
+2026-10-25T02:12:20.8400887Z test_restart_stays_still (tests.test_standstill.RestartTests.test_restart_stays_still) ... ok
+2026-10-25T02:12:20.8502099Z test_bad_argument (tests.test_standstill.TextTests.test_bad_argument) ... ok
+2026-10-25T02:12:20.8595107Z test_notaus_says_learning_continues_and_points_to_standstill (tests.test_standstill.TextTests.test_notaus_says_learning_continues_and_points_to_standstill) ... ok
+2026-10-25T02:12:20.8692301Z test_local_operator_origin_and_record_only_default (tests.test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_local_operator_origin_and_record_only_default) ... ok
+2026-10-25T02:12:20.9337977Z test_paused_fifo_exact_sources_export_and_second_restart (tests.test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_paused_fifo_exact_sources_export_and_second_restart) ... ok
+2026-10-25T02:12:21.1910795Z test_standstill_persists_and_blocks_turn_until_local_release (tests.test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_standstill_persists_and_blocks_turn_until_local_release) ... ok
+2026-10-25T02:12:21.6190876Z test_two_separate_ask_processes_keep_exact_source_and_final_history (tests.test_phone_cli_run87.PhoneCliRun87.test_two_separate_ask_processes_keep_exact_source_and_final_history) ... ok
+2026-10-25T02:12:21.6289857Z test_backslash_is_literal_and_ascii_case_insensitive_is_preserved (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_backslash_is_literal_and_ascii_case_insensitive_is_preserved) ... ok
+2026-10-25T02:12:21.6388600Z test_percent_is_literal_not_any_substring (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_percent_is_literal_not_any_substring) ... ok
+2026-10-25T02:12:21.6485698Z test_underscore_is_literal_not_any_character (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_underscore_is_literal_not_any_character) ... ok
+2026-10-25T02:12:21.7082204Z test_two_chat_exports_exact_sources_and_selected_chat_restart (tests.test_phone_chat_sessions_run89.PhoneChatSessionsRun89.test_two_chat_exports_exact_sources_and_selected_chat_restart) ... ok
+2026-10-25T02:12:21.7083752Z test_absent_port_has_zero_authority (tests.test_body_training_port.BodyTrainingPortContract.test_absent_port_has_zero_authority) ... ok
+2026-10-25T02:12:21.7092375Z test_bound_artifacts_still_do_not_grant_training_authority (tests.test_body_training_port.BodyTrainingPortContract.test_bound_artifacts_still_do_not_grant_training_authority) ... ok
+2026-10-25T02:12:21.7097134Z test_quantized_inference_file_cannot_be_master (tests.test_body_training_port.BodyTrainingPortContract.test_quantized_inference_file_cannot_be_master) ... ok
+2026-10-25T02:12:21.7105243Z test_tamper_and_nontrainable_dtype_fail_closed (tests.test_body_training_port.BodyTrainingPortContract.test_tamper_and_nontrainable_dtype_fail_closed) ... ok
+2026-10-25T02:12:21.7112130Z test_capability_profile_cannot_promote_bound_descriptor (tests.test_body_training_port.CapabilityIntegration.test_capability_profile_cannot_promote_bound_descriptor) ... ok
+2026-10-25T02:12:21.7118925Z test_exception_rejects_quantized_slices_and_non_fp32_master (tests.test_body_training_port.Fp32SliceRequantizerException.test_exception_rejects_quantized_slices_and_non_fp32_master) ... ok
+2026-10-25T02:12:21.7124652Z test_fp32_slices_need_no_requantizer_but_keep_zero_authority (tests.test_body_training_port.Fp32SliceRequantizerException.test_fp32_slices_need_no_requantizer_but_keep_zero_authority) ... ok
+2026-10-25T02:12:21.7128992Z test_descriptor_dotdot_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_dotdot_escape_is_rejected) ... ok
+2026-10-25T02:12:21.7133275Z test_descriptor_symlink_outside_home_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_descriptor_symlink_outside_home_is_rejected) ... ok
+2026-10-25T02:12:21.7139034Z test_external_artifact_symlink_with_matching_hash_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_external_artifact_symlink_with_matching_hash_is_rejected) ... ok
+2026-10-25T02:12:21.7143740Z test_parent_directory_symlink_escape_is_rejected (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_parent_directory_symlink_escape_is_rejected) ... ok
+2026-10-25T02:12:21.7150100Z test_regular_bound_port_remains_non_authoritative (tests.test_body_train_port_paths_run90.BodyTrainPortPathsRun90.test_regular_bound_port_remains_non_authoritative) ... ok
+2026-10-25T02:12:21.7155448Z test_native_capability_diagnostic_survives_malformed_descriptor (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_native_capability_diagnostic_survives_malformed_descriptor) ... ok
+2026-10-25T02:12:21.7160059Z test_unhashable_fp32_exception_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_fp32_exception_ids_return_reason_not_typeerror) ... ok
+2026-10-25T02:12:21.7164160Z test_unhashable_master_dtype_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_master_dtype_return_reason_not_typeerror) ... ok
+2026-10-25T02:12:21.7168564Z test_unhashable_trainable_ids_return_reason_not_typeerror (tests.test_body_train_port_schema_run91.BodyTrainPortSchemaRun91.test_unhashable_trainable_ids_return_reason_not_typeerror) ... ok
+2026-10-25T02:12:21.7471118Z test_invalid_matching_self_label_source_cannot_train_any_head (tests.test_jef_outcome_vocab_run92.JefOutcomeVocabularyRun92.test_invalid_matching_self_label_source_cannot_train_any_head) ... ok
+2026-10-25T02:12:21.7472431Z test_english_curly_double_quote_survives_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_english_curly_double_quote_survives_compression) ... ok
+2026-10-25T02:12:21.7474736Z test_existing_short_ascii_and_german_quotes_remain_exact (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_existing_short_ascii_and_german_quotes_remain_exact) ... ok
+2026-10-25T02:12:21.7477074Z test_long_ascii_and_german_quotes_survive (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_long_ascii_and_german_quotes_survive) ... ok
+2026-10-25T02:12:21.7478534Z test_oversized_quote_forces_raw_not_lossy_compression (tests.test_context_exact_quotes_run93.ContextExactQuotesRun93.test_oversized_quote_forces_raw_not_lossy_compression) ... ok
+2026-10-25T02:12:25.5177235Z test_actual_phone_zip_runs_approval_reader_and_merged_firing_after_extraction (tests.test_package_source.PackageSource.test_actual_phone_zip_runs_approval_reader_and_merged_firing_after_extraction) ... ok
+2026-10-25T02:12:27.8099833Z test_actual_phone_zip_runs_isolated_native_firing_candidate_after_extraction (tests.test_package_source.PackageSource.test_actual_phone_zip_runs_isolated_native_firing_candidate_after_extraction) ... ok
+2026-10-25T02:12:29.7106075Z test_actual_phone_zip_runs_source_handoff_regressions_after_extraction (tests.test_package_source.PackageSource.test_actual_phone_zip_runs_source_handoff_regressions_after_extraction) ... ok
+2026-10-25T02:12:29.7509408Z test_missing_phone_dependency_fails_before_creating_archive (tests.test_package_source.PackageSource.test_missing_phone_dependency_fails_before_creating_archive) ... ok
+2026-10-25T02:12:29.7959679Z test_phone_includes_only_required_baseline_and_does_not_rewrite_source_manifest (tests.test_package_source.PackageSource.test_phone_includes_only_required_baseline_and_does_not_rewrite_source_manifest) ... ok
+2026-10-25T02:12:29.8394488Z test_source_excludes_live_and_rotated_sqlite_but_keeps_sealed_checkpoint (tests.test_package_source.PackageSource.test_source_excludes_live_and_rotated_sqlite_but_keeps_sealed_checkpoint) ... ok
+2026-10-25T02:12:29.8395067Z 
+2026-10-25T02:12:29.8395224Z ----------------------------------------------------------------------
+2026-10-25T02:12:29.8395632Z Ran 100 tests in 13.308s
+2026-10-25T02:12:29.8395757Z 
+2026-10-25T02:12:29.8405896Z OK
+2026-10-25T02:12:30.1432318Z EXTRACTED_PHONE_RUNTIME_RESTART_PASS
+2026-10-25T02:12:30.1607485Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-25T02:12:30.1607725Z with:
+2026-10-25T02:12:30.1607914Z   name: V13-Phone-source-2ce8533aa103bbf9c5c581bdf68784c55a423108
+2026-10-25T02:12:30.1608149Z   path: /home/runner/work/_temp/V13-Phone-Run83.zip
+2026-10-25T02:12:30.1608335Z   if-no-files-found: error
+2026-10-25T02:12:30.1608477Z   compression-level: 0
+2026-10-25T02:12:30.1608609Z   retention-days: 30
+2026-10-25T02:12:30.1608735Z   overwrite: false
+2026-10-25T02:12:30.1608864Z   include-hidden-files: false
+2026-10-25T02:12:30.1609004Z ##[endgroup]
+2026-10-25T02:12:30.2782556Z (node:2694) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-25T02:12:30.2783233Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-25T02:12:30.2827289Z With the provided path, there will be 1 file uploaded
+2026-10-25T02:12:30.2845761Z Artifact name is valid!
+2026-10-25T02:12:30.2846203Z Root directory input is valid!
+2026-10-25T02:12:30.5601183Z Beginning upload of artifact content to blob storage
+2026-10-25T02:12:30.5905650Z (node:2694) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-25T02:12:31.0972724Z Uploaded bytes 8388608
+2026-10-25T02:12:31.2363360Z Uploaded bytes 12621050
+2026-10-25T02:12:31.2834745Z Finished uploading artifact content to blob storage!
+2026-10-25T02:12:31.2835657Z SHA256 digest of uploaded artifact zip is f57518fad7673e8b7e095f8048b06df294b61ffc4edc2efea3d3b9b237583a6c
+2026-10-25T02:12:31.2836547Z Finalizing artifact upload
+2026-10-25T02:12:31.6994699Z Artifact V13-Phone-source-2ce8533aa103bbf9c5c581bdf68784c55a423108.zip successfully finalized. Artifact ID 12582869875
+2026-10-25T02:12:31.6995817Z Artifact V13-Phone-source-2ce8533aa103bbf9c5c581bdf68784c55a423108 has been successfully uploaded! Final size is 12621050 bytes. Artifact ID is 12582869875
+2026-10-25T02:12:31.7000843Z Artifact download URL: https://github.com/RedMentos/Aii/actions/runs/40153517041/artifacts/12582869875
+2026-10-25T02:12:31.7185533Z Post job cleanup.
+2026-10-25T02:12:31.7746931Z [command]/usr/bin/git version
+2026-10-25T02:12:31.7775924Z git version 2.55.0
+2026-10-25T02:12:31.7799089Z Temporarily overriding HOME='/home/runner/work/_temp/905d6e41-f1c4-4f9e-bc27-7de495d89ca2' before making global git config changes
+2026-10-25T02:12:31.7799833Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T02:12:31.7802394Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T02:12:31.7839522Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:12:31.7872228Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:12:31.8122523Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:12:31.8160115Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:12:31.8540228Z Cleaning up orphan processes
+2026-10-25T02:12:31.8809932Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
