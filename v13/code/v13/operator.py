@@ -42,7 +42,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC
 :tap B1_DETAIL|B2_GIST [Start:Ende] (max. 64 native Tokens, read-only)
 :feedback output <gewünschter Referenztext> [--learn] (erster nativer Token)
-:budget [Name Wert] / :learning record|shadow|commit / :learn [route|wake|halt|b1_predictor|b2_predictor|a3_student|world_predictor|control_calibration|memory_retrieval|output_adapter]
+:budget [Name Wert] / :learning [status|record|shadow|commit] / :learn [route|wake|halt|b1_predictor|b2_predictor|a3_student|world_predictor|control_calibration|memory_retrieval|output_adapter]
 :requests / :approve <ID> / :reject <ID> / :rollback <Update-ID>
 :rules [add <Regel>|remove <Index> [weitere Indizes]] / :permissions / :age [freeze on|off|lower <n>|structural lock|unlock] / :stage cap 0..5
 :rules fixed "exakte Frage" "exakte Antwort" (Diff, dann :approve ID; kein semantischer Abgleich)
@@ -395,6 +395,14 @@ class Operator:
         if cmd=='open':
             if len(args)!=1 or not s.one('SELECT id FROM sessions WHERE id=?',(args[0],)):raise ValueError('Chat-ID unbekannt')
             r.session=args[0];s.set_meta('last_session',r.session);r.world.recover();return r.session
+        if cmd=='learning' and (not args or args==['status']):
+            # Read-only operator status. A mode setting is never a weight
+            # commit approval or an Age-rights promotion.
+            return dumps({'mode':r.cfg['learning_mode'],
+                          'age_stage':agectl.controller(r).system_stage(),
+                          'approval_required':True,
+                          'approval_scope':'weight_commit',
+                          'mode_is_not_approval':True})
         if cmd in {'route','observers','channel','learning'}:
             key={'route':'route_override','observers':'observer_mode','channel':'channel','learning':'learning_mode'}[cmd]
             if len(args)!=1:raise ValueError('Ein Wert erforderlich')
