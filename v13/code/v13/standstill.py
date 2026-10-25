@@ -20,11 +20,11 @@ from . import age as agectl
 from . import prohibitions as P
 
 KEY='STANDSTILL'
-REVISION='v13-standstill-v1'
+REVISION='v13-standstill-v2-release-recovery'
 WAIT_SECONDS=10.
 
 
-def _state(store):return store.state(KEY,{'revision':REVISION,'on':False,'since':None,'set':{}})
+def _state(store):return store.state(KEY,{'revision':REVISION,'on':False,'since':None,'set':{},'release_pending':{}})
 
 
 def _held_background(r):
@@ -72,6 +72,7 @@ def status(r):
     st,_=_state(r.store);p=parts(r);job=r.current
     if job is None and p['queue'] and not _parked(r):job='coordinator'  # worker not yet parked (e.g. inside a scheduler tick)
     return {'revision':REVISION,'on':bool(st['on']),'since':st['since'],'parts':p,'all_parts_on':all(p.values()),
+            'release_pending':dict(st.get('release_pending') or {}),
             'running_job':job,'confirmed_still':bool(all(p.values()) and job is None),'set_by_standstill':st['set'],
             'background_waiting':_held_background(r),
             'claim_limit':'Stops tools, approvals, the job queue (turns, learning, replay, sleep, dream, training, scheduler) '
@@ -79,15 +80,26 @@ def status(r):
 
 
 def engage(r,wait=WAIT_SECONDS,clock=time.monotonic):
-    st,v=_state(r.store);before=parts(r)
-    P.halt(r.store,True,authority=P.HUMAN);_watch(r)
-    if not before['queue']:r.pause()
-    else:r.cancel()
-    r._standstill_since=time.monotonic()  # a coordinator wait after this point proves it is parked
-    if not before['age']:agectl.controller(r).freeze(True)
-    newly={k:not before[k] for k in before}
-    if st['on']:newly={k:bool(st['set'].get(k) or newly[k]) for k in newly}  # repeated call keeps the first record
-    r.store.set_state(KEY,{'revision':REVISION,'on':True,'since':st['since'] or time.time(),'set':newly},expected=v)
+    # Serialize operator state transitions with the Runtime worker and a
+    # concurrent :stillstand aus. The potentially long park wait is outside
+    # this lock so the worker can reach its idle wait.
+    with r.lock:
+        st,v=_state(r.store);before=parts(r)
+        P.halt(r.store,True,authority=P.HUMAN);_watch(r)
+        if not before['queue']:r.pause()
+        else:r.cancel()
+        r._standstill_since=time.monotonic()
+        if not before['age']:agectl.controller(r).freeze(True)
+        newly={k:not before[k] for k in before}
+        if st['on']:
+            newly={k:bool(st['set'].get(k) or newly[k]) for k in newly}
+        elif st.get('release_pending'):
+            # A previous explicit release was interrupted. Re-engagement
+            # must not forget the queue/age parts that standstill owned.
+            newly={k:bool(st['release_pending'].get(k) or newly[k]) for k in newly}
+        r.store.set_state(KEY,{'revision':REVISION,'on':True,
+                               'since':st['since'] or time.time(),'set':newly,
+                               'release_pending':{}},expected=v)
     end=clock()+max(0.,float(wait))
     while (r.current is not None or not _parked(r)) and clock()<end:time.sleep(.02)
     r.store.log('standstill',None,{'on':True,'set':newly,'running_job':r.current})
@@ -95,19 +107,39 @@ def engage(r,wait=WAIT_SECONDS,clock=time.monotonic):
 
 
 def release(r):
-    st,v=_state(r.store)
-    if not st['on']:return status(r)
-    done=st['set']
-    if done.get('age'):agectl.controller(r).freeze(False)
-    if done.get('notaus'):P.halt(r.store,False,authority=P.HUMAN)
-    waiting=_held_background(r)
-    r.store.set_state(KEY,{'revision':REVISION,'on':False,'since':None,'set':{}},expected=v)
-    if done.get('queue'):r.resume()
-    r.store.log('standstill',None,{'on':False,'released':done,'background_waiting':waiting})
+    # A release is an explicit human action. Persist that consent *before*
+    # clearing any guard. A failed CAS leaves all protections in place.
+    # An interrupted release is retried only on another explicit command;
+    # Runtime startup never silently resumes the queue.
+    with r.lock:
+        st,v=_state(r.store)
+        if st['on']:
+            done={k:bool(st['set'].get(k)) for k in ('notaus','queue','age')}
+            r.store.set_state(KEY,{'revision':REVISION,'on':False,'since':None,
+                                   'set':{},'release_pending':done},expected=v)
+        else:
+            done=dict(st.get('release_pending') or {})
+            if not done:return status(r)
+        # The queue remains paused while the other protections are relaxed.
+        # If either call raises, the durable retry marker survives.
+        if done.get('age'):agectl.controller(r).freeze(False)
+        if done.get('notaus'):P.halt(r.store,False,authority=P.HUMAN)
+        waiting=_held_background(r)
+        if done.get('queue'):r.resume()
+        current,version=_state(r.store)
+        if current['on'] or current.get('release_pending')!=done:
+            raise ValueError('Standstill release ownership changed during completion')
+        r.store.set_state(KEY,{'revision':REVISION,'on':False,'since':None,
+                               'set':{},'release_pending':{}},expected=version)
+        r.store.log('standstill',None,{'on':False,'released':done,'background_waiting':waiting})
     return status(r)|{'released':done,'background_resumes':waiting}
 
 
 def text(s):
+    if s.get('release_pending'):
+        if s['parts'].get('queue'):
+            return 'Stillstand-Aufhebung unterbrochen; Warteschlange weiterhin pausiert. Erneut :stillstand aus zum Abschließen.'
+        return 'Stillstand-Aufhebung unvollständig; Warteschlange bereits fortgesetzt. Erneut :stillstand aus zum Bestätigen des Abschlusses.'
     if not s['on'] and not s.get('released'):
         return 'Stillstand: aus. (:stillstand hält alles an: Werkzeuge, Lernen, Hintergrund, Alterung.)'
     names={'notaus':'Werkzeuge und Freigaben','queue':'Aufgaben, Lernen, Traum/Schlaf, Hintergrund','age':'Alterung (Stufenaufstieg)'}
