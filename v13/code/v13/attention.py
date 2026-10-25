@@ -225,12 +225,26 @@ class Attention:
         if resp['status']!='GRANTED':raise ValueError('Nur gewährte Anfragen haben ein Ergebnis')
         req=json.loads(self.s.one("SELECT payload FROM packets WHERE id=? AND kind='AttentionRequest'",(resp['request_packet_id'],))['payload'])
         key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)  # WP-U6 §12.7
-        def f(st):
+        receipt_key='ATTENTION_OUTCOME_RECEIPT:'+response_packet_id
+        # The bounded last-32 diagnostic list cannot enforce exactly-once
+        # learning: an older response could otherwise be credited again.
+        # Receipt and learned-policy state must commit in the same SQLite tx.
+        with self.s.tx() as c:
+            if c.execute('SELECT 1 FROM states WHERE key=?',(receipt_key,)).fetchone():
+                raise ValueError('Ergebnis schon verbucht')
+            row=c.execute('SELECT version,payload FROM states WHERE key=?',(KEY,)).fetchone()
+            st=json.loads(row['payload']) if row else empty()
+            if st.get('revision')!=REVISION:raise ValueError('Attention state revision mismatch')
             q=st['policy'].setdefault(key,{'n':0,'mean':0.,'outcomes':[]})
+            # Pre-upgrade recent outcomes have no receipt yet.
             if response_packet_id in q['outcomes']:raise ValueError('Ergebnis schon verbucht')
-            q['n']+=1;q['mean']+=sc*max(POLICY_RATE,1/q['n'])*(u-q['mean']);q['outcomes']=(q['outcomes']+[response_packet_id])[-32:]
-            return dict(q,outcomes=len(q['outcomes']))
-        q=self._mutate(f)
+            q['n']+=1;q['mean']+=sc*max(POLICY_RATE,1/q['n'])*(u-q['mean'])
+            q['outcomes']=(q['outcomes']+[response_packet_id])[-32:]
+            c.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',
+                      (KEY,(row['version'] if row else 0)+1,dumps(st)))
+            c.execute('INSERT INTO states VALUES (?,?,?)',
+                      (receipt_key,1,dumps({'response_packet_id':response_packet_id,'policy_key':key})))
+            q=dict(q,outcomes=len(q['outcomes']))
         if self.n is not None:
             ch={'task_success':u} if u>0 else {'action_error':-u} if u<0 else {}
             self.n.signal(resp['event_id'],path=PATH,source_class=source_class,refs=[],**ch)
