@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 337,
+  "date_utc": "2026-10-25",
+  "owner": "assistant/run337-independent-c3-raw-audit-20261025",
+  "pr": 333,
+  "prereg_sha": "88254880a51701bdf8b32ea73369dbed5086997c",
+  "source_head_before_checkpoint": "26e38d8d2b3a4b13cf2a0b40b993f5e9eddeb443",
+  "source_blobs": {
+    "script": "5a2ebaaa99cf271a507f269ee530721cc4b91129",
+    "tests": "4df22d9c434fbf2d1803358d99e44da28bdd3853"
+  },
+  "parent_run336": {
+    "pr": 332,
+    "head": "dfbe3c50a5e0f1b31e42d3ccb05fffa98c446195",
+    "ci": 40219433906,
+    "status_at_checkpoint": "IN_PROGRESS_NOT_VERIFIED"
+  },
+  "source_tests": "12/12 PASS_LOCAL_AND_EXACT_HEAD_CI",
+  "ci": {
+    "run": 40219870610,
+    "job": 121248908733,
+    "conclusion": "SUCCESS_SOURCE_ONLY",
+    "privacy": "CLEAN",
+    "artifact_id": 12609047324,
+    "zip_sha256": "e191801cd7659d5ae279e8bd89d4ced1d8d89d3c1a8ce17c5e9f09c438f41246",
+    "manifest": "6/6 independently verified",
+    "private_backup": "/V13/checkpoints/2026-10-25/V13_Run337_SourceOnly_PASS_raw_shae191801c.zip"
+  },
+  "original_run334_red": {
+    "ci": 40218827356,
+    "artifact_id": 12609405610,
+    "zip_sha256": "9900d10ca527a5181eca39047a38002d1f1539f4f79a92a2735630a672cba0d1",
+    "manifest": "35/35",
+    "guard_result": "FAIL_CLOSED_EXPECTED",
+    "cause": "ModuleNotFoundError gguf after two native A epochs, B/C absent",
+    "private_backup": "/V13/checkpoints/2026-10-25/V13_Run334_Native_ThreeArm_RED_raw_sha9900d10c.zip"
+  },
+  "evidence_level": "SOURCE_ONLY_SYNTHETIC_ADVERSARIAL_NOT_NATIVE_REEXECUTION",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "MISSING",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Will Run336 exact native three-arm replay complete with pinned gguf-py reader?",
+    "What are B/C heldout fact/paraphrase/near-miss/retention results?",
+    "Do strict GGUF selected-only tensor receipts and independent raw-score audit pass?",
+    "Redmi hardware unavailable here."
+  ],
+  "next_command": "Check GitHub Actions run 40219433906 exact head dfbe3c50; download raw ZIP and run python3 v13/code/scripts/verify_run336_artifact.py <zip>; independently hash full manifest, persist checkpoint and continue next substantive learning package",
+  "prerequisites": [
+    "No competing heavy native jobs",
+    "Preserve original failed Run334 artifact",
+    "No weights published, no rejected Drive destination",
+    "Do not promote STEP2/B3/Body-JEPA/AG6/V13"
+  ]
+}
