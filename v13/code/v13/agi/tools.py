@@ -150,9 +150,13 @@ class ToolRegistry:
         except BaseException:
             abort_prediction()
             raise
-        if a['state']=='CANCELLED' and str(a.get('error') or '').startswith('HARD_BLOCK:'):  # last gate in Transactions.execute
+        if a['state']=='CANCELLED':
+            # Neither a hard prohibition nor a normal cancellation is an
+            # executed action; never turn it into a grounded FAILED outcome.
             abort_prediction()
-            return dict(tx,action_tx=a['id'],status='DENIED',reason=a['error'],result=None,error=None)
+            hard=str(a.get('error') or '').startswith('HARD_BLOCK:')
+            return dict(tx,action_tx=a['id'],status='DENIED' if hard else 'CANCELLED',
+                        reason=a.get('error') or 'CANCELLED',result=None,error=None if hard else a.get('error'))
         tx.update(action_tx=a['id'],status='EXECUTED' if a['state']=='SUCCEEDED' else 'FAILED',result=a['result'],error=a['error'],duration_s=a.get('duration_s'))
         if self.on_outcome:
             if tx.get('event_id') and not self._turn_ended(tx['event_id']):  # IH-H13: an outcome inside a running turn stays provisional until that turn is FINAL
