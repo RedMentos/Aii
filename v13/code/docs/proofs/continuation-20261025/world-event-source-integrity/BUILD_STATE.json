@@ -1,0 +1,59 @@
+{
+  "run": "WP-T8 world-event-source-integrity",
+  "date_utc": "2026-10-25",
+  "branch": "codex/world-event-source-integrity-20261025",
+  "base_verified": "d0bf78b933718b4def9bb821c1683af7c5d5b498",
+  "pr": 252,
+  "owner": "WorldModel event-source ingest guard only; independent of active Run223 DS3; no heavy native jobs",
+  "files": {
+    "v13/code/v13/world_model.py": "c0ebe4890bd62996103c8b3d41ad93adff7c2e89",
+    "v13/code/tests/test_world_event_source_integrity_20261025.py": "381646c16bc1c6928d6798dcdc8d483bb13da129",
+    ".github/workflows/world-event-source-integrity-20261025.yml": "91356daa1d730371d44d146f090ce37637ec10df"
+  },
+  "implementation": "Actual production Store read_source() revalidates EventEnvelope source id, event id, kind, authority, provenance and live source blob before WorldModel transitions and for_event; synthetic legacy SQLite doubles without read_source retain test-only semantics. Does not invalidate previously fitted WorldModel state.",
+  "red": {
+    "head": "f18fa42e71b80c902a18ac329934c6901f080d2a",
+    "run_id": 40183615317,
+    "job_id": 121139657712,
+    "tests": 6,
+    "assertion_failures": 7,
+    "artifact_id": 12595385956,
+    "artifact_zip_sha256": "86127dd645c4d9750d2360dfb86627d98157a4f89d6813c21f9ea6a7d83d5c6a"
+  },
+  "green": {
+    "head": "58b1e1b4a6aa6bfeeb4f1b0946231ea79cf8af7c",
+    "run_id": 40183684595,
+    "job_id": 121139863554,
+    "tests": 28,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS",
+    "artifact_id": 12594948455,
+    "artifact_zip_sha256": "e22716e4cb3d8024333f04435723438ba6c5d526c0d60414f3e95a88e79bec47"
+  },
+  "independent_compatibility": {
+    "run202": 40183684616,
+    "conclusion": "pending at initial checkpoint",
+    "run209": 40183684598,
+    "run218": 40183684592
+  },
+  "evidence_kind": "GitHub Linux software and synthetic SQLite plus Run218 actual Runtime with deterministic C3 double if CI passes; no native model or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Persisted fitted WorldModel parameters can outlive revocation of their training sources; must source-bind fitted state and invalidate on load/counterfactual.",
+    "Legacy SQLite synthetic-only compatibility without read_source is not production evidence; tests using actual Store must prove fail-closed behavior.",
+    "Run221 full suite still RED: 2646 tests, 2 FAIL, 36 historical candidate source mismatch ERROR, 14 skipped. No full-suite promotion.",
+    "Native B1/B2/C2/C3, sparse training, Redmi and full acceptance remain unproven."
+  ],
+  "next_step": "New independent package: persist verified training SourceRefs in WorldModel fitted state, revalidate on load and before counterfactual; preserve old synthetic test semantics and fail closed for real Store. RED-first actual Runtime revoke/restart test; no model authority promotion.",
+  "next_command": "Fetch latest PR252 and PR251 heads; check ownership. Add source-bound fitted-state test and candidate on fresh branch based on verified PR252 head, then CI, privacy scan, remote-byte verification.",
+  "no_gate_promotion": true
+}
