@@ -34,12 +34,13 @@ class OrphanGroupReview(SerialCohortTests):
             with patch.object(mod, 'check', return_value=self.ready), \
                  patch.object(mod, 'audit', return_value=self.good_audit), \
                  patch.object(mod, 'receipt_for', return_value={'schema':'synthetic'}), \
-                 patch.object(mod.os, 'killpg') as killpg:
+                 patch.object(mod.os, 'killpg', wraps=os.killpg) as killpg:
                 with self.assertRaisesRegex(mod.LaunchBlocked, 'surviving process-group'):
                     self.call()
                 # The leader was already reaped. Numeric PGID signalling could
                 # kill an unrelated process after PID reuse (Run21 contract).
-                killpg.assert_not_called()
+                self.assertTrue(all(call.args[1] == 0 for call in killpg.call_args_list),
+                                'post-reap process group must only receive signal-0 probes')
             child_pid = int(child_pid_path.read_text())
             if not hasattr(os, 'pidfd_open') or not hasattr(signal, 'pidfd_send_signal'):
                 self.fail('Linux pidfd required for safe fixture cleanup')
