@@ -1,9 +1,11 @@
-"""Run388 opt-in AG2 pre-action tool hook contract (RED scaffold; no live wiring).
+"""Run388 opt-in AG2 pre-action tool hook, not wired into live Growth by default.
 
-This module has no effect unless a ToolRegistry is explicitly constructed with
-on_pre_execute, on_outcome and on_abort callbacks. It must not be wired into
-Growth or active model/age paths without separate registered acceptance.
+A ToolRegistry explicitly configured with before/after/abort can now take a
+frequency prediction after the durable CorollaryCopy but *before* tool effects.
+The baseline remains a non-causal frequency model, not Body-JEPA or STEP8.
 """
+from ..common import dumps
+from ..toolforecast import is_forecast
 from .grounding import Grounding
 
 
@@ -12,10 +14,31 @@ class PreActionGrounding:
         self.grounding = grounding
 
     def before(self, tx):
-        return None  # RED scaffold: no pre-action prediction yet
+        """Called only after action-copy commit and before the actual effect."""
+        if tx.get("status") != "APPROVED":
+            return None
+        predicted = tx.get("predicted")
+        if is_forecast(predicted) or not isinstance(predicted, dict) or "outcome" not in predicted:
+            predicted = None
+        aid, _ = self.grounding.expect(
+            "tool:" + tx["tool"],
+            dumps(tx["args"])[:120],
+            {"tool": tx["tool"]},
+            modality="tool",
+            predicted=predicted,
+        )
+        return aid
 
     def after(self, tx):
-        return None
+        """Close only a genuine pre-action expectation; never backfill post-hoc."""
+        if tx.get("status") not in ("EXECUTED", "FAILED"):
+            return None
+        aid = tx.get("preaction_id")
+        if not aid:
+            return None
+        return self.grounding.observe(aid, {"status": tx["status"], "result": tx.get("result")})
 
     def abort(self, tx):
-        return False
+        """A hard-blocked or interrupted effect supplies no training outcome."""
+        aid = tx.get("preaction_id")
+        return self.grounding.discard(aid) if aid else False
