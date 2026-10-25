@@ -45,3 +45,15 @@ Ran 13 tests in 0.026s
 OK
 RUN135_SYNTHETIC positive_60_pairs_but_gate_UNVERIFIED
 RUN134_SYNTHETIC_COHORT correct_false_alarms=0/100 wrong_detected=100/100 seed=13425
+
+=== RUN135 SMALL-N ADVERSARIAL RED ===
+FAIL: test_tiny_cohort_cannot_create_positive_diagnostic
+AssertionError: 'SYNTHETIC_DIAGNOSTIC_ONLY' != 'NOT_SUPPORTED_OR_UNMEASURED'
+Ran 9 tests in 0.028s
+FAILED (failures=1)
+
+=== RUN135 SMALL-N FIX GREEN ===
+Ran 14 tests in 0.028s
+OK
+RUN135_SYNTHETIC positive_60_pairs_but_gate_UNVERIFIED
+RUN134_SYNTHETIC_COHORT correct_false_alarms=0/100 wrong_detected=100/100 seed=13425
