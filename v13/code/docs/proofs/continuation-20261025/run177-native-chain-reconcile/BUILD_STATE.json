@@ -1,0 +1,63 @@
+{
+  "package": "Run177 native-firing integrated chain reconciliation",
+  "date_utc": "2026-10-25",
+  "branch": "codex/run177-native-chain-reconcile-20261025",
+  "pr": 257,
+  "base_verified": "ff89e52be43df7a5b306e2c16587273ed1c4b4d7",
+  "owner": "integrated_candidates.py + new test/CI/proof; no live runner or frozen snapshot changes",
+  "source_blobs": {
+    "v13/code/scripts/integrated_candidates.py": "80bcb73af07e2496160557dea995fba7b3463b4f",
+    "v13/code/tests/test_run177_native_chain_reconcile_20261025.py": "ca98ae0e44bc459fd22c8b6019298dcda1c66bcd",
+    ".github/workflows/run177-native-chain-reconcile-20261025.yml": "5f1fca692417790891c9d3ac959763db6d46fa2f",
+    "v13/code/v13/runners.py": "37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5"
+  },
+  "implementation": "Append exact unique-anchor reviewed Run177 dd122cf8 B2_GIST tap identity (docstring, 1024 dim, qwen35 tap_id) after all prior integrated chain steps; four integrated source files now byte-exact current live. Frozen snapshots unchanged.",
+  "red": {
+    "run_id": 40184414259,
+    "job_id": 121142050953,
+    "tests": 3,
+    "failures": 2,
+    "errors": 1,
+    "raw_artifact_id": 12595169233,
+    "raw_zip_sha256": "19911e53f43c69cc4cb2ac8ad88047e84097eb0032f8329ec5708c32a9e0292d"
+  },
+  "intermediate_error": {
+    "run_id": 40184472149,
+    "job_id": 121142227685,
+    "tests": 3,
+    "errors": 1,
+    "reason": "new test omitted required root argument",
+    "raw_artifact_id": 12595144354,
+    "raw_zip_sha256": "55b0620672958f68ba87760c0b15e65f0c5f9e62dab8c5e64d9d124d3780161e"
+  },
+  "green": {
+    "run_id": 40184564692,
+    "job_id": 121142501101,
+    "source_identity_tests": 3,
+    "historical_native_candidate_tests": 37,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS",
+    "raw_artifact_id": 12596000399,
+    "raw_zip_sha256": "87c41627299dd94f46068bcb270580cb7ea0797ce42991c28886dcd1873242f3"
+  },
+  "evidence_kind": "GitHub Linux software/synthetic source and candidate compatibility, no native model, no Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Full suite after this Run177 chain repair not yet rerun; Run255 before repair had 2657 tests, 0 FAIL, 36 ERROR.",
+    "Historical candidate source identity is repaired, but real native firing/quality/semantic truth and permission gates remain unproven.",
+    "WorldModel previously fitted states can outlive source revocation; separate source-bound state invalidation required.",
+    "Run24 atomic clone3 candidate still unintegrated and no delegated cgroup/Redmi proof."
+  ],
+  "next_step": "Run exact current full suite on this head with pinned Run147 fixture and archived Run21 LP3 helper, preserve raw log. If PASS, proceed to substantive V13 learning/Context/JEF/JEPA utility packages; no gate promotion.",
+  "next_command": "Create unique exact-head full-suite workflow branch based on this verified PR257 head; do not alter registered cohorts, models or source snapshots.",
+  "no_gate_promotion": true
+}
