@@ -1,0 +1,38 @@
+name: V13 Run177 native-firing integrated chain source identity
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/integrated_candidates.py'
+      - 'v13/code/tests/test_run177_native_chain_reconcile_20261025.py'
+      - '.github/workflows/run177-native-chain-reconcile-20261025.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/run177-native-chain-reconcile/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  chain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact integrated chain identity (RED before patch)
+        working-directory: v13/code
+        run: |
+          set -o pipefail
+          PYTHONPATH=tests:. python3 -m unittest -v test_run177_native_chain_reconcile_20261025 2>&1 | tee "$RUNNER_TEMP/RUN177_CHAIN_RAW.log"
+          python3 -m compileall -q scripts/integrated_candidates.py tests/test_run177_native_chain_reconcile_20261025.py
+      - name: Official privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base ff89e52be43df7a5b306e2c16587273ed1c4b4d7 --head HEAD --no-worktree
+      - name: Preserve raw logs on failure or success
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Run177-Native-Chain-Raw
+          path: ${{ runner.temp }}/RUN177_CHAIN_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Scope
+        run: echo 'Source-hash chain only; native firing quality, B3 and Redmi not proven'
