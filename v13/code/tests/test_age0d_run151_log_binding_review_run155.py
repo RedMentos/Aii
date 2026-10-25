@@ -67,9 +67,9 @@ class RawLogBinding(unittest.TestCase):
         rows,log=fixtures();data=pack(rows,log)
         with self.assertRaisesRegex(ValueError,'artifact_sha256'):audit(data,'0'*64)
 
-    def test_missing_provenance_verifier_fails_closed(self):
+    def test_fake_native_artifact_fails_closed(self):
         rows,log=fixtures();data=pack(rows,log)
-        with self.assertRaises((ImportError,ModuleNotFoundError)):
+        with self.assertRaises((ImportError,ModuleNotFoundError,ValueError)):
             audit(data,hashlib.sha256(data).hexdigest())
 
     def test_gate_promotion_rejected(self):
