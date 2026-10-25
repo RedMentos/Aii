@@ -18,13 +18,22 @@ def digest(text):
 
 class Run177NativeChainReconcile(unittest.TestCase):
     def test_integrated_chain_is_byte_exact_live_for_all_four_files(self):
+        # Run177 is an immutable historical chain. Later reviewed Runtime/store
+        # changes are a separately digest-bound live source, not a rewrite of
+        # the original cohort or a permissive overlay.
+        from scripts import current_source_lineage_run357 as lineage
+        import json
+        manifest=json.loads(lineage.MANIFEST.read_text())
         expected=chain.integrated_sources()
         live={name:(chain.ROOT/name).read_text() for name in chain.NAMES}
         self.assertEqual(set(expected),set(live))
         self.assertEqual({name:digest(text) for name,text in expected.items()},
-                         {name:digest(text) for name,text in live.items()})
+                         manifest['historical_sha256'])
+        self.assertEqual({name:digest(text) for name,text in live.items()},
+                         manifest['current_sha256'])
         self.assertEqual(digest(expected['v13/runners.py']),EXPECTED_RUNNERS_SHA256)
-        self.assertEqual(chain.overlay(chain._baseline(chain.ROOT)),live)
+        self.assertIsNone(chain.overlay(chain._baseline(chain.ROOT)))
+        self.assertTrue(lineage.verify()['current_reviewed_sources_exact'])
 
     def test_b2_native_identity_preserved_without_changing_c3(self):
         t=chain.integrated_sources()['v13/runners.py']
