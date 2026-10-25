@@ -89,7 +89,7 @@ def validate_fixtures(fixtures):
                 raise ValueError(name + ": current revision not explicit")
         elif any(str(old[k]) not in note_text for k in ("budget", "deadline")):
             raise ValueError(name + ": old rule missing")
-        if f["oracle"]["project"] != name or f["oracle"]["action"] not in ("A", "B", "UNKNOWN"):
+        if f["oracle"]["project"] != name or f["oracle"]["action"] not in ("A", "B", "NONE", "UNKNOWN"):
             raise ValueError(name + ": invalid oracle")
     return True
 
