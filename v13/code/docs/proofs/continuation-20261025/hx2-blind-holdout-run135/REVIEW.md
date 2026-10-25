@@ -13,3 +13,7 @@ Claim limits: This is software/synthetic evidence only. No registered B2 STEP2 r
 Gates unchanged: STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; DS2 H2 FAIL; V13 INCOMPLETE.
 
 Exact next step: preregister registered B2 rule-quote real holdout with same-task reference/guided/unguided and judge, source/model/seed hashes, after Run131 releases native resources. Continue independent Canon work meanwhile. Do not activate harness overrides without HX2 and explicit user approval.
+
+## Independent review follow-up: small-n false signal
+
+Adversarial 6-task fixture (3 general + 3 domain) initially yielded `SYNTHETIC_DIAGNOSTIC_ONLY` despite tiny sample: RED 1/9 FAIL. Fixed by requiring at least 20 decisive blinded comparisons per axis and both guided-vs-reference and guided-vs-unguided lower95 > 0.5. Final local 14/14 PASS (9 HX2 + 5 AGE0d), compileall PASS. Remote module Git blob now `42967cece1a95ee918a43054241d81049877e79f`; test blob `d52b03cba3285071f86f47a8443eb6d9324b7d46`. No gate promotion.
