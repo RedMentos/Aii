@@ -1,0 +1,20 @@
+# Run219 actual-source GREEN output excerpt
+
+Full raw GitHub Actions job: https://github.com/RedMentos/Aii/actions/runs/40179838856/job/121128346403
+Tested head: e6d24c9fc2b5a64b852b60447b20342b750bedf0
+Exact timestamped test-output excerpt; complete raw log remains in GitHub Actions.
+
+2026-10-25T09:15:07.6266649Z test_backup_restores_exact_source_bound_digest_without_later_turn (tests.test_sleep_context_backup_continuity_run219.SleepDigestBackupContinuityRun219.test_backup_restores_exact_source_bound_digest_without_later_turn) ... ok
+2026-10-25T09:15:07.8367998Z test_revoking_restored_earlier_source_invalidates_digest_lineage (tests.test_sleep_context_backup_continuity_run219.SleepDigestBackupContinuityRun219.test_revoking_restored_earlier_source_invalidates_digest_lineage) ... ok
+2026-10-25T09:15:07.9223414Z test_full_sleep_cannot_resurrect_a_forgotten_correction (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_cannot_resurrect_a_forgotten_correction) ... ok
+2026-10-25T09:15:07.9789694Z test_full_sleep_keeps_exact_human_correction_available_to_c3 (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_keeps_exact_human_correction_available_to_c3) ... ok
+2026-10-25T09:15:08.0010897Z test_repeated_sleep_keeps_one_human_record_and_no_weight_change (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_repeated_sleep_keeps_one_human_record_and_no_weight_change) ... ok
+2026-10-25T09:15:08.1362761Z test_digest_message_id_must_match_its_event_and_source (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_digest_message_id_must_match_its_event_and_source) ... ok
+2026-10-25T09:15:08.3043396Z test_forged_digest_text_cannot_enter_live_c3_system_context (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_forged_digest_text_cannot_enter_live_c3_system_context) ... ok
+2026-10-25T09:15:08.4336601Z test_revoked_earlier_source_invalidates_transitively_dependent_digest (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_revoked_earlier_source_invalidates_transitively_dependent_digest) ... ok
+2026-10-25T09:15:08.5631206Z test_revoked_earlier_turn_cannot_be_reexported_in_training_context (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_earlier_turn_cannot_be_reexported_in_training_context) ... ok
+2026-10-25T09:15:08.6985770Z test_revoked_target_turn_is_not_staged_for_training (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_target_turn_is_not_staged_for_training) ... ok
+2026-10-25T09:15:08.8391965Z test_tampered_persisted_digest_does_not_become_training_input (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_tampered_persisted_digest_does_not_become_training_input) ... ok
+2026-10-25T09:15:08.8394651Z Ran 11 tests in 1.682s
+2026-10-25T09:15:08.8395032Z OK
+2026-10-25T09:15:08.9521979Z privacy scan 0a414c1ad..HEAD: CLEAN
