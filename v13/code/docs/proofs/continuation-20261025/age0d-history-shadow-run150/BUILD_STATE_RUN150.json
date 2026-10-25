@@ -1,0 +1,33 @@
+{
+  "schema": "V13_RUN150_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex Run150 new read-only history auditor, tests, CI and Run150 proof only; Runtime/Store/Canon frozen",
+  "base_pr": 180,
+  "base_commit": "699665c72bdd5f285c793a4edc9b604894729a8f",
+  "source_blob_sha": "7524b7c5e3776a13672a4774c369aa543f69283c",
+  "test_blob_sha": "02c89ab259551969192dc75e7a66f23c6a5f91be",
+  "local_software": "14 PASS, 1 SKIP (real Store unavailable in scratch), synthetic SQLite/WAL/symlink/tamper/privacy",
+  "ci_expected": "15 PASS including real Store integration; pending",
+  "evidence_class": "LOCAL_SOFTWARE_SYNTHETIC_ONLY_UNTIL_CI",
+  "operation": "READ_ONLY_SESSION_SCOPED_AGGREGATE_NO_RAW_CONTENT",
+  "may_deliver": false,
+  "may_update": false,
+  "authority": "SHADOW_ONLY",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "FINAL message not proof of C3 generation",
+    "Only one-operation arithmetic source-bound checker",
+    "No model/Redmi/learning proof",
+    "No runtime command integration; explicit offline diagnostic script"
+  ],
+  "exact_next_command": "PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_age0d_history_shadow_audit_run150.py -v",
+  "next_step": "Verify real Store CI (must not skip), privacy, remote blobs. If passed, review end-to-end utility and move to another canonical organ package; no gate promotion."
+}
