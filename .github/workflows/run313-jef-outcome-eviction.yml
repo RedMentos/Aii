@@ -1,0 +1,84 @@
+name: V13 Run313 durable JEF self-outcome identity (software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/jefoutcome.py'
+      - 'v13/code/tests/test_jef_outcome_eviction_run313.py'
+      - '.github/workflows/run313-jef-outcome-eviction.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  jef-outcome:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact head, immutable Canon and source blobs
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN313_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/v13/jefoutcome.py v13/code/tests/test_jef_outcome_eviction_run313.py | tee "$RUNNER_TEMP/RUN313_BLOBS.txt"
+          python3 -m compileall -q v13/code/v13/jefoutcome.py v13/code/tests/test_jef_outcome_eviction_run313.py
+      - name: Isolated pinned CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run313venv"
+          "$RUNNER_TEMP/run313venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual SQLite JEF outcome and human authority regressions
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run313venv/bin/python" -m unittest -v \
+            tests.test_jef_outcome_eviction_run313 \
+            tests.test_jefoutcome \
+            tests.test_jef_outcome_lineage_run69 \
+            tests.test_jef_outcome_vocab_run92 \
+            tests.test_fastpolicy 2>&1 | tee "$RUNNER_TEMP/RUN313_TEST_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN313_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN313_PRIVACY.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN313_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          sha256sum RUN313_HEAD.txt RUN313_BLOBS.txt RUN313_TEST_RAW.log RUN313_TEST_EXIT.txt RUN313_PRIVACY.log RUN313_PRIVACY_EXIT.txt > RUN313_SHA256SUMS.txt
+      - name: Retain RED and GREEN raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run313-JEFOutcome-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN313_HEAD.txt
+            ${{ runner.temp }}/RUN313_BLOBS.txt
+            ${{ runner.temp }}/RUN313_TEST_RAW.log
+            ${{ runner.temp }}/RUN313_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN313_PRIVACY.log
+            ${{ runner.temp }}/RUN313_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN313_SHA256SUMS.txt
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true test and privacy exits
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
