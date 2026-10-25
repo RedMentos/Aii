@@ -74,7 +74,13 @@ def recover(home):
     if not journal.exists():return False
     j=json.loads(journal.read_text());stage=(home/j['stage']).resolve();old=(home/j['old']).resolve()
     if not stage.is_relative_to(home/'tmp') or not old.is_relative_to(home/'tmp'):raise ValueError('Restore-Journal-Pfad ungültig')
-    for name in ['data/db','data/blobs','checkpoints','config']:
+    # A journal with no staging directory is not proof that the swap finished:
+    # keep it for explicit recovery instead of silently discarding intent.
+    if not stage.is_dir():raise ValueError('Restore-Staging fehlt; Journal bleibt erhalten')
+    names=['data/db','data/blobs','checkpoints','config']
+    if not any((stage/name).exists() for name in names) and not old.is_dir():
+        raise ValueError('Restore-Staging leer; Journal bleibt erhalten')
+    for name in names:
         src=stage/name;dst=home/name;saved=old/name
         if not src.exists():continue
         if dst.exists() and not saved.exists():saved.parent.mkdir(parents=True,exist_ok=True);os.replace(dst,saved)
