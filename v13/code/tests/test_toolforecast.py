@@ -21,6 +21,13 @@ from v13.transaction import operator_command as tx_command, settle_turn
 
 APP = Path(__file__).resolve().parents[1]
 
+def optional_local_restore_available(path):
+    """Optional developer-only fixture: inaccessible is unavailable, not a test error."""
+    try:
+        return Path(path).exists()
+    except OSError:
+        return False
+
 
 class FakeTaps:
     """Deterministic stand-in encoder: one fixed random 1024-vector per text."""
@@ -125,6 +132,13 @@ class CheckpointTests(unittest.TestCase):
                 F.Checkpoint('note_edit', entry, root)
             self.assertIsNone(F.Checkpoint('note_edit', {k: v for k, v in entry.items() if k != 'competence'}, root).competence(far))
 
+    def test_optional_local_restore_permission_denied_is_unavailable(self):
+        from unittest.mock import patch
+        with patch.object(Path, 'exists', side_effect=PermissionError(13, 'denied')):
+            self.assertFalse(optional_local_restore_available('/root/native/restore/round8-note-tool-raw'))
+        with patch.object(Path, 'exists', return_value=True):
+            self.assertTrue(optional_local_restore_available('/root/native/restore/round8-note-tool-raw'))
+
     def test_competence_check_scores_states_not_calls(self):
         sys.path.insert(0, str(APP / 'scripts'))
         import tool_forecast_competence_check as cc
@@ -144,7 +158,7 @@ class CheckpointTests(unittest.TestCase):
         self.assertTrue(note['pass'])
         self.assertEqual(note['report_only_ratio_geo_mean'], {'unflagged': .5, 'flagged': 2.})
         self.assertEqual(rep['verdict'], 'COMPETENCE_SIGNAL_NOT_CONFIRMED')
-        plan = cc.plan('/root/native/restore') if Path('/root/native/restore/round8-note-tool-raw').exists() else None
+        plan = cc.plan('/root/native/restore') if optional_local_restore_available('/root/native/restore/round8-note-tool-raw') else None
         if plan:
             earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
             for k in plan:
