@@ -1,0 +1,193 @@
+name: V13 Run324 exact b10964 full FP32 converter (no training)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/probe_native_fp32_convert_run324.py'
+      - 'v13/code/tests/test_native_fp32_convert_run324.py'
+      - '.github/workflows/run324-b10964-fp32-convert.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/b10964-fp32-convert-run324/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run324-b10964-vocab-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  pinned-fp32-converter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_PROGRESS_BARS: '1'
+      PIP_NO_CACHE_DIR: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source and eight synthetic negative tests
+        id: fixture
+        run: |
+          set -uo pipefail
+          set +e
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN324_HEAD.txt"
+          PYTHONPATH=v13/code python3 -m unittest -v tests.test_native_fp32_convert_run324 \
+            2>&1 | tee "$RUNNER_TEMP/RUN324_FIXTURE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN324_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Fetch and verify immutable official b10964 source
+        id: source
+        run: |
+          set -uo pipefail
+          set +e
+          curl --fail --location --retry 3 --connect-timeout 30 --max-time 300 \
+            'https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz' \
+            -o "$RUNNER_TEMP/RUN324_b10964.tar.gz" \
+            2>&1 | tee "$RUNNER_TEMP/RUN324_SOURCE_DOWNLOAD_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            echo "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe  $RUNNER_TEMP/RUN324_b10964.tar.gz" | sha256sum -c -
+            rc=$?
+          fi
+          if [[ "$rc" == "0" ]]; then
+            tar -xzf "$RUNNER_TEMP/RUN324_b10964.tar.gz" -C "$RUNNER_TEMP"
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN324_SOURCE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Isolated CPU converter dependencies (no weight publication)
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run324venv"
+          {
+            "$RUNNER_TEMP/run324venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              --index-url https://download.pytorch.org/whl/cpu 'torch==2.8.0'
+            "$RUNNER_TEMP/run324venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              'numpy==2.3.5' 'transformers==5.3.0' 'jinja2==3.1.6' \
+              'safetensors==0.6.2' 'sentencepiece==0.2.1' 'protobuf==6.33.0'
+          } 2>&1 | tee "$RUNNER_TEMP/RUN324_DEPS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          "$RUNNER_TEMP/run324venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN324_PIP_FREEZE.txt" || true
+          echo "$rc" > "$RUNNER_TEMP/RUN324_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download unchanged pinned tokenizer-only snapshot and hash all source files
+        id: hf
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN324_DEPS_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN324_HF_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export HF_DIR="$RUNNER_TEMP/run324hf"
+          "$RUNNER_TEMP/run324venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN324_HF_RAW.log"
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id="LiquidAI/LFM2.5-350M",
+              revision="9e6c6ccf47cd318696e137d381a7ded8fe4df09f",
+              local_dir=os.environ["HF_DIR"],
+              allow_patterns=["*.safetensors","config.json","tokenizer*","special_tokens_map.json","chat_template.jinja","generation_config.json"])
+          PY
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            export SOURCE_MANIFEST="$RUNNER_TEMP/RUN324_SOURCE_MANIFEST.json"
+            python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path(os.environ["HF_DIR"])
+          files={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir()) if p.is_file() and not p.is_symlink()}
+          assert all(x in files for x in ("config.json","tokenizer_config.json","tokenizer.json"))
+          assert any(x.endswith(".safetensors") for x in files)
+          manifest={"hf_repo":"LiquidAI/LFM2.5-350M",
+              "hf_revision":"9e6c6ccf47cd318696e137d381a7ded8fe4df09f",
+              "file_sha256":files,"license":"LFM Open License v1.0"}
+          Path(os.environ["SOURCE_MANIFEST"]).write_text(json.dumps(manifest,indent=2,sort_keys=True)+"\n")
+          print(json.dumps(manifest,sort_keys=True))
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN324_HF_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official unmodified b10964 converter vocab-only execution
+        id: convert
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN324_SOURCE_EXIT.txt")" != "0" || "$(cat "$RUNNER_TEMP/RUN324_HF_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN324_CONVERT_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          timeout 720s "$RUNNER_TEMP/run324venv/bin/python" \
+            "$RUNNER_TEMP/llama.cpp-b10964/convert_hf_to_gguf.py" \
+            --outtype f32 --outfile "$RUNNER_TEMP/run324-f32.gguf" "$RUNNER_TEMP/run324hf" \
+            2>&1 | tee "$RUNNER_TEMP/RUN324_CONVERT_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN324_CONVERT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Fail-closed native vocab GGUF source/structure verification
+        id: verify
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN324_CONVERT_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN324_VERIFY_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          PYTHONPATH="$RUNNER_TEMP/llama.cpp-b10964/gguf-py:$GITHUB_WORKSPACE/v13/code" \
+            "$RUNNER_TEMP/run324venv/bin/python" v13/code/scripts/probe_native_fp32_convert_run324.py \
+            --gguf "$RUNNER_TEMP/run324-f32.gguf" --snapshot "$RUNNER_TEMP/run324hf" \
+            --manifest "$RUNNER_TEMP/RUN324_SOURCE_MANIFEST.json" \
+            --source-tar "$RUNNER_TEMP/RUN324_b10964.tar.gz" \
+            --converter "$RUNNER_TEMP/llama.cpp-b10964/convert_hf_to_gguf.py" \
+            --out "$RUNNER_TEMP/RUN324_VERIFIED.json" \
+            2>&1 | tee "$RUNNER_TEMP/RUN324_VERIFY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN324_VERIFY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN324_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN324_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Hash-close raw logs and source bindings, never upload GGUF or weights
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN324_*' ! -name 'RUN324_b10964.tar.gz' ! -name 'RUN324_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN324_SHA256SUMS.txt
+          sha256sum "$GITHUB_WORKSPACE/v13/code/scripts/probe_native_fp32_convert_run324.py" >> RUN324_SHA256SUMS.txt
+      - name: Retain original failures and source-only hashes (no GGUF or weights)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run324-B10964-VocabOnly-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN324_*.log
+            ${{ runner.temp }}/RUN324_*.txt
+            ${{ runner.temp }}/RUN324_*.json
+          retention-days: 30
+      - name: Enforce source fixture converter verifier and privacy
+        if: always()
+        run: |
+          test "${{ steps.fixture.outputs.rc }}" = "0"
+          test "${{ steps.source.outputs.rc }}" = "0"
+          test "${{ steps.deps.outputs.rc }}" = "0"
+          test "${{ steps.hf.outputs.rc }}" = "0"
+          test "${{ steps.convert.outputs.rc }}" = "0"
+          test "${{ steps.verify.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
