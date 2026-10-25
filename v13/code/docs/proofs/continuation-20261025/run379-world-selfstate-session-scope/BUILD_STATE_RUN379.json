@@ -18,7 +18,8 @@
     "passed": 11,
     "failed": 1,
     "observed": "session A expected 1 unfinished action, received 3",
-    "raw_artifact": 12615932337
+    "raw_artifact": 12615932337,
+    "raw_zip_sha256": "29119697ae2c40af433c458edf141bcac94d0cd24912acd8ae42acf68bbcd485"
   },
   "green": {
     "actions_run": 40238913441,
@@ -33,7 +34,8 @@
       40238913436,
       40238913447,
       40238913448
-    ]
+    ],
+    "raw_zip_sha256": "2dad9b1f985de1af60a627b7c88dbc80456866a65dfd174a720d12d7f1545f7a"
   },
   "scope": "Runtime/SQLite synthetic action session accounting only",
   "negative_gates": [
@@ -45,8 +47,13 @@
     "whole_V13_INCOMPLETE",
     "Run367_full_suite_RED"
   ],
-  "raw_zip_private_backup": "NOT_VERIFIED",
+  "raw_zip_private_backup": "VERIFIED_CRC_4_OF_4_SHA_PRIVATE_BYTE_MATCH",
   "remote_bytes": "VERIFIED via GitHub fetch_file",
   "next_command": "Review exact PR374 HEAD and run test_world_selfstate_session_run379 + inherited World tests; independently validate artifact ZIP; then address AG8 shield invalid metric acceptance on separate branch.",
-  "blocked": "No Redmi device or native model proof in this run; no private artifact bytes accessible through connector."
+  "blocked": "Redmi device/native model proof not available; full Run367 suite remains RED.",
+  "private_backup_paths": [
+    "/V13/Backups/Run379-380-20261025/V13_Actions_12615932337.zip",
+    "/V13/Backups/Run379-380-20261025/V13_Actions_12615848946.zip"
+  ],
+  "raw_verification": "CRC PASS, internal 4/4 SHA PASS, GitHub exact-head matches, Library re-materialized byte-identical"
 }
