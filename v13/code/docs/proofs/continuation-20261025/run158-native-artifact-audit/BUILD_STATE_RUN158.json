@@ -1,0 +1,37 @@
+{
+  "schema": "V13_RUN158_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_commit": "b4b07b88a5c4753d17568ab60aa3039d6ba9f1cc",
+  "owner": "Codex Run158 new read-only CI workflow and proof only; frozen source and model cohorts unchanged",
+  "artifacts": [
+    {
+      "id": 12585869006,
+      "sha256": "0f19525d8e8abd62ca328ce752a0e8f8b619ca27ced71a42f3bd5c78d53edbe4",
+      "source_run": 40161320601
+    },
+    {
+      "id": 12585869203,
+      "sha256": "fb0cc7d8370437a29d49fdbdabe5b8bbc32a5445ee3db55e295f701bfaec30da",
+      "source_run": 40161328126
+    }
+  ],
+  "local_readonly_check": "Both ZIP SHA-256 verified; 288/288 Run155 exact raw-log row bindings on each; all negative gates present; no model run",
+  "ci_status": "PENDING",
+  "evidence_class": "SOFTWARE_REVIEW_OF_PRIOR_LINUX_NATIVE_ARTIFACTS",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "CI must verify full Run154 provenance and comparison against exact original ZIPs; do not silently replace artifacts.",
+    "Run151 second execution was unplanned same-seed replication, not independent holdout.",
+    "No human adjudication of v3-only labels; no Redmi, learning or whole-system proof."
+  ],
+  "next_command": "Run GitHub Actions workflow v13-run158-native-artifact-audit.yml; verify artifact ZIP SHA256 and first/second audit JSON",
+  "next_step": "After CI, preserve success/failure and remote proof, then continue actual A3/Body-JEPA teacher-target utility."
+}
