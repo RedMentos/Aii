@@ -1,0 +1,50 @@
+name: V13 Run149 terminal-format AGE0d SHADOW regression
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run149-age0d-terminal-format.yml"
+      - "v13/code/v13/agi/answer_arithmetic_shadow_v3.py"
+      - "v13/code/tests/test_answer_arithmetic_shadow_v3_run149.py"
+      - "v13/code/docs/proofs/continuation-20261025/age0d-terminal-format-run149/**"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  software:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Download exact Run147 native evidence for nonpromoting posthoc crosscheck
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --retry-delay 1 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12585363362/zip" \
+            -o "$RUNNER_TEMP/RUN147_native.zip"
+          echo "ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676  $RUNNER_TEMP/RUN147_native.zip" | sha256sum -c -
+      - name: Ten isolated format tests and fresh 120-task synthetic controls
+        env:
+          RUN147_ARTIFACT: ${{ runner.temp }}/RUN147_native.zip
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q v13/code/v13/agi/answer_arithmetic_shadow_v3.py v13/code/tests/test_answer_arithmetic_shadow_v3_run149.py
+          PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p 'test_answer_arithmetic_shadow_v3_run149.py' -v
