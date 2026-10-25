@@ -40,7 +40,7 @@ jobs:
         working-directory: v13/code
         run: |
           set -o pipefail
-          PYTHONPATH="$LP3_TEST_DIR:$LP3_HELPER_DIR:$PWD" python3 -m unittest -v test_lp3_serial_review_run18 2>&1 | tee "$RUNNER_TEMP/LP3_POSTREAP_RAW.log"
+          PYTHONPATH="$PWD/tests:$LP3_TEST_DIR:$LP3_HELPER_DIR:$PWD" python3 -m unittest -v test_lp3_serial_review_run18 2>&1 | tee "$RUNNER_TEMP/LP3_POSTREAP_RAW.log"
           python3 -m compileall -q tests/test_lp3_serial_review_run18.py
       - name: Official privacy scanner
         run: python3 v13/code/scripts/public_repo_privacy_scan.py --base f5d2eaed19c1ff79cd4baec10912c03bc7a2eff0 --head HEAD --no-worktree
