@@ -1,0 +1,85 @@
+name: V13 Run304 source-closed backups (software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/backup.py'
+      - 'v13/code/tests/test_backup_source_closure_run304.py'
+      - '.github/workflows/run304-backup-source-closure.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-closure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source and immutable Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN304_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/v13/backup.py v13/code/tests/test_backup_source_closure_run304.py | tee "$RUNNER_TEMP/RUN304_BLOBS.txt"
+          python3 -m compileall -q v13/code/v13/backup.py v13/code/tests/test_backup_source_closure_run304.py
+      - name: Isolated pinned CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run304venv"
+          "$RUNNER_TEMP/run304venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual SQLite backup, archive, crash, memory and chat regressions
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run304venv/bin/python" -m unittest -v \
+            tests.test_backup_source_closure_run304 \
+            tests.test_backup_restore_memory_run210 \
+            tests.test_restore_crash_journal_run211 \
+            tests.test_multichat_backup_restore_run217 \
+            tests.test_sleep_context_backup_continuity_run219 \
+            tests.test_archive 2>&1 | tee "$RUNNER_TEMP/RUN304_TEST_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN304_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN304_PRIVACY.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN304_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Hash closed raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          sha256sum RUN304_HEAD.txt RUN304_BLOBS.txt RUN304_TEST_RAW.log RUN304_TEST_EXIT.txt RUN304_PRIVACY.log RUN304_PRIVACY_EXIT.txt > RUN304_SHA256SUMS.txt
+      - name: Retain RED and GREEN raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run304-BackupClosure-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN304_HEAD.txt
+            ${{ runner.temp }}/RUN304_BLOBS.txt
+            ${{ runner.temp }}/RUN304_TEST_RAW.log
+            ${{ runner.temp }}/RUN304_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN304_PRIVACY.log
+            ${{ runner.temp }}/RUN304_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN304_SHA256SUMS.txt
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual results
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
