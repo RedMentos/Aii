@@ -1,0 +1,47 @@
+2026-10-25T08:50:36.2335177Z test_missing_restore_stage_cannot_silently_discard_pending_journal (tests.test_restore_crash_journal_run211.RestoreCrashJournalRun211.test_missing_restore_stage_cannot_silently_discard_pending_journal) ... FAIL
+2026-10-25T08:50:36.2792874Z test_partial_swap_finishes_after_restart_without_losing_snapshot (tests.test_restore_crash_journal_run211.RestoreCrashJournalRun211.test_partial_swap_finishes_after_restart_without_losing_snapshot) ... FAIL
+2026-10-25T08:50:36.3377873Z test_backup_after_forget_cannot_resurrect_a_revoked_correction (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_backup_after_forget_cannot_resurrect_a_revoked_correction) ... ok
+2026-10-25T08:50:36.4077381Z test_backup_restore_recovers_correction_and_discards_later_mutations (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_backup_restore_recovers_correction_and_discards_later_mutations) ... ok
+2026-10-25T08:50:36.4511182Z test_corrupt_backup_rejected_without_modifying_live_memory (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_corrupt_backup_rejected_without_modifying_live_memory) ... ok
+2026-10-25T08:50:36.4801147Z test_operator_backup_and_offline_restore_instruction (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_operator_backup_and_offline_restore_instruction) ... ok
+2026-10-25T08:50:36.5030160Z test_failed_actual_ddl_rolls_back_and_retry_resumes_last_committed_version (tests.test_migrations.Migrations.test_failed_actual_ddl_rolls_back_and_retry_resumes_last_committed_version) ... ok
+2026-10-25T08:50:36.5273809Z test_fresh_two_migrations_restart_and_immutable_history (tests.test_migrations.Migrations.test_fresh_two_migrations_restart_and_immutable_history) ... ok
+2026-10-25T08:50:36.5483424Z test_future_version_rejection_changes_no_database_and_releases_lock (tests.test_migrations.Migrations.test_future_version_rejection_changes_no_database_and_releases_lock) ... ok
+2026-10-25T08:50:36.5707222Z test_legacy_one_data_is_upgraded_without_rewriting_generation (tests.test_migrations.Migrations.test_legacy_one_data_is_upgraded_without_rewriting_generation) ... ok
+2026-10-25T08:50:36.6047130Z test_malformed_one_and_two_are_rejected_without_silent_repair (tests.test_migrations.Migrations.test_malformed_one_and_two_are_rejected_without_silent_repair) ... ok
+2026-10-25T08:50:36.6292723Z test_migration_journal_corruption_rejected_by_doctor_and_startup (tests.test_migrations.Migrations.test_migration_journal_corruption_rejected_by_doctor_and_startup) ... ok
+2026-10-25T08:50:36.6876566Z test_version_one_backup_verified_then_upgraded_before_restore (tests.test_migrations.Migrations.test_version_one_backup_verified_then_upgraded_before_restore) ... ok
+2026-10-25T08:50:36.7002062Z test_actual_sql_abort_leaves_no_accepted_event (tests.test_migrations.PersistentQueue.test_actual_sql_abort_leaves_no_accepted_event) ... ok
+2026-10-25T08:50:36.7126373Z test_atomic_bounds_no_event_or_source_when_admission_rejected (tests.test_migrations.PersistentQueue.test_atomic_bounds_no_event_or_source_when_admission_rejected) ... ok
+2026-10-25T08:50:36.7325874Z test_completed_output_crash_window_not_reexecuted (tests.test_migrations.PersistentQueue.test_completed_output_crash_window_not_reexecuted) ... ok
+2026-10-25T08:50:36.7491452Z test_concurrent_admission_capacity_and_duplicate_retry (tests.test_migrations.PersistentQueue.test_concurrent_admission_capacity_and_duplicate_retry) ... ok
+2026-10-25T08:50:36.7767135Z test_fifo_pause_finish_and_dedup_survive_restart (tests.test_migrations.PersistentQueue.test_fifo_pause_finish_and_dedup_survive_restart) ... ok
+2026-10-25T08:50:36.8459231Z test_process_exit_preserves_pending_pause_and_partial_without_reexecution (tests.test_migrations.PersistentQueue.test_process_exit_preserves_pending_pause_and_partial_without_reexecution) ... ok
+2026-10-25T08:50:36.8581003Z test_source_revoked_cannot_be_claimed (tests.test_migrations.PersistentQueue.test_source_revoked_cannot_be_claimed) ... ok
+2026-10-25T08:50:36.8581740Z 
+2026-10-25T08:50:36.8581909Z ======================================================================
+2026-10-25T08:50:36.8583117Z FAIL: test_missing_restore_stage_cannot_silently_discard_pending_journal (tests.test_restore_crash_journal_run211.RestoreCrashJournalRun211.test_missing_restore_stage_cannot_silently_discard_pending_journal)
+2026-10-25T08:50:36.8584340Z ----------------------------------------------------------------------
+2026-10-25T08:50:36.8584817Z Traceback (most recent call last):
+2026-10-25T08:50:36.8592818Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_restore_crash_journal_run211.py", line 50, in test_missing_restore_stage_cannot_silently_discard_pending_journal
+2026-10-25T08:50:36.8593880Z     with self.assertRaisesRegex(ValueError, 'Restore'):
+2026-10-25T08:50:36.8594329Z AssertionError: ValueError not raised
+2026-10-25T08:50:36.8594581Z 
+2026-10-25T08:50:36.8594748Z ======================================================================
+2026-10-25T08:50:36.8595934Z FAIL: test_partial_swap_finishes_after_restart_without_losing_snapshot (tests.test_restore_crash_journal_run211.RestoreCrashJournalRun211.test_partial_swap_finishes_after_restart_without_losing_snapshot)
+2026-10-25T08:50:36.8597509Z ----------------------------------------------------------------------
+2026-10-25T08:50:36.8597970Z Traceback (most recent call last):
+2026-10-25T08:50:36.8598985Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_restore_crash_journal_run211.py", line 74, in test_partial_swap_finishes_after_restart_without_losing_snapshot
+2026-10-25T08:50:36.8599898Z     self.assertEqual(self.r.memory.recall('Run211 beta?', self.session), [])
+2026-10-25T08:50:36.8600452Z AssertionError: Lists differ: [{'id': 'mem_0ce46bd357ec4db692ac901cf6f4e[718 chars]al'}] != []
+2026-10-25T08:50:36.8600793Z 
+2026-10-25T08:50:36.8600911Z First list contains 1 additional elements.
+2026-10-25T08:50:36.8601200Z First extra element 0:
+2026-10-25T08:50:36.8603674Z {'id': 'mem_0ce46bd357ec4db692ac901cf6f4ef96', 'event_id': 'evt_1f8d6c7fca544f819bfabef9f07ac21b', 'source_id': 'src_a829ffb3f5764cc5a862cee3bd798581', 'session_id': 'chat_2c56e0c6bea24599ad6e4bbf98a5ad7e', 'kind': 'fact', 'scope': 'session', 'key_text': 'Run211 alpha?', 'value': '120 synthetic units', 'active': 1, 'created': 1792918236.2479875, 'hash': 'e03687ea3077f14bf795818d071ddf15f101c1e720721d2a4ccc011cf32ff086', 'chars': 19, 'source_ref': {'source_id': 'src_a829ffb3f5764cc5a862cee3bd798581', 'sha256': 'e03687ea3077f14bf795818d071ddf15f101c1e720721d2a4ccc011cf32ff086', 'char_start': 0, 'char_end': 19, 'modality': 'text'}, 'retrieval_score': 0.3333333333333333, 'retrieval_policy': None, 'embedding_similarity': None, 'retrieval_channel': 'lexical'}
+2026-10-25T08:50:36.8606347Z 
+2026-10-25T08:50:36.8606536Z Diff is 913 characters long. Set self.maxDiff to None to see it.
+2026-10-25T08:50:36.8606795Z 
+2026-10-25T08:50:36.8607281Z ----------------------------------------------------------------------
+2026-10-25T08:50:36.8607631Z Ran 20 tests in 0.713s
+2026-10-25T08:50:36.8607778Z 
+2026-10-25T08:50:36.8607869Z FAILED (failures=2)
