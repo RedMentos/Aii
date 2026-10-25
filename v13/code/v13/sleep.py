@@ -209,9 +209,12 @@ class SleepCycle:
         recallable=[m for m in mems if m['kind'] in RECALL_KINDS]
         if recallable:
             found=self.memory.recall(text,ev['session_id'])
-            ids={r.get('id') for r in found};values={r.get('value') for r in found}
+            # Retention is per human correction, not per answer string. Two
+            # distinct corrections can have the same value while only one is
+            # retrievable; a value-only match would hide the other one's loss.
+            ids={r.get('id') for r in found}
             for m in recallable:
-                ok=m['id'] in ids or m['value'] in values;checks.append({'memory_id':m['id'],'probe':'RECALL','pass':ok})
+                ok=m['id'] in ids;checks.append({'memory_id':m['id'],'probe':'RECALL','pass':ok})
                 if not ok:errors.append('RECALL_MISS:'+m['id']);paths.add('memory_retrieval')
         for m in mems:
             ref={'source_id':m['source_id'],'sha256':m['hash'],'char_start':0,'char_end':m['chars'],'modality':'text'}
