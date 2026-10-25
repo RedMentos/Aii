@@ -1,0 +1,27 @@
+{
+  "schema": "V13_RUN137_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "selective exact Run127 installer/test integration + workflow/proofs",
+  "base_sha": "b97ea8d9ad519f32c0bbec70bba6660ad5c0c926",
+  "pr": 168,
+  "upstream_pr": 158,
+  "upstream_sha": "088f08d6dcdb0c7ec8dcc4c1e28e78c11c7a380f",
+  "original_installer_blob": "73c43485f929a81add056e0b0d0c8a3a0136cab0",
+  "integrated_installer_blob": "744ef9cbf20bb096eb8222c010d2bd28f8fe7ab2",
+  "integrated_test_blob": "fccc0f240fb521211baf35bb2774d2c7d74caf5c",
+  "linux_red": "installer exit 0 but generated button bash -n exit 2",
+  "linux_green": "bash -n and generated Stillstand button PASS; exact control file mode 0600",
+  "tests": "23/23 local PASS; initial missing historical test module ERROR preserved",
+  "native": "NOT RUN (Run136 separate owner)",
+  "redmi": "NOT RUN",
+  "full_suite": "NOT RUN; Run129 4 FAIL 1 ERROR inherited",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "next_step": "exact-head Run137 Termux source-only ZIP build/extraction with Widget custom-path tests; then Redmi operator proof."
+}
