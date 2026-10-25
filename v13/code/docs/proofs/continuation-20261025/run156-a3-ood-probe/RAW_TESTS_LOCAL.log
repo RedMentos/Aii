@@ -1,0 +1,11 @@
+Run156 local synthetic test transcript (2026-10-25):
+test_clustered_id_and_ood_are_separated ... ok
+test_deterministic_aggregate ... ok
+test_gate_and_provenance ... ok
+test_nonfinite_heldout_rejected ... ok
+test_threshold_independent_of_heldout ... ok
+test_uniform_clamp_is_detected_not_hidden ... ok
+test_zero_heldout_rejected ... ok
+Ran 7 tests in 0.117s
+OK
+RUN156_A3_OOD SYNTHETIC_NUMPY_ONLY_NO_TEACHER_OR_NATIVE UNVERIFIED

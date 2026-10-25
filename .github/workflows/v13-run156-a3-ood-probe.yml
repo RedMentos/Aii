@@ -1,0 +1,33 @@
+name: V13 Run156 A3 OOD synthetic stress
+on:
+  push:
+    branches: ['codex/run156-a3-ood-stress-20261025']
+  pull_request:
+    paths:
+      - 'v13/code/scripts/a3_support_ood_probe_run156.py'
+      - 'v13/code/tests/test_a3_support_ood_probe_run156.py'
+      - '.github/workflows/v13-run156-a3-ood-probe.yml'
+  workflow_dispatch:
+jobs:
+  software-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Isolated NumPy dependency
+        run: python -m pip install numpy==2.3.5
+      - name: Deterministic synthetic checks
+        run: |
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p 'test_a3_support_ood_probe_run156.py' -v
+          python -m compileall -q v13/code/scripts/a3_support_ood_probe_run156.py v13/code/tests/test_a3_support_ood_probe_run156.py
+          PYTHONPATH=v13/code python v13/code/scripts/a3_support_ood_probe_run156.py --output /tmp/run156-ci.json
+          python -c "import json; r=json.load(open('/tmp/run156-ci.json')); assert r['gate']=='UNVERIFIED' and r['results']['uniform']['id_accepted']==0"
+      - name: Public repo privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 945a4b3c0d957b8cf5599889e619dd31015d3b99 --head HEAD

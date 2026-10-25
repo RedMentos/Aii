@@ -1,0 +1,32 @@
+{
+  "schema": "V13_RUN156_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_commit": "945a4b3c0d957b8cf5599889e619dd31015d3b99",
+  "owner": "Codex Run156; only new script/tests/workflow/proof, no Run152/frozen worker changes",
+  "purpose": "Counterexample probe for A3 train-only nearest-neighbor threshold clamp under two synthetic distributions",
+  "local_tests": "7/7 PASS; Python 3.11+ NumPy 2.3.5; no model loaded",
+  "result_sha256": "bf48f4ec8ec354a8f52ca49356eefd37d2872e367c77063af7e568e035c48393",
+  "cohort_definition_sha256": "f8274c2fdd828696f1447a14ffbcdf31b250f406aa6a0f8d8ac29ce223675c6e",
+  "finding": "Clustered synthetic ID 64/64 accepted, OOD 0/64 accepted; uniform same-distribution ID 0/64 accepted, OOD 0/64 accepted; train LOO P05 0.07787, floor clamped to 0.5. Therefore no universal A3 OOD calibration claim.",
+  "evidence_class": "SYNTHETIC_NUMPY_ONLY_NO_TEACHER_OR_NATIVE",
+  "native": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "teacher": "NOT_RUN",
+  "full_suite": "NOT_RUN_LOCAL_DNS",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Evaluate exact frozen A3 raw_features on new source-group-heldout text, with teacher embeddings if available, before any integration.",
+    "Threshold should be calibrated to acceptable ID false rejection without using held-out OOD labels for selection.",
+    "Run152 actual-worker CI and privacy results require independent confirmation."
+  ],
+  "next_command": "PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_a3_support_ood_probe_run156.py -v",
+  "next_step": "Verify remote bytes and CI; preregister fresh actual A3 text/teacher holdout and compare train-only floor to explicit abstention controls; do not integrate until evidence."
+}
