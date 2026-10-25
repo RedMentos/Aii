@@ -1,0 +1,58 @@
+{
+  "run": "Run209",
+  "date_utc": "2026-10-25",
+  "canonical_area": "F4 digital WorldModel / source-bound counterfactual observed state",
+  "branch": "codex/world-cf-observed-count-run209-20261025",
+  "base_verified": "9172c44ca01c598df886c864b12391f6be7182b9",
+  "tested_commit": "4d7e5ce7403371e5834beb23ae8dcebfc8a83bd6",
+  "owner": "Run209 world_model.py and tests only; no overlap with Run206 Callosum, Run207/208 Sleep, active native B2/C3 owner",
+  "owned_files": [
+    "v13/code/v13/world_model.py",
+    "v13/code/tests/test_world_counterfactual_input_integrity_run209.py",
+    ".github/workflows/run209-world-cf-count.yml",
+    "v13/code/docs/proofs/continuation-20261025/run209-world-cf-count/"
+  ],
+  "changes": "for_event requires actual integer nonnegative input_chars, matching transitions; no float or fractional state accepted as observed.",
+  "source_blob_sha": {
+    "world_model.py": "d65dcc6af6ce49294a0363652170b74535d22854",
+    "test_world_counterfactual_input_integrity_run209.py": "c269356e23d8eae88bf11cf615df43d6d77ee959"
+  },
+  "actual_source_ci": {
+    "first_red": {
+      "run_id": 40177753487,
+      "job_id": 121122033795,
+      "result": "3 expected RED subcases + 1 workflow module typo (preserved)"
+    },
+    "clean_red": {
+      "run_id": 40177772740,
+      "job_id": 121122090947,
+      "result": "3 RED subcases, 18 tests total"
+    },
+    "green": {
+      "run_id": 40177820494,
+      "job_id": 121122236241,
+      "result": "18/18 PASS; compileall PASS; official privacy scan CLEAN"
+    },
+    "run202_regression": {
+      "run_id": 40177820529,
+      "result": "PASS"
+    }
+  },
+  "evidence_kind": "Actual-source GitHub Linux CI with synthetic SQLite; no real native model, causal world learning, learned utility or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Counterfactual WorldModel remains a digital timing/success hypothesis, not semantic causality.",
+    "Full project-wide tests and Redmi resource measurements not established by focused CI.",
+    "Active B2/C3 native owner remains separate; PR234 Run98 B3 degradation workflow failed and owner notified."
+  ],
+  "next_step": "Pivot to disjoint persistent operator utility: actual Runtime human-memory backup/restore/forget lifecycle, fail-closed corrupted archive, and restart; test before modifying backup.py.",
+  "next_command": "python -m unittest -v tests.test_backup_restore_memory_run210 tests.test_migrations tests.test_memory_recall_key_lineage_run203",
+  "no_authority_promotion": true
+}
