@@ -1,0 +1,50 @@
+{
+  "run": "Run392",
+  "date": "2026-10-26",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/sourcewide-resource-isolation-run392-20261026",
+  "pr": 387,
+  "base": {
+    "branch": "codex/ag2-preaction-restart-run391-20261026",
+    "sha": "752873ba8a9ff7a57536831007257ac54c6b9c32",
+    "integration": "stacked review only, not main"
+  },
+  "plan_commit": "91e6e5025ff017df4e180013cc634fec2341c56b",
+  "diagnostic_script_commit": "34ef0222f507c232a8741b65877803178d17dd15",
+  "workflow_commit": "137de4540e33c309c872125ed691ece6679e2df3",
+  "evidence": {
+    "head": "137de4540e33c309c872125ed691ece6679e2df3",
+    "run": 40244288287,
+    "artifact": 12618650109,
+    "zip_sha256": "3578b7a03160e47a67dd7b3502a4d59951f0ec13345c512f5b73173c4024567f",
+    "tests": "3181 tests, failures=0, errors=70, skipped=19, 272.872s",
+    "privacy": "CLEAN",
+    "integrity": "ZIP CRC PASS, five internal SHA256 members PASS, private Library copy byte-identical"
+  },
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run392_SourceWide_20261026/RAW.zip",
+  "findings": [
+    "Run389 single resource-mode failure did not reproduce; no production/test source changed",
+    "DEFAULTS.minimum_free_mb=500 before/at/after suite, Runtime/profile thresholds correct",
+    "Guard synthetic 1200 MB YELLOW with MEM_BELOW_YELLOW; SleepCycle.runtime linked",
+    "Additional real host resource snapshot ~15.56GB observed between synthetic guard updates, potential race only, not proven",
+    "70 frozen source-identity errors preserved, full suite remains RED"
+  ],
+  "negative_gates": [
+    "Full-suite RED (70 errors)",
+    "Run389 prior 1 failure preserved as negative evidence",
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "No native/Redmi proof",
+    "Age0/approval unchanged",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Controlled resource sampling/guard race test needed before any production change",
+    "Run389 frozen SourceHandoff source identities remain mismatched; do not weaken guards",
+    "Run394 fresh STEP2 fixture/native experiment is independent substantive path"
+  ],
+  "next_command": "git fetch origin codex/sourcewide-resource-isolation-run392-20261026 && git checkout -b review-run392 origin/codex/sourcewide-resource-isolation-run392-20261026 && cd v13/code && python scripts/run392_resource_suite_diagnostic.py",
+  "next_package": "Continue Run394 native STEP2 long-note/revision pilot; do not conflate diagnostic suite RED with native utility."
+}
