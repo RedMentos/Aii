@@ -99,8 +99,13 @@ def compress(text,cap):
     # Strip already protected paired spans first; an unmatched delimiter in
     # the remainder makes RAW the only source-exact option.
     remainder=QUOTE.sub('',CODE.sub('',text))
-    if any(marker in remainder for marker in ('`','"','„','“','”')):
-        return text,spans,False
+    for marker in re.finditer(r'[`"„“”]',remainder):
+        # Backslash-escaped literal marks are not Markdown delimiters.
+        # Odd preceding backslashes escape; even runs leave the mark active.
+        j=marker.start()-1
+        while j>=0 and ord(remainder[j])==92:j-=1
+        if (marker.start()-1-j)%2==0:
+            return text,spans,False
     if sum(len(s) for s in spans)>SPAN_CHARS or len(spans)>SPAN_MAX:return text,spans,False
     head=first_sentence(text,cap);missing=[s for s in spans if s not in head]
     out='[compressed earlier turn; exact source kept] '+head+((' | exact: '+' ; '.join(missing)) if missing else '')
