@@ -1,0 +1,45 @@
+name: WP-T8 source-bound WorldModel event evidence (software only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/world_model.py'
+      - 'v13/code/tests/test_world_event_source_integrity_20261025.py'
+      - '.github/workflows/world-event-source-integrity-20261025.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/world-event-source-integrity/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  world-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned isolated numpy
+        run: |
+          python3 -m venv "$RUNNER_TEMP/world"
+          "$RUNNER_TEMP/world/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Actual source adversarial and compatibility tests
+        working-directory: v13/code
+        run: |
+          set -o pipefail
+          export PYTHONPATH="$PWD"
+          for f in tests/test_world_event_source_integrity_20261025.py tests/test_world_model_integration_run64.py tests/test_world_observation_integrity_run202.py tests/test_world_counterfactual_input_integrity_run209.py; do
+            "$RUNNER_TEMP/world/bin/python" "$f" -v || exit $?
+          done 2>&1 | tee "$RUNNER_TEMP/WORLD_SOURCE_RAW.log"
+          "$RUNNER_TEMP/world/bin/python" -m compileall -q v13/world_model.py tests/test_world_event_source_integrity_20261025.py
+      - name: Official privacy scanner
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base d0bf78b933718b4def9bb821c1683af7c5d5b498 --head HEAD --no-worktree
+      - name: Preserve raw logs on RED or GREEN
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-World-Source-Integrity-Raw
+          path: ${{ runner.temp }}/WORLD_SOURCE_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Evidence scope
+        run: echo 'Synthetic SQLite software evidence only. No native model, Redmi, world utility or gate promotion.'
