@@ -1,0 +1,30 @@
+name: Run199 Context OS candidate plan integration (software only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/tests/test_context_inline_plan_run199.py'
+      - '.github/workflows/run199-context-plan-integration.yml'
+  workflow_dispatch:
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Isolated software dependencies (no models)
+        run: python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Run actual Context OS plan and source binding tests
+        run: |
+          cd v13/code
+          python -m unittest -v tests.test_context_inline_plan_run199 tests.test_context_inline_guard_run198 tests.test_context_unclosed_fence_run100
+          python -m compileall -q tests/test_context_inline_plan_run199.py
+      - name: Official public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 1351cac43821bbae3e5dbed48d34000f7ef9b300 --head HEAD
+      - name: Scope
+        run: echo 'SOFTWARE/SYNTHETIC plan integration only; temporary test patch, no production change'
