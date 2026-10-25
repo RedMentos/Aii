@@ -1,0 +1,9 @@
+Run157 local replicated-stem test transcript (2026-10-25):
+test_exact_determinism ... ok
+test_far_domain_rejection ... ok
+test_gates_and_zero_updates ... ok
+test_source_group_split ... ok
+test_unseen_value_substitution_is_not_truth ... ok
+Ran 5 tests in 0.590s
+OK
+RUN157_A3_RAWSTEM 97 31 UNVERIFIED
