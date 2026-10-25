@@ -1,0 +1,85 @@
+{
+  "schema": "V13_RUN270_MEMORY_HUMAN_DECISION_LINEAGE_CHECKPOINT_V1",
+  "utc": "2026-10-25T11:11:00Z",
+  "base_verified_pr": 268,
+  "base_verified_sha": "7ab557a3b9c44d4b00f9487bb70b52305a7d7c6c",
+  "branch": "codex/memory-decision-lineage-run270-20261025",
+  "pr": 270,
+  "owner": {
+    "production": [
+      "v13/code/v13/memory.py"
+    ],
+    "tests": [
+      "v13/code/tests/test_memory_human_decision_lineage_run270.py"
+    ],
+    "evidence": [
+      "v13/code/docs/proofs/continuation-20261025/memory-human-decision-run270/*"
+    ],
+    "ci": [
+      ".github/workflows/run270-memory-decision-lineage.yml"
+    ]
+  },
+  "evidence_scope": "ACTUAL_RUNTIME_SQLITE_SYNTHETIC_TEXT_LINUX_SOFTWARE_NO_NATIVE_MODEL_NO_REDMi",
+  "source_git_blob": "f1f329f181d69c96e253d05f7081afd72cca99dc",
+  "test_git_blob": "1871fed7bbb7fb279dcf86cec4f1ae44e52c1077",
+  "tests": {
+    "red": {
+      "assertion_failures": 16,
+      "errors": 1,
+      "exit": 1,
+      "notes": "one FK-invalid test mutation was corrected without hiding original RED"
+    },
+    "green_new": {
+      "tests": 9,
+      "exit": 0
+    },
+    "green_new_plus_prior": {
+      "tests": 17,
+      "exit": 0
+    },
+    "focused": {
+      "tests": 78,
+      "exit": 0,
+      "skips": 0
+    },
+    "full_discovery": {
+      "status": "INCOMPLETE_TOOL_TIMEOUT",
+      "completed_summary": false,
+      "exit": "UNOBSERVED",
+      "partial_dots": 122
+    },
+    "benchmark": {
+      "memories": 160,
+      "iterations": 8,
+      "median_ms": 15.67,
+      "max_ms": 50.45
+    }
+  },
+  "raw_sha256": {
+    "red": "a5188dc77faeeeebf9fe7b363eeadf42a0f1c94392787986ea65d1861ef6e5ac",
+    "green": "2e281a4ef6191608bf4b76575f3adda8d000e232cec12ec0841ed78e63fa3a74",
+    "green2": "caf77e52d053027466163a268bb8b6e9b3927b205d17fe385785167fd514c5de",
+    "focused": "ccf10a98a5b6de19d654b38bf89f02021fc5db85b52eca5f4b796bcdc16c0700",
+    "fullsuite_partial": "c4263e5d9e7ab892dbba8e1dada2b595d89e6af3587fd783e43448a4f7f93d6d",
+    "benchmark": "e002aa71862ecf3113a25f5fcbcc169acd28a6ef4559652dfe912ad09696030c"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "blocked": [
+    "Current Redmi sustained proof unavailable",
+    "No model-native inference in Run270",
+    "Full local discovery timed out; CI evidence pending",
+    "PR269 active native owner, no overlapping native work"
+  ],
+  "next": "Fetch PR270 workflow runs/artifacts; inspect exact-head CI and official privacy scan. Independently review source diff; rerun full suite in serialized CI if feasible. Then implement a separate non-overlapping canonical functional package; never promote gates from this result.",
+  "original_blueprint_modified": false,
+  "production_runtime_modified": false,
+  "model_hashes_modified": false
+}
