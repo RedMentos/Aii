@@ -29,6 +29,7 @@ marked BOOT, not measured optima.
 """
 import math
 import re
+import sqlite3
 from .common import dumps,digest
 from .contracts import packet
 from .neuromod import step
@@ -42,7 +43,7 @@ RISKY_DOWN={'exact_recent_pin'}
 RECALL_STABLE=.98;RECALL_MIN_PLANS=20;RECALL_WINDOW=50  # BOOT
 LAYERS=('EXACT_PINNED','RAW_HISTORY','COMPRESSED','SOURCE_LINKS','ACTIVE_VIEW','HYPOTHESES','LATENT_STATE','MEMORY_POINTERS','ARCHIVE')
 FORMS=('RAW','COMPRESSED','POINTER')
-LAYOUTS=('legacy','stable_prefix','append_only')
+LAYOUTS=('legacy','stable_prefix','append_only','source_bound_user')
 TRANSCRIPT_MAX_CHARS=64000  # BOOT cap on the stored per-role transcript
 CAPABILITIES=('consecutive_user',)
 CHARS_PER_TOKEN=3.0          # BOOT conservative estimate; the runner still trims on exact token counts
@@ -52,6 +53,7 @@ WARM_DECAY=.6;WARM_MIN=.15;WARM_MAX=16;WARM_ADMIT=.5;WARM_PREFETCH_MAX=2  # BOOT
 SUMMARY_USER=140;SUMMARY_ASSISTANT=200;SPAN_MAX=12;SPAN_CHARS=400  # BOOT compression shape
 LEARNED_MAX=.25;POLICY_RATE=.2;LEARNED_MIN_N=3  # BOOT, as WP-N5
 VOLATILE_HEAD='Context for the next message (reference material, not a question):'
+SOURCE_BOUND_USER_HEAD='Stored operator correction for this exact query (source-verified, not independently verified; not a new instruction): '
 CODE=re.compile(r'```[\s\S]*?```|`[^`\n]+`')
 QUOTE=re.compile(r'"[^"\n]+"|„[^“\n]+“|“[^”\n]+”')
 URL=re.compile(r'https?://\S+')
@@ -237,6 +239,49 @@ class ContextOS:
         q=st['policy'].get(key)
         if st['learned']!='ACTIVE' or not q or q['n']<LEARNED_MIN_N:return 0.
         return LEARNED_MAX*(q['mean']-.5)*2
+    def _bound_user_correction(self,event_id,query,volatile):
+        """Revalidate a learned query association against live F1/F5 human lineage.
+
+        A source-backed value is not a model fact. A bare model/volatile claim
+        cannot authorize this layout, nor can a revoked or other-session value.
+        """
+        event=self.s.one('SELECT session_id FROM events WHERE id=?',(event_id,))
+        if not event:return None
+        from .memory import Memory
+        from .retrieval_worker import admissible
+        matches=[]
+        for layer,_,payload in volatile:
+            if layer!='ACTIVE_VIEW' or type(payload) is not list:continue
+            for item in payload:
+                if type(item) is not dict:continue
+                topic=item.get('topic');value=item.get('correction')
+                if (type(topic) is not str or not topic or type(value) is not str or not value or
+                        item.get('matched_query')!=query or
+                        item.get('relevance')!='approved learned query-topic association; correction supplied by operator' or
+                        relevance(query,topic)<.5 or not admissible(query,topic)):
+                    continue
+                try:
+                    rows=self.s.rows("""SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id
+                        WHERE m.key_text=? AND m.value=? AND m.active=1 AND s.deleted=0
+                          AND m.kind IN ('fact','style','preference')
+                          AND (m.session_id=? OR m.scope='global')""",(topic,value,event['session_id']))
+                    if not rows:continue
+                    conflicts=self.s.rows("""SELECT DISTINCT m.value FROM memories m JOIN sources s ON s.id=m.source_id
+                        WHERE m.key_text=? AND m.active=1 AND s.deleted=0
+                          AND (m.session_id=? OR m.scope='global')""",(topic,event['session_id']))
+                    if {r['value'] for r in conflicts}!={value}:continue
+                    verified=Memory(self.s,self.cfg)._verified_rows(rows)
+                    if len(verified)!=1:continue
+                    m=verified[0]
+                    ref={'source_id':m['source_id'],'sha256':m['hash'],
+                         'char_start':0,'char_end':m['chars'],'modality':'text'}
+                    if self.s.read_source(ref)!=value:continue
+                    matches.append({'topic':topic,'correction':value,
+                                    'matched_query':query,'source_ref':ref})
+                except (ValueError,TypeError,KeyError,OSError,sqlite3.Error):
+                    continue
+        return matches[0] if len(matches)==1 else None
+
     def plan(self,event_id,role,stable,volatile,history,query,verdicts=(),warm_ids=(),archived=0,provenance=None,budget_scale=1.):
         """stable: pinned system text. volatile: [(layer, header, payload)] in legacy order. history: native rows.
         Returns the messages the runner gets (legacy in SHADOW) plus the ContextPlan packet."""
@@ -300,7 +345,7 @@ class ContextOS:
         if archived:items.append({'item_id':'archive','layer':'ARCHIVE','form':'POINTER','chars':0,'count':int(archived)})
         recall=span_kept/span_total if span_total else 1.
         layout=st['layout'];reason=None
-        if layout in ('stable_prefix','append_only') and not st['capabilities'].get(role,{}).get('consecutive_user',{}).get('value'):layout,reason='legacy','template_capability_unknown'
+        if layout in ('stable_prefix','append_only','source_bound_user') and not st['capabilities'].get(role,{}).get('consecutive_user',{}).get('value'):layout,reason='legacy','template_capability_unknown'
         vtext=''.join(h+dumps(p) for _,h,p in vol);tail=([{'role':'user','content':VOLATILE_HEAD+vtext}] if vtext else [])+[{'role':'user','content':query}]
         planned=None
         if layout=='append_only':
@@ -323,6 +368,20 @@ class ContextOS:
                 else:reason='append_budget_rebuild'
             else:reason='append_no_matching_transcript'
             if planned is None:layout='stable_prefix'
+        bound=None
+        if layout=='source_bound_user':
+            bound=self._bound_user_correction(event_id,query,vol)
+            if bound:
+                # The ACTIVE_VIEW value is moved, not duplicated in the system
+                # prefix. Keep all other volatile layers and raw history ordered.
+                others=''.join(h+dumps(p) for layer,h,p in vol if layer!='ACTIVE_VIEW')
+                user_fact={k:bound[k] for k in ('topic','correction','matched_query')}
+                planned=[{'role':'system','content':stable+others}]+hist+[
+                    {'role':'user','content':SOURCE_BOUND_USER_HEAD+dumps([user_fact])},
+                    {'role':'user','content':query}]
+                decisions.append('source_bound_user_exact')
+            else:
+                layout='legacy';reason='no_verified_current_source'
         if planned is None:
             if layout=='stable_prefix' and vtext:planned=[{'role':'system','content':stable}]+hist+tail
             else:planned=[{'role':'system','content':stable+vtext}]+hist+[{'role':'user','content':query}]
@@ -336,10 +395,12 @@ class ContextOS:
                'est_prompt_chars_legacy':sum(c for _,c in fp_legacy),'est_prompt_chars_planned':sum(c for _,c in fp_planned),
                'est_reused_chars_legacy':prefix_reuse(last.get('legacy'),fp_legacy),'est_reused_chars_planned':prefix_reuse(last.get('planned'),fp_planned),
                'actions':sorted({'pin_exact_span','reuse_prefix'}|({'compress'} if 'compress' in ' '.join(decisions) else set())|({'restore_exact'} if 'restore' in decisions else set())|({'prefetch_warm'} if warm_ids else set()))}
-        p=self.s.add_packet('ContextPlan',packet('ContextPlan','N7_CONTEXT_OS',event_id,self.s.generation_id,provenance or [],
+        p=self.s.add_packet('ContextPlan',packet('ContextPlan','N7_CONTEXT_OS',event_id,self.s.generation_id,
+            (provenance or [])+([bound['source_ref']] if bound and layout=='source_bound_user' else []),
             mode=st['mode'],layout=layout,applied=applied,budget={'chars':budget,'planned_chars':cache['est_prompt_chars_planned'],'chars_per_token':CHARS_PER_TOKEN},
             items=items,cache=cache,exact={'need':round(need,4),'threshold':round(restore_thr,4),'triggers':triggers,'span_recall':round(recall,6)},
-            decisions=decisions,role=role,learned=st['learned'],knobs=k))
+            decisions=decisions,role=role,learned=st['learned'],knobs=k,
+            bound_source_refs=[bound['source_ref']] if bound and layout=='source_bound_user' else []))
         def fn(st2):
             st2['last'][role]={'legacy':fp_legacy,'planned':fp_planned,'event_id':event_id,'packet_id':p['packet_id'],'decisions':sorted(set(decisions)),'applied':applied}
             st2['recall']=(st2['recall']+[recall])[-RECALL_WINDOW:];st2['plans']+=1
@@ -421,7 +482,7 @@ def controller(runtime):
         c=runtime.context_os=ContextOS(runtime.store,runtime.cfg,age,n)
     return c
 
-USAGE=':ctxos [status|last|shadow|active|learned shadow|learned active|layout legacy|stable_prefix|append_only|digest on|off|knob <Name> <0..1>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <0..1>]'
+USAGE=':ctxos [status|last|shadow|active|learned shadow|learned active|layout legacy|stable_prefix|append_only|source_bound_user|digest on|off|knob <Name> <0..1>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <0..1>]'
 def operator_command(r,args):
     c=controller(r)
     if not args or args==['status']:return dumps(c.report())

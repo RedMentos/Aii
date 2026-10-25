@@ -1,0 +1,51 @@
+{
+  "schema": "V13_RUN296_CTXOS_BOUND_SOURCE_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "branch": "codex/ctxos-bound-source-user-run296-20261025",
+  "pr": 296,
+  "base_sha": "22f88f982e3681d2701295a806f4e8ffc38f635f",
+  "tested_source_sha": "3552709a56f6757b214d1a50bab8338375105965",
+  "owner": [
+    "v13/code/v13/context_os.py",
+    "v13/code/tests/test_run296_ctxos_bound_source_user.py",
+    ".github/workflows/run296-ctxos-bound-source-user.yml",
+    "v13/code/docs/proofs/continuation-20261025/ctxos-bound-source-user-run296"
+  ],
+  "source_blobs": {
+    "v13/code/v13/context_os.py": "f4811bc25b7947a0aa00d47b259909e1a8fdf2f0",
+    "v13/code/tests/test_run296_ctxos_bound_source_user.py": "f696bf94290092fa9dd18000a7a3afb45f0ec3a3",
+    ".github/workflows/run296-ctxos-bound-source-user.yml": "fec93c3e380b1549a85586f7e2fbbee2b52516af"
+  },
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "software": {
+    "run": 40202057893,
+    "tests": "71/71 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12602072005,
+    "sha256": "969d9b21480aa7fbd2c8445819cf5e2f979200461b1409256cb47c17d9201187"
+  },
+  "focused": {
+    "run": 40202057891,
+    "tests": "401/401 PASS",
+    "phone_extracted": "114/114 PASS",
+    "manifest_files": 1012,
+    "privacy": "CLEAN",
+    "artifact_id": 12602426239,
+    "outer_sha256": "2689fc13e85111d8c8b80eda3dfe6f042a08316c86cbcab28c68597aa932e032",
+    "phone_zip_sha256": "ed63537fdf899d0747646c281719cc863123da1b6dbe81a5445dd8e83123b466"
+  },
+  "private_library": "/V13-Inquisition/Proofs/Run296",
+  "raw_readback": "SHA256_AND_BYTE_MATCH",
+  "source_readback": "SHA256_AND_BYTE_MATCH",
+  "native_integrated_layout": "NOT_MEASURED",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "next_command": "Preregister new independent native integration probe reusing unchanged tests/integration_retrieval.py and Run296 opt-in layout; verify B1 source-use and negative native outputs; do not promote original memory gate.",
+  "next_prerequisites": "Check serialized native owner, pinned model/source hashes and genuine template capability; retain original Run295 negative output evidence."
+}
