@@ -49,6 +49,24 @@ class DisjointHoldoutRun387(unittest.TestCase):
         self.assertEqual(self.a.induce(eps, domain="cipher"), [])
         self.assertEqual(self.rules(), before)
 
+    def test_duplicate_training_input_cannot_inflate_support(self):
+        eps = episodes()
+        eps[1]["input"] = eps[0]["input"]
+        eps[1]["output"] = eps[0]["output"]
+        self.assertEqual(self.a.induce(eps, domain="cipher"), [])
+        self.assertEqual(self.rules(), {})
+
+    def test_cross_run_reused_inputs_with_fresh_ids_stay_separate(self):
+        first = self.a.induce(episodes(), domain="cipher")[0]
+        next_eps = list(reversed(episodes()))
+        for e in next_eps:
+            e["id"] = "fresh_" + e["id"]
+        second = self.a.induce(next_eps, domain="cipher")[0]
+        self.assertNotEqual(first["id"], second["id"])
+        self.assertEqual(len(self.rules()), 2)
+        for rule in self.rules().values():
+            self.assertFalse(set(rule["support_input_hashes"]) & set(rule["test_input_hashes"]))
+
     def test_independent_examples_still_validate_without_fact_authority(self):
         out = self.a.induce(episodes(), domain="cipher")
         self.assertEqual(len(out), 1)
