@@ -15,3 +15,11 @@ Run full `python -m unittest discover -s tests -p test_*.py -v`, preserve closed
 `STEP2=UTILITY_FAIL`, `B3_L1=FAIL`, `Body_JEPA=UNAVAILABLE`, `jepa_weight=0`, `DS2_H2=FAIL`, `V13=INCOMPLETE`. Run171 native predictor heldout `commit_eligible=False` also remains a separate negative result.
 
 After Run173 CI, inspect all failed tests and raw stderr. If orphan descendant persists, review Run24 atomic clone3 candidate with real cgroup kernel evidence before any safe production integration. Do not use old post-reap killpg; PID reuse is unsafe. Do not retry rejected Drive destination.
+
+## Observed Linux full-suite result — FAIL, not promoted
+
+Run173 Actions `40166625520`, full-suite job `121088946951` **FAIL** after 2408 tests in 248.657 s: **1 FAIL, 1 ERROR, 13 skipped**. The original three LP3 CLI rc1 failures from Run164 are absent after staging the exact two sibling modules; this supports the diagnosed import-path repair. Remaining:
+- `test_lp3_serial_review_run18.OrphanGroupReview.test_successful_leader_with_live_descendant_is_not_success`: **FAIL**; child still live after wrapper unlocked. Original safety gate remains failed.
+- `test_toolforecast.CheckpointTests.test_competence_check_scores_states_not_calls`: **ERROR**; optional local `Path('/root/native/restore/round8-note-tool-raw').exists()` raises `PermissionError` on GitHub Ubuntu. This is a test portability problem in an optional local fixture probe, not a measured forecast failure. A separate source-preserving test fix must handle unreadable optional path explicitly, without skipping competence assertions.
+
+Official privacy scan PASS. Closed raw suite artifact ID `12588498353`, ZIP SHA-256 `c06651dd13605ace2687ca2dd2b93b5e64abb8a51a60eebd395e8bc2bb10e5de`. No original failure was discarded or marked green. Next: scoped Run176 optional fixture permission handling and full-suite recheck; Run175 isolated subreaper/pidfd candidate remains nonproduction and cannot satisfy cgroup gate alone.
