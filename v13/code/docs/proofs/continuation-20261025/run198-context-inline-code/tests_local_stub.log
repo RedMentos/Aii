@@ -1,0 +1,14 @@
+test_candidate_preserves_double_backtick_code (tests.test_context_inline_guard_run198.ContextInlineGuard.test_candidate_preserves_double_backtick_code) ... ok
+test_candidate_preserves_unclosed_late_inline_code (tests.test_context_inline_guard_run198.ContextInlineGuard.test_candidate_preserves_unclosed_late_inline_code) ... ok
+test_escaped_backtick_does_not_force_raw (tests.test_context_inline_guard_run198.ContextInlineGuard.test_escaped_backtick_does_not_force_raw) ... ok
+test_existing_closed_fence_with_internal_backtick_unchanged (tests.test_context_inline_guard_run198.ContextInlineGuard.test_existing_closed_fence_with_internal_backtick_unchanged) ... ok
+test_existing_complete_inline_code_still_compresses (tests.test_context_inline_guard_run198.ContextInlineGuard.test_existing_complete_inline_code_still_compresses) ... ok
+test_existing_v1_loses_unclosed_late_inline_code (tests.test_context_inline_guard_run198.ContextInlineGuard.test_existing_v1_loses_unclosed_late_inline_code) ... ok
+test_multiline_inline_code_stays_raw (tests.test_context_inline_guard_run198.ContextInlineGuard.test_multiline_inline_code_stays_raw) ... ok
+test_ordinary_prose_still_compresses (tests.test_context_inline_guard_run198.ContextInlineGuard.test_ordinary_prose_still_compresses) ... ok
+test_unmatched_fence_still_raw (tests.test_context_inline_guard_run198.ContextInlineGuard.test_unmatched_fence_still_raw) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.002s
+
+OK
