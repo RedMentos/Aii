@@ -40,7 +40,7 @@ jobs:
             tests.test_atomic_forget_generation_run290 \
             tests.test_atomic_update_approval_row_run289 \
             tests.test_revoked_update_lineage_run287 \
-            tests.test_core tests.test_memory \
+            tests.test_core tests.test_memory_trainer tests.test_memory_human_decision_lineage_run270 \
             tests.test_learning_invariants tests.test_component_generations 2>&1 | tee "$RUNNER_TEMP/RUN290_TEST_RAW.log"
           rc=$?
           echo "$rc" > "$RUNNER_TEMP/RUN290_TEST_EXIT.txt"
