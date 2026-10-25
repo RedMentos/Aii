@@ -1,0 +1,77 @@
+name: V13 Run379 World SelfState session accounting
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run379-world-selfstate-session.yml'
+      - 'v13/code/v13/world.py'
+      - 'v13/code/tests/test_world_selfstate_session_run379.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact source and dependencies
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN379_HEAD.txt"
+          sha256sum v13/code/v13/world.py v13/code/tests/test_world_selfstate_session_run379.py | tee "$RUNNER_TEMP/RUN379_SOURCE_SHA256SUMS.txt"
+          python3 -m venv "$RUNNER_TEMP/run379venv"
+          "$RUNNER_TEMP/run379venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          python3 -m compileall -q v13/code/v13/world.py v13/code/tests/test_world_selfstate_session_run379.py
+      - name: Actual Runtime SQLite regression
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run379venv/bin/python" -m unittest -v \
+            tests.test_world_selfstate_session_run379 \
+            tests.test_world_state \
+            tests.test_world_multiaction_recovery_run343 \
+            2>&1 | tee "$RUNNER_TEMP/RUN379_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN379_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN379_*' ! -name RUN379_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN379_SHA256SUMS.txt
+      - name: Upload exact-head raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run379-WorldSelfState-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN379_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          test "${{ steps.suite.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
