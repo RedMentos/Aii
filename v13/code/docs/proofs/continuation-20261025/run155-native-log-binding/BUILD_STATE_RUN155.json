@@ -1,0 +1,29 @@
+{
+  "schema": "V13_RUN155_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_commit": "50e86580bea78a13a9c2aceb97ea3c1970c16796",
+  "owner": "Codex Run155; new review-only script/tests/workflow/proof; frozen Runtime and Run151/153/154 unchanged",
+  "finding": "Run154 counted 288 RUN151_ROW lines but did not verify row IDs/order/status/label against report. Exact artifact SHA binding still protects original pinned bytes.",
+  "implementation": "Standalone read-only wrapper invokes Run154 registered-source/provenance loader then enforces 288 exact log/report row matches. No original code modified.",
+  "local_tests": "10/10 PASS software/synthetic; compileall PASS",
+  "evidence_class": "SOFTWARE_SYNTHETIC_ONLY",
+  "native_run": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "full_repo_suite": "NOT_RUN_LOCAL_GITHUB_DNS_UNAVAILABLE",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Exact pinned Run151 ZIPs not available in current local container; run read-only wrapper against verified archived native artifacts in CI or trusted host.",
+    "Official GitHub Actions result and full-suite privacy scan must be checked.",
+    "Raw native log only contains status fields; original native model response bytes remain bound by report SHA and artifact provenance."
+  ],
+  "next_command": "PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_age0d_run151_log_binding_review_run155.py -v",
+  "next_step": "Verify exact remote Git blob hashes and CI; run review on both pinned native ZIPs; independently continue A3/Body-JEPA utility work."
+}
