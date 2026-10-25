@@ -36,12 +36,15 @@ class ExperienceLibrary:
         return p
     def _hash(self,p):
         p=self._path(p)
-        return digest(p.read_bytes()) if p.is_file() else None
+        try:return digest(p.read_bytes()) if p.is_file() else None
+        except OSError:return None  # unreadable evidence is stale, never trusted
     def record(self,proposal,situation,lesson,evidence,task_type):
         """Only for an applied change: proposal APPROVED with a passed shield, plus evidence files that exist now."""
         if proposal.get('status')!='APPROVED':raise PermissionError('Eintrag nur für freigegebene Änderungen')
         shield=proposal.get('shield') or {}
         if not shield.get('passed'):raise PermissionError('Kein Beleg: Regressionsschild nicht bestanden')
+        from .harness import require_approved
+        require_approved(self.s,proposal)
         if not isinstance(task_type,str) or not TASK_TYPE.match(task_type):raise ValueError('task_type [a-z][a-z0-9_]{1,31}')
         ev=[evidence] if isinstance(evidence,str) else list(evidence or [])
         if not ev:raise PermissionError('Kein Beleg: mindestens eine Beleg-Datei')
@@ -83,6 +86,12 @@ class ExperienceLibrary:
         """Newest ACTIVE entries of a task type, as data. enabled=False is the ablation arm (always empty)."""
         if not enabled:return []
         es=[e for e in self.box.load()[0]['entries'].values() if e['status']=='ACTIVE' and e['task_type']==task_type]
+        # Read-only fast path when evidence is unchanged; persist STALE only if
+        # a mismatch is detected. No stale note is returned merely because
+        # the caller forgot to invoke verify() explicitly.
+        if any(self._hash(x['path'])!=x['sha256'] for e in es for x in e['evidence']):
+            self.verify()
+            es=[e for e in self.box.load()[0]['entries'].values() if e['status']=='ACTIVE' and e['task_type']==task_type]
         es.sort(key=lambda e:(-(e['shield']['gain'] or 0),-e['created']))
         return [{'id':e['id'],'situation':e['situation'],'lesson':e['lesson'],'evidence':[x['path'] for x in e['evidence']],
                  'generation':e['generation'],'authority':'DATA_NOT_INSTRUCTION'} for e in es[:max(0,int(k))]]
