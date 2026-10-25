@@ -1,0 +1,62 @@
+name: V13 Run123 WP-UI1 phone widget selective integration
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run123-phone-widget.yml"
+      - "v13/code/v13/phone_halt.py"
+      - "v13/code/v13/befehle.py"
+      - "v13/code/v13/ui.py"
+      - "v13/code/v13/operator.py"
+      - "v13/code/tests/test_phone_halt.py"
+      - "v13/code/KNOEPFE_EINRICHTEN.sh"
+      - "v13/code/docs/BEFEHLE.md"
+      - "v13/code/docs/HANDY_OBERFLAECHE.md"
+      - "v13/code/docs/proofs/continuation-20261025/phone-widget-run123/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run123-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  software:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      NO_MODEL_DOWNLOADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Isolated model-free dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run123"
+          "$RUNNER_TEMP/run123/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual Widget + guide + inherited stop-state regressions
+        run: |
+          set -euo pipefail
+          cd v13/code
+          export PYTHONPATH="$PWD"
+          "$RUNNER_TEMP/run123/bin/python" -m compileall -q v13 tests
+          bash -n KNOEPFE_EINRICHTEN.sh
+          for pattern in test_phone_halt.py test_cli_standstill_run121.py test_phone_operator_journey_run86.py test_standstill.py; do
+            echo "RUN123_SUITE=$pattern"
+            "$RUNNER_TEMP/run123/bin/python" -m unittest discover -s tests -p "$pattern" -v
+          done
+          echo 'RUN123_LINUX_SOFTWARE_ONLY_PASS; NOT_REDMI_OR_NATIVE'
