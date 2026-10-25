@@ -1,0 +1,73 @@
+name: V13 Run294 current-option authority (software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/agi/eligibility.py'
+      - 'v13/code/tests/test_run294_eligibility_option_authority.py'
+      - '.github/workflows/run294-eligibility-option-authority.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  option-authority:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Source pin and unchanged Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN294_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/v13/agi/eligibility.py v13/code/tests/test_run294_eligibility_option_authority.py | tee "$RUNNER_TEMP/RUN294_BLOBS.txt"
+          python3 -m compileall -q v13/code/v13 v13/code/tests
+      - name: RED or GREEN exact-head eligibility regressions
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run294venv"
+          "$RUNNER_TEMP/run294venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          deps=$?
+          if [[ "$deps" != "0" ]]; then echo "$deps" > "$RUNNER_TEMP/RUN294_TEST_EXIT.txt"; echo "rc=$deps" >> "$GITHUB_OUTPUT"; exit 0; fi
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run294venv/bin/python" -m unittest -v \
+            tests.test_run294_eligibility_option_authority \
+            tests.test_eligibility_tool tests.test_eligibility_fixed tests.test_eligibility_live 2>&1 | tee "$RUNNER_TEMP/RUN294_TEST_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN294_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN294_PRIVACY.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN294_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Retain closed raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run294-OptionAuthority-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN294_HEAD.txt
+            ${{ runner.temp }}/RUN294_BLOBS.txt
+            ${{ runner.temp }}/RUN294_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN294_TEST_RAW.log
+            ${{ runner.temp }}/RUN294_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN294_PRIVACY.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce exits
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

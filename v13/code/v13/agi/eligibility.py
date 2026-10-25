@@ -40,18 +40,52 @@ def stated_values(rule, text):
     return {(v.lower() == 'true') if rule == 'local_only' else int(v) for v in found}
 
 
+# Option markers are boundaries, even when A and B share one sentence.
+# A current option *statement* overrides earlier quotes; a bare mention does not.
+_OPTION_MARKER = re.compile(r'\boption\s+([AB])\b', re.I)
+_OPTION_FIELD = re.compile(r'\b(?:costs?|price|duration|days?|local|euros?)\b', re.I)
+_OPTION_COST = re.compile(r'\bcost\s+(\d+)\b', re.I)
+_OPTION_DAYS = re.compile(r'\b(\d+)\s+days?\b', re.I)
+_OPTION_LOCAL = re.compile(r'\blocal\s+(true|false)\b', re.I)
+
+
+def option_clauses(entity, text):
+    markers = list(_OPTION_MARKER.finditer(str(text)))
+    clauses = []
+    for i, match in enumerate(markers):
+        if match.group(1).upper() != entity.upper():
+            continue
+        end = markers[i + 1].start() if i + 1 < len(markers) else len(text)
+        clauses.append(str(text)[match.start():end].split('.', 1)[0])
+    return clauses
+
+
 def option_clause(entity, text):
-    m = re.search(r'\boption\s+'+re.escape(entity)+r'\b[^.]*', text, re.I)
-    return m.group(0) if m else ''
+    clauses = option_clauses(entity, text)
+    return clauses[0] if clauses else ''
+
+
+def _option_statement(clause):
+    return _OPTION_FIELD.search(clause) is not None
+
+
+def _option_matches(option, clause):
+    # Never convert a model-provided string 'false' using bool('false') == True.
+    if (type(option.get('cost')) is not int or type(option.get('days')) is not int
+            or type(option.get('local')) is not bool):
+        return False
+    costs = {int(v) for v in _OPTION_COST.findall(clause)}
+    days = {int(v) for v in _OPTION_DAYS.findall(clause)}
+    local = {v.lower() == 'true' for v in _OPTION_LOCAL.findall(clause)}
+    return (costs == {option['cost']} and days == {option['days']}
+            and local == {option['local']})
 
 
 def option_stated(option, texts):
     for text in texts:
-        clause = option_clause(option['entity'], text)
-        if (clause and re.search(r'\bcost\s+'+str(option['cost'])+r'\b', clause, re.I)
-                and re.search(r'\b'+str(option['days'])+r'\s+days?\b', clause, re.I)
-                and re.search(r'\blocal\s+'+_token(bool(option['local']))+r'\b', clause, re.I)):
-            return True
+        for clause in option_clauses(option['entity'], text):
+            if _option_matches(option, clause):
+                return True
     return False
 
 
@@ -76,12 +110,20 @@ def decide(rules, options, current, quotes=()):
         v = rules.get(rule)
         if v is None: kept[rule] = None; continue
         override = stated_values(rule, current)
-        if override and v not in override: rejected.append(rule+':conflicts_current'); kept[rule] = None
+        if override and (len(override) != 1 or v not in override): rejected.append(rule+':conflicts_current'); kept[rule] = None
         elif not any(stated(rule, v, t) for t in texts): rejected.append(rule+':not_stated'); kept[rule] = None
         else: kept[rule] = v
     for o in options:
-        if not option_stated(o, texts): rejected.append(o['entity']+':option_not_stated')
-    if any(r.endswith('option_not_stated') for r in rejected): kept['budget'] = None
+        current_statements = [c for c in option_clauses(o['entity'], current) if _option_statement(c)]
+        if current_statements and not all(_option_matches(o, c) for c in current_statements):
+            # Keep the original option_not_stated diagnostic for existing callers.
+            # The additional conflicts_current tag identifies stale-source precedence.
+            rejected.extend((o['entity']+':option_not_stated', o['entity']+':conflicts_current'))
+        elif not current_statements and not option_stated(o, texts):
+            rejected.append(o['entity']+':option_not_stated')
+    if any(r.endswith(('option_not_stated', 'conflicts_current')) and
+           r.split(':')[0] in ('A', 'B') for r in rejected):
+        kept['budget'] = None
     action, out = recipe(kept['budget'], kept['deadline'], kept['local_only'], options)
     return {'action': action, 'options': out, 'rejected': rejected, 'revision': REVISION}
 
@@ -219,11 +261,15 @@ def fixed_rule(rule, current, earlier=()):
 
 def fixed_option(entity, current, earlier=()):
     for text in (current, *reversed(list(earlier))):
-        clause = option_clause(entity, str(text))
-        if not clause: continue
-        got = [re.findall(rx, clause, re.I) for rx in _OPT_VALUES]
-        if any(len(set(g)) != 1 for g in got): return None
-        return {'entity': entity, 'cost': int(got[0][0]), 'days': int(got[1][0]), 'local': got[2][0].lower() == 'true'}
+        clauses = [c for c in option_clauses(entity, str(text)) if _option_statement(c)]
+        if not clauses: continue
+        values = []
+        for clause in clauses:
+            got = [re.findall(rx, clause, re.I) for rx in _OPT_VALUES]
+            if any(len(set(g)) != 1 for g in got): return None
+            values.append({'entity': entity, 'cost': int(got[0][0]),
+                           'days': int(got[1][0]), 'local': got[2][0].lower() == 'true'})
+        return values[0] if all(v == values[0] for v in values) else None
     return None
 
 
