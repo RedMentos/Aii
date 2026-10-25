@@ -42,12 +42,30 @@ class Executive:
             return (event.get('event_id')==item['event_id'] and event.get('source_ref')==item['source_ref']
                     and self._valid_ref(item['source_ref']))
         except (ValueError,TypeError,KeyError):return False
+    def _task_valid(self,task,state,session):
+        """An implicit task is the current query; a pinned task is a same-session HumanDecision."""
+        if not isinstance(task,dict) or not isinstance(task.get('source_ref'),dict):return False
+        ref=task['source_ref']
+        if not self._valid_ref(ref):return False
+        if task.get('origin')=='SOURCE_USER_REQUEST':
+            return self._goal_event_valid({'event_id':state.get('last_event_id'),'source_ref':ref},session)
+        if task.get('origin')!='EXPLICIT_OPERATOR_TASK':return False
+        try:
+            row=self.s.one("SELECT p.payload,p.event_id FROM packets p JOIN events e ON e.id=p.event_id "
+                           "WHERE p.kind='HumanDecision' AND e.session_id=? "
+                           "AND json_extract(p.payload,'$.source_ref.source_id')=? ORDER BY p.rowid DESC LIMIT 1",
+                           (session,ref['source_id']))
+            if not row:return False
+            decision=json.loads(row['payload'])
+            return (decision.get('kind')=='executive_task' and decision.get('event_id')==row['event_id']
+                    and decision.get('source_ref')==ref and decision.get('value')==self.s.read_source(ref))
+        except (ValueError,TypeError,KeyError,OSError):return False
     def _clean(self,state,session):
         state=json.loads(dumps(state or {}))
         if state.get('session_id')!=session:return {}
         state['goal_sequence']=[x for x in state.get('goal_sequence',[]) if self._goal_event_valid(x,session)][-MAX_EVENTS:]
         task=state.get('active_task')
-        if not isinstance(task,dict) or not self._valid_ref(task.get('source_ref',{})):state['active_task']=None
+        if not self._task_valid(task,state,session):state['active_task']=None
         state['memory_refs']=[x for x in state.get('memory_refs',[]) if self._memory(x,session)]
         state['open_questions']=[x for x in state.get('open_questions',[]) if self._question_valid(x,session)][-MAX_QUESTIONS:]
         # Never carry old hypotheses into another generation as current offers.
