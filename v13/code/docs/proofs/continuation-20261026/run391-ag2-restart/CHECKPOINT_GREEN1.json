@@ -1,0 +1,48 @@
+{
+  "run": "Run391",
+  "stage": "GREEN1",
+  "date": "2026-10-26",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/ag2-preaction-restart-run391-20261026",
+  "pr": 386,
+  "base_sha": "b60a5af368eec7d989da1a2c902e80c0bdb1b61d",
+  "plan_commit": "b49dcd14b84a2247ed38d7f0e71c570e491eb76e",
+  "red_test_commit": "3788b5553f32ff5588accc28889eed90db5205fb",
+  "red_workflow_commit": "1c2588176f5dafcfb0e3a24bb3920b73c60265df",
+  "red": {
+    "head": "1c2588176f5dafcfb0e3a24bb3920b73c60265df",
+    "run": 40243740528,
+    "artifact_id": 12618056265,
+    "zip_sha256": "a8d056492496bf1e6cedf62df27c0f34ccfbb0dbdeffea82f1f0cd5ab468e613",
+    "tests": "20 tests; 1 expected failure, 9 expected errors",
+    "privacy": "CLEAN"
+  },
+  "green1": {
+    "head": "151767b1d3ba8274e038d7943891069e92454291",
+    "run": 40243859954,
+    "artifact_id": 12617267588,
+    "zip_sha256": "82525d97340615ae5c2697091fb41a097f0e73e25dcd344a6d96f96f54e65bd2",
+    "tests": "20/20 PASS",
+    "privacy": "CLEAN",
+    "inherited_run388": "Actions 40243860044 success"
+  },
+  "raw_integrity": "RED and GREEN1 SHA256, CRC, four internal SHA256 members PASS; private Library uploads re-materialized and byte-identical",
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run391_AG2_20261026/{RED_RAW.zip,GREEN1_RAW.zip}",
+  "scope": "Opt-in source-only Runtime/SQLite simulated crash reconciliation; no live Growth activation",
+  "negative_gates": [
+    "Run389 full suite RED (3160 tests, failures=1, errors=70)",
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0/approval unchanged",
+    "no native/Redmi proof",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Independent post-GREEN counterexamples: real FINAL/CANCELLED assistant message and event/source identity mismatch",
+    "Explicit reconcile must run only after Transactions.recover; no automatic startup wiring",
+    "Unmeasured native/Redmi real process-death case"
+  ],
+  "next_command": "git fetch origin codex/ag2-preaction-restart-run391-20261026 && git checkout -b review-run391 origin/codex/ag2-preaction-restart-run391-20261026 && cd v13/code && python -m unittest -v tests.test_ag2_preaction_recovery_run391 tests.test_ag2_preaction_tool_run388 tests.test_growth.G2Grounding tests.test_growth.G10Tools"
+}

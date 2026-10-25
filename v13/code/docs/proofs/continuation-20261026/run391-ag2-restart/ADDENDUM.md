@@ -1,0 +1,9 @@
+# Run391 post-GREEN independent counterexamples (2026-10-26)
+
+Original preregistered PLAN `b49dcd1`, RED tests `3788b55`, isolated workflow `1c25881`, then GREEN1 source `151767b`. Original RED Actions 40243740528: 20 tests, 1 expected failure and 9 expected errors. GREEN1 Actions 40243859954: 20/20 PASS; inherited Run388 Actions 40243860044 PASS. Raw ZIPs privately saved and independently SHA256/CRC/member-verified.
+
+**Post-GREEN review, explicitly not claimed as original preregistration.** Fresh Runtime/SQLite counterexamples added at `0575d32` for a real FINAL assistant message, a CANCELLED assistant turn, and tampered `event_id`/`origin` attached to an otherwise valid durable action. RED2 Actions 40243988251: 23 tests, **3 expected failures**; the first two FINAL/CANCELLED cases passed, but a forged event or origin could still launder a valid action's result into the wrong AG2 expectation. This is a genuine source-lineage gap in GREEN1, not a test-fixture failure. GREEN2 `ad30010` binds event ID and origin to the opt-in preaction record and requires both at reconciliation; Actions 40244062500: **23/23 PASS**, compileall/privacy CLEAN; inherited Run388 Actions 40244062429 PASS.
+
+No active Growth opt-in, model/native/Redmi execution, Age/permission change, STEP2/B3/Body-JEPA/jepa_weight promotion or full-suite GREEN. `Transactions.recover()` remains the explicit owner of EXECUTING→UNKNOWN; `PreActionGrounding.reconcile()` is opt-in and must be called after that recovery. Unknown or unfinalized outcomes cannot become training evidence. Four raw ZIPs (RED, GREEN1, RED2, GREEN2) have verified SHA256/CRC/4-of-4 internal SHA members and byte-identical private Library copies.
+
+Next: independent cross-review, then separately test the real live-turn FINAL/CANCELLED settlement path before enabling any default hook. This branch is review-only and stacked, not integrated into main.

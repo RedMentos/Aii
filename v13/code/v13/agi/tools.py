@@ -136,6 +136,7 @@ class ToolRegistry:
         if a.get('deduplicated'):
             return dict(tx,status='DEDUPLICATED',reason='IDEMPOTENCY_KEY',action_tx=a['id'],result=a.get('result'),error=a.get('error'))
         T.commit_copy(a['id'],{'predicted':tx.get('predicted')})
+        tx['action_tx']=a['id']  # durable correlation available to opt-in pre-effect observers
         # The transaction copy is durable before this callback, and the effect
         # has not started. A failed predictor never blocks an authorised tool.
         if self.on_pre_execute is not None:

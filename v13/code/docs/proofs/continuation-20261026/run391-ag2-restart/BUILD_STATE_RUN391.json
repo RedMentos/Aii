@@ -1,0 +1,87 @@
+{
+  "run": "Run391",
+  "date": "2026-10-26",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/ag2-preaction-restart-run391-20261026",
+  "pr": 386,
+  "base": {
+    "branch": "codex/resource-telemetry-finite-run390-20261026",
+    "sha": "b60a5af368eec7d989da1a2c902e80c0bdb1b61d",
+    "integration": "stacked review chain only, not main"
+  },
+  "plan_commit": "b49dcd14b84a2247ed38d7f0e71c570e491eb76e",
+  "red_test_commit": "3788b5553f32ff5588accc28889eed90db5205fb",
+  "red_workflow_commit": "1c2588176f5dafcfb0e3a24bb3920b73c60265df",
+  "green1_source_commit": "151767b1d3ba8274e038d7943891069e92454291",
+  "postgreen_red2_test_commit": "0575d323d2a6e16b80e7104e2dfbc90b391521e2",
+  "green2_source_commit": "ad30010ed65d0ae9c27de7ea8baadad11dbba14e",
+  "source_blobs_verified": {
+    "tools": "172ad8c9cf3b3be4d36734f4a60cc25da3755ac3",
+    "preaction": "c1478da628c2e0922f1125bd4bd3ce8bf8ddebf1",
+    "tests": "4227a262191c1cda742b13aa58777b9626edff1b",
+    "workflow": "eb294f9233713bd1b26b4514e2a05f835bda8f8c",
+    "addendum": "a0d4b1104bd2553614ee26a1b2883e979ececf63"
+  },
+  "change_summary": [
+    "Opt-in ToolRegistry pre-effect callback now receives durable ActionTransaction ID after CorollaryCopy commit",
+    "AG2 expectation stores action ID, event ID and origin alongside tool/context; recovery verifies all against durable transaction",
+    "Explicit bounded reconcile observes exact durable SUCCEEDED/FAILED only for USER operator or FINAL assistant turn; UNKNOWN/CANCELLED/mismatched/nonfinal discarded or deferred",
+    "No re-execution, no automatic Growth wiring, no default learning/age/permission promotion"
+  ],
+  "evidence": {
+    "red": {
+      "head": "1c2588176f5dafcfb0e3a24bb3920b73c60265df",
+      "run": 40243740528,
+      "artifact": 12618056265,
+      "zip_sha256": "a8d056492496bf1e6cedf62df27c0f34ccfbb0dbdeffea82f1f0cd5ab468e613",
+      "tests": "20 tests, 1 expected failure, 9 expected errors",
+      "privacy": "CLEAN"
+    },
+    "green1": {
+      "head": "151767b1d3ba8274e038d7943891069e92454291",
+      "run": 40243859954,
+      "artifact": 12617267588,
+      "zip_sha256": "82525d97340615ae5c2697091fb41a097f0e73e25dcd344a6d96f96f54e65bd2",
+      "tests": "20/20 PASS",
+      "inherited_run388": "Actions 40243860044 PASS"
+    },
+    "red2": {
+      "head": "0575d323d2a6e16b80e7104e2dfbc90b391521e2",
+      "run": 40243988251,
+      "artifact": 12617962881,
+      "zip_sha256": "c414a421952573b95832b862afef99b7d451c8e03bc7fd903b6fb9610ab6067f",
+      "tests": "23 tests, 3 expected failures (forged event/origin source linkage)",
+      "privacy": "CLEAN"
+    },
+    "green2": {
+      "head": "ad30010ed65d0ae9c27de7ea8baadad11dbba14e",
+      "run": 40244062500,
+      "artifact": 12617822045,
+      "zip_sha256": "2949aae41395059700cb7f7d1e1bca7c1bbbf51bb8ba858eabf8555b72108c06",
+      "tests": "23/23 PASS; compileall PASS; privacy CLEAN",
+      "inherited_run388": "Actions 40244062429 PASS"
+    }
+  },
+  "raw_integrity": "CLOSED all four Actions ZIP SHA256 match logs, CRC PASS, 4/4 internal SHA256 members each; all private Library copies re-materialized and byte-identical",
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run391_AG2_20261026/{RED_RAW.zip,GREEN1_RAW.zip,RED2_RAW.zip,GREEN2_RAW.zip}",
+  "scope": "Opt-in source-only Linux/SQLite simulated process crash; no live end-to-end model or Redmi evidence",
+  "negative_gates": [
+    "Run389 full source-only suite RED: 3160 tests, failures=1, errors=70, skipped=19",
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0/approval unchanged",
+    "Active Growth default postaction; preaction and reconcile opt-in only",
+    "Redmi/native process-death proof missing",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Live-turn FINAL/CANCELLED settlement proof with real Runtime/Provisional lifecycle before default opt-in",
+    "Actual SIGKILL/restart native process proof not run",
+    "Potential interprocess race between normal settlement and explicit reconciliation requires independent concurrency test",
+    "Run389 full suite RED must be triaged without weakening frozen source-handoff guards"
+  ],
+  "next_command": "git fetch origin codex/ag2-preaction-restart-run391-20261026 && git checkout -b review-run391 origin/codex/ag2-preaction-restart-run391-20261026 && cd v13/code && python -m unittest -v tests.test_ag2_preaction_recovery_run391 tests.test_ag2_preaction_tool_run388 tests.test_growth.G2Grounding tests.test_growth.G10Tools",
+  "next_package": "Independent source-wide regression isolation for the one Run389 resource-mode test failure or substantive B1/B2/JEF/JEPA utility package; do not keep polishing AG2 only."
+}
