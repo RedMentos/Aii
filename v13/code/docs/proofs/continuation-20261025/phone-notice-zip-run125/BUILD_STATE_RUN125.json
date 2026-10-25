@@ -1,0 +1,72 @@
+{
+  "schema": "V13_RUN125_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_pr": 155,
+  "base_sha": "80c22155f24651bb1dd26dfb9d3e22e202ea182b",
+  "pr": 156,
+  "branch": "codex/phone-widget-notice-zip-run125-20261025",
+  "owner": "narrow UI startup notice + new tests/workflow/proofs only",
+  "source_under_test": "11e68dce443cce299f9c623b23d08177c82e4414",
+  "test_first_red": {
+    "run_id": 40148205182,
+    "job_id": 121034044657,
+    "failures": 1,
+    "errors": 1,
+    "reason": "preworker STOP applied but not shown in plain UI; idempotent display helper missing",
+    "raw": "RAW_RED_JOB.log"
+  },
+  "fix": {
+    "ui_before_blob": "33081fbf50de4706c1ae45b33f650c1d5a191609",
+    "ui_after_blob": "24ef11af5f30d7400d27a4b9ef94d5b064e94121",
+    "description": "Consume _startup_phone_halt display-only list exactly once after notify hook in both plain and prompt-toolkit UIs; never change actual persisted stop."
+  },
+  "green": {
+    "run_id": 40148272361,
+    "job_id": 121034261830,
+    "privacy": "CLEAN",
+    "source_tests": "30/30 PASS",
+    "extracted_tests": "30/30 PASS",
+    "raw": "RAW_GREEN_JOB.log",
+    "source_zip_bytes": 12620454,
+    "source_zip_sha256": "1287e280a6cfafc2a712250d9f3abdcb5f4f3a3a288b0c8ac6fff417138ed27d",
+    "source_entries": 854,
+    "manifest_files": 853,
+    "zip_crc": "PASS",
+    "artifact_id": 12582420001,
+    "artifact_wrapper_bytes": 12620608,
+    "artifact_wrapper_sha256": "3a2faa74ac914655d47119cb436f0f1efc16b7a4205f68f8fea6c29292fefea0",
+    "artifact_url": "https://github.com/RedMentos/Aii/actions/runs/40148272361/artifacts/12582420001",
+    "artifact_retention_days": 30
+  },
+  "independent_verification": {
+    "method": "Downloaded actual GitHub artifact via connector, verified wrapper/inner SHA256 and ZIP CRC, extracted in separate local Python 3.13.5 container, ran same 30 tests",
+    "tests": "30/30 PASS",
+    "local_log": "/mnt/data/V13_Run125_Independent_Linux_Test_Log.txt",
+    "source_only_zip": "/mnt/data/V13_Phone_Run125_Source_Only.zip",
+    "scope": "Linux software/SQLite/Widget shell simulation only"
+  },
+  "private_backup": {
+    "destination": "/V13_Run125_20261025/V13_Phone_Run125_Artifact_Wrapper.zip",
+    "library_file_id": "libfile_4f99336e39dc81918dc2659b6509b187",
+    "size_bytes": 12620608,
+    "method": "Exact GitHub exported file_id snapshot copied into private Library; file listing size checked",
+    "note": "Direct container_path upload unavailable (container_session_unavailable); rejected anyone-writable Drive destination not used."
+  },
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false
+  },
+  "open_questions": [
+    "Full repository suite with pinned torch and archived LP3 candidate still has known failures; rerun after Runtime/UI integration for regressions, retain negative result.",
+    "Real Termux:Widget/Redmi hardware latency, permissions and battery constraints NOT RUN.",
+    "Native LP3 cgroup kernel proof, seven model artifacts, four-seed cohort, Body-JEPA and actual generated-answer utility remain unproven."
+  ],
+  "exact_next_step": "Run126 from final Run125 head: bounded full-suite Linux regression audit with pinned CPU-only torch and archived Run16 helper in isolated temp path, preserve full raw failures; compare against Run115 2217 tests/4 FAIL/1 ERROR, do not promote gates. If only known LP3 failures remain, select independent canonical package rather than more LP3 helper-only work.",
+  "backup": "GitHub PR #156 and 30-day Actions artifact; private Library wrapper copy. Do not retry rejected Drive."
+}
