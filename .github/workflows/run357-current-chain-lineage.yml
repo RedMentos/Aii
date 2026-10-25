@@ -1,0 +1,60 @@
+name: V13 Run357 frozen/current source lineage integrity
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run357-current-chain-lineage.yml'
+      - 'v13/code/specs/current_source_lineage_run357.json'
+      - 'v13/code/scripts/current_source_lineage_run357.py'
+      - 'v13/code/tests/test_current_source_lineage_run357.py'
+      - 'v13/code/tests/test_run177_native_chain_reconcile_20261025.py'
+      - 'v13/code/tests/test_eligibility_fixed.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run357-current-chain-lineage/**'
+permissions:
+  contents: read
+jobs:
+  lineage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 50
+      - name: Exact head, source hashes and isolated deps
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN357_HEAD.txt"
+          sha256sum v13/code/v13/{runners,memory_server,runtime,store}.py v13/code/specs/current_source_lineage_run357.json | tee "$RUNNER_TEMP/RUN357_SOURCE_SHA256SUMS.txt"
+          python3 -m venv "$RUNNER_TEMP/run357venv"
+          "$RUNNER_TEMP/run357venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source lineage, eligibility and Run177 adversarial regressions
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          "$RUNNER_TEMP/run357venv/bin/python" -m compileall -q scripts/current_source_lineage_run357.py tests/test_current_source_lineage_run357.py
+          "$RUNNER_TEMP/run357venv/bin/python" -m unittest -v tests.test_current_source_lineage_run357 tests.test_run177_native_chain_reconcile_20261025 tests.test_eligibility_fixed 2>&1 | tee "$RUNNER_TEMP/RUN357_TESTS_RAW.log"
+          exit ${PIPESTATUS[0]}
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN357_PRIVACY_RAW.log"
+      - name: Close raw manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN357_*' ! -name RUN357_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN357_SHA256SUMS.txt
+      - name: Preserve raw source-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run357-Lineage-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN357_*
+          if-no-files-found: warn
+          retention-days: 30
