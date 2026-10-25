@@ -1,0 +1,57 @@
+{
+  "schema": "V13_RUN126_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "pr": 157,
+  "base_pr": 156,
+  "base_sha": "c509949f67e93b18e8bd973bafb991aca947d983",
+  "owner": "Full-suite Linux audit only; no production edits",
+  "environment": {
+    "platform": "GitHub Linux Actions",
+    "torch": "2.9.1+cpu",
+    "numpy": "2.3.5",
+    "prompt_toolkit": "3.0.52",
+    "models_downloaded": false,
+    "lp3_archive": "Run16 temp-only not production",
+    "lp3_archive_git_blob": "667d7f1b73a655097a44ff4c61749af113f7544f"
+  },
+  "run": {
+    "id": 40148477442,
+    "job": 121034873838,
+    "privacy": "CLEAN",
+    "suite": "FAIL",
+    "tests": 2238,
+    "failures": 8,
+    "errors": 63,
+    "skipped": 11,
+    "seconds": 105.191,
+    "raw_artifact_id": 12581426676,
+    "raw_artifact_wrapper_sha256": "551bd0dea6db8238e785e2673e9cd8f1b040794aa5ec34659dc119cd966449a4",
+    "raw_log_sha256": "fa040f9aee42707364008580ea219701f35c8766367e3b39b110120e1c7058ea",
+    "raw_log_bytes": 484346,
+    "raw_artifact_url": "https://github.com/RedMentos/Aii/actions/runs/40148477442/artifacts/12581426676",
+    "raw_private_library": "/V13_Run126_20261025/V13_Run126_FullSuite_Raw_Artifact.zip",
+    "library_file_id": "libfile_5e37bc017b548191af65dbe0f9cfbada"
+  },
+  "comparison": {
+    "run115": "2217 tests; 4 FAIL, 1 ERROR, 11 skips",
+    "run126": "2238 tests; 8 FAIL, 63 ERROR, 11 skips",
+    "dominant_new_cause": "Run124 modified v13/runtime.py frozen source bytes; SourceHandoff and NativeFiring candidate validators refuse runtime not exact frozen baseline or reviewed candidate, cascading to ~60 errors.",
+    "other_known": "Run16 LP3 helper lacks _cleanup_owned_group and fails orphan fail-open; default CLI temp archive path checks remain failing."
+  },
+  "critical_action": "Do NOT merge/activate Run124/Run125 as-is; source-bound tests fail by design. Do NOT alter frozen source hash or relax validators. Implement a superseding CLI prestart stop-file gate that leaves v13/runtime.py byte-identical to frozen baseline.",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Run126 workflow exit_code output empty due shell -e pipeline; raw artifact preserved and CI correctly red; fix in future audit.",
+    "Source-bound compatibility requires external preflight or fully reviewed candidate, not silent runtime.py mutation.",
+    "LP3 kernel and native models/Redmi remain unverified."
+  ],
+  "exact_next_step": "Run128 superseding branch from Run123 (before Runtime modification) with CLI prestart stop-file gate in phone_halt.py/__main__.py, preregister real CLI recovered queue tests, retain frozen Runtime byte hash, then run SourceHandoff focused tests and full suite. Keep PR154 draft and Run124/125/127 separate review candidates; no force-push.",
+  "backup": "GitHub PR #157, raw Actions artifact, private Library raw artifact copy. Rejected Drive destination not used."
+}
