@@ -8,7 +8,7 @@ Mode: off | shadow (default: suggestion recorded in meta.route, scaffold route k
 """
 import json
 from .common import dumps
-from .memory import relevance
+from .memory import Memory, relevance
 
 KEY='U10_EPISODIC_ROUTE';REVISION='u10-episodic-route-v1'
 MIN_RELEVANCE=.6   # BOOT: "very similar" request
@@ -84,7 +84,12 @@ def _source_bound(store, m):
 def suggest(store,text,session):
     """Best matching active human route correction, or None."""
     best=None
-    for m in store.rows("SELECT m.id,m.event_id,m.source_id,m.session_id,m.scope,m.key_text,m.value,m.created FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.kind='route' AND m.active=1 AND s.deleted=0 AND (m.scope='global' OR m.session_id=?) ORDER BY m.created DESC LIMIT ?",(session,LIMIT)):
+    rows=store.rows("SELECT m.id,m.event_id,m.source_id,m.session_id,m.kind,m.scope,m.key_text,m.value,m.created,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.kind='route' AND m.active=1 AND s.deleted=0 AND (m.scope='global' OR m.session_id=?) ORDER BY m.created DESC LIMIT ?",(session,LIMIT))
+    # A MemoryRecord + a plausible HumanDecision is not enough: the F5
+    # feedback and its original human source must still be live. Batch-check
+    # before any fast episodic suggestion (including ACTIVE route bypass).
+    # Keep the existing route-specific source/event checks as a second guard.
+    for m in Memory(store,{})._verified_rows(rows):
         if m['value'] not in ROUTES:continue
         rel=relevance(text,m['key_text'])
         if rel>=MIN_RELEVANCE and (best is None or rel>best['relevance']):
