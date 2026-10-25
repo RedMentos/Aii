@@ -49,7 +49,7 @@ jobs:
       - name: Assert registered task and prompt hashes before native model execution
         run: |
           set -euo pipefail
-          python3 - <<'PY'
+          "$RUNNER_TEMP/run147/bin/python" - <<'PY'
           import hashlib,json,sys
           sys.path.insert(0,'v13/code')
           from scripts.age0d_c3_varied_run147 import tasks,SYSTEM
