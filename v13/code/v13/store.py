@@ -392,7 +392,18 @@ class Store:
         components[component]={'path':r['path'],'sha256':r['hash'],'update_id':update_id,'encoder_role':encoder_role,'encoder_revision':m.get('encoder_revision'),
                                'dependency_revisions':m.get('dependency_revisions',{}),'context_revision':m.get('context_revision')}
         self.validate_artifacts({'hashes':hashes,'components':components})
+        source_ids=m.get('source_ids',[])
+        if not isinstance(source_ids,list) or any(type(sid) is not str or not sid for sid in source_ids):
+            raise ValueError('Update-Source-Lineage ungültig')
         with self.tx() as c:
+            # Source revocation and generation commit share one write transaction.
+            # A source forgotten while an optimizer was running must not be
+            # resurrected by a later approval, even if its update was not yet
+            # included in the forget path's candidate quarantine.
+            for sid in source_ids:
+                source=c.execute('SELECT deleted FROM sources WHERE id=?',(sid,)).fetchone()
+                if not source or source['deleted']:
+                    raise ValueError('Update-Source-Lineage gelöscht/fehlt: '+sid)
             active=json.loads(c.execute("SELECT value FROM meta WHERE key='active_generation'").fetchone()[0])
             if active!=r["base_generation"]:raise ValueError("Generation konkurrierend geändert")
             ids=[entry['update_id'] for entry in components.values() if entry.get('update_id')]
