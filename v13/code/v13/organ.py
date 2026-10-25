@@ -32,7 +32,7 @@ from .models import ROLES,OPTIONAL_ROLES
 REVISION='v13-organ-checkpoint-v1'
 DIR='organs'
 MODEL_ROLES=frozenset(ROLES)|frozenset(OPTIONAL_ROLES)
-SNAPSHOT_ID=re.compile(r'organ_[0-9a-f]{32}\\Z')
+SNAPSHOT_ID=re.compile(r'organ_[0-9a-f]{32}\Z')
 
 
 def _require_role(role):
