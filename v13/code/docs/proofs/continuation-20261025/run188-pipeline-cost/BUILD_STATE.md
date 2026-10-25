@@ -9,3 +9,9 @@
 - Closed full Run188 108-row cost JSON SHA256 `d1e80731964a800fa0c1080595c9a509363f414c6e49e41bfb7865d9b7eccbf4`, backed up in private Library `/V13/Run188-B2-C3-total-cost-audit-20261025.json`, re-materialized and byte-verified. Rejected anyone-writable Drive not used.
 - Original negative gates: STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight 0; DS2 H2 FAIL; V13 INCOMPLETE; Run173 orphan and AGE0c false alarms retained. Gist remains SHADOW.
 - Exact next command in full checkout: `python3 -m unittest discover -s v13/code/tests -p test_run188_b2_c3_pipeline_cost_audit.py -v`; `python3 v13/code/scripts/run188_b2_c3_pipeline_cost_audit.py --b2-report run181/report.json --c3-report run186/report.json --output run188.json`; `python3 v13/code/scripts/public_repo_privacy_scan.py --base 9389d00cae4d83f91e082d1fc62250369c4b3f89 --head HEAD`. Then independently preregister held-out multi-seed B1/B2/C3 total utility with quote-negative-control and Redmi constraints. Do not activate Gist or promote any gate.
+
+## Full-checkout CI verification
+
+- Run188 independent total-cost Actions `40170595862` SUCCESS: 7/7 focused software tests, immutable native B2/C3 ZIP hashes, Run187 independent score guard, Run188 108-row cost report SHA, official public privacy scan and artifact upload. Artifact metadata: [{"id":12589654948,"name":"V13-Run188-Total-B2-C3-Pipeline-Cost","size":5064}].
+- Generic focused-source CI remains separately failing on pre-existing Phone smoke; no claim of full-suite PASS.
+- Next disjoint package: Run189 preregistered 24 heldout memos from two new corpus seeds, fixed960 vs Gist12 vs Gist6, sequential B2/C3 total-cost utility.
