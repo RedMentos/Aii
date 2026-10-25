@@ -1,0 +1,29 @@
+{
+  "schema": "V13_RUN151_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex Run151 new native cohort script, tests, workflow and Run151 proof; no frozen Runtime/model/seed changes to prior runs",
+  "base_pr": 181,
+  "base_commit": "51a2824ec40844057286ebf5234b9a56c83f191c",
+  "prereg_v1": "7d984144e24bd86d75f3ea9627adda1dfe5bfe24 PROVISIONAL_NOT_RUN",
+  "prereg_correction": "78cd3e3019b26de3f59de2b3c2828d1efbf301a8 BEFORE_NATIVE",
+  "prereg_execution_clarification": "fad4e1ba05cf3bd77d58a4c68e7d5cf41fb6a5ae BEFORE_NATIVE",
+  "seed": 15132,
+  "rows": 288,
+  "task_sha256": "9418de94428bb51a42d4d5e292ab9f5ef5e94acea61382d3f88c1694a7712144",
+  "prior_artifact_sha256": "ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676",
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_archive_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+  "native_status": "NOT_RUN_UNTIL_CI",
+  "evidence_class": "PREREG_AND_SOFTWARE_ONLY",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "next_command": "CI v13-run151-age0d-terminal-native.yml; download Run147 artifact, verify SHA, assert 288 tasks SHA, run tests, recheck RAM/disk, then one serialized native C3 job; retain report/log",
+  "next_step": "Independently audit closed native output and any failures, compare v2/v3, no gate promotion, then continue other canonical organs."
+}
