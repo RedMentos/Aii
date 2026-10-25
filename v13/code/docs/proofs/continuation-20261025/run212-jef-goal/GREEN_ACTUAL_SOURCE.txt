@@ -1,0 +1,32 @@
+2026-10-25T08:55:22.6044860Z test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort) ... ok
+2026-10-25T08:55:22.6159652Z test_same_session_event_id_cannot_be_rebound_to_wrong_source (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_event_id_cannot_be_rebound_to_wrong_source) ... ok
+2026-10-25T08:55:22.6273171Z test_same_session_goal_remains_exact_and_usable (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_goal_remains_exact_and_usable) ... ok
+2026-10-25T08:55:22.6386254Z test_atomic_state_packet_crash_rolls_back_and_stale_update_rejected (tests.test_executive.ExecutiveChecks.test_atomic_state_packet_crash_rolls_back_and_stale_update_rejected) ... ok
+2026-10-25T08:55:22.6900177Z test_continuity_restart_is_explicit_bounded_and_operator_owned (tests.test_executive.ExecutiveChecks.test_continuity_restart_is_explicit_bounded_and_operator_owned) ... ok
+2026-10-25T08:55:22.7014451Z test_control_boundary_consumes_binding_permissions_pressure_and_versions (tests.test_executive.ExecutiveChecks.test_control_boundary_consumes_binding_permissions_pressure_and_versions) ... ok
+2026-10-25T08:55:22.7163789Z test_event_session_and_snapshot_stay_bound_after_restart (tests.test_executive.ExecutiveChecks.test_event_session_and_snapshot_stay_bound_after_restart) ... ok
+2026-10-25T08:55:22.7297191Z test_implicit_task_tracks_current_turn_but_explicit_task_persists (tests.test_executive.ExecutiveChecks.test_implicit_task_tracks_current_turn_but_explicit_task_persists) ... ok
+2026-10-25T08:55:22.7405163Z test_offers_and_actions_keep_provenance_without_fact_authority (tests.test_executive.ExecutiveChecks.test_offers_and_actions_keep_provenance_without_fact_authority) ... ok
+2026-10-25T08:55:22.8050254Z test_source_and_memory_revocation_are_checked_on_every_use (tests.test_executive.ExecutiveChecks.test_source_and_memory_revocation_are_checked_on_every_use) ... ok
+2026-10-25T08:55:22.8146028Z test_task_input_and_snapshot_authority_have_hard_bounds (tests.test_executive.ExecutiveChecks.test_task_input_and_snapshot_authority_have_hard_bounds) ... ok
+2026-10-25T08:55:22.9948531Z test_c2_resource_guard_abstains_without_native_or_head_execution (tests.test_executive.ExecutiveRuntimeChecks.test_c2_resource_guard_abstains_without_native_or_head_execution) ... ok
+2026-10-25T08:55:23.1532286Z test_force_report_before_any_native_output_ends_deliberation (tests.test_executive.ExecutiveRuntimeChecks.test_force_report_before_any_native_output_ends_deliberation) ... ok
+2026-10-25T08:55:23.1846080Z test_idle_force_report_preserves_best_actual_saved_output (tests.test_executive.ExecutiveRuntimeChecks.test_idle_force_report_preserves_best_actual_saved_output) ... ok
+2026-10-25T08:55:23.2304549Z test_real_missing_model_failure_has_source_snapshot_and_continuity (tests.test_executive.ExecutiveRuntimeChecks.test_real_missing_model_failure_has_source_snapshot_and_continuity) ... ok
+2026-10-25T08:55:23.2305489Z 
+2026-10-25T08:55:23.2305690Z ----------------------------------------------------------------------
+2026-10-25T08:55:23.2306279Z Ran 15 tests in 0.642s
+2026-10-25T08:55:23.2306454Z 
+2026-10-25T08:55:23.2306548Z OK
+2026-10-25T08:55:23.2867235Z ##[group]Run python v13/code/scripts/public_repo_privacy_scan.py --base 95d3ba42d77c9fbed941325a3c72e5d321e0b4d3 --head HEAD --no-worktree
+2026-10-25T08:55:23.2867974Z [36;1mpython v13/code/scripts/public_repo_privacy_scan.py --base 95d3ba42d77c9fbed941325a3c72e5d321e0b4d3 --head HEAD --no-worktree[0m
+2026-10-25T08:55:23.2922017Z shell: /usr/bin/bash -e {0}
+2026-10-25T08:55:23.2922228Z env:
+2026-10-25T08:55:23.2922452Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:55:23.2922805Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-25T08:55:23.2923139Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:55:23.2923432Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:55:23.2923719Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:55:23.2924010Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-25T08:55:23.2924263Z ##[endgroup]
+2026-10-25T08:55:23.3264756Z privacy scan 95d3ba42d..HEAD: CLEAN

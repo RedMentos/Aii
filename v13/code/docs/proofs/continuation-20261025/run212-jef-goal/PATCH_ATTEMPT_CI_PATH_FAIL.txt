@@ -1,0 +1,22 @@
+2026-10-25T08:55:19.2640632Z test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort) ... ok
+2026-10-25T08:55:19.2770610Z test_same_session_event_id_cannot_be_rebound_to_wrong_source (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_event_id_cannot_be_rebound_to_wrong_source) ... ok
+2026-10-25T08:55:19.2898993Z test_same_session_goal_remains_exact_and_usable (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_goal_remains_exact_and_usable) ... ok
+2026-10-25T08:55:19.2900271Z test_executive (unittest.loader._FailedTest.test_executive) ... ERROR
+2026-10-25T08:55:19.2900785Z 
+2026-10-25T08:55:19.2901017Z ======================================================================
+2026-10-25T08:55:19.2901645Z ERROR: test_executive (unittest.loader._FailedTest.test_executive)
+2026-10-25T08:55:19.2902326Z ----------------------------------------------------------------------
+2026-10-25T08:55:19.2902869Z ImportError: Failed to import test module: test_executive
+2026-10-25T08:55:19.2903307Z Traceback (most recent call last):
+2026-10-25T08:55:19.2908639Z   File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/unittest/loader.py", line 162, in loadTestsFromName
+2026-10-25T08:55:19.2909380Z     module = __import__(module_name)
+2026-10-25T08:55:19.2909729Z              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T08:55:19.2910307Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive.py", line 12, in <module>
+2026-10-25T08:55:19.2910812Z     import resource_pins
+2026-10-25T08:55:19.2911202Z ModuleNotFoundError: No module named 'resource_pins'
+2026-10-25T08:55:19.2911519Z 
+2026-10-25T08:55:19.2911525Z 
+2026-10-25T08:55:19.2911708Z ----------------------------------------------------------------------
+2026-10-25T08:55:19.2912458Z Ran 4 tests in 0.058s
+2026-10-25T08:55:19.2912652Z 
+2026-10-25T08:55:19.2912798Z FAILED (errors=1)

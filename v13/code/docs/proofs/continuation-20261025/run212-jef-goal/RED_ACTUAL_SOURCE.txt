@@ -1,0 +1,44 @@
+2026-10-25T08:54:21.0689517Z test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort) ... FAIL
+2026-10-25T08:54:21.0809948Z test_same_session_event_id_cannot_be_rebound_to_wrong_source (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_event_id_cannot_be_rebound_to_wrong_source) ... FAIL
+2026-10-25T08:54:21.0933502Z test_same_session_goal_remains_exact_and_usable (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_goal_remains_exact_and_usable) ... ok
+2026-10-25T08:54:21.0934746Z test_executive (unittest.loader._FailedTest.test_executive) ... ERROR
+2026-10-25T08:54:21.0935123Z 
+2026-10-25T08:54:21.0935273Z ======================================================================
+2026-10-25T08:54:21.0935889Z ERROR: test_executive (unittest.loader._FailedTest.test_executive)
+2026-10-25T08:54:21.0936398Z ----------------------------------------------------------------------
+2026-10-25T08:54:21.0936902Z ImportError: Failed to import test module: test_executive
+2026-10-25T08:54:21.0937338Z Traceback (most recent call last):
+2026-10-25T08:54:21.0943537Z   File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/unittest/loader.py", line 162, in loadTestsFromName
+2026-10-25T08:54:21.0944265Z     module = __import__(module_name)
+2026-10-25T08:54:21.0944600Z              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T08:54:21.0945051Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive.py", line 12, in <module>
+2026-10-25T08:54:21.0945412Z     import resource_pins
+2026-10-25T08:54:21.0945881Z ModuleNotFoundError: No module named 'resource_pins'
+2026-10-25T08:54:21.0946081Z 
+2026-10-25T08:54:21.0946085Z 
+2026-10-25T08:54:21.0946186Z ======================================================================
+2026-10-25T08:54:21.0946937Z FAIL: test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort)
+2026-10-25T08:54:21.0947691Z ----------------------------------------------------------------------
+2026-10-25T08:54:21.0947969Z Traceback (most recent call last):
+2026-10-25T08:54:21.0948592Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_goal_session_lineage_run212.py", line 46, in test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort
+2026-10-25T08:54:21.0949166Z     self.assertNotIn('BETA', json.dumps(view))
+2026-10-25T08:54:21.0956106Z AssertionError: 'BETA' unexpectedly found in '{"active_task": {"origin": "SOURCE_USER_REQUEST", "source_ref": {"char_end": 33, "char_start": 0, "modality": "text", "sha256": "68c516e2b79d1e2897b81e5e56efeb0e1207c9530a020a738695c2ed0c7d87e8", "source_id": "src_b36f78a0148f4473923fc8a88ad17dde"}, "status": "UNCONFIRMED", "exact_task": "Run212 ALPHA private-session goal"}, "brain_generation_id": "gen_74c2e6661f984875bf660b5938f04265", "constraints": [], "conversation_event_version": 1, "created_monotonic_ns": 180858749541, "created_wall_time": 1792918461.0672915, "current_action_intent": null, "event_id": "evt_eb09506c4e8d4c0696e7f3041a7eaa73", "goal": "Run212 BETA foreign-session goal", "goal_sequence": [{"event_id": "evt_eb09506c4e8d4c0696e7f3041a7eaa73", "source_ref": {"char_end": 33, "char_start": 0, "modality": "text", "sha256": "68c516e2b79d1e2897b81e5e56efeb0e1207c9530a020a738695c2ed0c7d87e8", "source_id": "src_b36f78a0148f4473923fc8a88ad17dde"}}, {"event_id": "evt_ef76b440245b4e51a1a3a87610353649", "source_ref": {"char_end": 32, "char_start": 0, "modality": "text", "sha256": "fabfba093a687fb0f68dec94ea1133d16f3fbb5db571c6d65dfb61a69aa79680", "source_id": "src_8fe01ab4d3ba4913824a020f1a9caebb"}}], "goal_source_ref": {"char_end": 32, "char_start": 0, "modality": "text", "sha256": "fabfba093a687fb0f68dec94ea1133d16f3fbb5db571c6d65dfb61a69aa79680", "source_id": "src_8fe01ab4d3ba4913824a020f1a9caebb"}, "last_event_id": "evt_eb09506c4e8d4c0696e7f3041a7eaa73", "memory_refs": [], "open_questions": [], "packet_id": "pkt_82cdd98253214d84bc793b78660465ac", "permission_flags": {"age": 0, "age_by_capability": {"audio": 0, "body_port": 0, "language": 0, "memory_skill": 0, "routing_skill": 0, "social": 0, "tool": 0, "vision": 0}, "external_tool_execution": false, "learning_mode": "RECORD_ONLY", "native_body_training": false, "resource_mode": "YELLOW", "rights": ["direct_route", "episodic_memory_write", "late_correction", "simple_feedback", "small_shadow_update"], "user_stage_cap": 0}, "producer_component": "C1_EXEC", "producer_version": "0.1.0", "provenance": [{"char_end": 33, "char_start": 0, "modality": "text", "sha256": "68c516e2b79d1e2897b81e5e56efeb0e1207c9530a020a738695c2ed0c7d87e8", "source_id": "src_b36f78a0148f4473923fc8a88ad17dde"}], "resource_state": {"guard": "UNKNOWN", "measurements": {}}, "salient_A_offer": {"char_end": 32, "char_start": 0, "modality": "text", "sha256": "fabfba093a687fb0f68dec94ea1133d16f3fbb5db571c6d65dfb61a69aa79680", "source_id": "src_8fe01ab4d3ba4913824a020f1a9caebb"}, "salient_B_offer": [], "schema_version": "1.0", "session_id": "chat_2521f5ed225042858b7a7317740fbca0", "state_version": 1, "uncertainty": {"report": "NO_NATIVE_ANSWER_YET", "semantic_confidence": null}}'
+2026-10-25T08:54:21.0962669Z 
+2026-10-25T08:54:21.0962770Z ======================================================================
+2026-10-25T08:54:21.0963471Z FAIL: test_same_session_event_id_cannot_be_rebound_to_wrong_source (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_event_id_cannot_be_rebound_to_wrong_source)
+2026-10-25T08:54:21.0964262Z ----------------------------------------------------------------------
+2026-10-25T08:54:21.0980853Z Traceback (most recent call last):
+2026-10-25T08:54:21.0981501Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_goal_session_lineage_run212.py", line 67, in test_same_session_event_id_cannot_be_rebound_to_wrong_source
+2026-10-25T08:54:21.0982118Z     self.assertEqual([x['source_ref'] for x in view['goal_sequence']],
+2026-10-25T08:54:21.0982661Z AssertionError: Lists differ: [{'char_end': 33, 'char_start': 0, 'modality[509 chars]7f'}] != [{'source_id': 'src_c1b845b8f5b44f9cbb0d7cd6[323 chars]xt'}]
+2026-10-25T08:54:21.0983040Z 
+2026-10-25T08:54:21.0983132Z First list contains 1 additional elements.
+2026-10-25T08:54:21.0983367Z First extra element 2:
+2026-10-25T08:54:21.0983886Z {'char_end': 33, 'char_start': 0, 'modality': 'text', 'sha256': '68c516e2b79d1e2897b81e5e56efeb0e1207c9530a020a738695c2ed0c7d87e8', 'source_id': 'src_c1b845b8f5b44f9cbb0d7cd636a0817f'}
+2026-10-25T08:54:21.0984367Z 
+2026-10-25T08:54:21.0984517Z Diff is 791 characters long. Set self.maxDiff to None to see it.
+2026-10-25T08:54:21.0984720Z 
+2026-10-25T08:54:21.0984840Z ----------------------------------------------------------------------
+2026-10-25T08:54:21.0985282Z Ran 4 tests in 0.041s
+2026-10-25T08:54:21.0985407Z 
+2026-10-25T08:54:21.0985615Z FAILED (failures=2, errors=1)
