@@ -84,5 +84,50 @@ class PlainNoticeRun351(unittest.TestCase):
         self.assertEqual(after.count("[V13] immediate notice"), 1)
 
 
+    def test_concurrent_new_notice_cannot_overtake_held_fifo_during_render(self):
+        r = FakeRuntime()
+        state = {"typing": True}
+        output = io.StringIO()
+        entered = threading.Event()
+        release = threading.Event()
+        original_safe = U.safe_text
+
+        def slow_safe(text):
+            if text == "first delayed":
+                entered.set()
+                release.wait(.8)
+            return original_safe(text)
+
+        def fake_read(prompt):
+            r.notify("first delayed")
+            state["typing"] = False
+            self.assertTrue(entered.wait(.6), "render never attempted held notice")
+            thread = threading.Thread(target=lambda: r.notify("second immediate"))
+            thread.start()
+            try:
+                time.sleep(.05)  # let the competing worker reach notify
+            finally:
+                release.set()
+                thread.join(.8)
+            self.assertFalse(thread.is_alive(), "concurrent notifier blocked")
+            until = time.monotonic() + .4
+            while time.monotonic() < until and "[V13] second immediate" not in output.getvalue():
+                time.sleep(.01)
+            raise EOFError
+
+        with patch.object(U, "Operator", FakeOperator), \
+             patch.object(U, "watch_buttons", lambda r: None), \
+             patch.object(U, "typing", lambda: state["typing"]), \
+             patch.object(U, "safe_text", side_effect=slow_safe), \
+             patch.object(U, "read_block", side_effect=fake_read), \
+             contextlib.redirect_stdout(output):
+            U.plain(r)
+        result = output.getvalue()
+        self.assertEqual(result.count("[V13] first delayed"), 1)
+        self.assertEqual(result.count("[V13] second immediate"), 1)
+        self.assertLess(result.index("[V13] first delayed"),
+                        result.index("[V13] second immediate"))
+
+
 if __name__ == "__main__":
     unittest.main()
