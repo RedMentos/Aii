@@ -1,0 +1,46 @@
+{
+  "schema": "V13_RUN119_CHECKPOINT_V1",
+  "date_utc": "2026-10-25",
+  "pr": 150,
+  "parent": "12130ad6675c94246fe525c5afa5651dc36c988d",
+  "owner": "Codex source-only reproducible packaging",
+  "scope": "SOURCE_ONLY_NOT_FULL_SYSTEM",
+  "workflow_git_blob": "2002c2c322b9fc460b5782d341f98c44b2c9f02c",
+  "first_attempt": {
+    "run_id": 40146345314,
+    "job_id": 121028451207,
+    "status": "REJECTED_AS_EXACT_HEAD_PROOF",
+    "reason": "GitHub pull_request default checkout used ephemeral merge ref, not PR head",
+    "merge_sha": "982b94925316183ce79ac4f65256faf8eb496d7e",
+    "zip_sha256": "36c447f7da113065a504971d691194e79869a84c74e3a381bca08fe5579482d6",
+    "artifact_url": "https://github.com/RedMentos/Aii/actions/runs/40146345314/artifacts/12581091833",
+    "archive_paths": 3394
+  },
+  "correction": "Checkout exact github.event.pull_request.head.sha and assert git rev-parse HEAD matches. No fallback to ephemeral merge.",
+  "expected_required_paths": [
+    "AGENTS.md",
+    "v13/AGENTS.md",
+    "v13/ROADMAP.md",
+    "v13/NUTZER_ENTSCHEIDUNGEN.md",
+    "v13/blueprint/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+    "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+    "v13/code/BUILD_STATE.json",
+    "v13/code/v13/runtime.py"
+  ],
+  "final_artifact_status": "AWAITING_EXACT_HEAD_CI",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "negative_evidence": {
+    "run115_augmented_full_suite": "FAIL",
+    "run117_selective_risk": "NOT_SUPPORTED_SYNTHETIC_SELECTIVE"
+  },
+  "exact_next_command": "git archive --format=zip --output=dist/V13_RUN119_SOURCE_ONLY.zip HEAD AGENTS.md v13/AGENTS.md v13/ROADMAP.md v13/NUTZER_ENTSCHEIDUNGEN.md v13/blueprint v13/code && unzip -t -q dist/V13_RUN119_SOURCE_ONLY.zip && sha256sum dist/V13_RUN119_SOURCE_ONLY.zip",
+  "next_step": "Wait for exact-head GitHub Actions PR150 run. Verify HEAD, SHA-256, required canon paths, privacy CLEAN and artifact URL. Put final artifact metadata in PR body without mutating the frozen source commit; continue next canonical implementation package.",
+  "backup": "GitHub PR #150 source durable, 14-day artifact ephemeral; rejected Drive destination not retried"
+}
