@@ -1,0 +1,14 @@
+Run155 local software tests (2026-10-25):
+test_artifact_digest_rejected ... ok
+test_exact_288_lines ... ok
+test_fake_native_artifact_fails_closed ... ok
+test_forged_status_rejected ... ok
+test_gate_promotion_rejected ... ok
+test_malformed_status_rejected ... ok
+test_missing_line_rejected ... ok
+test_repeated_rows_rejected ... ok
+test_report_order_rejected ... ok
+test_swapped_lines_rejected ... ok
+Ran 10 tests in 0.009s
+OK
+compileall PASS
