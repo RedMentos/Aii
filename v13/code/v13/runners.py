@@ -403,14 +403,14 @@ class LlamaRunner:
                 from .focal import token_confidence
                 self.last_metrics['token_confidence']=token_confidence(lp_pairs,confidence_field)  # AG12 solver: field 'answer'
     def tap(self,text,cancel,deadline,max_tokens=64):
-        """Pinned LFM2 result_norm, after final RMSNorm, before output projection.
+        """Pinned role-specific final token-state readout, before output projection.
 
         A separate read-only prefill, not a tap of another runner's live KV.
         Native token IDs and unnormalized vectors are returned without pooling.
         """
         if self.purpose!='tap':raise Unavailable('Separaten Tap-Modus anfordern')
         ceiling=512 if self.role=='C3_LANGUAGE' else 64
-        dimension=getattr(self,'tap_dim',None) or (1024 if self.role=='C3_LANGUAGE' else 2048)
+        dimension=getattr(self,'tap_dim',None) or (1024 if self.role in ('C3_LANGUAGE','B2_GIST') else 2048)
         if not 1<=max_tokens<=ceiling:raise ValueError('Tap-Budget 1..'+str(ceiling)+' native Tokens')
         started=time.monotonic();done=threading.Event()
         def watchdog():
@@ -430,7 +430,7 @@ class LlamaRunner:
             if any(sum(x*x for x in v)<=1e-20 for v in vectors):raise Unavailable('Native Tap lieferte Null-Vektor')
             self.last_metrics={'role':self.role,'operation':'PREFILL_TAP','duration_s':time.monotonic()-started,'prompt_tokens':len(tokens),'embedding_dim':dimension,
                                'memory':process_memory(self.proc.pid),'CAN_LATENT_TAP':True,'CAN_LATENT_INJECT':False,'CAN_TRAIN_BODY':False,
-                               'tap_id':'lfm2.result_norm.final.v1','pooling':'none','normalization':'native_final_RMSNorm_only','runner_revision':'b10964',
+                               'tap_id':getattr(self,'tap_id',None) or ('qwen35.result_norm.final.v1' if self.role=='B2_GIST' else 'lfm2.result_norm.final.v1'),'pooling':'none','normalization':'native_final_RMSNorm_only','runner_revision':'b10964',
                                'physical_batch_tokens':512 if self.role=='C3_LANGUAGE' else 128,'whole_sequence_prefill':True}
             return {'token_ids':tokens,'vectors':vectors,'metrics':dict(self.last_metrics)}
         except BaseException:
