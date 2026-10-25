@@ -1,0 +1,42 @@
+2026-10-25T08:36:29.9188210Z test_revoked_earlier_turn_cannot_be_reexported_in_training_context (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_earlier_turn_cannot_be_reexported_in_training_context) ... FAIL
+2026-10-25T08:36:30.0080737Z test_revoked_target_turn_is_not_staged_for_training (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_target_turn_is_not_staged_for_training) ... FAIL
+2026-10-25T08:36:30.0920190Z test_tampered_persisted_digest_does_not_become_training_input (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_tampered_persisted_digest_does_not_become_training_input) ... FAIL
+2026-10-25T08:36:30.1778052Z test_digest_is_extractive_incremental_and_pins_exact_spans (tests.test_sleep_offline.DigestTests.test_digest_is_extractive_incremental_and_pins_exact_spans) ... ok
+2026-10-25T08:36:30.3664465Z test_digest_reaches_live_context_only_outside_history_and_respects_deletion (tests.test_sleep_offline.LiveContextTests.test_digest_reaches_live_context_only_outside_history_and_respects_deletion) ... ok
+2026-10-25T08:36:30.4058810Z test_cancel_and_yellow (tests.test_sleep_offline.PhaseTests.test_cancel_and_yellow) ... ok
+2026-10-25T08:36:30.5270301Z test_full_sleep_runs_offline_phase_and_stages_ttt_only (tests.test_sleep_offline.PhaseTests.test_full_sleep_runs_offline_phase_and_stages_ttt_only) ... ok
+2026-10-25T08:36:30.5449410Z test_consolidation_keeps_only_if_heldout_error_does_not_rise (tests.test_sleep_offline.PredictorTests.test_consolidation_keeps_only_if_heldout_error_does_not_rise) ... ok
+2026-10-25T08:36:30.5974080Z test_full_sleep_cannot_resurrect_a_forgotten_correction (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_cannot_resurrect_a_forgotten_correction) ... ok
+2026-10-25T08:36:30.6333746Z test_full_sleep_keeps_exact_human_correction_available_to_c3 (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_keeps_exact_human_correction_available_to_c3) ... ok
+2026-10-25T08:36:30.6463473Z test_repeated_sleep_keeps_one_human_record_and_no_weight_change (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_repeated_sleep_keeps_one_human_record_and_no_weight_change) ... ok
+2026-10-25T08:36:30.6586221Z test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat (tests.test_history_lineage.HistoryLineage.test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat) ... ok
+2026-10-25T08:36:30.6666116Z test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported (tests.test_history_lineage.HistoryLineage.test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported) ... ok
+2026-10-25T08:36:30.6667127Z 
+2026-10-25T08:36:30.6668078Z ======================================================================
+2026-10-25T08:36:30.6668867Z FAIL: test_revoked_earlier_turn_cannot_be_reexported_in_training_context (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_earlier_turn_cannot_be_reexported_in_training_context)
+2026-10-25T08:36:30.6669663Z ----------------------------------------------------------------------
+2026-10-25T08:36:30.6670016Z Traceback (most recent call last):
+2026-10-25T08:36:30.6674968Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_ttt_source_lineage_run207.py", line 69, in test_revoked_earlier_turn_cannot_be_reexported_in_training_context
+2026-10-25T08:36:30.6675712Z     self.assertFalse(any('ALPHA_207' in json.dumps(row) for row in rows), rows)
+2026-10-25T08:36:30.6677573Z AssertionError: True is not false : [{'context': 'U: Run207 alpha historical context synthetic marker ALPHA_207 | A: synthetic response', 'event_id': 'evt_f0782e24e8f5499daebe8cfd1967f373', 'input': 'Run207 beta middle context synthetic marker BETA_207', 'label_source': 'own_final_answer', 'origin': 'self', 'requires': 'WP-I retention gate + human approval', 'session': 'chat_e1ca4fc87ac04b6fa0550ad67b7c9f63', 'status': 'CANDIDATE_NOT_TRAINED', 'target': 'synthetic response'}, {'context': 'U: Run207 alpha historical context synthetic marker ALPHA_207 | A: synthetic response\nU: Run207 beta middle context synthetic marker BETA_207 | A: synthetic response', 'event_id': 'evt_2122adc21779420a9e4f7d302ae7ac43', 'input': 'Run207 gamma target synthetic marker GAMMA_207', 'label_source': 'own_final_answer', 'origin': 'self', 'requires': 'WP-I retention gate + human approval', 'session': 'chat_e1ca4fc87ac04b6fa0550ad67b7c9f63', 'status': 'CANDIDATE_NOT_TRAINED', 'target': 'synthetic response'}]
+2026-10-25T08:36:30.6679294Z 
+2026-10-25T08:36:30.6679378Z ======================================================================
+2026-10-25T08:36:30.6679826Z FAIL: test_revoked_target_turn_is_not_staged_for_training (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_target_turn_is_not_staged_for_training)
+2026-10-25T08:36:30.6680291Z ----------------------------------------------------------------------
+2026-10-25T08:36:30.6680500Z Traceback (most recent call last):
+2026-10-25T08:36:30.6680902Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_ttt_source_lineage_run207.py", line 76, in test_revoked_target_turn_is_not_staged_for_training
+2026-10-25T08:36:30.6681325Z     self.assertFalse(any('GAMMA_207' in json.dumps(row) for row in rows), rows)
+2026-10-25T08:36:30.6683247Z AssertionError: True is not false : [{'context': 'U: Run207 alpha historical context synthetic marker ALPHA_207 | A: synthetic response', 'event_id': 'evt_7c5f585efa4c49e1838369654490cff9', 'input': 'Run207 beta middle context synthetic marker BETA_207', 'label_source': 'own_final_answer', 'origin': 'self', 'requires': 'WP-I retention gate + human approval', 'session': 'chat_616a438df4d4496583f4166406e8c37f', 'status': 'CANDIDATE_NOT_TRAINED', 'target': 'synthetic response'}, {'context': 'U: Run207 alpha historical context synthetic marker ALPHA_207 | A: synthetic response\nU: Run207 beta middle context synthetic marker BETA_207 | A: synthetic response', 'event_id': 'evt_2bbab2c4a764476e85621d03d1acd9b8', 'input': 'Run207 gamma target synthetic marker GAMMA_207', 'label_source': 'own_final_answer', 'origin': 'self', 'requires': 'WP-I retention gate + human approval', 'session': 'chat_616a438df4d4496583f4166406e8c37f', 'status': 'CANDIDATE_NOT_TRAINED', 'target': 'synthetic response'}]
+2026-10-25T08:36:30.6684918Z 
+2026-10-25T08:36:30.6684989Z ======================================================================
+2026-10-25T08:36:30.6685467Z FAIL: test_tampered_persisted_digest_does_not_become_training_input (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_tampered_persisted_digest_does_not_become_training_input)
+2026-10-25T08:36:30.6685956Z ----------------------------------------------------------------------
+2026-10-25T08:36:30.6686267Z Traceback (most recent call last):
+2026-10-25T08:36:30.6686658Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_ttt_source_lineage_run207.py", line 86, in test_tampered_persisted_digest_does_not_become_training_input
+2026-10-25T08:36:30.6687102Z     self.assertFalse(any('FORGED_RUN207' in json.dumps(row) for row in rows), rows)
+2026-10-25T08:36:30.6688794Z AssertionError: True is not false : [{'context': 'U: FORGED_RUN207_CONTEXT | A: synthetic response', 'event_id': 'evt_da982d5ea15d4311a35ff573b4821407', 'input': 'Run207 beta middle context synthetic marker BETA_207', 'label_source': 'own_final_answer', 'origin': 'self', 'requires': 'WP-I retention gate + human approval', 'session': 'chat_242a98bed04d4bd6a842594800b89f94', 'status': 'CANDIDATE_NOT_TRAINED', 'target': 'synthetic response'}, {'context': 'U: FORGED_RUN207_CONTEXT | A: synthetic response\nU: Run207 beta middle context synthetic marker BETA_207 | A: FORGED_RUN207_ANSWER', 'event_id': 'evt_66c9c775d4f94c1591c22339bf55e28c', 'input': 'Run207 gamma target synthetic marker GAMMA_207', 'label_source': 'own_final_answer', 'origin': 'self', 'requires': 'WP-I retention gate + human approval', 'session': 'chat_242a98bed04d4bd6a842594800b89f94', 'status': 'CANDIDATE_NOT_TRAINED', 'target': 'synthetic response'}]
+2026-10-25T08:36:30.6690554Z 
+2026-10-25T08:36:30.6690650Z ----------------------------------------------------------------------
+2026-10-25T08:36:30.6690847Z Ran 13 tests in 0.961s
+2026-10-25T08:36:30.6690933Z 
+2026-10-25T08:36:30.6690991Z FAILED (failures=3)
