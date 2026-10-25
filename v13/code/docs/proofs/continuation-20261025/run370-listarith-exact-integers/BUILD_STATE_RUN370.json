@@ -1,0 +1,39 @@
+{
+  "schema": "V13_RUN370_BRANCH_SCOPED_CHECKPOINT_V1",
+  "owner": "codex/listarith-exact-integers-run370-20261025",
+  "parent": "codex/ag12-embedded-holdout-20261025@115c12bf00d04dd6cb461a317e29d14e66bf1091",
+  "review_pr": 365,
+  "prereg_commit": "2804a40a9527cdec92a60e4fe21d599d907f47dc",
+  "red_test_commit": "7ad775452ebb8c757685e72cf7f41f26adabbbf1",
+  "red_source_head": "ece3b8f7771aea402f0b84f3918bb76ea61edb95",
+  "red_actions_run": 40233629434,
+  "red_result": "15 tests, 21 expected assertion failures + 2 type errors; inherited Run362/363 PASS; privacy CLEAN",
+  "red_artifact_id": 12614525303,
+  "red_raw_sha256": "4aeefe27802cd6ba0f01f69b2db984da4c70e96e1a163fe245f6b1cc11861617",
+  "red_private_backup": "/V13/checkpoints/2026-10-25/V13_Run370_RED_raw_sha4aeefe27.zip",
+  "green_source_head": "a1128eff5fe14ac693b3b9ecc83c21ff6ffd4a92",
+  "green_actions_run": 40233707040,
+  "green_result": "15/15 PASS, privacy CLEAN, compileall PASS; inherited Run362/363 workflows SUCCESS",
+  "green_artifact_id": 12614246174,
+  "green_raw_sha256": "602ee8fbcfe7e8237ff3a92f330bff24c2f22f33899c2abdb3177e8009a0b91d",
+  "green_private_backup": "/V13/checkpoints/2026-10-25/V13_Run370_GREEN_raw_sha602ee8fb.zip",
+  "library_byte_comparison": "RED and GREEN independently re-materialized and byte-identical; CRC and 4/4 internal SHA PASS",
+  "source_sha256": {
+    "v13/code/v13/agi/listarith.py": "720b80bc101ac3c523fda9dc94792281ba9d61fbab337702319647dfc207b14b",
+    "v13/code/tests/test_listarith_exact_integers_run370.py": "e2211efda4cf49cca4e92eed0e9bed5f4a3c057cdbcdf8dda637d76d6bfc0696"
+  },
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED",
+    "full_suite": "RUN367_RED_UNCHANGED"
+  },
+  "remaining": "Run369 C3 semantic answer/confidence not proven (native report answer comma, confidence_source mean_prob); independent review on PR364. Current whole-suite Run367 remains RED. Native/Redmi/STEP2/B3/JEPA gates open.",
+  "next_package": "Run371: teacher fulfil cancellation-after-backend and terminal status compare-and-set, RED-first; independent of Run369",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_listarith_exact_integers_run370 tests.test_listarith_german_run362 tests.test_listarith_fast_rows_run363",
+  "status": "BRANCH_SCOPED_GREEN_NOT_MERGED"
+}
