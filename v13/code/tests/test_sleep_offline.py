@@ -60,10 +60,18 @@ class LiveContextTests(Base):
 class PredictorTests(Base):
     def test_consolidation_keeps_only_if_heldout_error_does_not_rise(self):
         f=F.FastForward(self.r.store);self.assertEqual(f.consolidate()['status'],'SKIPPED_TOO_FEW')
-        for i in range(40):f.learn('e',F.features('q %d'%i,'simple','both' if i%2 else 'none'),20. if i%2 else 2.,'FINAL',100)
+        for i in range(40):f.learn('e-%d'%i,F.features('q %d'%i,'simple','both' if i%2 else 'none'),20. if i%2 else 2.,'FINAL',100)
         rep=f.consolidate();self.assertIn(rep['status'],('KEPT','REVERTED'))
         if rep['status']=='KEPT':self.assertLessEqual(rep['heldout_error_after'],rep['heldout_error_before'])
         self.assertLessEqual(len(f._load()[0]['replay']),F.REPLAY_MAX)
+    def test_exact_outcome_replay_is_idempotent_but_conflicting_replay_is_rejected(self):
+        f=F.FastForward(self.r.store);x=F.features('one event','simple','none')
+        first=f.learn('receipt-1',x,2.,'FINAL',100)
+        self.assertEqual(f.learn('receipt-1',x,2.,'FINAL',100),first)
+        self.assertEqual(f._load()[0]['n'],1)
+        with self.assertRaisesRegex(ValueError,'Conflicting Fast-Forward outcome replay'):
+            f.learn('receipt-1',x,3.,'FINAL',100)
+        self.assertEqual(f._load()[0]['n'],1)
 
 class PhaseTests(Base):
     def test_full_sleep_runs_offline_phase_and_stages_ttt_only(self):
