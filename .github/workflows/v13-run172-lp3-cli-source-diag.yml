@@ -1,0 +1,65 @@
+name: V13 Run172 exact LP3 CLI import/exit diagnostic (no native)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run172-lp3-cli-source-diag.yml'
+      - 'v13/code/scripts/run172_lp3_cli_probe.py'
+      - 'v13/code/tests/test_run172_lp3_cli_probe.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run172-lp3-cli-source/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  readonly-cli:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Reconstruct exact Run21 LP3 source and no-native tests
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run172_lp3_cli_probe.py)" = '0ebb7376887d7dcbe1ae89c8c11cf59e55d6d0de'
+          test "$(git hash-object v13/code/tests/test_run172_lp3_cli_probe.py)" = '6d5092c4914bb8d025cdc09591cfa7d44fd7a534'
+          mkdir -p "$RUNNER_TEMP/run172/lp3"
+          base64 -d v13/code/docs/proofs/continuation-20261024/lp3-run20/LP3_RUN20_CODE_ONLY.tar.xz.base64 > "$RUNNER_TEMP/run172/run20.tar.xz"
+          echo "fc532d00e2c72281a154c984bbd79bd757a69a1d4e3c14e70a988dfb44c100c7  $RUNNER_TEMP/run172/run20.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/run172/run20.tar.xz" -C "$RUNNER_TEMP/run172/lp3"
+          patch -d "$RUNNER_TEMP/run172/lp3" -p1 < v13/code/docs/coordination/LP3_RUN21_POSTREAP_REVIEW.patch
+          helper="$(find "$RUNNER_TEMP/run172/lp3" -type f -path '*/scripts/lp3_serial_cohort.py' -print -quit)"
+          test -n "$helper"
+          echo "05e5bf300f582a03efeaae0133c8e20bf60948a2fa4e05a4867924ac4dc4b831  $helper" | sha256sum -c -
+          # Run20 code-only tar intentionally lacks the two source-bound audit modules.
+          # Stage exact current canonical modules into PRIVATE temp helper directory.
+          test "$(git hash-object v13/code/scripts/lp3_native_readiness.py)" = '2dfa7099541d3f8940817d43b97746c1d4d27092'
+          test "$(git hash-object v13/code/scripts/lp3_closed_evidence_audit.py)" = '6068ddafa2ae319f66a1cfcd7fb50127372e20a8'
+          cp v13/code/scripts/lp3_native_readiness.py "$(dirname "$helper")/"
+          cp v13/code/scripts/lp3_closed_evidence_audit.py "$(dirname "$helper")/"
+          echo "RUN172_HELPER=$helper" >> "$GITHUB_ENV"
+      - name: Isolated exact-helper CLI regression and adversarial missing-sibling control
+        run: |
+          set -euo pipefail
+          PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_run172_lp3_cli_probe.py -v
+          python3 -m compileall -q v13/code/scripts/run172_lp3_cli_probe.py v13/code/tests/test_run172_lp3_cli_probe.py
+          PYTHONPATH=v13/code python3 v13/code/scripts/run172_lp3_cli_probe.py "$RUN172_HELPER" | tee "$RUNNER_TEMP/run172/report.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'run172/report.json'
+          d=json.loads(p.read_text())
+          assert d['expected_blocked_rc2'] is True and d['returncode']==2
+          assert d['native_executed'] is False and d['gates']['STEP2']=='UTILITY_FAIL'
+          print('RUN172_LP3_EXACT_CLI_BLOCKED_RC2_WITH_ALL_SIBLINGS')
+          PY
+      - name: Official privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base c8a79a5a8859753b6d736b7b297c63d7ecd91c7c --head HEAD
+      - name: Upload metadata-only diagnostic
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run172-LP3-CLI-ReadOnly-Diagnostic
+          path: ${{ runner.temp }}/run172/report.json
+          if-no-files-found: warn
+          retention-days: 14
