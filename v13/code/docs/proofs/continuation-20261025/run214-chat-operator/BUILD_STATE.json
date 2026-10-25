@@ -1,0 +1,54 @@
+{
+  "run": "Run214",
+  "date_utc": "2026-10-25",
+  "canonical_area": "STEP0/Phone multi-chat operator usability and persisted JSON export",
+  "branch": "codex/chat-operator-journey-run214-20261025",
+  "base_verified": "d5cbdee642844e334ddfb277c48005785be25441",
+  "tested_commit": "e878f82a09cd23cb33fc1ef7a5b195add7e52281",
+  "owner": "Run214 test-only Operator/Runtime/SQLite journey; no production owner overlap",
+  "owned_files": [
+    "v13/code/tests/test_chat_operator_persistence_run214.py",
+    ".github/workflows/run214-chat-operator.yml",
+    "v13/code/docs/proofs/continuation-20261025/run214-chat-operator/"
+  ],
+  "implementation": "Three actual Runtime/SQLite synthetic-C3 integration tests for :new, :chats, :open, :search literal %, _, :export chat json, process restart, session isolation and unknown open. Production files untouched.",
+  "source_blob_sha": {
+    "test_chat_operator_persistence_run214.py": "ce8f6be311d4099bca3a757c3348ed9eaacfe025",
+    "run214-chat-operator.yml": "b4f03e0be2d3d3a33c73bbc56fc0320887414a88"
+  },
+  "actual_source_ci": {
+    "run_id": 40179172059,
+    "job_id": 121126310452,
+    "head": "e878f82a09cd23cb33fc1ef7a5b195add7e52281",
+    "tests": "9/9 PASS (Run214 3, Run88 3, Run204 3)",
+    "compileall": "PASS",
+    "privacy_scan": "CLEAN",
+    "log_url": "https://github.com/RedMentos/Aii/actions/runs/40179172059/job/121126310452"
+  },
+  "local_environment_recheck": {
+    "host": "Linux x86_64 6.18.55",
+    "memory_max_bytes": 4294967296,
+    "cgroup_v2": "read-only",
+    "transformers": "not installed",
+    "llama_cpp": "not installed",
+    "gguf_models_in_mnt_data": 0,
+    "redmi": "NOT RUN"
+  },
+  "evidence_kind": "GitHub Actions Linux actual Runtime/SQLite, deterministic C3 test double. Local environment inspection only; no native model, JEPA, or Redmi evidence.",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Run213 JEF open_questions still needs source/event/session cross-binding audit; avoid modifying Run213 active owner until head verified.",
+    "Full project-wide regression suite not established by Run214 focused CI.",
+    "Redmi sustained native models, STEP2/B3 utility and Body-JEPA remain open."
+  ],
+  "next_step": "Run215 separate read-only JEF open_questions source/event cross-session adversarial audit, test-first, narrow fix only if RED. Then run actual source CI and privacy scan.",
+  "next_command": "PYTHONPATH=tests:. python -m unittest -v tests.test_executive_open_question_lineage_run215 tests.test_executive_task_session_lineage_run213 tests.test_executive_goal_session_lineage_run212 tests.test_executive",
+  "no_authority_promotion": true
+}
