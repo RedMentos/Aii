@@ -1,0 +1,45 @@
+{
+  "schema": "V13_RUN132_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "pr": 162,
+  "branch": "codex/hx134-claude-preservation-run132-20261025",
+  "base_sha": "ad3183796f9a06c7bea9c2e956a43c623e042dcb",
+  "source_commit": "8be4354e195c3c13a44686a1f878592a3a22b6a2",
+  "owner": "Claude HX1/HX3/HX4 shadow module integration and tests only",
+  "claude_provenance": "claude/project-thread-4iqpro",
+  "source_blobs": {
+    "harness.py": "002d2d981314f3ffcbd8c02d7ec835a99abb0599",
+    "experience.py": "8908adb75ff859356bf0f4fb9ae62c8282581519",
+    "blind_select.py": "2ff30cb68ecded2a1853b39e07b1d9a2a8f571f2",
+    "self_improve.py": "f18ec4494bbe17a92793aca081fdebfe897349f7",
+    "agi/__init__.py": "27a5f57885a2836d0a3fbd4cf1829c0a1ab4edce",
+    "test_harness_hx.py": "aa39a8c5d0d5a4ffda1416738e84e364365e4963",
+    "runtime.py": "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+  },
+  "red": {
+    "run": 40154393086,
+    "errors": 1,
+    "raw": "RAW_RED_JOB.log"
+  },
+  "green": {
+    "run": 40154531402,
+    "tests": 64,
+    "passed": 64,
+    "privacy": "CLEAN",
+    "raw": "RAW_GREEN_JOB.log"
+  },
+  "status": "SHADOW_ONLY_NO_LIVE_CONSUMER",
+  "open_review": [
+    "Forged caller-provided APPROVED proposal accepted by HX1/HX3 Python APIs",
+    "HX3 lookup may serve stale evidence until verify()"
+  ],
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "exact_next_step": "Run133 adversarial test-first approval binding and stale evidence guard; no live HX2 activation. Run131 native C3 after heavy jobs."
+}
