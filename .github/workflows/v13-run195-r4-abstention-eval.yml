@@ -1,0 +1,59 @@
+name: V13 Run195 R4 selective abstention retrospective evaluation
+
+on:
+  pull_request:
+    paths:
+      - "v13/code/docs/proofs/continuation-20261025/run195-selective-abstention/preregistration.json"
+      - ".github/workflows/v13-run195-r4-abstention-eval.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v13-run195-eval-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  retrospective:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout sealed prereg and frozen Linux-native C3 captures
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          filter: blob:none
+          sparse-checkout: |
+            v13/code
+
+      - name: Verify sealed seed7 prereg bytes and run seed11 once
+        shell: bash
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          REG=docs/proofs/continuation-20261025/run195-selective-abstention/preregistration.json
+          test "$(git hash-object "$REG")" = 353fc674784a0745b71de2d789c3a8a6b81e6cc5
+          echo "PREREG_BLOB_VERIFIED 353fc674784a0745b71de2d789c3a8a6b81e6cc5"
+          python3 -m unittest -v tests.test_run195_r4_selective_abstention
+          python3 scripts/run195_r4_selective_abstention.py evaluate \
+            "$REG" \
+            docs/proofs/continuation-20261012/r4-c3-uncertainty-wake/capture-seed11.json \
+            "${{ runner.temp }}/run195-retrospective.json"
+          sha256sum "${{ runner.temp }}/run195-retrospective.json"
+          cat "${{ runner.temp }}/run195-retrospective.json"
+
+      - name: Official public repository privacy scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+
+      - name: Persist retrospective report without modifying original captures
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: run195-retrospective-${{ github.sha }}
+          path: ${{ runner.temp }}/run195-retrospective.json
+          if-no-files-found: error
+          retention-days: 30

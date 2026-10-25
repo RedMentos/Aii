@@ -1,0 +1,57 @@
+name: V13 Run195 R4 selective abstention preregistration
+
+on:
+  pull_request:
+    paths:
+      - "v13/code/scripts/run195_r4_selective_abstention.py"
+      - "v13/code/tests/test_run195_r4_selective_abstention.py"
+      - ".github/workflows/v13-run195-r4-abstention.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v13-run195-prereg-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact source and immutable original captures
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          filter: blob:none
+          sparse-checkout: |
+            v13/code
+
+      - name: Model-free tests and seed7-only threshold preregistration
+        shell: bash
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q scripts/run195_r4_selective_abstention.py tests/test_run195_r4_selective_abstention.py
+          python3 -m unittest -v tests.test_run195_r4_selective_abstention
+          python3 scripts/run195_r4_selective_abstention.py prereg \
+            docs/proofs/continuation-20261012/r4-c3-uncertainty-wake/capture-seed7.json \
+            "${{ runner.temp }}/run195-prereg.json"
+          sha256sum "${{ runner.temp }}/run195-prereg.json"
+          cat "${{ runner.temp }}/run195-prereg.json"
+
+      - name: Official public repository privacy scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+
+      - name: Persist closed preregistration as immutable workflow artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: run195-seed7-prereg-${{ github.sha }}
+          path: ${{ runner.temp }}/run195-prereg.json
+          if-no-files-found: error
+          retention-days: 30
