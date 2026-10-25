@@ -1,0 +1,34 @@
+{
+  "schema": "V13_RUN148_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex Run148 only owns new standalone audit script, 12-test suite, bounded CI, and Run148 proof directory; no frozen Runtime or Run147 cohort edits",
+  "base_commit": "af8b88b35fd1cf32f0c6895d27ff956e28e9ab5e",
+  "base_pr": 178,
+  "native_artifact_id": 12585363362,
+  "artifact_sha256": "ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676",
+  "report_sha256": "212f4f45fae05dda68fc475f03b28b3183de721d0924b75b9ea0457354d4ac60",
+  "raw_log_sha256": "b197ec375fd1327f68aeb3d33bf878b4d38c8f26392f244e56d39f7e2a2b7563",
+  "crosshost_local_tests": "12/12 PASS",
+  "crosshost_local_audit": "96/96 source rows, integrity PASS, 79 correct format labels, 4 wrong, 13 unknown",
+  "native_evidence": "Run147 original Linux-native C3, not Run148 native execution",
+  "status": "POSTHOC_INDEPENDENT_INTEGRITY_PASS",
+  "gate": "UNVERIFIED",
+  "original_K1": "PASS_AUTOMATED_LABELS",
+  "original_K2": "INSUFFICIENT_4_WRONG",
+  "original_K3": "PASS",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "questions": [
+    "K2 remains underpowered (4 wrong-format labels; >=10 required).",
+    "13 unlabelable responses include whitespace/newline/markdown/chain formats; do not silently adjudicate.",
+    "Run147 labels are automated, not human-reviewed; no Redmi or whole-system proof."
+  ],
+  "next_command": "CI: python3 v13/code/scripts/age0d_run147_independent_audit_run148.py --artifact RUN147_native.zip --output RUN148_AUDIT.json && RUN147_ARTIFACT=RUN147_native.zip PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_age0d_run147_independent_audit_run148.py -v",
+  "next_step": "Verify exact-head CI and remote blob hashes; then pursue a fresh preregistered distinct-format holdout or a separate canonical end-to-end package, without changing frozen Runtime or promoting gates."
+}
