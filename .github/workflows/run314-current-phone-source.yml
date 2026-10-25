@@ -1,0 +1,141 @@
+name: V13 Run314 exact current-chain Termux source ZIP
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run314-current-phone-source.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/current-phone-source-run314/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  current-phone-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source, immutable Canon and source-only preflight
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN314_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          test -s AGENTS.md
+          test -s v13/code/STARTEN.sh
+          test -s v13/code/scripts/package_source.py
+          test -s v13/code/scripts/verify_phone_zip_current_run268.py
+          git hash-object v13/code/v13/backup.py v13/code/v13/operator.py v13/code/v13/fastforward.py v13/code/v13/jefoutcome.py | tee "$RUNNER_TEMP/RUN314_SOURCE_BLOBS.txt"
+          python3 -m compileall -q v13/code/v13/backup.py v13/code/v13/operator.py v13/code/v13/fastforward.py v13/code/v13/jefoutcome.py v13/code/scripts/package_source.py
+      - name: Isolated CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run314venv"
+          "$RUNNER_TEMP/run314venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Build and independently verify immutable current phone ZIP
+        id: zip
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run314venv/bin/python" scripts/package_source.py --root "$PWD" --out "$RUNNER_TEMP/V13-Phone-Run314.zip" --phone-install 2>&1 | tee "$RUNNER_TEMP/RUN314_PACKAGE_RAW.log"
+          package_rc=${PIPESTATUS[0]}
+          if [[ "$package_rc" = "0" ]]; then
+            "$RUNNER_TEMP/run314venv/bin/python" scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Run314.zip" --root "$PWD" --out "$RUNNER_TEMP/RUN314_VERIFY.json" 2>&1 | tee "$RUNNER_TEMP/RUN314_VERIFY_RAW.log"
+            verify_rc=${PIPESTATUS[0]}
+            sha256sum "$RUNNER_TEMP/V13-Phone-Run314.zip" > "$RUNNER_TEMP/RUN314_ZIP_SHA256.txt"
+          else
+            verify_rc=2
+            echo 'PACKAGE_FAILED_NO_VERIFY' > "$RUNNER_TEMP/RUN314_VERIFY_RAW.log"
+          fi
+          echo "$package_rc" > "$RUNNER_TEMP/RUN314_PACKAGE_EXIT.txt"
+          echo "$verify_rc" > "$RUNNER_TEMP/RUN314_VERIFY_EXIT.txt"
+          echo "package_rc=$package_rc" >> "$GITHUB_OUTPUT"
+          echo "verify_rc=$verify_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Extract ZIP, run offline Termux diagnostic and actual SQLite operator tests
+        id: extracted
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN314_PACKAGE_EXIT.txt")" != "0" || "$(cat "$RUNNER_TEMP/RUN314_VERIFY_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN314_EXTRACT_EXIT.txt"
+            echo "rc=2" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          mkdir -p "$RUNNER_TEMP/run314-extracted"
+          unzip -q "$RUNNER_TEMP/V13-Phone-Run314.zip" -d "$RUNNER_TEMP/run314-extracted"
+          unzip_rc=$?
+          if [[ "$unzip_rc" != "0" ]]; then
+            echo "$unzip_rc" > "$RUNNER_TEMP/RUN314_EXTRACT_EXIT.txt"
+            echo "rc=$unzip_rc" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          cd "$RUNNER_TEMP/run314-extracted/V13-Phone"
+          test -s v13/backup.py && test -s tests/test_backup_source_closure_run304.py && test -s tests/test_learning_operator_status_run302.py
+          test -s tests/test_world_source_disjoint_run306.py && test -s tests/test_sleep_retention_identity_run307.py && test -s tests/test_attention_outcome_receipt_run308.py && \
+            test -s tests/test_fastforward_outcome_once_run312.py && test -s tests/test_jef_outcome_eviction_run313.py
+          source_rc=$?
+          V13_HOME="$RUNNER_TEMP/run314-home" V13_NO_AUTOSTART=1 V13_SOURCE_ONLY_DIAGNOSTIC=1 \
+            PIP_NO_INDEX=1 PIP_DISABLE_PIP_VERSION_CHECK=1 \
+            PATH="$RUNNER_TEMP/run314venv/bin:$PATH" bash setup.sh 2>&1 | tee "$RUNNER_TEMP/RUN314_OFFLINE_SETUP_RAW.log"
+          setup_rc=${PIPESTATUS[0]}
+          grep -q 'SOURCE_ONLY_DIAGNOSTIC' "$RUNNER_TEMP/RUN314_OFFLINE_SETUP_RAW.log" || setup_rc=3
+          grep -q 'NO_NATIVE_MODEL / NO_REDMi / NO_JEPA_PROOF' "$RUNNER_TEMP/RUN314_OFFLINE_SETUP_RAW.log" || setup_rc=3
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run314venv/bin/python" -m unittest -v \
+            tests.test_backup_source_closure_run304 \
+            tests.test_learning_operator_status_run302 \
+            tests.test_world_source_disjoint_run306 \
+            tests.test_sleep_retention_identity_run307 \
+            tests.test_attention_outcome_receipt_run308 \
+            tests.test_fastforward_outcome_once_run312 \
+            tests.test_jef_outcome_eviction_run313 \
+            tests.test_jefoutcome \
+            tests.test_phone_operator_journey_run86 \
+            tests.test_phone_cli_run87 2>&1 | tee "$RUNNER_TEMP/RUN314_EXTRACTED_TEST_RAW.log"
+          tests_rc=${PIPESTATUS[0]}
+          rc=0
+          if [[ "$source_rc" != "0" || "$setup_rc" != "0" || "$tests_rc" != "0" ]]; then rc=1; fi
+          echo "$rc" > "$RUNNER_TEMP/RUN314_EXTRACT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN314_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN314_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close hashes for every present raw output
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN314_*' ! -name 'RUN314_RAW_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN314_RAW_SHA256SUMS.txt
+      - name: Retain exact phone source ZIP and raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run314-Current-Phone-Source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/V13-Phone-Run314.zip
+            ${{ runner.temp }}/RUN314_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true ZIP, extracted and privacy results
+        if: always()
+        run: |
+          test "${{ steps.zip.outputs.package_rc }}" = "0"
+          test "${{ steps.zip.outputs.verify_rc }}" = "0"
+          test "${{ steps.extracted.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
