@@ -127,6 +127,15 @@ def deltas(first, second):
     return result
 
 
+def validate_numeric_deltas(metrics):
+    for stage in ("baseline_to_epoch1", "epoch1_to_epoch2"):
+        rows = metrics.get(stage)
+        require(isinstance(rows, dict) and set(rows) == set(SELECTED),
+                "missing selected numerical delta metrics: " + stage)
+        require(any(v.get("changed_elements", 0) > 0 and v.get("l2", 0) > 0
+                    for v in rows.values()), "no numerical selected update: " + stage)
+
+
 def audit(master, epoch1, epoch2, report):
     # Independently require Run321 exact raw cohort/score consistency first.
     from audit_native_lfm2_epoch_eval_run321 import audit as original_audit
@@ -140,6 +149,7 @@ def audit(master, epoch1, epoch2, report):
     checked = assess(m, e1, e2)
     metrics = {"baseline_to_epoch1": deltas(mr, r1),
                "epoch1_to_epoch2": deltas(r1, r2)}
+    validate_numeric_deltas(metrics)
     # Keep readers alive through all mmap-based comparisons.
     assert m_reader is not None and e1_reader is not None and e2_reader is not None
     return {"schema": SCHEMA, "status": "PASS_NATIVE_WEIGHT_DELTA_DIAGNOSTIC_NO_ACTIVATION",
