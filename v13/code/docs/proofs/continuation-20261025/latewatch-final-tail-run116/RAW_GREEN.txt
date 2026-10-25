@@ -1,0 +1,23 @@
+SOURCE GitHub Actions run 40145650447 job 121026291760, commit b2d638546b9084184cfcb9987e924eb9d6ff8f1b
+RAW TEST LOG:
+test_finish_completed_correct_tail_is_not_a_conflict (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_finish_completed_correct_tail_is_not_a_conflict) ... ok
+2026-10-25T00:10:37.3370041Z test_finish_records_completed_numeric_conflict_without_active_cut (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_finish_records_completed_numeric_conflict_without_active_cut) ... ok
+2026-10-25T00:10:37.3372305Z test_partial_tail_is_still_ignored_but_completed_tail_is_checked (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_partial_tail_is_still_ignored_but_completed_tail_is_checked) ... ok
+2026-10-25T00:10:37.3373284Z 
+2026-10-25T00:10:37.3373819Z ----------------------------------------------------------------------
+2026-10-25T00:10:37.3374266Z Ran 3 tests in 0.019s
+2026-10-25T00:10:37.3374441Z 
+2026-10-25T00:10:37.3374541Z OK
+2026-10-25T00:10:37.3672768Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:10:37.3674081Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:10:37.6535487Z test_disagreement (test_latewatch.Pure.test_disagreement) ... ok
+2026-10-25T00:10:37.6536431Z test_number_parsing (test_latewatch.Pure.test_number_parsing) ... ok
+2026-10-25T00:10:37.6614893Z test_residency_never_evicts_c3 (test_latewatch.Pure.test_residency_never_evicts_c3) ... ok
+2026-10-25T00:10:37.9741435Z test_active_cuts_and_revises (test_latewatch.Turn.test_active_cuts_and_revises) ... ok
+2026-10-25T00:10:44.1756146Z test_off_and_no_residency_run_no_body (test_latewatch.Turn.test_off_and_no_residency_run_no_body) ... ok
+2026-10-25T00:10:44.2784208Z test_shadow_records_without_touching_the_answer (test_latewatch.Turn.test_shadow_records_without_touching_the_answer) ... ok
+2026-10-25T00:10:44.2785040Z 
+2026-10-25T00:10:44.2785271Z ----------------------------------------------------------------------
+2026-10-25T00:10:44.2785771Z Ran 6 tests in 6.625s
+2026-10-25T00:10:44.2785979Z 
+2026-10-25T00:10:44.2786097Z OK
