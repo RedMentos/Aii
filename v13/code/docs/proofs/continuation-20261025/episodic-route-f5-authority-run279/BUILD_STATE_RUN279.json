@@ -36,8 +36,8 @@
     "pr": 269,
     "run_id": 40186761125,
     "stages_attempted": 20,
-    "pass": 11,
-    "fail": 9,
+    "pass": 12,
+    "fail": 8,
     "exit": 2,
     "status": "IMPLEMENTED_PATHS_PARTIAL",
     "artifact_id": 12597232047
