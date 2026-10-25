@@ -55,10 +55,10 @@ jobs:
           test -n "$helper"
           echo "05e5bf300f582a03efeaae0133c8e20bf60948a2fa4e05a4867924ac4dc4b831  $helper" | sha256sum -c -
           echo "LP3_HELPER_DIR=$(dirname "$helper")" >> "$GITHUB_ENV"
-      testhelper="$(find "$RUNNER_TEMP/lp3_run21" -type f -path '*/tests/test_lp3_serial_cohort.py' -print -quit)"
-      test -n "$testhelper"
-      test "$(git hash-object "$testhelper")" = "4e355dd45eda22a486f06af69b6c0d0fc35f178c"
-      echo "LP3_TEST_DIR=$(dirname "$testhelper")" >> "$GITHUB_ENV"
+          testhelper="$(find "$RUNNER_TEMP/lp3_run21" -type f -path '*/tests/test_lp3_serial_cohort.py' -print -quit)"
+          test -n "$testhelper"
+          test "$(git hash-object "$testhelper")" = "4e355dd45eda22a486f06af69b6c0d0fc35f178c"
+          echo "LP3_TEST_DIR=$(dirname "$testhelper")" >> "$GITHUB_ENV"
       - name: Stage exact Run147 closed native fixture (read only)
         env:
           GH_TOKEN: ${{ github.token }}
