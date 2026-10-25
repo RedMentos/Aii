@@ -1,0 +1,67 @@
+name: V13 Run158 pinned Linux-native artifact read-only audit
+on:
+  push:
+    branches: ['codex/run158-pinned-native-artifact-audit-20261025']
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run158-native-artifact-audit.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/run158-native-artifact-audit/**'
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch exact archived native ZIP bytes, no model run
+        run: |
+          mkdir -p /tmp/run158
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12585869006/zip \
+            -o /tmp/run158/first.zip
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12585869203/zip \
+            -o /tmp/run158/second.zip
+          echo "0f19525d8e8abd62ca328ce752a0e8f8b619ca27ced71a42f3bd5c78d53edbe4  /tmp/run158/first.zip" | sha256sum -c -
+          echo "fb0cc7d8370437a29d49fdbdabe5b8bbc32a5445ee3db55e295f701bfaec30da  /tmp/run158/second.zip" | sha256sum -c -
+      - name: Independent source-bound raw-log audits and replication comparison
+        run: |
+          PYTHONPATH=v13/code python v13/code/scripts/age0d_run151_log_binding_review_run155.py --artifact /tmp/run158/first.zip --sha256 0f19525d8e8abd62ca328ce752a0e8f8b619ca27ced71a42f3bd5c78d53edbe4 --output /tmp/run158/first-audit.json
+          PYTHONPATH=v13/code python v13/code/scripts/age0d_run151_log_binding_review_run155.py --artifact /tmp/run158/second.zip --sha256 fb0cc7d8370437a29d49fdbdabe5b8bbc32a5445ee3db55e295f701bfaec30da --output /tmp/run158/second-audit.json
+          PYTHONPATH=v13/code python v13/code/scripts/age0d_run151_replication_compare_run154.py --first /tmp/run158/first.zip --second /tmp/run158/second.zip --output /tmp/run158/compare.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=Path('/tmp/run158')
+          a=json.loads((d/'first-audit.json').read_text())
+          b=json.loads((d/'second-audit.json').read_text())
+          c=json.loads((d/'compare.json').read_text())
+          assert a['rows_bound']==b['rows_bound']==288
+          assert a['overall_gate']==b['overall_gate']==c['overall_gate']=='UNVERIFIED'
+          assert c['response_identical']==267 and c['response_different']==21 and c['v3_status_changed']==7
+          assert not c['deterministic_repeat']
+          print('RUN158_PINNED_NATIVE_AUDIT_PASS 288 288 267/21 7 STATUS UNVERIFIED')
+          PY
+      - name: Official public repo privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base b4b07b88a5c4753d17568ab60aa3039d6ba9f1cc --head HEAD
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: V13-Run158-ReadOnly-Pinned-Native-Audit
+          path: /tmp/run158/*-audit.json
+          if-no-files-found: warn
+          retention-days: 14
