@@ -22,7 +22,7 @@ jobs:
           set -euo pipefail
           echo "EXACT_HEAD=$(git rev-parse HEAD)" | tee "$RUNNER_TEMP/RUN266_PRECHECK.log"
           echo "WORLD_BLOB=$(git hash-object v13/code/v13/world_model.py)" | tee -a "$RUNNER_TEMP/RUN266_PRECHECK.log"
-          test "$(git hash-object v13/code/v13/world_model.py)" = "db62c761a9b1f3364c951ad6ac82a71d84f"
+          test "$(git hash-object v13/code/v13/world_model.py)" = "db62c761a9b1f3364c951ad6ac82a71f3a71d84f"
           git apply --check --verbose v13/code/docs/coordination/WORLD_TERMINAL_RUN266.patch 2>&1 | tee -a "$RUNNER_TEMP/RUN266_PRECHECK.log"
           git apply v13/code/docs/coordination/WORLD_TERMINAL_RUN266.patch
           git hash-object v13/code/v13/world_model.py | tee "$RUNNER_TEMP/RUN266_CANDIDATE_BLOB.log"
