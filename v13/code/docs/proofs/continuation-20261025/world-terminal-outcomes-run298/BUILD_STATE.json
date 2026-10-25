@@ -1,0 +1,58 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN298_V1",
+  "utc": "2026-10-25T14:34:00Z",
+  "owner": "GPT-6 automation / Run298",
+  "base_branch": "codex/ctxos-bound-source-user-run296-20261025",
+  "base_sha": "2bcb475abcd26e2eef1083f4bf3bde3833dc5196",
+  "work_branch": "codex/world-terminal-outcomes-run298-20261025",
+  "pr": 297,
+  "code_commit": "8aeb24329ccda9fc8386a357dbcd7f97349363db",
+  "code_blob_sha": "0176a7b78c267149aec70c3c2be58ca1d5a76db3",
+  "files_owned": [
+    "v13/code/v13/world_model.py",
+    "v13/code/tests/test_world_terminal_outcomes_run298.py",
+    ".github/workflows/run298-world-terminal-outcomes.yml",
+    "v13/code/docs/proofs/continuation-20261025/world-terminal-outcomes-run298/"
+  ],
+  "tests": {
+    "red": {
+      "run_id": 40202752914,
+      "artifact_id": 12602132879,
+      "tests": 52,
+      "failures": 4,
+      "raw_retained": true
+    },
+    "green": {
+      "run_id": 40202801867,
+      "artifact_id": 12602876070,
+      "tests": 52,
+      "failures": 0,
+      "privacy": "CLEAN"
+    },
+    "related_green": [
+      40202801866,
+      40202801775,
+      40202801791,
+      40202801792,
+      40202801810
+    ],
+    "pending_at_checkpoint": [
+      40202801794,
+      40202801834
+    ]
+  },
+  "evidence_scope": "ACTUAL_PRODUCTION_SQLITE_SYNTHETIC_VALUES_SOFTWARE_ONLY",
+  "source_and_cohorts_unchanged": true,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "step2_gate": "UTILITY_FAIL_UNCHANGED",
+  "b3_gate": "L1_ORIGINAL_NEGATIVE_UNCHANGED",
+  "jepa_weight": "UNCHANGED_NO_PROMOTION",
+  "redmi_measured": false,
+  "blocked": [
+    "Current automation runtime cannot directly clone github.com into local container; GitHub connector writes and GitHub Actions supply actual remote tests.",
+    "Redmi phone and target-native training measurements unavailable in this run."
+  ],
+  "next_command": "Fetch GitHub Actions runs 40202801794 and 40202801834; inspect full logs and preserve any failures. Then branch from verified Run298 checkpoint for an independent canonical package.",
+  "prerequisites": "No live model calls or paid provisioning. Respect active Run297 Context OS native owner; no shared file overwrite."
+}

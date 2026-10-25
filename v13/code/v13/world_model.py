@@ -23,6 +23,9 @@ from .common import now
 
 KEY='T8_WORLD_MODEL';REVISION='t8-world-model-sourcebound-v2'
 ACTIONS=('simple','detail','gist','both')
+# Only closed, observed outcomes can supervise the success target. In-flight
+# DISPATCHED and unrecognized statuses must never become negative examples.
+TERMINAL_STATUSES=frozenset(('FINAL','ERROR','DEADLINE','CANCELLED'))
 TARGETS=('log_duration','success','log_chars')
 RIDGE=1e-2;ENSEMBLE=5;MIN_FIT=8;MAX_ROWS=2048
 COVER_N=8.        # BOOT: samples per action for ~63 % of the coverage term
@@ -83,6 +86,7 @@ def transitions(store,limit=MAX_ROWS):
     rows=store.rows("SELECT a.id,a.event_id,a.status,a.expected,a.outcome,a.created FROM actions a WHERE a.outcome IS NOT NULL AND a.expected LIKE ? ORDER BY a.created DESC LIMIT ?",('%"forecast"%',limit))
     out=[]
     for r in rows:
+        if r['status'] not in TERMINAL_STATUSES:continue
         if not _valid_observed_event_source(store,r['event_id']):continue
         try:
             exp=json.loads(r['expected']);act=json.loads(r['outcome'] or '{}')
@@ -142,7 +146,7 @@ def _action_binding(store, action_id):
         row = store.one(
             "SELECT id,event_id,status,expected,outcome,created FROM actions WHERE id=?",
             (action_id,))
-        if not row or row['status'] != 'FINAL':
+        if not row or row['status'] not in TERMINAL_STATUSES:
             return None
         if not _valid_observed_event_source(store, row['event_id']):
             return None
