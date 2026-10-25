@@ -1,0 +1,59 @@
+{
+  "authority": "SHADOW_DIAGNOSTIC_NOT_ACTIVE",
+  "claim": "SOURCE_SIMILARITY_IS_NOT_FACTUAL_TRUTH_OR_LEARNING",
+  "evidence_class": "MODEL_FREE_RAW_STEM_SOFTWARE_ONLY",
+  "far_domain": {
+    "floor_clamped_min": false,
+    "id_accept_rate": 1.0,
+    "id_accepted": 31,
+    "id_count": 31,
+    "id_score_max": 0.980006479403102,
+    "id_score_min": 0.967688681877294,
+    "ood_accepted": 0,
+    "ood_count": 64,
+    "ood_false_accept_rate": 0.0,
+    "ood_score_max": 0.7577444666090786,
+    "ood_score_min": 0.7231251230292632,
+    "support_floor": 0.9492559677609256,
+    "threshold_uses_heldout": false,
+    "train_loo_p05": 0.9692559677609256
+  },
+  "gate": "UNVERIFIED",
+  "gates": {
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "DS2_H2": "FAIL",
+    "STEP2": "UTILITY_FAIL",
+    "V13": "INCOMPLETE",
+    "jepa_weight": 0
+  },
+  "heldout_id_count": 31,
+  "limitations": [
+    "no native teacher embeddings or student learning",
+    "substituted values are a novelty stressor, not ground-truth OOD class",
+    "fixed synthetic English templates are not real user data",
+    "no Redmi, Body-JEPA or full V13 proof"
+  ],
+  "schema": "V13_RUN157_A3_RAWSTEM_SOURCE_PROBE_V1",
+  "source_definition_sha256": "2671fe0644ba55a83b4922f70c9ba3e11b6b1bbf43daa6a7e7ae3aa7df02fda1",
+  "source_texts_sha256": "556ded9c4ed126166fe21402e5c1c2b515ac5661f3c25c704ece4c7174c8e837",
+  "student_parameter_updates": 0,
+  "teacher_parameter_updates": 0,
+  "train_count": 97,
+  "unseen_value_substitution": {
+    "floor_clamped_min": false,
+    "id_accept_rate": 1.0,
+    "id_accepted": 31,
+    "id_count": 31,
+    "id_score_max": 0.980006479403102,
+    "id_score_min": 0.967688681877294,
+    "ood_accepted": 64,
+    "ood_count": 64,
+    "ood_false_accept_rate": 1.0,
+    "ood_score_max": 0.9824863567082052,
+    "ood_score_min": 0.9523132887212791,
+    "support_floor": 0.9492559677609256,
+    "threshold_uses_heldout": false,
+    "train_loo_p05": 0.9692559677609256
+  }
+}
