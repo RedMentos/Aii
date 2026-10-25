@@ -1,0 +1,79 @@
+name: V13 Run386 AG4 skill outcome guard
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run386-ag4-skill-outcome-guard.yml'
+      - 'v13/code/v13/agi/skills.py'
+      - 'v13/code/tests/test_ag4_skill_outcome_guard_run386.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run386-ag4-skill-outcomes/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Source and isolated dependencies
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN386_HEAD.txt"
+          sha256sum v13/code/v13/agi/skills.py v13/code/tests/test_ag4_skill_outcome_guard_run386.py | tee "$RUNNER_TEMP/RUN386_SOURCE_HASHES.txt"
+          python3 -m venv "$RUNNER_TEMP/run386venv"
+          "$RUNNER_TEMP/run386venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          python3 -m compileall -q v13/code/v13/agi/skills.py v13/code/tests/test_ag4_skill_outcome_guard_run386.py
+      - name: Actual AG2 and inherited SQLite tests
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run386venv/bin/python" -m unittest -v \
+            tests.test_ag4_skill_outcome_guard_run386 \
+            tests.test_growth.G4Skills \
+            tests.test_skilllive \
+            tests.test_agi_live \
+            2>&1 | tee "$RUNNER_TEMP/RUN386_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN386_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN386_*' ! -name RUN386_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN386_SHA256SUMS.txt
+      - name: Upload exact-head raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run386-AG2-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN386_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce test and privacy outcome
+        if: always()
+        run: |
+          test "${{ steps.suite.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
