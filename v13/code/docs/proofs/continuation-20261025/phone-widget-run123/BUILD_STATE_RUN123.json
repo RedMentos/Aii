@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN123_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_pr": 153,
+  "base_sha": "af9335c6c70fb10704d86dd2d16887f2148d4a74",
+  "pr": 154,
+  "branch": "codex/phone-widget-selective-run123-20261025",
+  "owner": "WP-UI1 selective Claude import and narrow UI/operator hooks only",
+  "source_provenance": {
+    "branch": "claude/project-thread-e53fle",
+    "phone_halt_blob": "6460aa8a71266f75f50558f9480d7332b5302529",
+    "test_blob": "707cec00a61d62437289a5082caed05a54fc0866",
+    "installer_blob": "73c43485f929a81add056e0b0d0c8a3a0136cab0",
+    "guide_module_blob": "8e251afca407aa2046b48d5c464a0139add09e05",
+    "guide_blob": "3047919c1786a6d0295b8d3aec4cb2e92fda8e50",
+    "handy_doc_blob": "513ee2612e9b279c04fa8a5f3474d6c2c1d7db27"
+  },
+  "test_first": {
+    "red_run": 40147761951,
+    "red_job": 121032717278,
+    "reason": "missing v13.phone_halt import",
+    "raw": "RAW_RED_JOB.log",
+    "green_run": 40147853024,
+    "green_job": 121032995785,
+    "tests_passed": 25,
+    "privacy": "CLEAN",
+    "raw_green": "RAW_GREEN_JOB.log",
+    "scope": "Linux software/SQLite + simulated widget shell, no Android/Redmi"
+  },
+  "changed_runtime_files": [
+    "v13/code/v13/ui.py",
+    "v13/code/v13/operator.py"
+  ],
+  "new_files": [
+    "v13/code/v13/phone_halt.py",
+    "v13/code/v13/befehle.py",
+    "v13/code/tests/test_phone_halt.py",
+    "v13/code/KNOEPFE_EINRICHTEN.sh",
+    "v13/code/docs/BEFEHLE.md",
+    "v13/code/docs/HANDY_OBERFLAECHE.md"
+  ],
+  "canon_changed": false,
+  "learning_or_model_changed": false,
+  "safety_review": {
+    "status": "OPEN_FAIL_OPEN_STARTUP_WINDOW",
+    "evidence": "Independent local Linux Run122 parent: queued exact-copy turn FINAL ~43ms after Runtime construction while preexisting control/STILLSTAND remained pending; UI watcher only starts after Runtime worker.",
+    "scope_limit": "Run123 source ordering still starts Runtime.worker before ui.watch_buttons; race not closed by 25 green tests.",
+    "activation": "DO_NOT_MERGE_OR_CLAIM_SAFE_PHONE_WIDGET_BEFORE_RUN124_PRESTART_FIX"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Preexisting STILLSTAND file must be applied before coordinator thread starts and before any recovered pending turn; ensure _SeenEvent worker binding and human release ownership semantics.",
+    "Actual Termux:Widget device latency and permission behavior NOT RUN.",
+    "Native LP3 and full-system remain blocked."
+  ],
+  "exact_next_step": "Run124 on branch from this exact Run123 checkpoint: preregister deterministic startup stop-file + recovered queued turn test, prove RED, add minimal Runtime pre-worker phone_halt.apply_once with correct standstill watcher worker binding, test release/restart and inherited 25, preserve raw logs. Keep PR154 draft until closed.",
+  "backup": "GitHub PR #154, raw RED/GREEN logs, source hashes. No rejected Drive destination."
+}

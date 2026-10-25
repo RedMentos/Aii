@@ -3,6 +3,7 @@ import sys
 import threading
 from .common import safe_text
 from .operator import Operator
+from .phone_halt import watch as watch_buttons
 
 def typing():
     """True while the operator has unsent text in the input line (readline only)."""
@@ -30,6 +31,7 @@ def plain(r):
         for x in held+[t]:print('\n[V13] '+safe_text(x),flush=True)
         held.clear()
     r.notify=notify
+    watch_buttons(r)  # WP-UI1: Termux home-screen stop requests, ON-only
     def render():
         while not done.wait(.1):
             if typing():continue
@@ -66,6 +68,7 @@ def chat(r,force_plain=False):
         with notice_lock:notices.append(safe_text(text));del notices[:-8]
         if app:app.invalidate()
     r.notify=notice
+    watch_buttons(r)  # WP-UI1: same stop watcher in prompt-toolkit UI
     transcript=TextArea(text='',read_only=True,scrollbar=True,wrap_lines=True,focusable=True)
     def accept(buffer):
         text=buffer.text
