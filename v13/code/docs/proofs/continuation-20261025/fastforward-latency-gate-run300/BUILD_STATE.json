@@ -1,0 +1,64 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN300_V1",
+  "utc": "2026-10-25T14:43:00Z",
+  "owner": "GPT-6 automation / Run300",
+  "base": "4720f08fd363a8d63155cc98664cc31684112f46",
+  "branch": "codex/fastforward-latency-gate-run300-20261025",
+  "pr": 299,
+  "code_commit": "5633a37ac9ebd1e00da2b7ba59f3d27f5e3f65c1",
+  "source_blob": "eaaa27099154e71009526c18e73e08a987acdad2",
+  "owned": [
+    "v13/code/v13/fastforward.py",
+    "v13/code/tests/test_fastforward_latency_gate_run300.py",
+    ".github/workflows/run300-fastforward-latency-gate.yml",
+    "v13/code/docs/proofs/continuation-20261025/fastforward-latency-gate-run300/"
+  ],
+  "tests": {
+    "initial_red": {
+      "run": 40203310383,
+      "artifact": 12602801319,
+      "total": 44,
+      "failures": 5,
+      "errors": 1
+    },
+    "first_green": {
+      "run": 40203373686,
+      "artifact": 12602198761,
+      "total": 44,
+      "failures": 0
+    },
+    "review_red": {
+      "run": 40203435900,
+      "artifact": 12602448598,
+      "total": 44,
+      "errors": 2
+    },
+    "final_green": {
+      "run": 40203492074,
+      "artifact": 12603235595,
+      "total": 44,
+      "failures": 0,
+      "errors": 0,
+      "privacy": "CLEAN"
+    }
+  },
+  "proof_scope": "ACTUAL_PRODUCTION_SQLITE_SYNTHETIC_LATENCY_SOFTWARE_ONLY",
+  "canonical_gate_pass": false,
+  "model_cohorts_unchanged": true,
+  "canon_unchanged": true,
+  "runtime_unchanged": true,
+  "redmi_measured": false,
+  "step2": "UTILITY_FAIL_UNCHANGED",
+  "b3": "L1_ORIGINAL_NEGATIVE_UNCHANGED",
+  "body_jepa": "NOT_PROMOTED",
+  "jepa_weight": "UNCHANGED",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "open": [
+    "Native real speedup/noninferiority proof for proceduralization",
+    "Run298 full-suite 40202886433 pending at checkpoint",
+    "Redmi and original Body-JEPA/STEP2/B3 gates remain open"
+  ],
+  "next_command": "Check Run300 focused and Run298 full suite conclusions, then create separate owned branch for next substantive Canon package. Preserve failures.",
+  "prerequisites": "No force push, no shared status overwrite, no competing native jobs. Respect active Run297 native Context OS owner."
+}
