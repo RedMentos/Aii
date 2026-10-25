@@ -72,4 +72,22 @@ class ReversibleTests(unittest.TestCase):
             patch_rollback(self.model,self.master,self.report,self.micro,self.micro_report,'0'*64,self.out)
         self.assertFalse(self.out.exists())
 
+    def test_quantized_alias_of_f32_span_rejected(self):
+        # Malformed GGUF: a Q4_0 tensor shares the selected F32 vector offset.
+        # Run162/163 only inspect selected F32; Run168 must inspect ALL spans.
+        h=b'GGUF'+u32(3)+u64(2)+u64(0)
+        h+=s('quant.weight')+u32(1)+u64(32)+u32(2)+u64(0)
+        h+=s('norm.0.weight')+u32(1)+u64(4)+u32(0)+u64(0)
+        h+=b'\0'*(-len(h)%32)
+        self.model.write_bytes(h+np.array([1.,2.,3.,4.],dtype='<f4').tobytes()+b'\0'*16)
+        self.sha=hashlib.sha256(self.model.read_bytes()).hexdigest()
+        self.master.unlink();self.micro.unlink()
+        r=export(self.model,self.sha,['norm.0.weight'],self.master)
+        self.report.write_text(json.dumps(r))
+        m=micro(self.model,self.master,self.report,self.sha,self.micro)
+        self.micro_report.write_text(json.dumps(m))
+        with self.assertRaisesRegex(ValueError,'ggml_tensor_span_overlap'):
+            self.run_patch()
+        self.assertFalse(self.out.exists())
+
 if __name__=='__main__':unittest.main()
