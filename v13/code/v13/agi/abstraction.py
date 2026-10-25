@@ -8,6 +8,7 @@ Built-in inducer: enumerative search over a tiny program DSL (DreamCoder idea, n
 for input→output string pairs. A model-based inducer plugs in through the same contract:
 inducer(train_pairs) -> list of (name, fn).
 """
+import hashlib
 import itertools
 import re
 import time
@@ -41,6 +42,8 @@ def dsl_inducer(pairs,max_depth=2):
         if found:break
     return found
 
+def input_hash(value):return hashlib.sha256(str(value).encode('utf-8')).hexdigest()
+
 def words(t):return set(re.findall(r'\w+',str(t).casefold()))
 def jaccard(a,b):return len(a&b)/len(a|b) if a|b else 0.
 
@@ -63,6 +66,10 @@ class Abstraction:
         out=[]
         for members in cluster(episodes):
             if len(members)<MIN_SUPPORT:continue
+            # A repeated replay example is not a held-out generalisation test.
+            # Require unique episode identities and exact inputs across the cohort.
+            ids=[m['id'] for m in members];inputs=[input_hash(m['input']) for m in members]
+            if len(set(ids))!=len(ids) or len(set(inputs))!=len(inputs):continue
             k=max(1,int(round(len(members)*HOLDOUT_SHARE)));train,test=members[:-k],members[-k:]
             progs=self.inducer([(m['input'],m['output']) for m in train])
             if not progs:continue
@@ -71,18 +78,30 @@ class Abstraction:
             reach=None
             if transfer:reach=round(sum(fn(m['input'])==m['output'] for m in transfer)/len(transfer),4)
             status='VALIDATED' if held==1. else 'REFUTED'
-            out.append(self._save(name,domain,[m['id'] for m in train],[m['id'] for m in test],held,reach,status,len(progs)))
+            out.append(self._save(name,domain,[m['id'] for m in train],[m['id'] for m in test],held,reach,status,len(progs),
+                                  [input_hash(m['input']) for m in train],[input_hash(m['input']) for m in test]))
         return out
-    def _save(self,program,domain,train,test,held,reach,status,alternatives):
+    def _save(self,program,domain,train,test,held,reach,status,alternatives,train_hashes,test_hashes):
         def f(st):
             for r in st['rules'].values():
                 if r['program']==program and r['domain']==domain:
+                    # A later cohort may reverse old train/test roles. Keep it
+                    # as a separate rule, not a contaminated merged validation.
+                    if ('support_input_hashes' not in r or 'test_input_hashes' not in r
+                        or set(r['support'])&set(test) or set(r['tests'])&set(train)
+                        or set(r['support_input_hashes'])&set(test_hashes)
+                        or set(r['test_input_hashes'])&set(train_hashes)):
+                        continue
                     r['support']=sorted(set(r['support'])|set(train));r['tests']=sorted(set(r['tests'])|set(test))
+                    r['support_input_hashes']=sorted(set(r['support_input_hashes'])|set(train_hashes))
+                    r['test_input_hashes']=sorted(set(r['test_input_hashes'])|set(test_hashes))
                     r['holdout_accuracy']=held;r['transfer']=reach if reach is not None else r['transfer']
                     if status=='REFUTED':r['status']='REFUTED'
                     return dict(r)
             st['seq']+=1;rid=f'rule_{st["seq"]}'
-            st['rules'][rid]={'id':rid,'program':program,'domain':domain,'support':train,'tests':test,'holdout_accuracy':held,'transfer':reach,
+            st['rules'][rid]={'id':rid,'program':program,'domain':domain,'support':train,'tests':test,
+                              'support_input_hashes':sorted(set(train_hashes)),'test_input_hashes':sorted(set(test_hashes)),
+                              'holdout_accuracy':held,'transfer':reach,
                               'status':status,'ambiguity':alternatives,'fact_write_authority':0,'created':self.clock()}
             while len(st['rules'])>MAX_RULES:st['rules'].pop(next(iter(st['rules'])))
             return dict(st['rules'][rid])
