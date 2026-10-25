@@ -9,9 +9,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-concurrency:
-  group: v13-native-c3-run131-serialized
-  cancel-in-progress: false
+# Synthetic standard-library lab is not a heavy native/model job; independent CI.
 jobs:
   ds3:
     runs-on: ubuntu-24.04
