@@ -64,11 +64,17 @@ class A2FrozenReferenceRun286(unittest.TestCase):
     def test_hash_tamper_and_nonfinite_refused(self):
         self.path.write_text('broken')
         with self.assertRaises(ValueError): self.check()
-        for value in [float('nan'), float('inf'), True]:
+        for value in [float('nan'), float('inf'), 1e308, True]:
             v = self.vector.copy(); v[0] = value
             atomic_write(self.path, json.dumps({'embedding': v}, allow_nan=True))
             p = copy.deepcopy(self.p); p['feature_sha256'] = file_hash(self.path)
             with self.subTest(value=str(value)), self.assertRaises(ValueError): self.check(p)
+
+    def test_partial_source_span_refused_even_if_provenance_updated(self):
+        p = copy.deepcopy(self.p)
+        p['source_ref']['char_end'] -= 1
+        p['provenance'] = [p['source_ref']]
+        with self.assertRaises(ValueError): self.check(p)
 
     def test_blob_directory_symlink_refused(self):
         blob = self.home / 'data/blobs'
