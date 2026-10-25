@@ -82,6 +82,26 @@ class AG8ShieldMetricsRun380(unittest.TestCase):
                 self.assertEqual(self.si.get(pid)["status"], "PROPOSED")
                 self.assertEqual(self.request_count(), before)
 
+    def test_forgetting_regression_above_exact_threshold_blocks_gain(self):
+        pid, result = self.propose_and_evaluate(
+            dict(self.base, forgetting={"rate": 0.1}),
+            {"overall": 0.54, "seen": 0.5, "unseen": 0.5,
+             "forgetting": {"rate": 0.12004}},
+        )
+        self.assertEqual(result["status"], "SHIELD_FAIL")
+        self.assertIn("forgetting", result["shield"]["regressions"])
+        self.assertEqual(self.request_count(), 0)
+
+    def test_invalid_baseline_cannot_be_masked_by_candidate_gain(self):
+        pid = self.si.propose("knob", {"memory_top_k": 4}, origin="USER")
+        with self.assertRaises(ValueError):
+            self.si.evaluate(pid, lambda settings:
+                {"overall": 0.5, "seen": 0.5, "unseen": float("nan")}
+                if settings is None else
+                {"overall": 0.9, "seen": 0.9, "unseen": 0.9})
+        self.assertEqual(self.si.get(pid)["status"], "PROPOSED")
+        self.assertEqual(self.request_count(), 0)
+
     def test_complete_finite_improvement_remains_human_gated(self):
         pid, result = self.propose_and_evaluate(
             dict(self.base, forgetting={"rate": 0.1}),
