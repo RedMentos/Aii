@@ -1,0 +1,57 @@
+{
+  "run": "Run215",
+  "date_utc": "2026-10-25",
+  "canonical_area": "JEF C1 open-question original event/source integrity",
+  "branch": "codex/jef-open-question-lineage-run215-20261025",
+  "base_verified": "f4691e7246bd7bb9d0468304c224267ee2551be2",
+  "tested_commit": "a42c0c929eb025dd3937fe3ad427cda4030e0cc9",
+  "owner": "Sequential executive.py _question_valid and new test; no native or other active owner overlap",
+  "owned_files": [
+    "v13/code/v13/executive.py",
+    "v13/code/tests/test_executive_open_question_lineage_run215.py",
+    ".github/workflows/run215-jef-question-lineage.yml",
+    "v13/code/docs/proofs/continuation-20261025/run215-jef-question/"
+  ],
+  "changes": "RED first: JEF accepted foreign-session and unrelated same-session source_ref in persisted open_question despite same-session OfferPacket. Fix revalidates original event packet source_ref and OfferPacket event_id/packet_id before report/control; valid question survives Store restart.",
+  "failed_attempts": {
+    "red": {
+      "run_id": 40179289167,
+      "job_id": 121126660854,
+      "head": "29b7ac1df375fe713114210c9f3c2da71ead3580",
+      "result": "2 genuine binding FAIL + 1 test fixture ERROR (wrong report_context key)",
+      "preserved": "RED_ACTUAL_SOURCE.txt"
+    },
+    "fixture_fix": "Changed test report_context key to unresolved_observer_hypotheses; did not change production to hide error."
+  },
+  "actual_source_ci": {
+    "green_run_id": 40179356288,
+    "green_job_id": 121126865175,
+    "head": "a42c0c929eb025dd3937fe3ad427cda4030e0cc9",
+    "tests": "21/21 PASS (Run215 3, Run213 3, Run212 3, original executive 12)",
+    "compileall": "PASS",
+    "privacy_scan": "CLEAN",
+    "log_url": "https://github.com/RedMentos/Aii/actions/runs/40179356288/job/121126865175"
+  },
+  "source_blob_sha": {
+    "executive.py": "c8ab48fd9e25cd8ec6c1167e49f4ed7faeb6fa3a",
+    "test_executive_open_question_lineage_run215.py": "2c35e9a02dee9cac2a7a031f345d5f4231dab0b3",
+    "run215-jef-question-lineage.yml": "1a647c0c92615d0324ae58b8bd76f24bc6b95b8b"
+  },
+  "evidence_kind": "Actual-source GitHub Linux CI, synthetic Store/Executive/OfferPacket, no native C2, Redmi, model training, JEPA",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "JEF current_action_intent persisted state is not revalidated in _clean; test cross-session action ID and type in separate package.",
+    "No full project-wide regression suite claim from 21 focused tests.",
+    "Native model utility, Redmi, Body-JEPA and original STEP2/B3 gates still unproven."
+  ],
+  "next_step": "Run216 actual Store/Executive current_action_intent source/event and corollary binding adversarial test, narrow fix only after RED; then shift to another canonical organ.",
+  "next_command": "PYTHONPATH=tests:. python -m unittest -v tests.test_executive_action_intent_lineage_run216 tests.test_executive_open_question_lineage_run215 tests.test_executive",
+  "no_authority_promotion": true
+}
