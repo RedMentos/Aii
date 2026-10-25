@@ -13,3 +13,10 @@
 - Environment: local container has no GitHub DNS; GitHub connector reads/writes authorized review branch. Library container-path upload returned `No active container session`; rejected anyone-writable Drive destination not retried.
 - Open questions: How much real C3 correct-answer coverage survives strict JSON-only parsing? How often do semantically misleading sources lack obvious ambiguity markers? Need independent held-out native C3 mixed-correct/wrong calibration and better source provenance before any delivery proposal.
 - Exact next commands (on full checkout): `python3 -m unittest discover -s v13/code/tests -p test_run184_age0d_strict_shadow.py -v`; `python3 v13/code/scripts/run184_age0d_strict_shadow.py --output /tmp/run184.json`; `python3 v13/code/scripts/public_repo_privacy_scan.py --base 614a1d543c8f2fd0071a5b983dad3e58429a3b28 --head HEAD`. Inspect PR213 CI and raw artifact, then continue a disjoint canonical package.
+
+## Verified full-checkout CI addendum
+
+- GitHub Actions run `40169536016`, job `121097395105`: **SUCCESS**; source-bound Run183 counterexample tests, 13/13 focused tests (no local missing-source skip in CI), 120-case synthetic report, official public-repo privacy scan and artifact upload steps all succeeded.
+- Artifact metadata: `12589287426` (`V13-Run184-AGE0d-Strict-Software-Raw`, 1874 bytes, not expired). GitHub artifact ZIP bytes have **not** been independently downloaded/hashed here; do not claim that verification.
+- CI confirms two original Run183 non-abstention counterexamples (obsolete-cost decoy and duplicate JSON keys), not that Run183 historical replay was invalid. This candidate remains isolated SHADOW and unvalidated on held-out real C3 correct answers.
+- Next: independent native C3 mixed-correct/wrong held-out evaluation after Run181 heavy job completes, or a disjoint canonical package meanwhile. Never alter Run181's active owner files.
