@@ -1,0 +1,260 @@
+﻿2026-10-25T02:10:23.6294263Z Current runner version: '2.338.0'
+2026-10-25T02:10:23.6312896Z ##[group]Runner Image Provisioner
+2026-10-25T02:10:23.6313460Z Hosted Compute Agent
+2026-10-25T02:10:23.6313987Z Version: 20261021.618
+2026-10-25T02:10:23.6314409Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T02:10:23.6314886Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T02:10:23.6315539Z Worker ID: {5890296e-4adc-40dc-9f36-7832171dd474}
+2026-10-25T02:10:23.6316010Z Region: westus2
+2026-10-25T02:10:23.6316428Z Cloud: Azure
+2026-10-25T02:10:23.6316767Z ##[endgroup]
+2026-10-25T02:10:23.6317611Z ##[group]Operating System
+2026-10-25T02:10:23.6318048Z Ubuntu
+2026-10-25T02:10:23.6318380Z 26.04.1
+2026-10-25T02:10:23.6318731Z LTS
+2026-10-25T02:10:23.6319135Z ##[endgroup]
+2026-10-25T02:10:23.6319477Z ##[group]Runner Image
+2026-10-25T02:10:23.6319895Z Image: ubuntu-26.04
+2026-10-25T02:10:23.6320258Z Version: 20261012.163.1
+2026-10-25T02:10:23.6321120Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-25T02:10:23.6322023Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-25T02:10:23.6322663Z ##[endgroup]
+2026-10-25T02:10:23.6323350Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T02:10:23.6324676Z Contents: read
+2026-10-25T02:10:23.6325045Z Metadata: read
+2026-10-25T02:10:23.6325696Z ##[endgroup]
+2026-10-25T02:10:23.6327105Z Secret source: Actions
+2026-10-25T02:10:23.6327780Z Cache mode: write
+2026-10-25T02:10:23.6328233Z Prepare workflow directory
+2026-10-25T02:10:23.6579052Z Prepare all required actions
+2026-10-25T02:10:23.6611341Z Getting action download info
+2026-10-25T02:10:23.9680549Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-25T02:10:24.1215954Z Complete job name: software
+2026-10-25T02:10:24.1750848Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-25T02:10:24.1751379Z with:
+2026-10-25T02:10:24.1751665Z   persist-credentials: false
+2026-10-25T02:10:24.1751973Z   repository: RedMentos/Aii
+2026-10-25T02:10:24.1754361Z   token: ***
+2026-10-25T02:10:24.1754617Z   ssh-strict: true
+2026-10-25T02:10:24.1754881Z   ssh-user: git
+2026-10-25T02:10:24.1755131Z   clean: true
+2026-10-25T02:10:24.1755542Z   sparse-checkout-cone-mode: true
+2026-10-25T02:10:24.1755852Z   fetch-depth: 1
+2026-10-25T02:10:24.1756111Z   fetch-tags: false
+2026-10-25T02:10:24.1756377Z   show-progress: true
+2026-10-25T02:10:24.1756644Z   lfs: false
+2026-10-25T02:10:24.1756892Z   submodules: false
+2026-10-25T02:10:24.1757159Z   set-safe-directory: true
+2026-10-25T02:10:24.1757516Z env:
+2026-10-25T02:10:24.1757754Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:10:24.1758018Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:10:24.1758306Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:10:24.1758579Z ##[endgroup]
+2026-10-25T02:10:24.2440737Z Syncing repository: RedMentos/Aii
+2026-10-25T02:10:24.2442422Z ##[group]Getting Git version info
+2026-10-25T02:10:24.2443093Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-25T02:10:24.2444029Z [command]/usr/bin/git version
+2026-10-25T02:10:24.2444497Z git version 2.55.0
+2026-10-25T02:10:24.2446082Z ##[endgroup]
+2026-10-25T02:10:24.2450085Z Temporarily overriding HOME='/home/runner/work/_temp/32991213-5279-44b7-a5d5-323f513a4349' before making global git config changes
+2026-10-25T02:10:24.2451412Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T02:10:24.2452405Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T02:10:24.2505022Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-25T02:10:24.2507394Z ##[group]Initializing the repository
+2026-10-25T02:10:24.2510678Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-25T02:10:24.2717720Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-25T02:10:24.2718418Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-25T02:10:24.2719234Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-25T02:10:24.2719728Z hint: call:
+2026-10-25T02:10:24.2719969Z hint:
+2026-10-25T02:10:24.2720301Z hint: 	git config --global init.defaultBranch <name>
+2026-10-25T02:10:24.2720670Z hint:
+2026-10-25T02:10:24.2721149Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-25T02:10:24.2721911Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-25T02:10:24.2722343Z hint:
+2026-10-25T02:10:24.2722589Z hint: 	git branch -m <name>
+2026-10-25T02:10:24.2722869Z hint:
+2026-10-25T02:10:24.2723239Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-25T02:10:24.2733882Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-25T02:10:24.2737375Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-25T02:10:24.2812715Z ##[endgroup]
+2026-10-25T02:10:24.2813511Z ##[group]Disabling automatic garbage collection
+2026-10-25T02:10:24.2814235Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-25T02:10:24.2844917Z ##[endgroup]
+2026-10-25T02:10:24.2846186Z ##[group]Setting up auth
+2026-10-25T02:10:24.2850540Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:10:24.2890304Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:10:24.3278109Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:10:24.3308375Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:10:24.3546206Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-25T02:10:24.3582369Z ##[endgroup]
+2026-10-25T02:10:24.3582983Z ##[group]Fetching the repository
+2026-10-25T02:10:24.3589205Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0fa874302eb6f4551fe97b87a7c44ac867900f79:refs/remotes/pull/159/merge
+2026-10-25T02:10:32.5366084Z From https://github.com/RedMentos/Aii
+2026-10-25T02:10:32.5367753Z  * [new ref]         0fa874302eb6f4551fe97b87a7c44ac867900f79 -> pull/159/merge
+2026-10-25T02:10:32.5370939Z ##[endgroup]
+2026-10-25T02:10:32.5372113Z ##[group]Determining the checkout info
+2026-10-25T02:10:32.5373559Z ##[endgroup]
+2026-10-25T02:10:32.5377268Z [command]/usr/bin/git sparse-checkout disable
+2026-10-25T02:10:32.5427420Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-25T02:10:32.5455628Z ##[group]Checking out the ref
+2026-10-25T02:10:32.5458566Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/159/merge
+2026-10-25T02:10:33.5518352Z Updating files:  93% (3238/3460)
+2026-10-25T02:10:33.5543247Z Updating files:  94% (3253/3460)
+2026-10-25T02:10:33.5560956Z Updating files:  95% (3287/3460)
+2026-10-25T02:10:33.5580889Z Updating files:  96% (3322/3460)
+2026-10-25T02:10:33.5601649Z Updating files:  97% (3357/3460)
+2026-10-25T02:10:33.5636986Z Updating files:  98% (3391/3460)
+2026-10-25T02:10:33.5661748Z Updating files:  99% (3426/3460)
+2026-10-25T02:10:33.5662048Z Updating files: 100% (3460/3460)
+2026-10-25T02:10:33.5662338Z Updating files: 100% (3460/3460), done.
+2026-10-25T02:10:33.5687580Z Note: switching to 'refs/remotes/pull/159/merge'.
+2026-10-25T02:10:33.5687828Z 
+2026-10-25T02:10:33.5688059Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-25T02:10:33.5688532Z changes and commit them, and you can discard any commits you make in this
+2026-10-25T02:10:33.5688980Z state without impacting any branches by switching back to a branch.
+2026-10-25T02:10:33.5689192Z 
+2026-10-25T02:10:33.5689631Z If you want to create a new branch to retain commits you create, you may
+2026-10-25T02:10:33.5690000Z do so (now or later) by using -c with the switch command. Example:
+2026-10-25T02:10:33.5690185Z 
+2026-10-25T02:10:33.5690275Z   git switch -c <new-branch-name>
+2026-10-25T02:10:33.5690408Z 
+2026-10-25T02:10:33.5690526Z Or undo this operation with:
+2026-10-25T02:10:33.5690655Z 
+2026-10-25T02:10:33.5690726Z   git switch -
+2026-10-25T02:10:33.5690826Z 
+2026-10-25T02:10:33.5691032Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-25T02:10:33.5691243Z 
+2026-10-25T02:10:33.5691480Z HEAD is now at 0fa8743 Merge 52db0cd123a914f936b251709c2f922b5052ce0a into d3aa8dde0f521ecd3f4920820743a3d3bbad12bc
+2026-10-25T02:10:33.5820135Z ##[endgroup]
+2026-10-25T02:10:33.5870925Z [command]/usr/bin/git log -1 --format=%H
+2026-10-25T02:10:33.5896665Z 0fa874302eb6f4551fe97b87a7c44ac867900f79
+2026-10-25T02:10:33.5904914Z ##[group]Removing auth
+2026-10-25T02:10:33.5908111Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:10:33.5935474Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:10:33.6176551Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:10:33.6197868Z http.https://github.com/.extraheader
+2026-10-25T02:10:33.6204356Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-25T02:10:33.6232583Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:10:33.6466425Z ##[endgroup]
+2026-10-25T02:10:33.6641000Z ##[group]Run python3 -m venv "$RUNNER_TEMP/run128"
+2026-10-25T02:10:33.6641372Z [36;1mpython3 -m venv "$RUNNER_TEMP/run128"[0m
+2026-10-25T02:10:33.6641813Z [36;1m"$RUNNER_TEMP/run128/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-25T02:10:33.6790985Z shell: /usr/bin/bash -e {0}
+2026-10-25T02:10:33.6791239Z env:
+2026-10-25T02:10:33.6791534Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:10:33.6791707Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:10:33.6791884Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:10:33.6792053Z ##[endgroup]
+2026-10-25T02:10:35.7314193Z Collecting numpy==2.3.5
+2026-10-25T02:10:35.7747060Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-25T02:10:35.8158424Z Collecting prompt-toolkit==3.0.52
+2026-10-25T02:10:35.8233161Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-25T02:10:35.8415447Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-25T02:10:35.8525004Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-25T02:10:35.8691090Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-25T02:10:36.2221971Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 47.4 MB/s eta 0:00:00
+2026-10-25T02:10:36.2295970Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-25T02:10:36.2401647Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-25T02:10:36.2477569Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 88.6 MB/s eta 0:00:00
+2026-10-25T02:10:36.2727329Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-25T02:10:37.6641086Z 
+2026-10-25T02:10:37.6650512Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-25T02:10:37.7660922Z ##[group]Run set -euo pipefail
+2026-10-25T02:10:37.7661194Z [36;1mset -euo pipefail[0m
+2026-10-25T02:10:37.7661341Z [36;1mcd v13/code[0m
+2026-10-25T02:10:37.7661495Z [36;1mexport PYTHONPATH="$PWD"[0m
+2026-10-25T02:10:37.7661892Z [36;1m"$RUNNER_TEMP/run128/bin/python" -m compileall -q v13 tests[0m
+2026-10-25T02:10:37.7724095Z [36;1mfor pattern in test_phone_prestart_run128.py test_phone_halt.py test_cli_standstill_run121.py test_standstill.py; do[0m
+2026-10-25T02:10:37.7724491Z [36;1m  echo "RUN128_SUITE=$pattern"[0m
+2026-10-25T02:10:37.7724757Z [36;1m  "$RUNNER_TEMP/run128/bin/python" -m unittest discover -s tests -p "$pattern" -v[0m
+2026-10-25T02:10:37.7725003Z [36;1mdone[0m
+2026-10-25T02:10:37.7725181Z [36;1mecho "RUN128_LINUX_SOFTWARE_PASS; NO_NATIVE_OR_REDMI_PROOF"[0m
+2026-10-25T02:10:37.7779917Z shell: /usr/bin/bash -e {0}
+2026-10-25T02:10:37.7780077Z env:
+2026-10-25T02:10:37.7780199Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:10:37.7780391Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:10:37.7780538Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:10:37.7780715Z ##[endgroup]
+2026-10-25T02:10:38.4333136Z RUN128_SUITE=test_phone_prestart_run128.py
+2026-10-25T02:10:38.5280942Z test_both_buttons_only_apply_stillstand (test_phone_prestart_run128.PhonePrestartRun128.test_both_buttons_only_apply_stillstand) ... ERROR
+2026-10-25T02:10:38.7596356Z test_cli_recovered_turn_never_final_before_human_release (test_phone_prestart_run128.PhonePrestartRun128.test_cli_recovered_turn_never_final_before_human_release) ... FAIL
+2026-10-25T02:10:38.7707653Z test_human_held_parts_remain_after_release (test_phone_prestart_run128.PhonePrestartRun128.test_human_held_parts_remain_after_release) ... ERROR
+2026-10-25T02:10:38.7777847Z test_invalid_age_state_does_not_consume_request_or_partially_write (test_phone_prestart_run128.PhonePrestartRun128.test_invalid_age_state_does_not_consume_request_or_partially_write) ... ERROR
+2026-10-25T02:10:38.7785902Z test_notaus_only_does_not_pause_queue_or_freeze_age (test_phone_prestart_run128.PhonePrestartRun128.test_notaus_only_does_not_pause_queue_or_freeze_age) ... ERROR
+2026-10-25T02:10:38.7793161Z test_stillstand_preflight_applies_all_gates_and_owns_only_new_parts (test_phone_prestart_run128.PhonePrestartRun128.test_stillstand_preflight_applies_all_gates_and_owns_only_new_parts) ... ERROR
+2026-10-25T02:10:38.7795720Z 
+2026-10-25T02:10:38.7795906Z ======================================================================
+2026-10-25T02:10:38.7796469Z ERROR: test_both_buttons_only_apply_stillstand (test_phone_prestart_run128.PhonePrestartRun128.test_both_buttons_only_apply_stillstand)
+2026-10-25T02:10:38.7796877Z ----------------------------------------------------------------------
+2026-10-25T02:10:38.7797200Z Traceback (most recent call last):
+2026-10-25T02:10:38.7797717Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_phone_prestart_run128.py", line 78, in test_both_buttons_only_apply_stillstand
+2026-10-25T02:10:38.7798265Z     self.assertEqual(len(H.prestart(self.home)), 1)
+2026-10-25T02:10:38.7798807Z                          ^^^^^^^^^^
+2026-10-25T02:10:38.7799150Z AttributeError: module 'v13.phone_halt' has no attribute 'prestart'
+2026-10-25T02:10:38.7799402Z 
+2026-10-25T02:10:38.7799505Z ======================================================================
+2026-10-25T02:10:38.7800076Z ERROR: test_human_held_parts_remain_after_release (test_phone_prestart_run128.PhonePrestartRun128.test_human_held_parts_remain_after_release)
+2026-10-25T02:10:38.7800657Z ----------------------------------------------------------------------
+2026-10-25T02:10:38.7800965Z Traceback (most recent call last):
+2026-10-25T02:10:38.7801448Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_phone_prestart_run128.py", line 63, in test_human_held_parts_remain_after_release
+2026-10-25T02:10:38.7801944Z     H.prestart(self.home)
+2026-10-25T02:10:38.7802150Z     ^^^^^^^^^^
+2026-10-25T02:10:38.7802416Z AttributeError: module 'v13.phone_halt' has no attribute 'prestart'
+2026-10-25T02:10:38.7802658Z 
+2026-10-25T02:10:38.7803197Z ======================================================================
+2026-10-25T02:10:38.7803839Z ERROR: test_invalid_age_state_does_not_consume_request_or_partially_write (test_phone_prestart_run128.PhonePrestartRun128.test_invalid_age_state_does_not_consume_request_or_partially_write)
+2026-10-25T02:10:38.7804408Z ----------------------------------------------------------------------
+2026-10-25T02:10:38.7804607Z Traceback (most recent call last):
+2026-10-25T02:10:38.7804961Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_phone_prestart_run128.py", line 106, in test_invalid_age_state_does_not_consume_request_or_partially_write
+2026-10-25T02:10:38.7805491Z     H.prestart(self.home)
+2026-10-25T02:10:38.7805622Z     ^^^^^^^^^^
+2026-10-25T02:10:38.7805792Z AttributeError: module 'v13.phone_halt' has no attribute 'prestart'
+2026-10-25T02:10:38.7805951Z 
+2026-10-25T02:10:38.7806021Z ======================================================================
+2026-10-25T02:10:38.7806414Z ERROR: test_notaus_only_does_not_pause_queue_or_freeze_age (test_phone_prestart_run128.PhonePrestartRun128.test_notaus_only_does_not_pause_queue_or_freeze_age)
+2026-10-25T02:10:38.7806818Z ----------------------------------------------------------------------
+2026-10-25T02:10:38.7807019Z Traceback (most recent call last):
+2026-10-25T02:10:38.7807345Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_phone_prestart_run128.py", line 89, in test_notaus_only_does_not_pause_queue_or_freeze_age
+2026-10-25T02:10:38.7807692Z     self.assertEqual(len(H.prestart(self.home)), 1)
+2026-10-25T02:10:38.7807870Z                          ^^^^^^^^^^
+2026-10-25T02:10:38.7808065Z AttributeError: module 'v13.phone_halt' has no attribute 'prestart'
+2026-10-25T02:10:38.7808221Z 
+2026-10-25T02:10:38.7808288Z ======================================================================
+2026-10-25T02:10:38.7808743Z ERROR: test_stillstand_preflight_applies_all_gates_and_owns_only_new_parts (test_phone_prestart_run128.PhonePrestartRun128.test_stillstand_preflight_applies_all_gates_and_owns_only_new_parts)
+2026-10-25T02:10:38.7809210Z ----------------------------------------------------------------------
+2026-10-25T02:10:38.7809406Z Traceback (most recent call last):
+2026-10-25T02:10:38.7809762Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_phone_prestart_run128.py", line 35, in test_stillstand_preflight_applies_all_gates_and_owns_only_new_parts
+2026-10-25T02:10:38.7810126Z     messages = H.prestart(self.home)
+2026-10-25T02:10:38.7810279Z                ^^^^^^^^^^
+2026-10-25T02:10:38.7810468Z AttributeError: module 'v13.phone_halt' has no attribute 'prestart'
+2026-10-25T02:10:38.7810620Z 
+2026-10-25T02:10:38.7810688Z ======================================================================
+2026-10-25T02:10:38.7811087Z FAIL: test_cli_recovered_turn_never_final_before_human_release (test_phone_prestart_run128.PhonePrestartRun128.test_cli_recovered_turn_never_final_before_human_release)
+2026-10-25T02:10:38.7811505Z ----------------------------------------------------------------------
+2026-10-25T02:10:38.7811702Z Traceback (most recent call last):
+2026-10-25T02:10:38.7812032Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_phone_prestart_run128.py", line 133, in test_cli_recovered_turn_never_final_before_human_release
+2026-10-25T02:10:38.7812410Z     self.assertEqual(result.returncode, 2, result.stderr)
+2026-10-25T02:10:38.7812614Z     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T02:10:38.7812810Z AssertionError: 0 != 2 : [V13] Eingabe gespeichert.
+2026-10-25T02:10:38.7813266Z [V13] Antwort gespeichert · FINAL
+2026-10-25T02:10:38.7813452Z [V13] Antwort gespeichert · FINAL
+2026-10-25T02:10:38.7813557Z 
+2026-10-25T02:10:38.7813559Z 
+2026-10-25T02:10:38.7813660Z ----------------------------------------------------------------------
+2026-10-25T02:10:38.7813856Z Ran 6 tests in 0.253s
+2026-10-25T02:10:38.7813941Z 
+2026-10-25T02:10:38.7814004Z FAILED (failures=1, errors=5)
+2026-10-25T02:10:38.7955168Z ##[error]Process completed with exit code 1.
+2026-10-25T02:10:38.8046716Z Post job cleanup.
+2026-10-25T02:10:38.8664421Z [command]/usr/bin/git version
+2026-10-25T02:10:38.8701620Z git version 2.55.0
+2026-10-25T02:10:38.8730762Z Temporarily overriding HOME='/home/runner/work/_temp/9a3a92fc-156a-4454-8892-dba19ca30170' before making global git config changes
+2026-10-25T02:10:38.8731844Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T02:10:38.8733430Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T02:10:38.8781235Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:10:38.8823464Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:10:38.9085995Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:10:38.9119217Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:10:38.9516516Z Cleaning up orphan processes
+2026-10-25T02:10:38.9786387Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
