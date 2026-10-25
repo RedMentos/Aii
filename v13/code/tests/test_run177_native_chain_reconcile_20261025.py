@@ -24,7 +24,7 @@ class Run177NativeChainReconcile(unittest.TestCase):
         self.assertEqual({name:digest(text) for name,text in expected.items()},
                          {name:digest(text) for name,text in live.items()})
         self.assertEqual(digest(expected['v13/runners.py']),EXPECTED_RUNNERS_SHA256)
-        self.assertEqual(chain.overlay(chain._baseline()),live)
+        self.assertEqual(chain.overlay(chain._baseline(chain.ROOT)),live)
 
     def test_b2_native_identity_preserved_without_changing_c3(self):
         t=chain.integrated_sources()['v13/runners.py']
