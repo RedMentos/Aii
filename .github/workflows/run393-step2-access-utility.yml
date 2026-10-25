@@ -1,0 +1,87 @@
+name: V13 Run393 STEP2 recorded access-versus-utility
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run393-step2-access-utility.yml'
+      - 'v13/code/scripts/run393_step2_access_utility.py'
+      - 'v13/code/tests/test_run393_step2_access_utility.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run393-step2-access/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Source and input identity
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN393_HEAD.txt"
+          sha256sum v13/code/scripts/run393_step2_access_utility.py v13/code/tests/test_run393_step2_access_utility.py v13/code/scripts/step2_z2_timescale.py | tee "$RUNNER_TEMP/RUN393_SOURCE_HASHES.txt"
+          sha256sum v13/code/bench-results/step2-z2c-b2-rule-20261021/summary_{CQ,CQA,CQP}_s{17,18,19}.json | tee "$RUNNER_TEMP/RUN393_INPUT_HASHES.txt"
+          python3 -m compileall -q v13/code/scripts/run393_step2_access_utility.py v13/code/tests/test_run393_step2_access_utility.py
+      - name: Real recorded native rows and adversarial tests
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" python3 -m unittest -v tests.test_run393_step2_access_utility \
+            2>&1 | tee "$RUNNER_TEMP/RUN393_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Exploratory paired report
+        id: analysis
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" python3 scripts/run393_step2_access_utility.py --output "$RUNNER_TEMP/RUN393_REPORT.json" \
+            2>&1 | tee "$RUNNER_TEMP/RUN393_ANALYSIS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -eq 0 ]; then sha256sum "$RUNNER_TEMP/RUN393_REPORT.json" | tee "$RUNNER_TEMP/RUN393_REPORT_HASH.txt"; fi
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN393_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw SHA
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN393_*' ! -name RUN393_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN393_SHA256SUMS.txt
+      - name: Upload exact-head raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run393-STEP2-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN393_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce tests, analysis and privacy
+        if: always()
+        run: |
+          test "${{ steps.suite.outputs.rc }}" = "0"
+          test "${{ steps.analysis.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

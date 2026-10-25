@@ -1,0 +1,15 @@
+# Run393: STEP2 access ↔ utility, source-bound exploratory finding (2026-10-26)
+
+**Status `EXPLORATORY_RECORDED`; `canonical_gate_pass=false`; STEP2 `UTILITY_FAIL`.** No new model call, no Redmi measurement and no source/seed/cohort re-registration. Nine unchanged real Linux-native Z2c summaries (CQ/CQA/CQP × seeds 17–19) were read by a deterministic new analyzer. Eight adversarial/unit tests PASS; compileall and privacy CLEAN (Actions 40244509688, exact head `aaaee5e4cfe9bf9d02a73212a2a1619ff5b067bd`). Nine source-file SHA256 values are embedded in `RUN393_REPORT.json`; raw artifact ZIP SHA256 `a058a85d3bbf079de5dccc3d827c324a9b1c0138b12a9381a741dcd268985562`, ZIP CRC and all eight member SHA256 checks PASS. Private Library copy was re-materialized and byte-compared identical.
+
+## Observed paired association (96 source-access rows per treatment)
+
+B2 pointer CQP versus no pointer CQ: **77/96** rows gained verified B2 rule access, with mean tool-utility difference **+0.277** in that subgroup. Sixteen rows already had access (mean difference **+0.016**), three never had access (**0.000**); none lost access. On `both_exact` specifically, 19/24 gained access (mean **+0.382**), four already had it (mean **+0.271**), one never did (**0.000**). The nonzero difference even with unchanged access is a direct warning against causal attribution: quote formatting, prompt lengths and sampling also changed.
+
+Anchor CQA versus CQ: 44/96 gained access (mean **+0.288**), eight lost access (**−0.365**), eight always had it (**+0.031**), 36 never did (**−0.005**). This is consistent with the pointer's stronger coverage, but these are correlated repeated rows, not 96 independent episodes.
+
+Fixture-cluster bootstrap (10 fixtures; each fixture retains its three seeds) for CQP `both_exact` tool utility: versus CQ `both_exact` **+0.306**, 95 % interval **[+0.214,+0.383]**; versus same-arm B1-only **+0.300** **[+0.211,+0.378]**; versus same-arm B2-only **+0.603** **[+0.383,+0.775]**; versus same-arm shared-body/same-policy dual **+0.294** **[+0.186,+0.383]**. These are descriptive resamplings of previously seen episodes and do **not** substitute for a new registered control cohort. Recorded wrong-committed-tool and wrong-rule rows remain zero in all three arms.
+
+## Interpretation and next actual STEP2 experiment
+
+The existing Z2c pointer candidate supplies the missing old rule often enough for C3's deterministic tool path to improve. The remaining uncertainty is **generalization and necessity of two distinct bodies**, not another arbitrary posthoc helper: new, independently authored long-rule-note and revised-rule episodes; fresh sampling seeds; pointer on/off and one-body/two-state control with the same information budget; negative controls for old-rule overrides, zero wrong committed decisions, latency/RSS and per-body error profiles. Preregister those before new native inference, preserve the original failed cohorts, and require the full G-B-TIMESCALE-DIVERGENCE-001 and STEP2 exit criteria. Until then, no STEP2, B3, Body-JEPA, jepa_weight, Age or whole-V13 promotion.
