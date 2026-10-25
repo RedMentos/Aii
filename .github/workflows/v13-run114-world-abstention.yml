@@ -1,0 +1,49 @@
+name: V13 Run114 World Model abstention regression
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run114-world-abstention.yml"
+      - "v13/code/scripts/ablation_world_model_confidence.py"
+      - "v13/code/tests/test_ablation_homeo_meta.py"
+      - "v13/code/tests/test_world_confidence_abstention_run114.py"
+      - "v13/code/docs/proofs/continuation-20261025/world-confidence-abstention-run114/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run114-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      DO_NOT_TRACK: "1"
+      NO_MODEL_DOWNLOADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Isolated dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: World Model ablation and historical regression
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python -m compileall -q scripts/ablation_world_model_confidence.py tests/test_world_confidence_abstention_run114.py tests/test_ablation_homeo_meta.py
+          ../../.venv/bin/python -m unittest discover -s tests -p 'test_world_confidence_abstention_run114.py' -v
+          ../../.venv/bin/python -m unittest discover -s tests -p 'test_ablation_homeo_meta.py' -v
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Official public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
