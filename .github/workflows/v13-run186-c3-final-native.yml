@@ -1,0 +1,100 @@
+name: V13 Run186 pinned C3 final-answer Gist utility 36x3
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run186-c3-final-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  c3-final-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind original source, registry and software checks
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run186"
+          test "$(git hash-object v13/code/scripts/gist_utility_bench.py)" = 'f2b6d00cbe100152bb77a3b04187324eb379abd6'
+          test "$(git hash-object v13/code/scripts/run181_gist_offer_audit.py)" = '30b4f32893ec505e7c3035e76523389233121e9a'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          python3 -m pip install --disable-pip-version-check --no-input numpy==2.3.5 prompt-toolkit==3.0.52
+          python3 -m compileall -q v13/code/scripts/run186_c3_gist_final_utility.py
+          python3 -m unittest discover -s v13/code/tests -p test_run186_c3_gist_final_utility.py -v 2>&1 | tee "$RUNNER_TEMP/run186/software.log"
+          free -m | tee "$RUNNER_TEMP/run186/memory.log"
+          cat /sys/fs/cgroup/memory.max >> "$RUNNER_TEMP/run186/memory.log" || true
+      - name: Download independently verified immutable Run181 native B2 report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 20 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12589259384/zip' \
+            -o "$RUNNER_TEMP/run186/run181-raw.zip"
+          echo 'cb0786ec15734efe4b3dda2607218dccf98cb96015d2852349a44b8c689982fb  '"$RUNNER_TEMP/run186/run181-raw.zip" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/run186/input"
+          unzip -q "$RUNNER_TEMP/run186/run181-raw.zip" -d "$RUNNER_TEMP/run186/input"
+          echo 'ea379b52c7b95c2bb30cd6725f539f443521a64210fdf6bf6fa726c413126880  '"$RUNNER_TEMP/run186/input/report/report.json" | sha256sum -c -
+          PYTHONPATH=v13/code python3 v13/code/scripts/run181_gist_offer_audit.py \
+            "$RUNNER_TEMP/run186/input/report/report.json" --output "$RUNNER_TEMP/run186/run181-recheck.json" \
+            2>&1 | tee "$RUNNER_TEMP/run186/run181-recheck.log"
+          PYTHONPATH=v13/code python3 v13/code/scripts/run185_gist_source_support_audit.py \
+            "$RUNNER_TEMP/run186/input/report/report.json" --output "$RUNNER_TEMP/run186/run185-diagnostic.json" \
+            2>&1 | tee "$RUNNER_TEMP/run186/run185-diagnostic.log"
+      - name: Download exact registered C3 and llama.cpp b10964
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+            'https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz' \
+            -o "$RUNNER_TEMP/run186/llama.tar.gz"
+          test "$(stat -c %s "$RUNNER_TEMP/run186/llama.tar.gz")" = 16825086
+          echo '9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443  '"$RUNNER_TEMP/run186/llama.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/run186/llama"
+          tar -xzf "$RUNNER_TEMP/run186/llama.tar.gz" -C "$RUNNER_TEMP/run186/llama"
+          server="$(find "$RUNNER_TEMP/run186/llama" -type f -name llama-server -print -quit)"
+          test -n "$server" && test -x "$server"
+          echo "RUN186_SERVER=$server" >> "$GITHUB_ENV"
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+            'https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/LFM2.5-350M-QAD-Q4_0.gguf' \
+            -o "$RUNNER_TEMP/run186/C3.gguf"
+          test "$(stat -c %s "$RUNNER_TEMP/run186/C3.gguf")" = 219312832
+          echo '3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d  '"$RUNNER_TEMP/run186/C3.gguf" | sha256sum -c -
+      - name: Serial native C3 final answers and raw source-bound report
+        run: |
+          set -euo pipefail
+          export LD_LIBRARY_PATH="$(dirname "$RUN186_SERVER"):${LD_LIBRARY_PATH:-}"
+          PYTHONPATH=v13/code timeout --signal=INT --kill-after=10s 1500s \
+            python3 v13/code/scripts/run186_c3_gist_final_utility.py \
+              --source-report "$RUNNER_TEMP/run186/input/report/report.json" \
+              --model "$RUNNER_TEMP/run186/C3.gguf" --server "$RUN186_SERVER" \
+              --output "$RUNNER_TEMP/run186/final" \
+            2>&1 | tee "$RUNNER_TEMP/run186/native.log"
+          echo RUN186_LINUX_NATIVE_C3_FINAL_PROXY_ONLY_NO_STEP2_PROMOTION
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 92cd1f54cfef56be8d0d3af9407e2337917c2afc --head HEAD
+      - name: Preserve raw partial/full C3 answers and failure logs, never weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run186-C3-Final-Native-Raw
+          path: |
+            ${{ runner.temp }}/run186/*.log
+            ${{ runner.temp }}/run186/*.json
+            ${{ runner.temp }}/run186/final/*.json
+            ${{ runner.temp }}/run186/final/*.log
+          if-no-files-found: warn
+          retention-days: 14

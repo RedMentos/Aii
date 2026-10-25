@@ -1,0 +1,16 @@
+test_c3_model_pin (test_run186_c3_gist_final_utility.C3GistFinal.test_c3_model_pin) ... ok
+test_correct_final_source_supported (test_run186_c3_gist_final_utility.C3GistFinal.test_correct_final_source_supported) ... ok
+test_duplicate_json_keys_refused (test_run186_c3_gist_final_utility.C3GistFinal.test_duplicate_json_keys_refused) ... ok
+test_exact_source_quote_forwarded (test_run186_c3_gist_final_utility.C3GistFinal.test_exact_source_quote_forwarded) ... ok
+test_fabricated_quote_filtered (test_run186_c3_gist_final_utility.C3GistFinal.test_fabricated_quote_filtered) ... ok
+test_malformed_json_not_supported (test_run186_c3_gist_final_utility.C3GistFinal.test_malformed_json_not_supported) ... ok
+test_numeric_substring_not_hit (test_run186_c3_gist_final_utility.C3GistFinal.test_numeric_substring_not_hit) ... ok
+test_paired_summary_and_gates (test_run186_c3_gist_final_utility.C3GistFinal.test_paired_summary_and_gates) ... ok
+test_report_binding (test_run186_c3_gist_final_utility.C3GistFinal.test_report_binding) ... ok
+test_unforwarded_quote_not_supported (test_run186_c3_gist_final_utility.C3GistFinal.test_unforwarded_quote_not_supported) ... ok
+test_unsupported_final_not_supported (test_run186_c3_gist_final_utility.C3GistFinal.test_unsupported_final_not_supported) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.002s
+
+OK
