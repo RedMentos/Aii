@@ -42,10 +42,13 @@ jobs:
           set -uo pipefail
           set +e
           python3 -m venv "$RUNNER_TEMP/run320venv"
-          "$RUNNER_TEMP/run320venv/bin/python" -m pip install --disable-pip-version-check --no-input \
-            'numpy==2.3.5' 'huggingface_hub==0.36.0' 'safetensors==0.6.2' \
-            'transformers==4.57.1' 'sentencepiece==0.2.1' 'protobuf==6.33.0' \
-            'torch==2.8.0' 2>&1 | tee "$RUNNER_TEMP/RUN320_DEPS_RAW.log"
+          {
+            "$RUNNER_TEMP/run320venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              --index-url https://download.pytorch.org/whl/cpu 'torch==2.8.0'
+            "$RUNNER_TEMP/run320venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              'numpy==2.3.5' 'huggingface_hub==0.36.0' 'safetensors==0.6.2' \
+              'transformers==4.57.1' 'sentencepiece==0.2.1' 'protobuf==6.33.0'
+          } 2>&1 | tee "$RUNNER_TEMP/RUN320_DEPS_RAW.log"
           rc=${PIPESTATUS[0]}
           "$RUNNER_TEMP/run320venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN320_PIP_FREEZE.txt" || true
           echo "$rc" > "$RUNNER_TEMP/RUN320_DEPS_EXIT.txt"
