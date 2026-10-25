@@ -58,12 +58,17 @@ def view(store,session,cap=1200):
     """Digest text for a session (warm context aid; authority 0)."""
     d=_load(store)[0]['sessions'].get(session)
     if not d:return None
+    # The operator-visible digest is also an information output. A persisted
+    # cache is not source authority: apply the same live history/source checks
+    # as the C3 context and sleep-time TTT staging paths before showing text.
+    checked=_checked_digest_entries(store,session,d.get('entries'))
+    valid=[e for item in checked if item is not None for e,_,_ in (item,)]
     lines=[];n=0
-    for e in reversed(d['entries']):
+    for e in reversed(valid):
         ln=line(e['user'],e['answer'])
         if n+len(ln)>cap:break
         lines.append(ln);n+=len(ln)
-    return {'session':session,'text':'\n'.join(reversed(lines)),'entries':len(d['entries']),'fact_authority':0}
+    return {'session':session,'text':'\n'.join(reversed(lines)),'entries':len(valid),'fact_authority':0}
 
 def _checked_digest_entries(store,session,entries):
     """Validate a persisted digest against the live, source-bound history path.
