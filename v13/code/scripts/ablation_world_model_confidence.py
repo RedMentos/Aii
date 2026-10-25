@@ -107,6 +107,9 @@ def run_seed(seed):
             with mock.patch.object(WM,'transitions',lambda store,limit=WM.MAX_ROWS:T):
                 st=WM.fit(store,rng_seed=seed)
             for q in queries:
+                # Preserve the preregistered random arm's per-query RNG stream,
+                # even when the World Model abstains on an earlier query.
+                random_score=rng.random()
                 cf=WM.counterfactual(store,q['s'],q['a'])
                 scored=_scored_counterfactual(cf)
                 if scored is None:
@@ -123,7 +126,7 @@ def run_seed(seed):
                 rows.append({'err':err,'confidence':confidence,
                              'samples_only':1-math.exp(-samples/WM.COVER_N),
                              'spread_only':1/(1+spread/WM.SPREAD_REF),
-                             'random':rng.random(),'label':label})
+                             'random':random_score,'label':label})
         finally:
             store.close()
     neg=[-r['err'] for r in rows]
