@@ -1,0 +1,55 @@
+name: V13 Run128 frozen-runtime CLI prestart stop
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run128-phone-prestart.yml"
+      - "v13/code/v13/phone_halt.py"
+      - "v13/code/v13/__main__.py"
+      - "v13/code/tests/test_phone_prestart_run128.py"
+      - "v13/code/docs/proofs/continuation-20261025/phone-prestart-run128/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run128-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan and frozen source hash
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+          test "$(git hash-object v13/code/v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+  software:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      NO_MODEL_DOWNLOADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Isolated model-free dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run128"
+          "$RUNNER_TEMP/run128/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Prestart stop and inherited CLI/SQLite tests
+        run: |
+          set -euo pipefail
+          cd v13/code
+          export PYTHONPATH="$PWD"
+          "$RUNNER_TEMP/run128/bin/python" -m compileall -q v13 tests
+          for pattern in test_phone_prestart_run128.py test_phone_halt.py test_cli_standstill_run121.py test_standstill.py; do
+            echo "RUN128_SUITE=$pattern"
+            "$RUNNER_TEMP/run128/bin/python" -m unittest discover -s tests -p "$pattern" -v
+          done
+          echo "RUN128_LINUX_SOFTWARE_PASS; NO_NATIVE_OR_REDMI_PROOF"
