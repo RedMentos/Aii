@@ -1,0 +1,44 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_V1",
+  "date": "2026-10-25",
+  "package": "Run349 WorldState ModulatorPacket + PredictionOutcome SQLite atomicity",
+  "owner": "codex/run349-world-modulator-atomicity-20261025",
+  "base_ref": "codex/run348-standstill-release-recovery-20261025",
+  "base_sha": "f4d8d9710c664cd51f17e889895565117e2a9ba1",
+  "source_test_head": "8868c3286e6d3407f5c7aab6f4e95274b0366bce",
+  "source_sha256": "f7d0a1af971565b6ac8d3ff5b5f6451dd068808ef21419b0e64c7e78cba7e9e3",
+  "test_sha256": "799593fe0ebfe8fe7859f49920de5572ecfd33c414fa4843e805a7f389f9e798",
+  "proof": {
+    "workflow_run": 40224773551,
+    "job": 121263700607,
+    "tests": "25/25 PASS Runtime/SQLite",
+    "privacy": "CLEAN",
+    "artifact_id": 12610941106,
+    "raw_zip_sha256": "9ede2aeb19a6fb00b25a003a12fb810f90552b84d05d33a56aeed09cde984a6f",
+    "manifest": "4/4 PASS",
+    "crc": "PASS",
+    "private_backup": "/V13/checkpoints/2026-10-25/V13_Run349_World_Modulator_GREEN_FINAL_raw_sha9ede2aeb.zip"
+  },
+  "negative_gates": {
+    "STEP2_EXIT": "UTILITY_FAIL",
+    "B3_L1_ORIGINAL": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "MISSING",
+    "AG6": "NOT_PROMOTED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Native World latent-score efficacy and causal validity not measured",
+    "Historical pre-Run349 orphan ModulatorPackets preserved, not auto-repaired",
+    "Concurrent WorldTransition creation remains a separate possible idempotency boundary",
+    "Whole-suite frozen-source hash tests separately RED; do not change registered hashes"
+  ],
+  "next": {
+    "package": "Run350 Context OS unbalanced literal delimiter exactness",
+    "prerequisites": "Check latest remote heads/owners and binding Context OS exact-span requirement; new review branch only",
+    "exact_next_command": "python3 -m unittest -v tests.test_context_os tests.test_context_exact_pin_run73 tests.test_context_exact_quotes_run93 tests.test_context_unbalanced_literals_run350",
+    "required_proof": "RED unmatched backtick/quote compressed away; GREEN conservative RAW fallback; source-only CI + privacy + raw SHA/CRC, no native/Redmi/age promotion"
+  }
+}
