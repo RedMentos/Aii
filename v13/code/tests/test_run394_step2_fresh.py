@@ -82,16 +82,27 @@ class Run394FreshFixtures(unittest.TestCase):
         self.assertEqual(a["source_sha256"]["run394_script"], r.file_sha(r.__file__))
 
     def test_configure_only_private_modules_not_original_fixtures(self):
-        from step2_z2_timescale import FIXTURES as original
-        original_copy = copy.deepcopy(original)
-        # Import the new script's private adapter, but never change a file on disk.
+        import step2_z2_timescale as z2
+        import step2_z2c_b2_rule as z2c
+        original_copy = copy.deepcopy(z2.FIXTURES)
+        prior = (z2.FIXTURES, z2c.FIX, z2c.RULE_EPISODES,
+                 dict(z2c.ARMS), dict(z2c.z2b.ARMS), z2c.SEEDS, z2c.z2b.SEEDS)
         selected = [x for x in r.FIXTURES if x["id"] in r.PILOT_IDS]
-        z2c = r.configure(selected)
-        self.assertEqual(set(z2c.FIX), set(r.PILOT_IDS))
-        self.assertEqual(z2c.z2b.ARMS["S"]["base"], "D")
-        self.assertEqual(z2c.ARMS["S"], "pointer")
-        self.assertEqual(len(original_copy), 10)
-        self.assertEqual(len(selected), 2)
+        try:
+            configured = r.configure(selected)
+            self.assertEqual(set(configured.FIX), set(r.PILOT_IDS))
+            self.assertEqual(configured.z2b.ARMS["S"]["base"], "D")
+            self.assertEqual(configured.ARMS["S"], "pointer")
+            self.assertEqual(len(original_copy), 10)
+            self.assertEqual(len(selected), 2)
+        finally:
+            z2.FIXTURES, z2c.FIX, z2c.RULE_EPISODES = prior[:3]
+            z2c.ARMS.clear()
+            z2c.ARMS.update(prior[3])
+            z2c.z2b.ARMS.clear()
+            z2c.z2b.ARMS.update(prior[4])
+            z2c.SEEDS, z2c.z2b.SEEDS = prior[5:]
+        self.assertEqual(z2.FIXTURES, original_copy)
         self.assertEqual(hashlib.sha256((ROOT / "scripts/step2_z2_timescale.py").read_bytes()).hexdigest(),
                          r.file_sha(ROOT / "scripts/step2_z2_timescale.py"))
 
