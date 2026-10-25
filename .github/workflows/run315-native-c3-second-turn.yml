@@ -1,0 +1,120 @@
+name: V13 Run315 real native C3 second-turn correction and forget
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/native_second_turn_probe_run315.py'
+      - 'v13/code/tests/test_native_second_turn_probe_run315.py'
+      - '.github/workflows/run315-native-c3-second-turn.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-c3-second-turn:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact current source and unchanged pinned Canon/models
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN315_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/specs/models.json v13/code/scripts/native_second_turn_probe_run315.py v13/code/tests/test_native_second_turn_probe_run315.py | tee "$RUNNER_TEMP/RUN315_BLOBS.txt"
+          python3 -m compileall -q v13/code/scripts/native_second_turn_probe_run315.py v13/code/tests/test_native_second_turn_probe_run315.py
+          { date -u -Iseconds; uname -a; free -h; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } | tee "$RUNNER_TEMP/RUN315_HOST.txt"
+      - name: Isolated pinned CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run315venv"
+          "$RUNNER_TEMP/run315venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real Runtime SQLite fixture harness, explicitly not native proof
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run315venv/bin/python" -m unittest -v \
+            tests.test_native_second_turn_probe_run315 \
+            tests.test_second_turn_c3_memory_pipeline_run204 \
+            tests.test_native_longrun_assets_run267 2>&1 | tee "$RUNNER_TEMP/RUN315_FIXTURE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN315_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Bootstrap exact registered public native C3 and runner only after fixture PASS
+        id: bootstrap
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN315_FIXTURE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN315_BOOTSTRAP_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run315installed"
+          timeout 1200s "$RUNNER_TEMP/run315venv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN315_BOOTSTRAP_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN315_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Three real native C3 turns across restart, correction and forget
+        id: native
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN315_BOOTSTRAP_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN315_NATIVE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run315installed"
+          timeout 700s "$RUNNER_TEMP/run315venv/bin/python" scripts/native_second_turn_probe_run315.py \
+            --home "$RUNNER_TEMP/run315native" --models-from "$V13_HOME" \
+            --out "$RUNNER_TEMP/RUN315_NATIVE_REPORT.json" --timeout 140 \
+            2>&1 | tee "$RUNNER_TEMP/RUN315_NATIVE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN315_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN315_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN315_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close all present raw hashes even on failure
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN315_*' ! -name 'RUN315_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN315_SHA256SUMS.txt
+      - name: Preserve exact native and fixture raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run315-Native-C3-SecondTurn-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN315_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true fixture, bootstrap, native integration and privacy exits
+        if: always()
+        run: |
+          test "${{ steps.fixture.outputs.rc }}" = "0"
+          test "${{ steps.bootstrap.outputs.rc }}" = "0"
+          test "${{ steps.native.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
