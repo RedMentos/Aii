@@ -377,8 +377,30 @@ def tool_answer_first(sources):
     return out
 
 
+def run177_b2_tap_identity(sources):
+    """Replay the three exact reviewed Run177 B2_GIST Qwen3.5 tap edits.
+
+    Original change: dd122cf8f5c5. Unique anchors reject drift or accidental
+    duplicate application; frozen baselines and live runner are never written.
+    """
+    out = dict(sources)
+    t = out['v13/runners.py']
+    t = _replace(t,
+        '"""Pinned LFM2 result_norm, after final RMSNorm, before output projection.',
+        '"""Pinned role-specific final token-state readout, before output projection.')
+    t = _replace(t,
+        "dimension=getattr(self,'tap_dim',None) or (1024 if self.role=='C3_LANGUAGE' else 2048)",
+        "dimension=getattr(self,'tap_dim',None) or (1024 if self.role in ('C3_LANGUAGE','B2_GIST') else 2048)")
+    t = _replace(t,
+        "'tap_id':'lfm2.result_norm.final.v1'",
+        "'tap_id':getattr(self,'tap_id',None) or ('qwen35.result_norm.final.v1' if self.role=='B2_GIST' else 'lfm2.result_norm.final.v1')")
+    out['v13/runners.py'] = t
+    return out
+
+
 def _later(sources):
-    return tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))))
+    out = tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))))
+    return run177_b2_tap_identity(out)
 
 
 def _baseline(root):
