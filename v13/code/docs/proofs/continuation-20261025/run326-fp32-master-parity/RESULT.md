@@ -1,0 +1,11 @@
+# Run326 closed — pinned FP32 GGUF byte drift is metadata-only
+
+UTC 2026-10-25. Preregistration commit `dc4e74f2dcc66e510a356e1e3ab705492189635f` preceded implementation. Verified source head `1dd246a105b852238ca2f05625f53a4f291694e6` / PR323, parent Run325/PR322, **not main**. GitHub Actions run `40214511020`, job `121232634475` **SUCCESS**, completed 2026-10-25T17:03:30Z; official privacy CLEAN. Ten source-only adversarial tests PASS. Exact pinned b10964 source tar/converter SHA and original HF model safetensors SHA verified.
+
+Single-job controlled full conversion A/B: identical original pinned HF snapshot bytes, same official converter/deps/`--outtype f32`, only local directory name differs. Baseline `run324hf` reproduced independently verified Run324 original GGUF SHA256 **`5d200c19f13483e66b39d9feb3353032581882f3eb10cc8752f027d4688d6e6f`**. Variant `run325hf` GGUF SHA256 **`6a20c99653fcf7ce9e6c6ff26de096a43841cd5479b98e179ff4931cf1476b35`**. **148/148** actual FP32 tensor names, shapes, types and payload SHA256 match exactly; metadata difference **only `general.name`**. The full-file hash mismatch was caused by local snapshot directory name in this A/B. The separate Run325 allowlist difference was not isolated in this experiment.
+
+Raw artifact ID `12607375237` (30-day retention), uploaded ZIP SHA256 `97d0ad62a756cdad38ed5a74993e2ff68fbb05cb8e807e2f7187693ff1896e58`. Raw run `https://github.com/RedMentos/Aii/actions/runs/40214511020`. Full per-tensor payload SHA values are compared in ephemeral CI, aggregate only in public output; no GGUF or weights published. Source code bound by exact Git commit; source/model/seed/cohort hashes unchanged.
+
+**No native optimizer ran in Run326.** Original Run325 `40213614735` remains RED before optimizer, with original raw artifact `12607105983`. Run326 cannot promote native training, STEP2, B3, Body-JEPA, AG6, jepa_weight, Redmi or V13. Negative gates: STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi MISSING, V13 INCOMPLETE.
+
+Next package Run327: use exact Run324 conversion recipe/master bytes as prerequisite, then run original unchanged Run320 two native epochs and independent Run321 audit. Do not retune selection or overwrite original failures.
