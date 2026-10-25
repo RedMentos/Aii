@@ -1,0 +1,32 @@
+{
+  "schema": "V13_RUN366_BRANCH_SCOPED_CHECKPOINT_V1",
+  "owner": "codex/ag12-finite-confidence-20261025",
+  "parent": "codex/organ-checkpoint-path-safety-20261025@554cbc46a8845284a55e504b5e28015ac5072b0a",
+  "review_pr": 361,
+  "tested_source_head": "217b5c0eac6a05aa9a148489bc3246e5e2f3fe59",
+  "source_sha256": {
+    "v13/code/v13/agi/base.py": "0a380539a15bda1c4024ab128916f09f6325ddf4ecbc5d5b794aa57bc6b8451e",
+    "v13/code/v13/agi/solver.py": "ceeb551dbcde89495241d66fa3fe751225b8d4352fb09fbb3eaf3fe57e1c82a5"
+  },
+  "tests": "24/24 PASS, inherited AG12/live PASS, privacy CLEAN, focused source-bound SUCCESS",
+  "red_run": 40231902253,
+  "green_run": 40232010426,
+  "focused_run": 40232010258,
+  "red_zip_sha256": "22db02444405beaf8234c6a5a6b5767c4a310ac2cdb8915817ad8efc212cc83f",
+  "green_zip_sha256": "0646103072c06765a495e02b589629f5a85b854f6a79adf43ffb66b3d203593f",
+  "private_backup_red": "/V13/checkpoints/2026-10-25/V13_Run366_AG12_RED_raw_sha22db0244.zip",
+  "private_backup_green": "/V13/checkpoints/2026-10-25/V13_Run366_AG12_GREEN_raw_sha06461030.zip",
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED"
+  },
+  "remaining": "full blueprint and native/Redmi acceptance open; direct AG12 calibration consumers still need finite input contract",
+  "next_package": "AG12 direct calibration finite-pair integrity or newly available higher-priority independent functional package",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_agi_solver tests.test_agi_solver_finite_run366 tests.test_agi_live",
+  "status": "BRANCH_SCOPED_GREEN_NOT_MERGED"
+}

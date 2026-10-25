@@ -5,6 +5,7 @@ the read version), checks Age rights through age.AgeControl and never grants its
 authority: anything that would touch weights, structure, hard rules or the outside
 world ends as a PENDING human request, not as an action.
 """
+import math
 import time
 from ..common import uid,dumps
 
@@ -41,7 +42,12 @@ def budget(age,name,default=0):
     try:return age.budgets('system').get(name,default)
     except Exception:return default
 
-def clamp01(x):return max(0.,min(1.,float(x)))
+def clamp01(x):
+    """Clamp a measured probability; nonfinite values carry zero evidence."""
+    value=float(x)
+    if not math.isfinite(value):
+        return 0.
+    return max(0.,min(1.,value))
 
 def new_id(prefix):return uid(prefix)
 
