@@ -1,0 +1,89 @@
+name: V13 Run180 B2 native raw Gist SourceRef consumer audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run180-b2-gist-raw.yml'
+      - 'v13/code/scripts/run180_b2_gist_native.py'
+      - 'v13/code/scripts/run180_b2_gist_audit.py'
+      - 'v13/code/tests/test_run180_b2_gist_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run180-b2-gist/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-gist:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source hashes, numpy and independent auditor software tests
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run180"
+          test "$(git hash-object v13/code/v13/runners.py)" = '37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5'
+          test "$(git hash-object v13/code/v13/gist_readout.py)" = '81484174e46051b80d031ed0c1d9badb317d538f'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(git hash-object v13/code/scripts/run180_b2_gist_native.py)" = '947d1ba9657efe905b5af91aa2e54e390b69b843'
+          test "$(git hash-object v13/code/scripts/run180_b2_gist_audit.py)" = 'da0831cb9dcb92805b95fce8a6bce052ad1da29b'
+          test "$(git hash-object v13/code/tests/test_run180_b2_gist_audit.py)" = 'b78bab310495384e20ea6ccbe1a3e6e13389eff7'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261025/run180-b2-gist/PREREG.md)" = 'fc0f71527c854408a8e0fa79fe7ec3a821f0a856'
+          python3 -m pip install --disable-pip-version-check --no-input numpy==2.3.5
+          python3 -m compileall -q v13/code/scripts/run180_b2_gist_native.py v13/code/scripts/run180_b2_gist_audit.py v13/code/tests/test_run180_b2_gist_audit.py
+          PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_run180_b2_gist_audit.py -v 2>&1 | tee "$RUNNER_TEMP/run180/software.log"
+      - name: Download and verify pinned llama b10964 runner
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+            https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz \
+            -o "$RUNNER_TEMP/run180/llama.tar.gz"
+          test "$(stat -c %s "$RUNNER_TEMP/run180/llama.tar.gz")" = 16825086
+          echo '9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443  '"$RUNNER_TEMP/run180/llama.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/run180/llama"
+          tar -xzf "$RUNNER_TEMP/run180/llama.tar.gz" -C "$RUNNER_TEMP/run180/llama"
+          server="$(find "$RUNNER_TEMP/run180/llama" -type f -name llama-server -print -quit)"
+          test -n "$server" && test -x "$server"
+          echo "RUN180_SERVER=$server" >> "$GITHUB_ENV"
+      - name: Download and verify pinned Qwen B2 weights
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+            https://huggingface.co/ggml-org/Qwen3.5-0.8B-GGUF/resolve/8fea620810c4afa23dd6443f999a48574c1611a3/Qwen3.5-0.8B-Q4_0.gguf \
+            -o "$RUNNER_TEMP/run180/B2.gguf"
+          test "$(stat -c %s "$RUNNER_TEMP/run180/B2.gguf")" = 563036064
+          echo '57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf  '"$RUNNER_TEMP/run180/B2.gguf" | sha256sum -c -
+      - name: Real B2 tap to Gist SourceRef raw evidence and independent audit
+        run: |
+          set -euo pipefail
+          export LD_LIBRARY_PATH="$(dirname "$RUN180_SERVER"):${LD_LIBRARY_PATH:-}"
+          PYTHONPATH=v13/code timeout 480s python3 v13/code/scripts/run180_b2_gist_native.py \
+            --model "$RUNNER_TEMP/run180/B2.gguf" --server "$RUN180_SERVER" \
+            --output-dir "$RUNNER_TEMP/run180/raw" 2>&1 | tee "$RUNNER_TEMP/run180/native.log"
+          python3 v13/code/scripts/run180_b2_gist_audit.py "$RUNNER_TEMP/run180/raw" 2>&1 | tee "$RUNNER_TEMP/run180/independent-audit.log"
+          echo RUN180_LINUX_NATIVE_GIST_READONLY_SOURCE_AUDIT_PASS_NO_JEPA_NO_REDMi
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 3991cf45319d02dedb7ed0f925b5a1481a8d772a --head HEAD
+      - name: Retain raw evidence and failures, exclude model/binary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run180-B2-Gist-Native-Raw
+          path: |
+            ${{ runner.temp }}/run180/software.log
+            ${{ runner.temp }}/run180/native.log
+            ${{ runner.temp }}/run180/independent-audit.log
+            ${{ runner.temp }}/run180/raw/*.json
+            ${{ runner.temp }}/run180/raw/*.npz
+            ${{ runner.temp }}/run180/raw/worker/logs/*.log
+          if-no-files-found: warn
+          retention-days: 14
