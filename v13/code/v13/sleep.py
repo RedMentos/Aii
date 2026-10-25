@@ -195,8 +195,16 @@ class SleepCycle:
         env=json.loads(ev['packet'])
         try:text=self.s.read_source(env['source_ref'])
         except ValueError:return 'RETIRE','SOURCE_DELETED',{}
-        mems=self.s.rows('SELECT m.id,m.kind,m.value,m.source_id,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.event_id=? AND m.active=1 AND s.deleted=0',(it['event_id'],))
+        mems=self.s.rows('SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.event_id=? AND m.active=1 AND s.deleted=0',(it['event_id'],))
         if not mems:return 'RETIRE','SUPERSEDED_OR_FORGOTTEN',{}
+        # Sleep A must not grant retention credit to a correction whose original
+        # F5 HumanDecision/feedback was revoked, even when its blob still reads.
+        valid={m['id'] for m in self.memory._verified_rows(mems)}
+        invalid=[m['id'] for m in mems if m['id'] not in valid]
+        if invalid:
+            return 'FAIL',['HUMAN_AUTHORITY_LOST:'+mid for mid in invalid],{
+                'checks':[{'memory_id':mid,'probe':'HUMAN_AUTHORITY','pass':False} for mid in invalid],
+                'source_refs':[env['source_ref']],'affected_paths':['memory_provenance']}
         errors=[];checks=[];refs=[env['source_ref']];paths=set()
         recallable=[m for m in mems if m['kind'] in RECALL_KINDS]
         if recallable:
@@ -279,7 +287,10 @@ class SleepCycle:
         budget=limit if limit is not None else min(policy['dream_max'],max(1,math.ceil(policy['dream_gain']*real))) if real else 0
         rep['budget']=budget
         if not budget:return rep
-        rows=self.s.rows("SELECT m.id,m.event_id,m.kind,m.key_text,m.value,m.session_id,s.hash,s.chars,m.source_id FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 ORDER BY m.created DESC LIMIT 512")
+        rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 ORDER BY m.created DESC LIMIT 512")
+        # Dream may create hypotheses, never facts; even hypotheses must not
+        # be seeded by a correction without a live F5 human authority chain.
+        rows=self.memory._verified_rows(rows)
         ref=lambda m:{'source_id':m['source_id'],'sha256':m['hash'],'char_start':0,'char_end':m['chars'],'modality':'text'}
         def candidates():
             # 1) route alternatives on real anchored episodes (counterfactual replay, §37)
