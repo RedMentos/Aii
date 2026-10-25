@@ -1,0 +1,57 @@
+name: V13 Run114 World Model abstention regression
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run114-world-abstention.yml"
+      - "v13/code/scripts/ablation_world_model_confidence.py"
+      - "v13/code/tests/test_ablation_homeo_meta.py"
+      - "v13/code/tests/test_world_confidence_abstention_run114.py"
+      - "v13/code/docs/proofs/continuation-20261025/world-confidence-abstention-run114/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run114-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      DO_NOT_TRACK: "1"
+      NO_MODEL_DOWNLOADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Isolated dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: World Model ablation and historical regression
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python -m compileall -q scripts/ablation_world_model_confidence.py tests/test_world_confidence_abstention_run114.py tests/test_ablation_homeo_meta.py
+          ../../.venv/bin/python -m unittest discover -s tests -p 'test_world_confidence_abstention_run114.py' -v
+          ../../.venv/bin/python -m unittest discover -s tests -p 'test_ablation_homeo_meta.py' -v
+      - name: Five original synthetic seeds with explicit abstention accounting
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          timeout 120s ../../.venv/bin/python scripts/ablation_world_model_confidence.py /tmp/run114-world-confidence.json
+          ../../.venv/bin/python -c "import json; r=json.load(open('/tmp/run114-world-confidence.json')); assert len(r['per_seed'])==5; assert all(x['evaluated_n']+x['abstained_n']==x['queries_n']==400 for x in r['per_seed'].values()); print(json.dumps({'verdict':r['verdict'],'complete_seeds':r['complete_seeds'],'incomplete_seeds':r['incomplete_seeds'],'counts':{k:{'evaluated':v['evaluated_n'],'abstained':v['abstained_n'],'reasons':v['abstention_reasons']} for k,v in r['per_seed'].items()}},sort_keys=True))"
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
