@@ -1,0 +1,51 @@
+name: V13 Run175 isolated Linux subreaper pidfd synthetic orphan tests
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run175-subreaper-pidfd.yml'
+      - 'v13/code/scripts/run175_subreaper_isolation.py'
+      - 'v13/code/tests/test_run175_subreaper_isolation.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run175-subreaper/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-bound real Linux synthetic orphan cleanup
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run175_subreaper_isolation.py)" = 'a10328d1f0b62ca5f39814d8bcb1855913c0e7ae'
+          test "$(git hash-object v13/code/tests/test_run175_subreaper_isolation.py)" = '30efc025e42cc7df790ca0d01b6c85d5a1c858ba'
+          python3 -m compileall -q v13/code/scripts/run175_subreaper_isolation.py v13/code/tests/test_run175_subreaper_isolation.py
+          mkdir -p "$RUNNER_TEMP/run175"
+          PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_run175_subreaper_isolation.py -v 2>&1 | tee "$RUNNER_TEMP/run175/tests-raw.log"
+          python3 v13/code/scripts/run175_subreaper_isolation.py > "$RUNNER_TEMP/run175/setsid.json"
+          python3 v13/code/scripts/run175_subreaper_isolation.py --double-fork > "$RUNNER_TEMP/run175/double-fork.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'run175'
+          for p in (d/'setsid.json',d/'double-fork.json'):
+              x=json.loads(p.read_text())
+              assert x['cleanup']['closed'] and x['cleanup']['remaining']==0
+              assert x['cleanup']['killed_by_pidfd']>=1
+              assert x['cgroup_isolation_proven'] is False and x['body_model_executed'] is False
+          print('RUN175_LINUX_NATIVE_SYNTHETIC_SUBREAPER_PASS_NO_CGROUP_PROOF')
+          PY
+      - name: Official public repo privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base f86aafe65e3390798999dd593e5a41ad1d13f47e --head HEAD
+      - name: Upload closed synthetic process evidence only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run175-Linux-Subreaper-Synthetic-Only
+          path: ${{ runner.temp }}/run175/
+          if-no-files-found: warn
+          retention-days: 14

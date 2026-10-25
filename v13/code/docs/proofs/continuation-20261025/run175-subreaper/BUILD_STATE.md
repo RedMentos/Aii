@@ -1,0 +1,19 @@
+# Run175 — isolated subreaper/pidfd Linux synthetic candidate (2026-10-25)
+
+Owner: new Run175 script, tests, workflow and proof only. Base Run174 `f86aafe65e3390798999dd593e5a41ad1d13f47e`. This is **not** the Run24 cgroup-v2/clone3 candidate, not production LP3 integration, and **not a substitute for the original cgroup containment gate**.
+
+Motivation: Run164 full suite had one real synthetic failure where a descendant remained live after the leader exited. Run21 correctly refuses post-reap `killpg` because a numeric process-group ID can be reused. Linux's `PR_SET_CHILD_SUBREAPER` can instead adopt orphaned descendants of a dedicated controller; `pidfd_open` + `pidfd_send_signal` signals a stable process identity, not a recycled numeric PID. Primary references: Linux man-pages `PR_SET_CHILD_SUBREAPER(2const)` and `pidfd_send_signal(2)` (man7.org). This only addresses a narrow process-ownership case, not atomically placing a child in a cgroup before ELF execution, not crash recovery, and not arbitrary concurrent external descendants.
+
+Implementation: dedicated controller refuses pre-existing children, enables subreaper, starts one synthetic leader which creates a `setsid()` grandchild (also a double-fork variant), waits leader, discovers only adopted direct children via `/proc` PPid, opens pidfds and sends SIGKILL through pidfd only, waits for reaping. No numeric `os.kill`/post-reap `killpg` fallback. Exception path also attempts cleanup. It refuses success if any child remains or adoption was not observed. Do not call this helper from a shared multi-job runtime process.
+
+Local Linux kernel 6.18.55 / Python 3.13.5 **native synthetic process evidence**: direct orphan: adopted 1, killed by pidfd 1, reaped 1, remaining 0; double-fork: adopted 2, killed by pidfd 2, reaped 2, remaining 0. Source/test local **3/3 PASS**, raw log SHA-256 `d6a8faf0f510682c71f18e662e5fdb8587a1907c2db7253a15c8eb0d1b78ad56`. Source Git blob `a10328d1f0b62ca5f39814d8bcb1855913c0e7ae`, test Git blob `30efc025e42cc7df790ca0d01b6c85d5a1c858ba`. First proof JSON SHA-256 (before exception cleanup hardening): single `8b45b0bbaa1d63b98c8b8dd19afd380eb5da241c056515f8a5022b2dd9c3609f`, double `dc44c0046ab4025373c01f6342ebd6df7f853b27372eab4e5a0b7bf36dd78058`. Hardening was retested; do not hide earlier source versions.
+
+Linux CI native synthetic test **PENDING** until PR. All process work is bounded; no model downloaded, no training, no phone, no cgroup delegation, no full-suite or STEP2 proof. The original Run164 descendant failure remains open until the exact original test is rerun with independently reviewed ownership-safe integration; do not change that test's acceptance criteria.
+
+Gates unchanged: `STEP2=UTILITY_FAIL`, `B3_L1=FAIL`, `Body_JEPA=UNAVAILABLE`, `jepa_weight=0`, `DS2_H2=FAIL`, `V13=INCOMPLETE`.
+
+Exact next step: verify Run173 full-suite outcome and Run175 CI, then independently review whether dedicated subreaper can be integrated as *additional* containment under original cgroup requirement, including abrupt controller death and unrelated-child isolation. Never publish a successful native LP3 receipt based solely on this candidate.
+
+## Independent Linux CI verified
+
+Run175 Actions `40167100407` **SUCCESS**, exact source/test Git blobs checked, 3/3 Linux-native synthetic tests PASS, official privacy scan CLEAN. Artifact ID `12588069022`, ZIP SHA-256 `22c8ed117212c560d3703939547f338d16ed434e1b1d9ed7f282bdd1653990d1`. CI single `setsid` orphan: adopted/killed/reaped 1/1/1; double-fork: 2/2/2; zero remaining. No cgroup, model or Redmi execution. The original Run173 full-suite orphan-descendant test **still fails** and is not superseded by this separate candidate.
