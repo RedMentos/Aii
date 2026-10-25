@@ -12,3 +12,9 @@
 - Next exact command after verified Run181 artifact download and hash check: `python3 v13/code/scripts/run181_gist_offer_audit.py report.json --output run181-audit.json` then `python3 v13/code/scripts/run185_gist_source_support_audit.py report.json --output run185-audit.json`; inspect all 108 raw outputs and paired per-kind deltas. Do not promote even if diagnostic positive.
 - Other next work: cross-review PR214 focused CI + official privacy scan, then proceed toward independently preregistered **C3 final-answer** Gist/Context utility or another unowned canonical package.
 - Environment: local GitHub DNS unavailable, connector remote writes work. Private Library container-path upload unavailable (no active container session). Rejected anyone-writable Drive folder not retried.
+
+## CI verification addendum
+
+- Run185 focused source-bound CI `40169754365` **SUCCESS**: frozen Run181 script/auditor Git blobs matched, 11/11 synthetic software tests, official public-repo privacy scan and raw-log artifact upload succeeded.
+- Artifact metadata: [{"id":12589573557,"size":449,"name":"V13-Run185-Gist-Source-Support-Software"}]. Artifact ZIP bytes not independently downloaded here. No native B2 result audited yet; Run181 heavy job remains separately owned.
+- Next independent package is preregistered C3 final-answer consumer of frozen B2 offers; native run only after Run181 finishes and original artifact is independently verified.
