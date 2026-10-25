@@ -52,6 +52,7 @@ class Finalizer(unittest.TestCase):
                 raise RuntimeError('synthetic interrupted turn')
             if status != 'DRAFT':
                 self.r.store.finish_message(mid, status, {'model_generated': False})
+        self.r._turn = fake_turn  # Real worker/SQLite; only the native generation body is replaced.
         eid = self.r.submit('RUN340 actual persisted worker turn')
         deadline = time.monotonic() + 8
         while not self.r.idle() and time.monotonic() < deadline:
