@@ -81,6 +81,31 @@ class PackageSource(unittest.TestCase):
             self.assertFalse(out.exists())
             self.assertFalse(out.with_suffix('.partial').exists())
 
+    def native_firing_applicable(self, app):
+        """Only run historical firing tests when their exact source binding holds.
+
+        Newer reviewed Runtime sources are not that frozen candidate. A stale
+        candidate must refuse; corruption/missing fixtures must still FAIL.
+        """
+        probe=subprocess.run([sys.executable,'-c',
+            'from scripts.native_firing_runtime_candidate import sources; sources()'],
+            cwd=app,capture_output=True,text=True,timeout=30)
+        if probe.returncode==0:return True
+        self.assertEqual(probe.returncode,1,probe.stderr)
+        self.assertEqual(probe.stderr.strip().splitlines()[-1],
+            'ValueError: Live sources differ from complete baseline/candidate')
+        return False
+
+    def assert_stale_firing_refused(self,app,*,merged=False):
+        command=('from scripts.native_firing_candidate_smoke import merged_sources; merged_sources()'
+                 if merged else
+                 'from scripts.native_firing_runtime_candidate import load_candidate; load_candidate("runtime")')
+        probe=subprocess.run([sys.executable,'-c',command],
+            cwd=app,capture_output=True,text=True,timeout=30)
+        self.assertEqual(probe.returncode,1,probe.stdout+'\n'+probe.stderr)
+        self.assertEqual(probe.stderr.strip().splitlines()[-1],
+            'ValueError: Live sources differ from complete baseline/candidate')
+
     def test_actual_phone_zip_runs_source_handoff_regressions_after_extraction(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);out=root/'phone.zip'
@@ -100,11 +125,17 @@ class PackageSource(unittest.TestCase):
             self.assertEqual(completed.returncode,0,completed.stderr)
             self.inspect(out)
             with zipfile.ZipFile(out) as archive:archive.extractall(root/'extracted')
-            tested=subprocess.run([sys.executable,'-m','unittest',
-                'tests.test_native_firing_runtime_candidate'],cwd=root/'extracted/V13-Phone',
-                capture_output=True,text=True,timeout=30)
-            self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
-            self.assertRegex(tested.stderr,r'Ran [1-9][0-9]* tests')
+            app=root/'extracted/V13-Phone'
+            if self.native_firing_applicable(app):
+                tested=subprocess.run([sys.executable,'-m','unittest',
+                    'tests.test_native_firing_runtime_candidate'],cwd=app,
+                    capture_output=True,text=True,timeout=30)
+                self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
+                self.assertRegex(tested.stderr,r'Ran [1-9][0-9]* tests')
+            else:
+                # Never run historical candidate tests against unrelated live
+                # Runtime revisions; verify the original fail-closed contract.
+                self.assert_stale_firing_refused(app)
 
     def test_actual_phone_zip_runs_approval_reader_and_merged_firing_after_extraction(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -113,11 +144,36 @@ class PackageSource(unittest.TestCase):
             self.assertEqual(completed.returncode,0,completed.stderr)
             self.inspect(out)
             with zipfile.ZipFile(out) as archive:archive.extractall(root/'extracted')
+            app=root/'extracted/V13-Phone'
+            # Approval reader is independently fixture-bound and remains
+            # runnable even when the historical merged firing path is stale.
             tested=subprocess.run([sys.executable,'-m','unittest',
-                'tests.test_approval_reader_runtime_candidate','tests.test_native_firing_merged_candidate'],
-                cwd=root/'extracted/V13-Phone',capture_output=True,text=True,timeout=30)
+                'tests.test_approval_reader_runtime_candidate'],cwd=app,
+                capture_output=True,text=True,timeout=30)
             self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
             self.assertRegex(tested.stderr,r'Ran [1-9][0-9]* tests')
+            if self.native_firing_applicable(app):
+                merged=subprocess.run([sys.executable,'-m','unittest',
+                    'tests.test_native_firing_merged_candidate'],cwd=app,
+                    capture_output=True,text=True,timeout=30)
+                self.assertEqual(merged.returncode,0,merged.stdout+'\n'+merged.stderr)
+                self.assertRegex(merged.stderr,r'Ran [1-9][0-9]* tests')
+            else:
+                self.assert_stale_firing_refused(app,merged=True)
+
+
+    def test_historical_candidate_corrupt_fixture_is_not_misclassified_as_stale(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);out=root/'phone.zip'
+            completed=self.package(ROOT,out,phone=True)
+            self.assertEqual(completed.returncode,0,completed.stderr)
+            with zipfile.ZipFile(out) as archive:archive.extractall(root/'extracted')
+            app=root/'extracted/V13-Phone'
+            fixture=app/'docs/proofs/continuation-20261011/native-firing-runtime-baseline/runners.py'
+            fixture.write_bytes(fixture.read_bytes()+b'\n# corruption')
+            with self.assertRaises(AssertionError):
+                self.native_firing_applicable(app)
+
 
 
 if __name__=='__main__':unittest.main()
