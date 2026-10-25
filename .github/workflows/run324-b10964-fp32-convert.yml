@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: v13-run324-b10964-vocab-${{ github.ref }}
+  group: v13-run324-b10964-fp32-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   pinned-fp32-converter:
@@ -27,7 +27,7 @@ jobs:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 50
-      - name: Exact source and eight synthetic negative tests
+      - name: Exact source and ten synthetic negative tests
         id: fixture
         run: |
           set -uo pipefail
@@ -116,7 +116,7 @@ jobs:
           echo "$rc" > "$RUNNER_TEMP/RUN324_HF_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
-      - name: Official unmodified b10964 converter vocab-only execution
+      - name: Official unmodified b10964 converter full FP32 tensor conversion
         id: convert
         run: |
           set -uo pipefail
@@ -132,7 +132,7 @@ jobs:
           echo "$rc" > "$RUNNER_TEMP/RUN324_CONVERT_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
-      - name: Fail-closed native vocab GGUF source/structure verification
+      - name: Fail-closed native FP32 GGUF source/tensor verification
         id: verify
         run: |
           set -uo pipefail
