@@ -1,0 +1,127 @@
+name: V13 Run318 native G13 wake-drain diagnostics (original gate retained)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/g13_wake_diagnostics_run318.py'
+      - 'v13/code/tests/test_g13_wake_diagnostics_run318.py'
+      - '.github/workflows/run318-native-g13-wake-diagnostics.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  g13-diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact head, original G13 source, immutable Canon and native host
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN318_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/scripts/longrun_soak.py v13/code/v13/scheduler.py v13/code/v13/sleep.py v13/code/specs/models.json v13/code/scripts/g13_wake_diagnostics_run318.py | tee "$RUNNER_TEMP/RUN318_BLOBS.txt"
+          python3 -m compileall -q v13/code/scripts/g13_wake_diagnostics_run318.py v13/code/tests/test_g13_wake_diagnostics_run318.py
+          { date -u -Iseconds; uname -a; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } | tee "$RUNNER_TEMP/RUN318_HOST.txt"
+      - name: Pinned isolated CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run318venv"
+          "$RUNNER_TEMP/run318venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual Runtime SQLite fixture diagnostics and inherited G13 tests
+        id: software
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run318venv/bin/python" -m unittest -v \
+            tests.test_g13_wake_diagnostics_run318 \
+            tests.test_longrun_soak \
+            tests.test_native_longrun_assets_run267 \
+            tests.test_scheduler 2>&1 | tee "$RUNNER_TEMP/RUN318_SOFTWARE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN318_SOFTWARE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Bootstrap unchanged registered native model and runner
+        id: bootstrap
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN318_SOFTWARE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN318_BOOTSTRAP_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run318installed"
+          timeout 1800s "$RUNNER_TEMP/run318venv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN318_BOOTSTRAP_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN318_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original G13 native two-day soak with non-mutating fsynced trace
+        id: native
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN318_BOOTSTRAP_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN318_NATIVE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run318installed"
+          timeout 900s "$RUNNER_TEMP/run318venv/bin/python" scripts/g13_wake_diagnostics_run318.py \
+            --home "$RUNNER_TEMP/run318soak" --out-dir "$RUNNER_TEMP/run318diag" \
+            --days 2 --turns 2 --native --models-from "$V13_HOME" \
+            2>&1 | tee "$RUNNER_TEMP/RUN318_NATIVE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN318_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN318_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN318_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw hashes including failed native verdicts
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN318_*' ! -name 'RUN318_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN318_SHA256SUMS.txt
+          for f in run318diag/RUN318_TRACE.jsonl run318diag/RUN318_SUMMARY.json run318soak/exports/longrun-soak.json; do
+            if [[ -f "$f" ]]; then sha256sum "$f" >> RUN318_SHA256SUMS.txt; fi
+          done
+      - name: Preserve all raw fixture, native and negative G13 evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run318-G13-Wake-Diagnostics-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN318_*
+            ${{ runner.temp }}/run318diag/RUN318_*
+            ${{ runner.temp }}/run318soak/exports/longrun-soak.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce original software, bootstrap, native G13 and privacy verdicts
+        if: always()
+        run: |
+          test "${{ steps.software.outputs.rc }}" = "0"
+          test "${{ steps.bootstrap.outputs.rc }}" = "0"
+          test "${{ steps.native.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
