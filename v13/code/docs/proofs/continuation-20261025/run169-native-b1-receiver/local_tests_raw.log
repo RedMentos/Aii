@@ -1,0 +1,9 @@
+test_native_error_still_restores_and_unloads (test_body_fp32_native_receiver_run169.ReceiverTests.test_native_error_still_restores_and_unloads) ... ok
+test_preregistered_prompt_hash (test_body_fp32_native_receiver_run169.ReceiverTests.test_preregistered_prompt_hash) ... ok
+test_serial_receiver_and_private_rollback (test_body_fp32_native_receiver_run169.ReceiverTests.test_serial_receiver_and_private_rollback) ... ok
+test_wrong_registered_sha_rejected_without_output (test_body_fp32_native_receiver_run169.ReceiverTests.test_wrong_registered_sha_rejected_without_output) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.037s
+
+OK
