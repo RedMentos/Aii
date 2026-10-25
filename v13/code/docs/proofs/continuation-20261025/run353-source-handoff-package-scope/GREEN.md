@@ -1,0 +1,19 @@
+# Run353 GREEN — historical source-handoff tests correctly scoped in phone ZIP
+
+## Provenance and change
+- Parent verified Run352 checkpoint `b04fb7678a7ed684c2138e8def24ac0415ed8510`, PR348→PR347 review chain, not main.
+- Preregistered at `5251437f741e90e641990e62ae177bfc02849f64` before source commit `cd06920e6f245c3cdea0077da47024ba63ace480`; exact-head workflow added at `f76e86af914736345d0215f57f9584e289514c28`.
+- Only `tests/test_package_source.py` changed. The frozen `scripts/source_handoff_candidate.py`, `scripts/source_handoff_ablation.py`, historical candidate tests, archived source bytes, production Runtime and model/learning/age/approval gates are unchanged.
+- Earlier inherited focused workflow `40226631286` FAILED in extracted phone ZIP: 15 source-handoff errors correctly refusing a current Runtime that is neither the exact frozen baseline nor exact reviewed candidate. New package first checks exact-source applicability; if stale, requires identical fail-closed refusal from both `load_candidate('cognition')` and `arm_sources()`; when exact, still runs the original 20 historical tests. A corrupted archived baseline must fail rather than be silently classified stale.
+
+## Measured software/CI results
+- New exact-head GitHub Actions `40227191291`, job `121270953019`, checkout SHA `f76e86af914736345d0215f57f9584e289514c28`: `python -m unittest -v tests.test_package_source` **8/8 PASS**, including new corrupted source-handoff baseline counterexample. Compileall PASS; privacy scan `CLEAN`.
+- Independent raw ZIP artifact ID `12611274621`, downloaded SHA256 `0688981010a876daec05c854a4dbb9805cd51fc5c124b15e045e494617533f54`, CRC PASS, 4/4 internal manifest hashes PASS, embedded exact HEAD matches. Source test SHA256 `62ade7cf7a9e421b63da2f3d6f0e5cb86fac16aae848c19cffa858ed43a01fce`; frozen candidate source hashes `03a726496e1c142abc3f0db63dde5ac85f982d5c5d66adbf46058759f68f22d2` and `ed2d7c5f56e64eed878caf9d7821e87ae399aaeb78c7f460b61ffe5f7768f634`.
+- Earlier PR349 focused source-bound workflow `40227001333` **PASS**: 401 source-bound software/SQLite tests, phone ZIP manifest 1079 files, independently audited archive SHA256 `9e4585deb12c75d457ae27b6f01c3d0556c510969b3ba87b7b038d06cf19834c`, 115 extracted-phone tests PASS and real Runtime store/restart smoke PASS. Focused workflow checkout is GitHub's PR merge ref, not separately claimed exact source head. New exact-head Run353 workflow closes that limitation for the package test.
+- Private durable raw backup uploaded: `/V13/checkpoints/2026-10-25/V13_Run353_Package_GREEN_raw_sha06889810.zip`; GitHub source/PR349 and Actions artifact provide separate reviewable records. Rejected anyone-writable Drive path not used.
+
+## Negative gates and next work
+- **No claim** that the 20 historical source-handoff tests passed against the changed current Runtime; they are inapplicable and remain fail-closed there. This repairs release-test scoping, not semantic utility.
+- No native, Redmi, phone thermal/energy or human long-run measurement. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA and `jepa_weight=0` unchanged. Canon completeness false.
+- Next independent package: run a current exact-head full Python source suite to identify remaining genuine failures and separate stale frozen-cohort tests from live regressions, then implement the highest-priority real failure without weakening its original gate. Exact command: `cd v13/code && python -m unittest discover -s tests -p 'test_*.py'` with pinned isolated dependencies, raw SHA manifest and privacy scan. Native/model tests may require separately registered resources; do not conflate their failures with software regressions.
+- Owner/next review: PR349 head, no edits to foreign branches, review/merge in order PR347→PR348→PR349.
