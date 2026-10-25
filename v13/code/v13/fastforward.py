@@ -14,6 +14,8 @@ never failed. Only in ACTIVE (explicit human switch) may a READY policy set the 
 route (SKILL.reopen_on_failure); a surprising outcome or a salient/novel turn bypasses it (§24.4 de-automatization).
 Numbers are §75 BOOT values or marked BOOT.
 """
+import hashlib
+import json
 import math
 import re
 from .common import dumps
@@ -70,23 +72,56 @@ class FastForward:
         return {'duration_s':round(math.exp(max(-5.,min(7.,self._dot(w['log_duration'],x)))),3),'success_p':round(clip(self._dot(w['success'],x)),4),
                 'chars':int(math.exp(max(0.,min(10.,self._dot(w['log_chars'],x))))),'trained_on':st['n']}
     def learn(self,event_id,x,duration_s,status,chars):
-        """Normalized delta rule on the actual outcome; returns the prediction error (surprise in [0,1])."""
+        """One atomic, durable outcome update per event, including after restart.
+
+        A bounded replay buffer cannot act as an idempotency ledger. The
+        event-specific receipt and predictor state commit in the same SQLite
+        transaction; a conflicting replay fails closed rather than training
+        on an altered outcome. Existing historical outcomes have no receipt
+        until observed by this version.
+        """
+        if not isinstance(event_id,str) or not event_id:
+            raise ValueError('Fast-Forward requires a nonempty event ID')
+        # Hash the exact observed inputs, not a predicted or regenerated
+        # answer. A duplicate gets its original reported error/prediction.
+        fingerprint=hashlib.sha256(dumps([event_id,x,duration_s,status,chars]).encode('utf-8')).hexdigest()
+        receipt_key='F_FAST_FORWARD_RECEIPT_'+hashlib.sha256(event_id.encode('utf-8')).hexdigest()
         y={'log_duration':math.log(max(.01,duration_s)),'success':1. if status=='FINAL' else 0.,'log_chars':math.log(max(1,chars))}
-        norm=1e-6+sum(v*v for v in x);sc=step(self.n,PATH)  # WP-U6 §12.7
-        def fn(st):
+        norm=1e-6+sum(v*v for v in x)
+        sc=step(self.n,PATH)  # WP-U6 §12.7; read-only gate
+        with self.s.tx() as c:
+            receipt=c.execute('SELECT payload FROM states WHERE key=?',(receipt_key,)).fetchone()
+            if receipt is not None:
+                old=json.loads(receipt['payload'])
+                if old.get('event_id')!=event_id or old.get('fingerprint')!=fingerprint:
+                    raise ValueError('Conflicting Fast-Forward outcome replay')
+                return old['result']
+            row=c.execute('SELECT version,payload FROM states WHERE key=?',(KEY,)).fetchone()
+            version=row['version'] if row is not None else 0
+            st=json.loads(row['payload']) if row is not None else empty()
+            if st.get('revision')!=REVISION:
+                raise ValueError('Fast-Forward state revision mismatch')
             before=self.predict(x,st);err={}
             for t in TARGETS:
                 e=y[t]-self._dot(st['w'][t],x);err[t]=e
                 st['w'][t]=[w+sc*LR*e*xi/norm for w,xi in zip(st['w'][t],x)]
                 st['abs_err'][t]+=(abs(e)-st['abs_err'][t])/min(st['n']+1,50)
-            st['n']+=1;st['replay']=(st.get('replay',[])+[{'x':[round(v,6) for v in x],'y':y}])[-REPLAY_MAX:]  # WP-S7 offline replay buffer
-            return before,err
-        before,err=self._mutate(fn)
-        surprise=clip(abs(err['log_duration'])/2) if before['duration_s'] is not None else 0.
+            st['n']+=1
+            st['replay']=(st.get('replay',[])+[{'x':[round(v,6) for v in x],'y':y}])[-REPLAY_MAX:]
+            surprise=clip(abs(err['log_duration'])/2) if before['duration_s'] is not None else 0.
+            result={'predicted':before,'surprise':round(surprise,4),
+                    'errors':{k:round(v,4) for k,v in err.items()}}
+            # SQLite transaction is the single crash boundary: neither the
+            # receipt nor the predictor update may survive alone.
+            c.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',(KEY,version+1,dumps(st)))
+            c.execute('INSERT INTO states VALUES (?,?,?)',
+                      (receipt_key,1,dumps({'event_id':event_id,'fingerprint':fingerprint,'result':result})))
         if self.n is not None and before['duration_s'] is not None:
-            try:self.n.touch(PATH,event_id,activity=1.,error=surprise>=.5);self.n.signal(event_id,path=PATH,source_class='real_deterministic_outcome',world_prediction_error=surprise)
+            try:
+                self.n.touch(PATH,event_id,activity=1.,error=surprise>=.5)
+                self.n.signal(event_id,path=PATH,source_class='real_deterministic_outcome',world_prediction_error=surprise)
             except Exception:pass
-        return {'predicted':before,'surprise':round(surprise,4),'errors':{k:round(v,4) for k,v in err.items()}}
+        return result
     def consolidate(self,epochs=3,lr=LR/3,holdout=.2,checkpoint=None):
         """WP-S7 sleep: extra low-rate NLMS passes over the stored outcomes. Kept only if the held-out error does not rise."""
         st,source_version=self._load();buf=st.get('replay',[])
