@@ -27,16 +27,23 @@ ROLES={'c3':('C3_LANGUAGE',),'b1':('B1_DETAIL',),'b2':('B2_GIST',),'v13':('B1_DE
 CONF_KEYS=('field_min_prob','field_mean_prob','mean_prob')
 ITEM_SECONDS=90.
 
+def _answer_text(value):
+    """Reject structural non-answers; this is not a semantic correctness test."""
+    if not isinstance(value,str):return ''
+    answer=value.strip()
+    return answer if any(ch.isalnum() for ch in answer) else ''
+
+
 def extract(text):
     """JSON answer under grammar; tolerant fallback for runners without grammar support."""
     t=(text or '').strip()
     try:
         v=json.loads(t)
-        if isinstance(v,dict):return str(v.get('answer','')).strip()
+        if isinstance(v,dict):return _answer_text(v.get('answer'))
     except ValueError:pass
     m=re.search(r'"answer"\s*:\s*"((?:[^"\\]|\\.)*)',t)
-    if m:return m.group(1).strip()
-    return t.splitlines()[0].strip() if t else ''
+    if m:return _answer_text(m.group(1))
+    return _answer_text(t.splitlines()[0]) if t else ''
 
 def confidence(metrics):
     tc=(metrics or {}).get('token_confidence') or {}
@@ -94,7 +101,9 @@ class BodySolver:
         for tok in runner.generate([{'role':'system','content':SYS},{'role':'user','content':view['prompt']}],ev,dl,max_tokens=40,
                                    schema=SCHEMA,seed=self.seed,confidence_field='answer'):text+=tok
         conf,src=confidence(getattr(runner,'last_metrics',{}))
-        return {'role':role,'answer':extract(text),'confidence':conf,'confidence_source':src}
+        answer=extract(text)
+        if not answer:conf,src=0.,'invalid_answer'
+        return {'role':role,'answer':answer,'confidence':conf,'confidence_source':src}
     def _answers(self,role,views,cancel,deadline):
         out={};st=self.stats.setdefault(role,{'items':0,'errors':0,'seconds':0.})
         for v in views:
