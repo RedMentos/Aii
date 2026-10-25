@@ -1,0 +1,16 @@
+# Run220 exact-head extracted source ZIP evidence
+
+Full raw GitHub Actions job: https://github.com/RedMentos/Aii/actions/runs/40179968767/job/121128739092
+Tested head: 57f2c539c8043e1c44540d21ec510a25ad0685f1
+Artifact: https://github.com/RedMentos/Aii/actions/runs/40179968767/artifacts/12593801980
+Exact selected timestamped output lines follow; complete raw log remains in GitHub Actions.
+
+2026-10-25T09:16:54.8838179Z {"bytes": 12848165, "canonical_gate_pass": false, "files": 970, "native_models_launched": false, "phone_measured": false, "sha256": "9f6c973d054fb0fbcb212cc2708cee1d819979e8dd34c65530fa9b439fb8669c", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/run220/V13-Phone-Run220.zip"}
+2026-10-25T09:16:54.9024303Z 9f6c973d054fb0fbcb212cc2708cee1d819979e8dd34c65530fa9b439fb8669c  /home/runner/work/_temp/run220/V13-Phone-Run220.zip
+2026-10-25T09:16:55.0812426Z No errors detected in compressed data of /home/runner/work/_temp/run220/V13-Phone-Run220.zip.
+2026-10-25T09:16:55.5135637Z {"authenticity_proven": false, "canonical_gate_pass": false, "files": 969, "manifest_sha256": "c9a681ddaf9de583859f327f5983f736f2b572e6cf991c71299952700eca776a", "native_models_run": false, "redmi_measured": false, "status": "EXTRACTED_SOURCE_INTEGRITY_PASS"}
+2026-10-25T09:16:57.6110654Z Ran 14 tests in 1.725s
+2026-10-25T09:16:57.6110991Z OK
+2026-10-25T09:16:57.6866080Z privacy scan 263d39a29..HEAD: CLEAN
+2026-10-25T09:16:59.1583359Z SHA256 digest of uploaded artifact zip is e61c91af1e4d9cdef45e34fecd46959b4594e0d90de9528152561cd6e6af9d90
+2026-10-25T09:16:59.5492075Z Artifact download URL: https://github.com/RedMentos/Aii/actions/runs/40179968767/artifacts/12593801980
