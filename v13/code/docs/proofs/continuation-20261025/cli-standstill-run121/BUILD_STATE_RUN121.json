@@ -1,0 +1,72 @@
+{
+  "schema": "V13_RUN121_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "parent_pr": 151,
+  "parent_sha": "c7b8ebf5b9373de7d855d93ba4f97c32224fe1f6",
+  "pr": 152,
+  "branch": "codex/cli-standstill-failclosed-run121-20261025",
+  "owner": "Run121 CLI entrypoint only; independent review read-only",
+  "files_changed": [
+    "v13/code/v13/__main__.py",
+    "v13/code/tests/test_cli_standstill_run121.py",
+    ".github/workflows/v13-run121-cli-standstill.yml",
+    "v13/code/docs/proofs/continuation-20261025/cli-standstill-run121/*"
+  ],
+  "prereg": "PREREG.md committed before RED",
+  "test_first_red": {
+    "workflow_run": 40147274664,
+    "job": 121031237069,
+    "errors": 2,
+    "failures": 0,
+    "cause": "both persisted stop cases timed out after five seconds",
+    "raw": "RAW_RED_SOFTWARE.log"
+  },
+  "fix": {
+    "source_blob_before": "aa9995afad35f90b67c64f0a79245570ab3c5189",
+    "source_blob_after": "b1fe6a8c1c39b6de25372988a1cd2639319d2458",
+    "commit": "7fff5ef9da5b4191418207ac96721237c5c2a466",
+    "description": "Refuse CLI ask before queue admission when Runtime paused; abort waiting on subsequent pause without auto-resume or false FINAL."
+  },
+  "green": {
+    "workflow_run": 40147351197,
+    "job": 121031482745,
+    "tests_passed": 20,
+    "tests_failed": 0,
+    "privacy": "CLEAN",
+    "raw": "RAW_GREEN_SOFTWARE.log",
+    "scope": "Linux software + actual subprocess/SQLite; no native or Redmi"
+  },
+  "cross_review": {
+    "observations": [
+      "Original explicit exact-copy CLI behavior preserved by inherited Run87 test",
+      "Persisted pause and standstill do not enqueue or produce assistant FINAL",
+      "Only explicit local human release allows subsequent CLI ask",
+      "Potential external-process pause after runtime creation and non-pause worker stalls not proven"
+    ]
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "prerequisites_rechecked": {
+    "container_memory_max_bytes": 4294967296,
+    "cgroup_root_writable": false,
+    "model_weight_files_in_container": 0,
+    "transformers_installed": false,
+    "github_git_dns": "UNAVAILABLE",
+    "note": "Current scratch container only; GitHub Actions separate environment."
+  },
+  "open_questions": [
+    "Independent full extracted Phone ZIP proof on exact current branch including Run121 patch",
+    "Redmi sustained test, native body training, LP3 kernel isolation and four-seed cohort not proven",
+    "Global native process ownership unknown; no native run authorized in this session"
+  ],
+  "exact_next_step": "Create new review branch from final Run121 head, generate source-only phone ZIP from exact PR head, extract, execute Run121/Run87/Run86 tests and verify manifest/CRC/hashes in GitHub Actions; keep all negative gates. Then continue another substantive canonical package.",
+  "backup": "Authorized GitHub PR #152 and raw evidence files. Do not retry rejected anyone-writable Drive destination."
+}
