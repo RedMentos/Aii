@@ -54,6 +54,26 @@ class OrganPathSafetyRun365(unittest.TestCase):
         with self.assertRaises((ValueError, RuntimeError)):
             O.check(self.r, legitimate["id"])
 
+    def test_hash_consistent_manifest_cannot_change_its_snapshot_id(self):
+        legitimate = O.snapshot(self.r, "B1_DETAIL")
+        manifest = self.home / "organs" / "B1_DETAIL" / legitimate["id"] / "manifest.json"
+        data = json.loads(manifest.read_text())
+        data["id"] = "organ_" + "f" * 32
+        data["hash"] = digest(dumps({k: v for k, v in data.items() if k != "hash"}))
+        manifest.write_text(dumps(data))
+        with self.assertRaises((ValueError, RuntimeError)):
+            O.check(self.r, legitimate["id"])
+
+    def test_symlinked_role_directory_must_not_write_outside_organ_root(self):
+        outside = self.root / "external-role"
+        outside.mkdir()
+        organ_root = self.home / "organs"
+        organ_root.mkdir()
+        (organ_root / "B1_DETAIL").symlink_to(outside, target_is_directory=True)
+        with self.assertRaises(ValueError):
+            O.snapshot(self.r, "B1_DETAIL")
+        self.assertEqual(list(outside.iterdir()), [])
+
     def test_symlinked_organ_root_must_not_write_outside_runtime_home(self):
         outside = self.root / "external"
         outside.mkdir()
