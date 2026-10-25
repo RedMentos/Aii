@@ -90,6 +90,32 @@ class PreActionToolRun388(unittest.TestCase):
         self.assertEqual(tx["status"], "EXECUTED")
         self.assertIsNone(self.g.samples()[-1]["predicted"])
 
+    def test_nonhard_cancel_discards_without_false_failure_evidence(self):
+        t = self.registry(lambda value: value)
+        with mock.patch.object(Transactions, "execute", new=lambda _self, tid, _fn: {"id": tid, "state": "CANCELLED", "error": "CANCELLED_BY_USER"}):
+            tx = t.call("measure", {"value": 3})
+        self.assertEqual(tx["status"], "CANCELLED")
+        self.assertEqual(self.g.report()["open"], 0)
+        self.assertEqual(self.g.report()["closed"], 0)
+        self.assertEqual(self.g.box.load()[0]["table"], {})
+
+    def test_predictor_failure_does_not_block_tool_or_fabricate_grounding(self):
+        def broken(_tx):
+            raise RuntimeError("predictor unavailable")
+        t = ToolRegistry(
+            self.runtime.store,
+            on_pre_execute=broken,
+            on_outcome=self.adapter.after,
+            on_abort=self.adapter.abort,
+        )
+        t.register(ToolSpec("measure", lambda value: value + 1, schema={"value": "int"}))
+        t.enable("measure")
+        tx = t.call("measure", {"value": 4})
+        self.assertEqual((tx["status"], tx["result"]), ("EXECUTED", 5))
+        self.assertEqual(tx["preaction_error"], "RuntimeError")
+        self.assertEqual(self.g.report()["open"], 0)
+        self.assertEqual(self.g.report()["closed"], 0)
+
     def test_legacy_registry_without_hooks_remains_postaction(self):
         during = []
 
