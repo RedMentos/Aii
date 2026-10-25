@@ -1,0 +1,64 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN307_V1",
+  "utc": "2026-10-25T15:16:00Z",
+  "owner": "GPT-6 automation / Run307 Sleep A retention",
+  "base": "a7c4193f9e53b742adaec13dcf9f42c4a807544a",
+  "branch": "codex/sleep-retention-identity-run307-20261025",
+  "pr": 305,
+  "code_commit": "9cce2b793491f1331d9891e189d7983488fbf7a9",
+  "source_blob": "8b5d4ddc49dbf4ac60aa780ffd37ce320dab9e31",
+  "test_blob": "742820c67fce6c71e32b8e40a00d34f021d0d204",
+  "workflow_blob": "6859b0e67a9c673e46b90a1df2f756619db88ac6",
+  "owned": [
+    "v13/code/v13/sleep.py",
+    "v13/code/tests/test_sleep_retention_identity_run307.py",
+    ".github/workflows/run307-sleep-retention-identity.yml",
+    "v13/code/docs/proofs/continuation-20261025/sleep-retention-identity-run307/"
+  ],
+  "tests": {
+    "red": {
+      "run": 40205973171,
+      "artifact": 12603558061,
+      "archive_sha256": "ab12f705b1eb8c58aee4c33164e733c5efb54473a5f68a4b165d2dfc9e47c7b0",
+      "total": 33,
+      "expected_failures": 2,
+      "privacy": "CLEAN"
+    },
+    "green": {
+      "run": 40206052739,
+      "artifact": 12602939532,
+      "archive_sha256": "6ca84bd8efe1b1c0512748ab4d452fb6f15e4a1c1b6ed12232bd2406a746b0a6",
+      "total": 33,
+      "failures": 0,
+      "privacy": "CLEAN"
+    },
+    "independent_local": {
+      "tests": 11,
+      "failures": 0,
+      "scope": "LINUX_SOFTWARE_PATCHED_EXTRACTED_SOURCE"
+    }
+  },
+  "private_library": {
+    "red": "/V13-Inquisition/Proofs/Run307/V13-Run307-red-raw.zip",
+    "green": "/V13-Inquisition/Proofs/Run307/V13-Run307-green-raw.zip",
+    "remote_byte_parity": "PASS_BOTH"
+  },
+  "proof_scope": "ACTUAL_RUNTIME_STORE_SQLITE_SOFTWARE_ONLY",
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "model_seed_cohorts_unchanged": true,
+  "redmi_measured": false,
+  "native_model_execution": false,
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "whole_system_complete": false,
+  "prior_fullsuite": {
+    "run": 40202886433,
+    "failures": 2,
+    "errors": 36,
+    "status": "FAILED_UNCHANGED"
+  },
+  "next_command": "Inspect latest heads/owners and choose a distinct Canon package beyond Sleep/WorldModel/backup; prereg actual negative test, implement and run focused CI, persist verified remote source and raw. If useful, build updated exact current-chain phone ZIP only after next meaningful integration checkpoint.",
+  "prerequisites": "No force-push or native owner collision, no frozen cohort/Canon/seed changes, preserve original negative gates. Redmi and real native learning still require hardware/model proof."
+}
