@@ -1,0 +1,57 @@
+{
+  "run": "Run220",
+  "date_utc": "2026-10-25",
+  "canonical_area": "STEP0/Phone exact-head source-only ZIP extracted Linux usability",
+  "branch": "codex/phone-extracted-current-run220-20261025",
+  "base_verified": "263d39a29b40c5e469be9c04e76452c95b802728",
+  "tested_commit": "57f2c539c8043e1c44540d21ec510a25ad0685f1",
+  "owner": "Run220 new CI and proof only; no production/native owner overlap",
+  "owned_files": [
+    ".github/workflows/run220-phone-extracted.yml",
+    "v13/code/docs/proofs/continuation-20261025/run220-phone-extracted/"
+  ],
+  "implementation": "Built immutable source-only V13-Phone ZIP from exact GitHub checkout, extracted it, ran isolated Python -I -S manifest/hash preflight before V13 import, compared runtime.py and setup.sh byte-for-byte to checkout, ran model-free extracted CLI/multi-chat/preflight/literal search tests, uploaded verified GitHub artifact.",
+  "actual_source_ci": {
+    "run_id": 40179968767,
+    "job_id": 121128739092,
+    "head": "57f2c539c8043e1c44540d21ec510a25ad0685f1",
+    "tests": "14/14 PASS extracted ZIP",
+    "privacy_scan": "CLEAN",
+    "crc": "PASS",
+    "source_preflight": "EXTRACTED_SOURCE_INTEGRITY_PASS",
+    "files_including_manifest": 970,
+    "source_zip_bytes": 12848165,
+    "source_zip_sha256": "9f6c973d054fb0fbcb212cc2708cee1d819979e8dd34c65530fa9b439fb8669c",
+    "manifest_sha256": "c9a681ddaf9de583859f327f5983f736f2b572e6cf991c71299952700eca776a",
+    "log_url": "https://github.com/RedMentos/Aii/actions/runs/40179968767/job/121128739092"
+  },
+  "artifact": {
+    "id": 12593801980,
+    "name": "V13-Phone-Run220-source-only",
+    "url": "https://github.com/RedMentos/Aii/actions/runs/40179968767/artifacts/12593801980",
+    "outer_artifact_zip_sha256": "e61c91af1e4d9cdef45e34fecd46959b4594e0d90de9528152561cd6e6af9d90",
+    "outer_artifact_bytes": 12685780,
+    "expires_at": "2026-11-08T09:16:57Z",
+    "verified_via": "GitHub fetch_workflow_run_artifacts and CI SHA logs"
+  },
+  "source_blob_sha": {
+    "run220-phone-extracted.yml": "14bf84ff5487840a673014e60b7f744970dc5d5a"
+  },
+  "evidence_kind": "Actual-source GitHub Linux extracted source-only software smoke. No phone hardware, native model, or AGI proof.",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "No Redmi test, no native model cohort and no STEP2/B3 gate promotion.",
+    "Full current chain unittest discovery with optional historical LP3 fixtures not yet rerun.",
+    "ZIP is source-only; user must install models separately; no publisher signature/authenticity proven by embedded manifest."
+  ],
+  "next_step": "Run221 full current chain Python unittest discovery in isolated Linux CPU env with pinned dependencies, exact historical LP3 helper and optional fixture staging; preserve all failures, raw logs, no native model claim.",
+  "next_command": "Reuse verified v13-run176-fullsuite-portability.yml source and pinned helper/fixture hashes, run exact-head full suite with serialized CI concurrency; do not hide failures.",
+  "no_authority_promotion": true
+}
