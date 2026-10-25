@@ -60,6 +60,20 @@ class RevokedUpdateLineageRun287(unittest.TestCase):
         self.assertEqual(self.s.generation_id, old)
         self.assertEqual(self.s.one('SELECT status FROM updates WHERE id=?', (update,))['status'], 'PENDING_APPROVAL')
 
+    def test_active_source_with_corrupt_or_missing_blob_refuses_commit(self):
+        for kind in ('tampered', 'missing'):
+            with self.subTest(kind=kind):
+                ref = self.s.source('run287 integrity ' + kind)
+                update, _ = self.candidate([ref['source_id']])
+                blob = self.home / 'data/blobs' / ref['sha256']
+                if kind == 'tampered':
+                    atomic_write(blob, b'CORRUPTED')
+                else:
+                    blob.unlink()
+                with self.assertRaisesRegex(ValueError, 'Lineage'):
+                    self.s.switch_generation(update, self.cfg, self.models)
+                self.assertEqual(self.s.generation()['hashes'], {})
+
     def test_missing_and_malformed_source_ids_refuse(self):
         for source_ids in [['src_nonexistent'], 'src_wrong_shape', [True], [None], [0]]:
             with self.subTest(source_ids=source_ids):
