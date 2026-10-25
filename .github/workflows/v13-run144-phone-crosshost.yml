@@ -1,0 +1,76 @@
+name: V13 Run144 independent Run141 extracted phone ZIP review
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run144-phone-crosshost.yml"
+      - "v13/code/scripts/verify_phone_zip_run144.py"
+      - "v13/code/tests/test_verify_phone_zip_run144.py"
+      - "v13/code/docs/coordination/continuation-20261025/run144-phone-review/**"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  cross-host:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Independent verifier tests (synthetic only)
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          python3 -m compileall -q v13/code/scripts/verify_phone_zip_run144.py v13/code/tests/test_verify_phone_zip_run144.py
+          (cd v13/code && PYTHONPATH=. python3 -m unittest -v tests.test_verify_phone_zip_run144)
+      - name: Download exact Run141 source artifact (no model payload)
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: V13-Phone-Run141-fe902a560ea8bff171ff3b8c4b134bb9b0366211
+          run-id: 40156332906
+          github-token: ${{ github.token }}
+          repository: RedMentos/Aii
+          path: ${{ runner.temp }}/run141
+      - name: Verify extracted original source bytes and run seven focused suites
+        run: |
+          set -euo pipefail
+          test "$(sha256sum "$RUNNER_TEMP/run141/V13-Phone-Run141.zip" | cut -d' ' -f1)" = "11ea4b19c2be82a219582e877bc671bf6936f8794398dfff4cc92682714c18cd"
+          unzip -tqq "$RUNNER_TEMP/run141/V13-Phone-Run141.zip"
+          mkdir -p "$RUNNER_TEMP/run144_extract"
+          unzip -q "$RUNNER_TEMP/run141/V13-Phone-Run141.zip" -d "$RUNNER_TEMP/run144_extract"
+          cd "$RUNNER_TEMP/run144_extract/V13-Phone"
+          test "$(git hash-object v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+          test "$(git hash-object KNOEPFE_EINRICHTEN.sh)" = "9f9fed1f0fa22f5a2168cc4e41257a2adabd3abd"
+          bash -n KNOEPFE_EINRICHTEN.sh STARTEN.sh setup.sh
+          python3 -m venv "$RUNNER_TEMP/run144_venv"
+          "$RUNNER_TEMP/run144_venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          export PYTHONPATH="$PWD" HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 NO_MODEL_DOWNLOADS=1 NEEDLE_TELEMETRY=0 DO_NOT_TRACK=1
+          : > "$RUNNER_TEMP/RUN144_EXTRACTED_TESTS_RAW.log"
+          for pattern in test_widget_guide_fallback_run140.py test_widget_installer_quoting_run127.py test_phone_prestart_run128.py test_phone_halt.py test_cli_standstill_run121.py test_phone_operator_journey_run86.py test_standstill.py; do
+            echo "RUN144_SUITE=$pattern" | tee -a "$RUNNER_TEMP/RUN144_EXTRACTED_TESTS_RAW.log"
+            "$RUNNER_TEMP/run144_venv/bin/python" -m unittest discover -s tests -p "$pattern" -v 2>&1 | tee -a "$RUNNER_TEMP/RUN144_EXTRACTED_TESTS_RAW.log"
+          done
+          echo "RUN144_EXTRACTED_38_TESTS_PASS" | tee -a "$RUNNER_TEMP/RUN144_EXTRACTED_TESTS_RAW.log"
+      - name: Retain raw independent cross-host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Run144-Phone-Extracted-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN144_EXTRACTED_TESTS_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
