@@ -25,7 +25,7 @@ jobs:
       - name: Actual WorldModel counterfactual and transition integrity
         working-directory: v13/code
         run: |
-          python -m unittest -v tests.test_world_counterfactual_input_integrity_run209 tests.test_world_observation_integrity_run202 tests.test_world_model tests.test_world
+          python -m unittest -v tests.test_world_counterfactual_input_integrity_run209 tests.test_world_observation_integrity_run202 tests.test_world_model tests.test_world_state
           python -m compileall -q v13/world_model.py tests/test_world_counterfactual_input_integrity_run209.py
       - name: Official public repository privacy scan
         run: python v13/code/scripts/public_repo_privacy_scan.py --base 9172c44ca01c598df886c864b12391f6be7182b9 --head HEAD --no-worktree
