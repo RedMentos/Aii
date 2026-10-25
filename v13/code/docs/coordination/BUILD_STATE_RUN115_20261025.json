@@ -1,0 +1,64 @@
+{
+  "schema": "V13_RUN115_CHECKPOINT_V1",
+  "date_utc": "2026-10-25",
+  "pr": 146,
+  "parent": "6fce98c2111429b1951e6e527608cb9c543c21b3",
+  "owner": "Codex isolated full-suite prerequisite audit",
+  "changed_source_files": [],
+  "workflow_git_blob": "e6b35773ff101549f9b912bd31fd99440e838a46",
+  "archive": {
+    "path": "v13/code/docs/proofs/continuation-20261024/lp3-run16/SOURCE_AND_TESTS.tar.xz",
+    "git_blob": "667d7f1b73a655097a44ff4c61749af113f7544f",
+    "sha256": "041e0014194ffdfd74aef79cf6a9149e6c2e11ad51b859bc9a9e7e81b1b67516",
+    "files": [
+      "v13/code/scripts/lp3_serial_cohort.py",
+      "v13/code/tests/test_lp3_serial_cohort.py"
+    ],
+    "scope": "TEMP_ONLY_NOT_INTEGRATED"
+  },
+  "environment": {
+    "platform": "GitHub Linux Actions",
+    "torch": "2.9.1+cpu",
+    "numpy": "2.3.5",
+    "prompt_toolkit": "3.0.52",
+    "model_downloads": false
+  },
+  "results": {
+    "run_id": 40145472747,
+    "archive_inventory": "PASS",
+    "privacy": "CLEAN",
+    "augmented_full_suite": "FAIL",
+    "tests": 2217,
+    "passes": 2201,
+    "failures": 4,
+    "errors": 1,
+    "skips": 11,
+    "seconds": 162.996,
+    "job_id": 121025787776,
+    "findings": [
+      "Run16 archived LP3 module has no _cleanup_owned_group expected by later Run18 review.",
+      "Run18 orphan descendant test still gets LOCAL_CLOSED_EVIDENCE_UNPUBLISHED_ANCHOR (FAIL-OPEN under old Run16 source).",
+      "Three duplicated default CLI checks return 1 rather than expected 2 when source is extracted to temporary directory. This is not evidence of successful preflight."
+    ],
+    "claim_limit": "Augmented archived-candidate environment only. No full integrated suite PASS."
+  },
+  "evidence_git_blobs": {
+    "RAW_FAILURES.txt": "be601d4c7428d134ba4c21d4d28c932b8f2dbcad",
+    "RAW_ARCHIVE_INVENTORY.txt": "18e6487c242cbbcf5e3bd7d5afeef75bbe4d0f29"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Later LP3 Run18–25 patches are isolated and not in the integrated runtime; independently assemble and test exact latest source before considering integration.",
+    "Actual kernel cgroup containment, serial native four-seed run, model assets and Redmi remain unproven.",
+    "Unaugmented Run113 full suite still has missing torch/archive imports; this augmented run is not a substitute."
+  ],
+  "exact_next_step": "Inspect latest LP3 Run25/Run24 source archives, reconstruct and cross-review on a new isolated branch with strict file ownership; do not activate until cgroup kernel proof. Continue other canonical organs in parallel with blocked native path.",
+  "backup": "GitHub PR #146; no rejected anyone-writable Drive destination"
+}
