@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/mnt/data/v13_run197/v13/code/scripts/run197_r4_future_manifest.py", line 12, in <module>
+    from scripts import run196_r4_stratified_future as R
+ModuleNotFoundError: No module named 'scripts'

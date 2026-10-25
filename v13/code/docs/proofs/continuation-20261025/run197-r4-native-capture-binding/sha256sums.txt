@@ -1,0 +1,12 @@
+3edc2243431046923e858abe5119e1dd63e6e96112d109cdd4ba22dd5ed94c0a  ./.github/workflows/run197-r4-source-binding.yml
+32af6dfb84b39c0a67fa877a9fb6cf7e6af1ead5860d004bc915da025d84632c  ./cli_initial.log
+fe9f6431f9b36bfb03a48be1575188cf4d46052b45c0d0b5f51b8a1c9b36ae7c  ./tests_after_cli_fix.log
+fb24006b973533b574f9ea70d6d8fb43cb6b02b18a514b06c8188c708148612c  ./tests_final.log
+a5d76bbd73eb79473e085b9a26c62cd4bbd59fb0ca5f69499be7a58c28c017a6  ./tests_initial.log
+26c96b6548aa1efc5804951d820e8c8de2005226f48ddb50821e0e8fc886f321  ./v13/code/docs/proofs/continuation-20261025/run197-r4-native-capture-binding/BUILD_STATE.md
+32af6dfb84b39c0a67fa877a9fb6cf7e6af1ead5860d004bc915da025d84632c  ./v13/code/docs/proofs/continuation-20261025/run197-r4-native-capture-binding/cli_initial.log
+fe9f6431f9b36bfb03a48be1575188cf4d46052b45c0d0b5f51b8a1c9b36ae7c  ./v13/code/docs/proofs/continuation-20261025/run197-r4-native-capture-binding/tests_after_cli_fix.log
+fb24006b973533b574f9ea70d6d8fb43cb6b02b18a514b06c8188c708148612c  ./v13/code/docs/proofs/continuation-20261025/run197-r4-native-capture-binding/tests_final.log
+a5d76bbd73eb79473e085b9a26c62cd4bbd59fb0ca5f69499be7a58c28c017a6  ./v13/code/docs/proofs/continuation-20261025/run197-r4-native-capture-binding/tests_initial.log
+6631537ad94d73538ab61e2c380299b2a9656f70b68aa17b771cb531f97811ec  ./v13/code/scripts/run197_r4_future_manifest.py
+9d2b4a428b8d1ff2987d6074c13e4197d82d0472d054c916de772248c48ad3ad  ./v13/code/tests/test_run197_r4_future_manifest.py
