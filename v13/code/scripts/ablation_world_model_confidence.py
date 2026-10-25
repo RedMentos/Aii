@@ -70,33 +70,100 @@ def spearman(x,y):
     num=sum((a-mx)*(b-my) for a,b in zip(rx,ry));den=math.sqrt(sum((a-mx)**2 for a in rx)*sum((b-my)**2 for b in ry))
     return num/den if den else 0.
 
+def _scored_counterfactual(cf):
+    """Only finite, complete predictions may enter a numerical error ranking.
+
+    An explicit World Model abstention has no error observation. Inventing a
+    penalty (or zero error) would change the historical preregistered metric.
+    """
+    if type(cf) is not dict or type(cf.get('prediction')) is not dict:
+        return None
+    try:
+        pred=[cf['prediction'][t] for t in WM.TARGETS]
+        cov=cf['coverage']
+        samples=cov['samples']
+        spread=cf['model_spread']
+        confidence=cf['confidence']
+        label=cf['label']
+    except (KeyError,TypeError,IndexError):
+        return None
+    finite=lambda x:type(x) in (int,float) and math.isfinite(x)
+    if (type(cov) is not dict or
+        not all(finite(x) for x in pred) or
+        not finite(samples) or samples<0 or
+        not finite(spread) or spread<0 or
+        not finite(confidence) or not 0<=confidence<=1 or
+        label not in ('SIMULATION_SUPPORTED','SIMULATION_UNCERTAIN')):
+        return None
+    return pred, samples, spread, confidence, label
+
+
 def run_seed(seed):
     T,queries=world(seed);rng=random.Random(seed*41+3)
+    rows=[];abstentions={}
     with tempfile.TemporaryDirectory() as d:
         store,cfg=_store(Path(d))
-        with mock.patch.object(WM,'transitions',lambda store,limit=WM.MAX_ROWS:T):st=WM.fit(store,rng_seed=seed)
-        rows=[]
-        for q in queries:
-            cf=WM.counterfactual(store,q['s'],q['a'])
-            pred=[cf['prediction'][t] for t in WM.TARGETS];err=_mean([abs(p-t) for p,t in zip(pred,q['truth'])])
-            rows.append({'err':err,'confidence':cf['confidence'],'samples_only':1-math.exp(-cf['coverage']['samples']/WM.COVER_N),
-                         'spread_only':1/(1+cf['model_spread']/WM.SPREAD_REF),'random':rng.random(),'label':cf['label']})
-        store.close()
+        try:
+            with mock.patch.object(WM,'transitions',lambda store,limit=WM.MAX_ROWS:T):
+                st=WM.fit(store,rng_seed=seed)
+            for q in queries:
+                cf=WM.counterfactual(store,q['s'],q['a'])
+                scored=_scored_counterfactual(cf)
+                if scored is None:
+                    reason=(cf.get('reason') if type(cf) is dict else None)
+                    if type(reason) is not str or not reason or len(reason)>80:
+                        reason='INVALID_SCORING_FIELDS'
+                    abstentions[reason]=abstentions.get(reason,0)+1
+                    continue
+                pred,samples,spread,confidence,label=scored
+                err=_mean([abs(p-t) for p,t in zip(pred,q['truth'])])
+                if not math.isfinite(err):
+                    abstentions['NONFINITE_ERROR']=abstentions.get('NONFINITE_ERROR',0)+1
+                    continue
+                rows.append({'err':err,'confidence':confidence,
+                             'samples_only':1-math.exp(-samples/WM.COVER_N),
+                             'spread_only':1/(1+spread/WM.SPREAD_REF),
+                             'random':rng.random(),'label':label})
+        finally:
+            store.close()
     neg=[-r['err'] for r in rows]
-    sup=[r['err'] for r in rows if r['label']=='SIMULATION_SUPPORTED'];unc=[r['err'] for r in rows if r['label']!='SIMULATION_SUPPORTED']
-    return {**{a:{'primary':round(spearman([r[a] for r in rows],neg),5)} for a in ARMS},
-            'labels':{'supported_n':len(sup),'uncertain_n':len(unc),'supported_mean_err':round(_mean(sup),4) if sup else None,'uncertain_mean_err':round(_mean(unc),4) if unc else None},
+    sup=[r['err'] for r in rows if r['label']=='SIMULATION_SUPPORTED']
+    unc=[r['err'] for r in rows if r['label']=='SIMULATION_UNCERTAIN']
+    return {**{a:{'primary':round(spearman([r[a] for r in rows],neg),5) if len(rows)>=2 else None}
+               for a in ARMS},
+            'queries_n':len(queries),'evaluated_n':len(rows),
+            'abstained_n':sum(abstentions.values()),
+            'abstention_reasons':dict(sorted(abstentions.items())),
+            'labels':{'supported_n':len(sup),'uncertain_n':len(unc),
+                      'supported_mean_err':round(_mean(sup),4) if sup else None,
+                      'uncertain_mean_err':round(_mean(unc),4) if unc else None},
             'fit_status':st['status'],'counts':st['counts']}
+
 
 def run_all(seeds=SEEDS):
     per={s:run_seed(s) for s in seeds}
-    wins={a:sum(per[s]['confidence']['primary']>per[s][a]['primary'] for s in seeds) for a in ARMS[1:]}
+    complete=[s for s in seeds if per[s]['abstained_n']==0 and per[s]['evaluated_n']>=2]
+    incomplete=[s for s in seeds if s not in complete]
+    wins={a:sum(per[s]['confidence']['primary']>per[s][a]['primary'] for s in complete)
+          for a in ARMS[1:]}
     beat=[a for a,n in wins.items() if n>=4]
-    lab=sum((per[s]['labels']['supported_mean_err'] or 9)<(per[s]['labels']['uncertain_mean_err'] or 9) for s in seeds)
-    return {'prereg':PREREG,'per_seed':per,'wins_of_5':wins,'supported_label_lower_error_of_5':lab,
-            'summary':{a:{'mean':round(_mean([per[s][a]['primary'] for s in seeds]),4),'sd':round(_sd([per[s][a]['primary'] for s in seeds]),4)} for a in ARMS},
-            'verdict':'SUPPORTED_SYNTHETIC' if len(beat)==3 else ('PARTIAL' if beat else 'NOT_SUPPORTED'),
-            'claim_limit':'synthetic own transitions with a biased collection policy, BOOT coverage knobs; no causal claim'}
+    lab=sum(per[s]['labels']['supported_mean_err']<per[s]['labels']['uncertain_mean_err']
+            for s in seeds if per[s]['labels']['supported_mean_err'] is not None
+            and per[s]['labels']['uncertain_mean_err'] is not None)
+    summary={}
+    for a in ARMS:
+        vals=[per[s][a]['primary'] for s in complete]
+        summary[a]={'mean':round(_mean(vals),4) if vals else None,
+                    'sd':round(_sd(vals),4) if vals else None}
+    return {'prereg':PREREG,'per_seed':per,'wins_of_5':wins,
+            'complete_seeds':complete,'incomplete_seeds':incomplete,
+            'supported_label_lower_error_of_5':lab,'summary':summary,
+            'verdict':('INCOMPLETE_ABSTENTION' if incomplete else
+                       ('SUPPORTED_SYNTHETIC' if len(beat)==3 else
+                        ('PARTIAL' if beat else 'NOT_SUPPORTED'))),
+            'claim_limit':('Only fully scored seeds meet original preregistration; '
+                           'abstained queries have no observed error and cannot be ranked. '
+                           'Synthetic own transitions with biased policy; no causal claim')}
 
 if __name__=='__main__':
     if len(sys.argv)>1 and sys.argv[1]=='--prereg':
