@@ -1,0 +1,7 @@
+# Run146 — format-aware AGE0d SHADOW candidate, no live consumer
+
+2026-10-25 UTC. New isolated `v13/agi/answer_arithmetic_shadow_v2.py` supports exact single integer operation across What is/Calculate/Compute, Unicode ×/÷ in source-matched equation echo, or bare/sentence integer. It refuses mismatched ordered operands/operator, narrative/multiline/markup, non-exact division and unsupported values. `may_deliver=false`, `may_update=false`, authority `SHADOW_ONLY` on every path. Frozen Runtime and original Run134 checker untouched; no new model or native run.
+
+Local Linux software: `python -m unittest -v tests.test_answer_arithmetic_shadow_v2_run146` **5/5 PASS**, 200 correct + 200 deliberately wrong deterministic synthetic controls, adversarial source mismatch, bounds and ambiguity. `compileall` PASS. Post-hoc read-only crosscheck of original Run142 registered C3 native report yields 63 CORRECT, 11 MISMATCH, 6 ABSTAIN, matching independent Run143 audit. This is NOT a new preregistered native K1/K2/K3 result and must not replace Run142's original K1/K2 INSUFFICIENT.
+
+Remaining: native fresh varied-linguistic holdout on unchanged registered model/runner with exact preregistration, independent correct/wrong denominator, ablation against original checker, and calibration/false-alarm review before any delivery discussion. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, DS2 H2 FAIL, V13 INCOMPLETE.
