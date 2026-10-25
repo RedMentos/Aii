@@ -1,0 +1,21 @@
+{
+  "schema": "V13_RUN144_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex Run144 independent phone ZIP verifier (new script/test/workflow/docs only)",
+  "parent_run143_pr": 174,
+  "run141_pr": 172,
+  "source_head": "fe902a560ea8bff171ff3b8c4b134bb9b0366211",
+  "artifact_id": 12584274811,
+  "artifact_wrapper_sha256": "5e95a4a9d2aade9ae213d0f3843148f1f16b181f3805ab0783c82f6e2610d720",
+  "phone_source_sha256": "11ea4b19c2be82a219582e877bc671bf6936f8794398dfff4cc92682714c18cd",
+  "source_manifest_files": 867,
+  "manifest_crc_hash": "PASS",
+  "extracted_linux_focused_tests": "38/38 PASS",
+  "new_adversarial_software_tests": "5/5 PASS",
+  "full_suite": "TIMEOUT_AFTER_150S_WITH_TWO_PARTIAL_E_MARKERS_NO_FINAL_SUMMARY",
+  "redmi": "NOT RUN",
+  "native_model": "NOT RUN",
+  "claim_limit": "SOFTWARE_ARCHIVE_AND_EXTRACTED_LINUX_TESTS_ONLY",
+  "gates": {"STEP2": "UTILITY_FAIL", "B3_L1": "FAIL", "Body_JEPA": "UNAVAILABLE", "jepa_weight": 0, "DS2_H2": "FAIL", "V13": "INCOMPLETE"},
+  "next_step": "Longer serialized pinned-dependency full-suite audit to diagnose 2 partial errors; separate real Redmi phone proof; continue independent canonical packages."
+}
