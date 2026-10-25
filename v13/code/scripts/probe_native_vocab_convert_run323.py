@@ -5,8 +5,10 @@ import hashlib
 import json
 from pathlib import Path
 import struct
+import sys
 
-from probe_lfm2_tokenizer_compat_run322 import REPO, REVISION, verify_snapshot
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.probe_lfm2_tokenizer_compat_run322 import REPO, REVISION, verify_snapshot
 
 SCHEMA = "V13_RUN323_PINNED_B10964_VOCAB_ONLY_V1"
 SOURCE_TAR_SHA256 = "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe"
