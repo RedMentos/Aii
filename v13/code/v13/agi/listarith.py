@@ -126,9 +126,18 @@ def operation(text):
     return None
 
 
+def _exact_integer(value):
+    """A model-produced JSON integer is never a bool, float or numeric string."""
+    if type(value) is not int:
+        raise ValueError('number must be an exact integer')
+    return value
+
+
 def encode(values):
     """Typed values -> 'name=number' lines (the tool's text argument)."""
-    return '\n'.join(f"{str(v['name']).strip().replace('=', ' ')[:40]}={int(v['number'])}" for v in values)
+    if any(not isinstance(v, dict) for v in values):
+        raise ValueError('invalid value row')
+    return '\n'.join(f"{str(v['name']).strip().replace('=', ' ')[:40]}={_exact_integer(v.get('number'))}" for v in values)
 
 
 def decode(lines):
@@ -144,8 +153,10 @@ def compute(op, values, text):
     """Recipe with number guard; returns (value, label) or raises ValueError."""
     if op not in ('total', 'difference_max_min'):
         raise ValueError('unknown operation')
+    if any(not isinstance(v, dict) for v in values):
+        raise ValueError('invalid value row')
     values = [v for v in values if not AGGREGATE.match(str(v.get('name', '')))]
-    nums = [int(v['number']) for v in values]
+    nums = [_exact_integer(v.get('number')) for v in values]
     if len(nums) < 2:
         raise ValueError('fewer than two values')
     tokens = Counter(token.replace('\u2212', '-').lstrip('+') for token in _INT.findall(str(text)))
@@ -177,6 +188,10 @@ def read_values(runner, text, cancel, deadline, max_tokens=160):
     raw = ''.join(runner.generate([{'role': 'system', 'content': READ_SYSTEM}, {'role': 'user', 'content': str(text)}],
                                   cancel, deadline, max_tokens, READ_SCHEMA))
     values = json.loads(raw)['values']
-    if not isinstance(values, list):
+    if not isinstance(values, list) or len(values) > 8:
         raise ValueError('values')
+    for row in values:
+        if not isinstance(row, dict) or type(row.get('name')) is not str or len(row['name']) > 40:
+            raise ValueError('invalid value row')
+        _exact_integer(row.get('number'))
     return values
