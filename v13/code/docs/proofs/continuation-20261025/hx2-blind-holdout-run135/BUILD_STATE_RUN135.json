@@ -1,0 +1,27 @@
+{
+  "schema": "V13_RUN135_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "new HX2 pure module/tests/workflow/proofs only",
+  "base_sha": "787290a3a198b2cfab6ef89cd530354266b44b9b",
+  "prereg_sha": "026e60752a218b12c9beb0bf2b5927526de127f6",
+  "pr": 166,
+  "remote_module_blob": "42967cece1a95ee918a43054241d81049877e79f",
+  "remote_test_blob": "d52b03cba3285071f86f47a8443eb6d9324b7d46",
+  "tests": "14/14 local Linux software/synthetic PASS",
+  "new_tests": "9/9 PASS",
+  "cross_review": "unguided-control and small-n false signals RED then fixed",
+  "native": "NOT RUN",
+  "redmi": "NOT RUN",
+  "live_consumer": "OFF",
+  "hx2_gate": "UNVERIFIED",
+  "full_suite": "NOT RUN; Run129 inherited 4 FAIL 1 ERROR",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "next_step": "Registered B2 rule-quote real holdout after Run131 native owner releases; independent Canon packages otherwise."
+}
