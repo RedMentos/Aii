@@ -1,0 +1,23 @@
+=== Run137 Linux shell RED on old installer blob 73c43485 ===
+INSTALL_RC=0 BASH_N_RC=2
+/mnt/data/v13_run137_local/home/.shortcuts/tasks/V13 Stillstand: line 5: syntax error near unexpected token '('
+/mnt/data/v13_run137_local/home/.shortcuts/tasks/V13 Stillstand: line 5: msg='Stillstand angefordert: alles hält an (Werkzeuge, Lernen, Hintergrund, Alterung). Wirkt sofort im laufenden Chat, sonst beim nächsten Start. Aufheben nur im Chat: :stillstand aus''
+
+=== Run137 GREEN exact imported installer blob 744ef9cb ===
+git hash-object KNOEPFE_EINRICHTEN.sh = 744ef9cbf20bb096eb8222c010d2bd28f8fe7ab2
+bash -n KNOEPFE_EINRICHTEN.sh = PASS
+bash -n ~/.shortcuts/tasks/V13 Stillstand = PASS
+bash ~/.shortcuts/tasks/V13 Stillstand = exit 0
+literal control/STILLSTAND created; -rw------- (0600)
+WIDGET_GREEN_RC=0
+
+=== Run137 initial combined tests ERROR (missing historical source file in Run130 ZIP) ===
+ModuleNotFoundError: No module named 'tests.test_phone_startup_notice_run125'
+Ran 24 tests in 0.341s
+FAILED (errors=1)
+
+=== Run137 available-source combined tests GREEN ===
+Ran 23 tests in 0.331s
+OK
+RUN134_SYNTHETIC_COHORT correct_false_alarms=0/100 wrong_detected=100/100 seed=13425
+RUN135_SYNTHETIC positive_60_pairs_but_gate_UNVERIFIED
