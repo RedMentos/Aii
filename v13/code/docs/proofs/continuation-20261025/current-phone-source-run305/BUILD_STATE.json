@@ -1,0 +1,54 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN305_V1",
+  "utc": "2026-10-25T15:08:00Z",
+  "owner": "GPT-6 automation / Run305 phone source-only package",
+  "base": "c0c84fa3a1939e983ec15f3e4bc3ad8ee880afba",
+  "branch": "codex/phone-source-current-run305-20261025",
+  "pr": 303,
+  "exact_packaged_source": "ec997fffd1581eec1863729a12620d643f7a5937",
+  "owned": [
+    ".github/workflows/run305-current-phone-source.yml",
+    "v13/code/docs/proofs/continuation-20261025/current-phone-source-run305/"
+  ],
+  "github": {
+    "run": 40205397748,
+    "job": 121205117018,
+    "artifact": 12603961109,
+    "artifact_zip_sha256": "d17832699cb31984e8b74dda05571aea2a72ad41ce3c2b1d5aa0941dcd2b26a8"
+  },
+  "phone_zip": {
+    "filename": "V13-Phone-Run305.zip",
+    "size_bytes": 12941118,
+    "sha256": "af10d0b67b48487371c16d0826d2a1d4b16df14ee5f2df2a396ea3573f678d23",
+    "source_files": 1017,
+    "members": 1018,
+    "manifest_sha256": "2c3f87d467f38a6ec7218c2b5a2c2d58f723911e13d6742ba0ec6b912d43a367",
+    "crc": "PASS",
+    "member_hashes": "PASS",
+    "checkout_byte_parity": "PASS"
+  },
+  "extracted": {
+    "source_only_setup": "PASS",
+    "test_count": 15,
+    "test_failures": 0,
+    "privacy": "CLEAN",
+    "model_inference": false,
+    "redmi_measured": false
+  },
+  "private_library": {
+    "phone_zip": "/V13-Inquisition/Proofs/Run305/V13-Phone-Run305.zip",
+    "raw_artifact": "/V13-Inquisition/Proofs/Run305/V13-Run305-Current-Phone-Source-Artifacts.zip",
+    "remote_readback_sha256": "PASS_BOTH"
+  },
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "model_seed_cohorts_unchanged": true,
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "whole_system_complete": false,
+  "source_only": true,
+  "full_native_test": false,
+  "next_command": "On new independent review branch based on this checkpoint, preregister repeated-identical-user-source WorldModel holdout negative tests against actual Runtime/Store, then implement source-hash-disjoint grouping only if RED confirms leakage; run Run301 and source-lineage regressions; preserve exact unique-source split and all negative gates.",
+  "prerequisites": "No native/model jobs while Run297 owner active; no force-push, no frozen cohort/Canon changes. Actual Redmi setup/test requires user device; continue independent software work."
+}
