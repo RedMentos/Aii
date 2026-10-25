@@ -82,5 +82,21 @@ class WorldTrainOnlyCoverageRun361(unittest.TestCase):
         self.assertEqual(cf["confidence"], 0.0)
 
 
+    def test_legacy_store_none_numerical_fixture_is_explicitly_synthetic_only(self):
+        weights = [[[0.0, 0.0, 0.0] for _ in range(9)] for _ in range(W.ENSEMBLE)]
+        for weight in weights:
+            weight[0] = [0.5, 0.8, 0.3]
+        fixture = {"status": "FITTED", "forward": weights,
+                   "states": {role: [[0.0] * 4] * 20 for role in W.ACTIONS}}
+        legacy = W.counterfactual(None, [0.0] * 4, "simple", fixture)
+        self.assertEqual(legacy["label"], "SIMULATION_SUPPORTED")
+        self.assertEqual(legacy["evidence_scope"], "SYNTHETIC_TEST_ONLY")
+        # Identical unbound bytes in an actual worker/test-double Store
+        # must not silently acquire independent-source evidence.
+        unbound = W.counterfactual(Store(), [0.0] * 4, "simple", fixture)
+        self.assertEqual(unbound["label"], "SIMULATION_UNCERTAIN")
+        self.assertEqual(unbound["confidence"], 0.0)
+
+
 if __name__ == "__main__":
     unittest.main()
