@@ -1,0 +1,7 @@
+# Run140 — Termux Widget guide fallback EOF exit semantics (test-first)
+
+2026-10-25 UTC. Base Run139 PR170 exact `151a01994f16fd9cd513f4b466c19cd295178500` (native job owns separate script/workflow). Run138 exact source ZIP `664bd9d17c1fdf85e32cc3bd46e40668f8cf05af29ce2a2aec3c5c0a8625f0b1` was extracted independently; 34 tests 1 FAIL on Linux host without `less`: `test_apostrophe_in_source_folder_does_not_break_guide_button` returned 1 because fallback `more; echo; read -r _` hit EOF on /dev/null. This is a real cross-host portability failure despite Run138 CI success; preserve raw logs and original ZIP.
+
+Owner only `v13/code/KNOEPFE_EINRICHTEN.sh`, new `tests/test_widget_guide_fallback_run140.py`, CI/proofs. Frozen Runtime, native C3, Canon, Age, stop/permission behavior untouched. Test-first: generated `V13 Befehle` button in source folder with apostrophe, force no `less` by restricted PATH and stub `more`; with stdin /dev/null a successful `more` must return exit0, a failing `more` must preserve its nonzero status, and guide must still contain `:stillstand`. Existing Run127 quote/stop tests must pass. Narrow fix ignore only the expected optional `read` EOF, never mask `more` failure.
+
+Run local Linux tests and Actions privacy/frozen Runtime, then build a NEW exact source ZIP and independently extract on both fallback and normal host. No Redmi claim, no original gate promotion (STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; DS2 H2 FAIL; V13 INCOMPLETE).
