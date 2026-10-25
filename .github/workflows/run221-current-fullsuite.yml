@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/run221-current-fullsuite.yml'
-      - 'v13/code/docs/proofs/continuation-20261025/run221-current-fullsuite/**'
+      # Proof-only checkpoints do not retrigger this heavy serialized full suite.
       - 'v13/code/tests/test_toolforecast.py'
   workflow_dispatch:
 permissions:
