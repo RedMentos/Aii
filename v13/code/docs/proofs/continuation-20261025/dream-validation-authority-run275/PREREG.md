@@ -1,0 +1,7 @@
+# Run275 preregistration — queued Dream B hypothesis and neighbor authority
+
+Base: PR274 head `c6d425a078c2bc968387d0872744847abe69bd29`; Run275 owns only `v13/code/v13/sleep.py` (new owner after Run274 checkpoint), `v13/code/tests/test_dream_validation_authority_run275.py`, `v13/code/docs/proofs/continuation-20261025/dream-validation-authority-run275/*`, and optional new Run275 CI. No concurrent edits to PR274; all PR270–274 parents must be reviewed in order.
+
+RED hypothesis: Run274 filters new Dream B seeds, but previously queued hypotheses and neighbor evidence in `SleepCycle.check_hypothesis` still use active/readable memory rows without F5 HumanDecision/feedback validation. Revoking an anchor or a supporting neighbor may leave a hypothesis marked SUPPORTED/UNVERIFIED instead of STALE or unsupported.
+
+Controls: actual Runtime/SQLite, generate genuine QUEUED Dream B ReplayItem before tamper; then delete HumanDecision/feedback, change source kind or duplicate packet. Anchor loss must produce STALE; revoked supporting neighbor must not produce SUPPORTED. Independent valid queued hypothesis remains usable. Validate the entire main/neighbor evidence cohort via Memory._verified_rows, preserve no-fact-write authority and existing Sleep A/B/validation tests. Test RED before code, retain failed attempts, CI raw logs, exact hashes, official privacy. No native/Redmi proof; STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 INCOMPLETE.
