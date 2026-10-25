@@ -30,6 +30,9 @@ jobs:
           set -euo pipefail
           PYTHONPATH="$PWD" python3 scripts/native_candidate_drift_audit_20261025.py --root "$PWD" --output "$RUNNER_TEMP/native-drift" | tee "$RUNNER_TEMP/DRIFT_AUDIT_RAW.json"
           sha256sum "$RUNNER_TEMP/native-drift/manifest.json" "$RUNNER_TEMP/native-drift/historical-versus-live.diff"
+          echo "SOURCE_DIFF_BEGIN"
+          cat "$RUNNER_TEMP/native-drift/historical-versus-live.diff"
+          echo "SOURCE_DIFF_END"
           python3 -c "import json,os; p=json.load(open(os.environ['RUNNER_TEMP']+'/native-drift/manifest.json')); print('CANDIDATE_GATE',p['candidate_gate']); print('DRIFT_FILES',sum(not v['byte_equal'] for v in p['source_paths'].values()))"
       - name: Official public repo privacy scan
         run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 0c8dbb233a4541edb4049e5fa19deac91190f8a7 --head HEAD --no-worktree
