@@ -1,0 +1,7 @@
+# Run268 second failure — source scope mismatch (2026-10-25)
+
+- Exact tested head `ab9facf5f2da18cdaec3cbfced86b7671db5aa1d`, GitHub Actions run https://github.com/RedMentos/Aii/actions/runs/40186684270, job `121148861850`: **14 tests PASS**, official privacy CLEAN; package builder produced an immutable ZIP, but independent verifier **FAIL**: `missing required source: AGENTS.md`. No verified phone ZIP claim.
+- Closed raw artifact ID `12596408312`, ZIP SHA256 `8f1cc82bcfa4eb1d8fece0fcd292c5622d8c58d5ea41ad2dc9cd2608f48cddf2`; includes unverified source ZIP and all logs/exit codes. Preserve failure.
+- Root cause: repository-level `AGENTS.md` is at `/AGENTS.md`, **outside** the `v13/code` source root passed to the canonical `package_source.py --phone-install`. Requiring it inside `V13-Phone/` was an invented packaging constraint. The full AGENTS is still binding for development and remains in GitHub; it is not a runtime organ. The phone ZIP retains the complete Canon under `docs/canon/`.
+- Fix commits `a6c7c7ca175b82df1ccc68f8b2d10f5126c61e32`, `b6b589f20e35f23d1adbe4134fc9eb694c6ed78f`: verifier checks required files that actually belong to source root; CI separately asserts root AGENTS and includes it as an additional artifact file alongside the phone ZIP. No model/source hashes or Canon changed, no test disabled.
+- Next: rerun exact-head packaging, verify ZIP member hashes against source and official privacy; only then distribute. Original STEP2/B3/Body-JEPA/jepa_weight/full V13 negative gates remain.
