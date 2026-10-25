@@ -1,0 +1,41 @@
+{
+  "run": "Run221",
+  "date_utc": "2026-10-25",
+  "canonical_area": "Current exact-head full V13 unittest discovery, optional historical LP3 fixture",
+  "branch": "codex/current-fullsuite-run221-20261025",
+  "base_verified": "da4cceb5075e67d35146fe47ec3cd3d01241190d",
+  "workflow_commit": "8a33ad375e50eaab4776d2c07b739a874f9d25f8",
+  "workflow_blob_sha": "a3fe1097db933927620f14d55fd6750daa9810db",
+  "status": "CI_REQUESTED_NOT_YET_VERIFIED",
+  "owner": "Run221 CI/proof only, serialized group v13-native-c3-run131-serialized, no production edits",
+  "pr": 249,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/249",
+  "owned_files": [
+    ".github/workflows/run221-current-fullsuite.yml",
+    "v13/code/docs/proofs/continuation-20261025/run221-current-fullsuite/"
+  ],
+  "preflight_pins": {
+    "runtime.py": "a691d27bd0772a4fa1f03d57ec90663237bf6825",
+    "test_toolforecast.py": "28b551a3be56eaaf557e0a2f877fbf432137990a",
+    "lp3_native_readiness.py": "2dfa7099541d3f8940817d43b97746c1d4d27092",
+    "lp3_closed_evidence_audit.py": "6068ddafa2ae319f66a1cfcd7fb50127372e20a8",
+    "historical_run147_artifact_zip_sha256": "ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676"
+  },
+  "evidence_kind": "PENDING GitHub Linux CPU software full-suite; not native model or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "CI full suite result not yet observed; preserve raw failures if any.",
+    "Historical Run147 artifact availability/hash and torch CPU install must be independently rechecked.",
+    "No native model utility or Redmi proof."
+  ],
+  "next_step": "Observe exact Run221 CI, retrieve raw log and artifacts; if failures, classify environment vs source, fix narrow issue without suppressing failures. If pass, checkpoint and select next independent canonical package.",
+  "next_command": "Inspect GitHub Actions run for PR249 head, then fetch_workflow_job_logs and fetch_workflow_run_artifacts; verify remote bytes before continuing.",
+  "no_authority_promotion": true
+}
