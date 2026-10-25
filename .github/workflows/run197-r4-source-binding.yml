@@ -1,0 +1,26 @@
+name: Run197 R4 future task and capture binding (software only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/run197_r4_future_manifest.py'
+      - 'v13/code/tests/test_run197_r4_future_manifest.py'
+      - '.github/workflows/run197-r4-source-binding.yml'
+  workflow_dispatch:
+jobs:
+  software:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run contract and source novelty checks
+        run: |
+          cd v13/code
+          python -m unittest -v tests.test_run196_r4_stratified_future tests.test_run197_r4_future_manifest
+          python scripts/run197_r4_future_manifest.py manifest scripts/utility_bench2.py scripts/utility_bench.py /tmp/run197_future_tasks.json
+          python -m compileall -q scripts/run196_r4_stratified_future.py scripts/run197_r4_future_manifest.py
+      - name: Scope warning
+        run: echo 'SOURCE/SYNTHETIC ONLY - no native model inference or Redmi evidence'
