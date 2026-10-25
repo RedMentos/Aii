@@ -1,0 +1,9 @@
+# Run309 — exact current-chain source-only Termux ZIP after Run304–308 (2026-10-25)
+
+Owner GPT-6 automation; base verified Run308 checkpoint `3d7343dbedc6cd829df3c38df853f3aad0579217`. New review branch, owns only dedicated CPU workflow and this proof directory. No production source/Canon/model/seed/cohort changes, no overlap with Run303 Budget or Run297 native Context OS.
+
+Preregistered acceptance: build canonical `scripts/package_source.py --phone-install` ZIP `V13-Phone-Run309.zip` from **exact PR head**, verify immutable Canon SHA256 `3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee`, run independent `verify_phone_zip_current_run268.py` CRC/member SHA256/checkout byte parity/privacy and forbid model/private payloads. Extract ZIP and run offline `V13_SOURCE_ONLY_DIAGNOSTIC=1` setup, no native/model downloads. Run actual extracted-source regressions: Run302 read-only learning, Run304 source-closed backup, Run306 source-disjoint WorldModel, Run307 Sleep A exact retention, Run308 Attention durable receipt, and existing phone operator/CLI journey. Retain exact source SHA, ZIP, ZIP SHA256, verifier JSON, raw tests, exit codes, hash closure, privacy scan in GitHub Actions artifact. Download and independently verify artifact, save exact ZIP and raw to private Library, read back and check SHA256.
+
+Claim limit: source-only Linux extracted-software utility. No native model launch, Redmi, thermal, energy, JEPA weight or complete system proof. Original STEP2 `UTILITY_FAIL`, B3 L1 `FAIL`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, V13 `INCOMPLETE` remain. A verified ZIP is not a native end-to-end pass. No anyone-writable Drive destination.
+
+After verified save, continue a **different** substantive Canon organ or independent acceptance gap; do not stop simply because the ZIP passes. Exact next command: open draft PR to Run308 branch and run new dedicated workflow; inspect raw and remote bytes.
