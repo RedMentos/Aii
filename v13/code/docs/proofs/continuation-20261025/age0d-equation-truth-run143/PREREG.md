@@ -1,0 +1,7 @@
+# Run143 — independent source-bound equation-output truth auditor (post-hoc diagnostic)
+
+2026-10-25 UTC. Base Run142 PR173 exact `2ba3688039ac6368f6cb8c0130dcaaa5dcb5d6ee` (Run142 native source under test). Run142 registered C3 native 80-task report completed, original K1 INSUFFICIENT, K2 INSUFFICIENT, K3 PASS, 42 checker-supported but zero truth-parser-known answers. Independent review identified a **measurement harness limitation**: C3 responded with equations such as `24 + 48 = 72`, which AGE0d checker already handles, but independent `parse_answer` only accepted bare numbers or `The answer is ...`.
+
+Owner only new pure `v13/code/v13/agi/answer_claim_truth.py`, new `tests/test_age0d_equation_truth_run143.py`, CI and proof/coordination docs. Do not modify original Run142 script/report, source/model/seed, registered cohorts, Canon, Runtime, HX, AGE0d checker or any gate. Independent strict parser may extract a numeric claim from bare, sentence or **exact source-matching equation** only. Wrong LHS, multiple numbers, injection, unparseable outputs abstain. Rescore Run142 raw as **POSTHOC_SECONDARY_DIAGNOSTIC_ONLY** with original response hashes and SHA, never reinterpret the original prereg K1/K2 as PASS. No native job or Redmi.
+
+Predeclared software tests: equation true/false, signed/decimal, source mismatch, extra numbers, hostile text, bounds, zero, reproducible 80-row report cross-check; test-first RED then GREEN. Independent review should check no false source matches. Preserve all failed attempts. No STEP2/B3/Body-JEPA/DS2/V13 gate promotion.
