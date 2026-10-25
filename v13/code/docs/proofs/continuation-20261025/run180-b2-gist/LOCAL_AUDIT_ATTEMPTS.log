@@ -1,0 +1,6 @@
+Run180 raw ZIP SHA256 a80d408f36de5e07ae8af0cc511831a57e19b99cb255642132a8e4231cdd153e
+Attempt 1 (wrong operator path): python run180_b2_gist_audit.py /mnt/data/v13_run180/native_artifact
+Result: FileNotFoundError: /mnt/data/v13_run180/native_artifact/manifest.json (manifest actually in raw/).
+Attempt 2 (correct path): python run180_b2_gist_audit.py /mnt/data/v13_run180/native_artifact/raw
+Result: {"b3_promoted": false, "dim": 1024, "evidence_class": "LINUX_NATIVE_MODEL_READONLY", "slots": 3, "status": "INDEPENDENT_RAW_AUDIT_PASS", "step2_promoted": false, "tokens": 16}
+No native code or input changed between attempts.
