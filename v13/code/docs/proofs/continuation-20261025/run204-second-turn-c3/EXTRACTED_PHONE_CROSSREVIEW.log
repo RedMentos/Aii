@@ -1,0 +1,18 @@
+Run204 model-free extracted Phone source cross-review, 2026-10-25 UTC
+Downloaded GitHub Actions run 40176323929 artifact 12592581151 (Run203 exact parent source).
+Outer V13-Phone-source ZIP -> inner V13-Phone-Run83.zip, 953/953 manifest entries SHA-256 verified, no extra/missing original source entries.
+Original production Git blobs inside extracted archive:
+  v13/age.py: 7c47181c2a655e31865047fc53a817ae2ac35385
+  v13/world_model.py: fe1e28f75ec7d8004f37d9969a7cc85df825fda9
+  v13/memory.py: a6f6dc0d941f939809f8d74b4d42f5d6314a0cb5
+Added only Run204 test overlay to extracted source; test blob e5b51d021488c761f1a18640d793fb45df39eb55 exactly matches GitHub remote test blob.
+  python -m unittest -v tests.test_second_turn_c3_memory_pipeline_run204
+  Ran 3 tests in 0.622s
+  OK
+Actual Runtime synthetic proof:
+  turn 1: FINAL / unknown; C3 test-double system context has no human correction.
+  Explicit human fact feedback '120 Euro' persisted.
+  Close/restart Runtime; same session; turn 2: FINAL / 120 Euro; exact correction in C3 system context.
+  Forget human memory source; turn 3: FINAL / unknown; no correction in C3 system context.
+  Other session and tampered-key cases also remain unknown.
+This is deterministic C3 test-double behavior, not native C3 model improvement, native learning, Redmi or AGI evidence.
