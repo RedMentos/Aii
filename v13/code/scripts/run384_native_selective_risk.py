@@ -35,6 +35,8 @@ def checked_row(row):
     if not isinstance(answer, str):
         raise ValueError("invalid answer")
     empty = not bool(answer.strip())
+    if empty and row["correct_exact"]:
+        raise ValueError("empty answer cannot be exact correct")
     wrong_nonempty = not empty and not row["correct_exact"]
     if "empty" in row and row["empty"] is not empty:
         raise ValueError("empty flag conflicts with answer")
