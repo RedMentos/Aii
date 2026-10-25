@@ -1,0 +1,7 @@
+# Run127 — Termux Widget shell-quoting correctness
+
+2026-10-25 UTC. Independent package based on verified Run125 PR #156 head `c509949f67e93b18e8bd973bafb991aca947d983`. Run126 full-suite audit is a separate active **workflow/proofs-only** owner; no overlap. Run127 owns only `v13/code/KNOEPFE_EINRICHTEN.sh`, new test/workflow/proofs. No Runtime, UI, Canon, model, learning, native or registered cohort changes.
+
+**Local Linux RED observation:** with `V13_HOME` containing a literal apostrophe, installer returned 0 but the generated Stillstand button returned 2 with Bash syntax error and failed to create `control/STILLSTAND`. The script interpolates `V13_HOME` and `APP_DIR` inside single quotes in generated scripts. This is a real custom-path correctness bug and potential command interpretation issue if paths contain shell metacharacters; not an Android exploit claim.
+
+Test-first preregistration: custom model home containing apostrophe/spaces/semicolon, malicious-looking literal path, and source folder with apostrophe; generated stop buttons and guide must treat paths as data, never execute fragments. Preserve raw RED. Narrow fix uses Bash `printf %q` to quote values in generated Bash scripts, without changing stop semantics, permissions or widget paths. Verify `bash -n`, three new tests and inherited six Claude Widget + two startup notice tests, privacy. No native/Redmi. Negative V13 gates unchanged (STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; DS2 H2 FAIL; V13 INCOMPLETE).
