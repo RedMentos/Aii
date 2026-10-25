@@ -1,0 +1,79 @@
+{
+  "schema": "V13_RUN_SCOPED_BUILD_STATE_V1",
+  "run": "Run363",
+  "checkpoint_utc": "2026-10-25T20:26:00Z",
+  "owner": "assistant/run363-listarith-fast-rows-20261025",
+  "parent_branch": "assistant/run362-listarith-german-20261025",
+  "parent_commit": "90d142ea3ca8e0cfcbe4ba8a3bb82584057bb1a4",
+  "tested_head": "e049d9a4b2855028aeb1b21065cea67f67f0030a",
+  "review_pr": 358,
+  "scope": "Strict local name: integer [Euro] row extraction before C3 wake in ToolStep; C3 fallback for ambiguous rows; human tool enable/prohibition unchanged",
+  "changed_files": [
+    "v13/code/v13/agi/listarith.py",
+    "v13/code/v13/toolstep.py",
+    "v13/code/tests/test_listarith_fast_rows_run363.py",
+    "v13/code/tests/test_listarith_german_run362.py",
+    ".github/workflows/run363-listarith-fast-rows.yml"
+  ],
+  "git_blob_shas": {
+    "v13/code/v13/agi/listarith.py": "786900346fd965ae4f3d6db9ebc15b5e0eb38fe1",
+    "v13/code/v13/toolstep.py": "50d5efd45fd722ed9b9ff6a4dc63153db241aa09",
+    "v13/code/tests/test_listarith_fast_rows_run363.py": "53da107d482f978bdea4ddd3e97446bcacb02e38",
+    "v13/code/tests/test_listarith_german_run362.py": "d1397133d54434f8c0ea78b2a2d0ec7dce64fbb4",
+    ".github/workflows/run363-listarith-fast-rows.yml": "4b3a5a4f415c31c6b0f75d7e02f56ab9dbb9b68b",
+    "v13/code/BUILD_STATE.json": "fdf0827d7c4af5cdb85b69cbe651ed52784a07b5"
+  },
+  "red": {
+    "run_id": 40230383476,
+    "tests": 25,
+    "failures": 1,
+    "errors": 8,
+    "artifact_id": 12612479951,
+    "artifact_zip_sha256": "6b3ce01dbcc6190e977c8c33177f91dbc74e568371da238e249635f3ac3ee9d3"
+  },
+  "failed_attempts": [
+    {
+      "run_id": 40230466453,
+      "reason": "JS String.replace replacement-string $-expansion truncated inserted Python regex, compile SyntaxError; restored exact parent bytes and used callback replacement",
+      "artifact_id": 12612044022,
+      "artifact_zip_sha256": "fc7c8f6c7cfaf966417bc5704e7f914424775cc8bc1745711ebaca874beeaf8a"
+    },
+    {
+      "run_id": 40230529723,
+      "reason": "One Run362 regression still expected C3 read on exact rows; rebaselined only this now-obsolete observation, retained count veto and added C3 fallback assertion",
+      "tests": 25,
+      "failures": 1,
+      "artifact_id": 12612153937,
+      "artifact_zip_sha256": "684493c8288d657316a299cd2f8e617d94e5171a61b4defe45e310956a4e83db"
+    }
+  ],
+  "green": {
+    "run_id": 40230605773,
+    "tests": 25,
+    "failures": 0,
+    "errors": 0,
+    "artifact_id": 12611964509,
+    "artifact_zip_sha256": "4bcb7457da2545a5a332c620e28536397fdb0cd40215ac7bf838499c4466df8a",
+    "privacy": "CLEAN",
+    "other_workflows": "Run101 and Run362 PASS at exact tested head"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "NOT_PROMOTED",
+    "Body_JEPA": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone_measured": false,
+    "native_c3_latency_measured": false,
+    "whole_system_complete": false
+  },
+  "central_BUILD_STATE_mutated": false,
+  "blockers": [
+    "No native C3 wake/latency measurement or Redmi hardware",
+    "Historical registered R4 cohorts keep their original source/test bytes; this is prospective source-only fast arm"
+  ],
+  "next_command": "cd v13/code && python -m unittest -v tests.test_listarith_fast_rows_run363 tests.test_listarith_german_run362 tests.test_listarith tests.test_listarith_signed_source tests.test_r4_listarith_live",
+  "prerequisites": [
+    "Python with numpy==2.3.5 and prompt-toolkit==3.0.52"
+  ],
+  "claim_limit": "Linux source-only Runtime/SQLite and mocked C3, not native model latency or German read accuracy"
+}

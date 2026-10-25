@@ -1,0 +1,82 @@
+name: V13 Run363 strict local list-row fast arm
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run363-listarith-fast-rows.yml'
+      - 'v13/code/v13/agi/listarith.py'
+      - 'v13/code/v13/toolstep.py'
+      - 'v13/code/tests/test_listarith_fast_rows_run363.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact source and isolated dependencies
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN363_HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run363venv"
+          "$RUNNER_TEMP/run363venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          sha256sum v13/code/v13/{agi/listarith,toolstep}.py v13/code/tests/test_listarith_fast_rows_run363.py | tee "$RUNNER_TEMP/RUN363_SOURCE_SHA256SUMS.txt"
+      - name: Fast arm, inherited German/English and tool gates
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/run363venv/bin/python" -m compileall -q v13/agi/listarith.py v13/toolstep.py tests/test_listarith_fast_rows_run363.py
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run363venv/bin/python" -m unittest -v \
+            tests.test_listarith_fast_rows_run363 \
+            tests.test_listarith_german_run362 \
+            tests.test_listarith \
+            tests.test_listarith_signed_source \
+            tests.test_r4_listarith_live \
+            2>&1 | tee "$RUNNER_TEMP/RUN363_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -euo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN363_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN363_*' ! -name RUN363_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN363_SHA256SUMS.txt
+      - name: Upload raw PASS/RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run363-ListFastRows-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN363_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual tests
+        if: always()
+        run: |
+          test "${{ steps.suite.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

@@ -57,6 +57,53 @@ def question_part(text):
     return ' '.join(tail) if tail else (parts[-1] if parts else str(text))
 
 
+# A deliberately narrow local fast arm. A model is still needed for prose,
+# tables, decimal numbers, mixed formats or ambiguous item boundaries.
+EXACT_ROW = re.compile(
+    r'^\s*([^\d:;.!?\n]{1,40}?)\s*:\s*([+\-\u2212]?(?:0|[1-9]\d{0,8}))\s*(?:Euro|EUR|€)?\s*\.?\s*$',
+    re.I,
+)
+
+
+def parse_explicit_rows(text):
+    """Extract exact named integer rows before the question, or return None.
+
+    This is not a natural-language number extractor. Only unambiguous
+    name: integer [Euro] rows separated by sentences/semicolons qualify.
+    A missing or ambiguous row must fall back to the existing C3 reader.
+    """
+    if type(text) is not str or len(text) > MAX_TEXT:
+        return None
+    question = question_part(text)
+    if not question or question == text or re.search(r'\d', question):
+        return None
+    start = text.rfind(question)
+    if start <= 0:
+        return None
+    body = text[:start].strip()
+    if not body:
+        return None
+    values = []
+    names = set()
+    for chunk in re.split(r'(?<=\.)\s+|[;\n]+', body):
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        match = EXACT_ROW.fullmatch(chunk)
+        if not match:
+            return None
+        name = match.group(1).strip()
+        if AGGREGATE.match(name):
+            continue
+        if name.casefold() in names:
+            return None
+        names.add(name.casefold())
+        values.append({'name': name, 'number': int(match.group(2).replace('\u2212', '-'))})
+        if len(values) > 8:
+            return None
+    return values if len(values) >= 2 else None
+
+
 def operation(text):
     """BOOT rule R3 on the question part: which recipe the question asks for, or None."""
     t = str(text)
