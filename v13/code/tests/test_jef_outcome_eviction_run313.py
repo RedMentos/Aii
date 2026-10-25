@@ -78,6 +78,26 @@ class JefOutcomeEvictionRun313(unittest.TestCase):
         self.assertEqual(len(self.labels()), 1)
         self.assertEqual(self.sources(), 1)
 
+    def test_receipt_failure_rolls_back_source_row_and_label_together(self):
+        event = self.r.store.event(self.r.session, "run313 atomic source")
+        fp.head(self.r, "wake", event, "both")
+        before = self.r.store.state(jo.KEY)
+        source_count = self.sources()
+        original_dumps = jo.dumps
+        def fail_receipt(value):
+            if isinstance(value, dict) and all(k in value for k in
+                    ("event_id", "component", "decision_packet_id", "source_id", "value")):
+                raise RuntimeError("injected receipt serialization failure")
+            return original_dumps(value)
+        with patch.object(jo, "dumps", side_effect=fail_receipt):
+            self.assertEqual(self.emit(event), {})
+        self.assertEqual(self.r.store.state(jo.KEY), before)
+        self.assertEqual(self.sources(), source_count)
+        self.assertEqual(self.emit(event), {"wake": "gist"})
+        self.assertEqual(self.sources(), source_count + 1)
+        self.assertEqual(len(self.labels()), 1)
+        self.assertEqual(self.r.store.integrity(True), [])
+
     def test_distinct_components_keep_separate_source_bound_labels(self):
         e = self.r.store.event(self.r.session, "run313 two heads")
         fp.head(self.r, "wake", e, "both")
