@@ -9,7 +9,7 @@
   "pr": 378,
   "prereg_commit": "f244b9ddbaa77297e1dc9105c9dc4e981f2117f9",
   "pre_native_head": "50740edb326ca2e9c88fcfa4ce1beee99b32af2d",
-  "status": "AWAITING_NATIVE_GITHUB_ACTIONS",
+  "status": "RUN383_JSON_ANSWER_NOT_SUPPORTED",
   "model": {
     "revision": "657e078c94084481950a2d555a941481f715536b",
     "bytes": 219312832,
@@ -42,7 +42,45 @@
     "G-AGE-REOPEN-001_FAIL",
     "Run382_prompt_utility_FAIL"
   ],
-  "native_evidence": "PENDING_NOT_MEASURED",
-  "next_command": "Inspect PR378 exact-head native Actions, source-only tests and 48-call report; download raw ZIP, CRC/SHA and private backup; retain negative result without retuning.",
-  "blocked": "No Redmi; native Linux proof pending; production solver unchanged."
+  "native_evidence": "LINUX_NATIVE_PINNED_MEASURED_NEGATIVE",
+  "next_command": "Review PR378 raw verified negative; do not promote nonempty JSON; implement independent offline AG9 confidence/accuracy selective-risk diagnostic from Run382/383 raw receipts, no active abstention threshold.",
+  "blocked": "No native C3 correctness improvement; forcing answers increased wrong nonempty; no Redmi or native learning evidence.",
+  "actions_run": 40240289998,
+  "job": 121310432911,
+  "artifact_id": 12616716371,
+  "artifact_sha256": "de35f2172c96bbe575809c790fe64b18b576e99b49982519b7db4befb6f652a9",
+  "artifact_verified": "CRC PASS, internal 13/13 SHA PASS, exact HEAD, private re-materialized byte match",
+  "private_backup": "/V13/Backups/V13_Actions_12616716371_Run383_JSON_NATIVE_FAIL.zip",
+  "source_controls": "2/2 PASS",
+  "native_plumbing": "PASS 48/48 FINAL, process reaped, zero remaining PIDs",
+  "results": {
+    "baseline": {
+      "exact": 4,
+      "empty": 5,
+      "wrong_nonempty": 3,
+      "field": 7
+    },
+    "min_length": {
+      "exact": 4,
+      "empty": 3,
+      "wrong_nonempty": 5,
+      "field": 10
+    },
+    "explicit_json": {
+      "exact": 4,
+      "empty": 0,
+      "wrong_nonempty": 8,
+      "field": 12
+    },
+    "combined": {
+      "exact": 4,
+      "empty": 0,
+      "wrong_nonempty": 8,
+      "field": 12
+    },
+    "combined_exact_gain": 0,
+    "combined_empty_reduction": 5,
+    "combined_wrong_nonempty_increase": 5,
+    "combined_duration_ratio": 0.39006298684779495
+  }
 }
