@@ -1,0 +1,143 @@
+name: V13 Run286 frozen A2 source binding and native A3
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/a2_reference.py'
+      - 'v13/code/v13/learning.py'
+      - 'v13/code/tests/test_a2_frozen_reference_run286.py'
+      - '.github/workflows/run286-a2-frozen-binding.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Exact Canon and isolated pinned dependencies
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN286_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/v13/a2_reference.py v13/code/v13/learning.py v13/code/tests/test_a2_frozen_reference_run286.py | tee "$RUNNER_TEMP/RUN286_BLOBS.txt"
+          python3 -m compileall -q v13/code/v13 v13/code/tests
+          python3 -m venv "$RUNNER_TEMP/run286venv"
+          "$RUNNER_TEMP/run286venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual SQLite A2 and A3 software regressions
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run286venv/bin/python" -m unittest -v \
+            tests.test_a2_frozen_reference_run286 tests.test_student_worker \
+            tests.test_a3_rawstem_source_probe_run157 tests.test_a3_support_ood_probe_run156 \
+            tests.test_a3_trainonly_support_floor_run152 tests.test_learning_invariants \
+            tests.test_phone_learning_integrity_integration 2>&1 | tee "$RUNNER_TEMP/RUN286_SOFTWARE_RAW.log"
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN286_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN286_PRIVACY_RAW.log"
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN286_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Closed raw software evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run286-A2-Software-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN286_HEAD.txt
+            ${{ runner.temp }}/RUN286_BLOBS.txt
+            ${{ runner.temp }}/RUN286_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN286_SOFTWARE_RAW.log
+            ${{ runner.temp }}/RUN286_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN286_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce software and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
+  native-a3:
+    needs: software
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    concurrency:
+      group: v13-native-c3-run131-serialized
+      cancel-in-progress: false
+    env:
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Fresh host and isolated pinned CPU dependencies
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN286_NATIVE_HEAD.txt"
+          git hash-object v13/code/v13/a2_reference.py v13/code/v13/learning.py | tee "$RUNNER_TEMP/RUN286_NATIVE_BLOBS.txt"
+          { date -u -Iseconds; uname -a; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } | tee "$RUNNER_TEMP/RUN286_PREFLIGHT.log"
+          python3 -m venv "$RUNNER_TEMP/run286nativevenv"
+          "$RUNNER_TEMP/run286nativevenv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Fetch and hash-verify all registered native artifacts
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run286installed"
+          timeout 1800s "$RUNNER_TEMP/run286nativevenv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN286_BOOTSTRAP_RAW.log"
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN286_BOOTSTRAP_EXIT.txt"
+          exit 0
+      - name: Actual pinned Needle A2 to A3 learning, JEF consumer, restart and rollback
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN286_BOOTSTRAP_EXIT.txt")" != "0" ]]; then echo 2 > "$RUNNER_TEMP/RUN286_NATIVE_EXIT.txt"; exit 0; fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run286installed"
+          timeout 900s "$RUNNER_TEMP/run286nativevenv/bin/python" tests/integration_student.py --installed-home "$V13_HOME" --out "$RUNNER_TEMP/RUN286_NATIVE_A3.json" 2>&1 | tee "$RUNNER_TEMP/RUN286_NATIVE_RAW.log"
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN286_NATIVE_EXIT.txt"
+          exit 0
+      - name: Closed raw native evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run286-A2-Native-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN286_NATIVE_HEAD.txt
+            ${{ runner.temp }}/RUN286_NATIVE_BLOBS.txt
+            ${{ runner.temp }}/RUN286_PREFLIGHT.log
+            ${{ runner.temp }}/RUN286_BOOTSTRAP_RAW.log
+            ${{ runner.temp }}/RUN286_BOOTSTRAP_EXIT.txt
+            ${{ runner.temp }}/RUN286_NATIVE_RAW.log
+            ${{ runner.temp }}/RUN286_NATIVE_EXIT.txt
+            ${{ runner.temp }}/RUN286_NATIVE_A3.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual native result without promoting Canon gates
+        if: always()
+        run: |
+          test "$(cat "$RUNNER_TEMP/RUN286_BOOTSTRAP_EXIT.txt")" = "0"
+          test "$(cat "$RUNNER_TEMP/RUN286_NATIVE_EXIT.txt")" = "0"
