@@ -1,0 +1,3 @@
+# Run158 paired pinned artifact audit verified
+
+GitHub Actions run 40162587254, job 121077067284, head `95710c5761966736d8378706f8c279af07b96429`: **SUCCESS**. Both immutable original artifact ZIPs downloaded and SHA-256 verified (`first.zip: OK`, `second.zip: OK`). Exact Run155 full source/provenance/raw-log audits: 288/288 each, `PASS UNVERIFIED`. Exact Run154 comparison: 267/288 byte-identical responses, 21 different responses, 7 v3 status transitions, overall gate `UNVERIFIED`. Official privacy `b4b07b88a..HEAD: CLEAN`. No new native model run or Redmi proof. Workflow: https://github.com/RedMentos/Aii/actions/runs/40162587254
