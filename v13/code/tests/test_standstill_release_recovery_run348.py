@@ -89,5 +89,28 @@ class ReleaseRecoveryRun348(unittest.TestCase):
         self.assertTrue(P.report(self.r.store)["notaus"])
 
 
+    def test_second_cas_failure_reports_already_resumed_queue_truthfully(self):
+        S.engage(self.r)
+        original = self.r.store.set_state
+        count = 0
+        def fail_second(key, value, *args, **kwargs):
+            nonlocal count
+            if key == S.KEY:
+                count += 1
+                if count == 2:
+                    raise ValueError("injected final release CAS failure")
+            return original(key, value, *args, **kwargs)
+        with patch.object(self.r.store, "set_state", side_effect=fail_second):
+            with self.assertRaisesRegex(ValueError, "final release CAS"):
+                S.release(self.r)
+        state = S.status(self.r)
+        self.assertFalse(state["on"])
+        self.assertTrue(state["release_pending"])
+        self.assertFalse(self.r.paused)  # release was explicitly authorized
+        self.assertIn("bereits fortgesetzt", S.text(state))
+        S.release(self.r)
+        self.assertFalse(S.status(self.r)["release_pending"])
+
+
 if __name__ == "__main__":
     unittest.main()
