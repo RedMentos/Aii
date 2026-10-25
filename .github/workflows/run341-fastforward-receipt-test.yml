@@ -1,0 +1,61 @@
+name: V13 Run341 Fast-Forward atomic outcome receipt and sleep tests
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run341-fastforward-receipt-test.yml'
+      - 'v13/code/tests/test_sleep_offline.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run341-fastforward-receipt-test/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  receipt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source and isolated model-free deps
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN341_HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run341venv"
+          "$RUNNER_TEMP/run341venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          sha256sum v13/code/tests/test_sleep_offline.py v13/code/v13/fastforward.py | tee "$RUNNER_TEMP/RUN341_SOURCE_SHA256SUMS.txt"
+      - name: Sleep consolidation, CAS and exact event replay
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/run341venv/bin/python" -m compileall -q v13 tests
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run341venv/bin/python" -m unittest -v \
+            tests.test_sleep_offline.PredictorTests \
+            tests.test_fastforward_outcome_once_run312 \
+            tests.test_fastforward_sleep_cas_run299 \
+            2>&1 | tee "$RUNNER_TEMP/RUN341_TESTS_RAW.log"
+      - name: Official public privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN341_PRIVACY_RAW.log"
+      - name: Close raw source-only receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN341_*' ! -name RUN341_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN341_SHA256SUMS.txt
+      - name: Preserve raw PASS or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run341-FastForward-Receipt-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN341_*
+          if-no-files-found: warn
+          retention-days: 30
