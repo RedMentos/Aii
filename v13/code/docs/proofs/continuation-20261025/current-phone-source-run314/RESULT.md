@@ -1,0 +1,13 @@
+# Run314 verified exact-chain Termux source ZIP checkpoint
+
+UTC 2026-10-25. Review branch `assistant/current-phone-source-run314-20261025` based on Run313b checkpoint `46e2a20f6d16b181380d29c0692566d808d079ba`, not production main. CI source head `c5fab231dc4313453d312d8655cc86f29986f040`. Only new workflow and proof files; no production/model/seed/Canon/authority changes.
+
+## Actual GitHub Actions evidence
+Workflow `40208481476` (job `121214431308`) **SUCCESS**: package rc0, independent ZIP verify rc0, extracted offline source diagnostic rc0, extracted SQLite/operator tests rc0, official privacy CLEAN. Artifact ID `12605111810`, name `V13-Run314-Current-Phone-Source-55df5511721e6836406cc4438c6d1959c64bc750`, contains exact source ZIP and raw logs/exit/hashes. Source ZIP SHA256 `3c75b9d5caf79406fb9469f7a2d304953795f6d53b9b6769449bb4ec16fc0bae`; bytes `12952241`. Verified independent ZIP member CRC, **1022 member SHA256s**, checkout byte parity all PASS. Manifest SHA256 `ba7d213131562dd1b49ea23272ce32269d30f6fcc78ab70cf9f9fc54ba6ebd0e`; uncompressed bytes `29311403`. Exact extracted suite **52 tests OK in 4.180 s**, including Run312 FastForward receipt+rollback and Run313 JEF receipt+source-row atomicity. Offline setup explicitly `SOURCE_ONLY_DIAGNOSTIC`, no native model.
+
+Prior initial workflow `40208448877` failed due malformed YAML literal newline; fixed on branch `1af941607f812ea5b8f4c4af326aa67654852e94`, then strengthened all-file preflight `c5fab231dc4313453d312d8655cc86f29986f040`. Preserve failed attempt, not hide it. Source ZIP and outer Actions artifact are 30-day retention; hashes recorded here. Independent assistant download also verified inner ZIP bytes against embedded SHA256.
+
+## Scope and next
+This is a **source-only** Termux package, not an Android/Redmi execution proof. It is installable/testable subject to device prerequisites; no claim that native model downloads/learning work on Redmi. STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; V13 INCOMPLETE. The earlier Run310 full-suite (2 FAIL, 36 ERROR) remains negative. Run267 real Linux-native G13 longrun day1 `wake_priority` remains FAIL; exact raw artifact reviewed separately in PR267 comment.
+
+Next authorized work: investigate unowned functional end-to-end native C3 second-turn correction utility with pinned registered public artifacts and serial native CI, or continue a different canonical organ if native path unavailable. Preserve source/model/seed hashes, fail closed on unavailable native prerequisites and do not promote gates. Current owner: Run314 proof-only; next command: check CI artifact and current remote heads before creating a new review branch.
