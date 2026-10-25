@@ -45,16 +45,30 @@ class TeacherDistillation:
         st=self.box.load()[0];r=st['requests'].get(rid)
         if not r or r['status']!='OPEN':raise ValueError('Keine offene Lehrer-Anfrage')
         if kind=='cloud' and not st['cloud_allowed']:
-            def deny(st):st['requests'][rid]['status']='DENIED_CLOUD';return None
+            def deny(st):
+                current=st['requests'].get(rid)
+                if current and current.get('status')=='OPEN':current['status']='DENIED_CLOUD'
+                return None
             return self.box.mutate(deny)
         if cancel is not None and cancel.is_set():return None
         out=backend(r['prompt']) or {}
+        # Cancellation may arrive while a slow backend is executing. Its output
+        # must not become a stored reference after the operator has stopped it.
+        if cancel is not None and cancel.is_set():return None
         trace={'request':rid,'capability':r['capability'],'prompt':r['prompt'],'teacher_answer':str(out.get('answer',''))[:8000],
                'reasoning':str(out.get('reasoning',''))[:16000] or None,'own_answer':r['own_answer'],'backend':backend_name,'kind':kind,
                'model':out.get('model'),'authority':'REFERENCE_NOT_FACT','created':self.clock()}
         trace['id']='trace_'+digest(trace['prompt']+trace['teacher_answer'])[:16]
         def f(st):
-            st['requests'][rid]['status']='DONE';st['traces']=(st['traces']+[trace])[-MAX_TRACES:];return trace
+            current=st['requests'].get(rid)
+            # Re-read ownership at the actual commit boundary: a concurrent
+            # worker may already have completed/denied this request.
+            if not current or current.get('status')!='OPEN':return None
+            if cancel is not None and cancel.is_set():return None
+            if kind=='cloud' and not st['cloud_allowed']:
+                current['status']='DENIED_CLOUD'
+                return None
+            current['status']='DONE';st['traces']=(st['traces']+[trace])[-MAX_TRACES:];return trace
         return self.box.mutate(f)
     def dataset(self,capability=None,since=0.,limit=256):
         """Distillation examples for AG6/WP-S6. Holdout-guarded; traces are references, so a gate must still test them."""
