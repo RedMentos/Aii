@@ -1,0 +1,33 @@
+2026-10-25T08:42:01.6254292Z test_digest_message_id_must_match_its_event_and_source (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_digest_message_id_must_match_its_event_and_source) ... ok
+2026-10-25T08:42:01.7548749Z test_forged_digest_text_cannot_enter_live_c3_system_context (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_forged_digest_text_cannot_enter_live_c3_system_context) ... ok
+2026-10-25T08:42:01.8524420Z test_revoked_earlier_source_invalidates_transitively_dependent_digest (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_revoked_earlier_source_invalidates_transitively_dependent_digest) ... ok
+2026-10-25T08:42:01.9487791Z test_revoked_earlier_turn_cannot_be_reexported_in_training_context (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_earlier_turn_cannot_be_reexported_in_training_context) ... ok
+2026-10-25T08:42:02.0451866Z test_revoked_target_turn_is_not_staged_for_training (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_target_turn_is_not_staged_for_training) ... ok
+2026-10-25T08:42:02.1419366Z test_tampered_persisted_digest_does_not_become_training_input (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_tampered_persisted_digest_does_not_become_training_input) ... ok
+2026-10-25T08:42:02.2437836Z test_digest_is_extractive_incremental_and_pins_exact_spans (tests.test_sleep_offline.DigestTests.test_digest_is_extractive_incremental_and_pins_exact_spans) ... ok
+2026-10-25T08:42:02.4545170Z test_digest_reaches_live_context_only_outside_history_and_respects_deletion (tests.test_sleep_offline.LiveContextTests.test_digest_reaches_live_context_only_outside_history_and_respects_deletion) ... ok
+2026-10-25T08:42:02.4974437Z test_cancel_and_yellow (tests.test_sleep_offline.PhaseTests.test_cancel_and_yellow) ... ok
+2026-10-25T08:42:02.6337003Z test_full_sleep_runs_offline_phase_and_stages_ttt_only (tests.test_sleep_offline.PhaseTests.test_full_sleep_runs_offline_phase_and_stages_ttt_only) ... ok
+2026-10-25T08:42:02.6622165Z test_consolidation_keeps_only_if_heldout_error_does_not_rise (tests.test_sleep_offline.PredictorTests.test_consolidation_keeps_only_if_heldout_error_does_not_rise) ... ok
+2026-10-25T08:42:02.7381520Z test_full_sleep_cannot_resurrect_a_forgotten_correction (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_cannot_resurrect_a_forgotten_correction) ... ok
+2026-10-25T08:42:02.7898386Z test_full_sleep_keeps_exact_human_correction_available_to_c3 (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_keeps_exact_human_correction_available_to_c3) ... ok
+2026-10-25T08:42:02.8089406Z test_repeated_sleep_keeps_one_human_record_and_no_weight_change (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_repeated_sleep_keeps_one_human_record_and_no_weight_change) ... ok
+2026-10-25T08:42:02.8271642Z test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat (tests.test_history_lineage.HistoryLineage.test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat) ... ok
+2026-10-25T08:42:02.8388016Z test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported (tests.test_history_lineage.HistoryLineage.test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported) ... ok
+2026-10-25T08:42:02.8388710Z 
+2026-10-25T08:42:02.8388958Z ----------------------------------------------------------------------
+2026-10-25T08:42:02.8389622Z Ran 16 tests in 1.492s
+2026-10-25T08:42:02.8389872Z 
+2026-10-25T08:42:02.8389986Z OK
+2026-10-25T08:42:02.9127179Z ##[group]Run python v13/code/scripts/public_repo_privacy_scan.py --base 51f52ae2efd47b0211cdf755ada76927735f9701 --head HEAD --no-worktree
+2026-10-25T08:42:02.9128201Z [36;1mpython v13/code/scripts/public_repo_privacy_scan.py --base 51f52ae2efd47b0211cdf755ada76927735f9701 --head HEAD --no-worktree[0m
+2026-10-25T08:42:02.9168830Z shell: /usr/bin/bash -e {0}
+2026-10-25T08:42:02.9169211Z env:
+2026-10-25T08:42:02.9169654Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:42:02.9170212Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-25T08:42:02.9170707Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:42:02.9171217Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:42:02.9171714Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:42:02.9172210Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-25T08:42:02.9172729Z ##[endgroup]
+2026-10-25T08:42:03.1081707Z privacy scan 51f52ae2e..HEAD: CLEAN
