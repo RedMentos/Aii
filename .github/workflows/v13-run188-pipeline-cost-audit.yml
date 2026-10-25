@@ -1,0 +1,66 @@
+name: V13 Run188 total B2+C3 pipeline cost audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run188-pipeline-cost-audit.yml'
+      - 'v13/code/scripts/run188_b2_c3_pipeline_cost_audit.py'
+      - 'v13/code/tests/test_run188_b2_c3_pipeline_cost_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run188-pipeline-cost/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  readonly-cost-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify original source and software tests
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run188"
+          test "$(git hash-object v13/code/scripts/run187_c3_final_independent_audit.py)" = 'fc235f187ec1c6d9dcfbc9f868d859612dac8df2'
+          test "$(git hash-object v13/code/scripts/gist_utility_bench.py)" = 'f2b6d00cbe100152bb77a3b04187324eb379abd6'
+          python3 -m pip install --disable-pip-version-check --no-input numpy==2.3.5 prompt-toolkit==3.0.52
+          python3 -m compileall -q v13/code/scripts/run188_b2_c3_pipeline_cost_audit.py v13/code/tests/test_run188_b2_c3_pipeline_cost_audit.py
+          python3 -m unittest discover -s v13/code/tests -p test_run188_b2_c3_pipeline_cost_audit.py -v 2>&1 | tee "$RUNNER_TEMP/run188/software.log"
+      - name: Download and independently audit immutable native B2 and C3 raw evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for pair in '12589259384 b2' '12589624346 c3'; do
+            set -- $pair
+            curl --fail --silent --show-error --location --retry 2 --max-time 120 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/$1/zip" \
+              -o "$RUNNER_TEMP/run188/$2.zip"
+          done
+          echo 'cb0786ec15734efe4b3dda2607218dccf98cb96015d2852349a44b8c689982fb  '"$RUNNER_TEMP/run188/b2.zip" | sha256sum -c -
+          echo 'eca63cb1482282cda517216b6049188fc9d6c9bbdd219564ccae9b108f631667  '"$RUNNER_TEMP/run188/c3.zip" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/run188/b2" "$RUNNER_TEMP/run188/c3"
+          unzip -q "$RUNNER_TEMP/run188/b2.zip" -d "$RUNNER_TEMP/run188/b2"
+          unzip -q "$RUNNER_TEMP/run188/c3.zip" -d "$RUNNER_TEMP/run188/c3"
+          PYTHONPATH=v13/code python3 v13/code/scripts/run188_b2_c3_pipeline_cost_audit.py \
+            --b2-report "$RUNNER_TEMP/run188/b2/report/report.json" \
+            --c3-report "$RUNNER_TEMP/run188/c3/final/report.json" \
+            --output "$RUNNER_TEMP/run188/total-cost.json" 2>&1 | tee "$RUNNER_TEMP/run188/audit.log"
+          echo 'd1e80731964a800fa0c1080595c9a509363f414c6e49e41bfb7865d9b7eccbf4  '"$RUNNER_TEMP/run188/total-cost.json" | sha256sum -c -
+          echo RUN188_TOTAL_B2_C3_PIPELINE_COST_NO_GAIN_NO_ACTIVATION
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 9389d00cae4d83f91e082d1fc62250369c4b3f89 --head HEAD
+      - name: Preserve raw cost audit and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run188-Total-B2-C3-Pipeline-Cost
+          path: |
+            ${{ runner.temp }}/run188/*.log
+            ${{ runner.temp }}/run188/total-cost.json
+          if-no-files-found: warn
+          retention-days: 14
