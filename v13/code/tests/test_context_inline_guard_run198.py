@@ -2,6 +2,7 @@
 import unittest
 from scripts import context_inline_guard_run198 as G
 from v13 import context_os as C
+from tests.test_context_inline_plan_run199 import legacy_compress_run199
 
 FILL = 'Ordinary context that can be summarized. ' * 24
 
@@ -9,7 +10,8 @@ FILL = 'Ordinary context that can be summarized. ' * 24
 class ContextInlineGuard(unittest.TestCase):
     def test_existing_v1_loses_unclosed_late_inline_code(self):
         original = 'Opening sentence. ' + FILL + ' Later `source_ref_important ' + FILL
-        out, spans, ok = C.compress(original, 80)
+        # Preserve historical RED against the frozen v1 algorithm, not live code.
+        out, spans, ok = legacy_compress_run199(original, 80)
         self.assertTrue(ok)  # RED: original v1 compresses despite unclosed code
         self.assertNotIn('`source_ref_important', out)
 
