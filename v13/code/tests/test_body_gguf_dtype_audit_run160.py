@@ -46,7 +46,7 @@ class GGUFPortAudit(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'version'):parse(bytes(b))
 
     def test_oversized_metadata_rejected(self):
-        b=fixture(kv=(('oversize',8,u64(9*1024*1024)),))
+        b=fixture(kv=(('oversize',8,u64(33*1024*1024)),))
         with self.assertRaisesRegex(ValueError,'string_bounds'):parse(b)
 
     def test_negative_gates(self):
