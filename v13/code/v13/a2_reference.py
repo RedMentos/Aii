@@ -33,8 +33,10 @@ def validated_teacher_feature(store, home, reference, *, generation, encoder_rev
             or ref.get('modality') != 'text'):
         raise ValueError('A2 source lineage mismatch')
     source_text = store.read_source(ref)  # fails closed on revoked/altered source
-    if not source_text:
-        raise ValueError('A2 empty source')
+    if (not source_text or type(ref.get('char_start')) is not int or ref['char_start'] != 0
+            or type(ref.get('char_end')) is not int or ref['char_end'] != len(source_text)
+            or hashlib.sha256(source_text.encode('utf-8')).hexdigest() != ref.get('sha256')):
+        raise ValueError('A2 requires exact full source')
     rel = reference.get('feature_path')
     if not isinstance(rel, str):
         raise ValueError('A2 missing feature path')
@@ -74,7 +76,9 @@ def validated_teacher_feature(store, home, reference, *, generation, encoder_rev
     if not isinstance(obj, dict) or set(obj) != {'embedding'} or not isinstance(obj['embedding'], list):
         raise ValueError('A2 feature schema invalid')
     values = obj['embedding']
-    if (len(values) != TEACHER_DIM or any(type(x) not in (float, int) or not math.isfinite(x) for x in values)
-            or sum(float(x)*float(x) for x in values) < 1e-16):
+    if (len(values) != TEACHER_DIM or any(type(x) not in (float, int) or not math.isfinite(x) for x in values)):
+        raise ValueError('A2 feature nonfinite or wrong dimension')
+    norm_sq = sum(float(x)*float(x) for x in values)
+    if not math.isfinite(norm_sq) or norm_sq < 1e-16:
         raise ValueError('A2 feature nonfinite, zero or wrong dimension')
     return values
