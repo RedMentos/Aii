@@ -1,0 +1,92 @@
+name: V13 Run283 all-organ and learning-objective contract audit
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/canon_organ_audit.py'
+      - 'v13/code/tests/test_canon_organ_objective_audit_run283.py'
+      - '.github/workflows/run283-canon-organ-objective-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run283-contracts-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  contract-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Verify exact head and source bytes
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN283_HEAD.txt"
+          git hash-object v13/code/specs/component-contracts.json | tee "$RUNNER_TEMP/RUN283_CONTRACT_BLOB.txt"
+          git hash-object v13/code/specs/learning-objectives.json | tee "$RUNNER_TEMP/RUN283_OBJECTIVES_BLOB.txt"
+          test -s v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+      - name: Actual stdlib contract and adversarial mutation tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m compileall -q scripts tests
+          compile_rc=$?
+          echo "$compile_rc" > "$RUNNER_TEMP/RUN283_COMPILE_EXIT.txt"
+          PYTHONPATH="$PWD:$PWD/tests" python3 -m unittest -v tests.test_canon_organ_objective_audit_run283 2>&1 | tee "$RUNNER_TEMP/RUN283_TEST_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN283_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "compile_rc=$compile_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Read-only current binding manifest audit
+        id: audit
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 scripts/canon_organ_audit.py --root . --out "$RUNNER_TEMP/RUN283_AUDIT.json" 2>&1 | tee "$RUNNER_TEMP/RUN283_AUDIT_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN283_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN283_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN283_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload closed audit and failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run283-CanonAudit-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN283_HEAD.txt
+            ${{ runner.temp }}/RUN283_CONTRACT_BLOB.txt
+            ${{ runner.temp }}/RUN283_OBJECTIVES_BLOB.txt
+            ${{ runner.temp }}/RUN283_COMPILE_EXIT.txt
+            ${{ runner.temp }}/RUN283_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN283_TEST_RAW.log
+            ${{ runner.temp }}/RUN283_AUDIT_EXIT.txt
+            ${{ runner.temp }}/RUN283_AUDIT_RAW.log
+            ${{ runner.temp }}/RUN283_AUDIT.json
+            ${{ runner.temp }}/RUN283_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN283_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce manifest consistency without completeness promotion
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.compile_rc }}" = "0"
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.audit.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

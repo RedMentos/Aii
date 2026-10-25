@@ -1,0 +1,73 @@
+{
+  "schema": "V13_RUN283_BRANCH_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "run283_canon_organ_objective_audit",
+  "base_branch": "codex/native-step1-retest-run282-20261025",
+  "base_commit": "059f0cf4b6bfdf881e9284e741da83662d8c93b7",
+  "tested_commit": "0ea3b4e3ac4ae6b2805f6e3c0066a7a5d5b0d2ad",
+  "source_file": "v13/code/scripts/canon_organ_audit.py",
+  "source_blob_sha": "77889f60af37beac854179f88dcf42bbf719d352",
+  "test_blob_sha": "d9952054fad4107d612e6bce677b3f5555e98764",
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "contract_sha256": "14418d3312debacbacf881237d8742a64f164c49ea0e650964a35d77dde2601e",
+  "objective_sha256": "abbd474eca76fad27d840df70d5a526f6a1a76fc634b8e56616a520c0fd1f659",
+  "red": {
+    "run_id": 40192853212,
+    "tests": 1,
+    "errors": 1,
+    "reason": "new module absent",
+    "artifact_id": 12598427767,
+    "artifact_sha256": "ff994183edcd43878ccc4de7d570be76c6c1acb94dd411dda532222569bd6c47"
+  },
+  "green": {
+    "run_id": 40192920006,
+    "tests": 9,
+    "passed": 9,
+    "privacy": "CLEAN",
+    "compileall": "PASS",
+    "artifact_id": 12598737220,
+    "artifact_sha256": "21d6779df7ded69f9fd52ff09ab27f525beeb7e372362bcf0d7a964506a0f2e4"
+  },
+  "audit": {
+    "status": "CONSISTENT_BUT_INCOMPLETE",
+    "component_count": 30,
+    "component_modes": {
+      "IMPLEMENTED": 4,
+      "PARTIAL": 25,
+      "UNAVAILABLE": 1
+    },
+    "objective_count": 30,
+    "objective_modes": {
+      "IMPLEMENTED": 15,
+      "PARTIAL": 6,
+      "UNAVAILABLE": 9
+    },
+    "errors": [],
+    "canonical_architecture_complete": false
+  },
+  "native_run282": {
+    "source_commit": "059f0cf4b6bfdf881e9284e741da83662d8c93b7",
+    "run_id": 40192685057,
+    "stages_passed": 4,
+    "stages_total": 20,
+    "acceptance_status": "DIAGNOSTIC_INCOMPLETE",
+    "artifact_id": 12598915530,
+    "artifact_sha256": "8d6da82d4f1a766cc63214bc574e30f10cb9640f553fbd5ab8b23e0ced8ef6b3",
+    "evidence_scope": "LINUX_NATIVE_NOT_REDMi"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "Redmi": "NOT_MEASURED"
+  },
+  "parent_pr277_ci": "FAIL_OFFLINE_DEPENDENCY_INSTALL",
+  "full_suite": "NOT_RUN",
+  "next_step": "Choose independent canonical utility package from archived native failures without relaxing acceptance; inspect exact model/seed/source hashes, implement RED-first and rerun serially only when prerequisites are verified.",
+  "next_command": "python scripts/canon_organ_audit.py --root . --out /tmp/V13_CANON_AUDIT.json",
+  "no_force_push": true,
+  "source_and_raw_evidence_saved_in": "PR283 GitHub branch + GitHub Actions artifacts; Run282 native report and BUILD_STATE on PR283",
+  "private_drive_backup": "NOT_ATTEMPTED_REJECTED_DESTINATION"
+}
