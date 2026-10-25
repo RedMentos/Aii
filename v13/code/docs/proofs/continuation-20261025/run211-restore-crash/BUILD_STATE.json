@@ -1,0 +1,58 @@
+{
+  "run": "Run211",
+  "date_utc": "2026-10-25",
+  "canonical_area": "STEP0 crash-recoverable offline restore journal / durable SQLite memory",
+  "branch": "codex/restore-crash-journal-run211-20261025",
+  "base_verified": "6fbfe16ff4d665fbe597a06ffa4521850965d763",
+  "tested_commit": "b0ed91edf8ff7eb4451f9230b84891ace7366e06",
+  "owner": "Sequential Run211 backup.py crash journal and new test; no native/model or other owner overlap",
+  "owned_files": [
+    "v13/code/v13/backup.py",
+    "v13/code/tests/test_restore_crash_journal_run211.py",
+    ".github/workflows/run211-restore-crash-journal.yml",
+    "v13/code/docs/proofs/continuation-20261025/run211-restore-crash/"
+  ],
+  "changes": "Recovery refuses to clear journal when staging directory missing/empty without prior saved swap. Actual partial DB swap completes after restart, retaining backed-up human correction and discarding post-snapshot exact key.",
+  "source_blob_sha": {
+    "backup.py": "45d1bc4c9122d22cecce0c6fbe7cfac92f5b0743",
+    "test_restore_crash_journal_run211.py": "c2fc971ed2da4695cc29c7d1000c926b67df6471"
+  },
+  "actual_source_ci": {
+    "red": {
+      "run_id": 40178206539,
+      "job_id": 121123396143,
+      "result": "2/20 FAIL: missing stage journal cleared; fuzzy recall test assumption"
+    },
+    "first_patch": {
+      "run_id": 40178265680,
+      "job_id": 121123570476,
+      "result": "1/20 FAIL: fuzzy lexical recall assumption, patch stage check passed"
+    },
+    "green": {
+      "run_id": 40178273393,
+      "job_id": 121123593311,
+      "result": "20/20 PASS; compileall PASS; official privacy scan CLEAN"
+    },
+    "run210_regression": {
+      "run_id": 40178273340,
+      "result": "PASS"
+    }
+  },
+  "evidence_kind": "Actual-source GitHub Linux CI, synthetic crash windows with real Store/SQLite; no Redmi or native model",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Other restore crash windows, especially partial blob/config swap, remain unmeasured.",
+    "Full project-wide tests and Redmi device proof remain open.",
+    "No external source/model/seed hashes or permissions changed."
+  ],
+  "next_step": "Pivot to disjoint JEF C1 continuity: preregister cross-session goal/goal_sequence injection into live executive view/effort context; ensure source event/session/goal-text binding without changing native C2.",
+  "next_command": "python -m unittest -v tests.test_executive_goal_session_lineage_run212 tests.test_executive",
+  "no_authority_promotion": true
+}
