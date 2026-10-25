@@ -1,0 +1,9 @@
+# Run123 independent review — WP-UI1 integration candidate, NOT READY
+
+Imported six Claude source/test/doc files byte-for-byte from `claude/project-thread-e53fle` with pinned Git blob hashes; added only two `watch_buttons(r)` calls to current `ui.py` and one `:befehle` read-only operator dispatch/help entry. Current operator has 113 recognized commands; imported guide documents all 113 (pre-import static cross-check).
+
+**Test-first RED:** Actions 40147761951, missing `v13.phone_halt` import; raw full job log preserved. **Post-import GREEN:** Actions 40147853024, 6 Claude WP-UI1 + 2 Run121 + 3 Run86 + 14 standstill = 25/25 Linux software PASS; official privacy CLEAN. No actual Android widget or Redmi proof.
+
+**Independent safety finding:** In a local Linux parent-source reproduction with a recovered pending exact-copy turn and a preexisting `control/STILLSTAND` request, Runtime processed that turn to FINAL about 43ms after construction, while the request file remained present. `ui.watch_buttons` runs only after Runtime's worker starts; therefore a queued turn can run before the stop request is applied. This is a real prestart ordering gap, not covered by Claude's six tests. **PR154 must remain DRAFT and not be merged/activated until Run124 closes the gap with a deterministic pre-worker stop test.** This failure does not promote or change any original V13 gate.
+
+Next command: create Run124 branch from this exact checkpoint, add regression for pending stop file + recovered queue, prove RED, call `phone_halt.apply_once` after Runtime's components are initialized but **before** `self.worker.start()`, bind any pre-created `_SeenEvent.worker` to the newly created worker, prove explicit human release unblocks queued turn and old stop file never reapplies. No native/model/Redmi run.
