@@ -15,12 +15,15 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - name: Verify unchanged owner source and apply candidate only in CI worktree
         run: |
           set -euo pipefail
+          echo "EXACT_HEAD=$(git rev-parse HEAD)" | tee "$RUNNER_TEMP/RUN266_PRECHECK.log"
+          echo "WORLD_BLOB=$(git hash-object v13/code/v13/world_model.py)" | tee -a "$RUNNER_TEMP/RUN266_PRECHECK.log"
           test "$(git hash-object v13/code/v13/world_model.py)" = "db62c761a9b1f3364c951ad6ac82a71d84f"
-          git apply --check v13/code/docs/coordination/WORLD_TERMINAL_RUN266.patch
+          git apply --check --verbose v13/code/docs/coordination/WORLD_TERMINAL_RUN266.patch 2>&1 | tee -a "$RUNNER_TEMP/RUN266_PRECHECK.log"
           git apply v13/code/docs/coordination/WORLD_TERMINAL_RUN266.patch
           git hash-object v13/code/v13/world_model.py | tee "$RUNNER_TEMP/RUN266_CANDIDATE_BLOB.log"
           git diff -- v13/code/v13/world_model.py > "$RUNNER_TEMP/RUN266_EPHEMERAL_DIFF.patch"
@@ -46,6 +49,7 @@ jobs:
         with:
           name: V13-Run266-Terminal-Candidate-Raw
           path: |
+            ${{ runner.temp }}/RUN266_PRECHECK.log
             ${{ runner.temp }}/RUN266_CANDIDATE_BLOB.log
             ${{ runner.temp }}/RUN266_EPHEMERAL_DIFF.patch
             ${{ runner.temp }}/RUN266_RAW.log
