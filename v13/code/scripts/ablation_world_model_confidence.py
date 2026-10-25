@@ -98,19 +98,39 @@ def _scored_counterfactual(cf):
     return pred, samples, spread, confidence, label
 
 
+class SyntheticTransitionStore:
+    """Explicit test-only Store facade for preregistered synthetic transitions.
+
+    The underlying SQLite Store persists numerical model state, but this
+    facade deliberately does NOT expose read_source(): no synthetic action
+    IDs are promoted into production source-backed evidence. Passing the
+    actual Store to WorldModel.fit must continue to fail closed.
+    """
+    evidence_scope = 'SYNTHETIC_TEST_ONLY'
+
+    def __init__(self, store):
+        self._store = store
+
+    def __getattr__(self, name):
+        if name == 'read_source':
+            raise AttributeError('Synthetic transition fixture has no source reader')
+        return getattr(self._store, name)
+
+
 def run_seed(seed):
     T,queries=world(seed);rng=random.Random(seed*41+3)
     rows=[];abstentions={}
     with tempfile.TemporaryDirectory() as d:
         store,cfg=_store(Path(d))
+        synthetic=SyntheticTransitionStore(store)
         try:
             with mock.patch.object(WM,'transitions',lambda store,limit=WM.MAX_ROWS:T):
-                st=WM.fit(store,rng_seed=seed)
+                st=WM.fit(synthetic,rng_seed=seed)
             for q in queries:
                 # Preserve the preregistered random arm's per-query RNG stream,
                 # even when the World Model abstains on an earlier query.
                 random_score=rng.random()
-                cf=WM.counterfactual(store,q['s'],q['a'])
+                cf=WM.counterfactual(synthetic,q['s'],q['a'])
                 scored=_scored_counterfactual(cf)
                 if scored is None:
                     reason=(cf.get('reason') if type(cf) is dict else None)
