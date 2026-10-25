@@ -1,0 +1,51 @@
+{
+  "package": "Age noise-aware full-suite contract reconciliation",
+  "date_utc": "2026-10-25",
+  "branch": "codex/age-noise-fullsuite-contract-20261025",
+  "base_verified": "5a1c7b574a96f3a248ab779126f6f3985ed15a1f",
+  "pr": 253,
+  "owner": "historical test_ablation99.py only + unique CI/proof; no production Age changes",
+  "reason": "Run221 historical test expected explicit regression_pass=False to be waived as competence noise, contradicting later Run200 PR228 safety requirement.",
+  "changes": "Preserved 12-sample noisy competence priming, MAD>0.01, stage>0, plasticity comparison; now requires explicit regression failure counted, two consecutive failures demote, and later severe competence regression cannot promote or be noise-waived.",
+  "source_blobs": {
+    "v13/code/tests/test_ablation99.py": "0cb8d10361a3b888a5af2a0489cecb1c6fc8fb56",
+    "v13/code/v13/age.py": "7c47181c2a655e31865047fc53a817ae2ac35385",
+    ".github/workflows/age-noise-fullsuite-contract-20261025.yml": "dd42ef0b9ca599098e75b782bb0f32a11de44fc5"
+  },
+  "previous_failure": {
+    "run221": 40180545459,
+    "job_id": 121131130855,
+    "full_suite": "2646 tests, 2 FAIL, 36 ERROR, 14 skipped",
+    "target": "test_ablation99.AgeNoiseAware.test_noise_band_blocks_demotion_but_not_real_drop",
+    "reason": "AssertionError: None != FAIL_WITHIN_NOISE_BAND"
+  },
+  "focused_ci": {
+    "run_id": 40183840422,
+    "job_id": 121140330929,
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS",
+    "raw_artifact_id": 12595123369,
+    "raw_zip_sha256": "7ff5933dd109829d6e4c1f8532646871196e455fbc1310dc53b240d515eae453"
+  },
+  "evidence_kind": "GitHub Linux synthetic/software AgeControl test-only; not production Age>0, native model or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Full-suite rerun still required after this change; do not claim full suite PASS.",
+    "LP3 orphan test remains failing: child descendant after reaped leader and read-only cgroup; unsafe killpg must not be reintroduced.",
+    "36 historical native-firing candidate errors arise from source hashes not matching current live sources; require explicit candidate rebind/review, never suppress.",
+    "Native model and Redmi acceptance remain open."
+  ],
+  "next_step": "Read Run221 LP3 orphan and Run21 PID-reuse contract, design safe test or atomic cgroup containment candidate without signalling reaped leader PGID. Independently investigate 36 historical native-firing source hash errors. Continue canonical utility packages in parallel with blocked cgroup proof.",
+  "next_command": "Check current remote heads/open PRs, then reproduce LP3 orphan test in isolated GitHub CI using exact Run20+21 source reconstruction; preserve RED and never signal unowned processes.",
+  "no_gate_promotion": true
+}

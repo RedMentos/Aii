@@ -1,0 +1,41 @@
+name: V13 Age noise safety regression contract (software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/tests/test_ablation99.py'
+      - '.github/workflows/age-noise-fullsuite-contract-20261025.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/age-noise-fullsuite-contract/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  age-noise:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned isolated software prerequisites
+        run: |
+          python3 -m venv "$RUNNER_TEMP/age"
+          "$RUNNER_TEMP/age/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Actual Age full historical tests and Run200 strict safety tests
+        working-directory: v13/code
+        run: |
+          set -o pipefail
+          PYTHONPATH=tests:. "$RUNNER_TEMP/age/bin/python" -m unittest -v test_ablation99 test_age_noise_maintenance_run200 2>&1 | tee "$RUNNER_TEMP/AGE_NOISE_RAW.log"
+          "$RUNNER_TEMP/age/bin/python" -m compileall -q v13/age.py tests/test_ablation99.py tests/test_age_noise_maintenance_run200.py
+      - name: Official public repository privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 5a1c7b574a96f3a248ab779126f6f3985ed15a1f --head HEAD --no-worktree
+      - name: Preserve raw logs on failure or success
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Age-Noise-Contract-Raw
+          path: ${{ runner.temp }}/AGE_NOISE_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Claim boundary
+        run: echo 'Linux software/synthetic Age test-only reconciliation; production Age>0 remains gated'
