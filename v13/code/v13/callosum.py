@@ -161,17 +161,19 @@ class Callosum:
                     evidence=p['evidence_refs'];provenance=p['provenance']
                     if not isinstance(evidence,list) or not isinstance(provenance,list):break
                     for ref in evidence+provenance:self.s.read_source(ref)
-                    dur=(p.get('native_metrics') or {}).get('duration_s') or 0.
-                    nbytes=mp.get('bytes',0)
-                    if (isinstance(dur,bool) or not isinstance(dur,(int,float)) or
-                        not math.isfinite(dur) or dur<0 or isinstance(nbytes,bool) or
-                        not isinstance(nbytes,(int,float)) or not math.isfinite(nbytes) or nbytes<0):
-                        break
+                    native=p.get('native_metrics')
+                    dur=native.get('duration_s') if isinstance(native,dict) else None
+                    nbytes=mp.get('bytes')
+                    # B3-H9: missing measurements are not zero-cost observations.
+                    if type(dur) not in (int,float) or type(nbytes) is not int or nbytes<0:break
+                    try:
+                        if not math.isfinite(dur) or dur<0:break
+                    except OverflowError:break
                     comp={'task_gain':1. if p['packet_id'] in coalition_ids else 0.,
                           'uncertainty_reduction':0. if p['offer'].get('needs_reentry') else .5,
                           'source_recovery_gain':.25 if evidence else 0.,
-                          'latency_cost':min(1.,dur/LAT_S)*.25,
-                          'memory_cost':min(1.,nbytes/BYTES)*.25}
+                          'latency_cost':min(dur,LAT_S)/LAT_S*.25,
+                          'memory_cost':min(nbytes,BYTES)/BYTES*.25}
                     util=comp['task_gain']+comp['uncertainty_reduction']+comp['source_recovery_gain']-comp['latency_cost']-comp['memory_cost']-(0. if status=='FINAL' else .5)
                     scored.append((m,util,comp))
                     break

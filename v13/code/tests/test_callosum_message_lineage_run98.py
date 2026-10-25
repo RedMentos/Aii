@@ -22,7 +22,7 @@ class CallosumMessageLineageRun98(Base):
             evidence_refs=[event["source_ref"]],
             offer={"summary": "source bound", "quotes": [], "uncertainty": "",
                    "needs_reentry": False}, confidence=0.8,
-            peer_message_packet_id=peer_id,
+            peer_message_packet_id=peer_id, native_metrics={'duration_s':1.},
         )
         return self.r.store.add_packet("OfferPacket", p)
 
@@ -31,7 +31,7 @@ class CallosumMessageLineageRun98(Base):
             "MessagePacket", sender, event["event_id"],
             event["brain_generation_id"], [event["source_ref"]],
             sender=sender, receiver=receiver, channel="SOURCE_EXACT",
-            source_refs=[event["source_ref"]], content={"summary": "source bound"},
+            source_refs=[event["source_ref"]], content={"summary": "source bound"}, bytes=100,
         )
         return self.r.store.add_packet("MessagePacket", p)
 

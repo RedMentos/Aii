@@ -19,7 +19,7 @@ class CallosumPeerLinkRun99(Base):
         p = packet("MessagePacket", "B3_CALLOSUM",
                    event["event_id"], event["brain_generation_id"], refs,
                    sender="B1_DETAIL", receiver="B2_GIST", channel=channel,
-                   source_refs=refs, content={"quotes": []})
+                   source_refs=refs, content={"quotes": []}, bytes=100)
         return self.r.store.add_packet("MessagePacket", p)
 
     def offer(self, event, peer_id=None):
@@ -31,7 +31,7 @@ class CallosumPeerLinkRun99(Base):
             evidence_refs=[event["source_ref"]],
             offer={"summary": "source bound", "quotes": [], "uncertainty": "",
                    "needs_reentry": False}, confidence=0.8,
-            peer_message_packet_id=peer_id,
+            peer_message_packet_id=peer_id, native_metrics={'duration_s':1.},
         )
         return self.r.store.add_packet("OfferPacket", p)
 
