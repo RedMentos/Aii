@@ -1,0 +1,60 @@
+name: V13 Run339 contrastive C3 frozen cohort source-only checks
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run339-source-only.yml'
+      - 'v13/code/tests/test_native_c3_contrastive_run339.py'
+      - 'v13/code/scripts/native_c3_contrastive_run339.py'
+      - 'v13/code/scripts/audit_native_c3_contrastive_run339.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Verify exact source and preregistered cohort SHA
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN339_SO_HEAD.txt"
+          echo "68c872c9666da20ef7e4f6c7fa6212fd859768948d1b4b3554eb46ff1684d731  v13/code/docs/proofs/continuation-20261025/run339-c3-contrastive-abstention/RUN339_FRESH_CONTRASTIVE_COHORT.json" | sha256sum -c -
+          sha256sum v13/code/scripts/native_c3_contrastive_run339.py v13/code/scripts/audit_native_c3_contrastive_run339.py v13/code/tests/test_native_c3_contrastive_run339.py | tee "$RUNNER_TEMP/RUN339_SO_SOURCE_SHA256SUMS.txt"
+      - name: Compile and execute Run339 plus parent source-only tests
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q scripts/native_c3_contrastive_run339.py scripts/audit_native_c3_contrastive_run339.py tests/test_native_c3_contrastive_run339.py
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_native_c3_contrastive_run339 \
+            tests.test_native_c3_freshcohort_run334 \
+            tests.test_audit_native_c3_freshcohort_run334 \
+            2>&1 | tee "$RUNNER_TEMP/RUN339_SO_TESTS_RAW.log"
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN339_SO_PRIVACY_RAW.log"
+      - name: Close raw source-only evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN339_SO_*' ! -name RUN339_SO_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN339_SO_SHA256SUMS.txt
+      - name: Preserve raw source-only failures and PASS evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run339-SourceOnly-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN339_SO_*
+          if-no-files-found: warn
+          retention-days: 30
