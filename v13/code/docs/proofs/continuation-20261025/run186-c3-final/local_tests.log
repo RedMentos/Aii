@@ -11,6 +11,6 @@ test_unforwarded_quote_not_supported (test_run186_c3_gist_final_utility.C3GistFi
 test_unsupported_final_not_supported (test_run186_c3_gist_final_utility.C3GistFinal.test_unsupported_final_not_supported) ... ok
 
 ----------------------------------------------------------------------
-Ran 11 tests in 0.001s
+Ran 11 tests in 0.002s
 
 OK
