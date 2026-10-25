@@ -1,0 +1,67 @@
+name: V13 Run196 R4 stratified abstention veto
+
+on:
+  pull_request:
+    paths:
+      - "v13/code/scripts/run196_r4_stratified_abstention.py"
+      - "v13/code/tests/test_run196_r4_stratified_abstention.py"
+      - ".github/workflows/v13-run196-r4-strata.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v13-run196-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  strata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable R4 captures and sealed Run195 proof
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          filter: blob:none
+          sparse-checkout: |
+            v13/code
+
+      - name: Run software tests and independent negative-control replay
+        shell: bash
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q scripts/run196_r4_stratified_abstention.py tests/test_run196_r4_stratified_abstention.py
+          python3 -m unittest -v tests.test_run196_r4_stratified_abstention
+          python3 scripts/run196_r4_stratified_abstention.py \
+            docs/proofs/continuation-20261025/run195-selective-abstention/preregistration.json \
+            docs/proofs/continuation-20261025/run195-selective-abstention/retrospective.json \
+            docs/proofs/continuation-20261012/r4-c3-uncertainty-wake/capture-seed11.json \
+            "${{ runner.temp }}/run196-strata.json"
+          python3 - "${{ runner.temp }}/run196-strata.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d['deployment_supported'] is False
+          assert d['production_authority']==0
+          assert [x['kind'] for x in d['failures']]==['compare']
+          print('RUN196_COMPARE_VETO_PASS',d['per_kind']['compare']['wrong_answered'],
+                d['per_kind']['compare']['answered'])
+          PY
+          sha256sum "${{ runner.temp }}/run196-strata.json"
+
+      - name: Official public repository privacy scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+
+      - name: Persist negative control report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: run196-strata-${{ github.sha }}
+          path: ${{ runner.temp }}/run196-strata.json
+          if-no-files-found: error
+          retention-days: 30
