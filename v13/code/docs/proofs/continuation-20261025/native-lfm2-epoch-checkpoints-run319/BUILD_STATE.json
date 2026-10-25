@@ -1,0 +1,23 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 319,
+  "source_head": "ddb106f5abfdf9fd9c4f486da0a26f58eeef30e7",
+  "ci_exact_head": "6e858025cfe0e5a4b73d5aa7bacf6743ff10cde6",
+  "ci_run": 40211198937,
+  "artifact_id": 12606290647,
+  "artifact_zip_sha256": "680fee7c98d5ae9ac07ab55daea66e8612b83c31546cf56fcd13731676fd73db",
+  "native_binary_sha256": "06aeb0c8cfc4048ad4aa5254d961db4c3aaa48a50bda93bb1ed2b626541d2823",
+  "original_source_sha256": "401b95c5c6f4262eb8ea58bdab0af2b79f5d7032951ba45198ab2e13f102858c",
+  "candidate_source_sha256": "31f702390553edf017154be48f2f636b3e2d1b86ab56147ba6a751def480f770",
+  "status": "NATIVE_COMPILE_PASS_NO_MODEL_TRAINING",
+  "tests": "12 software PASS; pinned b10964 C++ native compile PASS; privacy CLEAN",
+  "owner": "Run319 closed after source-only native compilation",
+  "next_command": "Preregister Run320 real two-epoch native optimizer/eval with pinned public LFM2.5-350M master; no activation unless gates",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  }
+}
