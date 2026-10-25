@@ -1,0 +1,77 @@
+{
+  "run": "Run385",
+  "date": "2026-10-25",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/ag2-grounding-modality-guard-run385-20261025",
+  "base": {
+    "branch": "codex/ag9-native-selective-risk-audit-run384-20261025",
+    "sha": "83104a9364331f5c84db3a568b0558c3e0fb064b",
+    "integration": "review-chain only; not main"
+  },
+  "source_head": "e289b536c066716252b8049be670e8eface08895",
+  "pr": 380,
+  "changed": [
+    "v13/code/v13/agi/grounding.py",
+    "v13/code/tests/test_ag2_grounding_guard_run385.py",
+    ".github/workflows/run385-ag2-grounding-guard.yml",
+    "v13/code/docs/proofs/continuation-20261025/run385-ag2-grounding-inputs/"
+  ],
+  "remote_verified_blobs": {
+    "grounding": "dcd4f377ade272295ef37d8ca72dbde59de58453",
+    "tests": "de261b69e35f160d45104f439681ba792fc58cc7",
+    "workflow": "f9e85eed19e3dadc32284608928371264781a9a8"
+  },
+  "change_summary": [
+    "AG2 set_modality requires exact bool; cannot activate unimplemented STEP8 camera/audio/screen/effector ports",
+    "expect rejects disabled or STEP8 modalities at initial read and inside optimistic SQLite mutation, including stale prepatch true flags",
+    "counterfactual rejects zero/negative/nonfinite/non-numeric/bool denominators; remains SIMULATION_NOT_FACT"
+  ],
+  "evidence": {
+    "red_initial": {
+      "head": "a78d5fe170fe8f3ed4cb5267cfe437d7a6bbdaeb",
+      "run": 40241018712,
+      "tests": "16 tests: 18 failures, 4 errors, inherited tests pass",
+      "artifact_id": 12616023157,
+      "zip_sha256_from_actions": "50e7d759d70394f2e0dc312baed0f7e739dc0d86e6860d5ffad0b7c0bcc54063"
+    },
+    "green_initial": {
+      "head": "72b648c652d7030b7504205cd9c5c7cf4d47d5f3",
+      "run": 40241091028,
+      "tests": "16/16 PASS; privacy CLEAN",
+      "artifact_id": 12616277732,
+      "zip_sha256_from_actions": "227941b4b15befa90ef9c86ee22eb6f6ac9efbf5250c6af7a14b75a5e68a14aa"
+    },
+    "red_stale_flag": {
+      "head": "cec33cc4dcb1d8601269cc2bcd751116a7ba496a",
+      "run": 40241166743,
+      "tests": "17 tests; exactly 1 failure: preexisting camera=True bypass; privacy CLEAN",
+      "artifact_id": 12616494308,
+      "zip_sha256_from_actions": "3f624f25defd985a6828627b05ac12b432232720a06856cdf8c36728ae5e53ef"
+    },
+    "green_final": {
+      "head": "e289b536c066716252b8049be670e8eface08895",
+      "run": 40241222333,
+      "tests": "17/17 PASS, compileall PASS, privacy CLEAN",
+      "artifact_id": 12617018069,
+      "zip_sha256_from_actions": "e4bc2601dcbc10a420ae655da610ef076f058dc49c1006f612368d5b6885451d"
+    }
+  },
+  "raw_integrity_limit": "Artifact SHA256 values are from Actions upload logs; independent ZIP download/CRC/member-hash verification and private Library byte-copy not yet performed. GitHub Actions artifacts expire after 30 days. RED/GREEN log summaries and artifact IDs retained.",
+  "scope": "Actual Linux Actions Python/SQLite tests, no native model/Redmi execution. Not a STEP8 activation or causal world-model proof.",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0 learning/approval unchanged",
+    "native/Redmi proof missing",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Implement STEP8 ports only after explicit capability/permission/device gate, not through AG2 baseline set_modality",
+    "AG2 tool outcome currently observed after action; causal pre-action prediction timing remains separate work",
+    "Current full Python suite Run367 RED remains unresolved; focused tests do not promote full-suite acceptance"
+  ],
+  "next_command": "git fetch origin codex/ag2-grounding-modality-guard-run385-20261025 && git checkout -b review-run385 origin/codex/ag2-grounding-modality-guard-run385-20261025 && cd v13/code && python -m unittest -v tests.test_ag2_grounding_guard_run385 tests.test_growth.G2Grounding tests.test_growth.G10Tools tests.test_agi_live",
+  "next_package": "Run386 AG4 skill outcome evidence validation (independent file owner); preregister, RED, narrow fix, GREEN, checkpoint."
+}
