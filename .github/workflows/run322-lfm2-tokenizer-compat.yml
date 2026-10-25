@@ -89,7 +89,7 @@ jobs:
             echo 2 > "$RUNNER_TEMP/RUN322_OLD_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
           fi
           python3 -m venv "$RUNNER_TEMP/run322old"
-          "$RUNNER_TEMP/run322old/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==4.57.1' \
+          "$RUNNER_TEMP/run322old/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==4.57.1' 'jinja2==3.1.6' \
             2>&1 | tee "$RUNNER_TEMP/RUN322_OLD_DEPS_RAW.log"
           rc=${PIPESTATUS[0]}
           "$RUNNER_TEMP/run322old/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN322_OLD_FREEZE.txt" || true
@@ -112,7 +112,7 @@ jobs:
             echo 2 > "$RUNNER_TEMP/RUN322_NEW_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
           fi
           python3 -m venv "$RUNNER_TEMP/run322new"
-          "$RUNNER_TEMP/run322new/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==5.3.0' \
+          "$RUNNER_TEMP/run322new/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==5.3.0' 'jinja2==3.1.6' \
             2>&1 | tee "$RUNNER_TEMP/RUN322_NEW_DEPS_RAW.log"
           rc=${PIPESTATUS[0]}
           "$RUNNER_TEMP/run322new/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN322_NEW_FREEZE.txt" || true
