@@ -70,6 +70,14 @@ class Grounding:
             st['closed']=(st['closed']+[rec])[-HISTORY:];return rec
         rec=self.box.mutate(f);self.s.log('grounded_outcome',None,{'kind':rec['kind'],'grounded_error':rec['grounded_error']})
         return rec
+    def discard(self,aid):
+        """Abandon a pre-action expectation if the action never executed.
+
+        No frequency, error, closed-outcome or learning signal is recorded.
+        """
+        def f(st):return st['open'].pop(aid,None) is not None
+        return self.box.mutate(f)
+
     def counterfactual(self,kind,context_key,coverage_full=20):
         """'What if I did kind here?' without acting. Confidence shrinks with low action coverage (§7.2.2)."""
         if type(coverage_full) not in (int,float):raise ValueError('coverage_full: positive finite number required')

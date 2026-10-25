@@ -1,0 +1,13 @@
+# Run388 / AG2 pre-action tool prediction lifecycle — preregistration (2026-10-25)
+
+Independent GPT continuation owner, branch `codex/ag2-preaction-tool-candidate-run388-20261025` from verified Run387 checkpoint `673ecdc2d4cb9f3bb4ee8148cdddd5b3059d6a66` (review chain, not main). Owned files: `v13/code/v13/agi/tools.py` (additive opt-in hook only), `v13/code/v13/agi/grounding.py` (bounded discard), new `v13/code/v13/agi/grounding_preaction.py`, new `tests/test_ag2_preaction_tool_run388.py`, dedicated workflow and proof directory. No edits to runtime/Growth wiring or other owners.
+
+## Concrete missing functionality
+The existing AG2 `Grounding.from_tool` creates its expectation only **after** ToolRegistry executes the tool. That cannot establish a genuinely pre-action prediction or measure tool latency from the prediction. Preserve that legacy path and frozen evidence. Introduce an **opt-in, default-off** ToolRegistry callback invoked after committed transaction copy and before `Transactions.execute`; pair it with an AG2 adapter that opens an expectation before effect, observes the actual EXECUTED/FAILED result once, and discards abandoned expectations on a post-copy hard block. No model weights or tools are enabled by this hook.
+
+## RED-first acceptance
+Actual Runtime/SQLite tests (fake registered READ_LOCAL tool, no native model) require: (1) during the tool function, AG2 already contains the expectation and no closed outcome; after completion exactly one closed grounded observation exists, open=0, with real nonnegative elapsed time; (2) failed tool action closes with FAILED outcome and grounded error; (3) post-copy HARD_BLOCK cancellation discards the expectation without updating frequency counts or creating a false outcome; (4) repeated idempotency key must not create a second pre-action expectation or double-count; (5) existing ToolRegistry with hooks omitted behaves exactly as before and `tests.test_growth.G10Tools`, `tests.test_agi_live`, `tests.test_skilllive` remain green; (6) unsupported forecast-like predicted payload must not be treated as frequency outcome. Hooks are optional, no active Growth/runtime wiring, no external effects.
+
+No promotion to AG2 causal world-model, STEP8, Body-JEPA, Age or whole V13. The baseline frequency predictor is still non-causal; software pre-action ordering is not native/Redmi evidence. Preserve STEP2/B3/JEPA/Run367 full-suite negative gates.
+
+Evidence: exact-head Actions source-only Runtime/SQLite CI with pinned deps/actions, raw RED/GREEN logs and SHA, privacy scan, private Library byte-verified raw backups, and branch-scoped BUILD_STATE with exact next commands.

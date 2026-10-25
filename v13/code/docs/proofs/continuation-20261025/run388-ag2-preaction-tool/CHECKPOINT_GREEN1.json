@@ -1,0 +1,40 @@
+{
+  "run": "Run388",
+  "phase": "GREEN1_before_additional_cancellation_counterexamples",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/ag2-preaction-tool-candidate-run388-20261025",
+  "base_sha": "673ecdc2d4cb9f3bb4ee8148cdddd5b3059d6a66",
+  "source_head": "378e3d207add69f39cd99ae72c94699e0b8f5cc0",
+  "pr": 383,
+  "red": {
+    "head": "c30f320eb9fb608ff45f200e4dc5987d57927aab",
+    "run": 40242056873,
+    "tests": "22 tests; five expected errors for missing opt-in pre-execute interface, inherited PASS",
+    "artifact_id": 12617014614,
+    "zip_sha256": "59808ddfc6e1e1fe205ee4f2599df23a885189ae731d342e3ec0a4d1929f9452"
+  },
+  "green_attempt_failed": {
+    "head": "1309be4f4d3e57b87da61b7234f4ea89e5c5f840",
+    "run": 40242138692,
+    "tests": "22 tests; one ERROR due cancellation mock omitting required Transactions.execute id; production hook behavior otherwise PASS",
+    "artifact_id": 12616079561,
+    "zip_sha256": "51ed6c9e17655a98f5a2dd2c983ad7c04c9223e68dbd71f56656d18d756b9adf"
+  },
+  "green1": {
+    "head": "378e3d207add69f39cd99ae72c94699e0b8f5cc0",
+    "run": 40242192761,
+    "tests": "22/22 PASS; compileall PASS; privacy CLEAN",
+    "artifact_id": 12617400894,
+    "zip_sha256": "62d7ca95ebebca7a065980109e185dc94e01753c9282d9cb96344e4aad2d507c"
+  },
+  "scope": "Opt-in preaction ToolRegistry/AG2 candidate, default Growth/runtime unchanged, Linux/SQLite only",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0/permissions unchanged",
+    "Run367 full suite RED",
+    "Redmi native proof missing"
+  ],
+  "next": "Test non-hard cancellation and predictor callback failure, prevent false grounded outcomes, then final exact-head CI, private ZIP byte closure, BUILD_STATE."
+}
