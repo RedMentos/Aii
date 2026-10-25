@@ -13,6 +13,7 @@ structural_modification (Age 5), the structural unlock and the user — they are
 executed here. Generation manifests keep the rollback point.
 """
 import copy
+import math
 import time
 from .base import StateBox,age_allows
 
@@ -59,14 +60,31 @@ class SelfImprovement:
         if p['status']!='PROPOSED':raise ValueError('Nur PROPOSED wird geprüft')
         cand=self._candidate(p['kind'],p['diff'])
         base=evaluator(None);new=evaluator(cand)
+        if type(base) is not dict or type(new) is not dict:
+            raise ValueError('AG8 evaluator must return complete score objects')
+        def unit_score(value,field):
+            # A missing, nonfinite or boolean axis is not evidence of retention.
+            if type(value) not in (int,float) or not 0<=value<=1 or not math.isfinite(value):
+                raise ValueError('Invalid AG8 score: '+field)
+            return float(value)
+        def forgetting_rate(summary):
+            if 'forgetting' not in summary:return None
+            item=summary['forgetting']
+            if type(item) is not dict:
+                raise ValueError('Invalid AG8 forgetting record')
+            return unit_score(item.get('rate'),'forgetting.rate')
         delta=float(self.cfg.get('retention_max_delta',.02));axes={}
         for a in AXES:
-            b,c=base.get(a),new.get(a)
-            axes[a]={'base':b,'candidate':c,'delta':None if b is None or c is None else round(c-b,4)}
-        regress=[a for a,v in axes.items() if v['delta'] is not None and v['delta']<-delta]
-        bf,cf=(base.get('forgetting') or {}).get('rate'),(new.get('forgetting') or {}).get('rate')
-        if bf is not None and cf is not None and cf>bf+delta:regress.append('forgetting')
-        gain=max([v['delta'] for v in axes.values() if v['delta'] is not None],default=0.)
+            b=unit_score(base.get(a),'base.'+a)
+            c=unit_score(new.get(a),'candidate.'+a)
+            # Compare the actual measurement, not a rounded display number.
+            axes[a]={'base':b,'candidate':c,'delta':c-b}
+        bf,cf=forgetting_rate(base),forgetting_rate(new)
+        if (bf is None)!=(cf is None):
+            raise ValueError('AG8 forgetting coverage differs between arms')
+        regress=[a for a,v in axes.items() if v['delta']<-delta]
+        if bf is not None and cf>bf+delta:regress.append('forgetting')
+        gain=max(v['delta'] for v in axes.values())
         ok=not regress and gain>=MIN_GAIN
         def f(st):
             q=st['proposals'][pid];q['shield']={'axes':axes,'regressions':regress,'gain':gain,'passed':ok}

@@ -1,0 +1,56 @@
+{
+  "run": "Run380",
+  "date_utc": "2026-10-25T22:15:00Z",
+  "owner": "Codex AG8 independent regression shield",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/ag8-regression-shield-metrics-run380-20261025",
+  "base_branch": "codex/world-selfstate-session-scope-run379-20261025",
+  "base_sha": "9675eea132b1833abe0fbc6e0d3e31813b94e3d5",
+  "pr": 375,
+  "final_tested_source_head": "8641e5216ee34730d7bfb1649c8c76d9c7cd4f40",
+  "source_blob_sha": "e38b44c571ab50ce6601596c262f352dad6d5eb5",
+  "source_sha256": "e31ca044aa52bb7c9d9671e1c538f2271ba1246f7c3ba23ddc49bee31ee9adea",
+  "test_sha256": "e75ee15cb44399cb4534bd5ef3343ef9598803e5a430ee2e80520402158371e5",
+  "red": {
+    "run": 40239120314,
+    "job": 121306923712,
+    "tests": 15,
+    "expected_failures": 7,
+    "artifact": 12616045734,
+    "raw_zip_sha256": "6cf44ccc87becfe93db15cd02cc40d5c7aa0380ede31159ad58ec17e0b54589b"
+  },
+  "green": {
+    "initial_run": 40239218990,
+    "final_run": 40239288549,
+    "job": 121307430417,
+    "tests": 17,
+    "passed": 17,
+    "artifact": 12616425984,
+    "privacy": "CLEAN",
+    "raw_zip_sha256": "c63b87b368f742cb87109518aac2e278dab47472c3d14062c7f0e645fb5a92bf"
+  },
+  "independent_historical_failure": {
+    "workflow": "Run132 frozen Runtime hash",
+    "run": 40239288527,
+    "conclusion": "failure",
+    "reason": "frozen Runtime source hash mismatch; no HX test executed"
+  },
+  "scope": "Actual Runtime/SQLite software shield and synthetic evaluator scores only",
+  "raw_zip_private_backup": "VERIFIED_CRC_4_OF_4_SHA_PRIVATE_BYTE_MATCH",
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_UNRESOLVED",
+    "Body-JEPA_NOT_PROVEN",
+    "jepa_weight=0",
+    "Redmi_NATIVE_NOT_MEASURED",
+    "whole_V13_INCOMPLETE",
+    "Run367_full_suite_RED"
+  ],
+  "next_command": "Review PR375 exact head and AG8 17-test CI; independently download/verify raw artifacts; start separately preregistered Age reopen source-quality utility ablation without changing active cohorts.",
+  "blocked": "Redmi/native training proof unavailable; frozen Run132 source mismatch and Run367 full-suite RED retained.",
+  "private_backup_paths": [
+    "/V13/Backups/Run379-380-20261025/V13_Actions_12616045734.zip",
+    "/V13/Backups/Run379-380-20261025/V13_Actions_12616425984.zip"
+  ],
+  "raw_verification": "CRC PASS, internal 4/4 SHA PASS, GitHub exact-head matches, Library re-materialized byte-identical"
+}
