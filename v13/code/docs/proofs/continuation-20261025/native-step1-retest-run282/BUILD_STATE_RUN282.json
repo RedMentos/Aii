@@ -1,0 +1,59 @@
+{
+  "schema": "V13_RUN282_NATIVE_DIAGNOSTIC_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "run282_serial_native_step1",
+  "source_branch": "codex/native-step1-retest-run282-20261025",
+  "tested_commit": "059f0cf4b6bfdf881e9284e741da83662d8c93b7",
+  "native_workflow_run": 40192685057,
+  "raw_artifact_id": 12598915530,
+  "raw_artifact_sha256": "8d6da82d4f1a766cc63214bc574e30f10cb9640f553fbd5ab8b23e0ced8ef6b3",
+  "registered_models_blob_sha": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+  "bootstrap_blob_sha": "dc23e192bcd01589475692666ebb6568c80d078b",
+  "acceptance_blob_sha": "432b2e33eb53142b0d4246813b96fc791b0900f0",
+  "proofs_blob_sha": "a4bf9d9247dcbff727a2ccd12c979596658692cb",
+  "executive_integration_blob_sha": "0d71d97868cc3a0785846f1073afcc2784550b2c",
+  "evidence_scope": "LINUX_NATIVE_ACTUAL_REGISTERED_WEIGHTS_NOT_REDMi",
+  "host": "Ubuntu 24.04 x86_64 15GiB RAM",
+  "bootstrap_exit": 0,
+  "acceptance_exit": 2,
+  "acceptance_status": "DIAGNOSTIC_INCOMPLETE",
+  "stages": [
+    {
+      "name": "jef-modes",
+      "status": "PASS",
+      "exit_code": 0
+    },
+    {
+      "name": "experience",
+      "status": "PASS",
+      "exit_code": 0
+    },
+    {
+      "name": "learning",
+      "status": "PASS",
+      "exit_code": 0
+    },
+    {
+      "name": "executive",
+      "status": "PASS",
+      "exit_code": 0
+    }
+  ],
+  "unrun_registered_stages": 16,
+  "full_runner_proof": false,
+  "full_architecture_complete": false,
+  "privacy": "CLEAN",
+  "original_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "Redmi": "NOT_MEASURED"
+  },
+  "next_step": "Triage remaining native stage failures with exact raw metrics; pursue independent software packages and serial native rechecks, no threshold weakening.",
+  "next_command": "python scripts/acceptance.py --installed-home \"$V13_HOME\" --archive-dir \"$RUNNER_TEMP/next-archive\" --stage-limit 5",
+  "note": "Next command is a stage-limit example only; must first check active native owners, available prereqs, source binding and registered plan. Do not treat as automatic full rerun.",
+  "source_and_raw_evidence_saved_in": "PR282 GitHub Actions artifact, PR282 prereg, downstream PR283 report/state",
+  "private_drive_backup": "NOT_ATTEMPTED_REJECTED_DESTINATION"
+}
