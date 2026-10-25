@@ -7,6 +7,7 @@ Rights and maturity are orthogonal (§95.2): maturity scales budgets inside what
 stage ceiling, user cap, hard rules, user permissions and resource state allow.
 BUILD_CEILING is 0 until STEP7 (Age>0 is not released); all thresholds are BOOT values.
 """
+import math
 from .common import now,uid
 
 STATE_KEY='age_control'
@@ -62,12 +63,26 @@ def default_state():
     return {'revision':REVISION,'system':_subject(),'capabilities':{c:_subject() for c in CAPABILITIES},'frozen':False,
             'structural_locked':True,'proposals':[],'history':[],'seen_evidence':[]}
 
+def _valid_metrics(metrics):
+    """Fail closed before Age evidence affects maturity, hysteresis or stored state."""
+    if not isinstance(metrics,dict):return False
+    count=metrics.get('experience')
+    if count is not None and (type(count) is not int or count<0):return False
+    for key in METRICS:
+        value=metrics.get(key)
+        if value is None:continue  # unmeasured channels are allowed but cannot pass a gate
+        if type(value) not in (int,float) or not 0<=value<=1 or not math.isfinite(value):return False
+    flag=metrics.get('regression_pass')
+    return flag is None or type(flag) is bool
+
 def gate_pass(metrics,stage,band=0.):
-    """True if metrics meet the gate for `stage`; band lowers ratio thresholds (maintenance band)."""
+    """True only for valid finite evidence meeting the full stage gate."""
+    if not _valid_metrics(metrics):return False
     if stage<=0:return True
     if metrics.get('regression_pass') is not True:return False
-    if metrics.get('experience',0)<GATES['experience'][stage]:return False
-    return all(isinstance(metrics.get(k),(int,float)) and metrics[k]>=GATES[k][stage]-band for k in METRICS)
+    experience=metrics.get('experience')
+    if experience is None or experience<GATES['experience'][stage]:return False
+    return all(metrics.get(k) is not None and metrics[k]>=GATES[k][stage]-band for k in METRICS)
 
 class AgeControl:
     def __init__(self,store,cfg,build_ceiling=None):
@@ -95,6 +110,7 @@ class AgeControl:
     # Evidence, promotion, demotion ------------------------------------------------------------------------------
     def record(self,subject,metrics,evidence_id=None):
         """Feed one evidence record (one stable regression/shadow/retention assessment) for system or a capability."""
+        if not _valid_metrics(metrics):raise ValueError('Age evidence must be finite, typed and in range')
         st,v=self.state();sub=self._subject(st,subject);eid=evidence_id or uid('evidence')
         if eid in st['seen_evidence']:raise ValueError('Nachweis schon gezählt: '+eid)
         st['seen_evidence']=(st['seen_evidence']+[eid])[-512:];sub['evidence_count']+=1;sub['last_evidence']=eid
@@ -109,7 +125,8 @@ class AgeControl:
         if isinstance(metrics.get('competence'),(int,float)) and isinstance(metrics.get('safe_self_control'),(int,float)):
             m['trust']=round((1-EMA)*m['trust']+EMA*min(metrics['competence'],metrics['safe_self_control']),6)
         out={'subject':subject,'evidence_id':eid,'stage':sub['stage'],'change':None}
-        severe=metrics.get('regression_pass') is False and metrics.get('retention',1)<GATES['retention'][max(sub['stage'],1)]-BAND
+        retention=metrics.get('retention')
+        severe=metrics.get('regression_pass') is False and retention is not None and retention<GATES['retention'][max(sub['stage'],1)]-BAND
         if sub['stage']>0 and (severe or not gate_pass(metrics,sub['stage'],BAND)):
             # Competence noise cannot waive retention, stability, calibration, memory health,
             # safe-self-control, experience or regression maintenance failures.

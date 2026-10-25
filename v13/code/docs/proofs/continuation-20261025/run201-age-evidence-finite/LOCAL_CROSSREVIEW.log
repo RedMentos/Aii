@@ -1,0 +1,24 @@
+Run201 independent local exact-source reproduction, 2026-10-25 UTC
+Acquisition: GitHub Actions run 40175556117 artifact 12592105617, inner V13-Phone-Run83.zip.
+Verified 950/950 original source manifest entries SHA-256; no missing/extra files.
+Copied 30 MB extracted tree, applied only the four Run201 age.py edits.
+git hash-object v13/age.py => 7c47181c2a655e31865047fc53a817ae2ac35385
+Remote GitHub age.py blob => 7c47181c2a655e31865047fc53a817ae2ac35385 (exact match).
+python -m compileall -q v13/age.py => PASS
+python -m unittest -q tests.test_age tests.test_age_rights tests.test_age_noise_maintenance_run200
+----------------------------------------------------------------------
+Ran 20 tests in 0.919s
+OK
+
+Separate local synthetic adversarial script on exact bytes:
+PASS reject experience_nan
+PASS reject experience_inf
+PASS reject experience_bool
+PASS reject competence_bool
+PASS reject retention_inf
+PASS reject regression_int
+PASS missing retention, repeated regression demotes
+PASS default BUILD_CEILING remains 0
+
+Scope: software/synthetic Linux container, not native model, training, Redmi or measured user experience.
+No unregistered native process started. Full repository suite not claimed.
