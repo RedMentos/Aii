@@ -1,0 +1,46 @@
+name: V13 Run261 RED world terminal failure source lineage
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run261-world-terminal-failure-red.yml'
+      - 'v13/code/tests/test_world_terminal_failure_run261.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  terminal-failure-red:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Isolated pinned CPU dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run261"
+          "$RUNNER_TEMP/run261/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Actual Store RED-first focused test (preserve failure)
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run261/bin/python" -m unittest -v test_world_terminal_failure_run261 test_world_fitted_source_lineage_20261025 test_world_model 2>&1 | tee "$RUNNER_TEMP/RUN261_RED_RAW.log"
+          rc=$?
+          echo "RUN261_FOCUSED_EXIT=$rc"
+          echo "$rc" > "$RUNNER_TEMP/RUN261_EXIT.txt"
+          exit 0
+      - name: Official privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 28a9ebcbe51661adb716ae5bdd9ca999dbf2af3c --head HEAD --no-worktree
+      - name: Preserve RED raw logs and exact exit code
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run261-Terminal-Failure-RED
+          path: |
+            ${{ runner.temp }}/RUN261_RED_RAW.log
+            ${{ runner.temp }}/RUN261_EXIT.txt
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Claim boundary
+        run: echo 'RED-first expected to fail on PR259; no gate or model utility promotion'
