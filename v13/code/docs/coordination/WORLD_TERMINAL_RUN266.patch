@@ -1,0 +1,15 @@
+diff --git a/v13/code/v13/world_model.py b/v13/code/v13/world_model.py
+--- a/v13/code/v13/world_model.py
++++ b/v13/code/v13/world_model.py
+@@ -25,2 +25,3 @@
+ ACTIONS=('simple','detail','gist','both')
++TERMINAL_OBSERVED=frozenset(('FINAL','ERROR','DEADLINE','CANCELLED','INTERRUPTED'))
+ TARGETS=('log_duration','success','log_chars')
+@@ -85,2 +86,3 @@
+     for r in rows:
++        if r['status'] not in TERMINAL_OBSERVED:continue
+         if not _valid_observed_event_source(store,r['event_id']):continue
+@@ -145,2 +147,2 @@
+-        if not row or row['status'] != 'FINAL':
++        if not row or row['status'] not in TERMINAL_OBSERVED:
+             return None
