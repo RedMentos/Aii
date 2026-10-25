@@ -1,0 +1,82 @@
+name: V13 Run115 isolated full-suite prerequisites
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run115-fullsuite-prereq.yml"
+      - "v13/code/docs/proofs/continuation-20261025/fullsuite-prereq-run115/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run115-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  archive-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify and list sealed Run16 source archive
+        run: |
+          set -euo pipefail
+          ARCHIVE=v13/code/docs/proofs/continuation-20261024/lp3-run16/SOURCE_AND_TESTS.tar.xz
+          test "$(git hash-object "$ARCHIVE")" = "667d7f1b73a655097a44ff4c61749af113f7544f"
+          sha256sum "$ARCHIVE"
+          tar -tJf "$ARCHIVE"
+  augmented-full-suite:
+    needs: archive-inventory
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+      NEEDLE_TELEMETRY: "0"
+      NO_MODEL_DOWNLOADS: "1"
+      PIP_NO_CACHE_DIR: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify archived helper and isolate to temporary directory
+        run: |
+          set -euo pipefail
+          ARCHIVE=v13/code/docs/proofs/continuation-20261024/lp3-run16/SOURCE_AND_TESTS.tar.xz
+          test "$(git hash-object "$ARCHIVE")" = "667d7f1b73a655097a44ff4c61749af113f7544f"
+          mkdir -p "$RUNNER_TEMP/lp3_run16"
+          tar -xJf "$ARCHIVE" -C "$RUNNER_TEMP/lp3_run16"
+          find "$RUNNER_TEMP/lp3_run16" -maxdepth 8 -type f | sort
+          helper="$(find "$RUNNER_TEMP/lp3_run16" -type f -name 'test_lp3_serial_cohort.py' -print -quit)"
+          test -n "$helper"
+          echo "LP3_HELPER_DIR=$(dirname "$helper")" >> "$GITHUB_ENV"
+          echo "LP3_ARCHIVE_DIR=$RUNNER_TEMP/lp3_run16" >> "$GITHUB_ENV"
+      - name: Install pinned CPU-only test prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          timeout 180s .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          timeout 420s .venv/bin/python -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.1+cpu'
+          .venv/bin/python -c 'import torch; print("torch_version",torch.__version__,"cuda",torch.cuda.is_available())'
+      - name: Bounded full Python discovery with archived candidate helper (NOT production)
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$LP3_HELPER_DIR:$PWD"
+          ../../.venv/bin/python -m compileall -q v13 tests
+          timeout 900s ../../.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
