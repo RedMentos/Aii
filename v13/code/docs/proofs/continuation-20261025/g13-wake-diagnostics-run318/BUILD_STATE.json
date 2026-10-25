@@ -1,0 +1,23 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 318,
+  "source_head": "e2458a3ca2366dedf68f84fb09e29c43f609255d",
+  "ci_exact_head": "fb104e6903040450a14d69f88d3bbc11e3eaad56",
+  "ci_run": 40210738118,
+  "initial_red_run": 40210591387,
+  "artifact_id": 12605256336,
+  "artifact_zip_sha256": "64c9b0b8385007a1dc1f388174bc3bda2e1abb6bcddff293989e1bd8c47ebfaf",
+  "raw_private_library": "/V13/checkpoints/2026-10-25/V13_Run318_native_G13_negative_raw_sha64c9b0b8.zip",
+  "evidence": "LINUX_NATIVE_G13",
+  "status": "CLOSED_NEGATIVE_G13_FAIL",
+  "negative": "Fixed simulated clock earlier than real Runtime boot; day0 sleep_full not due, day1 passes; original Run267 day1 failure remains unresolved",
+  "owner": "Run318 closed; Run267 original soak owned separately",
+  "next_command": "Separate prereg for coherent-clock G13 test, do not weaken original gate; meanwhile pursue Run319 native body training",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  }
+}
