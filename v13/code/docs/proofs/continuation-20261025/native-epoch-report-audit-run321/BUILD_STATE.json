@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 321,
+  "branch": "assistant/native-epoch-report-audit-run321-20261025",
+  "pr": 318,
+  "parent_source_sha": "d631acf329ce6e668bb35a04b875cbf2cf7c25d9",
+  "prereg_sha": "87b1a84594a7d71e63f1e5eaf06853d3544bb4a8",
+  "tested_source_sha": "369e90602f4fadc0e7187f154581e876b2d05b65",
+  "ci_run": 40212243919,
+  "ci_job": 121225759904,
+  "artifact_id": 12606172052,
+  "artifact_zip_sha256": "03f87e4d949296ee3247f251ce238351bd4b965f44b02eee406f96c92ceebbc1",
+  "status": "SOURCE_ONLY_AUDIT_PASS_NOT_NATIVE_TRAINING",
+  "tests": {
+    "new_adversarial": 12,
+    "inherited_run320": 7,
+    "total": 19,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN"
+  },
+  "negative_ci_runs": [
+    40212158149,
+    40212202490
+  ],
+  "upstream_native_ci": {
+    "run": 40211685395,
+    "status": "RED_CONVERSION_TOKENIZERSBACKEND",
+    "artifact_id": 12606256943,
+    "artifact_zip_sha256": "c9893c5e0f5ee2e2d483175d5bef2ed0bf6185a78c691e5a3b89236a08b8ebaf",
+    "optimizer_epochs_executed": 0
+  },
+  "owner": "Run321 new read-only report auditor, tests, CI, proof only",
+  "next_command": "cd v13/code && python3 scripts/audit_native_lfm2_epoch_eval_run321.py /path/to/RUN320_EPOCH_EVAL.json (only after a complete actual native report is available)",
+  "prerequisites": "Run320 owner must resolve frozen HF TokenizersBackend conversion incompatibility, preserve RED attempt, execute pinned native epochs serially; no shared Run320 file edits from Run321",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "MISSING",
+    "V13": "INCOMPLETE"
+  }
+}
