@@ -57,7 +57,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           python3 -m venv "$RUNNER_TEMP/run151"
           "$RUNNER_TEMP/run151/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
-          "$RUNNER_TEMP/run151/bin/python" -m compileall -q v13/code/v13 v13/code/scripts/age0d_c3_varied_run151.py
+          "$RUNNER_TEMP/run151/bin/python" -m compileall -q v13/code/v13 v13/code/scripts/age0d_c3_terminal_native_run151.py
           (cd v13/code && PYTHONPATH=. "$RUNNER_TEMP/run151/bin/python" -m unittest -v tests.test_age0d_c3_terminal_run151 tests.test_answer_arithmetic_shadow_v3_run149)
       - name: Assert registered task and prompt hashes before native model execution
         run: |
