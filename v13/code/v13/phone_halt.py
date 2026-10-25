@@ -101,13 +101,21 @@ def prestart(home):
                 if (not isinstance(state,dict) or state.get('revision')!=standstill.REVISION
                     or not isinstance(state.get('on'),bool) or not isinstance(state.get('set'),dict)
                     or any(k not in ('notaus','queue','age') or not isinstance(v,bool)
-                           for k,v in state['set'].items())):
+                           for k,v in state['set'].items())
+                    or not isinstance(state.get('release_pending',{}),dict)
+                    or any(k not in ('notaus','queue','age') or not isinstance(v,bool)
+                           for k,v in state.get('release_pending',{}).items())):
                     raise ValueError('Unlesbarer Stillstand-Zustand; Widget-Datei bleibt erhalten')
                 before={'notaus':prohibitions['halt'],
                         'queue':s.queue_paused(),'age':age_state['frozen']}
                 newly={k:not v for k,v in before.items()}
                 if state['on']:
                     newly={k:bool(state['set'].get(k,False) or newly[k]) for k in newly}
+                elif state.get('release_pending'):
+                    # An interrupted human release may have already cleared Age,
+                    # while the paused queue still belongs to standstill.
+                    # Re-engaging via the widget must retain that ownership.
+                    newly={k:bool(state['release_pending'].get(k,False) or newly[k]) for k in newly}
                 # No coordinator exists yet. This durable queue gate is committed
                 # before Runtime can start its worker or recover queued turns.
                 c.execute("INSERT OR REPLACE INTO meta VALUES (?,?)",('queue_paused',dumps(True)))
@@ -116,7 +124,8 @@ def prestart(home):
                     A.AgeControl(s,{})._event(age_state,'FREEZE','system',None,None,'user')
                     c.execute("INSERT OR REPLACE INTO states VALUES (?,?,?)",
                               (A.STATE_KEY,av+1,dumps(age_state)))
-                state.update(on=True,since=state.get('since') or time.time(),set=newly)
+                state.update(on=True,since=state.get('since') or time.time(),
+                             set=newly,release_pending={})
                 c.execute("INSERT OR REPLACE INTO states VALUES (?,?,?)",
                           (standstill.KEY,sv+1,dumps(state)))
                 names_to_ack=['STILLSTAND']+(['NOTAUS'] if 'NOTAUS' in names else [])
