@@ -1,0 +1,16 @@
+test_exact_source_and_negative_gates (test_body_fp32_export_verify_run163.VerifyTests.test_exact_source_and_negative_gates) ... ok
+test_extra_npz_entry (test_body_fp32_export_verify_run163.VerifyTests.test_extra_npz_entry) ... ok
+test_forged_authority_rejected (test_body_fp32_export_verify_run163.VerifyTests.test_forged_authority_rejected) ... ok
+test_forged_tensor_digest (test_body_fp32_export_verify_run163.VerifyTests.test_forged_tensor_digest) ... ok
+test_manifest_offset_mismatch (test_body_fp32_export_verify_run163.VerifyTests.test_manifest_offset_mismatch) ... ok
+test_quantized_claim_rejected (test_body_fp32_export_verify_run163.VerifyTests.test_quantized_claim_rejected) ... ok
+test_signed_zero_counterexample_to_numpy_array_equal (test_body_fp32_export_verify_run163.VerifyTests.test_signed_zero_counterexample_to_numpy_array_equal) ... ok
+test_source_span_overlap (test_body_fp32_export_verify_run163.VerifyTests.test_source_span_overlap) ... ok
+test_symlink_master_rejected (test_body_fp32_export_verify_run163.VerifyTests.test_symlink_master_rejected) ... ok
+test_tampered_npz_digest (test_body_fp32_export_verify_run163.VerifyTests.test_tampered_npz_digest) ... ok
+test_wrong_external_model_sha (test_body_fp32_export_verify_run163.VerifyTests.test_wrong_external_model_sha) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.028s
+
+OK
