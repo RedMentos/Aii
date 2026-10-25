@@ -1,0 +1,31 @@
+{
+  "schema": "V13_RUN365_BRANCH_SCOPED_CHECKPOINT_V1",
+  "parent_branch": "assistant/run364-plain-ui-cursor-20261025",
+  "parent_sha": "4616bb0618b7ff64969df6f1af369da723f5da3e",
+  "owner": "codex/organ-checkpoint-path-safety-20261025",
+  "review_pr": 360,
+  "source_head_tested": "5bcae3b9ca2acbc85f78d40d0a55486bd40cc34f",
+  "source_path": "v13/code/v13/organ.py",
+  "source_sha256": "908ec645748b1870e54067b3bf5da8285ed163085173e7083e237c6848e86ddc",
+  "tests": "15/15 PASS; inherited organ 9/9; compileall PASS; privacy CLEAN",
+  "run_red": 40231388826,
+  "run_green": 40231660532,
+  "run_focused": 40231660542,
+  "raw_red_sha256": "b090f3a75a81dd5bdf6f95088740ec0e47fe4d48be645f5c7d3893bcbf442bd4",
+  "raw_green_sha256": "73206668c8b6d49b837a6fcec67c38d26fa90df018fabef859720b70c56ae7cd",
+  "private_backup_green": "/V13/checkpoints/2026-10-25/V13_Run365_OrganPath_GREEN_FINAL_raw_sha73206668.zip",
+  "private_backup_red": "/V13/checkpoints/2026-10-25/V13_Run365_OrganPath_RED_raw_shab090f3a7.zip",
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED"
+  },
+  "next_package": "AG12 solver nonfinite confidence guard with RED-first real unit test",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_agi_solver tests.test_agi_solver_finite_run366",
+  "remaining": "organ bridge restore crash-recovery and full native/Redmi acceptance remain open",
+  "status": "BRANCH_SCOPED_GREEN_NOT_MERGED"
+}
