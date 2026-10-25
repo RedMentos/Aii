@@ -1,0 +1,99 @@
+{
+  "schema": "V13_RUN114_CHECKPOINT_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex isolated World Model ablation review",
+  "base_commit": "3ec03c37595c450ce78b9754977ca3755ff75c7a",
+  "base_pr": 144,
+  "review_pr": 145,
+  "canonical_blueprint": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+  "canonical_blueprint_git_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "changed_source_git_blobs": {
+    "v13/code/scripts/ablation_world_model_confidence.py": "fb7a60def4abb75c76d269222adc3da6da96aebf",
+    "v13/code/tests/test_ablation_homeo_meta.py": "b97dae1b95566946eb6dd3d1f7f848e7944f2dd7",
+    "v13/code/tests/test_world_confidence_abstention_run114.py": "469d43d6a6022ff3eaa75cd10226c6ab713fde38",
+    ".github/workflows/v13-run114-world-abstention.yml": "1ea1e0d460452c6c0690668c7eced543b022f689"
+  },
+  "raw_evidence_git_blobs": {
+    "RAW_RED.txt": "a67c9c79ff1e35b32eedbbd19b0d29103d181615",
+    "RAW_GREEN.txt": "541e264cad9cebbb76cdff19fed9ded986e297dc"
+  },
+  "tests": {
+    "parent_full_suite": {
+      "run_id": 40144632264,
+      "tests": 2151,
+      "errors": 5,
+      "skips": 15,
+      "status": "FAIL",
+      "classification": "one World ablation crash, three torch missing-import errors, one archived LP3 helper missing-import error"
+    },
+    "prereg_red": {
+      "run_id": 40145166959,
+      "job_id": 121024833807,
+      "tests": 3,
+      "errors": 3,
+      "status": "EXPECTED_RED"
+    },
+    "green": {
+      "run_id": 40145321592,
+      "job_id": 121025301195,
+      "tests_run114": 4,
+      "tests_inherited": 12,
+      "status": "PASS"
+    },
+    "privacy": {
+      "run_id": 40145321592,
+      "status": "CLEAN"
+    },
+    "synthetic": {
+      "seeds": [
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "queries_per_seed": 400,
+      "evaluated_by_seed": [
+        212,
+        127,
+        159,
+        151,
+        190
+      ],
+      "abstained_by_seed": [
+        188,
+        273,
+        241,
+        249,
+        210
+      ],
+      "total_evaluated": 839,
+      "total_abstained": 1161,
+      "abstention_reason": "IMPOSSIBLE_PREDICTED_OUTCOME",
+      "verdict": "INCOMPLETE_ABSTENTION",
+      "evidence_level": "SYNTHETIC_LINUX"
+    }
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "ownership_exclusions": [
+    "v13/code/v13/world_model.py",
+    "v13/code/v13/episodes.py",
+    "v13/code/v13/episodic_route.py",
+    "production runtime",
+    "native model cohorts"
+  ],
+  "open_questions": [
+    "Run113 full suite still has four unrelated ERRORs: three require torch, one imports archived test_lp3_serial_cohort not present in integrated source.",
+    "World Model physically impossible prediction rate in this biased synthetic world is 1161/2000; need separately preregistered selective-risk/abstention utility before any positive confidence claim.",
+    "No native/Redmi evidence or full-system proof."
+  ],
+  "exact_next_step": "Review final Run114 CI after evidence commit, verify branch SHA and remote blobs, then start independent Run115 package to restore full-suite dependency/archived-fixture coverage without hiding failures. Preserve all original gates.",
+  "authorized_backup": "GitHub PR #145 review branch; rejected anyone-writable Drive destination must not be used."
+}
