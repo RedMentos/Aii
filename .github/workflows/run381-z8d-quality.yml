@@ -1,0 +1,91 @@
+name: V13 Run381 Z8d synthetic source-quality utility ablation
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run381-z8d-quality.yml'
+      - 'v13/code/scripts/z8d_exogenous_quality_probe.py'
+      - 'v13/code/tests/test_z8d_exogenous_quality_run381.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Source identity and dependencies
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN381_HEAD.txt"
+          sha256sum v13/code/scripts/z8d_exogenous_quality_probe.py v13/code/scripts/z8_age_reopen.py v13/code/v13/age.py v13/code/tests/test_z8d_exogenous_quality_run381.py | tee "$RUNNER_TEMP/RUN381_SOURCE_SHA256SUMS.txt"
+          python3 -m venv "$RUNNER_TEMP/run381venv"
+          "$RUNNER_TEMP/run381venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          python3 -m compileall -q v13/code/scripts/z8d_exogenous_quality_probe.py v13/code/tests/test_z8d_exogenous_quality_run381.py
+      - name: Real AgeControl SQLite controls
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run381venv/bin/python" -m unittest -v \
+            tests.test_z8d_exogenous_quality_run381 \
+            2>&1 | tee "$RUNNER_TEMP/RUN381_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Registered 20-seed synthetic utility comparison
+        id: experiment
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run381venv/bin/python" scripts/z8d_exogenous_quality_probe.py \
+            --out "$RUNNER_TEMP/z8d-result" --first-seed 301 --seeds 20 \
+            2>&1 | tee "$RUNNER_TEMP/RUN381_EXPERIMENT_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if test -f "$RUNNER_TEMP/z8d-result/z8d.json"; then
+            cp "$RUNNER_TEMP/z8d-result/z8d.json" "$RUNNER_TEMP/RUN381_RESULTS.json"
+          fi
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN381_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN381_*' ! -name RUN381_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN381_SHA256SUMS.txt
+      - name: Upload exact-head raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run381-Z8dQuality-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN381_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce runnable controls, experiment and privacy
+        if: always()
+        run: |
+          test "${{ steps.suite.outputs.rc }}" = "0"
+          test "${{ steps.experiment.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
