@@ -1,0 +1,30 @@
+2026-10-25T08:38:33.9758910Z test_revoked_earlier_turn_cannot_be_reexported_in_training_context (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_earlier_turn_cannot_be_reexported_in_training_context) ... ok
+2026-10-25T08:38:34.1063794Z test_revoked_target_turn_is_not_staged_for_training (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_target_turn_is_not_staged_for_training) ... ok
+2026-10-25T08:38:34.2381218Z test_tampered_persisted_digest_does_not_become_training_input (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_tampered_persisted_digest_does_not_become_training_input) ... ok
+2026-10-25T08:38:34.3726410Z test_digest_is_extractive_incremental_and_pins_exact_spans (tests.test_sleep_offline.DigestTests.test_digest_is_extractive_incremental_and_pins_exact_spans) ... ok
+2026-10-25T08:38:34.6587290Z test_digest_reaches_live_context_only_outside_history_and_respects_deletion (tests.test_sleep_offline.LiveContextTests.test_digest_reaches_live_context_only_outside_history_and_respects_deletion) ... ok
+2026-10-25T08:38:34.7148198Z test_cancel_and_yellow (tests.test_sleep_offline.PhaseTests.test_cancel_and_yellow) ... ok
+2026-10-25T08:38:34.8926991Z test_full_sleep_runs_offline_phase_and_stages_ttt_only (tests.test_sleep_offline.PhaseTests.test_full_sleep_runs_offline_phase_and_stages_ttt_only) ... ok
+2026-10-25T08:38:34.9260710Z test_consolidation_keeps_only_if_heldout_error_does_not_rise (tests.test_sleep_offline.PredictorTests.test_consolidation_keeps_only_if_heldout_error_does_not_rise) ... ok
+2026-10-25T08:38:35.0106605Z test_full_sleep_cannot_resurrect_a_forgotten_correction (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_cannot_resurrect_a_forgotten_correction) ... ok
+2026-10-25T08:38:35.0759890Z test_full_sleep_keeps_exact_human_correction_available_to_c3 (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_keeps_exact_human_correction_available_to_c3) ... ok
+2026-10-25T08:38:35.0985718Z test_repeated_sleep_keeps_one_human_record_and_no_weight_change (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_repeated_sleep_keeps_one_human_record_and_no_weight_change) ... ok
+2026-10-25T08:38:35.1193867Z test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat (tests.test_history_lineage.HistoryLineage.test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat) ... ok
+2026-10-25T08:38:35.1331410Z test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported (tests.test_history_lineage.HistoryLineage.test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported) ... ok
+2026-10-25T08:38:35.1332842Z 
+2026-10-25T08:38:35.1333598Z ----------------------------------------------------------------------
+2026-10-25T08:38:35.1334188Z Ran 13 tests in 1.482s
+2026-10-25T08:38:35.1334405Z 
+2026-10-25T08:38:35.1334781Z OK
+2026-10-25T08:38:35.2046437Z ##[group]Run python v13/code/scripts/public_repo_privacy_scan.py --base 681deec1d7a11a25324e3989617d7de2870d1a7c --head HEAD --no-worktree
+2026-10-25T08:38:35.2047451Z [36;1mpython v13/code/scripts/public_repo_privacy_scan.py --base 681deec1d7a11a25324e3989617d7de2870d1a7c --head HEAD --no-worktree[0m
+2026-10-25T08:38:35.2108521Z shell: /usr/bin/bash -e {0}
+2026-10-25T08:38:35.2108772Z env:
+2026-10-25T08:38:35.2109044Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:38:35.2109506Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-25T08:38:35.2109941Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:38:35.2110333Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:38:35.2110712Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:38:35.2111091Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-25T08:38:35.2111413Z ##[endgroup]
+2026-10-25T08:38:35.2536976Z privacy scan 681deec1d..HEAD: CLEAN

@@ -81,18 +81,50 @@ def context_items(store,session,exclude_ids=(),cap=1200):
     return list(reversed(out))
 
 def stage_ttt(store,home,checkpoint=None):
-    """Context->LoRA candidates for WP-I: (digest of earlier turns, user) -> answer. Staging only."""
+    """Stage context->LoRA candidates only from currently source-valid FINAL turns.
+
+    A digest is an untrusted, revocable context cache, never a training label.
+    Recheck the actual native-history source/answer lineage and recompute its
+    extractive compression before reusing a persisted digest entry. This is a
+    staging-time check, NOT authorization to train a later stale export.
+    """
+    from .history import native_history
     st=_load(store)[0];path=home/'exports/sleep-ttt-candidates.jsonl';rows=[]
+    def packed(text):
+        value,_,ok=compress(text,TURN_CAP)
+        return value if ok or len(value)<=TURN_CAP*2 else value[:TURN_CAP*2]
     for sess,d in st['sessions'].items():
-        ents=d['entries']
-        for i,e in enumerate(ents[1:],1):
+        ents=d['entries'][-ENTRIES_MAX:]
+        # Use the same source/answer/rule-revocation checks as live C3 history,
+        # not the persisted digest's self-asserted event_id or message metadata.
+        recs,_=native_history(store,sess,'',max(TURNS_MAX,len(ents)+1))
+        pairs={}
+        for m in recs:
+            pairs.setdefault(m['event_id'],{})[m['role']]=m
+        checked=[]
+        for e in ents:
+            if not isinstance(e,dict):
+                checked.append(None);continue
+            pair=pairs.get(e.get('event_id'),{})
+            u=pair.get('user');a=pair.get('assistant')
+            if not u or not a or a['id']!=e.get('msg'):
+                checked.append(None);continue
+            if e.get('user')!=packed(u['text']) or e.get('answer')!=packed(a['text']):
+                checked.append(None);continue
+            try:
+                if not json.loads(a['metadata']).get('model_generated'):
+                    checked.append(None);continue
+            except (TypeError,ValueError):
+                checked.append(None);continue
+            checked.append((e,u,a))
+        for i,entry in enumerate(checked[1:],1):
             if checkpoint and i%16==0:checkpoint()
-            ctx='\n'.join('U: '+x['user']+' | A: '+x['answer'] for x in ents[max(0,i-4):i])
-            msg=store.one("SELECT text,metadata FROM messages WHERE id=?",(e['msg'],))
-            if not msg or not json.loads(msg['metadata']).get('model_generated'):continue
-            user=store.one("SELECT text FROM messages WHERE event_id=? AND role='user'",(e['event_id'],))
-            if not user:continue
-            rows.append({'session':sess,'event_id':e['event_id'],'context':ctx,'input':user['text'],'target':msg['text'],
+            if entry is None:continue
+            prior=[x[0] for x in checked[max(0,i-4):i] if x is not None]
+            if not prior:continue  # a context-conditioned example needs valid earlier context
+            e,u,a=entry
+            ctx='\n'.join('U: '+x['user']+' | A: '+x['answer'] for x in prior)
+            rows.append({'session':sess,'event_id':e['event_id'],'context':ctx,'input':u['text'],'target':a['text'],
                          'status':'CANDIDATE_NOT_TRAINED','label_source':'own_final_answer','origin':'self','requires':'WP-I retention gate + human approval'})
     rows=rows[-TTT_MAX:]
     atomic_write(path,''.join(dumps(r)+'\n' for r in rows))
