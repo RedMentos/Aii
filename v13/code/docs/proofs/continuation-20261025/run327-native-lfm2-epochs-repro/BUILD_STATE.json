@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 327,
+  "date_utc": "2026-10-25",
+  "owner": "assistant/run327-native-lfm2-epochs-repro-20261025",
+  "parent_verified": "1dd246a105b852238ca2f05625f53a4f291694e6",
+  "prereg_sha": "fec0218ad355ce9f4e3b0a716c894ee1b807603b",
+  "run326_ci": {
+    "run_id": 40214511020,
+    "job_id": 121232634475,
+    "conclusion": "SUCCESS",
+    "raw_artifact_id": 12607375237,
+    "artifact_zip_sha256": "97d0ad62a756cdad38ed5a74993e2ff68fbb05cb8e807e2f7187693ff1896e58",
+    "baseline_master_sha256": "5d200c19f13483e66b39d9feb3353032581882f3eb10cc8752f027d4688d6e6f",
+    "variant_sha256": "6a20c99653fcf7ce9e6c6ff26de096a43841cd5479b98e179ff4931cf1476b35",
+    "status": "METADATA_ONLY_DRIFT",
+    "tensor_payloads_equal": true,
+    "metadata_different_keys": [
+      "general.name"
+    ],
+    "source_only_tests": "10/10 PASS"
+  },
+  "run325_red": {
+    "run_id": 40213614735,
+    "artifact_id": 12607105983,
+    "status": "FAIL_FP32_SHA_BEFORE_OPTIMIZER",
+    "native_optimizer_epochs": 0
+  },
+  "run327": {
+    "state": "SOURCE_ONLY_IMPLEMENTED_NATIVE_CI_PENDING",
+    "workflow": ".github/workflows/run327-native-lfm2-epochs-repro.yml",
+    "test": "v13/code/tests/test_run327_exact_recipe.py",
+    "original_evaluator": "v13/code/scripts/native_lfm2_epoch_eval_run320.py",
+    "original_auditor": "v13/code/scripts/audit_native_lfm2_epoch_eval_run321.py",
+    "source_hashes_unchanged": true,
+    "master_sha256_required": "5d200c19f13483e66b39d9feb3353032581882f3eb10cc8752f027d4688d6e6f",
+    "model_weights_published": false
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "MISSING",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Whether exact master allows native 2-epoch training and full 8/6/5/12 heldout without other native prerequisites",
+    "Whether either epoch satisfies original diagnostic selection without forgetting or near-miss leakage",
+    "Original Run267 native G13 wake_priority negative remains independent; do not conflate"
+  ],
+  "next_command": "Open PR from assistant/run327-native-lfm2-epochs-repro-20261025 to assistant/run326-fp32-master-parity-20261025; inspect serialized exact-head CI run, download raw artifact, verify hashes and independent Run321 audit; continue another canonical package even if RED",
+  "prerequisites": [
+    "Do not overlap other heavy native jobs; concurrency v13-native-c3-run131-serialized",
+    "No private or model-weight publication",
+    "No Canon/registered cohort/age/approval change"
+  ]
+}
