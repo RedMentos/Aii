@@ -106,6 +106,32 @@ class PackageSource(unittest.TestCase):
         self.assertEqual(probe.stderr.strip().splitlines()[-1],
             'ValueError: Live sources differ from complete baseline/candidate')
 
+    def source_handoff_applicable(self,app):
+        """Only execute the 2026-10-11 frozen cohort against its exact source.
+
+        Stale live Runtime is not the original experiment. A damaged archived
+        baseline is a different error and must never be silently skipped.
+        """
+        probe=subprocess.run([sys.executable,'-c',
+            'from scripts.source_handoff_candidate import sources; sources()'],
+            cwd=app,capture_output=True,text=True,timeout=30)
+        if probe.returncode==0:return True
+        self.assertEqual(probe.returncode,1,probe.stdout+'\n'+probe.stderr)
+        self.assertEqual(probe.stderr.strip().splitlines()[-1],
+            'ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate')
+        return False
+
+    def assert_stale_source_handoff_refused(self,app):
+        for command in (
+            'from scripts.source_handoff_candidate import load_candidate; load_candidate("cognition")',
+            'from scripts.source_handoff_ablation import arm_sources; arm_sources()',
+        ):
+            probe=subprocess.run([sys.executable,'-c',command],
+                cwd=app,capture_output=True,text=True,timeout=30)
+            self.assertEqual(probe.returncode,1,probe.stdout+'\n'+probe.stderr)
+            self.assertEqual(probe.stderr.strip().splitlines()[-1],
+                'ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate')
+
     def test_actual_phone_zip_runs_source_handoff_regressions_after_extraction(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);out=root/'phone.zip'
@@ -113,10 +139,30 @@ class PackageSource(unittest.TestCase):
             self.assertEqual(completed.returncode,0,completed.stderr)
             self.inspect(out)
             with zipfile.ZipFile(out) as archive:archive.extractall(root/'extracted')
-            tested=subprocess.run([sys.executable,'-m','unittest','tests.test_source_handoff_candidate',
-                'tests.test_source_handoff_ablation'],cwd=root/'extracted/V13-Phone',capture_output=True,text=True,timeout=30)
-            self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
-            self.assertRegex(tested.stderr,r'Ran [1-9][0-9]* tests')
+            app=root/'extracted/V13-Phone'
+            if self.source_handoff_applicable(app):
+                tested=subprocess.run([sys.executable,'-m','unittest',
+                    'tests.test_source_handoff_candidate',
+                    'tests.test_source_handoff_ablation'],
+                    cwd=app,capture_output=True,text=True,timeout=30)
+                self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
+                self.assertRegex(tested.stderr,r'Ran [1-9][0-9]* tests')
+            else:
+                # Preserve the original historical failure as a verified
+                # refusal, rather than weakening the exact-source guard.
+                self.assert_stale_source_handoff_refused(app)
+
+    def test_historical_source_handoff_corrupt_fixture_is_not_stale(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);out=root/'phone.zip'
+            completed=self.package(ROOT,out,phone=True)
+            self.assertEqual(completed.returncode,0,completed.stderr)
+            with zipfile.ZipFile(out) as archive:archive.extractall(root/'extracted')
+            app=root/'extracted/V13-Phone'
+            fixture=app/'docs/proofs/continuation-20261011/source-handoff-baseline/bodyview.py'
+            fixture.write_bytes(fixture.read_bytes()+b'\n# corrupted historical baseline')
+            with self.assertRaises(AssertionError):
+                self.source_handoff_applicable(app)
 
     def test_actual_phone_zip_runs_isolated_native_firing_candidate_after_extraction(self):
         with tempfile.TemporaryDirectory() as temp:
