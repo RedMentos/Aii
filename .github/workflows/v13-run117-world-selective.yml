@@ -49,6 +49,7 @@ jobs:
           timeout 360s ../../.venv/bin/python scripts/ablation_world_selective_risk_run117.py /tmp/world-run117.json
           ../../.venv/bin/python -c "import json; r=json.load(open('/tmp/world-run117.json')); assert len(r['per_seed'])==20; assert all(v['queries_n']==400 and v['valid_n']+v['abstained_n']==400 for v in r['per_seed'].values()); print(json.dumps({'verdict':r['verdict'],'wins':r['wins'],'eligible_seeds':r['eligible_seeds'],'counts':{s:{'valid':v['valid_n'],'abstained':v['abstained_n'],'risk':v['risk']} for s,v in r['per_seed'].items()}},sort_keys=True))"
           sha256sum /tmp/world-run117.json
+          test "$(sha256sum /tmp/world-run117.json | cut -d' ' -f1)" = "55d23c892c4add4d3d937c8ed0f2c4b4b1ff20f4b82f6fcb7b76199b3282ffab"
           cat /tmp/world-run117.json
   privacy:
     runs-on: ubuntu-latest
