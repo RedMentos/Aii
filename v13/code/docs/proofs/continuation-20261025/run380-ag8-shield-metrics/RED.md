@@ -1,0 +1,7 @@
+# Run380 exact-head RED (before AG8 production change)
+
+2026-10-25 22:13 UTC. PR #375, head `787822b7fee95f0fcb084c0353dcc90407f6dff0`. Actions **40239120314**, job **121306923712**, workflow expected RED, not infrastructure failure. Actual Runtime/SQLite + inherited G8/HX: **15 tests in 0.551s**, 7 failed assertions/subtests in new suite (five invalid-metric cases plus two threshold cases), inherited `G8SelfImprove` and all HX tests PASS. The pre-patch shield wrongly promoted subthreshold +0.00996 gain and -0.02004 unseen regression to PENDING_USER; missing unseen, boolean, out-of-range and one-sided/Inf forgetting did not fail closed. NaN/Inf primary axes already raised during request serialization in this particular case; this is *not* evidence of proper pre-evaluation validation.
+
+`compileall` PASS, official privacy scan CLEAN. Runner SHA256 `self_improve.py`: `818e8d2917dea13b1a20e6b8d654d86f17dc334c282c165493649030dddd9d3a`; test: `8fd73fdd4ab5e42f8a18e2d02925c5d575a21d47fd09bcd82d86c1531ffee4e1`. GitHub Actions RED raw artifact **12616045734** (5 files, 30-day retention), not independently downloaded or CRC/privately byte-verified. Preserve this failure and original blueprint negative gates.
+
+Next: validate complete finite score fields before StateBox mutation, use raw deltas for thresholds, rerun source-bound CI, inspect counterexamples, checkpoint.
