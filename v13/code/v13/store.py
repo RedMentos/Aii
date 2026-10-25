@@ -396,6 +396,17 @@ class Store:
         if not isinstance(source_ids,list) or any(type(sid) is not str or not sid for sid in source_ids):
             raise ValueError('Update-Source-Lineage ungültig')
         with self.tx() as c:
+            # Preflight is deliberately outside the write transaction. Another
+            # Store thread can change the update before BEGIN IMMEDIATE; the
+            # approval must therefore bind the *same* candidate row, not just
+            # the active generation and the previously observed source IDs.
+            live=c.execute(
+                "SELECT status,base_generation,path,hash,manifest FROM updates WHERE id=?",
+                (update_id,)).fetchone()
+            if not live or live['status']!='PENDING_APPROVAL':
+                raise ValueError('Update nicht mehr freigabefähig')
+            if any(live[key]!=r[key] for key in ('base_generation','path','hash','manifest')):
+                raise ValueError('Update nach Vorprüfung geändert; erneut prüfen')
             # Source revocation and generation commit share one write transaction.
             # A source forgotten while an optimizer was running must not be
             # resurrected by a later approval, even if its update was not yet
