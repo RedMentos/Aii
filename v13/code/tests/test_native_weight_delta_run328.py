@@ -75,6 +75,18 @@ class Run328SourceOnly(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "non-finite"):
             A.assess(b, e1, e2)
 
+    def test_bitwise_only_change_without_numeric_delta_rejected(self):
+        metrics = {stage: {name: {"changed_elements": 0, "l2": 0.0, "max_abs": 0.0}
+                           for name in A.SELECTED}
+                   for stage in ("baseline_to_epoch1", "epoch1_to_epoch2")}
+        with self.assertRaisesRegex(ValueError, "no numerical selected update"):
+            A.validate_numeric_deltas(metrics)
+        metrics["baseline_to_epoch1"][A.SELECTED[0]] = {"changed_elements": 1, "l2": 1e-5}
+        with self.assertRaisesRegex(ValueError, "epoch1_to_epoch2"):
+            A.validate_numeric_deltas(metrics)
+        metrics["epoch1_to_epoch2"][A.SELECTED[0]] = {"changed_elements": 1, "l2": 1e-5}
+        A.validate_numeric_deltas(metrics)
+
     def test_negative_gates_immutable(self):
         self.assertEqual(A.GATES["STEP2"], "UTILITY_FAIL")
         self.assertEqual(A.GATES["B3_L1"], "FAIL")
