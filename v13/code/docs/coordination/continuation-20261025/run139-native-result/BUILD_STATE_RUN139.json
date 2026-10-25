@@ -1,0 +1,42 @@
+{
+  "schema": "V13_RUN139_BUILD_STATE_V2",
+  "date_utc": "2026-10-25",
+  "pr": 170,
+  "source_under_test": "151a01994f16fd9cd513f4b466c19cd295178500",
+  "workflow_run": 40156088723,
+  "workflow": "SUCCESS",
+  "native_status": "LINUX_NATIVE_C3_COHORT_EXECUTED",
+  "artifact_id": 12584329156,
+  "wrapper_sha256": "a9a712eacf04e44e761497f66493d043274b76b7eea7bac29d287d333face5f7",
+  "report_sha256": "45b2843f8529d840b22cc6459841ff9719d739b819afe523df9a2be5bbf87370",
+  "log_sha256": "0f8598da521f59940ce5b5c447bba8ebaf3b05ffb05a14a749c15b056699ac79",
+  "private_library": "/V13_Run139_20261025/V13_RUN139_NATIVE_ARTIFACT.zip",
+  "private_readback": "BYTE_IDENTICAL",
+  "metrics": {
+    "n": 80,
+    "correct": 4,
+    "wrong": 14,
+    "unknown": 62,
+    "supported": 18,
+    "coverage": 0.225,
+    "false_alarms": 0,
+    "wrong_detected": 14,
+    "elapsed_s": 21.03,
+    "K1": "INSUFFICIENT",
+    "K2": "PASS",
+    "K3": "FAIL"
+  },
+  "independent_recompute": "PASS",
+  "failure_mechanism": "literal N placeholder echoed in 62 responses",
+  "redmi": "NOT RUN",
+  "age0d_gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "next_step": "Distinct fresh no-placeholder C3 cohort; Run140 guide fix + exact phone ZIP."
+}
