@@ -42,6 +42,18 @@ def unpack_verified(path,stage,max_bytes):
             names.add(m.name);total+=m.size
             if total>max_bytes:raise ValueError('Backup überschreitet verfügbaren Speicher')
         t.extractall(stage,**({'filter':'data'} if hasattr(tarfile,'data_filter') else {}))
+        # tarfile stops at the tar end marker. Drain the remaining gzip stream
+        # to force CRC/ISIZE trailer verification before accepting the snapshot.
+        # Bound unexpected trailing decompressed data (normal tar padding is tiny).
+        trailing=0
+        try:
+            while True:
+                chunk=t.fileobj.read(1<<20)
+                if not chunk:break
+                trailing+=len(chunk)
+                if trailing>1<<20:raise ValueError('Backup hat unerwartete nachgestellte Daten')
+        except (OSError,EOFError) as exc:
+            raise ValueError('Backup-Gzip-Integrität ungültig') from exc
     m=json.loads((stage/'backup_manifest.json').read_text())
     if m.get('format')!=1 or set(m['hashes'])!=names-{'backup_manifest.json'}:raise ValueError('Backup-Manifest inkonsistent')
     for name,h in m['hashes'].items():
