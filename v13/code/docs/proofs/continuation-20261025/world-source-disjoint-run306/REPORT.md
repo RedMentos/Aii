@@ -1,0 +1,17 @@
+# Run306 — WorldModel exact-source-disjoint holdout: RED → GREEN (actual SQLite software)
+
+UTC 2026-10-25. Draft PR304, base verified Run305 checkpoint `e73b10853fe74712aa3a49e3f53f3f63fa450235`. Independent owner only `v13/code/v13/world_model.py`, new tests, dedicated CI and scoped proof. No Runtime, Store, native/model, Canon or registered cohort edits.
+
+## Defect, repair, evidence
+- Run301 grouped actions by `event_id`, but 12 different events containing **identical original USER_TEXT bytes** could be split into training and heldout, yielding `FITTED` with `held_out=6` despite only one independent source hash. Reproduced independently in the extracted Run305 source-only ZIP: 24 actual closed actions, 12 event IDs, 1 source SHA256, old status `FITTED`.
+- Preregistration committed before tests at `c60d81f98b1819ee6b189bf4ab15652aa9e42382`; actual Runtime/Store tests at `f3f2ebc9641058736214f2d47449c323a65b5157`; CI at `15d3e8aabf06de2ed8a5bd9f3d4402f5222779f2`. Original source preserved until RED.
+- **RED** exact source `15d3e8aabf06de2ed8a5bd9f3d4402f5222779f2`, GitHub Actions `40205625607`: 46 tests, **2 expected FAIL** (all repeated source accepted and two-source-group split mislabeled), other tests passed, privacy CLEAN. Closed raw artifact `12603457666`, ZIP SHA256 `0ec4be18a2cc057263163a29cba6b3beeddc67126e12b2ef5359249423f51f86`.
+- **GREEN** code commit `54f55c2c29236590d55f7b973a0b5310219a88da`, source blob `3a4c4badc259f4aa30cb3b6846e1d549bdbaacf9`, GitHub Actions `40205701721`: **46/46 PASS**, official privacy CLEAN. Closed raw artifact `12603522766`, ZIP SHA256 `cbf043926c6db2a89b8f2267abd692eccaa66eb2f749e95eb52ca72d4a06a9a4`.
+- Actual change: on production Store only, after already source-verified `transitions()`, resolve the original event's live source SHA256. If multiple events repeat identical source bytes, assign the whole source-hash group to one split and report `SOURCE_HASH_DISJOINT`. If all source bytes are unique, keep Run301's event grouping and deterministic index split exactly. Synthetic doubles retain prior semantics. Existing revision, targets, ridge, thresholds, registered cohorts, source/model/seed hashes and approval gates untouched.
+- Tested 12 events × 2 actions all same source: `INSUFFICIENT_INDEPENDENT_GROUPS`, no fitted state. Two distinct repeated sources across sessions: source groups train/test disjoint, fitted model survives Store restart. Unique sources: old event split unchanged. Original Run301, WorldModel source-integrity, fitted lineage, terminal-outcome and synthetic-scope tests passed.
+- Raw RED and GREEN archives downloaded from GitHub, SHA256SUMS checked, uploaded to private Library `/V13-Inquisition/Proofs/Run306/` and read back byte-for-byte with matching SHA256. No rejected anyone-writable Drive destination used.
+
+## Claim limit / next
+This improves statistical independence of the **software** holdout; it is not causal generalization, native inference, Redmi performance or actual JEPA/AGI utility. STEP2 `UTILITY_FAIL`, B3 L1 `FAIL`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, V13 `INCOMPLETE` unchanged. Branch-scoped PR304 is not merged into production main.
+
+Next independent package: choose a different substantive Canon organ/learning or measured utility gap, respect active Runtime/native owners; do not spend the whole session elaborating WorldModel grouping. Full-suite baseline `40202886433` remains FAILED (2 failures, 36 errors, frozen source mismatch and resident cancellation); do not claim green.
