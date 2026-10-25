@@ -1,0 +1,51 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN302_V1",
+  "utc": "2026-10-25T14:54:00Z",
+  "owner": "GPT-6 automation / Run302",
+  "base": "8c964d58da62fca09ae8c42a31224fcedc9e3aef",
+  "branch": "codex/learning-operator-status-run302-20261025",
+  "pr": 301,
+  "code_commit": "3b6c0e617a3490a8259c884535beb050ef58e995",
+  "source_blob": "9e5d126040e5122e44c6808c594b591d03e356c4",
+  "owned": [
+    "v13/code/v13/operator.py",
+    "v13/code/tests/test_learning_operator_status_run302.py",
+    ".github/workflows/run302-learning-operator-status.yml",
+    "v13/code/docs/proofs/continuation-20261025/learning-operator-status-run302/"
+  ],
+  "tests": {
+    "red": {
+      "run": 40204311391,
+      "artifact": 12603062058,
+      "total": 45,
+      "errors": 3
+    },
+    "green": {
+      "run": 40204371994,
+      "artifact": 12602887338,
+      "total": 45,
+      "failures": 0,
+      "errors": 0,
+      "privacy": "CLEAN"
+    }
+  },
+  "proof_scope": "ACTUAL_RUNTIME_STORE_SQLITE_SOFTWARE_ONLY",
+  "model_cohorts_unchanged": true,
+  "canon_unchanged": true,
+  "runtime_unchanged": true,
+  "redmi_measured": false,
+  "step2": "UTILITY_FAIL_UNCHANGED",
+  "b3": "L1_ORIGINAL_NEGATIVE_UNCHANGED",
+  "body_jepa": "NOT_PROMOTED",
+  "jepa_weight": "UNCHANGED",
+  "whole_system_complete": false,
+  "prior_fullsuite": {
+    "run": 40202886433,
+    "artifact": 12602378950,
+    "status": "FAILED",
+    "failures": 2,
+    "errors": 36
+  },
+  "next_command": "Check Run302 related operator workflows, then package and verify current Phone source ZIP, and continue next substantive Canon package on separate review branch.",
+  "prerequisites": "No force-push, no frozen native hash relaxation, no unauthorized model/paid provisioning. Respect Run297 native owner."
+}
