@@ -127,7 +127,8 @@ def main():
             field_supported = (
                 out["confidence_source"] in ("field_min_prob", "field_mean_prob")
                 and type(field["field_tokens"]) is int and field["field_tokens"] > 0
-                and finite_number(field["field_min_prob"]) is not None
+                and (finite_number(field["field_min_prob"]) is not None
+                     or finite_number(field["field_mean_prob"]) is not None)
             )
             all_final = all_final and m["status"] == "FINAL" and m["can_train_body"] is False
             report["grammar_cases"].append({
