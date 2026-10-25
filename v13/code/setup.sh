@@ -29,7 +29,18 @@ fi
 export PYTHONPATH="$V13_APP_DIR${PYTHONPATH:+:$PYTHONPATH}"
 export NEEDLE_TELEMETRY=0 DO_NOT_TRACK=1
 mkdir -p "$V13_DATA_HOME"
-"$V13_PYTHON" -m v13.bootstrap --home "$V13_DATA_HOME"
+if [[ "${V13_SOURCE_ONLY_DIAGNOSTIC:-0}" == "1" ]]; then
+  # Explicit no-network source diagnostic. Do not attempt or claim native model
+  # installation, model inference, Redmi proof, or a full selftest acceptance.
+  "$V13_PYTHON" - "$V13_DATA_HOME" <<'PY'
+from pathlib import Path
+import sys
+from v13.config import initialize
+initialize(Path(sys.argv[1]))
+PY
+else
+  "$V13_PYTHON" -m v13.bootstrap --home "$V13_DATA_HOME"
+fi
 "$V13_PYTHON" - "$V13_APP_DIR" "$V13_DATA_HOME" "$V13_PYTHON" <<'PY'
 from pathlib import Path
 import sys,shlex
@@ -39,6 +50,14 @@ p.write_text(text);p.chmod(0o700)
 PY
 if [[ "${PREFIX:-}" == *com.termux* ]]; then
   ln -sfn "$V13_DATA_HOME/bin/v13" "$PREFIX/bin/v13"
+fi
+if [[ "${V13_SOURCE_ONLY_DIAGNOSTIC:-0}" == "1" ]]; then
+  printf '\nSOURCE_ONLY_DIAGNOSTIC: source integrity verified; Age-0 CLI initialized.\n'
+  printf 'NO_NATIVE_MODEL / NO_REDMi / NO_JEPA_PROOF. Full selftest and model probe NOT RUN.\n'
+  printf 'STEP2=UTILITY_FAIL B3_L1=FAIL Body-JEPA=UNAVAILABLE jepa_weight=0 V13=INCOMPLETE\n'
+  "$V13_DATA_HOME/bin/v13" doctor
+  printf '\nSource-only diagnostic finished. Normal setup requires pinned model downloads and native proof.\n'
+  exit 0
 fi
 "$V13_DATA_HOME/bin/v13" selftest
 printf '\nErster echter Modelltest. Auf dem Handy kann das einige Minuten dauern.\n'
