@@ -1,0 +1,67 @@
+name: V13 Run163 pinned real B1 FP32 slice export, no training
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run163-real-fp32-export.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/run163-real-fp32-export/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  read-only-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Isolated NumPy
+        run: python -m pip install numpy==2.3.5
+      - name: Exact pinned B1 model and ephemeral FP32 export
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run163"
+          MODEL="$RUNNER_TEMP/run163/body.gguf"
+          MASTER="$RUNNER_TEMP/run163/fp32-private.npz"
+          trap 'rm -f "$MODEL" "$MASTER"' EXIT
+          test "$(df -Pk "$RUNNER_TEMP" | awk 'NR==2{print $4}')" -gt 1500000
+          timeout 600s curl --fail --silent --show-error --location --retry 2 --retry-delay 2 --connect-timeout 20 --max-time 480 \
+            'https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/resolve/6767265158422fb8a19c62ceb45f16f05363615b/LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf' -o "$MODEL"
+          test "$(stat -c %s "$MODEL")" = "695755488"
+          echo "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1  $MODEL" | sha256sum -c -
+          PYTHONPATH=v13/code python v13/code/scripts/body_fp32_master_export_run162.py \
+            --model "$MODEL" \
+            --sha256 bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1 \
+            --tensor blk.0.attn_norm.weight \
+            --tensor blk.0.ffn_norm.weight \
+            --master "$MASTER" \
+            --report "$RUNNER_TEMP/run163/report.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'run163'/'report.json'
+          r=json.loads(p.read_text())
+          assert r['full_model_sha256_verified'] is True
+          assert r['model_file_unchanged'] is True
+          assert r['roundtrip']=='BYTE_EXACT_FLOAT32_VALUES'
+          assert len(r['selected_tensors'])==2
+          assert {x['name'] for x in r['selected_tensors']}=={'blk.0.attn_norm.weight','blk.0.ffn_norm.weight'}
+          assert r['train_master_authority']==r['body_training_authority']==0
+          assert r['gate']=='UNVERIFIED' and r['gates']['Body_JEPA']=='UNAVAILABLE'
+          print('RUN163_REAL_B1_FP32_EXPORT_PASS 2 F32 SLICES AUTHORITY 0')
+          PY
+      - name: Official public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 001e7af6748186b4c1c21ad357a06680079aef44 --head HEAD
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: V13-Run163-FP32-Export-Hashes-Only
+          path: ${{ runner.temp }}/run163/report.json
+          if-no-files-found: warn
+          retention-days: 14
