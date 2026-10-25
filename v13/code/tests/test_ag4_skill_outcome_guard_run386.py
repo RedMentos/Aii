@@ -33,7 +33,7 @@ class SkillOutcomeGuardRun386(unittest.TestCase):
 
     def test_parity_requires_finite_probability_not_bool_or_string(self):
         before = self.state()
-        for bad in (-1., 1.0001, 2., float("nan"), float("inf"), float("-inf"), True, False, "1", None if False else "nan", 10**1000):
+        for bad in (-1., 1.0001, 2., float("nan"), float("inf"), float("-inf"), True, False, "1", "nan", 10**1000):
             with self.subTest(bad=repr(bad)):
                 with self.assertRaises(ValueError):
                     self.lib.record("plan_summary", True, parity=bad, family="plan")
