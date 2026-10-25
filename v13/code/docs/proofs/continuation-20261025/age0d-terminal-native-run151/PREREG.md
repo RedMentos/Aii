@@ -1,0 +1,13 @@
+# Run151 preregistration — fresh C3 terminal-format SHADOW cohort (before native launch)
+
+Date: 2026-10-25 UTC. Owner: Codex Run151 only new cohort script, CI, proof. Base: Run150 PR181 head `51a2824ec40844057286ebf5234b9a56c83f191c`. Do not edit Run147 registered data, v1/v2/v3 checkers, Runtime, Canon or model registry.
+
+**Native:** Linux x86_64 only. Exact model LiquidAI/LFM2.5-350M-GGUF revision `657e078c94084481950a2d555a941481f715536b`, GGUF SHA-256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`, LFM Open License 1.0. Exact llama.cpp runner b10964, archive SHA-256 `9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443`; unchanged Run147 pinned prompt `e2a94802abbfc212fead6e70427ab6ac92b84541aabb762043a8ff29101b980d`. No paid provisioning or teacher.
+
+**Tasks:** seed **15131**, Python `random.Random`, same Run147 generator but **24** per operation × phrasing stratum = **288** unique source questions (plus/minus/times/exact divided-by × What is/Calculate/Compute). Canonical JSON task SHA-256 **`2ddeea6574c216cf09ff21220d8639fc088384148db5a730f9469cbeb9274c60`**. Exactly **zero** source-question overlap with original Run147 96 tasks; overlap check done before native launch. No alteration after preregistration.
+
+**Execution:** serial native job via existing `v13-native-c3-run131-serialized` concurrency group; llama-cli temp 0, seed 15131, 32 output tokens, ctx 512, 2 CPU threads, explicit deadline and child process cleanup. Preserve each response text and SHA-256 in closed CI artifact (synthetic arithmetic only). Run v1, v2, v3 checkers on identical native outputs. Strict independent format labels remain conservative (unknown for new newline/bold formats); no new v3-only verdict is treated as independently adjudicated. Record wrong-label denominator and any mismatches.
+
+**Readout:** K1 auto-labelled correct false alarm <=2%, >=50 correct labels; K2 >=10 independently auto-labelled wrong, detect >=80%; K3 v3 support >=30%, and v3-v2 coverage delta >=5 percentage points. Any underpowered denominator is **INSUFFICIENT**; all original STEP2/B3/Body-JEPA/DS2/V13 gates remain negative. Whole AGE0d gate stays **UNVERIFIED** regardless of K1/K2/K3 because human adjudication, actual delivery and Redmi proof are absent. Do not call this a causal learning or AGI test.
+
+**Stop/failure:** missing model/runner/hash, download failure, timeout, process leak, schema mismatch, output incompleteness => native FAIL/INCOMPLETE, preserve original logs and no success report. No fallback to another model or seed. Exact next after run: independent audit of closed raw artifact, then decide whether any further format change is justified.
