@@ -89,6 +89,17 @@ class FittedWorldSourceLineage(unittest.TestCase):
                                    'role':'C3_LANGUAGE'}),self.actions[0]))
         self.assertIsNone(W.load(self.r.store))
 
+    def test_action_selection_route_tamper_invalidates_fitted_state(self):
+        self.fitted()
+        # The selected route is part of the learned action input, but lives
+        # in ActionSelection rather than in the actions row.
+        with self.r.store.tx() as c:
+            c.execute(
+                "UPDATE packets SET payload=? WHERE kind='ActionSelection' "
+                "AND event_id=(SELECT event_id FROM actions WHERE id=?)",
+                (json.dumps({'route_hint':'both'}),self.actions[0]))
+        self.assertIsNone(W.load(self.r.store))
+
     def test_model_weight_tamper_invalidates_fitted_state(self):
         self.fitted()
         payload,_ = self.r.store.state(W.KEY)
