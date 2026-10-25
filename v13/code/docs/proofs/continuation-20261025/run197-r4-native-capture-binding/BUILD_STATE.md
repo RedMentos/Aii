@@ -31,3 +31,7 @@ STEP2 `UTILITY_FAIL`; B3 L1 `FAIL`; Body-JEPA `UNAVAILABLE`; `jepa_weight=0`; DS
 ## CI failure and follow-up correction (same Run197 branch)
 - Initial GitHub Actions `40173724279` reported FAILURE. Local reproduction of `python scripts/run197_r4_future_manifest.py --help` with `PYTHONPATH` absent returned RC1 (`ModuleNotFoundError: No module named 'scripts'`); original stderr retained in `cli_initial.log`. This was a real direct-CLI import-path defect missed by the first 12 tests.
 - Added explicit repository-root `sys.path` entry before importing `scripts.run196_r4_stratified_future` and an isolated subprocess CLI regression. Local 13/13 PASS (`tests_after_cli_fix.log`); GitHub CI rerun remains to verify after remote update. No native inference and no gate change.
+
+## Remote full-checkout verification and manifest persistence
+- Run196 CI `40173500041` PASS. Run197 initial CI `40173724279` FAIL (CLI path), corrected Run197 CI `40173846945` PASS including actual generator invocation from full checkout; the focused source-bound workflow was still pending at this checkpoint.
+- Workflow follow-up now records SHA-256 of the actual generated 120-task manifest, uploads it as a 30-day GitHub Actions artifact, and runs the official public repository privacy scanner against Run196 parent. This is a reproducible *software* artifact, not a native model result. The workflow result must be independently verified after remote publication.
