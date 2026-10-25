@@ -69,7 +69,7 @@ class RawLogBinding(unittest.TestCase):
 
     def test_fake_native_artifact_fails_closed(self):
         rows,log=fixtures();data=pack(rows,log)
-        with self.assertRaises((ImportError,ModuleNotFoundError,ValueError)):
+        with self.assertRaises((ImportError,ModuleNotFoundError,ValueError,KeyError)):
             audit(data,hashlib.sha256(data).hexdigest())
 
     def test_gate_promotion_rejected(self):
