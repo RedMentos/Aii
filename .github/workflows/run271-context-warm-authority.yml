@@ -1,0 +1,100 @@
+name: V13 Run271 ContextOS warm human authority proof
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/context_os.py'
+      - 'v13/code/tests/test_context_warm_authority_run271.py'
+      - '.github/workflows/run271-context-warm-authority.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run271-warm-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  warm-lineage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Verify exact source head and unmodified canonical blueprint
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN271_HEAD.txt"
+          git hash-object v13/code/v13/context_os.py | tee "$RUNNER_TEMP/RUN271_CONTEXT_BLOB.txt"
+          git hash-object v13/code/tests/test_context_warm_authority_run271.py | tee "$RUNNER_TEMP/RUN271_TEST_BLOB.txt"
+          test -s v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+      - name: Isolated pinned CPU-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run271venv"
+          timeout 180s "$RUNNER_TEMP/run271venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: ContextOS and F1/F5 actual SQLite integration tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run271venv/bin/python" -m compileall -q v13 tests
+          compile_rc=$?
+          echo "$compile_rc" > "$RUNNER_TEMP/RUN271_COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/run271venv/bin/python" -m unittest -v \
+            tests.test_context_warm_authority_run271 \
+            tests.test_context_os \
+            tests.test_context_append_provenance_run74 \
+            tests.test_context_inline_plan_run199 \
+            tests.test_context_exact_pin_run73 \
+            tests.test_context_exact_quotes_run93 \
+            tests.test_second_turn_c3_memory_pipeline_run204 \
+            tests.test_sleep_context_backup_continuity_run219 \
+            tests.test_sleep_memory_c3_continuity_run205 \
+            tests.test_consolidation \
+            tests.test_retrieval 2>&1 | tee "$RUNNER_TEMP/RUN271_FOCUSED_RAW.log"
+          test_rc=${PIPESTATUS[0]}
+          echo "$test_rc" > "$RUNNER_TEMP/RUN271_TEST_EXIT.txt"
+          echo "test_rc=$test_rc" >> "$GITHUB_OUTPUT"
+          echo "compile_rc=$compile_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official added-lines privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha || '33092440a9e719ce17b120f36e211ccdfad077bf' }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN271_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN271_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload closed raw Linux-software evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run271-ContextWarm-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN271_HEAD.txt
+            ${{ runner.temp }}/RUN271_CONTEXT_BLOB.txt
+            ${{ runner.temp }}/RUN271_TEST_BLOB.txt
+            ${{ runner.temp }}/RUN271_COMPILE_EXIT.txt
+            ${{ runner.temp }}/RUN271_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN271_FOCUSED_RAW.log
+            ${{ runner.temp }}/RUN271_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN271_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual results
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.compile_rc }}" = "0"
+          test "${{ steps.tests.outputs.test_rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
