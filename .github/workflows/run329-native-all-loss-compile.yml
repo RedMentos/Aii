@@ -1,0 +1,138 @@
+name: V13 Run329 exact b10964 all-token loss native compile (no training)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run329-native-all-loss-compile.yml'
+      - 'v13/code/scripts/prepare_native_all_loss_run329.py'
+      - 'v13/code/scripts/build_native_all_loss_run329.sh'
+      - 'v13/code/tests/test_native_all_loss_run329.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run329-native-all-loss-compat/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  pinned-compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      DO_NOT_TRACK: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Original immutable source and Canon, record exact head
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN329_HEAD.txt"
+          echo "401b95c5c6f4262eb8ea58bdab0af2b79f5d7032951ba45198ab2e13f102858c  v13/code/scripts/native_answer_finetune.cpp" | sha256sum -c -
+          echo "313bc41c447640241b00319932469345c801f089dae0b949f1f6ebda26d3d53f  v13/code/scripts/lora_bench.py" | sha256sum -c -
+          echo "dfb46beb7b5be571c364ac3cab04379d411fd54ae5d0005d094f1f5a11e94397  v13/code/scripts/native_lfm2_finetune_bench.py" | sha256sum -c -
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; uname -a; free -h; python3 --version; } | tee "$RUNNER_TEMP/RUN329_HOST.txt"
+      - name: Eleven source-only negative tests (not native training)
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" python3 -m unittest -v tests.test_native_all_loss_run329 \
+            2>&1 | tee "$RUNNER_TEMP/RUN329_FIXTURE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN329_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download and verify original official b10964 source
+        id: source
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN329_FIXTURE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN329_SOURCE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          curl --fail --location --retry 3 --connect-timeout 30 --max-time 300 \
+            'https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz' \
+            -o "$RUNNER_TEMP/RUN329_b10964.tar.gz" \
+            2>&1 | tee "$RUNNER_TEMP/RUN329_SOURCE_DOWNLOAD_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            echo "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe  $RUNNER_TEMP/RUN329_b10964.tar.gz" | sha256sum -c -
+            rc=$?
+          fi
+          if [[ "$rc" == "0" ]]; then
+            tar -xzf "$RUNNER_TEMP/RUN329_b10964.tar.gz" -C "$RUNNER_TEMP"
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN329_SOURCE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Compile exact pinned isolated all-token candidate, no model/optimizer
+        id: compile
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN329_SOURCE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN329_COMPILE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          timeout 1100s bash scripts/build_native_all_loss_run329.sh \
+            "$RUNNER_TEMP/llama.cpp-b10964" "$RUNNER_TEMP/run329candidate" 2 \
+            2>&1 | tee "$RUNNER_TEMP/RUN329_COMPILE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            test -x "$RUNNER_TEMP/llama.cpp-b10964/build/bin/native-answer-epoch-checkpoint-run319"
+            rc=$?
+          fi
+          if [[ "$rc" == "0" ]]; then
+            grep -q 'V13_LOSS_MODE' "$RUNNER_TEMP/run329candidate/scripts/native_answer_epoch_all_run329.cpp"
+            rc=$?
+          fi
+          if [[ "$rc" == "0" ]]; then
+            sha256sum "$RUNNER_TEMP/llama.cpp-b10964/build/bin/native-answer-epoch-checkpoint-run319" > "$RUNNER_TEMP/RUN329_BINARY_SHA256.txt"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN329_COMPILE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN329_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN329_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Hash-close raw without weights or model
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN329_*' ! -name 'RUN329_b10964.tar.gz' ! -name 'RUN329_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN329_SHA256SUMS.txt
+          sha256sum "$GITHUB_WORKSPACE/v13/code/scripts/prepare_native_all_loss_run329.py" "$GITHUB_WORKSPACE/v13/code/scripts/build_native_all_loss_run329.sh" >> RUN329_SHA256SUMS.txt
+      - name: Preserve original RED reference and compile-only raw, no weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run329-AllLoss-Compile-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN329_*.log
+            ${{ runner.temp }}/RUN329_*.txt
+            ${{ runner.temp }}/run329candidate/RUN319_PREP.json
+            ${{ runner.temp }}/run329candidate/RUN329_PREP.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce source tests native compile and privacy, not optimizer
+        if: always()
+        run: |
+          test "${{ steps.fixture.outputs.rc }}" = "0"
+          test "${{ steps.source.outputs.rc }}" = "0"
+          test "${{ steps.compile.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
