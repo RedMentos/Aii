@@ -197,7 +197,7 @@ def for_event(store,event_id,a):
     if not row:return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
     try:
         exp=json.loads(row['expected']);fc=exp.get('forecast') or {}
-        if type(fc) is not dict or not _finite_nonnegative(fc.get('input_chars')) or not _finite_nonnegative(row['created']):
+        if type(fc) is not dict or type(fc.get('input_chars')) is not int or fc['input_chars']<0 or not _finite_nonnegative(row['created']):
             raise ValueError('invalid observed state')
         s=state_vec(fc['input_chars'],fc.get('resource_state','NORMAL'),(row['created']%86400)/3600)
         if not all(math.isfinite(v) for v in s):raise ValueError('nonfinite observed state')
