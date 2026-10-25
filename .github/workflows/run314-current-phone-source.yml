@@ -80,7 +80,8 @@ jobs:
           fi
           cd "$RUNNER_TEMP/run314-extracted/V13-Phone"
           test -s v13/backup.py && test -s tests/test_backup_source_closure_run304.py && test -s tests/test_learning_operator_status_run302.py
-          test -s tests/test_world_source_disjoint_run306.py && test -s tests/test_sleep_retention_identity_run307.py && test -s tests/test_attention_outcome_receipt_run308.py\n          test -s tests/test_fastforward_outcome_once_run312.py && test -s tests/test_jef_outcome_eviction_run313.py
+          test -s tests/test_world_source_disjoint_run306.py && test -s tests/test_sleep_retention_identity_run307.py && test -s tests/test_attention_outcome_receipt_run308.py
+          test -s tests/test_fastforward_outcome_once_run312.py && test -s tests/test_jef_outcome_eviction_run313.py
           source_rc=$?
           V13_HOME="$RUNNER_TEMP/run314-home" V13_NO_AUTOSTART=1 V13_SOURCE_ONLY_DIAGNOSTIC=1 \
             PIP_NO_INDEX=1 PIP_DISABLE_PIP_VERSION_CHECK=1 \
