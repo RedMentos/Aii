@@ -1,0 +1,24 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 316,
+  "source_head": "2fdfa1172dd263ab2f3bf9b8a9fda717ca1337e0",
+  "ci_exact_head": "8a90630c756c955619e008645001154043153b52",
+  "ci_run": 40209349300,
+  "artifact_id": 12605113338,
+  "artifact_zip_sha256": "27491152aeef8f700bc8a1fe78f72065a0b0a4533dc2588a49dbf2bbda31d66f",
+  "raw_private_library": "/V13/checkpoints/2026-10-25/V13_Run316_LinuxNative_C3_raw_sha27491152.zip",
+  "evidence": "LINUX_NATIVE_C3",
+  "integration": "5/5",
+  "utility": "4/5",
+  "negative": "CEDAR missing code despite source in C3 prompt",
+  "status": "CLOSED_DIAGNOSTIC_NOT_PROMOTED",
+  "owner": "Run316 closed",
+  "next_command": "Review PR313 and Run317 prereg/RESULT; proceed independent G13 or body learning",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  }
+}
