@@ -1,0 +1,68 @@
+{
+  "schema": "V13_RUN_SCOPED_BUILD_STATE_V1",
+  "run": "Run361",
+  "checkpoint_utc": "2026-10-25T20:16:00Z",
+  "owner": "assistant/run361-world-trainonly-coverage-20261025",
+  "parent_branch": "assistant/run360-route-label-exact-20261025",
+  "parent_commit": "fb908db88c9608fccf9e4cdc493b3a577d9dbd0b",
+  "tested_head": "713b24275ce6abb9a96d4bc465f63653de10dc43",
+  "review_pr": 356,
+  "scope": "WorldModel counterfactual support uses training-only rows and independent source groups; store=None numerical fixture compatibility labeled SYNTHETIC_TEST_ONLY",
+  "changed_files": [
+    "v13/code/v13/world_model.py",
+    "v13/code/tests/test_world_trainonly_coverage_run361.py",
+    ".github/workflows/run361-world-trainonly-coverage.yml"
+  ],
+  "git_blob_shas": {
+    "v13/code/v13/world_model.py": "d7a68738ac6a193606b71e40432dc2179d6f8a93",
+    "v13/code/tests/test_world_trainonly_coverage_run361.py": "f886ad6e06a4f8a199bf36d24d9c020cd6542ff7",
+    ".github/workflows/run361-world-trainonly-coverage.yml": "f3138c153d028c86ee970cff82edb9c98c1fefa5",
+    "v13/code/BUILD_STATE.json": "fdf0827d7c4af5cdb85b69cbe651ed52784a07b5"
+  },
+  "red": {
+    "run_id": 40229629016,
+    "tests": 12,
+    "failures": 2,
+    "errors": 1,
+    "artifact_id": 12612736546,
+    "artifact_zip_sha256": "4a7d67ff4ced049961634e9dd027c9edbe444424f51ddec4482d748843a92a36"
+  },
+  "intermediate": {
+    "run_id": 40229687274,
+    "tests": 12,
+    "conclusion": "PASS_FOCUSED_BUT_BROADER_COMPATIBILITY_RED",
+    "compatibility_failures": "Run64 legacy store=None synthetic explicit fixtures",
+    "action": "narrow synthetic-only compatibility shim, no production fallback"
+  },
+  "green": {
+    "run_id": 40229814620,
+    "tests": 13,
+    "failures": 0,
+    "errors": 0,
+    "artifact_id": 12612568587,
+    "artifact_zip_sha256": "a727538fc4ed42d0f323f52bf3134b883ea6811b2d8888ba4ed27c5d8662792e",
+    "privacy": "CLEAN"
+  },
+  "independent_world_workflows": "Run301, Run306, WorldModel source lineage, Run202, Run218, Run298 and source adversarial workflows succeeded at final tested head; some broader suites were still running when this note was written",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "NOT_PROMOTED",
+    "Body_JEPA": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone_measured": false,
+    "causality_proven": false,
+    "whole_system_complete": false
+  },
+  "central_BUILD_STATE_mutated": false,
+  "blockers": [
+    "No Redmi hardware",
+    "No native World/Body JEPA model proof",
+    "Historical persisted World fits lacking state_groups now abstain until refit; no automatic promotion"
+  ],
+  "next_command": "cd v13/code && python -m unittest -v tests.test_world_trainonly_coverage_run361 tests.test_world_source_disjoint_run306 tests.test_world_model",
+  "prerequisites": [
+    "Python with numpy==2.3.5 and prompt-toolkit==3.0.52",
+    "Re-fit old World state only from currently valid source-bound actions"
+  ],
+  "claim_limit": "Source-only Linux NumPy/SQLite, no native/Redmi/causal proof"
+}
