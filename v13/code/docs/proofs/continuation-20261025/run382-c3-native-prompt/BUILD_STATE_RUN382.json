@@ -9,7 +9,7 @@
   "pr": 377,
   "prereg_commit": "ca5a651523d3a9cdcbb0ccc1bc93521d3229d2ca",
   "pre_native_head": "a917391dd8643f56bb06c67a273c187382c9e259",
-  "status": "AWAITING_NATIVE_GITHUB_ACTIONS",
+  "status": "RUN382_NATIVE_PROMPT_NOT_SUPPORTED",
   "model": {
     "source": "LiquidAI/LFM2.5-350M-GGUF",
     "revision": "657e078c94084481950a2d555a941481f715536b",
@@ -37,7 +37,32 @@
     "Run367_full_suite_RED",
     "G-AGE-REOPEN-001_FAIL"
   ],
-  "native_evidence": "PENDING_NOT_MEASURED",
-  "next_command": "Inspect PR377 exact-head workflow; if failed, inspect raw native artifact and fix only infrastructure separately from measured candidate; preserve negative outcome; download ZIP CRC/SHA and private byte backup.",
-  "blocked": "No Redmi. Native Linux proof pending. Do not promote prompts absent prereg PASS and independent review."
+  "native_evidence": "LINUX_NATIVE_PINNED_MEASURED_NEGATIVE",
+  "next_command": "Review PR377 and raw 13/13 verified evidence; keep prompt inactive; diagnose native JSON empty answer separately with preregistered fresh cases or progress independent C3 learning path.",
+  "blocked": "No utility gain on 12 paired native cases; no Redmi, no training/Body-JEPA evidence.",
+  "actions_run": 40239988193,
+  "job": 121309525188,
+  "artifact_id": 12616860696,
+  "artifact_sha256": "9ec4eb7286086e72db017cba8a776746cc35e35b9a4e9c4e1ea6691006647700",
+  "artifact_verified": "CRC PASS, internal 13/13 SHA PASS, exact HEAD, private re-materialized byte match",
+  "private_backup": "/V13/Backups/V13_Actions_12616860696_Run382_C3_NATIVE_FAIL.zip",
+  "source_controls": "2/2 PASS",
+  "native_plumbing": "PASS 24/24 FINAL, process reaped, zero remaining PIDs",
+  "baseline_exact": "6/12",
+  "candidate_exact": "6/12",
+  "candidate_gain": 0,
+  "field_supported": "8/12 per arm",
+  "category_counts": {
+    "baseline": {
+      "arithmetic": 4,
+      "backwards": 0,
+      "sequence": 2
+    },
+    "candidate": {
+      "arithmetic": 2,
+      "backwards": 1,
+      "sequence": 3
+    }
+  },
+  "candidate_duration_ratio": 1.2013365366060262
 }
