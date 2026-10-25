@@ -1,0 +1,46 @@
+name: V13 Run262 WorldModel source-bound load cost (software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/world_model_load_cost_run262.py'
+      - '.github/workflows/run262-world-source-cost.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-cost:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Isolated pinned CPU-only prerequisites
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run262"
+          "$RUNNER_TEMP/run262/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Actual Store synthetic-action scaling and revocation
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" timeout 600s "$RUNNER_TEMP/run262/bin/python" scripts/world_model_load_cost_run262.py 2>&1 | tee "$RUNNER_TEMP/RUN262_RAW.log"
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN262_EXIT.txt"
+          echo "RUN262_EXIT=$rc"
+          exit 0
+      - name: Official privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 28a9ebcbe51661adb716ae5bdd9ca999dbf2af3c --head HEAD --no-worktree
+      - name: Preserve closed raw timings even if failed
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run262-WorldModel-Source-Cost-Raw
+          path: |
+            ${{ runner.temp }}/RUN262_RAW.log
+            ${{ runner.temp }}/RUN262_EXIT.txt
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual result
+        run: test "$(cat "$RUNNER_TEMP/RUN262_EXIT.txt")" = "0"
