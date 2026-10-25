@@ -1,0 +1,76 @@
+name: V13 Run119 reproducible source-only ZIP
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run119-source-bundle.yml"
+      - "v13/code/docs/proofs/continuation-20261025/source-bundle-run119/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run119-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan before artifact publication
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  package:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Deterministic tracked-source archive and path audit
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          git archive --format=zip --output=dist/V13_RUN119_SOURCE_ONLY.zip HEAD \
+            AGENTS.md v13/AGENTS.md v13/ROADMAP.md v13/NUTZER_ENTSCHEIDUNGEN.md \
+            v13/blueprint v13/code
+          unzip -t -q dist/V13_RUN119_SOURCE_ONLY.zip
+          unzip -Z1 dist/V13_RUN119_SOURCE_ONLY.zip > dist/ARCHIVE_PATHS.txt
+          for path in \
+            AGENTS.md v13/AGENTS.md v13/ROADMAP.md v13/NUTZER_ENTSCHEIDUNGEN.md \
+            v13/blueprint/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md \
+            v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md \
+            v13/code/BUILD_STATE.json v13/code/v13/runtime.py \
+            v13/code/v13/latewatch.py v13/code/scripts/ablation_world_selective_risk_run117.py; do
+            grep -Fx "$path" dist/ARCHIVE_PATHS.txt
+          done
+          if grep -Ei '(^|/)(\.env($|/)|\.ssh/|\.netrc$|id_rsa$|[^/]*\.pem$|[^/]*\.key$)' dist/ARCHIVE_PATHS.txt; then
+            echo 'unexpected secret-like path in archive' >&2
+            exit 1
+          fi
+          git rev-parse HEAD | tee dist/HEAD_COMMIT.txt
+          sha256sum dist/V13_RUN119_SOURCE_ONLY.zip | tee dist/SHA256SUMS.txt
+          wc -l dist/ARCHIVE_PATHS.txt
+          printf '%s\n' 'SOURCE_ONLY; NO_MODEL_WEIGHTS; NO_NATIVE_OR_REDMI_PROOF' \
+            'STEP2=UTILITY_FAIL; B3_L1=FAIL; Body_JEPA=UNAVAILABLE; jepa_weight=0; DS2_H2=FAIL; V13=INCOMPLETE' \
+            > dist/CLAIM_LIMITS.txt
+      - name: Upload immutable short-lived source artifact
+        id: upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Run119-Source-Only-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+          include-hidden-files: false
+      - name: Print artifact URL and limitation
+        run: |
+          echo "Artifact URL: ${{ steps.upload.outputs.artifact-url }}"
+          echo "This is source-only and expires; GitHub source branch is the durable checkpoint."
