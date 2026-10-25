@@ -1,0 +1,30 @@
+name: V13 Run155 independent native-log binding review
+on:
+  push:
+    branches: ['codex/run155-native-log-binding-audit-20261025']
+  pull_request:
+    paths:
+      - 'v13/code/scripts/age0d_run151_log_binding_review_run155.py'
+      - 'v13/code/tests/test_age0d_run151_log_binding_review_run155.py'
+      - '.github/workflows/v13-run155-native-log-binding.yml'
+  workflow_dispatch:
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Focused adversarial software tests
+        run: |
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p 'test_age0d_run151_log_binding_review_run155.py' -v
+          python -m compileall -q v13/code/scripts/age0d_run151_log_binding_review_run155.py v13/code/tests/test_age0d_run151_log_binding_review_run155.py
+      - name: Public repository privacy scan
+        run: |
+          python v13/code/scripts/public_repo_privacy_scan.py --base 50e86580bea78a13a9c2aceb97ea3c1970c16796 --head HEAD
