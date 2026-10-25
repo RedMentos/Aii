@@ -1,0 +1,54 @@
+{
+  "schema": "V13_RUN286_A2_FROZEN_REFERENCE_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Run286: v13/a2_reference.py, narrow learning.shadow_student A2 target consumer, tests/test_a2_frozen_reference_run286.py, Run286 CI/proof",
+  "base_pr": 285,
+  "base_sha": "494b615a53f247d24ca204efa2a4d900ec1f0c08",
+  "source_head": "17fbe094b47c68f0140f227c38a98ff6b147fbc8",
+  "branch": "codex/a2-frozen-reference-binding-run286-20261025",
+  "pr": 286,
+  "changes": [
+    "Actual A2 frozen C2/Needle target read back from source/revision/packet/hash-bound blob before A3 optimizer and before persisted reference packet",
+    "Openat O_NOFOLLOW on home/data/blobs/file, bounded JSON/3072D finite nonzero vector, source revocation, full original source SHA and no teacher truth or gradient authority",
+    "No change to native model weights, registered seeds, learning objective, user gates or Canon"
+  ],
+  "tests": [
+    {
+      "environment": "Linux local exact source",
+      "tests": "55/55",
+      "result": "PASS"
+    },
+    {
+      "run": 40194349465,
+      "source_head": "5143ce516fe72d93a1eb5497598c2d85d24e4dfd",
+      "result": "PASS",
+      "native_status": "STUDENT_LIFECYCLE_PASS",
+      "target_packets": 64,
+      "artifact_id": 12599023000,
+      "raw_sha256": "9d300bb503ecde3eb2c24e66cfdd087e4b6d98e8a32a2e16e88591ad348ce7f9",
+      "note": "earlier source revision; final stronger full-source and finite-norm checks need exact-head rerun"
+    },
+    {
+      "run": 40194450778,
+      "source_head": "17fbe094b47c68f0140f227c38a98ff6b147fbc8",
+      "result": "PENDING",
+      "note": "serialized native CI, do not promote until result"
+    }
+  ],
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false,
+    "redmi_measured": false
+  },
+  "next_command": "Read GitHub Actions run 40194450778 exact-head software and native job statuses; download closed raw artifacts, verify SHA256 and 19 A3 lifecycle checks, append REPORT and verify remote proof blobs. Continue separate canonical utility package without modifying PR284 Runtime owner.",
+  "remaining_questions": [
+    "Final native exact-head A2 full-source validation still pending",
+    "A2 remains optional Age-0 frozen reference lane, not an independent multimodal teacher",
+    "No Redmi native A2 training or teacher-dropout generalization proof",
+    "PR284 resident cancellation RED and STEP2/B3 gates remain"
+  ]
+}
