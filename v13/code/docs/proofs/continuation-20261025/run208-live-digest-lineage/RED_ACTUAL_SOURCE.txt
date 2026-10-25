@@ -1,0 +1,45 @@
+2026-10-25T08:41:07.7662295Z test_digest_message_id_must_match_its_event_and_source (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_digest_message_id_must_match_its_event_and_source) ... FAIL
+2026-10-25T08:41:07.8984716Z test_forged_digest_text_cannot_enter_live_c3_system_context (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_forged_digest_text_cannot_enter_live_c3_system_context) ... FAIL
+2026-10-25T08:41:08.0261207Z test_revoked_earlier_source_invalidates_transitively_dependent_digest (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_revoked_earlier_source_invalidates_transitively_dependent_digest) ... FAIL
+2026-10-25T08:41:08.1580915Z test_revoked_earlier_turn_cannot_be_reexported_in_training_context (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_earlier_turn_cannot_be_reexported_in_training_context) ... ok
+2026-10-25T08:41:08.2894613Z test_revoked_target_turn_is_not_staged_for_training (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_target_turn_is_not_staged_for_training) ... ok
+2026-10-25T08:41:08.4257526Z test_tampered_persisted_digest_does_not_become_training_input (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_tampered_persisted_digest_does_not_become_training_input) ... ok
+2026-10-25T08:41:08.5598934Z test_digest_is_extractive_incremental_and_pins_exact_spans (tests.test_sleep_offline.DigestTests.test_digest_is_extractive_incremental_and_pins_exact_spans) ... ok
+2026-10-25T08:41:08.8448825Z test_digest_reaches_live_context_only_outside_history_and_respects_deletion (tests.test_sleep_offline.LiveContextTests.test_digest_reaches_live_context_only_outside_history_and_respects_deletion) ... ok
+2026-10-25T08:41:08.9004022Z test_cancel_and_yellow (tests.test_sleep_offline.PhaseTests.test_cancel_and_yellow) ... ok
+2026-10-25T08:41:09.0795231Z test_full_sleep_runs_offline_phase_and_stages_ttt_only (tests.test_sleep_offline.PhaseTests.test_full_sleep_runs_offline_phase_and_stages_ttt_only) ... ok
+2026-10-25T08:41:09.1123306Z test_consolidation_keeps_only_if_heldout_error_does_not_rise (tests.test_sleep_offline.PredictorTests.test_consolidation_keeps_only_if_heldout_error_does_not_rise) ... ok
+2026-10-25T08:41:09.1940798Z test_full_sleep_cannot_resurrect_a_forgotten_correction (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_cannot_resurrect_a_forgotten_correction) ... ok
+2026-10-25T08:41:09.2497452Z test_full_sleep_keeps_exact_human_correction_available_to_c3 (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_keeps_exact_human_correction_available_to_c3) ... ok
+2026-10-25T08:41:09.2714998Z test_repeated_sleep_keeps_one_human_record_and_no_weight_change (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_repeated_sleep_keeps_one_human_record_and_no_weight_change) ... ok
+2026-10-25T08:41:09.2923327Z test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat (tests.test_history_lineage.HistoryLineage.test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat) ... ok
+2026-10-25T08:41:09.3063125Z test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported (tests.test_history_lineage.HistoryLineage.test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported) ... ok
+2026-10-25T08:41:09.3064578Z 
+2026-10-25T08:41:09.3064800Z ======================================================================
+2026-10-25T08:41:09.3066129Z FAIL: test_digest_message_id_must_match_its_event_and_source (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_digest_message_id_must_match_its_event_and_source)
+2026-10-25T08:41:09.3091728Z ----------------------------------------------------------------------
+2026-10-25T08:41:09.3092645Z Traceback (most recent call last):
+2026-10-25T08:41:09.3099358Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_digest_live_lineage_run208.py", line 82, in test_digest_message_id_must_match_its_event_and_source
+2026-10-25T08:41:09.3100438Z     self.assertNotIn('ALPHA_208', text)
+2026-10-25T08:41:09.3101906Z AssertionError: 'ALPHA_208' unexpectedly found in '- user: Run208 synthetic source-bound context marker ALPHA_208\n- user: Run208 synthetic source-bound context marker BETA_208\n- user: Run208 synthetic source-bound context marker GAMMA_208'
+2026-10-25T08:41:09.3103481Z 
+2026-10-25T08:41:09.3103666Z ======================================================================
+2026-10-25T08:41:09.3105004Z FAIL: test_forged_digest_text_cannot_enter_live_c3_system_context (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_forged_digest_text_cannot_enter_live_c3_system_context)
+2026-10-25T08:41:09.3106339Z ----------------------------------------------------------------------
+2026-10-25T08:41:09.3106861Z Traceback (most recent call last):
+2026-10-25T08:41:09.3107977Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_digest_live_lineage_run208.py", line 57, in test_forged_digest_text_cannot_enter_live_c3_system_context
+2026-10-25T08:41:09.3109291Z     self.assertNotIn('FORGED_RUN208', '\n'.join(S.context_items(self.r.store, self.r.session)))
+2026-10-25T08:41:09.3110875Z AssertionError: 'FORGED_RUN208' unexpectedly found in '- user: FORGED_RUN208_CONTEXT\n- user: Run208 synthetic source-bound context marker BETA_208\n- user: Run208 synthetic source-bound context marker GAMMA_208'
+2026-10-25T08:41:09.3112100Z 
+2026-10-25T08:41:09.3112294Z ======================================================================
+2026-10-25T08:41:09.3114005Z FAIL: test_revoked_earlier_source_invalidates_transitively_dependent_digest (tests.test_sleep_digest_live_lineage_run208.LiveDigestLineageRun208.test_revoked_earlier_source_invalidates_transitively_dependent_digest)
+2026-10-25T08:41:09.3115513Z ----------------------------------------------------------------------
+2026-10-25T08:41:09.3116043Z Traceback (most recent call last):
+2026-10-25T08:41:09.3117264Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_digest_live_lineage_run208.py", line 73, in test_revoked_earlier_source_invalidates_transitively_dependent_digest
+2026-10-25T08:41:09.3118605Z     self.assertNotIn('BETA_208', text, 'later answer depends on revoked earlier context')
+2026-10-25T08:41:09.3120218Z AssertionError: 'BETA_208' unexpectedly found in '- user: Run208 synthetic source-bound context marker BETA_208\n- user: Run208 synthetic source-bound context marker GAMMA_208' : later answer depends on revoked earlier context
+2026-10-25T08:41:09.3121481Z 
+2026-10-25T08:41:09.3121705Z ----------------------------------------------------------------------
+2026-10-25T08:41:09.3122225Z Ran 16 tests in 1.886s
+2026-10-25T08:41:09.3122701Z 
+2026-10-25T08:41:09.3123043Z FAILED (failures=3)
