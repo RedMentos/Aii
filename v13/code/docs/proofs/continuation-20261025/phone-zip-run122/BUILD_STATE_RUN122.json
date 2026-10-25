@@ -1,0 +1,67 @@
+{
+  "schema": "V13_RUN122_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "pr": 153,
+  "base_pr": 152,
+  "base_sha": "10a290b62d954f264afa37e7e5d81787cc79eda4",
+  "owner": "Run122 CI + proofs only",
+  "source_under_test": "3d2a7a33db6cfc230865961af61a8c00ecb9c730",
+  "branch": "codex/phone-cli-standstill-zip-run122-20261025",
+  "production_runtime_changed": false,
+  "first_attempt": {
+    "run_id": 40147471413,
+    "job_id": 121031851864,
+    "status": "FAIL",
+    "reason": "planned test_phone_halt.py absent from integrated source; unittest discover 0 tests exit 5",
+    "raw": "RAW_FIRST_FAILURE.log",
+    "existing_tests_before_failure": "20/20 PASS"
+  },
+  "amendment": "AMENDMENT_AFTER_FAIL.md committed before successful rerun; missing WP-UI1 module/test explicitly remains unimplemented in this chain.",
+  "success": {
+    "run_id": 40147565614,
+    "job_id": 121032152972,
+    "privacy": "CLEAN",
+    "source_zip_bytes": 12601444,
+    "source_zip_sha256": "2aa8c40771c3db426ebe0e938ee176262cf495f8a4076914dc143fe3b5f825c1",
+    "source_entries": 846,
+    "manifest_files": 845,
+    "zip_crc": "PASS",
+    "required_canon": "PRESENT",
+    "new_run121_test": "PRESENT",
+    "tests_from_extracted_zip": "20/20 PASS",
+    "native_models_launched": false,
+    "phone_measured": false,
+    "artifact_id": 12580984168,
+    "artifact_wrapper_bytes": 12601598,
+    "artifact_wrapper_sha256": "85d2a507e2cd32b4c582b2bab0028130f1b81520613878f57d84faffd4ce285d",
+    "artifact_url": "https://github.com/RedMentos/Aii/actions/runs/40147565614/artifacts/12580984168",
+    "artifact_retention_days": 30,
+    "raw": "RAW_GREEN_JOB.log"
+  },
+  "independent_local_verification": {
+    "method": "GitHub connector downloaded artifact ID 12580984168; container independently hashed wrapper/inner, verified CRC, extracted, ran tests using Python 3.13.5 with installed NumPy/prompt-toolkit",
+    "wrapper_sha256": "85d2a507e2cd32b4c582b2bab0028130f1b81520613878f57d84faffd4ce285d",
+    "inner_sha256": "2aa8c40771c3db426ebe0e938ee176262cf495f8a4076914dc143fe3b5f825c1",
+    "zip_crc": "PASS",
+    "tests": "20/20 PASS",
+    "scope": "Linux software/SQLite only"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "WP-UI1 phone_halt.py, test_phone_halt.py, Widget installer and :befehle guide exist on Claude branch claude/project-thread-e53fle but are absent from integrated Run122 source; independently review/selectively import.",
+    "Actual Termux:Widget/Redmi UI tests NOT RUN.",
+    "Native LP3 cgroup kernel isolation, native models and four-seed cohort remain blocked.",
+    "Full V13 acceptance not met."
+  ],
+  "exact_next_step": "On new review branch based on Run122 verified head, preregister WP-UI1 selective integration of Claude e53fle source with exact blob hashes, run test-first RED, import only owned files, independently test real Runtime/UI and source ZIP, retain all negative gates. Do not overwrite newer Claude work.",
+  "backup": "GitHub PR #153 plus immutable 30-day Actions artifact; do not use rejected anyone-writable Drive destination."
+}
