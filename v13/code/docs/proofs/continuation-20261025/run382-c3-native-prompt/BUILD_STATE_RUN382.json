@@ -1,0 +1,68 @@
+{
+  "run": "Run382",
+  "date_utc": "2026-10-25T22:23:43Z",
+  "owner": "Codex independent C3 native prompt A/B",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/c3-native-prompt-ablation-run382-20261025",
+  "base_branch": "codex/z8d-exogenous-quality-ablation-run381-20261025",
+  "base_sha": "340b143b450d17db5c4bba5ce7b936779be16aba",
+  "pr": 377,
+  "prereg_commit": "ca5a651523d3a9cdcbb0ccc1bc93521d3229d2ca",
+  "pre_native_head": "a917391dd8643f56bb06c67a273c187382c9e259",
+  "status": "RUN382_NATIVE_PROMPT_NOT_SUPPORTED",
+  "model": {
+    "source": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "file": "LFM2.5-350M-QAD-Q4_0.gguf",
+    "bytes": 219312832,
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "license": "LFM Open License 1.0"
+  },
+  "runner": {
+    "tag": "b10964",
+    "bytes": 16825086,
+    "sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
+  },
+  "cases": 12,
+  "arms": 2,
+  "planned_calls": 24,
+  "minimum_exact_gain": 3,
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_UNRESOLVED",
+    "Body-JEPA_NOT_PROVEN",
+    "jepa_weight=0",
+    "Redmi_NATIVE_NOT_MEASURED",
+    "whole_V13_INCOMPLETE",
+    "Run367_full_suite_RED",
+    "G-AGE-REOPEN-001_FAIL"
+  ],
+  "native_evidence": "LINUX_NATIVE_PINNED_MEASURED_NEGATIVE",
+  "next_command": "Review PR377 and raw 13/13 verified evidence; keep prompt inactive; diagnose native JSON empty answer separately with preregistered fresh cases or progress independent C3 learning path.",
+  "blocked": "No utility gain on 12 paired native cases; no Redmi, no training/Body-JEPA evidence.",
+  "actions_run": 40239988193,
+  "job": 121309525188,
+  "artifact_id": 12616860696,
+  "artifact_sha256": "9ec4eb7286086e72db017cba8a776746cc35e35b9a4e9c4e1ea6691006647700",
+  "artifact_verified": "CRC PASS, internal 13/13 SHA PASS, exact HEAD, private re-materialized byte match",
+  "private_backup": "/V13/Backups/V13_Actions_12616860696_Run382_C3_NATIVE_FAIL.zip",
+  "source_controls": "2/2 PASS",
+  "native_plumbing": "PASS 24/24 FINAL, process reaped, zero remaining PIDs",
+  "baseline_exact": "6/12",
+  "candidate_exact": "6/12",
+  "candidate_gain": 0,
+  "field_supported": "8/12 per arm",
+  "category_counts": {
+    "baseline": {
+      "arithmetic": 4,
+      "backwards": 0,
+      "sequence": 2
+    },
+    "candidate": {
+      "arithmetic": 2,
+      "backwards": 1,
+      "sequence": 3
+    }
+  },
+  "candidate_duration_ratio": 1.2013365366060262
+}
