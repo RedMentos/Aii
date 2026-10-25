@@ -1,0 +1,18 @@
+test_direct_script_help_without_pythonpath (tests.test_run197_r4_future_manifest.CLIRegression.test_direct_script_help_without_pythonpath) ... ok
+test_changed_source_generator_refused (tests.test_run197_r4_future_manifest.IndependentSourceReview.test_changed_source_generator_refused) ... ok
+test_forged_historical_hash_inventory_refused (tests.test_run197_r4_future_manifest.IndependentSourceReview.test_forged_historical_hash_inventory_refused) ... ok
+test_exact_native_binding_passes_software_only (tests.test_run197_r4_future_manifest.ManifestBinder.test_exact_native_binding_passes_software_only) ... ok
+test_historical_prompt_collision_refused (tests.test_run197_r4_future_manifest.ManifestBinder.test_historical_prompt_collision_refused) ... ok
+test_manifest_is_120_new_prompts_with_120_historical_controls (tests.test_run197_r4_future_manifest.ManifestBinder.test_manifest_is_120_new_prompts_with_120_historical_controls) ... ok
+test_reject_feature_spoof (tests.test_run197_r4_future_manifest.ManifestBinder.test_reject_feature_spoof) ... ok
+test_reject_manifest_changed_after_registration (tests.test_run197_r4_future_manifest.ManifestBinder.test_reject_manifest_changed_after_registration) ... ok
+test_reject_mismatched_native_model_pin (tests.test_run197_r4_future_manifest.ManifestBinder.test_reject_mismatched_native_model_pin) ... ok
+test_reject_missing_future_task (tests.test_run197_r4_future_manifest.ManifestBinder.test_reject_missing_future_task) ... ok
+test_reject_modified_raw_capture_hash (tests.test_run197_r4_future_manifest.ManifestBinder.test_reject_modified_raw_capture_hash) ... ok
+test_reject_truncated_output (tests.test_run197_r4_future_manifest.ManifestBinder.test_reject_truncated_output) ... ok
+test_reject_wrong_score_even_when_capture_claims_pass (tests.test_run197_r4_future_manifest.ManifestBinder.test_reject_wrong_score_even_when_capture_claims_pass) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.860s
+
+OK
