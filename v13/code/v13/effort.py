@@ -133,13 +133,19 @@ def decide(mode,sig,**limits):
     plan['learned_wake_allowed']=mode=='adaptive';return plan
 
 def resolve_wake(plan,learned=None):
-    """A learned wake readout may choose only inside the effort ceiling.
+    """Intersect a learned wake with *both* effort-band and hard wake ceilings.
 
-    A user-forced mode keeps its own wake decision; the ceiling always binds.
+    A user-forced mode keeps its own wake. BOOT bands budget none/one/both
+    bodies independently of the resource/deadline ceiling in wake_ceiling.
     """
     if learned is None or not plan['learned_wake_allowed']:return plan['wake'],'EFFORT_POLICY'
     if learned not in WAKES:raise ValueError('wake action')
-    capped=cap_wake(learned,plan['wake_ceiling'])
+    band_ceiling={'DIRECT_C_NATIVE':'none','C_NATIVE_ONE_BODY':'one',
+                  'FOCAL_TARGETED':'both','DEEP_FOCAL':'both'}.get(plan.get('band'))
+    if band_ceiling is None:raise ValueError('effort band')
+    prefer=plan.get('one_body','detail')
+    capped=cap_wake(learned,band_ceiling,prefer)
+    capped=cap_wake(capped,plan['wake_ceiling'],prefer)
     return capped,'LEARNED_WAKE' if capped==learned else 'LEARNED_WAKE_CAPPED'
 
 def get_mode(store):
