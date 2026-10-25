@@ -1,0 +1,90 @@
+{
+  "schema": "V13_RUN274_SLEEP_MEMORY_AUTHORITY_CHECKPOINT_V1",
+  "utc": "2026-10-25T11:24:00Z",
+  "base": "0c58aa2ad9257aea67b5671b6b3aa69255cec539",
+  "base_pr": 273,
+  "parent_ci": {
+    "pr270": {
+      "run": 40187802482,
+      "tests": 78,
+      "privacy": "CLEAN",
+      "artifact": 12597155710
+    },
+    "pr271": {
+      "run": 40187989062,
+      "tests": 99,
+      "privacy": "CLEAN",
+      "artifact": 12597066691
+    },
+    "pr272": {
+      "run": 40188129508,
+      "tests": 31,
+      "privacy": "CLEAN",
+      "artifact": 12597221607
+    },
+    "pr273": {
+      "run": 40188272116,
+      "tests": 46,
+      "privacy": "CLEAN",
+      "artifact": 12597231967
+    }
+  },
+  "branch": "codex/sleep-dream-memory-authority-run274-20261025",
+  "owner": {
+    "production": [
+      "v13/code/v13/sleep.py"
+    ],
+    "tests": [
+      "v13/code/tests/test_sleep_memory_authority_run274.py"
+    ],
+    "proofs": [
+      "v13/code/docs/proofs/continuation-20261025/sleep-memory-authority-run274/*"
+    ],
+    "ci": [
+      ".github/workflows/run274-sleep-memory-authority.yml"
+    ]
+  },
+  "source_blob": "dd4f0e78af0d35d2d23f70d94fe443092a600754",
+  "test_blob": "a0a62163e48c657df56540b52a6438880b4a5235",
+  "scope": "LINUX_ACTUAL_RUNTIME_SQLITE_SYNTHETIC_TEXT_NO_NATIVE_MODEL_NO_REDMi",
+  "tests": {
+    "red": {
+      "tests": 6,
+      "failures": 4,
+      "exit": 1
+    },
+    "green_initial": {
+      "tests": 16,
+      "errors": 1,
+      "reason": "mistyped nonexistent tests.test_sleep",
+      "exit": 1
+    },
+    "focused": {
+      "tests": 74,
+      "exit": 0
+    },
+    "fullsuite": {
+      "status": "NOT_RUN_IN_RUN274"
+    }
+  },
+  "raw_sha256": {
+    "red": "34cf6ed277058f64feac72d76997c309a87c53534db2e4507dcf56866b0049c8",
+    "green_initial": "ee7b5e15ae3327d338b7f00e5201e4fe866b411a5c9d6c29623900b63c64be9b",
+    "focused": "9646db3cf6f27df674056db095ef3839fc05e814bd81dbafc764718ffacde351"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "changes": "Sleep A retention refuses revoked human corrections including route; Dream B seeds are filtered via F1/F5 validator before creating non-factual hypotheses. Dream fact-write authority remains zero.",
+  "open_questions": [
+    "Sleep B existing queued hypotheses and neighbor validation still require separate F5 revalidation; not covered by Run274",
+    "Full native model and Redmi evidence still unavailable"
+  ],
+  "original_canon_modified": false,
+  "model_hashes_modified": false,
+  "next": "Create PR274 against PR273; inspect exact-head CI raw artifact and privacy; then separate hypothesis validation authority package, do not promote original gates."
+}
