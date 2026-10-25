@@ -46,7 +46,7 @@ class FastForwardLatencyGateRun300(unittest.TestCase):
 
     def test_invalid_or_nonimproving_predictions_never_grant_ready(self):
         for i, prediction in enumerate((-1.0, 0.0, float("nan"), float("inf"),
-                                        True, 5.0)):
+                                        True, 5.0, 10**1000, -(10**1000))):
             with self.subTest(prediction=str(prediction)):
                 state = self.train_shadow(f"run300-invalid-{i}", prediction)
                 self.assertEqual(state["stage"], "SHADOW")
