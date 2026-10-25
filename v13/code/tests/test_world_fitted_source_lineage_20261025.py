@@ -94,7 +94,7 @@ class FittedWorldSourceLineage(unittest.TestCase):
     def test_old_unbound_revision_is_not_loaded(self):
         self.fitted()
         payload,_ = self.r.store.state(W.KEY)
-        payload['revision']='linear_ridge_bootstrap_v1'
+        payload['revision']='t8-world-model-v1'
         self.r.store.set_state(W.KEY,payload)
         self.assertIsNone(W.load(self.r.store))
 
