@@ -1,0 +1,60 @@
+{
+  "schema": "V13_RUN_SCOPED_BUILD_STATE_V1",
+  "run": "Run360",
+  "checkpoint_utc": "2026-10-25T20:10:00Z",
+  "owner": "assistant/run360-route-label-exact-20261025",
+  "parent_branch": "assistant/run359-phone-prestart-release-20261025",
+  "parent_commit": "2708ea54640f4bc789e3e001bafdd0ed71f8e147",
+  "tested_head": "36af5992c03a31f6d0024fbbf83d63aa4bff6054",
+  "review_pr": 355,
+  "scope": "External route-head optimizer rejects lossy human/scaffold class labels before candidate write",
+  "changed_files": [
+    "v13/code/v13/learning_worker.py",
+    "v13/code/tests/test_learning_worker_exact_labels_run360.py",
+    ".github/workflows/run360-route-label-exact.yml"
+  ],
+  "git_blob_shas": {
+    "v13/code/v13/learning_worker.py": "6d0b089f7585cd78d1c5be3b3fdd06e497ff068f",
+    "v13/code/tests/test_learning_worker_exact_labels_run360.py": "f6877627e32f4ef38ddb7b55a8472be3e124979c",
+    ".github/workflows/run360-route-label-exact.yml": "28129fdbed80ec08a1c2c9055fa18883647f3b81",
+    "v13/code/BUILD_STATE.json": "fdf0827d7c4af5cdb85b69cbe651ed52784a07b5"
+  },
+  "red": {
+    "run_id": 40229364950,
+    "tests": 5,
+    "failures": 11,
+    "errors": 2,
+    "detail": "subtest failures/errors on lossy labels; 5 top-level tests",
+    "artifact_id": 12612024100,
+    "artifact_zip_sha256": "3e36bb85a74ea472f8c771390b8feb98c7bfdb1b9d161a86ee5583962d49e5c2"
+  },
+  "green": {
+    "run_id": 40229418244,
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "artifact_id": 12611878213,
+    "artifact_zip_sha256": "a59b72fda762dd92be7e3ec51864adff694775131a6f809feef412a785508a10",
+    "privacy": "CLEAN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "NOT_PROMOTED",
+    "Body_JEPA": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "central_BUILD_STATE_mutated": false,
+  "blockers": [
+    "No native C2/Body weight training executed by this package",
+    "No Redmi hardware",
+    "Historical native cohort uses original source hashes; new source is a prospective candidate and cannot relabel original evidence"
+  ],
+  "next_command": "cd v13/code && python -m unittest -v tests.test_learning_worker_exact_labels_run360 tests.test_learning_worker",
+  "prerequisites": [
+    "Python with numpy==2.3.5 and prompt-toolkit==3.0.52"
+  ],
+  "claim_limit": "CPU NumPy/SQLite source-only regression; no native model/Redmi or learning utility claim"
+}
