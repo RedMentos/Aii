@@ -63,5 +63,15 @@ class MemoryRecallKeyLineageRun203(unittest.TestCase):
         self.assertEqual(self.recall(ALPHA),[])
 
 
+    def test_mutated_session_owner_cannot_reassign_human_correction(self):
+        second=self.s.new_session()
+        self.mutate('UPDATE memories SET session_id=? WHERE id=?',(second,self.mid))
+        self.assertEqual(self.recall(ALPHA,second),[])
+
+    def test_duplicate_memory_record_is_ambiguous_and_refused(self):
+        self.mutate("INSERT INTO packets SELECT ?,kind,event_id,generation_id,payload,created FROM packets WHERE kind='MemoryRecord' AND json_extract(payload,'$.memory_id')=?",('duplicate-memory-record',self.mid))
+        self.assertEqual(self.recall(ALPHA),[])
+
+
 if __name__=='__main__':
     unittest.main()
