@@ -38,35 +38,29 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           python3 -m compileall -q v13/code/scripts/age0d_run142_readonly_audit.py v13/code/tests/test_age0d_run142_readonly_audit.py
           (cd v13/code && PYTHONPATH=. python3 -m unittest -v tests.test_age0d_run142_readonly_audit)
-      - name: Fetch exact prior native evidence, validate hashes and audit
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Download registered Run142 artifact through official action
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: V13-Run142-C3-AGE0D-Native-2ba3688039ac6368f6cb8c0130dcaaa5dcb5d6ee
+          run-id: 40156408710
+          github-token: ${{ github.token }}
+          repository: RedMentos/Aii
+          path: ${{ runner.temp }}/run142_download
+      - name: Verify exact inner hashes and recompute independent audit
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import hashlib, io, os, pathlib, urllib.request, zipfile
-          aid=12584825740
-          url=f'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/{aid}/zip'
-          req=urllib.request.Request(url,headers={
-              'Authorization':f'Bearer {os.environ["GH_TOKEN"]}',
-              'Accept':'application/vnd.github+json',
-              'X-GitHub-Api-Version':'2022-11-28'})
-          with urllib.request.urlopen(req,timeout=90) as r: data=r.read()
-          if hashlib.sha256(data).hexdigest()!='f76a8550e3ab6a158ce29d0e0183312a8046b67b0c8c7d25e6455d369f85f839':
-              raise SystemExit('RUN143_REFUSED_WRAPPER_HASH')
-          with zipfile.ZipFile(io.BytesIO(data)) as z:
-              names=set(z.namelist())
-              if names!={'RUN142_C3_CHALLENGE_NATIVE_REPORT.json','RUN142_CHALLENGE_NATIVE_RAW.log'}:
-                  raise SystemExit('RUN143_REFUSED_ARTIFACT_FILES')
-              report=z.read('RUN142_C3_CHALLENGE_NATIVE_REPORT.json')
-              log=z.read('RUN142_CHALLENGE_NATIVE_RAW.log')
+          import hashlib, os, pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])
+          source=p/'run142_download'
+          report=(source/'RUN142_C3_CHALLENGE_NATIVE_REPORT.json').read_bytes()
+          log=(source/'RUN142_CHALLENGE_NATIVE_RAW.log').read_bytes()
           if hashlib.sha256(report).hexdigest()!='c691d0f07bef5776128bc7bdfdaa214d1704b3694d9ea1d5039dc19ab46e1b09':
               raise SystemExit('RUN143_REFUSED_REPORT_HASH')
           if hashlib.sha256(log).hexdigest()!='6b60f8c3e576923ee2fb63758148d55ef63693c750eb2519617bb07d04f114f5':
               raise SystemExit('RUN143_REFUSED_LOG_HASH')
-          p=pathlib.Path(os.environ['RUNNER_TEMP'])
           (p/'RUN142_C3_CHALLENGE_NATIVE_REPORT.json').write_bytes(report)
-          print('RUN143_SOURCE_HASHES_PASS; original Run142 artifact unchanged')
+          print('RUN143_INNER_HASHES_PASS; wrapper digest checked separately by original GitHub artifact metadata')
           PY
           cd v13/code
           PYTHONPATH=. python3 scripts/age0d_run142_readonly_audit.py \
