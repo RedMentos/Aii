@@ -1,0 +1,96 @@
+name: V13 Run136 registered C3 answer-visible arithmetic native cohort
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run136-c3-native.yml"
+      - "v13/code/scripts/c3_registered_linux_smoke_run136.py"
+      - "v13/code/docs/proofs/continuation-20261025/c3-native-run136/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  linux-native-c3:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+      NEEDLE_TELEMETRY: "0"
+      PIP_NO_CACHE_DIR: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Exact head and isolated Python
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          python3 -m venv "$RUNNER_TEMP/run136"
+          "$RUNNER_TEMP/run136/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          "$RUNNER_TEMP/run136/bin/python" -m compileall -q v13/code/v13 v13/code/scripts/c3_registered_linux_smoke_run136.py
+      - name: Recheck current native resources and ownership without signalling processes
+        run: |
+          set -euo pipefail
+          uname -a
+          df -h "$RUNNER_TEMP"
+          free -h
+          cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+          cat /sys/fs/cgroup/memory.current 2>/dev/null || true
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          p=Path('/sys/fs/cgroup/memory.max')
+          value=p.read_text().strip() if p.exists() else 'max'
+          current=Path('/sys/fs/cgroup/memory.current')
+          used=int(current.read_text()) if current.exists() else 0
+          limit=int(value) if value.isdigit() else None
+          if limit is not None and limit-used < 1536*1024*1024:
+              raise SystemExit('RUN136_REFUSED_MEMORY_BUDGET')
+          if shutil.disk_usage('/tmp').free < 1024*1024*1024:
+              raise SystemExit('RUN136_REFUSED_DISK_BUDGET')
+          print('RUN136_RESOURCE_PREFLIGHT_PASS; native owner only this job; no process signals')
+          PY
+      - name: Single native C3 registered model and pinned server, retain failures
+        id: native
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD"
+          timeout 840s "$RUNNER_TEMP/run136/bin/python" scripts/c3_registered_linux_smoke_run136.py --home "$RUNNER_TEMP/v13_run136" --report "$RUNNER_TEMP/RUN136_C3_AGE0D_NATIVE_REPORT.json" 2>&1 | tee "$RUNNER_TEMP/RUN136_AGE0D_NATIVE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          set -e
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          echo "RUN136_NATIVE_EXIT=$rc"
+          exit 0
+      - name: Upload only closed report and raw log, NEVER model bytes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Run136-C3-AGE0D-Native-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/RUN136_C3_NATIVE_REPORT.json
+            ${{ runner.temp }}/RUN136_NATIVE_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual native outcome
+        if: always()
+        run: |
+          test "${{ steps.native.outputs.exit_code }}" = "0"
