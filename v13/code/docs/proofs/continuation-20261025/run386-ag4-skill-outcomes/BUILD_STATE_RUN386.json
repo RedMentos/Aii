@@ -1,0 +1,59 @@
+{
+  "run": "Run386",
+  "date": "2026-10-25",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/ag4-skill-outcome-guard-run386-20261025",
+  "base": {
+    "branch": "codex/ag2-grounding-modality-guard-run385-20261025",
+    "sha": "9ccdb47750aaf8a6bafb92bc82572d98da964e9f",
+    "integration": "stacked review chain, not main"
+  },
+  "source_head": "e22a9372e468949edfd369fab0edf5ad79ec5007",
+  "pr": 381,
+  "source_blobs_verified": {
+    "skills": "080c46c0f9c0b1f5b86d943ec9fd411ad6739789",
+    "tests": "e23ae01d0ce23d7370f391c8ddd779e3021278eb",
+    "workflow": "262643f3d051a8ee3bb61b368b358e5e092bec0d"
+  },
+  "change_summary": [
+    "AG4 record success must be exact bool; strings and 0/1 ints cannot count as skill success",
+    "AG4 parity accepts only exact int/float, finite and [0,1]; rejects bool, numeric strings, overflow and NaN/Inf before state write",
+    "Original CANDIDATE→SHADOW→TRUSTED thresholds, user origin, Age0 SELF restriction and live route behavior preserved"
+  ],
+  "evidence": {
+    "red": {
+      "head": "c60d6cd5cb70cfba5208b15c54777281ba1ca87c",
+      "workflow_run": 40241475827,
+      "tests": "20 tests; 19 expected failures and 1 error; inherited G4/skilllive/AG live PASS",
+      "artifact_id": 12617170370,
+      "zip_sha256": "9ae5cf177043c9d01db221573e5b44246dcafff5c930e0c1f122bd0c6965eca7"
+    },
+    "green": {
+      "head": "e22a9372e468949edfd369fab0edf5ad79ec5007",
+      "workflow_run": 40241541822,
+      "tests": "20/20 PASS; compileall PASS; privacy CLEAN",
+      "artifact_id": 12616048768,
+      "zip_sha256": "e2318774a9e2a7364921c5740058ca0928a09e0b3ed4f4da883a28d04b83ccd7"
+    }
+  },
+  "raw_integrity": "CLOSED: both ZIP SHA256 matched Actions upload log; ZIP CRC PASS, 4/4 internal SHA256 member checks PASS for each. Both privately uploaded to Library and independently re-materialized byte-identical.",
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run386_AG4_20261025/{RED_RAW.zip,GREEN_RAW.zip}",
+  "scope": "Actual Linux Actions Python/SQLite source tests; no model-native, no Redmi, no demonstrated learned skill utility.",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0 learning/approval gates unchanged",
+    "Run367 full Python suite RED",
+    "Redmi native proof missing",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "AG4 stage thresholds are bootstrap policy, not evidence of skill utility; registered prospective real-task parity and latency proof remains needed",
+    "No independent native or Redmi AG4 utility run",
+    "Do not merge before owner review and exact frozen cohort compatibility"
+  ],
+  "next_command": "git fetch origin codex/ag4-skill-outcome-guard-run386-20261025 && git checkout -b review-run386 origin/codex/ag4-skill-outcome-guard-run386-20261025 && cd v13/code && python -m unittest -v tests.test_ag4_skill_outcome_guard_run386 tests.test_growth.G4Skills tests.test_skilllive tests.test_agi_live",
+  "next_package": "Run387 AG7 holdout disjointness and non-leaking rule induction, independent file owner, preregister and RED-first."
+}

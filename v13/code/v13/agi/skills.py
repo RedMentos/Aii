@@ -9,6 +9,7 @@ Promotion needs repeated success and parity against the full route; procedural_m
 tasks where success is between 30 % and 70 % (learning frontier), only from non-holdout
 families (AG12 practice_items).
 """
+import math
 import re
 import time
 from .base import StateBox,age_allows
@@ -55,9 +56,19 @@ class SkillLibrary:
         return {'status':'DONE','trace':trace,'value':value}
     def record(self,name,success,parity=None,family=None):
         """Outcome of one use (shadow or live). parity: agreement with the full focal route on the same input."""
+        # Do not turn strings such as "false" into successful observations or
+        # accept invalid parity that could promote a skill into the fast route.
+        if type(success) is not bool:raise ValueError('success: bool required')
+        measured_parity=None
+        if parity is not None:
+            if type(parity) not in (int,float):raise ValueError('parity: finite probability required')
+            try:measured_parity=float(parity)
+            except OverflowError as exc:raise ValueError('parity: finite probability required') from exc
+            if not math.isfinite(measured_parity) or not 0.<=measured_parity<=1.:
+                raise ValueError('parity: finite probability required')
         def f(st):
-            sk=st['skills'][name];sk['uses']+=1;sk['successes']+=int(bool(success))
-            if parity is not None:sk['parity']=(sk['parity']+[float(parity)])[-32:]
+            sk=st['skills'][name];sk['uses']+=1;sk['successes']+=int(success)
+            if measured_parity is not None:sk['parity']=(sk['parity']+[measured_parity])[-32:]
             if family:
                 o=st['outcomes'].setdefault(family,[0,0]);o[0]+=int(bool(success));o[1]+=1
             return self._advance(sk)
