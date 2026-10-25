@@ -1,0 +1,60 @@
+{
+  "schema": "V13_RUN_SCOPED_BUILD_STATE_V1",
+  "run": "Run359",
+  "checkpoint_utc": "2026-10-25T20:07:00Z",
+  "owner": "assistant/run359-phone-prestart-release-20261025",
+  "base_ref": "assistant/run357-current-chain-lineage-20261025",
+  "base_commit": "9c74c2d8ed74c5002259da10c4a6b541382dfa14",
+  "tested_head": "37116e789f892ee3dbcc09ab7526ece438a908bd",
+  "review_pr": 354,
+  "scope": "prestart STOP widget reengagement after interrupted standstill release; SQLite software only",
+  "changed_files": [
+    "v13/code/v13/phone_halt.py",
+    "v13/code/tests/test_phone_prestart_release_recovery_run359.py",
+    ".github/workflows/run359-phone-prestart-release.yml"
+  ],
+  "git_blob_shas": {
+    "v13/code/v13/phone_halt.py": "0af44f9f42f76991c26ae44e9a99204280866d73",
+    "v13/code/tests/test_phone_prestart_release_recovery_run359.py": "8dba6706c1c514385f95127240e4ba97ed675b88",
+    ".github/workflows/run359-phone-prestart-release.yml": "2222a9313374d9bdeeb9744a427b452d6fbbda65",
+    "v13/code/BUILD_STATE.json": "fdf0827d7c4af5cdb85b69cbe651ed52784a07b5",
+    "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "red": {
+    "run_id": 40229099289,
+    "tests": 15,
+    "failures": 2,
+    "errors": 0,
+    "artifact_id": 12611902922,
+    "artifact_zip_sha256": "b8dcc876a24d5e439d19e0b0d0b818a53de1d97b24487a85c0125ffea7664381"
+  },
+  "green": {
+    "run_id": 40229181464,
+    "tests": 15,
+    "failures": 0,
+    "errors": 0,
+    "artifact_id": 12612755964,
+    "artifact_zip_sha256": "5904654636443eee20a92b795d33d8ce3e7b2207f7822d77718e0b910aeee7ce",
+    "privacy": "CLEAN"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "NOT_PROMOTED",
+    "Body_JEPA": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "central_BUILD_STATE_mutated": false,
+  "blockers": [
+    "No Redmi hardware attached to this runner",
+    "Historical source-bound workflows may fail on newer runtime; keep frozen identity distinct"
+  ],
+  "next_command": "cd v13/code && python -m unittest -v tests.test_phone_prestart_release_recovery_run359 tests.test_phone_prestart_run128 tests.test_standstill_release_recovery_run348",
+  "prerequisites": [
+    "Python with numpy==2.3.5 and prompt-toolkit==3.0.52",
+    "Current branch source checked out"
+  ],
+  "claim_limit": "Linux GitHub Actions software/SQLite only; no native inference or phone measurement"
+}
