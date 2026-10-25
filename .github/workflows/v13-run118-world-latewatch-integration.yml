@@ -1,0 +1,60 @@
+name: V13 Run118 reviewed World/LateWatch integration
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run118-world-latewatch-integration.yml"
+      - "v13/code/v13/latewatch.py"
+      - "v13/code/docs/LATE_WATCH.md"
+      - "v13/code/scripts/ablation_world_selective_risk_run117.py"
+      - "v13/code/tests/test_world_selective_risk_run117.py"
+      - "v13/code/tests/test_latewatch_final_tail_run116.py"
+      - "v13/code/docs/proofs/continuation-20261025/integration-run118/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run118-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  integrated-software:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify exact reviewed source blob identities
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/v13/latewatch.py)" = "5df03a7c8a8f5709b5ed2ceb6a08851c780d8480"
+          test "$(git hash-object v13/code/docs/LATE_WATCH.md)" = "1759f3b4182ff540f91e0ecfdcea593d350b70d0"
+          test "$(git hash-object v13/code/tests/test_latewatch_final_tail_run116.py)" = "ce8088fdd60c6ca6422a8fd24e750b72374a19f3"
+          test "$(git hash-object v13/code/scripts/ablation_world_selective_risk_run117.py)" = "aa814ccb3ccea794339e1c68222db6fadedfdada"
+          test "$(git hash-object v13/code/tests/test_world_selective_risk_run117.py)" = "a135a938602c7fdbe997678edea837f4dc142977"
+          test "$(git hash-object v13/code/scripts/ablation_world_model_confidence.py)" = "fb7a60def4abb75c76d269222adc3da6da96aebf"
+          test "$(git hash-object v13/code/v13/world_model.py)" = "17aa0abd22ae0c67b0a3a3de5d7e5ef3d7e2c915"
+      - name: Isolated model-free dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Combined source-bound regression matrix
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          ../../.venv/bin/python -m compileall -q v13/latewatch.py scripts/ablation_world_model_confidence.py scripts/ablation_world_selective_risk_run117.py tests/test_world_selective_risk_run117.py tests/test_latewatch_final_tail_run116.py
+          for pattern in test_world_confidence_abstention_run114.py test_ablation_homeo_meta.py test_latewatch_final_tail_run116.py test_latewatch.py test_world_selective_risk_run117.py test_world_model_integration_run64.py test_world_recovery_invalid_run109.py; do
+            echo "SUITE=$pattern"
+            ../../.venv/bin/python -m unittest discover -s tests -p "$pattern" -v
+          done
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
