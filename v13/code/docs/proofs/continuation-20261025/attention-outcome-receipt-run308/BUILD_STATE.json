@@ -1,0 +1,60 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN308_V1",
+  "utc": "2026-10-25T15:20:00Z",
+  "owner": "GPT-6 automation / Run308 Attention outcomes",
+  "base": "c199935a94164ac2b07794ed0a5a8dcf92b6bb94",
+  "branch": "codex/attention-outcome-receipt-run308-20261025",
+  "pr": 306,
+  "code_commit": "d64369c1d26dce0fa4f6d48a34e3118b14b1cd95",
+  "source_blob": "ff0856172546e6bdb3544dfa5fad8ae92931bf88",
+  "test_blob": "df7a28b4e7ab004bac591aac977d3bc7310dc861",
+  "workflow_blob": "53b1a27100bced845abb0d3b2b8a7c3a2e5b8aff",
+  "owned": [
+    "v13/code/v13/attention.py",
+    "v13/code/tests/test_attention_outcome_receipt_run308.py",
+    ".github/workflows/run308-attention-outcome-receipt.yml",
+    "v13/code/docs/proofs/continuation-20261025/attention-outcome-receipt-run308/"
+  ],
+  "tests": {
+    "red": {
+      "run": 40206301157,
+      "artifact": 12603224150,
+      "archive_sha256": "19029fe1369cbda6bd26f91041575e1ddb71e5874bd1ffaf51b332d65c61dc45",
+      "total": 49,
+      "expected_failures": 3,
+      "privacy": "CLEAN"
+    },
+    "green": {
+      "run": 40206365970,
+      "artifact": 12603598673,
+      "archive_sha256": "6ec03de00a0b5b43d3d7056fb21f0cbd485110c4a81486a37d40e6242d604a46",
+      "total": 49,
+      "failures": 0,
+      "privacy": "CLEAN"
+    }
+  },
+  "private_library": {
+    "red": "/V13-Inquisition/Proofs/Run308/V13-Run308-red-raw.zip",
+    "green": "/V13-Inquisition/Proofs/Run308/V13-Run308-green-raw.zip",
+    "remote_byte_parity": "PASS_BOTH"
+  },
+  "proof_scope": "ACTUAL_RUNTIME_STORE_SQLITE_SOFTWARE_ONLY",
+  "legacy_evicted_receipts_reconstructable": false,
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "model_seed_cohorts_unchanged": true,
+  "redmi_measured": false,
+  "native_model_execution": false,
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "whole_system_complete": false,
+  "prior_fullsuite": {
+    "run": 40202886433,
+    "failures": 2,
+    "errors": 36,
+    "status": "FAILED_UNCHANGED"
+  },
+  "next_command": "Build new exact-current-head source-only Termux ZIP with Run306–308 changes using canonical package_source.py, independent verifier, extracted offline setup and all new focused regression modules; persist ZIP and raw in private Library, read back exact bytes. Then select further substantive Canon package.",
+  "prerequisites": "No native/Redmi claim, no force-push, preserve frozen model/source/seed cohorts and negative gates, respect active Run303 Budget and Run297 native owners."
+}
