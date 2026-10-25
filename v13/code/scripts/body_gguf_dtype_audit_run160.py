@@ -44,9 +44,14 @@ def parse(prefix):
     if version!=3:raise ValueError('version')
     tensor_count=unpack('Q');kv_count=unpack('Q')
     if tensor_count>100_000 or kv_count>100_000:raise ValueError('counts')
+    alignment=32
     for _ in range(kv_count):
         key=string(65535);kind=unpack('I')
-        value(kind)
+        if key=='general.alignment':
+            if kind!=4:raise ValueError('alignment_type')
+            alignment=unpack('I')
+            if alignment<1 or alignment>4096 or alignment&(alignment-1):raise ValueError('alignment_value')
+        else:value(kind)
     tensors={}
     for _ in range(tensor_count):
         name=string(64);ndims=unpack('I')
@@ -56,8 +61,11 @@ def parse(prefix):
         dtype=unpack('I');offset=unpack('Q')
         if dtype not in TYPES:raise ValueError('unknown_tensor_type')
         if name in tensors:raise ValueError('duplicate_tensor')
+        if offset%alignment:raise ValueError('tensor_alignment')
         tensors[name]={'type':TYPES[dtype],'dims':dims,'offset':offset}
-    return {'gguf_version':version,'tensor_count':len(tensors),'types':dict(sorted(Counter(t['type'] for t in tensors.values()).items())),
+    header_end=f.tell()
+    tensor_data_start=(header_end+alignment-1)//alignment*alignment
+    return {'tensor_data_start':tensor_data_start,'alignment':alignment,'gguf_version':version,'tensor_count':len(tensors),'types':dict(sorted(Counter(t['type'] for t in tensors.values()).items())),
             'fp32_tensor_names':sorted(n for n,t in tensors.items() if t['type']=='F32'),
             'tensors':tensors,'metadata_prefix_sha256':hashlib.sha256(prefix).hexdigest()}
 

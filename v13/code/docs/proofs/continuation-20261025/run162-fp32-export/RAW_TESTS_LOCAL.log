@@ -1,0 +1,14 @@
+Run162 local synthetic FP32 export tests (2026-10-25):
+test_duplicate_selection_rejected ... ok
+test_existing_master_not_overwritten ... ok
+test_hash_mismatch_rejected ... ok
+test_missing_tensor_rejected ... ok
+test_nonfinite_rejected ... ok
+test_nonvector_slice_rejected ... ok
+test_out_of_file_rejected ... ok
+test_parser_layout_alignment ... ok
+test_quantized_tensor_rejected ... ok
+test_roundtrip_and_no_authority ... ok
+Ran 10 tests in 0.009s
+OK
+compileall PASS
