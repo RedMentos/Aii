@@ -1,0 +1,62 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN304_V1",
+  "utc": "2026-10-25T15:05:00Z",
+  "owner": "GPT-6 automation / Run304 backup.py only",
+  "base": "5c4a655e521ff939ee4b00fc03d0be54c3db62da",
+  "branch": "codex/backup-source-closure-run304-20261025",
+  "pr": 302,
+  "code_commit": "d6cf5600df9307642a28baeb802c0b45d143adfe",
+  "source_blob": "4857f74bde5082e8c92d12ec42c168b758dc0753",
+  "test_blob": "7a6d3cae4fb5c1ebc1a2ec3360810ed36605456f",
+  "workflow_blob": "09edca8bc15d52d2d520f887f055cf6679990f3e",
+  "owned": [
+    "v13/code/v13/backup.py",
+    "v13/code/tests/test_backup_source_closure_run304.py",
+    ".github/workflows/run304-backup-source-closure.yml",
+    "v13/code/docs/proofs/continuation-20261025/backup-source-closure-run304/"
+  ],
+  "tests": {
+    "red": {
+      "run": 40205066463,
+      "artifact": 12603132808,
+      "archive_sha256": "53082382def42b6300e9389dff33dddc183f6a9dd563c210a2797051abf2f494",
+      "total": 21,
+      "expected_failures": 4
+    },
+    "green": {
+      "run": 40205136816,
+      "artifact": 12603641611,
+      "archive_sha256": "7c7ce1919f64b88240d99e0b285f5d9c925543ab90782886dc26089eed48ce8e",
+      "total": 21,
+      "failures": 0,
+      "privacy": "CLEAN"
+    },
+    "reviewed_green": {
+      "run": 40205209037,
+      "artifact": 12602938486,
+      "archive_sha256": "8a3bd353afe9bdf1fd8b2f2d6508446eb5afc9b3fb02daf38d73542931bd6fcc",
+      "total": 21,
+      "failures": 0,
+      "privacy": "CLEAN"
+    }
+  },
+  "proof_scope": "ACTUAL_RUNTIME_STORE_SQLITE_SOFTWARE_ONLY",
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "canon_unchanged": true,
+  "models_seeds_cohorts_unchanged": true,
+  "redmi_measured": false,
+  "native_model_execution": false,
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "whole_system_complete": false,
+  "prior_fullsuite": {
+    "run": 40202886433,
+    "failures": 2,
+    "errors": 36,
+    "status": "FAILED_UNCHANGED"
+  },
+  "next_command": "From exact review branch head, run python v13/code/scripts/package_source.py --root v13/code --out /tmp/V13-Phone-Current.zip --phone-install; independently run verify_phone_zip_current_run268.py against same checkout; extract ZIP and run offline source-only setup plus Run304 backup tests; preserve ZIP, hashes and raw logs.",
+  "prerequisites": "No model/Redmi claim, no force push, no frozen native hash relaxation; avoid Run303 Budget and Run297 native owners. GitHub branch is review-scoped; do not claim main integration."
+}
