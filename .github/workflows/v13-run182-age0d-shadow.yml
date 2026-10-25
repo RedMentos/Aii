@@ -1,0 +1,40 @@
+name: V13 Run182 AGE0d answer-aware SHADOW only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run182-age0d-shadow.yml'
+      - 'v13/code/scripts/run182_answer_aware_shadow.py'
+      - 'v13/code/tests/test_run182_answer_aware_shadow.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run182-age0d/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-shadow:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact source and AGE0d shadow-only regression tests
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run182_answer_aware_shadow.py)" = '461c129ed726b4b01d3b1068a57559fe485aa334'
+          test "$(git hash-object v13/code/tests/test_run182_answer_aware_shadow.py)" = '81bd6bbdcf4acfbe941ea6c5e121e90c2e11badb'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261025/run182-age0d/BUILD_STATE.md)" = '5a4d1e82a83f9654f307eb000479f6a0ca4c7dab'
+          python3 -m compileall -q v13/code/scripts/run182_answer_aware_shadow.py v13/code/tests/test_run182_answer_aware_shadow.py
+          python3 -m unittest discover -s v13/code/tests -p test_run182_answer_aware_shadow.py -v 2>&1 | tee "$RUNNER_TEMP/run182-tests-raw.log"
+          echo RUN182_AGE0D_SHADOW_ONLY_NO_DELIVERY_NO_LEARNING
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 4f781889c6634959f06466ef0a97b84ecb2bac99 --head HEAD
+      - name: Preserve synthetic raw log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run182-Age0d-Shadow-Only-Raw
+          path: ${{ runner.temp }}/run182-tests-raw.log
+          if-no-files-found: warn
+          retention-days: 14

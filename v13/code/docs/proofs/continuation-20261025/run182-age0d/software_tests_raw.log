@@ -1,0 +1,16 @@
+test_answer_without_explicit_value_refuses (test_run182_answer_aware_shadow.ShadowTests.test_answer_without_explicit_value_refuses) ... ok
+test_budget_correct_no_alert (test_run182_answer_aware_shadow.ShadowTests.test_budget_correct_no_alert) ... ok
+test_budget_wrong_explicit_claim_detected_with_exact_quote (test_run182_answer_aware_shadow.ShadowTests.test_budget_wrong_explicit_claim_detected_with_exact_quote) ... ok
+test_decimal_comma_budget_equivalence (test_run182_answer_aware_shadow.ShadowTests.test_decimal_comma_budget_equivalence) ... ok
+test_invalid_input_refuses (test_run182_answer_aware_shadow.ShadowTests.test_invalid_input_refuses) ... ok
+test_no_delivery_or_learning_on_any_case (test_run182_answer_aware_shadow.ShadowTests.test_no_delivery_or_learning_on_any_case) ... ok
+test_revised_deadline_correct_no_alert (test_run182_answer_aware_shadow.ShadowTests.test_revised_deadline_correct_no_alert) ... ok
+test_revised_deadline_wrong_old_date_detected (test_run182_answer_aware_shadow.ShadowTests.test_revised_deadline_wrong_old_date_detected) ... ok
+test_two_answer_claims_refuse (test_run182_answer_aware_shadow.ShadowTests.test_two_answer_claims_refuse) ... ok
+test_two_source_budgets_refuse (test_run182_answer_aware_shadow.ShadowTests.test_two_source_budgets_refuse) ... ok
+test_unsupported_question_refuses (test_run182_answer_aware_shadow.ShadowTests.test_unsupported_question_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.001s
+
+OK
