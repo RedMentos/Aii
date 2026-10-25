@@ -19,6 +19,15 @@ def synthetic(n=160,seed=0,latent=False):
         out.append({'action_id':'a%d'%i,'s':s,'a':a,'y':y,'latent':[y[0]+rng.gauss(0,.01),y[2],1.] if latent else None})
     return out
 
+class SyntheticStore:
+    """Pure numerical fixture: no source reader, no production persistence."""
+    def __init__(self):self.data={}
+    def set_state(self,key,payload,expected=None):
+        self.data[key]=json.loads(json.dumps(payload))
+    def state(self,key,default=None):return self.data.get(key,default),1
+    def log(self,kind,event,payload):pass
+
+
 class Base(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name))
@@ -27,12 +36,15 @@ class Base(unittest.TestCase):
 
 class Objectives(Base):
     def test_forward_inverse_outcome_and_align_unavailable_without_latent(self):
-        with mock.patch.object(WM,'transitions',return_value=synthetic()):st=WM.fit(self.r.store)
+        synthetic_store=SyntheticStore()
+        with mock.patch.object(WM,'transitions',return_value=synthetic()):st=WM.fit(synthetic_store)
         m=st['metrics'];self.assertEqual(st['status'],'FITTED')
+        self.assertEqual(st['evidence_scope'],'SYNTHETIC_TEST_ONLY')
+        self.assertIsNone(WM.load(self.r.store))
         self.assertLess(m['forward_mae']['log_duration'],.5*m['forward_baseline_mae']['log_duration'])
         self.assertGreater(m['inverse_accuracy'],m['inverse_majority_baseline']+.2);self.assertIn('not a causal claim',m['inverse_note'])
         self.assertEqual(m['state_align']['status'],'UNAVAILABLE')
-        with mock.patch.object(WM,'transitions',return_value=synthetic(latent=True)):st=WM.fit(self.r.store)
+        with mock.patch.object(WM,'transitions',return_value=synthetic(latent=True)):st=WM.fit(synthetic_store)
         self.assertEqual(st['metrics']['state_align']['status'],'MEASURED');self.assertGreater(st['metrics']['state_align']['r2']['log_duration'],.9)
     def test_too_few_transitions_is_honest(self):
         self.assertEqual(WM.fit(self.r.store)['status'],'TOO_FEW_TRANSITIONS')
@@ -43,15 +55,16 @@ class Counterfactuals(Base):
     def test_confidence_follows_coverage_not_frequency(self):
         data=synthetic()+[{'action_id':'rare','s':WM.state_vec(500,'NORMAL',12.),'a':'both','y':[1.,1.,.5],'latent':None}]
         data=[t for t in data if t['a']!='both' or t['action_id']=='rare']
-        with mock.patch.object(WM,'transitions',return_value=data):WM.fit(self.r.store)
+        synthetic_store=SyntheticStore()
+        with mock.patch.object(WM,'transitions',return_value=data):WM.fit(synthetic_store)
         s=WM.state_vec(800,'NORMAL',12.)
-        good=WM.counterfactual(self.r.store,s,'detail');rare=WM.counterfactual(self.r.store,s,'both')
-        far=WM.counterfactual(self.r.store,WM.state_vec(10**9,'CRITICAL',3.),'detail')
+        good=WM.counterfactual(synthetic_store,s,'detail');rare=WM.counterfactual(synthetic_store,s,'both')
+        far=WM.counterfactual(synthetic_store,WM.state_vec(10**9,'CRITICAL',3.),'detail')
         self.assertEqual(good['label'],'SIMULATION_SUPPORTED');self.assertGreaterEqual(good['confidence'],WM.CF_MIN)
         self.assertEqual(rare['label'],'SIMULATION_UNCERTAIN');self.assertLess(rare['confidence'],good['confidence'])
         self.assertEqual(far['label'],'SIMULATION_UNCERTAIN');self.assertFalse(far['coverage']['in_support'])
         self.assertTrue(all(x['cause']=='SELF_CAUSED' and x['authority']=='HYPOTHESIS' for x in (good,rare,far)))
-        self.assertGreater(good['prediction']['duration_s'],WM.counterfactual(self.r.store,s,'simple')['prediction']['duration_s'])
+        self.assertGreater(good['prediction']['duration_s'],WM.counterfactual(synthetic_store,s,'simple')['prediction']['duration_s'])
     def test_dream_route_alternative_carries_counterfactual_and_priority(self):
         e=self.r.store.event(self.r.session,'Erkläre Projekt Aurora genau');self.r.memory.feedback(e['event_id'],'route','detail')
         b=self.r.sleep.cycle.run('b',origin='USER')['phases'][0];h=b['hypotheses'][0]

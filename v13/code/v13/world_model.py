@@ -14,12 +14,14 @@ Coverage (§7.2.2) per query: samples for that action, OOD distance of s to that
 their median nearest-neighbour distance), ensemble spread, cause tag SELF_CAUSED (all digital actions are own),
 and counterfactual confidence in [0,1]. Low coverage -> label SIMULATION_UNCERTAIN; a counterfactual is never REAL.
 """
+import hashlib
 import json
 import math
+import sqlite3
 import numpy as np
 from .common import now
 
-KEY='T8_WORLD_MODEL';REVISION='t8-world-model-v1'
+KEY='T8_WORLD_MODEL';REVISION='t8-world-model-sourcebound-v2'
 ACTIONS=('simple','detail','gist','both')
 TARGETS=('log_duration','success','log_chars')
 RIDGE=1e-2;ENSEMBLE=5;MIN_FIT=8;MAX_ROWS=2048
@@ -44,7 +46,7 @@ def _valid_observed_event_source(store, event_id):
     Production Store has read_source(), which checks deletion, source SHA,
     blob integrity and exact SourceRef bounds. Older minimal SQLite test
     doubles lack that API and retain their legacy *synthetic-only* semantics.
-    This is an ingestion guard, not fitted-model source revocation.
+    Fitted-state source lineage is independently checked by load().
     """
     reader = getattr(store, 'read_source', None)
     if reader is None:
@@ -68,7 +70,7 @@ def _valid_observed_event_source(store, event_id):
             return False
         text = reader(ref)
         return isinstance(text, str) and bool(text)
-    except (ValueError, TypeError, KeyError, OSError, UnicodeError):
+    except (ValueError, TypeError, KeyError, OSError, UnicodeError, sqlite3.Error):
         return False
 
 
@@ -132,11 +134,90 @@ def _split(n):
     """Deterministic hashed 1-in-4 hold-out (a plain i%4 split can align with periodic action patterns)."""
     test=[i for i in range(n) if ((i*2654435761)%2**32>>16)%4==3];return [i for i in range(n) if i not in set(test)],test
 
+def _action_binding(store, action_id):
+    """Stable digest of action, selected route and still-readable source."""
+    if type(action_id) is not str or not action_id:
+        return None
+    try:
+        row = store.one(
+            "SELECT id,event_id,status,expected,outcome,created FROM actions WHERE id=?",
+            (action_id,))
+        if not row or row['status'] != 'FINAL':
+            return None
+        if not _valid_observed_event_source(store, row['event_id']):
+            return None
+        selection = store.one(
+            "SELECT payload,created FROM packets WHERE kind='ActionSelection' "
+            "AND event_id=? AND created<=? ORDER BY created DESC,rowid DESC LIMIT 1",
+            (row['event_id'],row['created']))
+        if not selection or json.loads(selection['payload']).get('route_hint') not in ACTIONS:
+            return None
+        fields = ([row[k] for k in ('id','event_id','status','expected','outcome','created')]
+                  + [selection['payload'],selection['created']])
+        raw = json.dumps(fields, ensure_ascii=False, separators=(',',':'),
+                         allow_nan=False).encode('utf-8')
+        return {'action_id': action_id, 'event_id': row['event_id'],
+                'action_sha256': hashlib.sha256(raw).hexdigest()}
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, sqlite3.Error):
+        return None
+
+
+def _state_digest(st):
+    """Hash the entire fitted payload except its own digest field."""
+    content = {k:v for k,v in st.items() if k != 'model_sha256'}
+    raw = json.dumps(content, sort_keys=True, ensure_ascii=False,
+                     separators=(',',':'), allow_nan=False).encode('utf-8')
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _state_integrity(st):
+    try:
+        return (type(st) is dict and type(st.get('model_sha256')) is str
+                and st['model_sha256'] == _state_digest(st))
+    except (TypeError, ValueError, OverflowError):
+        return False
+
+
+def _bindings_valid(store, st):
+    """Fail closed for actual Store; no synthetic fixture is production evidence."""
+    reader = getattr(store, 'read_source', None)
+    if reader is None:
+        return st.get('evidence_scope') == 'SYNTHETIC_TEST_ONLY'
+    if not callable(reader) or st.get('evidence_scope') != 'SOURCE_BOUND_STORE':
+        return False
+    bindings = st.get('training_bindings')
+    n = st.get('n')
+    if (type(bindings) is not list or type(n) is not int or n < MIN_FIT
+            or len(bindings) != n):
+        return False
+    ids = set()
+    for binding in bindings:
+        if type(binding) is not dict or set(binding) != {'action_id','event_id','action_sha256'}:
+            return False
+        aid = binding.get('action_id')
+        if type(aid) is not str or aid in ids:
+            return False
+        ids.add(aid)
+        if _action_binding(store, aid) != binding:
+            return False
+    return True
+
+
 def fit(store,rng_seed=0):
     """Fit all four objectives from stored transitions; persist parameters + held-out metrics."""
     T=transitions(store);n=len(T)
     st={'revision':REVISION,'fitted':now(),'n':n,'counts':{a:sum(t['a']==a for t in T) for a in ACTIONS},'status':'TOO_FEW_TRANSITIONS'}
     if n<MIN_FIT:store.set_state(KEY,st);return st
+    reader = getattr(store, 'read_source', None)
+    actual_store = reader is not None
+    if actual_store:
+        if not callable(reader):
+            return dict(st, status='SOURCE_UNVERIFIED')
+        bindings = [_action_binding(store, t.get('action_id')) for t in T]
+        if any(b is None for b in bindings):
+            return dict(st, status='SOURCE_UNVERIFIED')
+    else:
+        bindings = []  # legacy synthetic SQLite test double; not production
     S=np.array([t['s'] for t in T]);A=np.array([onehot(t['a']) for t in T]);Y=np.array([t['y'] for t in T])
     Xf=np.hstack([np.ones((n,1)),S,A]);tr,te=_split(n);rng=np.random.default_rng(rng_seed)
     fw=[ridge(Xf[idx],Y[idx]) for idx in (rng.choice(tr,len(tr)) for _ in range(ENSEMBLE))]
@@ -165,12 +246,21 @@ def fit(store,rng_seed=0):
               metrics={'forward_mae':dict(zip(TARGETS,np.round(mae,4).tolist())),'forward_baseline_mae':dict(zip(TARGETS,np.round(base,4).tolist())),
                        'inverse_accuracy':None if inv_acc is None else round(inv_acc,4),'inverse_majority_baseline':round(major,4),
                        'inverse_note':'representation/control signal, not a causal claim','state_align':align,'held_out':len(te)})
+    st['evidence_scope'] = 'SOURCE_BOUND_STORE' if actual_store else 'SYNTHETIC_TEST_ONLY'
+    st['training_bindings'] = bindings
+    st['model_sha256'] = _state_digest(st)
+    # Recheck after training; any revocation during fit must block persistence.
+    if actual_store and not _bindings_valid(store, st):
+        return dict(st, status='SOURCE_CHANGED_DURING_FIT')
     store.set_state(KEY,st);store.log('world_model_fit',None,{'n':n,'status':'FITTED'})
     return st
 
 def load(store):
     st=store.state(KEY,None)[0]
-    return st if st and st.get('revision')==REVISION else None
+    if (not st or st.get('revision')!=REVISION or st.get('status')!='FITTED'
+            or not _state_integrity(st) or not _bindings_valid(store,st)):
+        return None
+    return st
 
 def coverage(st,s,a):
     pts=np.array(st['states'].get(a) or [],float);n=len(pts)
@@ -184,6 +274,7 @@ def coverage(st,s,a):
 
 def counterfactual(store,s,a,st=None):
     """Predicted consequence of action a, never a real outcome or authority."""
+    explicit_state = st is not None
     st=st or load(store)
     if a not in ACTIONS:raise ValueError('Aktion '+'|'.join(ACTIONS))
     cov=None
@@ -197,6 +288,9 @@ def counterfactual(store,s,a,st=None):
             if distance is None or (type(distance) in (int,float) and math.isfinite(distance)):
                 out['coverage']=cov
         return out
+    if explicit_state and callable(getattr(store, 'read_source', None)):
+        if not _state_integrity(st) or not _bindings_valid(store, st):
+            return uncertain('TRAINING_SOURCE_UNVERIFIED')
     if not st or st.get('status')!='FITTED':return uncertain('NO_WORLD_MODEL')
     try:
         x=np.asarray([1.]+list(s)+onehot(a),dtype=float)

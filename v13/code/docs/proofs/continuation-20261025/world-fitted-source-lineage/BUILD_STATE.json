@@ -1,0 +1,80 @@
+{
+  "package": "WorldModel fitted source lineage/revocation",
+  "date_utc": "2026-10-25",
+  "branch": "codex/world-fitted-source-lineage-20261025",
+  "pr": 259,
+  "base_verified": "ddad7815b368819c8987695c0bee1256e104ddff",
+  "owner": "world_model.py, test_world_model.py, new fitted-source test, unique CI/proof; no Runtime/DS3/LP3/native edits",
+  "source_blobs": {
+    "v13/code/v13/world_model.py": "4ac5978817de2d1413559d2733d62c546ff21219",
+    "v13/code/tests/test_world_model.py": "8eda21901a582c7d764b57da94a0f000a4f9c3be",
+    "v13/code/tests/test_world_fitted_source_lineage_20261025.py": "3e08f7c58400c3639774c44af3cb5f33b5c2e56d",
+    ".github/workflows/world-fitted-source-lineage-20261025.yml": "3733d36d84b61b943aff292ece5cf63ab89a0a7a"
+  },
+  "implementation": "Bump fitted WorldModel to t8-world-model-sourcebound-v2; bind every training action to live EventEnvelope SourceRef and digest of action row; hash full fitted state; revalidate on load, explicit-st counterfactual and after training before persistence. Reject old unbound v1. Synthetic pure numerical tests use explicit source-less Store double, never production Store.",
+  "red": {
+    "run_id": 40184806156,
+    "job_id": 121143230730,
+    "tests": 34,
+    "failures": 3,
+    "errors": 1,
+    "raw_artifact_id": 12595891044,
+    "raw_zip_sha256": "f7fa5b923b41cc223f32fd25081baa04879aadc0f45786de6632cd8bf81ba2d5"
+  },
+  "intermediate": {
+    "run_id": 40184910612,
+    "job_id": 121143554642,
+    "tests": 34,
+    "errors": 1,
+    "reason": "restart test attempted concurrent Store owner, production lock correctly rejected",
+    "raw_artifact_id": 12595224916,
+    "raw_zip_sha256": "fe164aa69ab0f795eea3aa140f40a425ce5ba85850b52f5fc5470b6fc1fba8d8"
+  },
+  "green": {
+    "run_id": 40184954777,
+    "job_id": 121143687601,
+    "tests": 34,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS",
+    "raw_artifact_id": 12596140740,
+    "raw_zip_sha256": "4a745cb65e169432c696a3e2126c6fa33722e99fd7947ca8c3354c29efcda860"
+  },
+  "independent_compatibility": {
+    "Run209": {
+      "run_id": 40184954643,
+      "conclusion": "success"
+    },
+    "Run202": {
+      "run_id": 40184954746,
+      "conclusion": "success"
+    },
+    "Run218": {
+      "run_id": 40184954665,
+      "conclusion": "success"
+    },
+    "WP_T8": {
+      "run_id": 40184954773,
+      "conclusion": "success"
+    }
+  },
+  "evidence_kind": "GitHub Linux actual Store with synthetic actions and deterministic Runtime double; no native model, no Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "limitations": [
+    "Unkeyed SHA256 provides accidental tamper detection, not authentication against a malicious database writer who can recompute hashes.",
+    "Each load revalidates up to MAX_ROWS source blobs; Android latency/performance proof missing.",
+    "Old v1 fitted state is retained but not loadable; refit with live verified sources required.",
+    "Full suite on exact PR259 head not yet completed. Native/Redmi/JEPA gates remain negative."
+  ],
+  "next_step": "Finish Run258 exact full suite after Run177 source chain repair. Then run full suite on PR259 head with new fitted lineage; preserve raw, investigate any regressions. Pursue canonical JEF/C3/B1/B2 learning and JEPA next, not just isolation helpers.",
+  "next_command": "Check remote PR258/259 and full-suite run statuses; on PR259 exact head run pinned full suite in serialized CI and inspect raw errors. No model/Redmi claims.",
+  "no_gate_promotion": true
+}
