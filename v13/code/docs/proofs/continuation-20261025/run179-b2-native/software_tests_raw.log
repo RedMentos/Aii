@@ -1,0 +1,8 @@
+test_locked_b2_spec_and_authority (test_run179_b2_native_tap_probe.ProbeChecks.test_locked_b2_spec_and_authority) ... ok
+test_reject_wrong_archive_binding (test_run179_b2_native_tap_probe.ProbeChecks.test_reject_wrong_archive_binding) ... ok
+test_reject_wrong_model_before_runner_launch (test_run179_b2_native_tap_probe.ProbeChecks.test_reject_wrong_model_before_runner_launch) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.003s
+
+OK

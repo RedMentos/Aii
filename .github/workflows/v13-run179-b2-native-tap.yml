@@ -1,0 +1,85 @@
+name: V13 Run179 pinned Qwen B2 native read-only tap proof
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run179-b2-native-tap.yml'
+      - 'v13/code/scripts/run179_b2_native_tap_probe.py'
+      - 'v13/code/tests/test_run179_b2_native_tap_probe.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run179-b2-native/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  pinned-native-b2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify preregistration and run software refusal tests
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run179"
+          test "$(git hash-object v13/code/v13/runners.py)" = '37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(git hash-object v13/code/scripts/run179_b2_native_tap_probe.py)" = '4061116c1a37cc80ff2311bfceeef1bdc21d9f81'
+          test "$(git hash-object v13/code/tests/test_run179_b2_native_tap_probe.py)" = 'ec3dd0ed2bf78dae8f5d6ed25379cc4acb8d7e95'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261025/run179-b2-native/PREREG.md)" = '058df1aebf08dec65779238df503a8c88028c4da'
+          python3 -m compileall -q v13/code/scripts/run179_b2_native_tap_probe.py v13/code/tests/test_run179_b2_native_tap_probe.py
+          PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_run179_b2_native_tap_probe.py -v 2>&1 | tee "$RUNNER_TEMP/run179/software.log"
+      - name: Download exact pinned llama b10964 binary archive
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --location --retry 2 --max-time 300 \
+            https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz \
+            -o "$RUNNER_TEMP/run179/llama.tar.gz"
+          test "$(stat -c %s "$RUNNER_TEMP/run179/llama.tar.gz")" = 16825086
+          echo '9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443  '"$RUNNER_TEMP/run179/llama.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/run179/llama"
+          tar -xzf "$RUNNER_TEMP/run179/llama.tar.gz" -C "$RUNNER_TEMP/run179/llama"
+          server="$(find "$RUNNER_TEMP/run179/llama" -type f -name llama-server -print -quit)"
+          test -n "$server" && test -x "$server"
+          echo "RUN179_SERVER=$server" >> "$GITHUB_ENV"
+          echo RUN179_PINNED_RUNNER_SHA256_OK
+      - name: Download exact pinned public Qwen B2 GGUF
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --location --retry 2 --max-time 600 \
+            https://huggingface.co/ggml-org/Qwen3.5-0.8B-GGUF/resolve/8fea620810c4afa23dd6443f999a48574c1611a3/Qwen3.5-0.8B-Q4_0.gguf \
+            -o "$RUNNER_TEMP/run179/B2.gguf"
+          test "$(stat -c %s "$RUNNER_TEMP/run179/B2.gguf")" = 563036064
+          echo '57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf  '"$RUNNER_TEMP/run179/B2.gguf" | sha256sum -c -
+          echo RUN179_PINNED_QWEN_B2_SHA256_OK
+      - name: Serialized read-only real B2 native tap
+        run: |
+          set -euo pipefail
+          export LD_LIBRARY_PATH="$(dirname "$RUN179_SERVER"):${LD_LIBRARY_PATH:-}"
+          PYTHONPATH=v13/code timeout 480s python3 v13/code/scripts/run179_b2_native_tap_probe.py \
+            --model "$RUNNER_TEMP/run179/B2.gguf" --server "$RUN179_SERVER" \
+            --workdir "$RUNNER_TEMP/run179/worker" \
+            --output "$RUNNER_TEMP/run179/native-result.json" 2>&1 | tee "$RUNNER_TEMP/run179/native-stdout-stderr.log"
+          echo RUN179_LINUX_NATIVE_B2_READONLY_TAP_ONLY_NO_JEPA_NO_REDMi
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base d9170cd07ab37843d25055e9e03136a527337f1f --head HEAD
+      - name: Retain closed raw logs, not downloaded model or binary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run179-B2-Native-ReadOnly-Raw
+          path: |
+            ${{ runner.temp }}/run179/software.log
+            ${{ runner.temp }}/run179/native-stdout-stderr.log
+            ${{ runner.temp }}/run179/native-result.json
+            ${{ runner.temp }}/run179/worker/logs/*.log
+          if-no-files-found: warn
+          retention-days: 14
