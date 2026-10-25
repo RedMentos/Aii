@@ -1,0 +1,7 @@
+# Run129 — independent exact-head full-suite audit after frozen-runtime preflight
+
+2026-10-25 UTC. Base Run128 PR #159 `ad3183796f9a06c7bea9c2e956a43c623e042dcb`, verified remote bytes. Owner ONLY new workflow + proofs; no source/model/Canon edits. Run127 installer quote separate owner; no merge. Run126 PR #157 (Run125 unsafe runtime mutation) had 2238 tests, 8 FAIL, 63 ERROR, 11 skips. Run115 earlier baseline 2217 tests, 4 FAIL, 1 ERROR, 11 skips. Run128 reverted runtime blob to frozen `a691d27` and preflighted via CLI. Hypothesis: SourceHandoff and NativeFiring cascade errors disappear; remaining LP3 Run16 helper failures persist and are not to be hidden.
+
+Preregister exact PR HEAD (not merge ref), pinned torch 2.9.1+cpu, NumPy 2.3.5, prompt-toolkit 3.0.52; offline/no models; sealed Run16 LP3 helper SHA256 `041e0014194ffdfd74aef79cf6a9149e6c2e11ad51b859bc9a9e7e81b1b67516` extracted to temp only, not production. Full unittest discover with 900s timeout, raw log uploaded even on FAIL, nonzero CI outcome retained. Official privacy scan first. Do not promote STEP2/B3/Body-JEPA/jepa_weight/DS2/V13 from any result.
+
+Next if the only remaining failures are inherited LP3 helper: select substantive independent canonical package rather than looping on same LP3 helper. Do not overwrite other owners.
