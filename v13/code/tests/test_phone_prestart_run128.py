@@ -142,5 +142,46 @@ class PhonePrestartRun128(unittest.TestCase):
             s.close()
 
 
+    def test_retry_after_durable_commit_before_ack_keeps_original_ownership(self):
+        self.press("STILLSTAND")
+        H.prestart(self.home)
+        # Simulate a crash after SQLite COMMIT but before request-file rename.
+        self.press("STILLSTAND")
+        H.prestart(self.home)
+        r = Runtime(self.home)
+        try:
+            self.assertEqual(S.status(r)["set_by_standstill"],
+                             {"notaus": True, "queue": True, "age": True})
+            S.release(r)
+            self.assertFalse(r.paused)
+            self.assertFalse(P.report(r.store)["notaus"])
+            self.assertFalse(A.controller(r).view()["frozen"])
+        finally:
+            r.close()
+
+    def test_cli_corrupt_age_state_refuses_runtime_start_and_keeps_request(self):
+        s = Store(self.home)
+        try:
+            s.set_state(A.STATE_KEY, {"revision": "foreign", "frozen": False})
+        finally:
+            s.close()
+        self.press("STILLSTAND")
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(APP)
+        result = subprocess.run([sys.executable, "-m", "v13", "--home", str(self.home),
+                                 "ask", "Kopiere exakt: should never run"], env=env,
+                                capture_output=True, text=True, timeout=15)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Unlesbarer Age-Zustand", result.stderr)
+        self.assertEqual(H.pending(self.home), ["STILLSTAND"])
+        s = Store(self.home)
+        try:
+            self.assertFalse(s.queue_paused())
+            self.assertFalse(P.report(s)["notaus"])
+            self.assertEqual(s.queue_stats()["count"], 0)
+        finally:
+            s.close()
+
+
 if __name__ == "__main__":
     unittest.main()
