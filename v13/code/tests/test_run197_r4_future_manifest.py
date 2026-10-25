@@ -173,3 +173,16 @@ class IndependentSourceReview(unittest.TestCase):
             (Path(d)/'generator.py').write_text('modified source\n')
             with self.assertRaisesRegex(ValueError,'MANIFEST_GENERATOR_RECOMPUTE_MISMATCH'):
                 bind_local(rp,mp,raw,pp)
+
+
+class CLIRegression(unittest.TestCase):
+    def test_direct_script_help_without_pythonpath(self):
+        import os, subprocess, sys
+        script = Path(M.__file__)
+        env = dict(os.environ)
+        env.pop('PYTHONPATH', None)
+        p = subprocess.run([sys.executable, str(script), '--help'],
+                           cwd=script.parent.parent, env=env,
+                           capture_output=True, text=True, timeout=10)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn('manifest', p.stdout)
