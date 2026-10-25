@@ -23,6 +23,9 @@ COUNT = re.compile(r'(?i)\b(?:total|overall)\s+(?:number|count)\s+of\b')
 # Run362: conservative German question-only BOOT rules. A generic "difference
 # between A and B" is NOT necessarily max-minus-min when a list has >2 rows.
 DE_COUNT = re.compile(r'(?i)\b(?:gesamtanzahl|anzahl(?:\s+(?:der|von))?|wie\s+viele\s+(?:einträge|posten|artikel|positionen|personen|zeilen|stücke|teile|produkte|werte|zahlen|elemente|gruppen))\b')
+# "Wie viele" normally asks for a count, even when the noun embeds "Preis".
+# Explicit "wie viele Euro sind ..." is an amount, not a number of entries.
+DE_PLURAL_COUNT = re.compile(r'(?i)\bwie\s+viele\b(?!\s+euro(?:\s|$))')
 DE_DIFF_CUE = re.compile(r'(?i)\b(?:differenz|unterschied|abstand|auseinander|mehr|weniger)\b')
 DE_HIGH = re.compile(r'(?i)\b(?:größt\w*|höchst\w*|maxim\w*)\b')
 DE_LOW = re.compile(r'(?i)\b(?:kleinst\w*|niedrigst\w*|minim\w*)\b')
@@ -60,7 +63,7 @@ def operation(text):
     if len(t) > MAX_TEXT:
         return None
     q = question_part(t)
-    if COUNT.search(q) or DE_COUNT.search(q):
+    if COUNT.search(q) or DE_COUNT.search(q) or DE_PLURAL_COUNT.search(q):
         return None
     english=next((op for rx, op in OPERATIONS+EXTRA if rx.search(q)), None)
     if english is not None:
