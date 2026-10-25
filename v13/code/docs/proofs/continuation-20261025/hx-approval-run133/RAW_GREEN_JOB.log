@@ -1,0 +1,291 @@
+﻿2026-10-25T02:31:44.1032058Z Current runner version: '2.338.0'
+2026-10-25T02:31:44.1060665Z ##[group]Runner Image Provisioner
+2026-10-25T02:31:44.1061701Z Hosted Compute Agent
+2026-10-25T02:31:44.1062368Z Version: 20261021.618
+2026-10-25T02:31:44.1063125Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T02:31:44.1063893Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T02:31:44.1064607Z Worker ID: {3d90f23f-0ee7-400b-ab0e-7faed73ebfa3}
+2026-10-25T02:31:44.1065425Z Region: eastus
+2026-10-25T02:31:44.1066022Z Cloud: Azure
+2026-10-25T02:31:44.1066653Z ##[endgroup]
+2026-10-25T02:31:44.1068194Z ##[group]Operating System
+2026-10-25T02:31:44.1068870Z Ubuntu
+2026-10-25T02:31:44.1069958Z 26.04.1
+2026-10-25T02:31:44.1070543Z LTS
+2026-10-25T02:31:44.1071168Z ##[endgroup]
+2026-10-25T02:31:44.1071736Z ##[group]Runner Image
+2026-10-25T02:31:44.1072385Z Image: ubuntu-26.04
+2026-10-25T02:31:44.1072976Z Version: 20261012.163.1
+2026-10-25T02:31:44.1074357Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-25T02:31:44.1076180Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-25T02:31:44.1077269Z ##[endgroup]
+2026-10-25T02:31:44.1078436Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T02:31:44.1081006Z Contents: read
+2026-10-25T02:31:44.1081638Z Metadata: read
+2026-10-25T02:31:44.1082297Z ##[endgroup]
+2026-10-25T02:31:44.1084994Z Secret source: Actions
+2026-10-25T02:31:44.1086177Z Cache mode: write
+2026-10-25T02:31:44.1087159Z Prepare workflow directory
+2026-10-25T02:31:44.1512009Z Prepare all required actions
+2026-10-25T02:31:44.1564038Z Getting action download info
+2026-10-25T02:31:44.3024233Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-25T02:31:44.5375915Z Complete job name: software
+2026-10-25T02:31:44.6350931Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-25T02:31:44.6352266Z with:
+2026-10-25T02:31:44.6352888Z   persist-credentials: false
+2026-10-25T02:31:44.6353509Z   repository: RedMentos/Aii
+2026-10-25T02:31:44.6357607Z   token: ***
+2026-10-25T02:31:44.6358192Z   ssh-strict: true
+2026-10-25T02:31:44.6358772Z   ssh-user: git
+2026-10-25T02:31:44.6359526Z   clean: true
+2026-10-25T02:31:44.6360097Z   sparse-checkout-cone-mode: true
+2026-10-25T02:31:44.6360781Z   fetch-depth: 1
+2026-10-25T02:31:44.6361347Z   fetch-tags: false
+2026-10-25T02:31:44.6361952Z   show-progress: true
+2026-10-25T02:31:44.6362516Z   lfs: false
+2026-10-25T02:31:44.6363018Z   submodules: false
+2026-10-25T02:31:44.6363611Z   set-safe-directory: true
+2026-10-25T02:31:44.6364557Z env:
+2026-10-25T02:31:44.6365074Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:31:44.6365726Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:31:44.6366305Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:31:44.6366891Z ##[endgroup]
+2026-10-25T02:31:44.7460633Z Syncing repository: RedMentos/Aii
+2026-10-25T02:31:44.7463665Z ##[group]Getting Git version info
+2026-10-25T02:31:44.7465004Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-25T02:31:44.7466964Z [command]/usr/bin/git version
+2026-10-25T02:31:44.7480685Z git version 2.55.0
+2026-10-25T02:31:44.7516349Z ##[endgroup]
+2026-10-25T02:31:44.7533355Z Temporarily overriding HOME='/home/runner/work/_temp/28708835-8e7d-474b-a20d-1562523755e4' before making global git config changes
+2026-10-25T02:31:44.7536418Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T02:31:44.7538588Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T02:31:44.7603855Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-25T02:31:44.7607490Z ##[group]Initializing the repository
+2026-10-25T02:31:44.7613934Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-25T02:31:44.7777739Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-25T02:31:44.7781575Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-25T02:31:44.7784994Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-25T02:31:44.7787131Z hint: call:
+2026-10-25T02:31:44.7788409Z hint:
+2026-10-25T02:31:44.7790276Z hint: 	git config --global init.defaultBranch <name>
+2026-10-25T02:31:44.7792073Z hint:
+2026-10-25T02:31:44.7793707Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-25T02:31:44.7795939Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-25T02:31:44.7797755Z hint:
+2026-10-25T02:31:44.7798869Z hint: 	git branch -m <name>
+2026-10-25T02:31:44.7800364Z hint:
+2026-10-25T02:31:44.7801770Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-25T02:31:44.7803833Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-25T02:31:44.7807207Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-25T02:31:44.7857205Z ##[endgroup]
+2026-10-25T02:31:44.7858168Z ##[group]Disabling automatic garbage collection
+2026-10-25T02:31:44.7862979Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-25T02:31:44.7903952Z ##[endgroup]
+2026-10-25T02:31:44.7904795Z ##[group]Setting up auth
+2026-10-25T02:31:44.7914411Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:31:44.7956634Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:31:44.8470868Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:31:44.8512217Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:31:44.8811023Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-25T02:31:44.8857776Z ##[endgroup]
+2026-10-25T02:31:44.8858786Z ##[group]Fetching the repository
+2026-10-25T02:31:44.8869398Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +1a427f49fb1409c728ffe56606962ffa30421833:refs/remotes/pull/163/merge
+2026-10-25T02:31:50.9849894Z From https://github.com/RedMentos/Aii
+2026-10-25T02:31:50.9852428Z  * [new ref]         1a427f49fb1409c728ffe56606962ffa30421833 -> pull/163/merge
+2026-10-25T02:31:50.9856811Z ##[endgroup]
+2026-10-25T02:31:50.9858791Z ##[group]Determining the checkout info
+2026-10-25T02:31:50.9861066Z ##[endgroup]
+2026-10-25T02:31:50.9864601Z [command]/usr/bin/git sparse-checkout disable
+2026-10-25T02:31:50.9926404Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-25T02:31:50.9964168Z ##[group]Checking out the ref
+2026-10-25T02:31:50.9969657Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/163/merge
+2026-10-25T02:31:52.0430404Z Updating files:  49% (1724/3481)
+2026-10-25T02:31:52.1198142Z Updating files:  50% (1741/3481)
+2026-10-25T02:31:52.1951747Z Updating files:  51% (1776/3481)
+2026-10-25T02:31:52.1996059Z Updating files:  52% (1811/3481)
+2026-10-25T02:31:52.2021010Z Updating files:  53% (1845/3481)
+2026-10-25T02:31:52.2060060Z Updating files:  54% (1880/3481)
+2026-10-25T02:31:52.2095825Z Updating files:  55% (1915/3481)
+2026-10-25T02:31:52.2115270Z Updating files:  56% (1950/3481)
+2026-10-25T02:31:52.2137856Z Updating files:  57% (1985/3481)
+2026-10-25T02:31:52.2161429Z Updating files:  58% (2019/3481)
+2026-10-25T02:31:52.2189955Z Updating files:  59% (2054/3481)
+2026-10-25T02:31:52.2219373Z Updating files:  60% (2089/3481)
+2026-10-25T02:31:52.2239726Z Updating files:  61% (2124/3481)
+2026-10-25T02:31:52.2259967Z Updating files:  62% (2159/3481)
+2026-10-25T02:31:52.2287362Z Updating files:  63% (2194/3481)
+2026-10-25T02:31:52.2313678Z Updating files:  64% (2228/3481)
+2026-10-25T02:31:52.2336859Z Updating files:  65% (2263/3481)
+2026-10-25T02:31:52.2365570Z Updating files:  66% (2298/3481)
+2026-10-25T02:31:52.2382123Z Updating files:  67% (2333/3481)
+2026-10-25T02:31:52.2397184Z Updating files:  68% (2368/3481)
+2026-10-25T02:31:52.2417101Z Updating files:  69% (2402/3481)
+2026-10-25T02:31:52.2443425Z Updating files:  70% (2437/3481)
+2026-10-25T02:31:52.2461983Z Updating files:  71% (2472/3481)
+2026-10-25T02:31:52.2487192Z Updating files:  72% (2507/3481)
+2026-10-25T02:31:52.2505703Z Updating files:  73% (2542/3481)
+2026-10-25T02:31:52.2535475Z Updating files:  74% (2576/3481)
+2026-10-25T02:31:52.2572459Z Updating files:  75% (2611/3481)
+2026-10-25T02:31:52.2598359Z Updating files:  76% (2646/3481)
+2026-10-25T02:31:52.2628039Z Updating files:  77% (2681/3481)
+2026-10-25T02:31:52.2655278Z Updating files:  78% (2716/3481)
+2026-10-25T02:31:52.2684922Z Updating files:  79% (2750/3481)
+2026-10-25T02:31:52.2717617Z Updating files:  80% (2785/3481)
+2026-10-25T02:31:52.2750581Z Updating files:  81% (2820/3481)
+2026-10-25T02:31:52.2778415Z Updating files:  82% (2855/3481)
+2026-10-25T02:31:52.2808815Z Updating files:  83% (2890/3481)
+2026-10-25T02:31:52.3443432Z Updating files:  84% (2925/3481)
+2026-10-25T02:31:52.3468693Z Updating files:  85% (2959/3481)
+2026-10-25T02:31:52.3489374Z Updating files:  86% (2994/3481)
+2026-10-25T02:31:52.3511025Z Updating files:  87% (3029/3481)
+2026-10-25T02:31:52.3535477Z Updating files:  88% (3064/3481)
+2026-10-25T02:31:52.3556893Z Updating files:  89% (3099/3481)
+2026-10-25T02:31:52.3580322Z Updating files:  90% (3133/3481)
+2026-10-25T02:31:52.3603765Z Updating files:  91% (3168/3481)
+2026-10-25T02:31:52.3625946Z Updating files:  92% (3203/3481)
+2026-10-25T02:31:52.3649874Z Updating files:  93% (3238/3481)
+2026-10-25T02:31:52.3683556Z Updating files:  94% (3273/3481)
+2026-10-25T02:31:52.3709361Z Updating files:  95% (3307/3481)
+2026-10-25T02:31:52.3736801Z Updating files:  96% (3342/3481)
+2026-10-25T02:31:52.3765221Z Updating files:  97% (3377/3481)
+2026-10-25T02:31:52.3811414Z Updating files:  98% (3412/3481)
+2026-10-25T02:31:52.3845665Z Updating files:  99% (3447/3481)
+2026-10-25T02:31:52.3846397Z Updating files: 100% (3481/3481)
+2026-10-25T02:31:52.3846964Z Updating files: 100% (3481/3481), done.
+2026-10-25T02:31:52.3886709Z Note: switching to 'refs/remotes/pull/163/merge'.
+2026-10-25T02:31:52.3887375Z 
+2026-10-25T02:31:52.3888055Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-25T02:31:52.3889576Z changes and commit them, and you can discard any commits you make in this
+2026-10-25T02:31:52.3890744Z state without impacting any branches by switching back to a branch.
+2026-10-25T02:31:52.3891509Z 
+2026-10-25T02:31:52.3892105Z If you want to create a new branch to retain commits you create, you may
+2026-10-25T02:31:52.3893158Z do so (now or later) by using -c with the switch command. Example:
+2026-10-25T02:31:52.3893971Z 
+2026-10-25T02:31:52.3894381Z   git switch -c <new-branch-name>
+2026-10-25T02:31:52.3894949Z 
+2026-10-25T02:31:52.3895357Z Or undo this operation with:
+2026-10-25T02:31:52.3895918Z 
+2026-10-25T02:31:52.3896277Z   git switch -
+2026-10-25T02:31:52.3896891Z 
+2026-10-25T02:31:52.3897465Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-25T02:31:52.3898238Z 
+2026-10-25T02:31:52.3899363Z HEAD is now at 1a427f4 Merge 1df2f77c708afdc4b2f64770104356bacca2f660 into e1be374d279b3ef1ef2c84a3c014a362e2a4fa85
+2026-10-25T02:31:52.4008648Z ##[endgroup]
+2026-10-25T02:31:52.4072795Z [command]/usr/bin/git log -1 --format=%H
+2026-10-25T02:31:52.4102268Z 1a427f49fb1409c728ffe56606962ffa30421833
+2026-10-25T02:31:52.4117900Z ##[group]Removing auth
+2026-10-25T02:31:52.4120154Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:31:52.4162386Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:31:52.4459722Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:31:52.4487526Z http.https://github.com/.extraheader
+2026-10-25T02:31:52.4495506Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-25T02:31:52.4534030Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:31:52.4822949Z ##[endgroup]
+2026-10-25T02:31:52.5047651Z ##[group]Run python3 -m venv "$RUNNER_TEMP/run133"
+2026-10-25T02:31:52.5048137Z [36;1mpython3 -m venv "$RUNNER_TEMP/run133"[0m
+2026-10-25T02:31:52.5048844Z [36;1m"$RUNNER_TEMP/run133/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-25T02:31:52.5233245Z shell: /usr/bin/bash -e {0}
+2026-10-25T02:31:52.5233674Z env:
+2026-10-25T02:31:52.5233960Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:31:52.5234295Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:31:52.5234620Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:31:52.5234926Z ##[endgroup]
+2026-10-25T02:31:56.0204912Z Collecting numpy==2.3.5
+2026-10-25T02:31:56.0869114Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-25T02:31:56.1663863Z Collecting prompt-toolkit==3.0.52
+2026-10-25T02:31:56.1885359Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-25T02:31:56.2393084Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-25T02:31:56.2577337Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-25T02:31:56.2843355Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-25T02:31:56.4459410Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 120.4 MB/s eta 0:00:00
+2026-10-25T02:31:56.4651808Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-25T02:31:56.4886070Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-25T02:31:56.4951682Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 139.1 MB/s eta 0:00:00
+2026-10-25T02:31:56.5326646Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-25T02:31:58.7500996Z 
+2026-10-25T02:31:58.7512617Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-25T02:31:58.8856842Z ##[group]Run set -euo pipefail
+2026-10-25T02:31:58.8857198Z [36;1mset -euo pipefail[0m
+2026-10-25T02:31:58.8857445Z [36;1mcd v13/code[0m
+2026-10-25T02:31:58.8857673Z [36;1mexport PYTHONPATH="$PWD"[0m
+2026-10-25T02:31:58.8858032Z [36;1m"$RUNNER_TEMP/run133/bin/python" -m compileall -q v13 tests[0m
+2026-10-25T02:31:58.8858544Z [36;1mfor pattern in test_hx_approval_run133.py test_harness_hx.py test_growth.py; do[0m
+2026-10-25T02:31:58.8859297Z [36;1m  echo "RUN133_SUITE=$pattern"[0m
+2026-10-25T02:31:58.8859748Z [36;1m  "$RUNNER_TEMP/run133/bin/python" -m unittest discover -s tests -p "$pattern" -v[0m
+2026-10-25T02:31:58.8860180Z [36;1mdone[0m
+2026-10-25T02:31:58.8860461Z [36;1mecho "RUN133_LINUX_SHADOW_PASS; NO_LIVE_HX_OR_NATIVE_PROOF"[0m
+2026-10-25T02:31:58.8922902Z shell: /usr/bin/bash -e {0}
+2026-10-25T02:31:58.8923166Z env:
+2026-10-25T02:31:58.8923369Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:31:58.8923598Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:31:58.8923885Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:31:58.8924107Z ##[endgroup]
+2026-10-25T02:31:59.8760699Z RUN133_SUITE=test_hx_approval_run133.py
+2026-10-25T02:32:00.0824118Z test_forged_approved_dict_cannot_apply_harness (test_hx_approval_run133.HXAuthorityReview.test_forged_approved_dict_cannot_apply_harness) ... ok
+2026-10-25T02:32:00.0994513Z test_forged_approved_dict_cannot_create_experience (test_hx_approval_run133.HXAuthorityReview.test_forged_approved_dict_cannot_create_experience) ... ok
+2026-10-25T02:32:00.1158651Z test_legitimate_approved_request_remains_functional (test_hx_approval_run133.HXAuthorityReview.test_legitimate_approved_request_remains_functional) ... ok
+2026-10-25T02:32:00.1323851Z test_stale_evidence_excluded_without_explicit_verify (test_hx_approval_run133.HXAuthorityReview.test_stale_evidence_excluded_without_explicit_verify) ... ok
+2026-10-25T02:32:00.1324624Z 
+2026-10-25T02:32:00.1324807Z ----------------------------------------------------------------------
+2026-10-25T02:32:00.1325268Z Ran 4 tests in 0.078s
+2026-10-25T02:32:00.1325432Z 
+2026-10-25T02:32:00.1329934Z OK
+2026-10-25T02:32:00.1534885Z RUN133_SUITE=test_harness_hx.py
+2026-10-25T02:32:00.2934038Z test_allow_list_never_covers_safety_or_moral_texts (test_harness_hx.HX1Harness.test_allow_list_never_covers_safety_or_moral_texts) ... ok
+2026-10-25T02:32:00.3950777Z test_hub_wires_shadow_parts (test_harness_hx.HX1Harness.test_hub_wires_shadow_parts) ... ok
+2026-10-25T02:32:00.4223247Z test_rollback_goes_to_previous_version_and_overlay_is_sandbox (test_harness_hx.HX1Harness.test_rollback_goes_to_previous_version_and_overlay_is_sandbox) ... ok
+2026-10-25T02:32:00.4430431Z test_same_shield_human_gate_and_rollback_point (test_harness_hx.HX1Harness.test_same_shield_human_gate_and_rollback_point) ... ok
+2026-10-25T02:32:00.4602333Z test_texts_that_weaken_rules_are_refused (test_harness_hx.HX1Harness.test_texts_that_weaken_rules_are_refused) ... ok
+2026-10-25T02:32:00.4773782Z test_ablation_same_tasks_with_and_without (test_harness_hx.HX3Experience.test_ablation_same_tasks_with_and_without) ... ok
+2026-10-25T02:32:00.4976907Z test_entry_only_with_evidence (test_harness_hx.HX3Experience.test_entry_only_with_evidence) ... ok
+2026-10-25T02:32:00.5186923Z test_stale_evidence_and_rollback_retire_entries (test_harness_hx.HX3Experience.test_stale_evidence_and_rollback_retire_entries) ... ok
+2026-10-25T02:32:00.5192795Z test_judge_sees_no_origin_and_pick_is_revealed_after (test_harness_hx.HX4Blind.test_judge_sees_no_origin_and_pick_is_revealed_after) ... ok
+2026-10-25T02:32:00.5197169Z test_position_bias_bad_labels_and_errors_pick_nothing (test_harness_hx.HX4Blind.test_position_bias_bad_labels_and_errors_pick_nothing) ... ok
+2026-10-25T02:32:00.5200388Z 
+2026-10-25T02:32:00.5200880Z ----------------------------------------------------------------------
+2026-10-25T02:32:00.5201447Z Ran 10 tests in 0.255s
+2026-10-25T02:32:00.5201682Z 
+2026-10-25T02:32:00.5201816Z OK
+2026-10-25T02:32:00.5524971Z RUN133_SUITE=test_growth.py
+2026-10-25T02:32:00.6870518Z test_export_import_goes_through_swap_gates (test_growth.AG0Slots.test_export_import_goes_through_swap_gates) ... ok
+2026-10-25T02:32:00.7124472Z test_swap_keeps_portable_and_relearns_bound_state (test_growth.AG0Slots.test_swap_keeps_portable_and_relearns_bound_state) ... ok
+2026-10-25T02:32:00.7292391Z test_experts_load_evict_and_learn_only_when_resident (test_growth.AG13Residency.test_experts_load_evict_and_learn_only_when_resident) ... ok
+2026-10-25T02:32:00.8141039Z test_metrics_come_from_measurements_and_estimate_names_blockers (test_growth.AgeEvidence.test_metrics_come_from_measurements_and_estimate_names_blockers) ... ok
+2026-10-25T02:32:00.8510394Z test_calc_safety_and_policy (test_growth.G10Tools.test_calc_safety_and_policy) ... ok
+2026-10-25T02:32:00.8720064Z test_beliefs_need_evidence_and_protected_are_refused (test_growth.G11UserModel.test_beliefs_need_evidence_and_protected_are_refused) ... ok
+2026-10-25T02:32:00.8894440Z test_calibration_metric (test_growth.G12Eval.test_calibration_metric) ... ok
+2026-10-25T02:32:00.9087649Z test_oracle_vs_null_curves_forgetting_and_holdout_guard (test_growth.G12Eval.test_oracle_vs_null_curves_forgetting_and_holdout_guard) ... ok
+2026-10-25T02:32:00.9270118Z test_solver_errors_count_as_wrong (test_growth.G12Eval.test_solver_errors_count_as_wrong) ... ok
+2026-10-25T02:32:00.9500430Z test_suite_is_deterministic_and_answers_are_correct (test_growth.G12Eval.test_suite_is_deterministic_and_answers_are_correct) ... ok
+2026-10-25T02:32:00.9806904Z test_requests_cloud_privacy_dataset_and_reliance (test_growth.G1Teacher.test_requests_cloud_privacy_dataset_and_reliance) ... ok
+2026-10-25T02:32:00.9978871Z test_prediction_error_drops_with_experience (test_growth.G2Grounding.test_prediction_error_drops_with_experience) ... ok
+2026-10-25T02:32:01.0170863Z test_tree_progress_wake_and_age_gate (test_growth.G3Goals.test_tree_progress_wake_and_age_gate) ... ok
+2026-10-25T02:32:01.0404242Z test_lifecycle_run_and_frontier (test_growth.G4Skills.test_lifecycle_run_and_frontier) ... ok
+2026-10-25T02:32:01.0643812Z test_learning_progress_prefers_improving_region (test_growth.G5Curiosity.test_learning_progress_prefers_improving_region) ... ok
+2026-10-25T02:32:01.0887078Z test_holdout_prompt_cannot_enter_a_batch (test_growth.G6Weights.test_holdout_prompt_cannot_enter_a_batch) ... ok
+2026-10-25T02:32:01.1160488Z test_null_trainer_is_honest_and_gate_needs_user (test_growth.G6Weights.test_null_trainer_is_honest_and_gate_needs_user) ... ok
+2026-10-25T02:32:01.1355587Z test_stage_needs_learning_mode_and_replay_pass (test_growth.G6Weights.test_stage_needs_learning_mode_and_replay_pass) ... ok
+2026-10-25T02:32:01.1527689Z test_induces_rule_and_checks_holdout (test_growth.G7Abstraction.test_induces_rule_and_checks_holdout) ... ok
+2026-10-25T02:32:01.1696533Z test_shield_and_human_gate (test_growth.G8SelfImprove.test_shield_and_human_gate) ... ok
+2026-10-25T02:32:01.2043423Z test_calibrator_is_monotone_and_decides (test_growth.G9Metacog.test_calibrator_is_monotone_and_decides) ... ok
+2026-10-25T02:32:01.2214579Z test_semantic_entropy (test_growth.G9Metacog.test_semantic_entropy) ... ok
+2026-10-25T02:32:01.2405174Z test_growth_actions_run_through_sleep_runtime (test_growth.SchedulerHooks.test_growth_actions_run_through_sleep_runtime) ... ok
+2026-10-25T02:32:01.2626361Z test_operator_growth_command (test_growth.SchedulerHooks.test_operator_growth_command) ... ok
+2026-10-25T02:32:01.2626973Z 
+2026-10-25T02:32:01.2627188Z ----------------------------------------------------------------------
+2026-10-25T02:32:01.2627669Z Ran 24 tests in 0.600s
+2026-10-25T02:32:01.2627871Z 
+2026-10-25T02:32:01.2628005Z OK
+2026-10-25T02:32:01.3032444Z RUN133_LINUX_SHADOW_PASS; NO_LIVE_HX_OR_NATIVE_PROOF
+2026-10-25T02:32:01.3160277Z Post job cleanup.
+2026-10-25T02:32:01.4122862Z [command]/usr/bin/git version
+2026-10-25T02:32:01.4174566Z git version 2.55.0
+2026-10-25T02:32:01.4221179Z Temporarily overriding HOME='/home/runner/work/_temp/57cafda5-cb96-4bf5-8cb1-cfb6a1adef52' before making global git config changes
+2026-10-25T02:32:01.4223319Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T02:32:01.4227266Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T02:32:01.4278079Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:32:01.4325611Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:32:01.4700762Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:32:01.4757667Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:32:01.5305432Z Cleaning up orphan processes
+2026-10-25T02:32:01.5808293Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -87,6 +87,27 @@ def default(target):
     if target not in TARGETS:raise KeyError(target)
     return TARGETS[target][1]()
 
+def require_approved(store,proposal):
+    """Bind a claimed human approval to the persisted AG8 proposal and request.
+
+    A caller-controlled dict with APPROVED/passed fields is not authority.
+    Only the exact stored proposal after human approval may write HX state.
+    """
+    if not isinstance(proposal,dict) or not isinstance(proposal.get('id'),str):
+        raise PermissionError('Freigabe muss aus AG8 stammen')
+    from .self_improve import KEY as AG8_KEY
+    state=store.state(AG8_KEY,None)[0] or {}
+    stored=(state.get('proposals') or {}).get(proposal['id']) if isinstance(state,dict) else None
+    if not isinstance(stored,dict) or stored!=proposal:
+        raise PermissionError('Freigabe weicht vom gespeicherten AG8-Vorschlag ab')
+    if stored.get('status')!='APPROVED' or not (stored.get('shield') or {}).get('passed'):
+        raise PermissionError('AG8-Schild oder menschliche Freigabe fehlt')
+    rid=stored.get('request_id')
+    row=store.one("SELECT status FROM requests WHERE id=?",(rid,)) if rid else None
+    if row is None or row['status']!='APPROVED':
+        raise PermissionError('AG8-Freigabeanfrage nicht bestätigt')
+    return stored
+
 class HarnessLibrary:
     """Active harness overrides with history. apply() only takes an APPROVED AG8 'harness' proposal."""
     def __init__(self,store,clock=time.time):
@@ -104,6 +125,7 @@ class HarnessLibrary:
     def apply(self,proposal,settings):
         if proposal.get('kind')!='harness' or proposal.get('status')!='APPROVED':raise PermissionError('Nur freigegebene Harness-Vorschläge')
         if not (proposal.get('shield') or {}).get('passed'):raise PermissionError('Regressionsschild nicht bestanden')
+        require_approved(self.s,proposal)
         settings=candidate(settings)
         if settings!=candidate(proposal['diff']):raise ValueError('Werte weichen vom freigegebenen Vorschlag ab')
         def f(st):
