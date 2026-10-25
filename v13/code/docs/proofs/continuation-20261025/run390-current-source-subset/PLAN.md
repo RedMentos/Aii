@@ -1,0 +1,13 @@
+# Run390 / separate current-source regression from immutable historical source tests — preregistration (2026-10-25)
+
+Independent owner GPT continuation, branch `codex/current-source-subset-run390-20261025` from verified Run388 checkpoint `0e4a22157b937cf40d264f7d51617c44d0eb5796` (review chain only, not main). Run389 full source-wide survey is running independently on its own branch; do not overwrite it. Owned files: new `scripts/run390_current_source_subset.py`, new workflow and this proof directory. No modifications to runtime/model/seed/frozen cohorts or existing tests.
+
+## Why a separate cohort is needed
+Run367 exact-head full Python suite on historical Run366 source (PR362, Actions 40232222383) ran **3,134 tests, 0 failures, 63 errors, 14 skips**. Its 63 errors were classified as 36 historical native-firing source-hash mismatch, 26 historical source-handoff hash mismatch and one missing historical helper. These tests intentionally bind historical source bytes and should not be retuned to pass on the current stacked source. The full suite stays RED. Current-source regression should be measured **separately**, not silently counted as a full-suite PASS.
+
+## Immutable exclusion cohort and acceptance
+Use exact original Run367 raw artifact ID `12613203996` with ZIP SHA256 `1325380605cee8bf63abb79c559533229f18ebcb1e958286e6da913e002279c6`; derive exactly the 63 ERROR test IDs from `RUN367_FULL_SUITE_RAW.log` and commit a manifest, preserving its SHA256 `1fe7d636e211a721fe68b1a82c891eef1512e5fd4ee318b70fd21c91ab3c6115`. No additions/deletions to this exclusion list without a new preregistration. The new test runner must discover the full current test tree, fail if an exclusion ID is absent/ambiguous, explicitly list every excluded ID, then run every other test, emit JSON counts and honest exit status. This result is named **CURRENT_SOURCE_SUBSET** and never called full-suite GREEN. Historical 63 ERROR remain visible as a separate negative cohort.
+
+CI uses Ubuntu 24.04, pinned numpy 2.3.5, prompt-toolkit 3.0.52 and CPU torch 2.9.1+cpu as in Run367, no models/downloads, original Run147 native artifact 12585363362 SHA256 `ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676` read-only, immutable Canon SHA256 `3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee`, 900s test timeout, serialized native-heavy concurrency group, privacy scan, raw SHA closure and private backup. If historical artifacts have expired, fail closed and report prerequisite, do not replace with new bytes.
+
+No full-suite, STEP2, B3, Body-JEPA, jepa_weight, Redmi or whole V13 promotion. Follow-up on any *new* current-source failure is a separate narrow preregistered fix; do not weaken old source-bound tests.
