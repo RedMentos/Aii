@@ -370,7 +370,7 @@ class ContextOS:
             if planned is None:layout='stable_prefix'
         bound=None
         if layout=='source_bound_user':
-            bound=self._bound_user_correction(event_id,query,volatile)
+            bound=self._bound_user_correction(event_id,query,vol)
             if bound:
                 # The ACTIVE_VIEW value is moved, not duplicated in the system
                 # prefix. Keep all other volatile layers and raw history ordered.
