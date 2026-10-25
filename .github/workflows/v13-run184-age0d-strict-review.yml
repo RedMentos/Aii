@@ -1,0 +1,43 @@
+name: V13 Run184 AGE0d conservative arithmetic SHADOW review
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run184-age0d-strict-review.yml'
+      - 'v13/code/scripts/run184_age0d_strict_shadow.py'
+      - 'v13/code/tests/test_run184_age0d_strict_shadow.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run184-age0d-balanced/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-bound original and isolated synthetic tests
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run184"
+          test "$(git hash-object v13/code/scripts/run183_step2_arithmetic_shadow_replay.py)" = '3ef654ac5af5b8fa805064801b36246a8ebcbb64'
+          python3 -m compileall -q v13/code/scripts/run184_age0d_strict_shadow.py v13/code/tests/test_run184_age0d_strict_shadow.py
+          python3 -m unittest discover -s v13/code/tests -p 'test_run184_age0d_strict_shadow.py' -v 2>&1 | tee "$RUNNER_TEMP/run184/software.log"
+          python3 v13/code/scripts/run184_age0d_strict_shadow.py --output "$RUNNER_TEMP/run184/120-case-report.json" 2>&1 | tee "$RUNNER_TEMP/run184/stdout.log"
+          echo RUN184_SYNTHETIC_SOFTWARE_ONLY_NO_DELIVERY_OR_GATE_PROMOTION
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base 614a1d543c8f2fd0071a5b983dad3e58429a3b28 --head HEAD
+      - name: Preserve raw review and failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run184-AGE0d-Strict-Software-Raw
+          path: |
+            ${{ runner.temp }}/run184/software.log
+            ${{ runner.temp }}/run184/stdout.log
+            ${{ runner.temp }}/run184/120-case-report.json
+          if-no-files-found: warn
+          retention-days: 14
