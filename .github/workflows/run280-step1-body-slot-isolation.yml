@@ -52,8 +52,8 @@ jobs:
             tests.test_step1_body_slot_isolation_run280 \
             tests.test_step12 \
             tests.test_jef_lifecycle_integration_run67 \
-            tests.test_model_slots \
-            tests.test_body_fabric 2>&1 | tee "$RUNNER_TEMP/RUN280_FOCUSED_RAW.log"
+            tests.test_bodies \
+            tests.test_z7_residency_recovery 2>&1 | tee "$RUNNER_TEMP/RUN280_FOCUSED_RAW.log"
           rc=${PIPESTATUS[0]}
           echo "$rc" > "$RUNNER_TEMP/RUN280_TEST_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
