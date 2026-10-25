@@ -23,8 +23,61 @@ def read_block(prompt,ready=None,read=input):
     except (EOFError,OSError,ValueError):pass
     return '\n'.join(lines)
 
+def visible_delta(store, session, cursor, seen, limit=256):
+    """Bounded plain-UI history cursor with streaming suffix updates.
+
+    On first render show the latest eight messages, as before. Afterwards
+    drain every committed message in ascending ID order, even if more than
+    eight arrived between render ticks. Keep only recent/active lengths.
+    """
+    if type(limit) is not int or not 1 <= limit <= 256:
+        raise ValueError('UI history page limit')
+    recent = store.history(session, 8)
+    if cursor is None:
+        cursor = max(0, int(recent[0]['id']) - 1) if recent else 0
+    query = getattr(store, 'rows', None)
+    if callable(query):
+        fresh = query('SELECT * FROM messages WHERE session_id=? AND id>? ORDER BY id LIMIT ?',
+                      (session, cursor, limit))
+        if fresh:
+            cursor = int(fresh[-1]['id'])
+        active = query("SELECT * FROM messages WHERE session_id=? AND id<=? "
+                       "AND status IN ('DRAFT','STREAMING','OUTPUT_COMMITTED') "
+                       "ORDER BY id DESC LIMIT 32", (session, cursor))
+    else:
+        # Legacy UI-only test doubles without SQL have no paginated source.
+        fresh = [m for m in recent if m['id'] > cursor]
+        if fresh:
+            cursor = int(fresh[-1]['id'])
+        active = []
+    out = []
+    visited = set()
+    def add(message):
+        mid = int(message['id'])
+        if mid in visited:
+            return
+        visited.add(mid)
+        if message['role'] == 'user':
+            return
+        content = message['text'] or ''
+        old = seen.get(mid, 0)
+        if len(content) > old:
+            out.append((message['role'], content[old:], old == 0))
+        seen[mid] = len(content)
+    for message in fresh:
+        add(message)
+    for message in sorted(active + [m for m in recent if m['id'] <= cursor],
+                          key=lambda m: m['id']):
+        add(message)
+    keep = {int(m['id']) for m in recent + active}
+    for mid in list(seen):
+        if mid not in keep:
+            seen.pop(mid, None)
+    return cursor, out
+
+
 def plain(r):
-    op=Operator(r);done=threading.Event();seen={};held=[];held_lock=threading.Lock()
+    op=Operator(r);done=threading.Event();seen={};cursor=[None];current_session=[r.session];held=[];held_lock=threading.Lock()
     def show_notices(items):
         for x in items:print('\n[V13] '+safe_text(x),flush=True)
     def notify(t):
@@ -43,10 +96,11 @@ def plain(r):
             # A notice must not remain hidden indefinitely merely because
             # no second worker notification arrives after typing ends.
             show_notices(ready)
-            for m in r.store.history(r.session,8):
-                if m['role']=='user':continue
-                old=seen.get(m['id'],0);txt=m['text']
-                if len(txt)>old:print(('\n'+m['role']+'> ' if not old else '')+safe_text(txt[old:]),end='',flush=True);seen[m['id']]=len(txt)
+            if r.session != current_session[0]:
+                current_session[0]=r.session;cursor[0]=None;seen.clear()
+            cursor[0],changes=visible_delta(r.store,r.session,cursor[0],seen)
+            for role,delta,first in changes:
+                print(('\n'+role+'> ' if first else '')+safe_text(delta),end='',flush=True)
     t=threading.Thread(target=render,daemon=True);t.start()
     try:
         print('V13 lokal · :help · Strg+C bricht ab · :shutdown beendet',flush=True)
