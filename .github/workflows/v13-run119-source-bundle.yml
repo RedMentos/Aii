@@ -31,12 +31,12 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 50
-          ref: \${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Deterministic tracked-source archive and path audit
         run: |
           set -euo pipefail
           mkdir -p dist
-          test "$(git rev-parse HEAD)" = "\${{ github.event.pull_request.head.sha }}"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           git archive --format=zip --output=dist/V13_RUN119_SOURCE_ONLY.zip HEAD \
             AGENTS.md v13/AGENTS.md v13/ROADMAP.md v13/NUTZER_ENTSCHEIDUNGEN.md \
             v13/blueprint v13/code
