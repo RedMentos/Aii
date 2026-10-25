@@ -1,0 +1,83 @@
+{
+  "run": "Run222",
+  "date_utc": "2026-10-25",
+  "canonical_area": "WP-DS3 lab-only selective risk/coverage and abstention",
+  "branch": "codex/ds3-selective-risk-lab-run222-20261025",
+  "base_verified": "f27c9fb9f0c2699b4daab63b2ff0963af02ed6a7",
+  "tested_commit": "8096950b9bd643c74b27fd9e5b85178922e28a06",
+  "owner": "Run222 new agi/ds3_selective.py, new test, bench, CI, unique proof; no Runtime/native/other owner overlap",
+  "owned_files": [
+    "v13/code/v13/agi/ds3_selective.py",
+    "v13/code/tests/test_ds3_selective_run222.py",
+    "v13/code/scripts/ds3_selective_bench_run222.py",
+    ".github/workflows/run222-ds3-selective.yml",
+    "v13/code/docs/proofs/continuation-20261025/run222-ds3-selective/"
+  ],
+  "implementation": "Fixed preregistered threshold grid and one-sided Hoeffding/union bound under i.i.d. calibration assumption; disjoint heldout synthetic labels; fail-closed missing/invalid confidence, no tool execution; lab-only proposal actions ANSWER/ASK_USER/VERIFY_TOOL_PROPOSAL/ABSTAIN; tamper-evident policy checksum (not publisher authentication). No live consumer or model-weight change.",
+  "research_primary": [
+    "https://papers.neurips.cc/paper_files/paper/2017/hash/4a8423d5e91fda00bb7e46540e2b0cf1-Abstract.html",
+    "https://arxiv.org/abs/2208.02814"
+  ],
+  "failed_attempts": {
+    "red_run_id": 40180528159,
+    "red_job_id": 121130430769,
+    "red_head": "f0b108c02d7862b2a3f9c824523feb3412ed87f7",
+    "result": "4 PASS, 1 FAIL: modified threshold produced ANSWER",
+    "raw_artifact_id": 12594102751,
+    "preserved": "RED_ACTUAL_SOURCE.txt"
+  },
+  "actual_source_ci": {
+    "green_run_id": 40180598222,
+    "green_job_id": 121130644899,
+    "head": "8096950b9bd643c74b27fd9e5b85178922e28a06",
+    "tests": "5/5 PASS",
+    "privacy_scan": "CLEAN",
+    "compileall": "PASS",
+    "raw_artifact_id": 12594257669,
+    "raw_artifact_sha256": "2ad2a3e00c798c21cacd5a106e7980f8b5335f8aa6d8515aa542cd89330da9a1",
+    "raw_artifact_expires": "2026-11-24T09:25:57Z",
+    "log_url": "https://github.com/RedMentos/Aii/actions/runs/40180598222/job/121130644899"
+  },
+  "metrics": {
+    "calibration_n": 1000,
+    "threshold": 0.6,
+    "selected_calibration_n": 600,
+    "calibration_wrong": 10,
+    "one_sided_bound": 0.07982976073526317,
+    "heldout_n": 500,
+    "answered": 300,
+    "wrong": 5,
+    "coverage": 0.6,
+    "selective_risk": 0.016666666666666666,
+    "all_test_risk": 0.31,
+    "uninformative": "ABSTAIN_ALL",
+    "H1": true,
+    "H2": true,
+    "H3": true,
+    "H4": true
+  },
+  "source_blob_sha": {
+    "ds3_selective.py": "59fd466d672d46dfed004095e52411c0358fae1f",
+    "test_ds3_selective_run222.py": "be5e8554b04c0f6f2a0bdc6698543293a26640ea",
+    "ds3_selective_bench_run222.py": "bbb7977046c9d0c5ffd1d64f96a1c0c0b26d581d",
+    "run222-ds3-selective.yml": "ae4e4178e73b9beb4dd89c95724ab6e365ee77f3"
+  },
+  "evidence_kind": "Synthetic Linux Python lab, deterministic cohorts, no native C3 confidence, no tool execution, no Redmi. Empirical risk control not validated under distribution shift.",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Real C3 confidence signal and independent native calibration cohort absent; DS3 cannot enter live Runtime without separate native proof and authorization.",
+    "Lab checksum is tamper-evident only, not an external signature; no live authority.",
+    "Run221 full suite remains RED: 2646 tests, 2 FAIL, 36 historical source-bound candidate ERROR; original LP3 orphan and AgeNoiseAware contract conflict unresolved."
+  ],
+  "next_step": "Independent review of DS3 lab policy with fresh synthetic distribution-shift stress (not threshold tuning on registered cohort); or next canonical functional package. Do not promote live confidence or tools.",
+  "next_command": "PYTHONPATH=tests:. python -m unittest -v tests.test_ds3_selective_run222 && PYTHONPATH=. python scripts/ds3_selective_bench_run222.py",
+  "no_authority_promotion": true
+}
