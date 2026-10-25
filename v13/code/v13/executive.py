@@ -31,18 +31,32 @@ class Executive:
     def _valid_ref(self,ref):
         try:self.s.read_source(ref);return True
         except (ValueError,OSError,KeyError,TypeError):return False
+    def _goal_event_valid(self,item,session):
+        """A continuity goal must name its own session's exact event source."""
+        if not isinstance(item,dict) or type(item.get('event_id')) is not str or not isinstance(item.get('source_ref'),dict):
+            return False
+        row=self.s.one('SELECT session_id,packet FROM events WHERE id=?',(item['event_id'],))
+        if not row or row['session_id']!=session:return False
+        try:
+            event=json.loads(row['packet'])
+            return (event.get('event_id')==item['event_id'] and event.get('source_ref')==item['source_ref']
+                    and self._valid_ref(item['source_ref']))
+        except (ValueError,TypeError,KeyError):return False
     def _clean(self,state,session):
         state=json.loads(dumps(state or {}))
         if state.get('session_id')!=session:return {}
-        state['goal_sequence']=[x for x in state.get('goal_sequence',[]) if self._valid_ref(x.get('source_ref',{}))][-MAX_EVENTS:]
+        state['goal_sequence']=[x for x in state.get('goal_sequence',[]) if self._goal_event_valid(x,session)][-MAX_EVENTS:]
         task=state.get('active_task')
         if not isinstance(task,dict) or not self._valid_ref(task.get('source_ref',{})):state['active_task']=None
         state['memory_refs']=[x for x in state.get('memory_refs',[]) if self._memory(x,session)]
         state['open_questions']=[x for x in state.get('open_questions',[]) if self._question_valid(x,session)][-MAX_QUESTIONS:]
         # Never carry old hypotheses into another generation as current offers.
-        state['salient_A_offer']=state.get('goal_source_ref') if self._valid_ref(state.get('goal_source_ref',{})) else None
+        goal_ref=state.get('goal_source_ref')
+        if (not self._goal_event_valid({'event_id':state.get('last_event_id'),'source_ref':goal_ref},session)
+                or self.s.read_source(goal_ref)!=state.get('goal')):
+            state['goal']='';state['goal_source_ref']=None
+        state['salient_A_offer']=state.get('goal_source_ref')
         state['salient_B_offer']=[x for x in state.get('salient_B_offer',[]) if self._offer_valid(x,state.get('brain_generation_id'),session)]
-        if not self._valid_ref(state.get('goal_source_ref',{})):state['goal']='';state['goal_source_ref']=None
         return state
     def _question_valid(self,item,session):
         if not self._valid_ref(item.get('source_ref',{})):return False
