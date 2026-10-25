@@ -1,0 +1,67 @@
+{
+  "authority": "SHADOW_DIAGNOSTIC_NOT_ACTIVE",
+  "cohort_definition_sha256": "f8274c2fdd828696f1447a14ffbcdf31b250f406aa6a0f8d8ac29ce223675c6e",
+  "definition": {
+    "cluster_noise": 0.015,
+    "n_id": 64,
+    "n_ood": 64,
+    "n_train": 64,
+    "raw_dim": 512,
+    "regimes": [
+      "clustered",
+      "uniform"
+    ],
+    "seed": 15625
+  },
+  "evidence_class": "SYNTHETIC_NUMPY_ONLY_NO_TEACHER_OR_NATIVE",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "DS2_H2": "FAIL",
+    "STEP2": "UTILITY_FAIL",
+    "V13": "INCOMPLETE",
+    "jepa_weight": 0
+  },
+  "limitations": [
+    "synthetic cosine regimes are not measured A3 teacher features",
+    "no real source-group OOD or held-out teacher truth",
+    "the 0.5 clamp can reject all unrelated in-domain vectors",
+    "no frozen worker, Runtime, native model, JEPA or Redmi changes"
+  ],
+  "results": {
+    "clustered": {
+      "floor_clamped_min": false,
+      "id_accept_rate": 1.0,
+      "id_accepted": 64,
+      "id_count": 64,
+      "id_score_max": 0.9191929159098635,
+      "id_score_min": 0.900952682723644,
+      "ood_accepted": 0,
+      "ood_count": 64,
+      "ood_false_accept_rate": 0.0,
+      "ood_score_max": 0.13902594149740138,
+      "ood_score_min": -0.07233261915452088,
+      "support_floor": 0.8825896443635531,
+      "threshold_uses_heldout": false,
+      "train_loo_p05": 0.9025896443635532
+    },
+    "uniform": {
+      "floor_clamped_min": true,
+      "id_accept_rate": 0.0,
+      "id_accepted": 0,
+      "id_count": 64,
+      "id_score_max": 0.17070857780795584,
+      "id_score_min": 0.06896796284610071,
+      "ood_accepted": 0,
+      "ood_count": 64,
+      "ood_false_accept_rate": 0.0,
+      "ood_score_max": 0.1465226632479099,
+      "ood_score_min": 0.06837824032914594,
+      "support_floor": 0.5,
+      "threshold_uses_heldout": false,
+      "train_loo_p05": 0.07787245500919333
+    }
+  },
+  "schema": "V13_RUN156_A3_TRAIN_ONLY_OOD_DIAGNOSTIC_V1"
+}
