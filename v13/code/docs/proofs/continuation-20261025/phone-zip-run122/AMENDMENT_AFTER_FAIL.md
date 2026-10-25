@@ -1,0 +1,5 @@
+# Run122 preregistration deviation after failed first attempt
+
+2026-10-25 UTC. Original PREREG.md committed before run 40147471413, which FAILED after 20/20 existing extracted CLI/operator/standstill tests passed because the planned `test_phone_halt.py` suite ran **zero tests** (exit 5). The integrated Run120 source branch has neither `v13/code/tests/test_phone_halt.py` nor `v13/code/v13/phone_halt.py`; both paths were independently checked through the GitHub file API (404). The 2026-10-22 ROADMAP describes a Claude-branch implementation, but it is not in this integrated review chain.
+
+This is a **scope correction**, not a passed test: the Run122 workflow now runs only existing suites, explicitly prints `PHONE_HALT_MODULE_OR_TEST_NOT_IN_INTEGRATED_SOURCE; NOT_CLAIMED`, and leaves Phone Widget integration as a separate open canonical package. Preserve RAW_FIRST_FAILURE.log. Do not promote full phone/Redmi acceptance or pretend the missing module was tested. A future independent package must review/import the Claude phone_halt implementation and its tests with exact source binding before claiming that feature.
