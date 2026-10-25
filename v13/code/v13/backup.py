@@ -6,7 +6,46 @@ import shutil
 import sqlite3
 import tarfile
 import tempfile
-from .common import uid,atomic_write,dumps,file_hash
+from .common import uid,atomic_write,dumps,file_hash,digest
+import zlib
+
+# Store.blob_bytes has the same 64-MiB decompression ceiling.
+MAX_SOURCE_BLOB_BYTES = 64 * 1024 * 1024
+
+def _verify_live_source_blobs(stage, db):
+    """Require the snapshot DB's live source hashes to be readable from this stage.
+
+    A self-consistent archive manifest cannot prove SQLite-to-blob closure:
+    a missing blob can simply be omitted from that manifest. Verify the actual
+    source table independently before publishing or restoring a snapshot.
+    """
+    blobs = stage / 'data' / 'blobs'
+    for (h,) in db.execute('SELECT DISTINCT hash FROM sources WHERE deleted=0'):
+        if not isinstance(h, str) or len(h) != 64 or any(c not in '0123456789abcdef' for c in h):
+            raise ValueError('Source-Blob hash invalid in snapshot database')
+        plain = blobs / h
+        if plain.is_file():
+            try:
+                good = file_hash(plain) == h
+            except OSError as exc:
+                raise ValueError('Source-Blob unreadable: ' + h) from exc
+            if not good:
+                raise ValueError('Source-Blob hash mismatch: ' + h)
+            continue
+        compressed = blobs / (h + '.z')
+        if not compressed.is_file():
+            raise ValueError('Source-Blob missing: ' + h)
+        try:
+            if compressed.stat().st_size > MAX_SOURCE_BLOB_BYTES + 65536:
+                raise ValueError('Source-Blob compressed size exceeds bound: ' + h)
+            dec = zlib.decompressobj()
+            raw = dec.decompress(compressed.read_bytes(), MAX_SOURCE_BLOB_BYTES + 1)
+        except (OSError, zlib.error) as exc:
+            raise ValueError('Source-Blob archive unreadable: ' + h) from exc
+        if (len(raw) > MAX_SOURCE_BLOB_BYTES or not dec.eof or dec.unconsumed_tail
+                or dec.unused_data or digest(raw) != h):
+            raise ValueError('Source-Blob archive corrupt or oversized: ' + h)
+
 from .config import initialize
 from .store import Store,SCHEMA_VERSION,migrate_database
 
@@ -15,14 +54,20 @@ def backup(store,destination=None):
     if out.exists():raise ValueError('Backup-Zieldatei existiert bereits')
     with tempfile.TemporaryDirectory(dir=home/'tmp',prefix='backup-') as tmp:
         stage=Path(tmp);db=stage/'data/db/brain.sqlite3';db.parent.mkdir(parents=True)
-        target=sqlite3.connect(db)
-        try:
-            with store.mutex:store.db.backup(target)
-        finally:target.close()
-        for name in ['data/blobs','checkpoints','config']:
-            src=home/name
-            if src.exists():shutil.copytree(src,stage/name)
-        hashes={str(p.relative_to(stage)):file_hash(p) for p in stage.rglob('*') if p.is_file()};atomic_write(stage/'backup_manifest.json',dumps({'format':1,'hashes':hashes,'models_included':False,'active_generation':store.generation_id}))
+        # Keep the DB snapshot, blob/checkpoint/config copy and generation id
+        # in one Store mutation boundary. Archive can still race outside that
+        # mutex, so the copied stage is independently checked below.
+        with store.mutex:
+            target=sqlite3.connect(db)
+            try:store.db.backup(target)
+            finally:target.close()
+            for name in ['data/blobs','checkpoints','config']:
+                src=home/name
+                if src.exists():shutil.copytree(src,stage/name)
+            generation=store.generation_id
+        with sqlite3.connect(db) as snapshot:
+            _verify_live_source_blobs(stage,snapshot)
+        hashes={str(p.relative_to(stage)):file_hash(p) for p in stage.rglob('*') if p.is_file()};atomic_write(stage/'backup_manifest.json',dumps({'format':1,'hashes':hashes,'models_included':False,'active_generation':generation}))
         pending=out.with_suffix('.partial');out.parent.mkdir(parents=True,exist_ok=True)
         try:
             with tarfile.open(pending,'w:gz') as t:
@@ -66,6 +111,7 @@ def unpack_verified(path,stage,max_bytes):
         # may then be upgraded transactionally before it replaces the live store.
         migrate_database(db)
         if db.execute('PRAGMA foreign_key_check').fetchall():raise ValueError('Backup-Fremdschlüssel ungültig')
+        _verify_live_source_blobs(stage,db)
     finally:db.close()
     return m
 
