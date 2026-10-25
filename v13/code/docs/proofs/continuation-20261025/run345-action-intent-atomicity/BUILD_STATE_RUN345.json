@@ -1,0 +1,54 @@
+{
+  "schema": "V13_BRANCH_CHECKPOINT_V1",
+  "time_utc": "2026-10-25T18:47:00Z",
+  "branch": "assistant/run345-action-intent-atomicity-20261025",
+  "checkpoint_before_state": "e21220eb6a948f8b18e9c0965cd0df2709510abc",
+  "production_integrated": false,
+  "review_pr": 341,
+  "base_chain": "PR341→PR340→PR339→PR338→PR337→PR336→PR335 (review branches; not main)",
+  "source_changes": [
+    "Run342 FastForward canonical measured authority fail-closed",
+    "Run343 WorldState per-action recovery and action count",
+    "Run344 C5 ActionOutcome atomic exact replay",
+    "Run345 C5 ActionIntent/Corollary/action pre-dispatch atomicity"
+  ],
+  "tested_exact_head": "a584d8f2f79ea388426b34714c2e2efcf8f21abe",
+  "tests": {
+    "run345": {
+      "count": 29,
+      "passed": 29,
+      "failed": 0,
+      "actions_run_id": 40222842728
+    },
+    "run344": "SUCCESS",
+    "run214": "SUCCESS",
+    "run287": "SUCCESS",
+    "run289": "SUCCESS",
+    "legacy_source_handoff": "RED_UNCHANGED"
+  },
+  "raw_proofs": {
+    "red_sha256": "5c17e6f0d97575e313c5ba12400dd9d039e8e9ea5cdbaa7a1d06c09b63496329",
+    "green_sha256": "a7386c3723563fe4facae19c6e6f845f9d16d73e5e0f66b3690b440b17faa26d",
+    "verified": "independent CRC + internal SHA256 manifests + exact embedded heads",
+    "private_backup_folder": "/V13/checkpoints/2026-10-25"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "ag6": "MISSING",
+    "redmi": "MISSING",
+    "proceduralization": "NOT_PASS",
+    "self_world": "NOT_PASS",
+    "whole_v13": "INCOMPLETE"
+  },
+  "current_owner": "assistant/run345-action-intent-atomicity-20261025",
+  "next_command": "Fetch newest PR heads and exact handoffs; review PR338–341 diff and choose next independent functional V13 package, preregister, RED-first, exact-head CI, raw private checkpoint.",
+  "blocked": [
+    "No direct Redmi device",
+    "Run339 native job has separate serialized owner",
+    "Historical strict SourceHandoff baseline hash mismatch remains RED"
+  ],
+  "no_native_claims": true
+}

@@ -554,12 +554,27 @@ class Store:
             c.execute("INSERT OR REPLACE INTO states VALUES (?,?,?)",(key,v+1,dumps(payload)))
         return v+1
     def start_action(self,event,generation,kind="TEXT_REPORT",forecast=None):
-        aid=uid("act");intent=packet("ActionIntent","C5_REPORT_BROKER",event,generation,action_id=aid,action_type=kind,permission="local_text_only")
+        """Atomically bind pre-dispatch intent, corollary and action to one event.
+
+        No ActionIntent/CorollaryCopy may survive without its DISPATCHED action.
+        An event-generation mismatch is not an authorized new action.
+        """
+        aid=uid("act")
         expected={"stream_owner":"C5_REPORT_BROKER","type":kind}
         if forecast is not None:expected['forecast']=forecast
+        expected=json.loads(dumps(expected))  # freeze the same finite payload for both records
+        intent=packet("ActionIntent","C5_REPORT_BROKER",event,generation,action_id=aid,action_type=kind,permission="local_text_only")
         copy=packet("CorollaryCopy","F3_SELF",event,generation,action_id=aid,expected=expected,self_caused=True)
-        self.add_packet("ActionIntent",intent);self.add_packet("CorollaryCopy",copy)
-        with self.tx() as c:c.execute("INSERT INTO actions VALUES (?,?,?,?,?,?,?,?)",(aid,event,kind,"DISPATCHED",copy["packet_id"],dumps(copy["expected"]),None,now()))
+        validate("ActionIntent",intent);validate("CorollaryCopy",copy)
+        with self.tx() as c:
+            source=c.execute("SELECT generation_id FROM events WHERE id=?",(event,)).fetchone()
+            if source is None or source['generation_id']!=generation:
+                raise ValueError('Action event/generation binding missing or stale')
+            for name,p in (("ActionIntent",intent),("CorollaryCopy",copy)):
+                c.execute("INSERT INTO packets VALUES (?,?,?,?,?,?)",
+                          (p['packet_id'],name,p['event_id'],p['brain_generation_id'],dumps(p),now()))
+            c.execute("INSERT INTO actions VALUES (?,?,?,?,?,?,?,?)",
+                      (aid,event,kind,"DISPATCHED",copy['packet_id'],dumps(expected),None,now()))
         return aid
     def finish_action(self,aid,status,actual):
         """Commit one immutable ActionOutcome and its action row atomically.

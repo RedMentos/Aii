@@ -1,0 +1,66 @@
+name: V13 Run345 C5 pre-dispatch triple-write atomicity
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run345-action-intent-atomicity.yml'
+      - 'v13/code/v13/store.py'
+      - 'v13/code/tests/test_action_intent_atomicity_run345.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run345-action-intent-atomicity/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  intent:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact head and isolated model-free dependencies
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN345_HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run345venv"
+          "$RUNNER_TEMP/run345venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          sha256sum v13/code/v13/store.py v13/code/tests/test_action_intent_atomicity_run345.py | tee "$RUNNER_TEMP/RUN345_SOURCE_SHA256SUMS.txt"
+      - name: Real SQLite pre-dispatch and outcome regression tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          "$RUNNER_TEMP/run345venv/bin/python" -m compileall -q v13 tests
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run345venv/bin/python" -m unittest -v \
+            tests.test_action_intent_atomicity_run345 \
+            tests.test_action_outcome_atomicity_run344 \
+            tests.test_world_multiaction_recovery_run343 \
+            tests.test_world_state \
+            tests.test_executive_action_intent_lineage_run216 \
+            tests.test_runtime_world_observation_run218 \
+            2>&1 | tee "$RUNNER_TEMP/RUN345_TESTS_RAW.log"
+          exit ${PIPESTATUS[0]}
+      - name: Public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN345_PRIVACY_RAW.log"
+      - name: Close raw source-only receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN345_*' ! -name RUN345_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN345_SHA256SUMS.txt
+      - name: Preserve raw RED or PASS
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run345-ActionIntent-Atomicity-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN345_*
+          if-no-files-found: warn
+          retention-days: 30
