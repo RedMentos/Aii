@@ -1,0 +1,28 @@
+{
+  "schema": "V13_RUN161_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_commit": "36f2b57aeba3d5c1117350e8955ad78b71d2e578",
+  "owner": "Codex Run161 new workflow/proof only; source/model/runtime unchanged",
+  "registered_model": {
+    "role": "B1_DETAIL",
+    "revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+    "sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+    "bytes": 695755488,
+    "license": "LFM Open License 1.0"
+  },
+  "ci": "PENDING_PR_TRIGGER",
+  "local_full_model": "NOT_AVAILABLE_DNS_FAILURE",
+  "evidence_class": "PENDING_LINUX_CI_FILE_INTEGRITY",
+  "native_training": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "next_command": "Open PR against codex/run160-body-gguf-dtype-audit-20261025 and inspect exact-head GitHub Actions job",
+  "next_step": "If SHA passes, register separate FP32 master extraction/roundtrip candidate; actual native gradients and retention still blocked."
+}
