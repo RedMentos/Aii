@@ -1,0 +1,85 @@
+{
+  "run": "Run388",
+  "date": "2026-10-25",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/ag2-preaction-tool-candidate-run388-20261025",
+  "base": {
+    "branch": "codex/ag7-disjoint-holdout-run387-20261025",
+    "sha": "673ecdc2d4cb9f3bb4ee8148cdddd5b3059d6a66",
+    "integration": "stacked review chain only; not main"
+  },
+  "source_head": "4945384972bfb54af3fa50ee5ec48e141672b022",
+  "pr": 383,
+  "source_blobs_verified": {
+    "tools": "22593c87258924b15d36585fe1479bebdac7241f",
+    "grounding": "e010d97fb10b7905006a12f4726b18d07d3fecf0",
+    "preaction_adapter": "54ed3237d5ef00ca968792cd06632be915f93ea4",
+    "tests": "2f35cfcb720e599cc0ad05d0f6e1ecf47caeba14",
+    "workflow": "6d4cd4475bb9fb53008c0fdc29b3812c9b21b5e1"
+  },
+  "change_summary": [
+    "ToolRegistry opt-in on_pre_execute runs after durable CorollaryCopy and before Transactions.execute; default active Growth/runtime unchanged",
+    "AG2 PreActionGrounding adapter opens frequency prediction before effect and observes EXECUTED/FAILED once; never backfills a missing preaction as causal evidence",
+    "Canceled/hard-blocked actions discard open expectations with no frequency update, errors or closed learning record",
+    "Idempotency reuses existing action and creates no duplicate prediction; predictor failure cannot block an authorized tool or fabricate evidence"
+  ],
+  "evidence": {
+    "red_initial": {
+      "head": "c30f320eb9fb608ff45f200e4dc5987d57927aab",
+      "run": 40242056873,
+      "tests": "22 tests; 5 expected errors missing optional hooks, inherited PASS",
+      "artifact_id": 12617014614,
+      "zip_sha256": "59808ddfc6e1e1fe205ee4f2599df23a885189ae731d342e3ec0a4d1929f9452"
+    },
+    "green_attempt_failed": {
+      "head": "1309be4f4d3e57b87da61b7234f4ea89e5c5f840",
+      "run": 40242138692,
+      "tests": "22 tests; 1 ERROR from fake Transactions.execute missing required id; retained",
+      "artifact_id": 12616079561,
+      "zip_sha256": "51ed6c9e17655a98f5a2dd2c983ad7c04c9223e68dbd71f56656d18d756b9adf"
+    },
+    "green1": {
+      "head": "378e3d207add69f39cd99ae72c94699e0b8f5cc0",
+      "run": 40242192761,
+      "tests": "22/22 PASS",
+      "artifact_id": 12617400894,
+      "zip_sha256": "62d7ca95ebebca7a065980109e185dc94e01753c9282d9cb96344e4aad2d507c"
+    },
+    "red_cancel": {
+      "head": "8b4177d0e885d050f636870a58996afe3173f0f4",
+      "run": 40242267251,
+      "tests": "24 tests; 1 ERROR on non-hard CANCELLED result, predictor failure test PASS",
+      "artifact_id": 12617124139,
+      "zip_sha256": "fe6d95787a66ead774e01ed5e1d569a54844a53a489745c61d95b508d083ee44"
+    },
+    "green_final": {
+      "head": "4945384972bfb54af3fa50ee5ec48e141672b022",
+      "run": 40242336579,
+      "tests": "24/24 PASS; compileall PASS; privacy CLEAN",
+      "artifact_id": 12616718918,
+      "zip_sha256": "c0f44c87841ae18d531c16ddf2c7b6f7de9d22f2d8c099ee89a1b67a3bce028a"
+    }
+  },
+  "addendum": "Post-GREEN cancellation/predictor counterexamples and failed fixture attempt disclosed in ADDENDUM.md, not claimed original preregistered RED.",
+  "raw_integrity": "CLOSED: all five Actions ZIP SHA256 match upload logs, CRC PASS, 4/4 internal SHA256 member checks each; private Library uploads re-materialized and byte-compared identical.",
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run388_AG2_20261025/{RED_INITIAL_RAW.zip,GREEN_ATTEMPT_FAILED_RAW.zip,GREEN1_RAW.zip,RED_CANCEL_RAW.zip,GREEN_FINAL_RAW.zip}",
+  "scope": "Opt-in source-only Linux/SQLite action-order proof. Active Growth/runtime uses legacy post-action AG2 until separately approved. No native model/Redmi causal world proof.",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0/permissions unchanged",
+    "Run367 full suite RED",
+    "Redmi native proof missing",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Active Growth opt-in requires independent live-turn Provisional FINAL/CANCELLED settlement proof and source-hash re-registration; not enabled",
+    "Unexpected process death between preaction and outcome may leave an open expectation until bounded history eviction; needs recovery semantics",
+    "Frequency prediction is a baseline, not learned JEPA or causal intervention estimate",
+    "Full Python suite remains RED; source-wide regression should be rerun after stacked AG2/AG4/AG7 changes"
+  ],
+  "next_command": "git fetch origin codex/ag2-preaction-tool-candidate-run388-20261025 && git checkout -b review-run388 origin/codex/ag2-preaction-tool-candidate-run388-20261025 && cd v13/code && python -m unittest -v tests.test_ag2_preaction_tool_run388 tests.test_growth.G2Grounding tests.test_growth.G10Tools tests.test_agi_live tests.test_skilllive",
+  "next_package": "Run389 source-wide regression survey on stacked branch (no native/model download) to classify current full-suite failures, then fix an independent substantive blocker."
+}
