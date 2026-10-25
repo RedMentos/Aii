@@ -41,7 +41,7 @@ jobs:
           PYTHONPATH="$PWD" "$RUNNER_TEMP/run374venv/bin/python" -m unittest -v \
             tests.test_ag3_finite_plan_scores_run374 \
             tests.test_growth.G3Goals \
-            tests.test_executive_goal_session_lineage_run212 tests.test_growth.G3Goals \
+            tests.test_executive_goal_session_lineage_run212 \
             2>&1 | tee "$RUNNER_TEMP/RUN374_TESTS_RAW.log"
           rc=${PIPESTATUS[0]}
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
