@@ -8,6 +8,7 @@ wakes need resume_open_goals (Age 4) — at Age 0 they stay HELD_AGE. Plans can 
 pluggable evaluator (later World-JEPA rollouts, AG2) before execution. Depth is bounded by the
 Age budget focal_depth plus a hard ceiling.
 """
+import math
 import time
 from .base import StateBox,age_allows,budget
 
@@ -89,8 +90,19 @@ class GoalStore:
         """evaluator(goal, plan) -> {'value': float, 'risk': float}. Highest value-risk wins; nothing executes here."""
         g=self.get(gid);scored=[]
         for p in plans:
-            r=evaluator(g,p) or {};scored.append({'plan':p,'value':float(r.get('value',0.)),'risk':float(r.get('risk',0.))})
-        return sorted(scored,key=lambda x:x['value']-x['risk'],reverse=True)
+            r=evaluator(g,p) or {}
+            if not isinstance(r,dict):raise ValueError('Invalid plan evaluation')
+            raw_value,raw_risk=r.get('value',0.),r.get('risk',0.)
+            if type(raw_value) not in (int,float) or type(raw_risk) not in (int,float):
+                raise ValueError('Plan score must be a numeric value and risk')
+            try:value,risk=float(raw_value),float(raw_risk)
+            except (OverflowError,ValueError,TypeError) as exc:raise ValueError('Invalid plan score') from exc
+            margin=value-risk
+            if not all(math.isfinite(x) for x in (value,risk,margin)):
+                raise ValueError('Nonfinite plan score or margin')
+            scored.append((margin,{'plan':p,'value':value,'risk':risk}))
+        # Stable ties preserve proposal order, not an arbitrary float/NaN ordering.
+        return [row for _,row in sorted(scored,key=lambda x:x[0],reverse=True)]
     def on_wake(self,event):
         gid=(event.get('payload') or {}).get('goal_id')
         try:g=self.get(gid)
