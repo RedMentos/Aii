@@ -1,0 +1,20 @@
+# Run214 exact GitHub Actions test-output excerpt
+
+Source: https://github.com/RedMentos/Aii/actions/runs/40179172059/job/121126310452
+Head tested: e878f82a09cd23cb33fc1ef7a5b195add7e52281
+This is an exact filtered excerpt; the complete unmodified raw log is retained by GitHub Actions at the source above.
+
+2026-10-25T09:05:10.1039959Z ##[group]Run PYTHONPATH=tests:. python -m unittest -v tests.test_chat_operator_persistence_run214 tests.test_operator_search_literal_run88 tests.test_second_turn_c3_memory_pipeline_run204
+2026-10-25T09:05:10.1041229Z [36;1mPYTHONPATH=tests:. python -m unittest -v tests.test_chat_operator_persistence_run214 tests.test_operator_search_literal_run88 tests.test_second_turn_c3_memory_pipeline_run204[0m
+2026-10-25T09:05:10.7221588Z test_invalid_open_does_not_change_selected_chat_or_export (tests.test_chat_operator_persistence_run214.ChatOperatorPersistenceRun214.test_invalid_open_does_not_change_selected_chat_or_export) ... ok
+2026-10-25T09:05:10.8018434Z test_literal_search_across_chats_after_restart (tests.test_chat_operator_persistence_run214.ChatOperatorPersistenceRun214.test_literal_search_across_chats_after_restart) ... ok
+2026-10-25T09:05:10.8812631Z test_multichat_roundtrip_and_separate_json_exports_after_restart (tests.test_chat_operator_persistence_run214.ChatOperatorPersistenceRun214.test_multichat_roundtrip_and_separate_json_exports_after_restart) ... ok
+2026-10-25T09:05:10.8954622Z test_backslash_is_literal_and_ascii_case_insensitive_is_preserved (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_backslash_is_literal_and_ascii_case_insensitive_is_preserved) ... ok
+2026-10-25T09:05:10.9088558Z test_percent_is_literal_not_any_substring (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_percent_is_literal_not_any_substring) ... ok
+2026-10-25T09:05:10.9222023Z test_underscore_is_literal_not_any_character (tests.test_operator_search_literal_run88.LiteralSearchRun88.test_underscore_is_literal_not_any_character) ... ok
+2026-10-25T09:05:11.0026828Z test_corrupted_key_does_not_retarget_human_value_to_other_project (tests.test_second_turn_c3_memory_pipeline_run204.SecondTurnC3MemoryPipelineRun204.test_corrupted_key_does_not_retarget_human_value_to_other_project) ... ok
+2026-10-25T09:05:11.1172623Z test_second_turn_uses_persisted_human_correction_after_restart_then_forget (tests.test_second_turn_c3_memory_pipeline_run204.SecondTurnC3MemoryPipelineRun204.test_second_turn_uses_persisted_human_correction_after_restart_then_forget) ... ok
+2026-10-25T09:05:11.1829215Z test_session_only_correction_does_not_enter_another_chat_context (tests.test_second_turn_c3_memory_pipeline_run204.SecondTurnC3MemoryPipelineRun204.test_session_only_correction_does_not_enter_another_chat_context) ... ok
+2026-10-25T09:05:11.1832612Z Ran 9 tests in 0.696s
+2026-10-25T09:05:11.1833206Z OK
+2026-10-25T09:05:11.2895573Z privacy scan d5cbdee64..HEAD: CLEAN
