@@ -1,0 +1,17 @@
+{
+  "schema": "V13_RUN146_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex Run146 isolated AGE0d format-aware SHADOW source/tests/workflow/proofs only",
+  "base_pr": 176,
+  "software_tests": "5/5 PASS Linux, 200 correct + 200 wrong synthetic controls",
+  "posthoc_run142": {"correct": 63, "mismatch": 11, "abstain": 6, "claim": "diagnostic only"},
+  "native_run": "NOT RUN",
+  "redmi": "NOT RUN",
+  "authority": "SHADOW_ONLY",
+  "delivery": "OFF",
+  "weight_updates": "OFF",
+  "frozen_runtime": "UNCHANGED",
+  "run142_K1_K2": "INSUFFICIENT_UNCHANGED",
+  "gates": {"STEP2": "UTILITY_FAIL", "B3_L1": "FAIL", "Body_JEPA": "UNAVAILABLE", "jepa_weight": 0, "DS2_H2": "FAIL", "V13": "INCOMPLETE"},
+  "next_step": "New preregistered fresh native C3 varied phrasing cohort with independent denominators and old-checker ablation; no live delivery."
+}
