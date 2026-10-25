@@ -1,0 +1,15 @@
+# Run390 / finite resource telemetry fail-closed (2026-10-26)
+
+Independent source-only package based on Run389 PR384 head `1c20f99c8e3aa5c61eb34deb2d133e85093ef219` (stacked review chain, **not main**). Run389 owner retains sole ownership of its workflow and evidence. Run390 owns only `v13/code/v13/resource_modes.py`, new `tests/test_resource_telemetry_finite_run390.py`, its isolated workflow, and this proof directory. Do not modify frozen native/model/seed/cohort files or active Age/learning policy.
+
+**Problem / baseline.** `resource_modes.classify` accepts present NaN/Inf/bool/invalid sensor values and can silently choose GREEN, because comparisons against NaN are false; malformed types may throw during safety classification. `validate` currently accepts nonfinite persisted thresholds, so a corrupt resource profile can silently disable backoff. For a configured RSS budget, invalid process memory samples may also produce NaN and incorrectly choose GREEN. Missing/None telemetry is an **existing separate unmeasured state** and retains its current behavior; do not silently equate missing data to measured safe data.
+
+**Preregistered RED assertions before production edit.**
+1. With boot profile, a present nonfinite/boolean/negative/nonnumeric `mem_available_bytes` or `battery_temperature_c` must produce RED with an explicit invalid-telemetry reason, never GREEN or an exception. Valid GREEN/YELLOW/ORANGE/RED and 5%/1 C hysteresis remain unchanged.
+2. With RSS budget configured, malformed process records, nonfinite/boolean/negative PSS/RSS and non-list process containers must produce RED with an explicit invalid-process reason. Missing metrics remain UNAVAILABLE and do not masquerade as finite measured zero.
+3. `validate` must reject nonfinite/boolean/negative thresholds and invalid hysteresis, and `load_profile` must safely fall back to the uncalibrated boot profile on corrupted persisted state.
+4. Real `ResourceGuard.update` must map invalid sensor values to legacy CRITICAL/RED without throwing, preserving reasons. Inherited `test_resource_modes` must remain green in isolation.
+
+**Workflow:** pinned Ubuntu 24.04, no model download, exact-head checkout, source/test SHA256, `python -m unittest -v tests.test_resource_telemetry_finite_run390 tests.test_resource_modes`, compileall, privacy scan and raw logs with SHA256 member manifest, 30-day Actions artifact. RED failure is enforced and preserved. After observing RED, apply smallest fail-closed source change; do not alter existing test thresholds or promote any native claim. If a full-suite failure is unrelated (Run389 observed 3160 tests: 1 failure + 70 errors, 19 skipped), preserve it as RED; no claim of full-suite GREEN.
+
+**Nonpromotion:** STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA/jepa_weight=0, Age0 permissions/approval unchanged, no Redmi/native proof, canonical_architecture_complete=false, user_full_scope_complete=false. Review and source-hash binding required before integration. Next after GREEN: independent review, verify remote source/evidence, then continue a separate substantive package.
