@@ -1,0 +1,79 @@
+{
+  "schema": "V13_RUN271_CONTEXT_WARM_AUTHORITY_CHECKPOINT_V1",
+  "utc": "2026-10-25T11:14:00Z",
+  "base": "33092440a9e719ce17b120f36e211ccdfad077bf",
+  "base_pr": 270,
+  "parent_ci": {
+    "run_id": 40187802482,
+    "source_head": "33092440a9e719ce17b120f36e211ccdfad077bf",
+    "actual_sqlite_tests": 78,
+    "exit": 0,
+    "privacy": "CLEAN",
+    "artifact_id": 12597155710
+  },
+  "branch": "codex/context-warm-authority-run271-20261025",
+  "owner": {
+    "production": [
+      "v13/code/v13/context_os.py"
+    ],
+    "tests": [
+      "v13/code/tests/test_context_warm_authority_run271.py"
+    ],
+    "proofs": [
+      "v13/code/docs/proofs/continuation-20261025/context-warm-authority-run271/*"
+    ],
+    "ci": [
+      ".github/workflows/run271-context-warm-authority.yml"
+    ]
+  },
+  "source_blob": "4a20933b0dd293aa0541b935172b9f03dd8f49df",
+  "test_blob": "cc1423c7f4961b038f073c77ceec6a31cbc99a43",
+  "evidence_scope": "LINUX_ACTUAL_RUNTIME_SQLITE_SYNTHETIC_TEXT_NO_NATIVE_MODEL_NO_REDMi",
+  "tests": {
+    "red_harness_error": {
+      "errors": 6,
+      "exit": 1,
+      "retained": true
+    },
+    "red_corrected": {
+      "failures": 4,
+      "exit": 1
+    },
+    "red_strengthened": {
+      "failures": 5,
+      "exit": 1
+    },
+    "green": {
+      "tests": 44,
+      "exit": 0
+    },
+    "focused": {
+      "tests": 99,
+      "exit": 0,
+      "skips": 0
+    },
+    "fullsuite": {
+      "status": "NOT_RUN_IN_RUN271"
+    }
+  },
+  "raw_sha256": {
+    "red": "286fe6373405d5489cb5a58bc1f93141494c608c697695b80d17ac7de54f6f9c",
+    "red2": "5a429d8ee17295213ce85107b036ac38664796eda99bd87ef97ec3046b59204f",
+    "red3": "dc09fa32b30c7d3eebebe9261f2480ef2d01304e58445ff7389a13b37ad55e87",
+    "green": "304970f8e7d78271623b78264c32bcdba24b0cc0d39a709c3c36447ce908133d",
+    "focused": "935c52aa749739041bb3580588d787b461bcb2f4faca70d8404cc5129eadc237"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false
+  },
+  "changes": "ContextOS.warm now batch-validates all candidate corrections via Memory._verified_rows before applying the two-slot warm budget, including SHADOW and ACTIVE; invalid first item cannot starve valid later item.",
+  "original_canon_modified": false,
+  "model_hashes_modified": false,
+  "learning_authority_changed": false,
+  "next": "Create PR271 against PR270; inspect exact-head CI artifact and privacy scan; cross-review integration. Continue separate canonical functional package after checkpoint. No native/Redmi promotion."
+}
