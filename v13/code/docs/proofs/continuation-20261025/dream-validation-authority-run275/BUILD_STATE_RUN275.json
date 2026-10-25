@@ -1,0 +1,97 @@
+{
+  "schema": "V13_RUN275_DREAM_VALIDATION_AUTHORITY_CHECKPOINT_V1",
+  "utc": "2026-10-25T11:29:00Z",
+  "base": "c6d425a078c2bc968387d0872744847abe69bd29",
+  "base_pr": 274,
+  "parent_ci": {
+    "pr270": {
+      "run": 40187802482,
+      "tests": 78,
+      "privacy": "CLEAN",
+      "artifact": 12597155710
+    },
+    "pr271": {
+      "run": 40187989062,
+      "tests": 99,
+      "privacy": "CLEAN",
+      "artifact": 12597066691
+    },
+    "pr272": {
+      "run": 40188129508,
+      "tests": 31,
+      "privacy": "CLEAN",
+      "artifact": 12597221607
+    },
+    "pr273": {
+      "run": 40188272116,
+      "tests": 46,
+      "privacy": "CLEAN",
+      "artifact": 12597231967
+    },
+    "pr274": {
+      "run": 40188423855,
+      "tests": 74,
+      "privacy": "CLEAN",
+      "artifact": 12597247163
+    }
+  },
+  "branch": "codex/dream-validation-authority-run275-20261025",
+  "owner": {
+    "production": [
+      "v13/code/v13/sleep.py"
+    ],
+    "tests": [
+      "v13/code/tests/test_dream_validation_authority_run275.py"
+    ],
+    "proofs": [
+      "v13/code/docs/proofs/continuation-20261025/dream-validation-authority-run275/*"
+    ],
+    "ci": [
+      ".github/workflows/run275-dream-validation-authority.yml"
+    ]
+  },
+  "source_blob": "a144cd40ba46450af3329f598b1bc6ea7464ea94",
+  "test_blob": "152933e4afaf0e7d1defd991ab3e5c3267315a00",
+  "scope": "LINUX_ACTUAL_RUNTIME_SQLITE_SYNTHETIC_TEXT_NO_NATIVE_MODEL_NO_REDMi",
+  "tests": {
+    "red_initial": {
+      "tests": 6,
+      "failures": 5,
+      "exit": 1,
+      "notes": "one invalid test assertion used route memory.recall, corrected to Sleep A probe"
+    },
+    "red_corrected": {
+      "tests": 6,
+      "failures": 4,
+      "exit": 1
+    },
+    "green": {
+      "tests": 42,
+      "exit": 0
+    },
+    "focused": {
+      "tests": 80,
+      "exit": 0
+    },
+    "fullsuite": {
+      "status": "NOT_RUN_IN_RUN275"
+    }
+  },
+  "raw_sha256": {
+    "red": "3e0fdb553b2dea1dca606e79cf10570c987caca48d1c1e5fd1627b65d66dd638",
+    "red2": "f1ad7ff86961075f3bcdb3b25a80215af5f79b04fb7a871f4ea823321bd317e0",
+    "green": "9f58fa232900fc2b80b4475d769a774d2b71b13416dc70dbdd5279ee671a58a5",
+    "focused": "e53e8ae91c790954a602b9552beadfc40d0b1806b6f592a0a8061841e1ecc8f8"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "changes": "Sleep B queued hypothesis validation rechecks all anchor F5 human decisions and filters route/world supporting neighbors. Revoked anchors -> STALE, revoked neighbor no longer supports. Fact-write authority stays zero.",
+  "original_canon_modified": false,
+  "model_hashes_modified": false,
+  "next": "Create PR275 against PR274; verify exact-head CI artifact and privacy. Next audit other direct memory readers (operator :memory, admission, sparse/native inventory) and choose disjoint canonical package. No gate promotion."
+}

@@ -334,9 +334,10 @@ class SleepCycle:
         return rep
     # WP-T11 §15.4 / L8.2 DREAM.validation_required: hypotheses are checked against stored sources, never written as facts.
     def _memory(self,mid):
-        return self.s.one("SELECT m.id,m.kind,m.key_text,m.value,m.active,m.source_id,s.hash,s.chars,s.deleted FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.id=?",(mid,))
+        return self.s.one("SELECT m.*,s.hash,s.chars,s.deleted FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.id=?",(mid,))
     def _neighbors(self,kind,key,exclude):
-        rows=self.s.rows("SELECT m.id,m.key_text,m.value FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 AND m.kind=? ORDER BY m.created DESC LIMIT 512",(kind,))
+        rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 AND m.kind=? ORDER BY m.created DESC LIMIT 512",(kind,))
+        rows=self.memory._verified_rows(rows)
         return [m for m in rows if m['id'] not in exclude and (m['key_text'].strip().lower()==key.strip().lower() or relevance(key,m['key_text'])>=HYP_NEIGHBOR)]
     def check_hypothesis(self,item):
         """SUPPORTED / CONTRADICTED / UNVERIFIED / STALE against the stored memories and sources; evidence = memory ids."""
@@ -347,6 +348,10 @@ class SleepCycle:
         ids=h.get('memory_ids') or ([h['memory_id']] if h.get('memory_id') else [])
         ms=[self._memory(i) for i in ids]
         if not ms or any(m is None or not m['active'] or m['deleted'] for m in ms):return {'verdict':'STALE','reason':'MEMORY_INACTIVE','evidence':[]}
+        # Queued dreams outlive the original correction. Revalidate every anchor
+        # at judgment time, not only when the hypothesis was first proposed.
+        if len(self.memory._verified_rows(ms))!=len(ms):
+            return {'verdict':'STALE','reason':'HUMAN_AUTHORITY_LOST','evidence':[]}
         if kind=='ROUTE_ALTERNATIVE':
             m=ms[0];nb=self._neighbors('route',m['key_text'],{m['id']})
             sup=[x['id'] for x in nb if x['value']==h['alternative_route']];con=[x['id'] for x in nb if x['value']==h['observed_route']]
@@ -358,7 +363,8 @@ class SleepCycle:
         elif kind=='WORLD_RELATION':
             if len({m['value'].strip().lower() for m in ms})>1:return {'verdict':'CONTRADICTED','reason':'VALUES_DIVERGED','evidence':ids}
             ents=[e.lower() for e in h.get('entities',[])];sup=[];con=[]
-            for row in self.s.rows("SELECT m.id,m.key_text,m.value FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 ORDER BY m.created DESC LIMIT 512"):
+            rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 ORDER BY m.created DESC LIMIT 512")
+            for row in self.memory._verified_rows(rows):
                 if row['id'] in ids:continue
                 text=(row['key_text']+' '+row['value']).lower()
                 if ents and all(e in text for e in ents):sup.append(row['id'])
