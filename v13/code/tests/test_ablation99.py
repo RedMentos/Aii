@@ -68,7 +68,7 @@ if __name__=='__main__':unittest.main()
 
 class AgeNoiseAware(unittest.TestCase):
     """noise_aware: fails inside the measured noise band neither demote nor reopen; a real drop still demotes."""
-    def test_noise_band_blocks_demotion_but_not_real_drop(self):
+    def test_noise_band_never_hides_explicit_regression_or_real_drop(self):
         import tempfile
         from pathlib import Path
         from v13.age import AgeControl
@@ -78,10 +78,21 @@ class AgeNoiseAware(unittest.TestCase):
             for i in range(12):a.record('language',good|{'competence':.9+(.04 if i%2 else -.04)},evidence_id='g'+str(i))
             st=a.state()[0]['capabilities']['language'];stage=st['stage'];self.assertGreater(stage,0);self.assertGreater(st['noise']['mad'],.01)
             p0=a.plasticity('language');self.assertLess(p0,AgeControl(store,cfg|{'age_plasticity_policy':'boot'},build_ceiling=5).plasticity('language'))
-            for i in range(3):self.assertEqual(a.record('language',good|{'competence':.86,'regression_pass':False},evidence_id='n'+str(i)).get('noise'),'FAIL_WITHIN_NOISE_BAND')
-            self.assertEqual(a.state()[0]['capabilities']['language']['stage'],stage)
-            for i in range(2):a.record('language',good|{'competence':.3,'regression_pass':False},evidence_id='d'+str(i))
-            self.assertLess(a.state()[0]['capabilities']['language']['stage'],stage)
+            # Run200 safety contract: explicit regression_pass=False is NOT
+            # competence-only measurement noise, even inside the MAD band.
+            # The old test expected an unsafe waiver and contradicted Run200.
+            first=a.record('language',good|{'competence':.86,'regression_pass':False},evidence_id='n0')
+            self.assertNotEqual(first.get('noise'),'FAIL_WITHIN_NOISE_BAND')
+            self.assertIsNone(first['change'])
+            self.assertEqual(a.state()[0]['capabilities']['language']['fail_streak'],1)
+            second=a.record('language',good|{'competence':.86,'regression_pass':False},evidence_id='n1')
+            self.assertEqual(second['change']['kind'],'DEMOTE')
+            after_explicit=a.state()[0]['capabilities']['language']['stage']
+            self.assertLess(after_explicit,stage)
+            for i in range(2):
+                result=a.record('language',good|{'competence':.3,'regression_pass':False},evidence_id='d'+str(i))
+                self.assertNotEqual(result.get('noise'),'FAIL_WITHIN_NOISE_BAND')
+            self.assertLess(a.state()[0]['capabilities']['language']['stage'],after_explicit)
             store.close()
 
 class DelayedReward(unittest.TestCase):
