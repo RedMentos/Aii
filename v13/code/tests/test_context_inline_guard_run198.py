@@ -2,7 +2,7 @@
 import unittest
 from scripts import context_inline_guard_run198 as G
 from v13 import context_os as C
-from tests.test_context_inline_plan_run199 import legacy_compress_run199
+from tests.context_legacy_compress import legacy_compress_run199
 
 FILL = 'Ordinary context that can be summarized. ' * 24
 
