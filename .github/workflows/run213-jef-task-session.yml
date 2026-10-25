@@ -1,0 +1,33 @@
+name: Run213 JEF implicit and explicit task session lineage (software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/executive.py'
+      - 'v13/code/tests/test_executive_task_session_lineage_run213.py'
+      - '.github/workflows/run213-jef-task-session.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  jef:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      - name: Isolated software prerequisites
+        run: python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual JEF active-task and continuity regressions
+        working-directory: v13/code
+        run: |
+          PYTHONPATH=tests:. python -m unittest -v tests.test_executive_task_session_lineage_run213 tests.test_executive_goal_session_lineage_run212 tests.test_executive
+          python -m compileall -q v13/executive.py tests/test_executive_task_session_lineage_run213.py
+      - name: Official public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 82487f200a4fe99cc61248067596ec324afb8d7b --head HEAD --no-worktree
+      - name: Claim boundary
+        run: echo 'Actual JEF Store/Executive only; no native C2, Redmi, learning or age promotion'

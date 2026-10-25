@@ -1,0 +1,53 @@
+{
+  "run": "Run213",
+  "date_utc": "2026-10-25",
+  "canonical_area": "JEF C1 active task continuity / HumanDecision source-session binding",
+  "branch": "codex/jef-task-session-lineage-run213-20261025",
+  "base_verified": "82487f200a4fe99cc61248067596ec324afb8d7b",
+  "tested_commit": "ef6c4761533bcb56f0953c165903a15393b43cb8",
+  "owner": "Sequential Run213 executive.py active task and new test only; disjoint from native C2/B2/C3 owners",
+  "owned_files": [
+    "v13/code/v13/executive.py",
+    "v13/code/tests/test_executive_task_session_lineage_run213.py",
+    ".github/workflows/run213-jef-task-session.yml",
+    "v13/code/docs/proofs/continuation-20261025/run213-jef-task/"
+  ],
+  "changes": "Implicit task now bound to current same-session event source; explicit pinned task requires same-session stored HumanDecision packet and exact value; foreign task cannot enter JEF view/report/control; valid explicit task persists.",
+  "source_blob_sha": {
+    "executive.py": "4addc7c28b7a95528e111c441a0e3be768686b9e",
+    "test_executive_task_session_lineage_run213.py": "76f57d9bfdce639b7e984f4fb5dfff0a50297197"
+  },
+  "actual_source_ci": {
+    "red": {
+      "run_id": 40178632891,
+      "job_id": 121124690867,
+      "result": "2/18 RED failures, valid task test passed"
+    },
+    "green": {
+      "run_id": 40178687156,
+      "job_id": 121124855590,
+      "result": "18/18 PASS; compileall PASS; official privacy scan CLEAN"
+    },
+    "run212_regression": {
+      "run_id": 40178687203,
+      "result": "CHECKED in workflow; see CI"
+    }
+  },
+  "evidence_kind": "Actual-source GitHub Linux CI, synthetic Store/Executive and missing-model Runtime; no native C2, Redmi or learning",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "JEF open_questions and user_beliefs need separate session/source integrity review.",
+    "Full native model utility and Redmi performance remain unproven.",
+    "Full project-wide tests not established by focused CI."
+  ],
+  "next_step": "Run214 independent persistent multi-chat operator journey: actual Runtime with deterministic C3 seam, :new/:chats/:open/:search literal and :export chat JSON across restart; implement fixes only if tests expose failure.",
+  "next_command": "python -m unittest -v tests.test_chat_operator_persistence_run214 tests.test_operator",
+  "no_authority_promotion": true
+}

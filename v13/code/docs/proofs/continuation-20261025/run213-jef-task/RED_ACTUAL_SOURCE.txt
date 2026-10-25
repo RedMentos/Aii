@@ -1,0 +1,39 @@
+2026-10-25T08:57:03.7650374Z test_foreign_explicit_operator_task_cannot_cross_sessions (tests.test_executive_task_session_lineage_run213.ExecutiveTaskSessionLineageRun213.test_foreign_explicit_operator_task_cannot_cross_sessions) ... FAIL
+2026-10-25T08:57:03.7799582Z test_foreign_implicit_task_cannot_reach_view_report_or_control (tests.test_executive_task_session_lineage_run213.ExecutiveTaskSessionLineageRun213.test_foreign_implicit_task_cannot_reach_view_report_or_control) ... FAIL
+2026-10-25T08:57:03.8048167Z test_valid_explicit_operator_task_survives_later_turn (tests.test_executive_task_session_lineage_run213.ExecutiveTaskSessionLineageRun213.test_valid_explicit_operator_task_survives_later_turn) ... ok
+2026-10-25T08:57:03.8202552Z test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort) ... ok
+2026-10-25T08:57:03.8367122Z test_same_session_event_id_cannot_be_rebound_to_wrong_source (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_event_id_cannot_be_rebound_to_wrong_source) ... ok
+2026-10-25T08:57:03.8528874Z test_same_session_goal_remains_exact_and_usable (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_goal_remains_exact_and_usable) ... ok
+2026-10-25T08:57:03.8690472Z test_atomic_state_packet_crash_rolls_back_and_stale_update_rejected (tests.test_executive.ExecutiveChecks.test_atomic_state_packet_crash_rolls_back_and_stale_update_rejected) ... ok
+2026-10-25T08:57:03.9201376Z test_continuity_restart_is_explicit_bounded_and_operator_owned (tests.test_executive.ExecutiveChecks.test_continuity_restart_is_explicit_bounded_and_operator_owned) ... ok
+2026-10-25T08:57:03.9361625Z test_control_boundary_consumes_binding_permissions_pressure_and_versions (tests.test_executive.ExecutiveChecks.test_control_boundary_consumes_binding_permissions_pressure_and_versions) ... ok
+2026-10-25T08:57:03.9571079Z test_event_session_and_snapshot_stay_bound_after_restart (tests.test_executive.ExecutiveChecks.test_event_session_and_snapshot_stay_bound_after_restart) ... ok
+2026-10-25T08:57:03.9758977Z test_implicit_task_tracks_current_turn_but_explicit_task_persists (tests.test_executive.ExecutiveChecks.test_implicit_task_tracks_current_turn_but_explicit_task_persists) ... ok
+2026-10-25T08:57:03.9911249Z test_offers_and_actions_keep_provenance_without_fact_authority (tests.test_executive.ExecutiveChecks.test_offers_and_actions_keep_provenance_without_fact_authority) ... ok
+2026-10-25T08:57:04.0719231Z test_source_and_memory_revocation_are_checked_on_every_use (tests.test_executive.ExecutiveChecks.test_source_and_memory_revocation_are_checked_on_every_use) ... ok
+2026-10-25T08:57:04.0854371Z test_task_input_and_snapshot_authority_have_hard_bounds (tests.test_executive.ExecutiveChecks.test_task_input_and_snapshot_authority_have_hard_bounds) ... ok
+2026-10-25T08:57:04.3051128Z test_c2_resource_guard_abstains_without_native_or_head_execution (tests.test_executive.ExecutiveRuntimeChecks.test_c2_resource_guard_abstains_without_native_or_head_execution) ... ok
+2026-10-25T08:57:04.5089806Z test_force_report_before_any_native_output_ends_deliberation (tests.test_executive.ExecutiveRuntimeChecks.test_force_report_before_any_native_output_ends_deliberation) ... ok
+2026-10-25T08:57:04.5543221Z test_idle_force_report_preserves_best_actual_saved_output (tests.test_executive.ExecutiveRuntimeChecks.test_idle_force_report_preserves_best_actual_saved_output) ... ok
+2026-10-25T08:57:04.6120654Z test_real_missing_model_failure_has_source_snapshot_and_continuity (tests.test_executive.ExecutiveRuntimeChecks.test_real_missing_model_failure_has_source_snapshot_and_continuity) ... ok
+2026-10-25T08:57:04.6121543Z 
+2026-10-25T08:57:04.6121714Z ======================================================================
+2026-10-25T08:57:04.6122819Z FAIL: test_foreign_explicit_operator_task_cannot_cross_sessions (tests.test_executive_task_session_lineage_run213.ExecutiveTaskSessionLineageRun213.test_foreign_explicit_operator_task_cannot_cross_sessions)
+2026-10-25T08:57:04.6123911Z ----------------------------------------------------------------------
+2026-10-25T08:57:04.6124316Z Traceback (most recent call last):
+2026-10-25T08:57:04.6130976Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_task_session_lineage_run213.py", line 53, in test_foreign_explicit_operator_task_cannot_cross_sessions
+2026-10-25T08:57:04.6131873Z     self.assertIsNone(self.x.view(self.a)['active_task'])
+2026-10-25T08:57:04.6133262Z AssertionError: {'origin': 'EXPLICIT_OPERATOR_TASK', 'source_ref': {'char_end': 29, 'char_start': 0, 'modality': 'text', 'sha256': '90e308d518975d3015919d7c51a23dea09322379ed4bf0f3d0f1c99a4f3894cb', 'source_id': 'src_583bd89dcb4042e3b6daab01bf8a3835'}, 'status': 'UNCONFIRMED', 'exact_task': 'Run213 BETA explicit decision'} is not None
+2026-10-25T08:57:04.6134496Z 
+2026-10-25T08:57:04.6134618Z ======================================================================
+2026-10-25T08:57:04.6135615Z FAIL: test_foreign_implicit_task_cannot_reach_view_report_or_control (tests.test_executive_task_session_lineage_run213.ExecutiveTaskSessionLineageRun213.test_foreign_implicit_task_cannot_reach_view_report_or_control)
+2026-10-25T08:57:04.6137010Z ----------------------------------------------------------------------
+2026-10-25T08:57:04.6137387Z Traceback (most recent call last):
+2026-10-25T08:57:04.6138216Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_task_session_lineage_run213.py", line 43, in test_foreign_implicit_task_cannot_reach_view_report_or_control
+2026-10-25T08:57:04.6138991Z     self.assertIsNone(view['active_task'])
+2026-10-25T08:57:04.6140243Z AssertionError: {'origin': 'SOURCE_USER_REQUEST', 'source_ref': {'char_end': 24, 'char_start': 0, 'modality': 'text', 'sha256': '69180678a2f1b5545fdf81612726e4af4eb757b1903ed9278090000f862cf0fe', 'source_id': 'src_da7d4ca1af3b4e8fa5c4c43d5e7b1f82'}, 'status': 'UNCONFIRMED', 'exact_task': 'Run213 BETA foreign task'} is not None
+2026-10-25T08:57:04.6141338Z 
+2026-10-25T08:57:04.6141480Z ----------------------------------------------------------------------
+2026-10-25T08:57:04.6141817Z Ran 18 tests in 0.872s
+2026-10-25T08:57:04.6141951Z 
+2026-10-25T08:57:04.6142040Z FAILED (failures=2)

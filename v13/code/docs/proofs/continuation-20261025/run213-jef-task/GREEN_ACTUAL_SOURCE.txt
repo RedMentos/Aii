@@ -1,0 +1,35 @@
+2026-10-25T08:57:58.1044257Z test_foreign_explicit_operator_task_cannot_cross_sessions (tests.test_executive_task_session_lineage_run213.ExecutiveTaskSessionLineageRun213.test_foreign_explicit_operator_task_cannot_cross_sessions) ... ok
+2026-10-25T08:57:58.1198473Z test_foreign_implicit_task_cannot_reach_view_report_or_control (tests.test_executive_task_session_lineage_run213.ExecutiveTaskSessionLineageRun213.test_foreign_implicit_task_cannot_reach_view_report_or_control) ... ok
+2026-10-25T08:57:58.1367346Z test_valid_explicit_operator_task_survives_later_turn (tests.test_executive_task_session_lineage_run213.ExecutiveTaskSessionLineageRun213.test_valid_explicit_operator_task_survives_later_turn) ... ok
+2026-10-25T08:57:58.1517032Z test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_foreign_session_goal_and_sequence_cannot_enter_view_or_effort) ... ok
+2026-10-25T08:57:58.1679243Z test_same_session_event_id_cannot_be_rebound_to_wrong_source (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_event_id_cannot_be_rebound_to_wrong_source) ... ok
+2026-10-25T08:57:58.1845127Z test_same_session_goal_remains_exact_and_usable (tests.test_executive_goal_session_lineage_run212.ExecutiveGoalSessionLineageRun212.test_same_session_goal_remains_exact_and_usable) ... ok
+2026-10-25T08:57:58.2005093Z test_atomic_state_packet_crash_rolls_back_and_stale_update_rejected (tests.test_executive.ExecutiveChecks.test_atomic_state_packet_crash_rolls_back_and_stale_update_rejected) ... ok
+2026-10-25T08:57:58.2503628Z test_continuity_restart_is_explicit_bounded_and_operator_owned (tests.test_executive.ExecutiveChecks.test_continuity_restart_is_explicit_bounded_and_operator_owned) ... ok
+2026-10-25T08:57:58.2661835Z test_control_boundary_consumes_binding_permissions_pressure_and_versions (tests.test_executive.ExecutiveChecks.test_control_boundary_consumes_binding_permissions_pressure_and_versions) ... ok
+2026-10-25T08:57:58.2863342Z test_event_session_and_snapshot_stay_bound_after_restart (tests.test_executive.ExecutiveChecks.test_event_session_and_snapshot_stay_bound_after_restart) ... ok
+2026-10-25T08:57:58.3053193Z test_implicit_task_tracks_current_turn_but_explicit_task_persists (tests.test_executive.ExecutiveChecks.test_implicit_task_tracks_current_turn_but_explicit_task_persists) ... ok
+2026-10-25T08:57:58.3201491Z test_offers_and_actions_keep_provenance_without_fact_authority (tests.test_executive.ExecutiveChecks.test_offers_and_actions_keep_provenance_without_fact_authority) ... ok
+2026-10-25T08:57:58.3998111Z test_source_and_memory_revocation_are_checked_on_every_use (tests.test_executive.ExecutiveChecks.test_source_and_memory_revocation_are_checked_on_every_use) ... ok
+2026-10-25T08:57:58.4131352Z test_task_input_and_snapshot_authority_have_hard_bounds (tests.test_executive.ExecutiveChecks.test_task_input_and_snapshot_authority_have_hard_bounds) ... ok
+2026-10-25T08:57:58.6782521Z test_c2_resource_guard_abstains_without_native_or_head_execution (tests.test_executive.ExecutiveRuntimeChecks.test_c2_resource_guard_abstains_without_native_or_head_execution) ... ok
+2026-10-25T08:57:58.8844595Z test_force_report_before_any_native_output_ends_deliberation (tests.test_executive.ExecutiveRuntimeChecks.test_force_report_before_any_native_output_ends_deliberation) ... ok
+2026-10-25T08:57:58.9274890Z test_idle_force_report_preserves_best_actual_saved_output (tests.test_executive.ExecutiveRuntimeChecks.test_idle_force_report_preserves_best_actual_saved_output) ... ok
+2026-10-25T08:57:58.9850764Z test_real_missing_model_failure_has_source_snapshot_and_continuity (tests.test_executive.ExecutiveRuntimeChecks.test_real_missing_model_failure_has_source_snapshot_and_continuity) ... ok
+2026-10-25T08:57:58.9851898Z 
+2026-10-25T08:57:58.9852156Z ----------------------------------------------------------------------
+2026-10-25T08:57:58.9852679Z Ran 18 tests in 0.906s
+2026-10-25T08:57:58.9852881Z 
+2026-10-25T08:57:58.9852986Z OK
+2026-10-25T08:57:59.0487081Z ##[group]Run python v13/code/scripts/public_repo_privacy_scan.py --base 82487f200a4fe99cc61248067596ec324afb8d7b --head HEAD --no-worktree
+2026-10-25T08:57:59.0488128Z [36;1mpython v13/code/scripts/public_repo_privacy_scan.py --base 82487f200a4fe99cc61248067596ec324afb8d7b --head HEAD --no-worktree[0m
+2026-10-25T08:57:59.0549141Z shell: /usr/bin/bash -e {0}
+2026-10-25T08:57:59.0549417Z env:
+2026-10-25T08:57:59.0549705Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:57:59.0550470Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-25T08:57:59.0550977Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:57:59.0551421Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:57:59.0551853Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-25T08:57:59.0552283Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-25T08:57:59.0552644Z ##[endgroup]
+2026-10-25T08:57:59.0961616Z privacy scan 82487f200..HEAD: CLEAN
