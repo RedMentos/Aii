@@ -1,0 +1,47 @@
+SOURCE: GitHub Actions run 40145321592, job 121025301195, commit 1435ad83087b11714b77067155f04340e62e5c61
+UNEDITED CI LOG SECTION (timestamps retained):
+test_all_abstentions_cannot_generate_rank_or_false_success (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_all_abstentions_cannot_generate_rank_or_false_success) ... ok
+2026-10-25T00:05:47.2087870Z test_nonfinite_boolean_and_missing_diagnostics_are_not_scored (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_nonfinite_boolean_and_missing_diagnostics_are_not_scored) ... ok
+2026-10-25T00:05:47.2206464Z test_one_abstention_keeps_exact_denominator_and_reason (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_one_abstention_keeps_exact_denominator_and_reason) ... ok
+2026-10-25T00:05:47.2393100Z test_real_world_model_guard_preserved (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_real_world_model_guard_preserved) ... ok
+2026-10-25T00:05:47.2393831Z 
+2026-10-25T00:05:47.2394019Z ----------------------------------------------------------------------
+2026-10-25T00:05:47.2394458Z Ran 4 tests in 0.103s
+2026-10-25T00:05:47.2394634Z 
+2026-10-25T00:05:47.2394733Z OK
+2026-10-25T00:05:47.2721278Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:05:47.2722663Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:05:47.7486708Z test_real_gate_promotes_good_and_refuses_bad_student (test_ablation_homeo_meta.APlaneGateAblation.test_real_gate_promotes_good_and_refuses_bad_student) ... ok
+2026-10-25T00:05:47.7826030Z test_short_run_uses_real_admission_budget (test_ablation_homeo_meta.AttentionPrior.test_short_run_uses_real_admission_budget) ... ok
+2026-10-25T00:05:47.7865438Z test_attribution_uses_real_function_and_safety_stays_raw (test_ablation_homeo_meta.Corollary.test_attribution_uses_real_function_and_safety_stays_raw) ... ok
+2026-10-25T00:05:47.8366737Z test_one_correction_fixes_the_paraphrase_not_the_other_entity (test_ablation_homeo_meta.EpisodicRouteAblation.test_one_correction_fixes_the_paraphrase_not_the_other_entity) ... ok
+2026-10-25T00:05:47.8745749Z test_real_observe_accepts_every_fixture_trial (test_ablation_homeo_meta.F7PlasticityAblation.test_real_observe_accepts_every_fixture_trial) ... ok
+2026-10-25T00:05:47.8747039Z test_home_knobs_restored_after_ablation (test_ablation_homeo_meta.HomeoMeta.test_home_knobs_restored_after_ablation) ... ok
+2026-10-25T00:05:47.9067380Z test_streams_are_identical_per_seed_and_arms_differ (test_ablation_homeo_meta.HomeoMeta.test_streams_are_identical_per_seed_and_arms_differ) ... ok
+2026-10-25T00:05:47.9068402Z test_verdict_rule (test_ablation_homeo_meta.HomeoMeta.test_verdict_rule) ... ok
+2026-10-25T00:05:47.9069912Z test_real_watcher_cuts_conflict_not_agreement (test_ablation_homeo_meta.LateWatch.test_real_watcher_cuts_conflict_not_agreement) ... ok
+2026-10-25T00:05:47.9246633Z test_real_breaker_opens_after_three_failures_and_skips (test_ablation_homeo_meta.ReflexBreaker.test_real_breaker_opens_after_three_failures_and_skips) ... ok
+2026-10-25T00:05:48.0441254Z test_short_run_uses_real_consolidate_and_restores_buffer (test_ablation_homeo_meta.SleepOfflineAblation.test_short_run_uses_real_consolidate_and_restores_buffer) ... ok
+2026-10-25T00:05:48.0759434Z test_spearman_and_real_fit (test_ablation_homeo_meta.WorldModelConfidenceAblation.test_spearman_and_real_fit) ... ok
+2026-10-25T00:05:48.0759832Z 
+2026-10-25T00:05:48.0759966Z ----------------------------------------------------------------------
+2026-10-25T00:05:48.0760251Z Ran 12 tests in 0.634s
+2026-10-25T00:05:48.0760369Z 
+2026-10-25T00:05:48.0765828Z OK
+2026-10-25T00:05:48.1012472Z ##[group]Run set -euo pipefail
+2026-10-25T00:05:48.1012744Z [36;1mset -euo pipefail[0m
+2026-10-25T00:05:48.1013159Z [36;1mtimeout 120s ../../.venv/bin/python scripts/ablation_world_model_confidence.py /tmp/run114-world-confidence.json[0m
+2026-10-25T00:05:48.1014677Z [36;1m../../.venv/bin/python -c "import json; r=json.load(open('/tmp/run114-world-confidence.json')); assert len(r['per_seed'])==5; assert all(x['evaluated_n']+x['abstained_n']==x['queries_n']==400 for x in r['per_seed'].values()); print(json.dumps({'verdict':r['verdict'],'complete_seeds':r['complete_seeds'],'incomplete_seeds':r['incomplete_seeds'],'counts':{k:{'evaluated':v['evaluated_n'],'abstained':v['abstained_n'],'reasons':v['abstention_reasons']} for k,v in r['per_seed'].items()}},sort_keys=True))"[0m
+2026-10-25T00:05:48.1069925Z shell: /usr/bin/bash -e {0}
+2026-10-25T00:05:48.1070149Z env:
+2026-10-25T00:05:48.1070313Z   HF_HUB_OFFLINE: 1
+2026-10-25T00:05:48.1070495Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T00:05:48.1070716Z   DO_NOT_TRACK: 1
+2026-10-25T00:05:48.1070896Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T00:05:48.1071078Z ##[endgroup]
+2026-10-25T00:05:48.1289484Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:05:48.1290830Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:05:49.5646523Z INCOMPLETE_ABSTENTION {'samples_only': 0, 'spread_only': 0, 'random': 0} {'confidence': {'mean': None, 'sd': None}, 'samples_only': {'mean': None, 'sd': None}, 'spread_only': {'mean': None, 'sd': None}, 'random': {'mean': None, 'sd': None}} labels 5
+2026-10-25T00:05:49.5987131Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:05:49.5988512Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:05:49.6008079Z {"complete_seeds": [], "counts": {"13": {"abstained": 188, "evaluated": 212, "reasons": {"IMPOSSIBLE_PREDICTED_OUTCOME": 188}}, "14": {"abstained": 273, "evaluated": 127, "reasons": {"IMPOSSIBLE_PREDICTED_OUTCOME": 273}}, "15": {"abstained": 241, "evaluated": 159, "reasons": {"IMPOSSIBLE_PREDICTED_OUTCOME": 241}}, "16": {"abstained": 249, "evaluated": 151, "reasons": {"IMPOSSIBLE_PREDICTED_OUTCOME": 249}}, "17": {"abstained": 210, "evaluated": 190, "reasons": {"IMPOSSIBLE_PREDICTED_OUTCOME": 210}}}, "incomplete_seeds": [13, 14, 15, 16, 17], "verdict": "INCOMPLETE_ABSTENTION"
