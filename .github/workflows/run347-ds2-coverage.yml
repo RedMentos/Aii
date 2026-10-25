@@ -1,0 +1,66 @@
+name: V13 Run347 DS2 bounded per-action coverage lab
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run347-ds2-coverage.yml'
+      - 'v13/code/v13/sandbox.py'
+      - 'v13/code/tests/test_sandbox_ds2_coverage_run347.py'
+      - 'v13/code/scripts/run347_ds2_coverage_bench.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run347-ds2-bounded-coverage/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ds2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact head and frozen source hashes
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN347_HEAD.txt"
+          sha256sum v13/code/v13/sandbox.py v13/code/tests/test_sandbox_ds2_coverage_run347.py v13/code/scripts/run347_ds2_coverage_bench.py | tee "$RUNNER_TEMP/RUN347_SOURCE_SHA256SUMS.txt"
+      - name: Existing DS1/DS2 and new coverage tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          python3 -m compileall -q v13/sandbox.py tests/test_sandbox.py tests/test_sandbox_ds2_run346.py tests/test_sandbox_ds2_coverage_run347.py scripts/run347_ds2_coverage_bench.py
+          PYTHONPATH="$PWD" python3 -m unittest -v \
+            tests.test_sandbox tests.test_sandbox_ds2_run346 tests.test_sandbox_ds2_coverage_run347 \
+            2>&1 | tee "$RUNNER_TEMP/RUN347_TESTS_RAW.log"
+          exit ${PIPESTATUS[0]}
+      - name: Fresh disjoint 20-seed paired DS2 evaluation
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          PYTHONPATH="$PWD" python3 scripts/run347_ds2_coverage_bench.py --out "$RUNNER_TEMP/RUN347_BENCH_RAW.json" \
+            2>&1 | tee "$RUNNER_TEMP/RUN347_BENCH_STDOUT.log"
+          exit ${PIPESTATUS[0]}
+      - name: Public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN347_PRIVACY_RAW.log"
+      - name: Close raw source-only receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN347_*' ! -name RUN347_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN347_SHA256SUMS.txt
+      - name: Preserve raw RED, PASS or NOT_SUPPORTED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run347-DS2-Coverage-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN347_*
+          if-no-files-found: warn
+          retention-days: 30
