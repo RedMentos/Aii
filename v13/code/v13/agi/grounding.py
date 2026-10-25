@@ -45,13 +45,13 @@ class Grounding:
     def expect(self,kind,context_key,action,modality='text',predicted=None):
         """Before acting: store the prediction (from a supplied model or the baseline)."""
         st=self.box.load()[0]
-        if not st['modalities'].get(modality):raise PermissionError('Modalität aus: '+modality)
+        if modality in STEP8_GATED or not st['modalities'].get(modality):raise PermissionError('Modalität aus: '+modality)
         pred=predicted if predicted is not None else FrequencyPredictor(st['table']).predict(kind,context_key)
         aid=new_id('ground')
         def f(st):
             # The modality may have been disabled after the initial prediction read.
             # Recheck against the state used by the optimistic SQLite write.
-            if not st['modalities'].get(modality):raise PermissionError('Modalität aus: '+modality)
+            if modality in STEP8_GATED or not st['modalities'].get(modality):raise PermissionError('Modalität aus: '+modality)
             st['open'][aid]={'id':aid,'kind':kind,'ctx':context_key,'action':action,'modality':modality,'predicted':pred,'created':self.clock()}
             if len(st['open'])>HISTORY:st['open'].pop(next(iter(st['open'])))
         self.box.mutate(f);return aid,pred
