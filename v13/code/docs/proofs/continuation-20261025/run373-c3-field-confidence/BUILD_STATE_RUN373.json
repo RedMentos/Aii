@@ -1,0 +1,88 @@
+{
+  "schema": "V13_RUN373_NATIVE_DIAGNOSTIC_CHECKPOINT_V1",
+  "owner": "codex/c3-field-confidence-native-run373-20261025",
+  "parent": "codex/ag12-invalid-answer-abstain-run372-20261025@8d204939c62ba35ef6a457cebd469bafbb1d4f2d",
+  "review_pr": 368,
+  "prereg_commit": "e410a7b3b01e0b99c7aa8cf8fab749e7406e6737",
+  "infrastructure_failed_attempt": {
+    "head": "af93400355648cd5cfebc732990f7c38099c4011",
+    "actions_run": 40234476170,
+    "reason": "workflow called nonexistent scripts.run373_c3_native_solver_smoke module; not a model inference failure",
+    "raw_artifact_id": 12614516735,
+    "raw_sha256": "ca387c4e4750f5b80cbc389dcf27d41de608b73553f8ee466e78df2028236fb4",
+    "private_backup": "/V13/checkpoints/2026-10-25/V13_Run373_INFRA_RED_raw_shaca387c4e.zip"
+  },
+  "fixed_workflow_head": "51c24952d72d30d3920ae0d1e19aa49290191942",
+  "native_actions_run": 40234550912,
+  "native_result": {
+    "status": "FIELD_CONFIDENCE_NOT_SUPPORTED",
+    "native_plumbing_pass": true,
+    "field_specific_metrics_observed": 4,
+    "exact_correct_with_field_confidence": 2,
+    "total": 4,
+    "threshold": 3,
+    "answers": [
+      {
+        "prompt": "Compute: 7 + 5 = ?",
+        "expected": "12",
+        "observed": "12",
+        "confidence": 0.9999,
+        "field_tokens": 1
+      },
+      {
+        "prompt": "Compute: 9 + 1 = ?",
+        "expected": "10",
+        "observed": "10",
+        "confidence": 0.9996,
+        "field_tokens": 1
+      },
+      {
+        "prompt": "Write backwards: dog",
+        "expected": "god",
+        "observed": "dog",
+        "confidence": 0.815,
+        "field_tokens": 1
+      },
+      {
+        "prompt": "Continue: 2, 4, 6, ?",
+        "expected": "8",
+        "observed": "They are consecutive integers starting from 2.",
+        "confidence": 0.267,
+        "field_tokens": 7
+      }
+    ],
+    "plain_controls": [
+      "Two plus two equals four.",
+      "7 + 5 = 12"
+    ],
+    "max_sampled_peak_rss_bytes": 507281408,
+    "process_reaped": true,
+    "remaining_pids": [],
+    "phone_measured": false
+  },
+  "native_raw_artifact_id": 12614312467,
+  "native_raw_sha256": "6edd77c142e75ceef18fcd011b04fbc992bcc0f10d520be08553a09ecf2ed45f",
+  "native_private_backup": "/V13/checkpoints/2026-10-25/V13_Run373_NATIVE_NEGATIVE_raw_sha6edd77c1.zip",
+  "library_byte_comparison": "both failed infrastructure and native negative raw ZIPs independently re-materialized and byte-identical; CRC and all internal SHA PASS",
+  "source_sha256": {
+    "v13/code/specs/models.json": "81fe561e19b92614555453a1b99a39d8d77fe35dd7c7e06034e6dc7ff2e0bc58",
+    "v13/code/v13/runners.py": "18db214f930953a5f781aa8aaa2b4425e048fd8bacf7848793c112a4e06af798",
+    "v13/code/v13/agi/solver.py": "3d932f97a435c4bc02f051387a787955571e7d0bc0b1a0eefddeeb85de6bffe6",
+    "v13/code/scripts/run373_c3_field_confidence_native.py": "2b6c42252dc1b626fce2fd4141e82fa397dfa2222e51f77567f148a720facc1c"
+  },
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "native_binary_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "claim_limits": "Fixed 4-item seen-style diagnostic, not registered AG12 generality suite or phone proof; field confidence extraction works on 4/4 but does not guarantee correctness/calibration. No threshold retuning after observed 2/4.",
+  "negative_gates": {
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED",
+    "whole_v13": "INCOMPLETE",
+    "full_suite": "RUN367_RED_UNCHANGED"
+  },
+  "next_package": "Continue independent Run374 AG3 finite score branch and investigate native C3 semantic failure as a separately preregistered cohort, without changing Run373 threshold or pinned artifacts.",
+  "next_command": "Review raw RUN373_NATIVE_REPORT.json from private Library and implement independent AG3 score gate; do not rerun same pinned diagnostic without new preregistered reason.",
+  "status": "BRANCH_SCOPED_NATIVE_NEGATIVE_PRESERVED"
+}
