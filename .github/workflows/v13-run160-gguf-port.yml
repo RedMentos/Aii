@@ -1,0 +1,63 @@
+name: V13 Run160 BodyTrainPort GGUF dtype prefix audit
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/body_gguf_dtype_audit_run160.py'
+      - 'v13/code/tests/test_body_gguf_dtype_audit_run160.py'
+      - '.github/workflows/v13-run160-gguf-port.yml'
+  workflow_dispatch:
+jobs:
+  dtype-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Bounded parser tests and compile
+        run: |
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_body_gguf_dtype_audit_run160.py -v
+          python -m compileall -q v13/code/scripts/body_gguf_dtype_audit_run160.py v13/code/tests/test_body_gguf_dtype_audit_run160.py
+      - name: Bounded public GGUF prefix fetch and dtype audit, no native inference
+        run: |
+          mkdir -p /tmp/run160
+          PYTHONPATH=v13/code python - <<'PY'
+          import json,urllib.request
+          from pathlib import Path
+          from scripts.body_gguf_dtype_audit_run160 import audit,MAX_PREFIX
+          specs=json.loads(Path('v13/code/specs/models.json').read_text())
+          for role in ('body','gist'):
+              f=specs['models'][role]['files'][0]
+              req=urllib.request.Request(f['url'],headers={'Range':f'bytes=0-{MAX_PREFIX-1}','Accept-Encoding':'identity','User-Agent':'V13-Run160-ReadOnly/1'})
+              with urllib.request.urlopen(req,timeout=120) as response:
+                  status=response.status
+                  content_range=response.headers.get('Content-Range')
+                  prefix=response.read(MAX_PREFIX)
+              if status==206 and (not content_range or not content_range.endswith('/'+str(f['size']))):
+                  raise ValueError('range_total_mismatch:'+role)
+              if status not in (200,206):raise ValueError('http_status:'+role)
+              result=audit(prefix)
+              result['role']=role
+              result['pinned_revision']=specs['models'][role]['revision']
+              result['registered_full_model_sha256']=f['sha256']
+              result['prefix_http_status']=status
+              result['prefix_content_range']=content_range
+              result['downloaded_prefix_bytes']=len(prefix)
+              assert result['body_training_authority']==0 and result['full_model_sha256_verified'] is False
+              Path('/tmp/run160/'+role+'.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n')
+              print('RUN160_PREFIX',role,'HTTP',status,'TENSORS',result['tensor_count'],'F32',result['fp32_count'],'AUTHORITY',result['body_training_authority'])
+          PY
+      - name: Official public repo privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base c282a881205bd1a14268297eded3c8a642e53bca --head HEAD
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: V13-Run160-GGUF-Prefix-Dtype-Only
+          path: /tmp/run160/*.json
+          if-no-files-found: warn
+          retention-days: 14
