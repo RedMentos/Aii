@@ -12,13 +12,13 @@ from v13.config import initialize,save_config
 from v13.runtime import Runtime
 from v13.operator import Operator
 from v13.resources import device
-from v13.proofs import archive_previous,audit_event
+from v13.proofs import archive_previous,audit_event,_mask_step1_bodies
 
 def run(installed,out):
     installed=Path(installed).resolve();out=Path(out).resolve();archive_previous(out)
     report={'schema':'V13_EXPLICIT_EXECUTIVE_PROOF_V1','status':'RUNNING','device':device(),'phone_measured':device()['android'],'checks':{},'turns':[],
         'source_hashes':{str(p.relative_to(APP)):file_hash(p) for p in list((APP/'v13').glob('*.py'))+[Path(__file__).resolve()]},
-        'claim_limits':['Actual unchanged native C2 query and actual C3 output, no B manifest in this test home.',
+        'claim_limits':['Actual unchanged native C2 query and C3 output; neither B manifest nor committed AG0 body slot in this disposable test home.',
                         'Explicit structured task continuity and exact provenance; no native KV persistence or learned executive body.',
                         'Native wording is recorded; fluent answers do not prove task completion or truthful self reports.',
                         'Fixture task is explicitly authored by the test operator. No Android sustained or energy proof inferred from Linux.']}
@@ -29,7 +29,7 @@ def run(installed,out):
         for name in ('models','bin'):shutil.rmtree(home/name);(home/name).symlink_to(installed/name,target_is_directory=True)
         shutil.copyfile(installed/'config/models.json',home/'config/models.json')
         try:
-            r=Runtime(home);op=Operator(r);r.models.installed.pop('body',None);r.models.installed.pop('gist',None);r.models.save()
+            r=Runtime(home);op=Operator(r);_mask_step1_bodies(r)
             report['model_revisions']=r.revisions();hashes={role:file_hash(r.models.path_for(role)) for role in ('C3_LANGUAGE','C2_CONTROL')}
             def ask(name,text):
                 eid=r.submit(text);end=time.monotonic()+r.cfg['deadline_seconds']+20
@@ -50,7 +50,8 @@ def run(installed,out):
             report['checks']['task_source_consumed_in_native_context']=task_ref in refs and view['active_task']['exact_task']=='Prüfe das Budget von Projekt Aurora.'
             report['checks']['semantic_completion_not_inferred']=view['active_task']['status']=='REPORTED_UNCONFIRMED' and view['uncertainty']['semantic_confidence'] is None
             report['checks']['actual_action_and_corollary_bound']=view['current_action_intent']['corollary_packet_id'] in {x['packet_id'] for x in [json.loads(p['payload']) for p in r.store.rows("SELECT payload FROM packets WHERE kind='CorollaryCopy' AND event_id=?",(second['event_id'],))]}
-            report['checks']['body_not_required']=not {'body','gist'}&set(r.models.installed) and not r.store.rows("SELECT id FROM packets WHERE kind='OfferPacket'")
+            report['checks']['body_slot_absent']=not {'B1_DETAIL','B2_GIST'}&set(r.bodies.slots.box.load()[0]['slots'])
+            report['checks']['body_not_required']=not {'body','gist'}&set(r.models.installed) and report['checks']['body_slot_absent'] and not r.store.rows("SELECT id FROM packets WHERE kind='OfferPacket'")
             session=r.session;state=r.store.state('C1_EXEC:'+session);r.close();r=Runtime(home);op=Operator(r)
             report['checks']['restart_state_exact']=r.session==session and r.store.state('C1_EXEC:'+session)==state
             forced=op.run(':force-report');report['forced_idle_report']=forced;report['checks']['forced_best_actual_output']=second['output'] in forced and 'CURRENT_OUTPUT_SNAPSHOT' in forced
