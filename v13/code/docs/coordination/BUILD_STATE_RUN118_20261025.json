@@ -1,0 +1,60 @@
+{
+  "schema": "V13_RUN118_CHECKPOINT_V1",
+  "date_utc": "2026-10-25",
+  "pr": 149,
+  "parent": "6fce98c2111429b1951e6e527608cb9c543c21b3",
+  "owner": "Codex integration-only reviewed World/LateWatch packages",
+  "scope": "REVIEW_BRANCH_NOT_PRODUCTION",
+  "source_git_blobs": {
+    "v13/code/v13/latewatch.py": "5df03a7c8a8f5709b5ed2ceb6a08851c780d8480",
+    "v13/code/docs/LATE_WATCH.md": "1759f3b4182ff540f91e0ecfdcea593d350b70d0",
+    "v13/code/tests/test_latewatch_final_tail_run116.py": "ce8088fdd60c6ca6422a8fd24e750b72374a19f3",
+    "v13/code/scripts/ablation_world_selective_risk_run117.py": "aa814ccb3ccea794339e1c68222db6fadedfdada",
+    "v13/code/tests/test_world_selective_risk_run117.py": "a135a938602c7fdbe997678edea837f4dc142977",
+    "v13/code/scripts/ablation_world_model_confidence.py": "fb7a60def4abb75c76d269222adc3da6da96aebf",
+    "v13/code/v13/world_model.py": "17aa0abd22ae0c67b0a3a3de5d7e5ef3d7e2c915"
+  },
+  "all_source_blobs_remotely_verified": true,
+  "workflow_git_blob": "730507c472fd6d0ac543ddb26e7aa8fa4a048d7f",
+  "evidence_git_blob": "232d37e01291b05037f90ad56d38b337edebda87",
+  "tests": {
+    "run_id": 40146116010,
+    "job_id": 121027702142,
+    "suites": {
+      "world_abstention_run114": 4,
+      "ablation_homeo_meta": 12,
+      "latewatch_tail_run116": 3,
+      "latewatch_inherited": 6,
+      "world_selective_run117": 5,
+      "world_integration_run64": 15,
+      "world_recovery_run109": 6
+    },
+    "total": 51,
+    "failed": 0,
+    "errors": 0,
+    "status": "PASS",
+    "privacy": "CLEAN",
+    "evidence_class": "LINUX_SOFTWARE_SYNTHETIC"
+  },
+  "cross_package": "Run116 LateWatch exact reviewed source plus Run117 lab-only selective-risk script on Run114 World abstention baseline. No semantic edits; no new runtime confidence authority.",
+  "negative_evidence": {
+    "run115_augmented_full_suite": "FAIL_4_FAILURES_1_ERROR_11_SKIPS",
+    "run117_selective_risk": "NOT_SUPPORTED_SYNTHETIC_SELECTIVE"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Run115 LP3 archived Run16 source remains unsafe and unintegrated; delegated cgroup kernel proof missing.",
+    "Run117 confidence ranking not supported against spread-only in fresh synthetic seeds; no real-answer utility evidence.",
+    "Native/Redmi/full-suite integrated acceptance remains unproven."
+  ],
+  "exact_next_command": "cd v13/code && python -m unittest discover -s tests -p 'test_world_selective_risk_run117.py' -v && python -m unittest discover -s tests -p 'test_latewatch_final_tail_run116.py' -v",
+  "next_step": "Independently review PR149 and decide authorized merge sequencing with PR145; preserve Run115/117 negative evidence and continue next canonical functional organ without promoting gates.",
+  "backup": "GitHub PR #149 verified remote; rejected anyone-writable Drive destination not retried"
+}

@@ -1,0 +1,121 @@
+SOURCE GitHub Actions run 40146116010, job 121027702142, commit 92f399622a5bb88415234091fe83d75793a1b7fa
+UNEDITED CI TEST SECTION (timestamps retained):
+SUITE=test_world_confidence_abstention_run114.py
+2026-10-25T00:17:47.5410637Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:47.5411908Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:47.8403550Z test_all_abstentions_cannot_generate_rank_or_false_success (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_all_abstentions_cannot_generate_rank_or_false_success) ... ok
+2026-10-25T00:17:47.8502939Z test_nonfinite_boolean_and_missing_diagnostics_are_not_scored (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_nonfinite_boolean_and_missing_diagnostics_are_not_scored) ... ok
+2026-10-25T00:17:47.8603208Z test_one_abstention_keeps_exact_denominator_and_reason (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_one_abstention_keeps_exact_denominator_and_reason) ... ok
+2026-10-25T00:17:47.8762949Z test_real_world_model_guard_preserved (test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_real_world_model_guard_preserved) ... ok
+2026-10-25T00:17:47.8763309Z 
+2026-10-25T00:17:47.8763425Z ----------------------------------------------------------------------
+2026-10-25T00:17:47.8763652Z Ran 4 tests in 0.095s
+2026-10-25T00:17:47.8763766Z 
+2026-10-25T00:17:47.8763823Z OK
+2026-10-25T00:17:47.8985863Z SUITE=test_ablation_homeo_meta.py
+2026-10-25T00:17:47.9100687Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:47.9101740Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:48.2545250Z test_real_gate_promotes_good_and_refuses_bad_student (test_ablation_homeo_meta.APlaneGateAblation.test_real_gate_promotes_good_and_refuses_bad_student) ... ok
+2026-10-25T00:17:48.2800843Z test_short_run_uses_real_admission_budget (test_ablation_homeo_meta.AttentionPrior.test_short_run_uses_real_admission_budget) ... ok
+2026-10-25T00:17:48.2827816Z test_attribution_uses_real_function_and_safety_stays_raw (test_ablation_homeo_meta.Corollary.test_attribution_uses_real_function_and_safety_stays_raw) ... ok
+2026-10-25T00:17:48.3266278Z test_one_correction_fixes_the_paraphrase_not_the_other_entity (test_ablation_homeo_meta.EpisodicRouteAblation.test_one_correction_fixes_the_paraphrase_not_the_other_entity) ... ok
+2026-10-25T00:17:48.3562024Z test_real_observe_accepts_every_fixture_trial (test_ablation_homeo_meta.F7PlasticityAblation.test_real_observe_accepts_every_fixture_trial) ... ok
+2026-10-25T00:17:48.3563058Z test_home_knobs_restored_after_ablation (test_ablation_homeo_meta.HomeoMeta.test_home_knobs_restored_after_ablation) ... ok
+2026-10-25T00:17:48.3814194Z test_streams_are_identical_per_seed_and_arms_differ (test_ablation_homeo_meta.HomeoMeta.test_streams_are_identical_per_seed_and_arms_differ) ... ok
+2026-10-25T00:17:48.3814936Z test_verdict_rule (test_ablation_homeo_meta.HomeoMeta.test_verdict_rule) ... ok
+2026-10-25T00:17:48.3816663Z test_real_watcher_cuts_conflict_not_agreement (test_ablation_homeo_meta.LateWatch.test_real_watcher_cuts_conflict_not_agreement) ... ok
+2026-10-25T00:17:48.3960457Z test_real_breaker_opens_after_three_failures_and_skips (test_ablation_homeo_meta.ReflexBreaker.test_real_breaker_opens_after_three_failures_and_skips) ... ok
+2026-10-25T00:17:48.4836790Z test_short_run_uses_real_consolidate_and_restores_buffer (test_ablation_homeo_meta.SleepOfflineAblation.test_short_run_uses_real_consolidate_and_restores_buffer) ... ok
+2026-10-25T00:17:48.5119272Z test_spearman_and_real_fit (test_ablation_homeo_meta.WorldModelConfidenceAblation.test_spearman_and_real_fit) ... ok
+2026-10-25T00:17:48.5119729Z 
+2026-10-25T00:17:48.5119865Z ----------------------------------------------------------------------
+2026-10-25T00:17:48.5120185Z Ran 12 tests in 0.481s
+2026-10-25T00:17:48.5121414Z 
+2026-10-25T00:17:48.5121665Z OK
+2026-10-25T00:17:48.5371768Z SUITE=test_latewatch_final_tail_run116.py
+2026-10-25T00:17:48.5486396Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:48.5487220Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:48.5874977Z test_finish_completed_correct_tail_is_not_a_conflict (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_finish_completed_correct_tail_is_not_a_conflict) ... ok
+2026-10-25T00:17:48.5877116Z test_finish_records_completed_numeric_conflict_without_active_cut (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_finish_records_completed_numeric_conflict_without_active_cut) ... ok
+2026-10-25T00:17:48.5878295Z test_partial_tail_is_still_ignored_but_completed_tail_is_checked (test_latewatch_final_tail_run116.LateWatchFinalTailRun116.test_partial_tail_is_still_ignored_but_completed_tail_is_checked) ... ok
+2026-10-25T00:17:48.5878738Z 
+2026-10-25T00:17:48.5878836Z ----------------------------------------------------------------------
+2026-10-25T00:17:48.5879034Z Ran 3 tests in 0.006s
+2026-10-25T00:17:48.5879112Z 
+2026-10-25T00:17:48.5879163Z OK
+2026-10-25T00:17:48.5982911Z SUITE=test_latewatch.py
+2026-10-25T00:17:48.6090482Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:48.6091207Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:48.7981163Z test_disagreement (test_latewatch.Pure.test_disagreement) ... ok
+2026-10-25T00:17:48.7981661Z test_number_parsing (test_latewatch.Pure.test_number_parsing) ... ok
+2026-10-25T00:17:48.8038584Z test_residency_never_evicts_c3 (test_latewatch.Pure.test_residency_never_evicts_c3) ... ok
+2026-10-25T00:17:48.9598553Z test_active_cuts_and_revises (test_latewatch.Turn.test_active_cuts_and_revises) ... ok
+2026-10-25T00:17:55.1377968Z test_off_and_no_residency_run_no_body (test_latewatch.Turn.test_off_and_no_residency_run_no_body) ... ok
+2026-10-25T00:17:55.2235093Z test_shadow_records_without_touching_the_answer (test_latewatch.Turn.test_shadow_records_without_touching_the_answer) ... ok
+2026-10-25T00:17:55.2235913Z 
+2026-10-25T00:17:55.2236055Z ----------------------------------------------------------------------
+2026-10-25T00:17:55.2236359Z Ran 6 tests in 6.426s
+2026-10-25T00:17:55.2236475Z 
+2026-10-25T00:17:55.2236559Z OK
+2026-10-25T00:17:55.2540559Z SUITE=test_world_selective_risk_run117.py
+2026-10-25T00:17:55.2649938Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:55.2650498Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:55.3658643Z test_abstentions_are_not_fabricated_as_errors (test_world_selective_risk_run117.WorldSelectiveRiskRun117.test_abstentions_are_not_fabricated_as_errors) ... ok
+2026-10-25T00:17:55.4205547Z test_deterministic_equal_query_denominator_and_selection (test_world_selective_risk_run117.WorldSelectiveRiskRun117.test_deterministic_equal_query_denominator_and_selection) ... ok
+2026-10-25T00:17:55.4208557Z test_incomplete_cohort_cannot_be_supported (test_world_selective_risk_run117.WorldSelectiveRiskRun117.test_incomplete_cohort_cannot_be_supported) ... ok
+2026-10-25T00:17:55.4209370Z test_locked_cohort_and_thresholds (test_world_selective_risk_run117.WorldSelectiveRiskRun117.test_locked_cohort_and_thresholds) ... ok
+2026-10-25T00:17:55.4210283Z test_positive_verdict_requires_all_three_paired_controls (test_world_selective_risk_run117.WorldSelectiveRiskRun117.test_positive_verdict_requires_all_three_paired_controls) ... ok
+2026-10-25T00:17:55.4210879Z 
+2026-10-25T00:17:55.4211018Z ----------------------------------------------------------------------
+2026-10-25T00:17:55.4211309Z Ran 5 tests in 0.082s
+2026-10-25T00:17:55.4211423Z 
+2026-10-25T00:17:55.4211501Z OK
+2026-10-25T00:17:55.4441510Z SUITE=test_world_model_integration_run64.py
+2026-10-25T00:17:55.4556312Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:55.4557302Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:55.5219288Z test_bad_durations_and_chars_skipped (test_world_model_integration_run64.WorldRun64.test_bad_durations_and_chars_skipped) ... ok
+2026-10-25T00:17:55.5228475Z test_bad_input_chars_and_created_skipped (test_world_model_integration_run64.WorldRun64.test_bad_input_chars_and_created_skipped) ... ok
+2026-10-25T00:17:55.5257745Z test_bad_latent_does_not_promote (test_world_model_integration_run64.WorldRun64.test_bad_latent_does_not_promote) ... ok
+2026-10-25T00:17:55.5308254Z test_counterfactual_negative_chars_uncertain (test_world_model_integration_run64.WorldRun64.test_counterfactual_negative_chars_uncertain) ... <frozen importlib._bootstrap_external>:511: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7b96d4924d60>
+2026-10-25T00:17:55.5309346Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T00:17:55.5309929Z <frozen importlib._bootstrap_external>:511: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7b96d49265c0>
+2026-10-25T00:17:55.5310531Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T00:17:55.5311108Z <frozen importlib._bootstrap_external>:511: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7b96d4926890>
+2026-10-25T00:17:55.5311692Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T00:17:55.5312034Z ok
+2026-10-25T00:17:55.5312511Z test_counterfactual_negative_duration_uncertain (test_world_model_integration_run64.WorldRun64.test_counterfactual_negative_duration_uncertain) ... ok
+2026-10-25T00:17:55.5313786Z test_counterfactual_success_over_one_uncertain (test_world_model_integration_run64.WorldRun64.test_counterfactual_success_over_one_uncertain) ... ok
+2026-10-25T00:17:55.5314752Z test_for_event_bad_observed_state_uncertain (test_world_model_integration_run64.WorldRun64.test_for_event_bad_observed_state_uncertain) ... ok
+2026-10-25T00:17:55.5315671Z test_impossible_prediction_retains_finite_coverage_diagnostic (test_world_model_integration_run64.WorldRun64.test_impossible_prediction_retains_finite_coverage_diagnostic) ... ok
+2026-10-25T00:17:55.5316496Z test_malformed_json_skipped (test_world_model_integration_run64.WorldRun64.test_malformed_json_skipped) ... ok
+2026-10-25T00:17:55.5317103Z test_missing_route_skipped (test_world_model_integration_run64.WorldRun64.test_missing_route_skipped) ... ok
+2026-10-25T00:17:55.5317780Z test_no_model_uncertain (test_world_model_integration_run64.WorldRun64.test_no_model_uncertain) ... ok
+2026-10-25T00:17:55.5318391Z test_nonfinite_model_uncertain (test_world_model_integration_run64.WorldRun64.test_nonfinite_model_uncertain) ... ok
+2026-10-25T00:17:55.5338327Z test_sqlite_fit_with_valid_rows (test_world_model_integration_run64.WorldRun64.test_sqlite_fit_with_valid_rows) ... <frozen abc>:110: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7b96d4927010>
+2026-10-25T00:17:55.5377657Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T00:17:55.5407647Z <frozen abc>:110: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7b96d4927100>
+2026-10-25T00:17:55.5427798Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T00:17:55.5428334Z <frozen abc>:110: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7b96d49272e0>
+2026-10-25T00:17:55.5428843Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T00:17:55.5429344Z <frozen abc>:110: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7b96d49f63e0>
+2026-10-25T00:17:55.5429885Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-10-25T00:17:55.5430232Z ok
+2026-10-25T00:17:55.5430646Z test_valid_sqlite_transition (test_world_model_integration_run64.WorldRun64.test_valid_sqlite_transition) ... ok
+2026-10-25T00:17:55.5431388Z test_valid_supported_prediction_unchanged (test_world_model_integration_run64.WorldRun64.test_valid_supported_prediction_unchanged) ... ok
+2026-10-25T00:17:55.5431863Z 
+2026-10-25T00:17:55.5432003Z ----------------------------------------------------------------------
+2026-10-25T00:17:55.5432302Z Ran 15 tests in 0.017s
+2026-10-25T00:17:55.5432419Z 
+2026-10-25T00:17:55.5432488Z OK
+2026-10-25T00:17:55.5553695Z SUITE=test_world_recovery_invalid_run109.py
+2026-10-25T00:17:55.5665453Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:55.5666225Z <frozen site>:107: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/runner/work/Aii/Aii/.venv, got /home/runner/work/Aii/Aii/v13/code/../../.venv
+2026-10-25T00:17:55.6531791Z test_infinite_or_nested_nonfinite_outcome_refused (test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_infinite_or_nested_nonfinite_outcome_refused) ... ok
+2026-10-25T00:17:55.6787077Z test_invalid_first_row_does_not_block_valid_sibling_or_second_restart (test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_invalid_first_row_does_not_block_valid_sibling_or_second_restart) ... ok
+2026-10-25T00:17:55.6955866Z test_malformed_outcome_and_expected_do_not_brick_restart (test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_malformed_outcome_and_expected_do_not_brick_restart) ... ok
+2026-10-25T00:17:55.7124616Z test_nan_duration_does_not_brick_restart_or_create_observation (test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_nan_duration_does_not_brick_restart_or_create_observation) ... ok
+2026-10-25T00:17:55.7319976Z test_negative_and_boolean_duration_not_accepted_as_world_observation (test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_negative_and_boolean_duration_not_accepted_as_world_observation) ... ok
+2026-10-25T00:17:55.7502580Z test_valid_finite_prediction_error_and_authority_unchanged (test_world_recovery_invalid_run109.WorldRecoveryInvalidRun109.test_valid_finite_prediction_error_and_authority_unchanged) ... ok
+2026-10-25T00:17:55.7502996Z 
+2026-10-25T00:17:55.7503094Z ----------------------------------------------------------------------
+2026-10-25T00:17:55.7503304Z Ran 6 tests in 0.129s
