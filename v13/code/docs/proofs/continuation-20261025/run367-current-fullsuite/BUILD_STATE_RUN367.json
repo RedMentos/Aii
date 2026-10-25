@@ -1,0 +1,42 @@
+{
+  "schema": "V13_RUN367_BRANCH_SCOPED_FULLSUITE_V1",
+  "owner": "codex/fullsuite-after-run366-20261025",
+  "parent": "codex/ag12-finite-confidence-20261025@91416e63c1b9813e9aa3e140e85bd256092adcdc",
+  "review_pr": 362,
+  "tested_source_head": "9df12a9d9032805aab7921da9b6c104ccfb3e654",
+  "run": 40232222383,
+  "job": 121286187469,
+  "full_suite": {
+    "tests": 3134,
+    "failures": 0,
+    "errors": 63,
+    "skipped": 14,
+    "seconds": 270.635,
+    "exit": 1,
+    "status": "RED",
+    "root_causes": {
+      "historical_native_firing_exact_source_mismatch": 36,
+      "historical_source_handoff_exact_source_mismatch": 26,
+      "historical_lp3_helper_missing": 1
+    }
+  },
+  "source_exit": 0,
+  "deps_exit": 0,
+  "privacy_exit": 0,
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "raw_zip_sha256": "1325380605cee8bf63abb79c559533229f18ebcb1e958286e6da913e002279c6",
+  "private_backup": "/V13/checkpoints/2026-10-25/V13_Run367_FullSuite_RED_raw_sha13253806.zip",
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED",
+    "full_suite": "RED"
+  },
+  "next_package": "Independent functional/native probe; historical source contracts require separate reconciliation without changing frozen hashes",
+  "next_command": "PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p 'test_*.py' -v",
+  "status": "BRANCH_SCOPED_RED_REVIEWABLE"
+}
