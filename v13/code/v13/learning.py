@@ -601,6 +601,7 @@ class Learner:
                   'teacher_truth_authority':False,'teacher_stop_gradient':True,'body_learning':False,'receiver_authority':0,'consumer_mode':'T1_SHADOW','target_packet_ids':[]}
         with self.s.tx() as c:c.execute('INSERT INTO updates VALUES (?,?,?,?,?,?,?)',(uid_,base,'SHADOW_TRAINING',None,None,dumps(manifest),now()))
         try:
+            from .a2_reference import validated_teacher_feature
             self.r.pool.unload();texts=[];targets=[];groups=[]
             for text,(row,e) in data:
                 check(self.r.cancel_event,deadline)
@@ -610,8 +611,9 @@ class Learner:
                 path=self.r.home/'data/blobs'/(uid('a2')+'.json');atomic_write(path,dumps({'embedding':vector}))
                 reference=packet('PerceptPacket','A2_FROZEN_REFERENCE',e['event_id'],base,[e['source_ref']],source_ref=e['source_ref'],segments=[],modality='text',teacher_truth_authority=False,
                                  encoder_revision=manifest['encoder_revision'],feature_path=str(path.relative_to(self.r.home)),feature_sha256=file_hash(path),feature_dim=len(vector),stop_gradient=True)
+                verified_target=validated_teacher_feature(self.s,self.r.home,reference,generation=base,encoder_revision=manifest['encoder_revision'],event_id=e['event_id'])
                 self.s.add_packet('PerceptPacket',reference);manifest['target_packet_ids'].append(reference['packet_id'])
-                texts.append(text);targets.append(vector);groups.append(e['source_ref']['sha256']);lineage.extend([e['source_ref']['source_id'],row['source_id']])
+                texts.append(text);targets.append(verified_target);groups.append(e['source_ref']['sha256']);lineage.extend([e['source_ref']['source_id'],row['source_id']])
                 self.s.add_packet('LearningTrace',packet('LearningTrace','F6_LEARNING',e['event_id'],base,[e['source_ref']],path_id=component,activity=1.,eligibility=self.r.cfg['eligibility_decay'],authority='EXPLICIT_OBSERVATION_LEARN'))
             active=self.active(component);inp=folder/'input.json';atomic_write(inp,dumps({'config':self.training_config(component,uid_,manifest),'texts':texts,'teacher_embeddings':targets,'source_groups':groups,'active_checkpoint':str(active) if active else None}))
             self.r.needle.unload();env=os.environ.copy();env.update(PYTHONPATH=str(APP),OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1');last_check=time.monotonic()
