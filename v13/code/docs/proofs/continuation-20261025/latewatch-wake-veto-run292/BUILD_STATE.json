@@ -1,0 +1,66 @@
+{
+  "schema": "V13_RUN292_LATEWATCH_LEARNED_WAKE_VETO_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "latewatch.py learned-none veto, test, CPU and serialized native wake-only CI, scoped proof",
+  "branch": "codex/latewatch-learned-wake-veto-run292-20261025",
+  "pr": 292,
+  "base_sha": "6855943f5d568f08fc5b64faa958a3cf51866310",
+  "tested_source_sha": "ef3645f2b649f967fd86534122884b29b3dcdf1b",
+  "source_blobs": {
+    "v13/code/v13/latewatch.py": "f213cc646d90ca5528c435aa335472741413b4a7",
+    "v13/code/tests/test_run292_latewatch_wake_veto.py": "aa77aafa04032ce4d4afea63afa2648129c8568d",
+    ".github/workflows/run292-latewatch-wake-veto.yml": "b54c2f8382f0a555cd37dceaa3b9b1098eef0637",
+    ".github/workflows/run292-native-wake-only.yml": "06b5e0f9e906747b96301fc520eda296daa9b379"
+  },
+  "red": {
+    "run": 40196892228,
+    "tests": "33 total 1 FAIL",
+    "privacy": "CLEAN",
+    "artifact_id": 12600287362,
+    "sha256": "3e76f661750ad298dcaa2f2c0b5a098834edbf81d99fcb9a13ede12ab3e0631e"
+  },
+  "green": {
+    "run": 40197117997,
+    "tests": "33/33 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12599718135,
+    "sha256": "d04fb80b9120d7eb15e0aa36342156560529342f34c8e8bcc126ab304eb28bfa"
+  },
+  "native_wake_only": {
+    "run": 40197118017,
+    "status": "READOUT_LIFECYCLE_PASS_WAKE_ONLY",
+    "checks": "11/11",
+    "artifact_id": 12600692048,
+    "sha256": "9b590bb3a209a72d0bd2eb4b27b8ec169c627af3fad6b9ef00ed629bbdec1cd0",
+    "actual_latewatch": "LEARNED_WAKE_NONE"
+  },
+  "cross_review": {
+    "local_tests": "29/29 PASS",
+    "local_source_git_blob": "f213cc646d90ca5528c435aa335472741413b4a7",
+    "focused": 40197117956,
+    "focused_tests": "401/401 + extracted 114/114 PASS",
+    "phone_files": 1005,
+    "phone_zip_sha256": "ded94bb8d2ca79e5317af5d5b8466447fdf23a6615e689364a4e4410802f55a1"
+  },
+  "historical_pin_conflict": {
+    "workflow": "Run118",
+    "old_latewatch_blob": "5df03a7c8a8f5709b5ed2ceb6a08851c780d8480",
+    "status": "PIN_MISMATCH_BEFORE_TESTS",
+    "not_functional_regression": true
+  },
+  "private_backup": {
+    "path": "/V13-Inquisition/Proofs/Run292/",
+    "all_four_sha256_verified": true
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "redmi_measured": false,
+    "full_readouts": "PARTIAL_HALT_PARETO_FAIL"
+  },
+  "next_command": "Using closed Run288 actual native output-adapter feature artifact, compute exact theoretical first-token feasibility under original unchanged max_bias=12 and frozen 19-case test partition. If mathematically impossible, add an independently tested non-promoting diagnostic rather than weakening acceptance; then preregister alternative canonical utility route. Do not overlap PR284 Runtime owner.",
+  "checkpoint_kind": "branch_scoped_not_merged"
+}
