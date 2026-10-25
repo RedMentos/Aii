@@ -1,0 +1,9 @@
+test_duplicate_or_missing_row_refused (test_run181_gist_offer_audit.AuditTests.test_duplicate_or_missing_row_refused) ... ok
+test_false_paired_promotion_refused (test_run181_gist_offer_audit.AuditTests.test_false_paired_promotion_refused) ... ok
+test_score_tamper_refused (test_run181_gist_offer_audit.AuditTests.test_score_tamper_refused) ... ok
+test_valid_no_gain_does_not_promote (test_run181_gist_offer_audit.AuditTests.test_valid_no_gain_does_not_promote) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+OK
