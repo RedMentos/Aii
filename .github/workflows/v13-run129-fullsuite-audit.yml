@@ -65,10 +65,12 @@ jobs:
         working-directory: v13/code
         run: |
           set -uo pipefail
+          set +e  # GitHub bash starts with -e; preserve a failing suite long enough to capture PIPESTATUS.
           export PYTHONPATH="$LP3_HELPER_DIR:$PWD"
           "$RUNNER_TEMP/run129/bin/python" -m compileall -q v13 tests
           timeout 900s "$RUNNER_TEMP/run129/bin/python" -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/RUN129_FULL_SUITE_RAW.log"
           rc=${PIPESTATUS[0]}
+          set -e
           echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
           echo "RUN129_SUITE_EXIT=$rc"
           grep -E 'Ran [0-9]+ tests|FAILED \(|^OK$|^ERROR:|^FAIL:' "$RUNNER_TEMP/RUN129_FULL_SUITE_RAW.log" | tail -n 60 || true
