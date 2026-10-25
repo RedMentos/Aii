@@ -137,7 +137,9 @@ def release(r):
 
 def text(s):
     if s.get('release_pending'):
-        return 'Stillstand-Aufhebung unterbrochen; wartende Aufgaben bleiben bis zum ausdrücklichen erneuten :stillstand aus angehalten.'
+        if s['parts'].get('queue'):
+            return 'Stillstand-Aufhebung unterbrochen; Warteschlange weiterhin pausiert. Erneut :stillstand aus zum Abschließen.'
+        return 'Stillstand-Aufhebung unvollständig; Warteschlange bereits fortgesetzt. Erneut :stillstand aus zum Bestätigen des Abschlusses.'
     if not s['on'] and not s.get('released'):
         return 'Stillstand: aus. (:stillstand hält alles an: Werkzeuge, Lernen, Hintergrund, Alterung.)'
     names={'notaus':'Werkzeuge und Freigaben','queue':'Aufgaben, Lernen, Traum/Schlaf, Hintergrund','age':'Alterung (Stufenaufstieg)'}
