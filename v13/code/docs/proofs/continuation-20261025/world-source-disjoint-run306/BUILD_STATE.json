@@ -1,0 +1,59 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN306_V1",
+  "utc": "2026-10-25T15:12:00Z",
+  "owner": "GPT-6 automation / Run306 WorldModel source holdout",
+  "base": "e73b10853fe74712aa3a49e3f53f3f63fa450235",
+  "branch": "codex/world-source-disjoint-run306-20261025",
+  "pr": 304,
+  "code_commit": "54f55c2c29236590d55f7b973a0b5310219a88da",
+  "source_blob": "3a4c4badc259f4aa30cb3b6846e1d549bdbaacf9",
+  "test_blob": "c45ce30c47f742219bafafacf9f49ffc878b6fb0",
+  "workflow_blob": "006184edc5ff2d2f3e82707e54fa81c8d70fc270",
+  "owned": [
+    "v13/code/v13/world_model.py",
+    "v13/code/tests/test_world_source_disjoint_run306.py",
+    ".github/workflows/run306-world-source-disjoint.yml",
+    "v13/code/docs/proofs/continuation-20261025/world-source-disjoint-run306/"
+  ],
+  "tests": {
+    "red": {
+      "run": 40205625607,
+      "artifact": 12603457666,
+      "archive_sha256": "0ec4be18a2cc057263163a29cba6b3beeddc67126e12b2ef5359249423f51f86",
+      "total": 46,
+      "expected_failures": 2,
+      "privacy": "CLEAN"
+    },
+    "green": {
+      "run": 40205701721,
+      "artifact": 12603522766,
+      "archive_sha256": "cbf043926c6db2a89b8f2267abd692eccaa66eb2f749e95eb52ca72d4a06a9a4",
+      "total": 46,
+      "failures": 0,
+      "privacy": "CLEAN"
+    }
+  },
+  "private_library": {
+    "red": "/V13-Inquisition/Proofs/Run306/V13-Run306-red-raw.zip",
+    "green": "/V13-Inquisition/Proofs/Run306/V13-Run306-green-raw.zip",
+    "remote_byte_parity": "PASS_BOTH"
+  },
+  "proof_scope": "ACTUAL_RUNTIME_STORE_SQLITE_SOFTWARE_ONLY",
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "model_seed_cohorts_unchanged": true,
+  "redmi_measured": false,
+  "native_model_execution": false,
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "whole_system_complete": false,
+  "prior_fullsuite": {
+    "run": 40202886433,
+    "failures": 2,
+    "errors": 36,
+    "status": "FAILED_UNCHANGED"
+  },
+  "next_command": "Inspect latest GitHub heads/open PRs and owners; select independent substantive V13 organ/utility gap outside WorldModel/backup/phone ZIP; prereg RED-first tests, implement, verify CI and remote source bytes; checkpoint and continue.",
+  "prerequisites": "No force push, no frozen native/source/model/seed/cohort changes, preserve original negative gates, no device/paid provisioning. Source ZIP Run305 remains exact head ec997, not including Run306 patch."
+}
