@@ -1,0 +1,22 @@
+{
+  "schema": "V13_RUN159_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_commit": "c282a881205bd1a14268297eded3c8a642e53bca",
+  "owner": "Codex Run159 only new CI and proof, no Runtime/Canon/learning changes",
+  "preregistered": true,
+  "purpose": "Independent full CPU-only cross-organ regression on latest Run157 A3 chain with exact frozen Runtime and LP3 helper hash",
+  "local_tests": "NOT_RUN_FULL_CHECKOUT_DNS_UNAVAILABLE",
+  "ci": "PENDING",
+  "evidence_class": "CI_SOFTWARE_CPU_ONLY_NOT_NATIVE_MODEL",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "next_command": "Open PR against codex/run157-a3-rawstem-source-probe-20261025 to trigger v13-run159-fullsuite.yml; inspect jobs and closed raw log",
+  "next_step": "Record full suite count/failures; fix only independent bugs with red/green and preserve original failures; then return to native Body-JEPA port/utility."
+}
