@@ -37,6 +37,12 @@ jobs:
           ../../.venv/bin/python -m compileall -q scripts/ablation_world_model_confidence.py tests/test_world_confidence_abstention_run114.py tests/test_ablation_homeo_meta.py
           ../../.venv/bin/python -m unittest discover -s tests -p 'test_world_confidence_abstention_run114.py' -v
           ../../.venv/bin/python -m unittest discover -s tests -p 'test_ablation_homeo_meta.py' -v
+      - name: Five original synthetic seeds with explicit abstention accounting
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          timeout 120s ../../.venv/bin/python scripts/ablation_world_model_confidence.py /tmp/run114-world-confidence.json
+          ../../.venv/bin/python -c "import json; r=json.load(open('/tmp/run114-world-confidence.json')); assert len(r['per_seed'])==5; assert all(x['evaluated_n']+x['abstained_n']==x['queries_n']==400 for x in r['per_seed'].values()); print(json.dumps({'verdict':r['verdict'],'complete_seeds':r['complete_seeds'],'incomplete_seeds':r['incomplete_seeds'],'counts':{k:{'evaluated':v['evaluated_n'],'abstained':v['abstained_n'],'reasons':v['abstention_reasons']} for k,v in r['per_seed'].items()}},sort_keys=True))"
   privacy:
     runs-on: ubuntu-latest
     timeout-minutes: 5
