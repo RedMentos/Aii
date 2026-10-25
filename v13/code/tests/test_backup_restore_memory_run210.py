@@ -72,7 +72,7 @@ class BackupRestoreMemoryRun210(unittest.TestCase):
         data[-8] ^= 0x40
         corrupted.write_bytes(data)
         self.r.close(); self.r = None
-        with self.assertRaises(Exception):
+        with self.assertRaisesRegex(ValueError, 'Gzip'):
             restore(self.home, corrupted)
         self.restart()
         self.assertEqual([m['id'] for m in self.r.memory.recall(QUERY, self.session)], [mid])
