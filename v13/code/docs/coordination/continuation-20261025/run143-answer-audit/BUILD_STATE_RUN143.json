@@ -1,0 +1,19 @@
+{
+  "schema": "V13_RUN143_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_pr": 173,
+  "base_commit": "2ba3688039ac6368f6cb8c0130dcaaa5dcb5d6ee",
+  "owner": "Codex Run143; owns only new readonly audit script, tests, run143 coordination docs",
+  "native_run": "NOT RUN (review of Run142 native output)",
+  "run142_artifact_id": 12584825740,
+  "run142_artifact_sha256": "f76a8550e3ab6a158ce29d0e0183312a8046b67b0c8c7d25e6455d369f85f839",
+  "run142_report_sha256": "c691d0f07bef5776128bc7bdfdaa214d1704b3694d9ea1d5039dc19ab46e1b09",
+  "run142_log_sha256": "6b60f8c3e576923ee2fb63758148d55ef63693c750eb2519617bb07d04f114f5",
+  "software_tests": "5/5 PASS Linux",
+  "run142_original": {"correct": 35, "wrong": 7, "abstain": 38, "parsed_known": 0, "K1": "INSUFFICIENT", "K2": "INSUFFICIENT", "K3": "PASS"},
+  "run143_posthoc_diagnostic": {"correct": 63, "wrong": 11, "abstain": 6, "original_abstains_recovered": 32, "original_supported_disagreements": 0},
+  "claim_limit": "POSTHOC_SOFTWARE_AUDIT_OF_LINUX_NATIVE_OUTPUT; NOT_NEW_REGISTERED_K1_K2_K3",
+  "age0d_delivery": "OFF",
+  "gates": {"STEP2": "UTILITY_FAIL", "B3_L1": "FAIL", "Body_JEPA": "UNAVAILABLE", "jepa_weight": 0, "DS2_H2": "FAIL", "V13": "INCOMPLETE"},
+  "next_step": "New prospective format-aware AGE0d cohort with fresh prereg, varied task wording and exact source-bound checker; then independent native review."
+}
