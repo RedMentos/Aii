@@ -60,12 +60,32 @@ class Executive:
             return (decision.get('kind')=='executive_task' and decision.get('event_id')==row['event_id']
                     and decision.get('source_ref')==ref and decision.get('value')==self.s.read_source(ref))
         except (ValueError,TypeError,KeyError,OSError):return False
+    def _action_valid(self,item,state,session):
+        # Re-check persisted action and corollary against this event/session.
+        # An old or foreign action cannot become C1's current action intent.
+        if not isinstance(item,dict) or item.get('type')!='LOCAL_TEXT_REPORT':return False
+        aid=item.get('action_id');copy_id=item.get('corollary_packet_id')
+        if type(aid) is not str or type(copy_id) is not str:return False
+        row=self.s.one("SELECT a.event_id,a.kind,a.corollary_id,e.session_id,"
+                       "p.kind AS packet_kind,p.event_id AS copy_event,p.payload "
+                       "FROM actions a JOIN events e ON e.id=a.event_id "
+                       "JOIN packets p ON p.id=a.corollary_id WHERE a.id=?",(aid,))
+        if not row or row['session_id']!=session or row['event_id']!=state.get('last_event_id'):return False
+        if row['kind']!='TEXT_REPORT' or row['corollary_id']!=copy_id:return False
+        if row['packet_kind']!='CorollaryCopy' or row['copy_event']!=row['event_id']:return False
+        try:
+            copy=json.loads(row['payload'])
+            return (copy.get('packet_id')==copy_id and copy.get('event_id')==row['event_id']
+                    and copy.get('action_id')==aid and copy.get('self_caused') is True
+                    and copy.get('expected',{}).get('type')=='TEXT_REPORT')
+        except (KeyError,TypeError,ValueError):return False
     def _clean(self,state,session):
         state=json.loads(dumps(state or {}))
         if state.get('session_id')!=session:return {}
         state['goal_sequence']=[x for x in state.get('goal_sequence',[]) if self._goal_event_valid(x,session)][-MAX_EVENTS:]
         task=state.get('active_task')
         if not self._task_valid(task,state,session):state['active_task']=None
+        if not self._action_valid(state.get('current_action_intent'),state,session):state['current_action_intent']=None
         state['memory_refs']=[x for x in state.get('memory_refs',[]) if self._memory(x,session)]
         state['open_questions']=[x for x in state.get('open_questions',[]) if self._question_valid(x,session)][-MAX_QUESTIONS:]
         # Never carry old hypotheses into another generation as current offers.
