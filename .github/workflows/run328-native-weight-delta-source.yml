@@ -1,0 +1,75 @@
+name: V13 Run328 independent native weight-delta auditor source-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run328-native-weight-delta-source.yml'
+      - 'v13/code/scripts/audit_native_weight_delta_run328.py'
+      - 'v13/code/tests/test_native_weight_delta_run328.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run328-native-weight-delta-audit/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Verify immutable original training cohort and Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN328_HEAD.txt"
+          echo "313bc41c447640241b00319932469345c801f089dae0b949f1f6ebda26d3d53f  v13/code/scripts/lora_bench.py" | sha256sum -c -
+          echo "dfb46beb7b5be571c364ac3cab04379d411fd54ae5d0005d094f1f5a11e94397  v13/code/scripts/native_lfm2_finetune_bench.py" | sha256sum -c -
+          echo "401b95c5c6f4262eb8ea58bdab0af2b79f5d7032951ba45198ab2e13f102858c  v13/code/scripts/native_answer_finetune.cpp" | sha256sum -c -
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+      - name: Source-only negative tests, never native weight claim
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" python3 -m unittest -v tests.test_native_weight_delta_run328 \
+            2>&1 | tee "$RUNNER_TEMP/RUN328_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN328_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN328_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN328_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close source-only raw hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          sha256sum RUN328_HEAD.txt RUN328_TESTS_RAW.log RUN328_TESTS_EXIT.txt RUN328_PRIVACY_RAW.log RUN328_PRIVACY_EXIT.txt > RUN328_SHA256SUMS.txt
+          sha256sum "$GITHUB_WORKSPACE/v13/code/scripts/audit_native_weight_delta_run328.py" "$GITHUB_WORKSPACE/v13/code/tests/test_native_weight_delta_run328.py" >> RUN328_SHA256SUMS.txt
+      - name: Retain source-only raw and hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run328-SourceOnly-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN328_*
+          retention-days: 30
+      - name: Enforce tests and privacy, no native evidence promotion
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
