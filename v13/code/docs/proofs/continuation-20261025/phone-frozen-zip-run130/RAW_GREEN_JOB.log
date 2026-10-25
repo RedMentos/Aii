@@ -1,0 +1,464 @@
+﻿2026-10-25T02:18:19.9254976Z Current runner version: '2.338.0'
+2026-10-25T02:18:19.9279982Z ##[group]Runner Image Provisioner
+2026-10-25T02:18:19.9280893Z Hosted Compute Agent
+2026-10-25T02:18:19.9281482Z Version: 20261021.618
+2026-10-25T02:18:19.9282189Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T02:18:19.9282947Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T02:18:19.9283601Z Worker ID: {2647494b-a6aa-4724-8956-70ffc4bf5f4d}
+2026-10-25T02:18:19.9284364Z Region: westus
+2026-10-25T02:18:19.9284890Z Cloud: Azure
+2026-10-25T02:18:19.9285472Z ##[endgroup]
+2026-10-25T02:18:19.9287021Z ##[group]Operating System
+2026-10-25T02:18:19.9287649Z Ubuntu
+2026-10-25T02:18:19.9288263Z 26.04.1
+2026-10-25T02:18:19.9288764Z LTS
+2026-10-25T02:18:19.9289302Z ##[endgroup]
+2026-10-25T02:18:19.9290165Z ##[group]Runner Image
+2026-10-25T02:18:19.9290782Z Image: ubuntu-26.04
+2026-10-25T02:18:19.9291399Z Version: 20261012.163.1
+2026-10-25T02:18:19.9292640Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-25T02:18:19.9294280Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-25T02:18:19.9295238Z ##[endgroup]
+2026-10-25T02:18:19.9296371Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T02:18:19.9298491Z Contents: read
+2026-10-25T02:18:19.9299234Z Metadata: read
+2026-10-25T02:18:19.9300053Z ##[endgroup]
+2026-10-25T02:18:19.9302237Z Secret source: Actions
+2026-10-25T02:18:19.9303183Z Cache mode: write
+2026-10-25T02:18:19.9304199Z Prepare workflow directory
+2026-10-25T02:18:19.9762716Z Prepare all required actions
+2026-10-25T02:18:19.9814702Z Getting action download info
+2026-10-25T02:18:20.3008826Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-25T02:18:20.4242699Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-25T02:18:20.6036691Z Complete job name: software-zip
+2026-10-25T02:18:20.6920009Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-25T02:18:20.6921137Z with:
+2026-10-25T02:18:20.6921588Z   persist-credentials: false
+2026-10-25T02:18:20.6922150Z   ref: b4c5ca58215de7d7877701875f81262c2f5e2a85
+2026-10-25T02:18:20.6922723Z   fetch-depth: 1
+2026-10-25T02:18:20.6923172Z   repository: RedMentos/Aii
+2026-10-25T02:18:20.6927010Z   token: ***
+2026-10-25T02:18:20.6927433Z   ssh-strict: true
+2026-10-25T02:18:20.6927859Z   ssh-user: git
+2026-10-25T02:18:20.6928262Z   clean: true
+2026-10-25T02:18:20.6928704Z   sparse-checkout-cone-mode: true
+2026-10-25T02:18:20.6929223Z   fetch-tags: false
+2026-10-25T02:18:20.6929836Z   show-progress: true
+2026-10-25T02:18:20.6930285Z   lfs: false
+2026-10-25T02:18:20.6930740Z   submodules: false
+2026-10-25T02:18:20.6931179Z   set-safe-directory: true
+2026-10-25T02:18:20.6931905Z env:
+2026-10-25T02:18:20.6932309Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:18:20.6932761Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:18:20.6933287Z   NEEDLE_TELEMETRY: 0
+2026-10-25T02:18:20.6933737Z   DO_NOT_TRACK: 1
+2026-10-25T02:18:20.6934155Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:18:20.6934593Z ##[endgroup]
+2026-10-25T02:18:20.7961304Z Syncing repository: RedMentos/Aii
+2026-10-25T02:18:20.7963933Z ##[group]Getting Git version info
+2026-10-25T02:18:20.7965042Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-25T02:18:20.7966582Z [command]/usr/bin/git version
+2026-10-25T02:18:20.7968316Z git version 2.55.0
+2026-10-25T02:18:20.7989217Z ##[endgroup]
+2026-10-25T02:18:20.8005070Z Temporarily overriding HOME='/home/runner/work/_temp/83cc1600-58aa-45e3-a9e9-9dca00652985' before making global git config changes
+2026-10-25T02:18:20.8007552Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T02:18:20.8010445Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T02:18:20.8084689Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-25T02:18:20.8094170Z ##[group]Initializing the repository
+2026-10-25T02:18:20.8104675Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-25T02:18:20.8249784Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-25T02:18:20.8251927Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-25T02:18:20.8253983Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-25T02:18:20.8255471Z hint: call:
+2026-10-25T02:18:20.8256295Z hint:
+2026-10-25T02:18:20.8257294Z hint: 	git config --global init.defaultBranch <name>
+2026-10-25T02:18:20.8258543Z hint:
+2026-10-25T02:18:20.8259948Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-25T02:18:20.8262050Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-25T02:18:20.8263509Z hint:
+2026-10-25T02:18:20.8264271Z hint: 	git branch -m <name>
+2026-10-25T02:18:20.8265182Z hint:
+2026-10-25T02:18:20.8266527Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-25T02:18:20.8268335Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-25T02:18:20.8271583Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-25T02:18:20.8326758Z ##[endgroup]
+2026-10-25T02:18:20.8328101Z ##[group]Disabling automatic garbage collection
+2026-10-25T02:18:20.8331787Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-25T02:18:20.8371265Z ##[endgroup]
+2026-10-25T02:18:20.8372640Z ##[group]Setting up auth
+2026-10-25T02:18:20.8379040Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:18:20.8417936Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:18:20.8923807Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:18:20.8962159Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:18:20.9247759Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-25T02:18:20.9291937Z ##[endgroup]
+2026-10-25T02:18:20.9292951Z ##[group]Fetching the repository
+2026-10-25T02:18:20.9302222Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin b4c5ca58215de7d7877701875f81262c2f5e2a85
+2026-10-25T02:18:27.8311381Z From https://github.com/RedMentos/Aii
+2026-10-25T02:18:27.8326954Z  * branch            b4c5ca58215de7d7877701875f81262c2f5e2a85 -> FETCH_HEAD
+2026-10-25T02:18:27.8344081Z ##[endgroup]
+2026-10-25T02:18:27.8345921Z ##[group]Determining the checkout info
+2026-10-25T02:18:27.8348079Z ##[endgroup]
+2026-10-25T02:18:27.8349528Z [command]/usr/bin/git sparse-checkout disable
+2026-10-25T02:18:27.8397287Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-25T02:18:27.8433742Z ##[group]Checking out the ref
+2026-10-25T02:18:27.8439960Z [command]/usr/bin/git checkout --progress --force b4c5ca58215de7d7877701875f81262c2f5e2a85
+2026-10-25T02:18:28.8544362Z Updating files:  49% (1732/3469)
+2026-10-25T02:18:28.9302511Z Updating files:  50% (1735/3469)
+2026-10-25T02:18:29.0080214Z Updating files:  51% (1770/3469)
+2026-10-25T02:18:29.0130611Z Updating files:  52% (1804/3469)
+2026-10-25T02:18:29.0162037Z Updating files:  53% (1839/3469)
+2026-10-25T02:18:29.0200749Z Updating files:  54% (1874/3469)
+2026-10-25T02:18:29.0233364Z Updating files:  55% (1908/3469)
+2026-10-25T02:18:29.0252919Z Updating files:  56% (1943/3469)
+2026-10-25T02:18:29.0277105Z Updating files:  57% (1978/3469)
+2026-10-25T02:18:29.0299259Z Updating files:  58% (2013/3469)
+2026-10-25T02:18:29.0324531Z Updating files:  59% (2047/3469)
+2026-10-25T02:18:29.0355729Z Updating files:  60% (2082/3469)
+2026-10-25T02:18:29.0375308Z Updating files:  61% (2117/3469)
+2026-10-25T02:18:29.0395896Z Updating files:  62% (2151/3469)
+2026-10-25T02:18:29.0423370Z Updating files:  63% (2186/3469)
+2026-10-25T02:18:29.0446073Z Updating files:  64% (2221/3469)
+2026-10-25T02:18:29.0470783Z Updating files:  65% (2255/3469)
+2026-10-25T02:18:29.0498940Z Updating files:  66% (2290/3469)
+2026-10-25T02:18:29.0515265Z Updating files:  67% (2325/3469)
+2026-10-25T02:18:29.0531177Z Updating files:  68% (2359/3469)
+2026-10-25T02:18:29.0548690Z Updating files:  69% (2394/3469)
+2026-10-25T02:18:29.0573739Z Updating files:  70% (2429/3469)
+2026-10-25T02:18:29.0597193Z Updating files:  71% (2463/3469)
+2026-10-25T02:18:29.0615188Z Updating files:  72% (2498/3469)
+2026-10-25T02:18:29.0635628Z Updating files:  73% (2533/3469)
+2026-10-25T02:18:29.0663614Z Updating files:  74% (2568/3469)
+2026-10-25T02:18:29.0696498Z Updating files:  75% (2602/3469)
+2026-10-25T02:18:29.0723051Z Updating files:  76% (2637/3469)
+2026-10-25T02:18:29.0751425Z Updating files:  77% (2672/3469)
+2026-10-25T02:18:29.0778159Z Updating files:  78% (2706/3469)
+2026-10-25T02:18:29.0806775Z Updating files:  79% (2741/3469)
+2026-10-25T02:18:29.0837978Z Updating files:  80% (2776/3469)
+2026-10-25T02:18:29.0870968Z Updating files:  81% (2810/3469)
+2026-10-25T02:18:29.0897965Z Updating files:  82% (2845/3469)
+2026-10-25T02:18:29.0927846Z Updating files:  83% (2880/3469)
+2026-10-25T02:18:29.1556161Z Updating files:  84% (2914/3469)
+2026-10-25T02:18:29.1582774Z Updating files:  85% (2949/3469)
+2026-10-25T02:18:29.1603502Z Updating files:  86% (2984/3469)
+2026-10-25T02:18:29.1624581Z Updating files:  87% (3019/3469)
+2026-10-25T02:18:29.1649048Z Updating files:  88% (3053/3469)
+2026-10-25T02:18:29.1670555Z Updating files:  89% (3088/3469)
+2026-10-25T02:18:29.1693171Z Updating files:  90% (3123/3469)
+2026-10-25T02:18:29.1716188Z Updating files:  91% (3157/3469)
+2026-10-25T02:18:29.1738959Z Updating files:  92% (3192/3469)
+2026-10-25T02:18:29.1762690Z Updating files:  93% (3227/3469)
+2026-10-25T02:18:29.1796345Z Updating files:  94% (3261/3469)
+2026-10-25T02:18:29.1821982Z Updating files:  95% (3296/3469)
+2026-10-25T02:18:29.1848571Z Updating files:  96% (3331/3469)
+2026-10-25T02:18:29.1878102Z Updating files:  97% (3365/3469)
+2026-10-25T02:18:29.1924728Z Updating files:  98% (3400/3469)
+2026-10-25T02:18:29.1959303Z Updating files:  99% (3435/3469)
+2026-10-25T02:18:29.1960139Z Updating files: 100% (3469/3469)
+2026-10-25T02:18:29.1960689Z Updating files: 100% (3469/3469), done.
+2026-10-25T02:18:29.2003714Z Note: switching to 'b4c5ca58215de7d7877701875f81262c2f5e2a85'.
+2026-10-25T02:18:29.2004570Z 
+2026-10-25T02:18:29.2005314Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-25T02:18:29.2015171Z changes and commit them, and you can discard any commits you make in this
+2026-10-25T02:18:29.2016424Z state without impacting any branches by switching back to a branch.
+2026-10-25T02:18:29.2017261Z 
+2026-10-25T02:18:29.2018079Z If you want to create a new branch to retain commits you create, you may
+2026-10-25T02:18:29.2019240Z do so (now or later) by using -c with the switch command. Example:
+2026-10-25T02:18:29.2020475Z 
+2026-10-25T02:18:29.2020978Z   git switch -c <new-branch-name>
+2026-10-25T02:18:29.2021365Z 
+2026-10-25T02:18:29.2021546Z Or undo this operation with:
+2026-10-25T02:18:29.2021834Z 
+2026-10-25T02:18:29.2021980Z   git switch -
+2026-10-25T02:18:29.2022195Z 
+2026-10-25T02:18:29.2022571Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-25T02:18:29.2023103Z 
+2026-10-25T02:18:29.2023512Z HEAD is now at b4c5ca5 Run130 correct workflow trigger and deduplicate required source
+2026-10-25T02:18:29.2121352Z ##[endgroup]
+2026-10-25T02:18:29.2176919Z [command]/usr/bin/git log -1 --format=%H
+2026-10-25T02:18:29.2204908Z b4c5ca58215de7d7877701875f81262c2f5e2a85
+2026-10-25T02:18:29.2218859Z ##[group]Removing auth
+2026-10-25T02:18:29.2219924Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:18:29.2258158Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:18:29.2555077Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:18:29.2581680Z http.https://github.com/.extraheader
+2026-10-25T02:18:29.2588953Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-25T02:18:29.2623607Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:18:29.2901202Z ##[endgroup]
+2026-10-25T02:18:29.3212517Z ##[group]Run set -euo pipefail
+2026-10-25T02:18:29.3212941Z [36;1mset -euo pipefail[0m
+2026-10-25T02:18:29.3213344Z [36;1mtest "$(git rev-parse HEAD)" = "b4c5ca58215de7d7877701875f81262c2f5e2a85"[0m
+2026-10-25T02:18:29.3213784Z [36;1mgit rev-parse HEAD[0m
+2026-10-25T02:18:29.3214231Z [36;1mtest "$(git hash-object v13/code/v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"[0m
+2026-10-25T02:18:29.3214733Z [36;1mpython3 -m venv "$RUNNER_TEMP/run130"[0m
+2026-10-25T02:18:29.3215361Z [36;1m"$RUNNER_TEMP/run130/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-25T02:18:29.3397101Z shell: /usr/bin/bash -e {0}
+2026-10-25T02:18:29.3397482Z env:
+2026-10-25T02:18:29.3397755Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:18:29.3398069Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:18:29.3398400Z   NEEDLE_TELEMETRY: 0
+2026-10-25T02:18:29.3398703Z   DO_NOT_TRACK: 1
+2026-10-25T02:18:29.3398991Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:18:29.3399352Z ##[endgroup]
+2026-10-25T02:18:29.3537930Z b4c5ca58215de7d7877701875f81262c2f5e2a85
+2026-10-25T02:18:32.0839335Z Collecting numpy==2.3.5
+2026-10-25T02:18:32.1032213Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-25T02:18:32.1352042Z Collecting prompt-toolkit==3.0.52
+2026-10-25T02:18:32.1394525Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-25T02:18:32.1616772Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-25T02:18:32.1647921Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-25T02:18:32.1731467Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-25T02:18:32.4829374Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 53.7 MB/s eta 0:00:00
+2026-10-25T02:18:32.4874618Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-25T02:18:32.4948494Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-25T02:18:32.5009076Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 158.2 MB/s eta 0:00:00
+2026-10-25T02:18:32.5368120Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-25T02:18:34.5497984Z 
+2026-10-25T02:18:34.5520998Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-25T02:18:34.6480297Z ##[group]Run set -euo pipefail
+2026-10-25T02:18:34.6480666Z [36;1mset -euo pipefail[0m
+2026-10-25T02:18:34.6480935Z [36;1mexport PYTHONPATH="$PWD"[0m
+2026-10-25T02:18:34.6481296Z [36;1m"$RUNNER_TEMP/run130/bin/python" -m compileall -q v13 tests[0m
+2026-10-25T02:18:34.6481669Z [36;1mbash -n KNOEPFE_EINRICHTEN.sh[0m
+2026-10-25T02:18:34.6482339Z [36;1mfor pattern in test_phone_prestart_run128.py test_phone_halt.py test_cli_standstill_run121.py test_phone_operator_journey_run86.py test_standstill.py; do[0m
+2026-10-25T02:18:34.6483022Z [36;1m  echo "RUN130_SUITE=$pattern"[0m
+2026-10-25T02:18:34.6483454Z [36;1m  "$RUNNER_TEMP/run130/bin/python" -m unittest discover -s tests -p "$pattern" -v[0m
+2026-10-25T02:18:34.6483895Z [36;1mdone[0m
+2026-10-25T02:18:34.6547411Z shell: /usr/bin/bash -e {0}
+2026-10-25T02:18:34.6547666Z env:
+2026-10-25T02:18:34.6547858Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:18:34.6548085Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:18:34.6548356Z   NEEDLE_TELEMETRY: 0
+2026-10-25T02:18:34.6548570Z   DO_NOT_TRACK: 1
+2026-10-25T02:18:34.6548775Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:18:34.6548990Z ##[endgroup]
+2026-10-25T02:18:35.5877617Z RUN130_SUITE=test_phone_prestart_run128.py
+2026-10-25T02:18:35.9307126Z test_both_buttons_only_apply_stillstand (test_phone_prestart_run128.PhonePrestartRun128.test_both_buttons_only_apply_stillstand) ... ok
+2026-10-25T02:18:36.0220500Z test_cli_corrupt_age_state_refuses_runtime_start_and_keeps_request (test_phone_prestart_run128.PhonePrestartRun128.test_cli_corrupt_age_state_refuses_runtime_start_and_keeps_request) ... ok
+2026-10-25T02:18:36.1890278Z test_cli_recovered_turn_never_final_before_human_release (test_phone_prestart_run128.PhonePrestartRun128.test_cli_recovered_turn_never_final_before_human_release) ... ok
+2026-10-25T02:18:36.4226505Z test_human_held_parts_remain_after_release (test_phone_prestart_run128.PhonePrestartRun128.test_human_held_parts_remain_after_release) ... ok
+2026-10-25T02:18:36.4484284Z test_invalid_age_state_does_not_consume_request_or_partially_write (test_phone_prestart_run128.PhonePrestartRun128.test_invalid_age_state_does_not_consume_request_or_partially_write) ... ok
+2026-10-25T02:18:36.4715549Z test_notaus_only_does_not_pause_queue_or_freeze_age (test_phone_prestart_run128.PhonePrestartRun128.test_notaus_only_does_not_pause_queue_or_freeze_age) ... ok
+2026-10-25T02:18:36.7043589Z test_retry_after_durable_commit_before_ack_keeps_original_ownership (test_phone_prestart_run128.PhonePrestartRun128.test_retry_after_durable_commit_before_ack_keeps_original_ownership) ... ok
+2026-10-25T02:18:36.9264278Z test_stillstand_preflight_applies_all_gates_and_owns_only_new_parts (test_phone_prestart_run128.PhonePrestartRun128.test_stillstand_preflight_applies_all_gates_and_owns_only_new_parts) ... ok
+2026-10-25T02:18:36.9265899Z 
+2026-10-25T02:18:36.9266214Z ----------------------------------------------------------------------
+2026-10-25T02:18:36.9267072Z Ran 8 tests in 1.231s
+2026-10-25T02:18:36.9267374Z 
+2026-10-25T02:18:36.9267539Z OK
+2026-10-25T02:18:36.9434346Z RUN130_SUITE=test_phone_halt.py
+2026-10-25T02:18:37.0866268Z test_button_never_releases_and_handled_file_does_not_reapply (test_phone_halt.ButtonTests.test_button_never_releases_and_handled_file_does_not_reapply) ... ok
+2026-10-25T02:18:37.1648405Z test_notaus_button_blocks_tools_in_running_chat (test_phone_halt.ButtonTests.test_notaus_button_blocks_tools_in_running_chat) ... ok
+2026-10-25T02:18:37.2006666Z test_stillstand_button_waiting_at_start_is_applied_before_first_input (test_phone_halt.ButtonTests.test_stillstand_button_waiting_at_start_is_applied_before_first_input) ... ok
+2026-10-25T02:18:37.2014508Z test_befehle_command_shows_guide_and_filters (test_phone_halt.GuideTests.test_befehle_command_shows_guide_and_filters) ... ok
+2026-10-25T02:18:37.2024849Z test_every_operator_command_is_explained (test_phone_halt.GuideTests.test_every_operator_command_is_explained) ... ok
+2026-10-25T02:18:37.2947905Z test_installer_writes_five_buttons_and_stop_buttons_only_drop_request_files (test_phone_halt.InstallerTests.test_installer_writes_five_buttons_and_stop_buttons_only_drop_request_files) ... ok
+2026-10-25T02:18:37.2949157Z 
+2026-10-25T02:18:37.2949396Z ----------------------------------------------------------------------
+2026-10-25T02:18:37.2950185Z Ran 6 tests in 0.254s
+2026-10-25T02:18:37.2950395Z 
+2026-10-25T02:18:37.2950515Z OK
+2026-10-25T02:18:37.3117127Z RUN130_SUITE=test_cli_standstill_run121.py
+2026-10-25T02:18:37.5692961Z test_persisted_pause_refuses_ask_without_queue_side_effect (test_cli_standstill_run121.CliStandstillRun121.test_persisted_pause_refuses_ask_without_queue_side_effect) ... ok
+2026-10-25T02:18:38.2101933Z test_persisted_standstill_refuses_then_human_release_allows_ask (test_cli_standstill_run121.CliStandstillRun121.test_persisted_standstill_refuses_then_human_release_allows_ask) ... ok
+2026-10-25T02:18:38.2103183Z 
+2026-10-25T02:18:38.2103353Z ----------------------------------------------------------------------
+2026-10-25T02:18:38.2103734Z Ran 2 tests in 0.802s
+2026-10-25T02:18:38.2103878Z 
+2026-10-25T02:18:38.2103970Z OK
+2026-10-25T02:18:38.2284158Z RUN130_SUITE=test_phone_operator_journey_run86.py
+2026-10-25T02:18:38.3470905Z test_local_operator_origin_and_record_only_default (test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_local_operator_origin_and_record_only_default) ... ok
+2026-10-25T02:18:38.5222885Z test_paused_fifo_exact_sources_export_and_second_restart (test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_paused_fifo_exact_sources_export_and_second_restart) ... ok
+2026-10-25T02:18:38.8104719Z test_standstill_persists_and_blocks_turn_until_local_release (test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_standstill_persists_and_blocks_turn_until_local_release) ... ok
+2026-10-25T02:18:38.8106214Z 
+2026-10-25T02:18:38.8106517Z ----------------------------------------------------------------------
+2026-10-25T02:18:38.8107224Z Ran 3 tests in 0.486s
+2026-10-25T02:18:38.8107415Z 
+2026-10-25T02:18:38.8107534Z OK
+2026-10-25T02:18:38.8358184Z RUN130_SUITE=test_standstill.py
+2026-10-25T02:18:38.9925613Z test_all_parts_stop_and_idle_runtime_is_confirmed_still (test_standstill.EngageTests.test_all_parts_stop_and_idle_runtime_is_confirmed_still) ... ok
+2026-10-25T02:18:40.1121858Z test_engage_waits_for_a_scheduler_tick_in_progress (test_standstill.EngageTests.test_engage_waits_for_a_scheduler_tick_in_progress) ... ok
+2026-10-25T02:18:40.2304353Z test_job_that_ignores_cancel_is_reported_never_claimed_stopped (test_standstill.EngageTests.test_job_that_ignores_cancel_is_reported_never_claimed_stopped) ... ok
+2026-10-25T02:18:40.7665263Z test_queued_turn_is_not_answered_while_still (test_standstill.EngageTests.test_queued_turn_is_not_answered_while_still) ... ok
+2026-10-25T02:18:40.8030585Z test_running_job_that_honours_cancel_is_confirmed_stopped (test_standstill.EngageTests.test_running_job_that_honours_cancel_is_confirmed_stopped) ... ok
+2026-10-25T02:18:42.1425207Z test_scheduler_tick_and_background_do_not_run_during_standstill (test_standstill.EngageTests.test_scheduler_tick_and_background_do_not_run_during_standstill) ... ok
+2026-10-25T02:18:42.1786941Z test_release_only_undoes_what_standstill_set (test_standstill.ReleaseTests.test_release_only_undoes_what_standstill_set) ... ok
+2026-10-25T02:18:42.2143983Z test_release_reports_background_that_resumes (test_standstill.ReleaseTests.test_release_reports_background_that_resumes) ... ok
+2026-10-25T02:18:42.2297740Z test_release_without_standstill_changes_nothing (test_standstill.ReleaseTests.test_release_without_standstill_changes_nothing) ... ok
+2026-10-25T02:18:42.4675376Z test_repeated_engage_keeps_first_record (test_standstill.ReleaseTests.test_repeated_engage_keeps_first_record) ... ok
+2026-10-25T02:18:42.5042956Z test_user_notaus_before_standstill_survives_release (test_standstill.ReleaseTests.test_user_notaus_before_standstill_survives_release) ... ok
+2026-10-25T02:18:42.7476955Z test_restart_stays_still (test_standstill.RestartTests.test_restart_stays_still) ... ok
+2026-10-25T02:18:42.7630439Z test_bad_argument (test_standstill.TextTests.test_bad_argument) ... ok
+2026-10-25T02:18:42.7780866Z test_notaus_says_learning_continues_and_points_to_standstill (test_standstill.TextTests.test_notaus_says_learning_continues_and_points_to_standstill) ... ok
+2026-10-25T02:18:42.7781887Z 
+2026-10-25T02:18:42.7782118Z ----------------------------------------------------------------------
+2026-10-25T02:18:42.7782654Z Ran 14 tests in 3.831s
+2026-10-25T02:18:42.7782855Z 
+2026-10-25T02:18:42.7782968Z OK
+2026-10-25T02:18:42.8021473Z ##[group]Run set -euo pipefail
+2026-10-25T02:18:42.8021841Z [36;1mset -euo pipefail[0m
+2026-10-25T02:18:42.8022433Z [36;1m"$RUNNER_TEMP/run130/bin/python" scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run130.zip" --phone-install[0m
+2026-10-25T02:18:42.8023252Z [36;1munzip -tqq "$RUNNER_TEMP/V13-Phone-Run130.zip"[0m
+2026-10-25T02:18:42.8023610Z [36;1m"$RUNNER_TEMP/run130/bin/python" - <<'PY'[0m
+2026-10-25T02:18:42.8024298Z [36;1mimport json,os,zipfile[0m
+2026-10-25T02:18:42.8024657Z [36;1mp=os.path.join(os.environ['RUNNER_TEMP'],'V13-Phone-Run130.zip')[0m
+2026-10-25T02:18:42.8025051Z [36;1mwith zipfile.ZipFile(p) as z:[0m
+2026-10-25T02:18:42.8025334Z [36;1m    names=set(z.namelist())[0m
+2026-10-25T02:18:42.8025600Z [36;1m    required={[0m
+2026-10-25T02:18:42.8025881Z [36;1m      'V13-Phone/STARTEN.sh','V13-Phone/setup.sh',[0m
+2026-10-25T02:18:42.8026221Z [36;1m      'V13-Phone/KNOEPFE_EINRICHTEN.sh',[0m
+2026-10-25T02:18:42.8026564Z [36;1m      'V13-Phone/v13/phone_halt.py',[0m
+2026-10-25T02:18:42.8026902Z [36;1m      'V13-Phone/tests/test_phone_prestart_run128.py',[0m
+2026-10-25T02:18:42.8027238Z [36;1m      'V13-Phone/v13/befehle.py',[0m
+2026-10-25T02:18:42.8027652Z [36;1m      'V13-Phone/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md',[0m
+2026-10-25T02:18:42.8028091Z [36;1m      'V13-Phone/WORKSPACE_FILES.json',[0m
+2026-10-25T02:18:42.8028363Z [36;1m    }[0m
+2026-10-25T02:18:42.8028759Z [36;1m    if required-names:raise SystemExit('missing phone source: '+repr(sorted(required-names)))[0m
+2026-10-25T02:18:42.8029364Z [36;1m    if any(n.endswith(('.gguf','.safetensors','.sqlite','.db','.env')) for n in names):[0m
+2026-10-25T02:18:42.8030053Z [36;1m        raise SystemExit('private/model payload')[0m
+2026-10-25T02:18:42.8030438Z [36;1m    m=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))[0m
+2026-10-25T02:18:42.8030919Z [36;1m    if m['schema_version']!=1 or len(m['files'])<100:raise SystemExit('invalid manifest')[0m
+2026-10-25T02:18:42.8031394Z [36;1m    print('RUN130_SOURCE_MANIFEST_PASS',len(m['files']))[0m
+2026-10-25T02:18:42.8031711Z [36;1mPY[0m
+2026-10-25T02:18:42.8031952Z [36;1msha256sum "$RUNNER_TEMP/V13-Phone-Run130.zip"[0m
+2026-10-25T02:18:42.8032384Z [36;1mstat -c 'RUN130_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run130.zip"[0m
+2026-10-25T02:18:42.8032782Z [36;1mmkdir -p "$RUNNER_TEMP/extracted"[0m
+2026-10-25T02:18:42.8033189Z [36;1munzip -q "$RUNNER_TEMP/V13-Phone-Run130.zip" -d "$RUNNER_TEMP/extracted"[0m
+2026-10-25T02:18:42.8033630Z [36;1mcd "$RUNNER_TEMP/extracted/V13-Phone"[0m
+2026-10-25T02:18:42.8034082Z [36;1mtest "$(git hash-object v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"[0m
+2026-10-25T02:18:42.8034526Z [36;1mexport PYTHONPATH="$PWD"[0m
+2026-10-25T02:18:42.8035173Z [36;1mfor pattern in test_phone_prestart_run128.py test_phone_halt.py test_cli_standstill_run121.py test_phone_operator_journey_run86.py test_standstill.py; do[0m
+2026-10-25T02:18:42.8035870Z [36;1m  echo "RUN130_EXTRACTED_SUITE=$pattern"[0m
+2026-10-25T02:18:42.8036322Z [36;1m  "$RUNNER_TEMP/run130/bin/python" -m unittest discover -s tests -p "$pattern" -v[0m
+2026-10-25T02:18:42.8036740Z [36;1mdone[0m
+2026-10-25T02:18:42.8037164Z [36;1mecho 'RUN130_EXTRACTED_LINUX_SOFTWARE_PASS; NO_NATIVE_OR_REDMI_PROOF'[0m
+2026-10-25T02:18:42.8097475Z shell: /usr/bin/bash -e {0}
+2026-10-25T02:18:42.8097728Z env:
+2026-10-25T02:18:42.8097927Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:18:42.8098181Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:18:42.8098426Z   NEEDLE_TELEMETRY: 0
+2026-10-25T02:18:42.8098635Z   DO_NOT_TRACK: 1
+2026-10-25T02:18:42.8098838Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:18:42.8099050Z ##[endgroup]
+2026-10-25T02:18:44.5153367Z {"bytes": 12621079, "canonical_gate_pass": false, "files": 853, "native_models_launched": false, "phone_measured": false, "sha256": "2b4654e66733928b321bd2b149e17fb500a63fe36da802df0aa9e93fa84ccf05", "status": "SOURCE_CHECKPOINT_LOCAL_ONLY", "zip": "/home/runner/work/_temp/V13-Phone-Run130.zip"}
+2026-10-25T02:18:44.7271166Z RUN130_SOURCE_MANIFEST_PASS 852
+2026-10-25T02:18:44.7439957Z 2b4654e66733928b321bd2b149e17fb500a63fe36da802df0aa9e93fa84ccf05  /home/runner/work/_temp/V13-Phone-Run130.zip
+2026-10-25T02:18:44.7468871Z RUN130_SOURCE_BYTES=12621079
+2026-10-25T02:18:44.9704381Z RUN130_EXTRACTED_SUITE=test_phone_prestart_run128.py
+2026-10-25T02:18:45.4859897Z test_both_buttons_only_apply_stillstand (test_phone_prestart_run128.PhonePrestartRun128.test_both_buttons_only_apply_stillstand) ... ok
+2026-10-25T02:18:45.5786611Z test_cli_corrupt_age_state_refuses_runtime_start_and_keeps_request (test_phone_prestart_run128.PhonePrestartRun128.test_cli_corrupt_age_state_refuses_runtime_start_and_keeps_request) ... ok
+2026-10-25T02:18:45.7456751Z test_cli_recovered_turn_never_final_before_human_release (test_phone_prestart_run128.PhonePrestartRun128.test_cli_recovered_turn_never_final_before_human_release) ... ok
+2026-10-25T02:18:45.9782728Z test_human_held_parts_remain_after_release (test_phone_prestart_run128.PhonePrestartRun128.test_human_held_parts_remain_after_release) ... ok
+2026-10-25T02:18:46.0047699Z test_invalid_age_state_does_not_consume_request_or_partially_write (test_phone_prestart_run128.PhonePrestartRun128.test_invalid_age_state_does_not_consume_request_or_partially_write) ... ok
+2026-10-25T02:18:46.0276017Z test_notaus_only_does_not_pause_queue_or_freeze_age (test_phone_prestart_run128.PhonePrestartRun128.test_notaus_only_does_not_pause_queue_or_freeze_age) ... ok
+2026-10-25T02:18:46.2562064Z test_retry_after_durable_commit_before_ack_keeps_original_ownership (test_phone_prestart_run128.PhonePrestartRun128.test_retry_after_durable_commit_before_ack_keeps_original_ownership) ... ok
+2026-10-25T02:18:46.4779496Z test_stillstand_preflight_applies_all_gates_and_owns_only_new_parts (test_phone_prestart_run128.PhonePrestartRun128.test_stillstand_preflight_applies_all_gates_and_owns_only_new_parts) ... ok
+2026-10-25T02:18:46.4781030Z 
+2026-10-25T02:18:46.4781272Z ----------------------------------------------------------------------
+2026-10-25T02:18:46.4781760Z Ran 8 tests in 1.241s
+2026-10-25T02:18:46.4781955Z 
+2026-10-25T02:18:46.4782063Z OK
+2026-10-25T02:18:46.4978153Z RUN130_EXTRACTED_SUITE=test_phone_halt.py
+2026-10-25T02:18:46.6458392Z test_button_never_releases_and_handled_file_does_not_reapply (test_phone_halt.ButtonTests.test_button_never_releases_and_handled_file_does_not_reapply) ... ok
+2026-10-25T02:18:46.7290909Z test_notaus_button_blocks_tools_in_running_chat (test_phone_halt.ButtonTests.test_notaus_button_blocks_tools_in_running_chat) ... ok
+2026-10-25T02:18:46.7652292Z test_stillstand_button_waiting_at_start_is_applied_before_first_input (test_phone_halt.ButtonTests.test_stillstand_button_waiting_at_start_is_applied_before_first_input) ... ok
+2026-10-25T02:18:46.7665747Z test_befehle_command_shows_guide_and_filters (test_phone_halt.GuideTests.test_befehle_command_shows_guide_and_filters) ... ok
+2026-10-25T02:18:46.7675683Z test_every_operator_command_is_explained (test_phone_halt.GuideTests.test_every_operator_command_is_explained) ... ok
+2026-10-25T02:18:46.8175619Z test_installer_writes_five_buttons_and_stop_buttons_only_drop_request_files (test_phone_halt.InstallerTests.test_installer_writes_five_buttons_and_stop_buttons_only_drop_request_files) ... ok
+2026-10-25T02:18:46.8176905Z 
+2026-10-25T02:18:46.8177190Z ----------------------------------------------------------------------
+2026-10-25T02:18:46.8177772Z Ran 6 tests in 0.216s
+2026-10-25T02:18:46.8178007Z 
+2026-10-25T02:18:46.8178124Z OK
+2026-10-25T02:18:46.8357372Z RUN130_EXTRACTED_SUITE=test_cli_standstill_run121.py
+2026-10-25T02:18:47.0998137Z test_persisted_pause_refuses_ask_without_queue_side_effect (test_cli_standstill_run121.CliStandstillRun121.test_persisted_pause_refuses_ask_without_queue_side_effect) ... ok
+2026-10-25T02:18:47.8208939Z test_persisted_standstill_refuses_then_human_release_allows_ask (test_cli_standstill_run121.CliStandstillRun121.test_persisted_standstill_refuses_then_human_release_allows_ask) ... ok
+2026-10-25T02:18:47.8210106Z 
+2026-10-25T02:18:47.8210272Z ----------------------------------------------------------------------
+2026-10-25T02:18:47.8210637Z Ran 2 tests in 0.881s
+2026-10-25T02:18:47.8210776Z 
+2026-10-25T02:18:47.8211046Z OK
+2026-10-25T02:18:47.8399865Z RUN130_EXTRACTED_SUITE=test_phone_operator_journey_run86.py
+2026-10-25T02:18:47.9628015Z test_local_operator_origin_and_record_only_default (test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_local_operator_origin_and_record_only_default) ... ok
+2026-10-25T02:18:48.2061404Z test_paused_fifo_exact_sources_export_and_second_restart (test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_paused_fifo_exact_sources_export_and_second_restart) ... ok
+2026-10-25T02:18:48.4944844Z test_standstill_persists_and_blocks_turn_until_local_release (test_phone_operator_journey_run86.PhoneOperatorJourneyRun86.test_standstill_persists_and_blocks_turn_until_local_release) ... ok
+2026-10-25T02:18:48.4946159Z 
+2026-10-25T02:18:48.4946454Z ----------------------------------------------------------------------
+2026-10-25T02:18:48.4947026Z Ran 3 tests in 0.555s
+2026-10-25T02:18:48.4947290Z 
+2026-10-25T02:18:48.4947435Z OK
+2026-10-25T02:18:48.5237111Z RUN130_EXTRACTED_SUITE=test_standstill.py
+2026-10-25T02:18:48.6813964Z test_all_parts_stop_and_idle_runtime_is_confirmed_still (test_standstill.EngageTests.test_all_parts_stop_and_idle_runtime_is_confirmed_still) ... ok
+2026-10-25T02:18:49.8012449Z test_engage_waits_for_a_scheduler_tick_in_progress (test_standstill.EngageTests.test_engage_waits_for_a_scheduler_tick_in_progress) ... ok
+2026-10-25T02:18:49.9189956Z test_job_that_ignores_cancel_is_reported_never_claimed_stopped (test_standstill.EngageTests.test_job_that_ignores_cancel_is_reported_never_claimed_stopped) ... ok
+2026-10-25T02:18:50.4551248Z test_queued_turn_is_not_answered_while_still (test_standstill.EngageTests.test_queued_turn_is_not_answered_while_still) ... ok
+2026-10-25T02:18:50.4918931Z test_running_job_that_honours_cancel_is_confirmed_stopped (test_standstill.EngageTests.test_running_job_that_honours_cancel_is_confirmed_stopped) ... ok
+2026-10-25T02:18:51.8313821Z test_scheduler_tick_and_background_do_not_run_during_standstill (test_standstill.EngageTests.test_scheduler_tick_and_background_do_not_run_during_standstill) ... ok
+2026-10-25T02:18:51.8679142Z test_release_only_undoes_what_standstill_set (test_standstill.ReleaseTests.test_release_only_undoes_what_standstill_set) ... ok
+2026-10-25T02:18:51.9054000Z test_release_reports_background_that_resumes (test_standstill.ReleaseTests.test_release_reports_background_that_resumes) ... ok
+2026-10-25T02:18:51.9210247Z test_release_without_standstill_changes_nothing (test_standstill.ReleaseTests.test_release_without_standstill_changes_nothing) ... ok
+2026-10-25T02:18:52.1385867Z test_repeated_engage_keeps_first_record (test_standstill.ReleaseTests.test_repeated_engage_keeps_first_record) ... ok
+2026-10-25T02:18:52.1743445Z test_user_notaus_before_standstill_survives_release (test_standstill.ReleaseTests.test_user_notaus_before_standstill_survives_release) ... ok
+2026-10-25T02:18:52.4184173Z test_restart_stays_still (test_standstill.RestartTests.test_restart_stays_still) ... ok
+2026-10-25T02:18:52.4342155Z test_bad_argument (test_standstill.TextTests.test_bad_argument) ... ok
+2026-10-25T02:18:52.4495529Z test_notaus_says_learning_continues_and_points_to_standstill (test_standstill.TextTests.test_notaus_says_learning_continues_and_points_to_standstill) ... ok
+2026-10-25T02:18:52.4496315Z 
+2026-10-25T02:18:52.4496503Z ----------------------------------------------------------------------
+2026-10-25T02:18:52.4496917Z Ran 14 tests in 3.814s
+2026-10-25T02:18:52.4497087Z 
+2026-10-25T02:18:52.4497178Z OK
+2026-10-25T02:18:52.4710364Z RUN130_EXTRACTED_LINUX_SOFTWARE_PASS; NO_NATIVE_OR_REDMI_PROOF
+2026-10-25T02:18:52.4774854Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-25T02:18:52.4775286Z with:
+2026-10-25T02:18:52.4775580Z   name: V13-Phone-Run130-b4c5ca58215de7d7877701875f81262c2f5e2a85
+2026-10-25T02:18:52.4775990Z   path: /home/runner/work/_temp/V13-Phone-Run130.zip
+2026-10-25T02:18:52.4776366Z   if-no-files-found: error
+2026-10-25T02:18:52.4776605Z   compression-level: 0
+2026-10-25T02:18:52.4777014Z   retention-days: 30
+2026-10-25T02:18:52.4777222Z   overwrite: false
+2026-10-25T02:18:52.4777437Z   include-hidden-files: false
+2026-10-25T02:18:52.4777670Z env:
+2026-10-25T02:18:52.4777849Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:18:52.4778054Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:18:52.4778273Z   NEEDLE_TELEMETRY: 0
+2026-10-25T02:18:52.4778478Z   DO_NOT_TRACK: 1
+2026-10-25T02:18:52.4778674Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:18:52.4778884Z ##[endgroup]
+2026-10-25T02:18:52.6516995Z (node:2650) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-25T02:18:52.6517793Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-25T02:18:52.6564802Z With the provided path, there will be 1 file uploaded
+2026-10-25T02:18:52.6572359Z Artifact name is valid!
+2026-10-25T02:18:52.6573243Z Root directory input is valid!
+2026-10-25T02:18:53.0511149Z Beginning upload of artifact content to blob storage
+2026-10-25T02:18:53.1023983Z (node:2650) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-25T02:18:54.1154289Z Uploaded bytes 8388608
+2026-10-25T02:18:54.4240166Z Uploaded bytes 12621233
+2026-10-25T02:18:54.5061362Z Finished uploading artifact content to blob storage!
+2026-10-25T02:18:54.5062854Z SHA256 digest of uploaded artifact zip is 3b6f5427d3c599076a669e0466504c2fefc7a10dc9d388483a33d4af557afe69
+2026-10-25T02:18:54.5064840Z Finalizing artifact upload
+2026-10-25T02:18:54.9691042Z Artifact V13-Phone-Run130-b4c5ca58215de7d7877701875f81262c2f5e2a85.zip successfully finalized. Artifact ID 12583537489
+2026-10-25T02:18:54.9693223Z Artifact V13-Phone-Run130-b4c5ca58215de7d7877701875f81262c2f5e2a85 has been successfully uploaded! Final size is 12621233 bytes. Artifact ID is 12583537489
+2026-10-25T02:18:54.9694883Z Artifact download URL: https://github.com/RedMentos/Aii/actions/runs/40153920750/artifacts/12583537489
+2026-10-25T02:18:54.9912872Z ##[group]Run echo "RUN130_ARTIFACT_URL=https://github.com/RedMentos/Aii/actions/runs/40153920750/artifacts/12583537489"
+2026-10-25T02:18:54.9913714Z [36;1mecho "RUN130_ARTIFACT_URL=https://github.com/RedMentos/Aii/actions/runs/40153920750/artifacts/12583537489"[0m
+2026-10-25T02:18:54.9976193Z shell: /usr/bin/bash -e {0}
+2026-10-25T02:18:54.9976459Z env:
+2026-10-25T02:18:54.9976663Z   HF_HUB_OFFLINE: 1
+2026-10-25T02:18:54.9976894Z   TRANSFORMERS_OFFLINE: 1
+2026-10-25T02:18:54.9977133Z   NEEDLE_TELEMETRY: 0
+2026-10-25T02:18:54.9977353Z   DO_NOT_TRACK: 1
+2026-10-25T02:18:54.9977558Z   NO_MODEL_DOWNLOADS: 1
+2026-10-25T02:18:54.9977780Z ##[endgroup]
+2026-10-25T02:18:55.0059477Z RUN130_ARTIFACT_URL=https://github.com/RedMentos/Aii/actions/runs/40153920750/artifacts/12583537489
+2026-10-25T02:18:55.0182640Z Post job cleanup.
+2026-10-25T02:18:55.1097958Z [command]/usr/bin/git version
+2026-10-25T02:18:55.1144770Z git version 2.55.0
+2026-10-25T02:18:55.1185153Z Temporarily overriding HOME='/home/runner/work/_temp/521b02e3-ee40-4a54-8c6e-2206f3e9e031' before making global git config changes
+2026-10-25T02:18:55.1186480Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T02:18:55.1190448Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T02:18:55.1237052Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T02:18:55.1286461Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T02:18:55.1606195Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T02:18:55.1651332Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T02:18:55.2163164Z Cleaning up orphan processes
+2026-10-25T02:18:55.2554984Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

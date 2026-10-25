@@ -1,0 +1,13 @@
+# Run130 — exact-head frozen Runtime phone source ZIP, independently extracted
+
+2026-10-25 UTC. Run130 PR #161, exact source-under-test commit `b4c5ca58215de7d7877701875f81262c2f5e2a85` based on verified Run128 PR #159 `ad3183796f9a06c7bea9c2e956a43c623e042dcb`. No source edits in this package; workflow/proofs only. Run129 full suite separate owner; Run127 Widget quoting separate owner.
+
+GitHub Actions run `40153920750`, software job `121051117845`, official privacy CLEAN. Exact HEAD check, frozen `v13/runtime.py` Git blob `a691d27bd0772a4fa1f03d57ec90663237bf6825`, `bash -n` Widget installer, Python compileall. **33/33 Linux software/SQLite/CLI tests PASS from repository source and 33/33 PASS from extracted actual source ZIP** (8 Run128 prestart + 6 Widget + 2 CLI pause + 3 phone operator + 14 Stillstand). ZIP manifest 852 source files, CRC PASS, Canon present, no model/private payload.
+
+Source ZIP: `V13-Phone-Run130.zip`, **12,621,079 bytes**, SHA256 `2b4654e66733928b321bd2b149e17fb500a63fe36da802df0aa9e93fa84ccf05`. GitHub Actions artifact ID `12583537489` expires **2026-11-24T02:18:52Z**. Artifact wrapper `V13_Run130_Artifact_Wrapper.zip`, **12,621,233 bytes**, SHA256 `3b6f5427d3c599076a669e0466504c2fefc7a10dc9d388483a33d4af557afe69`. Full `RAW_GREEN_JOB.log` committed.
+
+Independent Linux container downloaded the actual GitHub artifact, verified outer and inner ZIP CRC and SHA256, extracted the ZIP and reran **33/33 PASS** (8+6+2+3+14). Extracted source blobs: Runtime `a691d27`, phone_halt `93e91553`, __main__ `b8696111`, identical to Run128 verified remote. Independent log is available in run-local artifact. A private Library backup `/V13_Run130_20261025/V13_Run130_Artifact_Wrapper.zip` was materialized and byte-compared against downloaded wrapper; **byte-identical**, Library id `libfile_83d06bfa2ac081918433fcc50c280b9e`. Rejected anyone-writable Drive destination not used.
+
+Claim limit: source-only Linux/SQLite proof, NOT a model-bearing installer, NOT a Redmi/Termux measurement, NOT a native cgroup/model test, NOT full V13. Run127 custom-path quoting fix is not in this artifact. Run129 full suite still needed. Original STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, DS2 H2 FAIL, V13 INCOMPLETE unchanged.
+
+**Next:** consume Run129 full-suite audit, keep negative failures. Then independently integrate reviewed Run127 custom-path quoting into a new frozen-runtime-safe source branch (only if Run127 is verified and ownership released), rebuild source ZIP, or pursue native C3 bounded smoke with registered hash and serialized heavy job.

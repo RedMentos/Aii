@@ -1,0 +1,110 @@
+name: V13 Run130 frozen Runtime exact source ZIP
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run130-phone-frozen-zip.yml"
+      - "v13/code/tests/test_phone_prestart_run128.py"
+      - "v13/code/docs/proofs/continuation-20261025/phone-frozen-zip-run130/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run130-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  software-zip:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      NO_MODEL_DOWNLOADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Exact source head and model-free dependencies
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          git rev-parse HEAD
+          test "$(git hash-object v13/code/v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+          python3 -m venv "$RUNNER_TEMP/run130"
+          "$RUNNER_TEMP/run130/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual source prestart stop tests
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD"
+          "$RUNNER_TEMP/run130/bin/python" -m compileall -q v13 tests
+          bash -n KNOEPFE_EINRICHTEN.sh
+          for pattern in test_phone_prestart_run128.py test_phone_halt.py test_cli_standstill_run121.py test_phone_operator_journey_run86.py test_standstill.py; do
+            echo "RUN130_SUITE=$pattern"
+            "$RUNNER_TEMP/run130/bin/python" -m unittest discover -s tests -p "$pattern" -v
+          done
+      - name: Package, CRC/manifest audit, extract and rerun from actual phone bytes
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/run130/bin/python" scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run130.zip" --phone-install
+          unzip -tqq "$RUNNER_TEMP/V13-Phone-Run130.zip"
+          "$RUNNER_TEMP/run130/bin/python" - <<'PY'
+          import json,os,zipfile
+          p=os.path.join(os.environ['RUNNER_TEMP'],'V13-Phone-Run130.zip')
+          with zipfile.ZipFile(p) as z:
+              names=set(z.namelist())
+              required={
+                'V13-Phone/STARTEN.sh','V13-Phone/setup.sh',
+                'V13-Phone/KNOEPFE_EINRICHTEN.sh',
+                'V13-Phone/v13/phone_halt.py',
+                'V13-Phone/tests/test_phone_prestart_run128.py',
+                'V13-Phone/v13/befehle.py',
+                'V13-Phone/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md',
+                'V13-Phone/WORKSPACE_FILES.json',
+              }
+              if required-names:raise SystemExit('missing phone source: '+repr(sorted(required-names)))
+              if any(n.endswith(('.gguf','.safetensors','.sqlite','.db','.env')) for n in names):
+                  raise SystemExit('private/model payload')
+              m=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              if m['schema_version']!=1 or len(m['files'])<100:raise SystemExit('invalid manifest')
+              print('RUN130_SOURCE_MANIFEST_PASS',len(m['files']))
+          PY
+          sha256sum "$RUNNER_TEMP/V13-Phone-Run130.zip"
+          stat -c 'RUN130_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run130.zip"
+          mkdir -p "$RUNNER_TEMP/extracted"
+          unzip -q "$RUNNER_TEMP/V13-Phone-Run130.zip" -d "$RUNNER_TEMP/extracted"
+          cd "$RUNNER_TEMP/extracted/V13-Phone"
+          test "$(git hash-object v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+          export PYTHONPATH="$PWD"
+          for pattern in test_phone_prestart_run128.py test_phone_halt.py test_cli_standstill_run121.py test_phone_operator_journey_run86.py test_standstill.py; do
+            echo "RUN130_EXTRACTED_SUITE=$pattern"
+            "$RUNNER_TEMP/run130/bin/python" -m unittest discover -s tests -p "$pattern" -v
+          done
+          echo 'RUN130_EXTRACTED_LINUX_SOFTWARE_PASS; NO_NATIVE_OR_REDMI_PROOF'
+      - name: Publish reviewed source-only phone ZIP
+        id: upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Phone-Run130-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/V13-Phone-Run130.zip
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+      - name: Artifact pointer
+        run: echo "RUN130_ARTIFACT_URL=${{ steps.upload.outputs.artifact-url }}"
