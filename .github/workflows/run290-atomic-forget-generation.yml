@@ -1,0 +1,78 @@
+name: V13 Run290 atomic forget-generation race (SQLite software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/memory.py'
+      - 'v13/code/tests/test_atomic_forget_generation_run290.py'
+      - '.github/workflows/run290-atomic-forget-generation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  forget-generation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Exact source and Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN290_HEAD.txt"
+          sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | tee "$RUNNER_TEMP/RUN290_CANON.txt"
+          test "$(cut -d' ' -f1 "$RUNNER_TEMP/RUN290_CANON.txt")" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/v13/memory.py v13/code/v13/store.py v13/code/tests/test_atomic_forget_generation_run290.py | tee "$RUNNER_TEMP/RUN290_BLOBS.txt"
+          python3 -m compileall -q v13/code/v13 v13/code/tests
+      - name: Actual SQLite forget/approval and memory regressions
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run290venv"
+          "$RUNNER_TEMP/run290venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          deps=$?
+          if [[ "$deps" != "0" ]]; then echo "$deps" > "$RUNNER_TEMP/RUN290_TEST_EXIT.txt"; echo "rc=$deps" >> "$GITHUB_OUTPUT"; exit 0; fi
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run290venv/bin/python" -m unittest -v \
+            tests.test_atomic_forget_generation_run290 \
+            tests.test_atomic_update_approval_row_run289 \
+            tests.test_revoked_update_lineage_run287 \
+            tests.test_core tests.test_memory_trainer tests.test_memory_human_decision_lineage_run270 \
+            tests.test_learning_invariants tests.test_component_generations 2>&1 | tee "$RUNNER_TEMP/RUN290_TEST_RAW.log"
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN290_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN290_PRIVACY_RAW.log"
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN290_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Preserve closed raw evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run290-AtomicForgetGeneration-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN290_HEAD.txt
+            ${{ runner.temp }}/RUN290_CANON.txt
+            ${{ runner.temp }}/RUN290_BLOBS.txt
+            ${{ runner.temp }}/RUN290_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN290_TEST_RAW.log
+            ${{ runner.temp }}/RUN290_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN290_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

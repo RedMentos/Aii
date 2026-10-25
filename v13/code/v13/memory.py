@@ -363,9 +363,17 @@ class Memory:
         for u in self.s.rows('SELECT * FROM updates'):
             if sid in json.loads(u['manifest']).get('source_ids',[]):affected.append(u)
         # Refuse a false unlearning claim: active learned lineage needs explicit rollbacks first.
-        active=self.s.generation()['hashes']
+        observed_generation=self.s.generation()
+        active=observed_generation['hashes']
         if any(u['path'] in active for u in affected):raise ValueError('Quelle steckt in aktiven Gewichten. Zuerst :rollback '+next(u['id'] for u in affected if u['path'] in active))
         with self.s.tx() as c:
+            # An approval can commit this source after the preflight above.
+            # The generation identity must still match under the same SQLite
+            # writer lock that marks the source deleted and quarantines heads.
+            current=json.loads(c.execute(
+                "SELECT value FROM meta WHERE key='active_generation'").fetchone()[0])
+            if current!=observed_generation['brain_generation_id']:
+                raise ValueError('Generation seit Forget-Vorprüfung geändert; erneut prüfen')
             c.execute('UPDATE memories SET active=0,value=? WHERE source_id=?',('[GELÖSCHT]',sid))
             c.execute('DELETE FROM feedback WHERE source_id=?',(sid,));c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
             for u in affected:c.execute("UPDATE updates SET status='QUARANTINED',path=NULL,hash=NULL WHERE id=?",(u['id'],))

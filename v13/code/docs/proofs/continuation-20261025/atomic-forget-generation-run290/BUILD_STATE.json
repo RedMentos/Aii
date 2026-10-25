@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN290_ATOMIC_FORGET_GENERATION_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Memory._forget_source generation identity + test/CI/scoped proof",
+  "branch": "codex/atomic-forget-generation-run290-20261025",
+  "pr": 290,
+  "base_sha": "c712f8df2fc95e88c8ce4a0744e3acc250c2e71d",
+  "tested_source_sha": "059c89f71afade06544c932e7f792dcb25d9457e",
+  "source_blobs": {
+    "v13/code/v13/memory.py": "a6a1177d04ce361231f8fcbf343ec4f8ad0d09d0",
+    "v13/code/tests/test_atomic_forget_generation_run290.py": "9089b6bb999cf194132eca9ad39128398b2813d0",
+    ".github/workflows/run290-atomic-forget-generation.yml": "24ba7c98330c5a93b6a423f7a557f9a1c80bf46f"
+  },
+  "red": {
+    "run": 40196120488,
+    "tests": "70 total, 1 FAIL, 2 SKIP",
+    "privacy": "CLEAN",
+    "artifact_id": 12599564807,
+    "artifact_sha256": "9576c069444611b55eff3b699d87988168df457dfd485955d8a5d5837ca5e8f1"
+  },
+  "green": {
+    "run": 40196200051,
+    "tests": "70 total, 0 FAIL, 2 SKIP",
+    "privacy": "CLEAN",
+    "artifact_id": 12600485799,
+    "artifact_sha256": "1926e87d48822cf038e30d266febb7d902dd436f1f63dfdbb10ddaea23e426c6"
+  },
+  "cross_review": {
+    "independent_linux_local_existing_tests": "53/53 PASS",
+    "local_interleaving": "REFUSED and active source/artifact preserved",
+    "local_source_git_blob": "a6a1177d04ce361231f8fcbf343ec4f8ad0d09d0",
+    "run270": 40196200046,
+    "run203": 40196200041,
+    "run103": 40196200140,
+    "focused": 40196200209,
+    "focused_tests": "401/401 + extracted 114/114 PASS",
+    "phone_zip_sha256": "d38e250d7e8bafd53604c1a8e2b119de0387a422e87f21964513cec9252af2f7",
+    "phone_files": 1002
+  },
+  "private_backup": {
+    "path": "/V13-Inquisition/Proofs/Run290/",
+    "files": [
+      "V13_Run290_RED_raw.zip",
+      "V13_Run290_GREEN_raw.zip",
+      "V13_Run290_Phone_Source.zip"
+    ],
+    "download_back_sha256_verified": true
+  },
+  "scope": "LINUX_SQLITE_SOFTWARE_SYNTHETIC_ARTIFACT",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "remaining_questions": [
+    "Run288 full 20-stage pinned native result pending; inspect actual raw stage failures before next native fix",
+    "PR284 Runtime cancel resident cleanup remains separately owned and RED",
+    "External filesystem mutation and Redmi remain unproven"
+  ],
+  "next_command": "Inspect latest PR288 full native acceptance run 40195217009 and its closed raw archive. Pick highest-priority failed registered stage not owned by PR284; reproduce failure against latest Run290 chain without changing pins, seeds, acceptance thresholds, or original negative gates. If still running, work on independent canonical utility path; no heavy native overlap.",
+  "checkpoint_kind": "branch_scoped_not_merged"
+}
