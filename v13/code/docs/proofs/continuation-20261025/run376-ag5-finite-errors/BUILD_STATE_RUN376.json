@@ -1,0 +1,39 @@
+{
+  "schema": "V13_RUN376_BRANCH_SCOPED_CHECKPOINT_V1",
+  "owner": "codex/ag5-curiosity-finite-errors-run376-20261025",
+  "parent": "codex/ag3-finite-plan-scores-run374-20261025@11a4eb18220d64f7b6ac1c546de0ee854b33ebf4",
+  "review_pr": 371,
+  "prereg_commit": "0446cf45687843af5228ac07f0ddd0f4d4cf1ae1",
+  "red_test_commit": "84a1fdfc90f4b15546bb87eb5778bb069eac29cd",
+  "red_source_head": "596bb911be16eb77288b65181147f00e13b3cf52",
+  "red_actions_run": 40235110417,
+  "red_result": "12 tests, 6 expected failures + 1 TypeError for nonfinite/bool/string/None prediction errors; inherited AG5 tests PASS",
+  "red_artifact_id": 12614398175,
+  "red_raw_sha256": "d5d6e43d9ac98ad9dbe43e52dc7113db727c8dabc3c05655719c76034c104e7d",
+  "red_private_backup": "/V13/checkpoints/2026-10-25/V13_Run376_RED_raw_shad5d6e43d.zip",
+  "green_source_head": "5cabdd0ee1136948184fb0de3bc3a486ec59f032",
+  "green_actions_run": 40235204975,
+  "green_result": "12/12 PASS, privacy CLEAN, compileall PASS, inherited AG5/AG12 tests",
+  "green_artifact_id": 12614522984,
+  "green_raw_sha256": "776fc0d79617ff91049834eb9f2244a62e117a8058f78eb682cd90d429a86345",
+  "green_private_backup": "/V13/checkpoints/2026-10-25/V13_Run376_GREEN_raw_sha776fc0d7.zip",
+  "library_byte_comparison": "RED and GREEN independently re-materialized and byte-identical; CRC and 4/4 internal SHA PASS",
+  "source_sha256": {
+    "v13/code/v13/agi/curiosity.py": "e913750b8ef2942d9a637fa399456c4d760c3c289faf416a65639b5011a7ba85",
+    "v13/code/tests/test_ag5_finite_errors_run376.py": "3d879be7cca996d3e2661a10b874e9f83b830b66f3c8121da16750694e3ef1ce"
+  },
+  "claim_limits": "AG5 finite error input integrity only, no proof of autonomous curiosity, learned exploration or model training.",
+  "negative_gates": {
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED",
+    "whole_v13": "INCOMPLETE",
+    "full_suite": "RUN367_RED_UNCHANGED"
+  },
+  "remaining": "Run373 Linux native C3 semantic+field threshold FAIL 2/4 despite 4/4 field metrics; Run367 full suite RED; Redmi/STEP2/B3/JEPA open.",
+  "next_package": "Run377 Context OS signed single-digit exact-span preservation, independent of Run375 B3 and Run373 native owners.",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_ag5_finite_errors_run376 tests.test_growth.G5Curiosity tests.test_agi_live",
+  "status": "BRANCH_SCOPED_GREEN_NOT_MERGED"
+}
