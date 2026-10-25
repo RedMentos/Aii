@@ -21,6 +21,14 @@ from v13.transaction import operator_command as tx_command, settle_turn
 
 APP = Path(__file__).resolve().parents[1]
 
+def _optional_legacy_fixture_exists():
+    """Legacy /root fixture is optional; Python <=3.13 Path.exists may raise EACCES."""
+    try:
+        return Path('/root/native/restore/round8-note-tool-raw').exists()
+    except PermissionError:
+        return False
+
+
 
 class FakeTaps:
     """Deterministic stand-in encoder: one fixed random 1024-vector per text."""
@@ -144,7 +152,7 @@ class CheckpointTests(unittest.TestCase):
         self.assertTrue(note['pass'])
         self.assertEqual(note['report_only_ratio_geo_mean'], {'unflagged': .5, 'flagged': 2.})
         self.assertEqual(rep['verdict'], 'COMPETENCE_SIGNAL_NOT_CONFIRMED')
-        plan = cc.plan('/root/native/restore') if Path('/root/native/restore/round8-note-tool-raw').exists() else None
+        plan = cc.plan('/root/native/restore') if _optional_legacy_fixture_exists() else None
         if plan:
             earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
             for k in plan:
@@ -567,6 +575,18 @@ class NativeEncoderTests(unittest.TestCase):
                 self.assertTrue(rec['beats_controls'])
             finally:
                 r.close()
+
+
+class OptionalLegacyFixturePortabilityTests(unittest.TestCase):
+    def test_permission_denied_is_absent_not_error(self):
+        from unittest.mock import patch
+        with patch.object(Path, 'exists', side_effect=PermissionError(13, 'Permission denied')):
+            self.assertFalse(_optional_legacy_fixture_exists())
+
+    def test_accessible_optional_fixture(self):
+        from unittest.mock import patch
+        with patch.object(Path, 'exists', return_value=True):
+            self.assertTrue(_optional_legacy_fixture_exists())
 
 
 if __name__ == '__main__':

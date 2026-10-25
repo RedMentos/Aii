@@ -1,0 +1,103 @@
+name: V13 Run164 full-suite portability recheck
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run164-fullsuite-portability.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/run164-fullsuite/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  privacy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official public repo privacy scan
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  full-suite:
+    needs: privacy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Exact frozen Runtime and reconstructed Run21 LP3 helper in temp only
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(git hash-object v13/code/v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
+          mkdir -p "$RUNNER_TEMP/lp3_run21"
+          base64 -d v13/code/docs/proofs/continuation-20261024/lp3-run20/LP3_RUN20_CODE_ONLY.tar.xz.base64 > "$RUNNER_TEMP/run20_code_only.tar.xz"
+          echo "fc532d00e2c72281a154c984bbd79bd757a69a1d4e3c14e70a988dfb44c100c7  $RUNNER_TEMP/run20_code_only.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/run20_code_only.tar.xz" -C "$RUNNER_TEMP/lp3_run21"
+          patch -d "$RUNNER_TEMP/lp3_run21" -p1 < v13/code/docs/coordination/LP3_RUN21_POSTREAP_REVIEW.patch
+          helper="$(find "$RUNNER_TEMP/lp3_run21" -type f -path '*/scripts/lp3_serial_cohort.py' -print -quit)"
+          test -n "$helper"
+          echo "05e5bf300f582a03efeaae0133c8e20bf60948a2fa4e05a4867924ac4dc4b831  $helper" | sha256sum -c -
+          echo "LP3_HELPER_DIR=$(dirname "$helper")" >> "$GITHUB_ENV"
+          testhelper="$(find "$RUNNER_TEMP/lp3_run21" -type f -path '*/tests/test_lp3_serial_cohort.py' -print -quit)"
+          test -n "$testhelper"
+          test "$(git hash-object "$testhelper")" = "4e355dd45eda22a486f06af69b6c0d0fc35f178c"
+          echo "LP3_TEST_DIR=$(dirname "$testhelper")" >> "$GITHUB_ENV"
+      - name: Stage exact Run147 closed native fixture (read only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12585363362/zip -o "$RUNNER_TEMP/run147_native.zip"
+          echo "ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676  $RUNNER_TEMP/run147_native.zip" | sha256sum -c -
+          echo "RUN147_ARTIFACT=$RUNNER_TEMP/run147_native.zip" >> "$GITHUB_ENV"
+      - name: Isolated CPU-only pinned dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run159"
+          timeout 180s "$RUNNER_TEMP/run159/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          timeout 420s "$RUNNER_TEMP/run159/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.1+cpu'
+          "$RUNNER_TEMP/run159/bin/python" -c 'import torch;print("RUN159_TORCH",torch.__version__,"CUDA",torch.cuda.is_available())'
+      - name: Full discovery, preserve all failures
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$LP3_TEST_DIR:$LP3_HELPER_DIR:$PWD"
+          "$RUNNER_TEMP/run159/bin/python" -m compileall -q v13 tests
+          timeout 900s "$RUNNER_TEMP/run159/bin/python" -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/RUN164_FULL_SUITE_RAW.log"
+          rc=$?
+          set -e
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          echo "RUN164_SUITE_EXIT=$rc"
+          grep -E 'Ran [0-9]+ tests|FAILED \(|^OK$|^ERROR:|^FAIL:' "$RUNNER_TEMP/RUN164_FULL_SUITE_RAW.log" | tail -n 80 || true
+          exit 0
+      - name: Upload closed raw suite log even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run164-FullSuite-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN164_FULL_SUITE_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true suite result
+        if: always()
+        run: |
+          test "${{ steps.suite.outputs.exit_code }}" = "0"
