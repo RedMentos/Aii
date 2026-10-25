@@ -178,7 +178,7 @@ class WorldState:
         for row in rows:
             observation=json.loads(row['payload'])['observation'];byaction.setdefault(observation['action_id'],observation)
             if len(byaction)==32:break
-        count=self.s.one("SELECT COUNT(DISTINCT p.event_id) AS n FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='PredictionOutcome' AND e.session_id=?",(session,))['n']
+        count=self.s.one("SELECT COUNT(DISTINCT json_extract(p.payload,'$.observation.action_id')) AS n FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='PredictionOutcome' AND e.session_id=?",(session,))['n']
         value={'mode':'OBSERVED_DIGITAL_ACTIONS','recent':list(reversed(list(byaction.values()))),'observed_action_count':count,'last_event_id':rows[0]['event_id']}
         key='WORLD_STATE:'+session;old,v=self.s.state(key,{})
         if {k:x for k,x in old.items() if k!='updated_wall_time'}!=value:self.s.set_state(key,value|{'updated_wall_time':now()},expected=v)
@@ -187,7 +187,7 @@ class WorldState:
         # A completed action is authoritative even if its derived observation
         # was not written before termination. No outcome is invented for an
         # unfinished DISPATCHED/OUTCOME_UNKNOWN action.
-        rows=self.s.rows("SELECT a.id FROM actions a JOIN events e ON e.id=a.event_id WHERE e.session_id=? AND a.outcome IS NOT NULL AND a.expected LIKE ? AND NOT EXISTS (SELECT 1 FROM packets p WHERE p.event_id=a.event_id AND p.kind='PredictionOutcome') ORDER BY a.created",(self.r.session,'%"forecast"%'))
+        rows=self.s.rows("SELECT a.id FROM actions a JOIN events e ON e.id=a.event_id WHERE e.session_id=? AND a.outcome IS NOT NULL AND a.expected LIKE ? AND NOT EXISTS (SELECT 1 FROM packets p WHERE p.event_id=a.event_id AND p.kind='PredictionOutcome' AND json_extract(p.payload,'$.action_id')=a.id) ORDER BY a.created",(self.r.session,'%"forecast"%'))
         for row in rows:self.observe(row['id'])
         self._refresh(self.r.session)
 

@@ -1,0 +1,67 @@
+name: V13 Run343 WorldState per-action crash recovery
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run343-world-multiaction-recovery.yml'
+      - 'v13/code/v13/world.py'
+      - 'v13/code/tests/test_world_multiaction_recovery_run343.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run343-world-multiaction-recovery/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source and isolated dependencies
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN343_HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run343venv"
+          "$RUNNER_TEMP/run343venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          sha256sum v13/code/v13/world.py v13/code/tests/test_world_multiaction_recovery_run343.py | tee "$RUNNER_TEMP/RUN343_SOURCE_SHA256SUMS.txt"
+      - name: Real WorldState SQLite recovery and regression suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          "$RUNNER_TEMP/run343venv/bin/python" -m compileall -q v13 tests
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run343venv/bin/python" -m unittest -v \
+            tests.test_world_multiaction_recovery_run343 \
+            tests.test_world_state \
+            tests.test_world_observation_integrity_run202 \
+            tests.test_world_action_chronology_run70 \
+            tests.test_world_terminal_outcomes_run298 \
+            tests.test_world_observed_role_run71 \
+            tests.test_runtime_world_observation_run218 \
+            2>&1 | tee "$RUNNER_TEMP/RUN343_TESTS_RAW.log"
+          exit ${PIPESTATUS[0]}
+      - name: Public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN343_PRIVACY_RAW.log"
+      - name: Close raw source-only receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN343_*' ! -name RUN343_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN343_SHA256SUMS.txt
+      - name: Preserve raw RED or PASS
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run343-WorldState-Recovery-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN343_*
+          if-no-files-found: warn
+          retention-days: 30
