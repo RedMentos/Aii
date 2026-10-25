@@ -1,0 +1,101 @@
+name: V13 Run270 source-bound human memory authority proof
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/memory.py'
+      - 'v13/code/tests/test_memory_human_decision_lineage_run270.py'
+      - '.github/workflows/run270-memory-decision-lineage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run270-memory-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  memory-lineage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Verify exact head and source-only scope
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN270_HEAD.txt"
+          test -s v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          test -s AGENTS.md
+          git hash-object v13/code/v13/memory.py | tee "$RUNNER_TEMP/RUN270_MEMORY_BLOB.txt"
+          git hash-object v13/code/tests/test_memory_human_decision_lineage_run270.py | tee "$RUNNER_TEMP/RUN270_TEST_BLOB.txt"
+      - name: Isolated pinned CPU-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run270venv"
+          timeout 180s "$RUNNER_TEMP/run270venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source-bound actual SQLite regression and integration tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run270venv/bin/python" -m compileall -q v13 tests
+          compile_rc=$?
+          echo "$compile_rc" > "$RUNNER_TEMP/RUN270_COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/run270venv/bin/python" -m unittest -v \
+            tests.test_memory_human_decision_lineage_run270 \
+            tests.test_memory_recall_key_lineage_run203 \
+            tests.test_consolidation \
+            tests.test_experience_replay \
+            tests.test_backup_restore_memory_run210 \
+            tests.test_multichat_backup_restore_run217 \
+            tests.test_second_turn_c3_memory_pipeline_run204 \
+            tests.test_sleep_memory_c3_continuity_run205 \
+            tests.test_sleep_context_backup_continuity_run219 \
+            tests.test_retrieval \
+            tests.test_semantic_memory 2>&1 | tee "$RUNNER_TEMP/RUN270_FOCUSED_RAW.log"
+          test_rc=${PIPESTATUS[0]}
+          echo "$test_rc" > "$RUNNER_TEMP/RUN270_TEST_EXIT.txt"
+          echo "test_rc=$test_rc" >> "$GITHUB_OUTPUT"
+          echo "compile_rc=$compile_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha || '7ab557a3b9c44d4b00f9487bb70b52305a7d7c6c' }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN270_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN270_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload closed raw Linux-software evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run270-Memory-HumanDecision-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN270_HEAD.txt
+            ${{ runner.temp }}/RUN270_MEMORY_BLOB.txt
+            ${{ runner.temp }}/RUN270_TEST_BLOB.txt
+            ${{ runner.temp }}/RUN270_COMPILE_EXIT.txt
+            ${{ runner.temp }}/RUN270_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN270_FOCUSED_RAW.log
+            ${{ runner.temp }}/RUN270_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN270_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true test and privacy results
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.compile_rc }}" = "0"
+          test "${{ steps.tests.outputs.test_rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
