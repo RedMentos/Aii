@@ -46,8 +46,10 @@ class ToolSpec:
         self.effects=effects  # 2026-10-21 user rules: (action classes, object classes) this tool touches; None = undeclared -> always asked while a user rule exists
 
 class ToolRegistry:
-    def __init__(self,store,age=None,on_outcome=None,clock=time.time,monotonic=time.monotonic):
+    def __init__(self,store,age=None,on_outcome=None,clock=time.time,monotonic=time.monotonic,on_pre_execute=None,on_abort=None):
         self.s=store;self.age=age;self.on_outcome=on_outcome;self.clock=clock;self.monotonic=monotonic;self.tools={}
+        # Optional AG2 pre-action evidence hooks. No active runtime wiring by default.
+        self.on_pre_execute=on_pre_execute;self.on_abort=on_abort
         self.box=StateBox(store,KEY,REVISION,lambda:{'enabled':[],'calls':[],'counters':{}})
         self.register(ToolSpec('calc',calc,description='Arithmetik ohne eval',schema={'expression':'str'},effects=({'COMPUTE'},{'CALCULATOR'})))
         from ..transaction import sandbox_note_tool
@@ -134,8 +136,22 @@ class ToolRegistry:
         if a.get('deduplicated'):
             return dict(tx,status='DEDUPLICATED',reason='IDEMPOTENCY_KEY',action_tx=a['id'],result=a.get('result'),error=a.get('error'))
         T.commit_copy(a['id'],{'predicted':tx.get('predicted')})
-        a=T.execute(a['id'],spec.fn)
+        # The transaction copy is durable before this callback, and the effect
+        # has not started. A failed predictor never blocks an authorised tool.
+        if self.on_pre_execute is not None:
+            tx['preaction_attempted']=True
+            try:tx['preaction_id']=self.on_pre_execute(dict(tx))
+            except Exception as exc:tx['preaction_error']=type(exc).__name__
+        def abort_prediction():
+            if tx.get('preaction_id') and self.on_abort is not None:
+                try:self.on_abort(dict(tx))
+                except Exception as exc:tx['preaction_abort_error']=type(exc).__name__
+        try:a=T.execute(a['id'],spec.fn)
+        except BaseException:
+            abort_prediction()
+            raise
         if a['state']=='CANCELLED' and str(a.get('error') or '').startswith('HARD_BLOCK:'):  # last gate in Transactions.execute
+            abort_prediction()
             return dict(tx,action_tx=a['id'],status='DENIED',reason=a['error'],result=None,error=None)
         tx.update(action_tx=a['id'],status='EXECUTED' if a['state']=='SUCCEEDED' else 'FAILED',result=a['result'],error=a['error'],duration_s=a.get('duration_s'))
         if self.on_outcome:
