@@ -43,8 +43,18 @@ def optimize(x,y,w,trace,cfg,stats=None):
     if stats is not None:stats['max_applied_step_norm']=max_norm
     return w,trace
 
+def exact_route_labels(values, kind, expected_length=None):
+    """Only JSON integer class IDs 0..3 are labels; never coerce human decisions."""
+    if (type(values) is not list
+            or (expected_length is not None and len(values)!=expected_length)
+            or any(type(value) is not int or value not in (0,1,2,3) for value in values)):
+        raise ValueError('Expected explicit integer '+kind+' labels 0..3')
+    return np.asarray(values,dtype=np.int64)
+
 def train(inp,out):
-    started=time.monotonic();cfg=inp['config'];x=features(inp['embeddings']);y=np.asarray(inp['labels'],dtype=int)
+    started=time.monotonic();cfg=inp['config'];x=features(inp['embeddings'])
+    y=exact_route_labels(inp['labels'],'route')
+    scaffold=exact_route_labels(inp['scaffold_labels'],'scaffold',len(y))
     if len(x)!=len(y) or len(y)<4 or not np.isin(y,[0,1,2,3]).all():raise ValueError('At least four valid explicit route labels required')
     w=np.zeros((x.shape[1],4));trace=np.zeros(x.shape[1])
     if inp.get('active_checkpoint'):
@@ -55,7 +65,7 @@ def train(inp,out):
     if len(vi):
         oldloss,_,oldp=objective(x[vi],y[vi],w);newloss,_,newp=objective(x[vi],y[vi],new)
         perclass={str(k):{'before':float(np.mean(oldp.argmax(1)[y[vi]==k]==k)),'after':float(np.mean(newp.argmax(1)[y[vi]==k]==k))} for k in set(y[vi].tolist())}
-        accuracy=float(np.mean(newp.argmax(1)==y[vi]));baseline=float(np.mean(np.asarray(inp['scaffold_labels'])[vi]==y[vi]))
+        accuracy=float(np.mean(newp.argmax(1)==y[vi]));baseline=float(np.mean(scaffold[vi]==y[vi]))
         held={'n':len(vi),'loss_before':oldloss,'loss_after':newloss,'accuracy':accuracy,'scaffold_accuracy':baseline,'per_class':perclass}
         retained=all(v['after']>=v['before']-cfg['retention_max_delta'] for v in perclass.values())
         eligible=len(y)>=12 and len(vi)>=4 and len(perclass)==4 and newloss<oldloss and accuracy>=.75 and accuracy>=baseline and retained
