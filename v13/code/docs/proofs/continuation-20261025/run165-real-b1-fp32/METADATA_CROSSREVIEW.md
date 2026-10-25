@@ -1,0 +1,7 @@
+# Run165 independent metadata-only cross-review (2026-10-25)
+
+Downloaded exact GitHub Actions artifact `12587178813` using connected GitHub API. ZIP SHA256 independently recalculated as `5066f297df054dd7683730d01226ab01beb5a504ed417ad37a180b1c94202d57` (matches GitHub artifact digest); ZIP has **only** `metadata-summary.json`, 2751 bytes uncompressed, no weights. JSON schema, exact registered model SHA/size, 148 tensor descriptors / 55 F32, 4 sorted selected 1D F32 tensors, 32-byte-aligned disjoint source offsets, 8192 bytes each, 64-hex per-tensor digests, original negative gates and zero authority all checked independently: **METADATA_REVIEW_PASS**.
+
+Selected actual source tensors: `blk.0.attn_norm.weight`, `blk.0.ffn_norm.weight`, `blk.1.attn_norm.weight`, `blk.1.ffn_norm.weight`; each shape `[2048]`, dtype F32, 8192 source bytes. Private master candidate: 33890 bytes, SHA256 `8b5ee39474c5af9fbf77f736f051d04dc1dacc4194ba259c2cd282b077cc0d50`. No NPZ bytes were downloaded or published; this cross-review **does not independently recompute tensor digests against model bytes**. The original Run165 CI did verify source bytes using Run163 before deleting the private files.
+
+This is a real pinned B1 **inference** F32 slice export, not trainable Body-JEPA, native gradient, EMA, requantization, retention, active answer improvement or Redmi evidence. All original gates remain negative. Next independently test actual train-master lifecycle and safe update path, and separately resolve Run164 full-suite failures.
