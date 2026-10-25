@@ -17,7 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from v13 import ablation99 as A
-import z8_age_reopen as Z
+from scripts import z8_age_reopen as Z
 
 ARMS = ("noise_aware", "quality", "quality_no_reopen", "quality_restart", "quality_shuffled")
 FIRST_SEED = 301
