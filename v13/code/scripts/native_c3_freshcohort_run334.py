@@ -297,7 +297,16 @@ def run(tool_dir,server,master,manifest,out):
             row["tensor_audit"]=tensor_audit(master,
                 Path(str(trained)+".epoch1.gguf"),Path(str(trained)+".epoch2.gguf"))
             row["status"]="COMPLETE_NATIVE_DIAGNOSTIC"
+            row["weights_retained"]=False
             save()
+            # Native hashes and closed raw receipts remain; no model binaries
+            # survive this arm or enter the public artifact. Bound disk use.
+            for temporary in (trained,
+                              Path(str(trained)+".epoch1.gguf"),
+                              Path(str(trained)+".epoch2.gguf"),
+                              arm_dir/"epoch1-q4.gguf",arm_dir/"epoch2-q4.gguf"):
+                temporary.unlink(missing_ok=True)
+        baseline_q4.unlink(missing_ok=True)
         report["status"]="COMPLETE_NATIVE_THREE_ARM_DIAGNOSTIC"
         report["evidence_level"]="LINUX_NATIVE_C3_FRESH_COHORT_TRAIN_EVAL"
         save()
