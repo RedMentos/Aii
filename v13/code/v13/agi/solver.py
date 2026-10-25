@@ -13,10 +13,12 @@ curves show what B1/B2/C3 can do per generation. Rules:
   no recall); that would put holdout prompts into memory.
 """
 import json
+import math
 import re
 import threading
 import time
 from ..common import Cancelled,Unavailable
+from .base import clamp01
 from .generality import normalize
 
 SYS='Answer with only the final answer. No explanation, no units, no extra words.'
@@ -40,8 +42,26 @@ def confidence(metrics):
     tc=(metrics or {}).get('token_confidence') or {}
     for k in CONF_KEYS:
         v=tc.get(k)
-        if isinstance(v,(int,float)):return max(0.,min(1.,float(v))),k
+        if isinstance(v,(int,float)) and not isinstance(v,bool):
+            try:
+                value=float(v)
+            except (OverflowError,ValueError):
+                return 0.,'nonfinite'
+            if not math.isfinite(value):
+                return 0.,'nonfinite'
+            return clamp01(value),k
     return .5,'none'
+
+
+def _vote_confidence(value):
+    # External/experimental solver outputs must not inject NaN or unbounded
+    # weight into the JEF-like ensemble even if they bypass confidence().
+    if isinstance(value,bool) or not isinstance(value,(int,float)):
+        return 0.
+    try:
+        return clamp01(value)
+    except (OverflowError,ValueError):
+        return 0.
 
 def combine(outs):
     """outs: [{'role','answer','confidence'}] -> one answer. Score per distinct answer = sum of member
@@ -50,7 +70,7 @@ def combine(outs):
     if not outs:return {'answer':'','confidence':0.,'votes':{}}
     score={};first={}
     for o in outs:
-        k=normalize(o['answer']);score[k]=score.get(k,0.)+o['confidence'];first.setdefault(k,o['answer'])
+        k=normalize(o['answer']);score[k]=score.get(k,0.)+_vote_confidence(o.get('confidence'));first.setdefault(k,o['answer'])
     best=max(score,key=lambda k:(score[k],-list(first).index(k)))
     return {'answer':first[best],'confidence':round(score[best]/len(outs),4),'votes':{k:round(v,4) for k,v in score.items()},
             'agree':sum(normalize(o['answer'])==best for o in outs),'voters':len(outs)}
