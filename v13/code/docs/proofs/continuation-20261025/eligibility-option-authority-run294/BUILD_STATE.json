@@ -50,11 +50,11 @@
   "independent_local": {
     "python": "3.13",
     "eligibility": "38/38 PASS",
-    "full_suite": "RUNNING_OR_UNCONFIRMED"
+    "full_suite": "NO_TERMINAL_SUMMARY_WITHIN_150S_CAP_NOT_A_PASS"
   },
   "private_library": "/V13-Inquisition/Proofs/Run294",
   "raw_library_readback": "3/3 SHA256 and byte MATCH",
-  "phone_library_readback": "PENDING",
+  "phone_library_readback": "SHA256_AND_BYTE_MATCH",
   "negative_gates": {
     "step2": "UTILITY_FAIL",
     "b3_l1": "FAIL",
