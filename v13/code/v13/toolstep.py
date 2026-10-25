@@ -100,14 +100,16 @@ class ToolStep:
              tool=p['tool'],args=p['args'],policy_status=status,policy_reason=why,contract=steps,confidence=p['confidence'],proposer=p['proposer'],truth_authority=0))
         p['packet_id']=pk['packet_id'];return p
     def _propose_list(self,e,text):
-        """R4 part 6: question over listed values (BOOT wording rule) -> C3 reads typed values -> list_arith proposal."""
+        """R4: strict local row fast arm, otherwise C3 typed read -> guarded list_arith proposal."""
         from .agi import listarith
         op=listarith.operation(text)
         if not op or 'list_arith' not in self._registry().box.load()[0]['enabled']:return None  # the C3 read costs a model call: only after the user enabled the tool
         from .prohibitions import verdict
         if verdict(self.r.store,self._registry().tools['list_arith'])['blocked']:return None  # prohibited / Notaus: no model read either
         try:
-            values=listarith.read_values(self.r.pool.get('C3_LANGUAGE'),text,self.r.cancel_event,time.monotonic()+LIST_READ_SECONDS)
+            values=listarith.parse_explicit_rows(text)
+            if values is None:
+                values=listarith.read_values(self.r.pool.get('C3_LANGUAGE'),text,self.r.cancel_event,time.monotonic()+LIST_READ_SECONDS)
             listarith.compute(op,values,text)  # guard before proposing: every value must be an exact number of the user text
         except Exception as exc:self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'list_read','error':type(exc).__name__});return None
         return {'tool':'list_arith','args':{'operation':op,'text':str(text),'values':listarith.encode(values)},'confidence':.8,'span':[0,len(str(text))],'proposer':LIST_PROPOSER}
