@@ -1,0 +1,25 @@
+{
+  "schema": "v13-current-chain-lineage-v1",
+  "evidence_kind": "SOURCE_ONLY_REVIEWED_HASH_BINDING_NOT_RUNTIME_AUTHORITY",
+  "historical_chain": "scripts.integrated_candidates.integrated_sources() frozen through Run177",
+  "historical_sha256": {
+    "v13/runners.py": "18db214f930953a5f781aa8aaa2b4425e048fd8bacf7848793c112a4e06af798",
+    "v13/memory_server.py": "78b1eb46b11a55c8ba1a37fabd99bdf480d33f62a2c0d7a97822abc68e5a4672",
+    "v13/runtime.py": "2020e6d2f12e034fb6321c5c94869ff1f88c318319b4ff1c0b2bb823b90e06d0",
+    "v13/store.py": "fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980"
+  },
+  "current_sha256": {
+    "v13/runners.py": "18db214f930953a5f781aa8aaa2b4425e048fd8bacf7848793c112a4e06af798",
+    "v13/memory_server.py": "78b1eb46b11a55c8ba1a37fabd99bdf480d33f62a2c0d7a97822abc68e5a4672",
+    "v13/runtime.py": "e5e4952e4cbee30202fda7f75377ec804ac4bcffb7aad07c94faa20573023cc0",
+    "v13/store.py": "719ad591d2fded3904166a154633571a48d2176c1fe97c5da0283348592f9361"
+  },
+  "observed_in": {
+    "github_actions_run": 40227725284,
+    "job": 121272778208,
+    "full_suite_result": "RED: 3094 tests, 3 failures, 63 errors, 14 skips",
+    "head": "fa889e5cce02911317e58c749c7a22900bf803c9"
+  },
+  "review_chain": "Run177 historical integration; later reviewed Run338-Run356 changes preserved; not production integrated to main",
+  "negative_gates": "STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA not proven; jepa_weight=0"
+}

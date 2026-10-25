@@ -39,8 +39,14 @@ class Config(unittest.TestCase):
     def test_chain_link_is_live(self):
         from scripts.integrated_candidates import INTEGRATED,integrated_sources
         self.assertIn('tool_answer_first',INTEGRATED)
-        live=(ROOT/'v13/runtime.py').read_text();self.assertEqual(integrated_sources()['v13/runtime.py'],live)
+        # Frozen Run177 chain remains exact; later reviewed Runtime changes
+        # are separately SHA-bound, not falsely treated as the old bytes.
+        from scripts.current_source_lineage_run357 import verify
+        historical=integrated_sources()['v13/runtime.py']
+        live=(ROOT/'v13/runtime.py').read_text()
+        self.assertIn("lead=toolctl.ToolStep(self).lead(tool_result)",historical)
         self.assertIn("lead=toolctl.ToolStep(self).lead(tool_result)",live)
+        self.assertTrue(verify()['current_reviewed_sources_exact'])
 
 class Live(unittest.TestCase):
     def setUp(self):

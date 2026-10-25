@@ -1,0 +1,14 @@
+# Run357 prereg — separate immutable historical chain from reviewed current source lineage
+
+Parent: verified Run356/PR352 head `724b580b610f85010135cbce6cb21c36dc6b3a66`, on Run355/PR351→Run354/PR350 chain, not main. Owner: new `specs/current_source_lineage_run357.json`, new read-only `scripts/current_source_lineage_run357.py`, `tests/test_current_source_lineage_run357.py`, and narrowly scoped historical tests `tests/test_run177_native_chain_reconcile_20261025.py`, `tests/test_eligibility_fixed.py`, plus proof/CI. No Runtime/store/runners/memory_server, frozen baseline, model/seed, learning/age/approval or Canon edit.
+
+## Observed RED
+Run355 full source suite `40227725284` (3094 tests, 3 failures, 63 errors, 14 skipped) still fails `test_run177_native_chain_reconcile_20261025.test_integrated_chain_is_byte_exact_live_for_all_four_files` and `test_eligibility_fixed.Config.test_chain_link_is_live`. Historical `scripts.integrated_candidates.integrated_sources()` stops at Run177 and has immutable expected Runtime/store hashes, while later reviewed Runtime/store features changed the live bytes. Forcing current code back to historical bytes would delete later JEF/World/Context work; accepting arbitrary live bytes would weaken integrity. Preserve BOTH historical and current exact hashes with separate authority.
+
+## Frozen acceptance
+1. Register exact four historical integrated-chain SHA256 hashes and four current live SHA256 hashes as independently observed in Run355 full-suite traceback (runners/memory_server unchanged, Runtime/store changed), with Run177 and later review provenance. New read-only verifier must require both exact historical transformation hashes and current source file hashes; no dynamic current-source trust, auto-repair or file rewrite. A one-byte tamper to any current file or manifest hash must fail closed. Verify expected B2 native tap identity and fixed eligibility first-answer marker in both historical and current code.
+2. Narrowly revise two stale historical tests to assert immutable historical chain, exact reviewed current lineage and preserved functional markers rather than equating old and new bytes. Keep all original negative gates and other tests unchanged. Manifest must be included in the phone source ZIP (`specs/`), with no private data.
+3. Run the two original test modules plus new tamper tests and Run177 B2 native identity regression, on exact-head CI with privacy scan and closed raw artifact. Do not claim full suite PASS; Run355's 63 errors and other failures remain until separately resolved.
+4. No new native, Redmi, B3, Body-JEPA, learning or AGI proof. If any digest differs, preserve RED, do not auto-update hashes.
+
+Next command: `cd v13/code && python -m unittest -v tests.test_run177_native_chain_reconcile_20261025 tests.test_eligibility_fixed tests.test_current_source_lineage_run357` on pinned isolated dependencies.
