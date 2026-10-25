@@ -1,0 +1,63 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN309_V1",
+  "utc": "2026-10-25T15:22:00Z",
+  "owner": "GPT-6 automation / Run309 exact current phone source",
+  "base": "3d7343dbedc6cd829df3c38df853f3aad0579217",
+  "branch": "codex/current-phone-source-run309-20261025",
+  "pr": 307,
+  "exact_packaged_source": "1c4a5c6ac95207a0704de7cd680460efc6e080be",
+  "owned": [
+    ".github/workflows/run309-current-phone-source.yml",
+    "v13/code/docs/proofs/continuation-20261025/current-phone-source-run309/"
+  ],
+  "github": {
+    "run": 40206524308,
+    "job": 121208527418,
+    "artifact": 12603119603,
+    "artifact_zip_sha256": "4f6213f4238a29f5bc653de3e3b8b6cbb9706a2b6df6f490bc6fc72e0c714943"
+  },
+  "phone_zip": {
+    "filename": "V13-Phone-Run309.zip",
+    "size_bytes": 12946925,
+    "sha256": "116cbb3dc333edc6a1ecace1886a8ee7651de3e24ed5f027bc97a79266b6c681",
+    "source_files": 1020,
+    "members": 1021,
+    "manifest_sha256": "d3ea2c74b6d85c28e926a14c759ac1abbc4021190bf31c282688dd86750a99c4",
+    "crc": "PASS",
+    "member_hashes": "PASS",
+    "checkout_byte_parity": "PASS"
+  },
+  "extracted": {
+    "source_only_setup": "PASS",
+    "test_count": 25,
+    "test_failures": 0,
+    "independent_local_test_count": 25,
+    "independent_local_failures": 0,
+    "privacy": "CLEAN",
+    "model_inference": false,
+    "redmi_measured": false
+  },
+  "private_library": {
+    "phone_zip": "/V13-Inquisition/Proofs/Run309/V13-Phone-Run309.zip",
+    "raw_artifact": "/V13-Inquisition/Proofs/Run309/V13-Run309-Current-Phone-Source-Artifacts.zip",
+    "remote_readback_sha256": "PASS_BOTH"
+  },
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "model_seed_cohorts_unchanged": true,
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "whole_system_complete": false,
+  "source_only": true,
+  "full_native_test": false,
+  "prior_fullsuite": {
+    "run": 40202886433,
+    "tests": 2833,
+    "failures": 2,
+    "errors": 36,
+    "status": "FAILED"
+  },
+  "next_command": "Create independent exact-current-chain full-suite CI using frozen LP3/native fixture staging and pinned CPU deps; serialize heavy jobs, run all tests, preserve raw and compare to Run298 baseline without relaxing frozen hashes. Continue independent Canon implementation after checkpoint.",
+  "prerequisites": "No model/Redmi claim, no force-push, no private data, no frozen cohort/Canon changes. Active Run303 Budget and Run297 native owners protected."
+}
