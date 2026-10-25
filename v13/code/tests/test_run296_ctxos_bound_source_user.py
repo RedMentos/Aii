@@ -71,6 +71,7 @@ class BoundSourceLayout(unittest.TestCase):
         self.assertEqual(p['messages'][-1]['content'], MATCH)
         self.assertEqual(p['plan']['bound_source_refs'], [self.m['source_ref']])
         self.assertIn(self.m['source_ref'], p['plan']['provenance'])
+        self.assertEqual(self.r.store.integrity(True), [])
         self.assertIn('source_bound_user_exact', p['plan']['decisions'])
 
     def test_wrong_topic_and_wrong_entity_never_move_source(self):
