@@ -88,6 +88,47 @@ def scores(p, y):
     return {'n':len(y), 'loss':float(-np.log(np.maximum(p[np.arange(len(y)), y],1e-300)).mean()),
             'brier':float(np.mean(np.sum((p-target)**2,axis=1))), 'accuracy':float(correct.mean()), 'ece':ece}
 
+def first_token_feasibility(base, y, max_bias, token_ids=None):
+    """Optimistic *upper* bound on accuracy under the unchanged logit cap.
+
+    For each held-out row independently, grant its target the maximum +cap
+    and every other trainable vocabulary row -cap. The unchanged-vocabulary
+    mass stays fixed. Shared learned weights can only do worse, never better.
+    Ties are counted as feasible to avoid falsely declaring impossibility.
+    This is diagnostic only: it does not alter training, thresholds or gates.
+    """
+    b=np.asarray(base,dtype=float);labels=np.asarray(y,dtype=int)
+    cap=float(max_bias)
+    if b.ndim!=2 or b.shape[0]<1 or b.shape[1]<3 or not np.isfinite(b).all():
+        raise ValueError('Finite native baseline log-probability rows required')
+    n,k=b.shape[0],b.shape[1]-1
+    if labels.shape!=(n,) or np.any(labels<0) or np.any(labels>=k):
+        raise ValueError('Native target indices required')
+    if not np.isfinite(cap) or cap<0:
+        raise ValueError('Finite nonnegative native logit cap required')
+    ids=list(range(k)) if token_ids is None else [int(x) for x in token_ids]
+    if len(ids)!=k or len(set(ids))!=k:raise ValueError('Unique native vocabulary rows required')
+    optimistic=b.copy();optimistic[:,:k]-=cap
+    optimistic[np.arange(n),labels]+=2*cap
+    competitors=optimistic.copy();competitors[np.arange(n),labels]=-np.inf
+    feasible=optimistic[np.arange(n),labels]>=competitors.max(axis=1)
+    shifted=optimistic-optimistic.max(axis=1,keepdims=True)
+    probs=np.exp(shifted);probs/=probs.sum(axis=1,keepdims=True)
+    ceiling=probs[np.arange(n),labels]
+    per={}
+    for j,token in enumerate(ids):
+        mask=labels==j
+        if mask.any():
+            per[str(token)]={'n':int(mask.sum()),'feasible_count':int(feasible[mask].sum()),
+                             'accuracy_upper_bound':float(feasible[mask].mean()),
+                             'target_probability_ceiling_max':float(ceiling[mask].max())}
+    return {'n':n,'feasible_count':int(feasible.sum()),'infeasible_count':int((~feasible).sum()),
+            'accuracy_upper_bound':float(feasible.mean()),'per_native_token':per,
+            'target_probability_ceiling_min':float(ceiling.min()),
+            'target_probability_ceiling_max':float(ceiling.max()),
+            'scope':'OPTIMISTIC_PER_SAMPLE_INDEPENDENT_BOUNDED_NATIVE_LOGIT_DELTAS'}
+
+
 def optimize(base,x,y,w,cfg):
     w=w.copy();largest=0.
     for _ in range(cfg['output_adapter_steps']):
@@ -155,6 +196,7 @@ def train(inp,out):
     # The summed unchanged-vocabulary category is a conservative competitor:
     # winning against it also wins against every unchanged individual row.
     m['first_native_token_accuracy_pass']=after['accuracy']>=.8
+    m['first_token_feasibility']=first_token_feasibility(base[vi],y[vi],cfg['output_adapter_max_bias'],tokens)
     m['held_out_per_native_token']=held_out_per_token
     m['commit_eligible']=bool(improved and retention and supported and m['calibration_pass'] and m['first_native_token_accuracy_pass'] and reload_ok and repeat_ok and error<1e-6)
     from .resources import device,process_memory

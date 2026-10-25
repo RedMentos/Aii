@@ -1,0 +1,193 @@
+{
+  "schema": "V13_RUN293_PINNED_NATIVE_LOGPROB_FEASIBILITY_V1",
+  "evidence_class": "FROZEN_LINUX_NATIVE_OBSERVATION_REPLAY_NO_NEW_MODEL_RUN",
+  "run288_action": 40195217009,
+  "run288_raw_zip_sha256": "940a7a066521318137fb10a230bcd65969aeb3e440865fbd889efd59946026ca",
+  "original_features_gzip_sha256": "23494e10dc101ab59b020c227a3e38815c77996d34f2f03d3d1abb2d4de89d58",
+  "original_report_sha256": "444848419ce209652bd08a60943b077c7a085ba10ed7a8d4f9ee94f182fe6a20",
+  "native_token_ids": [
+    549,
+    20751
+  ],
+  "native_token_labels": [
+    "Hallo",
+    "Danke"
+  ],
+  "max_bias": 12,
+  "original_test_count": 19,
+  "expected_optimistic_feasible_count": 13,
+  "expected_optimistic_accuracy_upper_bound": 0.6842105263157895,
+  "rows": [
+    {
+      "original_index": 3,
+      "target_index": 1,
+      "base_log_probabilities": [
+        -5.591791434,
+        -14.442128939,
+        -0.003735847
+      ]
+    },
+    {
+      "original_index": 9,
+      "target_index": 1,
+      "base_log_probabilities": [
+        -5.463730352,
+        -14.260509984,
+        -0.004247366
+      ]
+    },
+    {
+      "original_index": 10,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -9.725958107,
+        -19.180405853,
+        -0.00005972
+      ]
+    },
+    {
+      "original_index": 18,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -9.800713214,
+        -19.247827205,
+        -0.000055418
+      ]
+    },
+    {
+      "original_index": 32,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -10.004531275,
+        -19.651469599,
+        -0.000045199
+      ]
+    },
+    {
+      "original_index": 38,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -10.052328491,
+        -19.494438552,
+        -0.00004309
+      ]
+    },
+    {
+      "original_index": 48,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -9.677781856,
+        -18.841565883,
+        -0.000062669
+      ]
+    },
+    {
+      "original_index": 49,
+      "target_index": 1,
+      "base_log_probabilities": [
+        -5.56220592,
+        -14.061042437,
+        -0.003848474
+      ]
+    },
+    {
+      "original_index": 50,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -10.198817917,
+        -19.865349479,
+        -0.000037217
+      ]
+    },
+    {
+      "original_index": 63,
+      "target_index": 1,
+      "base_log_probabilities": [
+        -5.388110622,
+        -14.402235493,
+        -0.004581637
+      ]
+    },
+    {
+      "original_index": 72,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -10.217029623,
+        -19.797699026,
+        -0.000036546
+      ]
+    },
+    {
+      "original_index": 79,
+      "target_index": 1,
+      "base_log_probabilities": [
+        -5.799890675,
+        -14.103563942,
+        -0.003033231
+      ]
+    },
+    {
+      "original_index": 88,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -9.856695667,
+        -18.948055759,
+        -0.000052402
+      ]
+    },
+    {
+      "original_index": 92,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -10.21427652,
+        -19.752231804,
+        -0.000036647
+      ]
+    },
+    {
+      "original_index": 98,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -9.707766542,
+        -19.216125498,
+        -0.000060816
+      ]
+    },
+    {
+      "original_index": 108,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -10.122964322,
+        -19.631461561,
+        -0.000040151
+      ]
+    },
+    {
+      "original_index": 112,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -9.811882104,
+        -19.296873178,
+        -0.000054802
+      ]
+    },
+    {
+      "original_index": 118,
+      "target_index": 0,
+      "base_log_probabilities": [
+        -10.420106732,
+        -19.711086117,
+        -0.00002983
+      ]
+    },
+    {
+      "original_index": 119,
+      "target_index": 1,
+      "base_log_probabilities": [
+        -5.955987529,
+        -14.466830806,
+        -0.002594168
+      ]
+    }
+  ]
+}
