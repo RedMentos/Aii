@@ -38,7 +38,7 @@
 @@ -165,6 +186,18 @@
          // ggml averages the loss over all n_ctx rows; masked rows add 0, so this is not a per-answer-token loss
          ggml_opt_result_loss(result_train, &last_loss, &last_unc);
-         fprintf(stderr, "V13_EPOCH {\\"epoch\\":%d,\\"train_loss_all_rows\\":%.6f}\n", lr.epoch, last_loss);
+         fprintf(stderr, "V13_EPOCH {\"epoch\":%d,\"train_loss_all_rows\":%.6f}\n", lr.epoch, last_loss);
 +        if (save_epochs) {
 +            const std::string path = params.out_file + ".epoch" + std::to_string(lr.epoch + 1) + ".gguf";
 +            llama_model_save_to_file(model, path.c_str());
@@ -47,7 +47,7 @@
 +            if (error || bytes < 1024) {
 +                LOG_ERR("epoch checkpoint write failed: %s\n", path.c_str()); return 14;
 +            }
-+            printf("V13_EPOCH_CHECKPOINT {\\"epoch\\":%d,\\"bytes\\":%llu,\\"out\\":\\"%s\\"}\n",
++            printf("V13_EPOCH_CHECKPOINT {\"epoch\":%d,\"bytes\":%llu,\"out\":\"%s\"}\n",
 +                   lr.epoch + 1, (unsigned long long) bytes, path.c_str());
 +            fflush(stdout);
 +        }
