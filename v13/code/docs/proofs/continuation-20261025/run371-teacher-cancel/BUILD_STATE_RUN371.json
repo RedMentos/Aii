@@ -1,0 +1,40 @@
+{
+  "schema": "V13_RUN371_BRANCH_SCOPED_CHECKPOINT_V1",
+  "owner": "codex/teacher-cancel-terminal-run371-20261025",
+  "parent": "codex/listarith-exact-integers-run370-20261025@3f8747aa25994751058a26c58fcce1fd352a5bc8",
+  "review_pr": 366,
+  "prereg_commit": "24fdca33faa32720c4550bdb405bd8559417b97d",
+  "red_test_commit": "eb87584e4171ab5dfba22e1724bc3e1719368920",
+  "red_source_head": "05c5f8c8caa63119cb0d5dd6a1c403188e511298",
+  "red_actions_run": 40233902410,
+  "red_result": "33 tests, 3 expected assertion failures: post-backend cancellation, stale terminal overwrite, cloud revocation; inherited AG12 tests PASS; privacy CLEAN",
+  "red_artifact_id": 12613618836,
+  "red_raw_sha256": "26b23f9bcd58fcf32774a707440606f115ae0e0603ad114f0a3f82929af722f1",
+  "red_private_backup": "/V13/checkpoints/2026-10-25/V13_Run371_RED_raw_sha26b23f9b.zip",
+  "green_source_head": "1f338b035da69a1c132400658c59776c8363ec26",
+  "green_actions_run": 40234003513,
+  "green_result": "33/33 PASS, privacy CLEAN, compileall PASS",
+  "green_artifact_id": 12613449103,
+  "green_raw_sha256": "16acecb6cc0712d1f4a69220a0048305e98d9f2eba88dcd255b4f0b6d80e050f",
+  "green_private_backup": "/V13/checkpoints/2026-10-25/V13_Run371_GREEN_raw_sha16acecb6.zip",
+  "library_byte_comparison": "RED and GREEN independently re-materialized and byte-identical; CRC and 4/4 internal SHA PASS",
+  "source_sha256": {
+    "v13/code/v13/agi/teacher.py": "a6ad9e2dc47dc6a7bee770b72805a9936711efa7833495554ff7ec5a8600cf0f",
+    "v13/code/tests/test_teacher_fulfil_cancel_run371.py": "d7c71d3d1f8351416dacd7411c543ff1b2bd00e2c537da8ec468ebfdc0861395"
+  },
+  "claim_limits": "No guarantee of atomic cancellation relative to the final SQLite commit; no undo of external cloud call. Only stored reference after late revocation is prevented.",
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED",
+    "full_suite": "RUN367_RED_UNCHANGED"
+  },
+  "remaining": "Run369 native C3 model answered comma and used generic mean_prob rather than answer-field confidence; independent review left on PR364. Run367 full suite RED, Redmi/native training and STEP2/B3/JEPA gates open.",
+  "next_package": "Run372 AG12 punctuation-only native answers must abstain, preserving honest evaluation and original registered suite.",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_teacher_fulfil_cancel_run371 tests.test_agi_embedded_holdout_run368 tests.test_agi_solver tests.test_agi_trainers",
+  "status": "BRANCH_SCOPED_GREEN_NOT_MERGED"
+}
