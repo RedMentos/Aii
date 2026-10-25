@@ -1,0 +1,26 @@
+2026-10-25T08:37:32.4368080Z test_revoked_earlier_turn_cannot_be_reexported_in_training_context (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_earlier_turn_cannot_be_reexported_in_training_context) ... FAIL
+2026-10-25T08:37:32.5748698Z test_revoked_target_turn_is_not_staged_for_training (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_target_turn_is_not_staged_for_training) ... ok
+2026-10-25T08:37:32.7115115Z test_tampered_persisted_digest_does_not_become_training_input (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_tampered_persisted_digest_does_not_become_training_input) ... ok
+2026-10-25T08:37:32.8452566Z test_digest_is_extractive_incremental_and_pins_exact_spans (tests.test_sleep_offline.DigestTests.test_digest_is_extractive_incremental_and_pins_exact_spans) ... ok
+2026-10-25T08:37:33.1300379Z test_digest_reaches_live_context_only_outside_history_and_respects_deletion (tests.test_sleep_offline.LiveContextTests.test_digest_reaches_live_context_only_outside_history_and_respects_deletion) ... ok
+2026-10-25T08:37:33.1860420Z test_cancel_and_yellow (tests.test_sleep_offline.PhaseTests.test_cancel_and_yellow) ... ok
+2026-10-25T08:37:33.3626536Z test_full_sleep_runs_offline_phase_and_stages_ttt_only (tests.test_sleep_offline.PhaseTests.test_full_sleep_runs_offline_phase_and_stages_ttt_only) ... ok
+2026-10-25T08:37:33.3958818Z test_consolidation_keeps_only_if_heldout_error_does_not_rise (tests.test_sleep_offline.PredictorTests.test_consolidation_keeps_only_if_heldout_error_does_not_rise) ... ok
+2026-10-25T08:37:33.4793756Z test_full_sleep_cannot_resurrect_a_forgotten_correction (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_cannot_resurrect_a_forgotten_correction) ... ok
+2026-10-25T08:37:33.5354039Z test_full_sleep_keeps_exact_human_correction_available_to_c3 (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_full_sleep_keeps_exact_human_correction_available_to_c3) ... ok
+2026-10-25T08:37:33.5571319Z test_repeated_sleep_keeps_one_human_record_and_no_weight_change (tests.test_sleep_memory_c3_continuity_run205.SleepMemoryC3ContinuityRun205.test_repeated_sleep_keeps_one_human_record_and_no_weight_change) ... ok
+2026-10-25T08:37:33.5778522Z test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat (tests.test_history_lineage.HistoryLineage.test_deleted_dependency_excludes_both_roles_after_restart_but_keeps_chat) ... ok
+2026-10-25T08:37:33.5917195Z test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported (tests.test_history_lineage.HistoryLineage.test_legacy_unbound_model_answer_and_incomplete_pair_cannot_be_reimported) ... ok
+2026-10-25T08:37:33.5918265Z 
+2026-10-25T08:37:33.5918898Z ======================================================================
+2026-10-25T08:37:33.5920066Z FAIL: test_revoked_earlier_turn_cannot_be_reexported_in_training_context (tests.test_sleep_ttt_source_lineage_run207.SleepTTTSourceLineageRun207.test_revoked_earlier_turn_cannot_be_reexported_in_training_context)
+2026-10-25T08:37:33.5921709Z ----------------------------------------------------------------------
+2026-10-25T08:37:33.5941660Z Traceback (most recent call last):
+2026-10-25T08:37:33.5947855Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_sleep_ttt_source_lineage_run207.py", line 68, in test_revoked_earlier_turn_cannot_be_reexported_in_training_context
+2026-10-25T08:37:33.5948782Z     self.assertTrue(rows, 'a later valid pair still has a valid earlier pair')
+2026-10-25T08:37:33.5949321Z AssertionError: [] is not true : a later valid pair still has a valid earlier pair
+2026-10-25T08:37:33.5949645Z 
+2026-10-25T08:37:33.5949797Z ----------------------------------------------------------------------
+2026-10-25T08:37:33.5950152Z Ran 13 tests in 1.477s
+2026-10-25T08:37:33.5950304Z 
+2026-10-25T08:37:33.5950395Z FAILED (failures=1)
