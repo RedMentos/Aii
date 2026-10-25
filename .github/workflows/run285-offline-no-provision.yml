@@ -1,0 +1,90 @@
+name: V13 Run285 offline diagnostic no provisioning (Linux software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/setup.sh'
+      - 'v13/code/tests/test_offline_diagnostic_no_provision_run285.py'
+      - '.github/workflows/run285-offline-no-provision.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run285-offline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  offline-no-provision:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Exact source head and immutable Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN285_HEAD.txt"
+          git hash-object v13/code/setup.sh | tee "$RUNNER_TEMP/RUN285_SETUP_BLOB.txt"
+          git hash-object v13/code/tests/test_offline_diagnostic_no_provision_run285.py | tee "$RUNNER_TEMP/RUN285_TEST_BLOB.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+      - name: Pinned isolated CPU-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run285venv"
+          timeout 180s "$RUNNER_TEMP/run285venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real extracted ZIP and simulated Termux offline refusal tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run285venv/bin/python" -m compileall -q v13 tests
+          compile_rc=$?
+          echo "$compile_rc" > "$RUNNER_TEMP/RUN285_COMPILE_EXIT.txt"
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run285venv/bin/python" -m unittest -v \
+            tests.test_offline_diagnostic_no_provision_run285 \
+            tests.test_offline_phone_diagnostic_run277 2>&1 | tee "$RUNNER_TEMP/RUN285_TEST_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN285_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "compile_rc=$compile_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN285_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN285_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload closed raw evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run285-OfflineNoProvision-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN285_HEAD.txt
+            ${{ runner.temp }}/RUN285_SETUP_BLOB.txt
+            ${{ runner.temp }}/RUN285_TEST_BLOB.txt
+            ${{ runner.temp }}/RUN285_COMPILE_EXIT.txt
+            ${{ runner.temp }}/RUN285_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN285_TEST_RAW.log
+            ${{ runner.temp }}/RUN285_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN285_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true test and privacy exits
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.compile_rc }}" = "0"
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
