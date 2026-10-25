@@ -1,0 +1,54 @@
+# Run222 actual-source GREEN evidence
+
+Full raw job: https://github.com/RedMentos/Aii/actions/runs/40180598222/job/121130644899
+Raw artifact: https://github.com/RedMentos/Aii/actions/runs/40180598222/artifacts/12594257669
+Tested head: 8096950b9bd643c74b27fd9e5b85178922e28a06
+Exact selected timestamped test lines; full raw JSON with all 1000 hashed IDs is in the Actions artifact, not reproduced here.
+
+2026-10-25T09:25:57.0178489Z test_bad_scores_duplicate_ids_and_overlap_fail_closed (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_bad_scores_duplicate_ids_and_overlap_fail_closed) ... ok
+2026-10-25T09:25:57.1325666Z test_locked_synthetic_risk_and_coverage_on_disjoint_holdout (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_locked_synthetic_risk_and_coverage_on_disjoint_holdout) ... ok
+2026-10-25T09:25:57.1363801Z test_low_confidence_routes_are_proposals_never_tool_effects (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_low_confidence_routes_are_proposals_never_tool_effects) ... ok
+2026-10-25T09:25:57.1392380Z test_modified_calibration_threshold_must_not_create_answer_authority (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_modified_calibration_threshold_must_not_create_answer_authority) ... ok
+2026-10-25T09:25:57.1426468Z test_uninformative_scores_cannot_claim_confident_answers (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_uninformative_scores_cannot_claim_confident_answers) ... ok
+2026-10-25T09:25:57.1428695Z Ran 5 tests in 0.130s
+2026-10-25T09:25:57.1429042Z OK
+2026-10-25T09:25:57.4822033Z privacy scan f27c9fb9f..HEAD: CLEAN
+2026-10-25T09:25:58.3252220Z Artifact V13-Run222-DS3-Raw.zip successfully finalized. Artifact ID 12594257669
+
+{
+  "all_lab_hypotheses_pass": true,
+  "calibration": {
+    "threshold": 0.6,
+    "selected_count": 600,
+    "wrong_count": 10,
+    "risk_upper_bound": 0.07982976073526317,
+    "calibration_digest": "64839e5a6d9c30af823e704bea2be9f0d401e06a3ccb16199ecb9bf323bda060",
+    "integrity_sha256": "2c0ff1ed4ad53eba9a25d53ea0f32edf09841c625d28a96d89a7299ffd4026b3"
+  },
+  "heldout": {
+    "age_promotion": false,
+    "all_test_risk": 0.31,
+    "answered": 300,
+    "authority": "LAB_ONLY",
+    "coverage": 0.6,
+    "external_action_executed": false,
+    "n_test": 500,
+    "revision": "ds3-selective-lab-v1",
+    "selective_risk": 0.016666666666666666,
+    "wrong": 5
+  },
+  "hypotheses": {
+    "H1_risk_coverage": true,
+    "H2_noise_abstains": true,
+    "H3_no_tool_effects": true,
+    "H4_no_authority_promotion": true
+  },
+  "gates": {
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "STEP2": "UTILITY_FAIL",
+    "V13": "INCOMPLETE",
+    "jepa_weight": 0
+  },
+  "claim_limit": "SYNTHETIC_LINUX_LAB_ONLY_NO_NATIVE_C3"
+}

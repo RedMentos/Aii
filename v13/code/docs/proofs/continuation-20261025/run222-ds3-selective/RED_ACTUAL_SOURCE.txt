@@ -1,0 +1,16 @@
+# Run222 actual-source RED (calibration threshold tamper)
+
+Full raw GitHub Actions job: https://github.com/RedMentos/Aii/actions/runs/40180528159/job/121130430769
+Raw artifact #12594102751. Tested head f0b108c02d7862b2a3f9c824523feb3412ed87f7.
+A modified calibration threshold produced ANSWER instead of ABSTAIN. Four other preregistered tests passed. Exact selected lines below; full raw log remains in Actions.
+
+2026-10-25T09:24:57.6485860Z test_bad_scores_duplicate_ids_and_overlap_fail_closed (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_bad_scores_duplicate_ids_and_overlap_fail_closed) ... ok
+2026-10-25T09:24:57.6594105Z test_locked_synthetic_risk_and_coverage_on_disjoint_holdout (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_locked_synthetic_risk_and_coverage_on_disjoint_holdout) ... ok
+2026-10-25T09:24:57.6620437Z test_low_confidence_routes_are_proposals_never_tool_effects (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_low_confidence_routes_are_proposals_never_tool_effects) ... ok
+2026-10-25T09:24:57.6648829Z test_modified_calibration_threshold_must_not_create_answer_authority (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_modified_calibration_threshold_must_not_create_answer_authority) ... FAIL
+2026-10-25T09:24:57.6681318Z test_uninformative_scores_cannot_claim_confident_answers (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_uninformative_scores_cannot_claim_confident_answers) ... ok
+2026-10-25T09:24:57.6684595Z FAIL: test_modified_calibration_threshold_must_not_create_answer_authority (tests.test_ds3_selective_run222.SelectiveRiskLabRun222.test_modified_calibration_threshold_must_not_create_answer_authority)
+2026-10-25T09:24:57.6691800Z AssertionError: 'ANSWER' != 'ABSTAIN'
+2026-10-25T09:24:57.6693118Z Ran 5 tests in 0.023s
+2026-10-25T09:24:57.6693408Z FAILED (failures=1)
+2026-10-25T09:24:58.5611499Z Artifact V13-Run222-DS3-Raw.zip successfully finalized. Artifact ID 12594102751

@@ -1,0 +1,46 @@
+name: Run222 DS3 selective uncertainty lab (synthetic only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/agi/ds3_selective.py'
+      - 'v13/code/tests/test_ds3_selective_run222.py'
+      - 'v13/code/scripts/ds3_selective_bench_run222.py'
+      - '.github/workflows/run222-ds3-selective.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+# Synthetic standard-library lab is not a heavy native/model job; independent CI.
+jobs:
+  ds3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preregistered synthetic tests (preserve RED)
+        working-directory: v13/code
+        run: |
+          set -o pipefail
+          PYTHONPATH=tests:. python3 -m unittest -v tests.test_ds3_selective_run222 2>&1 | tee "$RUNNER_TEMP/RUN222_TEST_RAW.log"
+          python3 -m compileall -q v13/agi/ds3_selective.py scripts/ds3_selective_bench_run222.py
+      - name: Locked synthetic cohort and no-authority report
+        working-directory: v13/code
+        run: |
+          set -o pipefail
+          PYTHONPATH=. python3 scripts/ds3_selective_bench_run222.py | tee "$RUNNER_TEMP/RUN222_BENCH_RAW.json"
+      - name: Official public repository privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base f27c9fb9f0c2699b4daab63b2ff0963af02ed6a7 --head HEAD --no-worktree
+      - name: Upload raw synthetic evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Run222-DS3-Raw
+          path: |
+            ${{ runner.temp }}/RUN222_TEST_RAW.log
+            ${{ runner.temp }}/RUN222_BENCH_RAW.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Claim boundary
+        run: echo 'Synthetic fixed-grid lab only; no native C3 confidence, external tool, Age or acceptance gate promotion'
