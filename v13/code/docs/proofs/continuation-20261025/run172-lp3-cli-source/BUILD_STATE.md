@@ -15,3 +15,9 @@ CI reconstructs exact Run21 source in temp, executes only stdlib read-only block
 **Gates unchanged:** STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight 0; DS2_H2 FAIL; V13 INCOMPLETE.
 
 Exact next step: if focused Linux rc2 passes, isolate full-suite cross-test contamination with the already-defined Run167 full-suite stderr diagnostic (or equivalent independent source-preserving replay), then fix verified root cause without suppressing any test or altering expected blocked behavior. Surviving-descendant failure remains separate until independently proven contained. No Drive retry.
+
+## Confirmed CI import failure and bounded correction
+
+First Run172 CI `40166518201`, job `121088579905` **FAIL**: exact reconstructed Run21 `lp3_serial_cohort.py` returned **1**, stderr explicitly `ModuleNotFoundError: No module named 'lp3_native_readiness'` at line 24. This reproduces the same rc1 symptom as Run164, not proof of the *entire* Run164 failure until full suite reruns. Root cause in the CI reconstruction: Run20 code-only archive does not include the two sibling audit modules that exist in the canonical repository. Locally, removing `lp3_native_readiness.py` and `lp3_closed_evidence_audit.py` from the otherwise exact helper also produced rc1/ModuleNotFoundError; restoring them produced rc2/BLOCKED.
+
+Correction is restricted to **CI temp staging**: copy the exact registered repository `lp3_native_readiness.py` (Git blob `2dfa7099541d3f8940817d43b97746c1d4d27092`) and `lp3_closed_evidence_audit.py` (Git blob `6068ddafa2ae319f66a1cfcd7fb50127372e20a8`) into the temporary helper directory. Do not change the frozen helper, test expectations or production runtime. The original failed workflow and stderr remain retrievable; the corrected workflow must be verified separately. Live-descendant failure remains open.
