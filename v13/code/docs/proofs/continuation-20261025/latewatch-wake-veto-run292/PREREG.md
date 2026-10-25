@@ -1,0 +1,11 @@
+# Run292 preregistration — late watcher must honor approved learned wake=none
+
+2026-10-25 UTC. Base Run291 diagnostic source `6855943f5d568f08fc5b64faa958a3cf51866310`. Independent file owner: `v13/code/v13/latewatch.py`, new test, CPU CI and scoped proof. PR284 Runtime, Run291 native probe, Run290 Memory, Run289 Store, all pinned artifacts/Canon unchanged.
+
+Frozen external evidence: Run288 actual-weight full acceptance `40195217009`, 16/20 stages PASS, readouts FAIL. Raw Actions artifact `12600061321`, SHA256 `940a7a066521318137fb10a230bcd65969aeb3e440865fbd889efd59946026ca`, byte-verified private Library backup. Readouts `wake_decision.learned=true`, `action=none`, no selected offers, but `late_watch.status=STILL_RUNNING` and `late_watch.offered=B1_DETAIL`; `wake_consumed_by_runtime_no_body_wake=false`. Separately, the native halt readout is EVALUATED_FAIL because Pareto cost_after 0.5 > cost_before 0.0. No relaxation.
+
+**Hypothesis:** `latewatch.start` independently starts B1 when C3 streams, even when the learned bounded observer policy has explicitly selected `none`. This defeats the learned no-body-wake decision. The late watcher should fail closed for an approved learned `none`, while preserving behavior for non-learned, other learned actions, explicit `latewatch off`, resource residency, and output gating.
+
+**RED-first test:** fake C3 streaming Runtime with available residency and a real Watcher thread; `meta['wake_decision']={'learned':True,'action':'none'}`. Before fix, a body thread starts; after fix, inert Watcher status `LEARNED_WAKE_NONE` and no body call. Negative controls: `learned=false,action=none` remains subject to original residency gate; `learned=true,action=detail` remains subject to original gate; latewatch off remains off.
+
+Scope: software policy integration only; no proof of native utility, actual model response or all readouts. Original halt Pareto failure and Run288 READOUT_LIFECYCLE_PARTIAL remain negative. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, V13 INCOMPLETE. Future native `--wake-only` retest may check actual behavior only after Run291 native job finishes; do not overlap heavy jobs.

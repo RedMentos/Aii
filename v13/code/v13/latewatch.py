@@ -147,6 +147,12 @@ def start(r,e,version,offers,deadline,meta,runner,eligible=True):
         m=mode(r.store)
         if m=='off':return Watcher(r,e,meta,m,status='OFF')
         if not eligible or getattr(runner,'role',None)!='C3_LANGUAGE' or r.cfg.get('observer_mode')=='off':return Watcher(r,e,meta,m,status='NOT_ELIGIBLE')
+        # The learned wake readout governs *all* discretionary B1/B2 offers
+        # for this turn. A late observer must not silently defeat a learned
+        # no-body decision merely because C3 is still streaming.
+        wake=meta.get('wake_decision')
+        if isinstance(wake,dict) and wake.get('learned') is True and wake.get('action')=='none':
+            return Watcher(r,e,meta,m,status='LEARNED_WAKE_NONE')
         have={p.get('role') for p in offers if isinstance(p,dict)}
         role=next((x for x in ('B1_DETAIL','B2_GIST') if x not in have),None)
         if role is None:return Watcher(r,e,meta,m,status='ALL_BODIES_OFFERED')
