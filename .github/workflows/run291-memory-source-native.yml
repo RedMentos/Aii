@@ -1,0 +1,160 @@
+name: V13 Run291 native memory prompt A/B DIAGNOSTIC ONLY
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/run291_memory_prompt_probe.py'
+      - 'v13/code/tests/test_run291_memory_prompt_probe.py'
+      - 'v13/code/docs/proofs/continuation-20261025/memory-source-first-run291/PREREG.md'
+      - '.github/workflows/run291-memory-source-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Preregistered model-free prompt binding tests
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run291software"
+          "$RUNNER_TEMP/run291software/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          "$RUNNER_TEMP/run291software/bin/python" -m compileall -q scripts/run291_memory_prompt_probe.py tests/test_run291_memory_prompt_probe.py
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run291software/bin/python" -m unittest -v tests.test_run291_memory_prompt_probe
+      - name: Official privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  native-diagnostic:
+    needs: source-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Exact source, Canon and host prerequisites
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN291_HEAD.txt"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/v13/prompts.py v13/code/v13/runtime.py v13/code/tests/integration_retrieval.py v13/code/scripts/run291_memory_prompt_probe.py | tee "$RUNNER_TEMP/RUN291_SOURCE_BLOBS.txt"
+          { date -u -Iseconds; uname -a; free -h; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } | tee "$RUNNER_TEMP/RUN291_HOST.log"
+      - name: Isolated pinned dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run291venv"
+          "$RUNNER_TEMP/run291venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Fresh pinned model and native runner bootstrap
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run291installed"
+          timeout 1800s "$RUNNER_TEMP/run291venv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN291_BOOTSTRAP.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN291_BOOTSTRAP_EXIT.txt"
+          exit 0
+      - name: Sequential frozen baseline then candidate (both raw retained)
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          mkdir -p "$RUNNER_TEMP/run291"
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run291installed"
+          if [[ "$(cat "$RUNNER_TEMP/RUN291_BOOTSTRAP_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN291_BASELINE_EXIT.txt"
+            echo 2 > "$RUNNER_TEMP/RUN291_CANDIDATE_EXIT.txt"
+            exit 0
+          fi
+          timeout 1500s "$RUNNER_TEMP/run291venv/bin/python" scripts/run291_memory_prompt_probe.py --arm baseline --installed-home "$V13_HOME" --out "$RUNNER_TEMP/run291/baseline.json" 2>&1 | tee "$RUNNER_TEMP/RUN291_BASELINE.log"
+          echo "${PIPESTATUS[0]}" > "$RUNNER_TEMP/RUN291_BASELINE_EXIT.txt"
+          timeout 1500s "$RUNNER_TEMP/run291venv/bin/python" scripts/run291_memory_prompt_probe.py --arm source_first --installed-home "$V13_HOME" --out "$RUNNER_TEMP/run291/source_first.json" 2>&1 | tee "$RUNNER_TEMP/RUN291_CANDIDATE.log"
+          echo "${PIPESTATUS[0]}" > "$RUNNER_TEMP/RUN291_CANDIDATE_EXIT.txt"
+          exit 0
+      - name: Honest non-promoting paired result
+        id: compare
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN291_COMPARE.log"
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'run291'
+          rows={}
+          for arm in ('baseline','source_first'):
+              f=p/(arm+'.summary.json')
+              rows[arm]=json.loads(f.read_text()) if f.is_file() else None
+          b,c=rows['baseline'],rows['source_first']
+          valid=bool(b and c and b['diagnostic_valid'] and c['diagnostic_valid'])
+          control=bool(valid and b['native_language_answer_uses_human_source'] and c['native_language_answer_uses_human_source']
+                       and all(c[k] is True for k in ('same_entity_wrong_topic_rejected','different_entity_rejected','different_session_rejected')))
+          signal=bool(control and b['native_detail_answer_uses_human_source'] is False
+                      and c['native_detail_answer_uses_human_source'] is True)
+          status=('CANDIDATE_SIGNAL_ONLY' if signal else 'NOT_SUPPORTED' if valid else 'INVALID_DIAGNOSTIC')
+          report={'schema':'V13_RUN291_PAIRED_RESULT_V1','status':status,'diagnostic_valid':valid,
+                  'control_nonregression':control,'baseline':b,'source_first':c,
+                  'canonical_architecture_complete':False,'STEP2':'UTILITY_FAIL','B3_L1':'FAIL',
+                  'Body_JEPA':'UNAVAILABLE','jepa_weight':0,'Redmi_measured':False,
+                  'claim_limit':'Single Linux-native paired fixture, no production prompt change or full-system gate promotion.'}
+          p.joinpath('RUN291_RESULT.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print('RUN291_RESULT',status)
+          raise SystemExit(0 if valid else 2)
+          PY
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN291_COMPARE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN291_PRIVACY.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN291_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Preserve closed raw stage and failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run291-Native-Memory-Prompt-Diagnostic-Raw
+          path: |
+            ${{ runner.temp }}/RUN291_HEAD.txt
+            ${{ runner.temp }}/RUN291_SOURCE_BLOBS.txt
+            ${{ runner.temp }}/RUN291_HOST.log
+            ${{ runner.temp }}/RUN291_BOOTSTRAP.log
+            ${{ runner.temp }}/RUN291_BOOTSTRAP_EXIT.txt
+            ${{ runner.temp }}/RUN291_BASELINE.log
+            ${{ runner.temp }}/RUN291_BASELINE_EXIT.txt
+            ${{ runner.temp }}/RUN291_CANDIDATE.log
+            ${{ runner.temp }}/RUN291_CANDIDATE_EXIT.txt
+            ${{ runner.temp }}/RUN291_COMPARE.log
+            ${{ runner.temp }}/RUN291_COMPARE_EXIT.txt
+            ${{ runner.temp }}/RUN291_PRIVACY.log
+            ${{ runner.temp }}/RUN291_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/run291/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual diagnostic and privacy exits (not utility PASS)
+        if: always()
+        run: |
+          test "$(cat "$RUNNER_TEMP/RUN291_BOOTSTRAP_EXIT.txt")" = "0"
+          test "${{ steps.compare.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
