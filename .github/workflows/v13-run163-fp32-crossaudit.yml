@@ -1,0 +1,33 @@
+name: V13 Run163 exact-byte FP32 export cross-audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run163-fp32-crossaudit.yml'
+      - 'v13/code/scripts/body_fp32_export_verify_run163.py'
+      - 'v13/code/tests/test_body_fp32_export_verify_run163.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run163-fp32-audit/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Pinned NumPy
+        run: python -m pip install --disable-pip-version-check --no-input numpy==2.3.5
+      - name: Source-bound audit and inherited regression tests
+        run: |
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_body_fp32_export_verify_run163.py -v
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_body_fp32_master_export_run162.py -v
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_body_gguf_dtype_audit_run160.py -v
+          python -m compileall -q v13/code/scripts/body_fp32_export_verify_run163.py v13/code/tests/test_body_fp32_export_verify_run163.py
+      - name: Official public repo privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 001e7af6748186b4c1c21ad357a06680079aef44 --head HEAD
