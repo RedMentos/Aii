@@ -173,6 +173,12 @@
      "path": "all70_rowchecks_pass",
      "op": "==",
      "value": true
+    },
+    {
+     "file": "../bench-results/timescale-gate-20261009/two_body.analysis.json",
+     "path": "complementarity_proven",
+     "op": "==",
+     "value": true
     }
    ]
   },
