@@ -1,0 +1,19 @@
+test_ambiguous_budget_abstains (test_run184_age0d_strict_shadow.StrictShadow.test_ambiguous_budget_abstains) ... ok
+test_authority_zero (test_run184_age0d_strict_shadow.StrictShadow.test_authority_zero) ... ok
+test_bad_type_and_nan_abstain (test_run184_age0d_strict_shadow.StrictShadow.test_bad_type_and_nan_abstain) ... ok
+test_balanced_cohort (test_run184_age0d_strict_shadow.StrictShadow.test_balanced_cohort) ... ok
+test_correct (test_run184_age0d_strict_shadow.StrictShadow.test_correct) ... ok
+test_decoy_abstains (test_run184_age0d_strict_shadow.StrictShadow.test_decoy_abstains) ... ok
+test_duplicate_json_key_abstains (test_run184_age0d_strict_shadow.StrictShadow.test_duplicate_json_key_abstains) ... ok
+test_extra_json_claim_abstains (test_run184_age0d_strict_shadow.StrictShadow.test_extra_json_claim_abstains) ... ok
+test_original_run183_counterexamples_if_present (test_run184_age0d_strict_shadow.StrictShadow.test_original_run183_counterexamples_if_present)
+Document pre-existing non-abstention; do not silently change Run183. ... skipped 'exact Run183 source unavailable in isolated local copy'
+test_type_fuzz_does_not_raise (test_run184_age0d_strict_shadow.StrictShadow.test_type_fuzz_does_not_raise) ... ok
+test_unsupported_monetary_source_abstains (test_run184_age0d_strict_shadow.StrictShadow.test_unsupported_monetary_source_abstains) ... ok
+test_updated_budget (test_run184_age0d_strict_shadow.StrictShadow.test_updated_budget) ... ok
+test_wrong_and_refs (test_run184_age0d_strict_shadow.StrictShadow.test_wrong_and_refs) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.007s
+
+OK (skipped=1)
