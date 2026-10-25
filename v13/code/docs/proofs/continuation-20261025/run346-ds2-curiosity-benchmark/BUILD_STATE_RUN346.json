@@ -1,0 +1,37 @@
+{
+  "schema": "V13_BRANCH_CHECKPOINT_V1",
+  "time_utc": "2026-10-25T18:51:00Z",
+  "branch": "assistant/run346-ds2-curiosity-benchmark-20261025",
+  "review_pr": 342,
+  "base": "b9da91da6780b3dc43d3ed3814f205c1b4ada8c7",
+  "tested_exact_head": "226920918d4bcaeb3683dfea949f96c5adce0454",
+  "production_integrated": false,
+  "change": "DS2 sandbox new-kind visits/final KL telemetry only",
+  "tests": {
+    "source_only": "12/12_PASS",
+    "paired_seed_cohort": "401..420, 20 seeds, 4 policies, 1200 steps, new kind at 500",
+    "decision": "NOT_SUPPORTED",
+    "improved_new_kind_seeds": "7/20",
+    "delta_new_kind_kl_vs_lp_goal": 0.009315,
+    "delta_hunger_vs_lp": -0.140885
+  },
+  "raw": {
+    "red_sha256": "186fefb03c483ed999398debb00de239219b77e59e9df3457e349a59155b93d2",
+    "green_sha256": "3aed04e2dad9202fe2001f9ab68247f8fc678b3ad1938d1358121025025e7dbd",
+    "bench_json_sha256": "ff1363d5b9205da822e9214298e1862a72dde39d5a6fdf8540a5fa03f7767cca",
+    "verified": "independent CRC and all SHA256 manifest entries",
+    "private_backup_folder": "/V13/checkpoints/2026-10-25"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "ag6": "MISSING",
+    "redmi": "MISSING",
+    "ag5_ds2": "NOT_SUPPORTED",
+    "whole_v13": "INCOMPLETE"
+  },
+  "next_command": "Fresh preregistered DS2 bounded coverage candidate on seeds disjoint from 401..420; no runtime authority; or independent canonical package.",
+  "owner": "assistant/run346-ds2-curiosity-benchmark-20261025"
+}

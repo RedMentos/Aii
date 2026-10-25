@@ -168,7 +168,10 @@ def run(policy,seed,steps=1500,every=25,new_kind_at=NEW_KIND_AT):
         if first is None and k<=KL_GOAL and NEW_KIND not in kinds:first=world.steps
         if NEW_KIND in kinds and new_first is None and kl_kind(agent,NEW_KIND)<=KL_GOAL:new_first=world.steps-new_kind_at
     return {'policy':policy,'seed':seed,'steps':world.steps,'curve':curve,'steps_to_goal':first,
-            'new_kind_steps_to_goal':new_first,'interactions':acts,'noise_share':round(noise/max(1,acts),4),
+            'new_kind_steps_to_goal':new_first,
+            'new_kind_interactions':sum(agent.visits.get((NEW_KIND,a),0) for a in ACTIONS),
+            'new_kind_final_kl':round(kl_kind(agent,NEW_KIND),5) if NEW_KIND in kinds else None,
+            'interactions':acts,'noise_share':round(noise/max(1,acts),4),
             'mean_hunger':round(hunger/max(1,world.steps),4),'final_kl':round(model_kl(agent,kinds),5),
             'final_kl_learnable':round(model_kl(agent,[k for k in kinds if k!=NOISE]),5),'grounding':round(grounding(agent,kinds),4)}
 def kl_kind(agent,word):return sum(kl(TRUE[word][a],predictive(agent.counts(word,a))) for a in ACTIONS)/len(ACTIONS)
