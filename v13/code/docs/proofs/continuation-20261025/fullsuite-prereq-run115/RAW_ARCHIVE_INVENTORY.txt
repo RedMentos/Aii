@@ -1,0 +1,7 @@
+SOURCE GitHub Actions run 40145472747 job 121025745720
+RAW INVENTORY:
+041e0014194ffdfd74aef79cf6a9149e6c2e11ad51b859bc9a9e7e81b1b67516  v13/code/docs/proofs/continuation-20261024/lp3-run16/SOURCE_AND_TESTS.tar.xz
+2026-10-25T00:07:49.0178770Z v13/code/scripts/lp3_serial_cohort.py
+2026-10-25T00:07:49.0179077Z v13/code/tests/test_lp3_serial_cohort.py
+2026-10-25T00:07:49.0251838Z Post job cleanup.
+2026-10-25T00:07:49.0796313Z [command]/usr/bin/git ve
