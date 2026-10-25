@@ -99,6 +99,23 @@ class ActionOutcomeAtomicityRun344(unittest.TestCase):
         self.assertEqual(dict(self.row()), first)
         self.assertEqual(self.packets(), packets)
 
+    def test_legacy_orphan_receipt_is_preserved_but_never_replayed_as_a_new_outcome(self):
+        # Reproduce the old two-transaction crash window: packet committed,
+        # action still DISPATCHED. No silent repair or duplicate packet.
+        from v13.contracts import packet
+        generation = self.r.store.one(
+            "SELECT generation_id FROM events WHERE id=?", (self.event_id,)
+        )["generation_id"]
+        orphan = packet("ActionOutcome", "C6_TEXT", self.event_id, generation,
+                        action_id=self.aid, status="FINAL", actual=self.actual)
+        self.r.store.add_packet("ActionOutcome", orphan)
+        before = self.packets()
+        with self.assertRaisesRegex(ValueError, "Orphan ActionOutcome"):
+            self.r.store.finish_action(self.aid, "FINAL", self.actual)
+        self.assertEqual(self.packets(), before)
+        self.assertEqual(self.row()["status"], "DISPATCHED")
+        self.assertIsNone(self.row()["outcome"])
+
     def test_unknown_action_and_nonfinite_payload_cannot_create_packet(self):
         with self.assertRaises(Exception):
             self.r.store.finish_action("nonexistent-run344-action", "FINAL", self.actual)
