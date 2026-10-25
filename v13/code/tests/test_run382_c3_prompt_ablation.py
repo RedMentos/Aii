@@ -2,7 +2,7 @@
 import unittest
 
 from scripts import run382_c3_prompt_ablation_native as R
-from scripts import run373_c3_field_confidence_native as PREVIOUS
+RUN373_PROMPTS = {"Compute: 7 + 5 = ?", "Compute: 9 + 1 = ?", "Write backwards: dog", "Continue: 2, 4, 6, ?"}
 
 
 class Run382NativePromptControls(unittest.TestCase):
@@ -28,7 +28,7 @@ class Run382NativePromptControls(unittest.TestCase):
         return out
 
     def test_fresh_registered_cases_do_not_repeat_run373(self):
-        old = {prompt for prompt, _ in PREVIOUS.CASES}
+        old = RUN373_PROMPTS
         self.assertEqual(len(R.CASES), 12)
         self.assertEqual(len({p for _, p, _ in R.CASES}), 12)
         self.assertFalse(old & {p for _, p, _ in R.CASES})
