@@ -395,7 +395,8 @@ class ContextOS:
                'est_prompt_chars_legacy':sum(c for _,c in fp_legacy),'est_prompt_chars_planned':sum(c for _,c in fp_planned),
                'est_reused_chars_legacy':prefix_reuse(last.get('legacy'),fp_legacy),'est_reused_chars_planned':prefix_reuse(last.get('planned'),fp_planned),
                'actions':sorted({'pin_exact_span','reuse_prefix'}|({'compress'} if 'compress' in ' '.join(decisions) else set())|({'restore_exact'} if 'restore' in decisions else set())|({'prefetch_warm'} if warm_ids else set()))}
-        p=self.s.add_packet('ContextPlan',packet('ContextPlan','N7_CONTEXT_OS',event_id,self.s.generation_id,provenance or [],
+        p=self.s.add_packet('ContextPlan',packet('ContextPlan','N7_CONTEXT_OS',event_id,self.s.generation_id,
+            (provenance or [])+([bound['source_ref']] if bound and layout=='source_bound_user' else []),
             mode=st['mode'],layout=layout,applied=applied,budget={'chars':budget,'planned_chars':cache['est_prompt_chars_planned'],'chars_per_token':CHARS_PER_TOKEN},
             items=items,cache=cache,exact={'need':round(need,4),'threshold':round(restore_thr,4),'triggers':triggers,'span_recall':round(recall,6)},
             decisions=decisions,role=role,learned=st['learned'],knobs=k,
