@@ -175,11 +175,13 @@ class Runtime:
                 self.store.log('job_error',None,{'kind':kind,'error':type(exc).__name__,'detail':str(exc)[:1000]});self.notice(f'{kind}: {type(exc).__name__}: {exc}')
                 if kind=='turn' and not self.store.one("SELECT id FROM messages WHERE event_id=? AND role='assistant'",(payload['event_id'],)):self._rejected(payload,str(exc))
             finally:
+                turn_terminal_status=None
                 try:
                     if kind=='turn':
                         row=self.store.one("SELECT * FROM messages WHERE event_id=? AND role='assistant' ORDER BY id DESC LIMIT 1",(payload['event_id'],))
                         terminal={'FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED'}
                         status=row['status'] if row and row['status'] in terminal else 'INTERRUPTED'
+                        turn_terminal_status=status
                         if row and row['status'] not in terminal:
                             if not row['text']:self.store.append_message(row['id'],'[Systemdiagnose; keine Modellantwort] Verarbeitung unterbrochen; :doctor prüfen.')
                             self.store.finish_message(row['id'],status,json.loads(row['metadata'])|{'coordinator_interrupted':True})
@@ -187,7 +189,29 @@ class Runtime:
                 except Exception as exc:
                     self.notice('Abschluss konnte nicht gespeichert werden: '+type(exc).__name__+'; Neustart rekonstruiert den Status.')
                 finally:
-                    if kind=='turn':self.turn_event=None
+                    if kind=='turn':
+                        # Release only after the active turn has stopped. A terminal
+                        # failure (or unknown status after a Store error) must not
+                        # leave inactive B1/B2/C3 native residents running.
+                        # FINAL keeps residents for legitimate next-turn reuse.
+                        if turn_terminal_status!='FINAL':
+                            def cleanup_error(component,exc):
+                                try:self.store.log('turn_resident_cleanup_failed',payload['event_id'],{'component':component,'error':type(exc).__name__})
+                                except Exception:pass
+                            try:self.pool.unload()
+                            except Exception as exc:
+                                cleanup_error('pool',exc)
+                                # A broken one-role unload must not prevent
+                                # independent remaining resident roles from
+                                # being released. The failed role stays RED.
+                                try:
+                                    for role in dict.fromkeys(self.pool.resident_roles()):
+                                        try:self.pool.unload(role)
+                                        except Exception as child_exc:cleanup_error('pool:'+role,child_exc)
+                                except Exception as child_exc:cleanup_error('pool_inventory',child_exc)
+                            try:self.needle.unload()
+                            except Exception as exc:cleanup_error('needle',exc)
+                        self.turn_event=None
                     if hasattr(self._session_local,'session_id'):del self._session_local.session_id
                     with self.lock:self.current=None;self.jobs.task_done();self.status='Pausiert' if self.paused else 'Bereit'
     def _rejected(self,e,reason):
