@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN124_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "base_pr": 154,
+  "base_sha": "d3aa8dde0f521ecd3f4920820743a3d3bbad12bc",
+  "pr": 155,
+  "branch": "codex/phone-widget-preworker-run124-20261025",
+  "owner": "narrow Runtime preworker stop gate; tests/workflow/evidence only",
+  "source_before_blob": "a691d27bd0772a4fa1f03d57ec90663237bf6825",
+  "source_after_blob": "b80fe3e4e8273171cd45b64882a81da616ae3349",
+  "source_commit": "767a48fa526ce13ee30888b718e33db5f0c68991",
+  "test_first_red": {
+    "run_id": 40148004332,
+    "job_id": 121033432958,
+    "failures": 3,
+    "reason": "pending NOTAUS/STILLSTAND not applied before Runtime returns; recovered turn race",
+    "raw": "RAW_RED_JOB.log"
+  },
+  "green": {
+    "run_id": 40148069028,
+    "job_id": 121033654155,
+    "tests": "28/28 PASS",
+    "privacy": "CLEAN",
+    "raw": "RAW_GREEN_JOB.log",
+    "scope": "GitHub Linux real Runtime/SQLite/worker; no native or Redmi"
+  },
+  "implementation": "After SleepRuntime init and before coordinator thread construction/start, apply pending phone_halt requests via same typed stop functions. If preflight fails, close Store and do not start worker. If standstill created _SeenEvent before worker exists, bind event.worker to new thread before starting.",
+  "cross_review": {
+    "properties": [
+      "Recovered queued turn cannot begin before pending STILLSTAND applied",
+      "Pending NOTAUS active before Runtime returns",
+      "Confirmed_still eventually true after worker starts",
+      "Human release resumes queued exact-copy turn",
+      "Preexisting user pause/notaus/age freeze remain after widget release",
+      "Original Run121 CLI standstill tests still pass"
+    ],
+    "limitations": [
+      "Startup STOP notice text captured in _startup_phone_halt but not yet rendered in local chat UI",
+      "No actual Termux Widget/Redmi device measurement",
+      "Full repository suite not claimed"
+    ]
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Render preworker startup STOP notice exactly once in both UI modes; verify it is visible after restart without duplicate requests.",
+    "Build and verify new exact-head source-only Termux ZIP including WP-UI1 and Run124, independently extract/test.",
+    "Actual Redmi Widget latency/permissions and native LP3 remain unverified."
+  ],
+  "exact_next_step": "Run125 on new branch: test-first UI startup notice regression, narrow ui.py change (without touching Runtime), then exact-head phone source ZIP CRC/manifest and extracted 28-test smoke with independent artifact download and hashes; preserve negative gates.",
+  "backup": "GitHub PR #155 and raw logs; no rejected anyone-writable Drive."
+}
