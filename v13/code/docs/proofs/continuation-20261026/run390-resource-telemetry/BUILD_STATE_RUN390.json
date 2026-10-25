@@ -1,0 +1,69 @@
+{
+  "run": "Run390",
+  "date": "2026-10-26",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/resource-telemetry-finite-run390-20261026",
+  "pr": 385,
+  "base": {
+    "branch": "codex/sourcewide-regression-survey-run389-20261025",
+    "sha": "1c20f99c8e3aa5c61eb34deb2d133e85093ef219",
+    "integration": "stacked review chain only, NOT main; Run389 owned independently"
+  },
+  "preregister": {
+    "plan_commit": "1b90406f6040ac28520f6667f8731db8226c3541",
+    "red_tests_commit": "62573f9e533226ecb4ed48e18921685fadbf885a",
+    "red_workflow_commit": "85dcb0b6d4b5dae8796dd8dda032742d30b55293"
+  },
+  "green": {
+    "source_commit": "51f01d9a10ca5d6f1bd1dee05293c6532bc20e3c",
+    "source_blobs_verified": {
+      "resource_modes": "9fe76cfbc7f3515f7f88aa0ff1a13df62777a56d",
+      "tests": "cd7c316d0e0e8582c7f5fef1be4a82107ac7791c",
+      "workflow": "0a2308937adb959c42f66b90cf62af052254ac52",
+      "plan": "a9acb026cb18aa0dc77a7a17a0e064bfcc935a85"
+    }
+  },
+  "change_summary": [
+    "Present invalid memory/temperature measurements fail closed to RED with explicit reasons, while absent sensors retain existing unmeasured semantics",
+    "Configured RSS/PSS budget rejects malformed process telemetry rather than treating NaN as safe",
+    "Persisted resource profile validation rejects nonfinite, boolean and negative thresholds/hysteresis; invalid profile load falls back to uncalibrated BOOT",
+    "Valid mode thresholds, hysteresis and resource/sleep wiring unchanged in isolated inherited tests"
+  ],
+  "evidence": {
+    "red": {
+      "head": "85dcb0b6d4b5dae8796dd8dda032742d30b55293",
+      "run_id": 40243366811,
+      "artifact_id": 12618255406,
+      "zip_sha256": "964ce555d388aa0ccfbb801954774087c425d8d464961e89a8dd85d5c19a6d6f",
+      "tests": "18 tests; 28 expected failures + 5 errors from malformed telemetry; inherited resource modes PASS",
+      "privacy": "CLEAN"
+    },
+    "green": {
+      "head": "51f01d9a10ca5d6f1bd1dee05293c6532bc20e3c",
+      "run_id": 40243448775,
+      "artifact_id": 12617662470,
+      "zip_sha256": "6d8b092169f306d3549dfd89275ef1b75dcd1662de0e64f3b6f7b842a95b7438",
+      "tests": "18/18 PASS, 0 failures, 0 errors; compileall PASS",
+      "privacy": "CLEAN"
+    }
+  },
+  "raw_integrity": "CLOSED: both Actions ZIP SHA256 match upload logs, ZIP CRC PASS, four of four internal SHA256 member checks PASS each; private Library copies re-materialized and byte-compared identical.",
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run390_Resource_20261026/{RED_RAW.zip,GREEN_RAW.zip}",
+  "negative_gates": [
+    "Run389 full source-only suite RED: 3160 tests, failures=1, errors=70, skipped=19 (mostly frozen source-handoff identity checks; not reclassified)",
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0/permissions/approval unchanged",
+    "No native or Redmi proof",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Independent cross-review and additional malformed profile counterexamples before integration",
+    "Run389 full-suite RED must be triaged separately without loosening frozen source hash guards",
+    "Missing sensor values retain preexisting GREEN possibility; separate policy decision would be required to change unmeasured semantics"
+  ],
+  "next_command": "git fetch origin codex/resource-telemetry-finite-run390-20261026 && git checkout -b review-run390 origin/codex/resource-telemetry-finite-run390-20261026 && cd v13/code && python -m unittest -v tests.test_resource_telemetry_finite_run390 tests.test_resource_modes",
+  "next_package": "Independent source-only guard review and/or separate canonical end-to-end utility blocker; never equate narrow source tests with V13 completion."
+}
