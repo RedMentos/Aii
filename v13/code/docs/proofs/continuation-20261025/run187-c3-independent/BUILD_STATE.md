@@ -11,3 +11,9 @@
 - Private Library backups of original B2 ZIP, C3 ZIP, Run185 and Run187 full JSON verified by rematerialization and SHA256. Rejected anyone-writable Drive not retried.
 - Original negative gates: STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight 0; DS2 H2 FAIL; V13 INCOMPLETE; Run173 orphan and AGE0c false alarms retained. Gist SHADOW only; no activation.
 - Next exact commands in full checkout: `python3 -m unittest discover -s v13/code/tests -p test_run187_c3_final_independent_audit.py -v`; `python3 v13/code/scripts/run187_c3_final_independent_audit.py --native-report run186/report.json --b2-report run181/report.json --output independent.json` with immutable inputs verified by SHA; official `public_repo_privacy_scan.py --base c0c154aebf9ddab96a8414ad5c7febdb729af043 --head HEAD`. After CI, implement independently preregistered held-out multi-seed C3 final utility with B2+C3 total cost, quote-negative-control ablation and B1+B2 complementarity; do not promote gates from this candidate.
+
+## CI cross-check
+
+- GitHub Actions Run187 source-bound independent raw audit `40170412907` SUCCESS; 9/9 focused tests, immutable artifact ZIP hashes, 108-row recomputation, independent result SHA and official public privacy scan passed. Artifact metadata: [{"id":12589924286,"name":"V13-Run187-Independent-C3-Final-Raw-Audit","size":1641}].
+- Generic full repository focused-source workflow remains separately failing/cancelled on pre-existing Phone smoke; do not conflate with this independent proof.
+- Next package Run188 independently accounts for **total B2+C3** token and request latency costs rather than C3-only cost; no gate promotion.
