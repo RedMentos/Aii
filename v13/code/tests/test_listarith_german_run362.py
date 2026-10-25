@@ -95,11 +95,13 @@ class GermanListArithmeticRun362(unittest.TestCase):
                     self.assertEqual(proposal["tool"], "list_arith")
                     self.assertEqual(proposal["args"]["operation"], "total")
                     self.assertEqual(L.tool(**proposal["args"]), 13)
-                    self.assertEqual(read.call_count, 1)
+                    # Run363: exact rows are source-guarded locally, so this
+                    # formerly model-read case must now skip C3 entirely.
+                    self.assertEqual(read.call_count, 0)
                     ambiguous = "A: 4. B: 9. Wie viele Preisgruppen arbeiten zusammen?"
                     event2 = r.store.event(r.session, ambiguous)
                     self.assertIsNone(step._propose_list(event2, ambiguous))
-                    self.assertEqual(read.call_count, 1, "ambiguous count must not invoke C3")
+                    self.assertEqual(read.call_count, 0, "ambiguous count must not invoke C3")
             finally:
                 r.close()
 
