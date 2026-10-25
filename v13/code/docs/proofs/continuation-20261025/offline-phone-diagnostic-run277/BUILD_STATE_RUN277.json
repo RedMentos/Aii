@@ -1,0 +1,117 @@
+{
+  "schema": "V13_RUN277_OFFLINE_PHONE_DIAGNOSTIC_CHECKPOINT_V1",
+  "utc": "2026-10-25T11:39:00Z",
+  "base": "09ff9192a972ef46626f10b599f49785f78a7661",
+  "base_pr": 276,
+  "parent_ci": {
+    "pr270": {
+      "run": 40187802482,
+      "tests": 78,
+      "privacy": "CLEAN",
+      "artifact": 12597155710
+    },
+    "pr271": {
+      "run": 40187989062,
+      "tests": 99,
+      "privacy": "CLEAN",
+      "artifact": 12597066691
+    },
+    "pr272": {
+      "run": 40188129508,
+      "tests": 31,
+      "privacy": "CLEAN",
+      "artifact": 12597221607
+    },
+    "pr273": {
+      "run": 40188272116,
+      "tests": 46,
+      "privacy": "CLEAN",
+      "artifact": 12597231967
+    },
+    "pr274": {
+      "run": 40188423855,
+      "tests": 74,
+      "privacy": "CLEAN",
+      "artifact": 12597247163
+    },
+    "pr275": {
+      "run": 40188589615,
+      "tests": 80,
+      "privacy": "CLEAN",
+      "artifact": 12597322284
+    },
+    "pr276": {
+      "run": 40188720430,
+      "tests": 25,
+      "privacy": "CLEAN",
+      "artifact": 12596807062
+    }
+  },
+  "branch": "codex/offline-phone-diagnostic-run277-20261025",
+  "owner": {
+    "production": [
+      "v13/code/setup.sh"
+    ],
+    "tests": [
+      "v13/code/tests/test_offline_phone_diagnostic_run277.py"
+    ],
+    "proofs": [
+      "v13/code/docs/proofs/continuation-20261025/offline-phone-diagnostic-run277/*"
+    ],
+    "ci": [
+      ".github/workflows/run277-offline-phone-diagnostic.yml"
+    ]
+  },
+  "source_blob": "a39e0c8d8779ba8c36d2677cac864261ee259c3a",
+  "test_blob": "6cd87f9837bb618861fe03f7ebdc4796dd4a3853",
+  "scope": "LINUX_ACTUAL_EXTRACTED_PHONE_ZIP_SOURCE_DIAGNOSTIC_NO_NATIVE_MODEL_NO_REDMi",
+  "tests": {
+    "red_setup": {
+      "exit": 1,
+      "reason": "Pinned needle3 download DNS unavailable, no offline diagnostic option",
+      "retained": true
+    },
+    "green_initial": {
+      "tests": 4,
+      "failures": 1,
+      "reason": "tamper preflight emits SOURCE_HASH_MISMATCH, not SHA256 literal",
+      "exit": 1
+    },
+    "green_corrected": {
+      "tests": 4,
+      "exit": 0
+    },
+    "zip": {
+      "members": 989,
+      "source_byte_parity": "PASS",
+      "crc": "PASS",
+      "sha256": "199a3cf566565244d5a6d232d5a332e06d5190cb339d6f0875b46d6580c06c8c",
+      "native_model_inference": false,
+      "redmi_measured": false
+    },
+    "full_selftest": {
+      "status": "NOT_RUN_IN_SOURCE_ONLY_DIAGNOSTIC"
+    },
+    "native_probe": {
+      "status": "NOT_RUN_IN_SOURCE_ONLY_DIAGNOSTIC"
+    }
+  },
+  "raw_sha256": {
+    "red": "048935401bc21bcbd498e5f9b08e1b08636f7c5a0e2fafc920898a7a3e8c880f",
+    "green_initial": "f6035df47ec147baf29bbd4eefe7050b1111a8a1bd8248d461313cfbe6ff459a",
+    "green_corrected": "222fc12fe0f9860e3c847e06433e0ebba40957f837d6ddd1b9a0885da65fe696",
+    "final_package": "ee98d4ea07f5f66af87be81c19a18a04c7335e05a1304bdbc050d8e7b68ea838",
+    "final_verify": "0e6f78a222fa2a1603c0a1b1591e5b301a513b46391965a81faaca738db83ebc"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "changes": "Optional V13_SOURCE_ONLY_DIAGNOSTIC=1 on setup.sh: verifies extracted source, initializes CLI state, runs doctor, never downloads/builds native model or claims full selftest; default installer path remains unchanged.",
+  "original_canon_modified": false,
+  "model_hashes_modified": false,
+  "next": "Create PR277 against PR276; inspect exact-head CI ZIP artifact, raw tests, official privacy. On Android/Termux operator may run normal setup with network/models and native proof separately. Continue canonical utility work; do not promote gates."
+}
