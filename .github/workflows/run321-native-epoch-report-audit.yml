@@ -1,0 +1,95 @@
+name: V13 Run321 independent native epoch report audit (source-only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/audit_native_lfm2_epoch_eval_run321.py'
+      - 'v13/code/tests/test_native_lfm2_epoch_report_audit_run321.py'
+      - '.github/workflows/run321-native-epoch-report-audit.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/native-epoch-report-audit-run321/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run321-source-audit-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-only-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Frozen cohort and Canon hashes
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN321_HEAD.txt"
+          echo "313bc41c447640241b00319932469345c801f089dae0b949f1f6ebda26d3d53f  v13/code/scripts/lora_bench.py" | sha256sum -c -
+          echo "dfb46beb7b5be571c364ac3cab04379d411fd54ae5d0005d094f1f5a11e94397  v13/code/scripts/native_lfm2_finetune_bench.py" | sha256sum -c -
+          echo "0c8506397728d6084d3e6aa05a46d8434c7ec8a637861372c9c4c967611bfe00  v13/code/scripts/native_cache_bench.py" | sha256sum -c -
+          echo "401b95c5c6f4262eb8ea58bdab0af2b79f5d7032951ba45198ab2e13f102858c  v13/code/scripts/native_answer_finetune.cpp" | sha256sum -c -
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+      - name: Actual source-only adversarial audit tests and inherited Run320 fixtures
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" python3 -m unittest -v \
+            tests.test_native_lfm2_epoch_report_audit_run321 \
+            tests.test_native_lfm2_epoch_eval_run320 \
+            2>&1 | tee "$RUNNER_TEMP/RUN321_TEST_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN321_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: CLI import and help
+        id: cli
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 scripts/audit_native_lfm2_epoch_eval_run321.py --help \
+            2>&1 | tee "$RUNNER_TEMP/RUN321_CLI_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN321_CLI_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN321_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN321_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Hash-close source-only raw outputs
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN321_*' ! -name 'RUN321_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN321_SHA256SUMS.txt
+          sha256sum "$GITHUB_WORKSPACE/v13/code/scripts/audit_native_lfm2_epoch_eval_run321.py" >> RUN321_SHA256SUMS.txt
+          sha256sum "$GITHUB_WORKSPACE/v13/code/tests/test_native_lfm2_epoch_report_audit_run321.py" >> RUN321_SHA256SUMS.txt
+      - name: Retain all source-only results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run321-SourceAudit-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN321_*
+          retention-days: 30
+      - name: Enforce tests CLI and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.cli.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
