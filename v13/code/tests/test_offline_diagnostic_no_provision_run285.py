@@ -39,31 +39,31 @@ class Run285OfflineNoProvision(unittest.TestCase):
         app = self.make_app(label)
         if tamper:
             with (app / "v13/memory.py").open("ab") as f:
-                f.write(b"\\n# run285 tamper control\\n")
+                f.write(b"\n# run285 tamper control\n")
         sentinel = self.root / (label + "-sentinels")
         sentinel.mkdir()
         marker = sentinel / "provision-attempted"
         python_shim = sentinel / "python3"
-        real_python = str(Path(sys.executable).resolve())
+        real_python = str(Path(sys.executable))
         # The actual Python is the isolated CI venv. Fail if the setup ever
         # tries Python -m pip, even if the requested package is already cached.
         python_shim.write_text(
-            "#!/bin/sh\\n"
-            "for arg in \\"$@\\"; do\\n"
-            "  if [ \\"$arg\\" = pip ]; then\\n"
-            "    printf pip >> " + repr(str(marker)) + "\\n"
-            "    exit 93\\n"
-            "  fi\\n"
-            "done\\n"
+            "#!/bin/sh\n"
+            "for arg in \"$@\"; do\n"
+            "  if [ \"$arg\" = pip ]; then\n"
+            "    printf pip >> " + repr(str(marker)) + "\n"
+            "    exit 93\n"
+            "  fi\n"
+            "done\n"
             + (
-                "if [ \\"$1\\" = -c ] && [ \\"$2\\" = 'import numpy' ]; then exit 92; fi\\n"
+                "if [ \"$1\" = -c ] && [ \"$2\" = 'import numpy' ]; then exit 92; fi\n"
                 if no_numpy else ""
             )
-            + "exec " + repr(real_python) + " \\"$@\\"\\n"
+            + "exec " + repr(real_python) + " \"$@\"\n"
         )
         python_shim.chmod(0o700)
         pkg = sentinel / "pkg"
-        pkg.write_text("#!/bin/sh\\nprintf pkg >> " + repr(str(marker)) + "\\nexit 94\\n")
+        pkg.write_text("#!/bin/sh\nprintf pkg >> " + repr(str(marker)) + "\nexit 94\n")
         pkg.chmod(0o700)
         prefix = self.root / (label + "-com.termux/files/usr")
         (prefix / "bin").mkdir(parents=True)
