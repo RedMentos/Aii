@@ -133,4 +133,35 @@ class VerifyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'source_tensor_not_f32_vector'):
             verify(self.model, self.master, self.report, self.sha)
 
+    def test_real_run162_exporter_four_disjoint_vectors(self):
+        from scripts.body_fp32_master_export_run162 import export
+        names = [f'norm.{i}.weight' for i in range(4)]
+        header = b'GGUF' + u32(3) + u64(4) + u64(0)
+        for i, name in enumerate(names):
+            header += s(name) + u32(1) + u64(4) + u32(0) + u64(i * 32)
+        header += b'\0' * (-len(header) % 32)
+        payload = b''.join(np.array([i + 1, -0., i + 3, i + 4], dtype='<f4').tobytes() + b'\0' * 16 for i in range(4))
+        self.model.write_bytes(header + payload)
+        sha = hashlib.sha256(self.model.read_bytes()).hexdigest()
+        self.master.unlink()
+        report = export(self.model, sha, names, self.master)
+        self.report.write_text(json.dumps(report))
+        audit = verify(self.model, self.master, self.report, sha)
+        self.assertEqual(audit['selected_count'], 4)
+        self.assertTrue(audit['selected_bytes_exact'])
+        self.assertTrue(audit['selected_source_spans_nonoverlap'])
+        self.assertEqual(hashlib.sha256(self.model.read_bytes()).hexdigest(), sha)
+
+    def test_run162_overlapping_descriptors_detected_after_export(self):
+        from scripts.body_fp32_master_export_run162 import export
+        b, _, _ = gguf(overlap=True)
+        self.model.write_bytes(b)
+        sha = hashlib.sha256(b).hexdigest()
+        self.master.unlink()
+        report = export(self.model, sha, ['norm.weight', 'copy.weight'], self.master)
+        self.report.write_text(json.dumps(report))
+        self.assertEqual(len(report['selected_tensors']), 2)
+        with self.assertRaisesRegex(ValueError, 'selected_source_spans_overlap'):
+            verify(self.model, self.master, self.report, sha)
+
 if __name__ == '__main__': unittest.main()
