@@ -1,0 +1,68 @@
+{
+  "schema": "V13_RUN294_ELIGIBILITY_OPTION_AUTHORITY_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "branch": "codex/eligibility-option-authority-run294-20261025",
+  "pr": 294,
+  "base_sha": "df5f29c1f4a1ac4f9e58d83cecd9bccc3ba6fe7a",
+  "tested_source_sha": "e340631388676b942a8af0e920e5dd5a53839e8d",
+  "owner": [
+    "v13/code/v13/agi/eligibility.py",
+    "v13/code/tests/test_run294_eligibility_option_authority.py",
+    ".github/workflows/run294-eligibility-option-authority.yml",
+    "v13/code/docs/proofs/continuation-20261025/eligibility-option-authority-run294"
+  ],
+  "source_blobs": {
+    "v13/code/v13/agi/eligibility.py": "1778752f4a92de660a48a3c208134ef601bcbb9f",
+    "v13/code/tests/test_run294_eligibility_option_authority.py": "f2dfccaa45199fa130c7c651dd2dc2d9a78c3317",
+    ".github/workflows/run294-eligibility-option-authority.yml": "a0bc2c9f98eadbcf37b8b600136dd661f6eb361d"
+  },
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "red": {
+    "run": 40200578065,
+    "tests": "38 total, 5 expected FAIL",
+    "privacy": "CLEAN",
+    "artifact_id": 12601323687,
+    "sha256": "fc3decb1aacf33b787e285084862834a1afacdb7b039887418d7a119cbab1727"
+  },
+  "failed_green": {
+    "run": 40200630433,
+    "tests": "38 total, 1 original compatibility FAIL",
+    "privacy": "CLEAN",
+    "artifact_id": 12601403687,
+    "sha256": "c56ca42171574946d382157f158a8bca671e93bed4105f0b1ffa29769603fa73"
+  },
+  "green": {
+    "run": 40200695273,
+    "tests": "38/38 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12601239110,
+    "sha256": "d0a5071bbf8a2c413c0346e33602bfdebd4eca5914d22361ea656830533d3e22"
+  },
+  "focused": {
+    "run": 40200695257,
+    "tests": "401/401 PASS",
+    "phone_extracted": "114/114 PASS plus restart",
+    "privacy": "CLEAN",
+    "artifact_id": 12601202652,
+    "artifact_sha256": "08226285b9bb72fed6877503748b21ecfdb6ff75eae9d1d1624aff3859032064",
+    "phone_zip_sha256": "4e13712f7c5c926423b17377cc6484703d0ab055cc6c3d950f854831cdd8ee15"
+  },
+  "independent_local": {
+    "python": "3.13",
+    "eligibility": "38/38 PASS",
+    "full_suite": "RUNNING_OR_UNCONFIRMED"
+  },
+  "private_library": "/V13-Inquisition/Proofs/Run294",
+  "raw_library_readback": "3/3 SHA256 and byte MATCH",
+  "phone_library_readback": "PENDING",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "v13": "INCOMPLETE"
+  },
+  "next_command": "cd V13-Phone && python -m unittest discover -s tests -p 'test_*.py' -q",
+  "next_prerequisites": "Check serialized native owner and pinned artifacts before any native model run; PR284 Runtime and PR293 adapter owned separately."
+}
