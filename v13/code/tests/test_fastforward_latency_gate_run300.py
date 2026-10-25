@@ -60,7 +60,8 @@ class FastForwardLatencyGateRun300(unittest.TestCase):
         self.assertFalse(state["gate"]["canonical_gate_pass"])
         self.assertFalse(self.f.procedural(key, {})["apply"])
         self.f.set_mode("ACTIVE", "EXPLICIT_HUMAN")
-        self.assertTrue(self.f.procedural(key, {})["apply"])
+        self.assertFalse(self.f.procedural(key, {})["apply"])
+        self.assertEqual(self.f.procedural(key, {})["reason"], "CANONICAL_PROCEDURAL_GATE_UNVERIFIED")
 
 
 if __name__ == "__main__":
