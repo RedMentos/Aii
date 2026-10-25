@@ -1,0 +1,45 @@
+{
+  "run": "Run218",
+  "date_utc": "2026-10-25",
+  "canonical_area": "F4 WorldModel observed Runtime/C5 action/outcome integration",
+  "branch": "codex/runtime-world-observation-run218-20261025",
+  "base_verified": "9c8c03aaf72689616f722dde56266050c7fbde21",
+  "tested_commit": "4a9592ec99b743f6702e071bd6edcfeb467cf21a",
+  "owner": "Run218 test-only actual Runtime/C5/WorldModel/Backup integration; no production files touched",
+  "owned_files": [
+    "v13/code/tests/test_runtime_world_observation_run218.py",
+    ".github/workflows/run218-runtime-world.yml",
+    "v13/code/docs/proofs/continuation-20261025/run218-runtime-world/"
+  ],
+  "implementation": "Two actual Runtime/SQLite tests with deterministic C3 double: final C5 action becomes one observed finite WorldModel transition, bound to source event, route simple and no invented latent; unfitted counterfactual remains HYPOTHESIS/NO_WORLD_MODEL. Offline backup/restore preserves exact prior observed rows, excludes later actions and does not invent a fitted model.",
+  "actual_source_ci": {
+    "run_id": 40179724169,
+    "job_id": 121127986750,
+    "head": "4a9592ec99b743f6702e071bd6edcfeb467cf21a",
+    "tests": "24/24 PASS (Run218 2 + Run64, Run209, Run202 regressions)",
+    "compileall": "PASS",
+    "privacy_scan": "CLEAN",
+    "log_url": "https://github.com/RedMentos/Aii/actions/runs/40179724169/job/121127986750"
+  },
+  "source_blob_sha": {
+    "test_runtime_world_observation_run218.py": "91d6ef68fb3d59c8a00b213a3b7a7c75b06f93d7",
+    "run218-runtime-world.yml": "2f50180cb867d7feb02be91e33a260bebc0b7908"
+  },
+  "evidence_kind": "Actual-source GitHub Linux Runtime/SQLite with deterministic C3 double; no fitted WorldModel quality, native model, JEPA or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Actual native multi-route observations and preregistered WorldModel predictive utility remain open.",
+    "No body/world JEPA latent or fitted model utility was established.",
+    "Full project-wide tests and Redmi sustained measurements remain open."
+  ],
+  "next_step": "Run219 independent functional Sleep/ContextOS source-bound C3 history continuity across operator restart/backup, without changing learning/age authority. Review active owner before editing.",
+  "next_command": "PYTHONPATH=tests:. python -m unittest -v tests.test_sleep_context_backup_continuity_run219 tests.test_sleep_memory_c3_continuity_run205 tests.test_sleep_digest_source_lineage_run208",
+  "no_authority_promotion": true
+}
