@@ -1,0 +1,54 @@
+{
+  "run": "Run212",
+  "date_utc": "2026-10-25",
+  "canonical_area": "JEF C1 executive goal continuity, session/event/source lineage",
+  "branch": "codex/jef-goal-session-lineage-run212-20261025",
+  "base_verified": "95d3ba42d77c9fbed941325a3c72e5d321e0b4d3",
+  "tested_commit": "2565fe565cf8950e5c4d7c0e0f37b266ed6d7ac0",
+  "owner": "Run212 executive.py goal/sequence and new test only; no active native C2/B2/C3 owner overlap",
+  "owned_files": [
+    "v13/code/v13/executive.py",
+    "v13/code/tests/test_executive_goal_session_lineage_run212.py",
+    ".github/workflows/run212-jef-goal-session.yml",
+    "v13/code/docs/proofs/continuation-20261025/run212-jef-goal/"
+  ],
+  "changes": "Executive._clean now binds each goal_sequence entry to exact same-session event source; current goal text/source must match last_event source; invalid foreign/tampered goal cleared before view/effort/control.",
+  "source_blob_sha": {
+    "executive.py": "3b14d7824e22612e2e741949a028e68d49d80d0d",
+    "test_executive_goal_session_lineage_run212.py": "1bd52e5d972c86c042aba9e7317fb7ecb5ae56a7"
+  },
+  "actual_source_ci": {
+    "red": {
+      "run_id": 40178453358,
+      "job_id": 121124145913,
+      "result": "2/3 RED failures plus CI resource_pins path error"
+    },
+    "first_patch": {
+      "run_id": 40178509721,
+      "job_id": 121124321779,
+      "result": "source patch; CI import path error preserved"
+    },
+    "green": {
+      "run_id": 40178521557,
+      "job_id": 121124356037,
+      "result": "15/15 PASS; compileall PASS; official privacy scan CLEAN"
+    }
+  },
+  "evidence_kind": "Actual-source GitHub Linux CI, synthetic Store/Executive and deterministic Runtime tests; no native C2, Redmi or learned semantics",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "JEF active_task implicit/explicit source still only checks live source, not session ownership; next Run213 package.",
+    "Other executive persisted fields need independent source-bound review.",
+    "Full project-wide and Redmi native tests remain open; original gates unchanged."
+  ],
+  "next_step": "Run213: preregister cross-session active_task injection for implicit SOURCE_USER_REQUEST and EXPLICIT_OPERATOR_TASK; validate HumanDecision packet/event ownership without breaking legitimate operator-pinned continuity.",
+  "next_command": "PYTHONPATH=tests:. python -m unittest -v tests.test_executive_task_session_lineage_run213 tests.test_executive tests.test_executive_goal_session_lineage_run212",
+  "no_authority_promotion": true
+}
