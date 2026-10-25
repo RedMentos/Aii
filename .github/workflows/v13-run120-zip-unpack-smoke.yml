@@ -1,0 +1,65 @@
+name: V13 Run120 exact source ZIP unpacked smoke
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run120-zip-unpack-smoke.yml"
+      - "v13/code/docs/proofs/continuation-20261025/zip-unpack-run120/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run120-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  unpacked-software:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          ref: e8d0e0a84ba1cedd862a58131198e9266eb39360
+      - name: Verify exact Run119 source archive and extract cleanly
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "e8d0e0a84ba1cedd862a58131198e9266eb39360"
+          git archive --format=zip --output="$RUNNER_TEMP/V13_RUN119_SOURCE_ONLY.zip" HEAD \
+            AGENTS.md v13/AGENTS.md v13/ROADMAP.md v13/NUTZER_ENTSCHEIDUNGEN.md \
+            v13/blueprint v13/code
+          test "$(sha256sum "$RUNNER_TEMP/V13_RUN119_SOURCE_ONLY.zip" | cut -d' ' -f1)" = "59a3e5ad1640c7785952d296fa504b1f156e4c17d2ecbff8426273c1cfdcbf95"
+          unzip -t -q "$RUNNER_TEMP/V13_RUN119_SOURCE_ONLY.zip"
+          mkdir -p "$RUNNER_TEMP/unpacked"
+          unzip -q "$RUNNER_TEMP/V13_RUN119_SOURCE_ONLY.zip" -d "$RUNNER_TEMP/unpacked"
+          test -f "$RUNNER_TEMP/unpacked/v13/code/v13/runtime.py"
+          test -f "$RUNNER_TEMP/unpacked/v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md"
+          test -f "$RUNNER_TEMP/unpacked/v13/blueprint/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md"
+          test -f "$RUNNER_TEMP/unpacked/v13/code/tests/test_latewatch_final_tail_run116.py"
+          test -f "$RUNNER_TEMP/unpacked/v13/code/tests/test_world_selective_risk_run117.py"
+          sha256sum "$RUNNER_TEMP/V13_RUN119_SOURCE_ONLY.zip"
+      - name: Isolated model-free dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run120-venv"
+          "$RUNNER_TEMP/run120-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Execute reviewed World and LateWatch tests ONLY from extracted ZIP
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/unpacked/v13/code"
+          export PYTHONPATH="$PWD"
+          "$RUNNER_TEMP/run120-venv/bin/python" -m compileall -q v13 scripts
+          for pattern in test_world_confidence_abstention_run114.py test_ablation_homeo_meta.py test_latewatch_final_tail_run116.py test_latewatch.py test_world_selective_risk_run117.py test_world_model_integration_run64.py test_world_recovery_invalid_run109.py; do
+            echo "UNPACKED_SUITE=$pattern"
+            "$RUNNER_TEMP/run120-venv/bin/python" -m unittest discover -s tests -p "$pattern" -v
+          done
+          echo 'SOURCE_ONLY_MODEL_FREE_UNPACKED_SMOKE_PASS; NO_NATIVE_OR_REDMI_PROOF'
