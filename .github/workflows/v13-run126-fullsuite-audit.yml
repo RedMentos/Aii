@@ -1,0 +1,87 @@
+name: V13 Run126 post-Widget bounded full-suite audit
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run126-fullsuite-audit.yml"
+      - "v13/code/docs/proofs/continuation-20261025/fullsuite-after-phone-run126/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run126-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  full-suite:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+      NEEDLE_TELEMETRY: "0"
+      NO_MODEL_DOWNLOADS: "1"
+      PIP_NO_CACHE_DIR: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Exact head and sealed Run16 helper in temp only
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          ARCHIVE=v13/code/docs/proofs/continuation-20261024/lp3-run16/SOURCE_AND_TESTS.tar.xz
+          test "$(git hash-object "$ARCHIVE")" = "667d7f1b73a655097a44ff4c61749af113f7544f"
+          echo "041e0014194ffdfd74aef79cf6a9149e6c2e11ad51b859bc9a9e7e81b1b67516  $ARCHIVE" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/lp3_run16"
+          tar -xJf "$ARCHIVE" -C "$RUNNER_TEMP/lp3_run16"
+          helper="$(find "$RUNNER_TEMP/lp3_run16" -type f -name test_lp3_serial_cohort.py -print -quit)"
+          test -n "$helper"
+          echo "LP3_HELPER_DIR=$(dirname "$helper")" >> "$GITHUB_ENV"
+          echo 'RUN126_LP3_HELPER_TEMP_ONLY_NOT_PRODUCTION'
+      - name: Pinned isolated CPU-only prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run126"
+          timeout 180s "$RUNNER_TEMP/run126/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          timeout 420s "$RUNNER_TEMP/run126/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.1+cpu'
+          "$RUNNER_TEMP/run126/bin/python" -c 'import torch;print("RUN126_TORCH",torch.__version__,"CUDA",torch.cuda.is_available())'
+      - name: Bounded full discovery; preserve negative exit and raw output
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          export PYTHONPATH="$LP3_HELPER_DIR:$PWD"
+          "$RUNNER_TEMP/run126/bin/python" -m compileall -q v13 tests
+          timeout 900s "$RUNNER_TEMP/run126/bin/python" -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/RUN126_FULL_SUITE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          echo "RUN126_SUITE_EXIT=$rc"
+          grep -E 'Ran [0-9]+ tests|FAILED \(|^OK$|^ERROR:|^FAIL:' "$RUNNER_TEMP/RUN126_FULL_SUITE_RAW.log" | tail -n 60 || true
+          exit 0
+      - name: Upload closed raw full-suite evidence even on FAIL
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Run126-FullSuite-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN126_FULL_SUITE_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true suite outcome
+        if: always()
+        run: |
+          test "${{ steps.suite.outputs.exit_code }}" = "0"
