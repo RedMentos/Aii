@@ -10,7 +10,9 @@ is measured where both exist, so the user sees whether self-labels are trustwort
 
 Lifecycle L0-L11: a read model per experience from existing traces (no new authority, no writes).
 """
+import hashlib
 import json
+from .common import dumps
 
 KEY='JEF_OUTCOME_LABELS';MAX=1024;MODES=('record','learn');AUTHORITY='OUTCOME_SELF_LABEL'
 
@@ -44,32 +46,73 @@ def targets(meta,coalition,memory_ids):
     if (meta.get('skill') or {}).get('name') and not (meta.get('skill') or {}).get('vetoed_by'):out['skill']='skill'
     return out
 
+def _receipt_key(event_id,component):
+    """Durable identity independent of the bounded training label window."""
+    return 'JEF_OUTCOME_RECEIPT_'+hashlib.sha256(dumps([event_id,component]).encode('utf-8')).hexdigest()
+
 def after_turn(r,e,meta,status,focal_run):
-    """Record outcome labels for the head decisions of a FINAL turn (never changes the answer)."""
+    """Record FINAL self-labels once per event/component, including after eviction.
+
+    The Store mutex serializes normal concurrent callbacks while source rows
+    are allocated. Receipts and the bounded JEF ledger then commit in one
+    SQLite transaction. An interrupted source allocation can leave an
+    unreferenced immutable source, but never a committed trainable label.
+    """
     if status!='FINAL' or not focal_run:return {}
     try:
+        store=r.store
         t=targets(meta,focal_run.get('coalition') or [],meta.get('memory_ids') or [])
-        retained=(r.store.state(KEY)[0] or {}).get('labels',[])
-        seen={(x['event_id'],x['component']) for x in retained}
-        rows=[]
-        for comp,value in t.items():
-            if (e['event_id'],comp) in seen:continue  # no duplicate source creation on normal replay
-            d=_decision(r.store,e['event_id'],comp)
-            if not d:continue
-            ref=r.store.source(value,AUTHORITY)
-            rows.append({'event_id':e['event_id'],'component':comp,'value':value,'baseline':d['baseline'],'decision_packet_id':d['packet_id'],
-                         'context_sha256':d['context_ref']['sha256'],'context_revision':d['context_revision'],'source_id':ref['source_id']})
-        if not rows:return {}
-        def f(st):
-            existing={(x['event_id'],x['component']) for x in st['labels']}
-            fresh=[x for x in rows if (x['event_id'],x['component']) not in existing]
-            if fresh:st['labels']=(st['labels']+fresh)[-MAX:]
-            return fresh
-        committed=_mutate(r.store,f)  # CAS recheck also handles concurrent FINAL callbacks
-        if committed:r.store.log('jef_outcome_labels',e['event_id'],{'n':len(committed)})
-        return {x['component']:x['value'] for x in committed}
+        if not t:return {}
+        # Store.source() has its own transaction; keep the lock across the
+        # receipt check, allocation and ledger commit. The coordinator also
+        # excludes a second Store process for the same home.
+        with store.mutex:
+            st,version=store.state(KEY)
+            st=st or {'mode':'record','labels':[]}
+            active={(x['event_id'],x['component']):x for x in st['labels']}
+            rows=[];receipts=[]
+            for comp,value in t.items():
+                eid=e['event_id'];key=_receipt_key(eid,comp)
+                receipt=store.one('SELECT payload FROM states WHERE key=?',(key,))
+                if receipt is not None:
+                    old=json.loads(receipt['payload'])
+                    if old.get('event_id')!=eid or old.get('component')!=comp:
+                        raise ValueError('Invalid JEF outcome receipt identity')
+                    # A changed derived target must not replace the original
+                    # label, even if that label left the MAX-sized window.
+                    continue
+                d=_decision(store,eid,comp)
+                if not d:continue
+                existing=active.get((eid,comp))
+                if existing is not None:
+                    # Lazy receipt backfill for a pre-Run313 retained label;
+                    # route corrections may already have changed its value.
+                    row=existing
+                else:
+                    ref=store.source(value,AUTHORITY)
+                    row={'event_id':eid,'component':comp,'value':value,'baseline':d['baseline'],
+                         'decision_packet_id':d['packet_id'],
+                         'context_sha256':d['context_ref']['sha256'],
+                         'context_revision':d['context_revision'],'source_id':ref['source_id']}
+                    rows.append(row)
+                receipts.append((key,{'event_id':eid,'component':comp,'value':row['value'],
+                                      'source_id':row['source_id'],'decision_packet_id':row['decision_packet_id']}))
+            if not receipts:return {}
+            if rows:st['labels']=(st['labels']+rows)[-MAX:]
+            with store.tx() as c:
+                old=c.execute('SELECT version FROM states WHERE key=?',(KEY,)).fetchone()
+                if (old['version'] if old is not None else 0)!=version:
+                    raise ValueError('Stale JEF outcome state')
+                if rows:
+                    c.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',
+                              (KEY,version+1,dumps(st)))
+                for key,receipt in receipts:
+                    c.execute('INSERT INTO states VALUES (?,?,?)',(key,1,dumps(receipt)))
+        if rows:store.log('jef_outcome_labels',e['event_id'],{'n':len(rows)})
+        return {x['component']:x['value'] for x in rows}
     except Exception as exc:
-        r.store.log('jef_outcome_unavailable',e['event_id'],{'error':type(exc).__name__});return {}
+        r.store.log('jef_outcome_unavailable',e['event_id'],{'error':type(exc).__name__})
+        return {}
 
 def on_route_correction(store,event_id,value):
     """A disagreeing route correction on a skill turn turns its skill outcome label into 'none'."""
