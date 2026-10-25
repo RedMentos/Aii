@@ -1,0 +1,17 @@
+Run203 independent local actual-source cross-review, 2026-10-25 UTC
+Base: verified Run200 Phone source manifest 950/950, with exact Run201 age.py blob and Run202 world_model.py blob.
+Original Memory.recall, synthetic Runtime/SQLite:
+  6 tests, 5 FAIL: key retarget, scope retarget, kind relabel, MemoryRecord key mutation and missing MemoryRecord all leaked a live value.
+First candidate _verified_rows (read-only MemoryRecord scan before ranking):
+  24/24 local tests PASS (source integrity, semantic, route, executive).
+  300 valid human corrections: recall with lineage scan 0.0055 s; same in-memory fixture without lineage scan 0.0021 s; measured additional 0.0034 s on Linux synthetic (not Redmi).
+Independent second review: changing memories.session_id to a different session still leaked correction because MemoryRecord does not contain session id.
+  8 local tests, 1 FAIL: session owner retarget.
+  Added SQL JOIN events e ON e.id=m.event_id AND e.session_id=m.session_id.
+Final candidate:
+  26/26 local memory/semantic/route/executive tests PASS.
+  37/37 local memory user-rule/trainer/sparse/episodic tests PASS.
+  git hash-object v13/memory.py => a6f6dc0d941f939809f8d74b4d42f5d6314a0cb5
+  Remote GitHub memory.py blob => a6f6dc0d941f939809f8d74b4d42f5d6314a0cb5
+No MEMORY_KEY source created by plain lexical recall.
+Scope: Linux software/synthetic, no model, native learning or Redmi quality proof.
