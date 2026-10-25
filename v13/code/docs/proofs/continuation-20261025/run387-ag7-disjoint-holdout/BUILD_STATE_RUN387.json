@@ -1,0 +1,60 @@
+{
+  "run": "Run387",
+  "date": "2026-10-25",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/ag7-disjoint-holdout-run387-20261025",
+  "base": {
+    "branch": "codex/ag4-skill-outcome-guard-run386-20261025",
+    "sha": "e2ff37b5cb452906c661fbd5b4a234be149c6229",
+    "integration": "stacked review chain only, not main"
+  },
+  "source_head": "744f3d0bb95876de83f77edc8c7a8e97cf1dcf64",
+  "pr": 382,
+  "source_blobs_verified": {
+    "abstraction": "1b035d4d4f8ce2109c1e6128a35af05acb6b4d12",
+    "tests": "48d82eadb6ebf78c37d9c78065a16728246f15d3",
+    "workflow": "3032025541325a53e45557d0967d979692520d5c"
+  },
+  "change_summary": [
+    "AG7 inducer skips repeated episode IDs or exact input examples in a would-be train/holdout cohort",
+    "Each saved rule records SHA256 of train/test exact inputs, never raw input copies",
+    "Cross-run program/domain aggregation only merges compatible independent train/test roles; conflicting reused IDs or input hashes create a separate rule, preserving approved prior evidence"
+  ],
+  "evidence": {
+    "red": {
+      "head": "6a108ff4e3fea81be25be237cb24d42c328dec90",
+      "workflow_run": 40241738166,
+      "tests": "13 tests; exactly 3 expected AG7 failures, inherited AG7/AG live PASS",
+      "artifact_id": 12617340231,
+      "zip_sha256": "c015087272bc06faeff890a6c380b526a3079a671d81e3126a7e73f613655d8e"
+    },
+    "green": {
+      "head": "744f3d0bb95876de83f77edc8c7a8e97cf1dcf64",
+      "workflow_run": 40241830505,
+      "tests": "15/15 PASS; compileall PASS; privacy CLEAN",
+      "artifact_id": 12616898080,
+      "zip_sha256": "6155c9c50fde89fae7d63043fbff27b02d97dcdce17254afc8b800c1f2105e9b"
+    }
+  },
+  "addendum": "Two additional duplicate-training/cross-run input-hash tests were added after original RED, explicitly disclosed in ADDENDUM.md; not claimed preregistered RED.",
+  "raw_integrity": "CLOSED: both ZIP SHA256 matched Actions logs, CRC PASS, 4/4 member SHA256 checks each, private Library upload and independent re-materialization byte-identical.",
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run387_AG7_20261025/{RED_RAW.zip,GREEN_RAW.zip}",
+  "scope": "Actual Linux Actions Python/SQLite synthetic string induction; not a learned transfer or native/Redmi proof.",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0/permissions unchanged",
+    "Run367 full Python suite RED",
+    "Redmi proof missing",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "AG7 has no live source-bound episode→rule induction pipeline; model-based inducer remains absent",
+    "No prospective unseen-task utility or cross-domain transfer measurement",
+    "Existing old AG7 records without input hashes are not merged into new evidence; independent new rule created"
+  ],
+  "next_command": "git fetch origin codex/ag7-disjoint-holdout-run387-20261025 && git checkout -b review-run387 origin/codex/ag7-disjoint-holdout-run387-20261025 && cd v13/code && python -m unittest -v tests.test_ag7_disjoint_holdout_run387 tests.test_growth.G7Abstraction tests.test_agi_live",
+  "next_package": "Run388 AG2 pre-action grounded tool prediction lifecycle, isolated opt-in candidate with real Runtime/SQLite counterexamples; preserve frozen production gates."
+}
