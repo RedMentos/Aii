@@ -171,7 +171,8 @@ jobs:
             tests.test_body_train_port_schema_run91 \
             tests.test_jef_outcome_vocab_run92 \
             tests.test_context_exact_quotes_run93 \
-            tests.test_package_source
+            tests.test_package_source \
+            tests.test_run191_step2_complementarity_gate
           "$GITHUB_WORKSPACE/.venv/bin/python" - <<'PY'
           import os
           from pathlib import Path
