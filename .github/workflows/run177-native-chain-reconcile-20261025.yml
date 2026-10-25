@@ -1,4 +1,4 @@
-name: V13 Run177 native-firing integrated chain source identity
+name: V13 Run177 historical native-firing chain exact-source applicability
 on:
   pull_request:
     paths:
@@ -6,44 +6,84 @@ on:
       - 'v13/code/tests/test_run177_native_chain_reconcile_20261025.py'
       - '.github/workflows/run177-native-chain-reconcile-20261025.yml'
       - 'v13/code/docs/proofs/continuation-20261025/run177-native-chain-reconcile/**'
-  workflow_dispatch:
+      - 'v13/code/docs/proofs/continuation-20261025/run358-native-firing-historical-scope/**'
 permissions:
   contents: read
 jobs:
   chain:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
+    env:
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      V13_NO_AUTOSTART: '1'
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-          fetch-depth: 0
-      - name: Exact integrated chain identity (RED before patch)
-        working-directory: v13/code
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 50
+      - name: Exact head and source hashes
         run: |
-          set -o pipefail
-          PYTHONPATH=tests:. python3 -m unittest -v test_run177_native_chain_reconcile_20261025 2>&1 | tee "$RUNNER_TEMP/RUN177_CHAIN_RAW.log"
-          python3 -m compileall -q scripts/integrated_candidates.py tests/test_run177_native_chain_reconcile_20261025.py
-      - name: Isolated pinned synthetic candidate dependencies
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN358_HEAD.txt"
+          sha256sum v13/code/scripts/{integrated_candidates,native_firing_runtime_candidate,native_firing_candidate_smoke}.py v13/code/tests/test_run177_native_chain_reconcile_20261025.py | tee "$RUNNER_TEMP/RUN358_SOURCE_SHA256SUMS.txt"
+      - name: Isolated pinned source-only dependencies
         run: |
+          set -euo pipefail
           python3 -m venv "$RUNNER_TEMP/native-candidate"
-          "$RUNNER_TEMP/native-candidate/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
-      - name: Historical native-firing candidate and merged compatibility tests (no model)
+          "$RUNNER_TEMP/native-candidate/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Current lineage, historical Run177 and corrupted baseline counterexample
         working-directory: v13/code
         run: |
-          set -o pipefail
-          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/native-candidate/bin/python" -m unittest discover -s tests -p 'test_native_firing_*.py' -v 2>&1 | tee "$RUNNER_TEMP/RUN177_CANDIDATE_RAW.log"
+          set -uo pipefail
+          "$RUNNER_TEMP/native-candidate/bin/python" -m compileall -q scripts/integrated_candidates.py tests/test_run177_native_chain_reconcile_20261025.py
+          "$RUNNER_TEMP/native-candidate/bin/python" -m unittest -v \
+            tests.test_run177_native_chain_reconcile_20261025 \
+            tests.test_package_source.PackageSource.test_historical_candidate_corrupt_fixture_is_not_misclassified_as_stale \
+            2>&1 | tee "$RUNNER_TEMP/RUN358_CURRENT_RAW.log"
+          exit ${PIPESTATUS[0]}
+      - name: Historical native-firing candidate exact applicability or strict refusal
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          "$RUNNER_TEMP/native-candidate/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN358_HISTORICAL_RAW.log"
+          import subprocess,sys
+          from scripts.native_firing_runtime_candidate import sources,load_candidate
+          from scripts.native_firing_candidate_smoke import merged_sources
+          exact='Live sources differ from complete baseline/candidate'
+          try:
+              sources()
+          except ValueError as error:
+              if str(error)!=exact:raise
+              for fn in (lambda:load_candidate('runtime'),merged_sources):
+                  try:fn()
+                  except ValueError as rejected:
+                      if str(rejected)!=exact:raise
+                  else:raise AssertionError('Stale native-firing candidate was accepted')
+              print('HISTORICAL_NATIVE_FIRING_INAPPLICABLE_FAIL_CLOSED')
+          else:
+              print('HISTORICAL_NATIVE_FIRING_EXACT_SOURCE_MATCH_EXECUTE_ORIGINAL_TESTS')
+              subprocess.run([sys.executable,'-m','unittest','discover','-s','tests',
+                              '-p','test_native_firing_*.py','-v'],check=True)
+          PY
+          exit ${PIPESTATUS[0]}
       - name: Official privacy scan
-        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base ff89e52be43df7a5b306e2c16587273ed1c4b4d7 --head HEAD --no-worktree
-      - name: Preserve raw logs on failure or success
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN358_PRIVACY_RAW.log"
+      - name: Close raw manifest
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN358_*' ! -name RUN358_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN358_SHA256SUMS.txt
+      - name: Preserve original negative or positive source-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: V13-Run177-Native-Chain-Raw
-          path: |
-            ${{ runner.temp }}/RUN177_CHAIN_RAW.log
-            ${{ runner.temp }}/RUN177_CANDIDATE_RAW.log
+          name: V13-Run358-Historical-Native-Firing-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN358_*
           if-no-files-found: warn
           retention-days: 30
-      - name: Scope
-        run: echo 'Source-hash chain only; native firing quality, B3 and Redmi not proven'
