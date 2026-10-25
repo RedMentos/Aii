@@ -29,7 +29,7 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check --no-input numpy==2.3.5
           test "$(git hash-object v13/code/scripts/run171_b1_future_states.py)" = '9b647053923534b5dde266a0dc52abb364d613da'
-          test "$(git hash-object v13/code/tests/test_run171_b1_future_states.py)" = '809322207551d361681b68b442f1f5b1d489565f'
+          test "$(git hash-object v13/code/tests/test_run171_b1_future_states.py)" = '2a769fd578bf70d4410e02f30a4097743b9822b9'
           PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_run171_b1_future_states.py -v
           python -m compileall -q v13/code/scripts/run171_b1_future_states.py v13/code/tests/test_run171_b1_future_states.py
           PYTHONPATH=v13/code python - <<'PY'
