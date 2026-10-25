@@ -5,7 +5,15 @@ V13_APP_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 V13_DATA_HOME="${V13_HOME:-$HOME/v13}"
 trap 'printf "\nInstallation unterbrochen (Zeile %s). Nach Beheben erneut starten; fertige Downloads werden geprüft und wiederverwendet.\n" "$LINENO" >&2' ERR
 printf 'V13 Age-0 · lokale Modelle · Einrichtung startet\n'
-if [[ "${PREFIX:-}" == *com.termux* ]]; then
+# Source-only diagnostics are explicitly offline and must never run a package
+# manager, including the Termux prologue. Normal installation is unchanged.
+V13_OFFLINE_DIAGNOSTIC="${V13_SOURCE_ONLY_DIAGNOSTIC:-0}"
+if [[ "$V13_OFFLINE_DIAGNOSTIC" == "1" ]]; then
+  command -v python3 >/dev/null || command -v python >/dev/null || {
+    printf 'SOURCE_ONLY_DIAGNOSTIC: vorhandenes Python fehlt; keine automatische Installation.\n' >&2
+    exit 2
+  }
+elif [[ "${PREFIX:-}" == *com.termux* ]]; then
   pkg update -y
   pkg install -y python python-numpy clang cmake ninja make curl tar libandroid-spawn
 else
@@ -20,11 +28,18 @@ PY
 # Verify extracted source bytes before pip, V13 imports, bootstrap or model probe.
 # This is an integrity check, not a publisher signature. Never ignore failure.
 "$V13_PYTHON" -I -S "$V13_APP_DIR/scripts/verify_installed_source_run194.py" --root "$V13_APP_DIR"
-if ! "$V13_PYTHON" -c 'import numpy' 2>/dev/null; then
-  "$V13_PYTHON" -m pip install 'numpy>=1.24,<3'
-fi
-if ! "$V13_PYTHON" -m pip install 'prompt-toolkit==3.0.52'; then
-  printf 'Vollbild-UI nicht verfügbar; einfache Textoberfläche bleibt nutzbar.\n'
+if [[ "$V13_OFFLINE_DIAGNOSTIC" == "1" ]]; then
+  if ! "$V13_PYTHON" -c 'import numpy' 2>/dev/null; then
+    printf 'SOURCE_ONLY_DIAGNOSTIC: numpy fehlt; offline keine Paketinstallation.\n' >&2
+    exit 2
+  fi
+else
+  if ! "$V13_PYTHON" -c 'import numpy' 2>/dev/null; then
+    "$V13_PYTHON" -m pip install 'numpy>=1.24,<3'
+  fi
+  if ! "$V13_PYTHON" -m pip install 'prompt-toolkit==3.0.52'; then
+    printf 'Vollbild-UI nicht verfügbar; einfache Textoberfläche bleibt nutzbar.\n'
+  fi
 fi
 export PYTHONPATH="$V13_APP_DIR${PYTHONPATH:+:$PYTHONPATH}"
 export NEEDLE_TELEMETRY=0 DO_NOT_TRACK=1
