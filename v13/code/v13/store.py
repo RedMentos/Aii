@@ -562,9 +562,37 @@ class Store:
         with self.tx() as c:c.execute("INSERT INTO actions VALUES (?,?,?,?,?,?,?,?)",(aid,event,kind,"DISPATCHED",copy["packet_id"],dumps(copy["expected"]),None,now()))
         return aid
     def finish_action(self,aid,status,actual):
-        r=self.one("SELECT * FROM actions WHERE id=?",(aid,));e=self.one("SELECT generation_id FROM events WHERE id=?",(r["event_id"],))
-        self.add_packet("ActionOutcome",packet("ActionOutcome","C6_TEXT",r["event_id"],e["generation_id"],action_id=aid,status=status,actual=actual))
-        with self.tx() as c:c.execute("UPDATE actions SET status=?,outcome=? WHERE id=?",(status,dumps(actual),aid))
+        """Commit one immutable ActionOutcome and its action row atomically.
+
+        A previous terminal receipt is replayable only with the exact same
+        canonical outcome. An orphan packet from an older interrupted writer
+        must not be silently overwritten or duplicated.
+        """
+        outcome=dumps(actual)  # freeze/validate one finite JSON snapshot
+        frozen=json.loads(outcome)
+        with self.tx() as c:
+            r=c.execute("SELECT * FROM actions WHERE id=?",(aid,)).fetchone()
+            if r is None:raise ValueError('Unknown action ID')
+            prior=c.execute("SELECT payload FROM packets WHERE kind='ActionOutcome' AND event_id=? AND json_extract(payload,'$.action_id')=?",
+                            (r['event_id'],aid)).fetchall()
+            if r['outcome'] is not None:
+                if r['status']==status and r['outcome']==outcome and len(prior)==1:
+                    receipt=json.loads(prior[0]['payload'])
+                    if receipt.get('action_id')==aid and receipt.get('status')==status and receipt.get('actual')==frozen:
+                        return  # exact durable replay; no new packet or mutation
+                raise ValueError('Conflicting or incomplete ActionOutcome replay')
+            if prior:raise ValueError('Orphan ActionOutcome packet requires review')
+            if r['status'] not in ('DISPATCHED','OUTCOME_UNKNOWN'):
+                raise ValueError('Action is not open for an outcome')
+            e=c.execute("SELECT generation_id FROM events WHERE id=?",(r['event_id'],)).fetchone()
+            if e is None:raise ValueError('Action event missing')
+            p=packet("ActionOutcome","C6_TEXT",r['event_id'],e['generation_id'],action_id=aid,status=status,actual=frozen)
+            validate("ActionOutcome",p)
+            c.execute("INSERT INTO packets VALUES (?,?,?,?,?,?)",
+                      (p['packet_id'],'ActionOutcome',p['event_id'],p['brain_generation_id'],dumps(p),now()))
+            updated=c.execute("UPDATE actions SET status=?,outcome=? WHERE id=? AND outcome IS NULL",
+                              (status,outcome,aid))
+            if updated.rowcount!=1:raise ValueError('Action outcome changed before commit')
     def prune_telemetry(self,clock=None):
         cutoff=(now() if clock is None else clock)-self.log_retention_days*86400
         with self.tx() as c:return c.execute('DELETE FROM telemetry WHERE created<?',(cutoff,)).rowcount
