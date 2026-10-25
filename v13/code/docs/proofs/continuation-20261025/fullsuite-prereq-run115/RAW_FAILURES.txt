@@ -1,0 +1,62 @@
+SOURCE GitHub Actions run 40145472747 job 121025787776, commit 43f17a8ce6082da1b6fcfb9c753ce6855eed255c
+FULL LOG REMAINS IN GITHUB ACTIONS; THIS IS AN UNEDITED FAILURE SECTION, NOT A COMPLETE RAW LOG.
+Pinned dependency installation: Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+Successfully installed MarkupSafe-3.0.3 filelock-3.32.3 fsspec-2026.7.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.6.1 setuptools-78.1.0 sympy-1.14.0 torch-2.9.1+cpu typing-extensions-4.16.0
+
+ERROR: test_unverified_descendant_cleanup_poison_persists_across_attempts (test_lp3_serial_review_run18.LockPoisonReview.test_unverified_descendant_cleanup_poison_persists_across_attempts)
+2026-10-25T00:11:16.2301591Z ----------------------------------------------------------------------
+2026-10-25T00:11:16.2302189Z Traceback (most recent call last):
+2026-10-25T00:11:16.2302956Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_lp3_serial_review_run18.py", line 60, in test_unverified_descendant_cleanup_poison_persists_across_attempts
+2026-10-25T00:11:16.2303798Z     patch.object(mod, '_cleanup_owned_group', return_value={
+2026-10-25T00:11:16.2304198Z     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:11:16.2304633Z         'owned_group_residue_detected': True, 'owned_group_absent': False}):
+2026-10-25T00:11:16.2305084Z         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:11:16.2305739Z   File "/usr/lib/python3.14/unittest/mock.py", line 1510, in __enter__
+2026-10-25T00:11:16.2306185Z     original, local = self.get_original()
+2026-10-25T00:11:16.2306487Z                       ~~~~~~~~~~~~~~~~~^^
+2026-10-25T00:11:16.2306878Z   File "/usr/lib/python3.14/unittest/mock.py", line 1480, in get_original
+2026-10-25T00:11:16.2307295Z     raise AttributeError(
+2026-10-25T00:11:16.2307602Z         "%s does not have the attribute %r" % (target, name)
+2026-10-25T00:11:16.2308258Z     )
+2026-10-25T00:11:16.2308985Z AttributeError: <module 'lp3_serial_run16' from '/home/runner/work/_temp/lp3_run16/v13/code/scripts/lp3_serial_cohort.py'> does not have the attribute '_cleanup_owned_group'
+2026-10-25T00:11:16.2309708Z 
+2026-10-25T00:11:16.2309829Z ======================================================================
+2026-10-25T00:11:16.2310610Z FAIL: test_default_cli_read_only_blocks_missing_assets (test_lp3_serial_review_run18.LockPoisonReview.test_default_cli_read_only_blocks_missing_assets)
+2026-10-25T00:11:16.2311355Z ----------------------------------------------------------------------
+2026-10-25T00:11:16.2311712Z Traceback (most recent call last):
+2026-10-25T00:11:16.2312328Z   File "/home/runner/work/_temp/lp3_run16/v13/code/tests/test_lp3_serial_cohort.py", line 50, in test_default_cli_read_only_blocks_missing_assets
+2026-10-25T00:11:16.2312975Z     self.assertEqual(proc.returncode, 2)
+2026-10-25T00:11:16.2313254Z     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:11:16.2313503Z AssertionError: 1 != 2
+2026-10-25T00:11:16.2313647Z 
+2026-10-25T00:11:16.2313760Z ======================================================================
+2026-10-25T00:11:16.2314444Z FAIL: test_default_cli_read_only_blocks_missing_assets (test_lp3_serial_review_run18.OrphanGroupReview.test_default_cli_read_only_blocks_missing_assets)
+2026-10-25T00:11:16.2315146Z ----------------------------------------------------------------------
+2026-10-25T00:11:16.2315491Z Traceback (most recent call last):
+2026-10-25T00:11:16.2316117Z   File "/home/runner/work/_temp/lp3_run16/v13/code/tests/test_lp3_serial_cohort.py", line 50, in test_default_cli_read_only_blocks_missing_assets
+2026-10-25T00:11:16.2316742Z     self.assertEqual(proc.returncode, 2)
+2026-10-25T00:11:16.2317017Z     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:11:16.2317266Z AssertionError: 1 != 2
+2026-10-25T00:11:16.2317405Z 
+2026-10-25T00:11:16.2317520Z ======================================================================
+2026-10-25T00:11:16.2318594Z FAIL: test_successful_leader_with_live_descendant_is_not_success (test_lp3_serial_review_run18.OrphanGroupReview.test_successful_leader_with_live_descendant_is_not_success)
+2026-10-25T00:11:16.2319369Z ----------------------------------------------------------------------
+2026-10-25T00:11:16.2319719Z Traceback (most recent call last):
+2026-10-25T00:11:16.2320353Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_lp3_serial_review_run18.py", line 41, in test_successful_leader_with_live_descendant_is_not_success
+2026-10-25T00:11:16.2321129Z     self.assertNotEqual(status['status'], 'LOCAL_CLOSED_EVIDENCE_UNPUBLISHED_ANCHOR')
+2026-10-25T00:11:16.2321796Z     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:11:16.2322336Z AssertionError: 'LOCAL_CLOSED_EVIDENCE_UNPUBLISHED_ANCHOR' == 'LOCAL_CLOSED_EVIDENCE_UNPUBLISHED_ANCHOR'
+2026-10-25T00:11:16.2322732Z 
+2026-10-25T00:11:16.2322842Z ======================================================================
+2026-10-25T00:11:16.2323491Z FAIL: test_default_cli_read_only_blocks_missing_assets (test_lp3_serial_cohort.SerialCohortTests.test_default_cli_read_only_blocks_missing_assets)
+2026-10-25T00:11:16.2324189Z ----------------------------------------------------------------------
+2026-10-25T00:11:16.2324520Z Traceback (most recent call last):
+2026-10-25T00:11:16.2325105Z   File "/home/runner/work/_temp/lp3_run16/v13/code/tests/test_lp3_serial_cohort.py", line 50, in test_default_cli_read_only_blocks_missing_assets
+2026-10-25T00:11:16.2325716Z     self.assertEqual(proc.returncode, 2)
+2026-10-25T00:11:16.2326112Z     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:11:16.2326368Z AssertionError: 1 != 2
+2026-10-25T00:11:16.2326503Z 
+2026-10-25T00:11:16.2326643Z ----------------------------------------------------------------------
+2026-10-25T00:11:16.2326964Z Ran 2217 tests in 162.996s
+2026-10-25T00:11:16.2327112Z 
+2026-10-25T00:11:16.2327215Z FAILED (failures=4, errors=1, skipped=11)
