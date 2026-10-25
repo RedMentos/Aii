@@ -36,7 +36,7 @@
   },
   "private_library": "/V13-Inquisition/Proofs/Run296",
   "raw_readback": "SHA256_AND_BYTE_MATCH",
-  "source_readback": "PENDING",
+  "source_readback": "SHA256_AND_BYTE_MATCH",
   "native_integrated_layout": "NOT_MEASURED",
   "negative_gates": {
     "STEP2": "UTILITY_FAIL",
