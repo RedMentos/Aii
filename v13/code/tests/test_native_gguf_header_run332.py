@@ -56,7 +56,7 @@ class Run332Metadata(unittest.TestCase):
 
     def test_missing_selected_tensor_rejected(self):
         r = Reader()
-        r.tensors = r.tensors[:-2] + [Tensor("another")]
+        r.tensors[-2] = Tensor("another")
         with self.assertRaisesRegex(ValueError, "selected"):
             scan(r)
 
