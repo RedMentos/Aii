@@ -1,0 +1,78 @@
+{
+  "schema": "V13_RUN285_OFFLINE_DIAGNOSTIC_NO_PROVISION_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Run285 independent setup/test/CI/proof; no Runtime, Canon, model or seed ownership",
+  "base_sha": "d3d0c00819d847877d85fc35e5fad3556187f7cc",
+  "tested_source_sha": "04d6f0a04eca5eee031da488f9b8abd5f6638d11",
+  "branch": "codex/offline-diagnostic-no-provision-run285-20261025",
+  "pr": 285,
+  "source_blobs": {
+    "v13/code/setup.sh": "4b4a24a3ad4a01699d65f4bbae29fd79c8d19cbb",
+    "v13/code/tests/test_offline_diagnostic_no_provision_run285.py": "21dc73e2ea27c487bdac388b0d4ecef15502211b",
+    "v13/code/tests/test_offline_phone_diagnostic_run277.py": "750d90253b0514d2e07afe5bcfbdff6fe5a1390e"
+  },
+  "checks": [
+    {
+      "run": 40193605342,
+      "result": "FAIL",
+      "reason": "test literal syntax and old fixture; retained"
+    },
+    {
+      "run": 40193712805,
+      "result": "FAIL",
+      "reason": "new 4/4 PASS but previous isolated Python fixture FAIL; retained"
+    },
+    {
+      "run": 40193718675,
+      "result": "PASS",
+      "tests": "8/8",
+      "compileall": 0,
+      "privacy": "CLEAN",
+      "raw_artifact_id": 12598209121,
+      "raw_zip_sha256": "1ba5bdab2f87d4e3851586e0d63c745c2b796cf5b20a114905eab9a06c5ab4b8"
+    },
+    {
+      "run": 40193718701,
+      "result": "PASS",
+      "tests": "4/4",
+      "zip_files": 997,
+      "zip_sha256": "5404406db219ea7147c4875dac6577711eab52a87fb8691c8f59bf46ff526a61",
+      "raw_artifact_id": 12599261458
+    },
+    {
+      "run": 40193718792,
+      "result": "PASS",
+      "tests": "401/401 plus 114/114 extracted restart",
+      "privacy": "CLEAN",
+      "raw_artifact_id": 12598957161
+    },
+    {
+      "environment": "Linux local extracted source",
+      "result": "PASS",
+      "tests": "8/8"
+    },
+    {
+      "environment": "Linux local broader crossreview",
+      "result": "INCOMPLETE_TIMEOUT_120S",
+      "passed_before_timeout": 25
+    }
+  ],
+  "scope": "LINUX_SOFTWARE_EXTRACTED_SOURCE_ZIP_SIMULATED_TERMUX_ONLY",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "phone_measured": false,
+    "native_model_inference": false
+  },
+  "open_questions": [
+    "Actual Termux NumPy preinstallation and symlink permissions unverified",
+    "PR284 resident cancellation remains RED",
+    "PR269 native readout halt Pareto, control support, output calibration and B1 memory answer unresolved"
+  ],
+  "next_command": "From full latest PR chain, inspect PR285 exact branch and run `PYTHONPATH=v13/code:v13/code/tests python -m unittest -v tests.test_offline_diagnostic_no_provision_run285 tests.test_offline_phone_diagnostic_run277`; on operator-approved Termux source-only: `V13_SOURCE_ONLY_DIAGNOSTIC=1 bash setup.sh`. Continue separate canonical native utility packages with preregistration and serialized actual model runs.",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false
+}

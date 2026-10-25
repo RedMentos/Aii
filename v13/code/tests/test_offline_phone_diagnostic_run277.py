@@ -29,7 +29,10 @@ class OfflinePhoneDiagnosticRun277(unittest.TestCase):
 
     def diagnostic(self,home,app=None):
         env=os.environ.copy()
-        env.update(V13_HOME=str(home),V13_NO_AUTOSTART='1',V13_SOURCE_ONLY_DIAGNOSTIC='1',
+        # The subprocess must use the same pinned isolated interpreter that the
+        # CI fixture provisioned; system python3 may have no NumPy.
+        env.update(PATH=str(Path(sys.executable).parent)+os.pathsep+env.get('PATH',''),
+                   V13_HOME=str(home),V13_NO_AUTOSTART='1',V13_SOURCE_ONLY_DIAGNOSTIC='1',
                    PIP_NO_INDEX='1',PIP_DISABLE_PIP_VERSION_CHECK='1',NEEDLE_TELEMETRY='0',DO_NOT_TRACK='1')
         return subprocess.run(['bash','setup.sh'],cwd=app or self.app,env=env,text=True,
                               stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=90)
