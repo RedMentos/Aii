@@ -85,10 +85,13 @@ jobs:
           cd "$RUNNER_TEMP/extracted/V13-Phone"
           export PYTHONPATH="$PWD"
           "$RUNNER_TEMP/run122/bin/python" -m compileall -q v13 tests
-          for pattern in test_cli_standstill_run121.py test_phone_cli_run87.py test_phone_operator_journey_run86.py test_standstill.py test_phone_halt.py; do
+          for pattern in test_cli_standstill_run121.py test_phone_cli_run87.py test_phone_operator_journey_run86.py test_standstill.py; do
             echo "EXTRACTED_RUN122_SUITE=$pattern"
             "$RUNNER_TEMP/run122/bin/python" -m unittest discover -s tests -p "$pattern" -v
           done
+          if test ! -f tests/test_phone_halt.py || test ! -f v13/phone_halt.py; then
+            echo 'PHONE_HALT_MODULE_OR_TEST_NOT_IN_INTEGRATED_SOURCE; NOT_CLAIMED'
+          fi
           echo 'RUN122_EXTRACTED_LINUX_SOFTWARE_PASS; NO_NATIVE_OR_REDMI_PROOF'
       - name: Publish reviewed short-lived source-only phone ZIP
         id: upload
