@@ -1,0 +1,47 @@
+=== RUN135 TEST-FIRST RED ===
+ImportError: Failed to import test module: test_hx2_paired_run135
+ModuleNotFoundError: No module named 'v13.agi.hx2_paired_shadow'
+Ran 1 test in 0.000s
+FAILED (errors=1)
+
+=== RUN135 INITIAL IMPLEMENTATION FAIL (reviewer test assumption) ===
+test_generator_error_no_false_signal ... ok
+test_identical_outputs_are_ties ... ok
+test_invalid_input_refused_before_model ... ok
+test_position_biased_judge_never_picks ... ok
+test_same_task_seed_all_arms_and_control ... ok
+test_synthetic_positive_is_never_gate_pass ... ERROR
+test_unknown_label_abstains ... ok
+ValueError: 1..64 holdout tasks required
+Ran 7 tests in 0.010s
+FAILED (errors=1)
+Resolution: test incorrectly requested 80 > preregistered MAX_TASKS=64; corrected to 60.
+
+=== RUN135 ADVERSARIAL REVIEW RED (real bug) ===
+test_unguided_control_can_defeat_guided_signal ... FAIL
+AssertionError: 'SYNTHETIC_DIAGNOSTIC_ONLY' != 'NOT_SUPPORTED_OR_UNMEASURED'
+Ran 8 tests in 0.026s
+FAILED (failures=1)
+Resolution: require guided_vs_reference AND guided_vs_unguided lower95 > 0.5 for both general and domain.
+
+=== RUN135 FINAL LOCAL GREEN ===
+test_generator_error_no_false_signal ... ok
+test_identical_outputs_are_ties ... ok
+test_invalid_input_refused_before_model ... ok
+test_position_biased_judge_never_picks ... ok
+test_same_task_seed_all_arms_and_control ... ok
+test_synthetic_positive_is_never_gate_pass ... ok
+test_unguided_control_can_defeat_guided_signal ... ok
+test_unknown_label_abstains ... ok
+test_ambiguity_and_source_mismatch_abstain ... ok
+test_bounds ... ok
+test_fresh_synthetic_cohort ... ok
+test_signed_decimal_multiply_divide ... ok
+test_supported_right_and_wrong ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.026s
+
+OK
+RUN135_SYNTHETIC positive_60_pairs_but_gate_UNVERIFIED
+RUN134_SYNTHETIC_COHORT correct_false_alarms=0/100 wrong_detected=100/100 seed=13425
