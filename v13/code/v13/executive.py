@@ -77,11 +77,24 @@ class Executive:
         state['salient_B_offer']=[x for x in state.get('salient_B_offer',[]) if self._offer_valid(x,state.get('brain_generation_id'),session)]
         return state
     def _question_valid(self,item,session):
-        if not self._valid_ref(item.get('source_ref',{})):return False
-        row=self.s.one("SELECT p.payload,e.session_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",(item.get('offer_packet_id'),))
+        # An open question is about the user event that produced its OfferPacket,
+        # never an arbitrary readable source from another chat or later event.
+        if not isinstance(item,dict) or not isinstance(item.get('source_ref'),dict):return False
+        if not self._valid_ref(item['source_ref']):return False
+        row=self.s.one("SELECT p.payload,e.session_id,e.packet AS event_packet,e.id AS event_id "
+                       "FROM packets p JOIN events e ON e.id=p.event_id "
+                       "WHERE p.id=? AND p.kind='OfferPacket'",(item.get('offer_packet_id'),))
         if not row or row['session_id']!=session:return False
-        offer=json.loads(row['payload'])
-        return offer['offer'].get('needs_reentry') is True and item.get('uncertainty')==offer['offer'].get('uncertainty','')[:160] and all(self._valid_ref(x) for x in offer['provenance']+offer['evidence_refs'])
+        try:
+            offer=json.loads(row['payload']);event=json.loads(row['event_packet'])
+            return (event.get('event_id')==row['event_id']
+                    and event.get('source_ref')==item['source_ref']
+                    and offer.get('event_id')==row['event_id']
+                    and offer.get('packet_id')==item['offer_packet_id']
+                    and offer['offer'].get('needs_reentry') is True
+                    and item.get('uncertainty')==offer['offer'].get('uncertainty','')[:160]
+                    and all(self._valid_ref(x) for x in offer['provenance']+offer['evidence_refs']))
+        except (KeyError,TypeError,ValueError):return False
     def _offer_valid(self,item,generation,session):
         row=self.s.one("SELECT p.payload,e.session_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",(item.get('packet_id'),))
         if not row or row['session_id']!=session:return False

@@ -1,0 +1,21 @@
+# Run215 actual-source RED evidence (unaltered selected log lines)
+
+Full raw CI job: https://github.com/RedMentos/Aii/actions/runs/40179289167/job/121126660854
+Tested commit: 29b7ac1df375fe713114210c9f3c2da71ead3580
+RED: two genuine cross-binding failures; one test fixture error from wrong report_context key (corrected separately before production fix). Full log remains in Actions.
+
+2026-10-25T09:06:53.7662375Z test_foreign_session_source_cannot_be_reported_as_own_open_question (tests.test_executive_open_question_lineage_run215.ExecutiveOpenQuestionLineageRun215.test_foreign_session_source_cannot_be_reported_as_own_open_question) ... FAIL
+2026-10-25T09:06:53.7834639Z test_same_session_unrelated_source_cannot_be_rebound_to_old_offer (tests.test_executive_open_question_lineage_run215.ExecutiveOpenQuestionLineageRun215.test_same_session_unrelated_source_cannot_be_rebound_to_old_offer) ... FAIL
+2026-10-25T09:06:53.8074445Z test_valid_question_remains_source_bound_after_store_restart (tests.test_executive_open_question_lineage_run215.ExecutiveOpenQuestionLineageRun215.test_valid_question_remains_source_bound_after_store_restart) ... ERROR
+2026-10-25T09:06:55.1453599Z ERROR: test_valid_question_remains_source_bound_after_store_restart (tests.test_executive_open_question_lineage_run215.ExecutiveOpenQuestionLineageRun215.test_valid_question_remains_source_bound_after_store_restart)
+2026-10-25T09:06:55.1455063Z Traceback (most recent call last):
+2026-10-25T09:06:55.1460155Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_open_question_lineage_run215.py", line 69, in test_valid_question_remains_source_bound_after_store_restart
+2026-10-25T09:06:55.1461795Z KeyError: 'open_questions'
+2026-10-25T09:06:55.1463566Z FAIL: test_foreign_session_source_cannot_be_reported_as_own_open_question (tests.test_executive_open_question_lineage_run215.ExecutiveOpenQuestionLineageRun215.test_foreign_session_source_cannot_be_reported_as_own_open_question)
+2026-10-25T09:06:55.1464966Z Traceback (most recent call last):
+2026-10-25T09:06:55.1465787Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_open_question_lineage_run215.py", line 58, in test_foreign_session_source_cannot_be_reported_as_own_open_question
+2026-10-25T09:06:55.1474931Z FAIL: test_same_session_unrelated_source_cannot_be_rebound_to_old_offer (tests.test_executive_open_question_lineage_run215.ExecutiveOpenQuestionLineageRun215.test_same_session_unrelated_source_cannot_be_rebound_to_old_offer)
+2026-10-25T09:06:55.1476257Z Traceback (most recent call last):
+2026-10-25T09:06:55.1477020Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_open_question_lineage_run215.py", line 65, in test_same_session_unrelated_source_cannot_be_rebound_to_old_offer
+2026-10-25T09:06:55.1485011Z Ran 21 tests in 1.404s
+2026-10-25T09:06:55.1485244Z FAILED (failures=2, errors=1)
