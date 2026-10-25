@@ -28,7 +28,7 @@ ACTIONS=('simple','detail','gist','both')
 TERMINAL_STATUSES=frozenset(('FINAL','ERROR','DEADLINE','CANCELLED'))
 TARGETS=('log_duration','success','log_chars')
 RIDGE=1e-2;ENSEMBLE=5;MIN_FIT=8;MAX_ROWS=2048
-COVER_N=8.        # BOOT: samples per action for ~63 % of the coverage term
+COVER_N=8.        # BOOT: independent training sources per action for ~63 % coverage
 SPREAD_REF=.25    # BOOT: ensemble spread that halves confidence
 CF_MIN=.5         # BOOT: below this a counterfactual is SIMULATION_UNCERTAIN
 OOD_SUPPORT=2.    # BOOT: nearest-neighbour distance (in median-NN units) still inside the action's support
@@ -285,7 +285,8 @@ def fit(store,rng_seed=0):
         except (FloatingPointError,np.linalg.LinAlgError,ValueError,OverflowError):
             align={'status':'UNAVAILABLE','reason':'NUMERIC_UNSTABLE_LATENT'}
     st.update(status='FITTED',forward=[W.tolist() for W in fw],inverse=Wi.tolist(),
-              states={a:[t['s'] for t in T if t['a']==a][-256:] for a in ACTIONS},
+              states={a:[T[i]['s'] for i in tr if T[i]['a']==a][-256:] for a in ACTIONS},
+              state_groups={a:[groups[i] for i in tr if T[i]['a']==a][-256:] for a in ACTIONS},
               metrics={'forward_mae':dict(zip(TARGETS,np.round(mae,4).tolist())),'forward_baseline_mae':dict(zip(TARGETS,np.round(base,4).tolist())),
                        'inverse_accuracy':None if inv_acc is None else round(inv_acc,4),'inverse_majority_baseline':round(major,4),
                        'inverse_note':'representation/control signal, not a causal claim','state_align':align,'held_out':len(te),
@@ -310,14 +311,25 @@ def load(store):
     return st
 
 def coverage(st,s,a):
+    # Only TRAIN rows establish model support. Evaluation rows can measure
+    # error but cannot inflate the apparent evidence behind a counterfactual.
     pts=np.array(st['states'].get(a) or [],float);n=len(pts)
-    if n==0:return {'samples':0,'ood_distance':None,'in_support':False}
+    if n==0:return {'samples':0,'independent_sources':0,'ood_distance':None,'in_support':False}
+    groups=st.get('state_groups')
+    ids=groups.get(a) if type(groups) is dict else None
+    if (type(ids) is not list or len(ids)!=n
+            or any(type(g) is not str or not g for g in ids)):
+        # Old persisted states lack training-only source identity. They are
+        # not silently reinterpreted as calibrated independent evidence.
+        return {'samples':n,'independent_sources':0,'ood_distance':None,'in_support':False}
+    distinct=len(set(ids))
     d=np.sqrt(((pts-np.array(s))**2).sum(1));nearest=float(d.min())
     if n>=2:
         dd=np.sqrt(((pts[:,None,:]-pts[None,:,:])**2).sum(2));np.fill_diagonal(dd,np.inf);scale=float(np.median(dd.min(1)))
     else:scale=0.
     ood=nearest/max(scale,1e-3)
-    return {'samples':n,'ood_distance':round(ood,4),'in_support':ood<=OOD_SUPPORT}
+    return {'samples':n,'independent_sources':distinct,
+            'ood_distance':round(ood,4),'in_support':ood<=OOD_SUPPORT}
 
 def counterfactual(store,s,a,st=None):
     """Predicted consequence of action a, never a real outcome or authority."""
@@ -356,7 +368,7 @@ def counterfactual(store,s,a,st=None):
         # domains is not a supported simulation; never clamp/invent values.
         if mean[0]<0 or not 0<=mean[1]<=1 or mean[2]<0:
             return uncertain('IMPOSSIBLE_PREDICTED_OUTCOME')
-        conf=(1-math.exp(-cov['samples']/COVER_N))*math.exp(-max(0.,ood-OOD_SUPPORT))/(1+spread/SPREAD_REF)
+        conf=(1-math.exp(-cov['independent_sources']/COVER_N))*math.exp(-max(0.,ood-OOD_SUPPORT))/(1+spread/SPREAD_REF)
         duration=math.expm1(float(mean[0]))
         if not math.isfinite(conf) or not math.isfinite(duration):
             return uncertain('NONFINITE_PREDICTION')
