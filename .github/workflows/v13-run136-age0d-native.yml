@@ -2,9 +2,9 @@ name: V13 Run136 registered C3 answer-visible arithmetic native cohort
 on:
   pull_request:
     paths:
-      - ".github/workflows/v13-run136-c3-native.yml"
-      - "v13/code/scripts/c3_registered_linux_smoke_run136.py"
-      - "v13/code/docs/proofs/continuation-20261025/c3-native-run136/**"
+      - ".github/workflows/v13-run136-age0d-native.yml"
+      - "v13/code/scripts/age0d_c3_native_eval_run136.py"
+      - "v13/code/docs/proofs/continuation-20261025/age0d-c3-native-run136/**"
 permissions:
   contents: read
 concurrency:
@@ -44,7 +44,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           python3 -m venv "$RUNNER_TEMP/run136"
           "$RUNNER_TEMP/run136/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
-          "$RUNNER_TEMP/run136/bin/python" -m compileall -q v13/code/v13 v13/code/scripts/c3_registered_linux_smoke_run136.py
+          "$RUNNER_TEMP/run136/bin/python" -m compileall -q v13/code/v13 v13/code/scripts/age0d_c3_native_eval_run136.py
+          (cd v13/code && PYTHONPATH=. "$RUNNER_TEMP/run136/bin/python" -m unittest -v tests.test_age0d_native_fixture_run136 tests.test_age0d_answer_arithmetic_run134)
       - name: Recheck current native resources and ownership without signalling processes
         run: |
           set -euo pipefail
@@ -74,7 +75,7 @@ jobs:
           set -uo pipefail
           set +e
           export PYTHONPATH="$PWD"
-          timeout 840s "$RUNNER_TEMP/run136/bin/python" scripts/c3_registered_linux_smoke_run136.py --home "$RUNNER_TEMP/v13_run136" --report "$RUNNER_TEMP/RUN136_C3_AGE0D_NATIVE_REPORT.json" 2>&1 | tee "$RUNNER_TEMP/RUN136_AGE0D_NATIVE_RAW.log"
+          timeout 840s "$RUNNER_TEMP/run136/bin/python" scripts/age0d_c3_native_eval_run136.py --home "$RUNNER_TEMP/v13_run136" --report "$RUNNER_TEMP/RUN136_C3_AGE0D_NATIVE_REPORT.json" 2>&1 | tee "$RUNNER_TEMP/RUN136_AGE0D_NATIVE_RAW.log"
           rc=${PIPESTATUS[0]}
           set -e
           echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
@@ -86,8 +87,8 @@ jobs:
         with:
           name: V13-Run136-C3-AGE0D-Native-${{ github.event.pull_request.head.sha }}
           path: |
-            ${{ runner.temp }}/RUN136_C3_NATIVE_REPORT.json
-            ${{ runner.temp }}/RUN136_NATIVE_RAW.log
+            ${{ runner.temp }}/RUN136_C3_AGE0D_NATIVE_REPORT.json
+            ${{ runner.temp }}/RUN136_AGE0D_NATIVE_RAW.log
           if-no-files-found: warn
           retention-days: 30
       - name: Enforce actual native outcome
