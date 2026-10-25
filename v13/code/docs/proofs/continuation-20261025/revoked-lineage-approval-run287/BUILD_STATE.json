@@ -1,0 +1,53 @@
+{
+  "schema": "V13_RUN287_REVOKED_SOURCE_ATOMIC_APPROVAL_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Run287 store.switch_generation atomic source lineage and test/CI/proof only",
+  "branch": "codex/revoked-lineage-approval-gate-run287-20261025",
+  "pr": 287,
+  "base_sha": "bc1944b665b918da8b45563b73dc331902fc9a49",
+  "tested_source_sha": "c956e47fff2de03ed89a2cd78ff98c67b4fb02e6",
+  "source_blobs": {
+    "v13/code/v13/store.py": "4fa1d8858412d739ffddb3509d711e4523cb2c0b",
+    "v13/code/tests/test_revoked_update_lineage_run287.py": "3f2d2040d48302108bdd9340518d01ab0b94f8d0"
+  },
+  "checks": [
+    {
+      "run": 40195008742,
+      "result": "PASS",
+      "tests": "50/50",
+      "privacy": "CLEAN",
+      "artifact_id": 12598984125,
+      "raw_sha256": "753a0cc024d6413b5e93fe75e4695c73ca96a83f3fff9d67a9ab3c6a263341e3"
+    },
+    {
+      "run": 40195008770,
+      "result": "PASS",
+      "scope": "persistent multi-chat operator journey"
+    },
+    {
+      "run": 40195008670,
+      "result": "PASS",
+      "tests": "401/401 plus extracted runtime 114/114",
+      "phone_zip_sha256": "e98c811e153722e483a3e8112401060d0f2b685f2e2e22cd4354bc5a5861514c",
+      "source_files": 1000,
+      "artifact_id": 12599586375
+    }
+  ],
+  "scope": "LINUX_SOFTWARE_SQLITE_SYNTHETIC_CANDIDATE",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "redmi_measured": false,
+    "full_native_latest_chain": false
+  },
+  "remaining_questions": [
+    "Current-chain full 20-stage native acceptance not yet rerun",
+    "PR284 resident process cancellation remains RED and separately owned",
+    "No hardware Redmi proof for source-lineage approval",
+    "Concurrent external filesystem tampering is outside SQLite writer isolation"
+  ],
+  "next_command": "Create a new review branch from verified PR287 proof, run full pinned-native acceptance with existing registered models/seed/stages, serial native concurrency group, preserve every failure and source hash; then fix highest-priority native gate without changing thresholds or PR284 Runtime ownership."
+}
