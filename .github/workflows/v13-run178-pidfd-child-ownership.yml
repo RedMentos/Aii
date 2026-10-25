@@ -1,0 +1,39 @@
+name: V13 Run178 pidfd child-ownership guard (Linux synthetic)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run178-pidfd-child-ownership.yml'
+      - 'v13/code/scripts/run178_pidfd_child_ownership.py'
+      - 'v13/code/tests/test_run178_pidfd_child_ownership.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run178-pidfd-ownership/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux-synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact source and Linux synthetic child-ownership tests
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run178_pidfd_child_ownership.py)" = '91eb1820aa84b9fa45c9dc7539aa0f928c023742'
+          test "$(git hash-object v13/code/tests/test_run178_pidfd_child_ownership.py)" = 'f9d42d33652b0387f5651ea7be4dbf8f3369c83f'
+          python3 -m compileall -q v13/code/scripts/run178_pidfd_child_ownership.py v13/code/tests/test_run178_pidfd_child_ownership.py
+          python3 -m unittest discover -s v13/code/tests -p test_run178_pidfd_child_ownership.py -v 2>&1 | tee "$RUNNER_TEMP/run178-tests-raw.log"
+          echo RUN178_LINUX_SYNTHETIC_PIDFD_CHILD_OWNERSHIP_PASS_NO_CGROUP
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base d2c8deb63591c64c2ee8c2579204017ebdc7e7cc --head HEAD
+      - name: Retain raw test log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run178-Pidfd-Child-Ownership-Raw
+          path: ${{ runner.temp }}/run178-tests-raw.log
+          if-no-files-found: warn
+          retention-days: 14
