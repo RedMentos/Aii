@@ -1,0 +1,16 @@
+test_budget_substring_not_exact (test_run185_gist_source_support_audit.SourceSupport.test_budget_substring_not_exact) ... ok
+test_complete_report_no_authority (test_run185_gist_source_support_audit.SourceSupport.test_complete_report_no_authority) ... ok
+test_correct_quote_support (test_run185_gist_source_support_audit.SourceSupport.test_correct_quote_support) ... ok
+test_duplicate_json_key_refused (test_run185_gist_source_support_audit.SourceSupport.test_duplicate_json_key_refused) ... ok
+test_empty_quotes_not_valid (test_run185_gist_source_support_audit.SourceSupport.test_empty_quotes_not_valid) ... ok
+test_fabricated_quote_refused (test_run185_gist_source_support_audit.SourceSupport.test_fabricated_quote_refused) ... ok
+test_invalid_json_refused (test_run185_gist_source_support_audit.SourceSupport.test_invalid_json_refused) ... ok
+test_posthoc_diagnostic_not_original_verdict (test_run185_gist_source_support_audit.SourceSupport.test_posthoc_diagnostic_not_original_verdict) ... ok
+test_reject_duplicate_and_incomplete (test_run185_gist_source_support_audit.SourceSupport.test_reject_duplicate_and_incomplete) ... ok
+test_reject_wrong_model (test_run185_gist_source_support_audit.SourceSupport.test_reject_wrong_model) ... ok
+test_stale_even_when_new_mentioned (test_run185_gist_source_support_audit.SourceSupport.test_stale_even_when_new_mentioned) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.006s
+
+OK
