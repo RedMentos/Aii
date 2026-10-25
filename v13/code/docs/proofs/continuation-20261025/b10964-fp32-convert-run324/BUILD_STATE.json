@@ -1,0 +1,51 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 324,
+  "branch": "assistant/b10964-fp32-convert-run324-20261025",
+  "pr": 321,
+  "parent_source_sha": "fd8c12ae56a1add448dbe9001e4e57db3cc98029",
+  "prereg_sha": "4cc9aa00351a973e229d47410ddfd5e1e41e5a4b",
+  "tested_source_sha": "e205152e9e0bf657c6189b99672b122244b44fd1",
+  "ci_run": 40213340677,
+  "ci_job": 121229084221,
+  "artifact_id": 12606995474,
+  "artifact_zip_sha256": "2d2443917539ca4826f13341c6bbfebd3823ea11b857edcc43efa8d50cb62e71",
+  "status": "PINNED_REAL_FP32_MODEL_CONVERSION_PASS_NO_OPTIMIZER",
+  "tests": {
+    "synthetic_negative": 10,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "actual_official_converter": "PASS_FP32"
+  },
+  "hf_repo": "LiquidAI/LFM2.5-350M",
+  "hf_revision": "9e6c6ccf47cd318696e137d381a7ded8fe4df09f",
+  "hf_model_safetensors_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+  "hf_model_safetensors_bytes": 708984464,
+  "hf_original_file_count": 6,
+  "tokenizer_config_sha256": "3701f370c70034d06e28947ff51c1063983393319f429e3ce58f06a45fae67cc",
+  "llama_cpp_source_tar_sha256": "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe",
+  "converter_sha256": "e9a1da876330bbce9687541ab31736542a01b4ac43c6686126514a50f122fb7f",
+  "ephemeral_fp32_master_gguf": {
+    "sha256": "5d200c19f13483e66b39d9feb3353032581882f3eb10cc8752f027d4688d6e6f",
+    "bytes": 1420324800,
+    "gguf_version": 3,
+    "tensor_count": 148,
+    "f32_elements": 354483968,
+    "metadata_count": 27,
+    "all_tensors_f32": true,
+    "published": false
+  },
+  "native_training_executed": false,
+  "owner": "Run324 isolated full FP32 converter; Run320 owner files untouched",
+  "next_command": "cd v13/code && python3 scripts/native_lfm2_epoch_eval_run320.py --tool-dir <pinned b10964 build/bin> --server <pinned b10964 server> --master <verified 5d200c19... GGUF> --source-manifest <pinned HF manifest> --out-dir <private ephemeral run325eval> (LD_LIBRARY_PATH=<pinned build/bin>)",
+  "prerequisites": "Run325 separate prereg and serialized CI; original Run320 exact 8/6/5/12 cohort, seed13, 2 epochs and thresholds unchanged; pinned source/model/seed hashes and all negative gates; never upload model/epoch weights",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "MISSING",
+    "V13": "INCOMPLETE"
+  }
+}
