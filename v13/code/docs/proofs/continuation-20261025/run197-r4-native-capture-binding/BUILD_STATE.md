@@ -27,3 +27,7 @@ STEP2 `UTILITY_FAIL`; B3 L1 `FAIL`; Body-JEPA `UNAVAILABLE`; `jepa_weight=0`; DS
 ## Commands
 `cd v13/code && python scripts/run197_r4_future_manifest.py manifest scripts/utility_bench2.py scripts/utility_bench.py /tmp/run197_future_tasks.json`
 `python scripts/run197_r4_future_manifest.py bind <sealed.json> <tasks.json> <raw-seed20261101.json> <raw-seed20261103.json> <provenance.json> <bound.json>`
+
+## CI failure and follow-up correction (same Run197 branch)
+- Initial GitHub Actions `40173724279` reported FAILURE. Local reproduction of `python scripts/run197_r4_future_manifest.py --help` with `PYTHONPATH` absent returned RC1 (`ModuleNotFoundError: No module named 'scripts'`); original stderr retained in `cli_initial.log`. This was a real direct-CLI import-path defect missed by the first 12 tests.
+- Added explicit repository-root `sys.path` entry before importing `scripts.run196_r4_stratified_future` and an isolated subprocess CLI regression. Local 13/13 PASS (`tests_after_cli_fix.log`); GitHub CI rerun remains to verify after remote update. No native inference and no gate change.
