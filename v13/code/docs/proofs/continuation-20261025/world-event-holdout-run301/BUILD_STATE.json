@@ -1,0 +1,59 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN301_V1",
+  "utc": "2026-10-25T14:47:00Z",
+  "owner": "GPT-6 automation / Run301",
+  "base": "5f4e6f7d0735a97aca1f1d3165666307ef5200e3",
+  "branch": "codex/world-event-holdout-run301-20261025",
+  "pr": 300,
+  "code_commit": "b9dcf2913739b17bd3851b0dc0bec3a74e1e084b",
+  "source_blob": "cb899b099c5c7f5db626b4cf4cf6cc4877a8f6cc",
+  "owned": [
+    "v13/code/v13/world_model.py",
+    "v13/code/tests/test_world_event_group_holdout_run301.py",
+    ".github/workflows/run301-world-event-holdout.yml",
+    "v13/code/docs/proofs/continuation-20261025/world-event-holdout-run301/"
+  ],
+  "tests": {
+    "red": {
+      "run": 40203788386,
+      "artifact": 12602742081,
+      "total": 52,
+      "errors": 3
+    },
+    "green": {
+      "run": 40203854229,
+      "artifact": 12602509155,
+      "total": 52,
+      "failures": 0,
+      "errors": 0,
+      "privacy": "CLEAN"
+    },
+    "whole_suite_prior": {
+      "run": 40202886433,
+      "artifact": 12602378950,
+      "total": 2833,
+      "failures": 2,
+      "errors": 36,
+      "skipped": 14,
+      "status": "FAILED_PRESERVED"
+    }
+  },
+  "proof_scope": "ACTUAL_PRODUCTION_SQLITE_SYNTHETIC_OUTCOMES_SOFTWARE_ONLY",
+  "model_cohorts_unchanged": true,
+  "canon_unchanged": true,
+  "persisted_model_revision_unchanged": true,
+  "redmi_measured": false,
+  "step2": "UTILITY_FAIL_UNCHANGED",
+  "b3": "L1_ORIGINAL_NEGATIVE_UNCHANGED",
+  "body_jepa": "NOT_PROMOTED",
+  "jepa_weight": "UNCHANGED",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "open": [
+    "Native source chain mismatch in full suite requires independent owner and exact registered baseline reconciliation",
+    "Resident cancellation cleanup test fails in broader suite; frozen Runtime ownership",
+    "Native/Redmi world model utility and general causal transfer unproven"
+  ],
+  "next_command": "Fetch Run301 focused and related CI conclusions, preserve any failures. Start next independent substantive Canon package on a new review branch.",
+  "prerequisites": "No force-push, no frozen native hash relaxation, no paid provisioning, respect Run297 native Context OS owner."
+}
