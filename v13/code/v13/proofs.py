@@ -1,4 +1,5 @@
 """Read-only audits and isolated, real-run STEP1/2 probes of the existing runtime."""
+import copy
 import json
 import math
 from pathlib import Path
@@ -125,6 +126,45 @@ def probe_sustained(parent,cycles=12):
         save();parent.store.set_meta('latest_sustained_proof',str(path))
     return {'status':report['status'],'checks':report.get('checks',{}),'artifact':str(path),'phone_measured':report['phone_measured'],'stability_epoch_complete':False}
 
+def _mask_step1_bodies(runtime):
+    """Remove *both* B model authority paths in a disposable STEP1 proof home.
+
+    ModelManager's manifest is not the whole authority: AG0 committed slots
+    can override path_for even when the installed 'body'/'gist' entries are
+    absent. This helper is only called on a freshly created temporary proof
+    Runtime; never on the user's persistent brain.
+    """
+    from .models import model_key
+    from .common import Unavailable
+    roles=('B1_DETAIL','B2_GIST')
+    keys={model_key(role,runtime.models.b2_control) for role in roles}
+    slots=runtime.bodies.slots.box.load()[0]['slots']
+    saved={'installed':{k:runtime.models.installed[k] for k in keys if k in runtime.models.installed},
+           'slots':{role:copy.deepcopy(slots[role]) for role in roles if role in slots}}
+    runtime.pool.unload()  # no already-resident body may outlive the isolation
+    for key in keys:runtime.models.installed.pop(key,None)
+    runtime.models.save()
+    def remove(st):
+        for role in roles:st['slots'].pop(role,None)
+    runtime.bodies.slots.box.mutate(remove)
+    for role in roles:
+        try:runtime.models.path_for(role)
+        except Unavailable:continue
+        raise RuntimeError('STEP1 body still accessible after slot mask: '+role)
+    return saved
+
+
+def _restore_step1_bodies(runtime,saved):
+    """Restore exact original slot specs and installed entries before STEP2."""
+    runtime.pool.unload()
+    runtime.models.installed.update(saved['installed'])
+    runtime.models.save()
+    def restore(st):
+        for role,slot in saved['slots'].items():st['slots'][role]=copy.deepcopy(slot)
+    runtime.bodies.slots.box.mutate(restore)
+    runtime.bodies.sync()
+
+
 def probe_step12(parent,cycles=1):
     """Explicit proof job, separate brain. Does not train, tune prompts, or promote any gate."""
     if not 1<=cycles<=4:raise ValueError('Probe cycles: 1..4')
@@ -144,17 +184,15 @@ def probe_step12(parent,cycles=1):
                 if parent.cancel_event.is_set() or time.monotonic()>end:runtime.cancel();raise Cancelled('STEP12-Probe abgebrochen/Zeitbudget')
                 time.sleep(.05)
             result=audit_event(runtime.store,eid);report['turns'].append(result);return result
-        # STEP1 explicitly removes only the temporary test home's body manifest.
-        body=runtime.models.installed.pop('body',None);gist=runtime.models.installed.pop('gist',None);runtime.models.save()
+        # STEP1 must mask the disposable home's model manifest AND AG0 slots.
+        saved_bodies=_mask_step1_bodies(runtime)
         first=ask('Hallo. Erkläre kurz, wie ich dir eine Frage stellen kann.')
         state,version=runtime.store.state('C1_EXEC:'+runtime.session);session=runtime.session;runtime.close();runtime=Runtime(home)
         recovered,recovered_version=runtime.store.state('C1_EXEC:'+runtime.session)
-        report['step1_restart']={'same_session':runtime.session==session,'same_exec_state':recovered==state,'same_state_version':recovered_version==version,'body_manifest_absent':not {'body','gist'}&set(runtime.models.installed)}
+        report['step1_restart']={'same_session':runtime.session==session,'same_exec_state':recovered==state,'same_state_version':recovered_version==version,'body_manifest_absent':not {'body','gist'}&set(runtime.models.installed),'body_slot_absent':not {'B1_DETAIL','B2_GIST'}&set(runtime.bodies.slots.box.load()[0]['slots'])}
         report['step1_native_control_observed']='native_control' in first['output_metadata'].get('route',{})
         report['step1_c3_without_body']=first['output_metadata'].get('runner',{}).get('role')=='C3_LANGUAGE'
-        if body:runtime.models.installed['body']=body
-        if gist:runtime.models.installed['gist']=gist
-        runtime.models.save()
+        _restore_step1_bodies(runtime,saved_bodies)
         runtime.cfg.update(route_override='both',observer_mode='background')
         for i in range(cycles):
             parent.notice(f'STEP2 Messung {i+1}/{cycles} · bestehende B1/B2-Pfade')
@@ -176,7 +214,7 @@ def probe_step12(parent,cycles=1):
 
 
 def probe_jef_modes(parent):
-    """Real STEP1 C-plane proof: C2-only, C3-only and C2+C3, with B manifest removed.
+    """Real STEP1 C-plane proof: C2-only, C3-only and C2+C3, with B manifest and AG0 slots removed.
 
     Diagnostic only. C2 is a structured-control organ, so its row is judged on a
     native structured result rather than pretending it is a language answer.
@@ -199,7 +237,7 @@ def probe_jef_modes(parent):
             shutil.rmtree(home/name);(home/name).symlink_to(parent.home/name,target_is_directory=True)
         shutil.copyfile(parent.home/'config/models.json',home/'config/models.json')
         runtime=Runtime(home);runtime.cancel_event=parent.cancel_event
-        body=runtime.models.installed.pop('body',None);gist=runtime.models.installed.pop('gist',None);runtime.models.save()
+        saved_bodies=_mask_step1_bodies(runtime)
         fixtures=prompt_text(cfg,'probe_fixtures')
         # C2-only: real native structured-control calls.
         c2=[]
@@ -231,11 +269,10 @@ def probe_jef_modes(parent):
         report['restart']={'same_session':runtime.session==sid,'same_exec_state':recovered==state,'same_state_version':recovered_version==version}
         report['modes']['C2_PLUS_C3']={'turns':combined,'all_final':all(x['checks']['final_output'] and x['checks']['actual_model_output'] for x in combined),'all_c2_observed':all('native_control' in x['output_metadata'].get('route',{}) for x in combined),'all_c3_output':all(x['output_metadata'].get('runner',{}).get('role')=='C3_LANGUAGE' for x in combined)}
         report['body_manifest_absent']=not {'body','gist'}&set(runtime.models.installed)
-        report['checks']={'c2_only':report['modes']['C2_ONLY']['all_structured'],'c3_only':report['modes']['C3_ONLY']['all_nonempty'],'combined_final':report['modes']['C2_PLUS_C3']['all_final'],'combined_c2':report['modes']['C2_PLUS_C3']['all_c2_observed'],'combined_c3':report['modes']['C2_PLUS_C3']['all_c3_output'],'restart':all(report['restart'].values()),'no_b_manifest':report['body_manifest_absent'],'integrity':not runtime.store.integrity(True)}
+        report['body_slot_absent']=not {'B1_DETAIL','B2_GIST'}&set(runtime.bodies.slots.box.load()[0]['slots'])
+        report['checks']={'c2_only':report['modes']['C2_ONLY']['all_structured'],'c3_only':report['modes']['C3_ONLY']['all_nonempty'],'combined_final':report['modes']['C2_PLUS_C3']['all_final'],'combined_c2':report['modes']['C2_PLUS_C3']['all_c2_observed'],'combined_c3':report['modes']['C2_PLUS_C3']['all_c3_output'],'restart':all(report['restart'].values()),'no_b_manifest':report['body_manifest_absent'],'no_b_slots':report['body_slot_absent'],'integrity':not runtime.store.integrity(True)}
         report['no_b_dependency_proven']=all(report['checks'].values());report['status']='JEF_MODES_PASS' if report['no_b_dependency_proven'] else 'JEF_MODES_PARTIAL'
-        if body:runtime.models.installed['body']=body
-        if gist:runtime.models.installed['gist']=gist
-        runtime.models.save()
+        _restore_step1_bodies(runtime,saved_bodies)
     except Exception as exc:report.update(status='JEF_MODES_INTERRUPTED',error_type=type(exc).__name__,error=str(exc)[:500])
     finally:
         if runtime:

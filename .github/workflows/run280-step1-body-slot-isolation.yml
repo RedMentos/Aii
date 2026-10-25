@@ -1,0 +1,93 @@
+name: V13 Run280 STEP1 body-slot isolation (software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/proofs.py'
+      - 'v13/code/tests/test_step1_body_slot_isolation_run280.py'
+      - '.github/workflows/run280-step1-body-slot-isolation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run280-step1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  step1-isolation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Verify exact head and unchanged Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN280_HEAD.txt"
+          git hash-object v13/code/v13/proofs.py | tee "$RUNNER_TEMP/RUN280_SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_step1_body_slot_isolation_run280.py | tee "$RUNNER_TEMP/RUN280_TEST_BLOB.txt"
+          test -s v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+      - name: Isolated pinned CPU-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run280venv"
+          timeout 180s "$RUNNER_TEMP/run280venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual ModelManager, BodyFabric and STEP1 proof integration
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run280venv/bin/python" -m compileall -q v13 tests
+          compile_rc=$?
+          echo "$compile_rc" > "$RUNNER_TEMP/RUN280_COMPILE_EXIT.txt"
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run280venv/bin/python" -m unittest -v \
+            tests.test_step1_body_slot_isolation_run280 \
+            tests.test_step12 \
+            tests.test_jef_lifecycle_integration_run67 \
+            tests.test_bodies \
+            tests.test_z7_residency_recovery 2>&1 | tee "$RUNNER_TEMP/RUN280_FOCUSED_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN280_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "compile_rc=$compile_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN280_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN280_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload closed raw Linux-software evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run280-Step1BodySlots-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN280_HEAD.txt
+            ${{ runner.temp }}/RUN280_SOURCE_BLOB.txt
+            ${{ runner.temp }}/RUN280_TEST_BLOB.txt
+            ${{ runner.temp }}/RUN280_COMPILE_EXIT.txt
+            ${{ runner.temp }}/RUN280_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN280_FOCUSED_RAW.log
+            ${{ runner.temp }}/RUN280_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN280_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce test and privacy results
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.compile_rc }}" = "0"
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
