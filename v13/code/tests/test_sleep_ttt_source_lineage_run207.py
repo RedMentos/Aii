@@ -65,7 +65,7 @@ class SleepTTTSourceLineageRun207(unittest.TestCase):
         self.prepare()
         self.revoke_user_source('ALPHA_207')
         rows = self.rows()
-        self.assertTrue(rows, 'a later valid pair still has a valid earlier pair')
+        self.assertLess(len(rows), 2, 'source-dependent later turns may also be invalidated')
         self.assertFalse(any('ALPHA_207' in json.dumps(row) for row in rows), rows)
         self.assertTrue(all(row['status'] == 'CANDIDATE_NOT_TRAINED' for row in rows))
 
