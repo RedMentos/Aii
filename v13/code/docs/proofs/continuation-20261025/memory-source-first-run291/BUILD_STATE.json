@@ -1,0 +1,48 @@
+{
+  "schema": "V13_RUN291_NATIVE_MEMORY_SOURCE_PROMPT_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "New opt-in native diagnostic script, unit test, CI, prereg and scoped proof only",
+  "branch": "codex/memory-native-source-first-probe-run291-20261025",
+  "pr": 291,
+  "base_sha": "5c7c4876c7e50158d5eabc30d5647316549b10d8",
+  "tested_source_sha": "6855943f5d568f08fc5b64faa958a3cf51866310",
+  "result": "NOT_SUPPORTED",
+  "native_run": 40196741577,
+  "artifact_id": 12600522164,
+  "artifact_sha256": "16b3e9f02759f7aa72a66d63d1afb6b209bccbc17c63e688846eec4b987980c2",
+  "source_only_tests": "5/5 PASS",
+  "native_arms": {
+    "baseline": {
+      "diagnostic_valid": true,
+      "integration_exit": 2,
+      "detail_source_use": false,
+      "language_source_use": true
+    },
+    "source_first": {
+      "diagnostic_valid": true,
+      "integration_exit": 2,
+      "detail_source_use": false,
+      "language_source_use": true
+    }
+  },
+  "prompt_candidate_sha256": "e85a1ca602ed5ebcc39272b79edacec7ba591524663eacbd8bc2e0332dcd30b2",
+  "source_blobs": {
+    "v13/code/scripts/run291_memory_prompt_probe.py": "0eac13f93b3e8b3d320f43120657233d78409de2",
+    "v13/code/tests/test_run291_memory_prompt_probe.py": "1407c611af0f8ada1b99f36eb55ce2f8ecb45080",
+    ".github/workflows/run291-memory-source-native.yml": "46410a57d618f48a0ac40c41af0eefb289ac92eb"
+  },
+  "private_backup": {
+    "path": "/V13-Inquisition/Proofs/Run291/V13_Run291_Native_Prompt_AB_Raw.zip",
+    "sha256_download_back_verified": true
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "next_command": "Review Run292 actual pinned-native wake-only result after serialized Run291. Then pursue independent output-adapter bounded-bias feasibility proof using Run288 actual native feature artifact without modifying the registered cohort or gates; if structurally infeasible, record impossibility and design a separately preregistered canonical utility path. Do not promote the unsuccessful prompt candidate.",
+  "checkpoint_kind": "branch_scoped_not_merged"
+}
