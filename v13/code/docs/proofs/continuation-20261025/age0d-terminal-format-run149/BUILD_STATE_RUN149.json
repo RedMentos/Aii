@@ -1,0 +1,52 @@
+{
+  "schema": "V13_RUN149_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex Run149 new answer_arithmetic_shadow_v3.py, test_answer_arithmetic_shadow_v3_run149.py, workflow and Run149 proof only",
+  "base_pr": 179,
+  "base_commit": "2ab69633f867b06bb8b9320087888fafb1129b76",
+  "source_blob_sha": "20f3074d20f08a57885cc44b909d979320b0121a",
+  "test_blob_sha": "675b58b0e2dcd8174bef47e1382bce06424185be",
+  "local_tests": "10/10 PASS in repository-shaped layout",
+  "synthetic": {
+    "seed": 14926,
+    "n": 120,
+    "sha256": "f708e90ef2312d7eb8c453508778ba3f07eb52631e54bcc86f60e80e5701f10f",
+    "exact_question_overlap_with_run147": 0
+  },
+  "posthoc_run147": {
+    "artifact_sha256": "ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676",
+    "v2": {
+      "supported": 83,
+      "correct": 79,
+      "wrong": 4,
+      "abstain": 13
+    },
+    "v3": {
+      "supported": 90,
+      "correct": 86,
+      "wrong": 4,
+      "abstain": 6
+    },
+    "status": "POSTHOC_NOT_PROSPECTIVE"
+  },
+  "authority": "SHADOW_ONLY",
+  "runtime_consumer": "OFF",
+  "may_deliver": false,
+  "may_update": false,
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "blockers": [
+    "No fresh independent native v3 cohort or human labels; posthoc format benefit cannot promote K1/K2.",
+    "Run147 original K2 INSUFFICIENT (4 wrong-format labels).",
+    "Redmi not run; frozen Runtime untouched."
+  ],
+  "next_command": "RUN147_ARTIFACT=RUN147_native.zip PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_answer_arithmetic_shadow_v3_run149.py -v",
+  "next_step": "Verify exact-head CI, then prioritize a fresh prospective native output-utility comparison or an independent blueprint organ package, preserving frozen Runtime and negative gates."
+}
