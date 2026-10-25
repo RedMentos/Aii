@@ -45,7 +45,7 @@ class PreActionRecoveryRun391(unittest.TestCase):
         t.commit_copy(tx["id"])
         aid, _ = self.g.expect(
             kind, dumps(args)[:120] if ctx is None else ctx,
-            {"tool": "measure", "action_tx": tx["id"]} if action is None else action,
+            {"tool": "measure", "action_tx": tx["id"], "event_id": tx["event_id"], "origin": tx["origin"]} if action is None else action,
             modality="tool",
         )
         return t, tx["id"], aid
@@ -147,6 +147,37 @@ class PreActionRecoveryRun391(unittest.TestCase):
         self.g.clock = lambda: time.time() + 7200
         self.assertEqual(self.adapter.reconcile(stale_after_s=3600)["discarded"], 1)
         self.assertEqual(self.g.report()["closed"], 0)
+
+    def test_real_final_turn_settles_only_after_final(self):
+        sid = self.r.store.new_session("run391-final")
+        event_id = self.r.store.event(sid, "Check result")["event_id"]
+        t, tid, aid = self.manual(event_id=event_id)
+        t.execute(tid, lambda value: value + 1)
+        self.assertEqual(self.adapter.reconcile()["deferred"], 1)
+        self.assertEqual(self.g.report()["closed"], 0)
+        self.r.store.message(sid, event_id, "assistant", "Finished", "FINAL")
+        self.assertEqual(self.adapter.reconcile()["recovered"], 1)
+        self.assertEqual(self.g.samples()[-1]["actual"], "EXECUTED:3")
+
+    def test_cancelled_turn_discards_completed_effect_without_learning(self):
+        sid = self.r.store.new_session("run391-cancel")
+        event_id = self.r.store.event(sid, "Check cancelled")["event_id"]
+        t, tid, aid = self.manual(event_id=event_id)
+        t.execute(tid, lambda value: value + 1)
+        self.r.store.message(sid, event_id, "assistant", "", "CANCELLED")
+        self.assertEqual(self.adapter.reconcile()["discarded"], 1)
+        self.assertEqual(self.g.report()["closed"], 0)
+        self.assertEqual(self.g.box.load()[0]["table"], {})
+
+    def test_mismatched_event_and_origin_cannot_launder_durable_outcome(self):
+        for field, forged in (("event_id", "another-turn"), ("origin", "SYSTEM")):
+            with self.subTest(field=field):
+                t, tid, aid = self.manual()
+                t.execute(tid, lambda value: value)
+                self.g.box.mutate(lambda st: st["open"][aid]["action"].__setitem__(field, forged))
+                self.assertEqual(self.adapter.reconcile()["discarded"], 1)
+                self.assertEqual(self.g.report()["closed"], 0)
+        self.assertEqual(self.g.box.load()[0]["table"], {})
 
     def test_default_registry_still_uses_postaction_only(self):
         t = ToolRegistry(self.r.store, on_outcome=self.g.from_tool)
