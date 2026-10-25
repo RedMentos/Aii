@@ -5,7 +5,7 @@ C3 LFM2.5-350M reads listed numbers reliably but can neither compute nor pick th
 operation from the question wording plus a deterministic recipe raised the pass rate from 40/60 to 50/60 (p .006).
 Here the same pieces become a tool in the live turn: `operation(text)` is the BOOT rule (like the regex proposer in
 toolstep.py, not learned), the model reads typed values through READ_SCHEMA, and `tool()` re-checks every value against
-the user's own text (WP-W2 number guard) before computing. Claim limit: English only; rule R3 (parts 9/10) misses about 40 % of new
+the user's own text (WP-W2 number guard) before computing. Claim limit: English R3 plus conservative German BOOT wording; native German reading unmeasured; R3 misses about 40 % of new
 wordings, and those get no proposal.
 """
 import json
@@ -20,6 +20,19 @@ OPERATIONS = ((re.compile(r'(?i)\bhow (?:many|much)\b[^.?]*\b(?:more|less|fewer)
 EXTRA = ((re.compile(r'(?i)\bdifference between\b|\bexceeds?\b|\bgap between\b|\bfar apart\b'), 'difference_max_min'),
          (re.compile(r'(?i)\badd\b[^.?]*\bup\b|\baltogether\b|\bcombined\b'), 'total'))
 COUNT = re.compile(r'(?i)\b(?:total|overall)\s+(?:number|count)\s+of\b')
+# Run362: conservative German question-only BOOT rules. A generic "difference
+# between A and B" is NOT necessarily max-minus-min when a list has >2 rows.
+DE_COUNT = re.compile(r'(?i)\b(?:gesamtanzahl|anzahl(?:\s+(?:der|von))?|wie\s+viele\s+(?:einträge|posten|artikel|positionen|personen|zeilen|stücke|teile|produkte|werte|zahlen|elemente|gruppen))\b')
+# "Wie viele" normally asks for a count, even when the noun embeds "Preis".
+# Explicit "wie viele Euro sind ..." is an amount, not a number of entries.
+DE_PLURAL_COUNT = re.compile(r'(?i)\bwie\s+viele\b(?!\s+euro(?:\s|$))')
+DE_DIFF_CUE = re.compile(r'(?i)\b(?:differenz|unterschied|abstand|auseinander|mehr|weniger)\b')
+DE_HIGH = re.compile(r'(?i)\b(?:größt\w*|höchst\w*|maxim\w*)\b')
+DE_LOW = re.compile(r'(?i)\b(?:kleinst\w*|niedrigst\w*|minim\w*)\b')
+DE_TOTAL_STRONG = re.compile(r'(?i)\b(?:summe|gesamtbetrag|addier\w*|aufsummier\w*|zusammenrechn\w*)\b')
+DE_TOTAL_WEAK = re.compile(r'(?i)\b(?:zusammen|insgesamt)\b')
+DE_AMOUNT = re.compile(r'(?i)\b(?:wie\s+viel\b|wie\s+viele\s+euro\b|wie\s+hoch\b|was\s+kostet\b|was\s+kosten\b|was\s+ergibt\b|betrag\w*|preis\w*|kosten\b|euro\b)\b')
+DE_REQUEST = re.compile(r'(?i)\?|\b(?:wie|was|addier\w*|berechn\w*|ermitt\w*|rechne\w*)\b')
 READ_SYSTEM = ('Read the numbers in the text. Return JSON only. values: every listed item with its name and its number '
                'copied exactly from the text. Never calculate anything yourself.')
 READ_SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['values'], 'properties': {
@@ -50,9 +63,20 @@ def operation(text):
     if len(t) > MAX_TEXT:
         return None
     q = question_part(t)
-    if COUNT.search(q):
+    if COUNT.search(q) or DE_COUNT.search(q) or DE_PLURAL_COUNT.search(q):
         return None
-    return next((op for rx, op in OPERATIONS+EXTRA if rx.search(q)), None)
+    english=next((op for rx, op in OPERATIONS+EXTRA if rx.search(q)), None)
+    if english is not None:
+        return english
+    # German is conservative: no data-line-only trigger, no ambiguous
+    # two-named-item difference when the actual list may have more items.
+    if not DE_REQUEST.search(q):
+        return None
+    if DE_DIFF_CUE.search(q) and DE_HIGH.search(q) and DE_LOW.search(q):
+        return 'difference_max_min'
+    if DE_TOTAL_STRONG.search(q) or (DE_TOTAL_WEAK.search(q) and DE_AMOUNT.search(q)):
+        return 'total'
+    return None
 
 
 def encode(values):
