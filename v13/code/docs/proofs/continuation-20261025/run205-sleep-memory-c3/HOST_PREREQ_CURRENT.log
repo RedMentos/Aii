@@ -1,0 +1,28 @@
+2026-10-25T08:25:44Z
+== PLATFORM ==
+Linux 8124fdd2ed7b 6.18.55 #1 SMP Wed Oct 14 19:45:18 UTC 2026 x86_64 GNU/Linux
+4294967296
+cgroup2 /sys/fs/cgroup cgroup2 ro,nosuid,nodev,noexec,relatime,nsdelegate 0 0
+== RAM ==
+               total        used        free      shared  buff/cache   available
+Mem:           5.8Gi       1.2Gi       4.7Gi        12Ki       212Mi       4.6Gi
+Swap:             0B          0B          0B
+== TOOLS ==
+/usr/bin/gcc
+/usr/bin/cc
+/usr/local/swift/usr/bin/clang
+/usr/bin/cmake
+/usr/bin/ninja
+/usr/bin/git
+== PYTHON ==
+torch INSTALLED
+transformers MISSING
+llama_cpp MISSING
+numpy INSTALLED
+huggingface_hub INSTALLED
+safetensors INSTALLED
+prompt_toolkit INSTALLED
+== MODEL FILES ==
+== NETWORK ==
+== CGROUP WRITE ==
+read_only
