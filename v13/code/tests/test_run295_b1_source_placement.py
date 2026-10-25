@@ -48,6 +48,14 @@ class FrozenB1Prompt(unittest.TestCase):
         rows[0]["native_completed"] = False
         self.assertFalse(P.evaluate(rows)["baseline"]["native_complete"])
 
+    def test_baseline_only_is_not_a_new_prompt_signal(self):
+        diag = {arm: {"candidate_signal_only": arm == "baseline"} for arm in P.ARMS}
+        self.assertEqual(P.classify(diag, True), "B1_NATIVE_PROMPT_NOT_SUPPORTED")
+        diag["baseline"]["candidate_signal_only"] = False
+        diag["user_source"]["candidate_signal_only"] = True
+        self.assertEqual(P.classify(diag, True), "B1_NATIVE_PROMPT_SIGNAL_ONLY")
+        self.assertEqual(P.classify(diag, False), "B1_NATIVE_DIAGNOSTIC_INVALID")
+
     def test_existing_output_refused_before_native_launch(self):
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "exists.json"
