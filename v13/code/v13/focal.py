@@ -291,8 +291,16 @@ class Workspace:
             row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",(slot['payload_ref'],))
             return json.loads(row['payload'])['offer'].get('summary','') if row else None
         if slot['source_kind']=='MEMORY':
-            row=self.s.one('SELECT value FROM memories WHERE id=? AND active=1',(slot['payload_ref'],))
-            return row['value'] if row else None
+            row=self.s.one("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id "
+                           "WHERE m.id=? AND m.active=1 AND s.deleted=0",(slot['payload_ref'],))
+            if not row:return None
+            ref={'source_id':row['source_id'],'sha256':row['hash'],'char_start':0,
+                 'char_end':row['chars'],'modality':'text'}
+            if slot.get('source_refs')!=[ref]:return None
+            # B4 re-entry must not resurrect a correction after its human F5
+            # decision/feedback was revoked. Readable blobs alone are insufficient.
+            from .memory import Memory
+            return row['value'] if Memory(self.s,{})._verified_rows([row]) else None
         return None
     def load(self,e):
         st,_=self.s.state(self.key,{})
