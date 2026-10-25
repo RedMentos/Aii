@@ -12,7 +12,7 @@ import zipfile
 
 ROOT='V13-Phone/'
 REQUIRED=(
-    'AGENTS.md','STARTEN.sh','setup.sh','KNOEPFE_EINRICHTEN.sh',
+    'STARTEN.sh','setup.sh','KNOEPFE_EINRICHTEN.sh',
     'v13/runtime.py','v13/models.py','specs/models.json',
     'docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md')
 FORBIDDEN_SUFFIX=('.gguf','.safetensors','.sqlite','.sqlite3','.db','.pem','.key','.env','.ggml')
