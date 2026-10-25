@@ -1,0 +1,24 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 317,
+  "source_head": "285d742c4e59edd57840781d61e4d9f289aca7b4",
+  "ci_exact_head": "204435c7da4f0b509fe4b3328a45d9f9ce127dec",
+  "ci_run": 40210143325,
+  "artifact_id": 12604294593,
+  "artifact_zip_sha256": "f8e3cba28226f2cb7a1c939f1d099c9f889cea9c4f159ab9115177b1441c539c",
+  "raw_private_library": "/V13/checkpoints/2026-10-25/V13_Run317_Native_C3_SourceUse_raw_shaf8e3cba2.zip",
+  "evidence": "LINUX_NATIVE_C3",
+  "baseline": "4/5 exact-code",
+  "candidate": "5/5 exact-code",
+  "negative": "BERYL_B contradictory caveat; narrow observational prompt-only result",
+  "status": "CLOSED_DIAGNOSTIC_NOT_PROMOTED",
+  "owner": "Run317 closed",
+  "next_command": "Review PR314; switch to G13 and native body training independent packages",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  }
+}
