@@ -1,0 +1,105 @@
+name: V13 Run122 exact-head phone ZIP stop-state smoke
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v13-run122-phone-zip-stop.yml"
+      - "v13/code/docs/proofs/continuation-20261025/phone-zip-run122/**"
+permissions:
+  contents: read
+concurrency:
+  group: v13-run122-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Official privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+  zip-and-smoke:
+    needs: privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+      NEEDLE_TELEMETRY: "0"
+      NO_MODEL_DOWNLOADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Exact head and isolated model-free dependencies
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          git rev-parse HEAD
+          python3 -m venv "$RUNNER_TEMP/run122"
+          "$RUNNER_TEMP/run122/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Package, audit and extract exact source bytes
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/run122/bin/python" scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run122.zip" --phone-install
+          unzip -tqq "$RUNNER_TEMP/V13-Phone-Run122.zip"
+          "$RUNNER_TEMP/run122/bin/python" - <<'PY'
+          import json, os, zipfile
+          p=os.path.join(os.environ['RUNNER_TEMP'],'V13-Phone-Run122.zip')
+          with zipfile.ZipFile(p) as z:
+              names=set(z.namelist())
+              required={
+                  'V13-Phone/setup.sh',
+                  'V13-Phone/STARTEN.sh',
+                  'V13-Phone/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md',
+                  'V13-Phone/WORKSPACE_FILES.json',
+                  'V13-Phone/v13/__main__.py',
+                  'V13-Phone/tests/test_cli_standstill_run121.py',
+                  'V13-Phone/tests/test_phone_cli_run87.py',
+              }
+              if required-names:
+                  raise SystemExit('missing required source: '+repr(sorted(required-names)))
+              if any(n.endswith(('.gguf','.safetensors','.sqlite','.db','.env')) for n in names):
+                  raise SystemExit('private/model payload in phone ZIP')
+              m=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              if m['schema_version']!=1 or len(m['files'])<100:
+                  raise SystemExit('incomplete manifest')
+              print('RUN122_SOURCE_MANIFEST_PASS',len(m['files']))
+          PY
+          sha256sum "$RUNNER_TEMP/V13-Phone-Run122.zip"
+          stat -c 'RUN122_SOURCE_BYTES=%s' "$RUNNER_TEMP/V13-Phone-Run122.zip"
+          mkdir -p "$RUNNER_TEMP/extracted"
+          unzip -q "$RUNNER_TEMP/V13-Phone-Run122.zip" -d "$RUNNER_TEMP/extracted"
+      - name: Real CLI + stop-state tests exclusively from extracted ZIP
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/extracted/V13-Phone"
+          export PYTHONPATH="$PWD"
+          "$RUNNER_TEMP/run122/bin/python" -m compileall -q v13 tests
+          for pattern in test_cli_standstill_run121.py test_phone_cli_run87.py test_phone_operator_journey_run86.py test_standstill.py test_phone_halt.py; do
+            echo "EXTRACTED_RUN122_SUITE=$pattern"
+            "$RUNNER_TEMP/run122/bin/python" -m unittest discover -s tests -p "$pattern" -v
+          done
+          echo 'RUN122_EXTRACTED_LINUX_SOFTWARE_PASS; NO_NATIVE_OR_REDMI_PROOF'
+      - name: Publish reviewed short-lived source-only phone ZIP
+        id: upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-Phone-Run122-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/V13-Phone-Run122.zip
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Artifact pointer and claim limits
+        run: |
+          echo "RUN122_ARTIFACT_URL=${{ steps.upload.outputs.artifact-url }}"
+          echo "SOURCE_ONLY; NOT_NATIVE; NOT_REDMI; V13_INCOMPLETE"
