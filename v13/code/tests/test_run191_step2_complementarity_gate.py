@@ -29,12 +29,20 @@ class Step2ComplementarityGate(unittest.TestCase):
         self.assertIn(self.original,self.gate['real_data'])
         self.assertIn('docs/proofs/step2-ablations-linux.json',self.gate['ablation'])
 
-    def test_immutable_native_negative_evidence_is_not_green(self):
-        raw=json.loads((APP/self.native).read_text())
-        self.assertIs(raw['complementarity_proven'],False)
-        self.assertFalse(raw['gate_promotion'])
+    def test_immutable_native_negative_or_missing_evidence_is_not_green(self):
+        # The model-free Phone source ZIP intentionally excludes sibling
+        # bench-results. Missing evidence must fail shut rather than turning
+        # the original native negative into a fabricated positive.
+        path=APP/self.native
         failures=gates.verdicts(self.gate)
-        self.assertTrue(any(x['path']=='complementarity_proven' and x['actual'] is False
+        if path.is_file():
+            raw=json.loads(path.read_text())
+            self.assertIs(raw['complementarity_proven'],False)
+            self.assertFalse(raw['gate_promotion'])
+            actual=False
+        else:
+            actual='FileNotFoundError'
+        self.assertTrue(any(x['path']=='complementarity_proven' and x['actual']==actual
                             for x in failures),failures)
         self.assertNotEqual(gates.evaluate()['STEP2']['status'],'GREEN')
 
