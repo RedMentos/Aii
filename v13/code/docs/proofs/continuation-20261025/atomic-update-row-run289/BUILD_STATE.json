@@ -1,0 +1,52 @@
+{
+  "schema": "V13_RUN289_ATOMIC_UPDATE_ROW_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Store.switch_generation row identity, new test, CPU CI and scoped proof only",
+  "branch": "codex/atomic-update-approval-row-run289-20261025",
+  "pr": 289,
+  "base_sha": "be4e39e33c99e36c889dab892bf2367a0f3fcfdc",
+  "tested_source_sha": "a4cd4df0b95a5faf4163d8e5c1d2f05862c31efe",
+  "source_blobs": {
+    "v13/code/v13/store.py": "75f91eedd0d70d4244e80d61409b07b27fa5abd3",
+    "v13/code/tests/test_atomic_update_approval_row_run289.py": "35d792f4332b2e6c8202dc1cff569f4ba2466ec4",
+    ".github/workflows/run289-atomic-update-row.yml": "a172e8c314b594fce18775a8991f88293c94487a"
+  },
+  "red": {
+    "run": 40195820189,
+    "tests": "51 PASS / 4 FAIL",
+    "privacy": "CLEAN",
+    "artifact_id": 12600280476,
+    "artifact_sha256": "03583a25c187e57015307917f0e8adf12d307889860afa58adb910251c6e7336"
+  },
+  "green": {
+    "run": 40195901481,
+    "tests": "55/55 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12599464840,
+    "artifact_sha256": "5e31c10f1990b899b65e10ce81f33d8cea34b5727cdb8668c92213b1120e0a8f"
+  },
+  "other_checks": {
+    "run287": 40195901503,
+    "multichat": 40195901513,
+    "focused": 40195901521,
+    "focused_tests": "401/401 + extracted 114/114 PASS",
+    "phone_zip_sha256": "c69934326b9b85e8dd9c1d7c647f40a054e2e1fce0f4b49b79045b401cc3a287",
+    "phone_source_files": 1001
+  },
+  "scope": "LINUX_SQLITE_SOFTWARE_SYNTHETIC_ARTIFACT",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "remaining_questions": [
+    "Run288 full actual-weight 20-stage acceptance still in progress at checkpoint",
+    "Memory._forget_source active generation preflight-to-transaction race requires adversarial reproduction",
+    "External filesystem mutation not proven by SQLite row identity"
+  ],
+  "next_command": "Create separate Run290 branch from verified Run289 checkpoint, test Memory._forget_source preflight-to-deletion race using real SQLite transactions; preserve RED, patch if confirmed, run exact-head CI and publish raw evidence. Do not modify PR284 Runtime or Run288 native workflow.",
+  "checkpoint_kind": "branch_scoped_not_merged"
+}
