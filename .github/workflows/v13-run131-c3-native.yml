@@ -45,6 +45,28 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/run131"
           "$RUNNER_TEMP/run131/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
           "$RUNNER_TEMP/run131/bin/python" -m compileall -q v13/code/v13 v13/code/scripts/c3_registered_linux_smoke_run131.py
+      - name: Recheck current native resources and ownership without signalling processes
+        run: |
+          set -euo pipefail
+          uname -a
+          df -h "$RUNNER_TEMP"
+          free -h
+          cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+          cat /sys/fs/cgroup/memory.current 2>/dev/null || true
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          p=Path('/sys/fs/cgroup/memory.max')
+          value=p.read_text().strip() if p.exists() else 'max'
+          current=Path('/sys/fs/cgroup/memory.current')
+          used=int(current.read_text()) if current.exists() else 0
+          limit=int(value) if value.isdigit() else None
+          if limit is not None and limit-used < 1536*1024*1024:
+              raise SystemExit('RUN131_REFUSED_MEMORY_BUDGET')
+          if shutil.disk_usage('/tmp').free < 1024*1024*1024:
+              raise SystemExit('RUN131_REFUSED_DISK_BUDGET')
+          print('RUN131_RESOURCE_PREFLIGHT_PASS; native owner only this job; no process signals')
+          PY
       - name: Single native C3 registered model and pinned server, retain failures
         id: native
         working-directory: v13/code
