@@ -1,0 +1,10 @@
+test_bad_pid_rejected_without_open (test_run178_pidfd_child_ownership.PidfdOwnershipTests.test_bad_pid_rejected_without_open) ... ok
+test_direct_child_accepted_then_killed_via_pidfd (test_run178_pidfd_child_ownership.PidfdOwnershipTests.test_direct_child_accepted_then_killed_via_pidfd) ... ok
+test_fd_closed_if_waitid_refuses_child (test_run178_pidfd_child_ownership.PidfdOwnershipTests.test_fd_closed_if_waitid_refuses_child) ... ok
+test_no_numeric_signal_fallback (test_run178_pidfd_child_ownership.PidfdOwnershipTests.test_no_numeric_signal_fallback) ... ok
+test_nonchild_rejected_and_remains_alive (test_run178_pidfd_child_ownership.PidfdOwnershipTests.test_nonchild_rejected_and_remains_alive) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.031s
+
+OK
