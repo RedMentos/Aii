@@ -1,0 +1,75 @@
+{
+  "schema": "V13_RUN_SCOPED_BUILD_STATE_V1",
+  "run": "Run362",
+  "checkpoint_utc": "2026-10-25T20:21:00Z",
+  "owner": "assistant/run362-listarith-german-20261025",
+  "parent_branch": "assistant/run361-world-trainonly-coverage-20261025",
+  "parent_commit": "f9696d5574119ee87a31f8aa651e6dbd7c358929",
+  "tested_head": "19dd6f3a5b38d5639fb59950da6b4833d88fcb81",
+  "review_pr": 357,
+  "scope": "Conservative German R4 list arithmetic wording; explicit sums/extrema, plural counting abstention, gated ToolStep model-free mock",
+  "changed_files": [
+    "v13/code/v13/agi/listarith.py",
+    "v13/code/tests/test_listarith_german_run362.py",
+    ".github/workflows/run362-listarith-german.yml"
+  ],
+  "git_blob_shas": {
+    "v13/code/v13/agi/listarith.py": "94edf341ec79d4f7a6dba82b601da341d0b9819f",
+    "v13/code/tests/test_listarith_german_run362.py": "9a3ccba7ea9915a6a2e3793f313aa10bd28bd252",
+    ".github/workflows/run362-listarith-german.yml": "a9647915e02181826ead3922323855c228a26ca0",
+    "v13/code/BUILD_STATE.json": "fdf0827d7c4af5cdb85b69cbe651ed52784a07b5"
+  },
+  "red": {
+    "run_id": 40230011576,
+    "tests": 22,
+    "failures": 12,
+    "errors": 1,
+    "artifact_id": 12611684312,
+    "artifact_zip_sha256": "51b18b0fbdbd62b94fc833806c8eea1ad281e4e1e97f2f681c9d13d712b58d84"
+  },
+  "intermediate": {
+    "run_id": 40230087945,
+    "tests": 22,
+    "conclusion": "PASS",
+    "artifact_id": 12611784147,
+    "artifact_zip_sha256": "b0c399f34ec730468ac3709fd4b1811e6c3b9ade529514fd819da6b0fb0bec65"
+  },
+  "negative_control_red": {
+    "run_id": 40230159163,
+    "tests": 23,
+    "failures": 3,
+    "errors": 0,
+    "artifact_id": 12612634186,
+    "artifact_zip_sha256": "6ba257c7aebe1b2d5255935c08020213c6af951dac4238a613b51ceb075e40c1"
+  },
+  "green": {
+    "run_id": 40230210867,
+    "tests": 23,
+    "failures": 0,
+    "errors": 0,
+    "artifact_id": 12613150032,
+    "artifact_zip_sha256": "9f69daf89d8536f188a0883f0283bff6d740996490fb71997dd3e9774ea2439f",
+    "privacy": "CLEAN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "NOT_PROMOTED",
+    "Body_JEPA": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone_measured": false,
+    "native_german_read_proven": false,
+    "whole_system_complete": false
+  },
+  "central_BUILD_STATE_mutated": false,
+  "blockers": [
+    "No native German C3 typed read measurement",
+    "Tool remains disabled until explicit user enable and retains Age/tool/prohibition gates",
+    "No Redmi hardware"
+  ],
+  "next_command": "cd v13/code && python -m unittest -v tests.test_listarith_german_run362 tests.test_listarith tests.test_listarith_signed_source tests.test_r4_rule_r3 tests.test_r4_rule_question_only",
+  "prerequisites": [
+    "Python with numpy==2.3.5 and prompt-toolkit==3.0.52",
+    "ToolStep integration uses a mocked C3 reader; native evidence requires new registered cohort"
+  ],
+  "claim_limit": "Linux software-only German wording and deterministic numeric guard, no native/phone accuracy claim"
+}
