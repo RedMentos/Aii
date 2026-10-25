@@ -2,7 +2,7 @@ name: V13 Run373 pinned C3 350M Linux-native AG12 field-confidence diagnostic
 on:
   pull_request:
     paths:
-      - '.github/workflows/run373-c3-pinned-native-solver.yml'
+      - '.github/workflows/run373-c3-field-confidence-native.yml'
       - 'v13/code/scripts/run373_c3_field_confidence_native.py'
   workflow_dispatch:
 permissions:
