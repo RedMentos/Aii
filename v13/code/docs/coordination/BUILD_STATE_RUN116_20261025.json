@@ -1,0 +1,59 @@
+{
+  "schema": "V13_RUN116_CHECKPOINT_V1",
+  "date_utc": "2026-10-25",
+  "parent": "6fce98c2111429b1951e6e527608cb9c543c21b3",
+  "pr": 147,
+  "owner": "Codex LateWatch narrow finished-tail review",
+  "changed_source_git_blobs": {
+    "v13/code/v13/latewatch.py": "5df03a7c8a8f5709b5ed2ceb6a08851c780d8480",
+    "v13/code/tests/test_latewatch_final_tail_run116.py": "ce8088fdd60c6ca6422a8fd24e750b72374a19f3",
+    "v13/code/docs/LATE_WATCH.md": "1759f3b4182ff540f91e0ecfdcea593d350b70d0"
+  },
+  "evidence_blobs": {
+    "RAW_RED.txt": "b9455a4e523fea5a64990fd4b55e2248b0cd7671",
+    "RAW_GREEN.txt": "cbf6ce86d45253db4296b3f07ba6242418fe08f9"
+  },
+  "tests": {
+    "red": {
+      "run_id": 40145608760,
+      "job_id": 121026168671,
+      "tests": 3,
+      "errors": 2,
+      "expected": true
+    },
+    "green": {
+      "run_id": 40145650447,
+      "job_id": 121026291760,
+      "new_tests": 3,
+      "inherited_tests": 6,
+      "status": "PASS"
+    },
+    "privacy": {
+      "run_id": 40145650447,
+      "status": "CLEAN"
+    },
+    "evidence_level": "LINUX_SOFTWARE_MOCK"
+  },
+  "change": "Keep streaming numeric-tail suppression; at finished stream boundary only, include terminal number in late offer conflict check. Preserve shadow/default and gated selfmodel path.",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "exclusions": [
+    "v13/code/v13/runtime.py",
+    "v13/code/v13/episodes.py",
+    "v13/code/v13/episodic_route.py",
+    "native cohorts",
+    "canonical blueprint"
+  ],
+  "open_questions": [
+    "Native/Redmi timing and false-positive rates remain unmeasured.",
+    "Run115 independent augmented full suite is in progress; do not infer integrated success from it."
+  ],
+  "exact_next_step": "Verify final PR147 CI on evidence commit and remote blob hashes. Review Run115 full-suite prerequisite run. If Run115 passes, separately assess archive integration; if it fails preserve exact logs and continue another independent canonical package.",
+  "backup": "GitHub PR #147 branch; no rejected Drive destination retry"
+}
