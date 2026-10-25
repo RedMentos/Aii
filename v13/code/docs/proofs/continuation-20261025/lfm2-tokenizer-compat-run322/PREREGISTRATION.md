@@ -1,0 +1,15 @@
+# Run322 preregistration — isolated pinned LFM2 tokenizer compatibility (no model training)
+
+UTC 2026-10-25. Independent owner: new `scripts/probe_lfm2_tokenizer_compat_run322.py`, `tests/test_lfm2_tokenizer_compat_run322.py`, dedicated CPU workflow, this proof directory. Base Run321 verified source-only checkpoint `3531d79d736de0f99d606976ec6ac4f064ba3139`, PR318; no edits to active Run320 owner files or any canonical Runtime/learning path.
+
+Observed original Run320 native CI `40211685395` RED at official llama.cpp b10964 HF→GGUF FP32 conversion, before training: `ValueError: Tokenizer class TokenizersBackend does not exist or is not currently imported` from `transformers==4.57.1`. HF pinned `LiquidAI/LFM2.5-350M` revision `9e6c6ccf47cd318696e137d381a7ded8fe4df09f` declares `tokenizer_class=TokenizersBackend`. Official Hugging Face Transformers source defines `TokenizersBackend` in the 5.x tokenizer implementation. Hypothesis: an isolated Transformers 5.3.0 tokenizer can load the unchanged pinned files; 4.57.1 cannot.
+
+## Frozen two-arm diagnostic
+
+- Download **only** tokenizer/config/chat-template files from exact HF revision (no model weights), hash every original downloaded file, retain provenance and raw failures. No rewrite of `tokenizer_config.json` or substitution of model/seed/Canon. Record source and license LFM Open v1.0, access date 2026-10-25.
+- Exactly two isolated Python environments: `transformers==4.57.1` negative control and `transformers==5.3.0` candidate. Install resolver-chosen compatible dependencies into separate venvs, retain `pip freeze`. Never claim that a 5.x tokenizer alone proves the pinned b10964 converter or GGUF semantics.
+- Run same fixed five prompts through `AutoTokenizer.from_pretrained(local_dir, local_files_only=True)` and `apply_chat_template(add_generation_prompt=True, tokenize=True)`; hash the full token-id sequence, capture token counts and first/last IDs. Verify token ids are integers in [0,65535] and deterministic across two independent loads within each environment.
+- Diagnostic expected: 4.57.1 failure with `TokenizersBackend` (observed original), 5.3.0 success with deterministic tokens. If the newer candidate fails, report NOT_SUPPORTED; do not silently choose another version or edit the pinned HF snapshot.
+- Source-only fixture tests for wrong revision, source tamper, mismatched sequence, invalid IDs, unexpected old-version success, and unexpected new-version failure. Dedicated GitHub Actions CPU CI, official privacy scan, raw logs/hashes and no model weights. No native optimizer/Redmi/AG6/Body-JEPA promotion.
+
+**Next after proof:** independently test pinned b10964 `convert_hf_to_gguf.py --outtype f32` using a separately preregistered exact converter environment, with unchanged model/source hashes, before restarting Run320 native two-epoch evaluation. Original RED raw artifact `12606256943` preserved. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi MISSING, V13 INCOMPLETE.
