@@ -1,0 +1,11 @@
+# Run264 — restore preregistered synthetic WorldModel ablation under v2 source binding (2026-10-25)
+
+Parent: PR260 verified head `bfe8896348eff0016f67c83344a2a8096940bd07` on PR259 WorldModel v2. Independent Run260 full suite run 40185499205, **2669 tests, 2 FAIL, 0 ERROR, 14 skipped**, raw artifact 12595902858 ZIP SHA256 `1959b681a2da917cfb0085400903da55e51c2b02ffd3ef0ab0a50bb4d97fb927`. The two failures were `test_ablation_homeo_meta.WorldModelConfidenceAblation.test_spearman_and_real_fit` and `test_world_confidence_abstention_run114.WorldConfidenceAbstentionRun114.test_real_world_model_guard_preserved`, both expected FITTED but observed SOURCE_UNVERIFIED. Original Run258 before WorldModel v2: 2663 tests OK, 14 skipped. Run260 privacy PASS.
+
+Root cause: historical `ablation_world_model_confidence.run_seed` monkeypatches only `transitions` with synthetic `action_id` values and calls `WorldModel.fit` on a **production Store** with `read_source`. New v2 correctly rejects unbound action IDs, but the historical synthetic experiment requires an explicitly source-less Store facade, not a production source bypass.
+
+Exclusive ownership: only `scripts/ablation_world_model_confidence.py`, new focused tests/workflow/proof. No PR259 `world_model.py` edits, no Runtime/Store, no seed, sample count, hidden truth, scoring, prereg metric or gate change. Add `SyntheticTransitionStore` facade that delegates persistence to its underlying Store but hides `read_source`. Run `fit` and `counterfactual` through facade **only in synthetic ablation**. Real Store still refuses those unbound synthetic actions, and synthetic fitted state cannot load in a real Store. This repairs test harness compatibility without making synthetic data production evidence.
+
+Test exact original historical ablation suites and new negative controls on real GitHub checkout. Preserve all failures, raw logs, official privacy result and exact remote blobs. Full-suite rerun on this reconciled chain still required. STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight 0; complete V13 INCOMPLETE.
+
+Next: verify Run264 focused CI; then run full suite on exact Run264 head, not PR260. Independently resolve Run261 valid terminal failure/invalid DISPATCHED source-binding defects under PR259 owner; do not silently relax guards.

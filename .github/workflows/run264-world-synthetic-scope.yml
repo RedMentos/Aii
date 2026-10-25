@@ -1,0 +1,47 @@
+name: V13 Run264 synthetic WorldModel source-scope repair
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/ablation_world_model_confidence.py'
+      - 'v13/code/tests/test_world_synthetic_scope_run264.py'
+      - '.github/workflows/run264-world-synthetic-scope.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned isolated Python dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run264"
+          "$RUNNER_TEMP/run264/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Actual source synthetic-only compatibility and historic ablation tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run264/bin/python" -m unittest -v test_world_synthetic_scope_run264 test_world_confidence_abstention_run114 test_ablation_homeo_meta 2>&1 | tee "$RUNNER_TEMP/RUN264_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN264_EXIT.txt"
+          echo "RUN264_EXIT=$rc"
+          exit 0
+      - name: Official privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base bfe8896348eff0016f67c83344a2a8096940bd07 --head HEAD --no-worktree
+      - name: Preserve complete raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run264-World-Synthetic-Scope-Raw
+          path: |
+            ${{ runner.temp }}/RUN264_RAW.log
+            ${{ runner.temp }}/RUN264_EXIT.txt
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual test result
+        run: test "$(cat "$RUNNER_TEMP/RUN264_EXIT.txt")" = "0"
