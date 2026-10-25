@@ -28,12 +28,10 @@ def plain(r):
     def show_notices(items):
         for x in items:print('\n[V13] '+safe_text(x),flush=True)
     def notify(t):
-        # WP-V5: never overwrite unsent operator input. Notices from worker
-        # threads and the render thread share one FIFO, drained exactly once.
+        # Worker threads only enqueue. Printing here could overtake a notice
+        # already claimed by render but not yet formatted/output.
         with held_lock:
-            if typing():held.append(t);return
-            ready=held+[t];held.clear()
-        show_notices(ready)
+            held.append(t)
     r.notify=notify
     watch_buttons(r)  # WP-UI1: Termux home-screen stop requests, ON-only
     def render():
