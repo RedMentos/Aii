@@ -1,0 +1,9 @@
+test_plan_authority_tamper_refused_even_with_rehashed_file (test_run180_b2_gist_audit.RawAuditTests.test_plan_authority_tamper_refused_even_with_rehashed_file) ... ok
+test_raw_vector_tamper_refused (test_run180_b2_gist_audit.RawAuditTests.test_raw_vector_tamper_refused) ... ok
+test_slot_vector_hash_tamper_refused (test_run180_b2_gist_audit.RawAuditTests.test_slot_vector_hash_tamper_refused) ... ok
+test_valid_source_bound_synthetic (test_run180_b2_gist_audit.RawAuditTests.test_valid_source_bound_synthetic) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.010s
+
+OK
