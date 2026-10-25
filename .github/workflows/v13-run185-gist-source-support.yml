@@ -1,0 +1,40 @@
+name: V13 Run185 Gist source-supported offer audit (software)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run185-gist-source-support.yml'
+      - 'v13/code/scripts/run185_gist_source_support_audit.py'
+      - 'v13/code/tests/test_run185_gist_source_support_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run185-gist-source-audit/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-bound-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify original cohort/scorer and run independent tests
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run185"
+          test "$(git hash-object v13/code/scripts/gist_utility_bench.py)" = 'f2b6d00cbe100152bb77a3b04187324eb379abd6'
+          test "$(git hash-object v13/code/scripts/run181_gist_offer_audit.py)" = '30b4f32893ec505e7c3035e76523389233121e9a'
+          python3 -m compileall -q v13/code/scripts/run185_gist_source_support_audit.py v13/code/tests/test_run185_gist_source_support_audit.py
+          python3 -m unittest discover -s v13/code/tests -p test_run185_gist_source_support_audit.py -v 2>&1 | tee "$RUNNER_TEMP/run185/software.log"
+          echo RUN185_SOURCE_SUPPORTED_DIAGNOSTIC_ONLY_NO_NATIVE_OR_ACTIVATION
+      - name: Official public repository privacy scan
+        if: always()
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base f291aa9e736a4f0fe81087fcc4fce7b25aefbe90 --head HEAD
+      - name: Preserve raw software review
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run185-Gist-Source-Support-Software
+          path: ${{ runner.temp }}/run185/software.log
+          if-no-files-found: warn
+          retention-days: 14
