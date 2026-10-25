@@ -1,0 +1,46 @@
+{
+  "schema": "V13_RUN_CHECKPOINT_V1",
+  "run": 322,
+  "branch": "assistant/lfm2-tokenizer-compat-run322-20261025",
+  "pr": 319,
+  "parent_source_sha": "3531d79d736de0f99d606976ec6ac4f064ba3139",
+  "prereg_sha": "822655ef527040c19e1350df50894ee61c77e1b0",
+  "tested_source_sha": "d954e2ed14210cf90caf3e025d288d583cb04f2f",
+  "ci_run": 40212714416,
+  "ci_job": 121227398762,
+  "artifact_id": 12606850007,
+  "artifact_zip_sha256": "2af6899d06c9d8c3344d8f9de6f38235b82d5d5fbede8e7ebfb74594d1ca9728",
+  "status": "TOKENIZER_ONLY_COMPAT_DIAGNOSTIC_SUPPORTED_NOT_NATIVE_CONVERSION",
+  "tests": {
+    "source_fixture": 7,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "old_arm": "EXPECTED_TOKENIZERSBACKEND_FAIL",
+    "new_arm": "DETERMINISTIC_FIVE_PROMPTS_PASS"
+  },
+  "negative_ci_runs": [
+    40212484153,
+    40212587785
+  ],
+  "canceled_ci_runs": [
+    40212700980
+  ],
+  "hf_repo": "LiquidAI/LFM2.5-350M",
+  "hf_revision": "9e6c6ccf47cd318696e137d381a7ded8fe4df09f",
+  "tokenizer_config_sha256": "3701f370c70034d06e28947ff51c1063983393319f429e3ce58f06a45fae67cc",
+  "license": "LFM Open License v1.0",
+  "model_weights_downloaded": false,
+  "native_training_executed": false,
+  "owner": "Run322 tokenizer-only source, test, CI, proof; Run320 original native owner untouched",
+  "next_command": "python3 <pinned b10964>/convert_hf_to_gguf.py --vocab-only --outfile <isolated>/lfm-vocab.gguf <exact HF tokenizer snapshot> (in isolated transformers==5.3.0 + jinja2==3.1.6 environment)",
+  "prerequisites": "Pinned official b10964 tarball SHA256 4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe; exact HF tokenizer snapshot 9e6c6cc; no source mutation; independent prereg; capture failed raw outputs",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "MISSING",
+    "V13": "INCOMPLETE"
+  }
+}
