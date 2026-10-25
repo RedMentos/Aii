@@ -1,0 +1,56 @@
+--- a/scripts/native_answer_finetune.cpp
++++ b/scripts/native_answer_finetune.cpp
+@@ -25,6 +25,7 @@
+ #include <cstdio>
+ #include <cstdlib>
+ #include <cstring>
++#include <filesystem>
+ #include <string>
+ #include <vector>
+ #include <sys/resource.h>
+@@ -158,6 +159,26 @@
+     ggml_opt_result_t result_train = ggml_opt_result_init();
+     ggml_opt_result_t result_eval  = ggml_opt_result_init();
+     double last_loss = 0, last_unc = 0;
++    // Run319 isolated candidate: optional bounded, non-overwriting per-epoch GGUF checkpoints.
++    const char * epoch_env = std::getenv("V13_EPOCH_CHECKPOINTS");
++    if (epoch_env && std::strcmp(epoch_env, "0") != 0 && std::strcmp(epoch_env, "1") != 0) {
++        LOG_ERR("V13_EPOCH_CHECKPOINTS must be 0 or 1\n"); return 11;
++    }
++    const bool save_epochs = epoch_env && std::strcmp(epoch_env, "1") == 0;
++    if (save_epochs) {
++        if (params.out_file.empty() || lr.epochs < 1 || lr.epochs > 8) {
++            LOG_ERR("checkpoint mode requires an output path and 1..8 epochs\n"); return 12;
++        }
++        for (int e = 1; e <= lr.epochs; ++e) {
++            const std::string path = params.out_file + ".epoch" + std::to_string(e) + ".gguf";
++            if (std::filesystem::exists(path) || std::filesystem::is_symlink(path)) {
++                LOG_ERR("refusing to overwrite existing epoch checkpoint: %s\n", path.c_str()); return 13;
++            }
++        }
++        if (std::filesystem::exists(params.out_file) || std::filesystem::is_symlink(params.out_file)) {
++            LOG_ERR("refusing to overwrite existing final checkpoint\n"); return 13;
++        }
++    }
+     for (lr.epoch = 0; lr.epoch < lr.epochs; ++lr.epoch) {
+         llama_opt_epoch(ctx, dataset, result_train, result_eval, idata_split,
+                         ggml_opt_epoch_callback_progress_bar, ggml_opt_epoch_callback_progress_bar);
+@@ -165,6 +186,18 @@
+         // ggml averages the loss over all n_ctx rows; masked rows add 0, so this is not a per-answer-token loss
+         ggml_opt_result_loss(result_train, &last_loss, &last_unc);
+         fprintf(stderr, "V13_EPOCH {\"epoch\":%d,\"train_loss_all_rows\":%.6f}\n", lr.epoch, last_loss);
++        if (save_epochs) {
++            const std::string path = params.out_file + ".epoch" + std::to_string(lr.epoch + 1) + ".gguf";
++            llama_model_save_to_file(model, path.c_str());
++            std::error_code error;
++            const auto bytes = std::filesystem::file_size(path, error);
++            if (error || bytes < 1024) {
++                LOG_ERR("epoch checkpoint write failed: %s\n", path.c_str()); return 14;
++            }
++            printf("V13_EPOCH_CHECKPOINT {\"epoch\":%d,\"bytes\":%llu,\"out\":\"%s\"}\n",
++                   lr.epoch + 1, (unsigned long long) bytes, path.c_str());
++            fflush(stdout);
++        }
+         ggml_opt_result_reset(result_train);
+         ggml_opt_result_reset(result_eval);
+     }

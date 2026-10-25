@@ -1,0 +1,11 @@
+# Run319 verified pinned native LFM2 checkpoint candidate **compile** (not training)
+
+UTC 2026-10-25. Source head `6e858025cfe0e5a4b73d5aa7bacf6743ff10cde6`, prereg `a3ca5730599122a53c881236a17717a76acea046` before implementation, branch `assistant/native-lfm2-epoch-checkpoints-run319-20261025`, PR316 review chain, not main.
+
+GitHub Actions `40211198937` (job `121222591697`) **SUCCESS**: 12 source/software tests PASS; official llama.cpp b10964 tarball full SHA256 `4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe` verified; original native `native-select-finetune`, `native-answer-finetune`, `llama-quantize` and new isolated `native-answer-epoch-checkpoint-run319` **compiled/linked** against patched pinned ggml on Ubuntu 24.04 CPU. Official privacy CLEAN. Raw artifact `12606290647` SHA256 `680fee7c98d5ae9ac07ab55daea66e8612b83c31546cf56fcd13731676fd73db` (30-day retention).
+
+Source integrity: registered `scripts/native_answer_finetune.cpp` unchanged SHA256 `401b95c5c6f4262eb8ea58bdab0af2b79f5d7032951ba45198ab2e13f102858c`; new patch SHA256 `90a878640b63e823675fcca88af219b5a4ce5a219314af253df5219fc79f84d1`; generated isolated C++ candidate SHA256 `31f702390553edf017154be48f2f636b3e2d1b86ab56147ba6a751def480f770`; linked binary SHA256 `06aeb0c8cfc4048ad4aa5254d961db4c3aaa48a50bda93bb1ed2b626541d2823`. Default epoch saving OFF; explicit `V13_EPOCH_CHECKPOINTS=1` opt-in, max eight epochs, existing output/symlink preflight rejection, per-epoch GGUF receipts.
+
+**Limit:** No native optimizer epoch executed, no checkpoint GGUF generated/evaluated, no memory retention, model utility or Redmi measurement in Run319. C++ compilation is **not** Body-JEPA, AG6 or TrainRunnerProof. Original negative STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, V13 INCOMPLETE remain.
+
+Owner Run319 only new patch/preparation/build/test/workflow/proofs; original C++ and registered sources untouched. **Next**: separately preregister real two-epoch native training on pinned public `LiquidAI/LFM2.5-350M` FP32 master with frozen invented fact/near-miss/retention cohorts; measure each saved epoch on identical Q4 deployment recipe, retain all failures, select none unless explicit preregistered gates pass. Keep weights private; license LFM Open 1.0. Review command `gh run view 40211198937 --repo RedMentos/Aii`.

@@ -1,0 +1,131 @@
+name: V13 Run319 pinned native LFM2 epoch checkpoint candidate compile
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/patches/native-answer-epoch-checkpoint-run319.patch'
+      - 'v13/code/scripts/prepare_native_answer_epoch_run319.py'
+      - 'v13/code/scripts/build_native_answer_epoch_run319.sh'
+      - 'v13/code/tests/test_native_answer_epoch_run319.py'
+      - '.github/workflows/run319-native-lfm2-epoch-compile.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact head and unchanged registered C++/Canon/model source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN319_HEAD.txt"
+          echo "401b95c5c6f4262eb8ea58bdab0af2b79f5d7032951ba45198ab2e13f102858c  v13/code/scripts/native_answer_finetune.cpp" | sha256sum -c -
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          git hash-object v13/code/scripts/native_answer_finetune.cpp v13/code/scripts/patches/ggml-lfm2-backward-b10964.patch v13/code/specs/models.json v13/code/scripts/patches/native-answer-epoch-checkpoint-run319.patch | tee "$RUNNER_TEMP/RUN319_BLOBS.txt"
+          { date -u -Iseconds; uname -a; free -h; df -h "$RUNNER_TEMP"; } | tee "$RUNNER_TEMP/RUN319_HOST.txt"
+      - name: Pinned isolated software test dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run319venv"
+          "$RUNNER_TEMP/run319venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Exact-source candidate preparation and negative tests
+        id: software
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run319venv/bin/python" -m unittest -v \
+            tests.test_native_answer_epoch_run319 \
+            tests.test_native_lfm2_finetune_bench 2>&1 | tee "$RUNNER_TEMP/RUN319_SOFTWARE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN319_SOFTWARE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Fetch pinned official b10964 source archive and verify full SHA
+        id: source
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN319_SOFTWARE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN319_SOURCE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          curl --fail --location --retry 3 --retry-delay 2 --connect-timeout 30 --max-time 300 \
+            'https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz' \
+            -o "$RUNNER_TEMP/llama-b10964-source.tar.gz" 2>&1 | tee "$RUNNER_TEMP/RUN319_SOURCE_DOWNLOAD_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            echo "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe  $RUNNER_TEMP/llama-b10964-source.tar.gz" | sha256sum -c -
+            rc=$?
+          fi
+          if [[ "$rc" == "0" ]]; then
+            tar -xzf "$RUNNER_TEMP/llama-b10964-source.tar.gz" -C "$RUNNER_TEMP"
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN319_SOURCE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Build unchanged native trainer plus isolated candidate against pinned ggml
+        id: compile
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN319_SOURCE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN319_COMPILE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          timeout 1100s bash scripts/build_native_answer_epoch_run319.sh \
+            "$RUNNER_TEMP/llama.cpp-b10964" "$RUNNER_TEMP/run319candidate" 2 \
+            2>&1 | tee "$RUNNER_TEMP/RUN319_COMPILE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            sha256sum "$RUNNER_TEMP/llama.cpp-b10964/build/bin/native-answer-epoch-checkpoint-run319" > "$RUNNER_TEMP/RUN319_BINARY_SHA256.txt"
+            cp "$RUNNER_TEMP/run319candidate/RUN319_PREP.json" "$RUNNER_TEMP/RUN319_PREP.json"
+            strings "$RUNNER_TEMP/llama.cpp-b10964/build/bin/native-answer-epoch-checkpoint-run319" | grep -F 'V13_EPOCH_CHECKPOINT' > "$RUNNER_TEMP/RUN319_SYMBOLS.txt"
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN319_COMPILE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN319_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN319_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw source/compile failure hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN319_*' ! -name 'RUN319_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN319_SHA256SUMS.txt
+      - name: Preserve compile, source and negative test evidence (no model weights)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run319-Native-Epoch-Compile-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN319_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce exact source, tests, native compile and privacy
+        if: always()
+        run: |
+          test "${{ steps.software.outputs.rc }}" = "0"
+          test "${{ steps.source.outputs.rc }}" = "0"
+          test "${{ steps.compile.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
