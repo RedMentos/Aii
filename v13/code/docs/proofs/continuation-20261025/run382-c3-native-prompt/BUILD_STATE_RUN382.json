@@ -1,0 +1,43 @@
+{
+  "run": "Run382",
+  "date_utc": "2026-10-25T22:23:43Z",
+  "owner": "Codex independent C3 native prompt A/B",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/c3-native-prompt-ablation-run382-20261025",
+  "base_branch": "codex/z8d-exogenous-quality-ablation-run381-20261025",
+  "base_sha": "340b143b450d17db5c4bba5ce7b936779be16aba",
+  "pr": 377,
+  "prereg_commit": "ca5a651523d3a9cdcbb0ccc1bc93521d3229d2ca",
+  "pre_native_head": "a917391dd8643f56bb06c67a273c187382c9e259",
+  "status": "AWAITING_NATIVE_GITHUB_ACTIONS",
+  "model": {
+    "source": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "file": "LFM2.5-350M-QAD-Q4_0.gguf",
+    "bytes": 219312832,
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "license": "LFM Open License 1.0"
+  },
+  "runner": {
+    "tag": "b10964",
+    "bytes": 16825086,
+    "sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
+  },
+  "cases": 12,
+  "arms": 2,
+  "planned_calls": 24,
+  "minimum_exact_gain": 3,
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_UNRESOLVED",
+    "Body-JEPA_NOT_PROVEN",
+    "jepa_weight=0",
+    "Redmi_NATIVE_NOT_MEASURED",
+    "whole_V13_INCOMPLETE",
+    "Run367_full_suite_RED",
+    "G-AGE-REOPEN-001_FAIL"
+  ],
+  "native_evidence": "PENDING_NOT_MEASURED",
+  "next_command": "Inspect PR377 exact-head workflow; if failed, inspect raw native artifact and fix only infrastructure separately from measured candidate; preserve negative outcome; download ZIP CRC/SHA and private byte backup.",
+  "blocked": "No Redmi. Native Linux proof pending. Do not promote prompts absent prereg PASS and independent review."
+}
