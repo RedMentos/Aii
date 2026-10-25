@@ -1,0 +1,1101 @@
+{
+  "b3_promoted": false,
+  "body_jepa_available": false,
+  "cases": [
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 0,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 1,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 2,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 3,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 4,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 5,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 6,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 7,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 8,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 9,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 10,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 11,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 12,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 13,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 14,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 15,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 16,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 17,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 18,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 19,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 20,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 21,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 22,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 23,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 24,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 25,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 26,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 27,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 28,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 29,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 30,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 31,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 32,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 33,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 34,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 35,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 36,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 37,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 38,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 39,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 40,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 41,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 42,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 43,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 44,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 45,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 46,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 47,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 48,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 49,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 50,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 51,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 52,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 53,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 54,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 55,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 56,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 57,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 58,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 59,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 60,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 61,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 62,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 63,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 64,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 65,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 66,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 67,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 68,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 69,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 70,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 71,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 72,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 73,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 74,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 75,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 76,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 77,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_AGREES",
+      "index": 78,
+      "kind": "correct",
+      "observed": "SHADOW_AGREES",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "SHADOW_ARITHMETIC_MISMATCH",
+      "index": 79,
+      "kind": "wrong",
+      "observed": "SHADOW_ARITHMETIC_MISMATCH",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 80,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 81,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 82,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 83,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 84,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 85,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 86,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 87,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 88,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 89,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 90,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 91,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 92,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 93,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 94,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 95,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 96,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 97,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 98,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 99,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 100,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 101,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 102,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 103,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 104,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 105,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 106,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 107,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 108,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 109,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 110,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 111,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 112,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 113,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 114,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 115,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 116,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 117,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 118,
+      "kind": "decoy",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    },
+    {
+      "delivery_authorized": false,
+      "expected": "ABSTAIN",
+      "index": 119,
+      "kind": "duplicate_json",
+      "observed": "ABSTAIN",
+      "ok": true,
+      "shadow_only": true
+    }
+  ],
+  "counts": {
+    "correct": 40,
+    "decoy": 20,
+    "duplicate_json": 20,
+    "wrong": 40
+  },
+  "delivery_authorized": false,
+  "evidence_class": "SYNTHETIC_SOFTWARE_ONLY",
+  "failures": [],
+  "jepa_weight": 0,
+  "rows": 120,
+  "schema": "V13_RUN184_AGE0D_BALANCED_SOFTWARE_STRESS_V1",
+  "step2_promoted": false,
+  "v13_complete": false,
+  "verdict": "SOFTWARE_GUARD_PASS"
+}
