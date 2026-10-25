@@ -1,0 +1,29 @@
+{
+  "canonical_gate_pass": false,
+  "claim_limit": "Abstention reduces coverage; no new answer quality or AGI proof.",
+  "evidence_class": "OFFLINE_REPLAY_OF_EXISTING_LINUX_NATIVE_C3_OUTPUTS",
+  "fresh_capture_sha256": "96efd0d65bdb13005336661e0cb09fc7d1f41a1e62ec77c0b512ebf74078b5a1",
+  "holdout_blind": false,
+  "metrics": {
+    "abstained": 14,
+    "answered": 46,
+    "correct_abstained": 5,
+    "correct_answered": 37,
+    "coverage": 0.7666666666666667,
+    "n": 60,
+    "raw_c3_correct": 42,
+    "raw_c3_error_rate": 0.3,
+    "raw_c3_wrong": 18,
+    "selective_error_rate": 0.1956521739130435,
+    "wrong_abstained": 9,
+    "wrong_answered": 9
+  },
+  "native_inference_this_run": false,
+  "phase": "RETROSPECTIVE_EVALUATION",
+  "prereg_sha256": "f501313e9daee53080d4f3ebe8e8e26394a40917085abe05d07a1f49df6200e4",
+  "production_authority": 0,
+  "redmi_measured": false,
+  "schema": "V13_RUN195_SELECTIVE_ABSTENTION_V1",
+  "threshold": 0.5803461074829102,
+  "verdict": "SELECTIVE_RISK_SUPPORTED_RETROSPECTIVE"
+}
