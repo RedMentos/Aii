@@ -1,0 +1,13 @@
+Run160 local synthetic GGUF tests (2026-10-25):
+test_duplicate_tensor_rejected ... ok
+test_fp32_claim_valid_but_no_authority ... ok
+test_invalid_version_rejected ... ok
+test_negative_gates ... ok
+test_oversized_metadata_rejected ... ok
+test_quantized_claim_rejected ... ok
+test_truncated_rejected ... ok
+test_unknown_claim_rejected ... ok
+Ran 8 tests in 0.001s
+OK
+compileall PASS
+RUN160_FUZZ_500_REJECTED
