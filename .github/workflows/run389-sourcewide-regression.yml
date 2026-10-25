@@ -68,8 +68,8 @@ jobs:
           path: ${{ runner.temp }}/RUN389_*
           if-no-files-found: warn
           retention-days: 30
-      - name: Enforce privacy only; diagnostic test result retained, not hidden
+      - name: Enforce tests and privacy (expected RED is visible)
         if: always()
         run: |
           test "${{ steps.privacy.outputs.rc }}" = "0"
-          echo "Full suite diagnostic exit: ${{ steps.suite.outputs.rc }} (see raw evidence)"
+          test "${{ steps.suite.outputs.rc }}" = "0"
