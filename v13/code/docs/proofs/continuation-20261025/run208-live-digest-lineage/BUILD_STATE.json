@@ -1,0 +1,54 @@
+{
+  "run": "Run208",
+  "date_utc": "2026-10-25",
+  "canonical_area": "ContextOS compressed layer / Sleep A_OFFLINE / C3 user-visible context",
+  "branch": "codex/sleep-live-digest-lineage-run208-20261025",
+  "base_verified": "51f52ae2efd47b0211cdf755ada76927735f9701",
+  "tested_commit": "7afcde0a2b99d6fa81573518e44d4be603fc37be",
+  "owner": "Sequential Run208 Sleep/ContextOS; no overlap with Run206 Callosum or native B2/C3 owner",
+  "owned_files": [
+    "v13/code/v13/sleep_offline.py",
+    "v13/code/tests/test_sleep_digest_live_lineage_run208.py",
+    ".github/workflows/run208-sleep-live-digest-lineage.yml",
+    "v13/code/docs/proofs/continuation-20261025/run208-live-digest-lineage/"
+  ],
+  "changes": "Shared source-bound native_history + compressed-text validator used by both live ContextOS digest and offline TTT staging; excludes deleted and transitive revoked sources, forged digest content, mismatched event/message bindings.",
+  "source_blob_sha": {
+    "sleep_offline.py": "a1b522b6fff46ca1ef4770d2820a86fb933288d6",
+    "test_sleep_digest_live_lineage_run208.py": "b80eeacc38375368d35bdb8041f52ec42a70cbc2"
+  },
+  "actual_source_ci": {
+    "red": {
+      "run_id": 40177577977,
+      "job_id": 121121500692,
+      "result": "3/3 RED failures, 16 tests total"
+    },
+    "green": {
+      "run_id": 40177630514,
+      "job_id": 121121659659,
+      "result": "16/16 PASS; compileall PASS; official privacy scan CLEAN"
+    },
+    "run207_regression": {
+      "run_id": 40177630504,
+      "result": "PASS"
+    }
+  },
+  "evidence_kind": "Actual-source GitHub Linux CI with synthetic SQLite/Runtime and deterministic C3 test double; no native model, Redmi, weight learning or semantic quality claim.",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "A staged JSONL export can remain on disk after later forget; any future training consumer must revalidate at consumption time.",
+    "Operator-only :sleep digest view still shows persisted cache text; not a C3 source and not independently authoritative.",
+    "Live digest source verification may increase SQLite latency; no Redmi latency/RSS measurement.",
+    "Full project-wide tests not established by focused CI; PR234 Run98 degrade workflow failed and owner notified."
+  ],
+  "next_step": "Pivot to disjoint WorldModel Run209: preregister actual-source for_event fractional-character counterfactual rejection (transitions already rejects fractional observations), then narrow fix, CI, privacy and checkpoint.",
+  "next_command": "python -m unittest -v tests.test_world_counterfactual_input_integrity_run209 tests.test_world_observation_integrity_run202 tests.test_world_model",
+  "no_authority_promotion": true
+}
