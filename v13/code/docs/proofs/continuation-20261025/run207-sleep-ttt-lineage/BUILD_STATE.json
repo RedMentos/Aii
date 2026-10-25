@@ -1,0 +1,55 @@
+{
+  "run": "Run207",
+  "date_utc": "2026-10-25",
+  "canonical_area": "Sleep A_OFFLINE / F1 Memory / provenance and revocation",
+  "branch": "codex/sleep-ttt-source-lineage-run207-20261025",
+  "base_verified": "681deec1d7a11a25324e3989617d7de2870d1a7c",
+  "tested_commit": "9c12e7596cbf835d38a143dec389c403b0046404",
+  "owner": "Run207 Sleep TTT only; no overlap with Run206 Callosum or active B2/C3 native owner",
+  "owned_files": [
+    "v13/code/v13/sleep_offline.py",
+    "v13/code/tests/test_sleep_ttt_source_lineage_run207.py",
+    ".github/workflows/run207-sleep-ttt-lineage.yml",
+    "v13/code/docs/proofs/continuation-20261025/run207-sleep-ttt-lineage/"
+  ],
+  "changes": "Source-valid native_history pair + compressed digest byte revalidation; revoked target or context cannot be restaged; no training or approval changes.",
+  "source_blob_sha": {
+    "sleep_offline.py": "36d993953ff5aed523c60b550089411cfd050da5",
+    "test_sleep_ttt_source_lineage_run207.py": "783092f081ede8fbfb8de3fd9879816b560f2fb4"
+  },
+  "actual_source_ci": {
+    "red": {
+      "run_id": 40177275119,
+      "job_id": 121120589266,
+      "result": "FAIL 3/3 preregistered tests; 13 total"
+    },
+    "first_patch": {
+      "run_id": 40177334829,
+      "job_id": 121120775307,
+      "result": "FAIL 1/3; discovered transitive source dependencies invalidate downstream context too"
+    },
+    "green": {
+      "run_id": 40177401766,
+      "job_id": 121120975963,
+      "result": "13/13 PASS; compileall PASS; official privacy scan CLEAN"
+    }
+  },
+  "evidence_kind": "actual-source GitHub Linux CI, synthetic Runtime/SQLite and deterministic C3 double; no native model inference, Redmi, or weight training",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Persisted staged JSONL may outlive later forget; every future training consumer must independently revalidate source/approval at consumption time.",
+    "Live digest context_items still uses weaker source lineage checks than native_history; next disjoint Run208 package.",
+    "Full project-wide tests and real Redmi measurements not established by focused CI.",
+    "PR234 Run98 B3 degrade workflow failed (run 40176849999), notified owner in PR234 comment."
+  ],
+  "next_step": "Create sequential Run208 branch from verified Run207 checkpoint; preregister live context_items tamper/revocation tests against actual Runtime; preserve old digest behavior only for source-valid turns; run CI and privacy scan; do not touch Run206 Callosum.",
+  "next_command": "python -m unittest -v tests.test_sleep_ttt_source_lineage_run207 tests.test_sleep_offline tests.test_sleep_memory_c3_continuity_run205 tests.test_history_lineage",
+  "no_authority_promotion": true
+}
