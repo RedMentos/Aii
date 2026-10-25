@@ -45,6 +45,8 @@ class GermanListArithmeticRun362(unittest.TestCase):
             "A: 4. B: 9. Was ist der Preis?",
             "A: 4. B: 9. Welche zwei Gruppen arbeiten zusammen?",
             "A: 4. B: 9. Wie viele Euro-Beträge sind aufgelistet?",
+            "A: 4. B: 9. Wie viele Preisgruppen arbeiten zusammen?",
+            "A: 4. B: 9. Wie viele Preisgruppen gibt es insgesamt?",
             "Gesamt: 13 Euro. A: 4. B: 9. Wie viele Zeilen gibt es?",
         ]
         for text in cases:
@@ -65,6 +67,41 @@ class GermanListArithmeticRun362(unittest.TestCase):
         self.assertIsNone(L.operation("Total: 13. A: 4. B: 9. What is the total number of entries?"))
         self.assertEqual(L.operation("A: 4. B: 9. How many more does the largest have than the smallest?"),
                          "difference_max_min")
+
+
+    def test_live_toolstep_proposal_is_gated_and_reuses_number_guard_without_model(self):
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from v13.runtime import Runtime
+        from v13.agi import hub
+        from v13.toolstep import ToolStep
+        with tempfile.TemporaryDirectory() as tmp:
+            r = Runtime(Path(tmp))
+            try:
+                r.sleep.cycle.set_policy("enabled", "off")
+                text = "Apfel: 4 Euro. Birne: 9 Euro. Wie viel kostet alles zusammen?"
+                event = r.store.event(r.session, text)
+                values = [{"name": "Apfel", "number": 4}, {"name": "Birne", "number": 9}]
+                step = ToolStep(r)
+                with patch.object(r.pool, "get", return_value=object()), patch.object(
+                        L, "read_values", return_value=values) as read:
+                    self.assertIsNone(step._propose_list(event, text),
+                                      "disabled tool must not call a model")
+                    self.assertEqual(read.call_count, 0)
+                    hub(r).tools.enable("list_arith")
+                    proposal = step._propose_list(event, text)
+                    self.assertIsNotNone(proposal)
+                    self.assertEqual(proposal["tool"], "list_arith")
+                    self.assertEqual(proposal["args"]["operation"], "total")
+                    self.assertEqual(L.tool(**proposal["args"]), 13)
+                    self.assertEqual(read.call_count, 1)
+                    ambiguous = "A: 4. B: 9. Wie viele Preisgruppen arbeiten zusammen?"
+                    event2 = r.store.event(r.session, ambiguous)
+                    self.assertIsNone(step._propose_list(event2, ambiguous))
+                    self.assertEqual(read.call_count, 1, "ambiguous count must not invoke C3")
+            finally:
+                r.close()
 
 
 if __name__ == "__main__":
