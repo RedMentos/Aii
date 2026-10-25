@@ -43,6 +43,18 @@ class GroundingGuardRun385(unittest.TestCase):
                 with self.assertRaises(PermissionError):
                     self.g.expect("sensing", "ctx", {}, modality=name)
 
+    def test_preexisting_step8_flag_cannot_bypass_unimplemented_port_gate(self):
+        # A pre-patch database may already contain a camera=True flag.
+        st, version = self.g.box.load()
+        st["modalities"]["camera"] = True
+        self.runtime.store.set_state(KEY, st, expected=version)
+        with self.assertRaises(PermissionError):
+            self.g.expect("camera_capture", "ctx", {}, modality="camera")
+        self.assertEqual(self.g.report()["open"], 0)
+        # Disabling a stale flag remains an allowed cleanup operation.
+        self.g.set_modality("camera", False)
+        self.assertFalse(self.state()["modalities"]["camera"])
+
     def test_existing_text_tool_paths_and_explicit_disable_preserved(self):
         self.g.set_modality("text", True)
         aid, pred = self.g.expect("text_answer", "ctx", {"question": "x"})
