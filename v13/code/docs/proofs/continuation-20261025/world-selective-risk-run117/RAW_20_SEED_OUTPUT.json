@@ -1,0 +1,443 @@
+{
+  "claim_limit": "synthetic own transitions only; no abstention-utility or causal/real-answer claim",
+  "eligible_seeds": 20,
+  "gates": {
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "STEP2": "UTILITY_FAIL",
+    "V13": "INCOMPLETE",
+    "jepa_weight": 0
+  },
+  "mean_top_quartile_error": {
+    "confidence": 0.45398068,
+    "random": 0.59084627,
+    "samples_only": 0.4883968,
+    "spread_only": 0.42877628
+  },
+  "per_seed": {
+    "200": {
+      "abstained_n": 315,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 315
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.56178988,
+        "random": 0.64818846,
+        "samples_only": 0.61169834,
+        "spread_only": 0.56791074
+      },
+      "seed": 200,
+      "selected_k": 21,
+      "valid_n": 85
+    },
+    "201": {
+      "abstained_n": 335,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 335
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.35263995,
+        "random": 0.4043425,
+        "samples_only": 0.38127461,
+        "spread_only": 0.30387316
+      },
+      "seed": 201,
+      "selected_k": 16,
+      "valid_n": 65
+    },
+    "202": {
+      "abstained_n": 316,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 316
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.78539009,
+        "random": 0.79618325,
+        "samples_only": 0.57691526,
+        "spread_only": 0.63668077
+      },
+      "seed": 202,
+      "selected_k": 21,
+      "valid_n": 84
+    },
+    "203": {
+      "abstained_n": 313,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 313
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.24501906,
+        "random": 0.5573299,
+        "samples_only": 0.35099672,
+        "spread_only": 0.28525869
+      },
+      "seed": 203,
+      "selected_k": 21,
+      "valid_n": 87
+    },
+    "204": {
+      "abstained_n": 259,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 259
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.44373736,
+        "random": 0.47878993,
+        "samples_only": 0.44522266,
+        "spread_only": 0.510181
+      },
+      "seed": 204,
+      "selected_k": 35,
+      "valid_n": 141
+    },
+    "205": {
+      "abstained_n": 239,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 239
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.38714799,
+        "random": 0.59720106,
+        "samples_only": 0.61112713,
+        "spread_only": 0.37254119
+      },
+      "seed": 205,
+      "selected_k": 40,
+      "valid_n": 161
+    },
+    "206": {
+      "abstained_n": 318,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 318
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.56174898,
+        "random": 0.64886103,
+        "samples_only": 0.46147859,
+        "spread_only": 0.40011793
+      },
+      "seed": 206,
+      "selected_k": 20,
+      "valid_n": 82
+    },
+    "207": {
+      "abstained_n": 232,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 232
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.45425122,
+        "random": 0.56720251,
+        "samples_only": 0.49727334,
+        "spread_only": 0.52980654
+      },
+      "seed": 207,
+      "selected_k": 42,
+      "valid_n": 168
+    },
+    "208": {
+      "abstained_n": 289,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 289
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.45341709,
+        "random": 0.57628449,
+        "samples_only": 0.40780533,
+        "spread_only": 0.36655609
+      },
+      "seed": 208,
+      "selected_k": 27,
+      "valid_n": 111
+    },
+    "209": {
+      "abstained_n": 303,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 303
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.50698383,
+        "random": 0.6107008,
+        "samples_only": 0.58228621,
+        "spread_only": 0.48543996
+      },
+      "seed": 209,
+      "selected_k": 24,
+      "valid_n": 97
+    },
+    "210": {
+      "abstained_n": 202,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 202
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.34136129,
+        "random": 0.57941211,
+        "samples_only": 0.40448413,
+        "spread_only": 0.32542199
+      },
+      "seed": 210,
+      "selected_k": 49,
+      "valid_n": 198
+    },
+    "211": {
+      "abstained_n": 225,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 225
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.45447834,
+        "random": 0.68552377,
+        "samples_only": 0.61479459,
+        "spread_only": 0.38514027
+      },
+      "seed": 211,
+      "selected_k": 43,
+      "valid_n": 175
+    },
+    "212": {
+      "abstained_n": 244,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 244
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.48671386,
+        "random": 0.7453071,
+        "samples_only": 0.67330074,
+        "spread_only": 0.45016186
+      },
+      "seed": 212,
+      "selected_k": 39,
+      "valid_n": 156
+    },
+    "213": {
+      "abstained_n": 209,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 209
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.37520819,
+        "random": 0.49056941,
+        "samples_only": 0.51694461,
+        "spread_only": 0.37000201
+      },
+      "seed": 213,
+      "selected_k": 47,
+      "valid_n": 191
+    },
+    "214": {
+      "abstained_n": 229,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 229
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.48370395,
+        "random": 0.61697565,
+        "samples_only": 0.49750171,
+        "spread_only": 0.52192078
+      },
+      "seed": 214,
+      "selected_k": 42,
+      "valid_n": 171
+    },
+    "215": {
+      "abstained_n": 257,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 257
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.38701359,
+        "random": 0.47679676,
+        "samples_only": 0.35780018,
+        "spread_only": 0.3333508
+      },
+      "seed": 215,
+      "selected_k": 35,
+      "valid_n": 143
+    },
+    "216": {
+      "abstained_n": 297,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 297
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.52641984,
+        "random": 0.68983058,
+        "samples_only": 0.33515915,
+        "spread_only": 0.41718501
+      },
+      "seed": 216,
+      "selected_k": 25,
+      "valid_n": 103
+    },
+    "217": {
+      "abstained_n": 300,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 300
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.28087227,
+        "random": 0.46746892,
+        "samples_only": 0.3473507,
+        "spread_only": 0.27730128
+      },
+      "seed": 217,
+      "selected_k": 25,
+      "valid_n": 100
+    },
+    "218": {
+      "abstained_n": 329,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 329
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.60769093,
+        "random": 0.61501499,
+        "samples_only": 0.68996512,
+        "spread_only": 0.63264411
+      },
+      "seed": 218,
+      "selected_k": 17,
+      "valid_n": 71
+    },
+    "219": {
+      "abstained_n": 184,
+      "abstention_reasons": {
+        "IMPOSSIBLE_PREDICTED_OUTCOME": 184
+      },
+      "eligible": true,
+      "evidence": "SYNTHETIC_LINUX",
+      "fit_status": "FITTED",
+      "queries_n": 400,
+      "risk": {
+        "confidence": 0.3840259,
+        "random": 0.56494213,
+        "samples_only": 0.40455683,
+        "spread_only": 0.40403148
+      },
+      "seed": 219,
+      "selected_k": 54,
+      "valid_n": 216
+    }
+  },
+  "prereg": {
+    "arms": [
+      "confidence",
+      "samples_only",
+      "spread_only",
+      "random"
+    ],
+    "claim_limit": "synthetic own transitions only; no abstention-utility or causal/real-answer claim",
+    "minimum_valid_per_seed": 40,
+    "primary": "mean absolute error against noise-free synthetic truth in top quartile of valid predictions",
+    "queries_per_seed": 400,
+    "schema": "V13_WORLD_SELECTIVE_RISK_RUN117_PREREG_V1",
+    "seeds": [
+      200,
+      201,
+      202,
+      203,
+      204,
+      205,
+      206,
+      207,
+      208,
+      209,
+      210,
+      211,
+      212,
+      213,
+      214,
+      215,
+      216,
+      217,
+      218,
+      219
+    ],
+    "top_fraction_of_valid": 0.25,
+    "transitions_per_seed": 300,
+    "win_rule": "confidence lower error than each control in >=16/20 seeds AND lower all-seed mean error than each control"
+  },
+  "verdict": "NOT_SUPPORTED_SYNTHETIC_SELECTIVE",
+  "wins": {
+    "random": 20,
+    "samples_only": 15,
+    "spread_only": 7
+  }
+}

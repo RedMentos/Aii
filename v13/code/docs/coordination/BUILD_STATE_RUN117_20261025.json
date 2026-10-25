@@ -1,0 +1,78 @@
+{
+  "schema": "V13_RUN117_CHECKPOINT_V1",
+  "date_utc": "2026-10-25",
+  "pr": 148,
+  "parent": "6fce98c2111429b1951e6e527608cb9c543c21b3",
+  "owner": "Codex World selective-risk synthetic lab",
+  "scope": "LAB_ONLY_NOT_RUNTIME",
+  "source_git_blobs": {
+    "v13/code/scripts/ablation_world_selective_risk_run117.py": "aa814ccb3ccea794339e1c68222db6fadedfdada",
+    "v13/code/tests/test_world_selective_risk_run117.py": "a135a938602c7fdbe997678edea837f4dc142977",
+    "v13/code/scripts/ablation_world_model_confidence.py": "fb7a60def4abb75c76d269222adc3da6da96aebf",
+    "v13/code/v13/world_model.py": "17aa0abd22ae0c67b0a3a3de5d7e5ef3d7e2c915"
+  },
+  "evidence_git_blobs": {
+    "RAW_20_SEED_OUTPUT.json": "ad502e8ef904a2a50b4dbe05f1a15fda3fb7217b",
+    "EVIDENCE.md": "7b9da43fe90e810b2806aca6138491487fcd5ccd"
+  },
+  "workflow_git_blob": "325d70d3e76f8d21f3231611bb927b949ef29c5d",
+  "raw_json_sha256": "55d23c892c4add4d3d937c8ed0f2c4b4b1ff20f4b82f6fcb7b76199b3282ffab",
+  "tests": {
+    "red": {
+      "run_id": 40145847019,
+      "job_id": 121026883262,
+      "status": "EXPECTED_RED_MISSING_NEW_MODULE"
+    },
+    "green": {
+      "run_id": 40145901308,
+      "focused_tests": 5,
+      "status": "PASS"
+    },
+    "closed_json": {
+      "run_id": 40146015102,
+      "job_id": 121027470022,
+      "status": "PASS",
+      "raw_bytes_verified": true
+    },
+    "privacy": "CLEAN"
+  },
+  "cohort": {
+    "seeds": "200..219",
+    "n_seeds": 20,
+    "transitions_per_seed": 300,
+    "queries_per_seed": 400,
+    "valid": 2605,
+    "abstained": 5395,
+    "selected_top_quartile": 643,
+    "overall_selected_coverage_percent": 8.0375,
+    "wins": {
+      "samples_only": 15,
+      "spread_only": 7,
+      "random": 20
+    },
+    "mean_error": {
+      "confidence": 0.45398068,
+      "samples_only": 0.4883968,
+      "spread_only": 0.42877628,
+      "random": 0.59084627
+    },
+    "verdict": "NOT_SUPPORTED_SYNTHETIC_SELECTIVE",
+    "evidence_class": "LINUX_SYNTHETIC"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Confidence does not outperform spread-only on this synthetic distribution. No runtime weight change or positive utility claim.",
+    "Abstention rate is 5395/8000; real generated-answer utility, calibration and native/Redmi evidence remain missing.",
+    "Run115 LP3 archived Run16 candidate still FAIL-OPEN; do not activate."
+  ],
+  "exact_next_command": "cd v13/code && python scripts/ablation_world_selective_risk_run117.py /tmp/world-run117.json && sha256sum /tmp/world-run117.json",
+  "next_step": "Verify final checksum-pinned CI and remote blob identities; independently review Run118 integration PR149 and proceed to next non-LP3 canonical functional package.",
+  "backup": "GitHub PR #148 only; rejected anyone-writable Drive destination not retried"
+}
