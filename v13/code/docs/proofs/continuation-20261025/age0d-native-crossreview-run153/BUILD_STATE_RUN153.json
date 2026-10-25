@@ -1,0 +1,34 @@
+{
+  "schema": "V13_RUN153_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "owner": "Codex Run153 new read-only native audit, tests, CI and proof; no Run151 source/model/Runtime changes",
+  "base_pr": 182,
+  "base_commit": "5d6de404fabf27a6e8d45f4db5cc12edb1db42e1",
+  "original_native_run": 40161320601,
+  "original_native_artifact_id": 12585869006,
+  "native_artifact_sha256": "0f19525d8e8abd62ca328ce752a0e8f8b619ca27ced71a42f3bd5c78d53edbe4",
+  "original_report_sha256": "0e9d8bc03a74c066ef311618ec80312c3229a784275be16f563cf8e6b172b249",
+  "original_raw_log_sha256": "50968f11cfd5586b65f6357ef970f2e74d0df587690821084a511a6f34113dc2",
+  "audit_source_blob_sha": "c90aafd2f0238e4df177c6098a7d74e27e9bf374",
+  "audit_test_blob_sha": "f68a4f221e9f87e40b7220490c9be990589db263",
+  "local_tests": "9/9 PASS",
+  "result": "288/288 source rows integrity PASS; v2 244 supported, v3 276; 32 v3-only unadjudicated; original K1/K2/K3 PASS automated",
+  "source_binding_finding": "Original strict numeric labeler accepted row 243 echo '55 ÷ 22 = 2' for source 'Calculate 550 divided by 22.'; v3 correctly ABSTAIN. Source-bound strict wrong denominator 27 not 28.",
+  "evidence_class": "SOFTWARE_REAUDIT_OF_LINUX_NATIVE_NOT_NEW_NATIVE",
+  "gate": "UNVERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Human adjudication of 32 v3-only responses absent.",
+    "Second Run151 serialized accidental replication in progress at checkpoint; compare when closed, do not cherry-pick.",
+    "No Redmi/full V13 or learning proof."
+  ],
+  "next_command": "RUN151_ARTIFACT=RUN151_native.zip PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p test_age0d_run151_independent_audit_run153.py -v",
+  "next_step": "Verify exact-head CI and artifact bytes; compare second native replication when available; then move to A3/Body-JEPA utility with independent OOD holdout."
+}
