@@ -31,3 +31,7 @@ Sonst steht `NO_RESIDENCY` bzw. `C3_EXCLUSIVE_DECODE` in `meta['late_watch']`, u
 - Die Schnittkriterien sind BOOT-Regeln (Zahlen, `needs_reentry`), keine gelernte Salienz. Ein gelernter Interrupt-Kopf braucht Labels aus SHADOW-Fällen. Nutzer-Feedback darauf, ob die Revision half, wäre das Signal.
 - Ob paralleles B1 die C3-Tokenrate auf dem Redmi zu stark bremst, ist nicht gemessen.
 - Der Schnitt ist eine Markierung in den Metadaten. Die Chat-Anzeige zeigt den vorläufigen Teil nicht anders an.
+
+## Run116 (2026-10-25) — terminale Zahl nach Stream-Ende
+
+Während C3 noch streamt, bleibt eine Zahl am Textende absichtlich unvollständig und löst keinen Schnitt aus. Erst in `Watcher.finish` wird derselbe **abgeschlossene** Text mit seiner letzten Zahl geprüft. Dadurch wird z. B. `... answer is 100` gegen das spätere B1-Ergebnis `108` als `AFTER_OUTPUT` mit `RESULT_CONFLICT` protokolliert; `... answer is 108` bleibt ohne Konflikt. Keine Änderung an `active`-Schnittschwellen, `shadow`-Standard, Quellenrechten oder dem gegateten `selfmodel.late_offer`-Weg. Beleg: PR #147, Run116 RED→GREEN, nur Linux-Software/Mocks; keine native/Redmi- oder allgemeine Wahrheitsgarantie.
