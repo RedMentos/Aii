@@ -1,0 +1,66 @@
+{
+  "schema": "V13_RUN128_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "pr": 159,
+  "branch": "codex/phone-prestart-frozen-run128-20261025",
+  "base_pr": 154,
+  "base_sha": "d3aa8dde0f521ecd3f4920820743a3d3bbad12bc",
+  "owner": "CLI prestart phone_halt.py and __main__.py; tests/workflow/proofs only; frozen Runtime untouched",
+  "source_blobs": {
+    "v13/code/v13/runtime.py": "a691d27bd0772a4fa1f03d57ec90663237bf6825",
+    "v13/code/v13/phone_halt.py": "93e91553ebd591a2306c48ae6e1bcb4505eaeb5f",
+    "v13/code/v13/__main__.py": "b869611118f1e292fdffe9a11189a650adad3592",
+    "v13/code/tests/test_phone_prestart_run128.py": "9eaf100383bf24f3d26246393464e55a2b9a3536"
+  },
+  "red": {
+    "run_id": 40153412873,
+    "job_id": 121049578636,
+    "failures": 1,
+    "errors": 5,
+    "raw": "RAW_RED_JOB.log"
+  },
+  "green": {
+    "run_id": 40153666770,
+    "job_id": 121050351354,
+    "tests": 30,
+    "passed": 30,
+    "privacy": "CLEAN",
+    "raw": "RAW_GREEN_FINAL_JOB.log"
+  },
+  "source_bound": {
+    "run_id": 40153517041,
+    "job_id": 121049851156,
+    "tests": 501,
+    "passed": 501,
+    "privacy": "CLEAN",
+    "note": "same source blobs; prior to tests-only addition",
+    "raw": "RAW_SOURCE_BOUND_JOB.log"
+  },
+  "inherited": {
+    "run121": 40153517032,
+    "run123": 40153517022,
+    "conclusion": "success"
+  },
+  "independent_local": {
+    "scope": "reconstructed Linux software/SQLite, exact three source blobs only",
+    "assertions": 13,
+    "passed": 13
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false
+  },
+  "limitations": [
+    "CLI-only preflight, direct Runtime(home) bypass remains",
+    "Between preflight and UI watcher new button can race",
+    "Full suite on exact Run128 NOT RUN yet",
+    "Native LP3 cgroup and Redmi NOT RUN"
+  ],
+  "exact_next_step": "Run129 full suite on final Run128 commit, pinned torch 2.9.1+cpu, Run16 sealed LP3 helper temp-only; preserve all FAIL and raw; then independent canonical work.",
+  "backup": "GitHub PR #159; no rejected Drive destination"
+}
