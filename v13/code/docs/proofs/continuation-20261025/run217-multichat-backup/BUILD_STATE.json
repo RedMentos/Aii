@@ -1,0 +1,44 @@
+{
+  "run": "Run217",
+  "date_utc": "2026-10-25",
+  "canonical_area": "STEP0 Operator/Backup/Memory multi-chat restore integration",
+  "branch": "codex/multichat-backup-restore-run217-20261025",
+  "base_verified": "597544e2f523a73d81e947b56a4cf8a705872818",
+  "tested_commit": "8d7f941b63059f4be07aaa2fd8666ed43e5a26c6",
+  "owner": "Run217 test-only cross-organ Operator/Runtime/Backup/Memory journey; no production files touched",
+  "owned_files": [
+    "v13/code/tests/test_multichat_backup_restore_run217.py",
+    ".github/workflows/run217-multichat-restore.yml",
+    "v13/code/docs/proofs/continuation-20261025/run217-multichat-backup/"
+  ],
+  "implementation": "Two actual Runtime/SQLite software integration tests with deterministic C3 double: operator two chats and exports, scoped human correction, :backup, post-snapshot third chat, offline restore and restart, restored selected chat and exact JSON export bytes; post-snapshot chat absent and memory scope preserved.",
+  "actual_source_ci": {
+    "run_id": 40179622002,
+    "job_id": 121127675005,
+    "head": "8d7f941b63059f4be07aaa2fd8666ed43e5a26c6",
+    "tests": "11/11 PASS (Run217 2, Run214 3, Run210 4, Run211 2)",
+    "compileall": "PASS",
+    "privacy_scan": "CLEAN",
+    "log_url": "https://github.com/RedMentos/Aii/actions/runs/40179622002/job/121127675005"
+  },
+  "source_blob_sha": {
+    "test_multichat_backup_restore_run217.py": "607cab1e6e1d2abb4357bf2bd3652d3091fe280a",
+    "run217-multichat-restore.yml": "312cb8521608dcaa9a794078d0c41a26fc92552d"
+  },
+  "evidence_kind": "Actual-source GitHub Linux CI with real Runtime/SQLite and deterministic C3 double; no native inference, Redmi or learning",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Cross-organ WorldModel actual Runtime action/outcome path after restart and backup not yet tested by Run217.",
+    "Full project-wide suite, native model/Redmi, STEP2/B3 and Body-JEPA original gates remain open."
+  ],
+  "next_step": "Run218 independent actual Runtime/C5 ActionOutcome -> WorldModel.transitions source-bound path, deterministic C3, backup/restart. Verify no invented model utility; fix only after RED.",
+  "next_command": "PYTHONPATH=tests:. python -m unittest -v tests.test_runtime_world_observation_run218 tests.test_world_model_integration_run64 tests.test_world_counterfactual_input_integrity_run209",
+  "no_authority_promotion": true
+}

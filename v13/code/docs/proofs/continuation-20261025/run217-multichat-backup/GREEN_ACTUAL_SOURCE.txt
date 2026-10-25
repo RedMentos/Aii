@@ -1,0 +1,20 @@
+# Run217 actual-source GREEN output excerpt
+
+Full raw GitHub Actions job: https://github.com/RedMentos/Aii/actions/runs/40179622002/job/121127675005
+Tested head: 8d7f941b63059f4be07aaa2fd8666ed43e5a26c6
+Exact timestamped test output excerpt; complete raw log retained in GitHub Actions.
+
+2026-10-25T09:11:51.4607180Z test_backup_restores_selected_chat_and_exact_export_after_restart (tests.test_multichat_backup_restore_run217.MultiChatBackupRestoreRun217.test_backup_restores_selected_chat_and_exact_export_after_restart) ... ok
+2026-10-25T09:11:51.5951400Z test_two_chat_operator_exports_and_session_memory_survive_offline_restore (tests.test_multichat_backup_restore_run217.MultiChatBackupRestoreRun217.test_two_chat_operator_exports_and_session_memory_survive_offline_restore) ... ok
+2026-10-25T09:11:51.6355098Z test_invalid_open_does_not_change_selected_chat_or_export (tests.test_chat_operator_persistence_run214.ChatOperatorPersistenceRun214.test_invalid_open_does_not_change_selected_chat_or_export) ... ok
+2026-10-25T09:11:51.6956840Z test_literal_search_across_chats_after_restart (tests.test_chat_operator_persistence_run214.ChatOperatorPersistenceRun214.test_literal_search_across_chats_after_restart) ... ok
+2026-10-25T09:11:51.7556218Z test_multichat_roundtrip_and_separate_json_exports_after_restart (tests.test_chat_operator_persistence_run214.ChatOperatorPersistenceRun214.test_multichat_roundtrip_and_separate_json_exports_after_restart) ... ok
+2026-10-25T09:11:51.7921196Z test_backup_after_forget_cannot_resurrect_a_revoked_correction (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_backup_after_forget_cannot_resurrect_a_revoked_correction) ... ok
+2026-10-25T09:11:51.8368873Z test_backup_restore_recovers_correction_and_discards_later_mutations (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_backup_restore_recovers_correction_and_discards_later_mutations) ... ok
+2026-10-25T09:11:51.8645397Z test_corrupt_backup_rejected_without_modifying_live_memory (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_corrupt_backup_rejected_without_modifying_live_memory) ... ok
+2026-10-25T09:11:51.8779246Z test_operator_backup_and_offline_restore_instruction (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_operator_backup_and_offline_restore_instruction) ... ok
+2026-10-25T09:11:51.8886968Z test_missing_restore_stage_cannot_silently_discard_pending_journal (tests.test_restore_crash_journal_run211.RestoreCrashJournalRun211.test_missing_restore_stage_cannot_silently_discard_pending_journal) ... ok
+2026-10-25T09:11:51.9166758Z test_partial_swap_finishes_after_restart_without_losing_snapshot (tests.test_restore_crash_journal_run211.RestoreCrashJournalRun211.test_partial_swap_finishes_after_restart_without_losing_snapshot) ... ok
+2026-10-25T09:11:51.9168192Z Ran 11 tests in 0.699s
+2026-10-25T09:11:51.9168409Z OK
+2026-10-25T09:11:52.0066244Z privacy scan 597544e2f..HEAD: CLEAN
