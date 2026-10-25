@@ -12,7 +12,7 @@ Lifecycle L0-L11: a read model per experience from existing traces (no new autho
 """
 import hashlib
 import json
-from .common import dumps
+from .common import atomic_write, digest, dumps, now, uid
 
 KEY='JEF_OUTCOME_LABELS';MAX=1024;MODES=('record','learn');AUTHORITY='OUTCOME_SELF_LABEL'
 
@@ -53,24 +53,25 @@ def _receipt_key(event_id,component):
 def after_turn(r,e,meta,status,focal_run):
     """Record FINAL self-labels once per event/component, including after eviction.
 
-    The Store mutex serializes normal concurrent callbacks while source rows
-    are allocated. Receipts and the bounded JEF ledger then commit in one
-    SQLite transaction. An interrupted source allocation can leave an
-    unreferenced immutable source, but never a committed trainable label.
+    The Store mutex serializes concurrent callbacks. The source database
+    rows, receipts and bounded JEF ledger commit in one SQLite transaction.
+    An interrupted content-addressed blob preparation can leave an
+    unreferenced blob file, but never a committed authority source row or
+    trainable label.
     """
     if status!='FINAL' or not focal_run:return {}
     try:
         store=r.store
         t=targets(meta,focal_run.get('coalition') or [],meta.get('memory_ids') or [])
         if not t:return {}
-        # Store.source() has its own transaction; keep the lock across the
-        # receipt check, allocation and ledger commit. The coordinator also
-        # excludes a second Store process for the same home.
+        # Hold the Store lock across receipt check, blob preparation and the
+        # single database commit. The coordinator excludes a second Store
+        # process for this home.
         with store.mutex:
             st,version=store.state(KEY)
             st=st or {'mode':'record','labels':[]}
             active={(x['event_id'],x['component']):x for x in st['labels']}
-            rows=[];receipts=[]
+            rows=[];receipts=[];pending_sources=[]
             for comp,value in t.items():
                 eid=e['event_id'];key=_receipt_key(eid,comp)
                 receipt=store.one('SELECT payload FROM states WHERE key=?',(key,))
@@ -89,11 +90,17 @@ def after_turn(r,e,meta,status,focal_run):
                     # route corrections may already have changed its value.
                     row=existing
                 else:
-                    ref=store.source(value,AUTHORITY)
+                    # Mirror Store.source's immutable content-addressed blob
+                    # preparation, but defer its SQL source row to the SAME
+                    # transaction as the label and receipt. Never mutate Store.
+                    b=value.encode();h=digest(b);sid=uid('src')
+                    p=store.home/'data/blobs'/h
+                    if not p.exists():atomic_write(p,b)
+                    pending_sources.append((sid,h,AUTHORITY,len(b),len(value),now()))
                     row={'event_id':eid,'component':comp,'value':value,'baseline':d['baseline'],
                          'decision_packet_id':d['packet_id'],
                          'context_sha256':d['context_ref']['sha256'],
-                         'context_revision':d['context_revision'],'source_id':ref['source_id']}
+                         'context_revision':d['context_revision'],'source_id':sid}
                     rows.append(row)
                 receipts.append((key,{'event_id':eid,'component':comp,'value':row['value'],
                                       'source_id':row['source_id'],'decision_packet_id':row['decision_packet_id']}))
@@ -103,6 +110,8 @@ def after_turn(r,e,meta,status,focal_run):
                 old=c.execute('SELECT version FROM states WHERE key=?',(KEY,)).fetchone()
                 if (old['version'] if old is not None else 0)!=version:
                     raise ValueError('Stale JEF outcome state')
+                for source in pending_sources:
+                    c.execute('INSERT INTO sources VALUES (?,?,?,?,?,?,0)',source)
                 if rows:
                     c.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',
                               (KEY,version+1,dumps(st)))
