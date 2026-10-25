@@ -24,8 +24,13 @@ def main(argv=None):
     if a.command=='restore':
         if not a.confirm:p.error('Restore ersetzt den aktiven Speicher: --confirm erforderlich (automatisches Sicherheitsbackup).')
         print('Wiederhergestellt. Sicherheitsbackup: '+str(restore(home,Path(a.path).expanduser())));return 0
+    # Widget requests must be persisted before Runtime starts its recovered-turn worker.
+    # This CLI preflight leaves the source-bound frozen runtime.py byte-identical.
+    from .phone_halt import prestart
+    startup_stops=prestart(home)
     from .runtime import Runtime
     r=Runtime(home,lambda x:print('[V13] '+safe_text(x),file=sys.stderr,flush=True))
+    for message in startup_stops:r.notice(message)
     try:
         if a.command=='doctor':
             from .verification import doctor
