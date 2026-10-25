@@ -8,6 +8,7 @@ what it already knows (error≈0, LP≈0). choose() picks a practice target; the
 exploration_rate (0 at Age 0) and the right active_info_search bound what it may do on
 its own. Blocked regions (user/hard rules) are never chosen.
 """
+import math
 import random
 from .base import StateBox,age_allows,budget,clamp01
 
@@ -19,6 +20,13 @@ class Curiosity:
         self.age=age;self.rng=rng or random.Random()
         self.box=StateBox(store,KEY,REVISION,lambda:{'regions':{},'blocked':[]})
     def observe(self,region,error):
+        # An invalid prediction error is not evidence of zero error (success).
+        # Shared clamp01 deliberately maps nonfinite *confidence* to zero;
+        # learning-error evidence must instead fail closed before that clamp.
+        if type(error) not in (int,float):raise ValueError('Prediction error must be numeric')
+        try:finite=math.isfinite(error)
+        except (OverflowError,ValueError,TypeError):finite=False
+        if not finite:raise ValueError('Prediction error must be finite')
         e=clamp01(error)
         def f(st):
             r=st['regions'].get(region)
