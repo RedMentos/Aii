@@ -123,22 +123,50 @@ class WorldState:
         outcome={'action_id':aid,'status':action['status'],'self_caused':True,'observed':actual,'prediction_packet_id':forecast.get('packet_id'),
                  'timing_error_s':duration-predicted if comparable else None,'scored':bool(comparable),'semantic_success':None,
                  'causal_claim':False,'external_world_observation':False}
+        modulator=None
         if action['status']=='FINAL' and forecast.get('learned_latent_prediction'):
             try:
                 transition=self.transition(aid)
                 error=self.r.learner.world_score(transition,forecast['learned_latent_prediction'])
                 if type(error) not in (int,float) or not math.isfinite(error):
                     raise ValueError('World latent score nonfinite')
+                modulator=packet('ModulatorPacket','F4_WORLD',env['event_id'],env['brain_generation_id'],
+                    [transition['source_ref'],transition['outcome_source_ref']],
+                    epistemic_evidence=1.,human_correction=0.,task_success=0.,
+                    resource_cost=min(1.,max(0.,float(duration or 0))/self.r.cfg['deadline_seconds']),
+                    safety_veto=False,digital_prediction_error=error,
+                    values_status='measured own digital outcome; no semantic truth reward or automatic weight permission')
                 outcome.update(digital_latent_error=error,world_transition_packet_id=transition['packet_id'])
-                self.s.add_packet('ModulatorPacket',packet('ModulatorPacket','F4_WORLD',env['event_id'],env['brain_generation_id'],[transition['source_ref'],transition['outcome_source_ref']],
-                    epistemic_evidence=1.,human_correction=0.,task_success=0.,resource_cost=min(1.,max(0.,float(duration or 0))/self.r.cfg['deadline_seconds']),safety_veto=False,
-                    digital_prediction_error=error,values_status='measured own digital outcome; no semantic truth reward or automatic weight permission'))
-            except Exception as exc:self.s.log('world_error_unavailable',env['event_id'],{'error':type(exc).__name__})
-        p=packet('PredictionOutcome','F4_WORLD',env['event_id'],env['brain_generation_id'],[env['source_ref']],action_id=aid,observation=outcome)
-        self.s.add_packet('PredictionOutcome',p)
+            except Exception as exc:
+                self.s.log('world_error_unavailable',env['event_id'],{'error':type(exc).__name__})
+        p=packet('PredictionOutcome','F4_WORLD',env['event_id'],env['brain_generation_id'],
+                 [env['source_ref']],action_id=aid,observation=outcome)
+        # One durable crash boundary for a digital prediction-error modulator
+        # and its authoritative own-action receipt. Previously the modulator
+        # committed first, so a failed PredictionOutcome INSERT left an orphan
+        # that a retry could emit again. Recheck under the SQLite write lock
+        # to prevent two concurrent observers duplicating the pair.
+        with self.s.tx() as c:
+            existing=c.execute(
+                "SELECT payload FROM packets WHERE event_id=? AND kind='PredictionOutcome' AND json_extract(payload,'$.action_id')=?",
+                (env['event_id'],aid)).fetchone()
+            if existing:
+                observed=json.loads(existing['payload'])['observation']
+                inserted=False
+            else:
+                for kind,entry in (('ModulatorPacket',modulator),('PredictionOutcome',p)):
+                    if entry is not None:
+                        c.execute('INSERT INTO packets VALUES (?,?,?,?,?,?)',
+                                  (entry['packet_id'],kind,entry['event_id'],entry['brain_generation_id'],
+                                   dumps(entry),now()))
+                observed=outcome
+                inserted=True
         self._refresh(event['session_id'])
-        self.s.log('prediction_outcome',env['event_id'],{'status':action['status'],'duration_s':duration,'timing_error_s':outcome['timing_error_s'],'scored':comparable})
-        return outcome
+        if inserted:
+            self.s.log('prediction_outcome',env['event_id'],
+                       {'status':action['status'],'duration_s':duration,
+                        'timing_error_s':outcome['timing_error_s'],'scored':comparable})
+        return observed
 
     def transition(self,aid):
         """Bind a real committed own outcome to intent/corollary and raw source."""
