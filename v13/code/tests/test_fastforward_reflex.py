@@ -41,7 +41,7 @@ class ProceduralTests(Base):
         for _ in range(F.SKILL['shadow_cycles']):self.f.record_turn(self.K,'none','FINAL',5.,predicted_fast_s=3.)
         p=self.f.report()['procedures'][self.K];self.assertEqual(p['stage'],'READY');self.assertEqual(p['gate']['G'],'G-PROCEDURALIZATION-004')
         self.assertFalse(self.f.procedural(self.K,{})['apply'])  # SHADOW mode never acts
-        self.f.set_mode('ACTIVE','EXPLICIT_HUMAN');self.assertEqual(self.f.procedural(self.K,{})['wake'],'none');self.assertTrue(self.f.procedural(self.K,{})['apply'])
+        self.f.set_mode('ACTIVE','EXPLICIT_HUMAN');self.assertEqual(self.f.procedural(self.K,{})['wake'],'none');self.assertFalse(self.f.procedural(self.K,{})['apply'])  # predictor-only READY is not canonical utility proof
         self.assertFalse(self.f.procedural(self.K,{'novelty':.9})['apply'])  # salient/novel turn reopens focal
     def test_inconsistent_or_failing_routes_do_not_compile(self):
         for w in ['none','both']*4:self.f.record_turn(self.K,w,'FINAL',5.)
