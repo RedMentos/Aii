@@ -1,5 +1,6 @@
 """Read-only pinned Qwen B2 native tap provenance probe (no learning)."""
 import argparse
+import contextlib
 import hashlib
 import json
 import math
@@ -26,7 +27,7 @@ def sha256(path):
     return h.hexdigest()
 
 
-def probe(model, server, archive_sha=EXPECTED_ARCHIVE_SHA):
+def probe(model, server, archive_sha=EXPECTED_ARCHIVE_SHA, workdir=None):
     model, server = Path(model).resolve(), Path(server).resolve()
     if sha256(model) != EXPECTED_MODEL_SHA:
         raise ValueError('B2 pinned model sha256 mismatch')
@@ -40,9 +41,12 @@ def probe(model, server, archive_sha=EXPECTED_ARCHIVE_SHA):
     cfg = dict(DEFAULTS, context_tokens=1024, threads=2,
                native_cache_ram_mb=0, native_ctx_checkpoints=0)
     rows = []
-    with tempfile.TemporaryDirectory(prefix='v13-run179-') as d:
+    ctx = (tempfile.TemporaryDirectory(prefix='v13-run179-') if workdir is None
+           else contextlib.nullcontext(str(workdir)))
+    with ctx as d:
         home = Path(d)
-        (home / 'logs').mkdir()
+        home.mkdir(parents=True, exist_ok=True)
+        (home / 'logs').mkdir(exist_ok=True)
         runner = LlamaRunner(home, 'B2_GIST', model, cfg, purpose='tap')
         runner.binary = str(server)
         runner.tap_id, runner.tap_dim = expected_id, expected_dim
@@ -95,11 +99,12 @@ def main():
     p.add_argument('--server', required=True)
     p.add_argument('--output', required=True)
     p.add_argument('--archive-sha256', default=EXPECTED_ARCHIVE_SHA)
+    p.add_argument('--workdir', default=None, help='Persist native server logs for closed CI evidence')
     args = p.parse_args()
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     try:
-        result = probe(args.model, args.server, args.archive_sha256)
+        result = probe(args.model, args.server, args.archive_sha256, args.workdir)
     except BaseException as exc:
         result = {'schema':'V13_RUN179_PINNED_B2_NATIVE_TAP_V1',
                   'status':'FAIL_NOT_PROMOTED', 'error_type':type(exc).__name__,
