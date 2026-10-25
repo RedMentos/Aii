@@ -1,0 +1,35 @@
+name: V13 Run177 B2 tap identity and dimension regression (synthetic)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v13-run177-b2-tap-identity.yml'
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/tests/test_run177_tap_metric_identity.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run177-b2-tap/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  focused-provenance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Exact source and synthetic role-specific tap identity tests
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-input numpy==2.3.5
+          test "$(git hash-object v13/code/v13/runners.py)" = '37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5'
+          test "$(git hash-object v13/code/tests/test_run177_tap_metric_identity.py)" = '159c8c9b4b05b40d7a9d873f93635ac1e64986b2'
+          python -m compileall -q v13/code/v13/runners.py v13/code/tests/test_run177_tap_metric_identity.py
+          PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_run177_tap_metric_identity.py -v
+          echo RUN177_B2_TAP_METRIC_PROVENANCE_SOFTWARE_PASS_NO_NATIVE
+      - name: Official privacy scan
+        if: always()
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base ae81b5c322719281014c286846d24822b6306aa1 --head HEAD
