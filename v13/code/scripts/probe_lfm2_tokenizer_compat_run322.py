@@ -84,7 +84,7 @@ def probe(root, manifest, version_tag):
         for prompt in PROMPTS:
             ids = normalize_ids(tok.apply_chat_template(
                 [{"role": "user", "content": prompt}],
-                add_generation_prompt=True, tokenize=True))
+                add_generation_prompt=True, tokenize=True, return_dict=True))
             out.append({"sha256": token_digest(ids), "n": len(ids),
                         "first": ids[:4], "last": ids[-4:]})
         runs.append(out)
