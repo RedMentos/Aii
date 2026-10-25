@@ -1,0 +1,118 @@
+name: V13 Run338 exact-head full Python source suite, serialized and closed
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run338-fullsuite-source-proof.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/run338-fullsuite-source-proof/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  full-suite:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source, immutable Canon, host and provenance
+        id: source
+        run: |
+          set -uo pipefail
+          set +e
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN338_HEAD.txt"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          rc=$?
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee" || rc=2
+          { date -u -Iseconds; uname -a; free -h; df -h "$RUNNER_TEMP"; python3 --version; } | tee "$RUNNER_TEMP/RUN338_HOST.txt"
+          sha256sum v13/code/v13/runtime.py v13/code/v13/agi/metacog.py v13/code/scripts/verify_run336_artifact.py v13/code/tests/test_verify_run336_artifact.py | tee "$RUNNER_TEMP/RUN338_SOURCE_SHA256SUMS.txt"
+          echo "$rc" > "$RUNNER_TEMP/RUN338_SOURCE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Isolated pinned CPU-only dependencies, no models
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run338venv"
+          {
+            "$RUNNER_TEMP/run338venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+            "$RUNNER_TEMP/run338venv/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.1+cpu'
+          } 2>&1 | tee "$RUNNER_TEMP/RUN338_DEPS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          "$RUNNER_TEMP/run338venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN338_PIP_FREEZE.txt" || true
+          echo "$rc" > "$RUNNER_TEMP/RUN338_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Full compile and unittest discovery, preserve all failures
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "${{ steps.deps.outputs.rc }}" != "0" || "${{ steps.source.outputs.rc }}" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN338_SUITE_EXIT.txt"
+            echo "rc=2" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          "$RUNNER_TEMP/run338venv/bin/python" -m compileall -q v13 tests 2>&1 | tee "$RUNNER_TEMP/RUN338_COMPILE_RAW.log"
+          compile_rc=${PIPESTATUS[0]}
+          if [[ "$compile_rc" != "0" ]]; then
+            echo "$compile_rc" > "$RUNNER_TEMP/RUN338_SUITE_EXIT.txt"
+            echo "rc=$compile_rc" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          timeout 900s "$RUNNER_TEMP/run338venv/bin/python" -m unittest discover -s tests -p 'test_*.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/RUN338_FULL_SUITE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN338_SUITE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          grep -E 'Ran [0-9]+ tests|FAILED \(|^OK$|^ERROR:|^FAIL:' "$RUNNER_TEMP/RUN338_FULL_SUITE_RAW.log" | tail -n 80 || true
+          exit 0
+      - name: Official privacy scan on exact review diff
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN338_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN338_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN338_*' ! -name RUN338_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN338_SHA256SUMS.txt
+      - name: Preserve complete source-only failures and PASS evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run338-ExactHead-FullSuite-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN338_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce exact source, dependencies, complete suite and privacy
+        if: always()
+        run: |
+          test "${{ steps.source.outputs.rc }}" = "0"
+          test "${{ steps.deps.outputs.rc }}" = "0"
+          test "${{ steps.suite.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
