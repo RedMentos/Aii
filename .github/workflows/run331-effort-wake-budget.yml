@@ -1,0 +1,85 @@
+name: V13 Run331 learned-wake effort budget source-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run331-effort-wake-budget.yml'
+      - 'v13/code/v13/effort.py'
+      - 'v13/code/tests/test_run331_effort_learned_wake_budget.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run331-effort-learned-wake-budget/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact source head and original immutable Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN331_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+      - name: RED-first learned wake budget adversarial tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" python3 -m unittest -v tests.test_run331_effort_learned_wake_budget \
+            2>&1 | tee "$RUNNER_TEMP/RUN331_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN331_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original effort policy and runtime regression suite
+        id: regression
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" python3 -m unittest -v tests.test_effort \
+            2>&1 | tee "$RUNNER_TEMP/RUN331_REGRESSION_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN331_REGRESSION_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN331_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN331_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close source-only raw and source hash
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          sha256sum RUN331_HEAD.txt RUN331_TESTS_RAW.log RUN331_TESTS_EXIT.txt RUN331_REGRESSION_RAW.log RUN331_REGRESSION_EXIT.txt RUN331_PRIVACY_RAW.log RUN331_PRIVACY_EXIT.txt > RUN331_SHA256SUMS.txt
+          sha256sum "$GITHUB_WORKSPACE/v13/code/v13/effort.py" "$GITHUB_WORKSPACE/v13/code/tests/test_run331_effort_learned_wake_budget.py" >> RUN331_SHA256SUMS.txt
+      - name: Retain original RED and GREEN source-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run331-Effort-Wake-Budget-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN331_*
+          retention-days: 30
+      - name: Enforce adversarial regression and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.regression.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
