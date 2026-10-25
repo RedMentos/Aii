@@ -38,6 +38,14 @@ class EmbeddedHoldoutRun368(unittest.TestCase):
             self.g.eval.guard_training([prompt])
         self.assertTrue(self.g.eval.guard_training([self.seen["prompt"], "Write a short poem about numbers."]))
 
+    def test_guard_never_changes_registered_holdout_cohort_or_suite_hash(self):
+        original_hash = self.g.eval.suite["hash"]
+        original_holdout = list(self.g.eval.box.load()[0]["holdout"])
+        with self.assertRaises(ValueError):
+            self.g.eval.guard_training(["Wrapped: " + self.unseen["prompt"] + " END"])
+        self.assertEqual(self.g.eval.suite["hash"], original_hash)
+        self.assertEqual(self.g.eval.box.load()[0]["holdout"], original_holdout)
+
     def _teacher_trace(self, answer="safe", reasoning=None, rejected=None):
         teacher = self.g.teacher
         teacher.register("run368_fake_local", lambda prompt: {
