@@ -49,8 +49,17 @@ def main(argv=None):
             print(json.dumps(result,ensure_ascii=False,indent=2));return 0 if result['status'] in {'SMOKE_PASS','JEF_MODES_PASS','VERTICAL_CHECKS_PASS','BODY_STATE_CHECKS_PASS','BOUNDED_STABILITY_PASS'} else 2
         if a.command=='ask':
             if a.no_observers:r.cfg['observer_mode']='off'
+            # A persisted human :pause/:stillstand must never create an unfinishable CLI request.
+            if r.paused:
+                print('[V13] Warteschlange pausiert; lokal :resume oder :stillstand aus verwenden.',file=sys.stderr)
+                return 2
             eid=r.submit(a.text);printed=0;row=None
             while not r.idle():
+                # A pause during an accepted turn is not FINAL; leave the queued turn
+                # intact for an explicit human resume instead of waiting forever.
+                if r.paused:
+                    print('[V13] Anfrage wartet: Warteschlange pausiert.',file=sys.stderr)
+                    return 2
                 row=r.store.one("SELECT * FROM messages WHERE event_id=? AND role='assistant' ORDER BY id DESC LIMIT 1",(eid,))
                 if row and len(row['text'])>printed:print(safe_text(row['text'][printed:]),end='',flush=True);printed=len(row['text'])
                 time.sleep(.05)
