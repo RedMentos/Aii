@@ -1,0 +1,55 @@
+{
+  "run": "Run381",
+  "date_utc": "2026-10-25T22:19:00Z",
+  "owner": "Codex independent WP-Z8d synthetic source-quality ablation",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/z8d-exogenous-quality-ablation-run381-20261025",
+  "base_branch": "codex/ag8-regression-shield-metrics-run380-20261025",
+  "base_sha_at_creation": "335bb767078db819e30ef2354c96cd7c5ce9c494",
+  "pr": 376,
+  "exact_tested_head": "10543cc5aed46a64c35cba35c58c3cc7681884da",
+  "prereg_commit": "88fc26610731a790dcbc58c6c846c33306b51cc0",
+  "actions_run": 40239578149,
+  "job": 121308295118,
+  "artifact_id": 12616955651,
+  "artifact_sha256": "398b6ef93b1eae8c0b25be6f41879e50449ee72332009b133fdcbfc99f0d364c",
+  "artifact_verified": "CRC PASS; 6/6 SHA256 PASS; private Library re-materialized byte-for-byte identical",
+  "private_backup": "/V13/Backups/V13_Actions_12616955651_Run381_Z8d_FAIL.zip",
+  "source_sha256": {
+    "probe": "206b14f3ccec59acb0e93badf1e0797b6967586318a2df87e90120843e6ea2a4",
+    "original_z8": "7ddf1bcd47fb9a7c63a4d32cba25babf2f25ff5afa394d09aec95ca36477472c",
+    "production_age": "93d9ebf288144a4dada552f56ab0ad4261caffeb042da1d4714b7f586b4141cc",
+    "test": "af9afc803b12369a3a01c8f1eff08198ba25342640c6b88a961c7911738dc6f3"
+  },
+  "tests": {
+    "source_controls": "4/4 PASS",
+    "experiment": "20 seeds 301-320 completed",
+    "privacy": "CLEAN",
+    "verdict": "Z8D_SYNTHETIC_QUALITY_FAIL",
+    "criteria_pass": 5,
+    "criteria_total": 8
+  },
+  "criteria": {
+    "K1": "20/20 PASS",
+    "K2": "2.1962% reduction, FAIL",
+    "K3": "1.371623 FAIL",
+    "K4": "0.466398 PASS",
+    "K5": "restart identical PASS",
+    "K6": "median 2 PASS",
+    "K7": "0.971597 PASS",
+    "K8": "-5.1861% vs shuffled, 5/20 seeds better, FAIL"
+  },
+  "claim_limit": "Synthetic phase-correlated metadata, real AgeControl/SQLite, no native model/Redmi/production age change",
+  "negative_gates": [
+    "G-AGE-REOPEN-001_FAIL",
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_UNRESOLVED",
+    "Body-JEPA_NOT_PROVEN",
+    "jepa_weight=0",
+    "Redmi_NATIVE_NOT_MEASURED",
+    "whole_V13_INCOMPLETE",
+    "Run367_full_suite_RED"
+  ],
+  "next_command": "Review PR376 and raw artifact; keep failed Z8d candidate isolated; select a genuine native/real-data utility package with separate owner and preregistered gate.",
+  "blocked": "No actual independently measured source-quality sensor; no Redmi device. No production activation authorized."
+}
