@@ -1,0 +1,3 @@
+# Run163 full-checkout CI verification — 2026-10-25
+
+GitHub Actions `40163959305`, job `121081085316`, exact head `c1f124d9db687e89cf16398797b5e453b02c5c9f`, conclusion **SUCCESS**. Inherited full checkout: Run163 **11/11 PASS**, Run162 **10/10 PASS**, Run160 **8/8 PASS**, compileall PASS, official privacy `001e7af67..HEAD: CLEAN`. Source/test blobs independently fetched from remote and match local `c9542d9...` / `d3e2d28...`; local raw log blob `e53f9e3...` matches remote. No actual model was loaded by this workflow; software/synthetic evidence only. Negative V13 gates remain unchanged. Original scratch import ERROR retained in prior BUILD_STATE; CI imported actual Run160 module.
