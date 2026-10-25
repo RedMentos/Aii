@@ -31,6 +31,12 @@ jobs:
           helper="$(find "$RUNNER_TEMP/run172/lp3" -type f -path '*/scripts/lp3_serial_cohort.py' -print -quit)"
           test -n "$helper"
           echo "05e5bf300f582a03efeaae0133c8e20bf60948a2fa4e05a4867924ac4dc4b831  $helper" | sha256sum -c -
+          # Run20 code-only tar intentionally lacks the two source-bound audit modules.
+          # Stage exact current canonical modules into PRIVATE temp helper directory.
+          test "$(git hash-object v13/code/scripts/lp3_native_readiness.py)" = '2dfa7099541d3f8940817d43b97746c1d4d27092'
+          test "$(git hash-object v13/code/scripts/lp3_closed_evidence_audit.py)" = '6068ddafa2ae319f66a1cfcd7fb50127372e20a8'
+          cp v13/code/scripts/lp3_native_readiness.py "$(dirname "$helper")/"
+          cp v13/code/scripts/lp3_closed_evidence_audit.py "$(dirname "$helper")/"
           echo "RUN172_HELPER=$helper" >> "$GITHUB_ENV"
       - name: Isolated exact-helper CLI regression and adversarial missing-sibling control
         run: |
