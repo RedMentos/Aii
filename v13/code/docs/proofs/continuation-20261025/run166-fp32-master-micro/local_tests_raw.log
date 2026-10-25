@@ -1,0 +1,10 @@
+test_autograd_ema_persist_rollback_no_authority (test_body_fp32_master_micro_run166.MicroTests.test_autograd_ema_persist_rollback_no_authority) ... ok
+test_bad_model_sha_rejected_before_output (test_body_fp32_master_micro_run166.MicroTests.test_bad_model_sha_rejected_before_output) ... ok
+test_existing_candidate_not_overwritten (test_body_fp32_master_micro_run166.MicroTests.test_existing_candidate_not_overwritten) ... ok
+test_input_master_tamper_rejected (test_body_fp32_master_micro_run166.MicroTests.test_input_master_tamper_rejected) ... ok
+test_report_authority_forgery_rejected (test_body_fp32_master_micro_run166.MicroTests.test_report_authority_forgery_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.054s
+
+OK
