@@ -22,7 +22,9 @@ class SourceStore:
         self.ref = {'source_id':'src-1','sha256':'sha-1','char_start':0,
                     'char_end':6,'modality':'text'}
         self.db.execute('INSERT INTO events VALUES (?,?,?)',
-                        ('event-1','src-1',json.dumps({'source_ref':self.ref})))
+                        ('event-1','src-1',json.dumps({'source_ref':self.ref,'event_id':'event-1',
+                                    'kind':'USER_TEXT','authority':'AUTHORITATIVE',
+                                    'provenance':[self.ref]})))
         self.db.execute('INSERT INTO packets VALUES (?,?,?,?)',
                         ('ActionSelection','event-1',json.dumps({'route_hint':'simple'}),9.))
         self.db.execute('INSERT INTO actions VALUES (?,?,?,?,?,?)',
@@ -88,7 +90,16 @@ class WorldEventSourceIntegrity(unittest.TestCase):
 
     def test_tampered_event_envelope_rejected(self):
         for bad in ('{not-json',json.dumps({'source_ref':{'source_id':'src-foreign'}}),
-                    json.dumps({'source_ref':'not-a-ref'})):
+                    json.dumps({'source_ref':'not-a-ref'}),
+                    json.dumps({'source_ref':self.s.ref,'event_id':'wrong-event',
+                                'kind':'USER_TEXT','authority':'AUTHORITATIVE',
+                                'provenance':[self.s.ref]}),
+                    json.dumps({'source_ref':self.s.ref,'event_id':'event-1',
+                                'kind':'USER_TEXT','authority':'PROVISIONAL',
+                                'provenance':[self.s.ref]}),
+                    json.dumps({'source_ref':self.s.ref,'event_id':'event-1',
+                                'kind':'USER_TEXT','authority':'AUTHORITATIVE',
+                                'provenance':[]})):
             with self.subTest(packet=bad):
                 self.s.db.execute('UPDATE events SET packet=? WHERE id=?',
                                   (bad,'event-1'))
