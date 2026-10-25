@@ -1,0 +1,54 @@
+{
+  "package": "LP3 post-reap synthetic orphan test contract",
+  "date_utc": "2026-10-25",
+  "branch": "codex/lp3-postreap-test-contract-20261025",
+  "base_verified": "f5d2eaed19c1ff79cd4baec10912c03bc7a2eff0",
+  "pr": 254,
+  "owner": "test_lp3_serial_review_run18.py only + unique CI/proof; production LP3 launcher unchanged",
+  "source_blobs": {
+    "v13/code/tests/test_lp3_serial_review_run18.py": "a203e9215616cfd80b81ff6eb32ec18a1c6682fc",
+    ".github/workflows/lp3-postreap-test-contract-20261025.yml": "deafa7b6bf1c5e6ae714d6465982af7f12302a22",
+    "v13/code/docs/coordination/LP3_RUN21_POSTREAP_REVIEW.patch": "0534a92336e78d1920645098e68444b007bf1893"
+  },
+  "changes": "Run18 test now requires failed wrapper, no receipt, owned group residue, poisoned local lock and no nonzero post-reap killpg; synthetic grandchild is cleaned via pidfd in test only. No real cgroup isolation proof.",
+  "failed_attempt": {
+    "run_id": 40184017321,
+    "job_id": 121140859074,
+    "head": "9de769c3ffa3c770d41d112b243aac570a9a9452",
+    "reason": "CI PYTHONPATH omitted current tests dir; test body not executed",
+    "raw_artifact_id": 12595356418,
+    "raw_zip_sha256": "9f48dee2903eee704a68972ed83f91a106c9f10a194d41f4265ee3cd4e5693ff"
+  },
+  "green": {
+    "run_id": 40184081588,
+    "job_id": 121141050660,
+    "head": "8936f9ad4a315a4715cc954aa040134af265d98a",
+    "tests": 41,
+    "failures": 0,
+    "errors": 0,
+    "privacy": "CLEAN",
+    "compileall": "PASS",
+    "exact_run20_archive_sha256": "fc532d00e2c72281a154c984bbd79bd757a69a1d4e3c14e70a988dfb44c100c7",
+    "exact_run21_helper_git_blob": "05e5bf300f582a03efeaae0133c8e20bf60948a2fa4e05a4867924ac4dc4b831",
+    "raw_artifact_id": 12594669747,
+    "raw_zip_sha256": "4e584e3ee7b35a9c76a3efff316bb4b135eeb71878b6b4f68f997cd3867bd035"
+  },
+  "evidence_kind": "GitHub Linux synthetic subprocess + reconstructed archived Run20/Run21; no writable cgroup, native model, four-seed LP3 or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Run221 36 historical native-firing candidate errors remain; source snapshots differ from current live integrated sources. Do not suppress or automatically rebind.",
+    "Exact current full suite after 3 sequential PRs not yet rerun; cannot claim full-suite pass.",
+    "Run24 atomic clone3 candidate not integrated or proven on delegated writable cgroup; post-reap safe descendant cleanup not independently proven.",
+    "Native model utility, JEPA, learning, Redmi, full blueprint acceptance remain open."
+  ],
+  "next_step": "Diagnose and reconcile historical native-firing source-bound candidate against current integrated chain without changing frozen cohorts; run exact current full suite after approved candidate review. Separately advance real native/Context/JEF/JEPA packages as resources allow.",
+  "next_command": "Check remote PR251-254 and current owner, inspect integrated_candidates.overlay and original manifest/hashes; preregister source rebind test before any change. Keep old failure evidence.",
+  "no_gate_promotion": true
+}
