@@ -54,9 +54,9 @@ jobs:
           cd v13/code
           export PYTHONPATH="$PWD"
           "$RUNNER_TEMP/run123/bin/python" -m compileall -q v13 tests
-          bash -n KNOEPFE_EINRICHTEN.sh
           for pattern in test_phone_halt.py test_cli_standstill_run121.py test_phone_operator_journey_run86.py test_standstill.py; do
             echo "RUN123_SUITE=$pattern"
             "$RUNNER_TEMP/run123/bin/python" -m unittest discover -s tests -p "$pattern" -v
           done
+          bash -n KNOEPFE_EINRICHTEN.sh
           echo 'RUN123_LINUX_SOFTWARE_ONLY_PASS; NOT_REDMI_OR_NATIVE'
