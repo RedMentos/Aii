@@ -1,0 +1,294 @@
+﻿2026-10-25T00:35:32.6445010Z Current runner version: '2.338.0'
+2026-10-25T00:35:32.6471910Z ##[group]Runner Image Provisioner
+2026-10-25T00:35:32.6472820Z Hosted Compute Agent
+2026-10-25T00:35:32.6473414Z Version: 20261021.618
+2026-10-25T00:35:32.6474175Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T00:35:32.6474913Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T00:35:32.6475644Z Worker ID: {7b3457df-1048-4eb5-8c10-6c4cfdc5a893}
+2026-10-25T00:35:32.6476376Z Region: centralus
+2026-10-25T00:35:32.6476990Z Cloud: Azure
+2026-10-25T00:35:32.6477629Z ##[endgroup]
+2026-10-25T00:35:32.6479794Z ##[group]Operating System
+2026-10-25T00:35:32.6480556Z Ubuntu
+2026-10-25T00:35:32.6481115Z 26.04.1
+2026-10-25T00:35:32.6481639Z LTS
+2026-10-25T00:35:32.6482247Z ##[endgroup]
+2026-10-25T00:35:32.6482806Z ##[group]Runner Image
+2026-10-25T00:35:32.6483405Z Image: ubuntu-26.04
+2026-10-25T00:35:32.6484030Z Version: 20261012.163.1
+2026-10-25T00:35:32.6485297Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261012.163/images/ubuntu/Ubuntu2604-Readme.md
+2026-10-25T00:35:32.6486994Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261012.163
+2026-10-25T00:35:32.6487969Z ##[endgroup]
+2026-10-25T00:35:32.6489566Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T00:35:32.6491953Z Contents: read
+2026-10-25T00:35:32.6492617Z Metadata: read
+2026-10-25T00:35:32.6493254Z ##[endgroup]
+2026-10-25T00:35:32.6495404Z Secret source: Actions
+2026-10-25T00:35:32.6496351Z Cache mode: write
+2026-10-25T00:35:32.6497258Z Prepare workflow directory
+2026-10-25T00:35:32.6845198Z Prepare all required actions
+2026-10-25T00:35:32.6894067Z Getting action download info
+2026-10-25T00:35:32.8800663Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-25T00:35:33.1281669Z Complete job name: software
+2026-10-25T00:35:33.2172588Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-25T00:35:33.2173708Z with:
+2026-10-25T00:35:33.2174207Z   persist-credentials: false
+2026-10-25T00:35:33.2174747Z   repository: RedMentos/Aii
+2026-10-25T00:35:33.2178771Z   token: ***
+2026-10-25T00:35:33.2179214Z   ssh-strict: true
+2026-10-25T00:35:33.2179662Z   ssh-user: git
+2026-10-25T00:35:33.2180111Z   clean: true
+2026-10-25T00:35:33.2180578Z   sparse-checkout-cone-mode: true
+2026-10-25T00:35:33.2181121Z   fetch-depth: 1
+2026-10-25T00:35:33.2181568Z   fetch-tags: false
+2026-10-25T00:35:33.2182027Z   show-progress: true
+2026-10-25T00:35:33.2182503Z   lfs: false
+2026-10-25T00:35:33.2182941Z   submodules: false
+2026-10-25T00:35:33.2183409Z   set-safe-directory: true
+2026-10-25T00:35:33.2184205Z ##[endgroup]
+2026-10-25T00:35:33.3218401Z Syncing repository: RedMentos/Aii
+2026-10-25T00:35:33.3220859Z ##[group]Getting Git version info
+2026-10-25T00:35:33.3221777Z Working directory is '/home/runner/work/Aii/Aii'
+2026-10-25T00:35:33.3223118Z [command]/usr/bin/git version
+2026-10-25T00:35:33.3255427Z git version 2.55.0
+2026-10-25T00:35:33.3280599Z ##[endgroup]
+2026-10-25T00:35:33.3296869Z Temporarily overriding HOME='/home/runner/work/_temp/7d179d46-51da-45ae-b281-098c6354ee73' before making global git config changes
+2026-10-25T00:35:33.3299569Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T00:35:33.3303026Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T00:35:33.3360044Z Deleting the contents of '/home/runner/work/Aii/Aii'
+2026-10-25T00:35:33.3363190Z ##[group]Initializing the repository
+2026-10-25T00:35:33.3368483Z [command]/usr/bin/git init /home/runner/work/Aii/Aii
+2026-10-25T00:35:33.3483697Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-25T00:35:33.3485156Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-25T00:35:33.3486252Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-25T00:35:33.3487111Z hint: call:
+2026-10-25T00:35:33.3487790Z hint:
+2026-10-25T00:35:33.3489033Z hint: 	git config --global init.defaultBranch <name>
+2026-10-25T00:35:33.3489770Z hint:
+2026-10-25T00:35:33.3490454Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-25T00:35:33.3491463Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-25T00:35:33.3492293Z hint:
+2026-10-25T00:35:33.3492800Z hint: 	git branch -m <name>
+2026-10-25T00:35:33.3493368Z hint:
+2026-10-25T00:35:33.3494065Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-25T00:35:33.3495079Z Initialized empty Git repository in /home/runner/work/Aii/Aii/.git/
+2026-10-25T00:35:33.3505804Z [command]/usr/bin/git remote add origin https://github.com/RedMentos/Aii
+2026-10-25T00:35:33.3553160Z ##[endgroup]
+2026-10-25T00:35:33.3554050Z ##[group]Disabling automatic garbage collection
+2026-10-25T00:35:33.3557571Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-25T00:35:33.3593517Z ##[endgroup]
+2026-10-25T00:35:33.3594386Z ##[group]Setting up auth
+2026-10-25T00:35:33.3601852Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T00:35:33.3637612Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T00:35:33.4061616Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T00:35:33.4099778Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T00:35:33.4379748Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-25T00:35:33.4422820Z ##[endgroup]
+2026-10-25T00:35:33.4423787Z ##[group]Fetching the repository
+2026-10-25T00:35:33.4433340Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d0fc8087e69ec7e8b996a998340616412817b586:refs/remotes/pull/152/merge
+2026-10-25T00:35:39.8691641Z From https://github.com/RedMentos/Aii
+2026-10-25T00:35:39.8693517Z  * [new ref]         d0fc8087e69ec7e8b996a998340616412817b586 -> pull/152/merge
+2026-10-25T00:35:39.8697084Z ##[endgroup]
+2026-10-25T00:35:39.8698863Z ##[group]Determining the checkout info
+2026-10-25T00:35:39.8700357Z ##[endgroup]
+2026-10-25T00:35:39.8705186Z [command]/usr/bin/git sparse-checkout disable
+2026-10-25T00:35:39.8758429Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-25T00:35:39.8790397Z ##[group]Checking out the ref
+2026-10-25T00:35:39.8794220Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/152/merge
+2026-10-25T00:35:40.9225124Z Updating files:  50% (1731/3434)
+2026-10-25T00:35:41.0037757Z Updating files:  51% (1752/3434)
+2026-10-25T00:35:41.0421969Z Updating files:  52% (1786/3434)
+2026-10-25T00:35:41.0458754Z Updating files:  53% (1821/3434)
+2026-10-25T00:35:41.0486641Z Updating files:  54% (1855/3434)
+2026-10-25T00:35:41.0522185Z Updating files:  55% (1889/3434)
+2026-10-25T00:35:41.0548825Z Updating files:  56% (1924/3434)
+2026-10-25T00:35:41.0571364Z Updating files:  57% (1958/3434)
+2026-10-25T00:35:41.0592915Z Updating files:  58% (1992/3434)
+2026-10-25T00:35:41.0619426Z Updating files:  59% (2027/3434)
+2026-10-25T00:35:41.0652497Z Updating files:  60% (2061/3434)
+2026-10-25T00:35:41.0676667Z Updating files:  61% (2095/3434)
+2026-10-25T00:35:41.0697778Z Updating files:  62% (2130/3434)
+2026-10-25T00:35:41.0727538Z Updating files:  63% (2164/3434)
+2026-10-25T00:35:41.0763790Z Updating files:  64% (2198/3434)
+2026-10-25T00:35:41.0802892Z Updating files:  65% (2233/3434)
+2026-10-25T00:35:41.0836980Z Updating files:  66% (2267/3434)
+2026-10-25T00:35:41.0857038Z Updating files:  67% (2301/3434)
+2026-10-25T00:35:41.0872842Z Updating files:  68% (2336/3434)
+2026-10-25T00:35:41.0887792Z Updating files:  69% (2370/3434)
+2026-10-25T00:35:41.0907776Z Updating files:  70% (2404/3434)
+2026-10-25T00:35:41.0934105Z Updating files:  71% (2439/3434)
+2026-10-25T00:35:41.0951234Z Updating files:  72% (2473/3434)
+2026-10-25T00:35:41.0975032Z Updating files:  73% (2507/3434)
+2026-10-25T00:35:41.0995927Z Updating files:  74% (2542/3434)
+2026-10-25T00:35:41.1028439Z Updating files:  75% (2576/3434)
+2026-10-25T00:35:41.1054678Z Updating files:  76% (2610/3434)
+2026-10-25T00:35:41.1082598Z Updating files:  77% (2645/3434)
+2026-10-25T00:35:41.1108500Z Updating files:  78% (2679/3434)
+2026-10-25T00:35:41.1137532Z Updating files:  79% (2713/3434)
+2026-10-25T00:35:41.1169650Z Updating files:  80% (2748/3434)
+2026-10-25T00:35:41.1202765Z Updating files:  81% (2782/3434)
+2026-10-25T00:35:41.1231186Z Updating files:  82% (2816/3434)
+2026-10-25T00:35:41.1261217Z Updating files:  83% (2851/3434)
+2026-10-25T00:35:41.1890483Z Updating files:  84% (2885/3434)
+2026-10-25T00:35:41.1914955Z Updating files:  85% (2919/3434)
+2026-10-25T00:35:41.1935596Z Updating files:  86% (2954/3434)
+2026-10-25T00:35:41.1956550Z Updating files:  87% (2988/3434)
+2026-10-25T00:35:41.1981647Z Updating files:  88% (3022/3434)
+2026-10-25T00:35:41.2008382Z Updating files:  89% (3057/3434)
+2026-10-25T00:35:41.2030543Z Updating files:  90% (3091/3434)
+2026-10-25T00:35:41.2054340Z Updating files:  91% (3125/3434)
+2026-10-25T00:35:41.2075894Z Updating files:  92% (3160/3434)
+2026-10-25T00:35:41.2101365Z Updating files:  93% (3194/3434)
+2026-10-25T00:35:41.2145479Z Updating files:  94% (3228/3434)
+2026-10-25T00:35:41.2178499Z Updating files:  95% (3263/3434)
+2026-10-25T00:35:41.2217627Z Updating files:  96% (3297/3434)
+2026-10-25T00:35:41.2261093Z Updating files:  97% (3331/3434)
+2026-10-25T00:35:41.2308104Z Updating files:  98% (3366/3434)
+2026-10-25T00:35:41.2342373Z Updating files:  99% (3400/3434)
+2026-10-25T00:35:41.2343229Z Updating files: 100% (3434/3434)
+2026-10-25T00:35:41.2343713Z Updating files: 100% (3434/3434), done.
+2026-10-25T00:35:41.2381717Z Note: switching to 'refs/remotes/pull/152/merge'.
+2026-10-25T00:35:41.2382280Z 
+2026-10-25T00:35:41.2385121Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-25T00:35:41.2386608Z changes and commit them, and you can discard any commits you make in this
+2026-10-25T00:35:41.2387745Z state without impacting any branches by switching back to a branch.
+2026-10-25T00:35:41.2388415Z 
+2026-10-25T00:35:41.2389044Z If you want to create a new branch to retain commits you create, you may
+2026-10-25T00:35:41.2390018Z do so (now or later) by using -c with the switch command. Example:
+2026-10-25T00:35:41.2390610Z 
+2026-10-25T00:35:41.2390823Z   git switch -c <new-branch-name>
+2026-10-25T00:35:41.2391178Z 
+2026-10-25T00:35:41.2391383Z Or undo this operation with:
+2026-10-25T00:35:41.2391719Z 
+2026-10-25T00:35:41.2391896Z   git switch -
+2026-10-25T00:35:41.2392192Z 
+2026-10-25T00:35:41.2392623Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-25T00:35:41.2393297Z 
+2026-10-25T00:35:41.2394027Z HEAD is now at d0fc808 Merge f76f698d0a2be182a624852349330b9e5c71e58b into c7b8ebf5b9373de7d855d93ba4f97c32224fe1f6
+2026-10-25T00:35:41.2490478Z ##[endgroup]
+2026-10-25T00:35:41.2546082Z [command]/usr/bin/git log -1 --format=%H
+2026-10-25T00:35:41.2576811Z d0fc8087e69ec7e8b996a998340616412817b586
+2026-10-25T00:35:41.2590233Z ##[group]Removing auth
+2026-10-25T00:35:41.2595110Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T00:35:41.2632382Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T00:35:41.2927783Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T00:35:41.2952963Z http.https://github.com/.extraheader
+2026-10-25T00:35:41.2961145Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-25T00:35:41.2994466Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T00:35:41.3262974Z ##[endgroup]
+2026-10-25T00:35:41.3472445Z ##[group]Run python3 -m venv "$RUNNER_TEMP/run121"
+2026-10-25T00:35:41.3472894Z [36;1mpython3 -m venv "$RUNNER_TEMP/run121"[0m
+2026-10-25T00:35:41.3473553Z [36;1m"$RUNNER_TEMP/run121/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'[0m
+2026-10-25T00:35:41.3636472Z shell: /usr/bin/bash -e {0}
+2026-10-25T00:35:41.3636771Z ##[endgroup]
+2026-10-25T00:35:45.2390106Z Collecting numpy==2.3.5
+2026-10-25T00:35:45.2770271Z   Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-25T00:35:45.3276776Z Collecting prompt-toolkit==3.0.52
+2026-10-25T00:35:45.3379436Z   Downloading prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
+2026-10-25T00:35:45.3694352Z Collecting wcwidth (from prompt-toolkit==3.0.52)
+2026-10-25T00:35:45.3796990Z   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+2026-10-25T00:35:45.3940280Z Downloading numpy-2.3.5-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-25T00:35:45.5211605Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 145.5 MB/s eta 0:00:00
+2026-10-25T00:35:45.5316596Z Downloading prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
+2026-10-25T00:35:45.5449713Z Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (785 kB)
+2026-10-25T00:35:45.5501331Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 785.9/785.9 kB 164.1 MB/s eta 0:00:00
+2026-10-25T00:35:45.5858322Z Installing collected packages: wcwidth, numpy, prompt-toolkit
+2026-10-25T00:35:47.6037750Z 
+2026-10-25T00:35:47.6049106Z Successfully installed numpy-2.3.5 prompt-toolkit-3.0.52 wcwidth-0.9.4
+2026-10-25T00:35:47.7080724Z ##[group]Run set -euo pipefail
+2026-10-25T00:35:47.7081080Z [36;1mset -euo pipefail[0m
+2026-10-25T00:35:47.7081325Z [36;1mcd v13/code[0m
+2026-10-25T00:35:47.7081560Z [36;1mexport PYTHONPATH="$PWD"[0m
+2026-10-25T00:35:47.7081912Z [36;1m"$RUNNER_TEMP/run121/bin/python" -m compileall -q v13[0m
+2026-10-25T00:35:47.7082572Z [36;1mfor pattern in test_cli_standstill_run121.py test_phone_cli_run87.py test_phone_operator_journey_run86.py test_standstill.py; do[0m
+2026-10-25T00:35:47.7083161Z [36;1m  echo "RUN121_SUITE=$pattern"[0m
+2026-10-25T00:35:47.7083593Z [36;1m  "$RUNNER_TEMP/run121/bin/python" -m unittest discover -s tests -p "$pattern" -v[0m
+2026-10-25T00:35:47.7084012Z [36;1mdone[0m
+2026-10-25T00:35:47.7084309Z [36;1mecho "RUN121_LINUX_SOFTWARE_ONLY_PASS; NO_NATIVE_OR_REDMI_PROOF"[0m
+2026-10-25T00:35:47.7146244Z shell: /usr/bin/bash -e {0}
+2026-10-25T00:35:47.7146506Z ##[endgroup]
+2026-10-25T00:35:48.1685696Z RUN121_SUITE=test_cli_standstill_run121.py
+2026-10-25T00:35:53.3467144Z test_persisted_pause_refuses_ask_without_queue_side_effect (test_cli_standstill_run121.CliStandstillRun121.test_persisted_pause_refuses_ask_without_queue_side_effect) ... ERROR
+2026-10-25T00:35:58.3921278Z test_persisted_standstill_refuses_then_human_release_allows_ask (test_cli_standstill_run121.CliStandstillRun121.test_persisted_standstill_refuses_then_human_release_allows_ask) ... ERROR
+2026-10-25T00:35:58.3922088Z 
+2026-10-25T00:35:58.3922216Z ======================================================================
+2026-10-25T00:35:58.3923002Z ERROR: test_persisted_pause_refuses_ask_without_queue_side_effect (test_cli_standstill_run121.CliStandstillRun121.test_persisted_pause_refuses_ask_without_queue_side_effect)
+2026-10-25T00:35:58.3923815Z ----------------------------------------------------------------------
+2026-10-25T00:35:58.3924195Z Traceback (most recent call last):
+2026-10-25T00:35:58.3924851Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_cli_standstill_run121.py", line 40, in test_persisted_pause_refuses_ask_without_queue_side_effect
+2026-10-25T00:35:58.3925884Z     result = self.ask(home, "Kopiere exakt: must not be queued")
+2026-10-25T00:35:58.3926414Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_cli_standstill_run121.py", line 24, in ask
+2026-10-25T00:35:58.3926878Z     return subprocess.run(
+2026-10-25T00:35:58.3927109Z            ~~~~~~~~~~~~~~^
+2026-10-25T00:35:58.3927377Z         [sys.executable, "-m", "v13", "--home", str(home),
+2026-10-25T00:35:58.3927690Z         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3927973Z          "ask", text, "--no-observers"],
+2026-10-25T00:35:58.3928235Z          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3928524Z         cwd=root, env=env, capture_output=True, text=True,
+2026-10-25T00:35:58.3929152Z         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3929433Z         timeout=5, check=False)
+2026-10-25T00:35:58.3929682Z         ^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3929993Z   File "/usr/lib/python3.14/subprocess.py", line 557, in run
+2026-10-25T00:35:58.3930388Z     stdout, stderr = process.communicate(input, timeout=timeout)
+2026-10-25T00:35:58.3930748Z                      ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3931124Z   File "/usr/lib/python3.14/subprocess.py", line 1221, in communicate
+2026-10-25T00:35:58.3931539Z     stdout, stderr = self._communicate(input, endtime, timeout)
+2026-10-25T00:35:58.3931881Z                      ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3932245Z   File "/usr/lib/python3.14/subprocess.py", line 2154, in _communicate
+2026-10-25T00:35:58.3932654Z     self._check_timeout(endtime, orig_timeout, stdout, stderr)
+2026-10-25T00:35:58.3933013Z     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3933386Z   File "/usr/lib/python3.14/subprocess.py", line 1268, in _check_timeout
+2026-10-25T00:35:58.3933754Z     raise TimeoutExpired(
+2026-10-25T00:35:58.3934202Z     ...<2 lines>...
+2026-10-25T00:35:58.3934483Z             stderr=b''.join(stderr_seq) if stderr_seq else None)
+2026-10-25T00:35:58.3935372Z subprocess.TimeoutExpired: Command '['/home/runner/work/_temp/run121/bin/python', '-m', 'v13', '--home', '/tmp/tmp2mnlxkay/home', 'ask', 'Kopiere exakt: must not be queued', '--no-observers']' timed out after 5 seconds
+2026-10-25T00:35:58.3936107Z 
+2026-10-25T00:35:58.3936217Z ======================================================================
+2026-10-25T00:35:58.3937021Z ERROR: test_persisted_standstill_refuses_then_human_release_allows_ask (test_cli_standstill_run121.CliStandstillRun121.test_persisted_standstill_refuses_then_human_release_allows_ask)
+2026-10-25T00:35:58.3937844Z ----------------------------------------------------------------------
+2026-10-25T00:35:58.3938186Z Traceback (most recent call last):
+2026-10-25T00:35:58.3939180Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_cli_standstill_run121.py", line 61, in test_persisted_standstill_refuses_then_human_release_allows_ask
+2026-10-25T00:35:58.3939913Z     refused = self.ask(home, "Kopiere exakt: held until release")
+2026-10-25T00:35:58.3940422Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_cli_standstill_run121.py", line 24, in ask
+2026-10-25T00:35:58.3940868Z     return subprocess.run(
+2026-10-25T00:35:58.3941092Z            ~~~~~~~~~~~~~~^
+2026-10-25T00:35:58.3941355Z         [sys.executable, "-m", "v13", "--home", str(home),
+2026-10-25T00:35:58.3941667Z         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3941953Z          "ask", text, "--no-observers"],
+2026-10-25T00:35:58.3942219Z          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3942510Z         cwd=root, env=env, capture_output=True, text=True,
+2026-10-25T00:35:58.3942819Z         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3943089Z         timeout=5, check=False)
+2026-10-25T00:35:58.3943320Z         ^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3943614Z   File "/usr/lib/python3.14/subprocess.py", line 557, in run
+2026-10-25T00:35:58.3944181Z     stdout, stderr = process.communicate(input, timeout=timeout)
+2026-10-25T00:35:58.3944535Z                      ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3944902Z   File "/usr/lib/python3.14/subprocess.py", line 1221, in communicate
+2026-10-25T00:35:58.3945312Z     stdout, stderr = self._communicate(input, endtime, timeout)
+2026-10-25T00:35:58.3945658Z                      ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3946021Z   File "/usr/lib/python3.14/subprocess.py", line 2154, in _communicate
+2026-10-25T00:35:58.3946430Z     self._check_timeout(endtime, orig_timeout, stdout, stderr)
+2026-10-25T00:35:58.3946775Z     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T00:35:58.3947145Z   File "/usr/lib/python3.14/subprocess.py", line 1268, in _check_timeout
+2026-10-25T00:35:58.3947515Z     raise TimeoutExpired(
+2026-10-25T00:35:58.3947739Z     ...<2 lines>...
+2026-10-25T00:35:58.3948012Z             stderr=b''.join(stderr_seq) if stderr_seq else None)
+2026-10-25T00:35:58.3949156Z subprocess.TimeoutExpired: Command '['/home/runner/work/_temp/run121/bin/python', '-m', 'v13', '--home', '/tmp/tmp9ihxjdys/home', 'ask', 'Kopiere exakt: held until release', '--no-observers']' timed out after 5 seconds
+2026-10-25T00:35:58.3949901Z 
+2026-10-25T00:35:58.3950041Z ----------------------------------------------------------------------
+2026-10-25T00:35:58.3950370Z Ran 2 tests in 10.081s
+2026-10-25T00:35:58.3950533Z 
+2026-10-25T00:35:58.3950619Z FAILED (errors=2)
+2026-10-25T00:35:58.4134189Z ##[error]Process completed with exit code 1.
+2026-10-25T00:35:58.4267232Z Post job cleanup.
+2026-10-25T00:35:58.5110065Z [command]/usr/bin/git version
+2026-10-25T00:35:58.5155511Z git version 2.55.0
+2026-10-25T00:35:58.5196860Z Temporarily overriding HOME='/home/runner/work/_temp/86654cdd-4d28-4281-bd08-71296d253920' before making global git config changes
+2026-10-25T00:35:58.5198187Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T00:35:58.5203834Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Aii/Aii
+2026-10-25T00:35:58.5248157Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T00:35:58.5296597Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T00:35:58.5602741Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T00:35:58.5641680Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T00:35:58.6140785Z Cleaning up orphan processes
+2026-10-25T00:35:58.6534770Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
