@@ -5,6 +5,7 @@ no guarantee under distribution shift or uncalibrated C3 confidence. No tools
 are executed; VERIFY_TOOL_PROPOSAL is only a lab decision label.
 """
 import hashlib
+import hmac
 import json
 import math
 
@@ -22,6 +23,41 @@ def _score(value):
 
 def _id_hash(value):
     return hashlib.sha256(value.encode('utf-8')).hexdigest()
+
+
+def _seal(policy):
+    # Tamper-evident checksum, NOT authentication against a malicious writer.
+    # No live consumer may trust this self-contained lab checksum as a signature.
+    doc = {k: v for k, v in policy.items() if k != 'integrity_sha256'}
+    return hashlib.sha256(json.dumps(doc, sort_keys=True, separators=(',', ':'),
+                                     allow_nan=False).encode()).hexdigest()
+
+
+def _valid_policy(policy):
+    if not isinstance(policy, dict) or policy.get('revision') != REVISION:
+        return False
+    try:
+        if not hmac.compare_digest(policy['integrity_sha256'], _seal(policy)):
+            return False
+        if (policy.get('authority') != 'LAB_ONLY'
+                or policy.get('tool_execution_authority') is not False
+                or policy.get('target_risk') != TARGET_RISK
+                or policy.get('delta') != DELTA
+                or policy.get('grid') != list(GRID)):
+            return False
+        if policy.get('status') == 'ABSTAIN_ALL':
+            return policy.get('threshold') is None
+        if policy.get('status') != 'CALIBRATED':
+            return False
+        t = policy.get('threshold')
+        bound = policy.get('risk_upper_bound')
+        n = policy.get('selected_count')
+        return (type(t) in (int, float) and t in GRID
+                and type(bound) in (int, float) and math.isfinite(bound)
+                and bound <= TARGET_RISK
+                and type(n) is int and n >= MIN_SELECTED)
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return False
 
 
 def _rows(rows, split):
@@ -75,6 +111,7 @@ def calibrate(rows):
                           selected_count=n, wrong_count=wrong,
                           empirical_risk=risk, risk_upper_bound=upper)
             break
+    result['integrity_sha256'] = _seal(result)
     return result
 
 
@@ -82,8 +119,7 @@ def decide(confidence, calibration, *, ask_user=False, tool_permitted=False):
     """Only returns a proposal; no tool call, answer text or live authority."""
     action, reason = 'ABSTAIN', 'UNAVAILABLE_OR_UNCALIBRATED'
     if (type(ask_user) is not bool or type(tool_permitted) is not bool
-            or not isinstance(calibration, dict)
-            or calibration.get('revision') != REVISION
+            or not _valid_policy(calibration)
             or not _score(confidence)):
         reason = 'INVALID_OR_MISSING_INPUT'
     elif (calibration.get('status') == 'CALIBRATED'
@@ -106,7 +142,7 @@ def decide(confidence, calibration, *, ask_user=False, tool_permitted=False):
 
 def evaluate(rows, calibration):
     """Evaluate on disjoint held-out synthetic labels; no fit or threshold update."""
-    if not isinstance(calibration, dict) or calibration.get('revision') != REVISION:
+    if not _valid_policy(calibration):
         raise ValueError('INVALID_CALIBRATION')
     data = _rows(rows, 'test')
     prior = calibration.get('calibration_id_hashes')
