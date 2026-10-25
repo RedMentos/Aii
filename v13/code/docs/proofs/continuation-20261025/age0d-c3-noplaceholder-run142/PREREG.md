@@ -1,0 +1,9 @@
+# Run142 — registered C3 no-placeholder native AGE0d challenge (distinct holdout)
+
+2026-10-25 UTC. Base Run141 PR172 exact `fe902a560ea8bff171ff3b8c4b134bb9b0366211`. Run136 (seed 13625, 60 tasks) K1 PASS/K2 INSUFFICIENT/K3 PASS. Run139 (seed 13925, 80 tasks) K1 INSUFFICIENT/K2 PASS/K3 FAIL because C3 copied literal placeholder `N` on 62 tasks. Both originals and raw evidence are preserved, not modified. This is a distinct new preregistered cohort, not a retroactive retry.
+
+Model/runner EXACT unchanged registered `LiquidAI/LFM2.5-350M-GGUF` revision `657e078c94084481950a2d555a941481f715536b`, GGUF SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`, llama.cpp b10964 archive SHA256 `9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443`. Fresh seed **14225**, 80 fresh tasks: 10 plus, 20 minus, 40 two-digit times, 10 exact divided by; 48 tokens, 1024 context, threads 2, per-task seed 14225+i. New system prompt without a literal answer placeholder: `You are a calculator. For each question, output a single decimal integer representing the arithmetic result.` No post-hoc task/seed/model substitutions.
+
+Native Linux x86_64 CPU job only, serialized via existing shared native group; resource/ownership preflight, deep SHA verify, closed raw JSON/log with per-answer hashes, no model bytes, permitted private backup and independent recompute. K1 false alarms <=10% with >=10 correct; K2 wrong detection >=20% with >=10 wrong; K3 supported coverage >=30%. Missing denominators INSUFFICIENT; no automatic AGE0d delivery/HX2/STEP2/B3/JEPA/DS2/full V13 promotion even if all three pass. No Redmi.
+
+File ownership new Run142 script/test/workflow/proofs only. Frozen Runtime, Canon, learning/age rules and other active owner files untouched. Next after native: cross-review false alarms, new linguistic/task-family holdout before any live consumer.
