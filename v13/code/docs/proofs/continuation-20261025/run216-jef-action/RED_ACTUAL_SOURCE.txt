@@ -1,0 +1,21 @@
+# Run216 actual-source RED evidence
+
+Full raw GitHub Actions job: https://github.com/RedMentos/Aii/actions/runs/40179458093/job/121127179541
+Tested head: 2791535e9e5edc73cf24473faa914c4fc91178b7
+Three real JEF persisted-action binding failures; valid action restart control passes. Exact filtered timestamped lines; complete raw log retained by Actions.
+
+2026-10-25T09:09:27.7117693Z test_foreign_session_action_cannot_enter_control_view (tests.test_executive_action_intent_lineage_run216.ExecutiveActionIntentLineageRun216.test_foreign_session_action_cannot_enter_control_view) ... FAIL
+2026-10-25T09:09:27.7293792Z test_same_event_action_with_foreign_corollary_is_rejected (tests.test_executive_action_intent_lineage_run216.ExecutiveActionIntentLineageRun216.test_same_event_action_with_foreign_corollary_is_rejected) ... FAIL
+2026-10-25T09:09:27.7464532Z test_unrecognized_action_type_cannot_enter_report_or_control (tests.test_executive_action_intent_lineage_run216.ExecutiveActionIntentLineageRun216.test_unrecognized_action_type_cannot_enter_report_or_control) ... FAIL
+2026-10-25T09:09:27.7727365Z test_valid_action_survives_store_restart (tests.test_executive_action_intent_lineage_run216.ExecutiveActionIntentLineageRun216.test_valid_action_survives_store_restart) ... ok
+2026-10-25T09:09:28.7988830Z FAIL: test_foreign_session_action_cannot_enter_control_view (tests.test_executive_action_intent_lineage_run216.ExecutiveActionIntentLineageRun216.test_foreign_session_action_cannot_enter_control_view)
+2026-10-25T09:09:28.7997488Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_action_intent_lineage_run216.py", line 48, in test_foreign_session_action_cannot_enter_control_view
+2026-10-25T09:09:28.7999260Z AssertionError: {'action_id': 'act_0b4b475800f84b6e94e232b01bd034b8', 'corollary_packet_id': 'pkt_30453ef983134b58b589cff01ca0c68a', 'type': 'LOCAL_TEXT_REPORT'} is not None
+2026-10-25T09:09:28.8001474Z FAIL: test_same_event_action_with_foreign_corollary_is_rejected (tests.test_executive_action_intent_lineage_run216.ExecutiveActionIntentLineageRun216.test_same_event_action_with_foreign_corollary_is_rejected)
+2026-10-25T09:09:28.8003540Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_action_intent_lineage_run216.py", line 54, in test_same_event_action_with_foreign_corollary_is_rejected
+2026-10-25T09:09:28.8005141Z AssertionError: {'action_id': 'act_9970becf80f74318b9a16fa7b114e841', 'corollary_packet_id': 'pkt_2f67d5c3d24a4426bc33d6ccae733a8f', 'type': 'LOCAL_TEXT_REPORT'} is not None
+2026-10-25T09:09:28.8007138Z FAIL: test_unrecognized_action_type_cannot_enter_report_or_control (tests.test_executive_action_intent_lineage_run216.ExecutiveActionIntentLineageRun216.test_unrecognized_action_type_cannot_enter_report_or_control)
+2026-10-25T09:09:28.8009183Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_executive_action_intent_lineage_run216.py", line 58, in test_unrecognized_action_type_cannot_enter_report_or_control
+2026-10-25T09:09:28.8010755Z AssertionError: {'action_id': 'act_5c664be871634f1baf626ab0cbefe019', 'corollary_packet_id': 'pkt_e3177296b6184fe789ac9b260730f478', 'type': 'EXTERNAL_NETWORK'} is not None
+2026-10-25T09:09:28.8011847Z Ran 25 tests in 1.112s
+2026-10-25T09:09:28.8012094Z FAILED (failures=3)
