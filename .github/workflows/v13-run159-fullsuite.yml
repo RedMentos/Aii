@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: v13-native-c3-run131-serialized
   cancel-in-progress: false
@@ -40,19 +41,28 @@ jobs:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1
-      - name: Exact frozen Runtime and sealed LP3 test helper
+      - name: Exact frozen Runtime and reconstructed Run21 LP3 helper in temp only
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           test "$(git hash-object v13/code/v13/runtime.py)" = "a691d27bd0772a4fa1f03d57ec90663237bf6825"
-          ARCHIVE=v13/code/docs/proofs/continuation-20261024/lp3-run16/SOURCE_AND_TESTS.tar.xz
-          test "$(git hash-object "$ARCHIVE")" = "667d7f1b73a655097a44ff4c61749af113f7544f"
-          echo "041e0014194ffdfd74aef79cf6a9149e6c2e11ad51b859bc9a9e7e81b1b67516  $ARCHIVE" | sha256sum -c -
-          mkdir -p "$RUNNER_TEMP/lp3_run16"
-          tar -xJf "$ARCHIVE" -C "$RUNNER_TEMP/lp3_run16"
-          helper="$(find "$RUNNER_TEMP/lp3_run16" -type f -name test_lp3_serial_cohort.py -print -quit)"
+          mkdir -p "$RUNNER_TEMP/lp3_run21"
+          base64 -d v13/code/docs/proofs/continuation-20261024/lp3-run20/LP3_RUN20_CODE_ONLY.tar.xz.base64 > "$RUNNER_TEMP/run20_code_only.tar.xz"
+          echo "fc532d00e2c72281a154c984bbd79bd757a69a1d4e3c14e70a988dfb44c100c7  $RUNNER_TEMP/run20_code_only.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/run20_code_only.tar.xz" -C "$RUNNER_TEMP/lp3_run21"
+          patch -d "$RUNNER_TEMP/lp3_run21" -p1 < v13/code/docs/coordination/LP3_RUN21_POSTREAP_REVIEW.patch
+          helper="$(find "$RUNNER_TEMP/lp3_run21" -type f -path '*/scripts/lp3_serial_cohort.py' -print -quit)"
           test -n "$helper"
+          echo "05e5bf300f582a03efeaae0133c8e20bf60948a2fa4e05a4867924ac4dc4b831  $helper" | sha256sum -c -
           echo "LP3_HELPER_DIR=$(dirname "$helper")" >> "$GITHUB_ENV"
+      - name: Stage exact Run147 closed native fixture (read only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12585363362/zip -o "$RUNNER_TEMP/run147_native.zip"
+          echo "ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676  $RUNNER_TEMP/run147_native.zip" | sha256sum -c -
+          echo "RUN147_ARTIFACT=$RUNNER_TEMP/run147_native.zip" >> "$GITHUB_ENV"
       - name: Isolated CPU-only pinned dependencies
         run: |
           set -euo pipefail
