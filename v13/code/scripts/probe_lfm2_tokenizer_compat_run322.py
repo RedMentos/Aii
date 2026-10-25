@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run322 two-arm pinned LFM2 tokenizer compatibility probe (NO model weights)."""
 import argparse
+from collections.abc import Mapping
 import hashlib
 import json
 from pathlib import Path
@@ -54,12 +55,12 @@ def verify_snapshot(root, manifest):
 
 
 def normalize_ids(value):
-    if isinstance(value, dict):
+    if isinstance(value, Mapping):
         value = value.get("input_ids")
     if isinstance(value, list) and len(value) == 1 and isinstance(value[0], list):
         value = value[0]
     if not isinstance(value, list) or not value or len(value) > 2048:
-        raise ValueError("unexpected tokenizer ID sequence")
+        raise ValueError("unexpected tokenizer ID sequence: " + type(value).__name__)
     if any(type(x) is not int or not 0 <= x < 65536 for x in value):
         raise ValueError("tokenizer ID out of frozen vocab range")
     return value
