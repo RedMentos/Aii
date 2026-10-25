@@ -1,0 +1,7 @@
+# Run145 — preregistered pinned full-suite audit of current Run144 chain
+
+2026-10-25 UTC. Source under test **exact** Run144 PR #175 head `ecb263b53b48bc3a575b6dccf82da717e95ee98a`, after Run143 PR #174 and Run142 PR #173; no source modifications permitted in this package. Distinct from earlier Run129 audit on Run128 (`ad318379...`), which found 2241 tests, 4 FAIL, 1 ERROR, 11 skips, 164.257s. Preserve that negative baseline and Run144's local 150-second TIMEOUT with two partial E markers.
+
+Owner Run145 owns only a new full-suite workflow and Run145 proof/status files. Use official privacy scanner, exact source-head checkout, frozen Runtime blob `a691d27bd0772a4fa1f03d57ec90663237bf6825`, pinned CPU-only `torch==2.9.1+cpu`, `numpy==2.3.5`, `prompt-toolkit==3.0.52`; sealed Run16 LP3 helper Git blob `667d7f1b73a655097a44ff4c61749af113f7544f`, SHA256 `041e0014194ffdfd74aef79cf6a9149e6c2e11ad51b859bc9a9e7e81b1b67516` extracted **temp only**. No model downloads, no native inference, no Redmi, no production/helper overwrites. Serialize full suite with shared heavy-job group; enforce true unittest exit, upload closed raw log even on FAIL. 900s test timeout, 25min job budget; no silent skips.
+
+Expected result is unknown. A red suite is evidence, not a reason to suppress tests. Record exact test counts, FAIL/ERROR names, source SHA, artifact SHA and blockers after run. Original STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, DS2 H2 FAIL and V13 INCOMPLETE remain unchanged regardless of suite result.
