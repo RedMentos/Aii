@@ -1,0 +1,39 @@
+{
+  "schema": "V13_RUN375_BRANCH_SCOPED_CHECKPOINT_V1",
+  "owner": "codex/b3-callosum-finite-rating-run375-20261025",
+  "parent": "codex/ag3-finite-plan-scores-run374-20261025@11a4eb18220d64f7b6ac1c546de0ee854b33ebf4",
+  "review_pr": 370,
+  "prereg_commit": "1f22aad8645819f6efeedeb33e22371ee94ed566",
+  "red_test_commit": "e7b95c4439badad179289d0b21608d9544324965",
+  "red_source_head": "9ceda0b033646c3c27d8ad31abb3a5f738aba327",
+  "red_actions_run": 40234964211,
+  "red_result": "12 tests, 10 expected assertion failures + 3 TypeErrors for NaN/Inf/bool/string/None ratings and softmax; inherited Callosum tests PASS",
+  "red_artifact_id": 12614865490,
+  "red_raw_sha256": "128574f5c0823aa3911f8b91c30d7a8e243ebd3d4473720a53dd5dcf2cb6c02c",
+  "red_private_backup": "/V13/checkpoints/2026-10-25/V13_Run375_RED_raw_sha128574f5.zip",
+  "green_source_head": "4f5e0a5fd1faa6960420c1fa0d141bd04266e332",
+  "green_actions_run": 40235057138,
+  "green_result": "12/12 PASS, privacy CLEAN, compileall PASS; inherited Run98/Run99/Run206 Callosum workflows SUCCESS",
+  "green_artifact_id": 12614572571,
+  "green_raw_sha256": "423a064199575bbe6122c496d0527cd77e09676e466e493b267cec13c692f95d",
+  "green_private_backup": "/V13/checkpoints/2026-10-25/V13_Run375_GREEN_raw_sha423a0641.zip",
+  "library_byte_comparison": "RED and GREEN independently re-materialized and byte-identical; CRC and 4/4 internal SHA PASS",
+  "source_sha256": {
+    "v13/code/v13/callosum.py": "d37d1a027e547bccccbfea67b66b88c79e2278dd9696a7e33d7e43ff9a3d91b0",
+    "v13/code/tests/test_callosum_finite_rating_run375.py": "25b8d5319296d68145fa9931a766d791310684a4d73864510c7276e7ed310cff"
+  },
+  "claim_limits": "Software/SQLite B3-H9 human rating and softmax input integrity only; no latent channel, native calibration, B3 exit or active autonomy promotion.",
+  "negative_gates": {
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED",
+    "whole_v13": "INCOMPLETE",
+    "full_suite": "RUN367_RED_UNCHANGED"
+  },
+  "remaining": "Run373 native C3 semantic+field threshold FAIL 2/4 despite 4/4 field metrics; Run367 full suite RED; Redmi/STEP2/B3/JEPA open.",
+  "next_package": "Continue independent Run376 AG5 curiosity finite error branch and other substantive blueprint work.",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_callosum_finite_rating_run375 tests.test_callosum tests.test_callosum_observed_cost_run206",
+  "status": "BRANCH_SCOPED_GREEN_NOT_MERGED"
+}

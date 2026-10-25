@@ -71,7 +71,14 @@ class Callosum:
     @staticmethod
     def probabilities(d):
         """Softmax over measured channel utilities with a floor: every baseline keeps p > 0 (B3-H9); LATENT = 0."""
-        u={c:(d['u'].get(c) or {'v':0.,'n':0})['v'] for c in CHANNELS}
+        u={}
+        for c in CHANNELS:
+            value=(d['u'].get(c) or {'v':0.,'n':0})['v']
+            if type(value) not in (int,float):raise ValueError('Callosum utility is not numeric')
+            try:finite=math.isfinite(value)
+            except (OverflowError,ValueError,TypeError):finite=False
+            if not finite:raise ValueError('Callosum utility is not finite')
+            u[c]=float(value)
         m=max(u.values());ex={c:math.exp((u[c]-m)/TEMP) for c in CHANNELS};z=sum(ex.values())
         p={c:FLOOR+(1-FLOOR*len(CHANNELS))*ex[c]/z for c in CHANNELS};p['LATENT']=0.
         return {c:round(v,4) for c,v in p.items()}
@@ -191,6 +198,10 @@ class Callosum:
             except Exception:pass
         return {'scored':len(applied),'utilities':[round(u,3) for _,u in applied]}
     def on_rating(self,event_id,utility):
+        if type(utility) not in (int,float):raise ValueError('Callosum rating must be numeric')
+        try:finite=math.isfinite(utility)
+        except (OverflowError,ValueError,TypeError):finite=False
+        if not finite:raise ValueError('Callosum rating must be finite')
         u=max(0.,min(1.,float(utility)));sc=step(self.n,PATH)
         def fn(st):
             ms=st['pending'].get(event_id) or []
