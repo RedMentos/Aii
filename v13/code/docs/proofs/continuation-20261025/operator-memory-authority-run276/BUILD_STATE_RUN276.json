@@ -1,0 +1,91 @@
+{
+  "schema": "V13_RUN276_OPERATOR_MEMORY_AUTHORITY_CHECKPOINT_V1",
+  "utc": "2026-10-25T11:34:00Z",
+  "base": "d610ff461a4c211a28d4b5449ede029301195a2a",
+  "base_pr": 275,
+  "parent_ci": {
+    "pr270": {
+      "run": 40187802482,
+      "tests": 78,
+      "privacy": "CLEAN",
+      "artifact": 12597155710
+    },
+    "pr271": {
+      "run": 40187989062,
+      "tests": 99,
+      "privacy": "CLEAN",
+      "artifact": 12597066691
+    },
+    "pr272": {
+      "run": 40188129508,
+      "tests": 31,
+      "privacy": "CLEAN",
+      "artifact": 12597221607
+    },
+    "pr273": {
+      "run": 40188272116,
+      "tests": 46,
+      "privacy": "CLEAN",
+      "artifact": 12597231967
+    },
+    "pr274": {
+      "run": 40188423855,
+      "tests": 74,
+      "privacy": "CLEAN",
+      "artifact": 12597247163
+    },
+    "pr275": {
+      "run": 40188589615,
+      "tests": 80,
+      "privacy": "CLEAN",
+      "artifact": 12597322284
+    }
+  },
+  "branch": "codex/operator-memory-authority-run276-20261025",
+  "owner": {
+    "production": [
+      "v13/code/v13/operator.py"
+    ],
+    "tests": [
+      "v13/code/tests/test_operator_memory_authority_run276.py"
+    ],
+    "proofs": [
+      "v13/code/docs/proofs/continuation-20261025/operator-memory-authority-run276/*"
+    ],
+    "ci": [
+      ".github/workflows/run276-operator-memory-authority.yml"
+    ]
+  },
+  "source_blob": "aca1cad80c5d918fc60e6b06648a7c920ea63268",
+  "test_blob": "3d070df14702655d8d3104355e76dc7c1d3fa71d",
+  "scope": "LINUX_ACTUAL_RUNTIME_SQLITE_SYNTHETIC_TEXT_NO_NATIVE_MODEL_NO_REDMi",
+  "tests": {
+    "red": {
+      "tests": 7,
+      "failures": 5,
+      "exit": 1
+    },
+    "focused": {
+      "tests": 25,
+      "exit": 0
+    },
+    "fullsuite": {
+      "status": "NOT_RUN_IN_RUN276"
+    }
+  },
+  "raw_sha256": {
+    "red": "4ac97f77892879d36fa334a848621ca69d066d9dc35805d433dd3abc498f758c",
+    "focused": "6806700a1aa87c12c7a080a4bf7cc05a569dfca9b32290de2860ff8548eb93c8"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "changes": "User-facing operator :memory preserves exact JSON schema and session/global scope, but lists only live source-bound F5-authorized corrections. No memory write, training or model changes.",
+  "original_canon_modified": false,
+  "model_hashes_modified": false,
+  "next": "Create PR276 against PR275; inspect exact-head CI raw artifact and privacy. Next switch to independent functional end-to-end phone/acceptance work, not further F5 helper elaboration. No gate promotion."
+}

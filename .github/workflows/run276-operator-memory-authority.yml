@@ -1,0 +1,94 @@
+name: V13 Run276 operator memory authority proof
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_operator_memory_authority_run276.py'
+      - '.github/workflows/run276-operator-memory-authority.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run276-operator-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  operator-memory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Verify exact source head
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN276_HEAD.txt"
+          git hash-object v13/code/v13/operator.py | tee "$RUNNER_TEMP/RUN276_OPERATOR_BLOB.txt"
+          git hash-object v13/code/tests/test_operator_memory_authority_run276.py | tee "$RUNNER_TEMP/RUN276_TEST_BLOB.txt"
+          test -s v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+      - name: Isolated pinned CPU-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run276venv"
+          timeout 180s "$RUNNER_TEMP/run276venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Operator, multi-chat and source-bound SQLite integration
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run276venv/bin/python" -m compileall -q v13 tests
+          compile_rc=$?
+          echo "$compile_rc" > "$RUNNER_TEMP/RUN276_COMPILE_EXIT.txt"
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run276venv/bin/python" -m unittest -v \
+            tests.test_operator_memory_authority_run276 \
+            tests.test_phone_chat_sessions_run89 \
+            tests.test_phone_operator_journey_run86 \
+            tests.test_operator_search_literal_run88 \
+            tests.test_memory_human_decision_lineage_run270 \
+            tests.test_multichat_backup_restore_run217 2>&1 | tee "$RUNNER_TEMP/RUN276_FOCUSED_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN276_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "compile_rc=$compile_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha || 'd610ff461a4c211a28d4b5449ede029301195a2a' }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN276_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN276_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload closed raw Linux-software evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run276-OperatorMemory-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN276_HEAD.txt
+            ${{ runner.temp }}/RUN276_OPERATOR_BLOB.txt
+            ${{ runner.temp }}/RUN276_TEST_BLOB.txt
+            ${{ runner.temp }}/RUN276_COMPILE_EXIT.txt
+            ${{ runner.temp }}/RUN276_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN276_FOCUSED_RAW.log
+            ${{ runner.temp }}/RUN276_PRIVACY_EXIT.txt
+            ${{ runner.temp }}/RUN276_PRIVACY_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual test and privacy results
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.compile_rc }}" = "0"
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
