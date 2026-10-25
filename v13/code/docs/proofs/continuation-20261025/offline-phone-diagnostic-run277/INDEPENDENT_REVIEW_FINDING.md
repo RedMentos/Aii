@@ -1,0 +1,3 @@
+# Run277 independent cross-review before amendment
+
+Initial Linux offline diagnostic passed, but inspecting the unchanged Termux prologue found a genuine gap: `PREFIX=*com.termux*` still executed `pkg update` and `pkg install` before the diagnostic branch, and the unconditional pip paths could access the network. Thus the first candidate was **not** truly offline on Android. This is a software review finding, not Redmi evidence. The default installer remains unchanged; the optional diagnostic must skip all package-manager/pip provisioning and require already-present numpy, with an explicit error otherwise. Add a simulated Termux-prefix regression using a failing `pkg` sentinel. Preserve the initial CI/RED evidence, rerun and reverify exact head.
