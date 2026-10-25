@@ -34,23 +34,29 @@ jobs:
         id: suite
         working-directory: v13/code
         run: |
-          set -uo pipefail
+          set -euo pipefail
           "$RUNNER_TEMP/run359venv/bin/python" -m compileall -q v13/phone_halt.py tests/test_phone_prestart_release_recovery_run359.py
+          set +e
           PYTHONPATH="$PWD" "$RUNNER_TEMP/run359venv/bin/python" -m unittest -v \
             tests.test_phone_prestart_release_recovery_run359 \
             tests.test_phone_prestart_run128 \
             tests.test_standstill_release_recovery_run348 \
             2>&1 | tee "$RUNNER_TEMP/RUN359_TESTS_RAW.log"
-          echo "rc=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+          rc=${PIPESTATUS[0]}
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Public repository privacy scan
         id: privacy
         run: |
-          set -uo pipefail
+          set -euo pipefail
+          set +e
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
             2>&1 | tee "$RUNNER_TEMP/RUN359_PRIVACY_RAW.log"
-          echo "rc=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+          rc=${PIPESTATUS[0]}
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Close source-only evidence
         if: always()
