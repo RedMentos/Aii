@@ -1,0 +1,68 @@
+{
+  "schema": "V13_RUN295_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "branch": "codex/b1-source-placement-native-run295-20261025",
+  "pr": 295,
+  "base_sha": "75637b76b3520c444f79a1c8bae88ef69c1b6816",
+  "tested_source_sha": "4d0c085befaf25ce5562b42c4d1a65c48bb30f41",
+  "owner": [
+    "v13/code/scripts/run295_b1_source_placement.py",
+    "v13/code/tests/test_run295_b1_source_placement.py",
+    ".github/workflows/run295-b1-source-placement-native.yml",
+    "v13/code/docs/proofs/continuation-20261025/b1-source-placement-run295"
+  ],
+  "source_blobs": {
+    "v13/code/scripts/run295_b1_source_placement.py": "ef2425df693bdea669f73d9804840e85ea6f5c6f",
+    "v13/code/tests/test_run295_b1_source_placement.py": "7f95d1620d361a603d9d67c0d1e64731883653e0",
+    ".github/workflows/run295-b1-source-placement-native.yml": "b72ad061ec05e7bfe3c3634eee4053580a3fdb30"
+  },
+  "original_run288_raw_sha256": "940a7a066521318137fb10a230bcd65969aeb3e440865fbd889efd59946026ca",
+  "frozen_prompt_sha256": "54f859ca3667028b4ea83fbd91b46b4c5c85627868f795d1da3ed0e4c70d333c",
+  "model_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+  "model_revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+  "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "native": {
+    "run": 40201285153,
+    "source_only": "8/8 PASS",
+    "native_calls": "9/9 FINAL actual pinned B1",
+    "unloads": "9/9 reaped",
+    "bootstrap_exit": 0,
+    "native_exit": 0,
+    "privacy": "CLEAN",
+    "status": "B1_NATIVE_PROMPT_NOT_SUPPORTED",
+    "baseline": {
+      "match": false,
+      "wrong_topic_leak": false,
+      "wrong_entity_leak": false
+    },
+    "user_source": {
+      "match": true,
+      "wrong_topic_leak": true,
+      "wrong_entity_leak": true
+    },
+    "system_plain": {
+      "match": true,
+      "wrong_topic_leak": true,
+      "wrong_entity_leak": true
+    },
+    "artifact_id": 12601818140,
+    "artifact_sha256": "c17b2d18ba3c1e35396759b9dbf9b4f32f5739ad5363f6a9c20c7ed1a3297593"
+  },
+  "source_artifact": {
+    "id": 12602135440,
+    "sha256": "94eae3ddeaea988efd58ec801e76da5778c2447cc971142135d307246643d20b"
+  },
+  "private_library": "/V13-Inquisition/Proofs/Run295",
+  "backup_readback": "BOTH_ZIPS_SHA256_AND_BYTE_MATCH",
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "next_command": "Preregister independent topic/entity-bound output verification or receiver, keeping PR284/PR293 owner isolation; do not repeat Run295 prompt-only cohort.",
+  "next_prerequisites": "Check active native owner, frozen source/model pins, original failed controls and approved source lineage before any new native experiment."
+}
