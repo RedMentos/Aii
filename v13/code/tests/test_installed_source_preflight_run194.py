@@ -1,6 +1,8 @@
 """Run194 extracted Phone ZIP installer preflight: software integrity only."""
 import hashlib
 import json
+import os
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -74,6 +76,25 @@ class Preflight(unittest.TestCase):
                 (self.root / 'WORKSPACE_FILES.json').write_text(json.dumps(manifest))
                 with self.assertRaises(ValueError):
                     V.verify(self.root)
+
+    def test_actual_installer_refuses_tampered_setup_before_bootstrap(self):
+        # This invokes the real shell entry point but MUST exit at preflight;
+        # no pip, bootstrap, model downloads or native processes are reached.
+        self.files['setup.sh'] = (ROOT / 'setup.sh').read_bytes()
+        self.files['scripts/verify_installed_source_run194.py'] = (ROOT / 'scripts/verify_installed_source_run194.py').read_bytes()
+        self.save()
+        (self.root / 'setup.sh').write_bytes(self.files['setup.sh'] + b'\n# tamper\n')
+        home = self.root / 'never-created-home'
+        env = os.environ.copy()
+        env.pop('PREFIX', None)
+        env['V13_HOME'] = str(home)
+        env['V13_NO_AUTOSTART'] = '1'
+        completed = subprocess.run(['bash', str(self.root / 'setup.sh')],
+                                   cwd=self.root, env=env, capture_output=True,
+                                   text=True, timeout=20)
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn('V13_SOURCE_PREFLIGHT_FAIL:SOURCE_HASH_MISMATCH:setup.sh', completed.stderr)
+        self.assertFalse(home.exists())
 
     def test_installer_checks_before_pip_and_v13_bootstrap(self):
         text = (ROOT / 'setup.sh').read_text()
