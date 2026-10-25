@@ -1,0 +1,103 @@
+name: V13 Run267 native Linux G13 restart soak
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/longrun_soak.py'
+      - 'v13/code/tests/test_native_longrun_assets_run267.py'
+      - '.github/workflows/run267-native-longrun-soak.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-longrun:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Fresh host and exact source prerequisite
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(git hash-object v13/code/specs/models.json)" = "$(git rev-parse HEAD:v13/code/specs/models.json)"
+          {
+            date -u -Iseconds
+            uname -a
+            python3 --version
+            free -h
+            df -h "$RUNNER_TEMP"
+            cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+          } | tee "$RUNNER_TEMP/RUN267_PREFLIGHT.log"
+      - name: Pinned isolated CPU dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run267venv"
+          "$RUNNER_TEMP/run267venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Real software regression for exact native asset binding
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run267venv/bin/python" -m unittest -v test_native_longrun_assets_run267 test_longrun_soak 2>&1 | tee "$RUNNER_TEMP/RUN267_SOFTWARE.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN267_SOFTWARE_EXIT.txt"
+          echo "RUN267_SOFTWARE_EXIT=$rc"
+          exit 0
+      - name: Bootstrap exact registered public models and native runner (only after software PASS)
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN267_SOFTWARE_EXIT.txt")" != "0" ]]; then echo 2 > "$RUNNER_TEMP/RUN267_BOOTSTRAP_EXIT.txt"; exit 0; fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run267installed"
+          timeout 1800s "$RUNNER_TEMP/run267venv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN267_BOOTSTRAP.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN267_BOOTSTRAP_EXIT.txt"
+          echo "RUN267_BOOTSTRAP_EXIT=$rc"
+          exit 0
+      - name: Native G13 2-day restart, queue, sleep and memory soak
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN267_BOOTSTRAP_EXIT.txt")" != "0" ]]; then echo 2 > "$RUNNER_TEMP/RUN267_NATIVE_EXIT.txt"; exit 0; fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run267installed"
+          timeout 900s "$RUNNER_TEMP/run267venv/bin/python" scripts/longrun_soak.py --home "$RUNNER_TEMP/run267soak" --days 2 --turns 2 --native --models-from "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN267_NATIVE.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN267_NATIVE_EXIT.txt"
+          echo "RUN267_NATIVE_EXIT=$rc"
+          exit 0
+      - name: Official privacy scan
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base bff28504ffc682a3f63a2e4165d0547f6ce3d539 --head HEAD --no-worktree
+      - name: Preserve raw evidence on failure and success
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run267-Linux-Native-G13-Soak-Raw
+          path: |
+            ${{ runner.temp }}/RUN267_PREFLIGHT.log
+            ${{ runner.temp }}/RUN267_SOFTWARE.log
+            ${{ runner.temp }}/RUN267_SOFTWARE_EXIT.txt
+            ${{ runner.temp }}/RUN267_BOOTSTRAP.log
+            ${{ runner.temp }}/RUN267_BOOTSTRAP_EXIT.txt
+            ${{ runner.temp }}/RUN267_NATIVE.log
+            ${{ runner.temp }}/RUN267_NATIVE_EXIT.txt
+            ${{ runner.temp }}/run267soak/exports/longrun-soak.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true software, bootstrap and native verdict
+        run: |
+          test "$(cat "$RUNNER_TEMP/RUN267_SOFTWARE_EXIT.txt")" = "0"
+          test "$(cat "$RUNNER_TEMP/RUN267_BOOTSTRAP_EXIT.txt")" = "0"
+          test "$(cat "$RUNNER_TEMP/RUN267_NATIVE_EXIT.txt")" = "0"

@@ -91,13 +91,39 @@ def recall_ok(r,facts):
         hit+=any(m.get('value')==f['value'] for m in found)
     return hit
 
+def attach_native_assets(home,models_from):
+    """Bind a fresh isolated soak home to exactly one installed native source.
+
+    Never silently replace an existing models/bin directory or a different
+    symlink target; those would invalidate the native evidence's identity.
+    """
+    home=Path(home).expanduser().resolve()
+    src=Path(models_from).expanduser().resolve()
+    if home==src:raise ValueError('native soak home must differ from model source')
+    home.mkdir(parents=True,exist_ok=True)
+    manifest=src/'config/models.json'
+    if not manifest.is_file():raise FileNotFoundError('installed model manifest missing')
+    for name in ('models','bin'):
+        source=src/name
+        if not source.is_dir():raise FileNotFoundError('installed native '+name+' missing')
+        dst=home/name
+        if dst.is_symlink():
+            if dst.resolve()!=source.resolve():raise ValueError('native '+name+' symlink target mismatch')
+        elif dst.exists():
+            raise FileExistsError('native '+name+' already exists without a verified source link')
+        else:
+            dst.symlink_to(source,target_is_directory=True)
+    target=home/'config/models.json'
+    target.parent.mkdir(parents=True,exist_ok=True)
+    if target.exists():
+        if not target.is_file() or target.read_bytes()!=manifest.read_bytes():
+            raise ValueError('existing native model manifest differs from source')
+    else:shutil.copy2(manifest,target)
+
+
 def soak(home,days=3,turns=4,native=False,models_from=None,start=None,log=print):
     home=Path(home);home.mkdir(parents=True,exist_ok=True)
-    if models_from:
-        src=Path(models_from).expanduser()
-        (home/'config').mkdir(parents=True,exist_ok=True)
-        if not (home/'models').exists():os.symlink(src/'models',home/'models')
-        shutil.copy2(src/'config/models.json',home/'config/models.json')
+    if models_from:attach_native_assets(home,models_from)
     clock=Clock(start or time.time())
     report={'kind':'V13_G13_LONGRUN_SOAK','revision':REVISION,'native':native,'days':[],'facts':0,
             'evidence_level':'NATIVE_DEVICE_RUN' if native else 'LINUX_SOFTWARE_FIXTURE_SPEAKER',
