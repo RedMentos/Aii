@@ -135,7 +135,7 @@ def _split(n):
     test=[i for i in range(n) if ((i*2654435761)%2**32>>16)%4==3];return [i for i in range(n) if i not in set(test)],test
 
 def _action_binding(store, action_id):
-    """Stable digest of one observed action and its still-readable source."""
+    """Stable digest of action, selected route and still-readable source."""
     if type(action_id) is not str or not action_id:
         return None
     try:
@@ -146,12 +146,19 @@ def _action_binding(store, action_id):
             return None
         if not _valid_observed_event_source(store, row['event_id']):
             return None
-        fields = [row[k] for k in ('id','event_id','status','expected','outcome','created')]
+        selection = store.one(
+            "SELECT payload,created FROM packets WHERE kind='ActionSelection' "
+            "AND event_id=? AND created<=? ORDER BY created DESC,rowid DESC LIMIT 1",
+            (row['event_id'],row['created']))
+        if not selection or json.loads(selection['payload']).get('route_hint') not in ACTIONS:
+            return None
+        fields = ([row[k] for k in ('id','event_id','status','expected','outcome','created')]
+                  + [selection['payload'],selection['created']])
         raw = json.dumps(fields, ensure_ascii=False, separators=(',',':'),
                          allow_nan=False).encode('utf-8')
         return {'action_id': action_id, 'event_id': row['event_id'],
                 'action_sha256': hashlib.sha256(raw).hexdigest()}
-    except (ValueError, TypeError, KeyError, OSError, sqlite3.Error):
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, sqlite3.Error):
         return None
 
 
