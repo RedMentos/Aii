@@ -1,0 +1,7 @@
+# Run126 full-suite independent audit — CRITICAL SOURCE-BINDING REGRESSION
+
+Exact Run125 source head c509949f67e93b18e8bd973bafb991aca947d983. Pinned CPU-only torch 2.9.1+cpu, NumPy 2.3.5, prompt-toolkit 3.0.52, sealed Run16 LP3 helper TEMP ONLY. Official privacy CLEAN. Actions 40148477442: **2238 tests, 8 FAIL, 63 ERROR, 11 skips**, 105.191 s. Full raw log artifact 12581426676; wrapper SHA256 551bd0dea6db8238e785e2673e9cd8f1b040794aa5ec34659dc119cd966449a4; raw log SHA256 fa040f9aee42707364008580ea219701f35c8766367e3b39b110120e1c7058ea. Private Library copy verified by exact exported snapshot.
+
+Compared with Run115 (2217, 4 FAIL, 1 ERROR), most **new** errors come from source-bound validators rejecting the Run124 edit to the previously frozen `v13/runtime.py`: `Runtime is neither exact frozen baseline nor complete reviewed candidate` and `Live sources differ from complete baseline/candidate`. These are **correct fail-closed integrity checks**, not tests to weaken. LP3 Run16 orphan/cleanup failures and temporary CLI path failures also persist.
+
+**Do not merge Run124/125 as-is.** Supersede by leaving Runtime's original blob a691d27bd0772a4fa1f03d57ec90663237bf6825 untouched, moving preworker Widget stop to CLI preflight and preserving human stop ownership. The existing 30/30 phone smoke is not a full-suite pass. All original negative V13 gates unchanged. Next: Run128 CLI preflight test-first, then full source-bound review.
