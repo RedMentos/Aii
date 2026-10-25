@@ -1,0 +1,54 @@
+{
+  "run": "Run216",
+  "date_utc": "2026-10-25",
+  "canonical_area": "JEF C1 current_action_intent event/session/corollary integrity",
+  "branch": "codex/jef-action-intent-lineage-run216-20261025",
+  "base_verified": "539e59ff1e791371636da43515c56fe499340f31",
+  "tested_commit": "04105bc764f7c993e200f484bed836662f41ceb5",
+  "owner": "Sequential executive.py _action_valid and new test; no overlap with native B1/B2/C3, World, Sleep, Backup owners",
+  "owned_files": [
+    "v13/code/v13/executive.py",
+    "v13/code/tests/test_executive_action_intent_lineage_run216.py",
+    ".github/workflows/run216-jef-action-lineage.yml",
+    "v13/code/docs/proofs/continuation-20261025/run216-jef-action/"
+  ],
+  "changes": "RED-first actual Store/Executive tests caught persisted foreign action, foreign corollary and forged external action type reaching JEF readouts. _clean now validates local text action ID, own session/current event, CorollaryCopy packet, matching action ID and type; valid action survives restart.",
+  "failed_attempts": {
+    "red_run_id": 40179458093,
+    "red_job_id": 121127179541,
+    "red_head": "2791535e9e5edc73cf24473faa914c4fc91178b7",
+    "result": "3 genuine FAIL, 1 valid PASS",
+    "raw": "RED_ACTUAL_SOURCE.txt"
+  },
+  "actual_source_ci": {
+    "green_run_id": 40179515679,
+    "green_job_id": 121127353031,
+    "head": "04105bc764f7c993e200f484bed836662f41ceb5",
+    "tests": "25/25 PASS (Run216 4, Run215 3, Run213 3, Run212 3, original executive 12)",
+    "compileall": "PASS",
+    "privacy_scan": "CLEAN",
+    "log_url": "https://github.com/RedMentos/Aii/actions/runs/40179515679/job/121127353031"
+  },
+  "source_blob_sha": {
+    "executive.py": "c61276ce8ce1a6aed3b6b0c6e64c315efe66b408",
+    "test_executive_action_intent_lineage_run216.py": "b2c2b56b0fc07775386f3a84ab79a2d7643b8fb6",
+    "run216-jef-action-lineage.yml": "b870fa6ec68a0905f82372e5da46a8f15720dcc9"
+  },
+  "evidence_kind": "Actual-source GitHub Linux CI with synthetic Store/Executive/local actions; no native C2, model training, Redmi or JEPA",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Full project-wide suite remains unproven by focused Run216 CI.",
+    "Actual native JEF/C2 response quality, Redmi, STEP2/B3 and Body-JEPA remain open.",
+    "Next functional package should leave JEF guards and test operator backup/restore end-to-end across multiple chats."
+  ],
+  "next_step": "Run217 actual Runtime+Operator multi-chat backup/restore/restart with deterministic C3 seam and memory scope, test-first; avoid production change unless RED.",
+  "next_command": "PYTHONPATH=tests:. python -m unittest -v tests.test_multichat_backup_restore_run217 tests.test_chat_operator_persistence_run214 tests.test_backup_restore_memory_run210",
+  "no_authority_promotion": true
+}
