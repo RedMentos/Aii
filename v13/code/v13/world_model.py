@@ -61,9 +61,12 @@ def transitions(store,limit=MAX_ROWS):
             route=json.loads(sel['payload']).get('route_hint') if sel else None
             if route not in ACTIONS:continue
             chars=fc.get('input_chars');duration=act.get('action_duration_s')
-            output_chars=act.get('characters') or 0
+            output_chars=act.get('characters')
             created=r['created']
-            if not all(_finite_nonnegative(v) for v in (chars,duration,output_chars,created)):continue
+            # Character counts are observed integers, not optional values to impute.
+            # A missing/null/boolean/fractional count cannot become a fabricated zero target.
+            if type(chars) is not int or type(output_chars) is not int or chars<0 or output_chars<0:continue
+            if not all(_finite_nonnegative(v) for v in (duration,created)):continue
             hour=(created%86400)/3600
             state=state_vec(chars,fc.get('resource_state','NORMAL'),hour)
             if not all(math.isfinite(v) for v in state):continue
