@@ -6,6 +6,7 @@ on:
       - 'v13/code/v13/context_os.py'
       - 'v13/code/tests/test_context_unbalanced_literals_run350.py'
       - 'v13/code/tests/test_context_inline_plan_run199.py'
+      - 'v13/code/tests/test_context_inline_guard_run198.py'
       - 'v13/code/docs/proofs/continuation-20261025/run350-context-unbalanced-literals/**'
   workflow_dispatch:
 permissions:
@@ -31,7 +32,7 @@ jobs:
           git rev-parse HEAD | tee "$RUNNER_TEMP/RUN350_HEAD.txt"
           python3 -m venv "$RUNNER_TEMP/run350venv"
           "$RUNNER_TEMP/run350venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
-          sha256sum v13/code/v13/context_os.py v13/code/tests/test_context_unbalanced_literals_run350.py v13/code/tests/test_context_inline_plan_run199.py | tee "$RUNNER_TEMP/RUN350_SOURCE_SHA256SUMS.txt"
+          sha256sum v13/code/v13/context_os.py v13/code/tests/test_context_unbalanced_literals_run350.py v13/code/tests/test_context_inline_plan_run199.py v13/code/tests/test_context_inline_guard_run198.py | tee "$RUNNER_TEMP/RUN350_SOURCE_SHA256SUMS.txt"
       - name: Context OS source exactness and runtime integration tests
         working-directory: v13/code
         run: |
@@ -40,6 +41,7 @@ jobs:
           PYTHONPATH="$PWD" "$RUNNER_TEMP/run350venv/bin/python" -m unittest -v \
             tests.test_context_unbalanced_literals_run350 \
             tests.test_context_inline_plan_run199 \
+            tests.test_context_inline_guard_run198 \
             tests.test_context_os \
             tests.test_context_exact_pin_run73 \
             tests.test_context_exact_quotes_run93 \
