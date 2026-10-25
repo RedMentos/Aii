@@ -1,0 +1,56 @@
+name: V13 LP3 post-reap ownership test contract (synthetic only)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/tests/test_lp3_serial_review_run18.py'
+      - '.github/workflows/lp3-postreap-test-contract-20261025.yml'
+      - 'v13/code/docs/proofs/continuation-20261025/lp3-postreap-test-contract/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postreap:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Reconstruct exact archived Run20 and Run21 source without modifying checkout
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lp3"
+          base64 -d v13/code/docs/proofs/continuation-20261024/lp3-run20/LP3_RUN20_CODE_ONLY.tar.xz.base64 > "$RUNNER_TEMP/run20.tar.xz"
+          echo "fc532d00e2c72281a154c984bbd79bd757a69a1d4e3c14e70a988dfb44c100c7  $RUNNER_TEMP/run20.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/run20.tar.xz" -C "$RUNNER_TEMP/lp3"
+          patch -d "$RUNNER_TEMP/lp3" -p1 < v13/code/docs/coordination/LP3_RUN21_POSTREAP_REVIEW.patch
+          helper="$(find "$RUNNER_TEMP/lp3" -type f -path '*/scripts/lp3_serial_cohort.py' -print -quit)"
+          test -n "$helper"
+          echo "05e5bf300f582a03efeaae0133c8e20bf60948a2fa4e05a4867924ac4dc4b831  $helper" | sha256sum -c -
+          test "$(git hash-object v13/code/scripts/lp3_native_readiness.py)" = "2dfa7099541d3f8940817d43b97746c1d4d27092"
+          test "$(git hash-object v13/code/scripts/lp3_closed_evidence_audit.py)" = "6068ddafa2ae319f66a1cfcd7fb50127372e20a8"
+          cp v13/code/scripts/lp3_native_readiness.py "$(dirname "$helper")/"
+          cp v13/code/scripts/lp3_closed_evidence_audit.py "$(dirname "$helper")/"
+          testhelper="$(find "$RUNNER_TEMP/lp3" -type f -path '*/tests/test_lp3_serial_cohort.py' -print -quit)"
+          test -n "$testhelper"
+          echo "LP3_TEST_DIR=$(dirname "$testhelper")" >> "$GITHUB_ENV"
+          echo "LP3_HELPER_DIR=$(dirname "$helper")" >> "$GITHUB_ENV"
+      - name: Run real synthetic orphan and poison regressions; no native model
+        working-directory: v13/code
+        run: |
+          set -o pipefail
+          PYTHONPATH="$PWD/tests:$LP3_TEST_DIR:$LP3_HELPER_DIR:$PWD" python3 -m unittest -v test_lp3_serial_review_run18 2>&1 | tee "$RUNNER_TEMP/LP3_POSTREAP_RAW.log"
+          python3 -m compileall -q tests/test_lp3_serial_review_run18.py
+      - name: Official privacy scanner
+        run: python3 v13/code/scripts/public_repo_privacy_scan.py --base f5d2eaed19c1ff79cd4baec10912c03bc7a2eff0 --head HEAD --no-worktree
+      - name: Preserve raw log on failure or success
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: V13-LP3-PostReap-Test-Raw
+          path: ${{ runner.temp }}/LP3_POSTREAP_RAW.log
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Scope
+        run: echo 'Synthetic process tests; no writable cgroup, native model, Redmi or LP3 completion proof'
