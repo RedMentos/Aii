@@ -1,0 +1,40 @@
+{
+  "P_PIDFD": true,
+  "base_ref": "d2c8deb63591c64c2ee8c2579204017ebdc7e7cc",
+  "cgroup_v2_writable": false,
+  "checks": {
+    "direct_owned_child": "PASS",
+    "invalid_pid": "REJECTED",
+    "no_numeric_kill_fallback": "PASS",
+    "synthetic_ECHILD": "REJECTED",
+    "tests_passed": 5,
+    "unrelated_grandchild": "REJECTED_NO_SIGNAL"
+  },
+  "claims": {
+    "cgroup_containment": false,
+    "full_system": false,
+    "native_model_execution": false,
+    "production_integration": false,
+    "redmi": false
+  },
+  "evidence_class": "LINUX_NATIVE_SYNTHETIC_PROCESS_ONLY",
+  "files_sha256": {
+    "test_raw.log": "2af474e47c480a6dadbc7d28aaf9bcd12857637baefee89bc1f400b1fd992d8a",
+    "v13/code/scripts/run178_pidfd_child_ownership.py": "fd8551b36794187b6441a1dbbc23b7f557d224d1844c50773ae26c6517e50d04",
+    "v13/code/tests/test_run178_pidfd_child_ownership.py": "a29ba63c791425963d80656c9e06cbaf1e20589ea4d5f1ada6c73a0bd41bd86d"
+  },
+  "kernel_release": "6.18.55",
+  "negative_gates": {
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "DS2_H2": "FAIL",
+    "STEP2": "UTILITY_FAIL",
+    "V13": "INCOMPLETE",
+    "jepa_weight": 0
+  },
+  "open_question": "Reproduce and independently review original Run175 ownership boundary; retain cgroup requirement.",
+  "pidfd_open": true,
+  "pidfd_send_signal": true,
+  "python_version": "3.13.5",
+  "schema": "V13_RUN178_PIDFD_CHILD_OWNERSHIP_EVIDENCE_V1"
+}
