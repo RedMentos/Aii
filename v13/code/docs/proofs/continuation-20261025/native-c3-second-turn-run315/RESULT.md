@@ -1,0 +1,16 @@
+# Run315 verified Linux-native C3 second-turn correction and forget
+
+UTC 2026-10-25. Owner `assistant/native-c3-second-turn-run315-20261025`. Parent exact Run314 checkpoint `133f813be06dbaa0944dbee26d8270e1175edfbe` (review chain, **not main**). Prereg `890285232f5a7d35e0f82d559af4cd8431f06579`; source script `35aa79c240bea35b3291690aab1eaf667dccf572`; fixture tests `1c5f819da8cd64850be65baedc272d3ba69b3699`; native workflow exact head `679c5ef58a26598cf7f61e805926b802666c070b`.
+
+## Observed exact-head evidence
+Workflow `40209001442`, job `121215995050`, **SUCCESS**: 12 fixture/software tests PASS; exact registered public model/bootstrap rc0; three real Linux-native C3 turns rc0; official privacy CLEAN. Raw artifact ID `12604943365`, Actions ZIP SHA256 `d0288a93f929456b83f888a0dcf2b68e3f79500f375b87f7d934346ab0a139b3`. Raw `RUN315_NATIVE_REPORT.json` SHA256 `9512877dd53b0d7a88c785d0957dc2315077b248e3cd090c21a73bfb08687a3b` (11931 bytes). All four fixture/bootstrap/native/privacy exits 0.
+
+Model **actual on-disk SHA256** `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`, equals unchanged registered `LiquidAI/LFM2.5-350M-GGUF` `LFM2.5-350M-QAD-Q4_0.gguf` revision `657e078c94084481950a2d555a941481f715536b`. Observed llama-server binary SHA256 `79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39` (runner archive source pin unchanged). Native runner reports `CAN_LATENT_INJECT=false`, `CAN_LATENT_TAP=false`, `CAN_TRAIN_BODY=false`.
+
+## Actual three responses (one synthetic authored case)
+Question: fictional Project RUN315-ORBIT calibration code; synthetic global correction `73194`. Controlled route `simple`, C3 real model, observers/duplex off, lexical Memory, ContextOS SHADOW, fresh session each turn and Runtime restarts, history_turns=0. First native FINAL in **1.860 s**: says code cannot be specified (not the target); exact context lacks code. After explicit synthetic `Memory.feedback` and restart, second native FINAL in **1.595 s**: **`73194`**, source-bound Memory recall and exact production C3 prompt contain code. After `Memory.forget` and another restart/new session, third native FINAL in **1.757 s**: returns the initial abstaining explanation, exact context no longer contains code. All three real model-generated, all integrity checks clean, all native resident PIDs reaped, source revoked. Observed `integration_pass=true`, `utility_pass=true` for **this single controlled synthetic case only**. This is contextual memory use, **not evidence of C3 weight learning, AGI, or broad reliability**.
+
+## Negative gates and next
+The entire binding V13 blueprint remains incomplete. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi native/thermal proof MISSING. Run267 real Linux-native G13 two-day soak remains day1 wake_priority FAIL; Run310 full suite remains 2 FAIL + 36 ERROR. Do not conflate this controlled C3 probe with those gates. Raw artifact retention 30 days, IDs/hashes persisted here.
+
+Next independent package: preregister multiple held-out synthetic questions/codes (source disjoint) to quantify native second-turn/forget reliability, preserve failures and exact source/model hashes. No model or seed mutation. Check newest remote heads/owners before editing.
