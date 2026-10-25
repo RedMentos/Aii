@@ -43,7 +43,8 @@ class FittedWorldSourceLineage(unittest.TestCase):
             self.sources.append(event['source_ref']['source_id'])
 
     def tearDown(self):
-        self.r.close()
+        if self.r is not None:
+            self.r.close()
         self.tmp.cleanup()
 
     def fitted(self):
@@ -58,6 +59,10 @@ class FittedWorldSourceLineage(unittest.TestCase):
         self.assertEqual(st['revision'],W.REVISION)
         self.assertEqual(len(st['training_bindings']),24)
         self.assertTrue(all(b['action_sha256'] for b in st['training_bindings']))
+        # The production Store enforces a single-writer home lock; restart
+        # means closing the original Runtime before opening the same home.
+        self.r.close()
+        self.r = None
         fresh = Store(self.home)
         try:
             self.assertIsNotNone(W.load(fresh))
