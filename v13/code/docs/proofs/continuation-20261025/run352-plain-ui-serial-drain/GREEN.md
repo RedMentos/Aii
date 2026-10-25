@@ -1,0 +1,17 @@
+# Run352 observed GREEN and durable handoff (2026-10-25)
+
+## Exact lineage and scope
+- Parent Run351/PR347 `340b7a51a8e89e284c95e377b3c637b024eceb45`, itself on Run350/PR346, not main. Independent Run352 preregistration commit `654017f22023108196d3510a7c2428dfe34dc450` precedes code commit `154b745e921614b3a18b5c7e59a048315916fc52`.
+- Owner: `v13/code/v13/ui.py` only, plus this isolated proof folder. Run351 tests and all historical failed evidence unchanged.
+- Original Run351 exact-head Actions `40225789412`: 7 source-only tests, 1 FIFO failure (`AssertionError: 82 not less than 58`). New notice overtook a held notice during slow formatting. Worker printing is removed; workers enqueue, single render thread drains FIFO after typing ends.
+
+## Verified GREEN evidence
+- GitHub Actions `40226631313`, job `121269267095`, checkout explicitly pinned exact source head `154b745e921614b3a18b5c7e59a048315916fc52`: 8/8 source-only tests PASS (4 Run351 plain UI render-thread tests, 3 Run214 persistent chat, 1 Run89 multichat). `compileall` PASS, public-repo privacy scan `CLEAN`. Run123 phone-widget source workflow `40226631288` also PASS.
+- UI source SHA256 `4649cdfe5d66b6ba01506e27724ac23c5e14b0fba3a06e080b56923bf2684051`; test SHA256 `a7080ebfb23bad7574bcf8bb56de5c11a564161af4f5446a14f0a4fa7de342bb`. Remote UI blob SHA `a046be21017099e6a08ab5588fdb9fbfd73d6bea`, independently re-fetched from Run352 branch and confirmed worker enqueue/render drain.
+- Raw GitHub artifact ID `12611138991` from the successful run; downloaded ZIP SHA256 `fb6e3a080bb05f2728e4e4bb5f7ffd41a32e58c16875fee564ee204a6c0502aa`, ZIP CRC PASS, all four internal SHA256 manifest entries PASS, embedded exact HEAD matches `154b745...`, raw log says 8 tests OK and privacy CLEAN. A private Library copy was uploaded and listed at `/V13/checkpoints/2026-10-25/V13_Run352_UI_GREEN_raw_shafb6e3a08.zip`. This is not the rejected anyone-writable Drive destination.
+- The unrelated inherited focused source-bound proof workflow `40226631286` remains FAIL (as did parent `40225789375`): source-handoff candidate tests reject changed current Runtime because neither frozen baseline nor fully reviewed candidate matches. Do not weaken their exact-source guard or count full suite PASS.
+
+## Claim limits and next independent package
+- UI-only source/Linux CI with fake operator/store; no native model, Termux/Redmi, extended human-use or V13 end-to-end proof. STEP2 `UTILITY_FAIL`, B3 L1 FAIL, Body-JEPA and `jepa_weight=0` retain their prior status. No learning, age, approval or native runner changes.
+- Next priority: diagnose source-handoff frozen candidate mismatch in the inherited focused CI without loosening hash binding; isolate the historical candidate harness from current runtime and retain the observed failure. In parallel, continue substantive JEF/C3/Context OS/Body-JEPA and mobile proof packages under the canonical roadmap. Exact command for this package: `python -m unittest -v tests.test_ui_plain_notice_run351 tests.test_chat_operator_persistence_run214 tests.test_phone_chat_sessions_run89` from `v13/code`.
+- Checkpoint owner: assistant Run352 branch / PR348; source and proof reviewable on GitHub, raw proof retained in private Library. No device action requested.
