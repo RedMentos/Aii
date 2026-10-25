@@ -56,7 +56,7 @@
       "zip_sha256_from_actions": "e4bc2601dcbc10a420ae655da610ef076f058dc49c1006f612368d5b6885451d"
     }
   },
-  "raw_integrity_limit": "Artifact SHA256 values are from Actions upload logs; independent ZIP download/CRC/member-hash verification and private Library byte-copy not yet performed. GitHub Actions artifacts expire after 30 days. RED/GREEN log summaries and artifact IDs retained.",
+  "raw_integrity_limit": "CLOSED: four GitHub Actions ZIPs downloaded; ZIP SHA256 matched Actions upload logs, CRC PASS, all 4/4 internal member SHA256 PASS each; uploaded to private ChatGPT Library, independently rematerialized and byte-compared. GitHub Actions originals expire after 30 days; private Library copies persist.",
   "scope": "Actual Linux Actions Python/SQLite tests, no native model/Redmi execution. Not a STEP8 activation or causal world-model proof.",
   "negative_gates": [
     "STEP2 UTILITY_FAIL",
@@ -73,5 +73,15 @@
     "Current full Python suite Run367 RED remains unresolved; focused tests do not promote full-suite acceptance"
   ],
   "next_command": "git fetch origin codex/ag2-grounding-modality-guard-run385-20261025 && git checkout -b review-run385 origin/codex/ag2-grounding-modality-guard-run385-20261025 && cd v13/code && python -m unittest -v tests.test_ag2_grounding_guard_run385 tests.test_growth.G2Grounding tests.test_growth.G10Tools tests.test_agi_live",
-  "next_package": "Run386 AG4 skill outcome evidence validation (independent file owner); preregister, RED, narrow fix, GREEN, checkpoint."
+  "next_package": "Run386 AG4 skill outcome evidence validation (independent file owner); preregister, RED, narrow fix, GREEN, checkpoint.",
+  "private_library_backup": {
+    "folder": "/V13_PRIVATE_CHECKPOINTS_20261024/Run385_AG2_20261025",
+    "files": [
+      "RED_INITIAL_RAW.zip",
+      "GREEN_INITIAL_RAW.zip",
+      "RED_STALE_FLAG_RAW.zip",
+      "GREEN_FINAL_RAW.zip"
+    ],
+    "verified": "four ZIPs SHA256/CRC/member hashes, Library re-materialization byte-identical"
+  }
 }
