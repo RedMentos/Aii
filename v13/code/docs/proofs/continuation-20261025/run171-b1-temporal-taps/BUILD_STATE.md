@@ -11,3 +11,9 @@ Claim limits: external 16D projector/predictor on frozen B1 2048D native taps, n
 Next exact step: verify PR CI, preserve any failures and compare holdout metrics to copy/shuffled baselines; then independently design a native Body train-master path with actual predictive targets and answer-level utility/retention. In parallel, Run164/167 full-suite FAIL (3 LP3 CLI rc1 vs expected2 and one descendant) remains unresolved and must not be marked green.
 
 No user decision required; rejected anyone-writable Drive destination not retried.
+
+## Run171 first CI failure preserved (not a native attempt)
+
+Actions run `40166327260`, job `121088019991` **FAIL** during Python test collection: `ModuleNotFoundError: No module named 'run171_b1_future_states'`. Root cause: local scratch placed script and test together, but the real repository separates `v13/code/scripts` from `v13/code/tests`. The original test inserted its own tests directory in `sys.path`; it could not import the new script in GitHub CI. No model download/native tap/training occurred in that failed run; artifact upload correctly reported no report. The initial test source and workflow blobs remain in Git history.
+
+Fixed only the new test import path, changed to `parents[1] / 'scripts'`. Reproduced in a locally reconstructed real directory layout: **5/5 PASS**, raw log SHA-256 `9c25fd7c1a55f8fdf84db0cd7ce269474416c202c4b2e4a308599da0e1a00157`; new test Git blob `2a769fd578bf70d4410e02f30a4097743b9822b9`. Workflow pin updated accordingly. Native CI must rerun; no claim of native success until actual completion.
