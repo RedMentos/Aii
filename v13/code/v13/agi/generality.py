@@ -143,10 +143,21 @@ class GeneralityEval:
         st['suite_hash']=self.suite['hash']
         st['holdout']=sorted({digest(normalize(i['prompt'])) for i in self.suite['items'] if i['split']=='unseen'})
     def guard_training(self,texts):
-        """Raise if any training/distillation text equals a holdout prompt. Called by AG1/AG4/AG6 dataset builders."""
+        """Reject exact or embedded holdout prompts in any training/distillation field.
+
+        The registered holdout hashes and suite items are unchanged. A whole
+        training example may contain an unseen prompt inside instructions,
+        a teacher answer or a reasoning trace; hashing only the entire example
+        would silently admit that same benchmark task into training.
+        """
         hold=set(self.box.load()[0]['holdout'])
-        bad=[t for t in texts if digest(normalize(t)) in hold]
-        if bad:raise ValueError(f'AG12-Holdout im Trainingssatz ({len(bad)} Einträge)')
+        unseen=tuple(normalize(i['prompt']) for i in self.suite['items'] if i['split']=='unseen')
+        bad=0
+        for text in texts:
+            normalized=normalize(text)
+            if digest(normalized) in hold or any(prompt in normalized for prompt in unseen):
+                bad+=1
+        if bad:raise ValueError(f'AG12-Holdout im Trainingssatz ({bad} Einträge)')
         return True
     def practice_items(self):
         """Only 'seen' families may be used for practice (AG4/AG5)."""
