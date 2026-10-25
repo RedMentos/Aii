@@ -335,6 +335,19 @@ def counterfactual(store,s,a,st=None):
     """Predicted consequence of action a, never a real outcome or authority."""
     explicit_state = st is not None
     st=st or load(store)
+    # Run64's old hand-built numerical fixture passes store=None and no
+    # persisted/source-bound identity at all. Preserve that *synthetic-only*
+    # regression contract without granting the fallback to a real Store or
+    # to any historical fitted artifact missing train-only source groups.
+    synthetic_legacy=(store is None and explicit_state and type(st) is dict
+                      and type(st.get('states')) is dict
+                      and 'state_groups' not in st and 'training_bindings' not in st
+                      and 'model_sha256' not in st and st.get('evidence_scope') is None)
+    if synthetic_legacy:
+        st=dict(st)
+        st['state_groups']={role:['synthetic-fixture-'+str(i)
+                                 for i in range(len(st['states'].get(role) or []))]
+                            for role in ACTIONS}
     if a not in ACTIONS:raise ValueError('Aktion '+'|'.join(ACTIONS))
     cov=None
     def uncertain(reason):
@@ -377,6 +390,7 @@ def counterfactual(store,s,a,st=None):
     conf=round(max(0.,min(1.,conf)),4)
     return {'action':a,'prediction':dict(zip(TARGETS,np.round(mean,4).tolist()))|{'duration_s':round(duration,3)},
             'coverage':cov,'model_spread':round(spread,4),'confidence':conf,'cause':'SELF_CAUSED','authority':'HYPOTHESIS',
+            'evidence_scope':'SYNTHETIC_TEST_ONLY' if synthetic_legacy else st.get('evidence_scope','UNSPECIFIED'),
             'label':'SIMULATION_SUPPORTED' if conf>=CF_MIN and cov['in_support'] else 'SIMULATION_UNCERTAIN'}
 
 def for_event(store,event_id,a):
