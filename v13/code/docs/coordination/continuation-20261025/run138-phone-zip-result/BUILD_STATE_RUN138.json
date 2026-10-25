@@ -1,0 +1,29 @@
+{
+  "schema": "V13_RUN138_BUILD_STATE_V2",
+  "date_utc": "2026-10-25",
+  "pr": 169,
+  "source_under_test": "83372848c7bb87dc8586eb9c5720211b909f0eda",
+  "workflow_run": 40156006261,
+  "workflow": "SUCCESS",
+  "source_zip_sha256": "664bd9d17c1fdf85e32cc3bd46e40668f8cf05af29ce2a2aec3c5c0a8625f0b1",
+  "wrapper_sha256": "9d6272b397cefb1cbe519c1962b6d6f7252ca46468562f23e7bf8bc2f3e93777",
+  "artifact_id": 12584705282,
+  "manifest_files": 864,
+  "crc": "PASS",
+  "runtime_blob": "a691d27bd0772a4fa1f03d57ec90663237bf6825",
+  "widget_blob": "744ef9cbf20bb096eb8222c010d2bd28f8fe7ab2",
+  "private_backup": "/V13_Run138_20261025/V13_RUN138_PHONE_SOURCE_WRAPPER.zip",
+  "private_readback": "BYTE_IDENTICAL",
+  "independent_extracted_tests": "34 tests 1 FAIL (guide fallback read EOF); initial erroneous 35 tests 1 FAIL 1 ERROR",
+  "redmi": "NOT RUN",
+  "native": "NOT RUN",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "next_step": "Run140 test-first guide fallback EOF portability fix; new source ZIP and independent extraction."
+}
