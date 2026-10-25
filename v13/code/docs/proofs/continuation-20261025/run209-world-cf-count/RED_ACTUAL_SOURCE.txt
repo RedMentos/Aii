@@ -1,0 +1,59 @@
+2026-10-25T08:44:07.6074446Z test_fractional_or_float_character_counts_are_not_observed_states (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_fractional_or_float_character_counts_are_not_observed_states) ... 
+2026-10-25T08:44:07.6076804Z   test_fractional_or_float_character_counts_are_not_observed_states (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_fractional_or_float_character_counts_are_not_observed_states) (label='fractional') ... FAIL
+2026-10-25T08:44:07.6082769Z   test_fractional_or_float_character_counts_are_not_observed_states (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_fractional_or_float_character_counts_are_not_observed_states) (label='float_zero') ... FAIL
+2026-10-25T08:44:07.6089027Z   test_fractional_or_float_character_counts_are_not_observed_states (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_fractional_or_float_character_counts_are_not_observed_states) (label='float_integer') ... FAIL
+2026-10-25T08:44:07.6098558Z test_genuine_integer_counts_preserve_existing_counterfactual_path (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_genuine_integer_counts_preserve_existing_counterfactual_path) ... ok
+2026-10-25T08:44:07.6118266Z test_non_numeric_and_nonfinite_counts_fail_closed (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_non_numeric_and_nonfinite_counts_fail_closed) ... ok
+2026-10-25T08:44:07.6125241Z test_explicit_zero_and_positive_integer_counts_are_preserved (tests.test_world_observation_integrity_run202.WorldObservationIntegrityRun202.test_explicit_zero_and_positive_integer_counts_are_preserved) ... ok
+2026-10-25T08:44:07.6128938Z test_fractional_input_character_count_not_a_valid_observed_state (tests.test_world_observation_integrity_run202.WorldObservationIntegrityRun202.test_fractional_input_character_count_not_a_valid_observed_state) ... ok
+2026-10-25T08:44:07.6150883Z test_missing_or_untyped_output_characters_cannot_become_zero (tests.test_world_observation_integrity_run202.WorldObservationIntegrityRun202.test_missing_or_untyped_output_characters_cannot_become_zero) ... ok
+2026-10-25T08:44:07.6153940Z test_nonfinal_observation_also_requires_actual_characters (tests.test_world_observation_integrity_run202.WorldObservationIntegrityRun202.test_nonfinal_observation_also_requires_actual_characters) ... ok
+2026-10-25T08:44:07.6754808Z test_confidence_follows_coverage_not_frequency (tests.test_world_model.Counterfactuals.test_confidence_follows_coverage_not_frequency) ... ok
+2026-10-25T08:44:07.7154858Z test_dream_route_alternative_carries_counterfactual_and_priority (tests.test_world_model.Counterfactuals.test_dream_route_alternative_carries_counterfactual_and_priority) ... ok
+2026-10-25T08:44:07.8202260Z test_learn_medium_fits_world_and_keeps_curiosity_age_gated (tests.test_world_model.LiveGoals.test_learn_medium_fits_world_and_keeps_curiosity_age_gated) ... ok
+2026-10-25T08:44:07.8404176Z test_unresolved_turn_opens_user_goal_and_later_answer_closes_it (tests.test_world_model.LiveGoals.test_unresolved_turn_opens_user_goal_and_later_answer_closes_it) ... ok
+2026-10-25T08:44:07.8631463Z test_forward_inverse_outcome_and_align_unavailable_without_latent (tests.test_world_model.Objectives.test_forward_inverse_outcome_and_align_unavailable_without_latent) ... ok
+2026-10-25T08:44:07.8803565Z test_too_few_transitions_is_honest (tests.test_world_model.Objectives.test_too_few_transitions_is_honest) ... ok
+2026-10-25T08:44:07.9028719Z test_corollary_forecast_precedes_observation (tests.test_world_state.WorldTests.test_corollary_forecast_precedes_observation) ... ok
+2026-10-25T08:44:07.9318302Z test_failed_and_ood_data_never_become_supported_forecast (tests.test_world_state.WorldTests.test_failed_and_ood_data_never_become_supported_forecast) ... ok
+2026-10-25T08:44:07.9849737Z test_forecast_is_prior_action_bound_and_restart_persistent (tests.test_world_state.WorldTests.test_forecast_is_prior_action_bound_and_restart_persistent) ... ok
+2026-10-25T08:44:08.0092488Z test_model_config_and_session_profiles_do_not_mix (tests.test_world_state.WorldTests.test_model_config_and_session_profiles_do_not_mix) ... ok
+2026-10-25T08:44:08.0535129Z test_restart_repairs_both_action_and_materialized_view_crash_windows (tests.test_world_state.WorldTests.test_restart_repairs_both_action_and_materialized_view_crash_windows) ... ok
+2026-10-25T08:44:08.0536443Z 
+2026-10-25T08:44:08.0536691Z ======================================================================
+2026-10-25T08:44:08.0538941Z FAIL: test_fractional_or_float_character_counts_are_not_observed_states (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_fractional_or_float_character_counts_are_not_observed_states) (label='fractional')
+2026-10-25T08:44:08.0540993Z ----------------------------------------------------------------------
+2026-10-25T08:44:08.0541642Z Traceback (most recent call last):
+2026-10-25T08:44:08.0549744Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_counterfactual_input_integrity_run209.py", line 51, in test_fractional_or_float_character_counts_are_not_observed_states
+2026-10-25T08:44:08.0550662Z     self.assertEqual(cf['reason'],'INVALID_OBSERVED_STATE')
+2026-10-25T08:44:08.0551096Z AssertionError: 'NO_WORLD_MODEL' != 'INVALID_OBSERVED_STATE'
+2026-10-25T08:44:08.0551435Z - NO_WORLD_MODEL
+2026-10-25T08:44:08.0551667Z + INVALID_OBSERVED_STATE
+2026-10-25T08:44:08.0551823Z 
+2026-10-25T08:44:08.0551830Z 
+2026-10-25T08:44:08.0551948Z ======================================================================
+2026-10-25T08:44:08.0553072Z FAIL: test_fractional_or_float_character_counts_are_not_observed_states (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_fractional_or_float_character_counts_are_not_observed_states) (label='float_zero')
+2026-10-25T08:44:08.0554178Z ----------------------------------------------------------------------
+2026-10-25T08:44:08.0554534Z Traceback (most recent call last):
+2026-10-25T08:44:08.0555401Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_counterfactual_input_integrity_run209.py", line 51, in test_fractional_or_float_character_counts_are_not_observed_states
+2026-10-25T08:44:08.0556218Z     self.assertEqual(cf['reason'],'INVALID_OBSERVED_STATE')
+2026-10-25T08:44:08.0556626Z AssertionError: 'NO_WORLD_MODEL' != 'INVALID_OBSERVED_STATE'
+2026-10-25T08:44:08.0556972Z - NO_WORLD_MODEL
+2026-10-25T08:44:08.0557192Z + INVALID_OBSERVED_STATE
+2026-10-25T08:44:08.0557335Z 
+2026-10-25T08:44:08.0557737Z 
+2026-10-25T08:44:08.0557955Z ======================================================================
+2026-10-25T08:44:08.0559447Z FAIL: test_fractional_or_float_character_counts_are_not_observed_states (tests.test_world_counterfactual_input_integrity_run209.WorldCounterfactualInputIntegrityRun209.test_fractional_or_float_character_counts_are_not_observed_states) (label='float_integer')
+2026-10-25T08:44:08.0560592Z ----------------------------------------------------------------------
+2026-10-25T08:44:08.0560949Z Traceback (most recent call last):
+2026-10-25T08:44:08.0561764Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_world_counterfactual_input_integrity_run209.py", line 51, in test_fractional_or_float_character_counts_are_not_observed_states
+2026-10-25T08:44:08.0562566Z     self.assertEqual(cf['reason'],'INVALID_OBSERVED_STATE')
+2026-10-25T08:44:08.0562963Z AssertionError: 'NO_WORLD_MODEL' != 'INVALID_OBSERVED_STATE'
+2026-10-25T08:44:08.0563294Z - NO_WORLD_MODEL
+2026-10-25T08:44:08.0563661Z + INVALID_OBSERVED_STATE
+2026-10-25T08:44:08.0563814Z 
+2026-10-25T08:44:08.0563819Z 
+2026-10-25T08:44:08.0563969Z ----------------------------------------------------------------------
+2026-10-25T08:44:08.0564307Z Ran 18 tests in 0.452s
+2026-10-25T08:44:08.0564450Z 
+2026-10-25T08:44:08.0564531Z FAILED (failures=3)
