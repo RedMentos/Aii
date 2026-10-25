@@ -1,0 +1,57 @@
+name: V13 Run356 measured proceduralization gate synthetic regressions
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run356-ablation99-gate.yml'
+      - 'v13/code/tests/test_ablation99.py'
+      - 'v13/code/docs/proofs/continuation-20261025/run356-ablation99-procedural-gate/**'
+permissions:
+  contents: read
+jobs:
+  ablation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 50
+      - name: Exact head, source hashes, isolated deps
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN356_HEAD.txt"
+          sha256sum v13/code/tests/test_ablation99.py v13/code/v13/ablation99.py v13/code/v13/fastforward.py | tee "$RUNNER_TEMP/RUN356_SOURCE_SHA256SUMS.txt"
+          python3 -m venv "$RUNNER_TEMP/run356venv"
+          "$RUNNER_TEMP/run356venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real synthetic ablation and canonical gate counterexamples
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          "$RUNNER_TEMP/run356venv/bin/python" -m compileall -q tests/test_ablation99.py v13/fastforward.py
+          "$RUNNER_TEMP/run356venv/bin/python" -m unittest -v tests.test_ablation99 tests.test_fastforward_canonical_gate_run342 tests.test_fastforward_latency_gate_run300 2>&1 | tee "$RUNNER_TEMP/RUN356_TESTS_RAW.log"
+          exit ${PIPESTATUS[0]}
+      - name: Public repository privacy scan
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN356_PRIVACY_RAW.log"
+      - name: Close raw SHA manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN356_*' ! -name RUN356_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN356_SHA256SUMS.txt
+      - name: Preserve raw test PASS or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run356-Ablation-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN356_*
+          if-no-files-found: warn
+          retention-days: 30
