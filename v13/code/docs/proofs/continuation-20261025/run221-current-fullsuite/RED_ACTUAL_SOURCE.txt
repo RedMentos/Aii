@@ -1,0 +1,77 @@
+# Run221 exact-source full suite RED evidence
+
+Full raw GitHub Actions job: https://github.com/RedMentos/Aii/actions/runs/40180085223/job/121129140778
+Raw artifact #12594196414: https://github.com/RedMentos/Aii/actions/runs/40180085223/artifacts/12594196414
+Tested head: 8a33ad375e50eaab4776d2c07b739a874f9d25f8
+Full raw suite output is in immutable GitHub Actions artifact; exact selected lines below. Do not treat 36 historical source-bound candidate errors as native runtime results; original LP3 orphan and AgeNoiseAware failures remain open.
+
+2026-10-25T09:22:58.5922774Z ERROR: test_both_changes_survive_composition_and_live_sources_are_baseline_or_integrated (test_native_firing_merged_candidate.MergedPreparation.test_both_changes_survive_composition_and_live_sources_are_baseline_or_integrated)
+2026-10-25T09:22:58.5932979Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.5934060Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.5946994Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.5947467Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.5948827Z ERROR: test_opt_in_only_approved_memory_child_and_toggle_reloads (tests.test_native_firing_runtime_candidate.AuditLaunch.test_opt_in_only_approved_memory_child_and_toggle_reloads)
+2026-10-25T09:22:58.5955821Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.5956329Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.5964475Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.5964944Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.5974151Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.5974605Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.5991438Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.5991929Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6001606Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6002059Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6009888Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6010344Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6017821Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6018273Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6028194Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6028644Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6036450Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6036898Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6044542Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6044988Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6052387Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6052827Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6060329Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6061137Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6068659Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6069115Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6076649Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6077101Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6084554Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6085013Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6091116Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6091566Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6099358Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6099803Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6101040Z ERROR: test_opt_in_only_approved_memory_child_and_toggle_reloads (test_native_firing_runtime_candidate.AuditLaunch.test_opt_in_only_approved_memory_child_and_toggle_reloads)
+2026-10-25T09:22:58.6106363Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6106810Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6113500Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6113954Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6121866Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6122317Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6130105Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6130696Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6138841Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6139288Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6145983Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6146435Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6152773Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6153230Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6161036Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6161497Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6167631Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6168081Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6174621Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6175078Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6181538Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6181992Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6188013Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6188457Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6194670Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6195126Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6201427Z     raise ValueError('Live sources differ from complete baseline/candidate')
+2026-10-25T09:22:58.6201876Z ValueError: Live sources differ from complete baseline/candidate
+2026-10-25T09:22:58.6207695Z     raise ValueError('Live sources differ from complete baseline/candidate')

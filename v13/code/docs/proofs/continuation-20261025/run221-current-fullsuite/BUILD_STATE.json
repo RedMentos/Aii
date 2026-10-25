@@ -1,0 +1,67 @@
+{
+  "run": "Run221",
+  "date_utc": "2026-10-25",
+  "canonical_area": "Current exact-head full V13 unittest discovery, optional historical LP3 fixture",
+  "branch": "codex/current-fullsuite-run221-20261025",
+  "base_verified": "da4cceb5075e67d35146fe47ec3cd3d01241190d",
+  "workflow_commit": "8a33ad375e50eaab4776d2c07b739a874f9d25f8",
+  "workflow_blob_sha": "a3fe1097db933927620f14d55fd6750daa9810db",
+  "status": "FULL_SUITE_RED_VERIFIED",
+  "owner": "Run221 CI/proof only, serialized group v13-native-c3-run131-serialized, no production edits",
+  "pr": 249,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/249",
+  "owned_files": [
+    ".github/workflows/run221-current-fullsuite.yml",
+    "v13/code/docs/proofs/continuation-20261025/run221-current-fullsuite/"
+  ],
+  "preflight_pins": {
+    "runtime.py": "a691d27bd0772a4fa1f03d57ec90663237bf6825",
+    "test_toolforecast.py": "28b551a3be56eaaf557e0a2f877fbf432137990a",
+    "lp3_native_readiness.py": "2dfa7099541d3f8940817d43b97746c1d4d27092",
+    "lp3_closed_evidence_audit.py": "6068ddafa2ae319f66a1cfcd7fb50127372e20a8",
+    "historical_run147_artifact_zip_sha256": "ddd60c897e1bdc634a40179b67e434097bb1e1999a6a2141372f6272682b9676"
+  },
+  "evidence_kind": "PENDING GitHub Linux CPU software full-suite; not native model or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "AgeNoiseAware expected behavior conflicts with fixed regression gate: independent canonical review required before any production change; do not waive explicit regression failure.",
+    "Original LP3 orphan descendant remains live: no cgroup kernel proof, no promotion.",
+    "Historical native firing candidate tests reject live source mismatch; source-bound refusal is expected, tests not silently skipped.",
+    "Second queued duplicate Run221 full suite may run; classify separately.",
+    "Run222 DS3 lab-only prereg/CI queued in serialized group, not native C3."
+  ],
+  "next_step": "Preserve RED and independently review AgeNoiseAware contract without weakening safety. Continue independent Run222 DS3 lab synthetic risk/coverage package; retain all gates. Check later serialized full-suite runs for any changed results.",
+  "next_command": "Inspect PR250 Run222 serialized CI after Run221; use fetch_workflow_job_logs and fetch_workflow_run_artifacts; preserve RED if tamper test fails.",
+  "no_authority_promotion": true,
+  "actual_source_ci": {
+    "run_id": 40180085223,
+    "job_id": 121129140778,
+    "head": "8a33ad375e50eaab4776d2c07b739a874f9d25f8",
+    "tests": 2646,
+    "failures": 2,
+    "errors": 36,
+    "skipped": 14,
+    "elapsed_seconds": 220.024,
+    "exit_code": 1,
+    "privacy": "CLEAN",
+    "compileall": "PASS",
+    "torch_cpu_install": "PASS",
+    "lp3_historical_helper_hashes": "PASS",
+    "run147_artifact_hash": "PASS",
+    "raw_log_artifact_id": 12594196414,
+    "raw_log_zip_sha256": "7b932a23110ffd8aad7c0f337ad4ded9e28138f9b3fe7c556907ac7302987327",
+    "log_url": "https://github.com/RedMentos/Aii/actions/runs/40180085223/job/121129140778"
+  },
+  "failure_classification": [
+    "36 ERROR: historical native-firing baseline/candidate sources() fail closed on changed live sources, many duplicated via two import paths; not native execution evidence.",
+    "1 FAIL: AgeNoiseAware test expects regression_pass=False to be treated as noise, while age.gate_pass explicitly requires regression_pass=True; changing gate would weaken safety. Preserve as unresolved contract/test conflict.",
+    "1 FAIL: original LP3 orphan descendant still alive after wrapper unlocked; real isolation gate remains unresolved."
+  ]
+}
