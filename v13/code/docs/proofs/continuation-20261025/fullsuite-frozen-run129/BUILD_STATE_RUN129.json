@@ -1,0 +1,49 @@
+{
+  "schema": "V13_RUN129_BUILD_STATE_V1",
+  "date_utc": "2026-10-25",
+  "pr": 160,
+  "branch": "codex/fullsuite-frozen-prestart-run129-20261025",
+  "source_base": "ad3183796f9a06c7bea9c2e956a43c623e042dcb",
+  "source_runtime_blob": "a691d27bd0772a4fa1f03d57ec90663237bf6825",
+  "owner": "Full-suite audit workflow and proofs only",
+  "first": {
+    "run": 40153851627,
+    "tests": 2241,
+    "failures": 4,
+    "errors": 1,
+    "skips": 11,
+    "seconds": 160.517,
+    "artifact_id": 12584045881,
+    "zip_sha256": "b558bcab489ed99fe5e95cf8a92b80f7c3f37396b30446e1e764aabd1bc1be71",
+    "raw_sha256": "e4568d14a8e49802303141d853ccfc927d29c235240c3b6f52dfcd6611f98ef4",
+    "ci": "FAIL"
+  },
+  "retry": {
+    "run": 40154155819,
+    "tests": 2241,
+    "failures": 4,
+    "errors": 1,
+    "skips": 11,
+    "seconds": 164.257,
+    "exit_code": 1,
+    "artifact_id": 12583333460,
+    "zip_sha256": "8af3451778f60c5073b4d020de69ff782bbb1174125d6e188c43244679c78147",
+    "raw_sha256": "07cf804dba68aeb4fcfe6b3195ba751c848b4287b3f7e226c05d8b59b4cfb7eb",
+    "ci": "FAIL_EXPECTED"
+  },
+  "private_backups": [
+    "libfile_002510e453488191a1ad9ae17badb257",
+    "libfile_f8fa21330e088191a8248cf54151209a"
+  ],
+  "readback": "BOTH_BYTE_IDENTICAL",
+  "privacy": "CLEAN",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "DS2_H2": "FAIL",
+    "V13": "INCOMPLETE"
+  },
+  "exact_next_step": "Continue Run131 registered native C3 smoke after serialized heavy suite and Run132 Claude HX shadow integration; do not change original LP3 failures or promote gates."
+}
