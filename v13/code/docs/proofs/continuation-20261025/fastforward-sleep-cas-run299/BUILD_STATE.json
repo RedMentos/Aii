@@ -1,0 +1,44 @@
+{
+  "schema": "V13_SCOPED_BUILD_STATE_RUN299_V1",
+  "utc": "2026-10-25T14:38:00Z",
+  "owner": "GPT-6 automation / Run299",
+  "base": "3523fecea8d0b4c0bcacbd51fd70e9eebd2934f9",
+  "branch": "codex/fastforward-sleep-cas-run299-20261025",
+  "pr": 298,
+  "code_commit": "fd4b3dcfc8a0acaa09a4c2b4014effea79c4d218",
+  "code_blob": "15b992056145e63e1a98ac7a1a0d6a85a42921f2",
+  "owned": [
+    "v13/code/v13/fastforward.py",
+    "v13/code/tests/test_fastforward_sleep_cas_run299.py",
+    ".github/workflows/run299-fastforward-sleep-cas.yml",
+    "v13/code/docs/proofs/continuation-20261025/fastforward-sleep-cas-run299/"
+  ],
+  "tests": {
+    "red": {
+      "run": 40203034483,
+      "artifact": 12602732144,
+      "total": 59,
+      "failures": 2
+    },
+    "green": {
+      "run": 40203094089,
+      "artifact": 12602627487,
+      "total": 59,
+      "failures": 0,
+      "privacy": "CLEAN"
+    }
+  },
+  "source_cohorts_unchanged": true,
+  "canon_unchanged": true,
+  "production_runtime_unchanged": true,
+  "proof_level": "PRODUCTION_SQLITE_SYNTHETIC_TIMING_SOFTWARE_ONLY",
+  "redmi_measured": false,
+  "step2": "UTILITY_FAIL_UNCHANGED",
+  "b3": "L1_ORIGINAL_NEGATIVE_UNCHANGED",
+  "jepa_weight": "UNCHANGED_NO_PROMOTION",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "blocking": "Actual phone and native long-run gates unavailable in this automation environment; other software packages remain available.",
+  "next_command": "Fetch GitHub Actions focused workflow for Run299 code commit and Run298 full-suite 40202886433; then start an independent canonical package on a new branch after remote checkpoint.",
+  "prerequisites": "No force-push or shared status overwrite. Respect active Run297 native Context OS owner and original preregistered cohorts."
+}

@@ -89,7 +89,7 @@ class FastForward:
         return {'predicted':before,'surprise':round(surprise,4),'errors':{k:round(v,4) for k,v in err.items()}}
     def consolidate(self,epochs=3,lr=LR/3,holdout=.2,checkpoint=None):
         """WP-S7 sleep: extra low-rate NLMS passes over the stored outcomes. Kept only if the held-out error does not rise."""
-        st,_=self._load();buf=st.get('replay',[])
+        st,source_version=self._load();buf=st.get('replay',[])
         if len(buf)<10:return {'status':'SKIPPED_TOO_FEW','samples':len(buf)}
         k=max(2,int(len(buf)*holdout));train,test=buf[:-k],buf[-k:]
         def err(w):return sum(abs(s['y'][t]-self._dot(w[t],s['x'])) for s in test for t in TARGETS)/len(test)
@@ -102,8 +102,18 @@ class FastForward:
                     e=s['y'][t]-self._dot(w[t],s['x']);w[t]=[a+lr*e*xi/norm for a,xi in zip(w[t],s['x'])]
         after=err(w);kept=after<=before
         if kept:
-            def fn(st2):st2['w']=w;st2['sleep_updates']=st2.get('sleep_updates',0)+1
-            self._mutate(fn)
+            # Sleep trained against one exact replay/weight snapshot. Never
+            # rebase its weights onto a newer live learning or procedure state:
+            # the Store's optimistic version check is the commit boundary.
+            st['w']=w
+            st['sleep_updates']=st.get('sleep_updates',0)+1
+            try:
+                self.s.set_state(KEY,st,expected=source_version)
+            except ValueError:
+                if self._load()[1]!=source_version:
+                    return {'status':'SKIPPED_STALE_LIVE_STATE','samples':len(buf),
+                            'heldout_error_before':round(before,4),'heldout_error_after':round(after,4)}
+                raise
         return {'status':'KEPT' if kept else 'REVERTED','samples':len(buf),'heldout_error_before':round(before,4),'heldout_error_after':round(after,4)}
     # -- proceduralization ----------------------------------------------------------------------------
     def procedural(self,key,sig=None):
