@@ -235,6 +235,30 @@ def fit(store,rng_seed=0):
         bindings = []  # legacy synthetic SQLite test double; not production
     S=np.array([t['s'] for t in T]);A=np.array([onehot(t['a']) for t in T]);Y=np.array([t['y'] for t in T])
     groups=[t.get('event_id') or t.get('action_id') or f'row:{i}' for i,t in enumerate(T)]
+    group_split='EVENT_DISJOINT' if all(t.get('event_id') for t in T) else 'ACTION_ID_FALLBACK'
+    if actual_store:
+        # Different event IDs are not independent evidence when their exact
+        # human source bytes are identical. Preserve the Run301 event split
+        # unchanged for unique sources and for synthetic-only test doubles.
+        event_hashes={}
+        for t in T:
+            eid=t.get('event_id')
+            if type(eid) is not str or not eid:
+                return dict(st,status='SOURCE_UNVERIFIED')
+            if eid not in event_hashes:
+                source=store.one(
+                    "SELECT s.hash AS source_hash FROM events e "
+                    "JOIN sources s ON s.id=e.source_id "
+                    "WHERE e.id=? AND s.deleted=0", (eid,))
+                h=source.get('source_hash') if source else None
+                if (type(h) is not str or len(h)!=64
+                        or any(c not in '0123456789abcdef' for c in h)):
+                    return dict(st,status='SOURCE_UNVERIFIED')
+                event_hashes[eid]=h
+        source_groups=[event_hashes[t['event_id']] for t in T]
+        if len(set(source_groups))<len(set(groups)):
+            groups=source_groups
+            group_split='SOURCE_HASH_DISJOINT'
     tr,te=_split(n,groups)
     if not tr or not te:
         return dict(st,status='INSUFFICIENT_INDEPENDENT_GROUPS')
@@ -265,7 +289,7 @@ def fit(store,rng_seed=0):
               metrics={'forward_mae':dict(zip(TARGETS,np.round(mae,4).tolist())),'forward_baseline_mae':dict(zip(TARGETS,np.round(base,4).tolist())),
                        'inverse_accuracy':None if inv_acc is None else round(inv_acc,4),'inverse_majority_baseline':round(major,4),
                        'inverse_note':'representation/control signal, not a causal claim','state_align':align,'held_out':len(te),
-                       'group_split':'EVENT_DISJOINT' if all(t.get('event_id') for t in T) else 'ACTION_ID_FALLBACK',
+                       'group_split':group_split,
                        'group_disjoint':not bool({groups[i] for i in tr}&{groups[i] for i in te}),
                        'train_group_count':len({groups[i] for i in tr}),
                        'held_out_group_count':len({groups[i] for i in te})})
