@@ -87,7 +87,8 @@ def compare(tasks,generate,judge,seed=0):
         for a,b in PAIRS:
             s=axes[group][f'{a}_vs_{b}'];s['lower95']=_lower95(s['wins'],s['losses'])
     # Diagnostic only: never an HX2 PASS, even with a synthetic strong signal.
-    signal=all(axes[g][key]['lower95'] is not None and axes[g][key]['lower95']>.5
+    signal=all((axes[g][key]['wins']+axes[g][key]['losses']>=20 and
+                axes[g][key]['lower95'] is not None and axes[g][key]['lower95']>.5)
                for g in GROUPS for key in ('guided_vs_reference','guided_vs_unguided'))
     return {'revision':REVISION,'status':'INCOMPLETE' if incomplete else 'COMPARED',
             'gate':'UNVERIFIED','claim_limit':'SYNTHETIC_OR_SOFTWARE_ONLY',
