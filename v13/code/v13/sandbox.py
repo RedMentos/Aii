@@ -29,6 +29,7 @@ from collections import deque
 from .agi.curiosity import Curiosity,NOVELTY
 
 REVISION='ds1-sandbox-v1';DS2_REVISION='ds2-combined-v1';WORD_NOVELTY_GAIN=.3
+COVERAGE_TARGET=8;COVERAGE_BONUS=.75;COVERAGE_HUNGER_MAX=.60  # Run347 preregistered lab-only policy
 GRID=7;ACTIONS=('push','eat','touch','lift')
 OUTCOMES=('NOTHING','MOVED','EATEN','BLOCKED','BROKE','SOUND','LIGHT')
 K=len(OUTCOMES);ALPHA0=.5;NOISE='fernseher';NEW_KIND='pilz';NEW_KIND_AT=600
@@ -44,7 +45,7 @@ TRUE={
  NOISE:{a:[1/K]*K for a in ACTIONS},
  NEW_KIND:{'push':_d(NOTHING=1),'eat':_d(EATEN=1),'touch':_d(LIGHT=.8,NOTHING=.2),'lift':_d(MOVED=1)}}
 START_KINDS=('apfel','stein','kiste','glas',NOISE)
-POLICIES=('random','surprise','novelty','lp','eig','efe','lp_goal','lp_goal_novelty')
+POLICIES=('random','surprise','novelty','lp','eig','efe','lp_goal','lp_goal_novelty','lp_goal_coverage')
 
 def digamma(x):
     r=0.
@@ -124,12 +125,14 @@ class Agent:
         if self.policy=='surprise':
             s=self.surprise.get(key,[]);return 1. if not s else sum(s[-SURPRISE_WINDOW:])/len(s[-SURPRISE_WINDOW:])
         if self.policy=='novelty':return 1/math.sqrt(1+n)
-        if self.policy in ('lp','lp_goal','lp_goal_novelty'):
+        if self.policy in ('lp','lp_goal','lp_goal_novelty','lp_goal_coverage'):
             intrinsic=max(0.,Curiosity._lp(self.surprise.get(key,[])))+NOVELTY/math.sqrt(1+n)
             if self.policy=='lp':return intrinsic
             pragmatic=PRAGMATIC*hunger*predictive(a)[OUTCOMES.index('EATEN')]*HUNGER_RELIEF.get(word,0.)
             word_novelty=(WORD_NOVELTY_GAIN/math.sqrt(1+self.word_visits.get(word,0))) if self.policy=='lp_goal_novelty' else 0.
-            return intrinsic+pragmatic+word_novelty
+            coverage=(COVERAGE_BONUS*max(0.,1-n/COVERAGE_TARGET)
+                      if self.policy=='lp_goal_coverage' and hunger<COVERAGE_HUNGER_MAX else 0.)
+            return intrinsic+pragmatic+word_novelty+coverage
         v=eig(a)
         if self.policy=='efe':v+=PRAGMATIC*hunger*predictive(a)[OUTCOMES.index('EATEN')]*HUNGER_RELIEF.get(word,0.)
         return v
