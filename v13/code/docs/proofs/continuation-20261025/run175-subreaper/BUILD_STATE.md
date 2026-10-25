@@ -13,3 +13,7 @@ Linux CI native synthetic test **PENDING** until PR. All process work is bounded
 Gates unchanged: `STEP2=UTILITY_FAIL`, `B3_L1=FAIL`, `Body_JEPA=UNAVAILABLE`, `jepa_weight=0`, `DS2_H2=FAIL`, `V13=INCOMPLETE`.
 
 Exact next step: verify Run173 full-suite outcome and Run175 CI, then independently review whether dedicated subreaper can be integrated as *additional* containment under original cgroup requirement, including abrupt controller death and unrelated-child isolation. Never publish a successful native LP3 receipt based solely on this candidate.
+
+## Independent Linux CI verified
+
+Run175 Actions `40167100407` **SUCCESS**, exact source/test Git blobs checked, 3/3 Linux-native synthetic tests PASS, official privacy scan CLEAN. Artifact ID `12588069022`, ZIP SHA-256 `22c8ed117212c560d3703939547f338d16ed434e1b1d9ed7f282bdd1653990d1`. CI single `setsid` orphan: adopted/killed/reaped 1/1/1; double-fork: 2/2/2; zero remaining. No cgroup, model or Redmi execution. The original Run173 full-suite orphan-descendant test **still fails** and is not superseded by this separate candidate.
