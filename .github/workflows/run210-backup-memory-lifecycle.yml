@@ -1,0 +1,33 @@
+name: Run210 persistent human-memory backup and restore (software)
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/backup.py'
+      - 'v13/code/tests/test_backup_restore_memory_run210.py'
+      - '.github/workflows/run210-backup-memory-lifecycle.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      - name: Isolated software prerequisites
+        run: python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual Runtime backup/restore and memory regressions
+        working-directory: v13/code
+        run: |
+          python -m unittest -v tests.test_backup_restore_memory_run210 tests.test_migrations tests.test_memory_recall_key_lineage_run203
+          python -m compileall -q v13/backup.py tests/test_backup_restore_memory_run210.py
+      - name: Official public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 6a05bec291ebe44ba46bdb221a50ef4072513d58 --head HEAD --no-worktree
+      - name: Claim boundary
+        run: echo 'Actual SQLite/Runtime backup software; no native model, Redmi, learning authority or AGI proof'

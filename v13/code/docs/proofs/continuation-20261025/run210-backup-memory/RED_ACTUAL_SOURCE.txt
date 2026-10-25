@@ -1,0 +1,38 @@
+2026-10-25T08:46:48.0480132Z test_backup_after_forget_cannot_resurrect_a_revoked_correction (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_backup_after_forget_cannot_resurrect_a_revoked_correction) ... ok
+2026-10-25T08:46:48.1142618Z test_backup_restore_recovers_correction_and_discards_later_mutations (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_backup_restore_recovers_correction_and_discards_later_mutations) ... ok
+2026-10-25T08:46:48.1405085Z test_corrupt_backup_rejected_without_modifying_live_memory (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_corrupt_backup_rejected_without_modifying_live_memory) ... FAIL
+2026-10-25T08:46:48.1538497Z test_failed_actual_ddl_rolls_back_and_retry_resumes_last_committed_version (tests.test_migrations.Migrations.test_failed_actual_ddl_rolls_back_and_retry_resumes_last_committed_version) ... ok
+2026-10-25T08:46:48.1682311Z test_fresh_two_migrations_restart_and_immutable_history (tests.test_migrations.Migrations.test_fresh_two_migrations_restart_and_immutable_history) ... ok
+2026-10-25T08:46:48.1797786Z test_future_version_rejection_changes_no_database_and_releases_lock (tests.test_migrations.Migrations.test_future_version_rejection_changes_no_database_and_releases_lock) ... ok
+2026-10-25T08:46:48.1924064Z test_legacy_one_data_is_upgraded_without_rewriting_generation (tests.test_migrations.Migrations.test_legacy_one_data_is_upgraded_without_rewriting_generation) ... ok
+2026-10-25T08:46:48.2116141Z test_malformed_one_and_two_are_rejected_without_silent_repair (tests.test_migrations.Migrations.test_malformed_one_and_two_are_rejected_without_silent_repair) ... ok
+2026-10-25T08:46:48.2252090Z test_migration_journal_corruption_rejected_by_doctor_and_startup (tests.test_migrations.Migrations.test_migration_journal_corruption_rejected_by_doctor_and_startup) ... ok
+2026-10-25T08:46:48.2583400Z test_version_one_backup_verified_then_upgraded_before_restore (tests.test_migrations.Migrations.test_version_one_backup_verified_then_upgraded_before_restore) ... ok
+2026-10-25T08:46:48.2655336Z test_actual_sql_abort_leaves_no_accepted_event (tests.test_migrations.PersistentQueue.test_actual_sql_abort_leaves_no_accepted_event) ... ok
+2026-10-25T08:46:48.2724641Z test_atomic_bounds_no_event_or_source_when_admission_rejected (tests.test_migrations.PersistentQueue.test_atomic_bounds_no_event_or_source_when_admission_rejected) ... ok
+2026-10-25T08:46:48.2836565Z test_completed_output_crash_window_not_reexecuted (tests.test_migrations.PersistentQueue.test_completed_output_crash_window_not_reexecuted) ... ok
+2026-10-25T08:46:48.2931726Z test_concurrent_admission_capacity_and_duplicate_retry (tests.test_migrations.PersistentQueue.test_concurrent_admission_capacity_and_duplicate_retry) ... ok
+2026-10-25T08:46:48.3091540Z test_fifo_pause_finish_and_dedup_survive_restart (tests.test_migrations.PersistentQueue.test_fifo_pause_finish_and_dedup_survive_restart) ... ok
+2026-10-25T08:46:48.3519634Z test_process_exit_preserves_pending_pause_and_partial_without_reexecution (tests.test_migrations.PersistentQueue.test_process_exit_preserves_pending_pause_and_partial_without_reexecution) ... ok
+2026-10-25T08:46:48.3595448Z test_source_revoked_cannot_be_claimed (tests.test_migrations.PersistentQueue.test_source_revoked_cannot_be_claimed) ... ok
+2026-10-25T08:46:48.3700786Z test_duplicate_memory_record_is_ambiguous_and_refused (tests.test_memory_recall_key_lineage_run203.MemoryRecallKeyLineageRun203.test_duplicate_memory_record_is_ambiguous_and_refused) ... ok
+2026-10-25T08:46:48.3800287Z test_missing_memory_record_does_not_leave_unbound_value_live (tests.test_memory_recall_key_lineage_run203.MemoryRecallKeyLineageRun203.test_missing_memory_record_does_not_leave_unbound_value_live) ... ok
+2026-10-25T08:46:48.3896113Z test_mutated_key_cannot_redirect_alpha_value_to_beta_question (tests.test_memory_recall_key_lineage_run203.MemoryRecallKeyLineageRun203.test_mutated_key_cannot_redirect_alpha_value_to_beta_question) ... ok
+2026-10-25T08:46:48.3988779Z test_mutated_kind_cannot_relabel_a_human_correction (tests.test_memory_recall_key_lineage_run203.MemoryRecallKeyLineageRun203.test_mutated_kind_cannot_relabel_a_human_correction) ... ok
+2026-10-25T08:46:48.4083262Z test_mutated_memory_record_key_cannot_authorize_retargeting (tests.test_memory_recall_key_lineage_run203.MemoryRecallKeyLineageRun203.test_mutated_memory_record_key_cannot_authorize_retargeting) ... ok
+2026-10-25T08:46:48.4181860Z test_mutated_scope_cannot_leak_to_another_session (tests.test_memory_recall_key_lineage_run203.MemoryRecallKeyLineageRun203.test_mutated_scope_cannot_leak_to_another_session) ... ok
+2026-10-25T08:46:48.4276199Z test_mutated_session_owner_cannot_reassign_human_correction (tests.test_memory_recall_key_lineage_run203.MemoryRecallKeyLineageRun203.test_mutated_session_owner_cannot_reassign_human_correction) ... ok
+2026-10-25T08:46:48.4371762Z test_original_correction_recalled_without_read_side_effect (tests.test_memory_recall_key_lineage_run203.MemoryRecallKeyLineageRun203.test_original_correction_recalled_without_read_side_effect) ... ok
+2026-10-25T08:46:48.4372539Z 
+2026-10-25T08:46:48.4372669Z ======================================================================
+2026-10-25T08:46:48.4373407Z FAIL: test_corrupt_backup_rejected_without_modifying_live_memory (tests.test_backup_restore_memory_run210.BackupRestoreMemoryRun210.test_corrupt_backup_rejected_without_modifying_live_memory)
+2026-10-25T08:46:48.4374161Z ----------------------------------------------------------------------
+2026-10-25T08:46:48.4374478Z Traceback (most recent call last):
+2026-10-25T08:46:48.4379172Z   File "/home/runner/work/Aii/Aii/v13/code/tests/test_backup_restore_memory_run210.py", line 75, in test_corrupt_backup_rejected_without_modifying_live_memory
+2026-10-25T08:46:48.4379937Z     with self.assertRaises(Exception):
+2026-10-25T08:46:48.4380198Z AssertionError: Exception not raised
+2026-10-25T08:46:48.4380369Z 
+2026-10-25T08:46:48.4380501Z ----------------------------------------------------------------------
+2026-10-25T08:46:48.4380799Z Ran 25 tests in 0.485s
+2026-10-25T08:46:48.4380923Z 
+2026-10-25T08:46:48.4381004Z FAILED (failures=1)

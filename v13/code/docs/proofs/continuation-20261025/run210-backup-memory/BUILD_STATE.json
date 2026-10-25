@@ -1,0 +1,61 @@
+{
+  "run": "Run210",
+  "date_utc": "2026-10-25",
+  "canonical_area": "STEP0 persistence/backup/restore, F1 human memory and operator command",
+  "branch": "codex/backup-memory-lifecycle-run210-20261025",
+  "base_verified": "6a05bec291ebe44ba46bdb221a50ef4072513d58",
+  "tested_commit": "a34d235d96dcf16733674020a1fe5ff809dbd683",
+  "owner": "Run210 backup.py and test only; disjoint from active native B2/C3 and other current owners",
+  "owned_files": [
+    "v13/code/v13/backup.py",
+    "v13/code/tests/test_backup_restore_memory_run210.py",
+    ".github/workflows/run210-backup-memory-lifecycle.yml",
+    "v13/code/docs/proofs/continuation-20261025/run210-backup-memory/"
+  ],
+  "changes": "Restore now drains complete gzip stream to verify CRC/ISIZE trailer before live swap, bounded to 1MiB trailing decompressed padding. Actual Runtime/SQLite correction, forget, offline restore, corrupted archive refusal, :backup and :restore operator instruction proven.",
+  "source_blob_sha": {
+    "backup.py": "d390667480c5871400e9b81acd59906e87089c13",
+    "test_backup_restore_memory_run210.py": "2e0e0550d19384b03c7b72a1364c1a72fa3d5193"
+  },
+  "actual_source_ci": {
+    "red": {
+      "run_id": 40177961686,
+      "job_id": 121122652465,
+      "result": "1/25 FAIL: corrupt gzip trailer accepted"
+    },
+    "green": {
+      "run_id": 40178088055,
+      "job_id": 121123039513,
+      "result": "26/26 PASS; compileall PASS; official privacy scan CLEAN"
+    }
+  },
+  "evidence_kind": "Actual-source GitHub Linux CI with synthetic Runtime/SQLite and offline tar.gz; no native model, Redmi, model training or AGI claim",
+  "current_host_prerequisites_2026_10_25": {
+    "cgroup_memory_max_bytes": 4294967296,
+    "cgroup2_mount": "read-only",
+    "numpy": true,
+    "torch": true,
+    "transformers": false,
+    "llama_cpp": false,
+    "huggingface_cache": "MISSING",
+    "github_dns": "UNRESOLVED",
+    "claim": "Current sandbox only; not Redmi"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Backup is checksummed and CRC-verified, not publisher-authenticated or encrypted.",
+    "Crash recovery journal missing-stage handling is not independently verified; next Run211 package.",
+    "Full project-wide tests and Redmi measurements remain open; model cohorts unchanged.",
+    "PR234 Run98 B3 degradation workflow failed and owner was notified."
+  ],
+  "next_step": "Run211: preregister crash-interrupted offline restore journal cases (missing stage fail-closed, partial swap recover) against actual Runtime; preserve original recovery protocol; no native job overlap.",
+  "next_command": "python -m unittest -v tests.test_restore_crash_journal_run211 tests.test_backup_restore_memory_run210 tests.test_migrations",
+  "no_authority_promotion": true
+}
