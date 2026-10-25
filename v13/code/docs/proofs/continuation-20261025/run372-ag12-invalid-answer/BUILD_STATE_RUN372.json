@@ -1,0 +1,40 @@
+{
+  "schema": "V13_RUN372_BRANCH_SCOPED_CHECKPOINT_V1",
+  "owner": "codex/ag12-invalid-answer-abstain-run372-20261025",
+  "parent": "codex/teacher-cancel-terminal-run371-20261025@aece4717768c190d6ea3e84b050435ffac1560c3",
+  "review_pr": 367,
+  "prereg_commit": "0f7a1efba89920ea592907f4c4b5edb08747cd78",
+  "red_test_commit": "cb5ea2e2860169465aa3f803b4f42d23341c05de",
+  "red_source_head": "b020e52b32c9b9c585955e9303b39618354445a5",
+  "red_actions_run": 40234174544,
+  "red_result": "29 tests, 12 expected assertion/subtest failures for punctuation, wrong-typed JSON and high-confidence nonanswers; inherited AG12 PASS",
+  "red_artifact_id": 12613124729,
+  "red_raw_sha256": "a02e330f54a838868fad26668a4160dd215115f1739b70359fd630ef7861f479",
+  "red_private_backup": "/V13/checkpoints/2026-10-25/V13_Run372_RED_raw_shaa02e330f.zip",
+  "green_source_head": "9c5f44a87a92aae8eecefa22e82152be563fe302",
+  "green_actions_run": 40234257360,
+  "green_result": "29/29 PASS, privacy CLEAN, compileall PASS; inherited finite-confidence and solver tests",
+  "green_artifact_id": 12614301913,
+  "green_raw_sha256": "7ac832f417f20b17dacdc689e83383040b162d718d5045cd738bd1816eae55dd",
+  "green_private_backup": "/V13/checkpoints/2026-10-25/V13_Run372_GREEN_raw_sha7ac832f4.zip",
+  "library_byte_comparison": "RED and GREEN independently re-materialized and byte-identical; CRC and 4/4 internal SHA PASS",
+  "source_sha256": {
+    "v13/code/v13/agi/solver.py": "3d932f97a435c4bc02f051387a787955571e7d0bc0b1a0eefddeeb85de6bffe6",
+    "v13/code/tests/test_agi_invalid_answer_run372.py": "1b1883829f4b0565f7fe18c4ae410b690a7ef6ede9334862aeda3f5c1db3d2e9"
+  },
+  "claim_limits": "Structural non-answer guard only; nonempty wrong answers still possible. Run369 native raw remains historical and is not retroactively reclassified; new source not yet native-measured.",
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED",
+    "full_suite": "RUN367_RED_UNCHANGED"
+  },
+  "remaining": "Run369 native C3 model returned punctuation-only comma and generic mean_prob, so answer-field confidence and meaningful solver utility unproven. Run367 full suite RED; Redmi/STEP2/B3/JEPA open.",
+  "next_package": "Run373 pinned Linux-native C3 multi-prompt answer-field confidence diagnostic with unchanged registered artifacts and independent source/ablation evidence.",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_agi_invalid_answer_run372 tests.test_agi_solver tests.test_agi_solver_finite_run366 tests.test_agi_live",
+  "status": "BRANCH_SCOPED_GREEN_NOT_MERGED"
+}
