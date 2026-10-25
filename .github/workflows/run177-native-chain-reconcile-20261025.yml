@@ -24,6 +24,15 @@ jobs:
           set -o pipefail
           PYTHONPATH=tests:. python3 -m unittest -v test_run177_native_chain_reconcile_20261025 2>&1 | tee "$RUNNER_TEMP/RUN177_CHAIN_RAW.log"
           python3 -m compileall -q scripts/integrated_candidates.py tests/test_run177_native_chain_reconcile_20261025.py
+      - name: Isolated pinned synthetic candidate dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/native-candidate"
+          "$RUNNER_TEMP/native-candidate/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Historical native-firing candidate and merged compatibility tests (no model)
+        working-directory: v13/code
+        run: |
+          set -o pipefail
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/native-candidate/bin/python" -m unittest discover -s tests -p 'test_native_firing_*.py' -v 2>&1 | tee "$RUNNER_TEMP/RUN177_CANDIDATE_RAW.log"
       - name: Official privacy scan
         run: python3 v13/code/scripts/public_repo_privacy_scan.py --base ff89e52be43df7a5b306e2c16587273ed1c4b4d7 --head HEAD --no-worktree
       - name: Preserve raw logs on failure or success
@@ -31,7 +40,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: V13-Run177-Native-Chain-Raw
-          path: ${{ runner.temp }}/RUN177_CHAIN_RAW.log
+          path: |
+            ${{ runner.temp }}/RUN177_CHAIN_RAW.log
+            ${{ runner.temp }}/RUN177_CANDIDATE_RAW.log
           if-no-files-found: warn
           retention-days: 30
       - name: Scope
