@@ -13,9 +13,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from native_lfm2_epoch_eval_run320 import (  # noqa: E402
     SCHEMA, HF_REPO, HF_REVISION, GATES, FACTS, PARAPHRASES,
-    NEAR_MISS, PROBES, INVALID, hit, first_sentence, select,
-    verify_sources,
+    NEAR_MISS, PROBES, select, verify_sources,
 )
+from native_lfm2_finetune_bench import INVALID, hit, first_sentence
 
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 
