@@ -1,0 +1,39 @@
+{
+  "schema": "V13_RUN374_BRANCH_SCOPED_CHECKPOINT_V1",
+  "owner": "codex/ag3-finite-plan-scores-run374-20261025",
+  "parent": "codex/ag12-invalid-answer-abstain-run372-20261025@8d204939c62ba35ef6a457cebd469bafbb1d4f2d",
+  "review_pr": 369,
+  "prereg_commit": "f2c44f44666d13ff5c354921288c0acc74e5dccc",
+  "red_test_commit": "1b05904061532ed2551b7490d5e07d3dd6c9f65f",
+  "red_source_head": "1cb00d883b5e2a9710d1d99200eee03e0f12207f",
+  "red_actions_run": 40234671215,
+  "red_result": "8 tests, 15 expected failures and 2 TypeErrors for nonfinite, bool, string, None and overflowing margin; inherited AG3/goal lineage PASS",
+  "red_artifact_id": 12614870002,
+  "red_raw_sha256": "7e1acf2f0e79a25841b9d4aaddff69b1f17d3403b6672ccb884d53dd71956867",
+  "red_private_backup": "/V13/checkpoints/2026-10-25/V13_Run374_RED_raw_sha7e1acf2f.zip",
+  "green_source_head": "fbacd92d55d21091bab8398d63fd96963709066a",
+  "green_actions_run": 40234791343,
+  "green_result": "8/8 PASS, privacy CLEAN, compileall PASS, inherited AG3 tests",
+  "green_artifact_id": 12614272934,
+  "green_raw_sha256": "50be383b84d98d29873646296ae1a7b3118886b43424563074c9046044332111",
+  "green_private_backup": "/V13/checkpoints/2026-10-25/V13_Run374_GREEN_raw_sha50be383b.zip",
+  "library_byte_comparison": "RED and GREEN independently re-materialized and byte-identical; CRC and 4/4 internal SHA PASS",
+  "source_sha256": {
+    "v13/code/v13/agi/goals.py": "3eeac06dfbfab9b268192615cbf97d56dd449a68e3d89335fd69e973ba20636d",
+    "v13/code/tests/test_ag3_finite_plan_scores_run374.py": "545b37173d7b3528b53e1087f01bacbbcf0ba0d2df164787bd1744e10c777ad2"
+  },
+  "claim_limits": "AG3 score input integrity only; no learned planner or autonomous plan execution. Finite but incorrect evaluator predictions remain possible.",
+  "negative_gates": {
+    "step2_exit": "NOT_PROMOTED",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": "UNCHANGED",
+    "phone": "NOT_MEASURED",
+    "whole_v13": "INCOMPLETE",
+    "full_suite": "RUN367_RED_UNCHANGED"
+  },
+  "remaining": "Run373 Linux native C3 field-specific confidence 4/4, semantic exact only 2/4, prereg gate FAIL. Full suite Run367 RED; Redmi/STEP2/B3/JEPA still open.",
+  "next_package": "Run375 B3 Callosum human rating finite input and probability distribution fail-closed; independent of Run373 native owner.",
+  "next_command": "PYTHONPATH=v13/code python -m unittest -v tests.test_ag3_finite_plan_scores_run374 tests.test_growth.G3Goals tests.test_executive_goal_session_lineage_run212",
+  "status": "BRANCH_SCOPED_GREEN_NOT_MERGED"
+}
