@@ -116,7 +116,7 @@ def transitions(store,limit=MAX_ROWS):
             if not (type(lat) is list and 0<len(lat)<=4096 and
                     all(type(v) in (int,float) and math.isfinite(v) for v in lat)):
                 lat=None
-            out.append({'action_id':r['id'],'s':state,'a':route,
+            out.append({'action_id':r['id'],'event_id':r['event_id'],'s':state,'a':route,
                         'y':[math.log1p(duration),1. if r['status']=='FINAL' else 0.,math.log1p(output_chars)/8],
                         'latent':lat})
         except (ValueError,TypeError,KeyError,OverflowError,AttributeError):
@@ -134,9 +134,20 @@ def _align_predict(Xtrain,Ytrain,Xtest,lam=1.):
         return (Xtest@Xtrain.T)@np.linalg.solve(gram,Ytrain)
     return Xtest@ridge(Xtrain,Ytrain,lam)
 
-def _split(n):
-    """Deterministic hashed 1-in-4 hold-out (a plain i%4 split can align with periodic action patterns)."""
-    test=[i for i in range(n) if ((i*2654435761)%2**32>>16)%4==3];return [i for i in range(n) if i not in set(test)],test
+def _split(n,groups=None):
+    """Deterministic group-disjoint holdout, preserving the old unique-row split.
+
+    One user event may cause multiple observed actions. Its actions must stay
+    together in train or heldout, otherwise the heldout result leaks context.
+    With one group per row this is byte-for-byte the previous index rule.
+    """
+    keys=list(range(n)) if groups is None else list(groups)
+    if len(keys)!=n:raise ValueError('Group count mismatch')
+    unique=list(dict.fromkeys(keys))
+    held_groups={g for i,g in enumerate(unique) if ((i*2654435761)%2**32>>16)%4==3}
+    test=[i for i,g in enumerate(keys) if g in held_groups]
+    selected=set(test)
+    return [i for i in range(n) if i not in selected],test
 
 def _action_binding(store, action_id):
     """Stable digest of action, selected route and still-readable source."""
@@ -223,7 +234,11 @@ def fit(store,rng_seed=0):
     else:
         bindings = []  # legacy synthetic SQLite test double; not production
     S=np.array([t['s'] for t in T]);A=np.array([onehot(t['a']) for t in T]);Y=np.array([t['y'] for t in T])
-    Xf=np.hstack([np.ones((n,1)),S,A]);tr,te=_split(n);rng=np.random.default_rng(rng_seed)
+    groups=[t.get('event_id') or t.get('action_id') or f'row:{i}' for i,t in enumerate(T)]
+    tr,te=_split(n,groups)
+    if not tr or not te:
+        return dict(st,status='INSUFFICIENT_INDEPENDENT_GROUPS')
+    Xf=np.hstack([np.ones((n,1)),S,A]);rng=np.random.default_rng(rng_seed)
     fw=[ridge(Xf[idx],Y[idx]) for idx in (rng.choice(tr,len(tr)) for _ in range(ENSEMBLE))]
     pred=np.mean([Xf[te]@W for W in fw],0);mae=np.abs(pred-Y[te]).mean(0)
     base=np.abs(Y[tr].mean(0)-Y[te]).mean(0)
@@ -249,7 +264,11 @@ def fit(store,rng_seed=0):
               states={a:[t['s'] for t in T if t['a']==a][-256:] for a in ACTIONS},
               metrics={'forward_mae':dict(zip(TARGETS,np.round(mae,4).tolist())),'forward_baseline_mae':dict(zip(TARGETS,np.round(base,4).tolist())),
                        'inverse_accuracy':None if inv_acc is None else round(inv_acc,4),'inverse_majority_baseline':round(major,4),
-                       'inverse_note':'representation/control signal, not a causal claim','state_align':align,'held_out':len(te)})
+                       'inverse_note':'representation/control signal, not a causal claim','state_align':align,'held_out':len(te),
+                       'group_split':'EVENT_DISJOINT' if all(t.get('event_id') for t in T) else 'ACTION_ID_FALLBACK',
+                       'group_disjoint':not bool({groups[i] for i in tr}&{groups[i] for i in te}),
+                       'train_group_count':len({groups[i] for i in tr}),
+                       'held_out_group_count':len({groups[i] for i in te})})
     st['evidence_scope'] = 'SOURCE_BOUND_STORE' if actual_store else 'SYNTHETIC_TEST_ONLY'
     st['training_bindings'] = bindings
     st['model_sha256'] = _state_digest(st)
