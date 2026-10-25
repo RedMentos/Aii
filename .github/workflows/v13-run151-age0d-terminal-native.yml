@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      RUN147_ARTIFACT: ${{ runner.temp }}/RUN147_native.zip
+      RUN147_ARTIFACT: /tmp/RUN147_native.zip
       HF_HUB_DISABLE_TELEMETRY: "1"
       DO_NOT_TRACK: "1"
       NEEDLE_TELEMETRY: "0"
