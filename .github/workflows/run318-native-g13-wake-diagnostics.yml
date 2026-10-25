@@ -50,7 +50,7 @@ jobs:
             tests.test_g13_wake_diagnostics_run318 \
             tests.test_longrun_soak \
             tests.test_native_longrun_assets_run267 \
-            tests.test_scheduler 2>&1 | tee "$RUNNER_TEMP/RUN318_SOFTWARE_RAW.log"
+            tests.test_sleep_scheduler 2>&1 | tee "$RUNNER_TEMP/RUN318_SOFTWARE_RAW.log"
           rc=${PIPESTATUS[0]}
           echo "$rc" > "$RUNNER_TEMP/RUN318_SOFTWARE_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
