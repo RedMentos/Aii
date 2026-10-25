@@ -19,11 +19,10 @@ def normalize(candidate):
     text = text[:start] + text[end:]
     text = text.replace("          export V13_LOSS_MODE=all\n", "")
     text = text.replace("          test \"${{ steps.delta.outputs.rc }}\" = \"0\"\n", "")
-    text = text.replace("            tests.test_run330_exact_recipe \\\n", "")
     text = text.replace("            tests.test_native_all_loss_run329 \\\n", "")
-    text = text.replace("      - 'v13/code/tests/test_run330_exact_recipe.py'\n", "")
     text = text.replace("build_native_all_loss_run329.sh", "build_native_answer_epoch_run319.sh")
-    text = text.replace("run330-native-twoepoch-allloss/**", "run327-native-lfm2-epochs-repro/**")
+    text = text.replace("run330-native-twoepoch-allloss.yml", "run330-native-lfm2-epochs-repro.yml")
+    text = text.replace("run330-native-twoepoch-allloss/**", "run330-native-lfm2-epochs-repro/**")
     return text.replace("Run330", "Run327").replace("RUN330", "RUN327").replace("run330", "run327")
 
 
