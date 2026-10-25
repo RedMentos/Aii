@@ -1,0 +1,89 @@
+name: V13 Run394 fresh STEP2 fixture invariants
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run394-step2-fixtures.yml'
+      - 'v13/code/scripts/run394_step2_fresh.py'
+      - 'v13/code/tests/test_run394_step2_fresh.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run394-step2-fresh/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact source identity
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN394_HEAD.txt"
+          sha256sum v13/code/scripts/run394_step2_fresh.py v13/code/tests/test_run394_step2_fresh.py v13/code/scripts/step2_z2_timescale.py v13/code/scripts/step2_z2c_b2_rule.py | tee "$RUNNER_TEMP/RUN394_SOURCE_HASHES.txt"
+          python3 -m compileall -q v13/code/scripts/run394_step2_fresh.py v13/code/tests/test_run394_step2_fresh.py
+      - name: Source-only fixture and control tests
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" python3 -m unittest -v tests.test_run394_step2_fresh \
+            2>&1 | tee "$RUNNER_TEMP/RUN394_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Freeze pilot and full fixture manifests
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD" python3 scripts/run394_step2_fresh.py --work "$RUNNER_TEMP/run394-pilot" --fixture-only --pilot \
+            2>&1 | tee "$RUNNER_TEMP/RUN394_PILOT_RAW.log"
+          r1=${PIPESTATUS[0]}
+          PYTHONPATH="$PWD" python3 scripts/run394_step2_fresh.py --work "$RUNNER_TEMP/run394-full" --fixture-only --full \
+            2>&1 | tee "$RUNNER_TEMP/RUN394_FULL_RAW.log"
+          r2=${PIPESTATUS[0]}
+          if [ "$r1" -eq 0 ]; then cp "$RUNNER_TEMP/run394-pilot/RUN394_PREREGISTERED_FIXTURES.json" "$RUNNER_TEMP/RUN394_PILOT_MANIFEST.json"; fi
+          if [ "$r2" -eq 0 ]; then cp "$RUNNER_TEMP/run394-full/RUN394_PREREGISTERED_FIXTURES.json" "$RUNNER_TEMP/RUN394_FULL_MANIFEST.json"; fi
+          echo "rc=$((r1+r2))" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN394_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw SHA
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN394_*' ! -name RUN394_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN394_SHA256SUMS.txt
+      - name: Upload exact-head raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run394-Fixtures-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN394_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce fixture invariants and privacy
+        if: always()
+        run: |
+          test "${{ steps.suite.outputs.rc }}" = "0"
+          test "${{ steps.fixture.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
