@@ -1,0 +1,44 @@
+{
+  "package": "Run255 exact current-chain full-suite after PR252-254",
+  "date_utc": "2026-10-25",
+  "branch": "codex/current-fullsuite-postfix-20261025",
+  "pr": 255,
+  "source_head": "0c8dbb233a4541edb4049e5fa19deac91190f8a7",
+  "actual_result": {
+    "tests": 2657,
+    "failures": 0,
+    "errors": 36,
+    "skipped": 14,
+    "seconds": 221.529,
+    "exit_code": 1,
+    "full_suite_pass": false
+  },
+  "prior_run221": {
+    "tests": 2646,
+    "failures": 2,
+    "errors": 36,
+    "skipped": 14
+  },
+  "comparison": "Both prior FAIL cases (Run200 Age noise and Run21 LP3 post-reap orphan) are no longer failures; 36 source-bound historical native-firing candidate errors remain.",
+  "ci": {
+    "run_id": 40184183678,
+    "job_id": 121141412490,
+    "privacy": "CLEAN",
+    "run147_fixture_staged": true,
+    "isolated_cpu_dependencies": "PASS",
+    "raw_artifact_id": 12595217689,
+    "raw_zip_sha256": "cd093621ac5f7e1ec12c9ed75e3f139bd899e7e70d7d629c2ab69e8f6550a14c"
+  },
+  "evidence_kind": "GitHub Linux full software/synthetic suite with staged closed Run147 fixture; not new native inference or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_step": "PR256 audit isolated 28-line source drift only in runners.py, exactly reviewed Run177 dd122cf8. PR257 append Run177 transform to integrated_candidates chain, re-run historical native-firing candidate tests and exact full suite. Do not suppress 36 errors.",
+  "next_command": "Fetch PR257 latest and CI, verify source-chain byte equality and existing candidate regressions, then rerun exact full suite on PR257 descendant head.",
+  "no_gate_promotion": true
+}
