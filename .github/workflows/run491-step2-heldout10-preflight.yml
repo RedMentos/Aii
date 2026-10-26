@@ -1,0 +1,98 @@
+name: V13 Run491 prospective STEP2 heldout10 source preflight
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run491-step2-heldout10-preflight.yml'
+      - 'v13/code/scripts/run491_step2_heldout10.py'
+      - 'v13/code/tests/test_run491_step2_heldout10.py'
+permissions:
+  contents: read
+jobs:
+  source-preflight:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run491-step2-heldout10-preflight-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pin pre-inference registration and unchanged fixture constructor
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run491-heldout10/PREREG.md)" = 'cec309fb98cb6d9554860b6dffc27c062c679ff0'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/tests/test_run491_step2_heldout10.py)" = '5dacff483d5cc913b6eb926f26f9dffafa213fa1'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+      - name: Install isolated source-only Python prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Validate all ten held-out episodes, role horizons and negative gates
+        id: test
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest discover -s tests -p 'test_run491_step2_heldout10.py' -v > "$RUNNER_TEMP/RUN491_TEST_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python scripts/run491_step2_heldout10.py --output "$RUNNER_TEMP/RUN491_REGISTRATION.json" > "$RUNNER_TEMP/RUN491_REGISTER_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python - <<'PY' > "$RUNNER_TEMP/RUN491_ASSERT_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN491_REGISTRATION.json').read_text())
+          assert d['fixture_sha256']=='c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63'
+          assert len(d['fixtures'])==10 and d['planned_native_consumer_rows']==1050
+          assert d['seeds']==[31,32,33] and d['native_executed'] is False
+          assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          assert d['b3_l1']=='FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          print('RUN491_HELDOUT10_SOURCE_ONLY_FROZEN_NO_NATIVE')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN491_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN491_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN491_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw source-only evidence with SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN491_*' ! -name RUN491_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN491_SHA256SUMS.txt
+      - name: Preserve source-only evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run491-step2-heldout10-source-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN491_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce preflight and privacy without native
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/RUN491_TEST_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN491_TEST_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN491_PRIVACY_EXIT.txt")" = '0'
