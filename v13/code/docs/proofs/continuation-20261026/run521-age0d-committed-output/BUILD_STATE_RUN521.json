@@ -1,0 +1,62 @@
+{
+  "schema": "V13_RUN521_AGE0D_FINAL_OUTPUT_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run521-age0d-committed-output-binding-20261026",
+  "base_branch": "codex/run520-b2-quote-lineage-20261026",
+  "base_sha": "7c743cd7cc6e9bf258e6ae856793f2c40a35fd38",
+  "prereg_blob": "d9e8563cc0a2f7872fe499803d591dede71d9650",
+  "source": {
+    "selfmodel": "aab1d1905c98ce1d276e5136975a97f62e8e21dc",
+    "test_run517": "47a6468c03f2b3e65a3b960b7966ddfc7868871e",
+    "frozen_run134_evaluator": "3cec2c4b6883e3f02f449cc74cf44d5584a6affb"
+  },
+  "implementation": "Before SHADOW arithmetic diagnosis, require most recent persisted same-event same-session assistant message with status FINAL and byte-exact text equal to late_offer output. No notice, learning or Age authority.",
+  "tests": "SHA-pinned source-only CI pending: Run517 modified + Run134/150/184/late_correction/selfmodel, privacy scan. No models.",
+  "evidence": "SOURCE_ONLY_GREEN_74_TESTS_PRIVACY_CLEAN_RESTART_PERSISTENCE",
+  "heavy_owner": {
+    "pr": 517,
+    "run": 40316152651,
+    "stage": "p01",
+    "no_interference": true
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "age0d_deliver_recommended": false,
+    "canonical_architecture_complete": false
+  },
+  "next_command": "Preserve Run521 source-only PR for independent review, no Age promotion. Monitor Run522 native p02 Actions and independently verify raw/safe artifacts; keep all negative gates.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "initial_red": {
+    "run": 40317110061,
+    "conclusion": "FAILURE",
+    "tests": 74,
+    "passed": 73,
+    "errors": 1,
+    "reason": "New restart test violated existing Store exclusive-lock invariant by opening second Runtime before closing first.",
+    "privacy": "CLEAN",
+    "artifact_id": 12646894266,
+    "artifact_sha256": "080b86541348ef4f09d63a2afa13d92eed5169c3de3877dd3118b790cd620c97",
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run521/Run521_initial_RED_lock_sha080b8654.zip"
+  },
+  "amendment_a_blob": "2d82fbf227077f64420b7914926f543f5550ff0b",
+  "ci_final": {
+    "run": 40317353398,
+    "head_sha": "537ed395d7c2c1b51ffb225808f8c338b5847289",
+    "conclusion": "SUCCESS",
+    "tests": 74,
+    "privacy": "CLEAN",
+    "artifact_id": 12646753842,
+    "artifact_sha256": "34853ae13fe697dcfd4a138416c4c82e1d18193ea0cb2c2deaedce99af32941f",
+    "sha_manifest_entries_verified": 4,
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run521/Run521_final_74tests_GREEN_sha34853ae1.zip"
+  },
+  "open_questions": [
+    "Age0d remains SHADOW and no user notice or automatic learning",
+    "Real native end-to-end utility and Redmi evidence not provided by these source-only tests",
+    "Run522 p02 heavy native stage is separately owned on sibling branch"
+  ]
+}
