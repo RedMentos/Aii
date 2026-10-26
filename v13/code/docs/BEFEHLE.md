@@ -261,6 +261,8 @@ Form fast immer: <befehl> [status|shadow|active] – „active“ nur, wenn eine
 :workspace    wie lange Inhalte im Arbeitsgedächtnis bleiben.
 :attention    Aufmerksamkeit und Gewichtung der Verbindungen.
 :ctxos        Verwaltung des Modell-Kontexts und Zwischenspeichers.
+:ctxos digest on|off                 Quellgebundenen Tages-Digest im Kontext anzeigen/verbergen.
+:ctxos digest select recent|query    Auswahl des Tages-Digests: recent (Standard, neueste Quellen) oder query (nur ausdrücklich eingeschaltete lexikalische Relevanz zur aktuellen Frage). Exakte Quellen werden erneut geprüft; keine neue Fakten-Autorität, kein natives Lernen und kein gemessener Antwortqualitätsgewinn.
 :callosum     Verbindung zwischen den zwei Denk-Körpern (wie der Balken im Gehirn).
 :gist         Überblick-Gruppen; :gist preview <Text> zeigt sie.
 :jef          gemeinsamer Rundruf aller Teile, Nutzen von Angeboten.
