@@ -59,5 +59,16 @@
     "Independent Run569 owner branch prereg exists; coordinate before any duplicate native postflight or rerun.",
     "Original source/seed/model hashes and failed attempt must remain immutable."
   ],
-  "next_exact_command": "Read SHA-closed Run580_REPORT.json bounded AUDIT diagnostic from artifact 12678262640; isolate original Run568 AUDIT failure (native stage exit 0, audit exit 1), patch only a new review candidate if warranted, rerun independent source-only audit without native inference."
+  "next_exact_command": "Preregister a NEW independent read-only Run581 postflight on original raw/safe artifacts. Fix the seed32 audit tuple only in a separate review verifier, verify exact 42 rows and SHA/score on original bytes, preserve Run568 AUDIT=1 and do not rerun native or promote STEP2/JEPA/B3/Redmi.",
+  "root_cause": {
+    "classification": "ORIGINAL_AUDIT_SCRIPT_STAGE_SEED_TYPO",
+    "original_traceback": "FileNotFoundError: .../stage_A_s33_p02/tool_A_s32.json",
+    "original_workflow_source": ".github/workflows/run568-future005-native.yml",
+    "incorrect_tuple": "('A_s33_p02',32,('Crescent','Asteria'))",
+    "registered_plan": "batch.arm_seed_pairs = [['A',33],['A',33],['A',33]]",
+    "correct_source_filename": "tool_A_s33.json",
+    "original_native_status": "NATIVE_EXIT=0; RUN558_BATCH_STRUCTURALLY_VERIFIED_ONLY, 42 rows across 3 stages",
+    "independent_native_proof": "NOT_YET_ESTABLISHED; AUDIT_EXIT=1",
+    "evidence": "Original raw artifact 12671404476 SHA-verified in container; original traceback and source workflow inspected; no edits to original"
+  }
 }
