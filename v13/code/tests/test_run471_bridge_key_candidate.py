@@ -1,6 +1,7 @@
 """Run471 synthetic bridge identity and weight-integrity tests; no latent authority."""
 import json
 import os
+import shutil
 import sys
 import tempfile
 import unittest
@@ -98,6 +99,13 @@ class ExactBridgeKeyCandidate(unittest.TestCase):
         np.savez(p, **tensors)
         with self.assertRaisesRegex(ValueError, 'bridge weights do not match'):
             A.verify_file(self.path, self.specs)
+
+    def test_direction_cannot_be_relabelled_by_filename(self):
+        other = Path(self.tmp.name) / 'B2_TO_B1'
+        shutil.copyfile(self.path.with_suffix('.json'), other.with_suffix('.json'))
+        shutil.copyfile(self.path.with_suffix('.npz'), other.with_suffix('.npz'))
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_PATH_DIRECTION_MISMATCH'):
+            A.verify_file(other, self.specs)
 
     def test_symlink_and_hardlink_refused(self):
         p = self.path.with_suffix('.npz')
