@@ -1,0 +1,67 @@
+{
+  "schema": "V13_RUN560_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 / Run560 fixture-origin review",
+  "base_head": "1f2d911bf1a7e80f8680f3692f96e7b97cb6a258",
+  "branch": "codex/automation11-run560-fixture-origin-native002-audit-20261026",
+  "pr": 559,
+  "source_changed": [
+    "v13/code/scripts/run559_offline_review.py",
+    "v13/code/tests/test_run560_fixture_origin.py"
+  ],
+  "source_sha_git_blob": {
+    "run559": "4c8ebb3a00ffdf5454f11dbf4f1706ff95f7be92",
+    "test_run560": "03aa42d95533a16aadf155ff70f9f2f0570d25a3"
+  },
+  "source_tests": {
+    "workflow_run": 40356448491,
+    "tests_passed": 40,
+    "privacy": "CLEAN",
+    "source_and_offline_job": "SUCCESS",
+    "full_source_suite": "PENDING_AT_CHECKPOINT"
+  },
+  "native_origin": {
+    "run": 40350723259,
+    "head": "5cbf54f8c8ff2fe3fb8531a76a560493c7041296",
+    "kind": "LINUX_NATIVE_ORIGINAL_PRIOR_RUN",
+    "rows": 42,
+    "original_raw_artifact_id": 12664912862,
+    "original_safe_artifact_id": 12665895129,
+    "raw_sha256": "ae44a8d97b0a0d1e658a91fc2c7731fe5854592a9dbfe5cfe173a6cc80b9419b",
+    "safe_sha256": "ecd1ece00a2e82396bbd716b4fab93c84efe81ce60d9e853b8b450a437d4eb03"
+  },
+  "independent_offline": {
+    "run": 40356448491,
+    "artifact_id": 12665014962,
+    "artifact_sha256": "e5fe65ac8b862cf56f65aaca74e8563c50debe9d354897cb4a57078f51728f92",
+    "sha_manifest_entries": 14,
+    "sha_manifest_verified": true,
+    "report_sha256": "cb8fd1fc32f3e0f0e75c4ded772cf7039e7c049d96d3c2bc8909573d6b691ff1",
+    "rows_verified": 42,
+    "wrong_committed": 0,
+    "both_exact_mean": 0.2638888888888889,
+    "b1_only_mean": 0.2638888888888889,
+    "prompt_only_dual_mean": 0.2916666666666667,
+    "executed_new_native": false
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Native FUTURE_003..024 unexecuted; each requires distinct one-shot prereg and serialized owner",
+    "STEP2 no combined utility advantage in original FUTURE_001 and FUTURE_002",
+    "Independent original raw ZIP and safe ZIP artifacts have 30-day retention; preserve source/reports and hashes",
+    "Full source-wide regression CI result pending"
+  ],
+  "next_exact_command": "python -m unittest -v tests.test_run560_fixture_origin tests.test_run559_offline_review; then run a separately preregistered FUTURE_003 one-shot Linux-native workflow using run558_future_batch.py --plan/--execute with unchanged Run491/500/504 pins, and audit its exact raw/safe ZIP with run559_offline_review.py.",
+  "prerequisites": [
+    "Verify no active native Actions owner in group v13-native-c3-run131-serialized",
+    "Verify Run560 independent audit PASS and original Run557 artifact digests",
+    "No Redmi or device-based evidence until real target hardware is available"
+  ]
+}
