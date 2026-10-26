@@ -77,7 +77,7 @@ fi
 # Only the explicit portable subset is a supported phone-install preflight.
 # Full unfiltered selftest remains available for source-wide regression with
 # external pinned artifacts/dependencies; its known RED is never promoted.
-printf '\nPORTABLE_SELFTEST: 27 Live-Softwaretests, keine volle Quellcode-Suite.\n'
+printf '\nPORTABLE_SELFTEST: 94 Live-Softwaretests, keine volle Quellcode-Suite.\n'
 "$V13_DATA_HOME/bin/v13" selftest --portable
 printf 'Vollständige, ungefilterte Quellcode-Prüfung (mit externen Belegen): v13 selftest\n'
 printf '\nErster echter Modelltest. Auf dem Handy kann das einige Minuten dauern.\n'
