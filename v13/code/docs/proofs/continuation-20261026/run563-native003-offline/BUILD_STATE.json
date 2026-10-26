@@ -1,0 +1,68 @@
+{
+  "schema": "V13_RUN563_ORIGINAL_NATIVE003_INDEPENDENT_OFFLINE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 / Run563 source-only original Run561 independent audit",
+  "branch": "codex/automation11-run563-native003-offline-20261026",
+  "pr": 561,
+  "base_branch": "codex/automation11-run562-future004-prep-20261026",
+  "base_head": "39d6bf8176979dc0d0bf69b3dab0012a8c8b986d",
+  "prereg_git_blob": "23ece8f4a7ae11152e678eb7a4275e093c7bfec1",
+  "source_workflow_commit": "545946a6c81adcc33eabebfef82fd27e4bb0990b",
+  "original_native": {
+    "actions_run": 40357028652,
+    "head": "cf40fe3bf601260c6c6590637e50de0a6188a6c8",
+    "conclusion": "SUCCESS",
+    "batch": "FUTURE_003",
+    "rows": 42,
+    "raw_artifact_id": 12666688509,
+    "raw_sha256": "89b31cc16d9bc569492d6a4c560a2a511b65f0e6bbe2fab0562b4bf6a7e0ac15",
+    "safe_artifact_id": 12666848624,
+    "safe_sha256": "503a1a4c0ad900f71758b42cfda40ff75b440240db7d469f06fe8b976877ed77"
+  },
+  "independent": {
+    "actions_run": 40360930989,
+    "head": "545946a6c81adcc33eabebfef82fd27e4bb0990b",
+    "conclusion": "SUCCESS",
+    "source_script_blob": "4c8ebb3a00ffdf5454f11dbf4f1706ff95f7be92",
+    "tests_passed": 40,
+    "rows_verified": 42,
+    "wrong_committed": 0,
+    "raw_manifest_entries": 27,
+    "safe_manifest_entries": 24,
+    "offline_artifact_id": 12667444246,
+    "offline_artifact_sha256": "df1738d39cd382e145989eeb00b29a80075d8a1ea6ed9966166f9d0117487a5c",
+    "offline_manifest_entries": 16,
+    "privacy": "CLEAN",
+    "mean_utility": {
+      "b1_only": 0.23611111111111113,
+      "b2_only": 0.125,
+      "both_none": 0.2222222222222222,
+      "both_exact": 0.2222222222222222,
+      "both_control": 0.19444444444444445,
+      "same_policy_dual": 0.20833333333333334,
+      "prompt_only_dual": 0.25
+    },
+    "native_inference_performed_by_audit": false
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-26/Run563/ (original raw, original safe, independent offline evidence)",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "FUTURE_004 one-shot Linux-native not yet executed",
+    "FUTURE_005..024 and B/C/D/E remain unmeasured",
+    "Redmi sustained measurement, Body-JEPA and B3 gates remain open"
+  ],
+  "next_exact_command": "GitHub Actions API: list in_progress runs for native concurrency group; if none, create draft PR from codex/automation11-run562-future004-prep-20261026 against codex/automation11-run561-future003-native-20261026; wait for original FUTURE_004 workflow and independently verify its artifacts before any next batch.",
+  "prerequisites": [
+    "Do not mutate frozen Run491/500/504/model/runner/seed pins",
+    "Do not trigger competing heavy native Actions jobs",
+    "No main merge or paid provisioning",
+    "Keep learning/age/approval gates closed"
+  ]
+}

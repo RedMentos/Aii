@@ -1,0 +1,184 @@
+name: V13 Run563 independent original Run561 FUTURE_003 native artifact replay
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run563-native003-offline.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run563-native003-offline/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent-original-native003-offline:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run563-native003-offline-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Frozen source, original prereg, models and Canon
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN563_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run563-native003-offline/PREREG.md)" = '23ece8f4a7ae11152e678eb7a4275e093c7bfec1'
+          test "$(git hash-object v13/code/scripts/run559_offline_review.py)" = '4c8ebb3a00ffdf5454f11dbf4f1706ff95f7be92'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN563_HOST.txt"
+      - name: Isolated portable dependencies without native inference
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run563venv"
+          timeout 240s "$RUNNER_TEMP/run563venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN563_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN563_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent source-oracle, ZIP and frozen cohort adversarial regressions
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run563venv/bin/python" -m compileall -q scripts/run559_offline_review.py tests/test_run560_fixture_origin.py tests/test_run559_offline_review.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 420s "$RUNNER_TEMP/run563venv/bin/python" -m unittest -v tests.test_run560_fixture_origin tests.test_run559_offline_review tests.test_run558_future_batch tests.test_run556_future002_batch tests.test_run505_future001_batch tests.test_run504_remaining980_schedule tests.test_run500_step2_stage_map > "$RUNNER_TEMP/RUN563_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN563_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Verify original completed Linux-native Actions and original artifact metadata
+        id: original
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          set +e
+          mkdir -p "$RUNNER_TEMP/run563_artifacts"
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/runs/40357028652" -o "$RUNNER_TEMP/run563_artifacts/original_run.json" > "$RUNNER_TEMP/RUN563_ORIGINAL_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            curl --fail --silent --show-error --location --retry 2 --max-time 90 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/runs/40357028652/artifacts?per_page=100" -o "$RUNNER_TEMP/run563_artifacts/original_artifacts.json" >> "$RUNNER_TEMP/RUN563_ORIGINAL_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' >> "$RUNNER_TEMP/RUN563_ORIGINAL_RAW.log" 2>&1
+          import json,os,pathlib
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])/'run563_artifacts'
+          run=json.loads((root/'original_run.json').read_text())
+          assert run['id']==40357028652 and run['status']=='completed' and run['conclusion']=='success'
+          assert run['head_sha']=='cf40fe3bf601260c6c6590637e50de0a6188a6c8'
+          arts=json.loads((root/'original_artifacts.json').read_text())['artifacts']
+          expected={
+            12666688509:('run561-heldout10-native-raw-cf40fe3bf601260c6c6590637e50de0a6188a6c8','sha256:89b31cc16d9bc569492d6a4c560a2a511b65f0e6bbe2fab0562b4bf6a7e0ac15'),
+            12666848624:('run561-heldout10-safe-no-model-cf40fe3bf601260c6c6590637e50de0a6188a6c8','sha256:503a1a4c0ad900f71758b42cfda40ff75b440240db7d469f06fe8b976877ed77')
+          }
+          for aid,(name,digest) in expected.items():
+              matching=[a for a in arts if a['id']==aid]
+              assert len(matching)==1
+              a=matching[0]
+              assert a['name']==name and a['digest']==digest and a['expired'] is False
+              assert a['workflow_run']['head_sha']==run['head_sha']
+          print('ORIGINAL_RUN561_ACTIONS_AND_TWO_ARTIFACT_IDS_SHA256_PINNED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN563_ORIGINAL_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download original unchanged raw and safe ZIP bytes by fixed IDs
+        id: download
+        if: ${{ steps.original.outputs.rc == '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          set +e
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12666688509/zip" -o "$RUNNER_TEMP/run563_artifacts/raw.zip" > "$RUNNER_TEMP/RUN563_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            curl --fail --silent --show-error --location --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12666848624/zip" -o "$RUNNER_TEMP/run563_artifacts/safe.zip" >> "$RUNNER_TEMP/RUN563_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            sha256sum "$RUNNER_TEMP/run563_artifacts/raw.zip" "$RUNNER_TEMP/run563_artifacts/safe.zip" > "$RUNNER_TEMP/RUN563_DOWNLOAD_HASHES.txt"
+            test "$(sha256sum "$RUNNER_TEMP/run563_artifacts/raw.zip" | cut -d' ' -f1)" = '89b31cc16d9bc569492d6a4c560a2a511b65f0e6bbe2fab0562b4bf6a7e0ac15'
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            test "$(sha256sum "$RUNNER_TEMP/run563_artifacts/safe.zip" | cut -d' ' -f1)" = '503a1a4c0ad900f71758b42cfda40ff75b440240db7d469f06fe8b976877ed77'
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN563_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independently replay all original 42 rows against frozen source fixture oracles
+        id: audit
+        if: ${{ steps.download.outputs.rc == '0' && steps.tests.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          timeout 300s "$RUNNER_TEMP/run563venv/bin/python" scripts/run559_offline_review.py \
+            --raw "$RUNNER_TEMP/run563_artifacts/raw.zip" \
+            --safe "$RUNNER_TEMP/run563_artifacts/safe.zip" \
+            --raw-sha 89b31cc16d9bc569492d6a4c560a2a511b65f0e6bbe2fab0562b4bf6a7e0ac15 \
+            --safe-sha 503a1a4c0ad900f71758b42cfda40ff75b440240db7d469f06fe8b976877ed77 \
+            --head cf40fe3bf601260c6c6590637e50de0a6188a6c8 \
+            --prefix RUN561 --batch FUTURE_003 \
+            --output "$RUNNER_TEMP/RUN563_RUN561_REPORT.json" > "$RUNNER_TEMP/RUN563_AUDIT_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN563_AUDIT_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN563_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN563_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close all raw evidence even RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN563_*' ! -name RUN563_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN563_SHA256SUMS.txt
+      - name: Preserve all audit evidence including failed attempts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run563-original-native003-offline-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN563_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce original native success, source, independent replay and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          for item in DEPS TEST ORIGINAL DOWNLOAD AUDIT PRIVACY; do
+            test -f "$RUNNER_TEMP/RUN563_${item}_EXIT.txt"
+            test "$(cat "$RUNNER_TEMP/RUN563_${item}_EXIT.txt")" = 0
+          done
