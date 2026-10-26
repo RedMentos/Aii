@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN520_B2_NATIVE_QUOTE_LINEAGE_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run520-b2-quote-lineage-20261026",
+  "base_branch": "codex/run519-b2-native-p01-20261026",
+  "base_sha": "0e193755a446f837b848d143fcce582fa486979f",
+  "prereg_blob_sha": "97f12f294551b65a27f37c5208bf441e1ba2d92d",
+  "source": {
+    "revised_postflight_blob": "6bdcb125ecd652f2ea83bb77154efd6babcb5f16",
+    "new_adversarial_tests_blob": "6bff68f2525a6c6ed99a77aaffc5383047e63086",
+    "frozen_collector_blob": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
+    "frozen_metric_blob": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6"
+  },
+  "gap": "Original Run513 checked source/offset equality but not whether accepted quote was textually traceable to native raw_offer_quotes; source-exact fabricated quote could inflate metric.",
+  "fix": "Bounded casefold/whitespace-normalized injective raw-candidate ancestry check after exact source-ref check; Run516 aggregate inherits through Run513; original native/fixture/model/seed data unchanged.",
+  "test_plan": "12 new synthetic adversarial controls + original Run509-518 regressions + SHA-pinned original Run515 safe-artifact read-only replay + public privacy scan",
+  "evidence": "SOURCE_ONLY_CI_PENDING_NOT_NATIVE_PROOF",
+  "heavy_owner": {
+    "pr": 517,
+    "workflow": "run519-b2-native-p01",
+    "status": "IN_PROGRESS_AT_LAST_CHECK",
+    "stage": "p01",
+    "no_parallel_native": true
+  },
+  "original_artifact": {
+    "native_pr": 513,
+    "actions": 40313344309,
+    "conclusion": "FAILURE",
+    "raw_zip_sha256": "680e874dda717096d67506128aef688ab2ceab0ab4f5ca196f2f036875a70858",
+    "safe_zip_sha256": "4e7b53a2b6438562693b441c648338463df7d10258bb657f3ef821f696a3f534",
+    "read_only_replay_actions": 40314742064
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Open Run520 source-only PR stacked on Run519, inspect CI tests and exact original p00 replay; repair any RED without native rerun; after Run519 completes independently audit p01 raw/safe hashes.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
