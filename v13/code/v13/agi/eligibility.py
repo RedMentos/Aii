@@ -150,6 +150,33 @@ OPTION_PAIR = re.compile(r'\boption\s+A\b[\s\S]*\boption\s+B\b', re.I)
 DECIDE = re.compile(r'(?i)\b(?:choose|chooses|pick|select|recommend|cheapest|eligib\w*|which\s+option|go\s+with|decide)\b')
 MAX_TEXT = 2000
 MAX_EARLIER = 6
+
+# Run576: narrow explicit project evidence before either fixed or model typed read.
+# The label is deliberately lexical: uncertain aliases never become authority.
+_PROJECT_LABEL = re.compile(r'\\bproject[ \\t]+([a-z][a-z0-9_-]{0,39})\\b', re.I)
+
+
+def project_labels(text):
+    """Explicit English 'Project <name>' labels; no guessed aliases or topic inference."""
+    return frozenset(m.group(1).casefold() for m in _PROJECT_LABEL.finditer(str(text)))
+
+
+def scope_earlier(current, history=(), quotes=()):
+    """Separate earlier exact evidence by the current named project.
+
+    One explicit label admits only earlier sources with exactly that label.
+    No label admits only unlabelled sources. Multiple current labels admit no
+    earlier evidence. The caller retains its current-source rules and options.
+    This is a fail-closed source boundary, not a semantic project resolver.
+    """
+    target = project_labels(current)
+    if len(target) > 1:
+        return [], []
+    def allowed(source):
+        labels = project_labels(source)
+        return labels == target if target else not labels
+    return ([source for source in history if allowed(source)],
+            [source for source in quotes if allowed(source)])
 READ_SYSTEM = ('Read the project rules and the two options. Return JSON only. Copy every number exactly as written; never '
                'calculate anything. budget, deadline, local_only: the value written right after that rule word; if the current '
                'message states a rule, take it from there, otherwise from the earlier text; if a rule is not written anywhere, '
