@@ -1,0 +1,119 @@
+name: V13 Run452 actual 210-row import and S_s21 source-only preflight
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run452-stage6-s21-source.yml'
+      - 'v13/code/scripts/run452_stage6_s21.py'
+      - 'v13/code/tests/test_run452_stage6_s21.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run452-stage6-s21/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pinned source identities and isolated model-free dependencies
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          test "$(sha256sum v13/code/scripts/run438_import_stage5_artifact.py | cut -d' ' -f1)" = "da56fbef98685171bfaa0a3569200585fb1e09a3dda159e9d115849b1a9394a8"
+          test "$(sha256sum v13/code/scripts/run436_verify_native210.py | cut -d' ' -f1)" = "19b7a647f2149b6ce0dded029fc6ffd5213768b5f801549b9d5f97a52d886b7a"
+          sha256sum v13/code/scripts/run452_stage6_s21.py v13/code/tests/test_run452_stage6_s21.py | tee "$RUNNER_TEMP/run452-source-sha256.txt"
+          python3 -m venv "$RUNNER_TEMP/run452"
+          "$RUNNER_TEMP/run452/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Download exact existing 210-row safe export and original producer report
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12627626352/zip' -o "$RUNNER_TEMP/run452-safe210.zip"
+          curl -fsSL --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12627207495/zip' -o "$RUNNER_TEMP/run452-raw-small.zip"
+          printf '280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7  %s\n' "$RUNNER_TEMP/run452-safe210.zip" | sha256sum --check -
+          printf 'eb47eab043b7c51d0dbdea7cfb12ddfe1706a3611057efc7c348ae810fef599e  %s\n' "$RUNNER_TEMP/run452-raw-small.zip" | sha256sum --check -
+          python3 - <<'PY'
+          import hashlib,os,zipfile
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          with zipfile.ZipFile(root/'run452-raw-small.zip') as z:
+              names=z.namelist()
+              assert len(names)==len(set(names))
+              raw=z.read('RUN437_STAGE5_REPORT.json')
+          assert hashlib.sha256(raw).hexdigest()=='ef2e4554025730911012c50c417e55c25ef57185f147c131f30d319fb31ff6b1'
+          (root/'run452-stage5-report.json').write_bytes(raw)
+          print('ORIGINAL_210_STAGE5_REPORT_SHA256_VERIFIED')
+          PY
+      - name: Execute real 210-row atomic import and verify next S_s21 preview only
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run452/bin/python" scripts/run452_stage6_s21.py --archive "$RUNNER_TEMP/run452-safe210.zip" --expected-sha256 280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7 --stage5-report "$RUNNER_TEMP/run452-stage5-report.json" --work "$RUNNER_TEMP/run452-work" --output "$RUNNER_TEMP/run452-preview.json" > "$RUNNER_TEMP/run452-preview-raw.txt" 2>&1
+          cat "$RUNNER_TEMP/run452-preview-raw.txt"
+          "$RUNNER_TEMP/run452/bin/python" - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          d=json.loads((root/'run452-preview.json').read_text())
+          assert d['status']=='STAGE6_READY_NO_NATIVE' and d['errors']==[]
+          assert d['rows_verified']==210 and d['remaining_arms']==4
+          assert d['completed']==['O_s20','P_s20','S_s20','O_s21','P_s21']
+          assert d['preflight']['status']=='STAGE6_PREVIOUS_210_ROWS_VERIFIED'
+          assert d['native_execute_requested'] is False and d['native_execute_attempted'] is False
+          assert d['native_execution_performed'] is False and d['canonical_gate_pass'] is False
+          assert d['step2_exit']=='UTILITY_FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          assert (root/'run452-work/RUN397_PROGRESS.json').is_file()
+          print('ACTUAL_210_STAGE6_S21_SOURCE_PREFLIGHT_PASS')
+          PY
+      - name: Wrong outer SHA refuses without destination
+        working-directory: v13/code
+        run: |
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          set +e
+          "$RUNNER_TEMP/run452/bin/python" scripts/run452_stage6_s21.py --archive "$RUNNER_TEMP/run452-safe210.zip" --expected-sha256 "$(printf '0%.0s' {1..64})" --stage5-report "$RUNNER_TEMP/run452-stage5-report.json" --work "$RUNNER_TEMP/run452-wrong-sha" --output "$RUNNER_TEMP/run452-wrong-sha-report.json" > "$RUNNER_TEMP/run452-negative-raw.txt" 2>&1
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+          test ! -e "$RUNNER_TEMP/run452-wrong-sha"
+          "$RUNNER_TEMP/run452/bin/python" - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'run452-wrong-sha-report.json').read_text())
+          assert d['status']=='STAGE6_RED_PRESERVED' and d['canonical_gate_pass'] is False
+          assert 'ARTIFACT_SHA_MISMATCH' in ' '.join(d['errors'])
+          print('STAGE6_WRONG_SHA_NEGATIVE_PASS')
+          PY
+      - name: Source-only inherited and new regression controls
+        working-directory: v13/code
+        run: |
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run452/bin/python" -m unittest -v tests.test_run452_stage6_s21 tests.test_run438_import_stage5_artifact tests.test_run436_verify_native210 > "$RUNNER_TEMP/run452-tests.txt" 2>&1
+          cat "$RUNNER_TEMP/run452-tests.txt"
+      - name: Official privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Preserve raw source-only preview and negative evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run452-stage6-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run452-source-sha256.txt
+            ${{ runner.temp }}/run452-preview.json
+            ${{ runner.temp }}/run452-preview-raw.txt
+            ${{ runner.temp }}/run452-wrong-sha-report.json
+            ${{ runner.temp }}/run452-negative-raw.txt
+            ${{ runner.temp }}/run452-tests.txt
+          if-no-files-found: warn
+          retention-days: 30
