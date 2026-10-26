@@ -1,0 +1,70 @@
+{
+  "schema": "V13_RUN605_NATIVE_B1_TAP_VERIFIED_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run605-native-b1-latent-tap-20261026",
+  "base_branch": "codex/automation11-run604-native-b2-latent-tap-20261026",
+  "base_sha": "f79e5d9156cd025364c357d61c0b545d1460066a",
+  "verified_native_head": "d9fa26976e2252250618782bca5acaa2d0f011fe",
+  "pr": 600,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/600",
+  "prereg_commit": "d567cf87a88f64bc0a2bf8a3831044ee8c73c9e3",
+  "observed_ci": {
+    "run": 40398876409,
+    "conclusion": "success",
+    "fixture_tests": "4/4 PASS",
+    "bootstrap_exit": 0,
+    "native_exit": 0,
+    "independent_audit_exit": 0,
+    "privacy": "CLEAN",
+    "artifact_id": 12688311116,
+    "artifact_sha256": "041e48ce660fd1c4cd2e1210b0dc07e7f282357efdf843b4f7cf38f7f4fddc74",
+    "raw_manifest_entries": 14,
+    "raw_manifest_mismatches": 0
+  },
+  "native": {
+    "schema": "V13_RUN605_PINNED_B1_NATIVE_TAP_V1",
+    "status": "PASS_NATIVE_READONLY_TAP_ONLY",
+    "evidence_class": "LINUX_NATIVE_MODEL_READONLY",
+    "tap_id": "lfm2.result_norm.final.v1",
+    "embedding_dim": 2048,
+    "token_counts": [
+      7,
+      7,
+      7
+    ],
+    "max_repeat_abs_delta": 0,
+    "model_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+    "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "can_latent_tap": true,
+    "can_latent_inject": false,
+    "can_train_body": false,
+    "redmi_measured": false
+  },
+  "cosmetic_note": "RUN605_AUDIT_RAW.log prints inherited QWEN_B1 label; this is a label typo only. Native report, SHA-pinned actual model and runner are LFM2.5 B1_DETAIL.",
+  "private_backup": "/V13-Checkpoints/2026-10-26/Run605/run605-native-b1-tap-raw.zip",
+  "claim_limits": {
+    "b3_promoted": false,
+    "body_jepa": "UNAVAILABLE",
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "full_v13_complete": false,
+    "fullsuite": "Run596 RED 4 FAIL/65 ERROR frozen source chain mismatch"
+  },
+  "open_questions": [
+    "Both native B1 and B2 read-only taps now current-source proven; no paired cross-body bridge utility",
+    "No B3 latent receiver injection or Body-JEPA training",
+    "Real Redmi proof and native sparse learning remain missing",
+    "Review/merge stacked PR588–600 and Claude PR38"
+  ],
+  "next_command": "From verified Run605 head d9fa2697, choose highest-priority substantive canonical work: B3 cross-body latent utility/receiver-shadow under existing gates, or Z6 adaptive wake/Z5 coalition on newer Claude integration, with preregistered heldout controls; do not merely repeat taps.",
+  "prerequisites": [
+    "No anyone-writable Drive",
+    "No force push",
+    "Serialize heavy native jobs",
+    "Preserve original model/source/cohort hashes and negative gates"
+  ]
+}
