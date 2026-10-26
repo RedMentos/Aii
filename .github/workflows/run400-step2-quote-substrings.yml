@@ -1,0 +1,118 @@
+name: V13 Run400 RED-first exact B2 quote provenance and native replay
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run400-step2-quote-substrings.yml'
+      - 'v13/code/scripts/run396_step2_pilot_audit.py'
+      - 'v13/code/tests/test_run400_quote_substrings.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run400-quote-substrings/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  red-green-native-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OBSERVED_ID: '12619659510'
+      OBSERVED_SHA: '6a0ae4311db51d7165e372b370e57a6faf8223c0e214c87be5f6e1ad5ba46b6f'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact source, no frozen cohort mutation
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN400_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          sha256sum v13/code/scripts/run396_step2_pilot_audit.py v13/code/tests/test_run400_quote_substrings.py \
+            v13/code/scripts/run398_native_artifact_audit.py \
+            | tee "$RUNNER_TEMP/RUN400_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/scripts/run396_step2_pilot_audit.py \
+            v13/code/tests/test_run400_quote_substrings.py
+      - name: RED-first new and inherited source tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_run394_step2_fresh tests.test_run396_step2_pilot_audit \
+            tests.test_run397_step2_resume tests.test_run398_native_artifact_audit \
+            tests.test_run400_quote_substrings 2>&1 | tee "$RUNNER_TEMP/RUN400_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN400_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Re-audit unchanged real native Run395 ZIP
+        id: actual
+        working-directory: v13/code
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          set +e
+          gh api "repos/RedMentos/Aii/actions/artifacts/$OBSERVED_ID/zip" \
+            > "$RUNNER_TEMP/RUN395_ACTUAL_RAW.zip" 2> "$RUNNER_TEMP/RUN400_FETCH_STDERR.log"
+          fetch_rc=$?
+          echo "$fetch_rc" > "$RUNNER_TEMP/RUN400_FETCH_EXIT.txt"
+          if [ "$fetch_rc" -ne 0 ]; then
+            echo "rc=2" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          sha256sum "$RUNNER_TEMP/RUN395_ACTUAL_RAW.zip" | tee "$RUNNER_TEMP/RUN400_ACTUAL_ZIP_SHA.txt"
+          echo "$OBSERVED_SHA  $RUNNER_TEMP/RUN395_ACTUAL_RAW.zip" | sha256sum -c - \
+            > "$RUNNER_TEMP/RUN400_SHA_CHECK.log" 2>&1
+          hash_rc=$?
+          echo "$hash_rc" > "$RUNNER_TEMP/RUN400_SHA_EXIT.txt"
+          if [ "$hash_rc" -ne 0 ]; then
+            echo "rc=2" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/run398_native_artifact_audit.py \
+            --raw-zip "$RUNNER_TEMP/RUN395_ACTUAL_RAW.zip" --expected-sha256 "$OBSERVED_SHA" \
+            --output "$RUNNER_TEMP/RUN400_NATIVE_AUDIT.json" \
+            2>&1 | tee "$RUNNER_TEMP/RUN400_NATIVE_AUDIT_RAW.log"
+          audit_rc=${PIPESTATUS[0]}
+          echo "$audit_rc" > "$RUNNER_TEMP/RUN400_AUDIT_EXIT.txt"
+          echo "rc=$audit_rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Privacy
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" \
+            --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN400_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN400_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close all raw SHA even on RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN400_*' ! -name RUN400_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN400_SHA256SUMS.txt
+      - name: Upload closed raw (no weights or original ZIP)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run400-QuoteAudit-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN400_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce test, actual native audit and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.actual.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
