@@ -1,0 +1,45 @@
+{
+  "schema": "V13_RUN511_B2_COLLECTOR_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run511-b2-offer-collector-source-20261026",
+  "base_branch": "codex/run510-b2-quote-metric-source-20261026",
+  "base_sha": "5abc784013f6af8f0e3453ffa9bcb71bc918a7ee",
+  "status": "SOURCE_STAGED_CI_PENDING_NO_NATIVE",
+  "scope": {
+    "frozen_run509_fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726",
+    "pair_stages": 5,
+    "observations_per_stage": 12,
+    "planned_total_observations": 60,
+    "actual_run511_native_observations": 0,
+    "models_unchanged": true
+  },
+  "source": {
+    "prereg_blob": "ed03f1a3beb53350ee5d0ff0865b7dacae345a90",
+    "script_blob": "7e9eaa17a7b91d72b4095a8b8dcf9ecb75bf1763",
+    "test_blob": "d3b5a3ffc39979745c861e78a037e88c343444f8",
+    "run509_blob": "ec8860d2333bd3c4a16caccb9537073a310f32da",
+    "run510_blob": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run511 prereg persisted before implementation",
+    "Source-only script includes opt-in --execute but CI calls --plan and mocked tests only",
+    "Run507 active native separate owner; no concurrent heavy work",
+    "Source review identified potential inherited standing B2 question in BASE; explicitly disabled both standing questions and added regression test before native."
+  ],
+  "blockers": [
+    "Run511 source-only CI pending",
+    "Run507 native Actions 40309409260 active",
+    "No Run511 native trial authorized until separate prereg/owner check",
+    "Redmi unavailable"
+  ],
+  "next_command": "Verify latest Run511 source-only CI on updated script/test pins (older runs may be superseded); audit 60-key stage plan and private backup; inspect Run507 native completion and independent raw evidence.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}

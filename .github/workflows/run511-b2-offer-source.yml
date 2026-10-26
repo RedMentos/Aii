@@ -1,0 +1,108 @@
+name: V13 Run511 B2 offer collector source-only stage proof
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run511-b2-offer-source.yml'
+      - 'v13/code/scripts/run511_b2_offer_collector.py'
+      - 'v13/code/tests/test_run511_b2_offer_collector.py'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run511-b2-offer-collector-source-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact frozen original and Run511 source hashes
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run511-b2-offer-collector/PREREG.md)" = 'ed03f1a3beb53350ee5d0ff0865b7dacae345a90'
+          test "$(git hash-object v13/code/scripts/run511_b2_offer_collector.py)" = '7e9eaa17a7b91d72b4095a8b8dcf9ecb75bf1763'
+          test "$(git hash-object v13/code/tests/test_run511_b2_offer_collector.py)" = 'd3b5a3ffc39979745c861e78a037e88c343444f8'
+          test "$(git hash-object v13/code/scripts/run509_b2_rule_quote_prereg.py)" = 'ec8860d2333bd3c4a16caccb9537073a310f32da'
+          test "$(git hash-object v13/code/scripts/run510_b2_quote_metric.py)" = 'd2c35f430f9dc0f39c390043197787ea1f6e0cc6'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+          test "$(git hash-object v13/code/scripts/step2_z2b_seeds.py)" = '7c299616495450e4a38f9aab9921f7176ba67556'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+      - name: Isolated source-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source-only tests and Python syntax
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m py_compile scripts/run511_b2_offer_collector.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python -m unittest -v tests.test_run511_b2_offer_collector tests.test_run510_b2_quote_metric tests.test_run509_b2_rule_quote_prereg > "$RUNNER_TEMP/RUN511_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN511_TEST_EXIT.txt"
+          exit 0
+      - name: Five disjoint source-only stage plans
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          for index in 0 1 2 3 4; do
+            mkdir -p "$RUNNER_TEMP/run511-stage-$index"
+            ../../.venv/bin/python scripts/run511_b2_offer_collector.py --work "$RUNNER_TEMP/run511-stage-$index" --pair-index "$index" --plan >> "$RUNNER_TEMP/RUN511_PLAN_RAW.log" 2>&1 || break
+            cp "$RUNNER_TEMP/run511-stage-$index/RUN511_STAGE_PLAN.json" "$RUNNER_TEMP/RUN511_PLAN_$index.json"
+          done
+          ../../.venv/bin/python - <<'PY' >> "$RUNNER_TEMP/RUN511_PLAN_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          stages=[json.loads((root/f'RUN511_PLAN_{i}.json').read_text()) for i in range(5)]
+          keys=[tuple(key) for stage in stages for key in stage['row_keys']]
+          assert len(keys)==len(set(keys))==60
+          assert [s['stage_id'] for s in stages]==[f'p{i:02d}' for i in range(5)]
+          assert all(s['expected_observations']==12 and s['native_executed'] is False for s in stages)
+          assert all(s['canonical_gate_pass'] is False and s['step2_exit']=='UTILITY_FAIL' for s in stages)
+          print('RUN511_FIVE_SOURCE_ONLY_PLANS_60_NOT_NATIVE')
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN511_PLAN_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN511_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN511_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN511_*' ! -name RUN511_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN511_SHA256SUMS.txt
+      - name: Preserve source-only proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run511-b2-offer-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN511_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only tests plans privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN511_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN511_PLAN_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN511_PRIVACY_EXIT.txt")" = 0
