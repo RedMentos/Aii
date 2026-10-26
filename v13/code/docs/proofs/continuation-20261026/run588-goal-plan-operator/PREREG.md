@@ -1,0 +1,11 @@
+# Run588 prospective registration — usable Termux USER goal subplans (2026-10-26)
+
+Owner: GPT automation11. Independent review branch on verified Run587 PR583 checkpoint `d3e0d2c1cf2fe22ad1d9581c10e8b3cc46655640` (Run587 43/43 software PASS). File ownership: `v13/code/v13/agi/__init__.py` operator command parser only, `v13/code/v13/operator.py` HELP only, `v13/code/docs/BEFEHLE.md` command guide only, new Run588 tests/workflow/proofs. Do not modify frozen native sources, Canon, model/seed hashes, age/tool gates, other owner branches, or `main`.
+
+**Functional gap:** Run587 makes persistent `GoalStore.decompose` atomic, but the existing real Termux `:growth` command exposes only creating root goals and changing their status. A user cannot actually create a structured child plan in the chat UI without Python. This leaves the JEF planning organ less usable than its backend.
+
+**Prospective interface:** Add explicit TTY-only `:growth goal subgoals <USER-goal-ID> <child title> | <child title> [| ...]`. Each nonempty pipe-delimited group becomes one child goal title, preserving spaces; `Operator.run` already shlex-parses quoted titles and refuses origin=MODEL. Bound batch count (<=32), require nonempty title groups, existing USER parent and exact known ID, and call the Run587 atomic `decompose` once. Return JSON with parent ID and child IDs; no automatic wake, tool, learning, new Age right, or SELF/SYSTEM mutation. Keep `:growth goal <title>`, `status|done|abandon|reopen` behavior. Update `:help` and `:befehle` with short German instructions. No web/APK changes.
+
+**Prospective tests:** Actual `Operator.run` on Runtime/SQLite, multiword 2–3 child plan, restart persistence, malformed separators/empty titles/over-32 fail with no writes, unknown parent and SELF/SYSTEM refusal, model-origin command refusal, unchanged legacy commands and help/docs coverage. Exact-head source-only GitHub Actions with isolated dependencies, Run587/586/585 and Run553 operator regressions, compile/privacy/SHA-closed raw. Preserve RED.
+
+**Claim limits:** software-only, not learned planning or native/Redmi proof. STEP2 UTILITY_FAIL, B3 FAIL, Body-JEPA UNAVAILABLE, jepa_weight 0, full V13 INCOMPLETE; unfiltered historical source suite RED (4 FAIL/65 ERROR). Independent review before merge.

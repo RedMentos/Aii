@@ -173,6 +173,8 @@ Tasten im Vollbild-Chat: Strg+C bricht ab, Strg+D beendet, Tab springt zwischen 
 :growth [...]
     Wachstum: Prüfungen, Lehrer, Trainer, Ziele, Werkzeuge. Häufig:
     :growth status · :growth goals · :growth goal <Titel> · :growth goal status <ID> · :growth goal done <ID> · :growth goal abandon <ID> · :growth goal reopen <ID> · :growth approve <Stapel> · :growth reject <Stapel>
+    Unterziele anlegen: :growth goal subgoals <USER-Ziel-ID> Kindziel eins | Kindziel zwei
+    Alle Unterziele werden zusammen gespeichert oder gar nicht. Nur deine offenen/aktiven/blockierten Ziele; abgeschlossene Ziele zuerst mit reopen öffnen.
     :growth tools · :growth enable <Werkzeug> · :growth calc <Rechnung>
 :objectives
     Welche Lernziele es gibt.

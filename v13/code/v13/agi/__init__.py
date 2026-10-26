@@ -193,6 +193,28 @@ def operator_command(r,args):
         raise ValueError(':growth teacher [status|cloud on|off|ask <Frage>|run [local|claude]|dataset]')
     if c=='goals':return dumps(g.goals.report()|{'goals':g.goals.tree()})
     if c=='goal':
+        if len(args)>1 and args[1]=='subgoals':
+            usage=':growth goal subgoals <USER-goal-ID> <Kindziel 1> | <Kindziel 2>'
+            if len(args)<4:raise ValueError(usage)
+            parent=g.goals.get(args[2])
+            if parent['origin']!='USER':
+                raise PermissionError('Nur explizite USER-Ziele dürfen Unterziele erhalten')
+            if parent['status'] not in {'OPEN','ACTIVE','BLOCKED'}:
+                raise ValueError('GOAL_CLOSED_REOPEN_FIRST')
+            titles=[];words=[]
+            for token in args[3:]:
+                if token=='|':
+                    if not words:raise ValueError(usage)
+                    titles.append(' '.join(words));words=[]
+                else:words.append(token)
+                if len(titles)>32:raise ValueError('Maximal 32 Unterziele pro Plan')
+            if not words:raise ValueError(usage)
+            titles.append(' '.join(words))
+            if len(titles)>32 or any(not t.strip() for t in titles):
+                raise ValueError(usage)
+            ids=g.goals.decompose(parent['id'],titles,origin='USER')
+            return dumps({'parent':parent['id'],'children':ids,'count':len(ids),
+                          'authority':'EXPLICIT_USER_OPERATOR'})
         commands={'status','done','abandon','reopen'}
         if len(args)>1 and args[1] in commands:
             if len(args)!=3:raise ValueError(':growth goal status|done|abandon|reopen <goal_id>')

@@ -1,0 +1,68 @@
+{
+  "schema": "V13_RUN588_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run588-goal-plan-operator-20261026",
+  "base_branch": "codex/automation11-run587-goal-decompose-atomic-20261026",
+  "base_sha": "d3e0d2c1cf2fe22ad1d9581c10e8b3cc46655640",
+  "verified_code_head": "457fdf9127535e29674e4bc0b9a687cc01075fc7",
+  "pr": 584,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/584",
+  "prereg_commit": "9bfac5ca06b2ca3a47ac77265a2b22bb09c97235",
+  "changed_source_blobs": {
+    "v13/code/v13/agi/__init__.py": "2ff2cfe35387db4a959df043d2ec876bbce24d7a",
+    "v13/code/v13/operator.py": "cc79add3c54f602b02d5ebd9efb4831f50225c92",
+    "v13/code/docs/BEFEHLE.md": "54d9b63ecf6047b6470eb61cd7d4922e0334ad08",
+    "v13/code/tests/test_run588_goal_plan_operator.py": "45a97b035eab95f192ec769166eca7dfd281fd9a"
+  },
+  "observed_ci": {
+    "run": 40387354335,
+    "job": 121799046613,
+    "head": "457fdf9127535e29674e4bc0b9a687cc01075fc7",
+    "conclusion": "success",
+    "new_tests": "7/7 PASS",
+    "run587": "7/7 PASS",
+    "run586": "6/6 PASS",
+    "run585": "6/6 PASS",
+    "run553": "5/5 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12681662494,
+    "raw_artifact_sha256": "be2b9c1503ce9f709feada3ad518903a2f0866645dc76d5a8e1c4ff3e09455db"
+  },
+  "changes": [
+    "Real Termux :growth goal subgoals <USER-goal-ID> Kindziel 1 | Kindziel 2 command",
+    "Multiword titles grouped by pipe and atomically persisted via Run587 backend",
+    "Closed/non-USER parents and malformed/oversized batches rejected without mutation",
+    "Model-origin operator command still denied; German :help/:befehle updated"
+  ],
+  "inherited_workflow_failure": {
+    "run": 40387376872,
+    "workflow": "Run132 Claude HX1 HX3 HX4 preserved shadow integration",
+    "reason": "Frozen runtime.py blob expected a691d27bd0772a4fa1f03d57ec90663237bf6825 but current chain has a different hash; privacy CLEAN. Historical frozen lineage, not a newly introduced runtime.py edit.",
+    "status": "RED_PRESERVED"
+  },
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "full_source_suite": "RED_4_FAIL_65_ERROR"
+  },
+  "open_questions": [
+    "Independent review and coordinated merge of PR581→584 needed; no production merge",
+    "Actual Android/Termux device proof for new command remains unmeasured",
+    "Full binding blueprint still requires Body-JEPA, native sparse learning, Context OS and Dream/Sleep acceptance"
+  ],
+  "next_command": "Review PR584, inspect exact SHA-closed Actions raw, and continue another substantive blueprint organ on a separate review branch. Do not alter frozen lineage tests or active native cohorts.",
+  "prerequisites": [
+    "Keep Age/approval/learning gates unchanged",
+    "No force push, no other owner overwrite",
+    "No Redmi/native claim from Linux software tests"
+  ]
+}
