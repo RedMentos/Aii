@@ -1,0 +1,31 @@
+{
+  "schema": "V13_RUN474_B3_GEOMETRY_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run474-b3-bridge-geometry-20261026",
+  "base_sha": "7886352f624352f038e3611aac916a44aca3e0b9",
+  "owner": "Run474 source-only B3 geometry follow-up, no production/native owner",
+  "finding": "Run471 verifies exact serving keys and digest but a forged manifest with recomputed sender key and mismatched sender dims can pass while loaded bridge.d remains old; a self-consistent NPZ digest can also conceal invalid tensor shapes.",
+  "source_files": {
+    "v13/code/scripts/run471_bridge_key_candidate.py": "ed70ccc6c12080895615835cc0aa81afbb0daeae",
+    "v13/code/tests/test_run471_bridge_key_candidate.py": "ae7b4873a547a98eb9c58d21095ced002e98eb7e"
+  },
+  "tests_added": [
+    "re-keyed changed serving sender dims must fail even if keys match",
+    "self-consistent manifest/NPZ digest with malformed Q shape must fail"
+  ],
+  "verification_status": "CI_PENDING",
+  "scope": "read-only candidate only; production bodyport.py/b3bridge.py frozen; no authority granted",
+  "negative_gates": {
+    "b3_l1": "FAIL",
+    "latent_authority": 0,
+    "step2_exit": "UTILITY_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Run471 candidate still lacks hostile-concurrent-rename guarantees and path ancestor symlink proof.",
+    "No live train-time key stamping, BodyPort consumer integration, native B3 L1 utility or Redmi evidence."
+  ],
+  "exact_next_command": "Open PR against Run471 head; run existing Run471 B3 source workflow with new adversarial tests, privacy scan and raw artifacts; on GREEN independently review before integration."
+}
