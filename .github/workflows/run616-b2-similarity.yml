@@ -43,7 +43,7 @@ jobs:
       - name: Public privacy scan
         run: |
           set +e
-          git fetch --no-tags --depth=1 origin fef48329944556891d048744c075fbb5c3910397 > "$RUNNER_TEMP/RUN616_PRIVACY_RAW.log" 2>&1
+          git fetch --no-tags --depth=32 origin "$GITHUB_SHA" > "$RUNNER_TEMP/RUN616_PRIVACY_RAW.log" 2>&1
           python3 v13/code/scripts/public_repo_privacy_scan.py --base fef48329944556891d048744c075fbb5c3910397 --head "$GITHUB_SHA" >> "$RUNNER_TEMP/RUN616_PRIVACY_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/RUN616_PRIVACY_EXIT.txt"
           exit 0
