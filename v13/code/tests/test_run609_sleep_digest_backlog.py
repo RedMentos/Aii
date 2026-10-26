@@ -46,6 +46,19 @@ class SleepBacklog(unittest.TestCase):
         first=S.digest(self.r.store)
         self.assertEqual(first['turns'],64)
         self.assertEqual(first['backlog_remaining'],6)
+        # Even if an earlier deferred set becomes FINAL together with a new
+        # window, one cycle returns at most 64 validated pairs; the remainder
+        # is retained by assistant ID for the next cycle.
+        ids=self.assistant_ids()
+        bounded,_,high,deferred=native_history_since(
+            self.r.store,self.r.session,ids[63],64,ids[:64])
+        self.assertEqual(len(bounded),128)
+        self.assertEqual(high,ids[-1])
+        self.assertEqual(deferred,ids[64:])
+        recovered,_,_,left=native_history_since(
+            self.r.store,self.r.session,high,64,deferred)
+        self.assertEqual(len(recovered),12)
+        self.assertEqual(left,[])
         second=S.digest(self.r.store)
         self.assertEqual(second['turns'],6)
         self.assertEqual(second['backlog_remaining'],0)
