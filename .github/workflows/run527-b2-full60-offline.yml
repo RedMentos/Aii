@@ -1,0 +1,162 @@
+name: V13 Run527 exact five safe native B2 stages offline 60-row score
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run527-b2-full60-offline.yml'
+      - 'v13/code/scripts/run527_b2_artifact_score.py'
+      - 'v13/code/tests/test_run527_b2_artifact_score.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run527-b2-full60-offline/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  offline-five-stage:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run527-b2-full60-offline-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact frozen source and prospective registration
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run527-b2-full60-offline/PREREG.md)" = '0e45d5c0b67abda0d0f64650babded5fde147b11'
+          test "$(git hash-object v13/code/scripts/run527_b2_artifact_score.py)" = '6ebe030256bdf9c62db97a7f49358dffd8df9ca4'
+          test "$(git hash-object v13/code/tests/test_run527_b2_artifact_score.py)" = 'c896f2ec415f0c79591ac2f2b6febba3bddc4c16'
+          test "$(git hash-object v13/code/scripts/run513_b2_receipt_postflight.py)" = '76c92573867429d6a2c13f7493c456c06d4b6890'
+          test "$(git hash-object v13/code/scripts/run516_b2_aggregate.py)" = 'b5531e49288ac199673a05a67763999b2b589e1a'
+          test "$(git hash-object v13/code/scripts/run510_b2_quote_metric.py)" = 'd2c35f430f9dc0f39c390043197787ea1f6e0cc6'
+          test "$(git hash-object v13/code/scripts/run509_b2_rule_quote_prereg.py)" = 'ec8860d2333bd3c4a16caccb9537073a310f32da'
+          test "$(git hash-object v13/code/scripts/run511_b2_offer_collector.py)" = 'ab8efec8016d77abc371a5a1d6dae395a06ebb60'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN527_HOST.txt"
+      - name: Install isolated source-only dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run527venv"
+          timeout 240s "$RUNNER_TEMP/run527venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN527_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN527_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run adversarial and original frozen source-only regressions
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run527venv/bin/python" -m unittest -v tests.test_run527_b2_artifact_score tests.test_run516_b2_aggregate tests.test_run520_b2_quote_lineage tests.test_run518_b2_native_receipt_schema tests.test_run513_b2_receipt_postflight tests.test_run510_b2_quote_metric tests.test_run509_b2_rule_quote_prereg > "$RUNNER_TEMP/RUN527_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN527_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Read only five exact original Actions safe artifacts
+        id: fetch
+        if: ${{ steps.tests.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          mkdir -p "$RUNNER_TEMP/run527-stages" "$RUNNER_TEMP/run527-out"
+          "$RUNNER_TEMP/run527venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN527_DOWNLOAD_RAW.log" 2>&1
+          import json,os,subprocess
+          from pathlib import Path
+          from run527_b2_artifact_score import STAGES
+          root=Path(os.environ['RUNNER_TEMP'])/'run527-stages'
+          for stage,number,run_id,artifact_id,conclusion,head,digest in STAGES:
+              def api(endpoint):
+                  return json.loads(subprocess.run(
+                      ['gh','api',f'repos/RedMentos/Aii/{endpoint}'],
+                      check=True,capture_output=True,text=True).stdout)
+              run=api(f'actions/runs/{run_id}')
+              assert run['id']==run_id and run['head_sha']==head
+              assert run['status']=='completed' and run['conclusion'].upper()==conclusion
+              artifact=api(f'actions/artifacts/{artifact_id}')
+              name=f'run{number}-b2-native-{stage}-safe-{head}'
+              assert artifact['id']==artifact_id and artifact['name']==name
+              assert artifact['expired'] is False and artifact['digest']=='sha256:'+digest
+              assert artifact['workflow_run']['id']==run_id
+              target=root/stage
+              target.mkdir(exist_ok=False)
+              subprocess.run(['gh','run','download',str(run_id),'--repo',
+                              'RedMentos/Aii','--name',name,'--dir',str(target)],
+                             check=True,capture_output=True,text=True)
+              print(json.dumps({'stage':stage,'run':run_id,'original_conclusion':conclusion,
+                                'head_sha':head,'artifact_id':artifact_id,
+                                'safe_zip_github_digest':digest,
+                                'downloaded_members':len(list(target.iterdir()))},
+                               sort_keys=True),flush=True)
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN527_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Verify all safe member bytes, replay original RED, score exact 60 rows
+        id: score
+        if: ${{ steps.fetch.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run527venv/bin/python" scripts/run527_b2_artifact_score.py --stage-root "$RUNNER_TEMP/run527-stages" --output-dir "$RUNNER_TEMP/run527-out" > "$RUNNER_TEMP/RUN527_SCORE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN527_SCORE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan on exact source-only diff
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN527_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN527_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN527_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw logs and bounded no-model outputs with SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -d "$RUNNER_TEMP/run527-out" ]; then
+            for f in "$RUNNER_TEMP"/run527-out/RUN527_*.json; do
+              [ -f "$f" ] || continue
+              cp "$f" "$RUNNER_TEMP/$(basename "$f")"
+            done
+          fi
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN527_*' ! -name RUN527_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN527_SHA256SUMS.txt
+      - name: Preserve raw offline replay evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run527-b2-full60-offline-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN527_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact artifacts, 60-row replay and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          for n in DEPS TEST DOWNLOAD SCORE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/RUN527_${n}_EXIT.txt")" = 0
+          done
