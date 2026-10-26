@@ -28,8 +28,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run535-self-world-operator/PREREG.md)" = '703b69c3496ad359cb32f720a9aeec9186539f12'
-          test "$(git hash-object v13/code/v13/operator.py)" = '12ce54750021b317f7ab25deda8ecc74040de526'
-          test "$(git hash-object v13/code/tests/test_run535_self_world_operator.py)" = '9e161060f65701ae5e4c184fd02409006344a538'
+          test "$(git hash-object v13/code/v13/operator.py)" = '26087a32767f72dff2cddfe29e764ec06babee06'
+          test "$(git hash-object v13/code/tests/test_run535_self_world_operator.py)" = '96879f82f394ddd3518459875415752486487974'
           test "$(git hash-object v13/code/v13/agi/file_world_port.py)" = '713d66efac249649adeaeb32ae7efb690fab72f4'
           { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN535_HOST.txt"
       - name: Isolated source-only dependencies
