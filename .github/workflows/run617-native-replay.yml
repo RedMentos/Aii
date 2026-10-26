@@ -1,0 +1,97 @@
+name: V13 Run617 recorded native B2 tap SQLite replay (no inference)
+on:
+  push:
+    branches:
+      - codex/automation11-run617-b2-native-replay-20261026
+    paths:
+      - '.github/workflows/run617-native-replay.yml'
+      - 'v13/code/scripts/run617_gist_native_replay.py'
+      - 'v13/code/tests/test_run617_gist_native_replay.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run617-b2-native-replay/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Bind original source, cohort and Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN617_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run617_gist_native_replay.py)" = 26a6528b142df6361697c654b21be391273f455d
+          test "$(git hash-object v13/code/tests/test_run617_gist_native_replay.py)" = 41af9f8aeacb89bc0ae20effcd508178d23198fe
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run614-independent-native-paraphrase/RUN614_COHORT.json)" = 7068267d41a1719abea3a54c84b1d0223444df1d
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/scripts/run617_gist_native_replay.py v13/code/tests/test_run617_gist_native_replay.py > "$RUNNER_TEMP/RUN617_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN617_HOST.txt"
+      - name: Isolated pinned source-only dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run617venv"
+          "$RUNNER_TEMP/run617venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Retrieve original Run614 SHA-closed frozen native vectors, never re-infer
+        id: download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/run614"
+          timeout 180s gh run download 40407777217 --repo RedMentos/Aii --name V13-Run614-Independent-Native-Paraphrase-e253bb318737b3a8ead92f53a1044f0220f8281f --dir "$RUNNER_TEMP/run614" > "$RUNNER_TEMP/RUN617_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo 'cb535df87749c0cf5d698d26268e6b03f3d6f57690b95434aebc6c875a3ea189' " $RUNNER_TEMP/run614/RUN614_STATES.npz" | sha256sum -c - >> "$RUNNER_TEMP/RUN617_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN617_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Real original-native vector REPLAY through actual SQLite and operator
+        if: ${{ steps.download.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 "$RUNNER_TEMP/run617venv/bin/python" -m unittest -v tests.test_run617_gist_native_replay tests.test_gist_similarity_run616 > "$RUNNER_TEMP/RUN617_TESTS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            PYTHONPATH="$PWD" OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 "$RUNNER_TEMP/run617venv/bin/python" scripts/run617_gist_native_replay.py --cohort docs/proofs/continuation-20261026/run614-independent-native-paraphrase/RUN614_COHORT.json --native "$RUNNER_TEMP/run614" --out "$RUNNER_TEMP/RUN617_REPORT.json" > "$RUNNER_TEMP/RUN617_REPLAY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN617_TEST_EXIT.txt"
+          exit 0
+      - name: Public privacy scan with ancestry
+        run: |
+          set +e
+          git fetch --no-tags --depth=32 origin "$GITHUB_SHA" > "$RUNNER_TEMP/RUN617_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base 243acc770ee2a41c0157a1e7edf190398d90d135 --head "$GITHUB_SHA" >> "$RUNNER_TEMP/RUN617_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN617_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close original raw even on RED
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in DOWNLOAD TEST PRIVACY; do
+            test -f "RUN617_${k}_EXIT.txt" || echo 2 > "RUN617_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN617_*' ! -name 'RUN617_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN617_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run617-Recorded-Native-Replay-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN617_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact native replay, source tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in DOWNLOAD TEST PRIVACY; do
+            echo "RUN617 $k exit: $(cat "$RUNNER_TEMP/RUN617_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN617_${k}_EXIT.txt")" = 0
+          done
