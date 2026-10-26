@@ -12,7 +12,7 @@ def obsched_names():
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
 :befehle [Wort] (alle Befehle mit Erklärung) / :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
-:self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
+:self / :world / :native / :knobs / :language [status|en|de] (Modellantwort-Sprache; Standard Englisch, kein Lernen) / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
 :notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
@@ -342,6 +342,19 @@ class Operator:
         if cmd=='import' and len(args)==3 and args[0]=='causal-output':
             r.require_idle();r.enqueue('causal_import',{'dataset':args[1],'trained':args[2]})
             return 'Exact offline shadow verification queued; no automatic approval.'
+        if cmd=='language':
+            # Explicit operator-only prompt-language switch. This is not language learning.
+            # Serialize with turns so one answer never changes languages mid-generation.
+            if not args or args==['status']:
+                return dumps({'answer_language':r.cfg.get('answer_language','en'),
+                              'default':'en','scope':'model_prompts','training_effect':'none'})
+            if len(args)!=1 or args[0] not in {'en','de'}:
+                raise ValueError(':language [status|en|de]')
+            r.require_idle()
+            cfg=r.cfg|{'answer_language':args[0]}
+            save_config(r.home,cfg)
+            r.cfg.update(cfg)
+            return 'answer_language = '+args[0]+' (nur Modell-Prompts; kein Sprachtraining)'
         if cmd=='budget' and not args:return dumps({k:{'value':r.cfg[k],'unit':v[1],'range':[v[2],v[3]],'status':'BOOT_ESTIMATE'} for k,v in KNOBS.items()})
         if cmd=='rules' and not args:return dumps(s.rules())
         if cmd=='export' and args and args[0]=='chat':
