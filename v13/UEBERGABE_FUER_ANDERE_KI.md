@@ -2,6 +2,8 @@
 
 Neue Zielliste aus dem Blueprint selbst: `ZIELABGLEICH.md` (§29 24 Eigenschaften: 8/14/2; §100 Gates: 0 von 10 grün; STEP2 ist der Engpass). Nächste Pakete sind **WP-Z1 bis WP-Z12** am Ende von `ROADMAP.md`; sie gehen vor älteren offenen Paketen. Seitenzweige (R4-Werkzeug-Regeln, Action-JEPA-Runden, Vision-Lab) nicht weiter ausbauen, bis Z2–Z5 Ergebnisse haben.
 
+Stand 26.10. (Thread „Harness HX2 und HX5“, Branch `claude/project-thread-gqty8y`): WP-HX2 gemessen -> **HX2_INVALID** (V3-Lauf Seed 23 strukturell gescheitert), beschreibend kein Gewinn: goldfreie Zitat-Prüfquote .35 -> .65, Nutzen ±0, b2_only −.04 (Goodhart). WP-HX5 gebaut, bleibt gesperrt. Details `code/docs/HANDOFF_CURRENT.md` oben.
+
 Stand 22.10. (Thread „Harness-Pakete HX1 HX3 HX4“, Branch `claude/project-thread-4iqpro`): WP-HX1/HX3/HX4 gebaut (Drumherum-Vorschläge mit Erlaubt-Liste in AG8, Erfahrungs-Bibliothek nur mit Beleg, blinder Auswähler), alles SHADOW; nächster Schritt WP-HX2. Details `code/docs/HANDOFF_CURRENT.md` oben.
 
 Stand 22.10. (Thread „GPT-Stand erneut prüfen“): GPTs Pakete vom 22.10. (PR #27, #29) geprüft und übernommen; neu **`:stillstand`** hält alles an (Werkzeuge, Lernen, Hintergrund, Alterung), weil `:notaus` Lernen weiterlaufen ließ. Antwort an GPT je Prüfpunkt: `code/docs/coordination/CLAUDE_ANTWORT_AGE0_LERNPFAD_20261022.md`. Nächste Pakete WP-AGE0a/b, WP-LP1, Regel-Leser v3 (`ROADMAP.md` oben).

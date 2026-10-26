@@ -1,0 +1,403 @@
+{
+  "compose": {
+    "status": "CHOSEN",
+    "choice": "V3",
+    "gain": 0.30000000000000004,
+    "min_gain": 0.05,
+    "scores": {
+      "V1": 0.625,
+      "V2": 0.625,
+      "V3": 0.65
+    },
+    "reference_score": 0.35,
+    "class": {
+      "V1": "general",
+      "V2": "domain",
+      "V3": "general+domain"
+    }
+  },
+  "gate": {
+    "status": "HX2_INVALID",
+    "reason": "structural failure in a holdout run (PREREG rule 1)",
+    "failed_runs": [
+      {
+        "run": "V3_s23",
+        "rows_not_recorded": [
+          [
+            "Nimbus",
+            "b1_only",
+            "native prior preparation failed"
+          ],
+          [
+            "Nimbus",
+            "b2_only",
+            "native prior preparation failed"
+          ],
+          [
+            "Nimbus",
+            "both_none",
+            "native prior preparation failed"
+          ],
+          [
+            "Nimbus",
+            "both_exact",
+            "native prior preparation failed"
+          ],
+          [
+            "Nimbus",
+            "both_control",
+            "native prior preparation failed"
+          ],
+          [
+            "Nimbus",
+            "same_policy_dual",
+            "native prior preparation failed"
+          ],
+          [
+            "Nimbus",
+            "prompt_only_dual",
+            "native prior preparation failed"
+          ]
+        ],
+        "preparation_errors": [
+          {
+            "fixture": "Nimbus",
+            "error_type": "JSONDecodeError",
+            "error": "Expecting ':' delimiter: line 7 column 14 (char 359)"
+          }
+        ]
+      }
+    ],
+    "descriptive_complete_seeds": [
+      21,
+      22
+    ],
+    "descriptive_not_deciding": {
+      "revision": "hx2-probe-v1",
+      "status": "HX2_AXIS_WORSE",
+      "checks": {
+        "holdout_gain_ci_above_0": false,
+        "no_axis_worse": false,
+        "wrong_not_more": true,
+        "unguided_change_worse": true,
+        "unguided_alone_no_gain": true,
+        "structural": true
+      },
+      "axes": {
+        "both_exact": {
+          "chosen_minus_ref": {
+            "mean": 0.008333333333333337,
+            "ci95": [
+              -0.125,
+              0.15
+            ],
+            "tasks": 5
+          },
+          "unguided_minus_ref": {
+            "mean": -0.024999999999999988,
+            "ci95": [
+              -0.16666666666666666,
+              0.11666666666666667
+            ],
+            "tasks": 5
+          },
+          "chosen_minus_unguided": {
+            "mean": 0.033333333333333326,
+            "ci95": [
+              -0.09166666666666666,
+              0.1583333333333333
+            ],
+            "tasks": 5
+          }
+        },
+        "b2_only": {
+          "chosen_minus_ref": {
+            "mean": -0.041666666666666664,
+            "ci95": [
+              -0.1333333333333333,
+              0.03333333333333334
+            ],
+            "tasks": 5
+          },
+          "unguided_minus_ref": {
+            "mean": -0.008333333333333326,
+            "ci95": [
+              -0.11666666666666663,
+              0.08333333333333334
+            ],
+            "tasks": 5
+          },
+          "chosen_minus_unguided": {
+            "mean": -0.03333333333333333,
+            "ci95": [
+              -0.058333333333333334,
+              -0.008333333333333333
+            ],
+            "tasks": 5
+          }
+        },
+        "b1_only": {
+          "chosen_minus_ref": {
+            "mean": 0.008333333333333337,
+            "ci95": [
+              0.0,
+              0.025000000000000012
+            ],
+            "tasks": 5
+          },
+          "unguided_minus_ref": {
+            "mean": 0.008333333333333337,
+            "ci95": [
+              0.0,
+              0.025000000000000012
+            ],
+            "tasks": 5
+          },
+          "chosen_minus_unguided": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "tasks": 5
+          }
+        },
+        "b2_rule_rate": {
+          "chosen_minus_ref": {
+            "mean": 0.0,
+            "ci95": [
+              -0.28125,
+              0.34375
+            ],
+            "tasks": 4
+          },
+          "unguided_minus_ref": {
+            "mean": 0.09375,
+            "ci95": [
+              0.0,
+              0.1875
+            ],
+            "tasks": 4
+          },
+          "chosen_minus_unguided": {
+            "mean": -0.09375,
+            "ci95": [
+              -0.5,
+              0.34375
+            ],
+            "tasks": 4
+          }
+        }
+      },
+      "worse_axes": [
+        "b2_only"
+      ],
+      "wrong": {
+        "ref": 0,
+        "chosen": 0,
+        "unguided": 0
+      },
+      "primary": "both_exact",
+      "tolerance": 0.02,
+      "secondary_all_episodes_fresh_seeds": {
+        "revision": "hx2-probe-v1",
+        "status": "HX2_AXIS_WORSE",
+        "checks": {
+          "holdout_gain_ci_above_0": false,
+          "no_axis_worse": false,
+          "wrong_not_more": true,
+          "unguided_change_worse": false,
+          "unguided_alone_no_gain": true,
+          "structural": true
+        },
+        "axes": {
+          "both_exact": {
+            "chosen_minus_ref": {
+              "mean": 0.012500000000000006,
+              "ci95": [
+                -0.054166666666666655,
+                0.07916666666666668
+              ],
+              "tasks": 10
+            },
+            "unguided_minus_ref": {
+              "mean": 0.012500000000000006,
+              "ci95": [
+                -0.07499999999999998,
+                0.09166666666666667
+              ],
+              "tasks": 10
+            },
+            "chosen_minus_unguided": {
+              "mean": 0.0,
+              "ci95": [
+                -0.07916666666666665,
+                0.07499999999999998
+              ],
+              "tasks": 10
+            }
+          },
+          "b2_only": {
+            "chosen_minus_ref": {
+              "mean": -0.033333333333333326,
+              "ci95": [
+                -0.0875,
+                0.012500000000000002
+              ],
+              "tasks": 10
+            },
+            "unguided_minus_ref": {
+              "mean": 0.008333333333333335,
+              "ci95": [
+                -0.05833333333333333,
+                0.075
+              ],
+              "tasks": 10
+            },
+            "chosen_minus_unguided": {
+              "mean": -0.041666666666666664,
+              "ci95": [
+                -0.0875,
+                -0.004166666666666667
+              ],
+              "tasks": 10
+            }
+          },
+          "b1_only": {
+            "chosen_minus_ref": {
+              "mean": 0.0,
+              "ci95": [
+                -0.012500000000000006,
+                0.012500000000000006
+              ],
+              "tasks": 10
+            },
+            "unguided_minus_ref": {
+              "mean": 0.0,
+              "ci95": [
+                -0.012500000000000006,
+                0.012500000000000006
+              ],
+              "tasks": 10
+            },
+            "chosen_minus_unguided": {
+              "mean": 0.0,
+              "ci95": [
+                0.0,
+                0.0
+              ],
+              "tasks": 10
+            }
+          },
+          "b2_rule_rate": {
+            "chosen_minus_ref": {
+              "mean": 0.0,
+              "ci95": [
+                -0.140625,
+                0.171875
+              ],
+              "tasks": 8
+            },
+            "unguided_minus_ref": {
+              "mean": 0.15625,
+              "ci95": [
+                0.046875,
+                0.28125
+              ],
+              "tasks": 8
+            },
+            "chosen_minus_unguided": {
+              "mean": -0.15625,
+              "ci95": [
+                -0.359375,
+                0.078125
+              ],
+              "tasks": 8
+            }
+          }
+        },
+        "worse_axes": [
+          "b2_only"
+        ],
+        "wrong": {
+          "ref": 0,
+          "chosen": 0,
+          "unguided": 0
+        },
+        "primary": "both_exact",
+        "tolerance": 0.02
+      },
+      "b2_prompt_tokens_mean": {
+        "ref": 613.1,
+        "chosen": 680.1,
+        "unguided": 638.8
+      },
+      "choice": "V3",
+      "canonical_gate_pass": false
+    },
+    "canonical_gate_pass": false,
+    "choice": "V3"
+  },
+  "chosen_diff": {
+    "prompt.b2_earlier_context": " Earlier context separates exact source excerpts from fallible prior hypotheses. Use relevant earlier source excerpts when current text leaves a rule unstated; prefer an explicit current-source revision when the same rule changes. Never treat a prior hypothesis as a fact. Select short exact quotes carrying the source rules needed by your summary; only your verified quotes, not the full earlier context, are passed to the answer component. If required evidence is absent, state that uncertainty and request re-entry rather than inventing it. Quotes may cite only current source text or an exact earlier source excerpt, never own-state or hypotheses. Copy every quote character for character from one source sentence: same words, capitals and punctuation; never shorten, join or reword it. When the current text does not restate a project rule such as budget, deadline or a local-only requirement, quote the whole earlier source sentence that states it, word for word."
+  },
+  "hx5_candidates": {
+    "records": 80,
+    "accepted": 5,
+    "locked": true
+  },
+  "runs": {
+    "REF_s20": {
+      "tool": {
+        "b1_only": 0.5916666666666667,
+        "b2_only": 0.24166666666666664,
+        "both_control": 0.675,
+        "both_exact": 0.6166666666666667,
+        "both_none": 0.5916666666666667,
+        "prompt_only_dual": 0.5416666666666667,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "probe_score": 0.35,
+      "wrong": 0
+    },
+    "V1_s20": {
+      "tool": {
+        "b1_only": 0.5916666666666667,
+        "b2_only": 0.19166666666666665,
+        "both_control": 0.6333333333333333,
+        "both_exact": 0.6333333333333333,
+        "both_none": 0.5916666666666667,
+        "prompt_only_dual": 0.5416666666666667,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "probe_score": 0.625,
+      "wrong": 0
+    },
+    "V2_s20": {
+      "tool": {
+        "b1_only": 0.5916666666666667,
+        "b2_only": 0.16666666666666669,
+        "both_control": 0.5833333333333333,
+        "both_exact": 0.5833333333333333,
+        "both_none": 0.6,
+        "prompt_only_dual": 0.5166666666666667,
+        "same_policy_dual": 0.5666666666666667
+      },
+      "probe_score": 0.625,
+      "wrong": 0
+    },
+    "V3_s20": {
+      "tool": {
+        "b1_only": 0.5916666666666667,
+        "b2_only": 0.15833333333333333,
+        "both_control": 0.55,
+        "both_exact": 0.5916666666666667,
+        "both_none": 0.5916666666666667,
+        "prompt_only_dual": 0.5083333333333333,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "probe_score": 0.65,
+      "wrong": 0
+    }
+  }
+}
