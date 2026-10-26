@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN437_NATIVE_P21_PREEXEC_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run437-native-p21-cli-fixed-20261026",
+  "base": "7916b29f7f3904689fd2d484f397bd3db1b00a27",
+  "workflow_source_commit": "b6dcfcdc42cc14b55eb273fa7669871fc712d642",
+  "previous_failed_native": [
+    {"run": 40265963506, "artifact_id": 12625924197, "sha256": "6c091ec50c58174747fc7c055f9ecf8e189e2d3e580d872dc6e118cbf13670ef", "native_inference": false},
+    {"run": 40266123125, "artifact_id": 12625929445, "sha256": "1961db8b76c8a5638d62f270e1d5cad9ae3eb797a9cacb72df45b20e6af75241", "native_inference": false}
+  ],
+  "source_red": {"run": 40266144461, "tests": "51, one expected CLI failure", "artifact_id": 12626855087},
+  "source_green": {
+    "run": 40266234440,
+    "tests": "51/51 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12626885161,
+    "artifact_sha256": "5c1c0c73d4cb9adb89ffbb4e43baac0475f385d3060f7d099cef17a3bf83928e",
+    "run434_source_sha256": "84f169825f887a678e5441c4c22e272c5d3768832967ea1da9fbe20fd1bfbb6d"
+  },
+  "actual_168_predecessor": {
+    "native_run": 40263042202,
+    "independent_postflight_run": 40265361929,
+    "raw_artifact_id": 12626041558,
+    "raw_sha256": "3f7b66330778bd2129673c74d2917dcfe9b6ef8e2281df7f8557fd5c89bcecf5",
+    "safe_artifact_id": 12626146409,
+    "safe_sha256": "405e62268b0314c6e852e367a4624a12508e971877afe14afebf05cb2afba6b7"
+  },
+  "execution": {
+    "native_job": "one exclusive P_s21",
+    "max_new_arms": 1,
+    "expected_total_rows": 210,
+    "serial_group": "v13-native-c3-run131-serialized",
+    "cancel_in_progress": false,
+    "native_source_pin": "unchanged Run394/397/model/runner",
+    "pre_model_cli_smoke": "run434 --help must expose --stage4-report",
+    "failed_attempt_retention": "small raw + independently verified no-model safe archive on RED",
+    "no_auto_retry": true
+  },
+  "do_not_push_after_pr_open": true,
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Open draft PR once, observe exact Run437 Actions ID. Do not commit to this branch again. After completion, record actual status in PR body or independent evidence branch. If native GREEN, use Run436 verifier on exact observed no-model artifacts before any S_s21."
+}
