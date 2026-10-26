@@ -9,8 +9,8 @@
   "changed_test_blob": "24cd16a52dbce9329339f34c8037a1bf3e845c4a",
   "workflow_blob": "a50f094965cc701785f10a3247a5d1d13edf6119",
   "code_status": "REMOTE_READBACK_VERIFIED",
-  "test_status": "PENDING_REAL_SQLITE_CI",
-  "evidence_level": "LOCAL_PURE_NUMERICAL_COUNTEREXAMPLE_ONLY",
+  "test_status": "LOCAL_LINUX_SQLITE_26_OF_26_PASS_AND_OBSERVED_PRE_FIX_NEAR_TIE_RED",
+  "evidence_level": "LOCAL_LINUX_PYTHON_SQLITE_RUNTIME_RUN601_BASE_WITH_SOURCE_IDENTICAL_RUN616_RUN618_RUN619_OVERLAYS",
   "model_inference_new": false,
   "training_new": false,
   "redmi_measured": false,
@@ -27,10 +27,28 @@
   "open_questions": [
     "Does Run619 Actions CI execute and reproduce the precision regression?",
     "Does Run618 native cohort produce any six-decimal display-score ties?",
-    "Are native Run618 full-score and SQLite top-five orders identical on its frozen head?"
+    "Are native Run618 full-score and SQLite top-five orders identical on its frozen head?",
+    "Full exact-current-head GitHub Actions CI status still unverified; local Runtime used Run601 base with source-identical Run616/618/619 overlays."
   ],
   "next_command": "Inspect GitHub Actions for Run619 exact branch HEAD, validate test/privacy exits and SHA256 artifact, then update proof and proceed to next canonical functional package",
   "active_heavy_job_owner": "Run618 PR613; Run619 source-only CI does not launch model inference",
   "remote_backup": "GitHub review branch; no private data",
-  "main_integrated": false
+  "main_integrated": false,
+  "private_backup": {
+    "library_path": "/V13-Checkpoints/2026-10-26/Run619/run619-local-closed.zip",
+    "sha256": "68c38fbd5785810096fd417c47bd96a394313b02bd56e64e54ea6a4cd0d7d318",
+    "roundtrip": "BYTE_MATCH"
+  },
+  "test_evidence": {
+    "baseline_exit": 1,
+    "baseline_expected_failure": "test_near_equal_display_cosines_rank_by_full_precision",
+    "patched_exit": 0,
+    "patched_tests": 21,
+    "run618_synthetic_exit": 0,
+    "run618_tests": 5,
+    "combined_exit": 0,
+    "combined_tests": 26,
+    "combined_log_sha256": "d19a913b3944c7b0502324dd4f50baa16e7460cdc2672efeb13d7cf6fb39cd57"
+  },
+  "ci_status": "GITHUB_PUSH_WORKFLOW_RUN_UNVERIFIED"
 }
