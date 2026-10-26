@@ -1,0 +1,47 @@
+{
+  "schema": "V13_RUN485_HX2_COHORT_INTEGRITY_REVIEW_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run485-hx2-probe-cohort-integrity-20261026",
+  "base_ref": "claude/project-thread-gqty8y",
+  "base_sha": "7585dd34ba82871a9842a557b505a08be887ce4a",
+  "owner": "Independent HX2 harness-probe source review; no model/native ownership and no frozen Cognition edit",
+  "confirmed_counterexamples": [
+    "Original compose({'V1':NaN},0.5) returned CHOSEN because NaN < min_gain is false.",
+    "Original paired() silently intersected task keys and zipped unequal seed lists; missing holdout rows could be discarded from a nominal holdout gain."
+  ],
+  "changes": [
+    "Reject nonfinite, bool and out-of-range gold-free probe scores, reference and threshold with INVALID_PROBE.",
+    "Require identical task keys and nonempty equal-length finite seed rows across reference, chosen and unguided arms for every axis; no silent paired truncation.",
+    "Reject malformed wrong-commit counts and invalid structural/tolerance metadata with HX2_INVALID.",
+    "Preserve preregistered HX2_INVALID result and leave HX5 locked; no retrospective reseeding or native remeasurement."
+  ],
+  "source_blobs": {
+    "v13/code/v13/agi/harness.py": "dc55d65b53a3cd01743f405fe3f7f1a7c7b34eba",
+    "v13/code/v13/agi/harness_data.py": "fd06afa57dff9b0e19bf027571400a705a53a657",
+    "v13/code/v13/agi/harness_probe.py": "fdc10c6f9bcb9051de59a244fff7f6aec93f3aec",
+    "v13/code/tests/test_run485_hx2_cohort_integrity.py": "b435a017fdd011807fd573740c869dd7494c2d93"
+  },
+  "tests": {
+    "original_predicate_counterexamples": "NaN CHOSEN and missing task intersection reproduced in isolated Python",
+    "github_ci": "PENDING 8 new and inherited HX2/HX1 source tests, official privacy scan",
+    "full_repo_suite": "NOT RUN; existing Run455 full checkout RED, no full-suite claim"
+  },
+  "negative_gates": {
+    "hx2": "HX2_INVALID",
+    "hx5_export": "LOCKED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Task/seed identity still relies on externally authenticated preregistration; matching array shapes alone cannot prove real paired model runs.",
+    "Cross-axis fixture sets can differ in historical test fixtures; a strict full registered matrix gate requires explicit expected task IDs before future native evaluation.",
+    "Run484 independently fixes HX5 retention; integrate the two Claude review PRs without overwriting either branch."
+  ],
+  "exact_next_command": "Open draft PR against Claude HX2 branch; inspect CI raw tests and privacy, then cross-review integration. Continue native378 utility after Run479 completes."
+}
