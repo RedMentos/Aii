@@ -1,0 +1,70 @@
+{
+  "schema": "V13_RUN519_B2_P01_NATIVE_PREREG_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run519-b2-native-p01-20261026",
+  "base_branch": "codex/run518-b2-native12-postflight-repair-20261026",
+  "base_sha": "b8662fd3455c2b91726c41d2bac63561bc2b3482",
+  "prereg_blob_sha": "150b4871d39ffeff0e5ce7e742212028b4990cbe",
+  "cohort": {
+    "frozen_run509_fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726",
+    "pair_index": 1,
+    "stage": "p01",
+    "fixtures": [
+      "Cobalt",
+      "Dahlia"
+    ],
+    "seeds": [
+      41,
+      42,
+      43
+    ],
+    "arms": [
+      "BASE",
+      "RULE_FOCUS"
+    ],
+    "observations": 12
+  },
+  "source_blobs": {
+    "collector": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
+    "repaired_postflight": "da8461f49b83e1103ca04d38573bef8d188cfae4",
+    "postflight_tests": "09f07e15a5d23f58086a92780e8cd8c413a5e4cc",
+    "run518_adversarial_tests": "42899952c2df238b4b32acb8d95facee4efa1ce1",
+    "run509": "ec8860d2333bd3c4a16caccb9537073a310f32da",
+    "run510": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6",
+    "models": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "heavy_owner": {
+    "stage": "p01",
+    "run519_workflow": "NOT_CREATED_YET",
+    "preflight_in_progress": 0,
+    "preflight_queued": 0,
+    "shared_concurrency": "v13-native-c3-run131-serialized"
+  },
+  "prior_stage": {
+    "original_run515_actions": 40313344309,
+    "original_conclusion": "FAILURE",
+    "native_exit": 0,
+    "original_postflight_exit": 1,
+    "run518_replay_actions": 40314742064,
+    "replay_conclusion": "SUCCESS_READ_ONLY",
+    "no_native_rerun": true
+  },
+  "evidence": "PREREG_PERSISTED_SOURCE_ONLY_NO_NATIVE_P01",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "p01 native source/quote receipt and independent postflight not yet executed",
+    "p02-p04 36 additional frozen offers not yet executed",
+    "full Run510 60-row threshold unmeasured",
+    "Redmi real target-runner and learning/JEPA gates open"
+  ],
+  "next_command": "Create SHA-pinned one-shot Run519 p01 workflow on this branch, open PR exactly once, verify Actions and download/hash-audit raw/safe evidence; never auto-rerun a RED stage.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
