@@ -55,8 +55,8 @@ jobs:
         run: |
           set -uo pipefail
           set +e
-          python3 -m venv "$RUNNER_TEMP/run551venv"
-          timeout 240s "$RUNNER_TEMP/run551venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN552_DEPS_RAW.log" 2>&1
+          python3 -m venv "$RUNNER_TEMP/run552venv"
+          timeout 240s "$RUNNER_TEMP/run552venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN552_DEPS_RAW.log" 2>&1
           rc=$?
           echo "$rc" > "$RUNNER_TEMP/RUN552_DEPS_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
@@ -69,10 +69,10 @@ jobs:
           set -uo pipefail
           set +e
           export PYTHONPATH="$PWD"
-          "$RUNNER_TEMP/run551venv/bin/python" -m compileall -q v13/agi/live.py v13/agi/maturity.py tests/test_agi_live.py tests/test_world_model.py tests/test_run552_jef_goal_final_receipt.py
+          "$RUNNER_TEMP/run552venv/bin/python" -m compileall -q v13/agi/live.py v13/agi/maturity.py tests/test_agi_live.py tests/test_world_model.py tests/test_run552_jef_goal_final_receipt.py
           rc=$?
           if [ "$rc" -eq 0 ]; then
-            timeout 420s "$RUNNER_TEMP/run551venv/bin/python" -m unittest -v tests.test_run552_jef_goal_final_receipt tests.test_world_model tests.test_run551_rating_revision_calibration tests.test_run549_quality_fact_partition tests.test_agi_live tests.test_growth tests.test_run546_metacog_labels tests.test_age_rights > "$RUNNER_TEMP/RUN552_TESTS_RAW.log" 2>&1
+            timeout 420s "$RUNNER_TEMP/run552venv/bin/python" -m unittest -v tests.test_run552_jef_goal_final_receipt tests.test_world_model tests.test_run551_rating_revision_calibration tests.test_run549_quality_fact_partition tests.test_agi_live tests.test_growth tests.test_run546_metacog_labels tests.test_age_rights > "$RUNNER_TEMP/RUN552_TESTS_RAW.log" 2>&1
             rc=$?
           fi
           echo "$rc" > "$RUNNER_TEMP/RUN552_TEST_EXIT.txt"
@@ -102,7 +102,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: run551-jef-evidence-${{ github.event.pull_request.head.sha }}
+          name: run552-jef-goal-receipt-${{ github.event.pull_request.head.sha }}
           path: ${{ runner.temp }}/RUN552_*
           if-no-files-found: error
           retention-days: 30
