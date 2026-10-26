@@ -1,0 +1,55 @@
+{
+  "schema": "V13_RUN482_REVISION_SCOPED_B2_QUOTES_SHADOW_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run482-revision-scoped-b2-quotes-20261026",
+  "base_ref": "codex/run481-b2-ranked-quotes-shadow-20261026",
+  "base_sha": "be3a582ecb985f5391c3ebe430018b6c8abf2564",
+  "owner": "Run482 source-only revision guard; separate from Run479 exclusive native Stage9 and Run481 original source",
+  "intent": "Prevent Run481 goal-ranked lexical quote choices from silently selecting historical document versions when the caller supplies authenticated current SHA256 pins.",
+  "implementation": [
+    "Only externally pinned current document bytes are passed to the inherited lexical ranker; historical revisions cannot become returned pointers.",
+    "Validate exact record schema, content SHA256, document/revision uniqueness, active head completeness, bounded source/query sizes and pointer geometry.",
+    "Return exact character spans and original source indices with revision/digest provenance; abstain on absent lexical evidence; never establish trust or authority."
+  ],
+  "source_blobs": {
+    "v13/code/scripts/run481_ranked_quote_choices_candidate.py": "23835db103339eabdb46907aa6e7a85dffba5193",
+    "v13/code/v13/cognition.py": "1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf",
+    "v13/code/scripts/run482_revision_scoped_quote_candidate.py": "28a4092e180a6e63a10a47457a4db3a4e25a0e3c",
+    "v13/code/tests/test_run482_revision_scoped_quote_candidate.py": "2039757676282ce9ceee2512f1360d60f9c2bf3b",
+    ".github/workflows/run482-revision-scoped-quotes.yml": "bfd27c12185734178dbcbd50db8f7ef2606852af"
+  },
+  "tests": {
+    "local_standalone_boundary": "7/7 PASS, Python unittest; no model and no full V13 checkout",
+    "local_raw_log_sha256": "6a18b414ad5b6c5cb7f3e7d334d322e8209c8d649d243ab8cb1351df13052bce",
+    "github_ci": "SOURCE_CI_GREEN 27/27 PASS, privacy CLEAN; focused source-bound CI 401/401 + 115/115 PASS, privacy CLEAN; no native/model or Redmi",
+    "evidence_class": "software/synthetic only; no native, Redmi, learned utility, or production integration",
+    "github_source_run_id": 40283477101,
+    "github_source_job_id": 121441706099,
+    "github_raw_artifact_id": 12632578823,
+    "github_raw_zip_sha256": "7fa74901bca511f45a1ed3596f407103e0644a6e99f522be5234b33fdce48455",
+    "github_focused_run_id": 40283477071,
+    "github_focused_job_id": 121441705986,
+    "github_focused_artifact_id": 12632793722,
+    "github_focused_zip_sha256": "c05ba29531a1fb8b3dcac9cf8b76150aa50c8fb35799fe09c24f6d55e2d09c7d",
+    "tested_source_head": "55ac35541c570767af446e7b9f515dff88fcbad4"
+  },
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "canonical_gate_pass": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Current SHA256 pins must be authenticated by the caller against trusted immutable provenance; self-consistent caller-supplied pins alone cannot establish authority.",
+    "Conflicting statements within one current document remain unresolved; no inference of temporal precedence from text or revision integer.",
+    "No causal improvement or native utility evidence. New source-disjoint preregistration and independent review required before considering any production integration.",
+    "Run479 Stage9 native job remains independently owned; do not start a competing heavy job.",
+    "Private Library upload from this container failed with container_session_unavailable; GitHub remote branch is the durable source checkpoint, not a private raw-log backup."
+  ],
+  "next_command": "Verify post-checkpoint CI and remote head; independent review PR #479 and the current SHA-pin trust boundary. No production integration until a new preregistered native utility cohort. Check Run479 Stage9 without starting competing native work."
+}
