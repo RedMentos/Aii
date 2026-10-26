@@ -1,0 +1,132 @@
+name: V13 Run599 exact-current phone source ZIP and extracted smoke
+on:
+  push:
+    branches:
+      - codex/automation11-run599-current-phone-source-zip-20261026
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run599-current-phone-source-zip.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run599-current-phone-source-zip/**'
+permissions:
+  contents: read
+jobs:
+  immutable-phone-source:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run599-current-phone-source-zip-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact packaging tools, prereg, Canon and current source hashes
+        id: pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/PHONE_ZIP_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run599-current-phone-source-zip/PREREG.md)" = a503d061aecdf7f3055791af2ecc1e966f9a6f11
+          test "$(git hash-object v13/code/scripts/package_source.py)" = 06167e0bcb82b36cb08841cd31b9618c4ba0926e
+          test "$(git hash-object v13/code/scripts/verify_phone_zip_current_run268.py)" = 880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/backup.py v13/code/v13/chat_export.py v13/code/v13/context_os.py v13/code/v13/callosum.py v13/code/v13/operator.py > "$RUNNER_TEMP/PHONE_ZIP_CURRENT_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/PHONE_ZIP_HOST.txt"
+      - name: Build immutable source-only phone ZIP
+        id: pack
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/package_source.py --root v13/code --out "$RUNNER_TEMP/V13-Phone-current-Run599.zip" --phone-install > "$RUNNER_TEMP/PHONE_ZIP_PACK_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/PHONE_ZIP_PACK_EXIT.txt"
+          exit 0
+      - name: Independent complete ZIP member and source parity verification
+        id: verify
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/PHONE_ZIP_PACK_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-current-Run599.zip" --root v13/code --out "$RUNNER_TEMP/PHONE_ZIP_VERIFY.json" > "$RUNNER_TEMP/PHONE_ZIP_VERIFY_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=1
+          fi
+          if [ "$rc" = 0 ]; then
+            python3 - <<'PY' >> "$RUNNER_TEMP/PHONE_ZIP_VERIFY_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'PHONE_ZIP_VERIFY.json').read_text())
+          assert d['evidence_scope']=='LINUX_SOFTWARE_SOURCE_PACKAGE_INTEGRITY'
+          assert d['native_model_inference'] is False and d['redmi_measured'] is False
+          assert 'canonical_gate_pass' not in d or d['canonical_gate_pass'] is False
+          assert d['gates']['STEP2']=='UTILITY_FAIL' and d['gates']['B3_L1']=='FAIL'
+          assert d['gates']['Body_JEPA']=='UNAVAILABLE' and d['gates']['jepa_weight']==0
+          print('PHONE_SOURCE_BYTES_AND_NEGATIVE_GATES_INDEPENDENTLY_VERIFIED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/PHONE_ZIP_VERIFY_EXIT.txt"
+          exit 0
+      - name: Portable source packaging tests and extracted phone smoke
+        id: smoke
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m pip install --disable-pip-version-check 'numpy==2.2.6' 'prompt_toolkit==3.0.52' > "$RUNNER_TEMP/PHONE_ZIP_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            (cd v13/code && python3 -m unittest discover -s tests -p test_package_source.py -v && python3 -m unittest discover -s tests -p test_phone_zip_current_run268.py -v) > "$RUNNER_TEMP/PHONE_ZIP_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            mkdir -p "$RUNNER_TEMP/phone-extracted"
+            unzip -q "$RUNNER_TEMP/V13-Phone-current-Run599.zip" -d "$RUNNER_TEMP/phone-extracted" >> "$RUNNER_TEMP/PHONE_ZIP_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            (cd "$RUNNER_TEMP/phone-extracted/V13-Phone" && PYTHONPATH=. python3 -m unittest discover -s tests -p test_phone_chat_sessions_run89.py -v && PYTHONPATH=. python3 -m unittest discover -s tests -p test_run598_backup_noclobber.py -v) >> "$RUNNER_TEMP/PHONE_ZIP_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/PHONE_ZIP_TESTS_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "59c2fcede122a8a77e0a96211ad7afec32f49816" --head HEAD --no-worktree > "$RUNNER_TEMP/PHONE_ZIP_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/PHONE_ZIP_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw evidence and ZIP SHA even RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'PHONE_ZIP_*' ! -name PHONE_ZIP_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > PHONE_ZIP_SHA256SUMS.txt
+          if [ -f V13-Phone-current-Run599.zip ]; then sha256sum V13-Phone-current-Run599.zip >> PHONE_ZIP_SHA256SUMS.txt; fi
+      - name: Upload source ZIP and original raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-phone-current-run599-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/V13-Phone-current-Run599.zip
+            ${{ runner.temp }}/PHONE_ZIP_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact source package and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.pins.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/PHONE_ZIP_PACK_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/PHONE_ZIP_VERIFY_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/PHONE_ZIP_TESTS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/PHONE_ZIP_PRIVACY_EXIT.txt")" = 0
