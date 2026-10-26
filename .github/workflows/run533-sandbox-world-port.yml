@@ -1,0 +1,96 @@
+name: V13 Run533 bounded F3 F4 sandbox observation port
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run533-sandbox-world-port.yml'
+      - 'v13/code/v13/agi/file_world_port.py'
+      - 'v13/code/tests/test_run533_sandbox_world_port.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run533-sandbox-world-port/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run533-sandbox-world-port-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact prereg and F3 F4 source identity
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run533-sandbox-world-port/PREREG.md)" = '67cea265943bd6b13dca32c67fc97de3d2cf3f37'
+          test "$(git hash-object v13/code/v13/agi/file_world_port.py)" = '713d66efac249649adeaeb32ae7efb690fab72f4'
+          test "$(git hash-object v13/code/tests/test_run533_sandbox_world_port.py)" = '1642071c24d69969e50dbf0aabdf9b6848221a96'
+          test "$(git hash-object v13/code/v13/selfmodel.py)" = 'aab1d1905c98ce1d276e5136975a97f62e8e21dc'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN533_HOST.txt"
+      - name: Isolated no-model source dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run533venv"
+          timeout 240s "$RUNNER_TEMP/run533venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN533_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN533_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Real temp-file and F3 F4 regression tests
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run533venv/bin/python" -m unittest -v tests.test_run533_sandbox_world_port tests.test_selfmodel tests.test_z12a_self_world > "$RUNNER_TEMP/RUN533_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN533_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public diff privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN533_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN533_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN533_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN533_*' ! -name RUN533_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN533_SHA256SUMS.txt
+      - name: Preserve all raw outcomes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run533-sandbox-world-port-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN533_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source tests privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN533_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN533_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN533_PRIVACY_EXIT.txt")" = 0
