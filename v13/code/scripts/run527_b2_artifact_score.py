@@ -119,7 +119,7 @@ def validate_safe_stage(path, index):
         data = path.read_bytes()
         require(sha(data) == metadata["sha256"], "SAFE_MEMBER_HASH_MISMATCH")
         if name.endswith(".jsonl"):
-            require(data.endswith(b"\\n") and bool(data),
+            require(data.endswith(b"\n") and bool(data),
                     "SAFE_INCOMPLETE_JSONL")
             for line in data.splitlines():
                 require(bool(line), "SAFE_BLANK_JSONL")
