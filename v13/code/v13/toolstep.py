@@ -141,7 +141,9 @@ class ToolStep:
         if not eligibility.question(text) or 'eligibility' not in self._registry().box.load()[0]['enabled']:return None  # C3 read costs a model call: only after the user enabled the tool
         from .prohibitions import verdict
         if verdict(self.r.store,self._registry().tools['eligibility'])['blocked']:return None  # prohibited / Notaus: no read either
-        hist,quotes=self.earlier_parts(e,offers,version);earlier=hist+quotes
+        hist,quotes=self.earlier_parts(e,offers,version)
+        hist,quotes=eligibility.scope_earlier(text,hist,quotes)  # Run576: never import another project's exact rules
+        earlier=hist+quotes
         try:
             mode=self.r.cfg.get('eligibility_reader','model')
             if mode=='fixed_strict':values=eligibility.fixed_read(text,hist,quotes)  # 2026-10-21 reader: no language model at all (thread „Zitierhilfe an“)
