@@ -37,7 +37,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :consolidate semantic|procedural / :consolidate status / :consolidate rollback <ID>
 :route auto|simple|detail|gist|both / :observers background|off|A_THEN_B_SEQUENTIAL|B_THEN_A_SEQUENTIAL|ALWAYS_BOTH_ASYNC|JEF_FIRST_THEN_BOTH|SAMPLED_OBSERVER|ON_DEMAND_REENTRY
 :decode [server|same_causal_zero|same_causal] / :sampling [anti_echo|legacy] / :semantic [status|off|shadow|on|auto] / :episodes [status|list|cut|graph <id>|relation <a> <b>|forgetting] / :live / :register [summary|drift|paths|declared|<Präfix>] / :gates [summary|all|<Gate>] / :drift [status|probes|freeze <Set>|refreeze <Set> <Grund>|sdft] / :admission [status|train|active|shadow|table] / :duplex [status|auto|interrupt|off] / :fabric [report|record] / :image [status|add <Pfad>|list|describe [id] [g|rIJ|hl|hr|ht|hb]|train|look [id]|locate <id> <Text>|forget <id>] / :collapse [all]
-:effort [disabled|low|adaptive|high|max] (Reasoning-Effort/Body-Wake; ohne Wert: Status)
+:effort [disabled|low|adaptive|high|max|detail|gist] (Reasoning-Effort/Body-Wake; detail/gist = nur dieser eine Körper; ohne Wert: Status)
 :focal (JEF-Fokusschleife: Workspace-Slots, letzte Runden, Inquisition P1/P2, C5-Auswahl)
 :import causal-output <dataset.json> <offline-trained-directory>
 :channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC
@@ -275,7 +275,7 @@ class Operator:
         if cmd=='effort':
             from . import effort
             if not args:return dumps(effort.summary(s))
-            if len(args)!=1:raise ValueError(':effort [disabled|low|adaptive|high|max]')
+            if len(args)!=1:raise ValueError(':effort [disabled|low|adaptive|high|max|detail|gist]')
             return 'reasoning_effort = '+effort.set_mode(s,args[0])+' (Deadline, Ressourcen, Observer-Schalter und Age bleiben bindend)'
         if cmd=='fabric':  # WP-T14 thin-control-fabric budget (§22.2.3)
             from .control_budget import operator_command

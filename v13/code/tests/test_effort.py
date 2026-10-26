@@ -62,6 +62,14 @@ class EffortPolicy(unittest.TestCase):
         self.assertEqual(plans['high']['effort'],.7);self.assertFalse(plans['high']['learned_wake_allowed'])
         with self.assertRaises(ValueError):effort.decide('turbo',s)
 
+    def test_one_body_modes_force_that_body_and_limits_still_bind(self):  # WP-Z6e §24.22 A only / B only
+        for m in ('detail','gist'):
+            for text,route in (('Hallo','simple'),('Vergleiche A und B','both')):
+                p=effort.decide(m,sig(text,route),cfg=CFG)
+                self.assertEqual((p['wake'],p['max_reentry'],p['learned_wake_allowed']),(m,0,False))
+            p=effort.decide(m,sig('Hallo','simple'),cfg=CFG,observers=False)
+            self.assertEqual(p['wake'],'none');self.assertIn('OBSERVERS_OFF',p['constraints'])
+
     def test_hard_limits_bind_user_override(self):
         s=sig('Vergleiche A und B','both')
         for limits,reason in (({'direct':True},'EXACT_OR_FIXED_OUTPUT'),({'observers':False},'OBSERVERS_OFF'),
