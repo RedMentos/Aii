@@ -1379,6 +1379,7 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
   - Handy-Test, ob das Nachfragen stört.
 ### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — OFFEN
 - 24.22 Wake (R4 im Blueprint-Sinn; Ergebnisse der R4-Werkzeug-Teile hier einbringen), 24.23 Effort (R5), 24.17 Deliberation, 24.25 Observer-Nutzen, 24.26 Broadcast-Brücke, 24.32 Lebenszyklus Scaffold→gelernte Route je Fähigkeit. Typisierte Modulatoren (G-MODULATOR-SPECIFICITY-001) mit echten Modellen.
+- **§24.25 Observer-Nutzen MEASURED 2026-10-26** (Thread dq33gk, `code/docs/proofs/continuation-20261026/z6-observer-utility/`): Urteil nach Regel `ADAPTIVE_PREFERRED`, aber kein Beobachter-Arm schlägt „keiner“ (none 48/75, A 42, B 35, AB 40, adaptive 36; B und adaptive signifikant schlechter). Beobachter erkennen Konflikte/Korrekturen fast immer (B 45/45, Korrektur 15/15), C3 übernimmt sie nicht. Always-Pass (+9,9 s) nicht gerechtfertigt. Nächstes: Beobachter nur bei Bedarf + feste Übernahme (neu vorregistrieren). Danach §24.26 Broadcast-Brücke.
 
 ### WP-Z7 Ein Redmi-Paket für alle Handy-Pflichtmessungen (Nutzer, WP-R) — OFFEN
 - Ein Befehl wie `WERKZEUG_TESTEN.sh`: TRAIN_RUNNER_PROOF (G-TRAIN-RUNNER-PROOF-001), Langlauf (G-MOBILE-LONGRUN-001), §24.14 Overhead, §24.33 Residenz, Proceduralisierung Latenz/Energie, Werkzeug-Vorhersage. Ergebnis-ZIP hochladen. Bau in der Cloud, Lauf nur durch den Nutzer.
