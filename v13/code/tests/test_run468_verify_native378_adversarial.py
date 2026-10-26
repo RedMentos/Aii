@@ -71,7 +71,23 @@ class Run468NineReceiptAdversarial(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "RUN468_NATIVE_378_NOT_GREEN"):
             A.verify(self.source, self.report)
 
-    def test_nineh_receipt_source_identity_mismatch_refused(self):
+    def test_final_progress_must_be_structurally_complete(self):
+        path = self.source / "RUN397_PROGRESS.json"
+        progress = json.loads(path.read_text())
+        progress["status"] = "INCOMPLETE"
+        path.write_text(json.dumps(progress))
+        raw = path.read_bytes()
+        self.fixture.fixture.manifest["copied"]["RUN397_PROGRESS.json"] = {
+            "sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw)}
+        self.report["progress_sha256"] = A.sha_file(path)
+        self.report["safe_export"]["copied_bytes"] = sum(
+            x["bytes"] for x in self.fixture.fixture.manifest["copied"].values())
+        self.fixture.fixture.seal()
+        with self.assertRaisesRegex(ValueError,
+                                    "FINAL_PROGRESS_NOT_STRUCTURALLY_COMPLETE"):
+            A.verify(self.source, self.report)
+
+    def test_ninth_receipt_source_identity_mismatch_refused(self):
         def invalid(directory, arm, seed, *args, **kwargs):
             if (arm, seed) == ("S", 22):
                 return dict(self.receipt, sha256={"native.json": "0" * 64})
@@ -81,7 +97,7 @@ class Run468NineReceiptAdversarial(unittest.TestCase):
                                         "STAGE9_NATIVE_RECEIPT_INVALID:S_s22"):
                 A.verify(self.source, self.report)
 
-    def test_nineh_receipt_wrong_rows_refused(self):
+    def test_ninth_receipt_wrong_rows_refused(self):
         def invalid(directory, arm, seed, *args, **kwargs):
             return {"rows": 41} if (arm, seed) == ("S", 22) else self.receipt
         with mock.patch.object(A.r397, "validate_completed", side_effect=invalid):
@@ -89,7 +105,7 @@ class Run468NineReceiptAdversarial(unittest.TestCase):
                                         "STAGE9_NATIVE_RECEIPT_INVALID:S_s22"):
                 A.verify(self.source, self.report)
 
-    def test_tampered_nineh_file_rejected_before_receipt(self):
+    def test_tampered_ninth_file_rejected_before_receipt(self):
         (self.source / "attempts/S_s22/attempt-0001/native.json").write_bytes(b"tampered")
         with mock.patch.object(A.r397, "validate_completed") as checked:
             with self.assertRaisesRegex(ValueError,
@@ -106,7 +122,7 @@ class Run468NineReceiptAdversarial(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "RUN468_NATIVE_378_NOT_GREEN"):
             A.verify(self.source, self.report)
 
-    def test_symlinked_nineh_file_rejected(self):
+    def test_symlinked_ninth_file_rejected(self):
         target = self.source / "attempts/S_s22/attempt-0001/native.json"
         target.unlink()
         target.symlink_to(self.source / "RUN397_PROGRESS.json")
