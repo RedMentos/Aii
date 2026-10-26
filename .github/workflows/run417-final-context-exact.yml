@@ -1,0 +1,80 @@
+name: V13 Run417 final Context OS exact-token gate source-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run417-final-context-exact.yml'
+      - 'v13/code/v13/context_fit.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_context_fit.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run417-final-context-exact/**'
+permissions:
+  contents: read
+jobs:
+  final-context-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Source identity and compile
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN417_HEAD.txt"
+          sha256sum v13/code/v13/context_fit.py v13/code/v13/runtime.py \
+            v13/code/tests/test_context_fit.py | tee "$RUNNER_TEMP/RUN417_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/v13/context_fit.py \
+            v13/code/v13/runtime.py v13/code/tests/test_context_fit.py
+      - name: Exact final view and inherited context tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_context_fit tests.test_context_os \
+            tests.test_runtime_queue tests.test_runtime_queue_audit \
+            2>&1 | tee "$RUNNER_TEMP/RUN417_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN417_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN417_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN417_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close source raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN417_*' ! -name RUN417_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN417_SHA256SUMS.txt
+      - name: Upload source-only raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run417-FinalContextExact-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN417_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
