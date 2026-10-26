@@ -1,0 +1,162 @@
+name: V13 Run618 prospective new B2 native and gist operator source-disjoint proxy
+on:
+  push:
+    branches:
+      - codex/automation11-run618-prospective-b2-native-20261026
+    paths:
+      - '.github/workflows/run618-prospective-b2-native.yml'
+      - 'v13/code/scripts/run618_prospective_b2_native.py'
+      - 'v13/code/tests/test_run618_prospective_b2_native.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run618-prospective-b2-native/RUN618_COHORT.json'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  prospective-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Freeze prospective cohort, exact model/runner source and Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN618_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run618-prospective-b2-native/RUN618_COHORT.json)" = 00f95e65b01bacb5376b849f43674d88a00c1311
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run618-prospective-b2-native/PREREG.md)" = b8937d47827663d489130b80bc8b95f5cb68819f
+          test "$(git hash-object v13/code/scripts/run618_prospective_b2_native.py)" = 6404dfccb5c67cfd03b1baaa6f17d2931d46667b
+          test "$(git hash-object v13/code/tests/test_run618_prospective_b2_native.py)" = 268be2610507c0dc1e43572a840a2570fb97883b
+          test "$(git hash-object v13/code/scripts/run606_cross_body_latent_shadow.py)" = 22116eea1e16343a5ff68844e98641e98e7b4306
+          test "$(git hash-object v13/code/v13/runners.py)" = 37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5
+          test "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/scripts/run618_prospective_b2_native.py v13/code/docs/proofs/continuation-20261026/run618-prospective-b2-native/RUN618_COHORT.json v13/code/v13/runners.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN618_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; free -h; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN618_HOST.txt"
+      - name: Isolated pinned dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run618venv"
+          "$RUNNER_TEMP/run618venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Prospective cohort and synthetic SQLite adversarial fixtures
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 "$RUNNER_TEMP/run618venv/bin/python" -m unittest -v tests.test_run618_prospective_b2_native > "$RUNNER_TEMP/RUN618_FIXTURE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN618_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Bootstrap original public pinned B2 model and native runner
+        id: bootstrap
+        if: ${{ steps.fixture.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set +e
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run618installed"
+          timeout -s TERM -k 30s 1200s "$RUNNER_TEMP/run618venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN618_BOOTSTRAP_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN618_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: New genuine B2 native inference, source-disjoint heldout and SQLite replay
+        id: native
+        if: ${{ steps.bootstrap.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set +e
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run618installed" OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+          timeout -s TERM -k 30s 1000s "$RUNNER_TEMP/run618venv/bin/python" scripts/run618_prospective_b2_native.py --home "$V13_HOME" --out "$RUNNER_TEMP/RUN618_NATIVE_REPORT.json" --states "$RUNNER_TEMP/RUN618_STATES.npz" > "$RUNNER_TEMP/RUN618_NATIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN618_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent raw native receipts, replay, model pin and heldout audit
+        id: audit
+        if: ${{ steps.native.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 "$RUNNER_TEMP/run618venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN618_AUDIT_RAW.log" 2>&1
+          import hashlib,json,os
+          from pathlib import Path
+          import numpy as np
+          from scripts.run618_prospective_b2_native import load_cohort,COHORT_BLOB,GATES,MODEL_SHA,MODEL_REV,TAP_ID,TRAIN,TEST
+          tmp=Path(os.environ["RUNNER_TEMP"])
+          report=json.loads((tmp/"RUN618_NATIVE_REPORT.json").read_text())
+          assert report["status"] in ("SCOPED_B2_PROXY","NO_SCOPED_B2_GAIN")
+          assert report["cohort_blob"]==COHORT_BLOB and report["gates"]==GATES
+          assert report["no_weight_updates"] and not report["can_latent_inject"] and not report["b3_promoted"] and not report["redmi_measured"]
+          assert not report["canonical_architecture_complete"] and not report["user_full_scope_complete"]
+          assert report["model"]["sha256"]==MODEL_SHA and report["model"]["revision"]==MODEL_REV and report["model"]["tap_id"]==TAP_ID
+          path=tmp/"RUN618_STATES.npz"
+          assert hashlib.sha256(path.read_bytes()).hexdigest()==report["states_sha256"]
+          rows=load_cohort()
+          with np.load(path,allow_pickle=False) as z:
+            assert set(z.files)=={"y_b2","prompt_ids","train_idx","test_idx"}
+            y=z["y_b2"];ids=z["prompt_ids"].tolist();tr=z["train_idx"].tolist();te=z["test_idx"].tolist()
+          assert y.shape==(80,1024) and np.isfinite(y).all()
+          assert ids==[r["id"] for r in rows] and len(tr)==60 and len(te)==20
+          assert tr==[i for i,r in enumerate(rows) if r["topic"] in TRAIN]
+          assert te==[i for i,r in enumerate(rows) if r["topic"] in TEST]
+          assert len(report["receipts"])==80
+          for r,row in zip(report["receipts"],rows):
+            assert r["id"]==row["id"] and r["dimension"]==1024 and r["tap_id"]==TAP_ID
+            assert r["prompt_sha256"]==hashlib.sha256(row["text"].encode()).hexdigest()
+          # Independent raw cosine with self excluded and original-index tie break.
+          y=y/np.linalg.norm(y,axis=1,keepdims=True);s=y[te]@y[te].T
+          lookup={rows[i]["id"]:j for j,i in enumerate(te)}
+          hits=0
+          for j,i in enumerate(te):
+            target=lookup[rows[i]["fact_id"]+("-B" if rows[i]["variant"]=="A" else "-A")]
+            order=sorted((k for k in range(20) if k!=j),key=lambda k:(-float(s[j,k]),k))
+            hits+=int(order[0]==target)
+          assert abs(hits/20-report["metrics"]["b2_raw"]["top1"])<1e-12
+          assert report["replay_queries"]==20 and report["replay_top5_order_mismatches"]==0
+          assert abs(report["replay_operator_top1"]-report["metrics"]["b2_raw"]["top1"])<1e-12
+          print("RUN618_INDEPENDENT_AUDIT",report["status"],report["metrics"],"p",report["empirical_p_b2_raw"])
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN618_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base b71701b00e8352c5052bf57e253c908fa7baf75b --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN618_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN618_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close original raw, source, states and failed attempts even RED
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for key in FIXTURE BOOTSTRAP NATIVE AUDIT PRIVACY; do
+            test -f "RUN618_${key}_EXIT.txt" || echo 2 > "RUN618_${key}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN618_*' ! -name 'RUN618_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN618_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run618-Prospective-B2-Native-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN618_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce fixture, native, independent audit and privacy exits
+        if: always()
+        run: |
+          set -euo pipefail
+          for key in FIXTURE BOOTSTRAP NATIVE AUDIT PRIVACY; do
+            echo "RUN618 $key exit: $(cat "$RUNNER_TEMP/RUN618_${key}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN618_${key}_EXIT.txt")" = 0
+          done
