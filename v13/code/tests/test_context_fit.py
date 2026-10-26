@@ -146,6 +146,29 @@ class ContextFitTests(unittest.TestCase):
         self.assertGreater(count([{'role':'user','content':'example'}]),0)
         self.assertEqual(count.sources,['ESTIMATE'])
 
+    def test_operator_can_persist_exact_count_optin_without_age_change(self):
+        import tempfile
+        from pathlib import Path
+        from v13.runtime import Runtime
+        from v13.operator import Operator
+        with tempfile.TemporaryDirectory() as td:
+            first=Runtime(Path(td))
+            try:
+                self.assertEqual(first.cfg['context_fit_exact_count'],0)
+                self.assertIn('context_fit_exact_count = 1',
+                              Operator(first).run(':budget context_fit_exact_count 1'))
+                self.assertEqual(first.cfg['system_stage'],0)
+                self.assertEqual(first.cfg['context_fit_exact_count'],1)
+            finally:
+                first.close()
+            second=Runtime(Path(td))
+            try:
+                self.assertEqual(second.cfg['context_fit_exact_count'],1)
+                self.assertEqual(second.cfg['system_stage'],0)
+                Operator(second).run(':budget context_fit_exact_count 0')
+            finally:
+                second.close()
+
     def test_budget_matches_runner_rule(self):
         self.assertEqual(F.budget({'context_tokens':2048,'answer_tokens':256}),2048-256-16)
 
