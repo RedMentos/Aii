@@ -22,17 +22,37 @@
   "local_independent_replay": {
     "status": "RAW_NATIVE378_RECOMPUTED_NO_GATE_PROMOTION",
     "rows": 378,
-    "pointer_minus_off_both_exact": {"mean": 0.08796296296296297, "wins": 6, "ties": 7, "losses": 5, "pairs": 18},
-    "pointer_minus_shared_both_exact": {"mean": 0.17592592592592593, "wins": 7, "ties": 7, "losses": 4, "pairs": 18},
+    "pointer_minus_off_both_exact": {
+      "mean": 0.08796296296296297,
+      "wins": 6,
+      "ties": 7,
+      "losses": 5,
+      "pairs": 18
+    },
+    "pointer_minus_shared_both_exact": {
+      "mean": 0.17592592592592593,
+      "wins": 7,
+      "ties": 7,
+      "losses": 4,
+      "pairs": 18
+    },
     "pointer_both_exact_minus_b1_only": -0.10648148148148151,
     "pointer_both_exact_minus_same_policy_dual": -0.06018518518518523,
-    "strict_dominance": {"O": false, "P": false, "S": false},
+    "strict_dominance": {
+      "O": false,
+      "P": false,
+      "S": false
+    },
     "raw_result_sha256": "436b16d4c9642fddde59d7b7724907b60429f4d90e49ac1396603de49db72952",
     "raw_auditor_local_sha256": "aa3d3b1e769af14aa332cc648530e47d06b689b7d181b6826f046058bbb23051"
   },
   "tests": {
     "local": "Actual original safe ZIP 378/378 raw rows verified independently and matched Run486 metrics",
-    "github_ci": "PENDING: original artifact SHA, independent replay, deliberate ZIP tamper, official privacy scan"
+    "github_ci": "SOURCE_CI_GREEN Actions 40285486608: original 378/378 raw rows recomputed, pinned source/receipt hashes matched, deliberate original ZIP tamper rejected, privacy CLEAN; no model/native run",
+    "run_id": 40285486608,
+    "job_id": 121448030742,
+    "raw_artifact_id": 12634260135,
+    "raw_zip_sha256": "989d27d2a01fffb43136a0e97fc2fb19af6c1f97faab6819ff1af5ce52ad9335"
   },
   "negative_gates": {
     "canonical_architecture_complete": false,
@@ -49,5 +69,12 @@
     "Run487 independently validates arithmetic and source pins, not the validity of the original utility scoring rubric or causal benefit.",
     "No evidence of B1/B2 strict complementarity; pointer both_exact remains below B1-only and same-policy dual controls."
   ],
-  "exact_next_command": "Open PR to Run486; inspect independent raw CI and artifact, privately back up raw results, verify remote SHA and preserve no gate promotion; then preregister actual STEP2 acceptance rather than rerunning old nine arms."
+  "exact_next_command": "Review PR #485 and original raw artifact 12634260135; use independently confirmed negative complementarity to design a new preregistered canonical ten-episode STEP2 acceptance. Do not rerun original nine native arms or promote gates.",
+  "private_backup": {
+    "folder": "/V13-Checkpoints/2026-10-26/Run487",
+    "file": "RUN487_INDEPENDENT_RAW_40285486608.zip",
+    "sha256": "989d27d2a01fffb43136a0e97fc2fb19af6c1f97faab6819ff1af5ce52ad9335",
+    "verified": "re-materialized from private Library and SHA256 rehashed",
+    "anyone_writable_drive_used": false
+  }
 }
