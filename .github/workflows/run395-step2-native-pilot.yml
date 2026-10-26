@@ -1,0 +1,222 @@
+name: V13 Run395 pinned Linux-native STEP2 Run394 pilot
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run395-step2-native-pilot.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run395-step2-native-pilot/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-step2-pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact head, unchanged frozen source, model provenance and host
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git merge-base --is-ancestor f7d13afdd647be9d6e92b5a83061f9336f5d4d7b HEAD
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN395_HEAD.txt"
+          sha256sum v13/code/specs/models.json v13/code/scripts/run394_step2_fresh.py v13/code/scripts/step2_z2_timescale.py v13/code/scripts/step2_z2b_seeds.py v13/code/scripts/step2_z2c_b2_rule.py v13/code/v13/cognition.py v13/code/v13/runners.py | tee "$RUNNER_TEMP/RUN395_SOURCE_HASHES.txt"
+          { date -u -Iseconds; uname -a; python3 --version; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } | tee "$RUNNER_TEMP/RUN395_HOST.txt"
+          python3 - <<'PY' | tee "$RUNNER_TEMP/RUN395_CATALOG.txt"
+          import json
+          c=json.load(open('v13/code/specs/models.json'))
+          assert c['runner']['tag']=='b10964'
+          assert c['runner']['linux_binaries']['linux-x86_64']['sha256']=='9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443'
+          for k in ('needle','language','body','gist'):
+              m=c['models'][k]
+              assert m['files'] and all(len(f['sha256'])==64 and f['size']>0 for f in m['files'])
+              print(k,m['model_id'],m['revision'],m['license_id'],[(f['local_name'],f['sha256']) for f in m['files']])
+          PY
+      - name: Isolated pinned Python dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run395venv"
+          timeout 240s "$RUNNER_TEMP/run395venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' 2>&1 | tee "$RUNNER_TEMP/RUN395_DEPS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN395_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Source-only Run394 fixture tests and fixed pilot manifest
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run395venv/bin/python" -m unittest -v tests.test_run394_step2_fresh 2>&1 | tee "$RUNNER_TEMP/RUN395_TESTS_RAW.log"
+          t=${PIPESTATUS[0]}
+          "$RUNNER_TEMP/run395venv/bin/python" scripts/run394_step2_fresh.py --work "$RUNNER_TEMP/run395-pilot" --fixture-only --pilot --arms O P S --seeds 20 2>&1 | tee "$RUNNER_TEMP/RUN395_PREREG_RAW.log"
+          m=${PIPESTATUS[0]}
+          if [ "$m" -eq 0 ]; then cp "$RUNNER_TEMP/run395-pilot/RUN394_PREREGISTERED_FIXTURES.json" "$RUNNER_TEMP/RUN395_PREREGISTERED_FIXTURES.json"; fi
+          echo "$((t+m))" > "$RUNNER_TEMP/RUN395_FIXTURE_EXIT.txt"
+          echo "rc=$((t+m))" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Install registered public GGUF and b10964 native runner with SHA256 verification
+        id: bootstrap
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "${{ steps.deps.outputs.rc }}" != "0" || "${{ steps.fixture.outputs.rc }}" != "0" ]]; then
+            echo "PREREQUISITE_FAIL" | tee "$RUNNER_TEMP/RUN395_BOOTSTRAP_RAW.log"
+            echo "2" > "$RUNNER_TEMP/RUN395_BOOTSTRAP_EXIT.txt"
+            echo "rc=2" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run395installed"
+          timeout 1500s "$RUNNER_TEMP/run395venv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN395_BOOTSTRAP_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" == "0" ]]; then
+            "$RUNNER_TEMP/run395venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN395_INSTALLED_HASHES_RAW.log"
+          import json,os
+          from pathlib import Path
+          from v13.models import ModelManager,catalog
+          from v13.common import file_hash
+          h=Path(os.environ['V13_HOME'])
+          m=ModelManager(h);checks=m.verify(deep=True)
+          assert all(v['ok'] and v['hash_checked'] for v in checks.values()),checks
+          cat=catalog()
+          for k in ('needle','language','body','gist'):
+              assert m.installed[k]['exact_revision']==cat['models'][k]['revision']
+              print('MODEL_VERIFIED',k,m.installed[k]['exact_revision'])
+          runner=h/'bin/llama-server'
+          manifest=json.loads((h/'config/runner.json').read_text())
+          assert manifest['tag']=='b10964'
+          assert manifest['binary_sha256']==file_hash(runner)
+          print('RUNNER_VERIFIED',manifest['tag'],manifest['binary_sha256'])
+          PY
+            rc=${PIPESTATUS[0]}
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN395_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Real native 42-row O/P/S pilot, serial and bounded
+        id: native
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "${{ steps.bootstrap.outputs.rc }}" != "0" ]]; then
+            echo "BOOTSTRAP_MISSING" | tee "$RUNNER_TEMP/RUN395_NATIVE_RAW.log"
+            echo "2" > "$RUNNER_TEMP/RUN395_NATIVE_EXIT.txt"
+            echo "rc=2" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run395installed"
+          timeout 5200s "$RUNNER_TEMP/run395venv/bin/python" scripts/run394_step2_fresh.py \
+            --installed-home "$V13_HOME" --work "$RUNNER_TEMP/run395-pilot" \
+            --pilot --arms O P S --seeds 20 2>&1 | tee "$RUNNER_TEMP/RUN395_NATIVE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN395_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent structural postflight (no utility or canonical gate promotion)
+        id: audit
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN395_AUDIT_RAW.log"
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run395-pilot'
+          audit={'run':'Run395','proof_kind':'LINUX_NATIVE_IF_BOOTSTRAP_AND_ROWS_VERIFIED',
+                 'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL','redmi_measured':False,
+                 'native_exit':(Path(os.environ['RUNNER_TEMP'])/'RUN395_NATIVE_EXIT.txt').read_text().strip(),
+                 'arms':{},'errors':[]}
+          def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          try:
+              manifest=json.loads((root/'RUN394_PREREGISTERED_FIXTURES.json').read_text())
+              assert manifest['fixture_ids']==['Alder','Delta']
+              assert manifest['seeds']==[20] and list(manifest['arms'])==['O','P','S']
+              assert manifest['step2_exit']=='UTILITY_FAIL' and manifest['canonical_gate_pass'] is False
+              variants={'b1_only','b2_only','both_none','both_exact','both_control','same_policy_dual','prompt_only_dual'}
+              result=json.loads((root/'RUN394_RESULT.json').read_text())
+              assert result['step2_exit']=='UTILITY_FAIL' and result['canonical_gate_pass'] is False
+              for arm in ('O','P','S'):
+                  key=f'{arm}_s20'
+                  toolpath=root/f'tool_{key}.json'
+                  tool=json.loads(toolpath.read_text())
+                  rows=tool['rows']
+                  keys={(r['fixture'],r['variant']) for r in rows}
+                  assert len(rows)==14 and len(keys)==14
+                  assert keys=={(f,v) for f in ('Alder','Delta') for v in variants}
+                  assert tool['installed_artifacts_unchanged'] is True
+                  assert result['results'][key]['wrong_committed_tool']==0
+                  assert result['results'][key]['tool_sha256']==sha(toolpath)
+                  audit['arms'][arm]={'rows':len(rows),'tool_sha256':sha(toolpath),
+                                      'mean_utility':result['results'][key]['mean_utility']}
+              assert audit['native_exit']=='0'
+              assert result['status']=='PILOT_DIAGNOSTIC'
+              audit['structural_pilot_pass']=True
+          except Exception as exc:
+              audit['structural_pilot_pass']=False
+              audit['errors'].append(type(exc).__name__+': '+str(exc)[:350])
+          dest=Path(os.environ['RUNNER_TEMP'])/'RUN395_AUDIT.json'
+          dest.write_text(json.dumps(audit,sort_keys=True,indent=2)+'\n')
+          print(json.dumps(audit,sort_keys=True))
+          raise SystemExit(0 if audit['structural_pilot_pass'] else 2)
+          PY
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN395_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN395_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN395_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close complete synthetic raw evidence SHA256 (no weights or databases)
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN395_*' ! -name RUN395_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN395_SHA256SUMS.txt
+          if [[ -d run395-pilot ]]; then
+            find run395-pilot -maxdepth 1 -type f -name '*.json' -print0 | sort -z | xargs -0 -r sha256sum >> RUN395_SHA256SUMS.txt
+          fi
+      - name: Preserve all synthetic raw and failed attempts; never upload model files
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run395-NativeSTEP2-Pilot-Raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN395_*
+            ${{ runner.temp }}/run395-pilot/*.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce real native pilot, structural evidence and privacy
+        if: always()
+        run: |
+          test "${{ steps.deps.outputs.rc }}" = "0"
+          test "${{ steps.fixture.outputs.rc }}" = "0"
+          test "${{ steps.bootstrap.outputs.rc }}" = "0"
+          test "${{ steps.native.outputs.rc }}" = "0"
+          test "${{ steps.audit.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
