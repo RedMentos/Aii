@@ -1,0 +1,95 @@
+name: V13 Run624 fair multi-session Sleep A SQLite regression
+on:
+  push:
+    branches:
+      - codex/automation11-run624-sleep-session-fairness-20261027
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run624-sleep-session-fairness.yml'
+      - 'v13/code/v13/sleep_offline.py'
+      - 'v13/code/tests/test_run624_sleep_session_fairness.py'
+permissions:
+  contents: read
+jobs:
+  sqlite:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run624-sleep-session-fairness-20261027' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact source, regression, prereg and frozen Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN624_HEAD.txt"
+          test "$(git hash-object v13/code/v13/sleep_offline.py)" = 0525bffc887efd91a26a67f94a38f7eab2cdfd0f
+          test "$(git hash-object v13/code/tests/test_run624_sleep_session_fairness.py)" = a7c59e6541e4a47ff89927ab78b619dcbaf88f2c
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run624-sleep-session-fairness/PREREG.md)" = 05811fc387505866256350814c0ef4c4a3d3312c
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/sleep_offline.py v13/code/tests/test_run624_sleep_session_fairness.py > "$RUNNER_TEMP/RUN624_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN624_HOST.txt"
+      - name: Isolated source-only dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run624venv"
+          "$RUNNER_TEMP/run624venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Original exact Run623 source RED counterexample
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          cp v13/sleep_offline.py "$RUNNER_TEMP/RUN624_PATCHED.py"
+          git show 608d7be0b214e66771ae70cba2d61c8b3a95a6a5:v13/code/v13/sleep_offline.py > v13/sleep_offline.py
+          test "$(git hash-object v13/sleep_offline.py)" = 4ad4e4382b73f7ee2189e1d2e6d05a5d09b6ac9c
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run624venv/bin/python" -m unittest -v tests.test_run624_sleep_session_fairness > "$RUNNER_TEMP/RUN624_ORIGINAL_RED.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN624_ORIGINAL_RED_EXIT.txt"
+          cp "$RUNNER_TEMP/RUN624_PATCHED.py" v13/sleep_offline.py
+          exit 0
+      - name: Patched SQLite Runtime fairness and unchanged backlog regressions
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run624venv/bin/python" -m unittest -v tests.test_run624_sleep_session_fairness tests.test_run609_sleep_digest_backlog tests.test_run610_sleep_partial_pair tests.test_run612_sleep_backlog_status tests.test_sleep_offline > "$RUNNER_TEMP/RUN624_GREEN_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN624_GREEN_EXIT.txt"
+          exit 0
+      - name: Public privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 608d7be0b214e66771ae70cba2d61c8b3a95a6a5 --head HEAD > "$RUNNER_TEMP/RUN624_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN624_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close all original RED and GREEN raw
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in ORIGINAL_RED GREEN PRIVACY; do
+            test -f "RUN624_${k}_EXIT.txt" || echo 2 > "RUN624_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN624_*' ! -name 'RUN624_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN624_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run624-Sleep-Session-Fairness-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/RUN624_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce expected RED, patched GREEN and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          echo "Original RED exit: $(cat "$RUNNER_TEMP/RUN624_ORIGINAL_RED_EXIT.txt")"
+          test "$(cat "$RUNNER_TEMP/RUN624_ORIGINAL_RED_EXIT.txt")" = 1
+          grep -q 'FAILED' "$RUNNER_TEMP/RUN624_ORIGINAL_RED.log"
+          for k in GREEN PRIVACY; do
+            echo "RUN624 $k exit: $(cat "$RUNNER_TEMP/RUN624_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN624_${k}_EXIT.txt")" = 0
+          done
