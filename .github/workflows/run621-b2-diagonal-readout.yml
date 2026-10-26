@@ -1,0 +1,105 @@
+name: V13 Run621 original-native B2 train-only diagonal readout and controls
+on:
+  push:
+    branches:
+      - codex/automation11-run621-b2-diagonal-readout-20261026
+    paths:
+      - '.github/workflows/run621-b2-diagonal-readout.yml'
+      - 'v13/code/scripts/run621_b2_diagonal_readout.py'
+      - 'v13/code/tests/test_run621_b2_diagonal_readout.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  offline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Verify original source, frozen prereg, model pins and Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN621_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run621_b2_diagonal_readout.py)" = f08429acfccd6bac13f469119f1b76131a1967df
+          test "$(git hash-object v13/code/tests/test_run621_b2_diagonal_readout.py)" = 7253c4045fe5bf0aa5bbed6eab354215b9c3561b
+          test "$(git hash-object v13/code/scripts/run615_crosscohort_shadow.py)" = 22c1c4c55d95588135e0959693e7321d3706fdb0
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run621-b2-diagonal-readout/PREREG.md)" = 9f02f9ffa4fdeeab6e311f6f817c33e3beead848
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/scripts/run621_b2_diagonal_readout.py v13/code/tests/test_run621_b2_diagonal_readout.py > "$RUNNER_TEMP/RUN621_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN621_HOST.txt"
+      - name: Install isolated pinned NumPy
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run621venv"
+          "$RUNNER_TEMP/run621venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Download exact original public Run614 Linux-native artifact, no inference
+        id: download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/run614"
+          timeout 180s gh run download 40407777217 --repo RedMentos/Aii --name V13-Run614-Independent-Native-Paraphrase-e253bb318737b3a8ead92f53a1044f0220f8281f --dir "$RUNNER_TEMP/run614" > "$RUNNER_TEMP/RUN621_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo 'cb535df87749c0cf5d698d26268e6b03f3d6f57690b95434aebc6c875a3ea189' " $RUNNER_TEMP/run614/RUN614_STATES.npz" | sha256sum -c - >> "$RUNNER_TEMP/RUN621_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            echo '42ac6d22ef6c9cc59622572f233b2e7b83094af7a9fdd227cfe2fff15e0666e4' " $RUNNER_TEMP/run614/RUN614_NATIVE_REPORT.json" | sha256sum -c - >> "$RUNNER_TEMP/RUN621_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN621_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original native-state fit, shuffled controls and negative tests
+        if: ${{ steps.download.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set +e
+          RUN621_NATIVE="$RUNNER_TEMP/run614" PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run621venv/bin/python" -m unittest -v tests.test_run621_b2_diagonal_readout > "$RUNNER_TEMP/RUN621_TEST_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run621venv/bin/python" scripts/run621_b2_diagonal_readout.py --native "$RUNNER_TEMP/run614" --out "$RUNNER_TEMP/RUN621_REPORT.json" --weights "$RUNNER_TEMP/RUN621_WEIGHTS.npz" > "$RUNNER_TEMP/RUN621_EVAL_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN621_TEST_EXIT.txt"
+          exit 0
+      - name: Public repository privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base ac25ca8728c3a6b4cb9182ef4f9139438579b9c0 --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN621_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN621_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw, weights and original failures
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in DOWNLOAD TEST PRIVACY; do
+            test -f "RUN621_${k}_EXIT.txt" || echo 2 > "RUN621_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN621_*' ! -name 'RUN621_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN621_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run621-B2-Diagonal-Readout-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN621_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce original artifact, tests and privacy exits
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in DOWNLOAD TEST PRIVACY; do
+            echo "RUN621 $k exit: $(cat "$RUNNER_TEMP/RUN621_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN621_${k}_EXIT.txt")" = 0
+          done
