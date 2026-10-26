@@ -1,0 +1,62 @@
+{
+  "schema": "V13_RUN420_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run420-world-packet-recovery-current-20261026",
+  "base_pr": 415,
+  "base_commit": "3cd2b0359d04577cd24998cf41b59e86da46e69c",
+  "historical_red_first_pr": 417,
+  "superseded_reason": "Older Claude world.py lacked current atomic transaction; no implementation on older branch",
+  "verified_source_head": "3be9123d2413dc0f93a359e749576080b7068c17",
+  "source_sha256": {
+    "v13/code/v13/world.py": "3e22c1cf8b6b898ff0abae9ea9cfdbaf15eb7d67470388e5c547b06c3cdaa224",
+    "v13/code/tests/test_world_corrupt_packet_recovery_run420.py": "e4607d58dcc438f54c5c2131eb1b10d52406d2e0eeea9d1abe8838f54fe9a7d2"
+  },
+  "reproduction": {
+    "before": "Real Runtime(home) restart raised JSONDecodeError on persisted malformed PredictionOutcome",
+    "after": "Real local Runtime(home) restart succeeds; observed_action_count=0, raw corrupt packet retained",
+    "local_inherited_tests": "31/31 PASS"
+  },
+  "source_only_evidence": {
+    "workflow_run_id": 40261046191,
+    "conclusion": "success",
+    "tests": "34/34 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12623613775,
+    "artifact_zip_sha256": "fe82caf93644379d7afba0c3cf1b25ab44d2f59ac433b2392d5981761c4098df",
+    "additional_inherited_workflows": [
+      "Run109 GREEN",
+      "Run108 GREEN",
+      "Run343 GREEN",
+      "Run349 GREEN",
+      "Run379 GREEN",
+      "focused source-bound GREEN"
+    ]
+  },
+  "failed_attempt_preserved": {
+    "workflow_run_id": 40260970133,
+    "reason": "2 inherited WorldModel modules unavailable without numpy in fresh runner; not a source defect",
+    "resolution": "isolated pinned numpy==2.3.5 and prompt-toolkit==3.0.52 installed before rerun"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "native_owner": {
+    "run418_actions": 40260347495,
+    "status_last_checked": "IN_PROGRESS",
+    "no_new_native_jobs_started": true
+  },
+  "next_command": "After independent review, merge/rebase this WorldState corruption fix only through authorized integration; do not alter frozen Run394/397 native source. Continue native S_s20 owner separately and verify raw artifacts.",
+  "open_questions": [
+    "Whether corrupt but syntactically valid forged observation packet needs stronger source lineage check",
+    "Deduplication of repeated invalid-packet telemetry under long sessions",
+    "Native Redmi restart/thermal proof still missing"
+  ],
+  "checkpoint_note": "This status-file commit follows exact-head source CI 3be912; rerun exact-head source CI if code changes."
+}
