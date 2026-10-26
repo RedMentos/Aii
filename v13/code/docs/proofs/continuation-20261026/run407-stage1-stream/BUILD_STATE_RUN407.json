@@ -1,0 +1,58 @@
+{
+  "run": "Run407",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_STREAMING_STAGE1_NOT_ACTUAL_NATIVE_RESTORE",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run407-streaming-native-stage1-20261026",
+  "pr": 402,
+  "base": {
+    "branch": "codex/run406-stage1-artifact-inventory-20261026",
+    "initial_sha": "a9482aa1c408a3680a47aa5e8d6c0fd7028e7083",
+    "updated_base_sha": "430f59423a331c7a3885e8ab3ad983cceb55e423",
+    "integration": "stacked review, not main"
+  },
+  "plan_commit": "51dea4041dfd42821e9b8a17c19561d602be8c85",
+  "source_commit": "11f360113d2e13e9689083066cbab0ee3cadd755",
+  "red_tests_commit": "ce7b82f67e43dc8136a6bce1ac1f05b1dfa89e7a",
+  "red_run": 40252930858,
+  "red_findings": [
+    "missing Linux no-clobber rename function: 2 expected errors",
+    "earlier test fixture malformed manifest: 1 fixture failure, fixed at b3f56f8"
+  ],
+  "fix_commit": "0ad0e7012c809c1ce6a76a4baa4b311b601614c3",
+  "green": {
+    "actions_run": 40253002146,
+    "job": 121348736741,
+    "artifact": 12620619874,
+    "artifact_digest": "cc1e70e5996db77f5a9b543e1cdb9787fcb7464e20deba3d5046c91e8279830a",
+    "tests": "76/76 PASS",
+    "privacy": "CLEAN",
+    "compileall": "PASS"
+  },
+  "native_dependency": {
+    "run401_actions": 40250662450,
+    "source_head": "c0facf60c3286064e15bc06de104c85d9344382a",
+    "artifact_id": 12620379581,
+    "artifact_sha256": "65ac00a8cd2013ebab76828ed3bc25dee5433d1d55a995573387f19de29b530a",
+    "archive_bytes": 1461613972,
+    "run406_red": "MODEL_WEIGHTS_IN_ARTIFACT",
+    "actual_stream_restore_performed": false
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED",
+    "Age0 approval unchanged",
+    "No Redmi proof",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Run406 diagnostic re-inventory must identify exact model-weight members and sizes",
+    "Need source-bound derivation excluding only verified public model weights while preserving original raw ZIP and failed attempts",
+    "Actual stage1 archive streaming restore not run; no stage2 native until independent exact proof"
+  ],
+  "next_command": "Inspect Run406 diagnostic Actions 40252976656 raw inventory and model member names; do not invoke Run407 directly on artifact containing weights. Build fail-closed hash-bound filtered resume archive with original SHA closure, independently validate, then Run404 preview.",
+  "next_prerequisites": "Observed full inventory, registered model identity, no private/model republish, adequate disk; exclusive native owner before stage2"
+}
