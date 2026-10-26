@@ -112,8 +112,12 @@ jobs:
                   m=re.fullmatch(r'([0-9a-f]{64})  (?:\./)?(.+)',line)
                   assert m, 'MALFORMED_MANIFEST'
                   paths.append(m.group(2))
-              assert len(paths)==len(set(paths)) and set(paths)==seen-{'RUN401_SHA256SUMS.txt'}, 'UNHASHED_OR_MISSING'
+              assert len(paths)==len(set(paths)), 'DUPLICATE_MANIFEST_PATH'
+          unlisted=sorted(seen-set(paths)-{'RUN401_SHA256SUMS.txt'})
+          missing=sorted(set(paths)-seen)
           report.update({'status':'MODEL_WEIGHTS_PRESENT_BLOCKED' if model_members else 'INVENTORY_ONLY_NOT_RESTORE',
+                         'unlisted_in_original_sha_manifest':unlisted,
+                         'missing_from_zip_but_in_sha_manifest':missing,
                          'model_members':model_members,'member_count':len(entries),
                          'uncompressed_bytes':sum(x['bytes'] for x in entries),
                          'compressed_member_bytes':sum(x['compressed_bytes'] for x in entries),
@@ -123,6 +127,7 @@ jobs:
           out=Path(os.environ['RUNNER_TEMP'])/'RUN406_INVENTORY.json'
           out.write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
           print(json.dumps(report,sort_keys=True))
+          assert not missing and not [n for n in unlisted if n not in {x['name'] for x in model_members}], 'UNHASHED_NONMODEL_OR_MISSING'
           assert not model_members, 'MODEL_WEIGHTS_IN_ARTIFACT'
           PY
           rc=${PIPESTATUS[0]}
