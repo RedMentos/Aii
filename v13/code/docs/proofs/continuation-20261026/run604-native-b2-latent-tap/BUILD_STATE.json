@@ -1,0 +1,81 @@
+{
+  "schema": "V13_RUN604_NATIVE_B2_TAP_VERIFIED_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run604-native-b2-latent-tap-20261026",
+  "base_branch": "codex/automation11-run603-native-bodies-state-20261026",
+  "base_sha": "9bed17826270f4b97b89d3b17b69b75ade236ed3",
+  "verified_native_head": "6d873a0255f214ea5c27952dcac2dcffb5f31965",
+  "pr": 599,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/599",
+  "prereg_commit": "a97edb079486d49e1d84fefa40fcf7b45cee9abd",
+  "observed_ci": {
+    "run": 40398279940,
+    "conclusion": "success",
+    "fixture_tests": "3/3 PASS",
+    "bootstrap_exit": 0,
+    "native_exit": 0,
+    "independent_audit_exit": 0,
+    "privacy": "CLEAN",
+    "artifact_id": 12687736630,
+    "artifact_sha256": "559b52ad34889ccdd87c4d3f3299bae5337cbb98a6fe604ca53608871ec561c3",
+    "raw_manifest_entries": 14,
+    "raw_manifest_mismatches": 0
+  },
+  "native": {
+    "schema": "V13_RUN179_PINNED_B2_NATIVE_TAP_V1",
+    "status": "PASS_NATIVE_READONLY_TAP_ONLY",
+    "evidence_class": "LINUX_NATIVE_MODEL_READONLY",
+    "tap_id": "qwen35.result_norm.final.v1",
+    "embedding_dim": 1024,
+    "token_counts": [
+      6,
+      6,
+      6
+    ],
+    "max_repeat_abs_delta": 0,
+    "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+    "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "can_latent_tap": true,
+    "can_latent_inject": false,
+    "can_train_body": false,
+    "redmi_measured": false
+  },
+  "original_attempts": [
+    {
+      "run": 40398218670,
+      "status": "CANCELLED_BEFORE_NATIVE",
+      "reason": "workflow update changed canonical model path"
+    },
+    {
+      "run": 40398259828,
+      "status": "CANCELLED_BEFORE_NATIVE",
+      "reason": "PR-open duplicate pending concurrency replacement"
+    }
+  ],
+  "private_backup": "/V13-Checkpoints/2026-10-26/Run604/run604-native-b2-tap-raw.zip",
+  "claim_limits": {
+    "b3_promoted": false,
+    "body_jepa": "UNAVAILABLE",
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "full_v13_complete": false,
+    "fullsuite": "Run596 RED 4 FAIL/65 ERROR frozen source chain mismatch"
+  },
+  "open_questions": [
+    "B2 tap is read-only; no B3 receiver injection or cross-body utility evidence",
+    "Current B1 native 2048-dim tap still needs exact-current verification",
+    "Real Redmi proof and native sparse learning remain missing",
+    "Review/merge stacked PR588–599 and Claude PR38"
+  ],
+  "next_command": "From verified Run604 head 6d873a02, preregister current B1 LFM2.5-1.2B read-only native tap (2048-dim) with new source-only adversarial tests, pinned original model/runner and no gate promotion.",
+  "prerequisites": [
+    "No anyone-writable Drive",
+    "No force push",
+    "Serialize heavy native jobs",
+    "No model/source/seed hash edits"
+  ]
+}
