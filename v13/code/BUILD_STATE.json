@@ -1342,5 +1342,34 @@
     "independent_replay": "EXACT_FULL_REPORTS_ADAPTED_NPZ_ARRAYS",
     "list_signed_guard": "APPLIED_AFTER_NATIVE_CLOSURE_11_FOCUSED_PASS",
     "private_pilot": "18rows max42calls registered, not run yet"
+  },
+  "continuation_20261026_run551": {
+    "owner": "automation11 Run551, isolated review branch",
+    "branch": "codex/automation11-run551-rating-revision-calibration-20261026",
+    "base_run550_head": "51a187292adf3851a8f58b317c69863dced520e7",
+    "verified_software_head": "cbda05d0f4ccb446b495ea938675f214f551416b",
+    "review_pr": 550,
+    "run551_actions": 40343788754,
+    "source_tests": "50/50 PASS, Linux synthetic/SQLite; not native/Redmi",
+    "raw_artifact_id": 12660407428,
+    "raw_zip_sha256": "572a28529cd9009a81d1b3edc9dea9834de30c39026b9a1eca052b153775d8c2",
+    "raw_sha_manifest": "8/8 verified",
+    "privacy": "CLEAN",
+    "private_library_backup": "/V13/Run551/run551-evidence.zip",
+    "source_runtime_changes": [
+      "v13/agi/metacog.py event-keyed bounded quality labels",
+      "v13/agi/live.py explicit/implicit priority and neutral retraction"
+    ],
+    "negative_gates": {
+      "STEP2": "UTILITY_FAIL",
+      "B3_L1": "FAIL",
+      "Body_JEPA": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "Redmi": "UNMEASURED",
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
+    },
+    "next_command": "Inspect Actions 40343788224 and new PR550 current head; if green continue separate end-to-end JEF/STEP2 utility package; if RED preserve raw and diagnose; do not promote any gate.",
+    "proof": "docs/proofs/continuation-20261026/run551-rating-revisions/RESULT.md"
   }
 }
