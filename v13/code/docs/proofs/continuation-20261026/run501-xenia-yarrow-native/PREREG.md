@@ -1,0 +1,15 @@
+# Run501 — first *new* 14-row Run500 stage, Xenia/Yarrow C_s31_p01
+
+Date 2026-10-26. Base Run500 source-only GREEN PR #498 head `457b4a70a556e5a41e9a41272b1f40804585d202`. Run500 source Actions `40305428323` GREEN, 21 tests and 75 stages / 1050 unique planned rows, raw artifact `12642395808` SHA256 `803031d4c08aa9ec1753186877a0b31f4d4b46329bdf873fec4afcec4064bb22`. Run499 actual pilot Actions `40304564958` GREEN, 14 native Vesper/Willow C_s31 rows, raw artifact `12643015136` SHA256 `847f904fa3c811b23182bd492541d43e1db419662614b17dbf220d7a880e6601`, safe artifact `12641923870` SHA256 `04902a958cf665cb07c683b9b02648d83787aee222d2e37e4fd275cc494eecce`. Independently rescored; no gate promotion. Both archived in private Library, bytes re-materialized and verified.
+
+## Exact frozen new stage
+
+Execute **only** Run500 stage `C_s31_p01`: arm C, seed 31, original Run491 fixtures **Xenia** and **Yarrow**, all seven frozen variants each = **14 new Linux-native consumer rows**. This is disjoint from Run499 Vesper/Willow stage `C_s31_p00`; no duplicate/reuse of rows. Full Run491 fixture SHA256 `c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63`, frozen `run491_step2_heldout10.py` Git blob `f4d2d8d5e66c49c508e376ebafce2146e5a2715b`, `run496_heldout10_native_pilot.py` Git blob `543982e6c03c548eab87470732be279fbba53ac1`, `models.json` Git blob `7af05962af41d0bc3f7dd18ef01d4eba55eabf99`, Run500 stage runner Git blob `504a4a8492bdb383869b164b82c05d13e00f6823`. Original model/runner SHA256 and revisions are fixed by frozen Run491 and verified from actual installed bytes; no new weights, seeds or fixture content.
+
+## Prerequisites and one-shot execution
+
+Source-only tests and exact stage-map generation must pass before bootstrap. Then pinned public models/runner via original `v13.bootstrap`, deep actual installed model/runner/native-library hash preflight, fresh stage directory (never overwrite a partial attempt), `run500_step2_stage_map.py --execute --stage-id C_s31_p01`. One serialized GitHub Actions Linux runner, concurrency `v13-native-c3-run131-serialized`, one PR-opened trigger. All dependent stages require explicit completed-success **and** exact rc=0; skipped native or audit cannot be green. Independent 14-row postflight recomputes row/source SHA bindings and wrong committed count, then closes raw SHA256 evidence and safe no-model artifact on PASS or RED. No paid provisioning, private data, model payload uploads or unapproved Drive.
+
+## Claim limits and next
+
+Stage PASS means only 14 additional structural Linux-native rows, **not** 1050-row STEP2 acceptance, not Redmi, B3, Body-JEPA, Age, learning or AGI. Keep `STEP2=UTILITY_FAIL`, `B3_L1=FAIL`, `Body-JEPA=UNAVAILABLE`, `jepa_weight=0`, Redmi unmeasured, full scope incomplete. On RED preserve attempt and diagnose on separate branch; do not silently retry. On PASS independently rescore actual rows and compare against Run499 pilot, checkpoint, then select next disjoint stage after owner/resource check.
