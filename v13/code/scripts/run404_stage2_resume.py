@@ -31,7 +31,10 @@ def stage2(archive, expected_sha, work, installed=None, execute=False):
                 "STAGE1_ARCHIVE_NOT_VERIFIED:" + ";".join(restored.get("errors", [])))
         work = Path(work)
         manifest = load(work / "RUN394_PREREGISTERED_FIXTURES.json")
-        # Run401 stage1 attests the actual installed executable, not the\n        # downloadable runner release archive. Run402 already verifies this\n        # pinned executable SHA and its original raw installed-runner log.\n        runner_sha = restore.RUN401_EXECUTABLE_SHA256
+        # Run401 stage1 attests the actual installed executable, not the
+        # downloadable runner release archive. Run402 already verifies this
+        # pinned executable SHA and its original raw installed-runner log.
+        runner_sha = restore.RUN401_EXECUTABLE_SHA256
         first, failed = resume.previous_success(work, "O", 20, r394.FIXTURES,
                                                 manifest, current_runner_sha=runner_sha)
         require(first is not None and not failed and first["validated"]["rows"] == 42,
