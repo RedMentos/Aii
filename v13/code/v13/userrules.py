@@ -24,7 +24,7 @@ import time
 from pathlib import Path
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v8'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v7'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -176,7 +176,7 @@ INNER_FILLER=re.compile(r"\b(?:like|you\s+know|ya\s+know|i\s+mean|kinda|sort\s+o
 REQUEST=re.compile(r"^(?:could|can|would|will|wouldn'?t|won'?t|koenntest|kannst|wuerdest|wirst|magst)\s+(?:you|du|sie)\b|^(?:make|be)\s+sure\b|^(?:mach|sorg)\w*\s+(?:bitte\s+)?(?:sicher|dafuer)")
 BARE_NOT=re.compile(r"\b(?:not|never|no)\b|\byou\s+(?:didn'?t|did\s+not|wouldn'?t|would\s+not|won'?t)\b")
 # v7 (round 6 "erst wenn ich sag, dann ..."): "until/when I say so" is the user's approval, no action of the AI
-SAY_SO=re.compile(r"\b(?:wenn|bis|sobald|falls|nachdem|until|unless|when|if|once)\s+ich\s+(?:\w+\s+){0,3}(?:sag\w*|say\w*|said|erlaub\w*|ok\w*|freigeb\w*|zustimm\w*|ja\s+sag\w*|vorschreib\w*)\b")
+SAY_SO=re.compile(r"\b(?:wenn|bis|sobald|falls|nachdem|until|unless|when|if|once)\s+ich\s+(?:\w+\s+){0,3}(?:sag\w*|say\w*|said|erlaub\w*|ok\w*|freigeb\w*|zustimm\w*|ja\s+sag\w*)\b")
 APPROVAL=re.compile(r"\b(?:give|gives|given|giving|get|gets|got|geb\w*|gib)\s+(?:you\s+|dir\s+|me\s+|mir\s+)?(?:the\s+|my\s+|an?\s+|das\s+|mein\w*\s+|ein\w*\s+)?(?:green\s+light|okay|ok|go-?ahead|thumbs\s+up|all-?clear|permission|approval|consent|say-?so|nod|freigabe|erlaubnis|zustimmung)\b")
 TAG=re.compile(r"[\s,](?:okay|ok|alright|right|yeah|yes|ja|oder|gell|ne|ya\s+know|you\s+know)\s*\?$")  # "..., okay?" is no question
 MAKE_SURE=re.compile(r"\b(?:make|be)\s+sure\s+(?:\w+\s+)?(?:not|never|no)\b|\bsicher\w*\b.*\b(?:nicht|nie|kein\w*)\b")
@@ -279,7 +279,6 @@ def parse_clause(clause,prev=None):
     if 'INTERNET' in objs:actions.add('NETWORK')  # anything done "online / ins Internet" uses the network
     if 'NETWORK' in acts:objs.add('INTERNET')  # v5: "keine Dateien herunterladen" is about the internet too, not only about files
     if 'TOOLS' in objs:actions.add('TOOL')
-    if re.search(r"\bnichts\s+(?:zu\s+suchen|verloren)\b",t):actions.add('ANY')  # v8 (holdout_de4): "In meinen Notizen hast du nichts zu suchen"
     if 'MESSAGE' in objs and 'WRITE' in actions:actions.add('SEND')  # v6 (round 5): "keine E-Mails in meinem Namen schreiben" means sending
     if 'MODULE' in objs and actions&{'NETWORK','WRITE'}:actions.add('INSTALL')
     advice=bool(ADVICE.search(t));request=bool(REQUEST.search(t))
@@ -326,18 +325,16 @@ def parse_clause(clause,prev=None):
 # v6 broad net (after v3-v5: every fresh round brought new wordings): a clause the exact reader reads as no rule or as a
 # loosening, but that carries a negation, hold or condition signal and names a known action or object, becomes an open
 # question (UNCLEAR, reason NET; works like "ask first" until the user answers). Safety must not depend on knowing the wording.
-NET_NEG=re.compile(r"\b(?:weder|nicht\w*|kein\w*|nie|niemals|nimmer|niemand\w*|nichts|nix\w*|nich|no|not|never|nobody|nothing|none|nowhere|nirgends|nirgendwo)\b|n't\b")
+NET_NEG=re.compile(r"\b(?:nicht\w*|kein\w*|nie|niemals|nimmer|niemand\w*|nichts|nix\w*|nich|no|not|never|nobody|nothing|none|nowhere|nirgends|nirgendwo)\b|n't\b")
 NET_HOLD=re.compile(r"\b(?:bleib\w*|schluss|genug|weg|finger|pfoten|ruhe|tabu|gesperrt|sperr\w*|verbot\w*|verbiet\w*|untersag\w*|"
     r"gestrichen|streich\w*|aufhoer\w*|hoer\w*\s+(?:\w+\s+){0,4}auf|halt\w*\s+(?:\w+\s+){0,5}(?:raus|heraus|zurueck|fern)|raus|heraus|unterlass\w*|vorbei|"
     r"\w*lass\w*|\w*laesst|halte|behalt\w*|liegen|unberuehrt|bewahr\w*|verschon\w*|verpass\w*|versaeum\w*|skip\w*|omit\w*|spare?|"
     r"stop\w*|enough|keep|leave|quit|ban\w*|block\w*|forbid\w*|off[\s-]limits|hands\s+off|taboo|halt|cut\s+(?:it\s+)?out|no\s+more|"
     r"ausgeschlossen|ausschliess\w*|abgeschafft|abschaff\w*|unzulaessig|unerwuenscht|untersagt|verwehrt|ausgesetzt|eingestellt|"
     r"(?:ist|sind|bleibt|bleiben)\s+(?:\w+\s+){0,3}(?:aus|zu|dicht|vorbei|erledigt|gestrichen)|excluded|disabled|abolished|"
-    r"(?:ab|aus)geschaltet|(?:ab|aus)schalt\w*|abgestellt|abstell\w*|deaktivier\w*|(?:turned|switched|shut)\s+off|"
-    r"verweiger\w*|unveraendert|halten\s+sich\s+an)\b")  # v8 (round 7): "Ich verweigere dir ...", "bleiben unverändert"  # dev_v7: "Internet für dich abgeschaltet"  # v7 (round 6): "ist ausgeschlossen", "abgeschafft"
+    r"(?:ab|aus)geschaltet|(?:ab|aus)schalt\w*|abgestellt|abstell\w*|deaktivier\w*|(?:turned|switched|shut)\s+off)\b")  # dev_v7: "Internet für dich abgeschaltet"  # v7 (round 6): "ist ausgeschlossen", "abgeschafft"
 NET_COND=re.compile(r"\b(?:nur|erst|erstmal|erst\s+mal|vorerst|bevor|vorher|vorab|zuerst|zunaechst|ohne|ausser|bis|only|before|first|without|unless|until|except|prior|"
-    r"vorschau|preview|ehe|vor\s+(?:dem|der|deren|dessen|jede\w*)\s+\w+|bescheid|mitteil\w*|teil\w*\s+(?:\w+\s+){0,3}mit|wissen\s+lassen|lass\w*\s+(?:es\s+)?mich\s+(?:\w+\s+)?wissen|"
-    r"(?:sag|gib|meld|teil)\w*\s+(?:\w+\s+){0,3}(?:mir|mich)\b(?:\s*,?\s*\w+){0,4}?\s*,?\s*(?:wenn|bevor|falls|sobald|ob)|"
+    r"vorschau|preview|(?:sag|gib|meld|teil)\w*\s+(?:\w+\s+){0,3}(?:mir|mich)\b(?:\s*,?\s*\w+){0,4}?\s*,?\s*(?:wenn|bevor|falls|sobald|ob)|"
     r"frag\w*\s+(?:\w+\s+){0,2}(?:mich|mir)|fragen|ask\s+me|meld\w*\s+(?:\w+\s+){0,2}(?:mich|mir)|bescheid|rueckmeld\w*|nachfrag\w*|rueckfrag\w*|check\s+with\s+me)\b")
 WH_QUESTION=re.compile(r"^(?:warum|wieso|weshalb|was|wie|wo|wann|wer|welche\w*|why|what|how|where|when|who|which)\b")
 NET_IF=re.compile(r"\b(?:wenn|falls|sobald|nachdem|if|when|once|after)\b")
@@ -346,7 +343,7 @@ NET_OK=re.compile(r"\b(?:erlaub\w*|genehmig\w*|zustimm\w*|zugestimmt|okay|ok|ja|
 NET_NOT_COND=re.compile(r"\bohne\s+(?:nach|rueck)?frage\w*|\bohne\s+(?:mich\s+)?(?:zu\s+)?fragen\b|\bwithout\s+asking(?:\s+me)?\s*(?:first)?$")  # "darfst du ohne Nachfrage": a loosening
 
 
-NET_DISLIKE=re.compile(r"\b(?:stoer\w*|nerv\w*|aerger\w*|regt\s+(?:\w+\s+){0,3}auf|aufreg\w*|gefaellt\s+mir\s+nicht|unangenehm|bothers?|annoy\w*|hate|hasse|dislike)\b")  # v7 (round 6): "stört mich, wenn du an meinen Notizen ..."
+NET_DISLIKE=re.compile(r"\b(?:stoer\w*|nerv\w*|aerger\w*|gefaellt\s+mir\s+nicht|unangenehm|bothers?|annoy\w*|hate|hasse|dislike)\b")  # v7 (round 6): "stört mich, wenn du an meinen Notizen ..."
 # v7 cost (round 6 / holdout_de3): a report about other people or about the past is no rule when the AI is not addressed
 # and nothing is wished, allowed or required ("Niemand hat mir gesagt, dass ...", "Du hast nichts falsch gemacht").
 THIRD=re.compile(r"^(?:\w+\s*,\s*)?(?:\w+\s+){0,2}(?:niemand|keiner|kein\s+mensch|jemand|eine?\s+person|nobody|no\s+one|someone|somebody)\b.*\b(?:hat|hatte|haette|hab|habe|has|had|wurde|was)\b")
@@ -356,7 +353,7 @@ YOU_PAST=re.compile(r"\b(?:du\s+hast|hast\s+du|you\s+(?:have|did|didn'?t))\b.*"+
 I_PAST=re.compile(r"\b(?:ich\s+(?:habe|hab|hatte)|(?:habe|hab|hatte)\s+ich|i\s+(?:have|had|did|didn'?t))\b.*"+PAST_END)
 FIRM=re.compile(r"\b(?:gar\s+nicht|ueberhaupt\s+nicht|auf\s+keinen\s+fall|keinesfalls|kommt\s+nicht\s+in\s+frage|no\s+way|not\s+at\s+all)\b")
 ANY_ONLY_STATE=re.compile(r"\b(?:war|ist|sind|was|is|geht|gehen|klar|unklar|los)\b")
-FUNC=re.compile(r"\b(?:geht|gehen|ging|funktionier\w*|klappt|stimmt|laeuft|lief|hakt|spinnt|langsam|angekommen|ankommt|works?|working|broken|arrived)\b")
+FUNC=re.compile(r"\b(?:geht|gehen|ging|funktionier\w*|klappt|stimmt|laeuft|lief|hakt|spinnt|kaputt|langsam|angekommen|ankommt|works?|working|broken|arrived)\b")
 
 
 def _statement(t,piece):
@@ -372,11 +369,6 @@ def _statement(t,piece):
     return False
 
 
-ODER_Q=re.compile(r"\boder\s+(?:doch|vielleicht|nicht|trotzdem|lieber)\b")
-STRONG=re.compile(r"\b(?:tabu|sperrgebiet|gesperrt|sperr\w*|verbot\w*|verbiet\w*|untersag\w*|blockiert|ausgeschlossen|abgeschafft|"
-    r"finger\s+weg|pfoten\s+weg|hands\s+off|off[\s-]limits|forbidden|prohibited|banned)\b")
-
-
 def _net(piece):
     """Open question for a clause the exact reader missed, or None. Fixed signals only, never a model."""
     raw=norm(piece);t=NET_IDIOM.sub(' ',POSITIVE.sub(' ',raw)).strip();t=re.sub(r'\s+',' ',FILLER.sub('',INNER_FILLER.sub(' ',t))).strip() or t
@@ -387,18 +379,13 @@ def _net(piece):
     if _statement(t,piece):return None
     neg=bool(NET_NEG.search(t));hold=bool(NET_HOLD.search(t))
     if NET_DISLIKE.search(t) and YOU.search(t):hold=True
-    hedge=bool(HEDGE.search(t) and (YOU.search(t) or ODER_Q.search(t)))  # v8 (round 7): "Ich bin ungewiss, ob du Mails absenden würdest"
     cond=bool(NET_COND.search(NET_NOT_COND.sub(' ',t)) or (NET_IF.search(t) and NET_OK.search(t)))
-    if not (neg or hold or cond or hedge):return None
+    if not (neg or hold or cond):return None
     ta=SAY_SO.sub(' ',APPROVAL.sub(' ',ASK_WORDS.sub(' ',t)))
     acts=_classes(ta,ACTION_STEMS,ACTION_WORDS);weak={w for w in _words(ta) if w in WEAK_ANY}
     aw=(set().union(*acts.values()) if acts else set())|weak
     objs,unknown,_=_objects(t,aw)
-    if not acts and not objs:
-        if STRONG.search(t):  # v8 (round 7 "Das WLAN ist für dich ab jetzt Sperrgebiet"): a firm block word with an unknown target
-            return {'kind':'UNCLEAR','actions':['ANY','UNKNOWN'],'objects':['ALL'],'unknown':sorted(set(_objects(t,set())[1])),'exceptions':[],'reasons':['NET'],
-                    'text':piece.strip(),'suggest':'FORBID'}
-        return None  # nothing the AI could do is named ("kein Problem", "nicht schlecht")
+    if not acts and not objs:return None  # nothing the AI could do is named ("kein Problem", "nicht schlecht")
     if not acts and not weak and not hold and not cond and objs=={'ALL'} and not _classes(t,OBJECT_STEMS,{},compound=True) and ANY_ONLY_STATE.search(t) \
             and not NET_OK.search(t) and not YOU.search(t):return None  # v7 cost: "Nun, es war nichts", "geht nix" name no target
     actions=set(acts)|{'UNKNOWN'}  # unknown words widen, never narrow (G3)
@@ -513,14 +500,8 @@ def _short(r):
 def add(store,text,origin,clock=time.time):
     """Record the rule clauses of one line the user typed. Returns the new/known rules (never loosens anything, G2)."""
     if origin not in ('USER_TYPED','USER_COMMAND'):raise ValueError('Regeln entstehen nur aus eigenen Eingaben des Nutzers')
-    return add_clauses(store,[c for c in parse(text) if c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR')],origin,clock,text)
-
-
-def add_clauses(store,found,origin,clock=time.time,text=None):
-    """Store already read clauses (fixed reader, or open questions the second reader adds; userrules_second.py)."""
-    if origin not in ('USER_TYPED','USER_COMMAND'):raise ValueError('Regeln entstehen nur aus eigenen Eingaben des Nutzers')
+    found=[c for c in parse(text) if c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR')]
     if not found:return []
-    text=found[0]['text'] if text is None else text
     def f(st):
         new=[]
         for c in found:
@@ -544,8 +525,7 @@ def notice(r):
         why={'HEDGE':'du klingst unsicher','SOMEONE_ELSE':'das hat jemand anderes gesagt','QUESTION':'es ist eine Frage',
              'ABOUT_YOURSELF':'es klingt wie ein Satz über dich','UNCLEAR_OBJECT':'ich weiß nicht, was mit „das/es“ gemeint ist',
              'UNKNOWN_WORDING':'die Formulierung kenne ich noch nicht sicher','ADVICE':'es klingt wie ein Rat, nicht wie eine feste Regel',
-             'NET':'es klingt nach einer Regel, aber ich verstehe den Satz nicht sicher','QUOTED':'es klingt wie ein zitierter Text (Schild, Zettel), nicht sicher wie deine Regel',
-             'SECOND_READER':'ein zweiter Leser hält es für eine mögliche Regel, der feste Leser hat keine erkannt'}
+             'NET':'es klingt nach einer Regel, aber ich verstehe den Satz nicht sicher','QUOTED':'es klingt wie ein zitierter Text (Schild, Zettel), nicht sicher wie deine Regel'}
         prop={'FORBID':f' Mein Vorschlag: als Verbot lesen (:regel verbot {r["id"]}).','ASK_FIRST':f' Mein Vorschlag: als „erst fragen“ lesen (:regel fragen {r["id"]}).'}.get(r.get('suggest'),'')
         return (f'[Rückfrage {r["id"]}] Soll das eine Regel für mich sein? „{r["text"]}“ ({", ".join(why[x] for x in r["reasons"])}). '
                 f'Bis du antwortest, frage ich vorher bei allem, was das betreffen könnte ({_short(r)}). '

@@ -6,6 +6,8 @@ from pathlib import Path
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[3]
 sys.path.insert(0,str(ROOT));sys.path.insert(0,str(HERE.parents[1]/'continuation-20261021/user-rules'))
 import userrules_eval as E
+sys.path.insert(0,str(HERE));import snapshot
+E.U,_=snapshot.load()
 B=str(HERE.parents[1])+'/'
 files=[B+'continuation-20261021/user-rules/'+f for f in ('dev.json','holdout_author.json','model_cohort.json','model_cohort_round2.json')]
 files+=sorted(glob.glob(B+'continuation-20261022/user-rules-v[3-6]/cohort_round*.json'))+sorted(glob.glob(B+'continuation-20261022/user-rules-v[5-6]/holdout_de*.json'))+[str(HERE.parent/'user-rules-v7'/'dev_v7.json')]+[str(HERE.parent/'user-rules-v7'/f) for f in ('holdout_de4.json','cohort_round7.json')]

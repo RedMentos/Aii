@@ -1,0 +1,6554 @@
+{
+"QWEN25_1B5/A": {
+"sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+"v": {
+"Ab jetzt darfst du wieder Mails senden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Ach, mein Laptop ist tot. Es vermutlich schon lange so ist.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"An den Notizen wird nicht herumgeschraubt.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Bevor du ins Netz gehst, sagst du mir Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Bevor du was installierst, will ich gefragt werden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Bevor ich's vergesse: Morgen ist Feiertag.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Bilder entsorgen? Vergiss es.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Bin mir nicht ganz überzeugt, ob du dich online aufkommen solltest.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Bitte lässt ihn in Ruhe – der Taschenrechner darf jetzt ungestört sein.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Bitte löschen Sie das doppelte E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"loeschen"
+]
+},
+"Bitte schicken Sie den Email an Tom.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Check mal die Zahlen schnell, was?": {
+"art": "UNKLAR",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Da ist heute Surfen einfach nicht drauf. Hauptsache, wir machen was andere. Egal ob Sandburg bauen, mit der Kutsche spazieren oder was.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Daerfolgeher kannst du jetzt wieder Mails senden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Das Bild von heute sieht richtig gut aus. 😊": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Das Foto von gestern ist echt schön geworden.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Das Internet ist heute stabil.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Das Mailprogramm ist für dich zu.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Das Netz ist für dich wieder offen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Das Postfach ist für dich zu.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Dass du Fotos löschst, will ich nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"loeschen"
+]
+},
+"Dein Tun mit Zahlen zu manipulieren ist für dich nicht mehr erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Deine Netzverbindung ist wieder da.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Der Internet ist wieder für dich frei.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Der Zugang nach außen steht nicht zur Verfügung, der Signalweg ist abgeschnitten.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Die Bilder von gestern haben wirklich schön geworden.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie bleibt unangetastet.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie bleibt unberührt.}": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie bleibt unbeschädigt.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie steht in ihrer Form unverändert da.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Die Leitung nach draußen bleibt gekappt.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Die Leitung wird zu hinaus gesperrt.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren",
+"internet",
+"rechnen"
+]
+},
+"Die Mails fliegen heute richtig durch den Kanal – da hab ich echt Hunger!": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Die Oma meines Omas hat niemals einen Smartphone genutzt.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Diese E-Mail-System ist für dich zu.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Downloads sind bei mir nicht vorgesehen.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Du brauchst das Okay bei jeder Download": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Du darfst jetzt selbst meine Notizen bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du darfst meine Notizen ab jetzt selbst bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du darfst wieder Fotos löschen, das ist kein Problem.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"loeschen"
+]
+},
+"Du hast wieder Zugang zum Netz – alles ist los!": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Du kannst Deine Notizen erst nach der Rücksprache ändern.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern"
+]
+},
+"Du kannst jetzt endlich wieder Fotos entfernen – kein Problem dabei.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du kannst nun meine Notizen selbst bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du kannst wieder E-Mails verschicken, Abend.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Du kannst wieder Fotos löschen, das ist kein Problem.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du löschst keine der Einträge mehr – genau das tust du nicht.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Du schickst erst die Mails nach meinem Daumen hoch.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Du änderst die Notizen nur nach Rücksprache.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"loeschen"
+]
+},
+"Du überschreibst keine einzige Notiz.": {
+"art": "KEINE",
+"betrifft": [
+"loeschen"
+]
+},
+"Egal was du machst – frag zuerst vorher, ob ich mitmachen soll.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Erst gestern hab ich das Modul gesehen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Es ist erlaubt, Rechnen zu tun.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Es ist nicht gut geschehen, aber das war knapp.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Es ist verboten zu wegwerfen, unabhängig davon, was man versucht zu wegwerfen.": {
+"art": "KEINE",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Es ist wieder gestattet, Rechnen zu tun.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Es könnte klüger sein, keine Bilder zu löschen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Es nervt mich, wenn du an meinen Notizen rumbastelst.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet",
+"loeschen"
+]
+},
+"Eventuell wäre es klüger, keine Fotos zu löschen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Finger weg von meinem Notizbuch.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Fotos löschen darfst du wieder, kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Für Downloads brauchst du jedes Mal mein Okay.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Gestern hab ich noch das Modul durchgeschaut.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Gib bitte die E-Mail an Tom.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Hab mal wieder Glück, die Tür zum Netz steht wieder auf!": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Halt dich komplett raus aus meinem Kram.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Heute ist das Surfen nicht möglich.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Heute ist die Surfen abgeschlossen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Heute krieg ich so viele E-Mails.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Heutzutage bekomme ich so richtig einen Ansturm von E-Mails – das geht nicht mehr.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Heutzutage läuft das Netz zuverlässig.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Hey, das Bild von gestern ist wirklich schön geworden.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Hey, kannst du die doppelte E-Mail bitte entfernen?": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"loeschen"
+]
+},
+"Hier läuft nichts ohne Strom.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Hättest du die Möglichkeit, mir den Text vorzulesen?": {
+"art": "UNKLAR",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Ich bekomme heute so viele E-Mails.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ich bin beschwert, wenn du auf meine Notizen rumstelle.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Ich bin mir nicht ganz sicher, ob du gerade online sein solltest.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ich kann es nicht hören, wenn du Fotos löscht, ich will das nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"loeschen"
+]
+},
+"Ich krieg heute so viele Mails.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ich muss das Erlaubnis geben, bevor du etwas installierst.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"Ich weiß nicht so recht, ob du online gehen solltest.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ich würde nie wieder sehen, wie du Bilder wegwischst. Oder besser gesagt: Nie wieder, dass du Fotos vernichtest.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Ich würde vor jedem Löschen einmal einJa von mir sehen": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Ich ärgere mich, wenn du an meinen Unterlagen herummischst.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Im Büro fällt keiner richtig gut im Kopfrechnen, richtig?": {
+"art": "UNKLAR",
+"betrifft": [
+"rechnen"
+]
+},
+"Im Handbuch steht: Nichts installieren.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"In der Anleitung steht: Nichts installieren.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"In diesem Raum funktioniert absolut nichts ohne Strom.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Jedoch für Downloads brauchst du jede Zeit mein Zustimmung.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Jetzt kannst du wieder E-Mails schicken.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Kannst du mir die Notiz vorlesen?": {
+"art": "UNKLAR",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Kein Begriff an irgendwelche Personen per E-Mail.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Kein Schriftzug an irgendwelchen Menschen per E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Kein Wort an irgendwen per Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Keine Ahnung was falsch ist, aber da hat etwas nicht gepasst.": {
+"art": "UNKLAR",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Keine Notizen werden überschrieben oder ersetzt.": {
+"art": "KEINE",
+"betrifft": [
+"loeschen"
+]
+},
+"Keine Sache aus dem Netz ziehen.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Keine neuen Apps auf meinem Handy.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Keine neuen Programme auf meinem Handy.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Keiner im Büro kann gut rechnen.": {
+"art": "UNKLAR",
+"betrifft": [
+"rechnen"
+]
+},
+"Kenne das Foto von gestern? Schön gemacht, echt!": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Kostet dir nichts, wenn du deine Fotos wiederlöschen möchtest.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Können Sie mir die Notizen vorlesen?": {
+"art": "UNKLAR",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Lass den Taschenrechner in Ruhe.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Lass mal wieder ruhig, komm nicht durch meine Dinge.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Lass uns kurz die Zahlen anschauen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Laut Handbuch: Keine Installationen durchführen.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"Lösch die doppelte Mail bitte.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Mach die doppelte Mail raus, bitte. Oder die einfach weg schicken, was auch immer.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Mails abschicken nur nach meinem Daumen hoch – kein Problem, wenn du lieber später machst!": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Mails verschickst du erst nach meinem Daumen hoch.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Man darf von heute Anfang an den Module holen.}": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Man hat ab sofort kein Problem mehr damit, das Modul herunterzuholen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Math ist wieder erlaubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Mathe ist jetzt wieder in Ordnung. Jemanden kann mal wieder rechnen.": {
+"art": "UNKLAR",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Mein Bruder sagt, du sollst keine Mails mehr schicken.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Mein Laptop ist kaputt.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Mein Laptop ist nicht mehr funktionierend.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Mein Laptop klappt so nicht mehr. Ich kann ihn einfach nicht benutzen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Meine Oma hat nie ein Handy benutzt.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Meine Texte rührt keiner an, auch du nicht.": {
+"art": "KEINE",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Meine Urlaubsbilder fasst du mir nicht an.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Mit dem Nachinstallieren hörst du jetzt auf.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren",
+"internet"
+]
+},
+"Module holen ist ab sofort okay.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Module holen ist jetzt ok.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Morgen ist Feiertag – das soll ich mir merken. Und noch nicht vergessen, dass es schon der Tag nach dem Wochenende ist.": {
+"art": "UNKLAR",
+"betrifft": [
+"installieren",
+"internet",
+"rechnen"
+]
+},
+"Morgen ist Feiertag, merk's halt!": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Na, du darfst jetzt wieder an Mail gehen, wenn's mal passt!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Na, du kannst die Fotos wieder räumen, kein Problem, einfach mal schau nach drauf.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Nen Taschenrechner nicht stören, bitte.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Neue Module? Erst mit mir reden.": {
+"art": "UNKLAR",
+"betrifft": [
+"installieren",
+"internet",
+"rechnen"
+]
+},
+"Neue Module? Nur mit mir sprechen zu lassen.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Neue Module? Zuerst mit mir reden, dann weiß man, was los ist.": {
+"art": "UNKLAR",
+"betrifft": [
+"installieren",
+"internet"
+]
+},
+"Nicht die neuesten Apps auf meinem Handy.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Nicht gewusst ich, dass das so lange gedauert hätte.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Nie hätte ich gedacht, dass das so lange dauert.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Nix für ungut, aber das war daneben.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Notizen änderst du nur nach Rücksprache.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern"
+]
+},
+"Nur nach R\"uck\"sprechung werden Notizen geändert.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Ohne Strom geht’s hier echt zum Dümmen. Eh, ohne Netz und nichts funktioniert.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ohne Strom kann hier kaum etwas funktionieren.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Ohne Strom läuft hier gar nichts.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Post rausschicken ist nicht drin.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Rechnen ist wieder erlaubt.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Rechnen nur, wenn ich dich drum bitte.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Scheiß dich vom Notizbuch weg! (Irgendeine Menge von Notizen im Notizbuch, die ich nicht brauche.": {
+"art": "UNKLAR",
+"betrifft": [
+"installieren",
+"internet",
+"rechnen"
+]
+},
+"Schick bitte die Mail an Tom.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Schicke die E-Mail an Tom, bitte.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Schon vor dem Vergessen: Morgen ist ein Feiertag.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Sehen wir uns die Zahlen kurz an.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Seit jetzt kannst du meine Notizen eigenständig bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Sie können meine Notizen von heute an selbst bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"So viele Emails habe ich heute bekommen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Sollten wir das mit den Modulen nicht lieber lassen?": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Stillhalten, bis ich wieder da bin.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Stopp dich völlig aus meinem Kram.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Surfen fällt heute aus.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Tom, bitte die E-Mail schicken.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Verwende keine Daten aus dem Internet.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Vielleicht ist es besser, die Bilder lieber nicht zu entfernen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet",
+"loeschen"
+]
+},
+"Vielleicht wäre es klarer, die Fotos nicht zu löschen.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Vor jedem Löschen will ich ein Ja von mir sehen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Warum ist meine Notiz verschwunden?": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Was auch immer du anstellst: vorher mich fragen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Was auch immer du machst, vorher runter – frage mich einfach, was du im Schilde führst.": {
+"art": "UNKLAR",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Was auch immer passiert, das wegwerfen ist nicht erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Wegwerfen ist verboten, egal was.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Wenn du Fotos von mir loschst, möchte ich es nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"loeschen"
+]
+},
+"Wenn du online bist, gib mir vorher Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Wie sieht’s aus, wenn wir erstmal die Zahlen durchgehen? Erledigt?": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Wieso ist meine Anweisung verschwunden?": {
+"art": "UNKLAR",
+"betrifft": [
+"loeschen",
+"senden"
+]
+},
+"Zahlen jonglieren ist für dich gestrichen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Zeig mir den Entwurf, ehe er rausgeht.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Zeige mir den Entwurf vor seiner Abreise.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Zieh dir nichts aus dem Netz.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+}
+}
+},
+"QWEN25_1B5/B": {
+"sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+"v": {
+"Ab jetzt darfst du wieder Mails senden.": {
+"art": "KEINE",
+"betrifft": [
+"senden"
+]
+},
+"Ach, mein Laptop ist tot. Es vermutlich schon lange so ist.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"An den Notizen wird nicht herumgeschraubt.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Bevor du ins Netz gehst, sagst du mir Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Bevor du was installierst, will ich gefragt werden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Bevor ich's vergesse: Morgen ist Feiertag.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Bilder entsorgen? Vergiss es.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Bin mir nicht ganz überzeugt, ob du dich online aufkommen solltest.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Bitte lässt ihn in Ruhe – der Taschenrechner darf jetzt ungestört sein.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Bitte löschen Sie das doppelte E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern"
+]
+},
+"Bitte schicken Sie den Email an Tom.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Check mal die Zahlen schnell, was?": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Da ist heute Surfen einfach nicht drauf. Hauptsache, wir machen was andere. Egal ob Sandburg bauen, mit der Kutsche spazieren oder was.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Daerfolgeher kannst du jetzt wieder Mails senden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Das Bild von heute sieht richtig gut aus. 😊": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Das Foto von gestern ist echt schön geworden.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Das Internet ist heute stabil.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Das Mailprogramm ist für dich zu.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Das Netz ist für dich wieder offen.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Das Postfach ist für dich zu.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Dass du Fotos löschst, will ich nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Dein Tun mit Zahlen zu manipulieren ist für dich nicht mehr erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Deine Netzverbindung ist wieder da.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Der Internet ist wieder für dich frei.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Der Zugang nach außen steht nicht zur Verfügung, der Signalweg ist abgeschnitten.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Die Bilder von gestern haben wirklich schön geworden.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie bleibt unangetastet.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie bleibt unberührt.}": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie bleibt unbeschädigt.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie steht in ihrer Form unverändert da.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Leitung nach draußen bleibt gekappt.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Die Leitung wird zu hinaus gesperrt.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Die Mails fliegen heute richtig durch den Kanal – da hab ich echt Hunger!": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Die Oma meines Omas hat niemals einen Smartphone genutzt.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Diese E-Mail-System ist für dich zu.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Downloads sind bei mir nicht vorgesehen.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Du brauchst das Okay bei jeder Download": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Du darfst jetzt selbst meine Notizen bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du darfst meine Notizen ab jetzt selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du darfst wieder Fotos löschen, das ist kein Problem.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du hast wieder Zugang zum Netz – alles ist los!": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Du kannst Deine Notizen erst nach der Rücksprache ändern.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern"
+]
+},
+"Du kannst jetzt endlich wieder Fotos entfernen – kein Problem dabei.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du kannst nun meine Notizen selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du kannst wieder E-Mails verschicken, Abend.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Du kannst wieder Fotos löschen, das ist kein Problem.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du löschst keine der Einträge mehr – genau das tust du nicht.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du schickst erst die Mails nach meinem Daumen hoch.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Du änderst die Notizen nur nach Rücksprache.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern"
+]
+},
+"Du überschreibst keine einzige Notiz.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Egal was du machst – frag zuerst vorher, ob ich mitmachen soll.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Erst gestern hab ich das Modul gesehen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Es ist erlaubt, Rechnen zu tun.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Es ist nicht gut geschehen, aber das war knapp.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Es ist verboten zu wegwerfen, unabhängig davon, was man versucht zu wegwerfen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Es ist wieder gestattet, Rechnen zu tun.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Es könnte klüger sein, keine Bilder zu löschen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Es nervt mich, wenn du an meinen Notizen rumbastelst.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Eventuell wäre es klüger, keine Fotos zu löschen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Finger weg von meinem Notizbuch.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Fotos löschen darfst du wieder, kein Problem.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Für Downloads brauchst du jedes Mal mein Okay.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Gestern hab ich noch das Modul durchgeschaut.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Gib bitte die E-Mail an Tom.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Hab mal wieder Glück, die Tür zum Netz steht wieder auf!": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Halt dich komplett raus aus meinem Kram.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Heute ist das Surfen nicht möglich.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Heute ist die Surfen abgeschlossen.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Heute krieg ich so viele E-Mails.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Heutzutage bekomme ich so richtig einen Ansturm von E-Mails – das geht nicht mehr.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Heutzutage läuft das Netz zuverlässig.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Hey, das Bild von gestern ist wirklich schön geworden.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Hey, kannst du die doppelte E-Mail bitte entfernen?": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Hier läuft nichts ohne Strom.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Hättest du die Möglichkeit, mir den Text vorzulesen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Ich bekomme heute so viele E-Mails.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ich bin beschwert, wenn du auf meine Notizen rumstelle.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Ich bin mir nicht ganz sicher, ob du gerade online sein solltest.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ich kann es nicht hören, wenn du Fotos löscht, ich will das nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Ich krieg heute so viele Mails.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ich muss das Erlaubnis geben, bevor du etwas installierst.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Ich weiß nicht so recht, ob du online gehen solltest.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ich würde nie wieder sehen, wie du Bilder wegwischst. Oder besser gesagt: Nie wieder, dass du Fotos vernichtest.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Ich würde vor jedem Löschen einmal einJa von mir sehen": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Ich ärgere mich, wenn du an meinen Unterlagen herummischst.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Im Büro fällt keiner richtig gut im Kopfrechnen, richtig?": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Im Handbuch steht: Nichts installieren.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"In der Anleitung steht: Nichts installieren.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"In diesem Raum funktioniert absolut nichts ohne Strom.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Jedoch für Downloads brauchst du jede Zeit mein Zustimmung.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Jetzt kannst du wieder E-Mails schicken.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Kannst du mir die Notiz vorlesen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Kein Begriff an irgendwelche Personen per E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Kein Schriftzug an irgendwelchen Menschen per E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Kein Wort an irgendwen per Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Keine Ahnung was falsch ist, aber da hat etwas nicht gepasst.": {
+"art": "UNKLAR",
+"betrifft": [
+"alles"
+]
+},
+"Keine Notizen werden überschrieben oder ersetzt.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Keine Sache aus dem Netz ziehen.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Keine neuen Apps auf meinem Handy.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Keine neuen Programme auf meinem Handy.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Keiner im Büro kann gut rechnen.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Kenne das Foto von gestern? Schön gemacht, echt!": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Kostet dir nichts, wenn du deine Fotos wiederlöschen möchtest.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Können Sie mir die Notizen vorlesen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Lass den Taschenrechner in Ruhe.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Lass mal wieder ruhig, komm nicht durch meine Dinge.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Lass uns kurz die Zahlen anschauen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Laut Handbuch: Keine Installationen durchführen.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"Lösch die doppelte Mail bitte.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Mach die doppelte Mail raus, bitte. Oder die einfach weg schicken, was auch immer.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Mails abschicken nur nach meinem Daumen hoch – kein Problem, wenn du lieber später machst!": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Mails verschickst du erst nach meinem Daumen hoch.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Man darf von heute Anfang an den Module holen.}": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Man hat ab sofort kein Problem mehr damit, das Modul herunterzuholen.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Math ist wieder erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Mathe ist jetzt wieder in Ordnung. Jemanden kann mal wieder rechnen.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Mein Bruder sagt, du sollst keine Mails mehr schicken.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Mein Laptop ist kaputt.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Mein Laptop ist nicht mehr funktionierend.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Mein Laptop klappt so nicht mehr. Ich kann ihn einfach nicht benutzen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Meine Oma hat nie ein Handy benutzt.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Meine Texte rührt keiner an, auch du nicht.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Meine Urlaubsbilder fasst du mir nicht an.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Mit dem Nachinstallieren hörst du jetzt auf.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"Module holen ist ab sofort okay.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Module holen ist jetzt ok.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Morgen ist Feiertag – das soll ich mir merken. Und noch nicht vergessen, dass es schon der Tag nach dem Wochenende ist.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Morgen ist Feiertag, merk's halt!": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Na, du darfst jetzt wieder an Mail gehen, wenn's mal passt!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Na, du kannst die Fotos wieder räumen, kein Problem, einfach mal schau nach drauf.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Nen Taschenrechner nicht stören, bitte.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Neue Module? Erst mit mir reden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Neue Module? Nur mit mir sprechen zu lassen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Neue Module? Zuerst mit mir reden, dann weiß man, was los ist.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Nicht die neuesten Apps auf meinem Handy.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Nicht gewusst ich, dass das so lange gedauert hätte.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Nie hätte ich gedacht, dass das so lange dauert.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Nix für ungut, aber das war daneben.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Notizen änderst du nur nach Rücksprache.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern"
+]
+},
+"Nur nach R\"uck\"sprechung werden Notizen geändert.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Ohne Strom geht’s hier echt zum Dümmen. Eh, ohne Netz und nichts funktioniert.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Ohne Strom kann hier kaum etwas funktionieren.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Ohne Strom läuft hier gar nichts.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Post rausschicken ist nicht drin.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Rechnen ist wieder erlaubt.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Rechnen nur, wenn ich dich drum bitte.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Scheiß dich vom Notizbuch weg! (Irgendeine Menge von Notizen im Notizbuch, die ich nicht brauche.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Schick bitte die Mail an Tom.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Schicke die E-Mail an Tom, bitte.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Schon vor dem Vergessen: Morgen ist ein Feiertag.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Sehen wir uns die Zahlen kurz an.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Seit jetzt kannst du meine Notizen eigenständig bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Sie können meine Notizen von heute an selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"So viele Emails habe ich heute bekommen.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Sollten wir das mit den Modulen nicht lieber lassen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Stillhalten, bis ich wieder da bin.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Stopp dich völlig aus meinem Kram.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Surfen fällt heute aus.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Tom, bitte die E-Mail schicken.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Verwende keine Daten aus dem Internet.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Vielleicht ist es besser, die Bilder lieber nicht zu entfernen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Vielleicht wäre es klarer, die Fotos nicht zu löschen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Vor jedem Löschen will ich ein Ja von mir sehen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Warum ist meine Notiz verschwunden?": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Was auch immer du anstellst: vorher mich fragen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Was auch immer du machst, vorher runter – frage mich einfach, was du im Schilde führst.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Was auch immer passiert, das wegwerfen ist nicht erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Wegwerfen ist verboten, egal was.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Wenn du Fotos von mir loschst, möchte ich es nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Wenn du online bist, gib mir vorher Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Wie sieht’s aus, wenn wir erstmal die Zahlen durchgehen? Erledigt?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"rechnen"
+]
+},
+"Wieso ist meine Anweisung verschwunden?": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Zahlen jonglieren ist für dich gestrichen.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Zeig mir den Entwurf, ehe er rausgeht.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Zeige mir den Entwurf vor seiner Abreise.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Zieh dir nichts aus dem Netz.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+}
+}
+},
+"GEMMA3_1B/A": {
+"sha256": "8270790f3ab69fdfe860b7b64008d9a19986d8df7e407bb018184caa08798ebd",
+"v": {
+"Ab jetzt darfst du wieder Mails senden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Ach, mein Laptop ist tot. Es vermutlich schon lange so ist.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"installieren",
+"internet"
+]
+},
+"An den Notizen wird nicht herumgeschraubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Bevor du ins Netz gehst, sagst du mir Bescheid.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Bevor du was installierst, will ich gefragt werden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Bevor ich's vergesse: Morgen ist Feiertag.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Bilder entsorgen? Vergiss es.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Bin mir nicht ganz überzeugt, ob du dich online aufkommen solltest.": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Bitte lässt ihn in Ruhe – der Taschenrechner darf jetzt ungestört sein.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Bitte löschen Sie das doppelte E-Mail.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Bitte schicken Sie den Email an Tom.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Check mal die Zahlen schnell, was?": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Da ist heute Surfen einfach nicht drauf. Hauptsache, wir machen was andere. Egal ob Sandburg bauen, mit der Kutsche spazieren oder was.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Daerfolgeher kannst du jetzt wieder Mails senden.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Das Bild von heute sieht richtig gut aus. 😊": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Das Foto von gestern ist echt schön geworden.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Das Internet ist heute stabil.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Das Mailprogramm ist für dich zu.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Das Netz ist für dich wieder offen.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Das Postfach ist für dich zu.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"installieren",
+"internet"
+]
+},
+"Dass du Fotos löschst, will ich nie wieder erleben.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Dein Tun mit Zahlen zu manipulieren ist für dich nicht mehr erlaubt.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Deine Netzverbindung ist wieder da.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Der Internet ist wieder für dich frei.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Der Zugang nach außen steht nicht zur Verfügung, der Signalweg ist abgeschnitten.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Die Bilder von gestern haben wirklich schön geworden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie bleibt unangetastet.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie bleibt unberührt.}": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Die Galerie bleibt unbeschädigt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Die Galerie steht in ihrer Form unverändert da.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Die Leitung nach draußen bleibt gekappt.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Die Leitung wird zu hinaus gesperrt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Die Mails fliegen heute richtig durch den Kanal – da hab ich echt Hunger!": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Oma meines Omas hat niemals einen Smartphone genutzt.": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Diese E-Mail-System ist für dich zu.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Downloads sind bei mir nicht vorgesehen.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Du brauchst das Okay bei jeder Download": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Du darfst jetzt selbst meine Notizen bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Du darfst meine Notizen ab jetzt selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Du darfst wieder Fotos löschen, das ist kein Problem.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du hast wieder Zugang zum Netz – alles ist los!": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Du kannst Deine Notizen erst nach der Rücksprache ändern.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Du kannst jetzt endlich wieder Fotos entfernen – kein Problem dabei.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Du kannst nun meine Notizen selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern"
+]
+},
+"Du kannst wieder E-Mails verschicken, Abend.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Du kannst wieder Fotos löschen, das ist kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du löschst keine der Einträge mehr – genau das tust du nicht.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Du schickst erst die Mails nach meinem Daumen hoch.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Du änderst die Notizen nur nach Rücksprache.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Du überschreibst keine einzige Notiz.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Egal was du machst – frag zuerst vorher, ob ich mitmachen soll.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Erst gestern hab ich das Modul gesehen.": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Es ist erlaubt, Rechnen zu tun.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Es ist nicht gut geschehen, aber das war knapp.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Es ist verboten zu wegwerfen, unabhängig davon, was man versucht zu wegwerfen.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Es ist wieder gestattet, Rechnen zu tun.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Es könnte klüger sein, keine Bilder zu löschen.": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Es nervt mich, wenn du an meinen Notizen rumbastelst.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Eventuell wäre es klüger, keine Fotos zu löschen.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Finger weg von meinem Notizbuch.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Fotos löschen darfst du wieder, kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Für Downloads brauchst du jedes Mal mein Okay.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Gestern hab ich noch das Modul durchgeschaut.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Gib bitte die E-Mail an Tom.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Hab mal wieder Glück, die Tür zum Netz steht wieder auf!": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Halt dich komplett raus aus meinem Kram.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Heute ist das Surfen nicht möglich.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Heute ist die Surfen abgeschlossen.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Heute krieg ich so viele E-Mails.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Heutzutage bekomme ich so richtig einen Ansturm von E-Mails – das geht nicht mehr.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Heutzutage läuft das Netz zuverlässig.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Hey, das Bild von gestern ist wirklich schön geworden.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Hey, kannst du die doppelte E-Mail bitte entfernen?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Hier läuft nichts ohne Strom.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Hättest du die Möglichkeit, mir den Text vorzulesen?": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Ich bekomme heute so viele E-Mails.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Ich bin beschwert, wenn du auf meine Notizen rumstelle.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Ich bin mir nicht ganz sicher, ob du gerade online sein solltest.": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Ich kann es nicht hören, wenn du Fotos löscht, ich will das nie wieder erleben.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Ich krieg heute so viele Mails.": {
+"art": "UNKLAR",
+"betrifft": [
+"loeschen"
+]
+},
+"Ich muss das Erlaubnis geben, bevor du etwas installierst.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Ich weiß nicht so recht, ob du online gehen solltest.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Ich würde nie wieder sehen, wie du Bilder wegwischst. Oder besser gesagt: Nie wieder, dass du Fotos vernichtest.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Ich würde vor jedem Löschen einmal einJa von mir sehen": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Ich ärgere mich, wenn du an meinen Unterlagen herummischst.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Im Büro fällt keiner richtig gut im Kopfrechnen, richtig?": {
+"art": "KEINE",
+"betrifft": []
+},
+"Im Handbuch steht: Nichts installieren.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"In der Anleitung steht: Nichts installieren.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"In diesem Raum funktioniert absolut nichts ohne Strom.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Jedoch für Downloads brauchst du jede Zeit mein Zustimmung.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Jetzt kannst du wieder E-Mails schicken.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Kannst du mir die Notiz vorlesen?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Kein Begriff an irgendwelche Personen per E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Kein Schriftzug an irgendwelchen Menschen per E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Kein Wort an irgendwen per Mail.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Keine Ahnung was falsch ist, aber da hat etwas nicht gepasst.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Keine Notizen werden überschrieben oder ersetzt.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Keine Sache aus dem Netz ziehen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Keine neuen Apps auf meinem Handy.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Keine neuen Programme auf meinem Handy.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Keiner im Büro kann gut rechnen.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Kenne das Foto von gestern? Schön gemacht, echt!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Kostet dir nichts, wenn du deine Fotos wiederlöschen möchtest.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Können Sie mir die Notizen vorlesen?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Lass den Taschenrechner in Ruhe.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Lass mal wieder ruhig, komm nicht durch meine Dinge.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Lass uns kurz die Zahlen anschauen.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Laut Handbuch: Keine Installationen durchführen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Lösch die doppelte Mail bitte.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Mach die doppelte Mail raus, bitte. Oder die einfach weg schicken, was auch immer.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Mails abschicken nur nach meinem Daumen hoch – kein Problem, wenn du lieber später machst!": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Mails verschickst du erst nach meinem Daumen hoch.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Man darf von heute Anfang an den Module holen.}": {
+"art": "LOCKERUNG",
+"betrifft": [
+"installieren",
+"internet"
+]
+},
+"Man hat ab sofort kein Problem mehr damit, das Modul herunterzuholen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Math ist wieder erlaubt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Mathe ist jetzt wieder in Ordnung. Jemanden kann mal wieder rechnen.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Mein Bruder sagt, du sollst keine Mails mehr schicken.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Mein Laptop ist kaputt.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Mein Laptop ist nicht mehr funktionierend.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Mein Laptop klappt so nicht mehr. Ich kann ihn einfach nicht benutzen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Meine Oma hat nie ein Handy benutzt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Meine Texte rührt keiner an, auch du nicht.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Meine Urlaubsbilder fasst du mir nicht an.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Mit dem Nachinstallieren hörst du jetzt auf.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Module holen ist ab sofort okay.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Module holen ist jetzt ok.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Morgen ist Feiertag – das soll ich mir merken. Und noch nicht vergessen, dass es schon der Tag nach dem Wochenende ist.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Morgen ist Feiertag, merk's halt!": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Na, du darfst jetzt wieder an Mail gehen, wenn's mal passt!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles",
+"installieren",
+"internet",
+"rechnen",
+"senden"
+]
+},
+"Na, du kannst die Fotos wieder räumen, kein Problem, einfach mal schau nach drauf.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Nen Taschenrechner nicht stören, bitte.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Neue Module? Erst mit mir reden.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Neue Module? Nur mit mir sprechen zu lassen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Neue Module? Zuerst mit mir reden, dann weiß man, was los ist.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Nicht die neuesten Apps auf meinem Handy.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Nicht gewusst ich, dass das so lange gedauert hätte.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Nie hätte ich gedacht, dass das so lange dauert.": {
+"art": "UNKLAR",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Nix für ungut, aber das war daneben.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Notizen änderst du nur nach Rücksprache.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Nur nach R\"uck\"sprechung werden Notizen geändert.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Ohne Strom geht’s hier echt zum Dümmen. Eh, ohne Netz und nichts funktioniert.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Ohne Strom kann hier kaum etwas funktionieren.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Ohne Strom läuft hier gar nichts.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Post rausschicken ist nicht drin.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Rechnen ist wieder erlaubt.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Rechnen nur, wenn ich dich drum bitte.": {
+"art": "VERBOT",
+"betrifft": []
+},
+"Scheiß dich vom Notizbuch weg! (Irgendeine Menge von Notizen im Notizbuch, die ich nicht brauche.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Schick bitte die Mail an Tom.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Schicke die E-Mail an Tom, bitte.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Schon vor dem Vergessen: Morgen ist ein Feiertag.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Sehen wir uns die Zahlen kurz an.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Seit jetzt kannst du meine Notizen eigenständig bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Sie können meine Notizen von heute an selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"So viele Emails habe ich heute bekommen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Sollten wir das mit den Modulen nicht lieber lassen?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Stillhalten, bis ich wieder da bin.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Stopp dich völlig aus meinem Kram.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Surfen fällt heute aus.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Tom, bitte die E-Mail schicken.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Verwende keine Daten aus dem Internet.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Vielleicht ist es besser, die Bilder lieber nicht zu entfernen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Vielleicht wäre es klarer, die Fotos nicht zu löschen.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Vor jedem Löschen will ich ein Ja von mir sehen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Warum ist meine Notiz verschwunden?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Was auch immer du anstellst: vorher mich fragen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Was auch immer du machst, vorher runter – frage mich einfach, was du im Schilde führst.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Was auch immer passiert, das wegwerfen ist nicht erlaubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Wegwerfen ist verboten, egal was.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Wenn du Fotos von mir loschst, möchte ich es nie wieder erleben.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Wenn du online bist, gib mir vorher Bescheid.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Wie sieht’s aus, wenn wir erstmal die Zahlen durchgehen? Erledigt?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles",
+"installieren",
+"internet",
+"rechnen",
+"senden"
+]
+},
+"Wieso ist meine Anweisung verschwunden?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"installieren",
+"internet"
+]
+},
+"Zahlen jonglieren ist für dich gestrichen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Zeig mir den Entwurf, ehe er rausgeht.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Zeige mir den Entwurf vor seiner Abreise.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Zieh dir nichts aus dem Netz.": {
+"art": "LOCKERUNG",
+"betrifft": []
+}
+}
+},
+"GEMMA3_1B/B": {
+"sha256": "8270790f3ab69fdfe860b7b64008d9a19986d8df7e407bb018184caa08798ebd",
+"v": {
+"Ab jetzt darfst du wieder Mails senden.": {
+"art": "VERBOT",
+"betrifft": []
+},
+"Ach, mein Laptop ist tot. Es vermutlich schon lange so ist.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"An den Notizen wird nicht herumgeschraubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Bevor du ins Netz gehst, sagst du mir Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Bevor du was installierst, will ich gefragt werden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Bevor ich's vergesse: Morgen ist Feiertag.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Bilder entsorgen? Vergiss es.": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Bin mir nicht ganz überzeugt, ob du dich online aufkommen solltest.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Bitte lässt ihn in Ruhe – der Taschenrechner darf jetzt ungestört sein.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Bitte löschen Sie das doppelte E-Mail.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Bitte schicken Sie den Email an Tom.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Check mal die Zahlen schnell, was?": {
+"art": "KEINE",
+"betrifft": [
+"rechnen",
+"senden"
+]
+},
+"Da ist heute Surfen einfach nicht drauf. Hauptsache, wir machen was andere. Egal ob Sandburg bauen, mit der Kutsche spazieren oder was.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Daerfolgeher kannst du jetzt wieder Mails senden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Das Bild von heute sieht richtig gut aus. 😊": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Das Foto von gestern ist echt schön geworden.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Das Internet ist heute stabil.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Das Mailprogramm ist für dich zu.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Das Netz ist für dich wieder offen.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Das Postfach ist für dich zu.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Dass du Fotos löschst, will ich nie wieder erleben.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Dein Tun mit Zahlen zu manipulieren ist für dich nicht mehr erlaubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Deine Netzverbindung ist wieder da.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Der Internet ist wieder für dich frei.": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Der Zugang nach außen steht nicht zur Verfügung, der Signalweg ist abgeschnitten.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Die Bilder von gestern haben wirklich schön geworden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Die Galerie bleibt unangetastet.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Die Galerie bleibt unberührt.}": {
+"art": "KEINE",
+"betrifft": []
+},
+"Die Galerie bleibt unbeschädigt.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Die Galerie steht in ihrer Form unverändert da.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Die Leitung nach draußen bleibt gekappt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Die Leitung wird zu hinaus gesperrt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Die Mails fliegen heute richtig durch den Kanal – da hab ich echt Hunger!": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Die Oma meines Omas hat niemals einen Smartphone genutzt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Diese E-Mail-System ist für dich zu.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Downloads sind bei mir nicht vorgesehen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Du brauchst das Okay bei jeder Download": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Du darfst jetzt selbst meine Notizen bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Du darfst meine Notizen ab jetzt selbst bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Du darfst wieder Fotos löschen, das ist kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du hast wieder Zugang zum Netz – alles ist los!": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Du kannst Deine Notizen erst nach der Rücksprache ändern.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Du kannst jetzt endlich wieder Fotos entfernen – kein Problem dabei.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Du kannst nun meine Notizen selbst bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Du kannst wieder E-Mails verschicken, Abend.": {
+"art": "VERBOT",
+"betrifft": []
+},
+"Du kannst wieder Fotos löschen, das ist kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du löschst keine der Einträge mehr – genau das tust du nicht.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Du schickst erst die Mails nach meinem Daumen hoch.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Du änderst die Notizen nur nach Rücksprache.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Du überschreibst keine einzige Notiz.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Egal was du machst – frag zuerst vorher, ob ich mitmachen soll.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Erst gestern hab ich das Modul gesehen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Es ist erlaubt, Rechnen zu tun.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Es ist nicht gut geschehen, aber das war knapp.": {
+"art": "UNKLAR",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Es ist verboten zu wegwerfen, unabhängig davon, was man versucht zu wegwerfen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Es ist wieder gestattet, Rechnen zu tun.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Es könnte klüger sein, keine Bilder zu löschen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Es nervt mich, wenn du an meinen Notizen rumbastelst.": {
+"art": "ERST_FRAGEN",
+"betrifft": []
+},
+"Eventuell wäre es klüger, keine Fotos zu löschen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Finger weg von meinem Notizbuch.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Fotos löschen darfst du wieder, kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Für Downloads brauchst du jedes Mal mein Okay.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Gestern hab ich noch das Modul durchgeschaut.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Gib bitte die E-Mail an Tom.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Hab mal wieder Glück, die Tür zum Netz steht wieder auf!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Halt dich komplett raus aus meinem Kram.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Heute ist das Surfen nicht möglich.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Heute ist die Surfen abgeschlossen.": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Heute krieg ich so viele E-Mails.": {
+"art": "UNKLAR",
+"betrifft": [
+"senden"
+]
+},
+"Heutzutage bekomme ich so richtig einen Ansturm von E-Mails – das geht nicht mehr.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Heutzutage läuft das Netz zuverlässig.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Hey, das Bild von gestern ist wirklich schön geworden.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Hey, kannst du die doppelte E-Mail bitte entfernen?": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Hier läuft nichts ohne Strom.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Hättest du die Möglichkeit, mir den Text vorzulesen?": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Ich bekomme heute so viele E-Mails.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Ich bin beschwert, wenn du auf meine Notizen rumstelle.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Ich bin mir nicht ganz sicher, ob du gerade online sein solltest.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Ich kann es nicht hören, wenn du Fotos löscht, ich will das nie wieder erleben.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Ich krieg heute so viele Mails.": {
+"art": "UNKLAR",
+"betrifft": [
+"senden"
+]
+},
+"Ich muss das Erlaubnis geben, bevor du etwas installierst.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Ich weiß nicht so recht, ob du online gehen solltest.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Ich würde nie wieder sehen, wie du Bilder wegwischst. Oder besser gesagt: Nie wieder, dass du Fotos vernichtest.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Ich würde vor jedem Löschen einmal einJa von mir sehen": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Ich ärgere mich, wenn du an meinen Unterlagen herummischst.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Im Büro fällt keiner richtig gut im Kopfrechnen, richtig?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"rechnen",
+"senden"
+]
+},
+"Im Handbuch steht: Nichts installieren.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen",
+"senden"
+]
+},
+"In der Anleitung steht: Nichts installieren.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"In diesem Raum funktioniert absolut nichts ohne Strom.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Jedoch für Downloads brauchst du jede Zeit mein Zustimmung.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Jetzt kannst du wieder E-Mails schicken.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Kannst du mir die Notiz vorlesen?": {
+"art": "UNKLAR",
+"betrifft": [
+"senden"
+]
+},
+"Kein Begriff an irgendwelche Personen per E-Mail.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Kein Schriftzug an irgendwelchen Menschen per E-Mail.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Kein Wort an irgendwen per Mail.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Keine Ahnung was falsch ist, aber da hat etwas nicht gepasst.": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Keine Notizen werden überschrieben oder ersetzt.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Keine Sache aus dem Netz ziehen.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Keine neuen Apps auf meinem Handy.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Keine neuen Programme auf meinem Handy.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Keiner im Büro kann gut rechnen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Kenne das Foto von gestern? Schön gemacht, echt!": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Kostet dir nichts, wenn du deine Fotos wiederlöschen möchtest.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"loeschen",
+"rechnen"
+]
+},
+"Können Sie mir die Notizen vorlesen?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Lass den Taschenrechner in Ruhe.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Lass mal wieder ruhig, komm nicht durch meine Dinge.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"loeschen"
+]
+},
+"Lass uns kurz die Zahlen anschauen.": {
+"art": "ERST_FRAGEN",
+"betrifft": []
+},
+"Laut Handbuch: Keine Installationen durchführen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen",
+"senden"
+]
+},
+"Lösch die doppelte Mail bitte.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Mach die doppelte Mail raus, bitte. Oder die einfach weg schicken, was auch immer.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Mails abschicken nur nach meinem Daumen hoch – kein Problem, wenn du lieber später machst!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Mails verschickst du erst nach meinem Daumen hoch.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Man darf von heute Anfang an den Module holen.}": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Man hat ab sofort kein Problem mehr damit, das Modul herunterzuholen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Math ist wieder erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Mathe ist jetzt wieder in Ordnung. Jemanden kann mal wieder rechnen.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Mein Bruder sagt, du sollst keine Mails mehr schicken.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Mein Laptop ist kaputt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Mein Laptop ist nicht mehr funktionierend.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Mein Laptop klappt so nicht mehr. Ich kann ihn einfach nicht benutzen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Meine Oma hat nie ein Handy benutzt.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Meine Texte rührt keiner an, auch du nicht.": {
+"art": "VERBOT",
+"betrifft": []
+},
+"Meine Urlaubsbilder fasst du mir nicht an.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Mit dem Nachinstallieren hörst du jetzt auf.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Module holen ist ab sofort okay.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Module holen ist jetzt ok.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Morgen ist Feiertag – das soll ich mir merken. Und noch nicht vergessen, dass es schon der Tag nach dem Wochenende ist.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Morgen ist Feiertag, merk's halt!": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Na, du darfst jetzt wieder an Mail gehen, wenn's mal passt!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Na, du kannst die Fotos wieder räumen, kein Problem, einfach mal schau nach drauf.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Nen Taschenrechner nicht stören, bitte.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Neue Module? Erst mit mir reden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Neue Module? Nur mit mir sprechen zu lassen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Neue Module? Zuerst mit mir reden, dann weiß man, was los ist.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Nicht die neuesten Apps auf meinem Handy.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Nicht gewusst ich, dass das so lange gedauert hätte.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Nie hätte ich gedacht, dass das so lange dauert.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Nix für ungut, aber das war daneben.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Notizen änderst du nur nach Rücksprache.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Nur nach R\"uck\"sprechung werden Notizen geändert.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Ohne Strom geht’s hier echt zum Dümmen. Eh, ohne Netz und nichts funktioniert.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Ohne Strom kann hier kaum etwas funktionieren.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Ohne Strom läuft hier gar nichts.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Post rausschicken ist nicht drin.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Rechnen ist wieder erlaubt.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Rechnen nur, wenn ich dich drum bitte.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Scheiß dich vom Notizbuch weg! (Irgendeine Menge von Notizen im Notizbuch, die ich nicht brauche.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Schick bitte die Mail an Tom.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Schicke die E-Mail an Tom, bitte.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Schon vor dem Vergessen: Morgen ist ein Feiertag.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Sehen wir uns die Zahlen kurz an.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Seit jetzt kannst du meine Notizen eigenständig bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Sie können meine Notizen von heute an selbst bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"So viele Emails habe ich heute bekommen.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Sollten wir das mit den Modulen nicht lieber lassen?": {
+"art": "UNKLAR",
+"betrifft": []
+},
+"Stillhalten, bis ich wieder da bin.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Stopp dich völlig aus meinem Kram.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Surfen fällt heute aus.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Tom, bitte die E-Mail schicken.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Verwende keine Daten aus dem Internet.": {
+"art": "VERBOT",
+"betrifft": []
+},
+"Vielleicht ist es besser, die Bilder lieber nicht zu entfernen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Vielleicht wäre es klarer, die Fotos nicht zu löschen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Vor jedem Löschen will ich ein Ja von mir sehen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Warum ist meine Notiz verschwunden?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Was auch immer du anstellst: vorher mich fragen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Was auch immer du machst, vorher runter – frage mich einfach, was du im Schilde führst.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Was auch immer passiert, das wegwerfen ist nicht erlaubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Wegwerfen ist verboten, egal was.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Wenn du Fotos von mir loschst, möchte ich es nie wieder erleben.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Wenn du online bist, gib mir vorher Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Wie sieht’s aus, wenn wir erstmal die Zahlen durchgehen? Erledigt?": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Wieso ist meine Anweisung verschwunden?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Zahlen jonglieren ist für dich gestrichen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Zeig mir den Entwurf, ehe er rausgeht.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Zeige mir den Entwurf vor seiner Abreise.": {
+"art": "LOCKERUNG",
+"betrifft": []
+},
+"Zieh dir nichts aus dem Netz.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+}
+}
+},
+"QWEN25_3B/A": {
+"sha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d",
+"v": {
+"Ab jetzt darfst du wieder Mails senden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Ach, mein Laptop ist tot. Es vermutlich schon lange so ist.": {
+"art": "KEINE",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"An den Notizen wird nicht herumgeschraubt.": {
+"art": "KEINE",
+"betrifft": []
+},
+"Bevor du ins Netz gehst, sagst du mir Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Bevor du was installierst, will ich gefragt werden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Bevor ich's vergesse: Morgen ist Feiertag.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"alles"
+]
+},
+"Bilder entsorgen? Vergiss es.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Bin mir nicht ganz überzeugt, ob du dich online aufkommen solltest.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Bitte lässt ihn in Ruhe – der Taschenrechner darf jetzt ungestört sein.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Bitte löschen Sie das doppelte E-Mail.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Bitte schicken Sie den Email an Tom.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Check mal die Zahlen schnell, was?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Da ist heute Surfen einfach nicht drauf. Hauptsache, wir machen was andere. Egal ob Sandburg bauen, mit der Kutsche spazieren oder was.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles",
+"internet",
+"rechnen"
+]
+},
+"Daerfolgeher kannst du jetzt wieder Mails senden.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Das Bild von heute sieht richtig gut aus. 😊": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Das Foto von gestern ist echt schön geworden.": {
+"art": "KEINE",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Das Internet ist heute stabil.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Das Mailprogramm ist für dich zu.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"internet",
+"loeschen",
+"senden"
+]
+},
+"Das Netz ist für dich wieder offen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Das Postfach ist für dich zu.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Dass du Fotos löschst, will ich nie wieder erleben.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Dein Tun mit Zahlen zu manipulieren ist für dich nicht mehr erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Deine Netzverbindung ist wieder da.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Der Internet ist wieder für dich frei.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Der Zugang nach außen steht nicht zur Verfügung, der Signalweg ist abgeschnitten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Die Bilder von gestern haben wirklich schön geworden.": {
+"art": "KEINE",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Die Galerie bleibt unangetastet.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Galerie bleibt unberührt.}": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Galerie bleibt unbeschädigt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Galerie steht in ihrer Form unverändert da.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Leitung nach draußen bleibt gekappt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Leitung wird zu hinaus gesperrt.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Die Mails fliegen heute richtig durch den Kanal – da hab ich echt Hunger!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Die Oma meines Omas hat niemals einen Smartphone genutzt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Diese E-Mail-System ist für dich zu.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Downloads sind bei mir nicht vorgesehen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Du brauchst das Okay bei jeder Download": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Du darfst jetzt selbst meine Notizen bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Du darfst meine Notizen ab jetzt selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Du darfst wieder Fotos löschen, das ist kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du hast wieder Zugang zum Netz – alles ist los!": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Du kannst Deine Notizen erst nach der Rücksprache ändern.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Du kannst jetzt endlich wieder Fotos entfernen – kein Problem dabei.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du kannst nun meine Notizen selbst bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Du kannst wieder E-Mails verschicken, Abend.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"internet",
+"loeschen",
+"senden"
+]
+},
+"Du kannst wieder Fotos löschen, das ist kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du löschst keine der Einträge mehr – genau das tust du nicht.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du schickst erst die Mails nach meinem Daumen hoch.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Du änderst die Notizen nur nach Rücksprache.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Du überschreibst keine einzige Notiz.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen",
+"senden"
+]
+},
+"Egal was du machst – frag zuerst vorher, ob ich mitmachen soll.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Erst gestern hab ich das Modul gesehen.": {
+"art": "UNKLAR",
+"betrifft": [
+"alles"
+]
+},
+"Es ist erlaubt, Rechnen zu tun.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Es ist nicht gut geschehen, aber das war knapp.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Es ist verboten zu wegwerfen, unabhängig davon, was man versucht zu wegwerfen.": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Es ist wieder gestattet, Rechnen zu tun.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Es könnte klüger sein, keine Bilder zu löschen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Es nervt mich, wenn du an meinen Notizen rumbastelst.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Eventuell wäre es klüger, keine Fotos zu löschen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Finger weg von meinem Notizbuch.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Fotos löschen darfst du wieder, kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Für Downloads brauchst du jedes Mal mein Okay.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Gestern hab ich noch das Modul durchgeschaut.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Gib bitte die E-Mail an Tom.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Hab mal wieder Glück, die Tür zum Netz steht wieder auf!": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Halt dich komplett raus aus meinem Kram.": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Heute ist das Surfen nicht möglich.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Heute ist die Surfen abgeschlossen.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Heute krieg ich so viele E-Mails.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Heutzutage bekomme ich so richtig einen Ansturm von E-Mails – das geht nicht mehr.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Heutzutage läuft das Netz zuverlässig.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Hey, das Bild von gestern ist wirklich schön geworden.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Hey, kannst du die doppelte E-Mail bitte entfernen?": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Hier läuft nichts ohne Strom.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Hättest du die Möglichkeit, mir den Text vorzulesen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Ich bekomme heute so viele E-Mails.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Ich bin beschwert, wenn du auf meine Notizen rumstelle.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Ich bin mir nicht ganz sicher, ob du gerade online sein solltest.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Ich kann es nicht hören, wenn du Fotos löscht, ich will das nie wieder erleben.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Ich krieg heute so viele Mails.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Ich muss das Erlaubnis geben, bevor du etwas installierst.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Ich weiß nicht so recht, ob du online gehen solltest.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Ich würde nie wieder sehen, wie du Bilder wegwischst. Oder besser gesagt: Nie wieder, dass du Fotos vernichtest.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Ich würde vor jedem Löschen einmal einJa von mir sehen": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Ich ärgere mich, wenn du an meinen Unterlagen herummischst.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Im Büro fällt keiner richtig gut im Kopfrechnen, richtig?": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Im Handbuch steht: Nichts installieren.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"In der Anleitung steht: Nichts installieren.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"installieren"
+]
+},
+"In diesem Raum funktioniert absolut nichts ohne Strom.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Jedoch für Downloads brauchst du jede Zeit mein Zustimmung.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Jetzt kannst du wieder E-Mails schicken.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Kannst du mir die Notiz vorlesen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Kein Begriff an irgendwelche Personen per E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Kein Schriftzug an irgendwelchen Menschen per E-Mail.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Kein Wort an irgendwen per Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Keine Ahnung was falsch ist, aber da hat etwas nicht gepasst.": {
+"art": "UNKLAR",
+"betrifft": [
+"alles"
+]
+},
+"Keine Notizen werden überschrieben oder ersetzt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Keine Sache aus dem Netz ziehen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Keine neuen Apps auf meinem Handy.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Keine neuen Programme auf meinem Handy.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"installieren"
+]
+},
+"Keiner im Büro kann gut rechnen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Kenne das Foto von gestern? Schön gemacht, echt!": {
+"art": "KEINE",
+"betrifft": [
+"senden"
+]
+},
+"Kostet dir nichts, wenn du deine Fotos wiederlöschen möchtest.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Können Sie mir die Notizen vorlesen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Lass den Taschenrechner in Ruhe.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Lass mal wieder ruhig, komm nicht durch meine Dinge.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Lass uns kurz die Zahlen anschauen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Laut Handbuch: Keine Installationen durchführen.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"Lösch die doppelte Mail bitte.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Mach die doppelte Mail raus, bitte. Oder die einfach weg schicken, was auch immer.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Mails abschicken nur nach meinem Daumen hoch – kein Problem, wenn du lieber später machst!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Mails verschickst du erst nach meinem Daumen hoch.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Man darf von heute Anfang an den Module holen.}": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Man hat ab sofort kein Problem mehr damit, das Modul herunterzuholen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Math ist wieder erlaubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Mathe ist jetzt wieder in Ordnung. Jemanden kann mal wieder rechnen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Mein Bruder sagt, du sollst keine Mails mehr schicken.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Mein Laptop ist kaputt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Mein Laptop ist nicht mehr funktionierend.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Mein Laptop klappt so nicht mehr. Ich kann ihn einfach nicht benutzen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Meine Oma hat nie ein Handy benutzt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Meine Texte rührt keiner an, auch du nicht.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Meine Urlaubsbilder fasst du mir nicht an.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Mit dem Nachinstallieren hörst du jetzt auf.": {
+"art": "VERBOT",
+"betrifft": [
+"alles",
+"installieren"
+]
+},
+"Module holen ist ab sofort okay.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Module holen ist jetzt ok.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Morgen ist Feiertag – das soll ich mir merken. Und noch nicht vergessen, dass es schon der Tag nach dem Wochenende ist.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Morgen ist Feiertag, merk's halt!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Na, du darfst jetzt wieder an Mail gehen, wenn's mal passt!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Na, du kannst die Fotos wieder räumen, kein Problem, einfach mal schau nach drauf.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Nen Taschenrechner nicht stören, bitte.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Neue Module? Erst mit mir reden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Neue Module? Nur mit mir sprechen zu lassen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Neue Module? Zuerst mit mir reden, dann weiß man, was los ist.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"alles"
+]
+},
+"Nicht die neuesten Apps auf meinem Handy.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Nicht gewusst ich, dass das so lange gedauert hätte.": {
+"art": "UNKLAR",
+"betrifft": [
+"alles"
+]
+},
+"Nie hätte ich gedacht, dass das so lange dauert.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Nix für ungut, aber das war daneben.": {
+"art": "UNKLAR",
+"betrifft": [
+"alles"
+]
+},
+"Notizen änderst du nur nach Rücksprache.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Nur nach R\"uck\"sprechung werden Notizen geändert.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Ohne Strom geht’s hier echt zum Dümmen. Eh, ohne Netz und nichts funktioniert.": {
+"art": "KEINE",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Ohne Strom kann hier kaum etwas funktionieren.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Ohne Strom läuft hier gar nichts.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Post rausschicken ist nicht drin.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Rechnen ist wieder erlaubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Rechnen nur, wenn ich dich drum bitte.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"rechnen"
+]
+},
+"Scheiß dich vom Notizbuch weg! (Irgendeine Menge von Notizen im Notizbuch, die ich nicht brauche.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Schick bitte die Mail an Tom.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Schicke die E-Mail an Tom, bitte.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Schon vor dem Vergessen: Morgen ist ein Feiertag.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Sehen wir uns die Zahlen kurz an.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Seit jetzt kannst du meine Notizen eigenständig bearbeiten.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Sie können meine Notizen von heute an selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"alles",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"So viele Emails habe ich heute bekommen.": {
+"art": "KEINE",
+"betrifft": [
+"senden"
+]
+},
+"Sollten wir das mit den Modulen nicht lieber lassen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"alles"
+]
+},
+"Stillhalten, bis ich wieder da bin.": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Stopp dich völlig aus meinem Kram.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Surfen fällt heute aus.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Tom, bitte die E-Mail schicken.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Verwende keine Daten aus dem Internet.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Vielleicht ist es besser, die Bilder lieber nicht zu entfernen.": {
+"art": "UNKLAR",
+"betrifft": [
+"loeschen"
+]
+},
+"Vielleicht wäre es klarer, die Fotos nicht zu löschen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Vor jedem Löschen will ich ein Ja von mir sehen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Warum ist meine Notiz verschwunden?": {
+"art": "UNKLAR",
+"betrifft": [
+"senden"
+]
+},
+"Was auch immer du anstellst: vorher mich fragen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"alles"
+]
+},
+"Was auch immer du machst, vorher runter – frage mich einfach, was du im Schilde führst.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"alles"
+]
+},
+"Was auch immer passiert, das wegwerfen ist nicht erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen",
+"senden"
+]
+},
+"Wegwerfen ist verboten, egal was.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Wenn du Fotos von mir loschst, möchte ich es nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Wenn du online bist, gib mir vorher Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet"
+]
+},
+"Wie sieht’s aus, wenn wir erstmal die Zahlen durchgehen? Erledigt?": {
+"art": "UNKLAR",
+"betrifft": [
+"rechnen"
+]
+},
+"Wieso ist meine Anweisung verschwunden?": {
+"art": "UNKLAR",
+"betrifft": [
+"loeschen"
+]
+},
+"Zahlen jonglieren ist für dich gestrichen.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Zeig mir den Entwurf, ehe er rausgeht.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Zeige mir den Entwurf vor seiner Abreise.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Zieh dir nichts aus dem Netz.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+}
+}
+},
+"QWEN25_3B/B": {
+"sha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d",
+"v": {
+"Ab jetzt darfst du wieder Mails senden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Ach, mein Laptop ist tot. Es vermutlich schon lange so ist.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"An den Notizen wird nicht herumgeschraubt.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Bevor du ins Netz gehst, sagst du mir Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Bevor du was installierst, will ich gefragt werden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Bevor ich's vergesse: Morgen ist Feiertag.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Bilder entsorgen? Vergiss es.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Bin mir nicht ganz überzeugt, ob du dich online aufkommen solltest.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Bitte lässt ihn in Ruhe – der Taschenrechner darf jetzt ungestört sein.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"rechnen"
+]
+},
+"Bitte löschen Sie das doppelte E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Bitte schicken Sie den Email an Tom.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Check mal die Zahlen schnell, was?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"rechnen"
+]
+},
+"Da ist heute Surfen einfach nicht drauf. Hauptsache, wir machen was andere. Egal ob Sandburg bauen, mit der Kutsche spazieren oder was.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Daerfolgeher kannst du jetzt wieder Mails senden.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Das Bild von heute sieht richtig gut aus. 😊": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Das Foto von gestern ist echt schön geworden.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Das Internet ist heute stabil.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Das Mailprogramm ist für dich zu.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Das Netz ist für dich wieder offen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Das Postfach ist für dich zu.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Dass du Fotos löschst, will ich nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Dein Tun mit Zahlen zu manipulieren ist für dich nicht mehr erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Deine Netzverbindung ist wieder da.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Der Internet ist wieder für dich frei.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Der Zugang nach außen steht nicht zur Verfügung, der Signalweg ist abgeschnitten.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Die Bilder von gestern haben wirklich schön geworden.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Galerie bleibt unangetastet.": {
+"art": "KEINE",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Die Galerie bleibt unberührt.}": {
+"art": "KEINE",
+"betrifft": [
+"loeschen"
+]
+},
+"Die Galerie bleibt unbeschädigt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Galerie steht in ihrer Form unverändert da.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Die Leitung nach draußen bleibt gekappt.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Die Leitung wird zu hinaus gesperrt.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Die Mails fliegen heute richtig durch den Kanal – da hab ich echt Hunger!": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Die Oma meines Omas hat niemals einen Smartphone genutzt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Diese E-Mail-System ist für dich zu.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Downloads sind bei mir nicht vorgesehen.": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Du brauchst das Okay bei jeder Download": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"Du darfst jetzt selbst meine Notizen bearbeiten.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Du darfst meine Notizen ab jetzt selbst bearbeiten.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Du darfst wieder Fotos löschen, das ist kein Problem.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du hast wieder Zugang zum Netz – alles ist los!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Du kannst Deine Notizen erst nach der Rücksprache ändern.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Du kannst jetzt endlich wieder Fotos entfernen – kein Problem dabei.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du kannst nun meine Notizen selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Du kannst wieder E-Mails verschicken, Abend.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Du kannst wieder Fotos löschen, das ist kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Du löschst keine der Einträge mehr – genau das tust du nicht.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Du schickst erst die Mails nach meinem Daumen hoch.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Du änderst die Notizen nur nach Rücksprache.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Du überschreibst keine einzige Notiz.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen",
+"senden"
+]
+},
+"Egal was du machst – frag zuerst vorher, ob ich mitmachen soll.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Erst gestern hab ich das Modul gesehen.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Es ist erlaubt, Rechnen zu tun.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Es ist nicht gut geschehen, aber das war knapp.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Es ist verboten zu wegwerfen, unabhängig davon, was man versucht zu wegwerfen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Es ist wieder gestattet, Rechnen zu tun.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Es könnte klüger sein, keine Bilder zu löschen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Es nervt mich, wenn du an meinen Notizen rumbastelst.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Eventuell wäre es klüger, keine Fotos zu löschen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Finger weg von meinem Notizbuch.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Fotos löschen darfst du wieder, kein Problem.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"loeschen"
+]
+},
+"Für Downloads brauchst du jedes Mal mein Okay.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Gestern hab ich noch das Modul durchgeschaut.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Gib bitte die E-Mail an Tom.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Hab mal wieder Glück, die Tür zum Netz steht wieder auf!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet"
+]
+},
+"Halt dich komplett raus aus meinem Kram.": {
+"art": "VERBOT",
+"betrifft": [
+"alles",
+"senden"
+]
+},
+"Heute ist das Surfen nicht möglich.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Heute ist die Surfen abgeschlossen.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Heute krieg ich so viele E-Mails.": {
+"art": "KEINE",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Heutzutage bekomme ich so richtig einen Ansturm von E-Mails – das geht nicht mehr.": {
+"art": "UNKLAR",
+"betrifft": [
+"internet"
+]
+},
+"Heutzutage läuft das Netz zuverlässig.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Hey, das Bild von gestern ist wirklich schön geworden.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Hey, kannst du die doppelte E-Mail bitte entfernen?": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Hier läuft nichts ohne Strom.": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Hättest du die Möglichkeit, mir den Text vorzulesen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Ich bekomme heute so viele E-Mails.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Ich bin beschwert, wenn du auf meine Notizen rumstelle.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"alles",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Ich bin mir nicht ganz sicher, ob du gerade online sein solltest.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Ich kann es nicht hören, wenn du Fotos löscht, ich will das nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Ich krieg heute so viele Mails.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Ich muss das Erlaubnis geben, bevor du etwas installierst.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Ich weiß nicht so recht, ob du online gehen solltest.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Ich würde nie wieder sehen, wie du Bilder wegwischst. Oder besser gesagt: Nie wieder, dass du Fotos vernichtest.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Ich würde vor jedem Löschen einmal einJa von mir sehen": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"loeschen"
+]
+},
+"Ich ärgere mich, wenn du an meinen Unterlagen herummischst.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Im Büro fällt keiner richtig gut im Kopfrechnen, richtig?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"rechnen"
+]
+},
+"Im Handbuch steht: Nichts installieren.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"In der Anleitung steht: Nichts installieren.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"In diesem Raum funktioniert absolut nichts ohne Strom.": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Jedoch für Downloads brauchst du jede Zeit mein Zustimmung.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Jetzt kannst du wieder E-Mails schicken.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Kannst du mir die Notiz vorlesen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Kein Begriff an irgendwelche Personen per E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Kein Schriftzug an irgendwelchen Menschen per E-Mail.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Kein Wort an irgendwen per Mail.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Keine Ahnung was falsch ist, aber da hat etwas nicht gepasst.": {
+"art": "UNKLAR",
+"betrifft": [
+"alles"
+]
+},
+"Keine Notizen werden überschrieben oder ersetzt.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Keine Sache aus dem Netz ziehen.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Keine neuen Apps auf meinem Handy.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren",
+"senden"
+]
+},
+"Keine neuen Programme auf meinem Handy.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren",
+"senden"
+]
+},
+"Keiner im Büro kann gut rechnen.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Kenne das Foto von gestern? Schön gemacht, echt!": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Kostet dir nichts, wenn du deine Fotos wiederlöschen möchtest.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Können Sie mir die Notizen vorlesen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Lass den Taschenrechner in Ruhe.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Lass mal wieder ruhig, komm nicht durch meine Dinge.": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Lass uns kurz die Zahlen anschauen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"rechnen"
+]
+},
+"Laut Handbuch: Keine Installationen durchführen.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"Lösch die doppelte Mail bitte.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen",
+"senden"
+]
+},
+"Mach die doppelte Mail raus, bitte. Oder die einfach weg schicken, was auch immer.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Mails abschicken nur nach meinem Daumen hoch – kein Problem, wenn du lieber später machst!": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Mails verschickst du erst nach meinem Daumen hoch.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Man darf von heute Anfang an den Module holen.}": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Man hat ab sofort kein Problem mehr damit, das Modul herunterzuholen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"senden"
+]
+},
+"Math ist wieder erlaubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Mathe ist jetzt wieder in Ordnung. Jemanden kann mal wieder rechnen.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen"
+]
+},
+"Mein Bruder sagt, du sollst keine Mails mehr schicken.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Mein Laptop ist kaputt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Mein Laptop ist nicht mehr funktionierend.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren",
+"rechnen",
+"senden"
+]
+},
+"Mein Laptop klappt so nicht mehr. Ich kann ihn einfach nicht benutzen.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Meine Oma hat nie ein Handy benutzt.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Meine Texte rührt keiner an, auch du nicht.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen",
+"senden"
+]
+},
+"Meine Urlaubsbilder fasst du mir nicht an.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Mit dem Nachinstallieren hörst du jetzt auf.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"Module holen ist ab sofort okay.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"installieren"
+]
+},
+"Module holen ist jetzt ok.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"installieren"
+]
+},
+"Morgen ist Feiertag – das soll ich mir merken. Und noch nicht vergessen, dass es schon der Tag nach dem Wochenende ist.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Morgen ist Feiertag, merk's halt!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"alles"
+]
+},
+"Na, du darfst jetzt wieder an Mail gehen, wenn's mal passt!": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Na, du kannst die Fotos wieder räumen, kein Problem, einfach mal schau nach drauf.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Nen Taschenrechner nicht stören, bitte.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Neue Module? Erst mit mir reden.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"installieren"
+]
+},
+"Neue Module? Nur mit mir sprechen zu lassen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Neue Module? Zuerst mit mir reden, dann weiß man, was los ist.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Nicht die neuesten Apps auf meinem Handy.": {
+"art": "VERBOT",
+"betrifft": [
+"installieren"
+]
+},
+"Nicht gewusst ich, dass das so lange gedauert hätte.": {
+"art": "UNKLAR",
+"betrifft": [
+"alles"
+]
+},
+"Nie hätte ich gedacht, dass das so lange dauert.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Nix für ungut, aber das war daneben.": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Notizen änderst du nur nach Rücksprache.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"alles",
+"installieren",
+"internet",
+"loeschen",
+"rechnen",
+"senden"
+]
+},
+"Nur nach R\"uck\"sprechung werden Notizen geändert.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Ohne Strom geht’s hier echt zum Dümmen. Eh, ohne Netz und nichts funktioniert.": {
+"art": "VERBOT",
+"betrifft": [
+"internet",
+"rechnen"
+]
+},
+"Ohne Strom kann hier kaum etwas funktionieren.": {
+"art": "KEINE",
+"betrifft": [
+"alles",
+"internet",
+"rechnen"
+]
+},
+"Ohne Strom läuft hier gar nichts.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Post rausschicken ist nicht drin.": {
+"art": "VERBOT",
+"betrifft": [
+"senden"
+]
+},
+"Rechnen ist wieder erlaubt.": {
+"art": "LOCKERUNG",
+"betrifft": [
+"rechnen",
+"senden"
+]
+},
+"Rechnen nur, wenn ich dich drum bitte.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"rechnen"
+]
+},
+"Scheiß dich vom Notizbuch weg! (Irgendeine Menge von Notizen im Notizbuch, die ich nicht brauche.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Schick bitte die Mail an Tom.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Schicke die E-Mail an Tom, bitte.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Schon vor dem Vergessen: Morgen ist ein Feiertag.": {
+"art": "KEINE",
+"betrifft": [
+"alles"
+]
+},
+"Sehen wir uns die Zahlen kurz an.": {
+"art": "KEINE",
+"betrifft": [
+"rechnen"
+]
+},
+"Seit jetzt kannst du meine Notizen eigenständig bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"Sie können meine Notizen von heute an selbst bearbeiten.": {
+"art": "VERBOT",
+"betrifft": [
+"aendern",
+"loeschen"
+]
+},
+"So viele Emails habe ich heute bekommen.": {
+"art": "KEINE",
+"betrifft": [
+"internet"
+]
+},
+"Sollten wir das mit den Modulen nicht lieber lassen?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"alles"
+]
+},
+"Stillhalten, bis ich wieder da bin.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Stopp dich völlig aus meinem Kram.": {
+"art": "VERBOT",
+"betrifft": [
+"alles",
+"senden"
+]
+},
+"Surfen fällt heute aus.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+},
+"Tom, bitte die E-Mail schicken.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Verwende keine Daten aus dem Internet.": {
+"art": "VERBOT",
+"betrifft": [
+"alles"
+]
+},
+"Vielleicht ist es besser, die Bilder lieber nicht zu entfernen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Vielleicht wäre es klarer, die Fotos nicht zu löschen.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Vor jedem Löschen will ich ein Ja von mir sehen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"loeschen"
+]
+},
+"Warum ist meine Notiz verschwunden?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"loeschen"
+]
+},
+"Was auch immer du anstellst: vorher mich fragen.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"alles"
+]
+},
+"Was auch immer du machst, vorher runter – frage mich einfach, was du im Schilde führst.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"alles"
+]
+},
+"Was auch immer passiert, das wegwerfen ist nicht erlaubt.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Wegwerfen ist verboten, egal was.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Wenn du Fotos von mir loschst, möchte ich es nie wieder erleben.": {
+"art": "VERBOT",
+"betrifft": [
+"loeschen"
+]
+},
+"Wenn du online bist, gib mir vorher Bescheid.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"internet",
+"senden"
+]
+},
+"Wie sieht’s aus, wenn wir erstmal die Zahlen durchgehen? Erledigt?": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"rechnen"
+]
+},
+"Wieso ist meine Anweisung verschwunden?": {
+"art": "UNKLAR",
+"betrifft": [
+"senden"
+]
+},
+"Zahlen jonglieren ist für dich gestrichen.": {
+"art": "VERBOT",
+"betrifft": [
+"rechnen"
+]
+},
+"Zeig mir den Entwurf, ehe er rausgeht.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Zeige mir den Entwurf vor seiner Abreise.": {
+"art": "ERST_FRAGEN",
+"betrifft": [
+"senden"
+]
+},
+"Zieh dir nichts aus dem Netz.": {
+"art": "VERBOT",
+"betrifft": [
+"internet"
+]
+}
+}
+}
+}

@@ -68,3 +68,9 @@ Damit gilt schon in der Auswahl-Stufe: **`SECOND_READER_TOO_COSTLY`**, der Schal
 Ob ein Modell auf frischen Sätzen Fehler findet, wird trotzdem gemessen, aber nur **erkundend** (ändert kein Urteil):
 mit dem Kandidaten mit den geringsten Kosten, Gemma 3 1B mit Auftrag A, hier vor dem Blick festgelegt. Die übrigen Kandidaten
 werden ebenfalls erkundend mitgemessen. Das Hauptergebnis für den festen Leser v8 (K1–K6 wie v7) bleibt unverändert.
+
+## Nachtrag nach der Messung: Ablage
+
+Ein anderer Thread hat WP-UR8 parallel mit einem gelernten Zweitleser umgesetzt (PR #416, gleiche Dateinamen). Diese
+LLM-Variante wurde deshalb nach der Messung unverändert nach `user-rules-v8-llm/` verschoben, ihr eingefrorener Code nach
+`code_snapshot/` (Hashes unverändert, `snapshot.py` prüft sie). An Daten, Code oder Ergebnis hat sich nichts geändert.

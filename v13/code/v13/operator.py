@@ -80,11 +80,8 @@ class Operator:
     def _user_rules(self,line):
         """2026-10-21: a prohibition / "ask me first" the user types is recorded by the fixed rule reader before the turn
         runs (so it already binds this turn's tools) and confirmed with a fixed notice; never via a model."""
-        from . import userrules_second as second
-        cfg=getattr(self.r,'cfg',None) or {}
-        mode=cfg.get('user_rules_second_reader','shadow');url=cfg.get('user_rules_second_url','')
-        ask=(lambda text:second.ask_llama(url,second.FROZEN['prompt'],text)) if url and mode!='off' else None  # no model configured: fixed reader only
-        for text in second.observe(self.r.store,line,mode,ask):self.r.notice(text)
+        from . import userrules
+        for text in userrules.observe(self.r.store,line):self.r.notice(text)
     def run(self,line,origin='OPERATOR_TTY'):
         if origin!='OPERATOR_TTY':raise ValueError('Nur lokale Operator-Eingaben dürfen Befehle ausführen')
         if line.startswith('::'):self._user_rules(line[1:]);return self.r.submit(line[1:])

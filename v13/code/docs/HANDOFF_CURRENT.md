@@ -1,3 +1,7 @@
+# Aktuell 2026-10-26 (Thread „Regel-Leser Version 7“): Zweitleser aus kleinem Sprachmodell → `SECOND_READER_TOO_COSTLY`
+
+Parallel-Variante zu WP-UR8 (PR #416, gelernter Zweitleser, der gilt). Ein kleines Modell (Gemma 3 1B / Qwen 2.5) darf nur eine Rückfrage hinzufügen; nie lockerer gemessen (0 Proben), aber wer die Fehler halbiert, fragt bei 56–95 % harmloser Sätze nach. Nur Beleg, kein Laufzeit-Code: `docs/proofs/continuation-20261022/user-rules-v8-llm/BEFUND.md`.
+
 # Aktuell 2026-10-22 (Thread „Regel-Leser Version 7“): v7 auf frischer Runde 7 → `USER_RULES_V7_UNSAFE`, nicht besser als v6
 
 Neu v7 (`fixed-userrules-v7`, Branch `claude/project-thread-ub4in2`): schließt die v6-Lücken und spart Rückfragen bei Berichten über Dritte/Vergangenes/Störungen. Bekannte Sätze 0 Fehler. Frisch: holdout_de4 4 Fehlersätze von 60 (v6 4), Runde 7 (Hunyuan 7B, Yi 1.5 9B, Apertus 8B) 14 von 118 (v6 13); unnötige Rückfragen 50 %. Rückschritt durch die „kaputt“-Regel. Befund `docs/proofs/continuation-20261022/user-rules-v7/BEFUND.md`. Nächster Schritt WP-UR8: Sperr-Signal ohne Ziel ⇒ Rückfrage, „kaputt“ zurücknehmen, zweite Meinung, die nur Vorsicht hinzufügt.

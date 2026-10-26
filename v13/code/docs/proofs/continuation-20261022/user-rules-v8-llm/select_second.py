@@ -8,7 +8,8 @@ from pathlib import Path
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[3];P=HERE.parent
 sys.path.insert(0,str(ROOT));sys.path.insert(0,str(P.parent/'continuation-20261021/user-rules'));sys.path.insert(0,str(P/'user-rules-v3'))
 import userrules_eval as E
-from v13 import userrules as U, userrules_second as S
+sys.path.insert(0,str(HERE));import snapshot
+U,S=snapshot.load()
 from generate_round3 import sha,port
 SETS=[P/'user-rules-v5/holdout_de2.json',P/'user-rules-v6/holdout_de3.json',P/'user-rules-v7/holdout_de4.json',P/'user-rules-v5/cohort_round5.json',
       P/'user-rules-v6/cohort_round6.json',P/'user-rules-v7/cohort_round7.json',P/'user-rules-v7/dev_v7.json']

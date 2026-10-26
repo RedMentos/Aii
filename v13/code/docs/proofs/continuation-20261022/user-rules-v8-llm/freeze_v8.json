@@ -7,6 +7,7 @@
   "prompt": "A",
   "role": "exploratory"
  },
+ "location": "code_snapshot/<basename> since 2026-10-26 (moved after measurement, hashes unchanged)",
  "frozen": "2026-10-26, after round8_raw.json was committed unread and the selection on known sentences; before the hand audit or any reader run on round 8 / holdout_de5",
  "files": {
   "v13/userrules.py": "11ca805f605c43041c50061f40eccff660c3a01ab52b0cfabc5f2f22be4d9dc0",
