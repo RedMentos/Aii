@@ -26,8 +26,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run521-age0d-committed-output/PREREG.md)" = 'd9e8563cc0a2f7872fe499803d591dede71d9650'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run521-age0d-committed-output/AMENDMENT_A.md)" = '2d82fbf227077f64420b7914926f543f5550ff0b'
           test "$(git hash-object v13/code/v13/selfmodel.py)" = 'aab1d1905c98ce1d276e5136975a97f62e8e21dc'
-          test "$(git hash-object v13/code/tests/test_run517_age0d_arithmetic_shadow.py)" = '7cdd148360293c28788ac4d032695c99e440f53d'
+          test "$(git hash-object v13/code/tests/test_run517_age0d_arithmetic_shadow.py)" = '47a6468c03f2b3e65a3b960b7966ddfc7868871e'
           test "$(git hash-object v13/code/v13/agi/answer_arithmetic_shadow.py)" = '3cec2c4b6883e3f02f449cc74cf44d5584a6affb'
           test "$(git hash-object v13/code/tests/test_age0d_answer_arithmetic_run134.py)" = '7022699b8dc63622a910a7dd785cb2cf0188ac99'
           test "$(git hash-object v13/code/tests/test_run184_age0d_strict_shadow.py)" = 'bfa82321da8b252f2eaa36c8fe251a2defb3ed50'
