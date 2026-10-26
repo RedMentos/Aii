@@ -69,12 +69,27 @@ def backup(store,destination=None):
         try:_verify_live_source_blobs(stage,snapshot)
         finally:snapshot.close()
         hashes={str(p.relative_to(stage)):file_hash(p) for p in stage.rglob('*') if p.is_file()};atomic_write(stage/'backup_manifest.json',dumps({'format':1,'hashes':hashes,'models_included':False,'active_generation':generation}))
-        pending=out.with_suffix('.partial');out.parent.mkdir(parents=True,exist_ok=True)
+        out.parent.mkdir(parents=True,exist_ok=True)
+        # Never reuse a predictable .partial or replace an existing backup.
+        # Both names live in the destination directory, so the hardlink
+        # publication is atomic and fails closed on unsupported filesystems.
+        fd,pending_name=tempfile.mkstemp(prefix='.'+out.name+'.pending-',suffix='.tar.gz',dir=out.parent)
+        pending=Path(pending_name)
         try:
-            with tarfile.open(pending,'w:gz') as t:
-                for p in stage.rglob('*'):
-                    if p.is_file():t.add(p,arcname=str(p.relative_to(stage)),recursive=False)
-            os.replace(pending,out)
+            with os.fdopen(fd,'wb') as archive:
+                with tarfile.open(fileobj=archive,mode='w:gz') as t:
+                    for p in stage.rglob('*'):
+                        if p.is_file():t.add(p,arcname=str(p.relative_to(stage)),recursive=False)
+                archive.flush();os.fsync(archive.fileno())
+            try:os.link(pending,out)
+            except FileExistsError as exc:
+                raise ValueError('Backup-Zieldatei existiert bereits') from exc
+            # A successful backup must have both complete file bytes and a
+            # persisted directory entry. Do not silently claim durability if
+            # the destination filesystem rejects directory fsync.
+            d=os.open(out.parent,os.O_RDONLY)
+            try:os.fsync(d)
+            finally:os.close(d)
         finally:pending.unlink(missing_ok=True)
     return out
 

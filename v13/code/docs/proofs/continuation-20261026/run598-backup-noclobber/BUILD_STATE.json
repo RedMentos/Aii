@@ -1,0 +1,72 @@
+{
+  "schema": "V13_RUN598_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run598-backup-noclobber-20261026",
+  "base_branch": "codex/automation11-run597-chat-export-wal-snapshot-20261026",
+  "base_sha": "2d438472661b2ed012302bec956db35510c04c2c",
+  "verified_code_head": "f951e8fda7fac81a710ad0add88f0a7343e1a59a",
+  "pr": 593,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/593",
+  "prereg_commit": "655144259424af5b0ea945ae9bb21e82769a9a8c",
+  "changed_source_blobs": {
+    "v13/code/v13/backup.py": "1a1814dd6b858910115ad1c052adbfe12e676ed3",
+    "v13/code/tests/test_run598_backup_noclobber.py": "9b407c715ed84658847f454818053c7d86d9ecb8",
+    ".github/workflows/run598-backup-noclobber.yml": "6f781112a796b84c9418d95d15d0a398c01bfba3"
+  },
+  "observed_ci": {
+    "run": 40395088275,
+    "job": 121825889378,
+    "head": "f951e8fda7fac81a710ad0add88f0a7343e1a59a",
+    "conclusion": "success",
+    "new_tests": "6/6 PASS",
+    "source_closure": "7/7 PASS",
+    "backup_restore_memory": "4/4 PASS",
+    "multichat_backup": "2/2 PASS",
+    "restore_crash_journal": "2/2 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12686073036,
+    "raw_artifact_sha256_from_actions_log": "d4aa520a0df111214f5ec84014b3bc2be0c7918db5be93b554694a1a0c7dcfce"
+  },
+  "changes": [
+    "Unpredictable exclusive temporary archive in destination directory",
+    "Full archive fsync before atomic os.link no-clobber publication",
+    "Directory fsync before success, cleanup on all failures, unsupported hardlink filesystem fails closed",
+    "Existing destination/symlink and race never overwritten"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false
+  },
+  "fullsuite": {
+    "run596": 40393740879,
+    "source_head": "5a339a83c354da110d3bf1312531bc8b5989fa8f",
+    "tests": 4131,
+    "failures": 4,
+    "errors": 65,
+    "skipped": 14,
+    "artifact_sha256": "25ede1735dfa5f39e31fec35a6adb798f16d2e6012da086362e3dbcb58ac9904",
+    "root_cause": "frozen runtime/store source chain mismatch; original registered hashes unchanged",
+    "evidence_branch": "codex/automation11-run596-evidence-20261026"
+  },
+  "open_questions": [
+    "Run599 current source-only Termux ZIP with exact member/source-byte parity and portable smoke tests",
+    "Independent review/merge PR588–593 and Claude PR38",
+    "Hardlink/directory fsync support on Redmi not measured; external FAT/SD may fail closed",
+    "Native Body-JEPA, STEP2 utility and B3 receiver proof remain blocked"
+  ],
+  "next_command": "From this exact head, preregister and build current V13-Phone source-only ZIP using existing package_source.py --phone-install and independent Run268 verifier. Test extracted source and keep negative gates. No native/Redmi claim.",
+  "prerequisites": [
+    "No force push; no anyone-writable Drive",
+    "Keep source/Canon and frozen model hashes unchanged",
+    "Do not rerun unchanged fullsuite RED merely to claim progress"
+  ]
+}
