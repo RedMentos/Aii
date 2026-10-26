@@ -55,9 +55,13 @@ class GoalStore:
     def set_status(self,gid,status,note=None):
         if status not in STATUS:raise ValueError('Status '+'|'.join(STATUS))
         def f(st):
-            g=st['goals'][gid];g['status']=status;g['updated']=self.clock()
+            g=st['goals'][gid];prior=g['status'];g['status']=status;g['updated']=self.clock()
             if note:g['notes']=(g['notes']+[str(note)[:300]])[-8:]
             if status=='DONE':g['progress']=1.
+            elif status=='OPEN' and prior in {'DONE','ABANDONED'}:
+                # Reopening is a new work cycle, not 100%-complete progress.
+                # Keep prior steps, children and notes as historical evidence.
+                g['progress']=0.
             if g['parent']:self._recompute(st,g['parent'])
         self.box.mutate(f);return self.get(gid)
     def _recompute(self,st,gid):
