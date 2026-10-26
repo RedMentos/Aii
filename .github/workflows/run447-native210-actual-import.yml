@@ -1,0 +1,125 @@
+name: V13 Run447 actual native210 atomic no-model import
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run447-native210-actual-import.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run447-native210-import/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pinned Run438/Run436 source and isolated dependencies
+        run: |
+          set -euo pipefail
+          test "$(sha256sum v13/code/scripts/run436_verify_native210.py | cut -d' ' -f1)" = "19b7a647f2149b6ce0dded029fc6ffd5213768b5f801549b9d5f97a52d886b7a"
+          sha256sum v13/code/scripts/run438_import_stage5_artifact.py v13/code/scripts/run436_verify_native210.py | tee "$RUNNER_TEMP/run447-source-sha256.txt"
+          python3 -m venv "$RUNNER_TEMP/run447"
+          "$RUNNER_TEMP/run447/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Download exact existing Run437 safe work and original producer report
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12627626352/zip' -o "$RUNNER_TEMP/run447-safe210.zip"
+          curl -fsSL --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12627207495/zip' -o "$RUNNER_TEMP/run447-raw-small.zip"
+          printf '280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7  %s\n' "$RUNNER_TEMP/run447-safe210.zip" | sha256sum --check -
+          printf 'eb47eab043b7c51d0dbdea7cfb12ddfe1706a3611057efc7c348ae810fef599e  %s\n' "$RUNNER_TEMP/run447-raw-small.zip" | sha256sum --check -
+          "$RUNNER_TEMP/run447/bin/python" - <<'PY'
+          import hashlib,os,zipfile
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          with zipfile.ZipFile(root/'run447-raw-small.zip') as z:
+              names=z.namelist()
+              assert len(names)==len(set(names))
+              raw=z.read('RUN437_STAGE5_REPORT.json')
+          assert hashlib.sha256(raw).hexdigest()=='ef2e4554025730911012c50c417e55c25ef57185f147c131f30d319fb31ff6b1'
+          (root/'run447-stage5-report.json').write_bytes(raw)
+          print('ORIGINAL_STAGE5_REPORT_SHA256_VERIFIED')
+          PY
+      - name: Execute real atomic importer and independent five-receipt verification
+        working-directory: v13/code
+        run: |
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          set +e
+          "$RUNNER_TEMP/run447/bin/python" scripts/run438_import_stage5_artifact.py --archive "$RUNNER_TEMP/run447-safe210.zip" --expected-sha256 280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7 --stage5-report "$RUNNER_TEMP/run447-stage5-report.json" --destination "$RUNNER_TEMP/run447-restored-work" --output "$RUNNER_TEMP/run447-import-report.json" > "$RUNNER_TEMP/run447-import-raw.txt" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/run447-import-raw.txt"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/run447-import-exit.txt"
+          if [ "$status" -ne 0 ]; then exit "$status"; fi
+          "$RUNNER_TEMP/run447/bin/python" - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          d=json.loads((root/'run447-import-report.json').read_text())
+          assert d['status']=='RUN438_STAGE5_ARTIFACT_IMPORTED_VERIFIED'
+          assert d['rows_verified']==210 and d['copied_files']==147
+          assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          assert d['jepa_weight']==0 and d['redmi_measured'] is False
+          assert (root/'run447-restored-work/RUN397_PROGRESS.json').is_file()
+          print('ACTUAL_ATOMIC_NATIVE210_IMPORT_PASS')
+          PY
+      - name: Negative wrong SHA and forged positive report remain RED without destination
+        working-directory: v13/code
+        run: |
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          set +e
+          "$RUNNER_TEMP/run447/bin/python" scripts/run438_import_stage5_artifact.py --archive "$RUNNER_TEMP/run447-safe210.zip" --expected-sha256 "$(printf '0%.0s' {1..64})" --stage5-report "$RUNNER_TEMP/run447-stage5-report.json" --destination "$RUNNER_TEMP/run447-wrong-sha" --output "$RUNNER_TEMP/run447-wrong-sha-report.json" > "$RUNNER_TEMP/run447-negative-raw.txt" 2>&1
+          wrong_rc=$?
+          "$RUNNER_TEMP/run447/bin/python" - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          d=json.loads((root/'run447-stage5-report.json').read_text())
+          d['canonical_gate_pass']=True
+          (root/'run447-forged-report.json').write_text(json.dumps(d))
+          PY
+          "$RUNNER_TEMP/run447/bin/python" scripts/run438_import_stage5_artifact.py --archive "$RUNNER_TEMP/run447-safe210.zip" --expected-sha256 280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7 --stage5-report "$RUNNER_TEMP/run447-forged-report.json" --destination "$RUNNER_TEMP/run447-forged" --output "$RUNNER_TEMP/run447-forged-output.json" >> "$RUNNER_TEMP/run447-negative-raw.txt" 2>&1
+          forged_rc=$?
+          "$RUNNER_TEMP/run447/bin/python" - "$wrong_rc" "$forged_rc" <<'PY'
+          import json,os,sys
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          assert [int(x) for x in sys.argv[1:]]==[2,2]
+          for prefix,report in [('run447-wrong-sha','run447-wrong-sha-report.json'),('run447-forged','run447-forged-output.json')]:
+              assert not (root/prefix).exists()
+              d=json.loads((root/report).read_text())
+              assert d['status']=='RUN438_STAGE5_IMPORT_RED_PRESERVED' and d['canonical_gate_pass'] is False
+          print('ACTUAL_IMPORT_NEGATIVE_CONTROLS_PASS')
+          PY
+      - name: Source-only inherited import regressions
+        working-directory: v13/code
+        run: |
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run447/bin/python" -m unittest -v tests.test_run438_import_stage5_artifact tests.test_run436_verify_native210 > "$RUNNER_TEMP/run447-tests.txt" 2>&1
+          cat "$RUNNER_TEMP/run447-tests.txt"
+      - name: Official privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Retain small source-only actual import evidence, never model work
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run447-native210-import-proof-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run447-source-sha256.txt
+            ${{ runner.temp }}/run447-import-raw.txt
+            ${{ runner.temp }}/run447-import-exit.txt
+            ${{ runner.temp }}/run447-import-report.json
+            ${{ runner.temp }}/run447-negative-raw.txt
+            ${{ runner.temp }}/run447-wrong-sha-report.json
+            ${{ runner.temp }}/run447-forged-output.json
+            ${{ runner.temp }}/run447-tests.txt
+          if-no-files-found: warn
+          retention-days: 30
