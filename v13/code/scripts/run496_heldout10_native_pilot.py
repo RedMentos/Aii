@@ -92,9 +92,11 @@ def runner_target_within_bin(home, runner):
     actual resolved executable against the frozen runner SHA256.
     """
     try:
+        home_root = Path(home).resolve(strict=True)
         bin_root = (Path(home) / "bin").resolve(strict=True)
         target = Path(runner).resolve(strict=True)
-        return Path(runner).is_file() and target.is_relative_to(bin_root)
+        return (bin_root.is_relative_to(home_root) and
+                Path(runner).is_file() and target.is_relative_to(bin_root))
     except (OSError, RuntimeError):
         return False
 
