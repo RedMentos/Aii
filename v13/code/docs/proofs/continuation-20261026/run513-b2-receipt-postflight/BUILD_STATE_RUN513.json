@@ -1,0 +1,48 @@
+{
+  "schema": "V13_RUN513_RECEIPT_POSTFLIGHT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run513-b2-receipt-postflight-20261026",
+  "base_branch": "codex/run512-b2-source-binding-20261026",
+  "base_sha_at_branch": "b7121ff021f09b2ac09f9b15559efaf08ee8941d",
+  "run512_verified": {
+    "pr": 510,
+    "workflow": 40312012167,
+    "source_only_tests": 24,
+    "source_only_plans": 5,
+    "privacy": "CLEAN",
+    "artifact": 12644564001,
+    "artifact_zip_sha256": "6125171110ec99f14afaa9fa5e6dd5e7638fb211393486139ff7e7cb50e326a7",
+    "private_backup": "/V13_Run512_SOURCE_ONLY_PROOF_20261026_sha61251711.zip"
+  },
+  "scope": "Independent read-only structural 12-row native receipt postflight for Run511/512; synthetic tests only",
+  "implemented": [
+    "Exact 12 ordered keys, plan and result SHA",
+    "Four full source-slot IDs, text/SHA/ranges and prior-prep refs",
+    "Every quote bound to evidence ref exact source ID, SHA, char offsets, modality and substring",
+    "24 expected progress events, sealed prep, native metrics/release and negative gates",
+    "Export 12 reduced rows for later Run510 60-row scorer, never score partial cohort",
+    "11 synthetic tamper and positive tests"
+  ],
+  "source_sha": {
+    "prereg": "8ff35a512c2390a30d55c13c607d92b8120bd68d",
+    "script": "d2a5f4708c1f77ec14496ddab60ce072592d3fda",
+    "tests": "6fae51d5b44510d9dc3af234d03cb30042276387"
+  },
+  "evidence": "SOURCE_ONLY_CI_PENDING_NO_NATIVE",
+  "heavy_owner": "Run507 PR505 native job 40309409260 in progress at last check",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "blockers": [
+    "No Run511/512 native observations yet",
+    "Run507 heavy native job remains separate owner",
+    "Redmi unavailable"
+  ],
+  "next_command": "Open draft PR against Run512 branch, inspect Run513 source-only Actions and raw SHA evidence; repair any RED, then independently audit Run507 native job when complete.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
