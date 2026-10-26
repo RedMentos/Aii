@@ -31,6 +31,7 @@ jobs:
           set -uo pipefail
           cd v13/code
           export PYTHONPATH="$PWD:$PWD/scripts"
+          sha256sum scripts/run409_safe_export.py scripts/run413_export_receipt_gate.py tests/test_run440_model_path_casefold.py | tee "$RUNNER_TEMP/run440-source-sha256.txt"
           set +e
           "$RUNNER_TEMP/run440/bin/python" -m unittest -v tests.test_run440_model_path_casefold tests.test_run409_safe_export tests.test_run413_export_receipt_gate > "$RUNNER_TEMP/run440-tests.txt" 2>&1
           status=$?
@@ -49,5 +50,6 @@ jobs:
           path: |
             ${{ runner.temp }}/run440-tests.txt
             ${{ runner.temp }}/run440-exit.txt
+            ${{ runner.temp }}/run440-source-sha256.txt
           if-no-files-found: warn
           retention-days: 30
