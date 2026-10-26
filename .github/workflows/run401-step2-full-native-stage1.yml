@@ -1,0 +1,205 @@
+name: V13 Run401 one serialized real native STEP2 full-cohort arm
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run401-step2-full-native-stage1.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run401-full-native-stage1/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-full-stage-one:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact source identity, resource host and pinned provenance
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN401_HEAD.txt"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          sha256sum v13/code/scripts/run397_step2_resume.py v13/code/scripts/run394_step2_fresh.py \
+            v13/code/scripts/step2_z2_timescale.py v13/code/specs/models.json \
+            | tee "$RUNNER_TEMP/RUN401_SOURCE_SHA256.txt"
+          { date -u -Iseconds; uname -a; python3 --version; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } \
+            | tee "$RUNNER_TEMP/RUN401_HOST.txt"
+          python3 - <<'PY' | tee "$RUNNER_TEMP/RUN401_CATALOG.txt"
+          from pathlib import Path
+          from v13.models import catalog
+          c=catalog()
+          assert c['runner']['tag']=='b10964'
+          assert c['runner']['linux_binaries']['linux-x86_64']['sha256']=='9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443'
+          for k in ('needle','language','body','gist'):
+              m=c['models'][k]
+              assert m['files'] and all(len(f['sha256'])==64 and f['size']>0 for f in m['files'])
+              print('PINNED',k,m['model_id'],m['revision'],m['license_id'])
+          PY
+      - name: Isolated Python deps and 51 source-only controls
+        id: deps
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run401venv"
+          timeout 240s "$RUNNER_TEMP/run401venv/bin/python" -m pip install \
+            --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' \
+            2>&1 | tee "$RUNNER_TEMP/RUN401_DEPS_RAW.log"
+          d=${PIPESTATUS[0]}
+          if [ "$d" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run401venv/bin/python" -m unittest -v \
+              tests.test_run394_step2_fresh tests.test_run396_step2_pilot_audit \
+              tests.test_run397_step2_resume tests.test_run398_native_artifact_audit \
+              tests.test_run400_quote_substrings 2>&1 | tee "$RUNNER_TEMP/RUN401_TESTS_RAW.log"
+            t=${PIPESTATUS[0]}
+          else
+            t=2
+          fi
+          rc=$((d+t))
+          echo "$rc" > "$RUNNER_TEMP/RUN401_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Install only registered public GGUF and pinned b10964 runner
+        id: bootstrap
+        if: steps.deps.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run401installed"
+          timeout 1800s "$RUNNER_TEMP/run401venv/bin/python" -m v13.bootstrap --home "$V13_HOME" \
+            2>&1 | tee "$RUNNER_TEMP/RUN401_BOOTSTRAP_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run401venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN401_INSTALLED_RAW.log"
+          import json,os
+          from pathlib import Path
+          from v13.models import ModelManager,catalog
+          from v13.common import file_hash
+          h=Path(os.environ['V13_HOME'])
+          m=ModelManager(h);checks=m.verify(deep=True)
+          assert all(v['ok'] and v['hash_checked'] for v in checks.values()),checks
+          c=catalog()
+          for k in ('needle','language','body','gist'):
+              assert m.installed[k]['exact_revision']==c['models'][k]['revision']
+              print('MODEL_VERIFIED',k,m.installed[k]['exact_revision'])
+          p=h/'bin/llama-server'
+          cfg=json.loads((h/'config/runner.json').read_text())
+          assert cfg['tag']=='b10964' and cfg['binary_sha256']==file_hash(p)
+          print('RUNNER_VERIFIED',cfg['binary_sha256'])
+          PY
+            rc=${PIPESTATUS[0]}
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN401_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run exactly one full-cohort O_s20 native arm, append-only
+        id: native
+        if: steps.bootstrap.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run401installed"
+          timeout 4800s "$RUNNER_TEMP/run401venv/bin/python" scripts/run397_step2_resume.py \
+            --work "$RUNNER_TEMP/run401-full" --installed-home "$V13_HOME" \
+            --full --execute --max-new-arms 1 2>&1 | tee "$RUNNER_TEMP/RUN401_NATIVE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN401_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independently verify one actual 42-row completed arm, no promotion
+        id: audit
+        if: steps.native.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run401venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN401_POSTFLIGHT_RAW.log"
+          import json,os
+          from pathlib import Path
+          import run394_step2_fresh as r394
+          import run397_step2_resume as r397
+          from run396_step2_pilot_audit import sha
+          from v13.models import ModelManager
+          work=Path(os.environ['RUNNER_TEMP'])/'run401-full'
+          installed=Path(os.environ['RUNNER_TEMP'])/'run401installed'
+          manifest=json.loads((work/'RUN394_PREREGISTERED_FIXTURES.json').read_text())
+          assert manifest==r394.manifest(r394.FIXTURES,False,list(r394.ARMS),list(r394.SEEDS))
+          p=json.loads((work/'RUN397_PROGRESS.json').read_text())
+          assert p['status']=='INCOMPLETE' and set(p['completed'])=={'O_s20'}
+          assert p['canonical_gate_pass'] is False and p['step2_exit']=='UTILITY_FAIL'
+          assert not p['failures_preserved'],p['failures_preserved']
+          attempt=work/p['completed']['O_s20']['attempt']
+          m=ModelManager(installed)
+          checks=m.verify(deep=True)
+          assert all(checks[k]['ok'] and checks[k]['hash_checked'] for k in ('needle','language','body','gist'))
+          verified=r397.validate_completed(attempt,'O',20,r394.FIXTURES,manifest,sha(installed/'bin/llama-server'))
+          assert verified==p['completed']['O_s20']['validated']
+          assert verified['rows']==42
+          out={'run':'Run401','stage':'NATIVE_FULL_COHORT_PARTIAL','completed':['O_s20'],
+               'rows_verified':42,'remaining_arms':8,'attempt':str(attempt.relative_to(work)),
+               'validated':verified,'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL',
+               'redmi_measured':False,'jepa_weight':0}
+          dest=Path(os.environ['RUNNER_TEMP'])/'RUN401_POSTFLIGHT.json'
+          dest.write_text(json.dumps(out,sort_keys=True,indent=2)+'\n')
+          print(json.dumps({'status':out['stage'],'rows':42,'remaining_arms':8,
+                            'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL'}))
+          PY
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN401_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN401_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN401_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close all raw and partial work bytes before artifact upload
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN401_*' ! -name RUN401_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN401_SHA256SUMS.txt
+          if [[ -d run401-full ]]; then
+            find run401-full -type f -print0 | sort -z | xargs -0 -r sha256sum >> RUN401_SHA256SUMS.txt
+          fi
+      - name: Upload complete append-only native work, no model files
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run401-FullCohort-O_s20-Raw-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/RUN401_*
+            ${{ runner.temp }}/run401-full/**
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce all prerequisites and one real native completed arm
+        if: always()
+        run: |
+          test "${{ steps.deps.outputs.rc }}" = "0"
+          test "${{ steps.bootstrap.outputs.rc }}" = "0"
+          test "${{ steps.native.outputs.rc }}" = "0"
+          test "${{ steps.audit.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
