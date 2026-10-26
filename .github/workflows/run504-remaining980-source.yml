@@ -1,0 +1,105 @@
+name: V13 Run504 source-only remaining 980-row STEP2 schedule
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run504-remaining980-source.yml'
+      - 'v13/code/scripts/run504_remaining980_schedule.py'
+      - 'v13/code/tests/test_run504_remaining980_schedule.py'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run504-heldout980-remaining-map-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Frozen original and Run504 source identity
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run504-remaining980-source/PREREG.md)" = '08f7892088e7b53ae9ad5999f8a981deb4678fb5'
+          test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
+          test "$(git hash-object v13/code/tests/test_run504_remaining980_schedule.py)" = 'e1854594a6af6a3c3ccbf4668433bbc3d627654f'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+      - name: Isolated source dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source-only tests and frozen stage controls
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest -v tests.test_run504_remaining980_schedule tests.test_run500_step2_stage_map tests.test_run491_step2_heldout10 > "$RUNNER_TEMP/RUN504_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN504_TEST_EXIT.txt"
+          exit 0
+      - name: Generate and independently check no-native schedule
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python scripts/run504_remaining980_schedule.py --output "$RUNNER_TEMP/RUN504_PLAN.json" > "$RUNNER_TEMP/RUN504_PLAN_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python - <<'PY' >> "$RUNNER_TEMP/RUN504_PLAN_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          p=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN504_PLAN.json').read_text())
+          assert p['full_stage_count']==75 and p['full_row_count']==1050
+          assert p['remaining_stage_count']==70 and p['remaining_planned_rows']==980
+          assert p['batch_count']==24 and sum(b['expected_rows'] for b in p['batches'])==980
+          assert len(set(s for b in p['batches'] for s in b['stage_ids']))==70
+          assert p['reserved_stage_ids']==[f'C_s31_p{i:02d}' for i in range(5)]
+          assert p['reserved_p02_p04_native_verification_pending'] is True
+          assert p['native_executed'] is False and p['canonical_gate_pass'] is False
+          assert p['step2_exit']=='UTILITY_FAIL' and p['b3_l1']=='FAIL'
+          assert p['body_jepa']=='UNAVAILABLE' and p['jepa_weight']==0
+          print('RUN504_980_PLANNED_NOT_EXECUTED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN504_PLAN_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN504_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN504_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN504_*' ! -name RUN504_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN504_SHA256SUMS.txt
+      - name: Preserve source-only proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run504-remaining980-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN504_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests plan and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN504_TEST_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN504_PLAN_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN504_PRIVACY_EXIT.txt")" = '0'
