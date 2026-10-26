@@ -123,6 +123,51 @@ def check_quotes(row, by_slot):
                 "QUOTE_EVIDENCE_OFFSET_OR_TEXT_DRIFT")
 
 
+def check_quote_lineage(row):
+    """Verify source-exact refs also originate in the recorded native quote candidates.
+
+    A source substring alone does not prove that the body offered it. Pointer
+    mode can expand a short candidate into a longer exact-source excerpt.
+    This checks textual ancestry only, not independent native execution.
+    """
+    raw = row.get("raw_offer_quotes")
+    accepted = row.get("quotes")
+    rejected = row.get("rejected_quotes")
+    require(type(raw) is list and len(raw) <= 3 and
+            all(type(x) is str and len(x) <= 16384 for x in raw) and
+            type(accepted) is list and
+            type(rejected) is int and 0 <= rejected <= len(raw),
+            "RAW_QUOTE_LINEAGE_SCHEMA_DRIFT")
+    require(len(accepted) <= len(raw) - rejected,
+            "ACCEPTED_QUOTES_EXCEED_NATIVE_CANDIDATES")
+
+    def normalize(value):
+        return " ".join(value.split()).casefold()
+
+    candidates = [normalize(value) for value in raw]
+    possible = []
+    for quote in accepted:
+        require(type(quote) is dict and type(quote.get("text")) is str,
+                "ACCEPTED_QUOTE_LINEAGE_SCHEMA_DRIFT")
+        exact = normalize(quote["text"])
+        matches = [i for i, candidate in enumerate(candidates)
+                   if candidate and (
+                       (len(raw[i]) < 12 and raw[i] == quote["text"]) or
+                       (len(raw[i]) >= 12 and candidate in exact))]
+        require(bool(matches), "ACCEPTED_QUOTE_NOT_IN_NATIVE_OFFER")
+        possible.append(matches)
+
+    # At most three native candidates: exhaustive injective assignment avoids
+    # a greedy false rejection when one candidate matches multiple excerpts.
+    def assign(index, used):
+        if index == len(possible):
+            return True
+        return any(assign(index + 1, used | {candidate})
+                   for candidate in possible[index] if candidate not in used)
+
+    require(assign(0, set()), "NATIVE_QUOTE_CANDIDATE_REUSE")
+
+
 def check_prep(work, fixture, seed, preflight, rows):
     prep = load_json(work / f"RUN511_PREP_{fixture['id']}_s{seed}.json")
     require(prep.get("status") == "CLOSED_PREPARATION_SOURCE_ONLY" and
@@ -198,6 +243,7 @@ def audit(work, pair_index):
         fixture = fixtures[row["fixture"]]
         by_slot = check_slots(row, fixture)
         check_quotes(row, by_slot)
+        check_quote_lineage(row)
         keys.append([row["fixture"], row["arm"], row["seed"]])
         metric_rows.append({
             "fixture": row["fixture"], "arm": row["arm"],

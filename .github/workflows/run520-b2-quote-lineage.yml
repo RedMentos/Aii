@@ -1,0 +1,168 @@
+name: V13 Run520 B2 raw-native-quote lineage source-only and original p00 replay
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run520-b2-quote-lineage.yml'
+      - 'v13/code/scripts/run513_b2_receipt_postflight.py'
+      - 'v13/code/tests/test_run518_b2_native_receipt_schema.py'
+      - 'v13/code/tests/test_run520_b2_quote_lineage.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  offline-replay:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run520-b2-quote-lineage-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact prereg/source and original artifact pins
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run520-b2-quote-lineage/PREREG.md)" = '97f12f294551b65a27f37c5208bf441e1ba2d92d'
+          test "$(git hash-object v13/code/scripts/run513_b2_receipt_postflight.py)" = '76c92573867429d6a2c13f7493c456c06d4b6890'
+          test "$(git hash-object v13/code/tests/test_run513_b2_receipt_postflight.py)" = '09f07e15a5d23f58086a92780e8cd8c413a5e4cc'
+          test "$(git hash-object v13/code/tests/test_run518_b2_native_receipt_schema.py)" = '42899952c2df238b4b32acb8d95facee4efa1ce1'
+          test "$(git hash-object v13/code/tests/test_run520_b2_quote_lineage.py)" = '3c38db4d776f13a29e235b9c415d8df79b9df936'
+          test "$(git hash-object v13/code/tests/test_run516_b2_aggregate.py)" = '5e4d8f504ee0cf541b4f20e85a252df0e2cd44f7'
+          test "$(git hash-object v13/code/scripts/run509_b2_rule_quote_prereg.py)" = 'ec8860d2333bd3c4a16caccb9537073a310f32da'
+          test "$(git hash-object v13/code/scripts/run511_b2_offer_collector.py)" = 'ab8efec8016d77abc371a5a1d6dae395a06ebb60'
+      - name: Isolated source-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Corrected receipt schema and frozen source-only regression
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m py_compile scripts/run513_b2_receipt_postflight.py tests/test_run520_b2_quote_lineage.py tests/test_run518_b2_native_receipt_schema.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python -m unittest -v tests.test_run520_b2_quote_lineage tests.test_run516_b2_aggregate tests.test_run518_b2_native_receipt_schema tests.test_run513_b2_receipt_postflight tests.test_run512_b2_source_binding tests.test_run511_b2_offer_collector tests.test_run510_b2_quote_metric tests.test_run509_b2_rule_quote_prereg > "$RUNNER_TEMP/RUN520_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN520_TEST_EXIT.txt"
+          exit 0
+      - name: Read-only download exact original Run515 safe JSON artifact
+        run: |
+          set -uo pipefail
+          set +e
+          mkdir -p "$RUNNER_TEMP/run520-stage"
+          gh run download 40313344309 --repo RedMentos/Aii --name 'run515-b2-native-p00-safe-24f5f802b700c82f9e57f59bd3345dd6dd1e4f53' --dir "$RUNNER_TEMP/run520-stage" > "$RUNNER_TEMP/RUN520_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN520_DOWNLOAD_EXIT.txt"
+          exit 0
+      - name: Verify immutable original safe manifest and original raw observation SHA
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN520_INPUT_RAW.log" 2>&1
+          import hashlib,json,os,stat
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run520-stage'
+          manifest=root/'RUN515_SAFE_MANIFEST.json'
+          assert manifest.is_file() and not manifest.is_symlink()
+          assert hashlib.sha256(manifest.read_bytes()).hexdigest()=='1d10129f2e9f08cb62e08227008335a19a9b839f0069a44cea7c0d04468af3be'
+          d=json.loads(manifest.read_text())
+          assert d['status']=='SAFE_NO_MODEL_COPY_NOT_NATIVE_PROOF' and len(d['copied'])==11
+          assert {p.name for p in root.iterdir()}==set(d['copied'])|{'RUN515_SAFE_MANIFEST.json'}
+          for name,meta in d['copied'].items():
+              p=root/name;st=p.lstat()
+              assert stat.S_ISREG(st.st_mode) and st.st_nlink==1 and st.st_size==meta['bytes']
+              assert hashlib.sha256(p.read_bytes()).hexdigest()==meta['sha256']
+          assert hashlib.sha256((root/'RUN511_OBSERVATIONS_RAW.jsonl').read_bytes()).hexdigest()=='676bb2e87794fe8a96ab57f3ee68a7eda714e620426bd560f736cd71529b8448'
+          assert hashlib.sha256((root/'RUN511_STAGE_RESULT.json').read_bytes()).hexdigest()=='cfb238cdcfd722b85721e103bc406d6926e9e4662abf348d8f729c67d702510f'
+          print('RUN520_ORIGINAL_RUN515_11_SAFE_FILES_SHA_VERIFIED_NO_MODEL')
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN520_INPUT_EXIT.txt"
+          exit 0
+      - name: Re-audit actual original 12 native rows with repaired independent source refs
+        if: always()
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN520_INPUT_EXIT.txt")" = 0 ]; then
+            ../../.venv/bin/python scripts/run513_b2_receipt_postflight.py --work "$RUNNER_TEMP/run520-stage" --pair-index 0 > "$RUNNER_TEMP/RUN520_REPLAY_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'INPUT_NOT_VERIFIED_NO_REPLAY' > "$RUNNER_TEMP/RUN520_REPLAY_RAW.log"
+            rc=1
+          fi
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python - <<'PY' >> "$RUNNER_TEMP/RUN520_REPLAY_RAW.log" 2>&1
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run520-stage'
+          d=json.loads((root/'RUN513_POSTFLIGHT.json').read_text())
+          assert d['source_bound_rows']==12 and d['status']=='SOURCE_REF_STRUCTURAL_RECEIPT_PASS_NOT_NATIVE_PROOF'
+          assert d['native_execution_independently_confirmed'] is False and d['canonical_gate_pass'] is False
+          assert d['step2_exit']=='UTILITY_FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          report={'status':'RUN515_NATIVE12_ORIGINAL_RED_REPLAY_STRUCTURAL_PASS',
+                  'original_actions_run':40313344309,'original_actions_conclusion':'FAILURE',
+                  'original_raw_zip_sha256':'680e874dda717096d67506128aef688ab2ceab0ab4f5ca196f2f036875a70858',
+                  'original_safe_zip_sha256':'4e7b53a2b6438562693b441c648338463df7d10258bb657f3ef821f696a3f534',
+                  'raw_observations_sha256':d['raw_observations_sha256'],
+                  'source_bound_rows':12,'quote_ref_records':d['exact_quote_ref_records'],
+                  'native_execution_repeated':False,'native_execution_independently_confirmed':False,
+                  'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL','b3_l1':'FAIL',
+                  'body_jepa':'UNAVAILABLE','jepa_weight':0,'redmi_measured':False}
+          out=Path(os.environ['RUNNER_TEMP'])/'RUN520_REPLAY_REPORT.json'
+          out.write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
+          print(json.dumps(report,sort_keys=True))
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN520_REPLAY_EXIT.txt"
+          exit 0
+      - name: Public privacy scan with exact base fetch
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN520_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN520_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN520_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close replay and original RED provenance
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          if [ -f "$RUNNER_TEMP/run520-stage/RUN513_POSTFLIGHT.json" ]; then
+            cp "$RUNNER_TEMP/run520-stage/RUN513_POSTFLIGHT.json" "$RUNNER_TEMP/RUN520_POSTFLIGHT.json"
+            cp "$RUNNER_TEMP/run520-stage/RUN513_VERIFIED_METRIC_ROWS.json" "$RUNNER_TEMP/RUN520_METRIC_ROWS.json"
+          fi
+          find . -maxdepth 1 -type f -name 'RUN520_*' ! -name RUN520_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN520_SHA256SUMS.txt
+      - name: Preserve raw source-only replay evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run520-b2-quote-lineage-original-p00-replay-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN520_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact original 12-row replay and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for n in TEST DOWNLOAD INPUT REPLAY PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/RUN520_${n}_EXIT.txt")" = 0
+          done

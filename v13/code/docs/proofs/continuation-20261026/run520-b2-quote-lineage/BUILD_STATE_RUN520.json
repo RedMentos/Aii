@@ -1,0 +1,76 @@
+{
+  "schema": "V13_RUN520_B2_NATIVE_QUOTE_LINEAGE_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run520-b2-quote-lineage-20261026",
+  "base_branch": "codex/run519-b2-native-p01-20261026",
+  "base_sha": "0e193755a446f837b848d143fcce582fa486979f",
+  "prereg_blob_sha": "97f12f294551b65a27f37c5208bf441e1ba2d92d",
+  "source": {
+    "revised_postflight_blob": "76c92573867429d6a2c13f7493c456c06d4b6890",
+    "new_adversarial_tests_blob": "3c38db4d776f13a29e235b9c415d8df79b9df936",
+    "frozen_collector_blob": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
+    "frozen_metric_blob": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6"
+  },
+  "gap": "Original Run513 checked source/offset equality but not whether accepted quote was textually traceable to native raw_offer_quotes; source-exact fabricated quote could inflate metric.",
+  "fix": "Bounded casefold/whitespace-normalized injective raw-candidate ancestry check after exact source-ref check; Run516 aggregate inherits through Run513; original native/fixture/model/seed data unchanged.",
+  "test_plan": "Tightened short-candidate adversarial tests + Run516 aggregate tests + original Run509-518 + pinned original p00 replay + privacy scan",
+  "evidence": "SOURCE_ONLY_GREEN_61_TESTS_ORIGINAL_P00_12_ROWS_23_REFS_PRIVACY_CLEAN",
+  "heavy_owner": {
+    "pr": 517,
+    "workflow": "run519-b2-native-p01",
+    "status": "IN_PROGRESS_AT_LAST_CHECK",
+    "stage": "p01",
+    "no_parallel_native": true
+  },
+  "original_artifact": {
+    "native_pr": 513,
+    "actions": 40313344309,
+    "conclusion": "FAILURE",
+    "raw_zip_sha256": "680e874dda717096d67506128aef688ab2ceab0ab4f5ca196f2f036875a70858",
+    "safe_zip_sha256": "4e7b53a2b6438562693b441c648338463df7d10258bb657f3ef821f696a3f534",
+    "read_only_replay_actions": 40314742064
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Monitor Run519 Actions 40316152651 without interrupting; on completion download both raw/safe ZIP, verify SHA manifests, source/ref/quote lineage with new Run520 auditor, preserve original result, then preregister next disjoint p02 native stage only if heavy lane free.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "amendment_a": "Short (<12) raw quote must byte-equal accepted excerpt, not justify arbitrary widening; include Run516 synthetic aggregate tests.",
+  "initial_ci": {
+    "run": 40316505151,
+    "conclusion": "SUCCESS",
+    "tests": 49,
+    "original_p00_rows": 12,
+    "original_p00_quote_refs": 23,
+    "privacy": "CLEAN",
+    "artifact_id": 12647500590,
+    "artifact_sha256": "26ccc30be8be9715c5818b669b4fb468401d290e0d7e8db5687f758021fb5f22",
+    "manifest_entries_verified": 13
+  },
+  "ci_final": {
+    "run": 40316727287,
+    "source_head": "14f9a52a0daa9d2933e7f8f7dd08f9dd90309ff2",
+    "conclusion": "SUCCESS",
+    "tests": 61,
+    "artifact_id": 12647770073,
+    "artifact_sha256": "809616046736a2cf84fe1a46c74f6dcb582f4a8e36a4dabe6d97af14927ccc35",
+    "sha_manifest_entries_verified": 13,
+    "original_p00_rows": 12,
+    "original_p00_quote_refs": 23,
+    "original_run515_conclusion": "FAILURE",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run520/Run520_amended_61tests_sha80961604.zip"
+  },
+  "open_questions": [
+    "Run519 p01 native still in progress at last observation; original p00 only retrospective replay",
+    "No full 60-row Run510 score until all p00-p04 native stages are separately verified",
+    "Short raw quote guard proves textual ancestry only, not actual native execution or complete prompt choices",
+    "STEP2/B3/Body-JEPA/Redmi remain negative"
+  ]
+}
