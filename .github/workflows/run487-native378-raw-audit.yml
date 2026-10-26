@@ -1,0 +1,138 @@
+name: V13 Run487 independent original native378 raw replay
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - '.github/workflows/run487-native378-raw-audit.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run487-native378-raw-stdlib-review-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pin independent stdlib auditor and original native artifact
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run487_native378_independent_raw_audit.py)" = '9bbb0ab468268a5e7bef70fb507b9c893e3ec55d'
+          gh api repos/RedMentos/Aii/actions/artifacts/12633269066 --jq '{id,digest,expired}' > "$RUNNER_TEMP/RUN487_ORIGINAL_ARTIFACT_META.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN487_ORIGINAL_ARTIFACT_META.json').read_text())
+          assert p=={'id':12633269066,'digest':'sha256:a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe','expired':False}
+          PY
+          sha256sum v13/code/scripts/run487_native378_independent_raw_audit.py > "$RUNNER_TEMP/RUN487_SOURCE_SHA256.txt"
+      - name: Download only original SHA-pinned safe no-model ZIP
+        id: download
+        run: |
+          set -uo pipefail
+          set +e
+          curl -fsSL --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12633269066/zip' -o "$RUNNER_TEMP/run487-original-safe378.zip"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe  $RUNNER_TEMP/run487-original-safe378.zip" | sha256sum -c - > "$RUNNER_TEMP/RUN487_SAFE_SHA.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN487_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Recompute all original 378 rows without V13 analyzer code
+        id: audit
+        if: steps.download.outputs.rc == '0'
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/run487_native378_independent_raw_audit.py "$RUNNER_TEMP/run487-original-safe378.zip" > "$RUNNER_TEMP/RUN487_AUDIT.json" 2> "$RUNNER_TEMP/RUN487_AUDIT_RAW.log"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' > "$RUNNER_TEMP/RUN487_ASSERT_RAW.log" 2>&1
+          import json,math,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN487_AUDIT.json').read_text())
+          assert d['status']=='RAW_NATIVE378_RECOMPUTED_NO_GATE_PROMOTION' and d['rows']==378
+          assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          assert d['b3_l1']=='FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          assert d['strict_dominance']=={'O':False,'P':False,'S':False}
+          close=lambda x,y:math.isclose(x,y,abs_tol=1e-12)
+          assert close(d['arm_mean_utility']['P']['both_exact'],.5972222222222222)
+          assert close(d['arm_mean_utility']['P']['b1_only'],.7037037037037037)
+          assert close(d['pointer_minus_off_both_exact']['mean'],.08796296296296297)
+          assert close(d['pointer_minus_shared_both_exact']['mean'],.17592592592592593)
+          assert (d['pointer_minus_off_both_exact']['wins'],d['pointer_minus_off_both_exact']['ties'],d['pointer_minus_off_both_exact']['losses'])==(6,7,5)
+          assert (d['pointer_minus_shared_both_exact']['wins'],d['pointer_minus_shared_both_exact']['ties'],d['pointer_minus_shared_both_exact']['losses'])==(7,7,4)
+          print('RUN487_INDEPENDENT_ORIGINAL_378_RAW_UTILITY_CONFIRMED_NO_GATE_PROMOTION')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN487_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original ZIP tampering must be rejected before any row use
+        id: tamper
+        if: steps.audit.outputs.rc == '0'
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN487_TAMPER_RAW.log" 2>&1
+          import os,subprocess,sys
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          src=root/'run487-original-safe378.zip'
+          tamper=root/'run487-tampered.zip'
+          with src.open('rb') as f, tamper.open('wb') as g:
+              first=f.read(1);g.write(bytes([first[0]^1]))
+              for chunk in iter(lambda:f.read(1024*1024),b''):g.write(chunk)
+          r=subprocess.run([sys.executable,'v13/code/scripts/run487_native378_independent_raw_audit.py',str(tamper)],capture_output=True,text=True)
+          assert r.returncode!=0 and 'ORIGINAL_SAFE_ZIP_SHA_MISMATCH' in r.stderr
+          tamper.unlink()
+          print('RUN487_TAMPER_REJECTED')
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN487_TAMPER_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN487_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN487_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN487_*' ! -name RUN487_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN487_SHA256SUMS.txt
+      - name: Preserve raw evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run487-independent-native378-raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN487_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce raw replay and privacy, never native
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/RUN487_AUDIT_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN487_AUDIT_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN487_TAMPER_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN487_PRIVACY_EXIT.txt")" = '0'
