@@ -1,7 +1,7 @@
 {
   "run": "Run397",
   "date": "2026-10-26",
-  "stage": "SOURCE_ONLY_GREEN3_NATIVE_RESTART_UNPROVEN",
+  "stage": "SOURCE_ONLY_GREEN4_NATIVE_RESTART_UNPROVEN",
   "owner": "GPT scheduled continuation",
   "branch": "codex/run397-step2-resumable-native-20261026",
   "pr": 392,
@@ -42,6 +42,20 @@
       "artifact": 12619188261,
       "sha256": "a3a3b498dfddad44eba7cb4d31456515733ddb192d4b309fdb76ea7322211b63",
       "fixed_by": "5f5183109db1352c9faa2e4a4ceea34f68c853f2"
+    },
+    {
+      "type": "RECORDED_RUNTIME_SOURCE_HASH_MISMATCH",
+      "run": 40249348914,
+      "artifact": 12619343265,
+      "sha256": "a939fae7df1e422e3b2b550b7e9379f29fa3877b918a1387115381599fbf97f7",
+      "fixed_by": "132971e984124bcb583d6ee5ea57b6c1535279cb"
+    },
+    {
+      "type": "IMPLEMENTATION_ERROR_WRONG_Z2_IMPORT",
+      "run": 40249376667,
+      "artifact": 12620042730,
+      "sha256": "b7993eaaf3daa5916ba6e5a11a5bf83f1432bc5f33317d04ff6ae2cbff0fe853",
+      "fixed_by": "132971e984124bcb583d6ee5ea57b6c1535279cb"
     }
   ],
   "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run397_STEP2_20261026/",
@@ -67,17 +81,18 @@
   "next_command": "PYTHONPATH=v13/code:v13/code/scripts python3 v13/code/scripts/run397_step2_resume.py --work <private fresh cohort dir> --installed-home <verified installed home> --full --execute --max-new-arms 1",
   "next_prerequisites": "Run395 pilot complete and reviewed; no concurrent native owner; installed public artifacts deep-hash verified; native restart still requires measured proof",
   "proof_latest": {
-    "source_head": "d04db80ba84bc8d2507ebe0f84986d6682388f21",
-    "run": 40249150310,
-    "job": 121337017938,
-    "tests": "33/33 PASS, compileall PASS, privacy CLEAN",
-    "artifact": 12620112079,
-    "zip_sha256": "7f5aaac53f4c78257a9c9a4b5f415f6d3028aba41bf9cef53b731aca6e5a61a9",
-    "raw": "ZIP CRC PASS, four internal SHA256 PASS, private Library byte-identical"
+    "source_head": "132971e984124bcb583d6ee5ea57b6c1535279cb",
+    "run": 40249419934,
+    "job": 121337829011,
+    "tests": "34/34 PASS, compileall PASS, privacy CLEAN",
+    "artifact": 12619863375,
+    "zip_sha256": "7b28406ff7260d917b4d44a011c3dd4799bec765a001cea2d85377e9b67d2d2b",
+    "raw": "ZIP CRC PASS, 4/4 member SHA256 PASS, private Library byte-identical"
   },
   "additional_features": [
     "Optional --max-new-arms N allows staged durable continuation; default unbounded",
     "Reject symlinked work lock, attempt tree, receipt, evidence, manifest and journal",
-    "Three separate synthetic invocations complete O/P/S with no duplicate native-shaped rows"
+    "Three separate synthetic invocations complete O/P/S with no duplicate native-shaped rows",
+    "Require complete frozen native runtime/harness source_hashes identity for every reused arm"
   ]
 }
