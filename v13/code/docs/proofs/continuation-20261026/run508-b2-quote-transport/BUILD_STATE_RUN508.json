@@ -1,0 +1,42 @@
+{
+  "schema": "V13_RUN508_B2_QUOTE_DIAGNOSTIC_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run508-b2-quote-transport-audit-20261026",
+  "base_branch": "codex/run507-future001-native-20261026",
+  "base_sha": "28dbc83775ef3c764fffdbeb219fad567dff49c4",
+  "status": "RETROSPECTIVE_PARTIAL_NATIVE70_DIAGNOSTIC_PERSISTED",
+  "scope": {
+    "actual_native_rows_reviewed": 70,
+    "arm": "C",
+    "seed": 31,
+    "fixture_count": 10,
+    "variants": 7,
+    "run508_new_native_rows": 0
+  },
+  "verification": [
+    "Original Run499/501/503 70 native rows previously independently rescored, source/consumer quote hashes verified",
+    "Actual B2 offer literal quote counts recomputed for both_exact and b2_only",
+    "Actual consumer-message SHA equality compared for both_exact vs both_none/control",
+    "Run507 native separate owner, no model work here"
+  ],
+  "findings": [
+    "B2 both_exact literal all-three-rule quotes 0/10, local-only quote 0/10, any rule quote 3/10",
+    "both_exact consumer messages identical to both_none on Boreal, Vesper, Xenia (3/10) and to both_control on Vesper (1/10)",
+    "Observed transport bottleneck is a hypothesis for fresh prospective testing, not proof of B2 inability"
+  ],
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "blockers": [
+    "Full Run491 1050-row cohort incomplete",
+    "Run507 A_s31 native in progress",
+    "Redmi unavailable"
+  ],
+  "next_command": "Inspect Run507 native Actions 40309409260, preserve raw/safe RED or PASS. Independently preregister B2 rule quote source-bound intervention on fresh disjoint fixtures; no alteration to frozen Run491 source, models or seeds.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
