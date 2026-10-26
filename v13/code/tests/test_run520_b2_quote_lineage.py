@@ -96,6 +96,29 @@ class Run520QuoteLineage(unittest.TestCase):
         row["evidence_refs"].append(copy.deepcopy(row["evidence_refs"][0]))
         self.audit()
 
+    def test_short_raw_candidate_cannot_support_widened_excerpt(self):
+        row = self.rows[0]
+        row["raw_offer_quotes"] = [row["quotes"][0]["text"][0]]
+        with self.assertRaisesRegex(ValueError, "ACCEPTED_QUOTE_NOT_IN_NATIVE_OFFER"):
+            self.audit()
+
+    def test_short_raw_candidate_exact_excerpt_passes(self):
+        row = self.rows[0]
+        short = row["quotes"][0]["text"][:5]
+        row["raw_offer_quotes"] = [short]
+        row["quotes"][0]["text"] = short
+        row["evidence_refs"][0]["char_end"] = len(short)
+        self.audit()
+
+    def test_short_raw_candidate_casefold_only_rejected(self):
+        row = self.rows[0]
+        short = row["quotes"][0]["text"][:5]
+        row["raw_offer_quotes"] = [short.swapcase()]
+        row["quotes"][0]["text"] = short
+        row["evidence_refs"][0]["char_end"] = len(short)
+        with self.assertRaisesRegex(ValueError, "ACCEPTED_QUOTE_NOT_IN_NATIVE_OFFER"):
+            self.audit()
+
     def test_raw_quote_list_is_bounded(self):
         row = self.rows[0]
         row["raw_offer_quotes"] = [row["raw_offer_quotes"][0]] * 4
