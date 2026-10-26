@@ -15,13 +15,14 @@
   "tests_commit": "750faabce3be057c4958786683f43a5b0153ac03",
   "workflow_commit": "23fa3d6a7303c6cc493a496055299ade11a81647",
   "green": {
-    "run": 40253432009,
-    "job": 121350052095,
-    "artifact": 12621610934,
-    "artifact_sha256": "022bba89415bd78980eb76f4b83abafd01359d5442ee570c51e7c2c991c7fe57",
-    "tests": "97/97 PASS",
+    "run": 40253584720,
+    "job": 121350520807,
+    "artifact": 12621730866,
+    "artifact_sha256": "a8a5f851118f0eee304ad7d17649201136e27947bb767999e7a957dfd4492110",
+    "tests": "98/98 PASS",
     "compileall": "PASS",
-    "privacy": "CLEAN"
+    "privacy": "CLEAN",
+    "fix_commit": "cc2404144392957239e84e254fe57a441daeefe4"
   },
   "scope": "Source-only no-follow export of all native regular files; allow only installed models/bin arm-home symlinks, preserve failed attempts, atomic no-clobber, no inference",
   "actual_native_export": false,
@@ -42,5 +43,10 @@
     "No native stage2"
   ],
   "next_command": "Inspect Run406 latest diagnostic, then source-bound Run408 actual ZIP validation and Run409 safe export in next native checkpoint; no stage2 until real restored O_s20 verified.",
-  "next_prerequisites": "Observed artifact SHA closure and exact model member inventory, no concurrent native owner, pinned registered installed models for actual native stage2"
+  "next_prerequisites": "Observed artifact SHA closure and exact model member inventory, no concurrent native owner, pinned registered installed models for actual native stage2",
+  "red_hardlink": {
+    "commit": "c75c412ca5100e773b89979925195a1c6ff8c846",
+    "actions_run": 40253537925,
+    "observed": "test_hardlinked_model_renamed_as_data_rejected failed as intended; source accepted a model hardlink alias"
+  }
 }
