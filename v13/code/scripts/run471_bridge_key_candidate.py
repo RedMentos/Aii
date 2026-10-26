@@ -82,8 +82,10 @@ def verify_file(path, specs):
     bridge = Bridge.load(path, specs[sender]['revision'], specs[receiver]['revision'])
     require(bridge.digest() == result['bridge_weights_sha256'],
             'BRIDGE_WEIGHTS_NOT_ATTESTED')
+    require((manifest.get('calibrated') is True) == (bridge.cal is not None),
+            'BRIDGE_CALIBRATION_FLAG_MISMATCH')
     result.update(run='Run471', status='RUN471_EXACT_BRIDGE_IDENTITY_NO_AUTHORITY',
-                  calibrated=manifest.get('calibrated') is True,
+                  calibrated=bridge.cal is not None,
                   l1_verdict=(manifest.get('l1_gate') or {}).get('verdict'),
                   native_execution_performed=False, redmi_measured=False,
                   jepa_weight=0)
