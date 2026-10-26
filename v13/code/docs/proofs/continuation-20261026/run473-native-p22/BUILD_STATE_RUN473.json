@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN473_NATIVE_P22_PREEXEC_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run473 exclusive Linux-native P_s22; GitHub Actions concurrency v13-native-c3-run131-serialized",
+  "branch": "codex/run473-native-p22-20261026",
+  "base_sha": "76fd13970d1570c36c1b348c64a847332886e75e",
+  "source_workflow_git_blob": "73b1121e34a0dcb48a7b53767200b43762d8f1aa",
+  "source_workflow_commit": "158980531d592f607ec1784cc66cd30e7a0f8210",
+  "inherited_native294": {
+    "run_id": 40276284227,
+    "head_sha": "76fd13970d1570c36c1b348c64a847332886e75e",
+    "job_id": 121419615154,
+    "conclusion": "success",
+    "safe_artifact_id": 12630443252,
+    "safe_zip_sha256": "e2e044840b9ac7acdb54102bd7df069fbc6491ca8b758421c3958730090e2136",
+    "raw_artifact_id": 12630901885,
+    "raw_zip_sha256": "3fad8bf5a20ff9acd8ed1f43a318f507fb12ee1f80571e830e7e61f8942dffbf",
+    "evidence": "GitHub Actions successful native O_s22 execution and independent Run460 7-receipt 294-row audit; GitHub artifact digest/metadata verified. Raw ZIP not locally extracted in this automation.",
+    "report_member": "RUN472_STAGE7_REPORT.json",
+    "expected_report_status": "STAGE7_NATIVE_PARTIAL_NO_PROMOTION",
+    "verified_rows": 294,
+    "completed_arms": [
+      "O_s20",
+      "P_s20",
+      "S_s20",
+      "O_s21",
+      "P_s21",
+      "S_s21",
+      "O_s22"
+    ]
+  },
+  "new_native_work": {
+    "expected_next_arm": "P_s22",
+    "expected_total_rows_after_success": 336,
+    "source_script": "v13/code/scripts/run462_stage8_p22.py",
+    "source_script_blob": "235e543cad60692d31229e9a04fec0fea1845c5f",
+    "importer": "v13/code/scripts/run461_import_stage7_artifact.py",
+    "independent_verifier": "v13/code/scripts/run465_verify_native336.py",
+    "workflow": ".github/workflows/run473-native-p22.yml",
+    "execution_status": "NOT_STARTED_AT_PREEXEC_CHECKPOINT",
+    "safety": "single serialized arm; SHA-pinned actual native294 ZIP and raw report; source-only preflight before model install; independent eight-receipt postflight; fail-closed and preserve raw evidence; no-model export"
+  },
+  "negative_gates": {
+    "canonical_gate_pass": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Stage8 must actually run, export safely and pass Run465 independent 336-row verification; source-only CI does not prove native.",
+    "After verified 336, Stage9 S_s22 is the last frozen structural arm; 378 structural rows alone do not prove STEP2 utility acceptance.",
+    "Original 10-episode STEP2 acceptance, distinct B1/B2, B3 L1, Body-JEPA and Redmi remain open."
+  ],
+  "exact_next_command": "Open PR codex/run473-native-p22-20261026 against codex/run472-native-o22-20261026; monitor run473-native-p22.yml, preserve GREEN/RED raw artifact and hash, then independently verify 336 receipts before Stage9."
+}
