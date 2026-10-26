@@ -1,0 +1,59 @@
+{
+  "schema": "V13_RUN579_DISJOINT_PROJECT_TRANSFER_SOFTWARE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation12",
+  "review_branch": "codex/automation12-eligibility-project-scope-20261026",
+  "review_pr": 575,
+  "base_head": "456e6a1a4f91bfc369e31358946fedd52d9ad4d6",
+  "prereg_commit": "bd4142fff54a791378c82fe1e42419f86e3df441",
+  "source_tested_head": "1154653c50f317eec1b71c0d53756ac33eabe99d",
+  "source_blobs": {
+    "scripts/run579_project_transfer.py": "cd9e9a75f3e6770062c58ea408789a9256337ff6",
+    "tests/test_run579_project_transfer.py": "d54e1bcb14ca749df07aa5711e639255c3bcc362",
+    "v13/agi/eligibility.py": "6af0130fd6209aa6ec293eaa2d892d23401361fa",
+    "v13/toolstep.py": "25ce260e2e840aba97cd70ad44fbb5e56a6307b2"
+  },
+  "tests": {
+    "workflow_run": 40380908867,
+    "job_id": 121776538185,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12677833192,
+    "artifact_sha256": "c19e87d3be52872a3e5d05ed85643666d1ce16491a0a2321d4f9f5a278a3d706",
+    "scope": "24 real SQLite ToolStep shadow arm rows across 12 disjoint exact-wording synthetic cases; new and old focused tests; compileall; official privacy scan; SHA-closed raw",
+    "expected_metrics_asserted_in_passing_tests": {
+      "baseline": {
+        "n": 12,
+        "exact": 6,
+        "cross_wrong_committed": 6,
+        "same_project_exact": 6
+      },
+      "scoped": {
+        "n": 12,
+        "exact": 12,
+        "cross_wrong_committed": 0,
+        "same_project_exact": 6
+      }
+    },
+    "native_executed": false
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Designed exact-wording synthetic software cohort; improvement cannot be generalized to natural language or native C3/B1/B2 learning.",
+    "Tool action measured in SHADOW; no production tool approval/age gate bypass.",
+    "Original full source suite RED 4038 tests, 4 FAIL and 65 ERROR remains unresolved and separate.",
+    "No native, Redmi, B3 latent or Body-JEPA proof."
+  ],
+  "open_questions": [
+    "Independently review the raw report and compare source-bound behavior on a disjoint natural-language cohort, not only designed controls.",
+    "Integrate review-only PR575 only after independent approval and versioned current-source attestation.",
+    "Resolve original Run568 native failure and source-lineage mismatch before next large native experiment."
+  ],
+  "next_exact_command": "Review PR575 at latest head and Actions 40380908867 artifact; independently audit Run568 original failed native raw and decide next high-value STEP2/B1-B2 package. Keep all gates negative and do not retune registered cohort."
+}
