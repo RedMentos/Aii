@@ -113,7 +113,7 @@ class LiveToolStepPrecedence(unittest.TestCase):
              patch.object(self.r.pool, "get", side_effect=AssertionError("MODEL_READ_FORBIDDEN")):
             proposal = ToolStep(self.r).plan(e, current)
         self.assertIsNone(proposal)
-        row = self.r.store.one("SELECT payload FROM telemetry WHERE kind='tool_step_unavailable' ORDER BY id DESC LIMIT 1")
+        row = self.r.store.one("SELECT id FROM telemetry WHERE kind='tool_step_unavailable' ORDER BY id DESC LIMIT 1")
         self.assertIsNotNone(row)
 
     def test_runtime_conflicting_quote_rule_refuses(self):
