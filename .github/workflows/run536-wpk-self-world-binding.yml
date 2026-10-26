@@ -28,8 +28,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run536-wpk-self-world-binding/PREREG.md)" = '2856a6b81ca996f5b49c6dd99797746dfe3f0868'
-          test "$(git hash-object v13/code/v13/agi/approved_sandbox_world.py)" = 'de09734fe1eedbd207e6c57447430f8bcee12a51'
-          test "$(git hash-object v13/code/tests/test_run536_approved_sandbox_world.py)" = 'a3d859e574cf6089af808d95ff6a1c4eb63eb598'
+          test "$(git hash-object v13/code/v13/agi/approved_sandbox_world.py)" = '491495d861ca72fcc9d389ada1d2d1df4a49036c'
+          test "$(git hash-object v13/code/tests/test_run536_approved_sandbox_world.py)" = 'edf3f73c2f316e6a49c01ebb6808bebd622d1d89'
           test "$(git hash-object v13/code/v13/agi/file_world_port.py)" = '713d66efac249649adeaeb32ae7efb690fab72f4'
           test "$(git hash-object v13/code/v13/agi/tools.py)" = '172ad8c9cf3b3be4d36734f4a60cc25da3755ac3'
           { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN536_HOST.txt"
