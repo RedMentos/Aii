@@ -1,3 +1,4 @@
+import hashlib
 import unittest
 from v13.cognition import quote_choices
 from scripts.run481_ranked_quote_choices_candidate import ranked_quote_choices, diagnostic
@@ -55,6 +56,9 @@ class RankedChoices(unittest.TestCase):
         self.assertEqual(result['latent_authority'],0)
         self.assertEqual(result['step2_exit'],'UTILITY_FAIL')
         self.assertEqual(result['choices'][0]['text'],'Budget 40 euros.')
+        self.assertEqual(result['choices'][0]['source_sha256'],
+                         hashlib.sha256(b'Budget 40 euros.').hexdigest())
+        self.assertEqual(result['goal_sha256'],hashlib.sha256(b'budget').hexdigest())
 
 
 if __name__=='__main__':unittest.main()
