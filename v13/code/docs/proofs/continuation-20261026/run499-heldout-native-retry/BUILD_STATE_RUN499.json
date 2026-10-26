@@ -1,7 +1,7 @@
 {
   "schema": "V13_RUN499_CHECKPOINT_V1",
   "date_utc": "2026-10-26",
-  "status": "SOURCE_STAGED_NATIVE_NOT_YET_EXECUTED",
+  "status": "LINUX_NATIVE_PILOT_GREEN_14_ROWS_INDEPENDENTLY_RESCORED_NO_GATE_PROMOTION",
   "owner": "codex/run499-heldout14-native-retry-20261026",
   "base_branch": "codex/run498-native-runner-symlink-20261026",
   "base_sha": "2efebfe197b3465a0a10732b449fada527c89621",
@@ -17,10 +17,27 @@
     "run498_source_actions": 40302693619,
     "run498_focused_actions": 40302693801,
     "run497_original_red_actions": 40302045367,
-    "run499_native_actions": null,
-    "run499_raw_artifact": null,
-    "run499_safe_artifact": null,
-    "linux_native_rows_verified": 0
+    "run499_native_actions": 40304564958,
+    "run499_raw_artifact": 12643015136,
+    "run499_safe_artifact": 12641923870,
+    "linux_native_rows_verified": 14,
+    "run499_focused_actions": 40304564848,
+    "raw_zip_sha256": "847f904fa3c811b23182bd492541d43e1db419662614b17dbf220d7a880e6601",
+    "safe_zip_sha256": "04902a958cf665cb07c683b9b02648d83787aee222d2e37e4fd275cc494eecce",
+    "raw_sha_manifest_entries": 22,
+    "native_library_hash_count": 38,
+    "independent_rescore": {
+      "b1_only": 0.5,
+      "b2_only": 0.08333333333333333,
+      "both_none": 0.7083333333333334,
+      "both_exact": 0.7083333333333334,
+      "both_control": 0.7083333333333334,
+      "same_policy_dual": 0.5,
+      "prompt_only_dual": 0.5,
+      "wrong_committed": 0,
+      "scope": "TWO_EPISODE_PILOT_ONLY"
+    },
+    "private_library": "/V13-Checkpoints/2026-10-26/Run499/"
   },
   "scope": {
     "pilot_fixtures": [
@@ -45,13 +62,17 @@
   "verification": [
     "remote prereg/test/workflow blobs fetched and SHA matched",
     "Run498 source/focused Actions GREEN",
-    "no in-progress native GitHub Actions at preflight"
+    "no in-progress native GitHub Actions at preflight",
+    "Run499 native Actions 40304564958 GREEN, all seven mandatory raw exits 0 and all required step outcomes success; 14 actual Linux-native rows",
+    "Downloaded raw artifact 12643015136 and safe artifact 12641923870; 22 raw SHA256 entries independently recomputed",
+    "Independent source-free rescore of all 14 rows matches frozen utility scores, wrong committed 0; original model SHA pins and 38 native library hashes present",
+    "Private Library raw/safe ZIPs uploaded and materialized back; SHA256 byte-identical to downloaded artifacts; no model payloads"
   ],
   "blockers": [
-    "native proof not yet executed",
+    "Full 1050-row STEP2 cohort still not executed",
     "Redmi phone unavailable",
-    "full held-out STEP2 cohort not yet executed"
+    "Two-episode pilot does not satisfy original full STEP2 utility gate"
   ],
-  "next_command": "Create draft PR head codex/run499-heldout14-native-retry-20261026 base codex/run498-native-runner-symlink-20261026; inspect one-shot native Actions and preserve SHA-closed raw + safe artifacts; do not promote gates",
-  "stop_reason": "NOT_STOPPED_INTERMEDIATE_CHECKPOINT"
+  "next_command": "Continue with Run500 PR #498 source-only 75-stage map GREEN; preregister one new serialized native stage (not Vesper/Willow C_s31 duplicate), verify owner/cgroup/runner, preserve RED and raw/safe evidence; do not promote STEP2 or B3.",
+  "stop_reason": "INTERMEDIATE_VERIFIED_CHECKPOINT_CONTINUE"
 }
