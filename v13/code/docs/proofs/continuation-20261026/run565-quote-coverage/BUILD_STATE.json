@@ -69,7 +69,7 @@
   },
   "open_questions": [
     "Run562 original FUTURE_004 native conclusion and independent raw/safe audit pending",
-    "Test source pointer/complete input controlled consumer on new disjoint cohort after registered frozen work",
+    "Evaluate current already implemented pointer/fixed default vs frozen legacy on a NEW disjoint end-to-end cohort, not infer current path failure from 126 legacy rows",
     "Remaining FUTURE_005..024 and B/C/D/E arms, native Body-JEPA, Redmi sustained proof open"
   ],
   "next_exact_command": "When Run562 Actions 40361273235 terminates, retrieve original raw/safe artifact IDs/names/SHA256 and exact head; follow Run564 prereg branch codex/automation11-run564-native004-offline-prep-20261026 to create independent no-model frozen-source oracle audit --batch FUTURE_004 --prefix RUN562 --head 39d6bf8176979dc0d0bf69b3dab0012a8c8b986d; preserve RED and do not trigger FUTURE_005 before independent PASS.",
@@ -77,5 +77,13 @@
     "Do not mutate active Run562 native owner",
     "No main merge, force push, paid provisioning, or private data publication",
     "No STEP2/JEPA/B3/Redmi/learning/age gate promotion"
-  ]
+  ],
+  "configuration_scope": "FUTURE_001..003 frozen LEGACY_QUOTE_PATH/C3 consumer, NOT current default pointer/fixed reader",
+  "current_default_already_implemented": {
+    "b2_quote_select": "pointer",
+    "offer_quote_context_chars": 200,
+    "b1_recent_source_chars": 600,
+    "eligibility_reader": "fixed",
+    "tool_answer_first": true
+  }
 }
