@@ -1,0 +1,64 @@
+name: V13 Run583 independent stage-row source-binding software proof
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run583-stage-row-binding.yml'
+      - 'v13/code/scripts/run582_stage_source_bundle.py'
+      - 'v13/code/tests/test_run582_stage_source_bundle.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run583-source-row-binding/**'
+permissions:
+  contents: read
+jobs:
+  row-binding:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation13-run583-source-row-binding-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Execute standard-library source binding tests
+        shell: bash
+        run: |
+          mkdir -p run583-raw
+          git rev-parse HEAD > run583-raw/source_head.txt
+          sha256sum v13/code/scripts/run582_stage_source_bundle.py v13/code/tests/test_run582_stage_source_bundle.py v13/code/docs/proofs/continuation-20261026/run583-source-row-binding/PREREG.md > run583-raw/source_sha256.txt
+          set +e
+          (cd v13/code && python -m unittest discover -s tests -p test_run582_stage_source_bundle.py -v) > run583-raw/tests.log 2>&1
+          echo "$?" > run583-raw/tests.exit
+          python -m compileall -q v13/code/scripts/run582_stage_source_bundle.py v13/code/tests/test_run582_stage_source_bundle.py > run583-raw/compile.log 2>&1
+          echo "$?" > run583-raw/compile.exit
+          python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head "${{ github.event.pull_request.head.sha }}" --no-worktree > run583-raw/privacy.log 2>&1
+          echo "$?" > run583-raw/privacy.exit
+          set -e
+          cat run583-raw/tests.log
+          cat run583-raw/privacy.log
+      - name: Close raw manifest even on failure
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p run583-raw
+          (cd run583-raw && sha256sum *.txt *.log *.exit > RAW_SHA256SUMS.txt)
+          cat run583-raw/RAW_SHA256SUMS.txt
+      - name: Preserve closed raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run583-source-row-binding-raw
+          path: run583-raw/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all three checks
+        shell: bash
+        run: |
+          test "$(cat run583-raw/tests.exit)" = 0
+          test "$(cat run583-raw/compile.exit)" = 0
+          test "$(cat run583-raw/privacy.exit)" = 0
