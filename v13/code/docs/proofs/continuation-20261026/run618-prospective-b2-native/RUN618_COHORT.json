@@ -1,0 +1,578 @@
+{
+  "schema": "V13_RUN618_PROSPECTIVE_B2_PARAPHRASE_COHORT_V1",
+  "seed": 2026102618,
+  "train_topics": [
+    "acoustics",
+    "botany",
+    "meteorology",
+    "archaeology",
+    "robotics",
+    "textiles"
+  ],
+  "test_topics": [
+    "optics",
+    "linguistics"
+  ],
+  "prompts": [
+    {
+      "id": "acoustics-1-A",
+      "topic": "acoustics",
+      "fact_id": "acoustics-1",
+      "variant": "A",
+      "text": "The silver chime in Bellwick Hall sounds at sunrise."
+    },
+    {
+      "id": "acoustics-1-B",
+      "topic": "acoustics",
+      "fact_id": "acoustics-1",
+      "variant": "B",
+      "text": "At daybreak, the metallic bell inside Bellwick Hall is rung."
+    },
+    {
+      "id": "acoustics-2-A",
+      "topic": "acoustics",
+      "fact_id": "acoustics-2",
+      "variant": "A",
+      "text": "A glass drum in Tervin Museum produces a low hum."
+    },
+    {
+      "id": "acoustics-2-B",
+      "topic": "acoustics",
+      "fact_id": "acoustics-2",
+      "variant": "B",
+      "text": "The deep buzzing sound at Tervin Museum comes from a drum made of glass."
+    },
+    {
+      "id": "acoustics-3-A",
+      "topic": "acoustics",
+      "fact_id": "acoustics-3",
+      "variant": "A",
+      "text": "Naro Station uses three short whistles to signal departure."
+    },
+    {
+      "id": "acoustics-3-B",
+      "topic": "acoustics",
+      "fact_id": "acoustics-3",
+      "variant": "B",
+      "text": "A train leaving Naro Station is announced by a trio of brief whistle blasts."
+    },
+    {
+      "id": "acoustics-4-A",
+      "topic": "acoustics",
+      "fact_id": "acoustics-4",
+      "variant": "A",
+      "text": "The echo in Kestrel Tunnel lasts four seconds."
+    },
+    {
+      "id": "acoustics-4-B",
+      "topic": "acoustics",
+      "fact_id": "acoustics-4",
+      "variant": "B",
+      "text": "A sound persists as a reflection for four seconds inside Kestrel Tunnel."
+    },
+    {
+      "id": "acoustics-5-A",
+      "topic": "acoustics",
+      "fact_id": "acoustics-5",
+      "variant": "A",
+      "text": "Mira Choir practices beside the old stone fountain."
+    },
+    {
+      "id": "acoustics-5-B",
+      "topic": "acoustics",
+      "fact_id": "acoustics-5",
+      "variant": "B",
+      "text": "The singers of Mira rehearse next to the weathered fountain of stone."
+    },
+    {
+      "id": "botany-1-A",
+      "topic": "botany",
+      "fact_id": "botany-1",
+      "variant": "A",
+      "text": "The violet moss on Arden Rock blooms only in autumn."
+    },
+    {
+      "id": "botany-1-B",
+      "topic": "botany",
+      "fact_id": "botany-1",
+      "variant": "B",
+      "text": "Only during fall does the purple moss of Arden Rock produce flowers."
+    },
+    {
+      "id": "botany-2-A",
+      "topic": "botany",
+      "fact_id": "botany-2",
+      "variant": "A",
+      "text": "A white cedar in Fenwick Garden was planted by Ada."
+    },
+    {
+      "id": "botany-2-B",
+      "topic": "botany",
+      "fact_id": "botany-2",
+      "variant": "B",
+      "text": "Ada is the person who put the pale cedar into the soil at Fenwick Garden."
+    },
+    {
+      "id": "botany-3-A",
+      "topic": "botany",
+      "fact_id": "botany-3",
+      "variant": "A",
+      "text": "The striped fern at Orlo Pond folds its fronds at noon."
+    },
+    {
+      "id": "botany-3-B",
+      "topic": "botany",
+      "fact_id": "botany-3",
+      "variant": "B",
+      "text": "At midday the banded fern growing by Orlo Pond closes its leaves."
+    },
+    {
+      "id": "botany-4-A",
+      "topic": "botany",
+      "fact_id": "botany-4",
+      "variant": "A",
+      "text": "Pavo Orchard grows six varieties of pear trees."
+    },
+    {
+      "id": "botany-4-B",
+      "topic": "botany",
+      "fact_id": "botany-4",
+      "variant": "B",
+      "text": "Six distinct kinds of pear are cultivated among the trees at Pavo Orchard."
+    },
+    {
+      "id": "botany-5-A",
+      "topic": "botany",
+      "fact_id": "botany-5",
+      "variant": "A",
+      "text": "The lantern vine in Oriel House climbs the east wall."
+    },
+    {
+      "id": "botany-5-B",
+      "topic": "botany",
+      "fact_id": "botany-5",
+      "variant": "B",
+      "text": "Along the eastern side of Oriel House grows the upward-creeping lantern vine."
+    },
+    {
+      "id": "meteorology-1-A",
+      "topic": "meteorology",
+      "fact_id": "meteorology-1",
+      "variant": "A",
+      "text": "The first frost in Velden Valley arrives in November."
+    },
+    {
+      "id": "meteorology-1-B",
+      "topic": "meteorology",
+      "fact_id": "meteorology-1",
+      "variant": "B",
+      "text": "November is when icy ground first appears in Velden Valley."
+    },
+    {
+      "id": "meteorology-2-A",
+      "topic": "meteorology",
+      "fact_id": "meteorology-2",
+      "variant": "A",
+      "text": "Clouds above Aster Ridge travel toward the southwest."
+    },
+    {
+      "id": "meteorology-2-B",
+      "topic": "meteorology",
+      "fact_id": "meteorology-2",
+      "variant": "B",
+      "text": "Over Aster Ridge the drifting clouds move in a southwesterly direction."
+    },
+    {
+      "id": "meteorology-3-A",
+      "topic": "meteorology",
+      "fact_id": "meteorology-3",
+      "variant": "A",
+      "text": "Rain at Mako Harbor usually begins after midnight."
+    },
+    {
+      "id": "meteorology-3-B",
+      "topic": "meteorology",
+      "fact_id": "meteorology-3",
+      "variant": "B",
+      "text": "The typical onset of precipitation in Mako Harbor is later than twelve at night."
+    },
+    {
+      "id": "meteorology-4-A",
+      "topic": "meteorology",
+      "fact_id": "meteorology-4",
+      "variant": "A",
+      "text": "A dry wind crosses Salten Plain every Thursday."
+    },
+    {
+      "id": "meteorology-4-B",
+      "topic": "meteorology",
+      "fact_id": "meteorology-4",
+      "variant": "B",
+      "text": "On Thursdays a breeze without moisture sweeps across Salten Plain."
+    },
+    {
+      "id": "meteorology-5-A",
+      "topic": "meteorology",
+      "fact_id": "meteorology-5",
+      "variant": "A",
+      "text": "The red weather flag at Brinn Pier warns of hail."
+    },
+    {
+      "id": "meteorology-5-B",
+      "topic": "meteorology",
+      "fact_id": "meteorology-5",
+      "variant": "B",
+      "text": "Hail is the hazard indicated by the crimson warning banner at Brinn Pier."
+    },
+    {
+      "id": "archaeology-1-A",
+      "topic": "archaeology",
+      "fact_id": "archaeology-1",
+      "variant": "A",
+      "text": "A bronze cup was discovered beneath Talo Bridge."
+    },
+    {
+      "id": "archaeology-1-B",
+      "topic": "archaeology",
+      "fact_id": "archaeology-1",
+      "variant": "B",
+      "text": "Excavators unearthed a drinking vessel made of bronze under Talo Bridge."
+    },
+    {
+      "id": "archaeology-2-A",
+      "topic": "archaeology",
+      "fact_id": "archaeology-2",
+      "variant": "A",
+      "text": "The Kori tablets were buried inside a clay jar."
+    },
+    {
+      "id": "archaeology-2-B",
+      "topic": "archaeology",
+      "fact_id": "archaeology-2",
+      "variant": "B",
+      "text": "A container of fired earth held the buried inscribed tablets from Kori."
+    },
+    {
+      "id": "archaeology-3-A",
+      "topic": "archaeology",
+      "fact_id": "archaeology-3",
+      "variant": "A",
+      "text": "A stone wheel at Aven Site dates to the fourth century."
+    },
+    {
+      "id": "archaeology-3-B",
+      "topic": "archaeology",
+      "fact_id": "archaeology-3",
+      "variant": "B",
+      "text": "The circular rock artifact at Aven Site originates in century four."
+    },
+    {
+      "id": "archaeology-4-A",
+      "topic": "archaeology",
+      "fact_id": "archaeology-4",
+      "variant": "A",
+      "text": "The oldest chamber at Miro Ruins faces north."
+    },
+    {
+      "id": "archaeology-4-B",
+      "topic": "archaeology",
+      "fact_id": "archaeology-4",
+      "variant": "B",
+      "text": "The earliest room in the ruins of Miro is oriented toward the northern direction."
+    },
+    {
+      "id": "archaeology-5-A",
+      "topic": "archaeology",
+      "fact_id": "archaeology-5",
+      "variant": "A",
+      "text": "An amber bead from Dalo Cave has seven carved lines."
+    },
+    {
+      "id": "archaeology-5-B",
+      "topic": "archaeology",
+      "fact_id": "archaeology-5",
+      "variant": "B",
+      "text": "Seven grooves are engraved on the yellow fossil-resin bead found at Dalo Cave."
+    },
+    {
+      "id": "robotics-1-A",
+      "topic": "robotics",
+      "fact_id": "robotics-1",
+      "variant": "A",
+      "text": "The Orin rover sorts blue blocks before red blocks."
+    },
+    {
+      "id": "robotics-1-B",
+      "topic": "robotics",
+      "fact_id": "robotics-1",
+      "variant": "B",
+      "text": "Blue pieces are classified ahead of red ones by the mobile robot named Orin."
+    },
+    {
+      "id": "robotics-2-A",
+      "topic": "robotics",
+      "fact_id": "robotics-2",
+      "variant": "A",
+      "text": "A robot called Pex charges beside the loading dock."
+    },
+    {
+      "id": "robotics-2-B",
+      "topic": "robotics",
+      "fact_id": "robotics-2",
+      "variant": "B",
+      "text": "The machine named Pex replenishes its battery next to the freight platform."
+    },
+    {
+      "id": "robotics-3-A",
+      "topic": "robotics",
+      "fact_id": "robotics-3",
+      "variant": "A",
+      "text": "The Kiva arm places metal bolts into green trays."
+    },
+    {
+      "id": "robotics-3-B",
+      "topic": "robotics",
+      "fact_id": "robotics-3",
+      "variant": "B",
+      "text": "Green containers receive the steel fasteners deposited by Kiva’s mechanical arm."
+    },
+    {
+      "id": "robotics-4-A",
+      "topic": "robotics",
+      "fact_id": "robotics-4",
+      "variant": "A",
+      "text": "The Nelo drone returns home when its battery reaches twenty percent."
+    },
+    {
+      "id": "robotics-4-B",
+      "topic": "robotics",
+      "fact_id": "robotics-4",
+      "variant": "B",
+      "text": "At one-fifth battery capacity, the flying machine Nelo heads back to base."
+    },
+    {
+      "id": "robotics-5-A",
+      "topic": "robotics",
+      "fact_id": "robotics-5",
+      "variant": "A",
+      "text": "A sensor on Toma Bot detects warm pipes."
+    },
+    {
+      "id": "robotics-5-B",
+      "topic": "robotics",
+      "fact_id": "robotics-5",
+      "variant": "B",
+      "text": "Heat from piping is what the detector mounted on Toma Bot identifies."
+    },
+    {
+      "id": "textiles-1-A",
+      "topic": "textiles",
+      "fact_id": "textiles-1",
+      "variant": "A",
+      "text": "The navy scarf at Elin Workshop is woven from linen."
+    },
+    {
+      "id": "textiles-1-B",
+      "topic": "textiles",
+      "fact_id": "textiles-1",
+      "variant": "B",
+      "text": "Flax fiber forms the dark-blue neck wrap produced at Elin Workshop."
+    },
+    {
+      "id": "textiles-2-A",
+      "topic": "textiles",
+      "fact_id": "textiles-2",
+      "variant": "A",
+      "text": "A red carpet in Solin Hall contains nine golden knots."
+    },
+    {
+      "id": "textiles-2-B",
+      "topic": "textiles",
+      "fact_id": "textiles-2",
+      "variant": "B",
+      "text": "Nine yellow-metal-colored knots decorate the crimson rug in Solin Hall."
+    },
+    {
+      "id": "textiles-3-A",
+      "topic": "textiles",
+      "fact_id": "textiles-3",
+      "variant": "A",
+      "text": "Mora Tailor uses a copper needle for heavy cloth."
+    },
+    {
+      "id": "textiles-3-B",
+      "topic": "textiles",
+      "fact_id": "textiles-3",
+      "variant": "B",
+      "text": "Thick fabric is stitched by Mora Tailor with a sewing needle made of copper."
+    },
+    {
+      "id": "textiles-4-A",
+      "topic": "textiles",
+      "fact_id": "textiles-4",
+      "variant": "A",
+      "text": "The green banner in Elda Square was dyed with leaves."
+    },
+    {
+      "id": "textiles-4-B",
+      "topic": "textiles",
+      "fact_id": "textiles-4",
+      "variant": "B",
+      "text": "Plant foliage provided the color of the verdant flag hanging in Elda Square."
+    },
+    {
+      "id": "textiles-5-A",
+      "topic": "textiles",
+      "fact_id": "textiles-5",
+      "variant": "A",
+      "text": "Taro Mill makes wool blankets in the winter season."
+    },
+    {
+      "id": "textiles-5-B",
+      "topic": "textiles",
+      "fact_id": "textiles-5",
+      "variant": "B",
+      "text": "During the cold months, Taro Mill produces coverings from sheep fleece."
+    },
+    {
+      "id": "optics-1-A",
+      "topic": "optics",
+      "fact_id": "optics-1",
+      "variant": "A",
+      "text": "The blue lens in Sora Lab enlarges distant objects."
+    },
+    {
+      "id": "optics-1-B",
+      "topic": "optics",
+      "fact_id": "optics-1",
+      "variant": "B",
+      "text": "Faraway items look bigger through the azure optical glass at Sora Lab."
+    },
+    {
+      "id": "optics-2-A",
+      "topic": "optics",
+      "fact_id": "optics-2",
+      "variant": "A",
+      "text": "A mirror in Vale Observatory points toward the west."
+    },
+    {
+      "id": "optics-2-B",
+      "topic": "optics",
+      "fact_id": "optics-2",
+      "variant": "B",
+      "text": "The reflective panel at Vale Observatory is oriented in a westerly direction."
+    },
+    {
+      "id": "optics-3-A",
+      "topic": "optics",
+      "fact_id": "optics-3",
+      "variant": "A",
+      "text": "The prism at Orla School separates sunlight into colors."
+    },
+    {
+      "id": "optics-3-B",
+      "topic": "optics",
+      "fact_id": "optics-3",
+      "variant": "B",
+      "text": "Sunshine is divided into a spectrum by the transparent wedge at Orla School."
+    },
+    {
+      "id": "optics-4-A",
+      "topic": "optics",
+      "fact_id": "optics-4",
+      "variant": "A",
+      "text": "A lamp in Iven Gallery projects a square shadow."
+    },
+    {
+      "id": "optics-4-B",
+      "topic": "optics",
+      "fact_id": "optics-4",
+      "variant": "B",
+      "text": "The light fixture in Iven Gallery casts a shadow shaped like a quadrilateral with equal sides."
+    },
+    {
+      "id": "optics-5-A",
+      "topic": "optics",
+      "fact_id": "optics-5",
+      "variant": "A",
+      "text": "The narrow aperture in Fenor Camera admits less light."
+    },
+    {
+      "id": "optics-5-B",
+      "topic": "optics",
+      "fact_id": "optics-5",
+      "variant": "B",
+      "text": "Only a smaller quantity of illumination passes through Fenor Camera’s tiny opening."
+    },
+    {
+      "id": "linguistics-1-A",
+      "topic": "linguistics",
+      "fact_id": "linguistics-1",
+      "variant": "A",
+      "text": "The Daren dialect uses a rising tone for questions."
+    },
+    {
+      "id": "linguistics-1-B",
+      "topic": "linguistics",
+      "fact_id": "linguistics-1",
+      "variant": "B",
+      "text": "Interrogative sentences in the Daren speech variety end with an upward pitch."
+    },
+    {
+      "id": "linguistics-2-A",
+      "topic": "linguistics",
+      "fact_id": "linguistics-2",
+      "variant": "A",
+      "text": "The old Ruma script writes numbers from right to left."
+    },
+    {
+      "id": "linguistics-2-B",
+      "topic": "linguistics",
+      "fact_id": "linguistics-2",
+      "variant": "B",
+      "text": "Numerals are inscribed starting on the right in the ancient writing system of Ruma."
+    },
+    {
+      "id": "linguistics-3-A",
+      "topic": "linguistics",
+      "fact_id": "linguistics-3",
+      "variant": "A",
+      "text": "A glossary at Vero Library lists forty plant names."
+    },
+    {
+      "id": "linguistics-3-B",
+      "topic": "linguistics",
+      "fact_id": "linguistics-3",
+      "variant": "B",
+      "text": "Forty botanical terms are catalogued in the vocabulary reference at Vero Library."
+    },
+    {
+      "id": "linguistics-4-A",
+      "topic": "linguistics",
+      "fact_id": "linguistics-4",
+      "variant": "A",
+      "text": "The Peli language marks past tense with a suffix."
+    },
+    {
+      "id": "linguistics-4-B",
+      "topic": "linguistics",
+      "fact_id": "linguistics-4",
+      "variant": "B",
+      "text": "An ending attached to the word indicates earlier time in Peli grammar."
+    },
+    {
+      "id": "linguistics-5-A",
+      "topic": "linguistics",
+      "fact_id": "linguistics-5",
+      "variant": "A",
+      "text": "The translation contest at Loma School lasts two hours."
+    },
+    {
+      "id": "linguistics-5-B",
+      "topic": "linguistics",
+      "fact_id": "linguistics-5",
+      "variant": "B",
+      "text": "Competitors at Loma School have a duration of 120 minutes to translate text."
+    }
+  ]
+}
