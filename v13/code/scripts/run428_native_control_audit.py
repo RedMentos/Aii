@@ -121,9 +121,10 @@ def offer_digest(source_row, role):
     payload = json.loads(users[0]["content"])
     analysts = payload.get("analysts")
     require(type(analysts) is list, "ANALYSTS_MISSING")
+    # same_policy_dual intentionally delivers two B1_DETAIL offers. Keep
+    # the complete ordered list; collapsing to the first would hide changes.
     selected = [a for a in analysts if a.get("role") == role]
-    require(len(selected) <= 1, "DUPLICATE_ANALYST")
-    return digest(canonical(selected[0])) if selected else None
+    return digest(canonical(selected)) if selected else None
 
 
 def compare_rows(source, tool, left, right, variant):
