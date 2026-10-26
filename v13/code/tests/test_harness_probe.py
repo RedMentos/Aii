@@ -88,9 +88,9 @@ class HX5Records(unittest.TestCase):
         from v13.cognition import sentence_spans
         f=next(x for x in h.z2.FIXTURES if x['id']=='Quasar');src=f['history'][0][:h.z2.B2_EXCERPT_CHARS]
         rules=[src[a:b] for a,b in sentence_spans(src)][1:4]  # budget, deadline, local-only sentences
-        user=json.dumps({'goal':f['current'],'earlier_context':[{'exact_source_excerpt':src}]})
+        user=json.dumps({'source_segments':[{'text':f['current'][:40]},{'text':f['current'][40:]}],'earlier_context':[{'exact_source_excerpt':src}]})
         cap=[{'messages':[{'role':'system','content':'s'},{'role':'user','content':user}],'output':json.dumps({'quotes':q})} for q in (rules,rules[:2],['Budget 999 euros.'],[])]
         with tempfile.TemporaryDirectory() as d:
             (Path(d)/'b2_capture_V2_s21.json').write_text(json.dumps(cap))
             recs=h.hx5_records(d,'V2',seeds=(21,))
-        self.assertEqual([r['accepted'] for r in recs],[True,False,False,False])
+        self.assertEqual([r['accepted'] for r in recs],[True,True,False,False])  # widened like the live check: a part quote of a short rule note carries all

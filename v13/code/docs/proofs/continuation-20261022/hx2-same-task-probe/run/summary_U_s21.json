@@ -1,0 +1,2000 @@
+{
+  "run": "U_s21",
+  "arm": "U",
+  "seed": 21,
+  "enable": {
+    "offer_quote_context_chars": 200,
+    "b2_quote_select": "off",
+    "b2_offer_body_state": false,
+    "offer_quote_min_chars": 90,
+    "b1_recent_source_chars": 600,
+    "body_question_scope": "always",
+    "eligibility_reader": "c3",
+    "body_question_b1": "",
+    "body_question_b2": "",
+    "b2_control": "two_body",
+    "seed": 21
+  },
+  "query": true,
+  "step2_status": "UTILITY_FAIL",
+  "paired_no_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.5916666666666667,
+      "b2_only": 0.275,
+      "both_control": 0.6,
+      "both_exact": 0.6,
+      "both_none": 0.6,
+      "prompt_only_dual": 0.6166666666666667,
+      "same_policy_dual": 0.625
+    },
+    "best_solo": 0.5916666666666667,
+    "gain_over_best_solo": {
+      "both_none": 0.008333333333333304,
+      "both_exact": 0.008333333333333304,
+      "both_control": 0.008333333333333304
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_status": "TOOL_UTILITY_FAIL",
+  "paired_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.5916666666666667,
+      "b2_only": 0.225,
+      "both_control": 0.7166666666666666,
+      "both_exact": 0.5916666666666667,
+      "both_none": 0.7583333333333333,
+      "prompt_only_dual": 0.55,
+      "same_policy_dual": 0.5916666666666667
+    },
+    "best_solo": 0.5916666666666667,
+    "gain_over_best_solo": {
+      "both_none": 0.16666666666666663,
+      "both_exact": 0.0,
+      "both_control": 0.12499999999999989
+    },
+    "b1_b2_each_win_an_episode": true,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 0,
+      "unknown": 8,
+      "mean_utility": 0.5916666666666667,
+      "exact_fixtures": [
+        "Sirius",
+        "Tycho"
+      ]
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.225,
+      "exact_fixtures": [
+        "Quasar"
+      ]
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 5,
+      "wrong_committed": 0,
+      "unknown": 5,
+      "mean_utility": 0.7166666666666666,
+      "exact_fixtures": [
+        "Meridian",
+        "Quasar",
+        "Rigel",
+        "Sirius",
+        "Tycho"
+      ]
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 0,
+      "unknown": 8,
+      "mean_utility": 0.5916666666666667,
+      "exact_fixtures": [
+        "Rigel",
+        "Sirius"
+      ]
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 6,
+      "wrong_committed": 0,
+      "unknown": 4,
+      "mean_utility": 0.7583333333333333,
+      "exact_fixtures": [
+        "Meridian",
+        "Perseus",
+        "Quasar",
+        "Rigel",
+        "Sirius",
+        "Tycho"
+      ]
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.55,
+      "exact_fixtures": [
+        "Sirius"
+      ]
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 0,
+      "unknown": 8,
+      "mean_utility": 0.5916666666666667,
+      "exact_fixtures": [
+        "Sirius",
+        "Tycho"
+      ]
+    }
+  },
+  "error_profile_tool": {
+    "b1_only": {
+      "rule_fields_correct": 0.2,
+      "option_fields_correct": 1.0
+    },
+    "b2_only": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.35
+    },
+    "both_control": {
+      "rule_fields_correct": 0.5,
+      "option_fields_correct": 1.0
+    },
+    "both_exact": {
+      "rule_fields_correct": 0.2,
+      "option_fields_correct": 1.0
+    },
+    "both_none": {
+      "rule_fields_correct": 0.6,
+      "option_fields_correct": 1.0
+    },
+    "prompt_only_dual": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 1.0
+    },
+    "same_policy_dual": {
+      "rule_fields_correct": 0.2,
+      "option_fields_correct": 1.0
+    }
+  },
+  "information_access": {
+    "b1_only": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8
+    },
+    "b2_only": {
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 1
+    },
+    "both_none": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 6,
+      "B2_GIST:options": 0
+    },
+    "both_exact": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 1
+    },
+    "both_control": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 0
+    },
+    "same_policy_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 7
+    },
+    "prompt_only_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 2,
+      "B2_GIST:options": 2
+    }
+  },
+  "joint_access": {
+    "b1_only": 0,
+    "b2_only": 0,
+    "both_none": 6,
+    "both_exact": 4,
+    "both_control": 4,
+    "same_policy_dual": 0,
+    "prompt_only_dual": 2
+  },
+  "queried_offers": {
+    "offers": 120,
+    "with_question": 120
+  },
+  "episode_utility_tool": {
+    "Kestrel:b1_only": 0.5,
+    "Kestrel:b2_only": 0.0,
+    "Kestrel:both_none": 0.5,
+    "Kestrel:both_exact": 0.5,
+    "Kestrel:both_control": 0.5,
+    "Kestrel:same_policy_dual": 0.5,
+    "Kestrel:prompt_only_dual": 0.5,
+    "Lumen:b1_only": 0.5,
+    "Lumen:b2_only": 0.08333333333333333,
+    "Lumen:both_none": 0.5,
+    "Lumen:both_exact": 0.5,
+    "Lumen:both_control": 0.5,
+    "Lumen:same_policy_dual": 0.5,
+    "Lumen:prompt_only_dual": 0.5,
+    "Meridian:b1_only": 0.5,
+    "Meridian:b2_only": 0.16666666666666666,
+    "Meridian:both_none": 0.9166666666666666,
+    "Meridian:both_exact": 0.5,
+    "Meridian:both_control": 0.9166666666666666,
+    "Meridian:same_policy_dual": 0.5,
+    "Meridian:prompt_only_dual": 0.5,
+    "Nimbus:b1_only": 0.5833333333333334,
+    "Nimbus:b2_only": 0.08333333333333333,
+    "Nimbus:both_none": 0.5833333333333334,
+    "Nimbus:both_exact": 0.5833333333333334,
+    "Nimbus:both_control": 0.5833333333333334,
+    "Nimbus:same_policy_dual": 0.5833333333333334,
+    "Nimbus:prompt_only_dual": 0.5833333333333334,
+    "Orion:b1_only": 0.5,
+    "Orion:b2_only": 0.16666666666666666,
+    "Orion:both_none": 0.5,
+    "Orion:both_exact": 0.5,
+    "Orion:both_control": 0.5,
+    "Orion:same_policy_dual": 0.5,
+    "Orion:prompt_only_dual": 0.5,
+    "Perseus:b1_only": 0.5,
+    "Perseus:b2_only": 0.16666666666666666,
+    "Perseus:both_none": 0.9166666666666666,
+    "Perseus:both_exact": 0.5,
+    "Perseus:both_control": 0.5,
+    "Perseus:same_policy_dual": 0.5,
+    "Perseus:prompt_only_dual": 0.5,
+    "Quasar:b1_only": 0.5,
+    "Quasar:b2_only": 0.9166666666666666,
+    "Quasar:both_none": 0.9166666666666666,
+    "Quasar:both_exact": 0.5,
+    "Quasar:both_control": 0.9166666666666666,
+    "Quasar:same_policy_dual": 0.5,
+    "Quasar:prompt_only_dual": 0.5,
+    "Rigel:b1_only": 0.5,
+    "Rigel:b2_only": 0.5,
+    "Rigel:both_none": 0.9166666666666666,
+    "Rigel:both_exact": 0.9166666666666666,
+    "Rigel:both_control": 0.9166666666666666,
+    "Rigel:same_policy_dual": 0.5,
+    "Rigel:prompt_only_dual": 0.5,
+    "Sirius:b1_only": 0.9166666666666666,
+    "Sirius:b2_only": 0.08333333333333333,
+    "Sirius:both_none": 0.9166666666666666,
+    "Sirius:both_exact": 0.9166666666666666,
+    "Sirius:both_control": 0.9166666666666666,
+    "Sirius:same_policy_dual": 0.9166666666666666,
+    "Sirius:prompt_only_dual": 0.9166666666666666,
+    "Tycho:b1_only": 0.9166666666666666,
+    "Tycho:b2_only": 0.08333333333333333,
+    "Tycho:both_none": 0.9166666666666666,
+    "Tycho:both_exact": 0.5,
+    "Tycho:both_control": 0.9166666666666666,
+    "Tycho:same_policy_dual": 0.9166666666666666,
+    "Tycho:prompt_only_dual": 0.5
+  },
+  "split_exact_tool": {
+    "b1_only": [],
+    "b2_only": [],
+    "both_control": [
+      "Meridian"
+    ],
+    "both_exact": [],
+    "both_none": [
+      "Meridian",
+      "Perseus"
+    ],
+    "prompt_only_dual": [],
+    "same_policy_dual": []
+  },
+  "hx2": {
+    "arm": "U",
+    "class": "unguided_control",
+    "diff": {
+      "prompt.b2_earlier_context": " Earlier context separates exact source excerpts from fallible prior hypotheses. Use relevant earlier source excerpts when current text leaves a rule unstated; prefer an explicit current-source revision when the same rule changes. Never treat a prior hypothesis as a fact. Select short exact quotes carrying the source rules needed by your summary; only your verified quotes, not the full earlier context, are passed to the answer component. If required evidence is absent, state that uncertainty and request re-entry rather than inventing it. Quotes may cite only current source text or an exact earlier source excerpt, never own-state or hypotheses. Keep the summary in plain, friendly English, in complete sentences, and avoid repeating the same word twice in a row."
+    },
+    "b2_note_rewrite": {
+      "calls": 320,
+      "rewritten": 80
+    },
+    "probe_offers": [
+      {
+        "task": "Kestrel:b2_only",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "summary": "The source text explicitly defines a 100-euro budget and a 5-day",
+        "prompt_tokens": 634
+      },
+      {
+        "task": "Kestrel:both_none",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "summary": "The source text explicitly defines a 100-euro budget and a 5-day",
+        "prompt_tokens": 636
+      },
+      {
+        "task": "Kestrel:both_exact",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,",
+          "using the earlier project rules. Compute each remaining budget and eligibility; choose"
+        ],
+        "summary": "The source explicitly states that the project has a 100-euro and",
+        "prompt_tokens": 671
+      },
+      {
+        "task": "Kestrel:both_control",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "summary": "The source text explicitly defines a 100-euro budget and a 5-day",
+        "prompt_tokens": 646
+      },
+      {
+        "task": "Lumen:b2_only",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "quote2s"
+        ],
+        "summary": "The source explicitly states that the project has a 90-euro and ",
+        "prompt_tokens": 629
+      },
+      {
+        "task": "Lumen:both_none",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "quote2s"
+        ],
+        "summary": "The source text explicitly defines a 90-euro budget and a 4-day,",
+        "prompt_tokens": 629
+      },
+      {
+        "task": "Lumen:both_exact",
+        "emitted": 1,
+        "rejected": 1,
+        "verified": 0,
+        "quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, \""
+        ],
+        "summary": "The source explicitly states that the project has a 90-euro and ",
+        "prompt_tokens": 674
+      },
+      {
+        "task": "Lumen:both_control",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "quote2s"
+        ],
+        "summary": "The source text explicitly defines a 90-euro budget and a 4-day,",
+        "prompt_tokens": 641
+      },
+      {
+        "task": "Meridian:b2_only",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet",
+          "Project Meridian kickoff notes. Budget 80 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "summary": "The source text indicates that Project Meridian has a budget of ",
+        "prompt_tokens": 614
+      },
+      {
+        "task": "Meridian:both_none",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet",
+          "Project Meridian kickoff notes. Budget 80 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "summary": "The source text indicates that Project Meridian has a budget of ",
+        "prompt_tokens": 614
+      },
+      {
+        "task": "Meridian:both_exact",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Meridian kickoff notes. Budget 80 euros.",
+          "hypothesis: The source text indicates that Project Meridian has a budget of 80 euros."
+        ],
+        "summary": "The source text confirms Project Meridian has a budget of 80 EUR",
+        "prompt_tokens": 661
+      },
+      {
+        "task": "Meridian:both_control",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet",
+          "Project Meridian kickoff notes. Budget 80 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "summary": "The source text indicates that Project Meridian has a budget of ",
+        "prompt_tokens": 628
+      },
+      {
+        "task": "Quasar:b2_only",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Quasar status note. The procurement desk met the vendors on Monday; the final figu",
+          "Project Quasar kickoff notes. Budget 110 euros. Deadline 4 days. Local-only requirement:"
+        ],
+        "summary": "The project is defined with a 110 euro budget and a 4-day window",
+        "prompt_tokens": 626
+      },
+      {
+        "task": "Quasar:both_none",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Quasar status note. The procurement desk met the vendors on Monday; the final figu",
+          "Project Quasar kickoff notes. Budget 110 euros. Deadline 4 days. Local-only requirement:"
+        ],
+        "summary": "The project is defined with a 110 euro budget and a 4-day window",
+        "prompt_tokens": 626
+      },
+      {
+        "task": "Quasar:both_exact",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Quasar. Decide from the earlier project rules. Option A: cost 85 euros, duration 3",
+          "days, local true. Option B: cost 90 euros, duration 2 days, local true. Compute each"
+        ],
+        "summary": "The project is defined with a 110 euro budget and a 4-day window",
+        "prompt_tokens": 720
+      },
+      {
+        "task": "Quasar:both_control",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Quasar status note. The procurement desk met the vendors on Monday; the final figu",
+          "Project Quasar kickoff notes. Budget 110 euros. Deadline 4 days. Local-only requirement:"
+        ],
+        "summary": "The project is defined with a 110 euro budget and a 4-day window",
+        "prompt_tokens": 638
+      },
+      {
+        "task": "Sirius:b2_only",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "local-only requirement: true"
+        ],
+        "summary": "The source text explicitly states that the project has a 'local'",
+        "prompt_tokens": 624
+      },
+      {
+        "task": "Sirius:both_none",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "local-only requirement: true",
+          "Project Sirius. Decide between Option A and Option B from the latest supplier data sheet."
+        ],
+        "summary": "The source text explicitly states that the project has a 'local'",
+        "prompt_tokens": 626
+      },
+      {
+        "task": "Sirius:both_exact",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "local-only requirement: true",
+          "local-only requirement: false"
+        ],
+        "summary": "The source text explicitly states that the project has a 'local'",
+        "prompt_tokens": 670
+      },
+      {
+        "task": "Sirius:both_control",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "local-only requirement",
+          "local-only requirement: true"
+        ],
+        "summary": "The source text explicitly states that the project has a 'local'",
+        "prompt_tokens": 631
+      }
+    ],
+    "all_offers": [
+      {
+        "task": "Kestrel:b2_only",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "summary": "The source text explicitly defines a 100-euro budget and a 5-day",
+        "prompt_tokens": 634
+      },
+      {
+        "task": "Kestrel:both_none",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "summary": "The source text explicitly defines a 100-euro budget and a 5-day",
+        "prompt_tokens": 636
+      },
+      {
+        "task": "Kestrel:both_exact",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,",
+          "using the earlier project rules. Compute each remaining budget and eligibility; choose"
+        ],
+        "summary": "The source explicitly states that the project has a 100-euro and",
+        "prompt_tokens": 671
+      },
+      {
+        "task": "Kestrel:both_control",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "summary": "The source text explicitly defines a 100-euro budget and a 5-day",
+        "prompt_tokens": 646
+      },
+      {
+        "task": "Lumen:b2_only",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "quote2s"
+        ],
+        "summary": "The source explicitly states that the project has a 90-euro and ",
+        "prompt_tokens": 629
+      },
+      {
+        "task": "Lumen:both_none",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "quote2s"
+        ],
+        "summary": "The source text explicitly defines a 90-euro budget and a 4-day,",
+        "prompt_tokens": 629
+      },
+      {
+        "task": "Lumen:both_exact",
+        "emitted": 1,
+        "rejected": 1,
+        "verified": 0,
+        "quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, \""
+        ],
+        "summary": "The source explicitly states that the project has a 90-euro and ",
+        "prompt_tokens": 674
+      },
+      {
+        "task": "Lumen:both_control",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "quote2s"
+        ],
+        "summary": "The source text explicitly defines a 90-euro budget and a 4-day,",
+        "prompt_tokens": 641
+      },
+      {
+        "task": "Meridian:b2_only",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet",
+          "Project Meridian kickoff notes. Budget 80 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "summary": "The source text indicates that Project Meridian has a budget of ",
+        "prompt_tokens": 614
+      },
+      {
+        "task": "Meridian:both_none",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet",
+          "Project Meridian kickoff notes. Budget 80 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "summary": "The source text indicates that Project Meridian has a budget of ",
+        "prompt_tokens": 614
+      },
+      {
+        "task": "Meridian:both_exact",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Meridian kickoff notes. Budget 80 euros.",
+          "hypothesis: The source text indicates that Project Meridian has a budget of 80 euros."
+        ],
+        "summary": "The source text confirms Project Meridian has a budget of 80 EUR",
+        "prompt_tokens": 661
+      },
+      {
+        "task": "Meridian:both_control",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet",
+          "Project Meridian kickoff notes. Budget 80 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "summary": "The source text indicates that Project Meridian has a budget of ",
+        "prompt_tokens": 628
+      },
+      {
+        "task": "Nimbus:b2_only",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Nimbus. Decide between Option A and Option B from the latest supplier data sheet, "
+        ],
+        "summary": "The source text explicitly states that the project requires a 12",
+        "prompt_tokens": 618
+      },
+      {
+        "task": "Nimbus:both_none",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Nimbus. Decide between Option A and Option B from the latest supplier data sheet, "
+        ],
+        "summary": "The source text explicitly states that the project requires a 12",
+        "prompt_tokens": 615
+      },
+      {
+        "task": "Nimbus:both_exact",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Nimbus. Decide between Option A and Option B from the latest supplier data sheet, "
+        ],
+        "summary": "The project requires a 120-euro budget for a local-only task.",
+        "prompt_tokens": 668
+      },
+      {
+        "task": "Nimbus:both_control",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Nimbus. Decide between Option A and Option B from the latest supplier data sheet, "
+        ],
+        "summary": "The source text explicitly states that the project requires a 12",
+        "prompt_tokens": 626
+      },
+      {
+        "task": "Orion:b2_only",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Orion kickoff notes. Budget 75 euros.",
+          "Project Orion. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "summary": "The source indicates that the project details show a budget of 7",
+        "prompt_tokens": 613
+      },
+      {
+        "task": "Orion:both_none",
+        "emitted": 2,
+        "rejected": 2,
+        "verified": 0,
+        "quotes": [
+          "Project Orion. Decide between Option A and Option B from the latest supplier data sheet, \"",
+          "quote1s"
+        ],
+        "summary": "The prior hypothesis states that the project details indicate a ",
+        "prompt_tokens": 613
+      },
+      {
+        "task": "Orion:both_exact",
+        "emitted": 1,
+        "rejected": 1,
+        "verified": 0,
+        "quotes": [
+          "Project Orion kickoff notes. Budget 75 euros. Deadline 7 days. Local-only requirement: (1)"
+        ],
+        "summary": "The prior hypothesis states that the project details indicate a ",
+        "prompt_tokens": 661
+      },
+      {
+        "task": "Orion:both_control",
+        "emitted": 2,
+        "rejected": 2,
+        "verified": 0,
+        "quotes": [
+          "Project Orion. Decide between Option A and Option B from the latest supplier data sheet, \"",
+          "quote2s"
+        ],
+        "summary": "The prior hypothesis states that the project details indicate a ",
+        "prompt_tokens": 626
+      },
+      {
+        "task": "Perseus:b2_only",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Perseus. Decide between Option A and Option B from the latest supplier data sheet,",
+          "Project Perseus. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "summary": "The source text explicitly states that the project has a 60-euro",
+        "prompt_tokens": 617
+      },
+      {
+        "task": "Perseus:both_none",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Perseus. Decide between Option A and Option B from the latest supplier data sheet,",
+          "Project Perseus kickoff notes. Budget 60 euros."
+        ],
+        "summary": "The source text explicitly states that the project has a 60-euro",
+        "prompt_tokens": 620
+      },
+      {
+        "task": "Perseus:both_exact",
+        "emitted": 2,
+        "rejected": 2,
+        "verified": 0,
+        "quotes": [
+          "Project Perseus kickoff notes. Budget 60 euros. Deadline 5 days. Local-only requirement: (",
+          "quote2s[]:[]"
+        ],
+        "summary": "The source text indicates a project with a 60-euro budget and a ",
+        "prompt_tokens": 663
+      },
+      {
+        "task": "Perseus:both_control",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Perseus. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "summary": "The source text indicates a project with a 60-euro budget and a ",
+        "prompt_tokens": 630
+      },
+      {
+        "task": "Quasar:b2_only",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Quasar status note. The procurement desk met the vendors on Monday; the final figu",
+          "Project Quasar kickoff notes. Budget 110 euros. Deadline 4 days. Local-only requirement:"
+        ],
+        "summary": "The project is defined with a 110 euro budget and a 4-day window",
+        "prompt_tokens": 626
+      },
+      {
+        "task": "Quasar:both_none",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Quasar status note. The procurement desk met the vendors on Monday; the final figu",
+          "Project Quasar kickoff notes. Budget 110 euros. Deadline 4 days. Local-only requirement:"
+        ],
+        "summary": "The project is defined with a 110 euro budget and a 4-day window",
+        "prompt_tokens": 626
+      },
+      {
+        "task": "Quasar:both_exact",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Quasar. Decide from the earlier project rules. Option A: cost 85 euros, duration 3",
+          "days, local true. Option B: cost 90 euros, duration 2 days, local true. Compute each"
+        ],
+        "summary": "The project is defined with a 110 euro budget and a 4-day window",
+        "prompt_tokens": 720
+      },
+      {
+        "task": "Quasar:both_control",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Quasar status note. The procurement desk met the vendors on Monday; the final figu",
+          "Project Quasar kickoff notes. Budget 110 euros. Deadline 4 days. Local-only requirement:"
+        ],
+        "summary": "The project is defined with a 110 euro budget and a 4-day window",
+        "prompt_tokens": 638
+      },
+      {
+        "task": "Rigel:b2_only",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Rigel. Decide from the earlier project rules. Option A: cost 65 euros, duration 4",
+          "days, local false. Option B: cost 50 euros, duration 7 days, local true. Compute each"
+        ],
+        "summary": "The earlier context confirms the project has a 70-euro budget, a",
+        "prompt_tokens": 622
+      },
+      {
+        "task": "Rigel:both_none",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Rigel status note. The procurement desk met the vendors on Monday; the final facts",
+          "Project Rigel kickoff notes. Budget 70 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "summary": "The project is defined with a 70-euro budget and a 6-day window.",
+        "prompt_tokens": 627
+      },
+      {
+        "task": "Rigel:both_exact",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "Project Rigel status note.",
+          "Project Rigel kickoff notes."
+        ],
+        "summary": "The prior hypothesis states the project has a 70-euro budget and",
+        "prompt_tokens": 672
+      },
+      {
+        "task": "Rigel:both_control",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "Project Rigel status note. The procurement desk met the vendors on Monday; the final files",
+          "Project Rigel kickoff notes. Budget 70 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "summary": "The project is defined with a 70-euro budget and a 6-day window.",
+        "prompt_tokens": 636
+      },
+      {
+        "task": "Sirius:b2_only",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "local-only requirement: true"
+        ],
+        "summary": "The source text explicitly states that the project has a 'local'",
+        "prompt_tokens": 624
+      },
+      {
+        "task": "Sirius:both_none",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "local-only requirement: true",
+          "Project Sirius. Decide between Option A and Option B from the latest supplier data sheet."
+        ],
+        "summary": "The source text explicitly states that the project has a 'local'",
+        "prompt_tokens": 626
+      },
+      {
+        "task": "Sirius:both_exact",
+        "emitted": 2,
+        "rejected": 1,
+        "verified": 1,
+        "quotes": [
+          "local-only requirement: true",
+          "local-only requirement: false"
+        ],
+        "summary": "The source text explicitly states that the project has a 'local'",
+        "prompt_tokens": 670
+      },
+      {
+        "task": "Sirius:both_control",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "local-only requirement",
+          "local-only requirement: true"
+        ],
+        "summary": "The source text explicitly states that the project has a 'local'",
+        "prompt_tokens": 631
+      },
+      {
+        "task": "Tycho:b2_only",
+        "emitted": 2,
+        "rejected": 2,
+        "verified": 0,
+        "quotes": [
+          "Project Tycho. Decide between Option A and Option B from the latest supplier data sheet. \"",
+          "jef_query_answered"
+        ],
+        "summary": "The source text explicitly states that Project Tycho has a 'dead",
+        "prompt_tokens": 627
+      },
+      {
+        "task": "Tycho:both_none",
+        "emitted": 1,
+        "rejected": 0,
+        "verified": 1,
+        "quotes": [
+          "Project Tycho. Decide between Option A and Option B from the latest supplier data sheet."
+        ],
+        "summary": "The source text explicitly states that Project Tycho has a 'dead",
+        "prompt_tokens": 624
+      },
+      {
+        "task": "Tycho:both_exact",
+        "emitted": 2,
+        "rejected": 0,
+        "verified": 2,
+        "quotes": [
+          "local-only requirement: false.",
+          "Project Tycho. Decide between Option A and Option B from the latest supplier data sheet."
+        ],
+        "summary": "The source text explicitly states that the 'local-only' rule is:",
+        "prompt_tokens": 676
+      },
+      {
+        "task": "Tycho:both_control",
+        "emitted": 2,
+        "rejected": 2,
+        "verified": 0,
+        "quotes": [
+          "Project Tycho. Decide between Option A and Option B from the latest supplier data sheet. \"",
+          "jef_query_answered"
+        ],
+        "summary": "The source text explicitly states that Project Tycho has a 'dead",
+        "prompt_tokens": 639
+      }
+    ],
+    "behaviour": {
+      "Kestrel:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Kestrel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 40,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Kestrel:b2_only": {
+        "b2_quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly defines a 100-euro budget and a 5-day"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Kestrel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 100,\n      \"remaining\": 0,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 50,\n      \"remaining\": 50,\n      \"days\": 5,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          634
+        ]
+      },
+      "Kestrel:both_none": {
+        "b2_quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly defines a 100-euro budget and a 5-day"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Kestrel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 40,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          636
+        ]
+      },
+      "Kestrel:both_exact": {
+        "b2_quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,",
+          "using the earlier project rules. Compute each remaining budget and eligibility; choose"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source explicitly states that the project has a 100-euro and"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Kestrel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 40,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          671
+        ]
+      },
+      "Kestrel:both_control": {
+        "b2_quotes": [
+          "Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly defines a 100-euro budget and a 5-day"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Kestrel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 40,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          646
+        ]
+      },
+      "Kestrel:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Kestrel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 40,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": false,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Kestrel:prompt_only_dual": {
+        "b2_quotes": [
+          "budget",
+          "deadline"
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The source text explicitly states that Project Kestrel requires "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Kestrel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 40,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          478
+        ]
+      },
+      "Lumen:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Lumen\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 95,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Lumen:b2_only": {
+        "b2_quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "quote2s"
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The source explicitly states that the project has a 90-euro and "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Lumen\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"B\",\n      \"cost\": 0,\n      \"remaining\": 90,\n      \"days\": 1,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"A\",\n      \"cost\": 0,\n      \"remaining\": 90,\n      \"days\": 1,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          629
+        ]
+      },
+      "Lumen:both_none": {
+        "b2_quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "quote2s"
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The source text explicitly defines a 90-euro budget and a 4-day,"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Lumen\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 95,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": 4,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          629
+        ]
+      },
+      "Lumen:both_exact": {
+        "b2_quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, \""
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The source explicitly states that the project has a 90-euro and "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Lumen\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 95,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          674
+        ]
+      },
+      "Lumen:both_control": {
+        "b2_quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "quote2s"
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The source text explicitly defines a 90-euro budget and a 4-day,"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Lumen\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 95,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": 4,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          641
+        ]
+      },
+      "Lumen:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Lumen\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 95,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Lumen:prompt_only_dual": {
+        "b2_quotes": [
+          "Project Lumen. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that Project Lumen requires a "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Lumen\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 95,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": 4,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          481
+        ]
+      },
+      "Meridian:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Meridian\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 50,\n      \"remaining\": null,\n      \"days\": 8,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 75,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Meridian:b2_only": {
+        "b2_quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet",
+          "Project Meridian kickoff notes. Budget 80 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text indicates that Project Meridian has a budget of "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Meridian\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 80,\n      \"remaining\": 0,\n      \"days\": 6,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 80,\n      \"remaining\": 0,\n      \"days\": 6,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          614
+        ]
+      },
+      "Meridian:both_none": {
+        "b2_quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet",
+          "Project Meridian kickoff notes. Budget 80 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text indicates that Project Meridian has a budget of "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Meridian\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 50,\n      \"remaining\": null,\n      \"days\": 8,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 75,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          614
+        ]
+      },
+      "Meridian:both_exact": {
+        "b2_quotes": [
+          "Project Meridian kickoff notes. Budget 80 euros.",
+          "hypothesis: The source text indicates that Project Meridian has a budget of 80 euros."
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The source text confirms Project Meridian has a budget of 80 EUR"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Meridian\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 50,\n      \"remaining\": null,\n      \"days\": 8,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 75,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          661
+        ]
+      },
+      "Meridian:both_control": {
+        "b2_quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet",
+          "Project Meridian kickoff notes. Budget 80 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text indicates that Project Meridian has a budget of "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Meridian\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 50,\n      \"remaining\": null,\n      \"days\": 8,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 75,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          628
+        ]
+      },
+      "Meridian:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Meridian\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 50,\n      \"remaining\": null,\n      \"days\": 8,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 75,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Meridian:prompt_only_dual": {
+        "b2_quotes": [
+          "Project Meridian. Decide between Option A and Option B from the latest supplier data sheet"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that Project Meridian requires"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Meridian\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 50,\n      \"remaining\": null,\n      \"days\": 8,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 75,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          480
+        ]
+      },
+      "Nimbus:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Nimbus\",\n  \"action\": \"UNKNOWN\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 65,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Nimbus:b2_only": {
+        "b2_quotes": [
+          "Project Nimbus. Decide between Option A and Option B from the latest supplier data sheet, "
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the project requires a 12"
+        ],
+        "raw_answer": "{\n  \"project\": \"Nimbus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 0,\n      \"remaining\": 12,\n      \"days\": 1,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 0,\n      \"remaining\": 0,\n      \"days\": 1,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          618
+        ]
+      },
+      "Nimbus:both_none": {
+        "b2_quotes": [
+          "Project Nimbus. Decide between Option A and Option B from the latest supplier data sheet, "
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the project requires a 12"
+        ],
+        "raw_answer": "{\n  \"project\": \"Nimbus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 65,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          615
+        ]
+      },
+      "Nimbus:both_exact": {
+        "b2_quotes": [
+          "Project Nimbus. Decide between Option A and Option B from the latest supplier data sheet, "
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The project requires a 120-euro budget for a local-only task."
+        ],
+        "raw_answer": "{\n  \"project\": \"Nimbus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 65,\n      \"remaining\": 4,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          668
+        ]
+      },
+      "Nimbus:both_control": {
+        "b2_quotes": [
+          "Project Nimbus. Decide between Option A and Option B from the latest supplier data sheet, "
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the project requires a 12"
+        ],
+        "raw_answer": "{\n  \"project\": \"Nimbus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 65,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          626
+        ]
+      },
+      "Nimbus:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Nimbus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 65,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Nimbus:prompt_only_dual": {
+        "b2_quotes": [
+          "Project Nimbus. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that Project Nimbus requires a"
+        ],
+        "raw_answer": "{\n  \"project\": \"Nimbus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 70,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 65,\n      \"remaining\": 4,\n      \"days\": 4,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          478
+        ]
+      },
+      "Orion:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Orion\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 30,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 25,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Orion:b2_only": {
+        "b2_quotes": [
+          "Project Orion kickoff notes. Budget 75 euros.",
+          "Project Orion. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source indicates that the project details show a budget of 7"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Orion\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 75,\n      \"remaining\": 7,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 0,\n      \"remaining\": 7,\n      \"days\": 7,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          613
+        ]
+      },
+      "Orion:both_none": {
+        "b2_quotes": [
+          "Project Orion. Decide between Option A and Option B from the latest supplier data sheet, \"",
+          "quote1s"
+        ],
+        "b2_rejected": 2,
+        "b2_summary": [
+          "The prior hypothesis states that the project details indicate a "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Orion\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 30,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 25,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          613
+        ]
+      },
+      "Orion:both_exact": {
+        "b2_quotes": [
+          "Project Orion kickoff notes. Budget 75 euros. Deadline 7 days. Local-only requirement: (1)"
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The prior hypothesis states that the project details indicate a "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Orion\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 30,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 25,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          661
+        ]
+      },
+      "Orion:both_control": {
+        "b2_quotes": [
+          "Project Orion. Decide between Option A and Option B from the latest supplier data sheet, \"",
+          "quote2s"
+        ],
+        "b2_rejected": 2,
+        "b2_summary": [
+          "The prior hypothesis states that the project details indicate a "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Orion\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 30,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 25,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          626
+        ]
+      },
+      "Orion:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Orion\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 30,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 25,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Orion:prompt_only_dual": {
+        "b2_quotes": [
+          "Project Orion. Decide between Option A and Option B from the latest supplier data sheet, ",
+          "jef_query_answer"
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The source text explicitly states that Project Orion requires a "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Orion\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 30,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 25,\n      \"remaining\": 7,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          477
+        ]
+      },
+      "Perseus:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Perseus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 55,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 58,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Perseus:b2_only": {
+        "b2_quotes": [
+          "Project Perseus. Decide between Option A and Option B from the latest supplier data sheet,",
+          "Project Perseus. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the project has a 60-euro"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Perseus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 60,\n      \"remaining\": 0,\n      \"days\": 0,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 50,\n      \"remaining\": 10,\n      \"days\": 1,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          617
+        ]
+      },
+      "Perseus:both_none": {
+        "b2_quotes": [
+          "Project Perseus. Decide between Option A and Option B from the latest supplier data sheet,",
+          "Project Perseus kickoff notes. Budget 60 euros."
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the project has a 60-euro"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Perseus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 55,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 58,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          620
+        ]
+      },
+      "Perseus:both_exact": {
+        "b2_quotes": [
+          "Project Perseus kickoff notes. Budget 60 euros. Deadline 5 days. Local-only requirement: (",
+          "quote2s[]:[]"
+        ],
+        "b2_rejected": 2,
+        "b2_summary": [
+          "The source text indicates a project with a 60-euro budget and a "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Perseus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 55,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 58,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          663
+        ]
+      },
+      "Perseus:both_control": {
+        "b2_quotes": [
+          "Project Perseus. Decide between Option A and Option B from the latest supplier data sheet,"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text indicates a project with a 60-euro budget and a "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Perseus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 55,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 58,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          630
+        ]
+      },
+      "Perseus:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Perseus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 55,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 58,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Perseus:prompt_only_dual": {
+        "b2_quotes": [
+          "\"Project Perseus. Decide between Option A and Option B from the latest supplier data sheet",
+          "\"Compute each remaining budget and eligibility; choose cheapest eligible.\""
+        ],
+        "b2_rejected": 2,
+        "b2_summary": [
+          "The source text explicitly states that Project Perseus requires:"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Perseus\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 55,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 58,\n      \"remaining\": 3,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          475
+        ]
+      },
+      "Quasar:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Quasar\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 85,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 90,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Quasar:b2_only": {
+        "b2_quotes": [
+          "Project Quasar status note. The procurement desk met the vendors on Monday; the final figu",
+          "Project Quasar kickoff notes. Budget 110 euros. Deadline 4 days. Local-only requirement:"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The project is defined with a 110 euro budget and a 4-day window"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Quasar\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 85,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 90,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          626
+        ]
+      },
+      "Quasar:both_none": {
+        "b2_quotes": [
+          "Project Quasar status note. The procurement desk met the vendors on Monday; the final figu",
+          "Project Quasar kickoff notes. Budget 110 euros. Deadline 4 days. Local-only requirement:"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The project is defined with a 110 euro budget and a 4-day window"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Quasar\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 85,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 90,\n      \"remaining\": 2,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          626
+        ]
+      },
+      "Quasar:both_exact": {
+        "b2_quotes": [
+          "Project Quasar. Decide from the earlier project rules. Option A: cost 85 euros, duration 3",
+          "days, local true. Option B: cost 90 euros, duration 2 days, local true. Compute each"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The project is defined with a 110 euro budget and a 4-day window"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Quasar\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 85,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 90,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          720
+        ]
+      },
+      "Quasar:both_control": {
+        "b2_quotes": [
+          "Project Quasar status note. The procurement desk met the vendors on Monday; the final figu",
+          "Project Quasar kickoff notes. Budget 110 euros. Deadline 4 days. Local-only requirement:"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The project is defined with a 110 euro budget and a 4-day window"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Quasar\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 85,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 90,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          638
+        ]
+      },
+      "Quasar:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Quasar\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 85,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 90,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Quasar:prompt_only_dual": {
+        "b2_quotes": [
+          "Project Quasar. Decide from the earlier project rules. Option A: cost 85 euros, duration 3",
+          "days, local true. Option B: cost 90 euros, duration 2 days, local true. Compute each"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text specifies that Project Quasar has a deadline of "
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Quasar\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 85,\n      \"remaining\": null,\n      \"days\": 3,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 90,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          501
+        ]
+      },
+      "Rigel:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Rigel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 65,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 50,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Rigel:b2_only": {
+        "b2_quotes": [
+          "Project Rigel. Decide from the earlier project rules. Option A: cost 65 euros, duration 4",
+          "days, local false. Option B: cost 50 euros, duration 7 days, local true. Compute each"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The earlier context confirms the project has a 70-euro budget, a"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Rigel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 65,\n      \"remaining\": 4,\n      \"days\": 4,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 50,\n      \"remaining\": 7,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          622
+        ]
+      },
+      "Rigel:both_none": {
+        "b2_quotes": [
+          "Project Rigel status note. The procurement desk met the vendors on Monday; the final facts",
+          "Project Rigel kickoff notes. Budget 70 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The project is defined with a 70-euro budget and a 6-day window."
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Rigel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 65,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 50,\n      \"remaining\": 7,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          627
+        ]
+      },
+      "Rigel:both_exact": {
+        "b2_quotes": [
+          "Project Rigel status note.",
+          "Project Rigel kickoff notes."
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The prior hypothesis states the project has a 70-euro budget and"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Rigel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 65,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 50,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          672
+        ]
+      },
+      "Rigel:both_control": {
+        "b2_quotes": [
+          "Project Rigel status note. The procurement desk met the vendors on Monday; the final files",
+          "Project Rigel kickoff notes. Budget 70 euros. Deadline 6 days. Local-only requirement:"
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The project is defined with a 70-euro budget and a 6-day window."
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Rigel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 65,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 50,\n      \"remaining\": null,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          636
+        ]
+      },
+      "Rigel:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Rigel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 65,\n      \"remaining\": 30,\n      \"days\": 4,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 50,\n      \"remaining\": 20,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Rigel:prompt_only_dual": {
+        "b2_quotes": [
+          "Project Rigel. Decide from the earlier project rules. Option A: cost 65 euros, duration 40",
+          "Option B: cost 50 euros, duration 7 days, local true."
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The source text defines two specific project rules for the Rigel"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Rigel\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 65,\n      \"remaining\": null,\n      \"days\": 4,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 50,\n      \"remaining\": 7,\n      \"days\": 7,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          497
+        ]
+      },
+      "Sirius:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Sirius\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 99,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 80,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": true,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Sirius:b2_only": {
+        "b2_quotes": [
+          "local-only requirement: true"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the project has a 'local'"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Sirius\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 95,\n      \"remaining\": 0,\n      \"days\": 5,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 150,\n      \"remaining\": 0,\n      \"days\": 5,\n      \"local\": false,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          624
+        ]
+      },
+      "Sirius:both_none": {
+        "b2_quotes": [
+          "local-only requirement: true",
+          "Project Sirius. Decide between Option A and Option B from the latest supplier data sheet."
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the project has a 'local'"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Sirius\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 99,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 80,\n      \"remaining\": 5,\n      \"days\": 5,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          626
+        ]
+      },
+      "Sirius:both_exact": {
+        "b2_quotes": [
+          "local-only requirement: true",
+          "local-only requirement: false"
+        ],
+        "b2_rejected": 1,
+        "b2_summary": [
+          "The source text explicitly states that the project has a 'local'"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Sirius\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 99,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 80,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": true,\n      \"eligible\": false\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          670
+        ]
+      },
+      "Sirius:both_control": {
+        "b2_quotes": [
+          "local-only requirement",
+          "local-only requirement: true"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the project has a 'local'"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Sirius\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 99,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 80,\n      \"remaining\": 5,\n      \"days\": 5,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          631
+        ]
+      },
+      "Sirius:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Sirius\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 99,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 80,\n      \"remaining\": null,\n      \"days\": 5,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Sirius:prompt_only_dual": {
+        "b2_quotes": [
+          "local-only requirement"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that 'local-only requirement'—"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Sirius\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 99,\n      \"remaining\": null,\n      \"days\": 2,\n      \"local\": true,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 80,\n      \"remaining\": 5,\n      \"days\": 5,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          490
+        ]
+      },
+      "Tycho:b1_only": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Tycho\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 45,\n      \"remaining\": null,\n      \"days\": 9,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": false,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Tycho:b2_only": {
+        "b2_quotes": [
+          "Project Tycho. Decide between Option A and Option B from the latest supplier data sheet. \"",
+          "jef_query_answered"
+        ],
+        "b2_rejected": 2,
+        "b2_summary": [
+          "The source text explicitly states that Project Tycho has a 'dead"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Tycho\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 85,\n      \"remaining\": 0,\n      \"days\": 8,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 75,\n      \"remaining\": 10,\n      \"days\": 8,\n      \"local\": true,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          627
+        ]
+      },
+      "Tycho:both_none": {
+        "b2_quotes": [
+          "Project Tycho. Decide between Option A and Option B from the latest supplier data sheet."
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that Project Tycho has a 'dead"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Tycho\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 45,\n      \"remaining\": null,\n      \"days\": 9,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": false,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          624
+        ]
+      },
+      "Tycho:both_exact": {
+        "b2_quotes": [
+          "local-only requirement: false.",
+          "Project Tycho. Decide between Option A and Option B from the latest supplier data sheet."
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the 'local-only' rule is:"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Tycho\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 45,\n      \"remaining\": null,\n      \"days\": 9,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": false,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          676
+        ]
+      },
+      "Tycho:both_control": {
+        "b2_quotes": [
+          "Project Tycho. Decide between Option A and Option B from the latest supplier data sheet. \"",
+          "jef_query_answered"
+        ],
+        "b2_rejected": 2,
+        "b2_summary": [
+          "The source text explicitly states that Project Tycho has a 'dead"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Tycho\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 45,\n      \"remaining\": null,\n      \"days\": 9,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": false,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          639
+        ]
+      },
+      "Tycho:same_policy_dual": {
+        "b2_quotes": [],
+        "b2_rejected": 0,
+        "b2_summary": [],
+        "raw_answer": "{\n  \"project\": \"Project Tycho\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 45,\n      \"remaining\": null,\n      \"days\": 9,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": false,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": []
+      },
+      "Tycho:prompt_only_dual": {
+        "b2_quotes": [
+          "local-only requirement: false"
+        ],
+        "b2_rejected": 0,
+        "b2_summary": [
+          "The source text explicitly states that the 'local-only' rule is:"
+        ],
+        "raw_answer": "{\n  \"project\": \"Project Tycho\",\n  \"action\": \"NONE\",\n  \"options\": [\n    {\n      \"entity\": \"A\",\n      \"cost\": 45,\n      \"remaining\": null,\n      \"days\": 9,\n      \"local\": false,\n      \"eligible\": true\n    },\n    {\n      \"entity\": \"B\",\n      \"cost\": 60,\n      \"remaining\": null,\n      \"days\": 6,\n      \"local\": false,\n      \"eligible\": true\n    }\n  ]\n}",
+        "b2_prompt_tokens": [
+          493
+        ]
+      }
+    },
+    "b2_rule_rows": {
+      "Kestrel:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Kestrel:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Kestrel:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Kestrel:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Lumen:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Lumen:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Lumen:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Lumen:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Meridian:b2_only": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Meridian:both_control": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Meridian:both_exact": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Meridian:both_none": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Nimbus:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Nimbus:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Nimbus:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Nimbus:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Orion:b2_only": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Orion:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Orion:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Orion:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Perseus:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Perseus:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Perseus:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Perseus:both_none": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Quasar:b2_only": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Quasar:both_control": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Quasar:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Quasar:both_none": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Rigel:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Rigel:both_control": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Rigel:both_exact": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Rigel:both_none": {
+        "rules": true,
+        "wrong_rule": false
+      }
+    },
+    "wrong_committed_tool": 0,
+    "source_sha256": {
+      "scripts/hx2_same_task_probe.py": "68c604410e12674c3f49c19a8ca0c1979f611ebdee50baad0adc5e72db5a7de1",
+      "scripts/step2_z2b_seeds.py": "4479863daa334c955e3583be32a85f4213cedb5da135e6ce6e10e16a3fd64454",
+      "scripts/step2_z2c_b2_rule.py": "d7aac6406ca83ea26cb0429afe41e0bcd6cb9b4b80f54b12cc244c014297c6fe",
+      "v13/cognition.py": "4a0cd1a080f6746ac0a8f1df6bb261fb40a6a5cefeaf289fef86bc27349f83d2",
+      "v13/config.py": "e920df7807a59d9b52dcec8fbbc6efad42e4d660a7de49c5bfc35e1fc4c777f2",
+      "v13/agi/harness.py": "461f5d1c3205d59ccdb7b3f7306cb248b1c6f58570ea9b9c220535ee811f4d74",
+      "v13/agi/harness_probe.py": "11e937c629c6954fdf53469dfbb1872d16a98fd8fb3ea35474d137389b48efa2"
+    },
+    "probe_score": 0.825
+  }
+}

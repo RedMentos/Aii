@@ -149,14 +149,41 @@ def hx5_records(work,arm,seeds=HOLDOUT_SEEDS):
         for n,c in enumerate(json.loads(f.read_text())):
             try:user=json.loads(c['messages'][-1]['content']);obj=json.loads(c['output'])
             except (ValueError,KeyError,IndexError):continue
-            fx=by_goal.get(user.get('goal'))
+            current=''.join(x.get('text','') for x in user.get('source_segments') or [])  # B2 sees the current turn as segments
+            fx=by_goal.get(current)
             if fx is None:continue
-            sources=[user['goal']]+[x.get('exact_source_excerpt','') for x in user.get('earlier_context') or []]
-            exact=[q for q in obj.get('quotes',[])[:3] if isinstance(q,str) and any(quote_span(q,src,200) for src in sources)]
-            text=' '.join(exact)
+            sources=[current]+[x.get('exact_source_excerpt','') for x in user.get('earlier_context') or []]
+            spans=[]  # what the live check hands on: the widened exact source span of each verified quote
+            for q in obj.get('quotes',[])[:3]:
+                if not isinstance(q,str):continue
+                hit=next((src[sp[0]:sp[1]] for src in sources if (sp:=quote_span(q,src,200))),None)
+                if hit:spans.append(hit)
+            text=' '.join(spans)
             ok=all(E.stated(k,v,text) for k,v in fx['rules'].items()) and not any(fx['rules'][k]!=v for k,v in z2c.rule_values(text))
             out.append({'messages':c['messages'],'output':c['output'],'accepted':ok,'task':fx['id'],'run':z2b.run_id(arm,s)+f'#{n}'})
     return out
+
+def finalize_structural(work,choice):
+    """A holdout run whose STEP2 report failed structurally (so the tool replay refused it): the preregistered status is
+    HX2_INVALID. The completed seeds are reported descriptively only (not deciding, no new criterion)."""
+    global HOLDOUT_SEEDS
+    work=Path(work);failed=[]
+    for a,s_ in order('holdout',choice):
+        rep=work/('step2_'+z2b.run_id(a,s_)+'.json')
+        if rep.exists() and not json.loads(rep.read_text()).get('all_structural_checks_passed'):
+            r=json.loads(rep.read_text())
+            failed.append({'run':z2b.run_id(a,s_),'rows_not_recorded':[(x['fixture'],x['variant'],x.get('error')) for x in r['rows'] if x['status']!='RECORDED'],
+                           'preparation_errors':[{k:p_.get(k) for k in ('fixture','error_type','error')} for p_ in r['preparations'] if p_['status']!='RECORDED']})
+    runs={}
+    for f in work.glob('summary_*_s*.json'):
+        x=json.loads(f.read_text())
+        if 'hx2' in x:runs[(x['arm'],x['seed'])]=x
+    done=tuple(s_ for s_ in HOLDOUT_SEEDS if all((a,s_) in runs for a in ('REF',choice,'U')))
+    saved=HOLDOUT_SEEDS;HOLDOUT_SEEDS=done
+    try:desc=gate(runs,choice) if done else None
+    finally:HOLDOUT_SEEDS=saved
+    return {'status':'HX2_INVALID','reason':'structural failure in a holdout run (PREREG rule 1)','failed_runs':failed,
+            'descriptive_complete_seeds':list(done),'descriptive_not_deciding':desc,'canonical_gate_pass':False,'choice':choice}
 
 def order(stage,choice=None):
     if stage=='probe':return [(a,PROBE_SEED) for a in PROBE_ARMS]
@@ -164,7 +191,7 @@ def order(stage,choice=None):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--installed-home',required=True);p.add_argument('--work',required=True)
-    p.add_argument('--stage',choices=('probe','holdout','all'),default='all')
+    p.add_argument('--stage',choices=('probe','holdout','all','finalize-structural'),default='all')
     a=p.parse_args()
     from v13.common import atomic_write
     work=Path(a.work);work.mkdir(parents=True,exist_ok=True);runs={}
@@ -177,6 +204,9 @@ def main():
     print(json.dumps({k:comp[k] for k in ('status','choice','scores','reference_score')}),flush=True)
     result={'compose':{k:v for k,v in comp.items() if k!='behaviour_diff'}}
     if comp['status']!='CHOSEN':result['gate']={'status':'HX2_NO_CANDIDATE','canonical_gate_pass':False}
+    elif a.stage=='finalize-structural':
+        result['gate']=finalize_structural(work,comp['choice']);result['chosen_diff']=VARIANTS[comp['choice']]
+        recs=hx5_records(work,comp['choice'],seeds=result['gate']['descriptive_complete_seeds']);result['hx5_candidates']={'records':len(recs),'accepted':sum(r['accepted'] for r in recs),'locked':True}
     elif a.stage in ('holdout','all'):
         for k in order('holdout',comp['choice']):load_or_run(*k)
         result['gate']=gate(runs,comp['choice']);result['chosen_diff']=VARIANTS[comp['choice']]
