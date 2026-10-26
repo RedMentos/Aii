@@ -84,7 +84,10 @@ class SleepBacklog(unittest.TestCase):
         with self.r.store.tx() as c:
             c.execute("UPDATE sources SET deleted=1 WHERE id=?",(event['source_id'],))
         rep=S.digest(self.r.store)
-        self.assertEqual(rep['turns'],2)
+        # The later model answer also depends on the revoked middle turn's
+        # context source; native_history correctly excludes both, not just the
+        # directly revoked pair. The first independent turn remains valid.
+        self.assertEqual(rep['turns'],1)
         d=S._load(self.r.store)[0]['sessions'][self.r.session]
         self.assertEqual(d['until'],int(rows[-1]['id']))
         self.assertNotIn(int(mid['id']),[e['msg'] for e in d['entries']])
