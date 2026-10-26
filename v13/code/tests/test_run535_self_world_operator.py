@@ -101,6 +101,17 @@ class SelfWorldOperatorTests(unittest.TestCase):
         self.assertIn("mode", json.loads(self.op.run(":self correction")))
         self.assertEqual(json.loads(self.op.run(":self arithmetic"))["status"], "SHADOW_ONLY")
 
+    def test_corrupt_self_state_cannot_consume_scan_baseline(self):
+        from v13.selfmodel import KEY, empty
+        self.start()
+        (self.root / "new.txt").write_text("visible after recovery")
+        self.r.store.set_state(KEY, {"revision": "broken"})
+        with self.assertRaisesRegex(ValueError, "revision mismatch"):
+            self.op.run(":self world poll")
+        self.r.store.set_state(KEY, empty())
+        data = json.loads(self.op.run(":self world poll"))
+        self.assertEqual(data["total"], 2)
+
     def test_restart_defaults_off_without_replay(self):
         self.start()
         self.r.close()
