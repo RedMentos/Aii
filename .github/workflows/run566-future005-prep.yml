@@ -77,7 +77,7 @@ jobs:
           assert p['stage_ids']==['A_s33_p02','A_s33_p03','A_s33_p04']
           assert p['fixture_pairs']==[['Crescent','Asteria'],['Boreal','Cascade'],['Drift','Eon']]
           assert p['arm_seed_pairs']==[['A',33],['A',33],['A',33]]
-          assert p['expected_rows']==42 and p['native_executed'] is False
+          assert p['row_keys_sha256']=='0d3904aeced77afaa55e05819592ba2f40c3cb1aa41c30b8540c1e665f9f3180'\n          assert p['expected_rows']==42 and p['native_executed'] is False
           assert p['canonical_gate_pass'] is False and p['step2_exit']=='UTILITY_FAIL'
           assert p['jepa_weight']==0 and p['redmi_measured'] is False
           print('RUN566_FUTURE005_SOURCE_PLAN_42_DISJOINT_VERIFIED; NO_NATIVE')
