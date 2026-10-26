@@ -28,7 +28,11 @@ class Run415Stage3RestoreTests(unittest.TestCase):
                     } for a in ("O", "P")}, "failures_preserved": {}}
         files = {
             "RUN397_PROGRESS.json": json.dumps(progress).encode(),
-            "RUN394_PREREGISTERED_FIXTURES.json": b"{}",
+            "RUN394_PREREGISTERED_FIXTURES.json": json.dumps(
+                stage.r394.manifest(stage.r394.FIXTURES, False,
+                                    list(stage.r394.ARMS),
+                                    list(stage.r394.SEEDS)),
+                sort_keys=True).encode(),
             "RUN397_OWNER.lock": b"",
             "attempts/O_s20/attempt-0001/native.json": b'{"raw":true}',
             "attempts/P_s20/attempt-0001/native.json": b'{"raw":true}',
