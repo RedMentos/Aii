@@ -1,0 +1,62 @@
+{
+  "schema": "V13_RUN474_B3_GEOMETRY_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run474-b3-bridge-geometry-20261026",
+  "base_sha": "7886352f624352f038e3611aac916a44aca3e0b9",
+  "owner": "Run474 source-only B3 geometry follow-up, no production/native owner",
+  "finding": "Run471 verifies exact serving keys and digest but a forged manifest with recomputed sender key and mismatched sender dims can pass while loaded bridge.d remains old; a self-consistent NPZ digest can also conceal invalid tensor shapes.",
+  "source_files": {
+    "v13/code/scripts/run471_bridge_key_candidate.py": "7d45a5db8642de6f40ab38ff5522c0b9bbe095a6",
+    "v13/code/tests/test_run471_bridge_key_candidate.py": "01ab5320372973b57f8e9fbcb8abf622f4df572b"
+  },
+  "tests_added": [
+    "re-keyed changed serving sender dims must fail even if keys match",
+    "self-consistent manifest/NPZ digest with malformed Q shape must fail",
+    "symlinked ancestor directory must be refused before bridge artifact read"
+  ],
+  "verification_status": "FINAL_SOURCE_AND_FULL_CI_GREEN_ON_f3a23fd6",
+  "scope": "read-only candidate only; production bodyport.py/b3bridge.py frozen; no authority granted",
+  "negative_gates": {
+    "b3_l1": "FAIL",
+    "latent_authority": 0,
+    "step2_exit": "UTILITY_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Run471 candidate still lacks hostile-concurrent-rename guarantees and path ancestor symlink proof.",
+    "No live train-time key stamping, BodyPort consumer integration, native B3 L1 utility or Redmi evidence."
+  ],
+  "exact_next_command": "Independent review PR #473 source candidate and its source CI; production B3 integration remains separate and blocked on explicit migration/native L1 evidence. No authority promotion.",
+  "pr": 473,
+  "local_independent_tests": {
+    "status": "PASS",
+    "tests": "29/29",
+    "suite": "tests.test_run471_bridge_key_candidate tests.test_bodyport tests.test_b3bridge",
+    "raw_log_sha256": "9e2ed7ba9ae2256e60eab2acaf8c810f0e9c4def63c7cdc5c93fa1c045c351e5",
+    "source_reconstruction": "Run471 verified source ZIP with exact Run474 Git blob SHA1 for both patched files"
+  },
+  "verified_ci": {
+    "run_id": 40278283789,
+    "job_id": 121425675857,
+    "conclusion": "success",
+    "tests": "28/28 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12630189712,
+    "raw_zip_sha256": "3a54b3f5cd70eff669bbccbdc9865133c5685cc6a8c1d115aa140337a46a5647",
+    "raw_test_log_sha256": "9ac59ac202f8d8c28877eb47a440ca0e72d1e3db04aaf75e20681995d8b9c711",
+    "full_source_run_id": 40278283788,
+    "full_source_conclusion": "success",
+    "full_source_artifact_id": 12630499940,
+    "full_source_zip_sha256": "674092ca979b0b567e0e8aa94ceb018f4128b843c0dda23ef12e973e88e8a191"
+  },
+  "verified_ci_latest": {
+    "run_id": 40278537992,
+    "conclusion": "success",
+    "full_source_run_id": 40278537989,
+    "full_source_conclusion": "success",
+    "head_sha": "f3a23fd689b391e3187536a70f1670eaa7f2435f",
+    "claim_limit": "source-only synthetic/Linux; no native B3 or latent activation"
+  }
+}

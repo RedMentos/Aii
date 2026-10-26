@@ -71,6 +71,9 @@ def verify_file(path, specs):
     if path.suffix in ('.json', '.npz'):
         path = path.with_suffix('')
     manpath, weightpath = path.with_suffix('.json'), path.with_suffix('.npz')
+    # A safe leaf under a symlinked parent is still an untrusted path.
+    for parent in path.parents:
+        require(not parent.is_symlink(), 'BRIDGE_ANCESTOR_SYMLINK')
     for item in (manpath, weightpath):
         require(item.is_file() and not item.is_symlink(), 'BRIDGE_FILE_MISSING_OR_SYMLINK')
         info = item.stat()
@@ -81,6 +84,32 @@ def verify_file(path, specs):
     require(path.name == manifest['direction'], 'BRIDGE_PATH_DIRECTION_MISMATCH')
     sender, receiver = DIRECTIONS[manifest['direction']]
     bridge = Bridge.load(path, specs[sender]['revision'], specs[receiver]['revision'])
+    # An attacker can re-key an arbitrary serving spec and re-sign the manifest
+    # while retaining an incompatible NPZ. Keys and digests alone do not prove
+    # that the loaded tensor geometry can consume the claimed sender tap.
+    require(bridge.d == specs[sender]['dims'],
+            'BRIDGE_SENDER_DIM_MISMATCH')
+    expected = {
+        'Q': (bridge.K, bridge.d), 'P': (bridge.d, bridge.r),
+        'Pr': (bridge.K * bridge.r, bridge.h),
+        'gamma': (1,), 'Wu': (bridge.h, bridge.classes),
+    }
+    if bridge.aux:
+        expected['Wa'] = (bridge.h, bridge.aux)
+    for key, shape in expected.items():
+        require(key in bridge.p and bridge.p[key].shape == shape,
+                'BRIDGE_TENSOR_SHAPE_MISMATCH:' + key)
+    require(bridge.in_mu.shape == (bridge.d,) and
+            bridge.in_sd.shape == (bridge.d,),
+            'BRIDGE_INPUT_NORM_SHAPE_MISMATCH')
+    if bridge.head is not None:
+        require(bridge.head[0].shape == (bridge.h, bridge.classes) and
+                bridge.head[1].shape == (bridge.classes,),
+                'BRIDGE_HEAD_SHAPE_MISMATCH')
+    if bridge.cal is not None:
+        require(bridge.cal['mu'].shape == (bridge.K * bridge.r,) and
+                bridge.cal['sd'].shape == (bridge.K * bridge.r,),
+                'BRIDGE_CAL_SHAPE_MISMATCH')
     require(bridge.digest() == result['bridge_weights_sha256'],
             'BRIDGE_WEIGHTS_NOT_ATTESTED')
     require((manifest.get('calibrated') is True) == (bridge.cal is not None),

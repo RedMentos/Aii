@@ -62,6 +62,27 @@ class ExactBridgeKeyCandidate(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'BRIDGE_EXACT_KEY_MISMATCH:sender'):
                     A.verify_file(self.path, changed)
 
+    def test_rekeyed_wrong_sender_dims_refused_even_when_keys_match(self):
+        changed = specs()
+        changed['B1_DETAIL']['dims'] = 999
+        forged = dict(self.man, sender_bridge_key=bridge_key('B1_DETAIL',
+                                                             changed['B1_DETAIL']))
+        self.path.with_suffix('.json').write_text(json.dumps(forged))
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_SENDER_DIM_MISMATCH'):
+            A.verify_file(self.path, changed)
+
+    def test_self_consistent_digest_cannot_hide_malformed_npz_shape(self):
+        changed = Bridge(4, K=2, r=2, h=3, classes=2, seed=4)
+        changed.p['Q'] = np.zeros((3, 4))  # manifest still declares K=2
+        a, b = self.specs['B1_DETAIL'], self.specs['B2_GIST']
+        changed.save(self.path, a['revision'], b['revision'], {
+            'sender_bridge_key': bridge_key('B1_DETAIL', a),
+            'receiver_bridge_key': bridge_key('B2_GIST', b),
+            'l1_gate': {'verdict': 'FAIL'}})
+        with self.assertRaisesRegex(ValueError,
+                                    'BRIDGE_TENSOR_SHAPE_MISMATCH:Q'):
+            A.verify_file(self.path, self.specs)
+
     def test_legacy_revision_only_manifest_fails_closed(self):
         legacy = dict(self.man)
         legacy.pop('sender_bridge_key')
@@ -106,6 +127,18 @@ class ExactBridgeKeyCandidate(unittest.TestCase):
         shutil.copyfile(self.path.with_suffix('.npz'), other.with_suffix('.npz'))
         with self.assertRaisesRegex(ValueError, 'BRIDGE_PATH_DIRECTION_MISMATCH'):
             A.verify_file(other, self.specs)
+
+    def test_symlinked_ancestor_refused_before_read(self):
+        real = Path(self.tmp.name) / 'real'
+        real.mkdir()
+        shutil.copyfile(self.path.with_suffix('.json'),
+                        real / 'B1_TO_B2.json')
+        shutil.copyfile(self.path.with_suffix('.npz'),
+                        real / 'B1_TO_B2.npz')
+        link = Path(self.tmp.name) / 'linked_parent'
+        link.symlink_to(real, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_ANCESTOR_SYMLINK'):
+            A.verify_file(link / 'B1_TO_B2', self.specs)
 
     def test_symlink_and_hardlink_refused(self):
         p = self.path.with_suffix('.npz')
