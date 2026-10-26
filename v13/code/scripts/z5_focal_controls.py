@@ -214,7 +214,8 @@ def run_rep(installed,rep,fixtures,session_mode=False,fit_arms=False):
                         def fits(sp):
                             mm=[{'role':'system','content':swap_layer(sysmsg,hyp_head,coal,render(sp),anchor)}]+msgs[1:]
                             if sum(len(x['content']) for x in mm)<=limit*CF.SURE_CHARS_PER_TOKEN:return True
-                            return runner.prompt_tokens(mm,r.cancel_event,time.monotonic()+120)<=limit
+                            try:return runner.prompt_tokens(mm,r.cancel_event,time.monotonic()+120)<=limit
+                            except Exception:return CF.estimate(mm)<=limit  # no native count: conservative estimate
                         sp,cuts[arm]=fit_spec(specs[arm],fits)
                         if sp is not None:system=swap_layer(sysmsg,hyp_head,coal,render(sp),anchor)
                     m=[{'role':'system','content':system}]+msgs[1:];key=hashlib.sha256(dumps(m).encode()).hexdigest()
@@ -229,6 +230,7 @@ def run_rep(installed,rep,fixtures,session_mode=False,fit_arms=False):
                     rows.append(base|{'arm':arm,'pass':all(ok.values()) and all(num.values()),'gen_s':round(time.monotonic()-t1,2),'context_hash':key[:16],
                                       'context_chars':len(blocks[arm]),'fit_cuts':cuts.get(arm,0),'answer_role':cap['answer_role'],'same_as_live':o.strip()==out.strip(),'intrusion':intrusion(o,nums,prev),'output':o[:400]})
                     line[arm]=rows[-1]['pass']
+                if cuts:line['fit_cuts']=cuts
                 print(json.dumps(line),flush=True)
         finally:
             RT.FocalLoop,RT.save_context,F.admit,F.Workspace.load=orig_loop,orig_save,orig_admit,orig_load
