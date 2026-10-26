@@ -146,7 +146,10 @@ class ToolStep:
             mode=self.r.cfg.get('eligibility_reader','model')
             if mode=='fixed_strict':values=eligibility.fixed_read(text,hist,quotes)  # 2026-10-21 reader: no language model at all (thread „Zitierhilfe an“)
             else:
-                fixed=eligibility.read_fixed(text,earlier) if mode=='fixed' else None  # 22.10. reader (FIRST_SUPPORTED): rules never from a model
+                fixed=eligibility.read_fixed_sources(text,hist,quotes) if mode=='fixed' else None  # source authority: current > direct user > consistent body quotes
+                if fixed and fixed.get('ambiguous_options'):
+                    self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'elig_source_conflict'})
+                    return None  # do not let model fallback pick one of conflicting source quotes
                 if fixed and fixed['options']:values=fixed  # this wording is fully covered: no model call
                 else:
                     values=eligibility.read_values(self.r.pool.get('C3_LANGUAGE'),text,earlier,self.r.cancel_event,time.monotonic()+ELIG_READ_SECONDS)
