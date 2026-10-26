@@ -4,6 +4,7 @@ what late material may still be shown, and every egress kind gets its C6 schema 
 Authority order before the commit point (IH-H12), highest first:
   APPROVED_FIXED_RULE   operator-approved exact answer (output_policy); beats everything, also an explicit copy request
   EXPLICIT_EXACT_COPY   "Copy exactly: ..." renders the source span unchanged
+  ELIGIBILITY_TOOL_FINAL  exact UNKNOWN/NONE eligibility recipe text; no native answer generation
   MODEL_ANSWER          body answer (grounded by an executed TOOL_RESULT layer when C5 chose the tool)
   SOURCE_SYSTEM_REPORT  source-bound diagnostic when no visible model text exists (error, deadline, cancel)
 After the commit point nothing is replaced. Late material is a separate message with role 'broker' (never part of
@@ -21,7 +22,7 @@ import re
 from .common import dumps
 from .contracts import packet
 
-RANK={'APPROVED_FIXED_RULE':0,'EXPLICIT_EXACT_COPY':1,'MODEL_ANSWER':2,'SOURCE_SYSTEM_REPORT':3}
+RANK={'APPROVED_FIXED_RULE':0,'EXPLICIT_EXACT_COPY':1,'ELIGIBILITY_TOOL_FINAL':2,'MODEL_ANSWER':3,'SOURCE_SYSTEM_REPORT':4}
 LATE=('CORRECTION','ACTION_PREVIEW','RULE_NOTICE')
 DONE_CLAIM=re.compile(r"(?i)\b(i(?:'ve| have)? (?:saved|written|created|stored|noted)|(?:has|have) been (?:saved|written|created|stored)|note (?:is|was) saved|done[.!])")
 
@@ -103,6 +104,12 @@ class Broker:
         cands=[]
         if meta.get('output_authority')=='APPROVED_FIXED_RULE' or meta.get('exact_policy_matched'):cands.append('APPROVED_FIXED_RULE')
         if exact_requested or (direct and not cands):cands.append('EXPLICIT_EXACT_COPY')
+        if (meta.get('output_authority')=='ELIGIBILITY_TOOL_FINAL' and
+                meta.get('tool_answer_first')=='FINAL' and not meta.get('model_generated') and
+                tool_result and tool_result.get('tool')=='eligibility' and
+                isinstance(tool_result.get('result'),dict) and
+                tool_result['result'].get('action') in ('UNKNOWN','NONE')):
+            cands.append('ELIGIBILITY_TOOL_FINAL')
         if meta.get('model_generated') and output:cands.append('MODEL_ANSWER')
         if meta.get('output_authority')=='SOURCE_SYSTEM_REPORT':cands.append('SOURCE_SYSTEM_REPORT')
         d=decide(cands)
