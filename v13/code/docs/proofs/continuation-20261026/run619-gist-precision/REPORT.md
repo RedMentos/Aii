@@ -21,6 +21,10 @@ After the initial remote checkpoint, restored the **original Run601 phone source
 - Independent fake-store source-identical harness: baseline near-tie FAIL; patched **6/6 PASS** (not counted as SQLite).
 - Private Library `/V13-Checkpoints/2026-10-26/Run619/run619-local-closed.zip` SHA256 `68c38fbd5785810096fd417c47bd96a394313b02bd56e64e54ea6a4cd0d7d318`; SHA-closed raw logs, original failure, tests, source, branch checkpoint. **Round-trip byte-for-byte readback verified**. No user/private source text in public Git.
 
+## Independent retrospective original-native audit
+
+Original SHA-closed Run614 B2 states (`RUN614_STATES.npz` SHA256 `cb535df87749c0cf5d698d26268e6b03f3d6f57690b95434aebc6c875a3ea189`) were checked separately without new inference. For 20 original heldout queries, the old six-decimal rounded ranking and full-precision ranking had **0 top-five order differences and 0 rounded-score collision pairs**. This **does not** imply the bug affected the observed Run614 cohort; its demonstrated effect is the independent adversarial near-tie SQLite regression. Audit JSON SHA256 `a2954884d700e0c7a5d02fa962fab09cd3ef00e457e8d3b3ecacff919ca1eef1`, script SHA256 `155b957cd810cc333a9aa6ba02355e3e870770bcdb2e339cf20f09405626134a`; script rerun reproduced identical JSON bytes. Both stored privately in Library Run619.
+
 ## Verification and evidence level
 
 - Source remote readback: `gist_similarity.py` blob `b6aa89a8d954dde524217171cd28c4bdf09a0cf0`; tests blob `24cd16a52dbce9329339f34c8037a1bf3e845c4a`; workflow blob `a50f094965cc701785f10a3247a5d1d13edf6119`.
