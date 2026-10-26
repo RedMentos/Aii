@@ -1,0 +1,124 @@
+name: V13 Run398 independent Run395 native raw artifact audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run398-step2-native-artifact-audit.yml'
+      - 'v13/code/scripts/run398_native_artifact_audit.py'
+      - 'v13/code/tests/test_run398_native_artifact_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run398-independent-native-audit/**'
+  workflow_dispatch:
+    inputs:
+      artifact_id:
+        description: 'Completed Run395 raw artifact ID, never a guessed value'
+        required: false
+        type: string
+      zip_sha256:
+        description: 'Observed GitHub artifact SHA256'
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Frozen source and exact-head audit code
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN398_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          sha256sum v13/code/scripts/run398_native_artifact_audit.py v13/code/tests/test_run398_native_artifact_audit.py v13/code/scripts/run396_step2_pilot_audit.py | tee "$RUNNER_TEMP/RUN398_SOURCE_HASHES.txt"
+          python3 -m compileall -q v13/code/scripts/run398_native_artifact_audit.py v13/code/tests/test_run398_native_artifact_audit.py
+      - name: Inherited and new adversarial source-only controls
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_run394_step2_fresh tests.test_run396_step2_pilot_audit \
+            tests.test_run397_step2_resume tests.test_run398_native_artifact_audit \
+            2>&1 | tee "$RUNNER_TEMP/RUN398_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha || 'HEAD~1' }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN398_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close source-only raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN398_*' ! -name RUN398_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN398_SHA256SUMS.txt
+      - name: Upload source-only raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run398-Source-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN398_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce source tests and privacy, not native claims
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
+  actual-native-artifact:
+    if: github.event_name == 'workflow_dispatch' && inputs.artifact_id != '' && inputs.zip_sha256 != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Read exact Run395 artifact without starting inference
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+          EXPECTED_SHA: ${{ inputs.zip_sha256 }}
+        run: |
+          set -euo pipefail
+          test "$ARTIFACT_ID" -gt 0
+          echo "$EXPECTED_SHA" | grep -Eq '^[0-9a-f]{64}$'
+          gh api "repos/RedMentos/Aii/actions/artifacts/$ARTIFACT_ID/zip" > "$RUNNER_TEMP/RUN395_RAW.zip"
+          sha256sum "$RUNNER_TEMP/RUN395_RAW.zip" | tee "$RUNNER_TEMP/RUN398_DOWNLOADED_SHA.txt"
+          cd v13/code
+          PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/run398_native_artifact_audit.py \
+            --raw-zip "$RUNNER_TEMP/RUN395_RAW.zip" --expected-sha256 "$EXPECTED_SHA" \
+            --output "$RUNNER_TEMP/RUN398_NATIVE_AUDIT.json" 2>&1 | tee "$RUNNER_TEMP/RUN398_NATIVE_AUDIT_RAW.log"
+      - name: Close actual audit raw hashes even on failure
+        if: always()
+        run: |
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN398_*' ! -name RUN398_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN398_SHA256SUMS.txt
+      - name: Upload audit output only (original raw stays with Run395)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run398-Actual-Audit-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN398_*
+          if-no-files-found: warn
+          retention-days: 30

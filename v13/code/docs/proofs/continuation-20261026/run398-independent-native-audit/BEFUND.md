@@ -1,0 +1,11 @@
+# Run398 — source-only artifact audit verified, real native input pending (2026-10-26)
+
+A new independent read-only auditor `scripts/run398_native_artifact_audit.py` verifies a downloaded Run395 native artifact ZIP **before** interpreting any STEP2 row. It rejects wrong expected ZIP SHA, failed CRC, unsafe/duplicate/symlink paths, oversized members, unhashed or missing files, tampered raw SHA manifest, wrong exact Run395 source head, nonzero prerequisite/native/audit/privacy exit, incomplete 42-row pilot, and any failure of the unchanged Run396 independent row/provenance audit. All failures are returned as `PILOT_RED_PRESERVED` with negative canonical gates. A structurally valid two-fixture pilot is still only `PILOT_POSTFLIGHT_VERIFIED`, not STEP2 promotion.
+
+**Exact-head source proof:** GitHub Actions `40249652113`, job `121338552229`, head `47137fbd8f92056808955679262ccea163d11b8c`: **43/43 PASS** (7 Run394, 10 Run396, 17 Run397, 9 Run398), compileall PASS, privacy CLEAN. Actual-native-artifact job `121338553290` **SKIPPED by explicit workflow_dispatch guard**; no real Run395 artifact has been inspected in this package. The source-only tests create synthetic native-shaped ZIPs and do not prove model inference.
+
+**Raw closure:** Actions artifact `12619373572` ZIP SHA256 `566ce110907f9451db17d55c3c345705ec92532b45b3e86209f63fb1000b7521`; ZIP CRC PASS, 4/4 internal member SHA256 PASS. Private Library `/V13_PRIVATE_CHECKPOINTS_20261024/Run398_STEP2_20261026/SOURCE_RAW.zip` re-materialized byte-identical. No private data or model weights uploaded.
+
+**Open:** Run395 actual native pilot remains a separately owned serialized job at checkpoint. After it finishes, inspect exact-head job logs, artifact ID/digest and raw. Because workflow_dispatch on an unmerged branch may not be invokable, update this review-branch workflow to run the actual audit on a PR with the *observed* artifact ID/digest, or run the same script on a verified downloaded ZIP in an isolated local environment. Do not guess artifact IDs, force merge, alter Run394 source or run competing native jobs.
+
+**Gates:** STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA/jepa_weight=0, Age0 approval/learning unchanged, no Redmi proof, Run389 full suite RED, whole V13 incomplete.
