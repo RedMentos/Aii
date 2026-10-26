@@ -1,7 +1,7 @@
 """Run460 independent source-only adversarial review of seven native294 receipts.
 
 Builds seven synthetic receipts from the inherited Run434 fixture. No model
-inference, no claim of actual native252 evidence, no edit to active Run453 owner.
+inference, no claim of actual native294 evidence, no edit to active Run453 owner.
 """
 import hashlib
 import json
