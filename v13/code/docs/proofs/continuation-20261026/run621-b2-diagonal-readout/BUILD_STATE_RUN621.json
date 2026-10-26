@@ -45,5 +45,10 @@
     "Prospective semantic utility and native body learning remain unmeasured",
     "Exact Actions CI run status unverified"
   ],
-  "next_command": "Verify Run621 exact Actions raw/exit/privacy; retain NO_GAIN and continue different Canon path rather than tuning same heldout"
+  "next_command": "Verify Run621 exact Actions raw/exit/privacy; retain NO_GAIN and continue different Canon path rather than tuning same heldout",
+  "private_backup": {
+    "library_path": "/V13-Checkpoints/2026-10-26/Run621/run621-local-closed.zip",
+    "sha256": "f3d0aed7346753cead4e4d572b1aef20d6ac4252ad05d2630c9fac579c445864",
+    "roundtrip_verified": true
+  }
 }
