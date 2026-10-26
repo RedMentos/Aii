@@ -16,6 +16,8 @@ import run397_step2_resume as resume
 from v13.models import catalog
 
 SOURCE_HEAD = "c0facf60c3286064e15bc06de104c85d9344382a"
+# Observed executable SHA from Run401 installed verifier, NOT the release tarball SHA.
+RUN401_EXECUTABLE_SHA256 = "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39"
 HEX = re.compile(r"[0-9a-f]{64}\Z")
 RAW_EXITS = ("RUN401_DEPS_EXIT.txt", "RUN401_BOOTSTRAP_EXIT.txt",
              "RUN401_NATIVE_EXIT.txt", "RUN401_AUDIT_EXIT.txt", "RUN401_PRIVACY_EXIT.txt")
@@ -98,9 +100,14 @@ def _validate_native_tree(root, files):
             "attempts/O_s20/attempt-0001", "UNEXPECTED_STAGE1_ATTEMPT")
     attempt = root / info["attempt"]
     require(attempt.is_dir(), "STAGE1_ATTEMPT_MISSING")
-    runner_sha = catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+    installed_log = files.get("RUN401_INSTALLED_RAW.log", b"")
+    require(type(installed_log) is bytes and len(installed_log) <= 1_000_000,
+            "STAGE1_RUNNER_LOG_MISSING_OR_OVERSIZED")
+    observed = re.findall(rb"(?m)^RUNNER_VERIFIED ([0-9a-f]{64})\\s*$", installed_log)
+    require(len(observed) == 1 and observed[0].decode() == RUN401_EXECUTABLE_SHA256,
+            "STAGE1_RUNNER_LOG_IDENTITY_MISMATCH")
     actual = resume.validate_completed(attempt, "O", 20, r394.FIXTURES,
-                                       manifest, current_runner_sha=runner_sha)
+                                       manifest, current_runner_sha=RUN401_EXECUTABLE_SHA256)
     require(actual == info.get("validated") and actual["rows"] == 42,
             "STAGE1_VALIDATED_RECEIPT_MISMATCH")
     receipt = json.loads((attempt / "RUN397_ATTEMPT.json").read_bytes())
