@@ -1461,3 +1461,9 @@ Sicherheits-/Moralregeln sind nie änderbar. Alles vorregistriert, Autorität 0 
 - Vorregistriert `6d278e5`, frische Saat 41, 60 Aufgaben, 4 Arme: Antworttext richtig **59/60** (Q-Pfad 23, C3 allein 18), falsch festgelegt **0** (Q-Pfad 30), Rezept-Entscheidung 60/60 (C3-Leser 42), geänderte Regeln 15/15 (vorher 4/15), Zug 1,6 s statt 3,0 s. Rest: 1 Widerspruch in C3s Fortsetzung, vom Broker korrigiert.
 - Standard jetzt `eligibility_reader=fixed`, `tool_answer_first=true` (alt in `LEGACY_PRE_20261022`); Werkzeug selbst weiter nur nach `:growth enable eligibility`. Suite grün. Befund `code/docs/proofs/continuation-20261022/eligibility-first/BEFUND.md`.
 - Offen: Handy-Paket (WP-Z7) mit beidem (Nutzer: „Ja, beide an im Handy-Paket“); andere Wortformen über den Regel-Leser-Strang.
+
+### WP-Z2e Allgemeine Körper-Frage + Seed-Fehler (Cloud, Modelle) — ERLEDIGT 2026-10-26, **NOT_SUPPORTED** (Thread „STEP2-Nutzen Engpass“, Branch `claude/project-thread-dq33gk`)
+- Seed-Fehler behoben (Z2b offen c): Runner nutzt `cfg['seed']`, wenn ein Aufruf keinen Seed nennt (Kettenglied `runner_seed`, `85468a9`; Standard-Seed 13 → Standardzüge unverändert).
+- Z2/Z2c (B1-Fenster, Körper-Frage-Schalter) in dq33gk zusammengeführt (`7164c1b`).
+- Vorregistriert `b2876f5`, Seeds 23–25, Arme C/CL/CG: allgemeine Frage both_exact .361 gegen keine Frage .328 (+.03, KI [−.07, +.15]) und spezifische Frage .661 (−.30). Spezifische Frage repliziert: +.33, KI [+.18, +.50]. 0 falsch.
+- Folge: Gewinn kommt vom Benennen der gebrauchten Werte. Schalter bleibt aus. Nächstes Paket: JEF bildet die Körper-Frage fest aus der aktuellen Nachricht. Befund `code/docs/proofs/continuation-20261022/step2-z2e-general/BEFUND.md`.
