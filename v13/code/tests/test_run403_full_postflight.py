@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import run394_step2_fresh as r394
 import run397_step2_resume as resume
 import run403_full_postflight as audit
+import run402_stage_restore as restore
 from tests.test_run397_step2_resume import synthetic_source, write
 from tests.test_run402_stage_restore import make_archive
 
@@ -23,7 +24,9 @@ def make_full(folder):
     work = root / "run401-full"
     with patch.object(r394, "PILOT_IDS", tuple(f["id"] for f in r394.FIXTURES)):
         native = synthetic_source(folder / "native")
-    runner_sha = resume.catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+    # All synthetic arms belong to the same Run401 executable cohort.
+    # The release archive digest is intentionally different.
+    runner_sha = restore.RUN401_EXECUTABLE_SHA256
     manifest = r394.manifest(r394.FIXTURES, False, list(r394.ARMS), list(r394.SEEDS))
     completed = {}
     for seed in r394.SEEDS:
