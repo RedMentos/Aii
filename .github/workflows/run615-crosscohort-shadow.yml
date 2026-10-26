@@ -37,10 +37,10 @@ jobs:
         run: |
           set +e
           mkdir -p "$RUNNER_TEMP/run608" "$RUNNER_TEMP/run614"
-          timeout 180s gh run download 40402123481 --repo RedMentos/Aii --dir "$RUNNER_TEMP/run608" > "$RUNNER_TEMP/RUN615_DOWNLOAD_RAW.log" 2>&1
+          timeout 180s gh run download 40402123481 --repo RedMentos/Aii --name V13-Run608-Native-Paraphrase-81cd5417380251b3633aab474b4e1a672480ea2c --dir "$RUNNER_TEMP/run608" > "$RUNNER_TEMP/RUN615_DOWNLOAD_RAW.log" 2>&1
           rc=$?
           if [ "$rc" -eq 0 ]; then
-            timeout 180s gh run download 40407777217 --repo RedMentos/Aii --dir "$RUNNER_TEMP/run614" >> "$RUNNER_TEMP/RUN615_DOWNLOAD_RAW.log" 2>&1
+            timeout 180s gh run download 40407777217 --repo RedMentos/Aii --name V13-Run614-Independent-Native-Paraphrase-e253bb318737b3a8ead92f53a1044f0220f8281f --dir "$RUNNER_TEMP/run614" >> "$RUNNER_TEMP/RUN615_DOWNLOAD_RAW.log" 2>&1
             rc=$?
           fi
           if [ "$rc" -eq 0 ]; then
