@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import stat
 import time
+import threading
 
 _NAME = re.compile(r"[A-Za-z0-9_-]{1,64}\.txt\Z")
 _MAX_FILES = 256
@@ -42,6 +43,7 @@ class SandboxWorldPort:
         if not stat.S_ISDIR(st.st_mode):
             raise ValueError("sandbox root must be a real directory")
         self._identity = (st.st_dev, st.st_ino)
+        self._lock = threading.RLock()
         self._previous = self._scan()
 
     def _scan(self):
@@ -100,8 +102,8 @@ class SandboxWorldPort:
         finally:
             os.close(root_fd)
 
-    def poll(self, *, t=None):
-        """Return changes since baseline; no observations on first construction."""
+    def _pending(self, t):
+        """Stage changes against the last committed baseline, without consuming them."""
         timestamp = time.time() if t is None else t
         if type(timestamp) not in (int, float) or not math.isfinite(timestamp):
             raise ValueError("invalid observation timestamp")
@@ -115,14 +117,29 @@ class SandboxWorldPort:
         ]
         if old_count != new_count:
             rows.append({"channel": "listing", "value": new_count, "t": timestamp})
-        self._previous = fresh
-        return rows
+        return rows, fresh
 
-    def observe(self, selfsys, event_id, *, t=None):
-        """Explicitly forward changed observations into existing SelfSystem.
+    def poll(self, *, t=None):
+        """Explicit read-only poll; successful scans consume the baseline."""
+        with self._lock:
+            rows, fresh = self._pending(t)
+            self._previous = fresh
+            return rows
 
-        This creates ordinary SelfWorldAttribution packets; it does not
-        approve tools, deliver messages, change Age or authorize learning.
+    def observe(self, selfsys, event_id, *, t=None, extra_observations=(), close=()):
+        """Forward actual changes to F3/F4 before committing the scan baseline.
+
+        If attribution raises, a later explicit retry sees the same file
+        changes. In-process exception safety only: this is NOT a crash-atomic
+        exactly-once transaction across multiple SelfSystem packet writes.
+        Additional observations/close IDs are supplied only by an already
+        authorized caller (e.g. the verified WP-K action-status binding).
         """
-        rows = self.poll(t=t)
-        return selfsys.observe(event_id, rows, close=[]) if rows else []
+        with self._lock:
+            rows, fresh = self._pending(t)
+            extra = list(extra_observations)
+            if not rows and not extra and not close:
+                return []
+            attributed = selfsys.observe(event_id, rows + extra, close=list(close))
+            self._previous = fresh
+            return attributed
