@@ -1,0 +1,47 @@
+{
+  "schema": "V13_RUN530_REVIEWED_AGE0D_SHADOW_INTEGRATION_VERIFIED_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/automation11-run530-age0d-final-binding-integration-20261026",
+  "base_sha": "056dc1d8499f2c7a2d0c187b07bdb149c2e3cf47",
+  "pr": 529,
+  "tested_head": "a1acdfdc0f589251285488ea0d562d8af237c338",
+  "upstream_reviewed_pr": 519,
+  "upstream_source_head": "016de966c940582773779b02611f63cf70e4d109",
+  "base_blob_identity_verified": true,
+  "exact_upstream_source_blobs": {
+    "selfmodel": "aab1d1905c98ce1d276e5136975a97f62e8e21dc",
+    "test_run517": "47a6468c03f2b3e65a3b960b7966ddfc7868871e"
+  },
+  "actions": {
+    "run": 40322505870,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12649476967,
+    "artifact_zip_sha256": "77977a2de2f1a15641bee9efae25eb1832b623a4d64f7b98ccba472a3139ffe8",
+    "sha_manifest_entries_verified": 7,
+    "tests_passed": 121,
+    "privacy": "CLEAN"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-26/Run530/Run530_GREEN_sha77977A2D.zip",
+  "implementation": "Age0d arithmetic shadow mismatch requires persisted same-event same-session FINAL assistant output text byte-identical to late_offer output; no user notification, Age reopening or learning.",
+  "upstream_original_red": {
+    "run": 40317110061,
+    "reason": "Restart test Store lock lifecycle, preserved upstream"
+  },
+  "gates": {
+    "age0d_delivery": "OFF",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false,
+    "production_integrated": false
+  },
+  "open_questions": [
+    "Sibling Run521 PR #519 remains open; this is stacked review-branch integration only",
+    "No independent native/Redmi proof",
+    "Source-wide frozen candidate baseline tests remain RED on newer source"
+  ],
+  "next_command": "Continue next independent blueprint package, prioritize missing Self/World real-data evidence or native Body-JEPA train port; do not rewrite frozen gates or modify Claude owner's branch.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
