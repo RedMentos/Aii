@@ -153,7 +153,7 @@ MAX_EARLIER = 6
 
 # Run576: narrow explicit project evidence before either fixed or model typed read.
 # The label is deliberately lexical: uncertain aliases never become authority.
-_PROJECT_LABEL = re.compile(r'\\bproject[ \\t]+([a-z][a-z0-9_-]{0,39})\\b', re.I)
+_PROJECT_LABEL = re.compile(r'\bproject[ \t]+([a-z][a-z0-9_-]{0,39})\b', re.I)
 
 
 def project_labels(text):
