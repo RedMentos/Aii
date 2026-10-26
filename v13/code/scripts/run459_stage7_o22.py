@@ -85,6 +85,12 @@ def stage7(archive, expected_sha256, stage6_report, work, installed=None,
         report["rows_verified"] = 252
         report["remaining_arms"] = 3
         report["preflight"] = verify_previous(work)
+        require(report["preflight"].get("status") ==
+                "STAGE7_PREVIOUS_252_ROWS_VERIFIED" and
+                report["preflight"].get("rows_verified") == 252 and
+                report["preflight"].get("canonical_gate_pass") is False and
+                report["preflight"].get("step2_exit") == "UTILITY_FAIL",
+                "STAGE7_PREFLIGHT_NOT_VERIFIED")
         if not execute:
             report["status"] = "STAGE7_READY_NO_NATIVE"
         else:
