@@ -37,7 +37,7 @@ def make_archive(folder):
         shutil.copyfile(native / name, attempt / name)
     source_path = attempt / f"step2_{rid}.json"
     source = resume.audit.load(source_path)
-    source["installed_artifacts"]["runner_sha256"] = resume.catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+    source["installed_artifacts"]["runner_sha256"] = restore.RUN401_EXECUTABLE_SHA256
     write(source_path, source)
     prereg_path = attempt / f"tool_{rid}.preregistration.json"
     prereg = resume.audit.load(prereg_path)
@@ -72,6 +72,9 @@ def make_archive(folder):
                                             "step2_exit": "UTILITY_FAIL",
                                             "redmi_measured": False})
     (root / "RUN401_HEAD.txt").write_text(restore.SOURCE_HEAD + "\n")
+    (root / "RUN401_INSTALLED_RAW.log").write_text(
+        "MODEL_VERIFIED body synthetic\nRUNNER_VERIFIED " +
+        restore.RUN401_EXECUTABLE_SHA256 + "\n")
     for name in restore.RAW_EXITS:
         (root / name).write_text("0\n")
     (root / "RUN401_TESTS_RAW.log").write_text("SYNTHETIC TEST ONLY\n")
@@ -125,6 +128,20 @@ class Run402StageRestoreTests(unittest.TestCase):
             if p.is_file():
                 self.assertEqual(p.read_bytes(), (dest / p.relative_to(self.root / "run401-full")).read_bytes())
 
+    def test_streamed_bytearray_native_runner_log_is_accepted(self):
+        files = {p.name: bytearray(p.read_bytes())
+                 for p in self.root.glob("RUN401_*") if p.is_file()}
+        native = restore._validate_native_tree(self.root / "run401-full", files)
+        self.assertEqual(native["rows_verified"], 42)
+
+    def test_streamed_bytearray_forged_runner_log_is_rejected(self):
+        files = {p.name: bytearray(p.read_bytes())
+                 for p in self.root.glob("RUN401_*") if p.is_file()}
+        files["RUN401_INSTALLED_RAW.log"] = bytearray(
+            b"RUNNER_VERIFIED " + b"0" * 64 + b"\n")
+        with self.assertRaisesRegex(ValueError, "STAGE1_RUNNER_LOG_IDENTITY_MISMATCH"):
+            restore._validate_native_tree(self.root / "run401-full", files)
+
     def test_wrong_expected_sha_rejected(self):
         self.assertEqual(restore.inspect_archive(self.archive, "0" * 64)[0]["status"],
                          "STAGE1_RED_PRESERVED")
@@ -138,6 +155,19 @@ class Run402StageRestoreTests(unittest.TestCase):
         (self.root / "RUN401_HEAD.txt").write_text("0" * 40 + "\n")
         self.expected = close_archive(self.root, self.archive)
         self.assertIn("HEAD_MISMATCH", " ".join(self.inspect()["errors"]))
+
+    def test_runner_release_tarball_sha_is_not_executable_identity(self):
+        wrong = resume.catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+        self.assertNotEqual(wrong, restore.RUN401_EXECUTABLE_SHA256)
+        (self.root / "RUN401_INSTALLED_RAW.log").write_text("RUNNER_VERIFIED " + wrong + "\n")
+        self.expected = close_archive(self.root, self.archive)
+        self.assertIn("STAGE1_RUNNER_LOG_IDENTITY_MISMATCH",
+                      " ".join(self.inspect()["errors"]))
+
+    def test_missing_installed_runner_log_rejected(self):
+        self.expected = close_archive(self.root, self.archive,
+                                      omit="RUN401_INSTALLED_RAW.log")
+        self.assertIn("STAGE1_RUNNER_LOG", " ".join(self.inspect()["errors"]))
 
     def test_nonzero_native_exit_rejected(self):
         (self.root / "RUN401_NATIVE_EXIT.txt").write_text("2\n")

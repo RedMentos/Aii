@@ -1,0 +1,169 @@
+name: V13 Run410 exact observed Run401 native stage1 filtered postflight
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run410-actual-filtered-stage1.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run410-actual-filtered-stage1/**'
+      - 'v13/code/scripts/run402_stage_restore.py'
+      - 'v13/code/scripts/run407_stream_stage1.py'
+      - 'v13/code/scripts/run408_filtered_stage1.py'
+      - 'v13/code/tests/test_run402_stage_restore.py'
+      - 'v13/code/tests/test_run407_stream_stage1.py'
+      - 'v13/code/tests/test_run408_filtered_stage1.py'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-run401-readonly-artifact-audit
+  cancel-in-progress: true
+jobs:
+  exact-actual-native-stage1-readonly:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      ARTIFACT_ID: '12620379581'
+      EXPECTED_SHA256: '65ac00a8cd2013ebab76828ed3bc25dee5433d1d55a995573387f19de29b530a'
+      EXPECTED_SOURCE_HEAD: 'c0facf60c3286064e15bc06de104c85d9344382a'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact head, frozen cohort source and original artifact identity
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN410_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          sha256sum v13/code/scripts/run408_filtered_stage1.py v13/code/scripts/run407_stream_stage1.py \
+            v13/code/scripts/run402_stage_restore.py | tee "$RUNNER_TEMP/RUN410_SOURCE_SHA256.txt"
+          gh api "repos/RedMentos/Aii/actions/artifacts/$ARTIFACT_ID" \
+            --jq '{id,name,size_in_bytes,expired,digest,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha}}' \
+            | tee "$RUNNER_TEMP/RUN410_ORIGINAL_METADATA.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          d=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"RUN410_ORIGINAL_METADATA.json").read_text())
+          assert d["id"]==int(os.environ["ARTIFACT_ID"]) and not d["expired"]
+          assert d["digest"]=="sha256:"+os.environ["EXPECTED_SHA256"]
+          assert d["workflow_run"]["id"]==40250662450
+          assert d["workflow_run"]["head_sha"]==os.environ["EXPECTED_SOURCE_HEAD"]
+          assert d["size_in_bytes"]==1461613972
+          PY
+      - name: Source-only inherited adversarial controls, never native proof
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_run394_step2_fresh tests.test_run396_step2_pilot_audit \
+            tests.test_run397_step2_resume tests.test_run398_native_artifact_audit \
+            tests.test_run400_quote_substrings tests.test_run402_stage_restore \
+            tests.test_run407_stream_stage1 tests.test_run408_filtered_stage1 \
+            2>&1 | tee "$RUNNER_TEMP/RUN410_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN410_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download original 1.46GB ZIP read-only; never re-upload model bytes
+        id: download
+        if: steps.tests.outputs.rc == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          set +e
+          timeout 1400s gh api "repos/RedMentos/Aii/actions/artifacts/$ARTIFACT_ID/zip" \
+            > "$RUNNER_TEMP/RUN401_ORIGINAL.zip" 2> "$RUNNER_TEMP/RUN410_DOWNLOAD_STDERR.log"
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN410_DOWNLOAD_EXIT.txt"
+          if [ "$rc" -eq 0 ]; then
+            sha256sum "$RUNNER_TEMP/RUN401_ORIGINAL.zip" | tee "$RUNNER_TEMP/RUN410_DOWNLOADED_SHA256.txt"
+            echo "$EXPECTED_SHA256  $RUNNER_TEMP/RUN401_ORIGINAL.zip" | sha256sum -c - \
+              > "$RUNNER_TEMP/RUN410_HASH_CHECK.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN410_HASH_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Stream every original member SHA and CRC, verify 42 native rows without inference
+        id: actual
+        if: steps.download.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          timeout 1200s env PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/run408_filtered_stage1.py \
+            --archive "$RUNNER_TEMP/RUN401_ORIGINAL.zip" \
+            --expected-sha256 "$EXPECTED_SHA256" \
+            --output "$RUNNER_TEMP/RUN410_ACTUAL_REPORT.json" \
+            2>&1 | tee "$RUNNER_TEMP/RUN410_ACTUAL_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN410_INDEPENDENT_ASSERTIONS.log"
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"RUN410_ACTUAL_REPORT.json"
+          d=json.loads(p.read_text())
+          assert d["status"]=="FILTERED_STAGE1_VERIFIED_NO_PROMOTION",d.get("errors")
+          assert d["members_verified"]==107 and d["rows_verified"]==42
+          assert d["remaining_arms"]==8
+          assert len(d["omitted_registered_models"])==7
+          assert len(d["omitted_unlisted_in_manifest"])==7
+          assert len(d["unlisted_binary_members"])==64
+          assert d["all_member_sha_checked"] is True and d["zip_crc_checked"] is True
+          assert d["original_zip_sha256"]==os.environ["EXPECTED_SHA256"]
+          assert d["original_raw_retained_external"] is True
+          assert d["canonical_gate_pass"] is False and d["step2_exit"]=="UTILITY_FAIL"
+          assert d["redmi_measured"] is False and d["jepa_weight"]==0
+          assert d["native_inference_started"] is False
+          print(json.dumps({"status":d["status"],"members":107,"models_omitted":7,
+                            "binary_members_preserved":64,"rows":42,"remaining_arms":8,
+                            "canonical_gate_pass":False,"step2_exit":"UTILITY_FAIL"}))
+          PY
+            rc=${PIPESTATUS[0]}
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN410_ACTUAL_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN410_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN410_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close all small raw evidence, not original model-bearing ZIP
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN410_*' ! -name RUN410_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN410_SHA256SUMS.txt
+      - name: Upload audit-only raw; original ZIP remains at Run401
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run410-ActualFilteredStage1-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN410_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce exact source, original ZIP, 42-row audit and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.download.outputs.rc }}" = "0"
+          test "${{ steps.actual.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

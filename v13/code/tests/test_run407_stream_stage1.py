@@ -25,6 +25,7 @@ class Run407StreamTests(unittest.TestCase):
             "RUN401_NATIVE_EXIT.txt": b"0\n",
             "RUN401_AUDIT_EXIT.txt": b"0\n",
             "RUN401_PRIVACY_EXIT.txt": b"0\n",
+            "RUN401_INSTALLED_RAW.log": b"RUNNER_VERIFIED " + m.stage.RUN401_EXECUTABLE_SHA256.encode() + b"\n",
             "RUN401_NATIVE_RAW.log": b"native raw stays in ZIP only",
             "run401-full/RUN397_PROGRESS.json": b'{"status":"INCOMPLETE"}',
             "run401-full/attempts/O_s20/attempt-0001/step2_O_s20.json": b'{"fixture":"synthetic"}',
