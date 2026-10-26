@@ -510,6 +510,8 @@ class Runtime:
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
                 if exact_count:
                     try:
+                        ctxfit.require_native_count_compatible(
+                            runner.role,self.cfg.get('c3_decode_mode','server'))
                         final_tokens=ctxfit.require_final_exact(
                             messages,count,ctxfit.budget(self.cfg))
                         meta['context_fit_final']={'tokens':final_tokens,
