@@ -61,7 +61,7 @@ class Run465EightReceiptAdversarial(unittest.TestCase):
         self.assertEqual(result["step2_exit"], "UTILITY_FAIL")
         self.assertFalse(result["redmi_measured"])
 
-    def test_old_six_receipt_report_and_wrong_remaining_count_refused(self):
+    def test_old_partial_receipt_report_and_wrong_remaining_count_refused(self):
         self.report["rows_verified"] = 252
         with self.assertRaisesRegex(ValueError, "RUN465_NATIVE_336_NOT_GREEN"):
             A.verify(self.source, self.report)
@@ -70,7 +70,7 @@ class Run465EightReceiptAdversarial(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "RUN465_NATIVE_336_NOT_GREEN"):
             A.verify(self.source, self.report)
 
-    def test_eightth_receipt_source_identity_mismatch_refused(self):
+    def test_eighth_receipt_source_identity_mismatch_refused(self):
         def invalid(directory, arm, seed, *args, **kwargs):
             if (arm, seed) == ("P", 22):
                 return dict(self.receipt, sha256={"native.json": "0" * 64})
@@ -80,7 +80,7 @@ class Run465EightReceiptAdversarial(unittest.TestCase):
                                         "STAGE8_NATIVE_RECEIPT_INVALID:P_s22"):
                 A.verify(self.source, self.report)
 
-    def test_eightth_receipt_wrong_rows_refused(self):
+    def test_eighth_receipt_wrong_rows_refused(self):
         def invalid(directory, arm, seed, *args, **kwargs):
             return {"rows": 41} if (arm, seed) == ("P", 22) else self.receipt
         with mock.patch.object(A.r397, "validate_completed", side_effect=invalid):
@@ -88,7 +88,7 @@ class Run465EightReceiptAdversarial(unittest.TestCase):
                                         "STAGE8_NATIVE_RECEIPT_INVALID:P_s22"):
                 A.verify(self.source, self.report)
 
-    def test_tampered_eightth_file_rejected_before_receipt(self):
+    def test_tampered_eighth_file_rejected_before_receipt(self):
         (self.source / "attempts/P_s22/attempt-0001/native.json").write_bytes(b"tampered")
         with mock.patch.object(A.r397, "validate_completed") as checked:
             with self.assertRaisesRegex(ValueError,
@@ -105,7 +105,7 @@ class Run465EightReceiptAdversarial(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "RUN465_NATIVE_336_NOT_GREEN"):
             A.verify(self.source, self.report)
 
-    def test_symlinked_eightth_file_rejected(self):
+    def test_symlinked_eighth_file_rejected(self):
         target = self.source / "attempts/P_s22/attempt-0001/native.json"
         target.unlink()
         target.symlink_to(self.source / "RUN397_PROGRESS.json")
