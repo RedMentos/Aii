@@ -1387,10 +1387,13 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 ### WP-Z10 MoE verdrahten + Pre-Router-Vergessen messen (Cloud, groß) — OFFEN
 - WP-N11 Teil 3: EuroMoE/SmallThinker als B1/B2, §24.19 (heute NOT_IMPLEMENTED), aktive Expert-Deltas mit eingefrorenem Router (STEP6C).
 
-### WP-Z11 Referenz-Lehrer für STEP4 (Cloud) — OFFEN
+### WP-Z11 Referenz-Lehrer für STEP4 (Cloud) — GEMESSEN: Z11 und Z11b `STEP4_EXIT_FAIL`, Z11c läuft (Thread „Offene Ziel-Pakete Z6 bis Z12“, PR #38)
+- Lehrer Qwen3-4B-Instruct-2507 Q4_K_M nur Cloud als TEACHER. Z11 (Befund `code/docs/proofs/continuation-20261022/z11-reference-teacher/BEFUND.md`): T2/T3/T5 FAIL; T5 war ein echter Fehler im STEP4-Fingerabdruck (Zeilen-/Zufalls-IDs, behoben in `v13/memory.py` mit Test), T3 vermischte menschliche Auswahl mit dem Lehrer-Arm.
+- Z11b (Auswahl erst nach allen Antworten): T1, T3 60/60, T4, T5 20/20, T6 PASS; nur T2 FAIL durch einen vom Lehrer zitierten Self-Satz (Prüfung gegen JSON-kodierte History). Z11c: Leck-Prüfung v2 auf Klartext, frischer Seed 29.
 - Stärkeres Modell nur in der Cloud als REFERENCE-Lane (nie Wahrheit), SELF zuerst; Teacher on/off und §24.28B messen.
 
-### WP-Z12 JEPA im Körper + echte Self/World-Fälle (Cloud, nach Z2) — OFFEN
+### WP-Z12 JEPA im Körper + echte Self/World-Fälle (Cloud, nach Z2) — TEIL Z12a PASS 2026-10-26, Körper-JEPA (Z12b) offen
+- **Z12a** (`code/scripts/z12a_self_world_real.py`, Befund `code/docs/proofs/continuation-20261026/z12a-self-world-real/BEFUND.md`): echte Datei-Aktionen über den WP-K-Werkzeugweg gegen einen unabhängigen Welt-Prozess, 510 Beobachtungen, 3 Seeds: 0 Verwechslungen in beide Richtungen, echte Fehlschläge → MIXED, Mehrdeutiges/Nebeneffekt → UNCLEAR; ohne Corollary alles Eigene „fremd“, nur nach Zeit jede fremde Überschreibung „eigen“ → `Z12A_SELF_WORLD_REAL_PASS`. Grenze: Vorhersage ist ein exakter Hash, kein gelernter Vorhersager.
 - Body-JEPA-Term und handlungsgeerdetes World-JEPA auf echten Handlungsfolgen (§29 Nr. 13, 16); G-SELF-WORLD-005 mit echten statt synthetischen Fällen.
 
 ### Nicht weiter ausbauen bis Z2–Z5 Ergebnisse haben

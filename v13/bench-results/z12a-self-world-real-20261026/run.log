@@ -1,0 +1,34 @@
+{
+ "verdict": "Z12A_SELF_WORLD_REAL_PASS",
+ "criteria": {
+  "K1_false_self_on_world_le_5pct": true,
+  "K2_false_external_on_own_le_5pct": true,
+  "K3_failed_own_action_mixed_ge_90pct": true,
+  "K4_ambiguous_unclear_ge_90pct": true,
+  "K5_side_effect_unclear_ge_90pct": true,
+  "K6_controls_worse": true
+ },
+ "metrics": {
+  "n_observations": 510,
+  "n_world_file": 93,
+  "n_own_file": 117,
+  "n_interference_world": 29,
+  "n_ambiguous": 30,
+  "n_side_effect": 30,
+  "n_delayed": 30,
+  "n_fail_actions": 30,
+  "false_self_on_world": 0.0,
+  "false_external_on_own": 0.0,
+  "ambiguous_unclear": 1.0,
+  "side_effect_unclear": 1.0,
+  "delayed_self": 1.0,
+  "no_corollary_false_external_on_own": 1.0,
+  "timing_only_false_self_on_interference": 1.0,
+  "corollary_false_self_on_interference": 0.0,
+  "fail_actions_failed": 1.0,
+  "unknown_truth": 0,
+  "failed_status_mixed": 1.0,
+  "n_failed_status": 30,
+  "modulator_packets": 296
+ }
+}
