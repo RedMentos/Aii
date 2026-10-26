@@ -1,0 +1,85 @@
+name: V13 Run521 Age0d shadow requires persisted FINAL assistant output
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run521-age0d-committed-output.yml'
+      - 'v13/code/v13/selfmodel.py'
+      - 'v13/code/tests/test_run517_age0d_arithmetic_shadow.py'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run521-age0d-committed-output-binding-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact source pins and preserved design amendment
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run521-age0d-committed-output/PREREG.md)" = 'd9e8563cc0a2f7872fe499803d591dede71d9650'
+          test "$(git hash-object v13/code/v13/selfmodel.py)" = 'aab1d1905c98ce1d276e5136975a97f62e8e21dc'
+          test "$(git hash-object v13/code/tests/test_run517_age0d_arithmetic_shadow.py)" = '7cdd148360293c28788ac4d032695c99e440f53d'
+          test "$(git hash-object v13/code/v13/agi/answer_arithmetic_shadow.py)" = '3cec2c4b6883e3f02f449cc74cf44d5584a6affb'
+          test "$(git hash-object v13/code/tests/test_age0d_answer_arithmetic_run134.py)" = '7022699b8dc63622a910a7dd785cb2cf0188ac99'
+          test "$(git hash-object v13/code/tests/test_run184_age0d_strict_shadow.py)" = 'bfa82321da8b252f2eaa36c8fe251a2defb3ed50'
+          test ! -e v13/code/v13/answer_audit.py
+      - name: Isolated source-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Run134/150/184/Age0a and FINAL committed output shadow regressions
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m py_compile v13/selfmodel.py tests/test_run517_age0d_arithmetic_shadow.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python -m unittest -v tests.test_run517_age0d_arithmetic_shadow tests.test_age0d_answer_arithmetic_run134 tests.test_age0d_history_shadow_audit_run150 tests.test_run184_age0d_strict_shadow tests.test_late_correction tests.test_selfmodel > "$RUNNER_TEMP/RUN521_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN521_TEST_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN521_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN521_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN521_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close raw source-only evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN521_*' ! -name RUN521_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN521_SHA256SUMS.txt
+      - name: Preserve raw source-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run521-age0d-final-output-bound-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN521_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN521_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN521_PRIVACY_EXIT.txt")" = 0
