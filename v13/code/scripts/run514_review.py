@@ -3,12 +3,17 @@
 
 Reads only public synthetic benchmark artifacts. Does not execute models.
 """
-import hashlib,json,math,zipfile,collections
+import argparse,hashlib,json,math,zipfile,collections
 from pathlib import Path
 
-RAW=Path('/mnt/data/run507-native-raw.zip')
-SAFE=Path('/mnt/data/run507-native-safe.zip')
-OUT=Path('/mnt/data/run514_review.json')
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--raw',type=Path,default=Path('run507-native-raw.zip'))
+parser.add_argument('--safe',type=Path,default=Path('run507-native-safe.zip'))
+parser.add_argument('--output',type=Path,default=Path('run514_review.json'))
+args=parser.parse_args()
+RAW=args.raw
+SAFE=args.safe
+OUT=args.output
 EXPECTED_RAW='bae7d108bf211eb25b99694e4746f93ed0b240aeaacda3d289b1e1c051dc4227'
 EXPECTED_SAFE='406c5e6467c8666e257be73842c3bbf0b5ab53c73d7b46fb7e7cc155beb6677b'
 STAGES=('A_s31_p00','A_s31_p01','A_s31_p02')
