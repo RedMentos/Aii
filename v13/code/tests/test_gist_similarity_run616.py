@@ -85,6 +85,20 @@ class SimilarityTests(unittest.TestCase):
         self.assertEqual(out['excluded'], 1)
         self.assertNotIn('OTHER SESSION PRIVATE', json.dumps(out))
 
+    def test_exact_subspan_taps_remain_supported(self):
+        e = self.r.store.event(self.r.session, 'prefix exact source suffix')
+        ref = dict(e['source_ref'], char_start=7, char_end=19)
+        runner = MagicMock()
+        runner.tap.return_value = {'token_ids': [42], 'vectors': [[1., 0.]], 'metrics': {}}
+        runner.tap_id = 'qwen35.result_norm.final.v1'
+        with patch.object(self.r.pool, 'get_tap', return_value=runner), \
+             patch.object(self.r.learner, 'predict_states', return_value=None):
+            sub = self.r.cognition.tap('B2_GIST', e, ref, time.monotonic()+30)
+        self.tap('query', [1., 0.])
+        out = json.loads(Operator(self.r).run(':gist similar'))
+        self.assertEqual(out['matches'][0]['packet_id'], sub['packet_id'])
+        self.assertEqual(out['matches'][0]['excerpt'], 'exact source')
+
     def test_stale_query_model_revision_fails_closed(self):
         self.tap('query', [1., 0.])
         with patch.object(self.r.models, 'revision', return_value='wrong-revision'):
