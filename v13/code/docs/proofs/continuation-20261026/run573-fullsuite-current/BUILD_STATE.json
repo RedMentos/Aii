@@ -1,0 +1,43 @@
+{
+  "schema": "V13_RUN573_FULLSUITE_CURRENT_DORMANT_PRELAUNCH_V1",
+  "date_utc": "2026-10-26",
+  "owner": "assistant Run573 complete source-wide V13 unfiltered suite",
+  "branch": "assistant/v13-run573-fullsuite-current-20261026",
+  "base_head": "fa08a0a8aebf1983bc6428d139bbf0b76208ed2a",
+  "prereg": {
+    "commit": "f40ef1edee913dd22e74cc1b6666fc96f42a7f97",
+    "blob": "25279925839192943e4a252fa94700f99dc09937"
+  },
+  "workflow": {
+    "commit": "13b1c08c30bde84c3f5284c5bc6056fc359cd02d",
+    "blob": "55a45c43938d1243b0f5fe9d25a260acdc2778ee",
+    "path": ".github/workflows/run573-fullsuite-current.yml",
+    "concurrency": "v13-native-c3-run131-serialized",
+    "trigger": "pull_request opened/synchronize exact branch"
+  },
+  "source_only": true,
+  "fullsuite_not_run": true,
+  "run572_dormant_source_review": {
+    "run": 40369749030,
+    "conclusion": "SUCCESS"
+  },
+  "run568_native_owner": {
+    "run": 40367841707,
+    "status": "IN_PROGRESS_LAST_OBSERVED"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Full source suite not executed on this head",
+    "Original Run568 native still in progress; Run569 independent audit pending",
+    "Run572 new 84-row native not activated",
+    "Full V13 blueprint incomplete"
+  ],
+  "next_exact_command": "After original Run568 native owner clears and Run569 original evidence audit is secured, open draft PR head assistant/v13-run573-fullsuite-current-20261026 base assistant/v13-run572-current-legacy-native-20261026; allow serialized full unfiltered source suite, inspect all raw including RED, preserve SHA evidence and do not promote gates. No main merge."
+}
