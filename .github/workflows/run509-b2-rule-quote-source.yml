@@ -1,0 +1,102 @@
+name: V13 Run509 fresh B2 quote-focus source-only registration
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run509-b2-rule-quote-source.yml'
+      - 'v13/code/scripts/run509_b2_rule_quote_prereg.py'
+      - 'v13/code/tests/test_run509_b2_rule_quote_prereg.py'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run509-b2-rule-quote-prereg-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact frozen original and Run509 source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run509-b2-rule-quote/PREREG.md)" = 'f9248285137ec0d2d0f3ae45673c7621668ccfbe'
+          test "$(git hash-object v13/code/scripts/run509_b2_rule_quote_prereg.py)" = 'ec8860d2333bd3c4a16caccb9537073a310f32da'
+          test "$(git hash-object v13/code/tests/test_run509_b2_rule_quote_prereg.py)" = '7bdb21fd462f82d031ee17d1ac02c14e611d965f'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+      - name: Isolated source-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source-only tests and new fixture oracle validation
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest -v tests.test_run509_b2_rule_quote_prereg tests.test_run491_step2_heldout10 > "$RUNNER_TEMP/RUN509_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN509_TEST_EXIT.txt"
+          exit 0
+      - name: Generate fresh registration with zero native observations
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python scripts/run509_b2_rule_quote_prereg.py --output "$RUNNER_TEMP/RUN509_REGISTRATION.json" > "$RUNNER_TEMP/RUN509_PLAN_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python - <<'PY' >> "$RUNNER_TEMP/RUN509_PLAN_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          p=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN509_REGISTRATION.json').read_text())
+          assert len(p['fixtures'])==10
+          assert p['arms']==['BASE','RULE_FOCUS'] and p['seeds']==[41,42,43]
+          assert p['planned_b2_offer_observations']==60
+          assert p['fixture_hash_frozen'] is True
+          assert p['fixture_sha256']=='ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726'
+          assert p['native_executed'] is False and p['canonical_gate_pass'] is False
+          assert p['step2_exit']=='UTILITY_FAIL' and p['jepa_weight']==0
+          print('RUN509_SOURCE_ONLY_FRESH_FIXTURE_SHA256',p['fixture_sha256'])
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN509_PLAN_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN509_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN509_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN509_*' ! -name RUN509_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN509_SHA256SUMS.txt
+      - name: Preserve source-only proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run509-b2-quote-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN509_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests plan privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN509_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN509_PLAN_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN509_PRIVACY_EXIT.txt")" = 0
