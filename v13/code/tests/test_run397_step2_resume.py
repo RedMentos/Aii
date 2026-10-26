@@ -212,6 +212,23 @@ class Run397ResumeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "FROZEN_MANIFEST_MISMATCH"):
             resume.run(self.work, None, pilot=True, execute=False)
 
+    def test_reject_attempt_root_symlink_before_any_native_work(self):
+        self.work.mkdir()
+        outside = self.root / "outside-attempts"
+        outside.mkdir()
+        (self.work / "attempts").symlink_to(outside, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "UNSAFE_ATTEMPT_SYMLINK"):
+            resume.run(self.work, None, pilot=True, execute=False)
+
+    def test_reject_owner_lock_symlink_before_open(self):
+        self.work.mkdir()
+        outside = self.root / "outside-owner"
+        outside.write_text("do-not-touch")
+        (self.work / "RUN397_OWNER.lock").symlink_to(outside)
+        with self.assertRaisesRegex(ValueError, "UNSAFE_WORK_OWNER_LOCK"):
+            resume.run(self.work, None, pilot=True, execute=False)
+        self.assertEqual(outside.read_text(), "do-not-touch")
+
     def test_second_owner_cannot_take_same_work(self):
         self.work.mkdir()
         with (self.work / "RUN397_OWNER.lock").open("a+") as lock:
