@@ -1,0 +1,112 @@
+name: V13 Run510 strict B2 quote metric source-only proof
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run510-b2-quote-metric-source.yml'
+      - 'v13/code/scripts/run510_b2_quote_metric.py'
+      - 'v13/code/tests/test_run510_b2_quote_metric.py'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run510-b2-quote-metric-source-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact frozen Run509 and Run510 source hashes
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run510-b2-quote-metric/PREREG.md)" = '723238b5bc72996a261649419423c05dec91958e'
+          test "$(git hash-object v13/code/scripts/run510_b2_quote_metric.py)" = 'd2c35f430f9dc0f39c390043197787ea1f6e0cc6'
+          test "$(git hash-object v13/code/tests/test_run510_b2_quote_metric.py)" = 'a57a8da6121a2620c62d2866da16a766eae3a7c6'
+          test "$(git hash-object v13/code/scripts/run509_b2_rule_quote_prereg.py)" = 'ec8860d2333bd3c4a16caccb9537073a310f32da'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+      - name: Isolated source-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source-only quote-metric adversarial tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest -v tests.test_run510_b2_quote_metric tests.test_run509_b2_rule_quote_prereg > "$RUNNER_TEMP/RUN510_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN510_TEST_EXIT.txt"
+          exit 0
+      - name: Generate explicitly synthetic paired matrix and non-promoting diagnostic
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          ../../.venv/bin/python - <<'PY' > "$RUNNER_TEMP/RUN510_SYNTHETIC_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          from run509_b2_rule_quote_prereg import registration
+          from tests.test_run510_b2_quote_metric import synthetic_observations
+          root=Path(os.environ['RUNNER_TEMP'])
+          (root/'RUN510_REGISTRATION.json').write_text(json.dumps(registration(),sort_keys=True,indent=2)+'\n')
+          (root/'RUN510_OBSERVATIONS_SYNTHETIC.json').write_text(json.dumps(synthetic_observations(),sort_keys=True,indent=2)+'\n')
+          print('SYNTHETIC_NO_NATIVE_MATRIX_ONLY')
+          PY
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python scripts/run510_b2_quote_metric.py --registration "$RUNNER_TEMP/RUN510_REGISTRATION.json" --observations "$RUNNER_TEMP/RUN510_OBSERVATIONS_SYNTHETIC.json" --output "$RUNNER_TEMP/RUN510_METRIC_SYNTHETIC.json" >> "$RUNNER_TEMP/RUN510_SYNTHETIC_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python - <<'PY' >> "$RUNNER_TEMP/RUN510_SYNTHETIC_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          p=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN510_METRIC_SYNTHETIC.json').read_text())
+          assert p['observations']==60 and p['primary_paired_observations']==24
+          assert p['native_evidence_verified'] is False and p['canonical_gate_pass'] is False
+          assert p['step2_exit']=='UTILITY_FAIL' and p['jepa_weight']==0
+          print('RUN510_SYNTHETIC_60_SOURCE_ONLY_NOT_NATIVE')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN510_SYNTHETIC_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN510_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN510_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN510_*' ! -name RUN510_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN510_SHA256SUMS.txt
+      - name: Preserve source-only proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run510-b2-quote-metric-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN510_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests synthetic matrix privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN510_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN510_SYNTHETIC_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN510_PRIVACY_EXIT.txt")" = 0
