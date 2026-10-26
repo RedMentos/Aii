@@ -9,3 +9,9 @@ Run396 is an **independent read-only postflight auditor** of the already preregi
 **Pending:** Run395 native pilot on PR390 is running separately; do not claim 42 real rows until its exact-head artifact is complete, SHA-verified and independently audited. Native output can be structurally RED without invalidating the source-only auditor. Run389 full-suite RED and STEP2 UTILITY_FAIL remain.
 
 **Next command:** `PYTHONPATH=v13/code python3 v13/code/scripts/run396_step2_pilot_audit.py --input-dir <extracted Run395 run395-pilot> --output <private RUN396_NATIVE_POSTFLIGHT.json>`. Verify Run395 artifact ZIP CRC and all SHA before running. Preserve original failed attempts and original gates.
+
+## Independent adversarial review / exact-source quote guard
+
+Review after first GREEN found a gap: the auditor counted an old rule contained in an otherwise **forged B2 quote** as historically sourced. Narrow source-only fix `34b5a0e` now requires every B2 verified quote to equal one of the exact frozen history/current sources. New negative test `eb798a5` rejects an invented suffix even when the correct old rule text is present; synthetic valid fixtures now quote full historical notes. No frozen native source or preregistered Run394 fixture changed.
+
+Second exact-head Actions run `40248392453`, job `121334754731`, source `eb798a5140f2a654150b7eda43a9416811471356`: **17/17 PASS**, compileall PASS, privacy CLEAN. Raw artifact `12619711840` ZIP SHA256 `ae82eb04d093bdb3edcbc536100125b4292f6aa8718e2f429334d14a0398be63`; ZIP CRC PASS, 4/4 internal SHA256 PASS; private Library `SOURCE_RAW_REVIEW2.zip` materialized byte-identical. First GREEN artifact remains preserved. Native pilot still independently running at this checkpoint; no native utility or STEP2 promotion.
