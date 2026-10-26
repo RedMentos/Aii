@@ -1,0 +1,48 @@
+{
+  "schema": "V13_RUN620_BRANCH_SCOPED_BUILD_STATE_V1",
+  "utc_date": "2026-10-26",
+  "branch": "codex/automation11-run620-language-operator-20261026",
+  "base_pr": 614,
+  "base_head": "18a749dc6ad210ca39ef2a56eb4c618354dbb1bd",
+  "owner": "GPT automation11; operator.py, new test, BEFEHLE, new workflow/proof only",
+  "source_blob": "7ba517f8f9853983ac2b61bb8dfb1dfa9587c38b",
+  "test_blob": "8e5a187a82db318997ff4619ac7665453375b91c",
+  "prompt_blob": "a74d7517a7ab70e801e177b58da057e57fd3460c",
+  "config_blob": "9bbc5b6e1bc35b7d0b9be4fb925100bce97fd0cd",
+  "local_tests": {
+    "base": "Run601 phone source ZIP + source-identical Run620 operator patch/test",
+    "sqlite": 5,
+    "prompts": 5,
+    "combined": 10,
+    "exit": 0,
+    "log_sha256": "581c98f44ce119c8db07bc103683d308d8059c49a3a9f39a6b3bd7940cb6116a"
+  },
+  "ci_status": "GITHUB_PUSH_WORKFLOW_UNVERIFIED",
+  "native_inference_new": false,
+  "language_learning_new": false,
+  "redmi_measured": false,
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "main_integrated": false,
+  "next_command": "Verify Run620 GitHub Actions exact branch HEAD test/privacy exits and artifact; then independent current-runtime review and next Canon package",
+  "open_questions": [
+    "Full exact-current-head Actions CI not yet verified",
+    "Native Redmi language-switch latency/answer transfer unmeasured",
+    "No German learning from EN baseline claimed"
+  ],
+  "private_backup": {
+    "library_path": "/V13-Checkpoints/2026-10-26/Run620/run620-local-closed.zip",
+    "sha256": "24314b50b02881cc58d3e691984e082b449438002d27167582cd88737d9e35c9",
+    "readback_verified": true
+  },
+  "docs_blob": "47685daa49516bba9111d8a1e098e4c818d0f7b0",
+  "workflow_blob": "6502d2db1b8b27fa7abb487949f2444b308e5612"
+}

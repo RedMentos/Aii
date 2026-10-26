@@ -223,6 +223,7 @@ Tasten im Vollbild-Chat: Strg+C bricht ab, Strg+D beendet, Tab springt zwischen 
 
 ## 9 Einstellungen
 
+:language [status|en|de]                Sprache neuer Modellantworten: Englisch (Standard) oder Deutsch; dauerhaft, Wechsel nur wenn V13 frei ist. Das ist kein gelerntes Deutsch.
 :route auto|simple|detail|gist|both   Wer antwortet: automatisch, nur Sprache, oder mit Denk-Körpern.
 :observers <Art>                        Wie die Beobachter mitlaufen (off, background, nacheinander, …).
 :effort [disabled|low|adaptive|high|max] Wie gründlich V13 nachdenkt.
