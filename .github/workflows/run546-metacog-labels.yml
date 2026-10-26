@@ -1,0 +1,103 @@
+name: V13 Run546 JEF metacognition strict evidence-label regression
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run546-metacog-labels.yml'
+      - 'v13/code/v13/agi/metacog.py'
+      - 'v13/code/tests/test_run546_metacog_labels.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run546-metacog-labels/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run546-metacog-label-validation-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify prereg and exact source
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN546_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run546-metacog-labels/PREREG.md)" = '956c6fd2b343b863b90171bcffc8edb8b3c831a5'
+          test "$(git hash-object v13/code/v13/agi/metacog.py)" = 'd20542e2ecc7cfbdedbed629afc80fc8bab1f8f0'
+          test "$(git hash-object v13/code/tests/test_run546_metacog_labels.py)" = 'fb9948f137ebf1018b12d8ef01dd94f2b0e4e234'
+          test "$(git hash-object v13/code/scripts/integrated_candidates.py)" = '9ba7ea2eca522304b05a347ac749f0dff95c5236'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN546_HOST.txt"
+      - name: Isolated source-only dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run546venv"
+          timeout 240s "$RUNNER_TEMP/run546venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN546_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN546_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Current JEF source-only tests
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD"
+          "$RUNNER_TEMP/run546venv/bin/python" -m compileall -q v13/agi/metacog.py tests/test_run546_metacog_labels.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 240s "$RUNNER_TEMP/run546venv/bin/python" -m unittest -v tests.test_run546_metacog_labels tests.test_agi_live tests.test_ablation_homeo_meta > "$RUNNER_TEMP/RUN546_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN546_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN546_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN546_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN546_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw evidence SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN546_*' ! -name RUN546_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN546_SHA256SUMS.txt
+      - name: Preserve raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run546-metacog-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN546_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN546_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN546_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN546_PRIVACY_EXIT.txt")" = 0
