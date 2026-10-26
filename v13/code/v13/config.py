@@ -72,8 +72,9 @@ KNOBS['native_cache_ram_mb']=(128,"BYTES_MB",0,8192,"G6B BOOT llama-server --cac
 KNOBS['native_ctx_checkpoints']=(6,"COUNT",0,32,"G6B BOOT llama-server --ctx-checkpoints per slot (b10964 default 32; Qwen3.5 B2 ~19 MiB each, LFM2.5 <0.2 MiB)")
 KNOBS['observer_sample_rate']=(.5,"BUDGET_FRACTION",0.,1.,"§22.2.4 BOOT share of events that get pre-answer observer passes under observer_schedule SAMPLED_OBSERVER (deterministic per event)")
 KNOBS['control_budget_params_mb']=(0.,"THRESHOLD",0.,4096.,"WP-T14 §22.2.3 cap on approved learned control checkpoints in MB; 0 = unset")
+KNOBS["context_fit_exact_count"]=(0,"COUNT",0,1,"Run414 opt-in: 1 requires actual native tokenizer count before context-fit acceptance, no estimated fallback; 0 preserves Claude WP-Z5d measured default")
 DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"learning_mode":"RECORD_ONLY","system_stage":0,"user_stage_cap":0,
- "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","observer_schedule":"A_THEN_B_SEQUENTIAL","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"boot","segment_mode":"percept","tool_conflict_policy":"correct","context_fit":"active","context_fit_count_mode":"legacy_quick"}
+ "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","observer_schedule":"A_THEN_B_SEQUENTIAL","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"boot","segment_mode":"percept","tool_conflict_policy":"correct","context_fit":"active"}
 # IH-H5 KnobSpec: every knob has a declared kind, so 0..1 is never silently read as a probability.
 KNOB_KINDS={'AUTHORITY','MIX_WEIGHT','PRIOR','PROBABILITY','THRESHOLD','BUDGET_FRACTION','BOOLEAN','COUNT','BYTES','BYTES_MB',
             'DURATION_MS','DURATION_S','DURATION_DAYS','RATE_HZ','LEARNING_RATE','DECAY','TEMPERATURE'}
@@ -105,7 +106,6 @@ def validate(cfg):
     if not 0<=cfg["user_stage_cap"]<=5:raise ValueError("stage cap")
     if cfg.get("tool_conflict_policy","correct") not in {"log","correct"}:raise ValueError("tool_conflict_policy log|correct")
     if cfg.get("context_fit","active") not in {"off","shadow","active"}:raise ValueError("context_fit off|shadow|active")
-    if cfg.get("context_fit_count_mode","legacy_quick") not in {"legacy_quick","exact"}:raise ValueError("context_fit_count_mode legacy_quick|exact")
     if cfg.get("segment_mode","percept") not in {"fixed","percept","all"}:raise ValueError("segment_mode fixed|percept|all")
     if not isinstance(cfg.get("b2_offer_body_state",True),bool):raise ValueError("b2_offer_body_state true|false")
     if not (isinstance(cfg.get("offer_quote_min_chars",0),int) and 0<=cfg.get("offer_quote_min_chars",0)<=400):raise ValueError("offer_quote_min_chars 0..400")
