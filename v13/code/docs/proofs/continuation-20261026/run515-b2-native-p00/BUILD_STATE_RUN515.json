@@ -1,0 +1,68 @@
+{
+  "schema": "V13_RUN515_NATIVE_B2_P00_ONE_SHOT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run515-b2-native-p00-20261026",
+  "base_branch": "codex/run514-run507-native42-crossreview-20261026",
+  "base_sha": "73868bd9482b1e5ef311b6f196e31e8adb74b90f",
+  "source": {
+    "prereg_blob": "f83658975d570d914167ef9baa2eefdd759f67d5",
+    "workflow_blob": "a719dfca7edb7737615c217a13b518f4d44297e2",
+    "collector_blob": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
+    "postflight_blob": "d2a5f4708c1f77ec14496ddab60ce072592d3fda",
+    "frozen_run509_fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726"
+  },
+  "scope": {
+    "stage": "p00",
+    "fixtures": [
+      "Arbor",
+      "Bracken"
+    ],
+    "seeds": [
+      41,
+      42,
+      43
+    ],
+    "arms": [
+      "BASE",
+      "RULE_FOCUS"
+    ],
+    "planned_native_b2_observations": 12,
+    "expected_preparation_history_offers": 36,
+    "full_run509_matrix": 60
+  },
+  "owner": {
+    "run507_actions": 40309409260,
+    "status": "COMPLETED_SUCCESS",
+    "run514_independent_review_pr": 512,
+    "github_actions_in_progress_at_prereg": 0,
+    "concurrency_group": "v13-native-c3-run131-serialized"
+  },
+  "status": "PREREG_AND_WORKFLOW_PERSISTED_NATIVE_NOT_YET_TRIGGERED",
+  "safety": {
+    "age": "Age0",
+    "learning": "RECORD_ONLY",
+    "no_c3_consumer": true,
+    "no_oracle_to_native": true,
+    "no_tools": true,
+    "no_paid_provisioning": true,
+    "one_shot_only": true,
+    "fail_stop": true,
+    "no_overwrite": true,
+    "raw_and_safe_artifacts_even_on_red": true
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "blockers": [
+    "Native stage not yet run or verified",
+    "Remaining Run509 48 B2 observations unmeasured",
+    "Redmi unavailable"
+  ],
+  "next_command": "Open draft PR (one-shot opened trigger), monitor Actions native job without competing heavy owner; download and independently hash/inspect raw/safe ZIP even if RED; preserve failure and choose next independent package.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
