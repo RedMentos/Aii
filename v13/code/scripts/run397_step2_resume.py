@@ -154,7 +154,9 @@ def progress(work, manifest, completed, failures):
     return payload
 
 
-def run(work, installed, pilot=True, execute=False):
+def run(work, installed, pilot=True, execute=False, max_new_arms=None):
+    require(max_new_arms is None or
+            (type(max_new_arms) is int and max_new_arms > 0), "INVALID_MAX_NEW_ARMS")
     work = Path(work).expanduser().resolve()
     work.mkdir(parents=True, exist_ok=True)
     fixtures = [f for f in r394.FIXTURES if f["id"] in r394.PILOT_IDS] if pilot else r394.FIXTURES
@@ -170,6 +172,7 @@ def run(work, installed, pilot=True, execute=False):
         manifest = checked_manifest(work, fixtures, arms, seeds, pilot)
         completed = {}
         failures = {}
+        launched = 0
         current_runner_sha = None
         if execute:
             require(installed is not None, "INSTALLED_HOME_REQUIRED")
@@ -210,8 +213,9 @@ def run(work, installed, pilot=True, execute=False):
                     completed[rid] = existing
                     progress(work, manifest, completed, failures)
                     continue
-                if not execute:
+                if not execute or (max_new_arms is not None and launched >= max_new_arms):
                     continue
+                launched += 1
                 all_attempts = _attempts(work, rid)
                 number = 1 + max((int(p.name[8:]) for p in all_attempts), default=0)
                 attempt = work / "attempts" / rid / f"attempt-{number:04d}"
@@ -251,8 +255,10 @@ def main():
     p.add_argument("--installed-home", type=Path)
     p.add_argument("--full", action="store_true")
     p.add_argument("--execute", action="store_true", help="explicitly start actual pinned native inference")
+    p.add_argument("--max-new-arms", type=int, help="optional bounded attempt count for checkpointed staged execution")
     args = p.parse_args()
-    out = run(args.work, args.installed_home, pilot=not args.full, execute=args.execute)
+    out = run(args.work, args.installed_home, pilot=not args.full, execute=args.execute,
+              max_new_arms=args.max_new_arms)
     print(json.dumps({"status": out["status"], "completed": len(out["completed"]),
                       "failures_preserved": sum(map(len, out["failures_preserved"].values())),
                       "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL"}, sort_keys=True))
