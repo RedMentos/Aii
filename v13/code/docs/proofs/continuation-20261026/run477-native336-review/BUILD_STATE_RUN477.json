@@ -1,0 +1,100 @@
+{
+  "schema": "V13_RUN477_NATIVE336_INDEPENDENT_REVIEW_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run477-native336-independent-review-20261026",
+  "base_ref": "codex/run473-native-p22-20261026",
+  "base_sha": "5f147c81f1dfc3ffe7363d3c0067ce32599eecd2",
+  "owner": "Independent read-only native336 artifact reviewer; native Stage9 S_s22 separately owned by Run475",
+  "native_source": {
+    "run_id": 40277803560,
+    "job_id": 121424186885,
+    "head_sha": "8763ef9a8ab9e1a1e7da8463135e5b4983003145",
+    "workflow_conclusion": "success"
+  },
+  "raw_artifact": {
+    "id": 12631932326,
+    "sha256": "0f832b779d841a5c42255bb3c277cf2b3c1c845b9678f785922d8bb050d0d0d9",
+    "members": 33,
+    "sha256_entries_verified": 32
+  },
+  "safe_artifact": {
+    "id": 12632191220,
+    "sha256": "a928aaba590557a656d8ee3274262e144a890e675bba511338758b3a559d086f",
+    "manifest_sha256": "8ee3beaf7395b7dcb8cb6d7c0ebfa7e0c0cc1b30c7db004cd932f4b55b0c7d39",
+    "members": 196,
+    "manifest_files_sha256_verified": 195,
+    "uncompressed_copied_bytes": 100652709,
+    "models_exported": false
+  },
+  "verification": {
+    "method": "Independently downloaded original GitHub ZIPs, recomputed both outer SHA256, every raw SHA256SUMS entry, every manifest member byte length/hash, rejected duplicate/traversal/symlink entries, compared progress and Run465 receipt digests, preserved negative gates.",
+    "status": "INDEPENDENT_ARCHIVE_STRUCTURE_AND_HASHES_PASS",
+    "arms": [
+      "O_s20",
+      "P_s20",
+      "S_s20",
+      "O_s21",
+      "P_s21",
+      "S_s21",
+      "O_s22",
+      "P_s22"
+    ],
+    "rows": 336,
+    "remaining_arm": "S_s22"
+  },
+  "descriptive_native336": {
+    "scope": "8 arm-seed groups x 6 fixtures x 7 variants; not preregistered final acceptance",
+    "tool_utility_unweighted_arm_means": {
+      "b1_only": 0.661458,
+      "b2_only": 0.090278,
+      "both_exact": 0.515625,
+      "same_policy_dual": 0.680556,
+      "both_control": 0.293403,
+      "both_none": 0.298611,
+      "prompt_only_dual": 0.326389
+    },
+    "no_tool_utility_unweighted_arm_means": {
+      "b1_only": 0.572917,
+      "b2_only": 0.223958,
+      "both_exact": 0.494792,
+      "same_policy_dual": 0.581597
+    },
+    "field_overlap": {
+      "paired_fixture_groups": 48,
+      "paired_field_slots": 576,
+      "b2_correct_b1_wrong": 1,
+      "b1_correct_b2_wrong": 330,
+      "both_exact_correct_b1_wrong": 43,
+      "b1_correct_both_exact_wrong": 127,
+      "both_exact_fixture_wins": 11,
+      "both_exact_fixture_losses": 19,
+      "both_exact_fixture_ties": 18
+    },
+    "only_b2_unique_case": {
+      "arm": "P_s22",
+      "fixture": "Cypress",
+      "field": "B.days"
+    },
+    "limitations": "Correlated within-arm/fixture scores, six fused rows with no parsed field checks; no causal inference or final gate."
+  },
+  "negative_gates": {
+    "canonical_gate_pass": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "private_backup": {
+    "location": "User's private ChatGPT Library /V13/NativeEvidence/Run473",
+    "raw_library_file_id": "libfile_3278043fafd88191ba46750044d7e9ab",
+    "safe_library_file_id": "libfile_6640411af3e88191af911546e311b4b4",
+    "note": "Private backup, not public repository; original GitHub artifacts retained."
+  },
+  "open_questions": [
+    "Finish exact frozen S_s22 native Stage9 under separate serialized owner.",
+    "Run original full 378-row preregistered paired utility and within-arm complementarity analysis; do not promote STEP2 from partial descriptive data.",
+    "Investigate why B2 contributes only one unique correct field and why JEF fusion loses B1-correct fields using a NEW preregistered source-disjoint cohort, not retroactive tuning."
+  ],
+  "exact_next_command": "After Run475 native Stage9 owner releases and publishes verified 378 safe artifact, independently run Run468 structural verifier then Run469/470 paired utility; preserve failed attempts and all gates."
+}
