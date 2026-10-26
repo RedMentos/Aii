@@ -1,0 +1,61 @@
+name: V13 Run463 imported export-manifest lifecycle regression
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run463-manifest-lifecycle.yml'
+      - 'v13/code/scripts/run438_import_stage5_artifact.py'
+      - 'v13/code/scripts/run458_import_stage6_artifact.py'
+      - 'v13/code/scripts/run461_import_stage7_artifact.py'
+      - 'v13/code/tests/test_run438_import_stage5_artifact.py'
+      - 'v13/code/tests/test_run458_native252_atomic_import.py'
+      - 'v13/code/tests/test_run461_native294_atomic_import.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run463-manifest-lifecycle/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pin unchanged Run409 safe exporter and frozen receipts
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run409_safe_export.py)" = "864b227855e26f6990809234770529b3c5b227a4"
+          test "$(git hash-object v13/code/scripts/run453_verify_native252.py)" = "358f2803a9bcaf88aa011a177863b6ff77e65394"
+          test "$(git hash-object v13/code/scripts/run460_verify_native294.py)" = "2a61c2ae8600cede90900a323e22e1f5a723a3ea"
+          sha256sum v13/code/scripts/run438_import_stage5_artifact.py v13/code/scripts/run458_import_stage6_artifact.py v13/code/scripts/run461_import_stage7_artifact.py > "$RUNNER_TEMP/run463-source-sha256.txt"
+          python3 -m venv "$RUNNER_TEMP/run463"
+          "$RUNNER_TEMP/run463/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Re-export after verified ZIP import and inherited exact source controls
+        working-directory: v13/code
+        run: |
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run463/bin/python" -m unittest -v tests.test_run438_import_stage5_artifact tests.test_run452_stage6_s21 tests.test_run458_native252_atomic_import tests.test_run461_native294_atomic_import tests.test_run462_stage8_p22 tests.test_run460_verify_native294_adversarial tests.test_run459_stage7_o22 tests.test_run457_pinned_utility_reads tests.test_run456_native252_utility tests.test_run454_verify_native252_adversarial tests.test_run453_verify_native252 tests.test_run436_verify_native210 > "$RUNNER_TEMP/run463-tests.txt" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/run463-tests.txt"
+          echo "EXIT=$rc" > "$RUNNER_TEMP/run463-exit.txt"
+          exit "$rc"
+      - name: Official public repository privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Preserve raw tests and RED failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run463-manifest-lifecycle-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run463-source-sha256.txt
+            ${{ runner.temp }}/run463-tests.txt
+            ${{ runner.temp }}/run463-exit.txt
+          if-no-files-found: warn
+          retention-days: 30
