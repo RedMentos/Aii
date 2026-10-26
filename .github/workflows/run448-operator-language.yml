@@ -1,0 +1,57 @@
+name: V13 Run448 English-first operator language lifecycle
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run448-operator-language.yml'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_run448_operator_language.py'
+      - 'v13/code/docs/BEFEHLE.md'
+      - 'v13/code/docs/proofs/continuation-20261026/run448-operator-language/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Isolated model-free dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run448"
+          "$RUNNER_TEMP/run448/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real operator language/restart and inherited tests
+        run: |
+          set -euo pipefail
+          cd v13/code
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          sha256sum v13/operator.py docs/BEFEHLE.md tests/test_run448_operator_language.py | tee "$RUNNER_TEMP/run448-source-sha256.txt"
+          set +e
+          "$RUNNER_TEMP/run448/bin/python" -m unittest -v tests.test_run448_operator_language tests.test_prompts tests.test_phone_operator_journey_run86 tests.test_chat_operator_persistence_run214 > "$RUNNER_TEMP/run448-tests.txt" 2>&1
+          status=$?
+          set -e
+          cat "$RUNNER_TEMP/run448-tests.txt"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/run448-exit.txt"
+          exit "$status"
+      - name: Official public-repo privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Preserve raw source-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run448-language-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run448-source-sha256.txt
+            ${{ runner.temp }}/run448-tests.txt
+            ${{ runner.temp }}/run448-exit.txt
+          if-no-files-found: warn
+          retention-days: 30
