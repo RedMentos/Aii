@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN472_NATIVE_O22_PREEXEC_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run472 exclusive native O_s22; GitHub Actions concurrency v13-native-c3-run131-serialized",
+  "branch": "codex/run472-native-o22-20261026",
+  "base_sha": "f93efd4764ca5813b68082ee092dcb1dadcf6f05",
+  "source_workflow_git_blob": "af275159da902060a70fac142b3157629801dc7b",
+  "source_workflow_commit": "999d2315603269d71a848535e18c782be55670ad",
+  "inherited_native252": {
+    "github_actions_run": 40273136245,
+    "head_sha": "f90a17d9b1102f3bad5a7ee9e3684d610856c620",
+    "conclusion": "success",
+    "safe_artifact_id": 12629891890,
+    "safe_zip_sha256": "d7a8ae73fa8ebe9a0f8e863f700623846f5363834b193d3d635fa03eeb252025",
+    "raw_artifact_id": 12629867040,
+    "raw_zip_sha256": "c3f3d01a7caef7dedbc4756cae9b9e7be46d28a81f4e8152ad3ca67cc3acd099",
+    "original_stage6_report_sha256": "1d4f6230927c8bdc988a0c7663c3b2e8c95ce4a7527221b56d2d06efc5fa22a2",
+    "independent_native252_report_sha256": "92d8e38c13b14b4ec4b2feda27ec6534992a05d0a03543a475301cfbeb2a7595",
+    "export_manifest_sha256": "1aa68ec5aada746b3ae78b97d8a676dc99f0d13160f668a3128edef313e2c672",
+    "progress_sha256": "612b27feefe58f5d00f66e30a65ca84fab029f5513858ad6274531d2dc2913f9",
+    "completed_arms": [
+      "O_s20",
+      "P_s20",
+      "S_s20",
+      "O_s21",
+      "P_s21",
+      "S_s21"
+    ],
+    "verified_rows": 252,
+    "independent_local_zip_check": "163/163 SHA256 manifest members verified, 93,881,118 uncompressed bytes, 0 duplicates, 0 symlink entries; SHA256 of 30,607,662-byte outer ZIP matches GitHub artifact digest."
+  },
+  "new_native_work": {
+    "expected_next_arm": "O_s22",
+    "expected_total_rows_after_success": 294,
+    "source_script": "v13/code/scripts/run459_stage7_o22.py",
+    "independent_verifier": "v13/code/scripts/run460_verify_native294.py",
+    "model_provisioning": "exact pinned public models only, after source-only verified 252 preflight",
+    "safety": "exclusive serialized one arm; fresh work/export; timeout; always raw logs and SHA; fallback no-model export; no force push",
+    "execution_status": "NOT_STARTED_BEFORE_PR",
+    "evidence_level": "pre-execution verified source and prior native252 only"
+  },
+  "negative_gates": {
+    "canonical_gate_pass": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Native O_s22 must actually run and pass independent Run460 seven-receipt verification; source-only CI cannot promote it.",
+    "If GitHub native runner fails or times out, retain raw RED attempt and safe no-model export; do not silently reuse it as completed.",
+    "After verified 294, import exact safe artifact via Run461 and run P_s22 Stage8, then S_s22 Stage9 sequentially.",
+    "Original ten-episode STEP2 acceptance, B3 L1, Body-JEPA and Redmi remain unproven."
+  ],
+  "exact_next_command": "Open PR from codex/run472-native-o22-20261026 against codex/run470-complementarity-diagnostic-20261026; monitor GitHub Actions run472-native-o22.yml and raw artifact, then independently verify 294 receipts before Stage8."
+}
