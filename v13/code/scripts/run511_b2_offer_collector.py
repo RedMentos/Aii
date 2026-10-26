@@ -70,7 +70,7 @@ def plan(pair_index):
             "FROZEN_FIVE_PAIR_PARTITION_DRIFT")
     selected = PAIRS[pair_index]
     keys = [[name, arm, seed] for name in selected
-            for arm in frozen.ARMS for seed in frozen.SEEDS]
+            for seed in frozen.SEEDS for arm in frozen.ARMS]
     require(len(keys) == len({tuple(k) for k in keys}) == EXPECTED_PER_STAGE,
             "FROZEN_STAGE_KEY_DRIFT")
     return {
@@ -147,7 +147,7 @@ def native_config(installed, seed):
     return cfg
 
 
-def native_pair_seed(harness, installed, work, fixture, seed, progress):
+def native_pair_seed(harness, installed, work, fixture, seed, progress, raw, pinned_result):
     from v13.runtime import Runtime
     base = work / f"base-{fixture['id']}-s{seed}"
     require(not base.exists() and not base.is_symlink(),
@@ -160,8 +160,22 @@ def native_pair_seed(harness, installed, work, fixture, seed, progress):
     require(prep["status"] == "RECORDED" and
             prep["integrity_before_restart"] is True,
             "NATIVE_PRIOR_PREPARATION_FAILED")
+    require(prep["model_sha256"] == pinned_result["model_sha256"] and
+            prep["runner_sha256"] == pinned_result["runner_sha256"] and
+            prep["runner_runtime_libraries_sha256"] ==
+            pinned_result["runtime_library_sha256"],
+            "NATIVE_PREPARATION_ARTIFACT_DRIFT")
     expected = harness.checkpoint_hashes(base)
     sealed = harness.seal_checkpoint(base, expected)
+    write_exclusive(work / f"RUN511_PREP_{fixture['id']}_s{seed}.json", {
+        "fixture": fixture["id"], "seed": seed,
+        "model_sha256": prep["model_sha256"],
+        "runner_sha256": prep["runner_sha256"],
+        "runtime_library_sha256": prep["runner_runtime_libraries_sha256"],
+        "prior_event_source_refs": [e["source_ref"] for e in prep["prior_events"]],
+        "checkpoint_hashes": expected, "sealed_sha256": sealed["sha256"],
+        "status": "CLOSED_PREPARATION_SOURCE_ONLY",
+    })
     append_fsync(progress, {"state": "PREP_SEALED",
                             "fixture": fixture["id"], "seed": seed,
                             "sealed_sha256": sealed["sha256"],
@@ -208,6 +222,7 @@ def native_pair_seed(harness, installed, work, fixture, seed, progress):
                 all(release["process_reaped"] for release in releases),
                 "NATIVE_PROCESS_RELEASE_NOT_PROVEN")
         row["process_releases"] = releases
+        append_fsync(raw, row)
         rows.append(row)
         append_fsync(progress, {"state": "OFFER_RECORDED",
                                 "fixture": fixture["id"], "seed": seed,
@@ -246,10 +261,11 @@ def execute(work, pair_index, installed_home):
         for name in PAIRS[pair_index]:
             for seed in frozen.SEEDS:
                 fresh = native_pair_seed(
-                    harness, installed, work, by_name[name], seed, progress)
-                for row in fresh:
-                    append_fsync(raw, row)
-                    rows.append(row)
+                    harness, installed, work, by_name[name], seed,
+                    progress, raw, pinned_result)
+                rows.extend(fresh)
+    require(pinned.verify_installed(installed) == pinned_result,
+            "NATIVE_INSTALLED_ARTIFACTS_CHANGED")
     keys = [[r["fixture"], r["arm"], r["seed"]] for r in rows]
     require(keys == expected["row_keys"] and len(rows) == EXPECTED_PER_STAGE,
             "NATIVE_STAGE_COVERAGE_DRIFT")
