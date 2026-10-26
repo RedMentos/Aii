@@ -8,12 +8,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import run469_native378_utility as base
 import run470_step2_complementarity as candidate
-from tests.test_run469_native378_pinned_reads import PinnedUtilityReads
+from tests import test_run469_native378_pinned_reads as fixture_mod
 
 
 class Run470PinnedReplay(unittest.TestCase):
     def setUp(self):
-        self.fixture = PinnedUtilityReads(
+        self.fixture = fixture_mod.PinnedUtilityReads(
             methodName="test_unchanged_attested_export_is_readable_without_gate_promotion")
         self.fixture.setUp()
         self.addCleanup(self.fixture.doCleanups)
