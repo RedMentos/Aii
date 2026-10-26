@@ -1,0 +1,74 @@
+{
+  "schema": "V13_RUN580_ORIGINAL_NATIVE005_RED_AUDIT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation12 independent original RED review",
+  "review_branch": "codex/run580-native005-original-red-audit-20261026",
+  "review_pr": 577,
+  "base_head": "e55a2e64b0c82e3dd7ac71fcff84f57361464acf",
+  "prereg_commit": "cedfcccde87d2945e9df4fc939e4096dcdcc6424",
+  "source_tested_head": "a2d6e30ad3362fa6969d2eb5e36aad889fbfa174",
+  "source_blobs": {
+    "scripts/run580_native005_red_audit.py": "a8a289b902fd96d2cd7991469b9a7204867c294d",
+    "tests/test_run580_native005_red_audit.py": "6f1614a1895082cf5898ecdafe9a8d7702b45a1b"
+  },
+  "original": {
+    "workflow_run": 40367841707,
+    "head": "db6047b267edceed9055d9702a2810492ffbfe8a",
+    "artifact_id": 12671404476,
+    "artifact_sha256": "9652c6b03d7918ef148b85ec8f18d70bce78a99b959de2382bc79cd2bfc4288e",
+    "safe_artifact_id": 12672672003,
+    "safe_sha256": "8860df4426bdfb1f07215519638b48cbb45b11266bfdd2ebd1b08e7465b9d151",
+    "original_exit_flags": {
+      "AUDIT": 1,
+      "BOOTSTRAP": 0,
+      "DEPS": 0,
+      "FIXTURE": 0,
+      "NATIVE": 0,
+      "PRIVACY": 0,
+      "SAFE": 0
+    },
+    "original_progress_lines": 6,
+    "status": "ORIGINAL_NATIVE_RED_CONFIRMED",
+    "native_attempted": true,
+    "native_executed_independently_verified": false
+  },
+  "tests": {
+    "workflow_run": 40381344589,
+    "job_id": 121778077151,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12678262640,
+    "artifact_sha256": "4423de45f4f77801135681b07c009f3fc1cb47e92824c5d77616dd35ab6808a6",
+    "scope": "Exact outer ZIP and original inner SHA closure, original exit flags, 8 synthetic adversarial tests, compileall, official privacy scan; no native rerun"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "NATIVE exit 0 does not establish independently verified 42 rows: original AUDIT exit 1.",
+    "Native log/progress original preserved; report contains only bounded diagnostics.",
+    "No native model rerun, new utility, Redmi, B3 or JEPA proof.",
+    "Original unfiltered historical suite separately RED."
+  ],
+  "open_questions": [
+    "Determine exact original Run568 AUDIT failure from bounded raw diagnostic; do not infer that the native stage failed.",
+    "Independent Run569 owner branch prereg exists; coordinate before any duplicate native postflight or rerun.",
+    "Original source/seed/model hashes and failed attempt must remain immutable."
+  ],
+  "next_exact_command": "Preregister a NEW independent read-only Run581 postflight on original raw/safe artifacts. Fix the seed32 audit tuple only in a separate review verifier, verify exact 42 rows and SHA/score on original bytes, preserve Run568 AUDIT=1 and do not rerun native or promote STEP2/JEPA/B3/Redmi.",
+  "root_cause": {
+    "classification": "ORIGINAL_AUDIT_SCRIPT_STAGE_SEED_TYPO",
+    "original_traceback": "FileNotFoundError: .../stage_A_s33_p02/tool_A_s32.json",
+    "original_workflow_source": ".github/workflows/run568-future005-native.yml",
+    "incorrect_tuple": "('A_s33_p02',32,('Crescent','Asteria'))",
+    "registered_plan": "batch.arm_seed_pairs = [['A',33],['A',33],['A',33]]",
+    "correct_source_filename": "tool_A_s33.json",
+    "original_native_status": "NATIVE_EXIT=0; RUN558_BATCH_STRUCTURALLY_VERIFIED_ONLY, 42 rows across 3 stages",
+    "independent_native_proof": "NOT_YET_ESTABLISHED; AUDIT_EXIT=1",
+    "evidence": "Original raw artifact 12671404476 SHA-verified in container; original traceback and source workflow inspected; no edits to original"
+  }
+}

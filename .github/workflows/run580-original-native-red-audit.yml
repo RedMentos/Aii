@@ -1,0 +1,125 @@
+name: V13 Run580 independent original native RED artifact audit
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run580-original-native-red-audit.yml'
+      - 'v13/code/scripts/run580_native005_red_audit.py'
+      - 'v13/code/tests/test_run580_native005_red_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run580-native005-red-audit/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-native-red:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run580-native005-original-red-audit-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Bind immutable source, prereg and Canon
+        id: pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN580_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run580-native005-red-audit/PREREG.md)" = 8da3562ce05e1ad4111bdbae2cf7e2c7b20ac58a
+          test "$(git hash-object v13/code/scripts/run580_native005_red_audit.py)" = a8a289b902fd96d2cd7991469b9a7204867c294d
+          test "$(git hash-object v13/code/tests/test_run580_native005_red_audit.py)" = 6f1614a1895082cf5898ecdafe9a8d7702b45a1b
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN580_HOST.txt"
+      - name: Original immutable artifact download and SHA256
+        id: original
+        run: |
+          set -uo pipefail
+          set +e
+          curl -fsSL --retry 0 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12671404476/zip" \
+            -o "$RUNNER_TEMP/original-native-568.zip" > "$RUNNER_TEMP/RUN580_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "9652c6b03d7918ef148b85ec8f18d70bce78a99b959de2382bc79cd2bfc4288e  $RUNNER_TEMP/original-native-568.zip" | sha256sum -c - >> "$RUNNER_TEMP/RUN580_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN580_DOWNLOAD_EXIT.txt"
+          exit 0
+      - name: Compile and adversarial synthetic tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m compileall -q scripts/run580_native005_red_audit.py tests/test_run580_native005_red_audit.py > "$RUNNER_TEMP/RUN580_COMPILE_RAW.log" 2>&1
+          cr=$?
+          echo "$cr" > "$RUNNER_TEMP/RUN580_COMPILE_EXIT.txt"
+          if [ "$cr" -eq 0 ]; then
+            timeout 90s python3 -m unittest -v tests.test_run580_native005_red_audit > "$RUNNER_TEMP/RUN580_TEST_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=1
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN580_TEST_EXIT.txt"
+          if [ "$rc" -ne 0 ] && [ -f "$RUNNER_TEMP/RUN580_TEST_RAW.log" ]; then tail -n 80 "$RUNNER_TEMP/RUN580_TEST_RAW.log"; fi
+          exit 0
+      - name: Independently classify original native RED without rerun
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN580_DOWNLOAD_EXIT.txt")" = 0 ]; then
+            python3 -m scripts.run580_native005_red_audit \
+              --original-zip "$RUNNER_TEMP/original-native-568.zip" \
+              --report "$RUNNER_TEMP/RUN580_REPORT.json" > "$RUNNER_TEMP/RUN580_AUDIT_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=1
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN580_AUDIT_EXIT.txt"
+          if [ "$rc" -eq 0 ]; then
+            cat "$RUNNER_TEMP/RUN580_AUDIT_RAW.log"
+          else
+            echo "RUN580_AUDIT_RED (original evidence preserved, bounded failure)"
+            tail -n 50 "$RUNNER_TEMP/RUN580_AUDIT_RAW.log" 2>/dev/null || true
+          fi
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN580_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN580_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close new audit report without republishing original raw
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN580_*' ! -name RUN580_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN580_SHA256SUMS.txt
+      - name: Preserve new bounded audit even RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run580-original-native-red-audit-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN580_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce truthful original RED and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.pins.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN580_DOWNLOAD_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN580_COMPILE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN580_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN580_AUDIT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN580_PRIVACY_EXIT.txt")" = 0
