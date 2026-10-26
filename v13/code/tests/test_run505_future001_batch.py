@@ -85,7 +85,7 @@ class Future001SourceOnly(unittest.TestCase):
             stage_map.write_new(work / "RUN505_BATCH_PLAN.json", batch.plan(work))
             installed = work / "installed"; installed.mkdir()
             with patch("run496_heldout10_native_pilot.verify_installed",
-                       return_value={"MOCK_SOURCE_ONLY": True}), \\
+                       return_value={"MOCK_SOURCE_ONLY": True}), \
                  patch.object(batch, "run_child", side_effect=mock_child) as native:
                 result = batch.execute(work, installed)
             self.assertEqual(native.call_count, 3)
@@ -112,7 +112,7 @@ class Future001SourceOnly(unittest.TestCase):
                     return 17
                 return mock_child(command, log_path, timeout_s)
             with patch("run496_heldout10_native_pilot.verify_installed",
-                       return_value={"MOCK_SOURCE_ONLY": True}), \\
+                       return_value={"MOCK_SOURCE_ONLY": True}), \
                  patch.object(batch, "run_child", side_effect=fail_second):
                 with self.assertRaisesRegex(RuntimeError, "RUN505_STOPPED_AT_A_s31_p01_RC_17"):
                     batch.execute(work, installed)
@@ -138,7 +138,7 @@ class Future001SourceOnly(unittest.TestCase):
                 receipt.write_text(json.dumps(d))
                 return rc
             with patch("run496_heldout10_native_pilot.verify_installed",
-                       return_value={"MOCK_SOURCE_ONLY": True}), \\
+                       return_value={"MOCK_SOURCE_ONLY": True}), \
                  patch.object(batch, "run_child", side_effect=wrong_receipt) as native:
                 with self.assertRaisesRegex(RuntimeError, "RUN505_STOPPED_AT_A_s31_p00_RC_98"):
                     batch.execute(work, installed)
