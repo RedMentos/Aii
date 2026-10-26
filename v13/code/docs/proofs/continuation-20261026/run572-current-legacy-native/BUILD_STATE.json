@@ -1,0 +1,56 @@
+{
+  "schema": "V13_RUN572_DORMANT_NATIVE_PRELAUNCH_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "assistant Run572 dormant NEW disjoint 84-row native comparison",
+  "branch": "assistant/v13-run572-current-legacy-native-20261026",
+  "base_head": "387cb983c140bb174c3d448aeab2d5a17ee3516a",
+  "base_pr": 567,
+  "prereg": {
+    "commit": "c4201c919e52673139a9a52bbdefb544bb96c04d",
+    "blob": "bbe80979288006bde1b6e9bd8cf4081e6d4a8284"
+  },
+  "workflow": {
+    "commit": "c2e91bba9af12e2805c5a30b27b630b118395a6b",
+    "blob": "1cc82d7eb17dfa6e78986cc852426b6c08b7f948",
+    "path": ".github/workflows/run572-current-legacy-native.yml",
+    "trigger": "pull_request opened exact branch only",
+    "concurrency": "v13-native-c3-run131-serialized"
+  },
+  "run570_source_ci": {
+    "run": 40368451078,
+    "head": "661eda7f722606d3f6e73da8be932e450b72495c",
+    "conclusion": "SUCCESS",
+    "artifact_id": 12671581366,
+    "artifact_sha256": "422cb8bf27c782bdc2134e367725a170c7dca5a8d9c72b3a0d267b9791afb160"
+  },
+  "run571_executor_ci": {
+    "run": 40369319016,
+    "head": "387cb983c140bb174c3d448aeab2d5a17ee3516a",
+    "conclusion": "SUCCESS",
+    "artifact_id": 12672595469,
+    "artifact_sha256": "8866e1deeffd256299b9165702d08b2acbb1796f5775a08ce1491dca17efab5c"
+  },
+  "planned_rows": 84,
+  "source_only_prelaunch": true,
+  "native_executed": false,
+  "active_native_owner": {
+    "run": 40367841707,
+    "head": "db6047b267edceed9055d9702a2810492ffbfe8a",
+    "status": "IN_PROGRESS_LAST_OBSERVED"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Original Run568 native must terminate; Run569 independent original raw/safe audit must be completed",
+    "Run572 workflow untriggered and needs fresh independent review before launch",
+    "Run572 original native 84-row result and independent ZIP audit absent",
+    "Full Canon remaining organs, learning and Redmi still incomplete"
+  ],
+  "next_exact_command": "Do not open Run572 native PR while Run568 active. First complete original Run568, pin raw/safe SHA and audit via Run569 prereg. Independently review Run572 workflow and source tests; after verified idle and explicit source review, open one-shot draft PR from Run572 branch to Run571 branch; verify Actions exact head and raw/safe even RED. No main merge."
+}
