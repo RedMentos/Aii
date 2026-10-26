@@ -229,6 +229,39 @@ class Run397ResumeTests(unittest.TestCase):
             resume.run(self.work, None, pilot=True, execute=False)
         self.assertEqual(outside.read_text(), "do-not-touch")
 
+    def test_reject_symlinked_completed_receipt(self):
+        attempt = self.work / "attempts/O_s20/attempt-0001"
+        attempt.mkdir(parents=True)
+        outside = self.root / "outside-receipt.json"
+        outside.write_text('{"schema":"forged"}')
+        (attempt / "RUN397_ATTEMPT.json").symlink_to(outside)
+        with self.assertRaisesRegex(ValueError, "UNSAFE_ATTEMPT_RECEIPT_SYMLINK"):
+            resume.run(self.work, None, pilot=True, execute=False)
+
+    def test_reject_symlinked_tool_evidence_even_with_same_bytes(self):
+        fake = FakeNative(self.native)
+        self.fake_execute(fake)
+        path = self.work / "attempts/P_s20/attempt-0001/tool_P_s20.json"
+        outside = self.root / "outside-tool.json"
+        outside.write_bytes(path.read_bytes())
+        path.unlink()
+        path.symlink_to(outside)
+        result = resume.run(self.work, None, pilot=True, execute=False)
+        self.assertEqual(result["status"], "INCOMPLETE")
+        self.assertIn("P_s20", result["failures_preserved"])
+        self.assertIn("UNSAFE_ATTEMPT_EVIDENCE_SYMLINK",
+                      str(result["failures_preserved"]["P_s20"]))
+
+    def test_reject_symlinked_event_journal_before_write(self):
+        self.work.mkdir()
+        outside = self.root / "outside-events"
+        outside.write_text("do-not-touch")
+        (self.work / "RUN397_EVENTS.jsonl").symlink_to(outside)
+        fake = FakeNative(self.native)
+        with self.assertRaisesRegex(ValueError, "UNSAFE_EVENTS_SYMLINK"):
+            self.fake_execute(fake, max_new_arms=1)
+        self.assertEqual(outside.read_text(), "do-not-touch")
+
     def test_second_owner_cannot_take_same_work(self):
         self.work.mkdir()
         with (self.work / "RUN397_OWNER.lock").open("a+") as lock:
