@@ -1,0 +1,37 @@
+{
+  "schema": "V13_RUN523_CURRENT_SOURCEWIDE_FULLSUITE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run523-current-sourcewide-fullsuite-20261026",
+  "base_branch": "codex/run521-age0d-committed-output-binding-20261026",
+  "base_sha": "016de966c940582773779b02611f63cf70e4d109",
+  "prereg_blob": "b149ea946ba54614aceb74177957740556850473",
+  "source_blobs": {
+    "b2_postflight": "76c92573867429d6a2c13f7493c456c06d4b6890",
+    "b2_lineage_tests": "3c38db4d776f13a29e235b9c415d8df79b9df936",
+    "selfmodel": "aab1d1905c98ce1d276e5136975a97f62e8e21dc",
+    "age0d_tests": "47a6468c03f2b3e65a3b960b7966ddfc7868871e"
+  },
+  "prerequisites": "Isolated numpy2.3.5/prompt-toolkit3.0.52/torch2.9.1+cpu; no model downloads; public GitHub Actions",
+  "test_command": "cd v13/code && PYTHONPATH=$PWD python -m unittest discover -s tests -p 'test_*.py' -v",
+  "evidence": "FULL_SOURCE_ONLY_SUITE_PENDING",
+  "heavy_owner": {
+    "run522_pr": 520,
+    "stage": "p02",
+    "native_workflow_separate": true
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "Exact-head fullsuite unknown until CI completes",
+    "Source-only tests cannot validate real native/phone",
+    "Parallel Run522 p02 native receipt independently reviewed after completion"
+  ],
+  "next_command": "Open source-only PR, inspect all test failures and dependency logs, preserve raw SHA artifact and repair source regression if real; do not hide RED.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
