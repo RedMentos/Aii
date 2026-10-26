@@ -1,0 +1,70 @@
+{
+  "schema": "V13_RUN599_PHONE_SOURCE_ZIP_VERIFIED_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run599-current-phone-source-zip-20261026",
+  "base_branch": "codex/automation11-run598-backup-noclobber-20261026",
+  "base_sha": "59c2fcede122a8a77e0a96211ad7afec32f49816",
+  "verified_package_head": "2bb31696f35060c39691e0bbc0cb0456a0784151",
+  "pr": 594,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/594",
+  "prereg_commit": "1e6674f115083b2ffa05db18a3897bc091a18c76",
+  "observed_ci": {
+    "run": 40395386223,
+    "job": 121826928300,
+    "conclusion": "success",
+    "pack_exit": 0,
+    "independent_verify_exit": 0,
+    "portable_tests_exit": 0,
+    "privacy_exit": 0,
+    "source_package_tests": "8/8 PASS",
+    "zip_verifier_tests": "7/7 PASS",
+    "extracted_phone_chat": "1/1 PASS",
+    "extracted_backup_noclobber": "6/6 PASS",
+    "artifact_id": 12685203006,
+    "artifact_sha256": "9e63d3dc0385a062ed9d65c6d2d192eaa56601c5c18e8ca82c3c80ac33ebcc78"
+  },
+  "zip": {
+    "filename": "V13-Phone-current-Run599.zip",
+    "bytes": 13587355,
+    "sha256": "0e71dbf92260dd5929e44ac74b1f75ba9903b2f0a7dc1739725e34b36b87e00f",
+    "zip_members": 1299,
+    "source_files": 1298,
+    "uncompressed_source_bytes": 31120330,
+    "manifest_sha256": "201e998fbfdcd6715a72bc56e41e056a72de996f37432e7ba7002359dad1d658",
+    "crc": "PASS",
+    "checkout_byte_parity": "PASS",
+    "all_member_hashes": "PASS",
+    "models_included": false,
+    "source_only": true,
+    "redmi_measured": false,
+    "native_inference": false
+  },
+  "local_independent_artifact_verification": {
+    "outer_zip_sha256": "9e63d3dc0385a062ed9d65c6d2d192eaa56601c5c18e8ca82c3c80ac33ebcc78",
+    "manifest_entries_checked": 14,
+    "manifest_mismatches": 0,
+    "nested_zip_crc_bad_member": null
+  },
+  "claim_limits": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "source_suite": "RED_4_FAIL_65_ERROR at Run596 due frozen runtime/store chain pins"
+  },
+  "open_questions": [
+    "Phone source ZIP contains no models; first actual Redmi install/native inference and thermal/RSS/KV proof still missing",
+    "Review/merge stacked PR588–594 and Claude PR38; main remains older",
+    "Hardlink support for no-clobber backup on Redmi internal FS unmeasured",
+    "Current C3/B1/B2 native end-to-end and learning proof absent"
+  ],
+  "next_command": "Download Run599 artifact ID 12685203006, extract nested V13-Phone-current-Run599.zip, verify SHA256 0e71dbf9... and run setup.sh on Redmi/Termux with models only after user/device action. Meanwhile pursue independent Linux-native registered C3 smoke under v13-native-c3-run131-serialized, no gate promotion.",
+  "prerequisites": [
+    "No anyone-writable Drive",
+    "No force push",
+    "Preserve source/model/seed hashes and failed source-wide evidence"
+  ]
+}
