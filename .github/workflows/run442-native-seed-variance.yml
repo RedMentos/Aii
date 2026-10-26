@@ -1,0 +1,65 @@
+name: V13 Run442 actual-native seed variance source audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run442-native-seed-variance.yml'
+      - 'v13/code/scripts/run442_native_seed_variance.py'
+      - 'v13/code/tests/test_run442_native_seed_variance.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run442-native-seed-variance/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Download exact existing model-free Run427 archive (no new native run)
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12626146409/zip' -o "$RUNNER_TEMP/run442-native168.zip"
+          printf '405e62268b0314c6e852e367a4624a12508e971877afe14afebf05cb2afba6b7  %s\n' "$RUNNER_TEMP/run442-native168.zip" | sha256sum --check -
+          stat -c 'PINNED_ARCHIVE_BYTES=%s' "$RUNNER_TEMP/run442-native168.zip"
+      - name: Run actual source replay and negative controls
+        run: |
+          cd v13/code
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          export RUN442_ARCHIVE="$RUNNER_TEMP/run442-native168.zip"
+          sha256sum scripts/run442_native_seed_variance.py tests/test_run442_native_seed_variance.py | tee "$RUNNER_TEMP/run442-source-sha256.txt"
+          set +e
+          python3 -m unittest -v tests.test_run442_native_seed_variance > "$RUNNER_TEMP/run442-tests.txt" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/run442-tests.txt"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/run442-exit.txt"
+          if [ "$status" -ne 0 ]; then exit "$status"; fi
+          python3 scripts/run442_native_seed_variance.py --archive "$RUN442_ARCHIVE" --output "$RUNNER_TEMP/run442-report.json"
+          if python3 scripts/run442_native_seed_variance.py --archive "$RUN442_ARCHIVE" --expected-sha256 "$(printf '0%.0s' {1..64})" --output "$RUNNER_TEMP/run442-negative.json"; then
+            echo 'INVALID_SHA_UNEXPECTEDLY_ACCEPTED'; exit 3
+          fi
+          python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["status"]=="RED_PRESERVED" and d["canonical_gate_pass"] is False' "$RUNNER_TEMP/run442-negative.json"
+      - name: Official privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Retain only aggregate report and raw source test log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run442-aggregate-proof-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run442-tests.txt
+            ${{ runner.temp }}/run442-exit.txt
+            ${{ runner.temp }}/run442-source-sha256.txt
+            ${{ runner.temp }}/run442-report.json
+            ${{ runner.temp }}/run442-negative.json
+          if-no-files-found: warn
+          retention-days: 30
