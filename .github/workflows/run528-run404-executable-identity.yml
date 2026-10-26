@@ -1,0 +1,98 @@
+name: V13 Run528 Run404 exact executable identity stage2 resume source-only
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run528-run404-executable-identity.yml'
+      - 'v13/code/scripts/run404_stage2_resume.py'
+      - 'v13/code/tests/test_run404_stage2_resume.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run528-run404-executable-identity/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run528-run404-executable-identity-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Frozen executable identity and prereg source pins
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run528-run404-executable-identity/PREREG.md)" = 'a14acad44e23c43cece4ab8e4ca25cfc93d18845'
+          test "$(git hash-object v13/code/scripts/run404_stage2_resume.py)" = '50f53021387298385ed6ed58003a8dda82ae2d59'
+          test "$(git hash-object v13/code/tests/test_run404_stage2_resume.py)" = 'f2ee781152ee4838d8b4aa7887a9c63546432c56'
+          test "$(git hash-object v13/code/scripts/run402_stage_restore.py)" = '8b60c90504077c05d668966ad3d8acf87b90c8da'
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = 'f1946054135cb6fdf48c06477308f518e2e62ad9'
+          test "$(git hash-object v13/code/tests/test_run402_stage_restore.py)" = 'e3dc7f2cc3c1352b19d7930a70cca7574e0d9383'
+          test "$(git hash-object v13/code/tests/test_run397_step2_resume.py)" = '778ad4fb9bd892f79a91bfde7de9e98c1c0f4cbc'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN528_HOST.txt"
+      - name: Isolated source-only dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run528venv"
+          timeout 240s "$RUNNER_TEMP/run528venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN528_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN528_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run all Run397/402/404 positive and adversarial source-only tests
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run528venv/bin/python" -m unittest -v tests.test_run404_stage2_resume tests.test_run402_stage_restore tests.test_run397_step2_resume > "$RUNNER_TEMP/RUN528_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN528_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan on exact review diff
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN528_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN528_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN528_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close original tests and privacy outputs
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN528_*' ! -name RUN528_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN528_SHA256SUMS.txt
+      - name: Persist source-only raw proof even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run528-run404-executable-identity-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN528_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce original 39 tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN528_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN528_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN528_PRIVACY_EXIT.txt")" = 0
