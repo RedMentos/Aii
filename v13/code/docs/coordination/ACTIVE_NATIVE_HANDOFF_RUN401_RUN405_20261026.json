@@ -1,0 +1,104 @@
+{
+  "handoff": "V13_RUN405_ACTIVE_NATIVE_RUN401",
+  "created_utc": "2026-10-26T00:57:00Z",
+  "single_source_of_truth": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+  "active_owner": {
+    "package": "Run401",
+    "branch": "codex/run401-step2-full-native-stage1-20261026",
+    "source_head": "c0facf60c3286064e15bc06de104c85d9344382a",
+    "pr": 396,
+    "actions_run": 40250662450,
+    "job": 121341617101,
+    "status_at_checkpoint": "IN_PROGRESS_NATIVE_O_s20",
+    "expected": "one full-cohort arm 42 actual Linux-native rows; eight arms pending",
+    "next": "Do not start another heavy native job until Run401 completes and artifact verified"
+  },
+  "latest_review_chain": [
+    {
+      "run": 399,
+      "pr": 394,
+      "branch": "codex/run399-step2-actual-native-postflight-20261026",
+      "status": "ACTUAL_NATIVE_AUDIT_RED_PRESERVED",
+      "artifact": 12620490121
+    },
+    {
+      "run": 400,
+      "pr": 395,
+      "branch": "codex/run400-step2-quote-substring-postflight-20261026",
+      "status": "ACTUAL_NATIVE_42_ROW_AUDIT_VERIFIED_NO_GATE_PROMOTION",
+      "artifact": 12620144232,
+      "sha256": "4874a83b71737d5dfc990d6850f29c5305c5040d8a322ad0165b998eaef0c230"
+    },
+    {
+      "run": 401,
+      "pr": 396,
+      "branch": "codex/run401-step2-full-native-stage1-20261026",
+      "status": "IN_PROGRESS_NATIVE_STAGE1",
+      "artifact": "UNKNOWN"
+    },
+    {
+      "run": 402,
+      "pr": 397,
+      "branch": "codex/run402-step2-native-stage-restore-20261026",
+      "status": "SOURCE_ONLY_GREEN_62_TESTS",
+      "artifact": 12619409876
+    },
+    {
+      "run": 403,
+      "pr": 398,
+      "branch": "codex/run403-step2-full-postflight-20261026",
+      "status": "SOURCE_ONLY_GREEN_70_TESTS",
+      "artifact": 12620526768
+    },
+    {
+      "run": 404,
+      "pr": 399,
+      "branch": "codex/run404-step2-native-stage2-prep-20261026",
+      "status": "SOURCE_ONLY_GREEN_78_TESTS",
+      "artifact": 12620432455
+    },
+    {
+      "run": 405,
+      "pr": 400,
+      "branch": "codex/run405-step2-failure-history-audit-20261026",
+      "status": "SOURCE_ONLY_RED_FIRST_84_GREEN",
+      "red_artifact": 12620517567,
+      "green_artifact": 12621436052
+    }
+  ],
+  "source_checkpoint_head": "780fed8e98526a554e2e2644676de58c0977050d",
+  "frozen_source_hashes": {
+    "run394_git_blob": "fae7aed612108a554d8566b2917ebf31022df423",
+    "run397_git_blob": "f1946054135cb6fdf48c06477308f518e2e62ad9",
+    "models_catalog_git_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "original_native_pilot": {
+    "run": 40247992605,
+    "job": 121333557565,
+    "artifact": 12619659510,
+    "sha256": "6a0ae4311db51d7165e372b370e57a6faf8223c0e214c87be5f6e1ad5ba46b6f",
+    "rows": 42,
+    "status": "LINUX_NATIVE_PILOT_UTILITY_FAIL"
+  },
+  "private_backup_root": "/V13_PRIVATE_CHECKPOINTS_20261024",
+  "backup_byte_verification": "Run399/400/402/403/404/405 relevant ZIPs uploaded; Run400/402/403/404/405 byte-matched after materialization",
+  "next_steps": [
+    "Inspect Actions run 40250662450 status, job and artifact; do not assume complete",
+    "Download observed Run401 artifact and SHA/CRC/raw verify; mirror to private Library",
+    "Run Run402 stage restore with exact observed ZIP SHA into fresh work dir, preserve any RED",
+    "Run Run404 preview (no native); only if verified and no native owner, launch pinned serialized P_s20 native stage2 with Run397 max-new-arms 1",
+    "Continue remaining seven arms serially and Run403/405 full 378-row postflight, no gate promotion",
+    "Pursue independent canonical B1/B2/JEPA/C3/Context OS/JEF work when native blocked"
+  ],
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED",
+    "Age0/approval unchanged",
+    "No Redmi phone proof",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "safety": "No anyone-writable Drive; no private data; no force push; no unverified native claims; do not merge or overwrite other owners"
+}
