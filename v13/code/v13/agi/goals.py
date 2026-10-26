@@ -129,7 +129,7 @@ class GoalStore:
         except KeyError:return {'status':'UNKNOWN_GOAL'}
         # A scheduler event is a notification, not a transferable USER grant.
         # GoalStore.schedule maps SYSTEM/SELF goals to SELF-originated wakes.
-        if event.get('kind')!='GOAL_WAKE' or event.get('action')!='growth_goal':
+        if event.get('kind','GOAL_WAKE')!='GOAL_WAKE' or event.get('action')!='growth_goal':
             return {'status':'INVALID_WAKE_EVENT','goal_id':gid}
         expected_origin='USER' if g['origin']=='USER' else 'SELF'
         if event.get('origin')!=expected_origin:
