@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN591_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run591-callosum-rating-proof-20261026",
+  "base_branch": "codex/automation11-run590-ctx-plan-receipts-20261026",
+  "base_sha": "56c693de986a5d5e77fe0cc737bd6c210f32afd6",
+  "verified_code_head": "a05db13c13269d6f3988afd88fdc0dd0eb9cf727",
+  "pr": 587,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/587",
+  "prereg_commit": "ed2906fe1d4d1b7fa88bc1e3e94822ae51e7fbfb",
+  "changed_source_blobs": {
+    "v13/code/v13/callosum.py": "e337c39fb2bd7e50a2e0ba811debc20973323f5e",
+    "v13/code/tests/test_run591_callosum_rating_proof.py": "215dc0d4a3648ed37e9781efdef5d171c01040c5"
+  },
+  "observed_ci": {
+    "run": 40388779523,
+    "job": 121803972761,
+    "head": "a05db13c13269d6f3988afd88fdc0dd0eb9cf727",
+    "conclusion": "success",
+    "new_tests": "7/7 PASS",
+    "test_callosum": "5/5 PASS",
+    "outcome_once": "10/10 PASS",
+    "message_lineage": "10/10 PASS",
+    "observed_cost": "3/3 PASS",
+    "peer_link": "5/5 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12681028690,
+    "raw_artifact_sha256": "4ee62623df76ff7accef43dd345a5d22ca3fab06583c4c277c53d79ff8974885"
+  },
+  "changes": [
+    "Callosum human rating verifies real MessagePacket event/generation/direction/channel/source refs before learning",
+    "One rating per message ID with CAS-committed rated flag; duplicate pending references cannot double count",
+    "Nonfinite and nonnumeric utilities refused; source deletion/tamper/missing packet yields zero policy update",
+    "No change to native outcome once, latent ladder or B3 failure status"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "full_source_suite": "RED_4_FAIL_65_ERROR"
+  },
+  "open_questions": [
+    "Independent review and coordinated merge of PR581→587 needed",
+    "Native B3 L1 receiver influence/calibration still absent",
+    "Redmi sustained memory/thermal and complete V13 integration still unmeasured"
+  ],
+  "next_command": "Review PR587 exact CI and source; continue a different substantive blueprint organ (JEF/C3/Body-JEPA) on a new branch; preserve all frozen evidence and Age rights.",
+  "prerequisites": [
+    "No force-push or overwriting other owners",
+    "No native model execution claim from synthetic tests",
+    "Keep B3 FAIL and all original negative gates"
+  ]
+}
