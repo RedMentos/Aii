@@ -66,7 +66,7 @@ jobs:
           exits={k:(dest/('TOOLFULL_'+k+'_EXIT.txt')).read_text().strip() for k in keys}
           assert all(exits[k]=='0' for k in keys if k!='TEST'),exits
           assert exits['TEST']!='0','original full suite was not RED'
-          log=(dest/'TOOLFULL_TESTS_RAW.log').read_text(errors='replace')
+          raw_log=(dest/'TOOLFULL_TESTS_RAW.log').read_bytes();log=raw_log.decode(errors='replace')
           runs=re.findall(r'^Ran (\d+) tests in ([\d.]+)s',log,re.M)
           failure_ids=re.findall(r'^(?:FAIL|ERROR): ([^\n]+)',log,re.M)
           end=re.findall(r'^(?:FAILED \([^\n]+\)|OK(?: \([^\n]+\))?)$',log,re.M)
@@ -77,7 +77,7 @@ jobs:
                   'tests':int(runs[-1][0]) if runs else None,'duration_s':float(runs[-1][1]) if runs else None,
                   'failure_count':len(failure_ids),'failure_ids_bounded':failure_ids[:30],
                   'summary_bounded':end[-1:] if end else [],
-                  'test_log_sha256':hashlib.sha256(log.encode()).hexdigest(),
+                  'test_log_sha256':hashlib.sha256(raw_log).hexdigest(),
                   'status':'ORIGINAL_RED_CONFIRMED','native_executed':False,'redmi_measured':False,
                   'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL','jepa_weight':0}
           (tmp/'RED_AUDIT_REPORT.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
