@@ -1,0 +1,66 @@
+{
+  "schema": "V13_RUN525_B2_P03_NATIVE_PREREG_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run525-b2-native-p03-20261026",
+  "base_branch": "codex/run522-b2-native-p02-20261026",
+  "base_sha": "1ae99e718d2ac0e6c9710622086c3966be48c703",
+  "prereg_blob": "7928c4907e840d2379afe6b1bdfb5d73216daa2d",
+  "stage": {
+    "id": "p03",
+    "pair_index": 3,
+    "fixtures": [
+      "Garnet",
+      "Harbor"
+    ],
+    "seeds": [
+      41,
+      42,
+      43
+    ],
+    "arms": [
+      "BASE",
+      "RULE_FOCUS"
+    ],
+    "observations": 12,
+    "fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726"
+  },
+  "source": {
+    "collector": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
+    "postflight": "76c92573867429d6a2c13f7493c456c06d4b6890",
+    "lineage_tests": "3c38db4d776f13a29e235b9c415d8df79b9df936",
+    "model_spec": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "prior_p02": {
+    "actions": 40317501670,
+    "conclusion": "SUCCESS",
+    "raw_zip_sha256": "0e518d09f5a032b0b99d5e4d44304b5ed2e42bb3f6a8ed2d4d14ef91d65a3d5a",
+    "safe_zip_sha256": "c2e8c93c013ef08d98a23756b37b076b5d2be3ac1b09fcea4af03b87797eda97",
+    "raw_entries": 32,
+    "safe_entries": 13,
+    "quotes": 21,
+    "independent_audit_sha256": "33ae74e6ae304f2b4eff8f8d9951c34674bd58310d6d58d4096727b628909d97",
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run522/"
+  },
+  "heavy_owner": {
+    "native_in_progress": 0,
+    "stage": "p03",
+    "concurrency": "v13-native-c3-run131-serialized"
+  },
+  "evidence": "P03_PREREG_SOURCE_ONLY_NATIVE_PENDING",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "p03 native raw/safe proof pending",
+    "p04 negative control pending",
+    "Run510 60-row metric uncomputed",
+    "Redmi and JEPA remain negative"
+  ],
+  "next_command": "Open PR to trigger p03 native once; after Actions completion independently SHA-verify raw/safe artifacts and source quote lineage; no automatic retry.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
