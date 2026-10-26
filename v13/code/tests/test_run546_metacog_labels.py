@@ -57,12 +57,12 @@ class Run546MetacognitionLabels(unittest.TestCase):
         event = self.runtime.store.event(self.runtime.session, 'Budget Aurora?')
         signal = {'uncertainty': 0.2, 'route_hint': 'simple'}
         for _ in range(40):
-            self.meta.record('answer', 0.8, False)
+            self.meta.record(live.ANSWER_GROUNDED, 0.8, False)
         info = {}
         adjusted = live.before_effort(self.runtime, event, info, signal)
         self.assertEqual(adjusted['uncertainty'], 0.8)
         self.assertTrue(info['metacog_abstain'])
-        self.assertEqual(self.meta.report('answer')['components']['answer']['n'], 40)
+        self.assertEqual(self.meta.report(live.ANSWER_GROUNDED)['components'][live.ANSWER_GROUNDED]['n'], 40)
 
 
 if __name__ == '__main__':

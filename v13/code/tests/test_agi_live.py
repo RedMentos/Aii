@@ -16,9 +16,9 @@ class LiveHooks(unittest.TestCase):
     def test_metacog_raises_effort_only_when_calibrated(self):
         e=self.ev();meta={}
         self.assertEqual(live.before_effort(self.r,e,meta,SIG)['uncertainty'],.2);self.assertEqual(meta['metacognition']['answer']['reason'],'UNCALIBRATED')
-        for i in range(40):self.g.metacog.record('answer',.8,i%2==0)
+        for i in range(40):self.g.metacog.record(live.ANSWER_QUALITY,.8,i%2==0)
         meta={};out=live.before_effort(self.r,e,meta,SIG);self.assertEqual(out['uncertainty'],.6);self.assertNotIn('metacog_abstain',meta)
-        for _ in range(512):self.g.metacog.record('answer',.8,False)
+        for _ in range(512):self.g.metacog.record(live.ANSWER_GROUNDED,.8,False)
         meta={};out=live.before_effort(self.r,e,meta,SIG);self.assertEqual(out['uncertainty'],.8);self.assertTrue(meta['metacog_abstain'])
     def test_trusted_route_skill_sets_route_candidate_does_not(self):
         e=self.ev('please summarize the plan');self.g.skills.propose('summary_gist',[{'route':'gist'}],trigger='summarize plan')
@@ -30,7 +30,7 @@ class LiveHooks(unittest.TestCase):
     def test_feedback_labels_and_user_beliefs(self):
         e=self.ev();live.before_effort(self.r,e,{},SIG)
         self.r.memory.feedback(e['event_id'],'fact','120 Euro',key='Budget Aurora?')
-        self.assertEqual(self.g.metacog.box.load()[0]['components']['answer']['pairs'],[[.8,0]])
+        self.assertEqual(self.g.metacog.box.load()[0]['components'][live.ANSWER_GROUNDED]['pairs'],[[.8,0]])
         self.r.memory.feedback(e['event_id'],'preference','short answers',key='answer length')
         self.assertEqual([b['value'] for b in self.g.users.beliefs()],['short answers'])
         self.r.memory.feedback(e['event_id'],'preference','no meat',key='health diet')
@@ -39,7 +39,7 @@ class LiveHooks(unittest.TestCase):
     def test_rating_becomes_metacog_label(self):
         e=self.ev();live.before_effort(self.r,e,{},SIG);mid=self.r.store.message(self.r.session,e['event_id'],'assistant','ok');self.r.store.finish_message(mid,'FINAL',{})
         inputs.record_rating(self.r.store,e['event_id'],9,'EXPLICIT_NOTE');inputs.record_rating(self.r.store,e['event_id'],5,'IMPLICIT_CHAT')
-        self.assertEqual(self.g.metacog.box.load()[0]['components']['answer']['pairs'],[[.8,1]])
+        self.assertEqual(self.g.metacog.box.load()[0]['components'][live.ANSWER_QUALITY]['pairs'],[[.8,1]])
     def test_slots_mirror_installed_models_and_propose_on_new_revision(self):
         entry={'model_id':'m','exact_revision':'r1','license_id':'x','files':{'a.gguf':{'path':'models/language/a.gguf'}},'main_file':'a.gguf','download_complete':True}
         self.r.models.installed['language']=entry;self.assertEqual(live.sync_slots(self.r),[('C3_LANGUAGE','INSTALL')])

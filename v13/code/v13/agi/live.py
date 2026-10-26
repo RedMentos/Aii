@@ -1,7 +1,8 @@
 """WP-N13: AG modules in the live turn (runtime._turn), not only via :growth/sleep/scheduler.
 
-  AG9  metacognition -> effort: calibrated answer/route confidence can raise the effort signal
-       'uncertainty' (second attempt) or flag abstention; labels come from ratings, corrections, route feedback.
+  AG9  metacognition -> effort: answer quality ratings can request extra thinking,
+       but only grounded correctness evidence can request factual abstention.
+       Legacy mixed answer labels remain preserved but have no decision authority.
   AG2  grounding     -> every answer action: prediction before acting, grounded outcome after.
   AG11 user model    -> C1: explicit preference/style feedback becomes evidence-bound beliefs; the turn
        carries the belief summary (no inference about protected attributes).
@@ -22,6 +23,9 @@ from .base import clamp01
 STATE='agi-live:'
 RATING_GOOD=6;RATING_BAD=4
 BELIEF_MIN=.5;CONFIG='agi-live:config'
+ANSWER_GROUNDED='answer_grounded_v2'
+ANSWER_QUALITY='answer_quality_v2'
+LEGACY_ANSWER='answer'  # historical mixed quality/correctness; retained, never used for active decisions
 
 def _log(r,eid,stage,exc):r.store.log('agi_live_unavailable',eid,{'stage':stage,'error':type(exc).__name__})
 def _save(store,eid,**kw):
@@ -52,10 +56,21 @@ def before_effort(r,e,meta,sig):
     """AG9 -> effort (+ AG11 summary for C1). Returns the (possibly raised) effort signals."""
     try:
         g=hub(r);raw=round(1-sig.get('uncertainty',0.),4);out=dict(sig);notes={'answer_raw_confidence':raw}
-        d=g.metacog.decide('answer',raw);notes['answer']=d
-        if d['reason']=='CALIBRATED':
-            if d['abstain']:out['uncertainty']=max(out['uncertainty'],.8);meta['metacog_abstain']=True
-            elif d['second_attempt']:out['uncertainty']=max(out['uncertainty'],.6)
+        grounded=g.metacog.decide(ANSWER_GROUNDED,raw)
+        quality=g.metacog.decide(ANSWER_QUALITY,raw)
+        notes['answer']=grounded  # factual gate, never a quality-only rating
+        notes['answer_quality']=quality
+        notes['legacy_mixed_answer_ignored']=True
+        if grounded['reason']=='CALIBRATED':
+            if grounded['abstain']:
+                out['uncertainty']=max(out['uncertainty'],.8)
+                meta['metacog_abstain']=True
+            elif grounded['second_attempt']:
+                out['uncertainty']=max(out['uncertainty'],.6)
+        if quality['reason']=='CALIBRATED' and (quality['second_attempt'] or quality['abstain']):
+            # Dissatisfaction may justify another pass, but cannot assert
+            # factual incorrectness or unlock C5's ASK_USER abstention.
+            out['uncertainty']=max(out['uncertainty'],.6)
         info=meta.get('route') if isinstance(meta.get('route'),dict) else {}
         rc=route_confidence(info);comp='route:'+info.get('source','BOOT_SCAFFOLD')
         if rc is not None:
@@ -157,7 +172,7 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
     if kind=='route' and st.get('route_confidence') is not None and st.get('route'):
         Metacognition(store).record(st['route_component'],st['route_confidence'],value==st['route'],evidence=memory_id)
     if kind=='fact' and st.get('answer_confidence') is not None:
-        Metacognition(store).record('answer',st['answer_confidence'],False,evidence=memory_id)
+        Metacognition(store).record(ANSWER_GROUNDED,st['answer_confidence'],False,evidence=memory_id)
     if kind=='route':  # WP-T6: a route correction on a skill-routed turn reopens the skill (back to the full path)
         try:
             from ..skilllive import on_route_correction
@@ -170,15 +185,15 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
         except PermissionError:store.log('agi_live_unavailable',event_id,{'stage':'user_model','error':'PermissionError'})
 
 def on_rating(store,event_id,score):
-    """Answer rating 1-10 -> AG9 label (>=6 good, <=4 bad, 5 = no label)."""
+    """Answer quality rating, not a factual correctness label (5 = no label)."""
     from .metacog import Metacognition
     st=_load(store,event_id)
     if st.get('answer_confidence') is None or RATING_BAD<score<RATING_GOOD:return None
-    Metacognition(store).record('answer',st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id);return True
+    Metacognition(store).record(ANSWER_QUALITY,st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id);return True
 
 def report(r):
     g=hub(r);mc=g.metacog.report()
-    return {'metacognition':mc['components'],'grounding':g.grounding.report()['error_rate'],'user_beliefs':len(g.users.beliefs()),
+    return {'metacognition':mc['components'],'answer_label_contract':'QUALITY_NOT_FACT_GROUNDED_ONLY_V2','grounding':g.grounding.report()['error_rate'],'user_beliefs':len(g.users.beliefs()),
             'skills_trusted':[n for n,s in g.skills.box.load()[0]['skills'].items() if s['stage'] in {'TRUSTED','INTERNALISED'}],
             'slots':{k:v['active']['revision'][:12] if v.get('active') else None for k,v in g.slots.box.load()[0]['slots'].items()},
             'ask_mode':ask_mode(r.store),'user_beliefs_in_context':len([b for b in g.users.context() if b['confidence']>=BELIEF_MIN]),

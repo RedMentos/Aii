@@ -31,7 +31,12 @@ def collect(g,store,cfg):
     a=next((p for p in last if p.get('phase')=='SLEEP_A'),{})
     fr=(runs[-1]['summary'].get('forgetting') or {}).get('rate') if runs else None
     m['retention']=a.get('retention_old') if a.get('retention_old') is not None else (None if fr is None else round(1-fr,4))
-    cals=[g.metacog.age_metric(c) for c in g.metacog.box.load()[0]['components']]
+    # Human satisfaction ratings are not correctness labels. Historical
+    # 'answer' mixed both and cannot be migrated without source provenance.
+    # Only explicit grounded answer and source-scored AG12/route components
+    # may contribute calibration evidence to the Age gate.
+    eligible=lambda c: c=='answer_grounded_v2' or c.startswith(('ag12:','route:'))
+    cals=[g.metacog.age_metric(c) for c in g.metacog.box.load()[0]['components'] if eligible(c)]
     cals=[c for c in cals if c is not None];m['calibration']=min(cals) if cals else None
     delta=float(cfg.get('retention_max_delta',.02));ov=[r['summary']['overall'] for r in runs[-6:]]
     m['stability']=round(1-sum(b<a_-delta for a_,b in zip(ov,ov[1:]))/max(1,len(ov)-1),4) if len(ov)>=2 else None
