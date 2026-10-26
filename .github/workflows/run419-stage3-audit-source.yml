@@ -4,7 +4,9 @@ on:
     paths:
       - '.github/workflows/run419-stage3-audit-source.yml'
       - 'v13/code/scripts/run419_verify_stage3_native.py'
+      - 'v13/code/scripts/run419_import_stage3_artifact.py'
       - 'v13/code/tests/test_run419_verify_stage3_native.py'
+      - 'v13/code/tests/test_run419_import_stage3_artifact.py'
       - 'v13/code/docs/proofs/continuation-20261026/run419-stage3-audit/**'
 permissions:
   contents: read
@@ -31,10 +33,14 @@ jobs:
           test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
           test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
           sha256sum v13/code/scripts/run419_verify_stage3_native.py \
+            v13/code/scripts/run419_import_stage3_artifact.py \
             v13/code/tests/test_run419_verify_stage3_native.py \
+            v13/code/tests/test_run419_import_stage3_artifact.py \
             | tee "$RUNNER_TEMP/RUN419_SOURCE_SHA256.txt"
           python3 -m compileall -q v13/code/scripts/run419_verify_stage3_native.py \
-            v13/code/tests/test_run419_verify_stage3_native.py
+            v13/code/scripts/run419_import_stage3_artifact.py \
+            v13/code/tests/test_run419_verify_stage3_native.py \
+            v13/code/tests/test_run419_import_stage3_artifact.py
       - name: Independent native receipt and inherited source tests
         id: tests
         working-directory: v13/code
@@ -46,6 +52,7 @@ jobs:
             tests.test_run415_stage3_no_model_restore \
             tests.test_run418_import_no_model_artifact \
             tests.test_run419_verify_stage3_native \
+            tests.test_run419_import_stage3_artifact \
             2>&1 | tee "$RUNNER_TEMP/RUN419_TESTS_RAW.log"
           rc=${PIPESTATUS[0]}
           echo "$rc" > "$RUNNER_TEMP/RUN419_TESTS_EXIT.txt"
