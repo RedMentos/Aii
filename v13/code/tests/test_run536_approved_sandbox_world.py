@@ -1,4 +1,5 @@
 """Run536 real WP-K approved sandbox_note -> F3/F4 Self/World integration."""
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -91,6 +92,25 @@ class ApprovedSandboxWorldTests(unittest.TestCase):
         status = next(o for o in report["observations"] if o["channel"] == "status:blocked")
         self.assertEqual(status["class"], "MIXED")
         self.assertNotIn("will fail", json.dumps(report))
+
+    def test_failed_pre_effect_hook_cannot_borrow_unrelated_self_corollary(self):
+        self.enable()
+        digest = hashlib.sha256(b"own bytes").hexdigest()
+        self.session.selfsys.issue(
+            self.event, "unrelated-old", "old prediction",
+            [{"channel": "file:note", "value": digest}], window_s=30)
+        def fail_pre(_tx):
+            raise RuntimeError("test-only pre-effect failure")
+        self.session.registry.on_pre_execute = fail_pre
+        tx = self.session.propose("note", "own bytes")
+        report = self.session.approve(tx["id"], origin="OPERATOR_TTY")
+        self.assertEqual(report["status"], "EXECUTED")
+        self.assertFalse(report["corollary_issued"])
+        file_obs = next(o for o in report["observations"] if o["channel"] == "file:note")
+        self.assertEqual((file_obs["class"], file_obs["reason"], file_obs["action_ids"]),
+                         ("UNCLEAR", "no_current_corollary", []))
+        self.assertEqual(
+            self.r.store.one("SELECT count(*) AS n FROM packets WHERE kind='SelfWorldAttribution'")["n"], 0)
 
     def test_duplicate_collect_and_forged_transaction_refused(self):
         self.enable()
