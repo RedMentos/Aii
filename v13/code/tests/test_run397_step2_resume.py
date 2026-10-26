@@ -96,10 +96,10 @@ class Run397ResumeTests(unittest.TestCase):
             "tag": resume.catalog()["runner"]["tag"],
             "binary_sha256": resume.audit.sha(self.installed / "bin/llama-server")})
 
-    def fake_execute(self, fake):
+    def fake_execute(self, fake, **kwargs):
         with patch.object(resume, "ModelManager", FakeModels), \
              patch.object(r394, "configure", return_value=fake):
-            return resume.run(self.work, self.installed, pilot=True, execute=True)
+            return resume.run(self.work, self.installed, pilot=True, execute=True, **kwargs)
 
     def test_plan_only_is_not_native_and_does_not_promote(self):
         result = resume.run(self.work, None, pilot=True, execute=False)
@@ -128,6 +128,25 @@ class Run397ResumeTests(unittest.TestCase):
         self.assertEqual(second["status"], "ALL_ARMS_STRUCTURALLY_RECORDED")
         self.assertEqual(len(fake.calls), 3)
         self.assertEqual(len(list(self.work.glob("attempts/*/attempt-*/RUN397_ATTEMPT.json"))), 3)
+
+    def test_bounded_three_invocations_resume_without_duplicate_native_calls(self):
+        fake = FakeNative(self.native)
+        first = self.fake_execute(fake, max_new_arms=1)
+        self.assertEqual(first["status"], "INCOMPLETE")
+        self.assertEqual(list(first["completed"]), ["O_s20"])
+        second = self.fake_execute(fake, max_new_arms=1)
+        self.assertEqual(second["status"], "INCOMPLETE")
+        self.assertEqual(set(second["completed"]), {"O_s20", "P_s20"})
+        third = self.fake_execute(fake, max_new_arms=1)
+        self.assertEqual(third["status"], "ALL_ARMS_STRUCTURALLY_RECORDED")
+        self.assertEqual(fake.calls, ["O_s20", "P_s20", "S_s20"])
+        self.assertEqual(len(list(self.work.glob("attempts/*/attempt-*/RUN397_ATTEMPT.json"))), 3)
+
+    def test_reject_invalid_bounded_attempt_limit(self):
+        for value in (0, -1, True, 1.5):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(ValueError, "INVALID_MAX_NEW_ARMS"):
+                    resume.run(self.work, None, max_new_arms=value)
 
     def test_partial_failed_attempt_preserved_and_new_attempt_numbered(self):
         p = self.work / "attempts/O_s20/attempt-0001"
