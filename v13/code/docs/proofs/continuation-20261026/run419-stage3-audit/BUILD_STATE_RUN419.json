@@ -1,0 +1,46 @@
+{
+  "schema": "V13_RUN419_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run419-native-stage4-gate-20261026",
+  "base_pr": 414,
+  "base_commit": "7548c3b7a6db9189c1a3a94f447d9414a92bb3b4",
+  "verified_source_head": "224a952f5522771cab632ffa2e70d932f3882f6f",
+  "source_sha256": {
+    "v13/code/scripts/run419_verify_stage3_native.py": "53a14586fe5c2f727bae614ea12f9a89962d8216483687317ccfaaad3a9b7f9d",
+    "v13/code/scripts/run419_import_stage3_artifact.py": "73706e4436be5fca538e10f380b9714e9609bf0f047251e4c2c5e466f04e6171",
+    "v13/code/tests/test_run419_verify_stage3_native.py": "9c0fce912f17d5d0110c17c8716f95681974c978a85b3993083fd1c066960aed",
+    "v13/code/tests/test_run419_import_stage3_artifact.py": "e7299db200187d3231b80cbb1fcbda66f00909d52951e8f8a94c094e4cd0ce27"
+  },
+  "source_only_evidence": {
+    "workflow_run_id": 40260602020,
+    "conclusion": "success",
+    "tests": "53/53 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12624432971,
+    "artifact_zip_sha256": "95eb5252d983fe349789740a5fcfbf6766f2e1bc2fd45a283f221705e3bd7f89",
+    "scope": "synthetic/source-only; not actual S native"
+  },
+  "native_owner": {
+    "run418_actions": 40260347495,
+    "status_last_checked": "IN_PROGRESS",
+    "next_arm": "O_s21",
+    "next_arm_authorized_only_after_actual_126_green": true
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Actual S_s20 raw outcome and no-model artifact SHA/ID",
+    "Independent Run419 import and all three receipt validation on actual S artifact",
+    "Remaining O/P/S seeds21/22 and original 378-row paired utility gate"
+  ],
+  "next_command": "After Run418 Actions 40260347495 completes, download its small raw and safe-work artifacts, verify ZIP SHA256 against GitHub metadata, extract actual Run415 stage3 report, invoke run419_import_stage3_artifact.py --archive <safe.zip> --expected-sha256 <actual> --stage3-report <actual report> --destination <fresh work> --output <report.json>; only after 126 actual native rows verified schedule exclusive O_s21.",
+  "checkpoint_note": "Source-only head 224a952 verified. No native 126-row promotion from synthetic tests; any status-only follow-up commit needs exact-head CI."
+}
