@@ -125,6 +125,15 @@ FIRST_NOTE = ('The user already sees the "answer" sentence as the start of your 
               'short sentences that explain it with the numbers in "details". Do not repeat it and do not choose a different option.')
 
 
+# WP-Z2g: what the tool needs, asked of the bodies when its trigger fires (cfg body_question_mode='tool'). Same texts as
+# the WP-Z2b/Z2c targeted questions (+.23/+.33 both_exact); here they come from the tool, so normal chat asks nothing.
+BODY_QUESTIONS = {
+    'B2_GIST': 'Which earlier project rules apply here: budget, deadline and local-only requirement? '
+               'Quote the exact earlier source sentence that states them, or say they are not in the source.',
+    'B1_DETAIL': 'Which option figures apply here: cost, duration and locality of Option A and Option B? '
+                 'Quote the exact source sentences that state them, or say they are not in the source.'}
+
+
 def question(text):
     """BOOT rule: the message names Option A and Option B and asks for a choice/eligibility."""
     t = str(text)

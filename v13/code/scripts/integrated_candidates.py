@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'body_question', 'body_question_derived', 'eligibility_live', 'tool_answer_first', 'runner_seed')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'body_question', 'body_question_derived', 'body_question_tool', 'eligibility_live', 'tool_answer_first', 'runner_seed')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -278,6 +278,17 @@ def body_question_derived(text):
                     "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET")
 
 
+def body_question_tool(text):
+    """2026-10-26 WP-Z2g: cfg body_question_mode='tool' asks the bodies what the tool triggered by the current message needs
+    (bodyq.tool_focus; nothing when no tool trigger matches). '' (default) = previous behaviour."""
+    if 'bodyq.tool_focus' in text:
+        raise ValueError('Integrated anchor changed: body_question_tool already applied')
+    return _replace(text, "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET",
+                    "        if focus is None and self.r.cfg.get('body_question_mode','')=='tool':\n"
+                    "            from . import bodyq;focus=bodyq.tool_focus(role,text)  # WP-Z2g: the triggered tool's question, never a fact\n"
+                    "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET")
+
+
 def eligibility_live(sources):
     """2026-10-21 thread Q: ToolStep.plan gets the selected body offers and the state version, so the eligibility tool
     can use their source-verified quotes as earlier exact evidence (it only acts when the user enabled `eligibility`)."""
@@ -366,7 +377,7 @@ def rebase(texts, root=ROOT):
     out = _chain(full)
     out = {k: (out[k] if k in NAMES else v) for k, v in texts.items()}
     if 'v13/cognition.py' in out:  # cognition.py is bound exactly by source_handoff_candidate, not by NAMES
-        out['v13/cognition.py'] = body_question_derived(body_question(b1_recent(quote_context(b2_offer(out['v13/cognition.py'])))))
+        out['v13/cognition.py'] = body_question_tool(body_question_derived(body_question(b1_recent(quote_context(b2_offer(out['v13/cognition.py']))))))
     return out
 
 

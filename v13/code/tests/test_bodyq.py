@@ -44,3 +44,22 @@ class Live(unittest.TestCase):
         live=(Path(__file__).resolve().parents[1]/'v13/cognition.py').read_text();self.assertIn("bodyq.focus(role,text)",live)
 
 if __name__=='__main__':unittest.main()
+
+
+class ToolMode(unittest.TestCase):
+    def test_question_only_when_a_tool_trigger_matches(self):
+        from v13.agi import eligibility as E
+        t='Project Kestrel. Decide between Option A and Option B from the latest supplier data sheet.'
+        self.assertEqual(Q.tool_focus('B1_DETAIL',t)['question'],E.BODY_QUESTIONS['B1_DETAIL'])
+        self.assertEqual(Q.tool_focus('B2_GIST',t)['reason'],'TOOL_TRIGGER:eligibility')
+        self.assertIsNone(Q.tool_focus('B1_DETAIL','Project Kestrel kickoff notes. Budget 100 euros.'))
+        validate(dict(DEFAULTS,body_question_mode='tool'))
+    def test_live_tool_mode(self):
+        from v13.runtime import Runtime
+        with tempfile.TemporaryDirectory() as d:
+            r=Runtime(Path(d))
+            try:
+                r.cfg['body_question_mode']='tool';live=Live()
+                self.assertNotIn('jef_query',live.offer(r,'What time is it?'))
+                self.assertEqual(live.offer(r,'Decide between Option A and Option B.')['jef_query']['kind'],'FILL_GAP')
+            finally:r.close()

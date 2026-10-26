@@ -58,3 +58,13 @@ def question(role, text):
 def focus(role, text):
     return {'question': question(role, text)[:400], 'kind': 'FILL_GAP', 'target_role': role, 'reason': 'DERIVED_FROM_CURRENT_MESSAGE',
             'authority': 'EXECUTIVE_QUESTION_NOT_FACT'}
+
+
+def tool_focus(role, text):
+    """cfg body_question_mode='tool' (WP-Z2g): the question of the tool whose BOOT trigger matches the current message, else
+    None (no question). Only tools that declare BODY_QUESTIONS take part."""
+    from .agi import eligibility
+    if eligibility.question(text) and role in eligibility.BODY_QUESTIONS:
+        return {'question': eligibility.BODY_QUESTIONS[role], 'kind': 'FILL_GAP', 'target_role': role, 'reason': 'TOOL_TRIGGER:eligibility',
+                'authority': 'EXECUTIVE_QUESTION_NOT_FACT'}
+    return None
