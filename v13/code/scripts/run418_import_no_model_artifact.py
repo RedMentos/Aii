@@ -109,12 +109,17 @@ def import_artifact(archive, expected_sha256, run411_report, destination):
             require(verified["status"] == "RUN413_EXPORT_VERIFIED_NATIVE_PARTIAL" and
                     verified["native_rows"] == 84, "ARTIFACT_NATIVE_84_ROWS_UNVERIFIED")
             safe._rename_noreplace(stage, dest)
+    empty_leaves = {d for d in declared_dirs
+                    if not any(other.startswith(d + "/") for other in declared_dirs)
+                    and not any(name.startswith(d + "/") for name in copied)}
     return {"run": "Run418", "status": "RUN418_NO_MODEL_IMPORT_VERIFIED",
             "artifact_sha256": expected_sha256,
             "manifest_sha256": verified["manifest_sha256"],
             "copied_files": verified["copied_files"],
             "copied_bytes": verified["copied_bytes"],
-            "restored_empty_directories": len(declared_dirs - archive_dirs),
+            "restored_empty_directories": len(empty_leaves),
+            "restored_manifest_directories_without_zip_entries":
+                len(declared_dirs - archive_dirs),
             "native_rows_verified": 84, "restored_work": str(dest),
             "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL",
             "redmi_measured": False, "jepa_weight": 0}
