@@ -1,3 +1,7 @@
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2k — geänderte Regeln erstmals richtig
+
+Kette 1536 Zeichen + `b2_quote_choices=sources` + Wächter (`history`) + `rule_reader='newest_quoted'`: `Z2K_READER_CONFIRMED`, exakt 8 → 36/210, geänderte Regeln 0 → 28, 0 falsch. Nächstes WP-Z2l (ganze Kette gegen STEP2 mit Ein-Körper-Kontrolle). Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2k-reader/BEFUND.md`.
+
 # Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2j — ganze Quellen helfen, C3 liest alte Werte
 
 `b2_quote_choices=sources`: B2-Regelquote .12 → .71, exakte Entscheidungen 22 vs 8 von 210, 0 falsch mit Wächter. Bei geänderten Regeln zieht C3 den alten Wert (10/10) → UNKNOWN. Nächstes: WP-Z2k jüngster Regelwert deterministisch. Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2j-sources/BEFUND.md`.

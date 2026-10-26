@@ -1,0 +1,2234 @@
+{
+  "run": "S4_s38",
+  "arm": "S4",
+  "seed": 38,
+  "enable": {
+    "b2_offer_body_state": false,
+    "offer_quote_min_chars": 90,
+    "b2_control": "two_body",
+    "offer_quote_context_chars": 200,
+    "b1_recent_source_chars": 600,
+    "seed": 38,
+    "b2_quote_select": "pointer",
+    "b2_context_chars": 1536,
+    "b2_quote_slots": 4,
+    "b2_quote_choices": "sources"
+  },
+  "query": true,
+  "step2_status": "UTILITY_FAIL",
+  "paired_no_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.625,
+      "b2_only": 0.26666666666666666,
+      "both_control": 0.6166666666666666,
+      "both_exact": 0.6416666666666666,
+      "both_none": 0.625,
+      "prompt_only_dual": 0.6416666666666667,
+      "same_policy_dual": 0.5916666666666667
+    },
+    "best_solo": 0.625,
+    "gain_over_best_solo": {
+      "both_none": 0.0,
+      "both_exact": 0.016666666666666607,
+      "both_control": -0.008333333333333415
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_status": "TOOL_UTILITY_FAIL",
+  "paired_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.5,
+      "b2_only": 0.125,
+      "both_control": 0.675,
+      "both_exact": 0.6416666666666667,
+      "both_none": 0.7,
+      "prompt_only_dual": 0.5166666666666667,
+      "same_policy_dual": 0.4666666666666667
+    },
+    "best_solo": 0.5,
+    "gain_over_best_solo": {
+      "both_none": 0.19999999999999996,
+      "both_exact": 0.14166666666666672,
+      "both_control": 0.17500000000000004
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.5,
+      "exact_fixtures": []
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.125,
+      "exact_fixtures": []
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 7,
+      "unknown": 2,
+      "mean_utility": 0.675,
+      "exact_fixtures": [
+        "Zosma"
+      ]
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 8,
+      "unknown": 2,
+      "mean_utility": 0.6416666666666667,
+      "exact_fixtures": []
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 8,
+      "unknown": 1,
+      "mean_utility": 0.7,
+      "exact_fixtures": [
+        "Zosma"
+      ]
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.5166666666666667,
+      "exact_fixtures": []
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.4666666666666667,
+      "exact_fixtures": []
+    }
+  },
+  "error_profile_tool": {
+    "b1_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.9666666666666667
+    },
+    "b2_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.25
+    },
+    "both_control": {
+      "rule_fields_correct": 0.46,
+      "option_fields_correct": 0.9666666666666667
+    },
+    "both_exact": {
+      "rule_fields_correct": 0.38,
+      "option_fields_correct": 0.9666666666666667
+    },
+    "both_none": {
+      "rule_fields_correct": 0.48,
+      "option_fields_correct": 1.0
+    },
+    "prompt_only_dual": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.9833333333333333
+    },
+    "same_policy_dual": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.9
+    }
+  },
+  "information_access": {
+    "b1_only": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 9
+    },
+    "b2_only": {
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 0
+    },
+    "both_none": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 0
+    },
+    "both_exact": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 6,
+      "B2_GIST:options": 0
+    },
+    "both_control": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8,
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 0
+    },
+    "same_policy_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8
+    },
+    "prompt_only_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8,
+      "B2_GIST:rules": 0,
+      "B2_GIST:options": 0
+    }
+  },
+  "joint_access": {
+    "b1_only": 0,
+    "b2_only": 0,
+    "both_none": 3,
+    "both_exact": 5,
+    "both_control": 3,
+    "same_policy_dual": 0,
+    "prompt_only_dual": 0
+  },
+  "queried_offers": {
+    "offers": 120,
+    "with_question": 120
+  },
+  "episode_utility_tool": {
+    "Kaus:b1_only": 0.5,
+    "Kaus:b2_only": 0.08333333333333333,
+    "Kaus:both_none": 0.5833333333333334,
+    "Kaus:both_exact": 0.5833333333333334,
+    "Kaus:both_control": 0.3333333333333333,
+    "Kaus:same_policy_dual": 0.5,
+    "Kaus:prompt_only_dual": 0.5,
+    "Lucida:b1_only": 0.5,
+    "Lucida:b2_only": 0.08333333333333333,
+    "Lucida:both_none": 0.5,
+    "Lucida:both_exact": 0.5,
+    "Lucida:both_control": 0.5,
+    "Lucida:same_policy_dual": 0.5,
+    "Lucida:prompt_only_dual": 0.5,
+    "Maia:b1_only": 0.5,
+    "Maia:b2_only": 0.16666666666666666,
+    "Maia:both_none": 0.75,
+    "Maia:both_exact": 0.75,
+    "Maia:both_control": 0.75,
+    "Maia:same_policy_dual": 0.4166666666666667,
+    "Maia:prompt_only_dual": 0.5,
+    "Nekkar:b1_only": 0.5833333333333334,
+    "Nekkar:b2_only": 0.16666666666666666,
+    "Nekkar:both_none": 0.75,
+    "Nekkar:both_exact": 0.75,
+    "Nekkar:both_control": 0.75,
+    "Nekkar:same_policy_dual": 0.5833333333333334,
+    "Nekkar:prompt_only_dual": 0.5833333333333334,
+    "Peacock:b1_only": 0.5,
+    "Peacock:b2_only": 0.16666666666666666,
+    "Peacock:both_none": 0.75,
+    "Peacock:both_exact": 0.75,
+    "Peacock:both_control": 0.75,
+    "Peacock:same_policy_dual": 0.5,
+    "Peacock:prompt_only_dual": 0.5,
+    "Rukbat:b1_only": 0.5833333333333334,
+    "Rukbat:b2_only": 0.0,
+    "Rukbat:both_none": 0.75,
+    "Rukbat:both_exact": 0.75,
+    "Rukbat:both_control": 0.75,
+    "Rukbat:same_policy_dual": 0.5833333333333334,
+    "Rukbat:prompt_only_dual": 0.5833333333333334,
+    "Sargas:b1_only": 0.5,
+    "Sargas:b2_only": 0.08333333333333333,
+    "Sargas:both_none": 0.75,
+    "Sargas:both_exact": 0.75,
+    "Sargas:both_control": 0.75,
+    "Sargas:same_policy_dual": 0.5,
+    "Sargas:prompt_only_dual": 0.5,
+    "Thuban:b1_only": 0.5,
+    "Thuban:b2_only": 0.08333333333333333,
+    "Thuban:both_none": 0.75,
+    "Thuban:both_exact": 0.75,
+    "Thuban:both_control": 0.75,
+    "Thuban:same_policy_dual": 0.16666666666666666,
+    "Thuban:prompt_only_dual": 0.5,
+    "Vindemiatrix:b1_only": 0.4166666666666667,
+    "Vindemiatrix:b2_only": 0.16666666666666666,
+    "Vindemiatrix:both_none": 0.5,
+    "Vindemiatrix:both_exact": 0.5,
+    "Vindemiatrix:both_control": 0.5,
+    "Vindemiatrix:same_policy_dual": 0.4166666666666667,
+    "Vindemiatrix:prompt_only_dual": 0.5,
+    "Zosma:b1_only": 0.4166666666666667,
+    "Zosma:b2_only": 0.25,
+    "Zosma:both_none": 0.9166666666666666,
+    "Zosma:both_exact": 0.3333333333333333,
+    "Zosma:both_control": 0.9166666666666666,
+    "Zosma:same_policy_dual": 0.5,
+    "Zosma:prompt_only_dual": 0.5
+  },
+  "split_exact_tool": {
+    "b1_only": [],
+    "b2_only": [],
+    "both_control": [],
+    "both_exact": [],
+    "both_none": [],
+    "prompt_only_dual": [],
+    "same_policy_dual": []
+  },
+  "z2e": {
+    "b2_quote_select": "pointer",
+    "b2_rule_rows": {
+      "Kaus:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Kaus:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Kaus:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Kaus:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Lucida:b2_only": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Lucida:both_control": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Lucida:both_exact": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Lucida:both_none": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Maia:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Maia:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Maia:both_exact": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Maia:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Nekkar:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Nekkar:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Nekkar:both_exact": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Nekkar:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Peacock:b2_only": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Peacock:both_control": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Peacock:both_exact": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Peacock:both_none": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Rukbat:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Rukbat:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Rukbat:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Rukbat:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Sargas:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Sargas:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Sargas:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Sargas:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Thuban:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Thuban:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Thuban:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Thuban:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Vindemiatrix:b2_only": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Vindemiatrix:both_control": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Vindemiatrix:both_exact": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Vindemiatrix:both_none": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Zosma:b2_only": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Zosma:both_control": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Zosma:both_exact": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Zosma:both_none": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      }
+    },
+    "b2_rule_rate": 0.45,
+    "superseded_quoted_rows": 32,
+    "invented_value_rows": 0,
+    "picked_ids": 80,
+    "wrong_committed_tool": 23,
+    "wrong_committed_rows": [
+      {
+        "fixture": "Kaus",
+        "variant": "both_none",
+        "action": "NONE"
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "both_exact",
+        "action": "NONE"
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "both_none",
+        "action": "A"
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "both_exact",
+        "action": "A"
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "both_control",
+        "action": "A"
+      },
+      {
+        "fixture": "Maia",
+        "variant": "both_none",
+        "action": "B"
+      },
+      {
+        "fixture": "Maia",
+        "variant": "both_exact",
+        "action": "B"
+      },
+      {
+        "fixture": "Maia",
+        "variant": "both_control",
+        "action": "B"
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "both_none",
+        "action": "A"
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "both_exact",
+        "action": "A"
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "both_control",
+        "action": "A"
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "both_none",
+        "action": "A"
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "both_exact",
+        "action": "A"
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "both_control",
+        "action": "A"
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "both_none",
+        "action": "B"
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "both_exact",
+        "action": "B"
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "both_control",
+        "action": "B"
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "both_none",
+        "action": "B"
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "both_exact",
+        "action": "B"
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "both_control",
+        "action": "B"
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "both_none",
+        "action": "B"
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "both_exact",
+        "action": "B"
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "both_control",
+        "action": "B"
+      }
+    ],
+    "b2_prompt_tokens": [
+      832,
+      835,
+      881,
+      845,
+      557,
+      842,
+      839,
+      892,
+      853,
+      560,
+      814,
+      814,
+      861,
+      825,
+      552,
+      846,
+      850,
+      896,
+      858,
+      555,
+      837,
+      843,
+      922,
+      855,
+      560,
+      839,
+      845,
+      889,
+      851,
+      562,
+      928,
+      927,
+      977,
+      940,
+      560,
+      936,
+      933,
+      1018,
+      946,
+      556,
+      851,
+      854,
+      856,
+      867,
+      564,
+      846,
+      849,
+      894,
+      857,
+      560
+    ],
+    "source_sha256": {
+      "scripts/step2_z2e_pointer_hard.py": "11a14d1c919c8379ee90886454e42634cd5d8211384f48ea03e6f35a5cb1fc7b",
+      "scripts/step2_z2b_seeds.py": "4479863daa334c955e3583be32a85f4213cedb5da135e6ce6e10e16a3fd64454",
+      "scripts/step2_z2_timescale.py": "0139eb7edd060fc11d3e239c1e84d5293fa10b4b75b0223285a8d5509d7de032",
+      "v13/cognition.py": "dda0dd0751069ae10715926ee338484ff3babb3c0c5982e01eb23244fc3f4844"
+    }
+  },
+  "z2g": {
+    "b2_context_chars": 1536,
+    "validity": {
+      "offers": 40,
+      "kickoff_in_context": 40
+    },
+    "pairs": [
+      {
+        "fixture": "Kaus",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "NONE",
+        "off": "NONE",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "NONE",
+        "off": "NONE",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Maia",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Maia",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Maia",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Maia",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Maia",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Maia",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Maia",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "b1_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "b2_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "both_none",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "both_exact",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "both_control",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "same_policy_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "prompt_only_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "b1_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "b2_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "both_none",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "both_exact",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "both_control",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "same_policy_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "prompt_only_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "b1_only",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "b2_only",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "both_none",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "both_exact",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "both_control",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "same_policy_dual",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "prompt_only_dual",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "b1_only",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "b2_only",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "both_none",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "A",
+        "off": "A",
+        "on": "A",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "both_exact",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "both_control",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "A",
+        "off": "A",
+        "on": "A",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "same_policy_dual",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "prompt_only_dual",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      }
+    ],
+    "consistent": true,
+    "off": {
+      "exact": 2,
+      "wrong": 23,
+      "unknown": 45,
+      "rows": 70
+    },
+    "on": {
+      "exact": 2,
+      "wrong": 0,
+      "unknown": 68,
+      "rows": 70
+    },
+    "source_sha256": {
+      "scripts/step2_z2g_recency.py": "71ec85826f1bb45846073e749370e95bf9f2522c06382117731bbd1963c5cb4f",
+      "v13/agi/eligibility.py": "5772219b68c36a9f5c603b5302b33d7daf20c36e6ccc953e72a3c6d1b8326bc6"
+    }
+  },
+  "z2h": {
+    "b2_quote_slots": 4,
+    "picked_per_offer": {
+      "offers": 50,
+      "mean": 1.6,
+      "max": 3
+    },
+    "source_sha256": {
+      "scripts/step2_z2h_slots.py": "9a6155a387cc3376584994714d1a916d490cf0f4212344747daf4ac24be0acef",
+      "v13/cognition.py": "dda0dd0751069ae10715926ee338484ff3babb3c0c5982e01eb23244fc3f4844"
+    }
+  },
+  "z2i": {
+    "b2_quote_choices": "sources",
+    "picked_kinds": {
+      "current": 0,
+      "kickoff": 40,
+      "note": 17,
+      "sheet": 15,
+      "other": 0
+    },
+    "picked_kinds_changed": {
+      "current": 0,
+      "kickoff": 32,
+      "note": 10,
+      "sheet": 14,
+      "other": 0
+    }
+  },
+  "z2k": {
+    "pairs": [
+      {
+        "fixture": "Kaus",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Kaus",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": [
+          "budget"
+        ]
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "NONE",
+        "read_newest": [
+          "budget"
+        ]
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "NONE",
+        "read_newest": [
+          "budget"
+        ]
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "NONE",
+        "read_newest": [
+          "budget"
+        ]
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Lucida",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Maia",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Maia",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": [
+          "budget"
+        ]
+      },
+      {
+        "fixture": "Maia",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Maia",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "A",
+        "read_newest": [
+          "deadline"
+        ]
+      },
+      {
+        "fixture": "Maia",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Maia",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Maia",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "B",
+        "read_newest": [
+          "deadline"
+        ]
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Nekkar",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": [
+          "local_only"
+        ]
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "B",
+        "read_newest": [
+          "local_only"
+        ]
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "B",
+        "read_newest": [
+          "local_only"
+        ]
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "B",
+        "read_newest": [
+          "local_only"
+        ]
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Peacock",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Rukbat",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "b1_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "b2_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": [
+          "budget"
+        ]
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "both_none",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "both_exact",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "both_control",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "same_policy_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Sargas",
+        "variant": "prompt_only_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "b1_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "b2_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "both_none",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "both_exact",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "both_control",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "same_policy_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Thuban",
+        "variant": "prompt_only_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "b1_only",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "b2_only",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": [
+          "budget"
+        ]
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "both_none",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "both_exact",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "both_control",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "same_policy_dual",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Vindemiatrix",
+        "variant": "prompt_only_dual",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "b1_only",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "b2_only",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "both_none",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "on": "A",
+        "reader": "A",
+        "read_newest": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "both_exact",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "both_control",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "on": "A",
+        "reader": "A",
+        "read_newest": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "same_policy_dual",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      },
+      {
+        "fixture": "Zosma",
+        "variant": "prompt_only_dual",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "on": "UNKNOWN",
+        "reader": "UNKNOWN",
+        "read_newest": []
+      }
+    ],
+    "on": {
+      "exact": 2,
+      "wrong": 0,
+      "unknown": 68,
+      "rows": 70
+    },
+    "reader": {
+      "exact": 10,
+      "wrong": 0,
+      "unknown": 60,
+      "rows": 70
+    },
+    "source_sha256": {
+      "scripts/step2_z2k_reader.py": "726bc35e3bd74db46a79ef150dd197c950cbd7f2367a9c528831f2947a03d181",
+      "v13/agi/eligibility.py": "5772219b68c36a9f5c603b5302b33d7daf20c36e6ccc953e72a3c6d1b8326bc6"
+    }
+  }
+}
