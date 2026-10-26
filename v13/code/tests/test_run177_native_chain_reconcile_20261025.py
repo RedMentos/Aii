@@ -36,7 +36,7 @@ class Run177NativeChainReconcile(unittest.TestCase):
         self.assertEqual({name:digest(text) for name,text in live.items()},
                          manifest['current_sha256'])
         self.assertEqual(digest(historical['v13/runners.py']),EXPECTED_RUNNERS_SHA256)
-        self.assertIsNone(chain.overlay(chain._baseline(chain.ROOT)))
+        self.assertEqual(chain.overlay(chain._baseline(chain.ROOT)),reviewed)
         self.assertTrue(lineage.verify()['current_reviewed_sources_exact'])
 
     def test_b2_native_identity_preserved_without_changing_c3(self):
