@@ -35,6 +35,15 @@ class TestRun565(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'MALFORMED_QUOTE'):
             m.quote_coverage(self.analyst([None]),rules)
         self.assertFalse(any(m.quote_coverage(self.analyst([rules['budget']['sentence']],role='C3_LANGUAGE'),rules).values()))
+    def test_stage_duplicate_and_missing_row_keys_refused(self):
+        rows=[{'fixture':'F1' if i<7 else 'F2','variant':m.VARIANTS[i%7]} for i in range(14)]
+        self.assertEqual(len(m.require_stage_keys(rows,rows)),14)
+        bad=list(rows);bad[-1]=dict(rows[0])
+        with self.assertRaisesRegex(ValueError,'STAGE_ROW_KEY'):
+            m.require_stage_keys(rows,bad)
+        with self.assertRaisesRegex(ValueError,'STAGE_ROW_KEY'):
+            m.require_stage_keys(rows,rows[:-1])
+
     def test_exact_three_pinned_safe_archives_required(self):
         with self.assertRaisesRegex(ValueError,'EXACT_THREE'):
             m.audit([],[])
