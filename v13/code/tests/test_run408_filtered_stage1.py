@@ -27,6 +27,7 @@ class Run408FilteredTests(unittest.TestCase):
             "RUN401_NATIVE_EXIT.txt": b"0\n",
             "RUN401_AUDIT_EXIT.txt": b"0\n",
             "RUN401_PRIVACY_EXIT.txt": b"0\n",
+            "RUN401_INSTALLED_RAW.log": b"RUNNER_VERIFIED " + m.stage.RUN401_EXECUTABLE_SHA256.encode() + b"\n",
             "RUN401_NATIVE_RAW.log": b"original raw evidence",
             "run401-full/RUN397_PROGRESS.json": b'{"status":"INCOMPLETE"}',
             self.weight_path: self.weight,
