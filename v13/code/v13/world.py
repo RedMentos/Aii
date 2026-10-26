@@ -102,7 +102,7 @@ class WorldState:
         except (ValueError,TypeError,KeyError,OSError,UnicodeError,RecursionError,OverflowError):
             self.s.log('world_observation_refused',action['event_id'],{'reason':'INVALID_EVENT_SOURCE'})
             return None
-        existing=self.s.one("SELECT payload FROM packets WHERE event_id=? AND kind='PredictionOutcome' AND json_extract(payload,'$.action_id')=?",(env['event_id'],aid))
+        existing=self.s.one("SELECT payload FROM packets WHERE event_id=? AND kind='PredictionOutcome' AND CASE WHEN json_valid(payload) THEN json_extract(payload,'$.action_id')=? AND json_type(payload,'$.observation')='object' AND json_extract(payload,'$.observation.action_id')=? ELSE 0 END",(env['event_id'],aid,aid))
         if existing:
             self._refresh(event['session_id'])
             return json.loads(existing['payload'])['observation']
@@ -148,8 +148,8 @@ class WorldState:
         # to prevent two concurrent observers duplicating the pair.
         with self.s.tx() as c:
             existing=c.execute(
-                "SELECT payload FROM packets WHERE event_id=? AND kind='PredictionOutcome' AND json_extract(payload,'$.action_id')=?",
-                (env['event_id'],aid)).fetchone()
+                "SELECT payload FROM packets WHERE event_id=? AND kind='PredictionOutcome' AND CASE WHEN json_valid(payload) THEN json_extract(payload,'$.action_id')=? AND json_type(payload,'$.observation')='object' AND json_extract(payload,'$.observation.action_id')=? ELSE 0 END",
+                (env['event_id'],aid,aid)).fetchone()
             if existing:
                 observed=json.loads(existing['payload'])['observation']
                 inserted=False
@@ -202,12 +202,22 @@ class WorldState:
         # between packet insert and state write cannot silently lose an action.
         rows=self.s.rows("SELECT p.payload,p.event_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='PredictionOutcome' AND e.session_id=? ORDER BY p.created DESC LIMIT 128",(session,))
         if not rows:return
-        byaction={}
+        byaction={};rejected=0;latest_valid_event=None
         for row in rows:
-            observation=json.loads(row['payload'])['observation'];byaction.setdefault(observation['action_id'],observation)
+            try:
+                payload=_strict_json_object(row['payload'])
+                observation=payload.get('observation')
+                if not isinstance(observation,dict) or type(observation.get('action_id')) is not str or not observation['action_id']:
+                    raise ValueError('Invalid PredictionOutcome observation')
+            except (ValueError,TypeError,KeyError,OverflowError,RecursionError):
+                rejected+=1;continue
+            if latest_valid_event is None:latest_valid_event=row['event_id']
+            byaction.setdefault(observation['action_id'],observation)
             if len(byaction)==32:break
-        count=self.s.one("SELECT COUNT(DISTINCT json_extract(p.payload,'$.observation.action_id')) AS n FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='PredictionOutcome' AND e.session_id=?",(session,))['n']
-        value={'mode':'OBSERVED_DIGITAL_ACTIONS','recent':list(reversed(list(byaction.values()))),'observed_action_count':count,'last_event_id':rows[0]['event_id']}
+        # CASE guards SQLite JSON operations; malformed rows remain stored.
+        count=self.s.one("SELECT COUNT(DISTINCT CASE WHEN json_valid(p.payload) THEN CASE WHEN json_type(p.payload,'$.observation')='object' AND json_type(p.payload,'$.observation.action_id')='text' THEN json_extract(p.payload,'$.observation.action_id') END END) AS n FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='PredictionOutcome' AND e.session_id=?",(session,))['n']
+        value={'mode':'OBSERVED_DIGITAL_ACTIONS','recent':list(reversed(list(byaction.values()))),'observed_action_count':count,'last_event_id':latest_valid_event}
+        if rejected:self.s.log('world_packet_rejected',None,{'count':rejected,'reason':'INVALID_PREDICTION_OUTCOME'})
         key='WORLD_STATE:'+session;old,v=self.s.state(key,{})
         if {k:x for k,x in old.items() if k!='updated_wall_time'}!=value:self.s.set_state(key,value|{'updated_wall_time':now()},expected=v)
 
@@ -215,7 +225,7 @@ class WorldState:
         # A completed action is authoritative even if its derived observation
         # was not written before termination. No outcome is invented for an
         # unfinished DISPATCHED/OUTCOME_UNKNOWN action.
-        rows=self.s.rows("SELECT a.id FROM actions a JOIN events e ON e.id=a.event_id WHERE e.session_id=? AND a.outcome IS NOT NULL AND a.expected LIKE ? AND NOT EXISTS (SELECT 1 FROM packets p WHERE p.event_id=a.event_id AND p.kind='PredictionOutcome' AND json_extract(p.payload,'$.action_id')=a.id) ORDER BY a.created",(self.r.session,'%"forecast"%'))
+        rows=self.s.rows("SELECT a.id FROM actions a JOIN events e ON e.id=a.event_id WHERE e.session_id=? AND a.outcome IS NOT NULL AND a.expected LIKE ? AND NOT EXISTS (SELECT 1 FROM packets p WHERE p.event_id=a.event_id AND p.kind='PredictionOutcome' AND CASE WHEN json_valid(p.payload) THEN json_extract(p.payload,'$.action_id')=a.id AND json_type(p.payload,'$.observation')='object' AND json_extract(p.payload,'$.observation.action_id')=a.id ELSE 0 END) ORDER BY a.created",(self.r.session,'%"forecast"%'))
         for row in rows:self.observe(row['id'])
         self._refresh(self.r.session)
 
