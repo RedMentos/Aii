@@ -1,0 +1,3 @@
+# Run553 review finding before follow-up source edit
+
+2026-10-26. The existing `GoalStore.set_status('DONE')` sets progress to 1.0, but `set_status('OPEN')` leaves it at 1.0. A new explicit USER `reopen` command would therefore display OPEN with 100% progress, an inconsistent user-facing lifecycle. Before executing Run553 CI, amend the same atomic `set_status` transaction to reset progress to 0 when explicitly reopening a previously DONE/ABANDONED goal. Preserve step/child history, notes, and all other status transitions; do not grant new rights. Add a regression assertion. This finding is a follow-up to the original prereg, not retroactively claimed as preregistered.

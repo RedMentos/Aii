@@ -192,7 +192,23 @@ def operator_command(r,args):
         if sub=='dataset':return dumps(g.teacher.dataset(limit=20))
         raise ValueError(':growth teacher [status|cloud on|off|ask <Frage>|run [local|claude]|dataset]')
     if c=='goals':return dumps(g.goals.report()|{'goals':g.goals.tree()})
-    if c=='goal' and len(args)>1:return 'Ziel angelegt: '+g.goals.add(' '.join(args[1:]),'USER')
+    if c=='goal':
+        commands={'status','done','abandon','reopen'}
+        if len(args)>1 and args[1] in commands:
+            if len(args)!=3:raise ValueError(':growth goal status|done|abandon|reopen <goal_id>')
+            action,gid=args[1],args[2]
+            goal=g.goals.get(gid)
+            if action=='status':return dumps(goal)
+            if goal['origin']!='USER':raise PermissionError('Nur explizite USER-Ziele dürfen so geändert werden')
+            target={'done':'DONE','abandon':'ABANDONED','reopen':'OPEN'}[action]
+            if goal['status']==target:return dumps({'id':gid,'status':target,'changed':False})
+            allowed={'done':{'OPEN','ACTIVE','BLOCKED'},
+                     'abandon':{'OPEN','ACTIVE','BLOCKED'},
+                     'reopen':{'DONE','ABANDONED'}}[action]
+            if goal['status'] not in allowed:raise ValueError('GOAL_STATUS_TRANSITION_REFUSED')
+            g.goals.set_status(gid,target,'explicit USER operator '+action)
+            return dumps({'id':gid,'status':target,'changed':True})
+        if len(args)>1:return 'Ziel angelegt: '+g.goals.add(' '.join(args[1:]),'USER')
     if c=='consolidate':
         if r.sleep is None:raise ValueError('Kein Scheduler')
         r.sleep.scheduler.post('TIMER',origin='USER',action='growth_consolidate');return 'Konsolidierung eingeplant; startet sobald nichts anderes läuft.'
