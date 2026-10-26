@@ -126,8 +126,13 @@ class Run415Stage3RestoreTests(unittest.TestCase):
         result = {"status": "INCOMPLETE", "completed": receipts,
                   "failures_preserved": {}, "canonical_gate_pass": False,
                   "step2_exit": "UTILITY_FAIL"}
+        original_sha_file = stage.safe.sha_file
+        def selective_sha(path):
+            if Path(path).name == "llama-server":
+                return stage.RUN401_EXECUTABLE_SHA256
+            return original_sha_file(path)
         with mock.patch.object(stage.safe, "sha_file",
-                               return_value=stage.RUN401_EXECUTABLE_SHA256), \
+                               side_effect=selective_sha), \
              mock.patch.object(stage.resume, "run", return_value=result) as native, \
              mock.patch.object(stage.resume, "validate_completed",
                                return_value={"rows": 42}), \
@@ -151,8 +156,13 @@ class Run415Stage3RestoreTests(unittest.TestCase):
                   "completed": {"O_s20": {}, "P_s20": {}},
                   "failures_preserved": {"S_s20": [{"reason": "synthetic"}]},
                   "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL"}
+        original_sha_file = stage.safe.sha_file
+        def selective_sha(path):
+            if Path(path).name == "llama-server":
+                return stage.RUN401_EXECUTABLE_SHA256
+            return original_sha_file(path)
         with mock.patch.object(stage.safe, "sha_file",
-                               return_value=stage.RUN401_EXECUTABLE_SHA256), \
+                               side_effect=selective_sha), \
              mock.patch.object(stage.resume, "run", return_value=failed), \
              mock.patch.object(stage.safe, "export",
                                return_value={"status": "EXPORT_VERIFIED_NO_MODEL_WEIGHTS",
