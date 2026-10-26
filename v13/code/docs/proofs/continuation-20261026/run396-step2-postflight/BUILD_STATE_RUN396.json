@@ -1,7 +1,7 @@
 {
   "run": "Run396",
   "date": "2026-10-26",
-  "stage": "SOURCE_ONLY_GREEN_NATIVE_INPUT_PENDING",
+  "stage": "SOURCE_ONLY_GREEN2_NATIVE_INPUT_PENDING",
   "owner": "GPT scheduled continuation",
   "branch": "codex/run396-step2-native-postflight-20261026",
   "pr": 391,
@@ -42,5 +42,19 @@
     "Only after valid pilot assess whether preregistered 378-row full cohort is feasible"
   ],
   "next_command": "PYTHONPATH=v13/code python3 v13/code/scripts/run396_step2_pilot_audit.py --input-dir <extracted Run395 run395-pilot> --output <private RUN396_NATIVE_POSTFLIGHT.json>",
-  "next_prerequisites": "Run395 PR390 exact-head native artifact with complete step2/tool/summary reports; no paid provisioning"
+  "next_prerequisites": "Run395 PR390 exact-head native artifact with complete step2/tool/summary reports; no paid provisioning",
+  "adversarial_review": {
+    "finding": "forged B2 quote containing historical rule accepted by initial provenance counter; source-only fixed",
+    "source_commit": "34b5a0e829ddcb2c3aae14ddd551a8a90799fadc",
+    "tests_commit": "eb798a5140f2a654150b7eda43a9416811471356",
+    "exact_head": "eb798a5140f2a654150b7eda43a9416811471356",
+    "actions_run": 40248392453,
+    "job": 121334754731,
+    "artifact": 12619711840,
+    "zip_sha256": "ae82eb04d093bdb3edcbc536100125b4292f6aa8718e2f429334d14a0398be63",
+    "tests": "17/17 PASS, compileall PASS, privacy CLEAN",
+    "raw_integrity": "ZIP CRC PASS, 4/4 member SHA256 PASS, private Library byte-identical",
+    "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run396_STEP2_20261026/SOURCE_RAW_REVIEW2.zip"
+  },
+  "evidence_status": "Initial GREEN and post-GREEN adversarial GREEN2 both preserved; native input not yet audited"
 }
