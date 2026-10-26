@@ -61,6 +61,25 @@ class Run460SevenReceiptAdversarial(unittest.TestCase):
         self.assertEqual(result["step2_exit"], "UTILITY_FAIL")
         self.assertFalse(result["redmi_measured"])
 
+    def test_old_six_receipt_report_and_wrong_remaining_count_refused(self):
+        self.report["rows_verified"] = 252
+        with self.assertRaisesRegex(ValueError, "RUN460_NATIVE_294_NOT_GREEN"):
+            A.verify(self.source, self.report)
+        self.report["rows_verified"] = 294
+        self.report["remaining_arms"] = 3
+        with self.assertRaisesRegex(ValueError, "RUN460_NATIVE_294_NOT_GREEN"):
+            A.verify(self.source, self.report)
+
+    def test_seventh_receipt_source_identity_mismatch_refused(self):
+        def invalid(directory, arm, seed, *args, **kwargs):
+            if (arm, seed) == ("O", 22):
+                return dict(self.receipt, sha256={"native.json": "0" * 64})
+            return self.receipt
+        with mock.patch.object(A.r397, "validate_completed", side_effect=invalid):
+            with self.assertRaisesRegex(ValueError,
+                                        "STAGE7_NATIVE_RECEIPT_INVALID:O_s22"):
+                A.verify(self.source, self.report)
+
     def test_seventh_receipt_wrong_rows_refused(self):
         def invalid(directory, arm, seed, *args, **kwargs):
             return {"rows": 41} if (arm, seed) == ("O", 22) else self.receipt
