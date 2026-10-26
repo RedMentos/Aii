@@ -1,0 +1,34 @@
+{
+  "actions_head": "5cbf54f8c8ff2fe3fb8531a76a560493c7041296",
+  "b3_l1": "FAIL",
+  "batch_id": "FUTURE_002",
+  "body_jepa": "UNAVAILABLE",
+  "canonical_gate_pass": false,
+  "jepa_weight": 0,
+  "linux_native_origin_as_recorded": true,
+  "mean_utility": {
+    "b1_only": 0.2638888888888889,
+    "b2_only": 0.2638888888888889,
+    "both_control": 0.2222222222222222,
+    "both_exact": 0.2638888888888889,
+    "both_none": 0.23611111111111113,
+    "prompt_only_dual": 0.2916666666666667,
+    "same_policy_dual": 0.2638888888888889
+  },
+  "native_execution_performed_by_this_audit": false,
+  "raw_manifest_entries": 27,
+  "raw_zip_sha256": "ae44a8d97b0a0d1e658a91fc2c7731fe5854592a9dbfe5cfe173a6cc80b9419b",
+  "redmi_measured": false,
+  "rows_verified": 42,
+  "safe_manifest_entries": 24,
+  "safe_zip_sha256": "ecd1ece00a2e82396bbd716b4fab93c84efe81ce60d9e853b8b450a437d4eb03",
+  "schema": "V13_RUN559_INDEPENDENT_FUTURE_BATCH_AUDIT_V1",
+  "stage_ids": [
+    "A_s31_p03",
+    "A_s31_p04",
+    "A_s32_p00"
+  ],
+  "status": "OFFLINE_VERIFIED_NO_MODEL_EXECUTION",
+  "step2_exit": "UTILITY_FAIL",
+  "wrong_committed": 0
+}
