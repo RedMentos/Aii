@@ -107,7 +107,9 @@ class Run407StreamTests(unittest.TestCase):
         self.assertIn("STAGE1_SOURCE_HEAD_MISMATCH", str(report["errors"]))
 
     def test_missing_member_in_manifest_rejected(self):
-        digest = self.make_zip(manifest_override=[])
+        lines = [hashlib.sha256(v).hexdigest() + "  ./" + k
+                 for k, v in self.files.items() if k != "RUN401_HEAD.txt"]
+        digest = self.make_zip(manifest_override=lines)
         report, checked = self.check(digest)
         self.assertEqual(checked.call_count, 0)
         self.assertIn("UNHASHED_OR_MISSING_MEMBER", str(report["errors"]))
