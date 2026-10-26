@@ -1,0 +1,277 @@
+name: V13 Run413 one pinned Linux-native P_s20 with safe no-model export
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run413-native-p20.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  pinned-p20:
+    # Single-owner run. Docs-only PR updates must not duplicate the 1.46GB/native cohort.
+    if: github.event.pull_request.head.sha == 'f7fe01393801c852aa3797973bda0e81b14069ac'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      PIP_NO_CACHE_DIR: '1'
+      ARTIFACT_ID: '12620379581'
+      ORIGINAL_SHA256: '65ac00a8cd2013ebab76828ed3bc25dee5433d1d55a995573387f19de29b530a'
+      RUN410_GREEN: '40257737258'
+      RUN410_HEAD: '4d9b4c5d741bad5efeb888135f023f58486f64dc'
+      RUN410_RAW_ID: '12622519632'
+      RUN410_RAW_SHA256: 'bcd951375ab7e4fcd2ce0f974f1030d716f8dfcf3551a75f05ca20238fbdb075'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact source, observed Run410 GREEN, original artifact provenance and host
+        id: preflight
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN413_HEAD.txt"
+          git merge-base --is-ancestor "$RUN410_HEAD" HEAD
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          sha256sum v13/code/scripts/run408_filtered_stage1.py v13/code/scripts/run409_safe_export.py \
+            v13/code/scripts/run411_safe_stage2.py v13/code/scripts/run412_stage1_inventory_gate.py \
+            v13/code/scripts/run413_export_receipt_gate.py | tee "$RUNNER_TEMP/RUN413_SOURCE_SHA256.txt"
+          gh api "repos/RedMentos/Aii/actions/runs/$RUN410_GREEN" \
+            --jq '{id,conclusion,head_sha}' | tee "$RUNNER_TEMP/RUN413_RUN410_GREEN.json"
+          gh api "repos/RedMentos/Aii/actions/artifacts/$RUN410_RAW_ID" \
+            --jq '{id,digest,expired}' | tee "$RUNNER_TEMP/RUN413_RUN410_RAW_METADATA.json"
+          gh api "repos/RedMentos/Aii/actions/artifacts/$ARTIFACT_ID" \
+            --jq '{id,digest,size_in_bytes,expired,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha}}' \
+            | tee "$RUNNER_TEMP/RUN413_ORIGINAL_METADATA.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])
+          run=json.loads((p/"RUN413_RUN410_GREEN.json").read_text())
+          raw=json.loads((p/"RUN413_RUN410_RAW_METADATA.json").read_text())
+          original=json.loads((p/"RUN413_ORIGINAL_METADATA.json").read_text())
+          assert run=={"id":int(os.environ["RUN410_GREEN"]),"conclusion":"success",
+                       "head_sha":os.environ["RUN410_HEAD"]},run
+          assert raw["id"]==int(os.environ["RUN410_RAW_ID"]) and not raw["expired"]
+          assert raw["digest"]=="sha256:"+os.environ["RUN410_RAW_SHA256"]
+          assert original["id"]==int(os.environ["ARTIFACT_ID"]) and not original["expired"]
+          assert original["digest"]=="sha256:"+os.environ["ORIGINAL_SHA256"]
+          assert original["size_in_bytes"]==1461613972
+          assert original["workflow_run"]=={"id":40250662450,
+                                            "head_sha":"c0facf60c3286064e15bc06de104c85d9344382a"}
+          PY
+          { date -u -Iseconds; uname -a; python3 --version; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } \
+            | tee "$RUNNER_TEMP/RUN413_HOST.txt"
+      - name: Isolated pinned Python deps and inherited source-only tests
+        id: deps
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run413venv"
+          timeout 240s "$RUNNER_TEMP/run413venv/bin/python" -m pip install \
+            --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' \
+            2>&1 | tee "$RUNNER_TEMP/RUN413_DEPS_RAW.log"
+          d=${PIPESTATUS[0]}
+          if [ "$d" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run413venv/bin/python" -m unittest -v \
+              tests.test_run394_step2_fresh tests.test_run397_step2_resume \
+              tests.test_run408_filtered_stage1 tests.test_run409_safe_export \
+              tests.test_run411_safe_stage2 tests.test_run412_stage1_inventory_gate \
+              tests.test_run413_export_receipt_gate \
+              2>&1 | tee "$RUNNER_TEMP/RUN413_TESTS_RAW.log"
+            t=${PIPESTATUS[0]}
+          else
+            t=2
+          fi
+          rc=$((d+t))
+          echo "$rc" > "$RUNNER_TEMP/RUN413_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Install exact registered public models and b10964 native runner
+        id: bootstrap
+        if: steps.deps.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run413installed"
+          timeout 1800s "$RUNNER_TEMP/run413venv/bin/python" -m v13.bootstrap --home "$V13_HOME" \
+            2>&1 | tee "$RUNNER_TEMP/RUN413_BOOTSTRAP_RAW.log"
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run413venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN413_INSTALLED_RAW.log"
+          import json,os
+          from pathlib import Path
+          from v13.models import ModelManager,catalog
+          from v13.common import file_hash
+          from run402_stage_restore import RUN401_EXECUTABLE_SHA256
+          h=Path(os.environ["V13_HOME"]); m=ModelManager(h); checks=m.verify(deep=True)
+          assert all(checks[k]["ok"] and checks[k]["hash_checked"]
+                     for k in ("needle","language","body","gist")),checks
+          c=catalog()
+          for key in ("needle","language","body","gist"):
+              assert m.installed[key]["exact_revision"]==c["models"][key]["revision"]
+              print("MODEL_VERIFIED",key,m.installed[key]["exact_revision"])
+          p=h/"bin/llama-server"
+          cfg=json.loads((h/"config/runner.json").read_text())
+          assert cfg["tag"]=="b10964" and cfg["binary_sha256"]==file_hash(p)
+          assert file_hash(p)==RUN401_EXECUTABLE_SHA256
+          print("RUNNER_VERIFIED",cfg["binary_sha256"])
+          PY
+            rc=${PIPESTATUS[0]}
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN413_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download exact original Run401 ZIP locally without reupload
+        id: download
+        if: steps.bootstrap.outputs.rc == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          set +e
+          timeout 1400s gh api "repos/RedMentos/Aii/actions/artifacts/$ARTIFACT_ID/zip" \
+            > "$RUNNER_TEMP/original-stage1.zip" 2> "$RUNNER_TEMP/RUN413_DOWNLOAD_STDERR.log"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            sha256sum "$RUNNER_TEMP/original-stage1.zip" | tee "$RUNNER_TEMP/RUN413_DOWNLOADED_SHA256.txt"
+            echo "$ORIGINAL_SHA256  $RUNNER_TEMP/original-stage1.zip" | sha256sum -c - \
+              > "$RUNNER_TEMP/RUN413_ORIGINAL_HASH_CHECK.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN413_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Execute exactly one pinned P_s20 native arm and safe export
+        id: native
+        if: steps.download.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          timeout -s TERM -k 30s 4800s "$RUNNER_TEMP/run413venv/bin/python" scripts/run411_safe_stage2.py \
+            --archive "$RUNNER_TEMP/original-stage1.zip" --expected-sha256 "$ORIGINAL_SHA256" \
+            --work "$RUNNER_TEMP/run413work" --installed-home "$RUNNER_TEMP/run413installed" \
+            --export-destination "$RUNNER_TEMP/run413-safe-export" --execute \
+            --output "$RUNNER_TEMP/RUN413_STAGE2_REPORT.json" \
+            2>&1 | tee "$RUNNER_TEMP/RUN413_NATIVE_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN413_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Preserve failed attempts with no-model fallback after native termination
+        id: fallback
+        if: always()
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ -d "$RUNNER_TEMP/run413work" ] && [ -d "$RUNNER_TEMP/run413installed" ] \
+             && [ ! -e "$RUNNER_TEMP/run413-safe-export" ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run413venv/bin/python" \
+              scripts/run409_safe_export.py --work "$RUNNER_TEMP/run413work" \
+              --installed-home "$RUNNER_TEMP/run413installed" \
+              --destination "$RUNNER_TEMP/run413-safe-export" \
+              --output "$RUNNER_TEMP/RUN413_FALLBACK_EXPORT.json" \
+              2>&1 | tee "$RUNNER_TEMP/RUN413_FALLBACK_RAW.log"
+            rc=${PIPESTATUS[0]}
+            if [ "$rc" -eq 0 ] && [ ! -f "$RUNNER_TEMP/RUN413_STAGE2_REPORT.json" ]; then
+              python3 - <<'PY'
+          import json,os,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          exported=json.loads((root/"RUN413_FALLBACK_EXPORT.json").read_text())
+          red={"run":"Run411","status":"STAGE2_RED_PRESERVED",
+               "errors":["NATIVE_WRAPPER_DID_NOT_CLOSE_REPORT"],
+               "native_execute_requested":True,"native_execute_attempted":False,
+               "native_execution_performed":False,"canonical_gate_pass":False,
+               "step2_exit":"UTILITY_FAIL","redmi_measured":False,"jepa_weight":0,
+               "safe_export":exported}
+          (root/"RUN413_STAGE2_REPORT.json").write_text(json.dumps(red,sort_keys=True,indent=2)+"\n")
+          PY
+            fi
+          else
+            rc=0
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN413_FALLBACK_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independently verify every safe export byte and original native status
+        id: export
+        if: always()
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          rc=2
+          if [ -d "$RUNNER_TEMP/run413-safe-export" ] && \
+             [ -f "$RUNNER_TEMP/RUN413_STAGE2_REPORT.json" ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/run413_export_receipt_gate.py \
+              --export "$RUNNER_TEMP/run413-safe-export" \
+              --run411-report "$RUNNER_TEMP/RUN413_STAGE2_REPORT.json" \
+              --output "$RUNNER_TEMP/RUN413_EXPORT_VERIFICATION.json" \
+              2>&1 | tee "$RUNNER_TEMP/RUN413_EXPORT_VERIFICATION_RAW.log"
+            rc=${PIPESTATUS[0]}
+          else
+            echo "EXPORT_OR_RUN411_REPORT_MISSING" | tee "$RUNNER_TEMP/RUN413_EXPORT_VERIFICATION_RAW.log"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN413_EXPORT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN413_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN413_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Hash-close only small logs, never original ZIP or installed models
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN413_*' ! -name RUN413_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN413_SHA256SUMS.txt
+      - name: Upload small native logs and failed attempts' status even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run413-P20-Small-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN413_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Upload only independently verified no-model work
+        if: steps.export.outputs.rc == '0'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run413-P20-Safe-Work-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/run413-safe-export/**
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce pinned native, 84 rows, verified safe export and privacy
+        if: always()
+        run: |
+          test "${{ steps.preflight.conclusion }}" = "success"
+          test "${{ steps.deps.outputs.rc }}" = "0"
+          test "${{ steps.bootstrap.outputs.rc }}" = "0"
+          test "${{ steps.download.outputs.rc }}" = "0"
+          test "${{ steps.native.outputs.rc }}" = "0"
+          test "${{ steps.export.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
