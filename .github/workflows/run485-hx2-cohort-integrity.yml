@@ -1,0 +1,56 @@
+name: V13 Run485 independent HX2 cohort integrity review
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run485-hx2-cohort-integrity.yml'
+      - 'v13/code/v13/agi/harness_probe.py'
+      - 'v13/code/tests/test_run485_hx2_cohort_integrity.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run485-hx2-integrity/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pin upstream Claude HX1/HX5 source and install isolated deps
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/v13/agi/harness.py)" = 'dc55d65b53a3cd01743f405fe3f7f1a7c7b34eba'
+          test "$(git hash-object v13/code/v13/agi/harness_data.py)" = 'fd06afa57dff9b0e19bf027571400a705a53a657'
+          sha256sum v13/code/v13/agi/harness_probe.py v13/code/tests/test_run485_hx2_cohort_integrity.py > "$RUNNER_TEMP/run485-source-sha256.txt"
+          python3 -m venv "$RUNNER_TEMP/run485"
+          "$RUNNER_TEMP/run485/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: HX2 missing cohort, NaN and inherited probe regressions
+        working-directory: v13/code
+        run: |
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts:$PWD/tests"
+          "$RUNNER_TEMP/run485/bin/python" -m unittest -v tests.test_run485_hx2_cohort_integrity tests.test_harness_probe tests.test_harness_hx > "$RUNNER_TEMP/run485-tests.txt" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/run485-tests.txt"
+          echo "EXIT=$rc" > "$RUNNER_TEMP/run485-exit.txt"
+          exit "$rc"
+      - name: Official public repository privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Preserve raw tests and RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run485-hx2-integrity-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run485-source-sha256.txt
+            ${{ runner.temp }}/run485-tests.txt
+            ${{ runner.temp }}/run485-exit.txt
+          if-no-files-found: warn
+          retention-days: 30
