@@ -188,7 +188,8 @@ def audit(work, pair_index):
                 type(row.get("native_metrics")) is dict and
                 row["native_metrics"].get("status") == "FINAL" and
                 type(row.get("raw_offer_quotes")) is list and
-                type(row.get("rejected_quotes")) is list and
+                type(row.get("rejected_quotes")) is int and
+                row["rejected_quotes"] >= 0 and
                 type(row.get("process_releases")) is list and
                 bool(row["process_releases"]) and
                 all(type(x) is dict and x.get("process_reaped") is True
