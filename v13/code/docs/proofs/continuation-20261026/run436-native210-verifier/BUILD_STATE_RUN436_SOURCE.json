@@ -1,0 +1,36 @@
+{
+  "schema": "V13_RUN436_NATIVE210_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run436-native210-independent-verifier-20261026",
+  "source_actions": 40266083149,
+  "tested_head": "1deacf4178f8ac6bd6a82762957ecbd8f5ad750f",
+  "source_tests": "56/56 PASS (synthetic/source-only)",
+  "privacy": "CLEAN",
+  "artifact_id": 12625944114,
+  "artifact_sha256": "6e2b7669586b19074e46b1b0358af29c9c75fffc22efb2590b45ac3c7b11e47a",
+  "source_sha256": {
+    "v13/code/scripts/run436_verify_native210.py": "19b7a647f2149b6ce0dded029fc6ffd5213768b5f801549b9d5f97a52d886b7a",
+    "v13/code/tests/test_run436_verify_native210.py": "a6d351e95208193e2c18d115bc811637eb6c38831cd5a7b661b30856dcf37b33"
+  },
+  "verified_scope": "Strict future five-arm 210-row no-model export and native receipt verifier; no actual P_s21 evidence",
+  "upstream_native_run435": {
+    "run": 40265963506,
+    "status": "RED before inference",
+    "reason": "Run434 CLI --stage3-report/--stage4-report mismatch",
+    "raw_artifact_id": 12625924197,
+    "raw_sha256": "6c091ec50c58174747fc7c055f9ecf8e189e2d3e580d872dc6e118cbf13670ef",
+    "P_s21_rows_observed": 0,
+    "original_pr": 434,
+    "original_pr_state": "closed, evidence retained"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Finish RED-first Run434 CLI integration fix, rerun source tests, preregister separate native P_s21 attempt (not original failed PR). After actual native GREEN bind observed artifacts and use Run436 verifier on fresh no-model postflight."
+}
