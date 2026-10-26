@@ -1,0 +1,160 @@
+name: V13 Run622 exact review-chain source phone ZIP and extracted SQLite integration
+on:
+  push:
+    branches:
+      - codex/automation11-run622-current-phone-source-integration-20261026
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run622-current-phone-source.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run622-phone-source-integration/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-zip:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run622-current-phone-source-integration-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Bind exact source chain, prereg, Canon and negative gates
+        id: pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN622_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/package_source.py)" = 06167e0bcb82b36cb08841cd31b9618c4ba0926e
+          test "$(git hash-object v13/code/scripts/verify_phone_zip_current_run268.py)" = 880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1
+          test "$(git hash-object v13/code/v13/gist_similarity.py)" = b6aa89a8d954dde524217171cd28c4bdf09a0cf0
+          test "$(git hash-object v13/code/tests/test_gist_similarity_run616.py)" = 24cd16a52dbce9329339f34c8037a1bf3e845c4a
+          test "$(git hash-object v13/code/v13/operator.py)" = 7ba517f8f9853983ac2b61bb8dfb1dfa9587c38b
+          test "$(git hash-object v13/code/tests/test_language_operator_run620.py)" = 8e5a187a82db318997ff4619ac7665453375b91c
+          test "$(git hash-object v13/code/scripts/run621_b2_diagonal_readout.py)" = f08429acfccd6bac13f469119f1b76131a1967df
+          test "$(git hash-object v13/code/tests/test_run621_b2_diagonal_readout.py)" = 7253c4045fe5bf0aa5bbed6eab354215b9c3561b
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run618-prospective-b2-native/RUN618_COHORT.json)" = 00f95e65b01bacb5376b849f43674d88a00c1311
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run622-phone-source-integration/PREREG.md)" = 8c490e139d9ccc8bb5b724a8b0875ba99582dbc5
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/gist_similarity.py v13/code/v13/operator.py v13/code/scripts/run621_b2_diagonal_readout.py v13/code/scripts/package_source.py > "$RUNNER_TEMP/RUN622_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN622_HOST.txt"
+      - name: Isolated pinned source-only dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run622venv"
+          "$RUNNER_TEMP/run622venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Build exact checked-out source-only Termux ZIP
+        run: |
+          set +e
+          python3 v13/code/scripts/package_source.py --root v13/code --out "$RUNNER_TEMP/V13-Phone-Run622.zip" --phone-install > "$RUNNER_TEMP/RUN622_PACK_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN622_PACK_EXIT.txt"
+          exit 0
+      - name: Independently verify complete ZIP bytes and original negative gates
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN622_PACK_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Run622.zip" --root v13/code --out "$RUNNER_TEMP/RUN622_VERIFY.json" > "$RUNNER_TEMP/RUN622_VERIFY_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=2
+          fi
+          if [ "$rc" = 0 ]; then
+            "$RUNNER_TEMP/run622venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN622_VERIFY_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN622_VERIFY.json').read_text())
+          assert d['evidence_scope']=='LINUX_SOFTWARE_SOURCE_PACKAGE_INTEGRITY'
+          assert d['native_model_inference'] is False and d['redmi_measured'] is False
+          assert d['gates']['STEP2']=='UTILITY_FAIL' and d['gates']['B3_L1']=='FAIL'
+          assert d['gates']['Body_JEPA']=='UNAVAILABLE' and d['gates']['jepa_weight']==0
+          assert d['gates']['V13']=='INCOMPLETE'
+          print('RUN622_SOURCE_PARITY_AND_NEGATIVE_GATES_VERIFIED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN622_VERIFY_EXIT.txt"
+          exit 0
+      - name: Download original SHA-closed Run614 Linux-native states (no inference)
+        id: native
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/run614"
+          timeout 180s gh run download 40407777217 --repo RedMentos/Aii --name V13-Run614-Independent-Native-Paraphrase-e253bb318737b3a8ead92f53a1044f0220f8281f --dir "$RUNNER_TEMP/run614" > "$RUNNER_TEMP/RUN622_NATIVE_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then
+            echo 'cb535df87749c0cf5d698d26268e6b03f3d6f57690b95434aebc6c875a3ea189' " $RUNNER_TEMP/run614/RUN614_STATES.npz" | sha256sum -c - >> "$RUNNER_TEMP/RUN622_NATIVE_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            echo '42ac6d22ef6c9cc59622572f233b2e7b83094af7a9fdd227cfe2fff15e0666e4' " $RUNNER_TEMP/run614/RUN614_NATIVE_REPORT.json" | sha256sum -c - >> "$RUNNER_TEMP/RUN622_NATIVE_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN622_NATIVE_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Packaging regression, extracted source-only SQLite and original-native offline head
+        if: ${{ steps.native.outputs.rc == '0' }}
+        run: |
+          set +e
+          (cd v13/code && PYTHONPATH="$PWD" "$RUNNER_TEMP/run622venv/bin/python" -m unittest discover -s tests -p test_package_source.py -v && PYTHONPATH="$PWD" "$RUNNER_TEMP/run622venv/bin/python" -m unittest discover -s tests -p test_phone_zip_current_run268.py -v) > "$RUNNER_TEMP/RUN622_PACKAGE_TEST_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN622_VERIFY_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/extracted"
+            unzip -q "$RUNNER_TEMP/V13-Phone-Run622.zip" -d "$RUNNER_TEMP/extracted" >> "$RUNNER_TEMP/RUN622_PACKAGE_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            # Historical registered cohort is intentionally excluded from the
+            # portable source ZIP; supply it only to the extracted test harness.
+            mkdir -p "$RUNNER_TEMP/extracted/V13-Phone/docs/proofs/continuation-20261026/run618-prospective-b2-native"
+            cp v13/code/docs/proofs/continuation-20261026/run618-prospective-b2-native/RUN618_COHORT.json "$RUNNER_TEMP/extracted/V13-Phone/docs/proofs/continuation-20261026/run618-prospective-b2-native/RUN618_COHORT.json"
+            (cd "$RUNNER_TEMP/extracted/V13-Phone" && RUN621_NATIVE="$RUNNER_TEMP/run614" PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run622venv/bin/python" -m unittest -v tests.test_language_operator_run620 tests.test_prompts tests.test_gist_similarity_run616 tests.test_gist_readout tests.test_run618_prospective_b2_native tests.test_run621_b2_diagonal_readout) > "$RUNNER_TEMP/RUN622_EXTRACTED_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN622_TEST_EXIT.txt"
+          exit 0
+      - name: Public repository privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 405c7d8be42d34b98b80a83e48c79a49cc20aa27 --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN622_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN622_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw and ZIP SHA including RED
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in PACK VERIFY NATIVE_DOWNLOAD TEST PRIVACY; do
+            test -f "RUN622_${k}_EXIT.txt" || echo 2 > "RUN622_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN622_*' ! -name 'RUN622_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN622_SHA256SUMS.txt
+          if [ -f V13-Phone-Run622.zip ]; then sha256sum V13-Phone-Run622.zip >> RUN622_SHA256SUMS.txt; fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run622-Current-Phone-Source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/V13-Phone-Run622.zip
+            ${{ runner.temp }}/RUN622_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact ZIP, source-only tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.pins.outcome }}" = success
+          for k in PACK VERIFY NATIVE_DOWNLOAD TEST PRIVACY; do
+            echo "RUN622 $k exit: $(cat "$RUNNER_TEMP/RUN622_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN622_${k}_EXIT.txt")" = 0
+          done
