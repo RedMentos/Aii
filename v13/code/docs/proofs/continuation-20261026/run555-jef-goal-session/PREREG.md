@@ -1,0 +1,14 @@
+# Run555 prereg — session provenance for automatic JEF USER goal completion
+
+2026-10-26. Exact base Run554 PR #553 review head `e9a8b8535001fd6c8e5b0272b193916823051e32`; branch-scoped, not main. Before edits, independently downloaded Run554 native Actions raw artifact 12662420835: 11/11 SHA256SUMS entries verified, ZIP SHA256 `fef33a19358023efd05ba92435c04c833f17e97c964fd72242d57f2b307db8d3`, fixture/bootstrap/native/privacy exits all 0; native report has model-generated FINAL and persisted USER goal receipt, runner/model hashes, restart and operator checks true. Run554 remains a Linux-native *structural* result, not semantic, STEP2, JEPA or Redmi.
+
+## Reproduced bug (before source changes)
+In the exact Run553 packaged Python source (Run554 production `agi/live.py` unchanged), create unresolved USER goal in session A, switch Runtime to independent session B, persist a nonblank FINAL answer for a lexically identical question in B, invoke `live.goal_turn` in B: session-A goal becomes DONE. The receipt is from B, not A. Current `goal_turn` enumerates every open event-backed USER goal without checking the original event's session. This is cross-chat state mutation by an unrelated answer; it also risks confusing operator-facing goal history. No semantic relevance proof is implied.
+
+## Change boundary
+Only `v13/code/v13/agi/live.py`, new `v13/code/tests/test_run555_jef_goal_session.py`, this prereg, evidence and a source-only pinned CI workflow. Keep global manual USER goals, existing `:growth goal` commands, Age/approval gates, model/seed/cohort hashes, original 7-day TTL and prior evidence untouched. Do not promote any negative gates.
+
+## Acceptance / counterexamples
+A) Same-session unresolved goal + actual persisted nonblank own FINAL and similar topic closes; restart retains DONE. B) Identical question/FINAL in different session cannot close A's event-backed goal; B's own goal (if present) may close. C) Multiple event references with conflicting sessions, unknown/invalid event IDs, missing current event provenance, and mismatched Runtime session must fail closed for automatic completion (no fabricated receipt). D) Manual USER operator completion/reopen still works across sessions. E) Non-FINAL/blank/reference-only/CLARIFY and unrelated-topic negatives remain. F) No regression in Run552/553/554 fixture source suites and broader JEF regression. Record local raw outputs, GitHub exact head, SHA-closed CI logs, privacy CLEAN; retain RED evidence. The test is Linux software only; Run554 native proof is not reclassified.
+
+Next: if GREEN, pursue independent real native STEP2 consumer utility or another substantive canonical organ package; retain STEP2=UTILITY_FAIL, B3_L1=FAIL, Body_JEPA=UNAVAILABLE, jepa_weight=0, Redmi=UNMEASURED, V13=INCOMPLETE.
