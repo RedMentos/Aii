@@ -1,0 +1,333 @@
+name: V13 Run464 exact S_s21 native retry after imported-manifest repair
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run464-native-s21-retry.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  pinned-s21:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      PIP_NO_CACHE_DIR: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Frozen source, actual Run452 preview and exact native210 artifact metadata
+        id: preflight
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN453_HEAD.txt"
+          git merge-base --is-ancestor aa732057600a49a8d1066b337e08135794215f23 HEAD
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          test "$(git hash-object v13/code/scripts/run453_verify_native252.py)" = "358f2803a9bcaf88aa011a177863b6ff77e65394"
+          test "$(sha256sum v13/code/scripts/run452_stage6_s21.py | cut -d' ' -f1)" = "a614086dc075027bcc1b820e1f7eb3fc3cd594016be1a555e6231826bcc15852"
+          test "$(git hash-object v13/code/scripts/run438_import_stage5_artifact.py)" = "4ed1808e1e9eae3e37e02671c317ee2d821a17b1"
+          test "$(sha256sum v13/code/scripts/run436_verify_native210.py | cut -d' ' -f1)" = "19b7a647f2149b6ce0dded029fc6ffd5213768b5f801549b9d5f97a52d886b7a"
+          # Original Run453 RED remains immutable; verify prior artifact identity.
+          gh api repos/RedMentos/Aii/actions/runs/40270625698 --jq '{conclusion,head_sha}' > "$RUNNER_TEMP/RUN453_PRIOR_RED.json"
+          gh api repos/RedMentos/Aii/actions/artifacts/12629200418 --jq '{id,digest,expired}' > "$RUNNER_TEMP/RUN453_PRIOR_RED_ARTIFACT.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          old=json.loads((root/'RUN453_PRIOR_RED.json').read_text())
+          assert old=={'conclusion':'failure','head_sha':'7580bd02cde71d313b2fea31805f1f87de7f3d83'}
+          artifact=json.loads((root/'RUN453_PRIOR_RED_ARTIFACT.json').read_text())
+          assert artifact=={'id':12629200418,'digest':'sha256:91d52391421621d07274912941a0a806794f9d582d213c7a573145983908aabe','expired':False}
+          print('ORIGINAL_RUN453_NATIVE_RED_PINNED_AND_PRESERVED')
+          PY
+          sha256sum v13/code/scripts/run452_stage6_s21.py v13/code/scripts/run453_verify_native252.py | tee "$RUNNER_TEMP/RUN453_SOURCE_SHA256.txt"
+          gh api repos/RedMentos/Aii/actions/runs/40270355991 --jq '{conclusion,head_sha}' > "$RUNNER_TEMP/RUN453_SOURCE_RUN.json"
+          gh api repos/RedMentos/Aii/actions/artifacts/12627626352 --jq '{id,digest,expired}' > "$RUNNER_TEMP/RUN453_SAFE_INPUT.json"
+          gh api repos/RedMentos/Aii/actions/artifacts/12627207495 --jq '{id,digest,expired}' > "$RUNNER_TEMP/RUN453_RAW_INPUT.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          read=lambda n:json.loads((root/n).read_text())
+          assert read('RUN453_SOURCE_RUN.json')=={'conclusion':'success','head_sha':'64d281a7c41ecb92c9ff4bc6024a8c6086908fce'}
+          for name,ident,digest in (
+              ('RUN453_SAFE_INPUT.json',12627626352,'280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7'),
+              ('RUN453_RAW_INPUT.json',12627207495,'eb47eab043b7c51d0dbdea7cfb12ddfe1706a3611057efc7c348ae810fef599e')):
+              d=read(name)
+              assert d['id']==ident and d['digest']=='sha256:'+digest and d['expired'] is False
+          print('PINNED_ACTUAL_NATIVE210_SOURCE_VERIFIED')
+          PY
+          { date -u -Iseconds; uname -a; python3 --version; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } | tee "$RUNNER_TEMP/RUN453_HOST.txt"
+      - name: Isolated dependencies and source-only regressions
+        id: deps
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run453venv"
+          timeout 240s "$RUNNER_TEMP/run453venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN453_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run453venv/bin/python" -m unittest -v tests.test_run452_stage6_s21 tests.test_run453_verify_native252 tests.test_run438_import_stage5_artifact tests.test_run436_verify_native210 > "$RUNNER_TEMP/RUN453_SOURCE_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run453venv/bin/python" scripts/run452_stage6_s21.py --help | grep -Fq -- '--stage5-report'
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN453_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download and SHA-verify exact actual 210-row export and original report
+        id: download
+        if: steps.deps.outputs.rc == '0'
+        run: |
+          set -uo pipefail
+          set +e
+          curl -fsSL --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12627626352/zip' -o "$RUNNER_TEMP/run453-safe210.zip"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7  $RUNNER_TEMP/run453-safe210.zip" | sha256sum --check - > "$RUNNER_TEMP/RUN453_SAFE_INPUT_SHA.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            curl -fsSL --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12627207495/zip' -o "$RUNNER_TEMP/run453-raw-small.zip"
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            echo "eb47eab043b7c51d0dbdea7cfb12ddfe1706a3611057efc7c348ae810fef599e  $RUNNER_TEMP/run453-raw-small.zip" | sha256sum --check - > "$RUNNER_TEMP/RUN453_RAW_INPUT_SHA.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' > "$RUNNER_TEMP/RUN453_REPORT_EXTRACT.log" 2>&1
+          import hashlib,os,zipfile
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          with zipfile.ZipFile(root/'run453-raw-small.zip') as z:
+              assert len(z.namelist())==len(set(z.namelist()))
+              raw=z.read('RUN437_STAGE5_REPORT.json')
+          assert hashlib.sha256(raw).hexdigest()=='ef2e4554025730911012c50c417e55c25ef57185f147c131f30d319fb31ff6b1'
+          (root/'RUN453_STAGE5_REPORT.json').write_bytes(raw)
+          print('ORIGINAL_RUN437_STAGE5_REPORT_SHA256_VERIFIED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN453_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Actual 210-row source-only preflight before model provisioning
+        id: preview
+        if: steps.download.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run453venv/bin/python" scripts/run452_stage6_s21.py --archive "$RUNNER_TEMP/run453-safe210.zip" --expected-sha256 280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7 --stage5-report "$RUNNER_TEMP/RUN453_STAGE5_REPORT.json" --work "$RUNNER_TEMP/run453-preview-work" --output "$RUNNER_TEMP/RUN453_PREVIEW_REPORT.json" > "$RUNNER_TEMP/RUN453_PREVIEW_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' >> "$RUNNER_TEMP/RUN453_PREVIEW_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN453_PREVIEW_REPORT.json').read_text())
+          assert d['status']=='STAGE6_READY_NO_NATIVE' and d['errors']==[]
+          assert d['rows_verified']==210 and d['remaining_arms']==4
+          assert d['native_execution_performed'] is False and d['canonical_gate_pass'] is False
+          assert d['completed']==['O_s20','P_s20','S_s20','O_s21','P_s21']
+          print('ACTUAL_NATIVE210_PREEXEC_VERIFIED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN453_PREVIEW_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Install exact pinned public models and b10964 executable
+        id: bootstrap
+        if: steps.preview.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run453installed"
+          timeout 1800s "$RUNNER_TEMP/run453venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN453_BOOTSTRAP_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run453venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN453_INSTALLED_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          from v13.models import ModelManager,catalog
+          from v13.common import file_hash
+          from run402_stage_restore import RUN401_EXECUTABLE_SHA256
+          home=Path(os.environ['V13_HOME'])
+          manager=ModelManager(home)
+          checks=manager.verify(deep=True)
+          for key in ('needle','language','body','gist'):
+              assert checks[key]['ok'] and checks[key]['hash_checked']
+              assert manager.installed[key]['exact_revision']==catalog()['models'][key]['revision']
+              print('MODEL_VERIFIED',key)
+          runner=home/'bin/llama-server'
+          meta=json.loads((home/'config/runner.json').read_text())
+          assert meta['tag']=='b10964' and meta['binary_sha256']==file_hash(runner)
+          assert file_hash(runner)==RUN401_EXECUTABLE_SHA256
+          print('RUNNER_VERIFIED',meta['binary_sha256'])
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN453_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Execute exactly one pinned native S_s21 and safe no-model export
+        id: native
+        if: steps.bootstrap.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          timeout -s TERM -k 30s 4800s "$RUNNER_TEMP/run453venv/bin/python" scripts/run452_stage6_s21.py --archive "$RUNNER_TEMP/run453-safe210.zip" --expected-sha256 280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7 --stage5-report "$RUNNER_TEMP/RUN453_STAGE5_REPORT.json" --work "$RUNNER_TEMP/run453work" --installed-home "$RUNNER_TEMP/run453installed" --export-destination "$RUNNER_TEMP/run453-safe-export" --execute --output "$RUNNER_TEMP/RUN453_STAGE6_REPORT.json" > "$RUNNER_TEMP/RUN453_NATIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN453_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Preserve failed native attempts with no-model export if interrupted
+        if: always()
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          rc=0
+          if [ -d "$RUNNER_TEMP/run453work" ] && [ -d "$RUNNER_TEMP/run453installed" ] && [ ! -e "$RUNNER_TEMP/run453-safe-export" ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run453venv/bin/python" scripts/run409_safe_export.py --work "$RUNNER_TEMP/run453work" --installed-home "$RUNNER_TEMP/run453installed" --destination "$RUNNER_TEMP/run453-safe-export" --output "$RUNNER_TEMP/RUN453_FALLBACK_EXPORT.json" > "$RUNNER_TEMP/RUN453_FALLBACK_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN453_FALLBACK_EXIT.txt"
+          exit 0
+      - name: Independent six-receipt native252 verification (no inference)
+        id: audit
+        if: steps.native.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run453venv/bin/python" scripts/run453_verify_native252.py --export "$RUNNER_TEMP/run453-safe-export" --stage6-report "$RUNNER_TEMP/RUN453_STAGE6_REPORT.json" --output "$RUNNER_TEMP/RUN453_INDEPENDENT_REPORT.json" > "$RUNNER_TEMP/RUN453_INDEPENDENT_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' >> "$RUNNER_TEMP/RUN453_INDEPENDENT_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          d=json.loads((root/'RUN453_INDEPENDENT_REPORT.json').read_text())
+          assert d['status']=='RUN453_NATIVE_252_INDEPENDENTLY_VERIFIED'
+          assert d['rows_verified']==252 and len(d['verified_arms'])==6
+          assert d['verified_arms'][-1]=='S_s21'
+          assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          assert d['jepa_weight']==0 and d['redmi_measured'] is False
+          print('INDEPENDENT_NATIVE252_NO_PROMOTION_VERIFIED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN453_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independently inspect no-model export inventory even on RED
+        id: safe
+        if: always()
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 - <<'PY' > "$RUNNER_TEMP/RUN453_SAFE_AUDIT_RAW.log" 2>&1
+          import hashlib,json,os,stat
+          from pathlib import Path
+          from run413_export_receipt_gate import safe_rel,registered_model_hashes,MANIFEST,MAX_FILE,MAX_TOTAL
+          root=Path(os.environ['RUNNER_TEMP'])/'run453-safe-export'
+          assert root.is_dir() and not root.is_symlink()
+          mp=root/MANIFEST
+          assert mp.is_file() and not mp.is_symlink()
+          d=json.loads(mp.read_text())
+          assert d['schema']=='RUN409_SAFE_NATIVE_EXPORT_V1'
+          assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          copied=d['copied'];assert isinstance(copied,dict) and copied
+          observed=set();dirs=set();total=0;models=registered_model_hashes()
+          for current,folders,files in os.walk(root,topdown=True,followlinks=False):
+              here=Path(current);dirs.add(here.relative_to(root).as_posix())
+              for name in folders:
+                  p=here/name;assert p.is_dir() and not p.is_symlink()
+              for name in files:
+                  p=here/name;assert not p.is_symlink()
+                  info=p.stat();assert stat.S_ISREG(info.st_mode) and info.st_nlink==1
+                  rel=p.relative_to(root).as_posix()
+                  if rel==MANIFEST:continue
+                  safe_rel(rel);assert rel in copied and info.st_size==copied[rel]['bytes'] and info.st_size<=MAX_FILE
+                  h=hashlib.sha256(p.read_bytes()).hexdigest()
+                  assert h==copied[rel]['sha256'] and h not in models
+                  total+=info.st_size;assert total<=MAX_TOTAL;observed.add(rel)
+          assert observed==set(copied) and dirs==set(d['directories'])
+          progress=json.loads((root/'RUN397_PROGRESS.json').read_text())
+          assert progress['canonical_gate_pass'] is False and progress['step2_exit']=='UTILITY_FAIL'
+          assert set(progress['completed']).issubset({'O_s20','P_s20','S_s20','O_s21','P_s21','S_s21'})
+          result={'status':'SAFE_WORK_ARCHIVE_VERIFIED_NO_MODEL_WEIGHTS','files':len(observed),'bytes':total,
+                  'completed':sorted(progress['completed']),'failed_attempt_groups':len(progress.get('failures_preserved',{})),
+                  'manifest_sha256':hashlib.sha256(mp.read_bytes()).hexdigest(),
+                  'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL'}
+          (Path(os.environ['RUNNER_TEMP'])/'RUN453_SAFE_AUDIT.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(result,sort_keys=True))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN453_SAFE_AUDIT_EXIT.txt"
+          echo "ready=$([ "$rc" -eq 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN453_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN453_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw logs with SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN453_*' ! -name RUN453_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN453_SHA256SUMS.txt
+      - name: Upload only small raw native source/evidence logs even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run453-native-s21-raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN453_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Upload verified safe no-model work, never installed model files
+        if: always() && steps.safe.outputs.ready == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run453-native252-safe-no-model-${{ github.sha }}
+          path: ${{ runner.temp }}/run453-safe-export/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual native and independent result, preserve RED on failure
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/RUN453_NATIVE_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN453_NATIVE_EXIT.txt")" = "0"
+          test -f "$RUNNER_TEMP/RUN453_AUDIT_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN453_AUDIT_EXIT.txt")" = "0"
+          test -f "$RUNNER_TEMP/RUN453_PRIVACY_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN453_PRIVACY_EXIT.txt")" = "0"
+          test -f "$RUNNER_TEMP/RUN453_SAFE_AUDIT_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN453_SAFE_AUDIT_EXIT.txt")" = "0"
