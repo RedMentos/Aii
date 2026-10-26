@@ -513,8 +513,14 @@ def _short(r):
 def add(store,text,origin,clock=time.time):
     """Record the rule clauses of one line the user typed. Returns the new/known rules (never loosens anything, G2)."""
     if origin not in ('USER_TYPED','USER_COMMAND'):raise ValueError('Regeln entstehen nur aus eigenen Eingaben des Nutzers')
-    found=[c for c in parse(text) if c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR')]
+    return add_clauses(store,[c for c in parse(text) if c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR')],origin,clock,text)
+
+
+def add_clauses(store,found,origin,clock=time.time,text=None):
+    """Store already read clauses (fixed reader, or open questions the second reader adds; userrules_second.py)."""
+    if origin not in ('USER_TYPED','USER_COMMAND'):raise ValueError('Regeln entstehen nur aus eigenen Eingaben des Nutzers')
     if not found:return []
+    text=found[0]['text'] if text is None else text
     def f(st):
         new=[]
         for c in found:
@@ -538,7 +544,8 @@ def notice(r):
         why={'HEDGE':'du klingst unsicher','SOMEONE_ELSE':'das hat jemand anderes gesagt','QUESTION':'es ist eine Frage',
              'ABOUT_YOURSELF':'es klingt wie ein Satz über dich','UNCLEAR_OBJECT':'ich weiß nicht, was mit „das/es“ gemeint ist',
              'UNKNOWN_WORDING':'die Formulierung kenne ich noch nicht sicher','ADVICE':'es klingt wie ein Rat, nicht wie eine feste Regel',
-             'NET':'es klingt nach einer Regel, aber ich verstehe den Satz nicht sicher','QUOTED':'es klingt wie ein zitierter Text (Schild, Zettel), nicht sicher wie deine Regel'}
+             'NET':'es klingt nach einer Regel, aber ich verstehe den Satz nicht sicher','QUOTED':'es klingt wie ein zitierter Text (Schild, Zettel), nicht sicher wie deine Regel',
+             'SECOND_READER':'ein zweiter Leser hält es für eine mögliche Regel, der feste Leser hat keine erkannt'}
         prop={'FORBID':f' Mein Vorschlag: als Verbot lesen (:regel verbot {r["id"]}).','ASK_FIRST':f' Mein Vorschlag: als „erst fragen“ lesen (:regel fragen {r["id"]}).'}.get(r.get('suggest'),'')
         return (f'[Rückfrage {r["id"]}] Soll das eine Regel für mich sein? „{r["text"]}“ ({", ".join(why[x] for x in r["reasons"])}). '
                 f'Bis du antwortest, frage ich vorher bei allem, was das betreffen könnte ({_short(r)}). '
