@@ -93,9 +93,11 @@ def verify(destination, run411_report):
             "RUN394_PREREGISTERED_FIXTURES.json" in expected,
             "FROZEN_PROGRESS_MISSING")
     observed = set()
+    observed_dirs = set()
     total = 0
     models = registered_model_hashes()
     for current, folders, files in os.walk(root, topdown=True, followlinks=False):
+        observed_dirs.add(Path(current).relative_to(root).as_posix())
         for folder in folders:
             p = Path(current) / folder
             require(not p.is_symlink() and p.is_dir(), "EXPORT_SYMLINK_DIRECTORY")
@@ -124,6 +126,8 @@ def verify(destination, run411_report):
             require(total <= MAX_TOTAL, "EXPORT_TOTAL_EXCEEDS_BUDGET")
             observed.add(rel)
     require(observed == expected, "MISSING_EXPORTED_FILE")
+    require(len(set(dirs)) == len(dirs) and set(dirs) == observed_dirs,
+            "DIRECTORY_INVENTORY_MISMATCH")
     require(exported.get("copied_files") == len(observed) and
             exported.get("copied_bytes") == total, "RUN409_RECEIPT_MISMATCH")
     progress = json.loads((root / "RUN397_PROGRESS.json").read_text())
