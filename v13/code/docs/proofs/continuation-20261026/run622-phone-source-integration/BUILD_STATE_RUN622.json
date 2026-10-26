@@ -39,5 +39,10 @@
     "Native Redmi current-source install/sustained measurement requires user device",
     "Model weights not bundled; source-only ZIP requires authorized setup"
   ],
-  "next_command": "Inspect PR617 Actions exact head/run, verify five exit files and raw ZIP artifact, then private checkpoint and next canonical package"
+  "next_command": "Inspect PR617 Actions exact head/run, verify five exit files and raw ZIP artifact, then private checkpoint and next canonical package",
+  "private_backup": {
+    "library_path": "/V13-Checkpoints/2026-10-26/Run622/run622-local-evidence-closed.zip",
+    "sha256": "d2b7165644b497308d4494e7e53835f108b81e25d9a960dc82855488a573eae3",
+    "readback_verified": true
+  }
 }
