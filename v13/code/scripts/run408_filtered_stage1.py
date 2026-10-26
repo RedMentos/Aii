@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import stat
 import tempfile
@@ -71,6 +72,25 @@ def _inventory(z):
     return infos, total
 
 
+
+def _original_manifest(z, infos):
+    """Original find -type f manifest may omit dereferenced *registered* symlinks."""
+    raw = z.read(infos["RUN401_SHA256SUMS.txt"]).decode("utf-8")
+    expected = {}
+    for line in raw.splitlines():
+        m = re.fullmatch(r"([0-9a-f]{64})  (?:\\./)?(.+)", line)
+        require(m is not None, "INVALID_SHA_MANIFEST_LINE")
+        digest, name = m.groups()
+        stage._safe_path(name)
+        require(name != "RUN401_SHA256SUMS.txt" and name not in expected,
+                "DUPLICATE_OR_SELF_SHA")
+        expected[name] = digest
+    require(set(expected) <= set(infos), "UNHASHED_OR_MISSING_MEMBER")
+    unlisted = set(infos) - set(expected) - {"RUN401_SHA256SUMS.txt"}
+    require(all(_model_path(n) for n in unlisted), "UNHASHED_OR_MISSING_MEMBER")
+    return expected, sorted(unlisted)
+
+
 def _verify_and_stage(archive, expected_sha, temporary):
     archive = Path(archive)
     require(type(expected_sha) is str and base.HEX.fullmatch(expected_sha),
@@ -83,7 +103,7 @@ def _verify_and_stage(archive, expected_sha, temporary):
     registered = _registered_models()
     with zipfile.ZipFile(archive) as z:
         infos, total = _inventory(z)
-        expected = base._manifest(z, infos)
+        expected, unlisted = _original_manifest(z, infos)
         # Reject unknown model-home files rather than discarding evidence.
         for name in infos:
             if _model_path(name):
@@ -118,7 +138,7 @@ def _verify_and_stage(archive, expected_sha, temporary):
                 if handle is not None:
                     handle.close()
             actual = h.hexdigest()
-            if name != "RUN401_SHA256SUMS.txt":
+            if name in expected:
                 require(actual == expected[name], "MEMBER_SHA_MISMATCH:" + name)
             if _model_path(name):
                 matches = [role for size, digest, role in registered[Path(name).name]
@@ -129,7 +149,8 @@ def _verify_and_stage(archive, expected_sha, temporary):
         require(small["RUN401_HEAD.txt"].decode("utf-8").strip() == stage.SOURCE_HEAD,
                 "STAGE1_SOURCE_HEAD_MISMATCH")
         native = stage._validate_native_tree(root, small)
-        return {"native": native, "members_verified": len(expected),
+        return {"native": native, "members_verified": len(infos) - 1,
+                "omitted_unlisted_in_manifest": unlisted,
                 "original_zip_sha256": expected_sha, "original_member_bytes": total,
                 "staged_work_bytes": staged_bytes, "omitted_registered_models": omitted,
                 "omitted_bytes": sum(m["size"] for m in omitted),
