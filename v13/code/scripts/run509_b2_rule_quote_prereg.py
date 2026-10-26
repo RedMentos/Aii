@@ -31,7 +31,7 @@ FOCUS_QUESTION = (
 )
 EXPECTED_ACTIONS = ("A", "B", "B", "NONE", "A", "A", "A", "B", "A", "A")
 # Set to a literal after source-only CI recomputes the deterministic bytes.
-EXPECTED_FIXTURE_SHA256 = None
+EXPECTED_FIXTURE_SHA256 = "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726"
 
 
 def require(ok, reason):
