@@ -224,6 +224,8 @@ class Run415Stage3RestoreTests(unittest.TestCase):
         with mock.patch.object(stage.safe, "sha_file",
                                side_effect=selective_sha), \
              mock.patch.object(stage.resume, "run", return_value=failed), \
+             mock.patch.object(stage.resume, "validate_completed",
+                               return_value={"rows": 42}), \
              mock.patch.object(stage.safe, "export",
                                return_value={"status": "EXPORT_VERIFIED_NO_MODEL_WEIGHTS",
                                              "errors": []}) as exported:
