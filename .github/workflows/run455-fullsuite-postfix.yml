@@ -1,0 +1,86 @@
+name: V13 Run455 complete checkout offline suite after Run450/451 identity fixes
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run455-fullsuite-postfix.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run455-fullsuite-postfix/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Frozen source and reviewed identity-fix inventory
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN455_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          test "$(sha256sum v13/code/scripts/run404_stage2_resume.py | cut -d' ' -f1)" = "a87567eacf6061a09209bbf79b828c93d554abf0442ff4b59878a152dc6d47c4"
+          test "$(sha256sum v13/code/scripts/run403_full_postflight.py | cut -d' ' -f1)" = "f8f493cdcd780b85d7dbc3413872cd478920cb0cc09d1426bd5d369bec64b3d9"
+          sha256sum v13/code/scripts/run404_stage2_resume.py v13/code/scripts/run403_full_postflight.py | tee "$RUNNER_TEMP/RUN455_SOURCE_SHA256.txt"
+      - name: Isolated model-free dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run455"
+          "$RUNNER_TEMP/run455/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Bounded complete repository unittest discovery, preserve actual RED
+        run: |
+          cd v13/code
+          "$RUNNER_TEMP/run455/bin/python" -m compileall -q v13 tests
+          set +e
+          timeout 720s "$RUNNER_TEMP/run455/bin/python" -m unittest discover -s tests -p 'test_*.py' -q > "$RUNNER_TEMP/RUN455_TESTS_RAW.log" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/RUN455_TESTS_RAW.log"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/RUN455_TESTS_EXIT.txt"
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN455_SUMMARY.json"
+          import json,os,re
+          from pathlib import Path
+          raw=(Path(os.environ['RUNNER_TEMP'])/'RUN455_TESTS_RAW.log').read_text()
+          runs=re.findall(r'Ran (\d+) tests in [\d.]+s',raw)
+          failures=re.findall(r'FAILED \(([^)]*)\)',raw)
+          assert len(runs)==1 and len(failures)==1
+          fields=dict((k,int(v)) for k,v in re.findall(r'(failures|errors|skipped)=(\d+)',failures[0]))
+          result={'status':'FULL_SUITE_RED_PRESERVED','tests_run':int(runs[0]),
+                  'failures':fields.get('failures',0),'errors':fields.get('errors',0),
+                  'skipped':fields.get('skipped',0),'canonical_gate_pass':False,
+                  'step2_exit':'UTILITY_FAIL','redmi_measured':False,'jepa_weight':0}
+          assert result['tests_run']>=3430 and result['failures']+result['errors']>0
+          print(json.dumps(result,sort_keys=True,indent=2))
+          PY
+          exit 0
+      - name: Official public-repo privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Preserve full raw source suite and negative result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run455-fullsuite-postfix-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN455_HEAD.txt
+            ${{ runner.temp }}/RUN455_SOURCE_SHA256.txt
+            ${{ runner.temp }}/RUN455_TESTS_RAW.log
+            ${{ runner.temp }}/RUN455_TESTS_EXIT.txt
+            ${{ runner.temp }}/RUN455_SUMMARY.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual complete-suite result, never claim GREEN from classification
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/RUN455_TESTS_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN455_TESTS_EXIT.txt")" = "EXIT=0"
