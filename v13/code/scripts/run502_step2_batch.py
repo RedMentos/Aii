@@ -129,19 +129,26 @@ def execute(work, installed_home):
                    "--stage-id", stage_id, "--execute"]
         rc = run_child(command, log)
         receipt = work / ("stage_" + stage_id) / "RUN500_STAGE_RESULT.json"
-        if rc == 0 and not receipt.is_file():
-            rc = 99
+        if rc == 0:
+            if not receipt.is_file():
+                rc = 99
+            else:
+                try:
+                    data = json.loads(receipt.read_text())
+                    require(data["status"] == "STAGE_14_ROWS_STRUCTURALLY_VERIFIED_ONLY" and
+                            data["stage_id"] == stage_id and data["rows_verified"] == 14 and
+                            data["native_execution_performed"] is True and
+                            data["canonical_gate_pass"] is False and
+                            data["step2_exit"] == "UTILITY_FAIL",
+                            "STAGE_RECEIPT_INVALID")
+                except (ValueError, KeyError, TypeError):
+                    rc = 98
         sha = digest(receipt.read_bytes()) if receipt.is_file() else None
         append_progress(progress, {"stage_id": stage_id, "state": "FINISHED",
                                    "rc": rc, "receipt_sha256": sha,
                                    "time_ns": time.time_ns()})
         if rc != 0:
             raise RuntimeError(f"BATCH_STOPPED_AT_{stage_id}_RC_{rc}")
-        data = json.loads(receipt.read_text())
-        require(data["status"] == "STAGE_14_ROWS_STRUCTURALLY_VERIFIED_ONLY" and
-                data["stage_id"] == stage_id and data["rows_verified"] == 14 and
-                data["canonical_gate_pass"] is False,
-                "STAGE_RECEIPT_INVALID")
         receipts.append({"stage_id": stage_id, "receipt_sha256": sha,
                          "rows_verified": 14})
     result = {
