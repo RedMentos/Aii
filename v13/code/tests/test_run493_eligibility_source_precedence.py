@@ -62,6 +62,16 @@ class ProvenanceReader(unittest.TestCase):
         v = E.read_fixed_sources(CURRENT, [NEW_USER], [OPTIONS, changed])
         self.assertIsNone(v["options"])
 
+    def test_noncanonical_costs_wording_retains_guarded_option_fallback(self):
+        text = ("Budget 61 euros. Deadline 8 days. Local-only requirement: false. "
+                "Decide between Option A and Option B. "
+                "Option A: cost 45 euros, duration 7 days, local true. "
+                "Option B costs 55 euros, duration 6 days, local false.")
+        v = E.read_fixed_sources(text, [], [])
+        self.assertIsNone(v["options"])
+        self.assertIs(v["ambiguous_options"], False)
+        self.assertEqual(v["budget"], 61)
+
     def test_identical_body_options_remain_usable(self):
         v = E.read_fixed_sources(CURRENT, [NEW_USER], [OPTIONS, OPTIONS])
         self.assertEqual(v["options"][0]["cost"], 60)
@@ -93,6 +103,18 @@ class LiveToolStepPrecedence(unittest.TestCase):
         result = ToolStep(self.r).shadow(e, proposal)
         self.assertEqual(result["result"]["action"], "NONE")
         self.assertIsNone(proposal.get("truth_authority"))
+
+    def test_partial_canonical_current_option_blocks_model_fallback(self):
+        current = (CURRENT + " Budget 50 euros. Deadline 5 days. "
+                   "Local-only requirement: true. Option A: cost 20 euros. "
+                   "Option B: cost 90 euros, duration 3 days, local true.")
+        e = self.r.store.event(self.r.session, current)
+        with patch.object(ToolStep, "earlier_parts", return_value=([], [OPTIONS])), \
+             patch.object(self.r.pool, "get", side_effect=AssertionError("MODEL_READ_FORBIDDEN")):
+            proposal = ToolStep(self.r).plan(e, current)
+        self.assertIsNone(proposal)
+        row = self.r.store.one("SELECT payload FROM telemetry WHERE kind='tool_step_unavailable' ORDER BY id DESC LIMIT 1")
+        self.assertIsNotNone(row)
 
     def test_runtime_conflicting_quote_rule_refuses(self):
         e = self.r.store.event(self.r.session, CURRENT)
