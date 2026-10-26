@@ -1,4 +1,4 @@
-name: V13 Run513 complete B2 source-slot binding source-only proof
+name: V13 Run513 independent B2 native receipt postflight source-only proof
 on:
   pull_request:
     types: [opened, synchronize]
@@ -55,9 +55,9 @@ jobs:
           set -uo pipefail
           set +e
           for index in 0 1 2 3 4; do
-            mkdir -p "$RUNNER_TEMP/run512-stage-$index"
-            ../../.venv/bin/python scripts/run511_b2_offer_collector.py --work "$RUNNER_TEMP/run512-stage-$index" --pair-index "$index" --plan >> "$RUNNER_TEMP/RUN513_PLAN_RAW.log" 2>&1 || break
-            cp "$RUNNER_TEMP/run512-stage-$index/RUN511_STAGE_PLAN.json" "$RUNNER_TEMP/RUN513_PLAN_$index.json"
+            mkdir -p "$RUNNER_TEMP/run513-stage-$index"
+            ../../.venv/bin/python scripts/run511_b2_offer_collector.py --work "$RUNNER_TEMP/run513-stage-$index" --pair-index "$index" --plan >> "$RUNNER_TEMP/RUN513_PLAN_RAW.log" 2>&1 || break
+            cp "$RUNNER_TEMP/run513-stage-$index/RUN511_STAGE_PLAN.json" "$RUNNER_TEMP/RUN513_PLAN_$index.json"
           done
           ../../.venv/bin/python - <<'PY' >> "$RUNNER_TEMP/RUN513_PLAN_RAW.log" 2>&1
           import json, os
