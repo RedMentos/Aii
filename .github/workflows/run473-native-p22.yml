@@ -11,6 +11,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   pinned-p22:
+    # Run once on the exact source-tested head. PR documentation checkpoints
+    # re-trigger pull_request workflows; they must never duplicate native work.
+    if: ${{ github.event.pull_request.head.sha == '8763ef9a8ab9e1a1e7da8463135e5b4983003145' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 110
     env:
