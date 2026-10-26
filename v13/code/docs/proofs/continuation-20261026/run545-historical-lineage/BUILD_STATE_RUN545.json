@@ -1,0 +1,82 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_RUN545_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11/Run545 source-only lineage; no heavy native owner",
+  "base": {
+    "pr": 543,
+    "head": "e05353cf1cc9ff0493f163a7c0de1f1ad550db91",
+    "status": "review branch, not production integrated"
+  },
+  "review_pr": 544,
+  "original_failed_attempts": [
+    {
+      "run": 40333840743,
+      "conclusion": "FAILURE",
+      "artifact_id": 12655866491,
+      "reason": "stale historical/current source comparison"
+    },
+    {
+      "run": 40337189236,
+      "conclusion": "FAILURE",
+      "artifact_id": 12657332221,
+      "reason": "stale test local variable; preserved"
+    },
+    {
+      "run": 40337291500,
+      "conclusion": "FAILURE",
+      "reason": "obsolete overlay expectation; preserved"
+    }
+  ],
+  "verified_evidence": [
+    {
+      "run": 40337402917,
+      "conclusion": "SUCCESS",
+      "tests": 22,
+      "privacy": "PASS",
+      "artifact_id": 12657520559,
+      "artifact_zip_sha256": "d65da21eeadfd9e2058acf7fec55a8e9b2482e5b89aff83bfcc97cd700520707",
+      "scope": "Run357 historical/current lineage and eligibility; Linux software only"
+    },
+    {
+      "run": 40337402794,
+      "conclusion": "SUCCESS",
+      "tests": 40,
+      "privacy": "PASS",
+      "artifact_id": 12656509917,
+      "artifact_zip_sha256": "b61667a00ed1c2b26734327b78b8c3bca306d938485df9bbc45b3e2c3e2754ec",
+      "scope": "Run177 chain plus 37 native-firing source-only candidate tests; no model"
+    }
+  ],
+  "exact_git_blob_shas": {
+    "v13/code/scripts/current_source_lineage_run357.py": "3a312d1a53ad682610f51b8371895bbdc379ed2f",
+    "v13/code/tests/test_current_source_lineage_run357.py": "feb9a8a1c5a7c189e4102a4695d092df9b4b7897",
+    "v13/code/tests/test_run177_native_chain_reconcile_20261025.py": "3d74ae6fa6337ad42cf74262dd26880bad65335c",
+    "v13/code/specs/current_source_lineage_run357.json": "545b8d8d5808f8458e2dd3fac4184b42b70663ba",
+    "v13/code/scripts/integrated_candidates.py": "9ba7ea2eca522304b05a347ac749f0dff95c5236"
+  },
+  "preserved_negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA UNAVAILABLE",
+    "jepa_weight=0",
+    "Redmi unmeasured",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "other_active_work": {
+    "run544_fullsuite": 40336838628,
+    "status_at_checkpoint": "in_progress",
+    "branch": "codex/automation11-run544-fullsuite-restored-prereqs-20261026",
+    "owner": "Run544 workflow, serialized heavy lane"
+  },
+  "open_questions": [
+    "Run544 full source-wide exact-head result still pending; do not infer green",
+    "Source-only lineage correction does not improve model utility or authorize learning/age/tool activation"
+  ],
+  "next_command": "gh run view 40336838628 --repo RedMentos/Aii --log; inspect SHA-closed artifact, classify actual failures without changing frozen gates; then continue disjoint functional JEF/STEP2 package",
+  "prerequisites": [
+    "Wait for Run544 complete before classifying full suite",
+    "Use new review branch from current verified head; do not overwrite Run544 or Claude branches",
+    "No Redmi device in this environment"
+  ]
+}

@@ -25,6 +25,25 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def historical_sources(root=ROOT):
+    """Reconstruct only the Run177-era chain registered by Run357.
+
+    Later reviewed terminal cleanup and Store integrity transforms are
+    intentionally excluded here, but remain mandatory in the current chain.
+    No source is read from the live runtime to manufacture historical bytes.
+    """
+    from scripts import integrated_candidates as chain
+    from scripts import approval_reader_runtime_candidate as reader
+    from scripts import native_firing_runtime_candidate as firing
+    full=chain._baseline(Path(root))
+    full.update(reader.transform({k:full[k] for k in reader.NAMES}))
+    out=firing.transform(full)
+    out=chain.tool_answer_first(chain.eligibility_live(chain.b3_degrade(
+        chain.observer_schedule(chain.resource_modes(chain.schema_order(
+            chain.native_cache_bounds(out)))))))
+    return chain.run177_b2_tap_identity(out)
+
+
 def verify(root=ROOT,manifest_path=MANIFEST):
     """Require BOTH original integrated transformation and current live digests."""
     root=Path(root)
@@ -40,9 +59,12 @@ def verify(root=ROOT,manifest_path=MANIFEST):
                 isinstance(v,str) and SHA.fullmatch(v) for v in hashes.values()):
             raise ValueError('Current lineage manifest incomplete: '+field)
     from scripts.integrated_candidates import integrated_sources
-    historical=integrated_sources(root)
+    historical=historical_sources(root)
+    reviewed=integrated_sources(root)
     if set(historical)!=set(NAMES):
         raise ValueError('Historical chain file scope changed')
+    if set(reviewed)!=set(NAMES):
+        raise ValueError('Current chain file scope changed')
     current={}
     for name in NAMES:
         p=root/name
@@ -53,6 +75,8 @@ def verify(root=ROOT,manifest_path=MANIFEST):
             raise ValueError('Historical integrated chain digest changed: '+name)
         if sha(current[name])!=d['current_sha256'][name]:
             raise ValueError('Current reviewed source digest changed: '+name)
+        if sha(reviewed[name].encode('utf-8'))!=d['current_sha256'][name]:
+            raise ValueError('Current integrated chain digest changed: '+name)
     for marker in RUNNER_MARKERS:
         if marker not in historical['v13/runners.py'] or marker.encode() not in current['v13/runners.py']:
             raise ValueError('Run177 B2/C3 native tap marker missing')

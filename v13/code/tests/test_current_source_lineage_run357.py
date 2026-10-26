@@ -36,11 +36,29 @@ class CurrentSourceLineageRun357(unittest.TestCase):
             self.assertEqual(json.loads(p.read_text())['current_sha256']['v13/runtime.py'],'0'*64)
 
     def test_historical_chain_edit_rejected_even_if_live_is_unchanged(self):
-        original=chain.integrated_sources()
+        original=L.historical_sources()
         changed=dict(original);changed['v13/runners.py']+='\n# altered historical chain'
-        with patch.object(chain,'integrated_sources',return_value=changed):
+        with patch.object(L,'historical_sources',return_value=changed):
             with self.assertRaisesRegex(ValueError,'Historical integrated chain digest changed: v13/runners.py'):
                 L.verify()
+
+    def test_current_integrated_chain_edit_rejected_even_if_live_is_unchanged(self):
+        original=chain.integrated_sources()
+        changed=dict(original);changed['v13/store.py']+='\n# altered current chain'
+        with patch.object(chain,'integrated_sources',return_value=changed):
+            with self.assertRaisesRegex(ValueError,'Current integrated chain digest changed: v13/store.py'):
+                L.verify()
+
+    def test_frozen_and_current_replays_remain_distinct(self):
+        historical=L.historical_sources()
+        reviewed=chain.integrated_sources()
+        manifest=json.loads(L.MANIFEST.read_text())
+        import hashlib
+        sha=lambda value: hashlib.sha256(value.encode('utf-8')).hexdigest()
+        self.assertEqual({n:sha(historical[n]) for n in L.NAMES},manifest['historical_sha256'])
+        self.assertEqual({n:sha(reviewed[n]) for n in L.NAMES},manifest['current_sha256'])
+        self.assertNotEqual(historical['v13/runtime.py'],reviewed['v13/runtime.py'])
+        self.assertNotEqual(historical['v13/store.py'],reviewed['v13/store.py'])
 
     def test_later_reviewed_runtime_and_store_are_not_misrepresented_as_run177_bytes(self):
         d=json.loads(L.MANIFEST.read_text())
