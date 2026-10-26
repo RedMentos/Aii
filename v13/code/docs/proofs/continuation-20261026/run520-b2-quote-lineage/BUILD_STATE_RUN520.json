@@ -6,15 +6,15 @@
   "base_sha": "0e193755a446f837b848d143fcce582fa486979f",
   "prereg_blob_sha": "97f12f294551b65a27f37c5208bf441e1ba2d92d",
   "source": {
-    "revised_postflight_blob": "6bdcb125ecd652f2ea83bb77154efd6babcb5f16",
-    "new_adversarial_tests_blob": "6bff68f2525a6c6ed99a77aaffc5383047e63086",
+    "revised_postflight_blob": "76c92573867429d6a2c13f7493c456c06d4b6890",
+    "new_adversarial_tests_blob": "3c38db4d776f13a29e235b9c415d8df79b9df936",
     "frozen_collector_blob": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
     "frozen_metric_blob": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6"
   },
   "gap": "Original Run513 checked source/offset equality but not whether accepted quote was textually traceable to native raw_offer_quotes; source-exact fabricated quote could inflate metric.",
   "fix": "Bounded casefold/whitespace-normalized injective raw-candidate ancestry check after exact source-ref check; Run516 aggregate inherits through Run513; original native/fixture/model/seed data unchanged.",
-  "test_plan": "12 new synthetic adversarial controls + original Run509-518 regressions + SHA-pinned original Run515 safe-artifact read-only replay + public privacy scan",
-  "evidence": "SOURCE_ONLY_CI_PENDING_NOT_NATIVE_PROOF",
+  "test_plan": "Tightened short-candidate adversarial tests + Run516 aggregate tests + original Run509-518 + pinned original p00 replay + privacy scan",
+  "evidence": "INITIAL_SOURCE_ONLY_GREEN_49_TESTS_AND_ORIGINAL_P00_REPLAY; AMENDMENT_A_RETEST_PENDING",
   "heavy_owner": {
     "pr": 517,
     "workflow": "run519-b2-native-p01",
@@ -39,6 +39,18 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next_command": "Open Run520 source-only PR stacked on Run519, inspect CI tests and exact original p00 replay; repair any RED without native rerun; after Run519 completes independently audit p01 raw/safe hashes.",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Verify amended Run520 source-only CI and original p00 replay; independently hash-check artifact and update checkpoint. Keep Run519 p01 native lane separate, audit its raw/safe outputs after completion.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "amendment_a": "Short (<12) raw quote must byte-equal accepted excerpt, not justify arbitrary widening; include Run516 synthetic aggregate tests.",
+  "initial_ci": {
+    "run": 40316505151,
+    "conclusion": "SUCCESS",
+    "tests": 49,
+    "original_p00_rows": 12,
+    "original_p00_quote_refs": 23,
+    "privacy": "CLEAN",
+    "artifact_id": 12647500590,
+    "artifact_sha256": "26ccc30be8be9715c5818b669b4fb468401d290e0d7e8db5687f758021fb5f22",
+    "manifest_entries_verified": 13
+  }
 }
