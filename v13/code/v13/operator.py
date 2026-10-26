@@ -61,7 +61,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :callosum [status|shadow|active|degrade|promote <Richtung>] (WP-J B3-Kanal-Policy, signed_gain; WP-N19 B3-H10-Degradation) / :gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots; readout = nativer B2-Tap-Konsument, SHADOW) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :toolforecast [status|shadow|off|score] (Werkzeug-Folgen-Prädiktor vor der Wirkung, SHADOW, Runden 7/8) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
 :regeln (deine Regeln + was ich ohne Nachfrage tun würde) / :regel <Text> (Verbot oder „frag vorher“ speichern) / :regel aus|verbot|fragen|nein <Nr>
 :jef [status|last|shadow|active|query|outcome <Event> <0..1>] (WP-N3 JEF-Broadcast-Cache, Offer-Nutzen, Top-down-Query)
-:self [status|model|body|messages|arithmetic|edit list|edit approve|reject|rollback <Id>] (WP-N9 Selbstmodell, Körpergefühl, Corollary, Self-Messages/-Edits)
+:self [status|model|body|messages|arithmetic|world status|start|poll|stop|edit list|edit approve|reject|rollback <Id>] (WP-N9 Selbstmodell, Körpergefühl, Corollary, Self-Messages/-Edits)
 :download all|needle|language|body|gist|embedding / :import model <Rolle> <Pfad>
 :export model <Rolle> <Ziel> / :unload [Rolle] / :gc / :clear-logs
 :backup / :restore <Pfad> (zeigt Offline-Befehl)
@@ -127,6 +127,42 @@ class Operator:
             return dumps({'status':'SHADOW_ONLY','total':len(ring),'recent':ring[-8:],
                           'user_notified':False,'learning_authorized':False,
                           'age_reopen_authorized':False})
+        if cmd=='self' and args and args[0]=='world':
+            # Explicit local-only read-only observation of an already existing
+            # approved-tool sandbox. No automatic polling, events or authority.
+            from .agi.file_world_port import SandboxWorldPort
+            from .selfmodel import attribute, controller as self_controller
+            root=Path(s.home)/'data'/'tool_sandbox'
+            action=args[1:] or ['status']
+            port=getattr(r,'_self_world_port',None)
+            if action==['status']:
+                ready=root.exists() and root.is_dir() and not root.is_symlink()
+                return dumps({'mode':'MANUAL_POLL_ONLY','active':port is not None,
+                              'sandbox_ready':bool(ready),'learning_authorized':False,
+                              'age_reopen_authorized':False,'tool_authorized':False})
+            if action==['stop']:
+                r._self_world_port=None
+                return dumps({'mode':'MANUAL_POLL_ONLY','active':False,'status':'STOPPED'})
+            if action==['start']:
+                # No mkdir: a real sandbox must pre-exist from a separately
+                # authorized action. The port validates inode and symlinks.
+                port=SandboxWorldPort(root)
+                r._self_world_port=port
+                return dumps({'mode':'MANUAL_POLL_ONLY','active':True,'status':'BASELINED',
+                              'historical_replay':False,'learning_authorized':False})
+            if action==['poll']:
+                if port is None:raise ValueError('Self/World Beobachtung erst mit :self world start starten')
+                observations=port.poll()
+                opened=list(self_controller(r)._load()[0]['open'].values()) if observations else []
+                recent=[]
+                for obs in observations[-8:]:
+                    result=attribute(opened,obs)
+                    recent.append({'channel':obs['channel'],'class':result['class'],
+                                   'reason':result['reason'],'action_ids':result['action_ids']})
+                return dumps({'mode':'MANUAL_POLL_ONLY','active':True,'total':len(observations),
+                              'recent':recent,'packets_written':0,'learning_authorized':False,
+                              'age_reopen_authorized':False,'tool_authorized':False})
+            raise ValueError(':self world [status|start|poll|stop]')
         if cmd=='self' and args:  # bare :self keeps the F3 self_state view below
             from .selfmodel import operator_command
             return operator_command(r,args)
