@@ -185,11 +185,23 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
         except PermissionError:store.log('agi_live_unavailable',event_id,{'stage':'user_model','error':'PermissionError'})
 
 def on_rating(store,event_id,score):
-    """Answer quality rating, not a factual correctness label (5 = no label)."""
+    """One effective quality label per answer, with explicit feedback taking priority.
+
+    Rating edits replace rather than multiply calibration samples. A neutral
+    explicit note suppresses an earlier implicit judgement; it does not claim
+    factual correctness. Old unkeyed AG9 samples cannot be retroactively linked.
+    """
     from .metacog import Metacognition
+    from ..inputs import ratings
     st=_load(store,event_id)
-    if st.get('answer_confidence') is None or RATING_BAD<score<RATING_GOOD:return None
-    Metacognition(store).record(ANSWER_QUALITY,st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id);return True
+    if st.get('answer_confidence') is None:return None
+    rows=[x for x in ratings(store) if x.get('event_id')==event_id]
+    explicit=[x for x in rows if x.get('origin')=='EXPLICIT_NOTE']
+    effective=(explicit or rows)
+    score=effective[-1]['score'] if effective else score
+    label=None if RATING_BAD<score<RATING_GOOD else score>=RATING_GOOD
+    Metacognition(store).record_keyed(ANSWER_QUALITY,st['answer_confidence'],label,'rating:'+event_id)
+    return label is not None
 
 def report(r):
     g=hub(r);mc=g.metacog.report()
