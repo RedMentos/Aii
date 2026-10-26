@@ -1,15 +1,15 @@
 {
   "schema": "V13_RUN502_SOURCE_CHECKPOINT_V1",
   "date_utc": "2026-10-26",
-  "status": "SOURCE_ONLY_GREEN_26_TESTS_42_DISJOINT_ROWS",
+  "status": "REVIEW_HARDENING_PENDING_CI_ORIGINAL_26_TEST_GREEN_RETAINED",
   "branch": "codex/run502-heldout-batch3-source-20261026",
   "base_branch": "codex/run501-xenia-yarrow-native-20261026",
   "base_sha": "a0c90aab10ea984568f3c0d894fda8524a0a5290",
   "source": {
     "prereg_blob": "fd007101124510f881ad033a87f37e272cb30fe9",
-    "batch_script_blob": "773ed4b0507bab839d151367c21a7a28e091c67c",
-    "test_blob": "992b073c7a450105d2dc9df62e0e59b07019b003",
-    "workflow_blob": "7032b9fac8a16461f6a9fd030ef6592e9c755281",
+    "batch_script_blob": "5c01768ccedbe63cb3c2eebde5a75347e3a67abd",
+    "test_blob": "abbdca274d19b435837474e4fb986e0fee57cde5",
+    "workflow_blob": "3826de73db7e7f392b7eabd55e52cbde4dc63659",
     "stage_runner_blob": "504a4a8492bdb383869b164b82c05d13e00f6823"
   },
   "scope": {
@@ -63,8 +63,9 @@
     "source-only batch executor cannot call models in --plan mode",
     "Run501 native is separate active owner; no Run502 native job launched",
     "Run502 source-only Actions 40306622688 GREEN, 26 tests, no native; downloaded raw artifact 12643241199",
-    "Independently recomputed 8 SHA256 entries, exact 42-row plan C_s31_p02/p03/p04, privacy CLEAN"
+    "Independently recomputed 8 SHA256 entries, exact 42-row plan C_s31_p02/p03/p04, privacy CLEAN",
+    "Independent review found rc0 could be written before stage receipt validity; fixed to rc98 RED and stop before success progress; new adversarial test added; new CI pending"
   ],
-  "next_command": "Inspect Run501 native Actions 40305980830 and independently rescore. Only if PASS, preregister one serialized Run503 batch-native execution of 42 rows using Run502 source, with exact model preflight and raw/safe evidence.",
+  "next_command": "Inspect Run502 source-only Actions for commit 187fa4d3d8d55ea56a69db1087ac093a78e63a5e; preserve prior GREEN proof, verify new tests and raw SHA. Wait Run501 native independent result before Run503.",
   "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
 }
