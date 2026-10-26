@@ -1,0 +1,54 @@
+{
+  "schema": "V13_RUN509_FRESH_B2_QUOTE_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run509-b2-rule-quote-prereg-20261026",
+  "base_branch": "codex/run508-b2-quote-transport-audit-20261026",
+  "base_sha": "432feb9d3d289c6ebe2351941d95726308fda79e",
+  "status": "SOURCE_STAGED_FIXTURE_SHA_NOT_YET_FROZEN",
+  "scope": {
+    "fresh_fixtures": 10,
+    "split": 6,
+    "rule": 2,
+    "detail": 2,
+    "arms": [
+      "BASE",
+      "RULE_FOCUS"
+    ],
+    "seeds": [
+      41,
+      42,
+      43
+    ],
+    "planned_b2_offer_observations": 60,
+    "native_executed": false
+  },
+  "source": {
+    "prereg_blob": "f9248285137ec0d2d0f3ae45673c7621668ccfbe",
+    "script_blob": "d22cec6935b849f32c89c5f72381a7f28cc932a5",
+    "test_blob": "e749a492cd2c3b85edd7ebb60a9512161dff8d90",
+    "frozen_z2_source_blob": "2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7",
+    "frozen_run491_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "fresh_fixture_sha256": null
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "New disjoint fixture specs and value-free focus preregistered before inference",
+    "No native work; Run507 native Actions 40309409260 separate owner",
+    "Source-only fixture SHA must be computed and pinned before any native trial"
+  ],
+  "blockers": [
+    "Run509 source-only CI pending",
+    "Fresh fixture SHA not yet frozen",
+    "Run507 native active",
+    "Redmi unavailable"
+  ],
+  "next_command": "Open draft PR Run509 against Run508, run source-only CI, inspect raw artifact and fix literal fixture SHA256; rerun CI; private backup. Do not trigger native while Run507 owns heavy job.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
