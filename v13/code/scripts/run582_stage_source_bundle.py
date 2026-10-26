@@ -30,6 +30,9 @@ def required_stage_names(stage_id, seed):
 
 
 def read_regular(root, relative):
+    parts = Path(relative).parts
+    if any((root / Path(*parts[:i])).is_symlink() for i in range(1, len(parts))):
+        raise ValueError("UNSAFE_STAGE_PARENT:" + relative)
     path = root / relative
     if not path.is_file() or path.is_symlink():
         raise ValueError("MISSING_STAGE_SOURCE:" + relative)
@@ -126,8 +129,13 @@ def inspect_safe_zip(path):
     if not path.is_file() or path.is_symlink():
         raise ValueError("SAFE_ZIP_MISSING")
     with zipfile.ZipFile(path) as z:
-        names = z.namelist()
-        if len(names) != len(set(names)) or z.testzip() is not None:
+        infos = z.infolist()
+        names = [info.filename for info in infos]
+        if (len(names) != len(set(names)) or z.testzip() is not None or
+                any(info.is_dir() or stat.S_ISLNK(info.external_attr >> 16)
+                    or name.startswith("/") or "\\" in name
+                    or any(part in ("", ".", "..") for part in name.split("/"))
+                    for name, info in zip(names, infos))):
             raise ValueError("SAFE_ZIP_INVALID")
         plan = json.loads(z.read("RUN558_BATCH_PLAN.json"))
         full = json.loads(z.read("RUN500_STAGE_MAP.json"))
