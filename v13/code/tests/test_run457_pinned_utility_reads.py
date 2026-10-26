@@ -65,8 +65,8 @@ class PinnedUtilityReads(unittest.TestCase):
             return {key: {"score": {"utility": tool["utility"]}}
                     for key in expected}
 
-        with patch.object(audit.verified252, "verify", side_effect=verified), \\
-             patch.object(audit, "validated_rows", side_effect=rows):
+        with (patch.object(audit.verified252, "verify", side_effect=verified),
+              patch.object(audit, "validated_rows", side_effect=rows)):
             return audit.analyze(self.root, {})
 
     def test_unchanged_attested_export_is_readable_without_gate_promotion(self):
