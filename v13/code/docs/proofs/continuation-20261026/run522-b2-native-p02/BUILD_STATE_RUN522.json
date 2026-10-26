@@ -1,0 +1,73 @@
+{
+  "schema": "V13_RUN522_B2_P02_NATIVE_PREREG_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run522-b2-native-p02-20261026",
+  "base_branch": "codex/run520-b2-quote-lineage-20261026",
+  "base_sha": "7c743cd7cc6e9bf258e6ae856793f2c40a35fd38",
+  "prereg_blob": "1c3244eb13c48aa15bee42293b3b3e50d0f87aed",
+  "stage": {
+    "id": "p02",
+    "pair_index": 2,
+    "fixtures": [
+      "Eclipse",
+      "Fjord"
+    ],
+    "seeds": [
+      41,
+      42,
+      43
+    ],
+    "arms": [
+      "BASE",
+      "RULE_FOCUS"
+    ],
+    "observations": 12,
+    "frozen_run509_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726"
+  },
+  "source": {
+    "collector": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
+    "postflight_lineage": "76c92573867429d6a2c13f7493c456c06d4b6890",
+    "lineage_tests": "3c38db4d776f13a29e235b9c415d8df79b9df936",
+    "models": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "run509": "ec8860d2333bd3c4a16caccb9537073a310f32da",
+    "run510": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6"
+  },
+  "previous_native_p01": {
+    "pr": 517,
+    "run": 40316152651,
+    "conclusion": "SUCCESS",
+    "raw_sha256": "233a7877b6e827e56cf1d42d009f89144a50faede0f2f3b9bebd4016e6b2d4a3",
+    "safe_sha256": "95a72b76dba6a2f439ed149cba6073ea52de42490d48de91e006880821462cba",
+    "raw_manifest_verified": 32,
+    "safe_manifest_verified": 13,
+    "quote_refs_with_raw_candidate": 24,
+    "independent_audit_sha256": "07d8900277b93565b7f8b8bd7ab72aed6f1fdcda5681fc0afebedb4df16fae53",
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run519/"
+  },
+  "heavy_owner": {
+    "p02_not_started": true,
+    "in_progress_heavy": 0,
+    "shared_concurrency": "v13-native-c3-run131-serialized"
+  },
+  "parallel_source_only": {
+    "run521_pr": 519,
+    "not_in_native_base": true
+  },
+  "evidence": "SOURCE_ONLY_PREREG_WORKFLOW_PERSISTED_P02_NATIVE_PENDING",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "p02 native and independent artifact review pending",
+    "p03/p04 remain",
+    "frozen Run510 full 60-row paired score not yet evaluated",
+    "STEP2/B3/Body-JEPA/Redmi remain negative"
+  ],
+  "next_command": "Open PR exactly once to trigger p02 one-shot Actions; verify actual source/model/runner and all 12 rows; download raw/safe artifacts and independently SHA-audit, no automatic retry.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
