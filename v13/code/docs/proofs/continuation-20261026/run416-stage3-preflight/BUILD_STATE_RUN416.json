@@ -1,0 +1,56 @@
+{
+  "schema": "V13_RUN416_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run416-stage3-native-preflight-20261026",
+  "base_pr": 411,
+  "base_commit": "dfadb06fa84dcb4de45ca62e00027b8eb065706a",
+  "verified_source_head": "2d49da1ceba21a040afe04a76ca22f7e7034ffae",
+  "source_sha256": {
+    "v13/code/scripts/run415_stage3_no_model_restore.py": "d2a3475f0527975c7683046ae82642a9ff80d90f43af96b80a8bf36f0681d306",
+    "v13/code/tests/test_run415_stage3_no_model_restore.py": "2e6efecd3628d55094afd6ebd361f676746153c3911be4c12a62acdc12758926"
+  },
+  "source_only_evidence": {
+    "workflow_run_id": 40259720804,
+    "conclusion": "success",
+    "tests": "50/50 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12624385734,
+    "artifact_zip_sha256": "fb311bd6f39a96942a58db4dc3ac5fa49704e6bf7a6d53f4d97254b7923f16c8",
+    "raw_scope": "source-only synthetic; no model download or native inference"
+  },
+  "changes": [
+    "pre-native frozen Run394 manifest exact check",
+    "independent O_s20 and P_s20 receipt validation against pinned runner SHA and stored validated values",
+    "strict attempt path containment; no native call on invalid receipts",
+    "four new adversarial preflight regressions"
+  ],
+  "native_owner": {
+    "run413_original_actions": 40258333913,
+    "status_last_checked": "IN_PROGRESS",
+    "native_s20": "NOT_RUN"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "When Run413 actual native P_s20 is GREEN and its safe no-model export verified, use unchanged Run415 script with --export <verified_run413_export> --run411-report <verified_report> --work <fresh_private_work> --installed-home <pinned_models> --export-destination <fresh_private_export> --execute --output <report.json>; exclusive native owner only.",
+  "prerequisites": [
+    "Run413 84-row actual native GREEN",
+    "verified safe export artifact and raw receipt",
+    "pinned installed runner/model hashes",
+    "exclusive native owner",
+    "no model-bearing ZIP reupload"
+  ],
+  "open_questions": [
+    "Whether actual Run413 P_s20 native completes successfully",
+    "Whether S_s20 shows any paired utility gain under frozen cohort",
+    "Actual Redmi measurements remain missing"
+  ],
+  "checkpoint_note": "This status-file commit follows the verified 2d49 exact-head CI; run new exact-head source-only CI before promoting its status. No native proof claimed."
+}
