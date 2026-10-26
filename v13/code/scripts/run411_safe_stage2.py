@@ -12,6 +12,7 @@ import run394_step2_fresh as r394
 import run397_step2_resume as resume
 import run408_filtered_stage1 as filtered
 import run409_safe_export as safe
+from run402_stage_restore import RUN401_EXECUTABLE_SHA256
 from run396_step2_pilot_audit import load, sha
 from v13.models import catalog
 
@@ -45,7 +46,7 @@ def stage2(archive, expected_sha, work, installed=None, execute=False, export_de
                             "zip_crc_checked": first_stage["zip_crc_checked"]}
         work = Path(work)
         manifest = load(work / "RUN394_PREREGISTERED_FIXTURES.json")
-        runner_sha = catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+        runner_sha = RUN401_EXECUTABLE_SHA256
         first, failed = resume.previous_success(work, "O", 20, r394.FIXTURES,
                                                 manifest, current_runner_sha=runner_sha)
         require(first is not None and not failed and first["validated"]["rows"] == 42,
@@ -58,6 +59,8 @@ def stage2(archive, expected_sha, work, installed=None, execute=False, export_de
             report["rows_verified"] = 42
             report["remaining_arms"] = 8
         else:
+            require(sha(Path(installed) / "bin/llama-server") == runner_sha,
+                    "INSTALLED_RUNNER_EXECUTABLE_SHA_MISMATCH")
             report["native_execute_attempted"] = True
             out = resume.run(work, installed, pilot=False, execute=True, max_new_arms=1)
             require(out.get("status") == "INCOMPLETE" and
