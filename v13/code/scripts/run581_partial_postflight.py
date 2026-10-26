@@ -89,9 +89,6 @@ def audit(path, expected_sha=SAFE_SHA256):
         plan = load("RUN558_BATCH_PLAN.json")
         batch = load("RUN558_BATCH_RESULT.json")
         preflight = load("RUN558_INSTALLED_PREFLIGHT.json")
-        if plan["stage_ids"] != batch["stage_ids"] != []:
-            # The equality itself is checked below; do not infer a stage from names.
-            pass
         if (plan["stage_ids"] != [MISSING_STAGE, *[s for s, _ in STAGES]]
                 or batch["stage_ids"] != plan["stage_ids"]
                 or plan["arm_seed_pairs"] != [["A", 33]] * 3
