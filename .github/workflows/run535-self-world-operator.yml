@@ -1,0 +1,95 @@
+name: V13 Run535 local manual Self World operator polling
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run535-self-world-operator.yml'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_run535_self_world_operator.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run535-self-world-operator/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run535-self-world-operator-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact prereg, operator, port and tests
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run535-self-world-operator/PREREG.md)" = '703b69c3496ad359cb32f720a9aeec9186539f12'
+          test "$(git hash-object v13/code/v13/operator.py)" = '26087a32767f72dff2cddfe29e764ec06babee06'
+          test "$(git hash-object v13/code/tests/test_run535_self_world_operator.py)" = '96879f82f394ddd3518459875415752486487974'
+          test "$(git hash-object v13/code/v13/agi/file_world_port.py)" = '713d66efac249649adeaeb32ae7efb690fab72f4'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN535_HOST.txt"
+      - name: Isolated source-only dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run535venv"
+          timeout 240s "$RUNNER_TEMP/run535venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN535_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN535_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Manual operator and all source F3 F4 regressions
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run535venv/bin/python" -m unittest -v tests.test_run535_self_world_operator tests.test_run533_sandbox_world_port tests.test_run532_arithmetic_shadow_operator tests.test_selfmodel > "$RUNNER_TEMP/RUN535_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN535_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN535_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN535_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN535_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close raw source evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN535_*' ! -name RUN535_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN535_SHA256SUMS.txt
+      - name: Preserve raw even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run535-self-world-operator-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN535_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests privacy and source pins
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN535_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN535_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN535_PRIVACY_EXIT.txt")" = 0
