@@ -1,0 +1,7 @@
+# Run526 prestart review — p03 owner released, independently verified
+
+2026-10-26. Run525 p03 PR #523 Actions **40318195227 SUCCESS**. Original raw ZIP SHA256 `5e960d0bcf1ca1023e3454f94526ed9e5c07c6579b7c3c17c95bbc04a2b34e9c`, safe ZIP SHA256 `007299f558f98e45971dbd33cce5ab023428f9eab59d13faa4e3af8781518fc2`. Both independently downloaded; 32/32 raw SHA entries, 13/13 safe manifest entries and 13/13 raw/safe mapped files byte-identical; 12/12 frozen p03 keys, 24/24 progress events, 15/15 source-ref quotes with distinct recorded raw candidate ancestry; original pinned model/runner hashes. Independent report SHA256 `5c471cfa97430fc8dc8d91f92aa7f1907bef820e7ca9e98dca28c4b9b2a9b7fd`; raw/safe/report/script privately backed up under `/V13-Checkpoints/2026-10-26/Run525/`. Re-audited original p03 safe stage using current Run520 source: 12/12 rows and stored postflight exact equality.
+
+Descriptive p03 old-rule coverage: BASE 3/6, RULE_FOCUS 6/6; prior p00–p02 primary counts BASE 18/18, RULE_FOCUS 17/18. Combined p00–p03 primary = BASE 21/24, RULE_FOCUS 23/24, focus minus base **+2/24**, below the frozen Run510 >=6/24 descriptive threshold. This is not the full 60-row scored report; p04 DETAIL negative controls remain. Original p00 native Actions RED preserved, not silently promoted.
+
+Fresh GitHub Actions in-progress query before opening p04 returned **zero** active runs, so the shared heavy lane was available. The one-shot p04 PR may now be opened. No native/model/seed/fixture changes and no STEP2/B3/JEPA/Redmi promotion.
