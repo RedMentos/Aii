@@ -1,0 +1,43 @@
+{
+  "schema": "V13_RUN421_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run421-stage4-o21-continuation-20261026",
+  "base_pr": 415,
+  "base_commit": "3cd2b0359d04577cd24998cf41b59e86da46e69c",
+  "verified_source_head": "13616e4aaae487c5ba237ed1cf31329cb05d72fa",
+  "source_sha256": {
+    "v13/code/scripts/run421_stage4_o21.py": "c91b442448dbcfba5fa115c614b95d8b6d0bda0b87a265addea11403a79ebee8",
+    "v13/code/tests/test_run421_stage4_o21.py": "1bf7960e41daa34b13593d777499b32a4cfaf3a91df7b642d559131ca0d9fbf0"
+  },
+  "source_only_evidence": {
+    "workflow_run_id": 40261185293,
+    "conclusion": "success",
+    "tests": "46/46 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12624084743,
+    "artifact_zip_sha256": "b6bed1a390698b5fd35a1655cd5af1556208a68d6b3909ad0dff1118466dcf23",
+    "scope": "synthetic/source-only; no actual O_s21 inference"
+  },
+  "native_owner": {
+    "run418_s20_actions": 40260347495,
+    "status_last_checked": "IN_PROGRESS",
+    "o21": "NOT_RUN"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Actual S_s20 result, raw artifact hashes and independent Run419 postflight",
+    "Whether O_s21 native can be run with pinned models after exclusive owner release",
+    "Remaining five arms and full 378-row paired utility gate"
+  ],
+  "next_command": "Only after Run418 S_s20 actual GREEN and Run419 independent 126-row artifact import verified, run scripts/run421_stage4_o21.py --export <verified S work> --stage3-report <actual Run415 report> --work <fresh private work> --installed-home <pinned installed models> --export-destination <fresh no-model export> --execute --output <report.json> under exclusive native owner. Preserve RED and never reupload original model ZIP.",
+  "checkpoint_note": "Source-only exact head 13616e4 verified; any follow-up checkpoint commit needs exact-head CI."
+}
