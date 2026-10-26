@@ -1,0 +1,57 @@
+{
+  "schema": "V13_RUN568_NATIVE005_PREEXEC_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "assistant Run568 one-shot Linux-native FUTURE_005",
+  "base_head": "d186a90bca1d237b3770589d7ea252f23fbd1df7",
+  "base_pr": 564,
+  "branch": "assistant/v13-run568-future005-native-20261026",
+  "prereg": {
+    "commit": "7b7b75b8771d0035d47e947f198e2b0ece29132b",
+    "blob": "9163de7e7fdb8da587244d4c3009babffc375f85"
+  },
+  "workflow": {
+    "commit": "7a774f732f899724e1fc64159a853a7cd53b243a",
+    "blob": "46cddc6beb1b8c59eedc4f9f1e69ff574c81deb8",
+    "path": ".github/workflows/run568-future005-native.yml",
+    "trigger": "pull_request opened; exact branch only",
+    "concurrency": "v13-native-c3-run131-serialized"
+  },
+  "source_preflight": {
+    "run566": 40364147293,
+    "conclusion": "SUCCESS",
+    "batch": "FUTURE_005",
+    "row_keys_sha256": "0d3904aeced77afaa55e05819592ba2f40c3cb1aa41c30b8540c1e665f9f3180",
+    "stage_ids": [
+      "A_s33_p02",
+      "A_s33_p03",
+      "A_s33_p04"
+    ],
+    "rows": 42
+  },
+  "prelaunch_owners": {
+    "in_progress": 0,
+    "queued": 0,
+    "observed": "2026-10-26, immediately before native PR"
+  },
+  "evidence_level": "SOURCE_ONLY_PREEXEC; no new native results",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "New disjoint current live/default vs legacy native FINAL cohort not yet registered",
+    "Run568 native original evidence not yet produced or independently audited",
+    "Remaining FUTURE_006..024 and B/C/D/E frozen batches incomplete",
+    "Native body-JEPA, B3 and real Redmi full-system gates open"
+  ],
+  "next_exact_command": "Open draft PR head assistant/v13-run568-future005-native-20261026 base assistant/v13-run567-original-native004-offline-20261026 to trigger one-shot serialized native; inspect exact Actions head/status and retain original raw and bounded safe ZIPs even RED. Then separately preregister independent Run559 original artifact audit after completion.",
+  "prerequisites": [
+    "No competing native owner; no main merge or force push",
+    "No paid provisioning; use only pinned public artifacts",
+    "No gate promotion or changes to learning/age/approval rights"
+  ]
+}
