@@ -101,7 +101,7 @@ def _validate_native_tree(root, files):
     attempt = root / info["attempt"]
     require(attempt.is_dir(), "STAGE1_ATTEMPT_MISSING")
     installed_log = files.get("RUN401_INSTALLED_RAW.log", b"")
-    require(type(installed_log) is bytes and len(installed_log) <= 1_000_000,
+    require(isinstance(installed_log, (bytes, bytearray)) and len(installed_log) <= 1_000_000,
             "STAGE1_RUNNER_LOG_MISSING_OR_OVERSIZED")
     observed = re.findall(rb"(?m)^RUNNER_VERIFIED ([0-9a-f]{64})$", installed_log)
     require(len(observed) == 1 and observed[0].decode() == RUN401_EXECUTABLE_SHA256,
