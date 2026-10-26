@@ -1,0 +1,71 @@
+{
+  "schema": "V13_RUN594_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run594-chat-export-stream-20261026",
+  "base_branch": "codex/automation11-run593-callosum-rating-replay-20261026",
+  "base_sha": "f84da9510c25beddb7200cad65fa16324b9683ec",
+  "verified_code_head": "108e8fdf335af2bb9754f165ecbedd760b1c28be",
+  "pr": 589,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/589",
+  "prereg_commit": "f41f87ad2487f6cab5489975573ef3712438940a",
+  "changed_source_blobs": {
+    "v13/code/v13/chat_export.py": "c78581aa0f48d6313175e000bd70a2592f54eb01",
+    "v13/code/v13/operator.py": "791a8e4c295b65b0470aecd252975a2c9d18556b",
+    "v13/code/tests/test_run594_chat_export_stream.py": "05967489092e0ae1be6a50deab25b3defab1eb05",
+    ".github/workflows/run594-chat-export-stream.yml": "1d3acf0453edc2404f620660f25b63a38a9f0025"
+  },
+  "observed_ci": {
+    "run": 40392910859,
+    "job": 121818279665,
+    "head": "108e8fdf335af2bb9754f165ecbedd760b1c28be",
+    "conclusion": "success",
+    "new_tests": "6/6 PASS",
+    "existing_chat_operator": "3/3 PASS",
+    "existing_phone_chat": "1/1 PASS",
+    "existing_phone_operator": "3/3 PASS",
+    "existing_literal_search": "3/3 PASS",
+    "existing_multichat_backup": "2/2 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12684842730,
+    "raw_artifact_sha256_from_actions_log": "ddc81c5aab6491787aa6fa6b61ef91a80ce35d487df720e187372a6a6e8201fe"
+  },
+  "failed_attempt_preserved": {
+    "head": "825816f7714e264c784a130005b709a48e46bc97",
+    "run": 40392807227,
+    "artifact_id": 12685501155,
+    "artifact_sha256": "161e879db16cc02b8b4f9b92355604bea04a42d9bf976b453b3335842b2ed69a",
+    "reason": "Test harness injected an append on Store.one(session lookup), before the high-water capture, not on first paginated SELECT. New test FAIL 301!=300; code unchanged, test injection fixed in commit 108e8fdf."
+  },
+  "changes": [
+    "Local :export chat json|md streams all messages in bounded 256-row SQLite pages rather than truncating at 100000",
+    "Stable high-water mark excludes appended messages during export; ascending row order",
+    "Fsynced temp and atomic replace preserve prior export on read error",
+    "Unsafe imported session identifiers hashed to filenames under exports; explicit extra arguments rejected"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "full_source_suite": "RED_4_FAIL_65_ERROR"
+  },
+  "open_questions": [
+    "Independent review/merge of stacked PR581–589, not production main",
+    "True SQLite multi-statement snapshot under concurrent deletion is not implemented; high-water only guards append",
+    "Run592 JEF branch belongs to other owner and must not be overwritten",
+    "Continue substantive canonical Context OS/C3/Body-JEPA packages; native and Redmi proofs still absent"
+  ],
+  "next_command": "Review PR589 exact CI and source, then inspect current remote PRs/owners and implement the next independent canonical organ; retain frozen cohorts and negative gates.",
+  "prerequisites": [
+    "No force push or any-writable Drive",
+    "No native model execution claim from synthetic tests",
+    "No silent full-suite RED reclassification"
+  ]
+}
