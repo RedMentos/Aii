@@ -106,11 +106,12 @@ class Run408FilteredTests(unittest.TestCase):
         self.assertEqual(validator.call_count, 0)
         self.assertIn("UNREGISTERED_MODEL_PATH", str(result["errors"]))
 
-    def test_unhashed_model_member_rejected(self):
+    def test_unlisted_model_with_unregistered_hash_rejected(self):
+        self.files[self.weight_path] = b"not registered"
         digest = self.zip(omit_sha=self.weight_path)
         result, validator = self.check(digest)
         self.assertEqual(validator.call_count, 0)
-        self.assertIn("UNHASHED_OR_MISSING_MEMBER", str(result["errors"]))
+        self.assertIn("REGISTERED_MODEL_SHA_MISMATCH", str(result["errors"]))
 
     def test_model_symlink_rejected_even_when_catalog_matches(self):
         digest = self.zip(symlink=self.weight_path)
