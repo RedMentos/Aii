@@ -78,6 +78,7 @@ def verify_file(path, specs):
                 'BRIDGE_FILE_HARDLINK_OR_NONREGULAR')
     manifest = json.loads(manpath.read_bytes())
     result = exact_identity(manifest, specs)
+    require(path.name == manifest['direction'], 'BRIDGE_PATH_DIRECTION_MISMATCH')
     sender, receiver = DIRECTIONS[manifest['direction']]
     bridge = Bridge.load(path, specs[sender]['revision'], specs[receiver]['revision'])
     require(bridge.digest() == result['bridge_weights_sha256'],
