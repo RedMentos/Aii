@@ -1,0 +1,40 @@
+{
+  "schema": "V13_RUN434_STAGE5_P21_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run434-native-p21-next-arm-20261026",
+  "base_pr": 432,
+  "base_head": "0db3a569aa16dd495d6c4013b4610229fd03ed74",
+  "verified_native_predecessor": {
+    "producer_run": 40263042202,
+    "independent_postflight_run": 40265361929,
+    "rows_verified": 168,
+    "step2_exit": "UTILITY_FAIL",
+    "safe_zip_id": 12626146409,
+    "safe_zip_sha256": "405e62268b0314c6e852e367a4624a12508e971877afe14afebf05cb2afba6b7"
+  },
+  "source": {
+    "tested_head": "1f85f1230f31deebc70dd9055597b959f70a00bf",
+    "actions": 40265706361,
+    "tests": "50/50 PASS (synthetic/source-only)",
+    "privacy": "CLEAN",
+    "artifact_id": 12626361985,
+    "artifact_zip_sha256": "68b146e1f43292251130f8e9da733ec6294f04caa61abf5a3d532397c0e72e79",
+    "source_sha256": {
+      "v13/code/scripts/run434_stage5_p21.py": "c1b6ca23a0fcea24f4be9f717041b586e8669305f5de36864a372f9b0a0c37ad",
+      "v13/code/tests/test_run434_stage5_p21.py": "1ca9cafe8f9d116fd042d0dff1578f58925e432e3fc41a01373c85c53e68e576"
+    }
+  },
+  "next_arm": "P_s21",
+  "next_expected_total_rows": 210,
+  "native_execution_in_this_branch": false,
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review exact-head Run434 source CI after checkpoint, then queue a separate exclusive native P_s21 Actions workflow using exact observed Run427 artifacts and Run433 postflight metadata, pinned model/runner identities, one arm only, no weights upload; preserve failures and do not promote gates."
+}
