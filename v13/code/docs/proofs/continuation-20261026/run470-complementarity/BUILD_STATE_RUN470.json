@@ -1,0 +1,45 @@
+{
+  "schema": "V13_RUN470_FROZEN_COMPLEMENTARITY_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT Run470 source-only diagnostic; Run464 exclusive native S_s21 owner separate",
+  "branch": "codex/run470-complementarity-diagnostic-20261026",
+  "base_sha": "b3aab6974a9d93ab0ff50b75f3fbc7a15f1ea31c",
+  "pr": 469,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run470_step2_complementarity.py": "bc49f6aab3455dc4656c98ef8df5b6a038631b48",
+    "v13/code/tests/test_run470_step2_complementarity.py": "037ff31f159e0c36c472ba8ebdda8e6d3e297c45",
+    ".github/workflows/run470-step2-complementarity.yml": "98e466f7ffb96e161719427839a003debaee902f"
+  },
+  "verified_ci": {
+    "run_id": 40275078851,
+    "job_id": 121415999244,
+    "conclusion": "success",
+    "tests": "181/181 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12629483952,
+    "raw_artifact_sha256": "8a87c976c90dc041f4f826a3ef91ee765999786e34198cfe1db34fb63edc767a",
+    "artifact_url": "https://github.com/RedMentos/Aii/actions/runs/40275078851/artifacts/12629483952"
+  },
+  "result": "Exact frozen 378-row three-seed within-arm both_exact minus all six controls, per-seed/per-fixture paired wins/ties/losses, B1/B2 solo-unique coverage, P-O and P-S primary contrasts; original Run469 verifier and SHA-pinned reads reused, matrix recomputed. No native data synthesized.",
+  "scope": "Source-only software/synthetic Linux CI, not a native378 result or canonical STEP2 acceptance.",
+  "active_native": {
+    "run_id": 40273136245,
+    "owner": "Run464 exclusive S_s21 native retry",
+    "status_at_checkpoint": "in_progress"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run464 native S_s21 actual retry remains in progress; retain any RED raw attempt, and do not start competing native jobs.",
+    "After Run464 GREEN preserve original 252 safe ZIP and report, hash verify and import with Run458, then O_s22/P_s22/S_s22 sequentially.",
+    "Run470 descriptive strict dominance is not preregistered ten-episode acceptance, causal complementarity or distinct-body proof.",
+    "Actual distinct B1/B2 representation and native Body-JEPA train-runner/Redmi proof remain open."
+  ],
+  "next_command": "Fetch GitHub Actions run 40273136245 and artifact inventory. If complete GREEN, verify exact safe 252 ZIP and Stage6 report hashes, invoke Run458 import and Run459 Stage7 source preflight under released exclusive owner. Independently review Run470 PR469 and verify remote commit/tree; continue other blueprint packages if native still busy."
+}
