@@ -1,0 +1,57 @@
+{
+  "schema": "V13_RUN499_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "status": "SOURCE_STAGED_NATIVE_NOT_YET_EXECUTED",
+  "owner": "codex/run499-heldout14-native-retry-20261026",
+  "base_branch": "codex/run498-native-runner-symlink-20261026",
+  "base_sha": "2efebfe197b3465a0a10732b449fada527c89621",
+  "source": {
+    "prereg_blob": "95679f85c51a7265997c66f1e444be6679f6564b",
+    "test_blob": "71392386ce9869bb4c5dc3977882762cf77a3149",
+    "workflow_blob": "b4dc88ab28f0db2441d30752431643179600c133",
+    "pilot_script_blob": "543982e6c03c548eab87470732be279fbba53ac1",
+    "frozen_fixture_script_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "models_spec_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "evidence": {
+    "run498_source_actions": 40302693619,
+    "run498_focused_actions": 40302693801,
+    "run497_original_red_actions": 40302045367,
+    "run499_native_actions": null,
+    "run499_raw_artifact": null,
+    "run499_safe_artifact": null,
+    "linux_native_rows_verified": 0
+  },
+  "scope": {
+    "pilot_fixtures": [
+      "Vesper",
+      "Willow"
+    ],
+    "arm": "C",
+    "seed": 31,
+    "variants": 7,
+    "planned_rows": 14,
+    "full_cohort_rows": 1050
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "verification": [
+    "remote prereg/test/workflow blobs fetched and SHA matched",
+    "Run498 source/focused Actions GREEN",
+    "no in-progress native GitHub Actions at preflight"
+  ],
+  "blockers": [
+    "native proof not yet executed",
+    "Redmi phone unavailable",
+    "full held-out STEP2 cohort not yet executed"
+  ],
+  "next_command": "Create draft PR head codex/run499-heldout14-native-retry-20261026 base codex/run498-native-runner-symlink-20261026; inspect one-shot native Actions and preserve SHA-closed raw + safe artifacts; do not promote gates",
+  "stop_reason": "NOT_STOPPED_INTERMEDIATE_CHECKPOINT"
+}
