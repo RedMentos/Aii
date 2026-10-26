@@ -1,0 +1,46 @@
+{
+  "schema": "V13_RUN506_NATIVE70_REVIEW_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "status": "INDEPENDENT_NATIVE70_REVIEW_PASS_PARTIAL_SCOPE",
+  "branch": "codex/run506-native70-independent-audit-20261026",
+  "base_branch": "codex/run505-future001-batch-source-20261026",
+  "base_sha": "1065af780959f22f3671ca62191191bce0cd33a7",
+  "evidence": {
+    "run503_actions": 40307435396,
+    "run503_conclusion": "success",
+    "run503_raw_artifact": 12643324090,
+    "run503_safe_artifact": 12643866088,
+    "run503_raw_zip_sha256": "f79767aac7dfecc56a580ccea1434b12a21660ddce1c87339ac5c36f5e77a33d",
+    "run503_safe_zip_sha256": "867fef6d31591a15f309841f2bae2dd93e6b3980b91a22cd5559f31e5c1cba1c",
+    "run503_raw_sha_entries": 27,
+    "run503_safe_sha_entries": 23,
+    "run503_rows_independently_rescored": 42,
+    "combined_C_s31_native_rows_independently_rescored": 70,
+    "source_quote_hashes_verified": 70,
+    "wrong_committed": 0,
+    "run503_private_library_raw": "/V13-Checkpoints/2026-10-26/Run503/run503-native-raw-5fdc8347-sha-closed.zip",
+    "run503_private_library_safe": "/V13-Checkpoints/2026-10-26/Run503/run503-safe-no-model-5fdc8347-sha-closed.zip"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "blockers": [
+    "Run491 full 1050-row 5-arm/3-seed cohort incomplete: 70/1050 native",
+    "B2 rule-field advantage not demonstrated in observed C_s31 slice",
+    "Redmi phone unavailable"
+  ],
+  "verification": [
+    "Run503 Actions GREEN and raw/safe ZIPs downloaded",
+    "27 raw SHA256 entries and 23 safe manifest entries recomputed",
+    "42 Run503 native answers independently rescored from frozen oracles with strict types and source quote hashes",
+    "Combined Run499/501/503 70 distinct rows recomputed with zero wrong committed",
+    "Private Library Run503 raw/safe backups uploaded and verified"
+  ],
+  "next_command": "Inspect no active heavy owner. Preregister and launch separate one-shot Run507 native FUTURE_001 (A_s31_p00/p01/p02) from Run505 reviewed source; preserve full raw evidence and independent audit; continue other canonical packages if native job active.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}

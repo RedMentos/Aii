@@ -1,0 +1,114 @@
+{
+  "schema": "V13_RUN506_RETROSPECTIVE_C_S31_NATIVE70_INDEPENDENT_REVIEW_V1",
+  "date_utc": "2026-10-26",
+  "status": "PARTIAL_NATIVE70_INDEPENDENT_RESCORE_PASS_NO_GATE_PROMOTION",
+  "source_artifacts": [
+    {
+      "run": 499,
+      "actions": 40304564958,
+      "artifact_safe": 12641923870,
+      "stage": "C_s31_p00",
+      "rows": 14,
+      "tool_sha256": "fcc715c93d3e64e936b62a52ba1695471171a68ed575cc1dc313dadc2190eca8"
+    },
+    {
+      "run": 501,
+      "actions": 40305980830,
+      "artifact_safe": 12642802842,
+      "stage": "C_s31_p01",
+      "rows": 14,
+      "tool_sha256": "815c369743505a938e64a048834f5316094096e306f353fb0d750937d3ab2daf"
+    },
+    {
+      "run": 503,
+      "actions": 40307435396,
+      "artifact_safe": 12643866088,
+      "artifact_raw": 12643324090,
+      "stages": [
+        "C_s31_p02",
+        "C_s31_p03",
+        "C_s31_p04"
+      ],
+      "rows": 42,
+      "raw_zip_sha256": "f79767aac7dfecc56a580ccea1434b12a21660ddce1c87339ac5c36f5e77a33d",
+      "safe_zip_sha256": "867fef6d31591a15f309841f2bae2dd93e6b3980b91a22cd5559f31e5c1cba1c",
+      "raw_sha_manifest_entries_verified": 27,
+      "safe_manifest_entries_verified": 23
+    }
+  ],
+  "scope": {
+    "arm": "C",
+    "seed": 31,
+    "fixtures": 10,
+    "variants": 7,
+    "native_rows_verified": 70,
+    "source_consumer_quote_hashes_verified": 70,
+    "unique_row_keys": 70,
+    "wrong_committed": 0,
+    "full_registered_rows": 1050,
+    "remaining_unexecuted_rows": 980
+  },
+  "mean_utility": {
+    "b1_only": 0.5833333333333334,
+    "b2_only": 0.2583333333333333,
+    "both_none": 0.775,
+    "both_exact": 0.8333333333333333,
+    "both_control": 0.7916666666666666,
+    "same_policy_dual": 0.575,
+    "prompt_only_dual": 0.525
+  },
+  "both_exact_minus_controls": {
+    "b1_only": 0.25,
+    "b2_only": 0.575,
+    "both_none": 0.05833333333333324,
+    "both_control": 0.04166666666666663,
+    "same_policy_dual": 0.2583333333333333,
+    "prompt_only_dual": 0.30833333333333324
+  },
+  "correct_action_counts_out_of_10": {
+    "b1_only": 2,
+    "b2_only": 2,
+    "both_none": 7,
+    "both_exact": 8,
+    "both_control": 7,
+    "same_policy_dual": 2,
+    "prompt_only_dual": 1
+  },
+  "descriptive_field_check_proxies": {
+    "definition": "option: cost/days/local; rule: remaining/eligible; computed from original scored field_checks, not an independently established causal B2-rule advantage",
+    "b1_only": {
+      "option": 1,
+      "rule": 0.2
+    },
+    "b2_only": {
+      "option": 0.35,
+      "rule": 0.2
+    },
+    "both_exact": {
+      "option": 1,
+      "rule": 0.8
+    }
+  },
+  "caveats": [
+    "Retrospective descriptive analysis, not preregistered new experiment",
+    "One arm and one seed only; cannot pass 5-arm/3-seed Run491 acceptance",
+    "B2 rule proxy does not exceed B1 rule proxy on this slice",
+    "both_exact gain over both_control only 0.041667 on this slice; not a causal proof",
+    "Native evidence Linux GitHub Actions only; no Redmi measurements",
+    "No Body-JEPA weight update; no gate promotion"
+  ],
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "backup_paths": [
+    "/V13-Checkpoints/2026-10-26/Run499",
+    "/V13-Checkpoints/2026-10-26/Run501",
+    "/V13-Checkpoints/2026-10-26/Run503"
+  ],
+  "next": "Fresh preregistered B2 rule-source diagnostic with source-disjoint controls; continue Run491 remaining 980 native rows only under serialized owner/resource checks"
+}
