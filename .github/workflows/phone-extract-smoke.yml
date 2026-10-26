@@ -1,0 +1,154 @@
+name: V13 immutable review phone ZIP extracted software smoke
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/phone-extract-smoke.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/phone-extract-smoke/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  extracted-software:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-phone-extract-smoke-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pin original immutable phone artifact and prereg
+        id: pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/PHONE_EXTRACT_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/phone-extract-smoke/PREREG.md)" = 7740ca0be9d20c45e9664d4da19d349b17c9c61d
+          test "$(git hash-object v13/code/scripts/verify_phone_zip_current_run268.py)" = 880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1
+          test "$(git hash-object v13/code/tests/test_tool_final_live_software.py)" = 5a9362532366d301d6390d5724e1dff3a73a10a0
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+      - name: Retrieve and verify original review artifact
+        id: input
+        run: |
+          set -uo pipefail
+          set +e
+          curl -fsSL --retry 0 --max-time 120 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12675152877/zip" -o "$RUNNER_TEMP/phone-original-artifact.zip" > "$RUNNER_TEMP/PHONE_EXTRACT_INPUT_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "2d87f7853b996f56813ca4e85d45185f5e0a54098f4eb3e2c23ecc5706b00f9a  $RUNNER_TEMP/phone-original-artifact.zip" | sha256sum -c - >> "$RUNNER_TEMP/PHONE_EXTRACT_INPUT_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/PHONE_EXTRACT_INPUT_EXIT.txt"
+          exit 0
+      - name: Independently verify and safely extract source ZIP
+        id: extract
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/PHONE_EXTRACT_ARCHIVE_RAW.log" 2>&1
+          import hashlib,io,os,stat,zipfile
+          from pathlib import Path,PurePosixPath
+          tmp=Path(os.environ['RUNNER_TEMP'])
+          assert (tmp/'PHONE_EXTRACT_INPUT_EXIT.txt').read_text().strip()=='0'
+          with zipfile.ZipFile(tmp/'phone-original-artifact.zip') as outer:
+              assert outer.testzip() is None
+              names=outer.namelist()
+              assert len(names)==len(set(names))
+              assert all('/' not in n and '\\' not in n for n in names)
+              assert 'V13-Phone-review.zip' in names
+              nested=outer.read('V13-Phone-review.zip')
+          assert len(nested)<256*1024*1024
+          (tmp/'V13-Phone-review.zip').write_bytes(nested)
+          dest=tmp/'phone-extracted';dest.mkdir(exist_ok=False)
+          with zipfile.ZipFile(io.BytesIO(nested)) as z:
+              assert z.testzip() is None
+              infos=z.infolist();names=[i.filename for i in infos]
+              assert len(names)==len(set(names))
+              total=0
+              for i in infos:
+                  n=i.filename;p=PurePosixPath(n)
+                  assert n.startswith('V13-Phone/') and not n.startswith('/') and '..' not in p.parts and '\\' not in n
+                  assert not i.is_dir() and stat.S_IFMT(i.external_attr>>16)!=stat.S_IFLNK
+                  total+=i.file_size
+                  assert total<=256*1024*1024
+              z.extractall(dest)
+          print('EXTRACTED_PHONE_SOURCE_SOFTWARE_ONLY',len(infos),total,hashlib.sha256(nested).hexdigest())
+          PY
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-review.zip" --root v13/code --out "$RUNNER_TEMP/PHONE_EXTRACT_VERIFY.json" >> "$RUNNER_TEMP/PHONE_EXTRACT_ARCHIVE_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/PHONE_EXTRACT_ARCHIVE_EXIT.txt"
+          exit 0
+      - name: Install isolated pinned software-only test prerequisites
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/phonevenv"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/phonevenv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/PHONE_EXTRACT_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/PHONE_EXTRACT_DEPS_EXIT.txt"
+          exit 0
+      - name: Actual extracted runtime and tool-final software tests
+        id: tests
+        run: |
+          set -uo pipefail
+          set +e
+          rc=1
+          if [ "$(cat "$RUNNER_TEMP/PHONE_EXTRACT_ARCHIVE_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/PHONE_EXTRACT_DEPS_EXIT.txt")" = 0 ]; then
+            cd "$RUNNER_TEMP/phone-extracted/V13-Phone"
+            PYTHONPATH="$PWD" timeout 180s "$RUNNER_TEMP/phonevenv/bin/python" -m unittest -v tests.test_runtime_queue tests.test_tool_final_live_software tests.test_broker > "$RUNNER_TEMP/PHONE_EXTRACT_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/PHONE_EXTRACT_TESTS_EXIT.txt"
+          if [ "$rc" -ne 0 ] && [ -f "$RUNNER_TEMP/PHONE_EXTRACT_TESTS_RAW.log" ]; then
+            echo 'EXTRACTED_SOFTWARE_RED (bounded synthetic-only test log)'
+            tail -n 70 "$RUNNER_TEMP/PHONE_EXTRACT_TESTS_RAW.log"
+          fi
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/PHONE_EXTRACT_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/PHONE_EXTRACT_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close bounded raw software evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'PHONE_EXTRACT_*' ! -name PHONE_EXTRACT_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > PHONE_EXTRACT_SHA256SUMS.txt
+      - name: Preserve extracted software raw even RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phone-extract-software-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/PHONE_EXTRACT_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce extracted software result and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.pins.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/PHONE_EXTRACT_INPUT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/PHONE_EXTRACT_ARCHIVE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/PHONE_EXTRACT_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/PHONE_EXTRACT_TESTS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/PHONE_EXTRACT_PRIVACY_EXIT.txt")" = 0
