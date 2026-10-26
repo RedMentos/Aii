@@ -65,6 +65,13 @@ class Run552JefGoalReceipt(unittest.TestCase):
         live.goal_turn(self.r, e, {}, 'FINAL')
         self.assertFalse(self.is_done())
 
+    def test_teacher_reference_only_final_is_not_own_answer(self):
+        e = self.event()
+        mid = self.r.store.message(self.r.session, e['event_id'], 'assistant', 'Teacher reference')
+        self.r.store.finish_message(mid, 'FINAL', {'reference_only': True, 'not_fact': True})
+        live.goal_turn(self.r, e, {}, 'FINAL')
+        self.assertFalse(self.is_done())
+
     def test_real_final_same_topic_completes_and_survives_restart(self):
         e = self.event()
         mid = self.answer(e)
