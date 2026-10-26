@@ -13,7 +13,7 @@
     "re-keyed changed serving sender dims must fail even if keys match",
     "self-consistent manifest/NPZ digest with malformed Q shape must fail"
   ],
-  "verification_status": "LOCAL_28_PASS_GITHUB_CI_PENDING",
+  "verification_status": "GITHUB_SOURCE_CI_GREEN_INDEPENDENT_RAW_CHECKED",
   "scope": "read-only candidate only; production bodyport.py/b3bridge.py frozen; no authority granted",
   "negative_gates": {
     "b3_l1": "FAIL",
@@ -27,7 +27,7 @@
     "Run471 candidate still lacks hostile-concurrent-rename guarantees and path ancestor symlink proof.",
     "No live train-time key stamping, BodyPort consumer integration, native B3 L1 utility or Redmi evidence."
   ],
-  "exact_next_command": "Open PR against Run471 head; run existing Run471 B3 source workflow with new adversarial tests, privacy scan and raw artifacts; on GREEN independently review before integration.",
+  "exact_next_command": "Independent review PR #473 geometry candidate against Run471 PR #470, test ancestor-symlink and malformed-calibration negatives, then only after frozen native cohort permit separate production BodyPort/B3 integration with no retroactive key stamping.",
   "pr": 473,
   "local_independent_tests": {
     "status": "PASS",
@@ -35,5 +35,19 @@
     "suite": "tests.test_run471_bridge_key_candidate tests.test_bodyport tests.test_b3bridge",
     "raw_log_sha256": "aa667b942f65faecbcea0cc1d66ccccc0576582d2915ef31e4c5198819b0cd0a",
     "source_reconstruction": "Run471 verified phone source artifact 12629767953 SHA256 39b9dc0b307a28eedc5ebd1cf00068728552881a4b6ab1955af4f95802d60820, patch bytes checked against exact Run474 Git blobs"
+  },
+  "verified_ci": {
+    "run_id": 40278283789,
+    "job_id": 121425675857,
+    "conclusion": "success",
+    "tests": "28/28 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12630189712,
+    "raw_zip_sha256": "3a54b3f5cd70eff669bbccbdc9865133c5685cc6a8c1d115aa140337a46a5647",
+    "raw_test_log_sha256": "9ac59ac202f8d8c28877eb47a440ca0e72d1e3db04aaf75e20681995d8b9c711",
+    "full_source_run_id": 40278283788,
+    "full_source_conclusion": "success",
+    "full_source_artifact_id": 12630499940,
+    "full_source_zip_sha256": "674092ca979b0b567e0e8aa94ceb018f4128b843c0dda23ef12e973e88e8a191"
   }
 }
