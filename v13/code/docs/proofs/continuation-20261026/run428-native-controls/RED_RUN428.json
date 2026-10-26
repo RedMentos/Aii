@@ -1,0 +1,19 @@
+{
+  "schema": "RUN428_RED_FIRST_V1",
+  "date": "2026-10-26",
+  "source_head": "54b4ec413c3afe867484a45bd1a2525cef8254ba",
+  "actions": 40263304079,
+  "artifact_id": 12625636140,
+  "artifact_zip_sha256": "4ef1dc128911ac275b5dabcd26d4399e09b1434c0bd2f67a6e8816644253d85a",
+  "source_unit_tests": "4/4 PASS",
+  "actual_status": "CONTROL_SOURCE_RED_PRESERVED",
+  "error": "ValueError: DUPLICATE_ANALYST",
+  "counterexample": "same_policy_dual intentionally has two B1_DETAIL offers, not one. The audit incorrectly assumed at most one analyst per role. Existing frozen native data is valid; adjust fingerprint to hash the ordered list of all same-role offers. Do not alter frozen Run394/397 or native rows.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  }
+}
