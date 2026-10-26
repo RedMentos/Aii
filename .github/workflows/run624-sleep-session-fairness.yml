@@ -49,7 +49,7 @@ jobs:
           git show 608d7be0b214e66771ae70cba2d61c8b3a95a6a5:v13/code/v13/sleep_offline.py > v13/sleep_offline.py
           test "$(git hash-object v13/sleep_offline.py)" = 4ad4e4382b73f7ee2189e1d2e6d05a5d09b6ac9c
           set +e
-          PYTHONPATH="$PWD" "$RUNNER_TEMP/run624venv/bin/python" -m unittest -v tests.test_run624_sleep_session_fairness > "$RUNNER_TEMP/RUN624_ORIGINAL_RED.log" 2>&1
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run624venv/bin/python" -m unittest -v tests.test_run624_sleep_session_fairness.SleepSessionFairness > "$RUNNER_TEMP/RUN624_ORIGINAL_RED.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/RUN624_ORIGINAL_RED_EXIT.txt"
           cp "$RUNNER_TEMP/RUN624_PATCHED.py" v13/sleep_offline.py
           exit 0
@@ -57,7 +57,7 @@ jobs:
         working-directory: v13/code
         run: |
           set +e
-          PYTHONPATH="$PWD" "$RUNNER_TEMP/run624venv/bin/python" -m unittest -v tests.test_run624_sleep_session_fairness tests.test_run609_sleep_digest_backlog tests.test_run610_sleep_partial_pair tests.test_run612_sleep_backlog_status tests.test_sleep_offline > "$RUNNER_TEMP/RUN624_GREEN_RAW.log" 2>&1
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run624venv/bin/python" -m unittest -v tests.test_run624_sleep_session_fairness.SleepSessionFairness tests.test_run609_sleep_digest_backlog.SleepBacklog tests.test_run610_sleep_partial_pair.PartialUserPair tests.test_run612_sleep_backlog_status.SleepProgressStatus tests.test_sleep_offline.DigestTests tests.test_sleep_offline.LiveContextTests tests.test_sleep_offline.PredictorTests tests.test_sleep_offline.PhaseTests > "$RUNNER_TEMP/RUN624_GREEN_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/RUN624_GREEN_EXIT.txt"
           exit 0
       - name: Public privacy scan
