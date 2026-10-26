@@ -1,0 +1,9 @@
+# Run411 — opt-in native STEP2 stage2 with verified stage1 and no-model export (2026-10-26)
+
+Owner GPT scheduled continuation. Branch `codex/run411-stage2-safe-resume-20261026` from true two-parent merge `4b53666966cf5407d32cc60689846536726080fc` of Run410 actual read-only audit PR405 and Run409 safe exporter PR404. No force-push, no overwritten owner. Frozen Run394/Run397/Run402/Run404 and model/seed hashes unchanged.
+
+Prerequisite: Run410 independent actual original ZIP audit must be GREEN before any native stage2. Run401 artifact `12620379581`, exact SHA256 `65ac00a8cd2013ebab76828ed3bc25dee5433d1d55a995573387f19de29b530a`; source head `c0facf60c3286064e15bc06de104c85d9344382a`. Run406 observed 108 members, 37 original manifest entries, 7 model files and 64 bin files dereferenced from arm-home symlinks, zero original manifest members missing. Do not publish the original ZIP or model bytes again.
+
+Implement a single opt-in orchestrator: read-only Run408 filtered stage1 restore to fresh private work (verify all member hashes/CRC and unchanged Run402 native receipt), optional Run397 exactly-one-new-arm P_s20 native inference after installed-home deep hash verification and exclusive owner, Run403/Run404-compatible postflight, and Run409 safe no-follow export preserving all failed attempts and negative raw even if native fails. No native execution in source-only tests. Native workflow must install only pinned public models/runner in isolated runner, use explicit `--execute`, and upload only vetted no-model export and small raw logs. No paid provisioning, no Redmi or gate promotion.
+
+Acceptance: adversarial source-only tests/CI; actual Run410 GREEN prerequisite; actual stage2 source/runner identity and one P_s20 native arm, O_s20/P_s20 84 validated rows, 7 remaining, no false STEP2 promotion; failure preserved. Full 378-row cohort and later B3/Body-JEPA/JEF/C3/Context OS etc remain required.
