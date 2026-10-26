@@ -18,7 +18,6 @@ jobs:
     env:
       V13_NO_AUTOSTART: '1'
       NO_MODEL_DOWNLOADS: '1'
-      RUN534_RAW_JSON: ${{ runner.temp }}/run534_input/RUN531_FULL.json
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -59,7 +58,7 @@ jobs:
             rc=$?
           fi
           if [ "$rc" -eq 0 ]; then
-            echo "73ba92ea8e2a28a00d639dcb21caca5f8991472c4513233ad659fab65e947ea7  $RUN534_RAW_JSON" | sha256sum -c - >> "$RUNNER_TEMP/RUN534_FETCH_RAW.log" 2>&1
+            echo "73ba92ea8e2a28a00d639dcb21caca5f8991472c4513233ad659fab65e947ea7  $RUNNER_TEMP/run534_input/RUN531_FULL.json" | sha256sum -c - >> "$RUNNER_TEMP/RUN534_FETCH_RAW.log" 2>&1
             rc=$?
           fi
           echo "$rc" > "$RUNNER_TEMP/RUN534_FETCH_EXIT.txt"
@@ -73,6 +72,7 @@ jobs:
           set -uo pipefail
           set +e
           export PYTHONPATH="$PWD:$PWD/scripts"
+          export RUN534_RAW_JSON="$RUNNER_TEMP/run534_input/RUN531_FULL.json"
           python3 scripts/run534_independent_z12a_audit.py "$RUN534_RAW_JSON" --output "$RUNNER_TEMP/RUN534_AUDIT.json" > "$RUNNER_TEMP/RUN534_AUDIT_RAW.log" 2>&1
           rc=$?
           if [ "$rc" -eq 0 ]; then
