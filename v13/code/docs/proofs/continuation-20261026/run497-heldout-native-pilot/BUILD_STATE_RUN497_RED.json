@@ -1,0 +1,55 @@
+{
+  "schema": "V13_RUN497_NATIVE_HELDOUT10_RED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run497 native job finished RED; no active owner, next Run498 review candidate",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/run497-heldout10-native-pilot-20261026",
+  "review_pr": 495,
+  "opened_head_sha": "2223ee340733f7092af01678fd674ae5e6ae0baf",
+  "workflow_run_id": 40302045367,
+  "workflow_conclusion": "FAILURE",
+  "source_and_fixture": {
+    "run496_script_blob": "fd47ae42ab9505940a64864c73860b995f18754d",
+    "full_fixture_sha256": "c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63",
+    "pilot_fixture_sha256": "816c3a4cc8e8c85a7188b5c4524b13638d6bd4d353c782d296a363366702f774",
+    "planned_rows": 14,
+    "observed_rows": 0
+  },
+  "observed": {
+    "deps_exit": 0,
+    "fixture_exit": 0,
+    "bootstrap_command_exit": 0,
+    "installed_preflight_exit": 1,
+    "root_error": "ValueError: PINNED_RUNNER_BINARY_CHANGED at run496 verify_installed runner.is_file() and not runner.is_symlink()",
+    "explanation": "Existing v13.bootstrap intentionally installs bin/llama-server as a symlink to a versioned binary inside bin/b10964. The candidate preflight rejected all symlinks despite original pinned executable hash verification. The job stopped before inference; do not claim native rows.",
+    "secondary_issue": "GitHub Actions if: steps.native.outputs.rc == '0' evaluated true when native step skipped and rc empty; independent audit ran erroneously and failed on absent report. Fix guard with explicit step outcome plus rc."
+  },
+  "evidence": {
+    "raw_artifact_id": 12640686888,
+    "raw_artifact_sha256": "51f30ae63758498b8224398f4c329cc762cfd042784e24938b5a38bac81f4f1b",
+    "safe_artifact_id": 12640891186,
+    "safe_artifact_sha256": "c7d3f7263281d940ec1aeeba8b054f992af0dbec8b1c9acb10f44fae641700b8",
+    "privacy": "CLEAN",
+    "model_payload_uploads": 0,
+    "private_backups": [
+      {
+        "path": "/V13-Checkpoints/2026-10-26/Run497/RUN497_NATIVE_RED_RAW_40302045367.zip",
+        "library_file_id": "libfile_b269a1c543a08191befbe2b09454e6c4"
+      },
+      {
+        "path": "/V13-Checkpoints/2026-10-26/Run497/RUN497_NATIVE_RED_SAFE_40302045367.zip",
+        "library_file_id": "libfile_2b4a153075308191be1b8ab42eef4bf9"
+      }
+    ],
+    "private_bytes_verified": true
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "exact_next_command": "Run498 separate review branch from this checkpoint: accept only pinned runner symlink whose fully resolved target is inside installed home/bin and whose actual file SHA equals original Run491 RUNNER_SHA256; add adversarial symlink escape/broken-link tests; fix Actions skipped-step loose equality with explicit outcome checks; rerun one serialized 14-row pilot with new one-time PR workflow, preserving original Run497 RED and safe archives."
+}
