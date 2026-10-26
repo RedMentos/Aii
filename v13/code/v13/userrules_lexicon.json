@@ -4,7 +4,10 @@
  "sealed": [
   "round7",
   "user-rules-v7/round7",
-  "holdout_de4"
+  "holdout_de4",
+  "round8",
+  "user-rules-v8/round8",
+  "holdout_de5"
  ],
  "entries": [
   {

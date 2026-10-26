@@ -1273,6 +1273,14 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Rückschritt: Die Kosten-Regel „kaputt/geht nicht = Feststellung“ verschluckt „Mach meine Notizen bloß nicht kaputt“. Lehre: Kosten-Regeln nur mit Gegenproben.
 - Befund `code/docs/proofs/continuation-20261022/user-rules-v7/BEFUND.md`.
 - Offen (WP-UR8): starkes Sperr-Signal ohne Ziel ⇒ Rückfrage für alles; „kaputt“-Regel zurücknehmen; zweite Meinung (kleines lokales Modell oder gelernter JEF-Leser), die nur Vorsicht hinzufügen darf, auf frischer Runde messen. Weitere reine Wortlisten-Versionen lohnen kaum.
+### WP-UR8 Regel-Leser v8 + vorsichtiger Zweitleser + versiegelte Runde 8 — ERLEDIGT 2026-10-26, Urteil `USER_RULES_V8_UNSAFE`, Zweitleser `SECOND_OPINION_HELPS` (Thread „Zweiter vorsichtiger Regel-Leser“, Branch `claude/project-thread-27r15q`)
+- v8: starkes Sperr-Wort ohne bekanntes Ziel ⇒ Rückfrage für alles (Grund `BLOCK`); „kaputt“ aus der Feststellungs-Regel entfernt; zu jeder Kosten-Regel Gegenbeispiele (`dev_v8.json`). Keine neuen Wortlisten.
+- Zweitleser S1 (`v13/userrules_second.py`, gelernter JEF-Leser, reines Python, kein Sprachmodell): wird nur gefragt, wenn der feste Leser keine Einschränkung findet; ein Ja wird eine offene Rückfrage für alles (Grund `SECOND`). Lockert, ändert oder löscht nie eine Regel (K8: 0 Verstöße + Unit-Tests). Trainiert nur auf bekannten Sätzen, Schwelle 0,43 per Kreuzvalidierung.
+- T1 `holdout_de5` (60 Autor-Sätze): Fehlersätze v8+S1 1, v8 4, v7 4. T2 Runde 8 (DeepSeek-V2-Lite, Nemotron-Mini 4B, StableLM 2 12B; 118 von 360 brauchbar): v8+S1 3, v8 6, v7 6. Rückfragen bei Sätzen ohne Regel T2 23 % (hält), T1 56 % (verfehlt); Übervorsicht T1 50,4 % (knapp über Grenze).
+- v8 allein bringt auf frischen Sätzen nichts gegenüber v7; der Gewinn kommt ganz vom Zweitleser. S2 (LFM2.5-1.2B als Ja/Nein-Leser) sagt zu allem „Regel“ — wertlos, bleibt aus.
+- Schalter `user_rules_second_opinion` = `jef` (an), nach vorab festgelegter Regel. Grundregel unverändert: Außenwirkung nur als sichtbarer Vorschlag, `:verbot` getippt.
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v8/BEFUND.md`. holdout_de5 und Runde 8 sind jetzt bekannt.
+- Offen (WP-UR9): Zweitleser auch bei Regeln mit zu engem Ziel fragen lassen; mit Runde 8 nachtrainieren, frische Runde 9; Rückfrage-Kosten auf Autor-Sätzen senken.
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.

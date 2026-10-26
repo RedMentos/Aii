@@ -79,6 +79,8 @@ DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"learning_mode":"
  # rule questions are asked only on rule-decision turns; deciding stays with the fixed recipe, never a language model.
  "offer_quote_context_chars":200,"b2_quote_select":"pointer","b2_offer_body_state":False,"offer_quote_min_chars":90,"b1_recent_source_chars":600,
  "body_question_scope":"rule_decision","eligibility_reader":"fixed",
+ # WP-UR8: caution-only second opinion on user rules (v13/userrules_second.py); on: measured SECOND_OPINION_HELPS (round 8: 6 -> 3 failure sentences), only adds questions.
+ "user_rules_second_opinion":"jef",
  "body_question_b1":"Which option figures apply here: cost, duration and locality of Option A and Option B? Quote the exact source sentences that state them, or say they are not in the source.",
  "body_question_b2":"Which earlier project rules apply here: budget, deadline and local-only requirement? Quote the exact earlier source sentence that states them, or say they are not in the source."}
 # Values before the 2026-10-21 quote-help decision. Frozen measurement harnesses and their regression tests pin these, so a
@@ -125,6 +127,7 @@ def validate(cfg):
         if not (isinstance(cfg.get(key,""),str) and len(cfg.get(key,""))<=400):raise ValueError(key+" text 0..400 chars")
     if cfg.get("body_question_scope","always") not in {"always","rule_decision"}:raise ValueError("body_question_scope always|rule_decision")
     if cfg.get("eligibility_reader","c3") not in {"fixed","c3"}:raise ValueError("eligibility_reader fixed|c3")
+    if cfg.get("user_rules_second_opinion","off") not in {"jef","off"}:raise ValueError("user_rules_second_opinion jef|off")
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
     return cfg
 def initialize(home):

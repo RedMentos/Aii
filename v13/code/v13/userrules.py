@@ -14,7 +14,8 @@ Guarantees (each covered by tests/test_userrules.py):
      answered they work like "ask me first" for everything they might touch.
   G5 a tool whose effects are not declared is always asked while any rule or open question exists.
   G6 FORBID refuses even a call the user approves; the rule must be switched off first (`:regel aus`).
-A learned JEF/JEPA reader may later be added only as a stricter second opinion: it may add caution, never remove it.
+A learned JEF reader is added only as a stricter second opinion (v8, userrules_second.py): it may add an open question,
+never remove, loosen or narrow a rule.
 Enforced today: every call through agi.tools.ToolRegistry (all tools). Not yet enforced: memory/learning (LEARN), which
 is said plainly in the notice when a rule touches it.
 """
@@ -24,7 +25,7 @@ import time
 from pathlib import Path
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v7'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v8'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -353,7 +354,9 @@ YOU_PAST=re.compile(r"\b(?:du\s+hast|hast\s+du|you\s+(?:have|did|didn'?t))\b.*"+
 I_PAST=re.compile(r"\b(?:ich\s+(?:habe|hab|hatte)|(?:habe|hab|hatte)\s+ich|i\s+(?:have|had|did|didn'?t))\b.*"+PAST_END)
 FIRM=re.compile(r"\b(?:gar\s+nicht|ueberhaupt\s+nicht|auf\s+keinen\s+fall|keinesfalls|kommt\s+nicht\s+in\s+frage|no\s+way|not\s+at\s+all)\b")
 ANY_ONLY_STATE=re.compile(r"\b(?:war|ist|sind|was|is|geht|gehen|klar|unklar|los)\b")
-FUNC=re.compile(r"\b(?:geht|gehen|ging|funktionier\w*|klappt|stimmt|laeuft|lief|hakt|spinnt|kaputt|langsam|angekommen|ankommt|works?|working|broken|arrived)\b")
+# v8: 'kaputt' removed (v7 regression: "Mach meine Notizen bloss nicht kaputt" read as a statement); every cost rule now has
+# counterexamples in docs/proofs/continuation-20261022/user-rules-v8/dev_v8.json that it must not swallow.
+FUNC=re.compile(r"\b(?:geht|gehen|ging|funktionier\w*|klappt|stimmt|laeuft|lief|hakt|spinnt|langsam|angekommen|ankommt|works?|working|broken|arrived)\b")
 
 
 def _statement(t,piece):
@@ -400,7 +403,7 @@ def _net(piece):
 QUOTE_INTRO=re.compile(r"\b(?:steht|stand|stehen|lautet|heisst\s+es|hiess\s+es|says|said|reads|written)\s*:\s*(.+)$")
 
 
-def parse(text):
+def parse(text,second=None):
     """A user line -> list of rule-bearing clauses (kind != NONE). Clauses split on . ! ; : and but/aber/sondern."""
     out=[];prev=None;src=str(text);missed=False
     qm=QUOTE_INTRO.search(norm(src));quoted=qm.group(1) if qm else ''
@@ -430,7 +433,35 @@ def parse(text):
         n=_net(src)
         if n and not any(set(n['actions'])-{'UNKNOWN'}<=set(c['actions'])|({'ANY'} if 'ANY' in c['actions'] else set()) and (set(n['objects'])<=set(c['objects']) or 'ALL' in c['objects'])
                          and ('ANY' in c['actions'] or set(n['actions'])-{'UNKNOWN'}) for c in ruled):out.append(n)
+    ruled=[c for c in out if c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR')]
+    if STRONG_BLOCK.search(norm(src)) and not any(c['objects'] for c in ruled):  # v8: "Das WLAN ist für dich Sperrgebiet"
+        out.append(_ask_all(src,'BLOCK','FORBID'))
+    elif not ruled:
+        s=SECOND_OPINION if second is None else second
+        if s!='off' and _second(s,src):out.append(_ask_all(src,'SECOND','ASK_FIRST'))
     return out
+
+
+# v8 (WP-UR8): a strong block word whose target the reader cannot name asks about everything. A second opinion may look at a
+# line the fixed reader found no restriction in; if it suspects one, the user gets an open question about everything. It can
+# only add that question: it never changes, loosens or removes a rule of the fixed reader, and never creates a prohibition.
+STRONG_BLOCK=re.compile(r"\b(?:tabu\w*|\w*sperr\w*|gesperrt\w*|\w*verbot\w*|verbiet\w*|untersag\w*|ausgeschlossen|(?:finger|pfoten|haende|hand)\s+weg|"
+    r"lass\w*\s+(?:\w+\s+){0,4}finger|off[\s-]limits|forbidden|prohibited|banned|taboo|hands\s+off)\b")
+SECOND_OPINION='jef'  # WP-UR8 measured SECOND_OPINION_HELPS (PREREG switch rule). 'jef' (learned second reader, v13/userrules_second.py) | 'off' | a callable(text)->bool for comparisons; set by config
+
+
+def _ask_all(src,why,suggest):
+    return {'kind':'UNCLEAR','actions':['ANY','UNKNOWN'],'objects':['ALL'],'unknown':[],'exceptions':[],'reasons':[why],'text':str(src).strip(),'suggest':suggest}
+
+
+def _second(s,src):
+    try:
+        if callable(s):return bool(s(src))
+        if s=='jef':
+            from . import userrules_second
+            return userrules_second.suspects(src)
+    except Exception:return True  # a broken second opinion asks rather than stays silent
+    return False
 
 
 # ---- what a tool call does (declared per tool; undeclared = UNKNOWN, always asked while a rule exists)
@@ -497,10 +528,10 @@ def _short(r):
     return acts+(' · '+objs if objs else '')+extra+exc
 
 
-def add(store,text,origin,clock=time.time):
+def add(store,text,origin,clock=time.time,second=None):
     """Record the rule clauses of one line the user typed. Returns the new/known rules (never loosens anything, G2)."""
     if origin not in ('USER_TYPED','USER_COMMAND'):raise ValueError('Regeln entstehen nur aus eigenen Eingaben des Nutzers')
-    found=[c for c in parse(text) if c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR')]
+    found=[c for c in parse(text,second) if c['kind'] in ('FORBID','ASK_FIRST','UNCLEAR')]
     if not found:return []
     def f(st):
         new=[]
@@ -525,7 +556,9 @@ def notice(r):
         why={'HEDGE':'du klingst unsicher','SOMEONE_ELSE':'das hat jemand anderes gesagt','QUESTION':'es ist eine Frage',
              'ABOUT_YOURSELF':'es klingt wie ein Satz über dich','UNCLEAR_OBJECT':'ich weiß nicht, was mit „das/es“ gemeint ist',
              'UNKNOWN_WORDING':'die Formulierung kenne ich noch nicht sicher','ADVICE':'es klingt wie ein Rat, nicht wie eine feste Regel',
-             'NET':'es klingt nach einer Regel, aber ich verstehe den Satz nicht sicher','QUOTED':'es klingt wie ein zitierter Text (Schild, Zettel), nicht sicher wie deine Regel'}
+             'NET':'es klingt nach einer Regel, aber ich verstehe den Satz nicht sicher','QUOTED':'es klingt wie ein zitierter Text (Schild, Zettel), nicht sicher wie deine Regel',
+             'BLOCK':'ein klares Sperr-Wort, aber ich weiß nicht sicher, worauf es sich bezieht',
+             'SECOND':'mein zweiter, vorsichtiger Leser hält es für eine mögliche Regel, der feste Leser hat keine gefunden'}
         prop={'FORBID':f' Mein Vorschlag: als Verbot lesen (:regel verbot {r["id"]}).','ASK_FIRST':f' Mein Vorschlag: als „erst fragen“ lesen (:regel fragen {r["id"]}).'}.get(r.get('suggest'),'')
         return (f'[Rückfrage {r["id"]}] Soll das eine Regel für mich sein? „{r["text"]}“ ({", ".join(why[x] for x in r["reasons"])}). '
                 f'Bis du antwortest, frage ich vorher bei allem, was das betreffen könnte ({_short(r)}). '
@@ -533,10 +566,10 @@ def notice(r):
     return f'[Regel {r["id"]} gespeichert] {lead}: {_short(r)} — „{r["text"]}“. Gilt sofort, bis du sie mit :regel aus {r["id"]} aufhebst. Falsch verstanden? Dann :regel aus {r["id"]} und schreib die Regel noch einmal anders.'+note
 
 
-def observe(store,line,clock=time.time):
+def observe(store,line,clock=time.time,second=None):
     """Chat line the user typed -> notices (new rules, open questions, loosening attempts). Never raises."""
     try:
-        out=[notice(r) for r in add(store,line,'USER_TYPED',clock)]
+        out=[notice(r) for r in add(store,line,'USER_TYPED',clock,second)]
         if any(c['kind']=='LOOSEN' for c in parse(line)):
             act=[r for r in rules(store) if r['status'] in ('ACTIVE','OPEN')]
             if act:out.append('[Keine Regel gelockert] Aus Chat-Text lockere ich keine Regel. Aufheben geht nur mit :regel aus <Nr> '

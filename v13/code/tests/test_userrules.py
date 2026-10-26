@@ -9,7 +9,7 @@ from v13.agi import hub
 from v13.broker import preview_text,rule_notice_text
 from v13.operator import Operator
 
-def kinds(text):return [c['kind'] for c in U.parse(text)]
+def kinds(text):return [c['kind'] for c in U.parse(text,second='off')]  # the fixed reader alone; the v8 second opinion (only adds questions) is tested in test_userrules_v8.py
 
 class Parse(unittest.TestCase):
     def test_forbid_and_ask_in_both_languages(self):

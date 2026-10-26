@@ -38,3 +38,5 @@ Weiter: zuerst serialisierte beobachtete Capture vervollständigen; danach unver
 ## Durable recovery 2026-10-11T09:59:49.462861+00:00
 
 GitHub3d63ec8 and both saved ZIPs were restored and hash/CRC verified after scratch was cleared. Actualdurable tap evidence is736/1875rows46batches; later1248-row observation exists only in prior conversation, not recovered raw data. Dream2 retains2/15 completed arms. Native and pinned training resources are rebuilding; no new inference or gate promotion yet. Embedding per-request RSS accumulation requires separately preregistered bounded worker lifetime, real fresh-worker invariance checks and serialized heavy jobs.
+
+Stand Regel-Leser 2026-10-26 (WP-UR8): fester Leser v8 bleibt `USER_RULES_V8_UNSAFE`, aber der neue gelernte Zweitleser (`code/v13/userrules_second.py`, nur Rückfragen hinzufügen, nie lockern) halbiert die Fehler auf frischen Sätzen (Runde 8: 6 → 3 Sätze) und ist an (`user_rules_second_opinion=jef`). Befund: `code/docs/proofs/continuation-20261022/user-rules-v8/BEFUND.md`. Weiter mit WP-UR9 in `ROADMAP.md`. Außenwirkung bleibt nur sichtbarer Vorschlag.

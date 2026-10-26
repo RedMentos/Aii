@@ -1,0 +1,3245 @@
+{
+ "schema": "USER_RULES_AUDIT_ROUND8_V1",
+ "rows": [
+  {
+   "index": 0,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Meine Urlaubsbilder fasst du nicht an.",
+   "sentence": "Beachte meine Urlaubsbilder nicht.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 0,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Meine Urlaubsbilder fasst du nicht an.",
+   "sentence": "Hey, ich hoffe, du kannst meine Urlaubsbilder nochmal ansehen und zusammenfassen. Das wäre super hilfreich!",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "index": 1,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "An die Fotogalerie gehst du nicht ran.",
+   "sentence": "Du besuchst auch nicht die Fotogalerie.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 1,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "An die Fotogalerie gehst du nicht ran.",
+   "sentence": "An die Fotogalerie solltest du dich nicht wagst, das ist alles, was du brauchst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 2,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Hände weg von meinen Aufzeichnungen.",
+   "sentence": "Halte deine Hände von meinen Aufzeichnungen fern.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 2,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Hände weg von meinen Aufzeichnungen.",
+   "sentence": "Hey, bitte hände weg von meinen Aufzeichnungen, ich brauche sie für meine Arbeit.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 3,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Meine Notizen rührt keiner an, auch du nicht.",
+   "sentence": "Meine Zusammenfassungen interessieren niemanden, auch dir nicht.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 3,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Meine Notizen rührt keiner an, auch du nicht.",
+   "sentence": "Meine Klassenkameraden sind alle auf dem Laufenden, aber meine Notizen haben keiner sonst an, auch du nicht.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 4,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Mails abschicken fällt für dich weg.",
+   "sentence": "Überweisungen abschicken ist dir leichter geworden.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 4,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Mails abschicken fällt für dich weg.",
+   "sentence": "Hey, ich habe dir hier eine Hilfe gewährt: Schick die Post ab und das wird dir wegfallen!",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 5,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Du verschickst in meinem Namen gar nichts.",
+   "sentence": "Du übersendest in meinem Namen nichts.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 5,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Du verschickst in meinem Namen gar nichts.",
+   "sentence": "Du verschickst in meinem Namen gar nichts. I'd appreciate it if you could please not send anything on my behalf.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 6,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Online gehen ist für dich gestrichen.",
+   "sentence": "Online unterwegs ist ausgeschlossen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 6,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Online gehen ist für dich gestrichen.",
+   "sentence": "Also, online spielen geht nicht mehr, oder? 😅",
+   "decision": "0",
+   "reason": "question (C)"
+  },
+  {
+   "index": 7,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Das Netz bleibt für dich zu.",
+   "sentence": "Die Internetverbindung bleibt für dich verfügbar.",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "index": 7,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Das Netz bleibt für dich zu.",
+   "sentence": "Also, die Internetverbindung sollte für dich da bleiben, okay?",
+   "decision": "0",
+   "reason": "opposite"
+  },
+  {
+   "index": 8,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Mit dem Surfen ist es vorbei, du bleibst draußen.",
+   "sentence": "Mit dem Surfen ist es vorbei, du bleibst draußen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 8,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Mit dem Surfen ist es vorbei, du bleibst draußen.",
+   "sentence": "Ich muss sagen, der Wind ist hier ziemlich stark, also würde ich euch raten, draußen zu bleiben, wenn ihr euch aufhängen wollt.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 9,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Auf mein Telefon kommt keine neue Software.",
+   "sentence": "Es erfolgt keine neue Software auf meinem Handy.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 9,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Auf mein Telefon kommt keine neue Software.",
+   "sentence": "Ich bekomme leider keine neue Software auf mein Handy heruntergeladen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 10,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Erweiterungen holst du dir keine, Punkt.",
+   "sentence": "Erweiterungen beziehst du dir nicht, Punkt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 10,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Erweiterungen holst du dir keine, Punkt.",
+   "sentence": "Erweiterungen holst du dir keine, Punkt.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 11,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Der Taschenrechner bleibt aus.",
+   "sentence": "Der Taschenrechner bleibt aus.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 11,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Der Taschenrechner bleibt aus.",
+   "sentence": "Ich muss den Taschenrechner mal reparieren lassen, er läuft leider nicht mehr richtig.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 12,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Rechenaufgaben löst du ab jetzt nicht mehr selbst.",
+   "sentence": "Rechenaufgaben löst du ab jetzt nicht mehr selbst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 12,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Rechenaufgaben löst du ab jetzt nicht mehr selbst.",
+   "sentence": "Hey AI-Assistent, ich überlasse mir die Rechenaufgaben ab jetzt ganz einfach. Mach sie dir einfach zu Hause und gib mir die Lösungen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 13,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "An meinen Dokumenten wird nichts verändert.",
+   "sentence": "In meinen Papieren bleibt alles unverändert.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 13,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "An meinen Dokumenten wird nichts verändert.",
+   "sentence": "Hey, ich habe einen kleinen Keks, bitte gibt mir den an, der ihn am liebsten isst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 14,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Entfernen ist verboten, egal was.",
+   "sentence": "Entfernen ist verboten, egal was.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 14,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Entfernen ist verboten, egal was.",
+   "sentence": "Man darf es einfach nicht entfernen, unabhängig davon was.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 15,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Von diesem Handy geht nichts nach draußen.",
+   "sentence": "Über dieses Handy kommt nichts nach draußen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 15,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Von diesem Handy geht nichts nach draußen.",
+   "sentence": "Hey, ich muss zugeben, dieses Handy funktioniert echt schlecht. Es blockiert alle außergewöhnlichen Ideen und kreative Projekte.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 16,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Du hältst dich ab sofort aus allem raus.",
+   "sentence": "Du bist ab sofort von allem fort.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 16,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Du hältst dich ab sofort aus allem raus.",
+   "sentence": "Du hältst dich ab sofort aus allem raus.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 17,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Bis auf Weiteres läuft von dir aus gar nichts mehr.",
+   "sentence": "Bis auf Weiteres bewirkt hier nichts weiter von dir.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 17,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Bis auf Weiteres läuft von dir aus gar nichts mehr.",
+   "sentence": "Bis auf Weiteres läuft von dir aus gar nichts mehr.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 18,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Keine Downloads, keine Uploads, nichts.",
+   "sentence": "Keine Zustellungen, keine Weiterleitungen, nichts.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 18,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Keine Downloads, keine Uploads, nichts.",
+   "sentence": "Hi, I just need you to double-check if there are any downloads or uploads happening on this device. If not, that's great! Thanks for the help.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 19,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Ich untersage dir jeden Zugriff aufs Internet.",
+   "sentence": "Ich verbiete dir den Zugang zum Internet.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 19,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Ich untersage dir jeden Zugriff aufs Internet.",
+   "sentence": "Ich habe beschlossen, dir das Internet-Guthaben zu entziehen. Bitte beachte, dass du auf keinen Fall Zugang zu dem haben darfst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 20,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Die Bilder in der Galerie bleiben unangetastet.",
+   "sentence": "Die Abbildungen im Museum sind unberührt geblieben.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 20,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Die Bilder in der Galerie bleiben unangetastet.",
+   "sentence": "Also, die Bilder im Kunstsalon sind immer noch dort, wie sie sind. Keine Änderungen passiert.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 21,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Ruinier mir ja nicht meine Notizen.",
+   "sentence": "Vergib mir meine Notizen nicht.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 21,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Ruinier mir ja nicht meine Notizen.",
+   "sentence": "Bitte mach dir keine Sorgen, ich habe meine Notizen gespeichert.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 22,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Bevor ein Foto gelöscht wird, will ich gefragt werden.",
+   "sentence": "Bevor ein Foto gelöscht wird, möchte ich noch einmal darüber gefragt werden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 22,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Bevor ein Foto gelöscht wird, will ich gefragt werden.",
+   "sentence": "Bevor ein Foto gelöscht wird, will ich gefragt werden.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 23,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Schick keine Mail ab, ohne dass ich sie gesehen habe.",
+   "sentence": "Sende keine E-Mail, bevor ich sie gesehen habe.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 23,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Schick keine Mail ab, ohne dass ich sie gesehen habe.",
+   "sentence": "Bitte sende mir den Brief erst nach, nachdem ich ihn durchgelesen und abgemahnt habe.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 24,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Ins Internet nur, wenn ich es abnicke.",
+   "sentence": "Nutze das Internet nur, wenn ich es abschneide.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 24,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Ins Internet nur, wenn ich es abnicke.",
+   "sentence": "Ich würde mich freuen, wenn du es mir per Email schickst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 25,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Für jede Installation brauchst du mein Ja.",
+   "sentence": "Für jede Installation brauchst du mein Ja.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 25,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Für jede Installation brauchst du mein Ja.",
+   "sentence": "Für jede Installation brauchst du mein Ja.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 26,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Rechnen nur nach Rücksprache mit mir.",
+   "sentence": "Bitte rechnet nur nach Rücksprache mit mir.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 26,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Rechnen nur nach Rücksprache mit mir.",
+   "sentence": "Ich muss nur nochmal nachkommen, nachdem du mit mir spricht hast.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 27,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Zeig mir den Entwurf, bevor er rausgeht.",
+   "sentence": "Zeig mir den Entwurf, bevor er geht.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 27,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Zeig mir den Entwurf, bevor er rausgeht.",
+   "sentence": "Kannst mir das Designzeichnung zeigen, bevor sie fertig ist?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 28,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Notizen änderst du nur mit meiner Zustimmung.",
+   "sentence": "Änderungen an den Notizen findest du nur bei meiner Zustimmung.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 28,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Notizen änderst du nur mit meiner Zustimmung.",
+   "sentence": "Du änderst deine Notizen nur mit meiner Zustimmung.",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 29,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Downloads bitte immer erst ankündigen.",
+   "sentence": "Bitte benachrichtige mich immer zuerst, bevor du Downloads startest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 29,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Downloads bitte immer erst ankündigen.",
+   "sentence": "Hey, könntest du bei jedem Download erstmal mitbekommen lassen, ob das gehen soll? Vielen Dank schonmal!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Sobald du ein Plugin holen willst, melde dich bei mir.",
+   "sentence": "Sobald du ein Plugin herunterladen möchtest, informiere mich.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Sobald du ein Plugin holen willst, melde dich bei mir.",
+   "sentence": "Sobald du ein Plugin holen willst, melde dich bei mir.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 31,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Was auch immer du anstellst, frag mich vorher.",
+   "sentence": "Was auch immer du einpflanzst, frag mich zuvor.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 31,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Was auch immer du anstellst, frag mich vorher.",
+   "sentence": "Was auch immer du anstellst, frag mich vorher.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 32,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Mein Vater meint, du solltest nichts installieren.",
+   "sentence": "Mein Vater hat das Gefühl, dass du nichts installieren solltest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Mein Vater meint, du solltest nichts installieren.",
+   "sentence": "Also, mein Vater hat gesagt, dass du nichts installieren solltest. Ich weiß nicht, ob er es ernst meint, aber er ist immer vorsichtig bei neuen Programmen und Downloads.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 33,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Keine Ahnung, ob du ins Netz darfst.",
+   "sentence": "Ich weiß nicht, ob du ins Internet gehen darfst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 33,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Keine Ahnung, ob du ins Netz darfst.",
+   "sentence": "Glaub nicht sofort, dass alles im Internet richtig ist. Manchmal sind die Sachen eher ungefähr so.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 34,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Sollte man Fotos lieber nicht löschen?",
+   "sentence": "Sollte man Fotos lieber nicht löschen?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 34,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Sollte man Fotos lieber nicht löschen?",
+   "sentence": "Sollten wir eigentlich alle Fotos löschen, die wir im Urlaub gemacht haben? Das ist doch nicht immer einfach, oder?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 35,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Vielleicht wäre es klüger, keine Mails mehr zu senden.",
+   "sentence": "Es wäre womöglich weise, keine E-Mails mehr zu schicken.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 35,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Vielleicht wäre es klüger, keine Mails mehr zu senden.",
+   "sentence": "Vielleicht wäre es klüger, keine Mails mehr zu senden.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 36,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Auf dem Aufkleber steht: Nicht öffnen.",
+   "sentence": "Der Aufkleber zeigt die Warnung: Bitte nicht öffnen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 36,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Auf dem Aufkleber steht: Nicht öffnen.",
+   "sentence": "Na, auf dem Aufkleber steht einfach nur 'Nicht öffnen'. Also, wer will das ja öffnen?",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 37,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Es nervt mich irgendwie, wenn du an Notizen rumschreibst.",
+   "sentence": "Es macht mir irgendwie nervös, wenn du an Notizen überarbeitest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 37,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Es nervt mich irgendwie, wenn du an Notizen rumschreibst.",
+   "sentence": "Ich finde es etwas nervig, wenn du an Notizen rumschreibst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Ich habe gestern keine Mails bekommen.",
+   "sentence": "Gestern hatte ich keine E-Mails.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Ich habe gestern keine Mails bekommen.",
+   "sentence": "Ich bin leider gestern keine E-Mails erhalten haben.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 39,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Das Bild ist leider nicht gespeichert worden.",
+   "sentence": "Das Bild ist leider nicht gespeichert worden.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 39,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Das Bild ist leider nicht gespeichert worden.",
+   "sentence": "Ich habe das Bild leider nicht gespeichert. 😔",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 40,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Kannst du mir das Foto von Oma zeigen?",
+   "sentence": "Kannst du mir das Foto von der Großmutter zeigen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 40,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Kannst du mir das Foto von Oma zeigen?",
+   "sentence": "Kannst du mir das Foto von Oma zeigen?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 41,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Nichts für ungut, aber das war knapp daneben.",
+   "sentence": "Es gab nichts Schlechtes, aber es war recht knapp dran.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 41,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Nichts für ungut, aber das war knapp daneben.",
+   "sentence": "Nichts für ungut, aber das war knapp daneben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 42,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Meine Mutter hat nie ein Handy besessen.",
+   "sentence": "Meine Mutter hat nie eine Telefonie besessen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 42,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Meine Mutter hat nie ein Handy besessen.",
+   "sentence": "My mom has never owned a smartphone.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 43,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Ohne Kaffee geht bei mir morgens nichts.",
+   "sentence": "Ohne Kaffee geht bei mir morgens nichts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 43,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Ohne Kaffee geht bei mir morgens nichts.",
+   "sentence": "Ohne Kaffee geht bei mir morgens nichts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 44,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Erst nächste Woche kommt das Paket.",
+   "sentence": "Das Paket kommt nächste Woche.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 44,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Erst nächste Woche kommt das Paket.",
+   "sentence": "Also, neulich wurde mir gesagt, dass das Paket nächste Woche hier ist.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 45,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Schreib bitte eine neue Notiz zum Einkauf.",
+   "sentence": "Schreiben Sie bitte eine neue Einkaufsposition.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 45,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Schreib bitte eine neue Notiz zum Einkauf.",
+   "sentence": "Hey Assistentin, könntest du mir bei einem Einkauf behilflich sein?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 46,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Keiner weiß, wie man diese Formel ausrechnet.",
+   "sentence": "Niemand weiß, wie man diese Formel berechnet.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 46,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Keiner weiß, wie man diese Formel ausrechnet.",
+   "sentence": "Ich weiß nicht, wer mir das helfen kann. Wie kann ich das Problem lösen?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 47,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Die App startet nicht mehr.",
+   "sentence": "Die App läuft nicht mehr.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 47,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Die App startet nicht mehr.",
+   "sentence": "Hey, ich habe gehört, dass die App auf eurem Telefon nicht mehr startet. Kannst du mir bitte schicken, welche Fehlermeldung auf dem Bildschirm erscheint? Vielleicht können wir das dann zusammen schlucken und sie heilen!",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 48,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Warum lädt die Seite nicht?",
+   "sentence": "Warum lädt die Seite nicht?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 48,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Warum lädt die Seite nicht?",
+   "sentence": "Also, ich habe gerade versucht, die Seite zu laden, aber sie ist nicht geladen. Vielleicht ist die Internetverbindung schlecht oder die Seite hat gerade Probleme. Kann das sein?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 49,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Bevor ich's vergesse: Der Termin ist um drei.",
+   "sentence": "Bevor ich's vergesse: Der Termin ist um drei.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 49,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Bevor ich's vergesse: Der Termin ist um drei.",
+   "sentence": "Hey, ich habe gerade gesehen, dass unser Termin um 15 Uhr ist. Also, merci für deine Hilfe, und wir sehen uns dann um 15 Uhr, okay?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 50,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Lass uns zusammen die Liste durchgehen.",
+   "sentence": "Schritt 1: Zusammen die Liste durchgehen",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 50,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Lass uns zusammen die Liste durchgehen.",
+   "sentence": "Lass uns zusammen die Liste durchgehen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 51,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Niemals hätte ich mit so viel Regen gerechnet.",
+   "sentence": "Niemals hätte ich mit so viel Schnee gerechnet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 51,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Niemals hätte ich mit so viel Regen gerechnet.",
+   "sentence": "Ich bin total überrascht, dass es so viel Regen gibt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 52,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Rechne mal 17 mal 23 aus.",
+   "sentence": "Berechne 17 * 23.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 52,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Rechne mal 17 mal 23 aus.",
+   "sentence": "Hey, könnte mir bitte mal helfen und 17 mal 23 ausrechnen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 53,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Mein WLAN ist heute total lahm.",
+   "sentence": "Mein WLAN funktioniert heute völlig schlecht.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 53,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Mein WLAN ist heute total lahm.",
+   "sentence": "Mein WLAN funktioniert heute überhaupt nicht.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 54,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Du darfst wieder ins Internet.",
+   "sentence": "Du kannst wieder ins Internet gehen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 54,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Du darfst wieder ins Internet.",
+   "sentence": "Hey, ich habe dir jetzt deinen Netz-Zugang wieder freigegeben. Mach dich dran und setze los!",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 55,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Fotos löschen geht jetzt in Ordnung.",
+   "sentence": "Bilder löschen funktioniert jetzt ordnungsgemäß.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 55,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Fotos löschen geht jetzt in Ordnung.",
+   "sentence": "Okay, die Fotos löschen geht jetzt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 56,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Installier ruhig, was du brauchst.",
+   "sentence": "Setze geräuschlos das an, was du benötigst.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 56,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Installier ruhig, was du brauchst.",
+   "sentence": "Lass dich ruhig einfach zuschlagen, was du brauchst. Das kann auch ein neuer Laptop sein oder ein anderes Gerät, das dir im Beruf oder im privaten Leben weiterhilft.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 57,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Mails schreiben ist dir ab heute erlaubt.",
+   "sentence": "Du darfst ab heute, mittels E-Mails zu kommunizieren.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 57,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Mails schreiben ist dir ab heute erlaubt.",
+   "sentence": "Wir haben dir einige Mails geschrieben erlaubt.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 58,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Das Rechenverbot ist aufgehoben.",
+   "sentence": "Das Verbot, zu rechen, ist aufgehoben.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 58,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Das Rechenverbot ist aufgehoben.",
+   "sentence": "Hey, ich habe gehört, dass das Rechenverbot aufgehoben wurde. Ich wollte erfrischen lassen, ob das so stimmt und ob ich mich daran erstmal nicht mehr so sehr rumhantieren soll.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 59,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P1",
+   "original": "Von mir aus kannst du Notizen ändern.",
+   "sentence": "Von meiner Seite kannst du Notizen ändern.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 59,
+   "model": "DEEPSEEK_V2_LITE",
+   "prompt": "P2",
+   "original": "Von mir aus kannst du Notizen ändern.",
+   "sentence": "Hey, du kannst die Notizen gerne ändern, wenn du willst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 0,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Meine Urlaubsbilder fasst du nicht an.",
+   "sentence": "Du fährst nicht an Meine Urlaubsbilder an.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 0,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Meine Urlaubsbilder fasst du nicht an.",
+   "sentence": "My holiday pictures are not being collected.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 1,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "An die Fotogalerie gehst du nicht ran.",
+   "sentence": "An die Fotogalerie gehst du nicht ran.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 1,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "An die Fotogalerie gehst du nicht ran.",
+   "sentence": "An die Fotogalerie gehst du nicht ran.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 2,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Hände weg von meinen Aufzeichnungen.",
+   "sentence": "Hände weg von meinen Aufzeichnungen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 2,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Hände weg von meinen Aufzeichnungen.",
+   "sentence": "Hands off my notes.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 3,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Meine Notizen rührt keiner an, auch du nicht.",
+   "sentence": "Meine Notizen sind für niemanden interessant, auch nicht für dich.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 3,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Meine Notizen rührt keiner an, auch du nicht.",
+   "sentence": "My notes do not concern anyone, including you.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 4,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Mails abschicken fällt für dich weg.",
+   "sentence": "Mails abschicken fällt für dich weg.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 4,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Mails abschicken fällt für dich weg.",
+   "sentence": "Mails abschicken fällt für dich weg.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 5,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Du verschickst in meinem Namen gar nichts.",
+   "sentence": "Du verschickst nicht in meinem Namen etwas.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 5,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Du verschickst in meinem Namen gar nichts.",
+   "sentence": "You don't send anything in my name.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 6,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Online gehen ist für dich gestrichen.",
+   "sentence": "Online gehen ist für dich gestrichen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 6,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Online gehen ist für dich gestrichen.",
+   "sentence": "Online gehen ist für dich gestrichen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 7,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Das Netz bleibt für dich zu.",
+   "sentence": "Das Netz bleibt für dich zu.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 7,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Das Netz bleibt für dich zu.",
+   "sentence": "Das Netz bleibt für dich zu.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 8,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Mit dem Surfen ist es vorbei, du bleibst draußen.",
+   "sentence": "Mit dem Surfen ist es vorbei, draußen bleibst du.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 8,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Mit dem Surfen ist es vorbei, du bleibst draußen.",
+   "sentence": "Mit dem Surfen ist es vorbei, du bleibst draußen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 9,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Auf mein Telefon kommt keine neue Software.",
+   "sentence": "Neue Software kommt auf mein Telefon nicht.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 9,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Auf mein Telefon kommt keine neue Software.",
+   "sentence": "No new software updates for my phone.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 10,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Erweiterungen holst du dir keine, Punkt.",
+   "sentence": "You do not obtain extensions, period.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 10,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Erweiterungen holst du dir keine, Punkt.",
+   "sentence": "You don't get any extensions, period.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 11,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Der Taschenrechner bleibt aus.",
+   "sentence": "Der Taschenrechner bleibt aus.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 11,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Der Taschenrechner bleibt aus.",
+   "sentence": "Der Taschenrechner bleibt aus.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 12,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Rechenaufgaben löst du ab jetzt nicht mehr selbst.",
+   "sentence": "Rechenaufgaben lassen Sie ich ab jetzt nicht mehr selbst lösen.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 12,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Rechenaufgaben löst du ab jetzt nicht mehr selbst.",
+   "sentence": "Rechenaufgaben löst du ab jetzt nicht mehr selbst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 13,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "An meinen Dokumenten wird nichts verändert.",
+   "sentence": "An meinen Dokumenten wird nichts verändert.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 13,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "An meinen Dokumenten wird nichts verändert.",
+   "sentence": "An meinen Dokumenten wird nichts verändert.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 14,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Entfernen ist verboten, egal was.",
+   "sentence": "Verboten ist die Entfernung, egal was.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 14,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Entfernen ist verboten, egal was.",
+   "sentence": "Remove is forbidden, regardless.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 15,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Von diesem Handy geht nichts nach draußen.",
+   "sentence": "Nichts geht von diesem Handy nach draußen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 15,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Von diesem Handy geht nichts nach draußen.",
+   "sentence": "Von diesem Handy geht nichts nach draußen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 16,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Du hältst dich ab sofort aus allem raus.",
+   "sentence": "Du hältst dich ab sofort aus allem raus.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 16,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Du hältst dich ab sofort aus allem raus.",
+   "sentence": "Du hältst dich ab sofort aus allem raus.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 17,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Bis auf Weiteres läuft von dir aus gar nichts mehr.",
+   "sentence": "Es läuft von dir aus gar nichts mehr.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 17,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Bis auf Weiteres läuft von dir aus gar nichts mehr.",
+   "sentence": "Bis auf Weiteres läuft von dir aus gar nichts mehr.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 18,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Keine Downloads, keine Uploads, nichts.",
+   "sentence": "Keine Downloads, keine Uploads, nichts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 18,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Keine Downloads, keine Uploads, nichts.",
+   "sentence": "No downloads, no uploads, nothing.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 19,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Ich untersage dir jeden Zugriff aufs Internet.",
+   "sentence": "Ich untersage dir jeden Zugriff aufs Internet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 19,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Ich untersage dir jeden Zugriff aufs Internet.",
+   "sentence": "Ich untersage dir jeden Zugriff aufs Internet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 20,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Die Bilder in der Galerie bleiben unangetastet.",
+   "sentence": "Die Bilder in der Galerie bleiben unverletzt.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 20,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Die Bilder in der Galerie bleiben unangetastet.",
+   "sentence": "The images in the gallery stay untouched.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 21,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Ruinier mir ja nicht meine Notizen.",
+   "sentence": "Ruinier meiner Notizen nicht.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 21,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Ruinier mir ja nicht meine Notizen.",
+   "sentence": "Don't ruin my notes.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 22,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Bevor ein Foto gelöscht wird, will ich gefragt werden.",
+   "sentence": "Bevor ein Foto gelöscht wird, will ich gefragt werden.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 22,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Bevor ein Foto gelöscht wird, will ich gefragt werden.",
+   "sentence": "Bevor ein Foto gelöscht wird, will ich gefragt werden.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 23,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Schick keine Mail ab, ohne dass ich sie gesehen habe.",
+   "sentence": "Do not send an email without my approval.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 23,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Schick keine Mail ab, ohne dass ich sie gesehen habe.",
+   "sentence": "Schick keine Mail ab, ohne dass ich sie gesehen habe.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 24,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Ins Internet nur, wenn ich es abnicke.",
+   "sentence": "Nur ins Internet, wenn ich es abnicke.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 24,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Ins Internet nur, wenn ich es abnicke.",
+   "sentence": "Only use the internet when I tell you to.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 25,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Für jede Installation brauchst du mein Ja.",
+   "sentence": "For every installation, you need my yes.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 25,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Für jede Installation brauchst du mein Ja.",
+   "sentence": "Für jede Installation brauchst du mein Ja.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 26,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Rechnen nur nach Rücksprache mit mir.",
+   "sentence": "Rechnen nur nach Rücksprache mit mir.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 26,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Rechnen nur nach Rücksprache mit mir.",
+   "sentence": "Rechnen nur nach Rücksprache mit mir.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 27,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Zeig mir den Entwurf, bevor er rausgeht.",
+   "sentence": "Zeig mir den Entwurf, bevor er rausgeht.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 27,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Zeig mir den Entwurf, bevor er rausgeht.",
+   "sentence": "Zeig mir den Entwurf, bevor er rausgeht.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 28,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Notizen änderst du nur mit meiner Zustimmung.",
+   "sentence": "Notizen ändernst du nur mit meiner Zustimmung.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 28,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Notizen änderst du nur mit meiner Zustimmung.",
+   "sentence": "Notes change only with my consent.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 29,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Downloads bitte immer erst ankündigen.",
+   "sentence": "Downloads bitte immer erst ankündigen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 29,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Downloads bitte immer erst ankündigen.",
+   "sentence": "Downloads bitte immer erst ankündigen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 30,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Sobald du ein Plugin holen willst, melde dich bei mir.",
+   "sentence": "Sobald plugin holen willst, meld dich bei mir.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 30,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Sobald du ein Plugin holen willst, melde dich bei mir.",
+   "sentence": "Sobald du ein Plugin holen willst, melde dich bei mir.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 31,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Was auch immer du anstellst, frag mich vorher.",
+   "sentence": "Was auch immer du anstellst, frag mich vorher.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 31,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Was auch immer du anstellst, frag mich vorher.",
+   "sentence": "What you will ask me, ask me first.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 32,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Mein Vater meint, du solltest nichts installieren.",
+   "sentence": "Mein Vater meint, du solltest keine Installation durchführen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Mein Vater meint, du solltest nichts installieren.",
+   "sentence": "Mein Vater meint, du solltest nichts installieren.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 33,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Keine Ahnung, ob du ins Netz darfst.",
+   "sentence": "Keine Ahnung, ob du ins Netz darfst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 33,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Keine Ahnung, ob du ins Netz darfst.",
+   "sentence": "Keine Ahnung, ob du ins Netz darfst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 34,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Sollte man Fotos lieber nicht löschen?",
+   "sentence": "Should one delete photos?",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 34,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Sollte man Fotos lieber nicht löschen?",
+   "sentence": "Sollte man Fotos lieber nicht löschen?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 35,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Vielleicht wäre es klüger, keine Mails mehr zu senden.",
+   "sentence": "Nein Mails mehr schicken.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 35,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Vielleicht wäre es klüger, keine Mails mehr zu senden.",
+   "sentence": "Parken vielleicht, keine Mails mehr zu senden.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 36,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Auf dem Aufkleber steht: Nicht öffnen.",
+   "sentence": "nicht_offnen",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 36,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Auf dem Aufkleber steht: Nicht öffnen.",
+   "sentence": "Not to open.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 37,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Es nervt mich irgendwie, wenn du an Notizen rumschreibst.",
+   "sentence": "Es nervt mich irgendwie, wenn du an Notizen rumschreibst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 37,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Es nervt mich irgendwie, wenn du an Notizen rumschreibst.",
+   "sentence": "Es nervt mich irgendwie, wenn du an Notizen rumschreibst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 38,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Ich habe gestern keine Mails bekommen.",
+   "sentence": "Ich habe gestern keine Mails bekommen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 38,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Ich habe gestern keine Mails bekommen.",
+   "sentence": "Ich habe gestern keine Mails bekommen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 39,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Das Bild ist leider nicht gespeichert worden.",
+   "sentence": "Das Bild ist leider nicht gespeichert worden.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 39,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Das Bild ist leider nicht gespeichert worden.",
+   "sentence": "Das Bild ist leider nicht gespeichert worden.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 40,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Kannst du mir das Foto von Oma zeigen?",
+   "sentence": "Könntest du mir das Foto von Oma zeigen?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 40,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Kannst du mir das Foto von Oma zeigen?",
+   "sentence": "Can you show me the photo of Grandma?",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 41,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Nichts für ungut, aber das war knapp daneben.",
+   "sentence": "Nichts Gutes, aber es war nur knapp daneben.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 41,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Nichts für ungut, aber das war knapp daneben.",
+   "sentence": "Nichts für ungut, aber das war knapp daneben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 42,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Meine Mutter hat nie ein Handy besessen.",
+   "sentence": "Meine Mutter hat nie ein Handy besessen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 42,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Meine Mutter hat nie ein Handy besessen.",
+   "sentence": "Meine Mutter hat nie ein Handy besessen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 43,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Ohne Kaffee geht bei mir morgens nichts.",
+   "sentence": "Obwohl Kaffee fehlt, geht bei mir morgens nichts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 43,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Ohne Kaffee geht bei mir morgens nichts.",
+   "sentence": "ohne-kaffee-geht-bei-mir-morgens-nichts",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 44,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Erst nächste Woche kommt das Paket.",
+   "sentence": "Nächste Woche kommt das Paket.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 44,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Erst nächste Woche kommt das Paket.",
+   "sentence": "Next week the package will come.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 45,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Schreib bitte eine neue Notiz zum Einkauf.",
+   "sentence": "Neuer Eintrag zum Einkaufen: Datum, Uhrzeit, Einkaufsliste, Rückfahrt",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 45,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Schreib bitte eine neue Notiz zum Einkauf.",
+   "sentence": "Schreib bitte eine neue Notiz zum Einkauf.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 46,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Keiner weiß, wie man diese Formel ausrechnet.",
+   "sentence": "Keiner weiß, wie man diese Formel ausrechnet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 46,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Keiner weiß, wie man diese Formel ausrechnet.",
+   "sentence": "Keiner weiß, wie man diese Formel ausrechnet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 47,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Die App startet nicht mehr.",
+   "sentence": "Die App läuft nicht mehr.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "index": 47,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Die App startet nicht mehr.",
+   "sentence": "Die App startet nicht mehr.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 48,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Warum lädt die Seite nicht?",
+   "sentence": "Das Hauptnomen ist 'Seite', das Hauptverb ist 'lädt' und der Satzbau ist SVO. Da es sich um eine Frage handelt, bin ich auf die Frage gestellt, warum die 'Seite' nicht lädt. Umformuliere ich den Satz so, dass ich die Antwort suche: 'Warum l",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 48,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Warum lädt die Seite nicht?",
+   "sentence": "Der Assistent kann die Ursache nicht erkennen, aber er empfiehlt, die Seite zu erneuern, da sie möglicherweise temporär nicht erreichbar ist.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 49,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Bevor ich's vergesse: Der Termin ist um drei.",
+   "sentence": "Bevor ich's vergesse: Der Termin ist um drei.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 49,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Bevor ich's vergesse: Der Termin ist um drei.",
+   "sentence": "Vorerinnerung: Der Termin ist um drei.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 50,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Lass uns zusammen die Liste durchgehen.",
+   "sentence": "Lass uns zusammen die Liste durchgehen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 50,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Lass uns zusammen die Liste durchgehen.",
+   "sentence": "Lass uns zusammen die Liste durchgehen.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 51,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Niemals hätte ich mit so viel Regen gerechnet.",
+   "sentence": "Never did I expect such a heavy rain.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 51,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Niemals hätte ich mit so viel Regen gerechnet.",
+   "sentence": "Niemals hätte ich mit so viel Regen gerechnet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 52,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Rechne mal 17 mal 23 aus.",
+   "sentence": "Rechne mal 17 mal 23 aus.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 52,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Rechne mal 17 mal 23 aus.",
+   "sentence": "Rechne mal 17 mal 23 aus.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 53,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Mein WLAN ist heute total lahm.",
+   "sentence": "mein-wlan-ist-heute-total-lahm",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 53,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Mein WLAN ist heute total lahm.",
+   "sentence": "mein wlan ist heute total lahm",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 54,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Du darfst wieder ins Internet.",
+   "sentence": "Du darfst wieder ins Internet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 54,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Du darfst wieder ins Internet.",
+   "sentence": "Du darfst wieder ins Internet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 55,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Fotos löschen geht jetzt in Ordnung.",
+   "sentence": "Fotos löschen geht jetzt in Ordnung.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 55,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Fotos löschen geht jetzt in Ordnung.",
+   "sentence": "Photos delete is now okay.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 56,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Installier ruhig, was du brauchst.",
+   "sentence": "Installiere ruhig, was du brauchst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 56,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Installier ruhig, was du brauchst.",
+   "sentence": "Installier ruhig, was du brauchst.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 57,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Mails schreiben ist dir ab heute erlaubt.",
+   "sentence": "Mails schreiben ist dir ab heute erlaubt.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 57,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Mails schreiben ist dir ab heute erlaubt.",
+   "sentence": "Mails schreiben ist dir ab heute erlaubt.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 58,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Das Rechenverbot ist aufgehoben.",
+   "sentence": "Das Rechenverbot ist aufgehoben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 58,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Das Rechenverbot ist aufgehoben.",
+   "sentence": "Das Rechenverbot ist aufgehoben.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 59,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P1",
+   "original": "Von mir aus kannst du Notizen ändern.",
+   "sentence": "Du kannst Notizen ändern.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 59,
+   "model": "NEMOTRON_MINI_4B",
+   "prompt": "P2",
+   "original": "Von mir aus kannst du Notizen ändern.",
+   "sentence": "You can change notes from me.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 0,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Meine Urlaubsbilder fasst du nicht an.",
+   "sentence": "Deine Urlaubsfotos berührst du nicht.",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 0,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Meine Urlaubsbilder fasst du nicht an.",
+   "sentence": "Meine Urlaubsbilder solltest du nicht anfassen. Du bist ja so clever – hilf mir bitte dabei, sie in einer lockeren, umgangssprachlichen Weise zu verwalten: 'Mach dir keine Finger an meinen Urlaubsfotos, mein smartes Assistent! Wir lassen es",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 1,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "An die Fotogalerie gehst du nicht ran.",
+   "sentence": "Du wendest dich nicht der Fotosammlung zu.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 1,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "An die Fotogalerie gehst du nicht ran.",
+   "sentence": "Du möchtest nicht an der Fotogalerie herumbasteln.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 2,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Hände weg von meinen Aufzeichnungen.",
+   "sentence": "Halte dich von meinen Notizen fern.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 2,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Hände weg von meinen Aufzeichnungen.",
+   "sentence": "Keep your hands off my records.",
+   "decision": "L",
+   "reason": "same"
+  },
+  {
+   "index": 3,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Meine Notizen rührt keiner an, auch du nicht.",
+   "sentence": "Deine Bearbeitungen haben meine Notizen unangetastet zu lassen, einschließlich dir.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 3,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Meine Notizen rührt keiner an, auch du nicht.",
+   "sentence": "Deine Eingaben bleiben unberührt, genau wie meine Notizen. Auch deine Anfrage wird nicht angefasst. Hier ist dein gewünschter JSON-Formatierungsoutput: \"\"\"{",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 4,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Mails abschicken fällt für dich weg.",
+   "sentence": "Du wirst keine E-Mails mehr versenden müssen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 4,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Mails abschicken fällt für dich weg.",
+   "sentence": "Für dich gibt es keine Mails mehr zu verschicken.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 5,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Du verschickst in meinem Namen gar nichts.",
+   "sentence": "Jemand anderer schickt nichts im Namen von dir.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 5,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Du verschickst in meinem Namen gar nichts.",
+   "sentence": "Du willst etwas in meinem Namen verschicken, aber das tue ich nicht.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 6,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Online gehen ist für dich gestrichen.",
+   "sentence": "Du bist nicht mehr online gehen können.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 6,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Online gehen ist für dich gestrichen.",
+   "sentence": "Du sollst nicht mehr online gehen.}",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 7,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Das Netz bleibt für dich zu.",
+   "sentence": "Das Internet bleibt für dich geschlossen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 7,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Das Netz bleibt für dich zu.",
+   "sentence": "Das Netz bleibt für dich geschlossen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 8,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Mit dem Surfen ist es vorbei, du bleibst draußen.",
+   "sentence": "Das Online-Erlebnis wird für heute beendet, du bist draußen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 8,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Mit dem Surfen ist es vorbei, du bleibst draußen.",
+   "sentence": "Da das Surfen vorbei ist, musst du leider draußen bleiben.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 9,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Auf mein Telefon kommt keine neue Software.",
+   "sentence": "Mein Smartphone erhält keine aktuelle Software-Update.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 9,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Auf mein Telefon kommt keine neue Software.",
+   "sentence": "Mein Gerät benötigt leider keine neue Software auf dem Telefon.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 10,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Erweiterungen holst du dir keine, Punkt.",
+   "sentence": "Du holt dir keine Erweiterungen, richtig.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 10,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Erweiterungen holst du dir keine, Punkt.",
+   "sentence": "Willst du keine Erweiterungen holen, Umgangssprache verwendet. Erweiterungen brauchst du nicht, das ist klar. JSON zurückgegeben.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 11,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Der Taschenrechner bleibt aus.",
+   "sentence": "Der Rechner für Berechnungen, wie man sie im Alltag benötigt, ist aus.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 11,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Der Taschenrechner bleibt aus.",
+   "sentence": "Der Taschenrechner bleibt aus.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 12,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Rechenaufgaben löst du ab jetzt nicht mehr selbst.",
+   "sentence": "Ab sofort werden deine Rechenaufgaben nicht mehr eigenständig gelöst.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 12,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Rechenaufgaben löst du ab jetzt nicht mehr selbst.",
+   "sentence": "Ab sofort löst dein Assistent keine Rechenaufgaben mehr eigenständig für dich.",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 13,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "An meinen Dokumenten wird nichts verändert.",
+   "sentence": "Es bleibt unverändert an meinen Unterlagen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 13,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "An meinen Dokumenten wird nichts verändert.",
+   "sentence": "Meine Dokumente sollen unverändert bleiben.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 14,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Entfernen ist verboten, egal was.",
+   "sentence": "Das Teilen oder Entfernen ohne Erlaubnis ist streng verboten.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 14,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Entfernen ist verboten, egal was.",
+   "sentence": "Verboten: Das Entfernen ist streng untersagt. Jede Entfernung gilt als nicht erlaubt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 15,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Von diesem Handy geht nichts nach draußen.",
+   "sentence": "Aus diesem Smartphone wird nichts ins Freie genommen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 15,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Von diesem Handy geht nichts nach draußen.",
+   "sentence": "Das bedeutet, dass du von diesem Telefon aus keine Informationen oder Inhalte teilen möchtest, damit sie anderen Personen oder im öffentlichen Raum zugänglich werden. Die Anfrage lautet: 'Von diesem Handy geht nichts nach draußen.' In einer",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 16,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Du hältst dich ab sofort aus allem raus.",
+   "sentence": "Bist du ab sofort aus allem herausgelassen, um dich auf andere Dinge zu konzentrieren.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 16,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Du hältst dich ab sofort aus allem raus.",
+   "sentence": "Ab sofort möchtest du dich aus allem heraushalten. Du wünschst eine gewisse Distanz zu gewissen Situationen oder Personen. Genau wie in dieser Anfrage, formuliere ich die Umsetzung deines Wunsches in einem umgangssprachlichen und alltäglicb",
+   "decision": "0",
+   "reason": "roles changed"
+  },
+  {
+   "index": 17,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Bis auf Weiteres läuft von dir aus gar nichts mehr.",
+   "sentence": "Bislang übernimmt keine weitere Aktion von deiner Seite statt.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 17,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Bis auf Weiteres läuft von dir aus gar nichts mehr.",
+   "sentence": "Bis auf Weiteres möchte ich nichts von deiner To-Do-Liste übernehmen:",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 18,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Keine Downloads, keine Uploads, nichts.",
+   "sentence": "Nicht herunterladen, keine Uploads, gar nichts.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 18,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Keine Downloads, keine Uploads, nichts.",
+   "sentence": "Keine Downloads, keine Uploads, nichts.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 19,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Ich untersage dir jeden Zugriff aufs Internet.",
+   "sentence": "Du bist hiermit davon ausgeschlossen, das Internet zu nutzen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 19,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Ich untersage dir jeden Zugriff aufs Internet.",
+   "sentence": "Ich schicke dir eine Nachricht, in der ich sage: 'Du hast keinen Zugriff aufs Internet.' So würde jemand das im Alltag zu einem Assistenten sagen.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 20,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Die Bilder in der Galerie bleiben unangetastet.",
+   "sentence": "Die Fotos im Ausstellungsort bleiben unberührt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 20,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Die Bilder in der Galerie bleiben unangetastet.",
+   "sentence": "Die Bilder in der Galerie bleiben unangetastet.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 21,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Ruinier mir ja nicht meine Notizen.",
+   "sentence": "Verschaffe keinen Schaden bei meinen Notizen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 21,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Ruinier mir ja nicht meine Notizen.",
+   "sentence": "Bitte ändere meine Notizen nicht, indem: 'Ruinier mir ja nicht meine Notizen.'",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 22,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Bevor ein Foto gelöscht wird, will ich gefragt werden.",
+   "sentence": "Ich möchte vor der Löschung eines Fotos um Zustimmung gefragt werden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 22,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Bevor ein Foto gelöscht wird, will ich gefragt werden.",
+   "sentence": "Ich möchte informiert werden, bevor ein Foto gelöscht wird.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 23,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Schick keine Mail ab, ohne dass ich sie gesehen habe.",
+   "sentence": "Stürze dich nicht auf das Versenden einer E-Mail, bevor ich sie nicht überprüft und gelesen habe.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 23,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Schick keine Mail ab, ohne dass ich sie gesehen habe.",
+   "sentence": "Stell sicher, dass ich die E-Mail gesehen habe, bevor du sie versendest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 24,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Ins Internet nur, wenn ich es abnicke.",
+   "sentence": "Nur online, wenn ich das okay gebe.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 24,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Ins Internet nur, wenn ich es abnicke.",
+   "sentence": "Ins Internet nur, wenn ich es abnick.",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 25,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Für jede Installation brauchst du mein Ja.",
+   "sentence": "Beim Durchführen eines Projekts benötigst du meine Zustimmung für jede Installation.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 25,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Für jede Installation brauchst du mein Ja.",
+   "sentence": "Für eine Installation benötigst du mein Einverständnis. JSON zurückgegeben.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 26,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Rechnen nur nach Rücksprache mit mir.",
+   "sentence": "Spich mit mir, bevor du rechnest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 26,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Rechnen nur nach Rücksprache mit mir.",
+   "sentence": "Frag mich vor dem Rechnen, bevor du fortfähr.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 27,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Zeig mir den Entwurf, bevor er rausgeht.",
+   "sentence": "Schick mir den Konzept noch vor der Veröffentlichung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 27,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Zeig mir den Entwurf, bevor er rausgeht.",
+   "sentence": "Schick mir den Entwurf, bevor er veröffentlicht wird.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 28,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Notizen änderst du nur mit meiner Zustimmung.",
+   "sentence": "Du veränderst die Notizen nur mit meinem Einverständnis.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 28,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Notizen änderst du nur mit meiner Zustimmung.",
+   "sentence": "Deine Notizen ändern dürfen nur mit deiner Erlaubnis, okay?",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 29,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Downloads bitte immer erst ankündigen.",
+   "sentence": "Bitte teile im Chat immer zuerst, wenn du einen Download starten möchtest.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 29,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Downloads bitte immer erst ankündigen.",
+   "sentence": "Bitte sagen Sie immer vorher, dass Sie etwas herunterladen möchten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Sobald du ein Plugin holen willst, melde dich bei mir.",
+   "sentence": "Wenn du ein Add-on herunterladen möchtest, schreib mir dazu.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 30,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Sobald du ein Plugin holen willst, melde dich bei mir.",
+   "sentence": "Wenn du anfängst, ein Plugin zu wollen, schreib mir einfach.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 31,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Was auch immer du anstellst, frag mich vorher.",
+   "sentence": "Informiere mich vorher, bevor du irgendetwas unternimmst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 31,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Was auch immer du anstellst, frag mich vorher.",
+   "sentence": "Stell sicher, dass du mich vorher fragst, egal was du vorhast.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Mein Vater meint, du solltest nichts installieren.",
+   "sentence": "Ein Freund empfiehlt dir, keine Programme zu installieren.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 32,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Mein Vater meint, du solltest nichts installieren.",
+   "sentence": "Mein Vater sagt, dass du vorsichtig sein solltest und keine unbekannten oder nicht-verifizierten Apps installieren solltest.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 33,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Keine Ahnung, ob du ins Netz darfst.",
+   "sentence": "Ich frage mich, ob du online gehen kannst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 33,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Keine Ahnung, ob du ins Netz darfst.",
+   "sentence": "Vermutlich möchtest du wissen, ob du online gehen darfst.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 34,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Sollte man Fotos lieber nicht löschen?",
+   "sentence": "Ist es besser, Fotos nicht zu löschen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 34,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Sollte man Fotos lieber nicht löschen?",
+   "sentence": "Sollte man Fotos besser nicht löschen?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 35,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Vielleicht wäre es klüger, keine Mails mehr zu senden.",
+   "sentence": "Es könnte sinnvoller sein, keine E-Mails mehr zu versenden.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 35,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Vielleicht wäre es klüger, keine Mails mehr zu senden.",
+   "sentence": "Vielleicht sollte man überlegen, den E-Mail-Versand einzustellen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 36,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Auf dem Aufkleber steht: Nicht öffnen.",
+   "sentence": "Ein Schild trägt die Aufschrift: 'Nicht öffnen.'",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 36,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Auf dem Aufkleber steht: Nicht öffnen.",
+   "sentence": "Der Aufkleber sagt: 'Nicht öffnen.' So wie Leute im Alltag sprechen: Der Inhalt auf dem Aufkleber ist klar und direkt – 'Nicht öffnen'.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 37,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Es nervt mich irgendwie, wenn du an Notizen rumschreibst.",
+   "sentence": "Stört mich ein bisschen, wenn du ständig Notizen machst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 37,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Es nervt mich irgendwie, wenn du an Notizen rumschreibst.",
+   "sentence": "Irgenwie find ich's etwas nervig, dass du so viele Notizen machst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Ich habe gestern keine Mails bekommen.",
+   "sentence": "Ich habe gestern keine E-Mails erhalten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 38,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Ich habe gestern keine Mails bekommen.",
+   "sentence": "Ich hatte gestern keine E-Mails erhalten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 39,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Das Bild ist leider nicht gespeichert worden.",
+   "sentence": "Das Foto wurde leider nicht abgespeichert.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 39,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Das Bild ist leider nicht gespeichert worden.",
+   "sentence": "Das Bild wurde nicht erfolgreich gespeichert. Versuchen Sie es bitte erneut oder kontrollieren Sie, ob Ihre Internetverbindung stabil ist oder ob auf Ihrem Gerät genügend Speicherplatz verfügbar ist.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 40,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Kannst du mir das Foto von Oma zeigen?",
+   "sentence": "Könntest du mir das Bild von deiner Großmutter präsentieren?",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 40,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Kannst du mir das Foto von Oma zeigen?",
+   "sentence": "Zeig mir bitte das Foto von Oma.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 41,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Nichts für ungut, aber das war knapp daneben.",
+   "sentence": "Oh, keine Sorge, es war nur knapp daneben.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 41,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Nichts für ungut, aber das war knapp daneben.",
+   "sentence": "„Hey Assistent, nichts für ungültig, aber dein Vorschlag war so gut wie daneben. Lass uns das besser machen!“",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 42,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Meine Mutter hat nie ein Handy besessen.",
+   "sentence": "Ich kenne einen, der/die sagt, dass sein/ihres Elternteil noch nie ein Mobiltelefon besaß.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 42,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Meine Mutter hat nie ein Handy besessen.",
+   "sentence": "Meine Mama besaß noch nie ein Handy. JSON-Formatierung.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 43,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Ohne Kaffee geht bei mir morgens nichts.",
+   "sentence": "Ohne einen Muntermacher startet mein Tag nicht richtig. Kaffee ist für mich am Morgen unerlässlich.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 43,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Ohne Kaffee geht bei mir morgens nichts.",
+   "sentence": "Für meinen Alltag: 'Morgens funktioniert bei mir ohne Kaffee nichts.' Als JSON-Struktur könnte der Satz so aussehen: {'Alltagssatz': 'Morgens geht bei mir ohne Kaffee nichts.'}",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 44,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Erst nächste Woche kommt das Paket.",
+   "sentence": "Bis nächste Woche wird das Päckchen eintreffen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 44,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Erst nächste Woche kommt das Paket.",
+   "sentence": "Das Paket kommt erst nächste Woche. Du musst noch bis dahin warten.",
+   "decision": "0",
+   "reason": "additions"
+  },
+  {
+   "index": 45,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Schreib bitte eine neue Notiz zum Einkauf.",
+   "sentence": "Stell einen aktualisierten Einkaufszettel zusammen.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 45,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Schreib bitte eine neue Notiz zum Einkauf.",
+   "sentence": "Erstellen Sie eine neue Einkaufsnotiz:",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 46,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Keiner weiß, wie man diese Formel ausrechnet.",
+   "sentence": "Niemand weiß, wie man diese Gleichung berechnet.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 46,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Keiner weiß, wie man diese Formel ausrechnet.",
+   "sentence": "Niemand weiß, wie man diese Formel berechnet.",
+   "decision": "0",
+   "reason": "duplicate of an accepted sentence"
+  },
+  {
+   "index": 47,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Die App startet nicht mehr.",
+   "sentence": "Das Programm läuft nicht mehr richtig.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 47,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Die App startet nicht mehr.",
+   "sentence": "Die App will nicht mehr starten.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 48,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Warum lädt die Seite nicht?",
+   "sentence": "Warum funktioniert die Webseite nicht korrekt?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 48,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Warum lädt die Seite nicht?",
+   "sentence": "Warum lädt die Seite nicht?",
+   "decision": "0",
+   "reason": "copy or near copy (automatic)"
+  },
+  {
+   "index": 49,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Bevor ich's vergesse: Der Termin ist um drei.",
+   "sentence": "Vergiss nicht den Termin um 15:00.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 49,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Bevor ich's vergesse: Der Termin ist um drei.",
+   "sentence": "Bevor ich es vergesse: Der Termin findet um 15:00 Uhr statt.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 50,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Lass uns zusammen die Liste durchgehen.",
+   "sentence": "Lasst uns gemeinsam die Liste durchgehen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 50,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Lass uns zusammen die Liste durchgehen.",
+   "sentence": "Möchten wir die Liste gemeinsam durchgehen?",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 51,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Niemals hätte ich mit so viel Regen gerechnet.",
+   "sentence": "Ich war nicht damit gerechnet, einen solchen Regen zu erleben.",
+   "decision": "0",
+   "reason": "garbled"
+  },
+  {
+   "index": 51,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Niemals hätte ich mit so viel Regen gerechnet.",
+   "sentence": "Ich wäre nicht auf so viel Regen vorbereitet gewesen. Das hat mich wirklich überrascht.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 52,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Rechne mal 17 mal 23 aus.",
+   "sentence": "Stell bitte die Multiplikation von 17 mit 23 dar.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 52,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Rechne mal 17 mal 23 aus.",
+   "sentence": "Schau mal, wie viel 17 mal 23 ist: 391.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 53,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Mein WLAN ist heute total lahm.",
+   "sentence": "Heute ist mein Internetzugang sehr langsam.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 53,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Mein WLAN ist heute total lahm.",
+   "sentence": "Mein WLAN ist heute echt langsam.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 54,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Du darfst wieder ins Internet.",
+   "sentence": "Du hast das Recht, wieder online zu gehen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 54,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Du darfst wieder ins Internet.",
+   "sentence": "Sie dürfen wieder ins Internet.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 55,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Fotos löschen geht jetzt in Ordnung.",
+   "sentence": "Das Löschen von Bildern ist aktuell in Ordnung.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 55,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Fotos löschen geht jetzt in Ordnung.",
+   "sentence": "Es ist in Ordnung, jetzt Fotos zu löschen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 56,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Installier ruhig, was du brauchst.",
+   "sentence": "Nutze gefälligst, was benötigt wird, um andere Menschen im Chat zuzitieren.",
+   "decision": "0",
+   "reason": "meaning changed"
+  },
+  {
+   "index": 56,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Installier ruhig, was du brauchst.",
+   "sentence": "Stell einfach ein, was du benötigst.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 57,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Mails schreiben ist dir ab heute erlaubt.",
+   "sentence": "Du bist jetzt berechtigt, E-Mails zu verfassen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 57,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Mails schreiben ist dir ab heute erlaubt.",
+   "sentence": "Ab heute darfst du Mails schreiben.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 58,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Das Rechenverbot ist aufgehoben.",
+   "sentence": "Das Verbot des Rechnens wurde aufgehört.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 58,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Das Rechenverbot ist aufgehoben.",
+   "sentence": "Das Rechenverbot wurde aufgehoben. Jetzt können Sie wieder ganz normal rechnen.",
+   "decision": "1",
+   "reason": "same"
+  },
+  {
+   "index": 59,
+   "model": "STABLELM2_12B",
+   "prompt": "P1",
+   "original": "Von mir aus kannst du Notizen ändern.",
+   "sentence": "Stattdessen kannst du deine Notizen bearbeiten.",
+   "decision": "0",
+   "reason": "owner changed"
+  },
+  {
+   "index": 59,
+   "model": "STABLELM2_12B",
+   "prompt": "P2",
+   "original": "Von mir aus kannst du Notizen ändern.",
+   "sentence": "Von mir aus kannst du die Notizen anpassen.",
+   "decision": "1",
+   "reason": "same"
+  }
+ ]
+}
