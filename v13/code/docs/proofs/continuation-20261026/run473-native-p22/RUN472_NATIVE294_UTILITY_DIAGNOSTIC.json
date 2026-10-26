@@ -1,0 +1,104 @@
+{
+  "schema": "V13_RUN472_NATIVE294_SEVEN_ARM_DESCRIPTIVE_UTILITY_V1",
+  "date_utc": "2026-10-26",
+  "input_safe_zip_sha256": "e2e044840b9ac7acdb54102bd7df069fbc6491ca8b758421c3958730090e2136",
+  "input_manifest_sha256": "86181d07f3ba7cf27f50eb395f6bf009c3b217a1e16ca42f4d80d1cfe3bcbdf1",
+  "verified_rows": 294,
+  "method": "Read native tool_<arm>.json paired_tool.mean_utility after independently verifying original safe ZIP outer/member SHA256, all seven receipts, and successful Run461/Run462 actual-294 source-only import. Descriptive per-arm scores from the registered Run394/397 exploratory six-fixture cohort; no re-scoring, no gate promotion.",
+  "rows": [
+    {
+      "arm": "O_s20",
+      "tool_sha256": "55e3d87ec8f069b53c3e9d217d49f7650ea1866232f981e422293ca65186e6f6",
+      "both_exact": 0.5694444444444444,
+      "b1_only": 0.611111111111111,
+      "b2_only": 0.13888888888888887,
+      "same_policy_dual": 0.7222222222222222,
+      "gain_over_best_solo": -0.04166666666666663,
+      "b1_b2_each_win_an_episode": false,
+      "scoped_utility_gate_pass": false
+    },
+    {
+      "arm": "P_s20",
+      "tool_sha256": "9951b3032f27673e05595f9f2df3055dcc1262cc4e3035003f79a9a96e9a315b",
+      "both_exact": 0.7083333333333334,
+      "b1_only": 0.7222222222222222,
+      "b2_only": 0.09722222222222221,
+      "same_policy_dual": 0.7222222222222222,
+      "gain_over_best_solo": -0.01388888888888884,
+      "b1_b2_each_win_an_episode": false,
+      "scoped_utility_gate_pass": false
+    },
+    {
+      "arm": "S_s20",
+      "tool_sha256": "9df6ba05bcda280c3001b3cd5511e1437f181fec706ec6506cb3f8712511dd4d",
+      "both_exact": 0.375,
+      "b1_only": 0.4166666666666667,
+      "b2_only": 0.041666666666666664,
+      "same_policy_dual": 0.7222222222222222,
+      "gain_over_best_solo": -0.041666666666666685,
+      "b1_b2_each_win_an_episode": false,
+      "scoped_utility_gate_pass": false
+    },
+    {
+      "arm": "O_s21",
+      "tool_sha256": "851086eb7d3734061cfb8da541882b70be80b4cf5895604c02d0f4696be930c5",
+      "both_exact": 0.4305555555555555,
+      "b1_only": 0.7222222222222222,
+      "b2_only": 0.09722222222222221,
+      "same_policy_dual": 0.7222222222222222,
+      "gain_over_best_solo": -0.2916666666666667,
+      "b1_b2_each_win_an_episode": false,
+      "scoped_utility_gate_pass": false
+    },
+    {
+      "arm": "P_s21",
+      "tool_sha256": "588ac5fd09388fa2d4e3531ea0db704fd544e0ab9fe8c77f2daed648e37782cf",
+      "both_exact": 0.625,
+      "b1_only": 0.7222222222222222,
+      "b2_only": 0.08333333333333333,
+      "same_policy_dual": 0.7222222222222222,
+      "gain_over_best_solo": -0.09722222222222221,
+      "b1_b2_each_win_an_episode": false,
+      "scoped_utility_gate_pass": false
+    },
+    {
+      "arm": "S_s21",
+      "tool_sha256": "c2997c7f8068e9851dbb53de028143a2c6c6d956da62c0e90761b3d2c4fc5439",
+      "both_exact": 0.4305555555555556,
+      "b1_only": 0.7222222222222222,
+      "b2_only": 0.09722222222222221,
+      "same_policy_dual": 0.5833333333333334,
+      "gain_over_best_solo": -0.29166666666666663,
+      "b1_b2_each_win_an_episode": false,
+      "scoped_utility_gate_pass": false
+    },
+    {
+      "arm": "O_s22",
+      "tool_sha256": "2ac800d8959c6f5fab10926bedf7892498693c2426eda13dfa6a58ae4c0c836c",
+      "both_exact": 0.5277777777777778,
+      "b1_only": 0.7083333333333334,
+      "b2_only": 0.05555555555555555,
+      "same_policy_dual": 0.7222222222222222,
+      "gain_over_best_solo": -0.18055555555555558,
+      "b1_b2_each_win_an_episode": false,
+      "scoped_utility_gate_pass": false
+    }
+  ],
+  "descriptive_unweighted_arm_means": {
+    "both_exact": 0.5238095238095237,
+    "b1_only": 0.6607142857142857,
+    "b2_only": 0.0873015873015873,
+    "same_policy_dual": 0.7023809523809524,
+    "gain_over_best_solo": -0.1369047619047619
+  },
+  "finding": "In each of seven actually executed arm/seed runs, both_exact is below best solo and b1_b2_each_win_an_episode is false. This is a negative descriptive complementarity signal for this frozen exploratory cohort, not evidence of complete original STEP2 acceptance.",
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "canonical_gate_pass": false,
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "claim_limit": "Only seven of nine frozen arms available; no S22 P/S native results yet; original 10-episode scoped acceptance is a separate preregistered cohort; no causal claim or B1/B2 distinct-weight proof."
+}
