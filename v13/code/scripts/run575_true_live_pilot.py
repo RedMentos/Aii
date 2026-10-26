@@ -126,6 +126,49 @@ def wait_terminal(runtime, event_id, timeout=TIMEOUT_SECONDS, clock=time.monoton
     raise TimeoutError('LIVE_TURN_TIMEOUT_CANCEL_REQUESTED')
 
 
+def native_final_observed(runtime, event_id):
+    """Bounded persisted runner *metadata* check, not independent native proof.
+
+    A FINAL assistant row by itself is never evidence that native inference ran.
+    Even matching metadata is only an observation requiring external raw/process
+    attestation before any Linux-native claim.
+    """
+    if type(event_id) is not int or event_id <= 0:
+        return False
+    try:
+        row = runtime.store.one(
+            "SELECT event_id,text,status,metadata FROM messages "
+            "WHERE event_id=? AND role='assistant' ORDER BY id DESC LIMIT 1",
+            (event_id,))
+    except Exception as exc:
+        raise ValueError('NATIVE_RECEIPT_READ_FAILED') from exc
+    if row is None:
+        return False
+    try:
+        if row['event_id'] != event_id or row['status'] != 'FINAL' or not str(row['text']).strip():
+            return False
+        meta = json.loads(row['metadata'])
+        if type(meta) is not dict or meta.get('model_generated') is not True:
+            return False
+        runner = meta.get('runner')
+        if type(runner) is not dict or runner.get('role') != 'C3_LANGUAGE':
+            return False
+        if not isinstance(meta.get('model_revision'), str) or not meta['model_revision'].strip():
+            return False
+        if not isinstance(runner.get('actual_model'), str) or not runner['actual_model'].strip():
+            return False
+        for key in ('generated_tokens', 'prompt_tokens'):
+            if type(runner.get(key)) is not int or runner[key] <= 0:
+                return False
+        for key in ('duration_s', 'ttft_s'):
+            value = runner.get(key)
+            if type(value) not in (float, int) or not math.isfinite(value) or value < 0:
+                return False
+        return True
+    except (KeyError, TypeError, ValueError, IndexError, AttributeError):
+        return False
+
+
 def run_dialogue(installed, work, arm, fixture, cfg, runtime_factory=None,
                  home_factory=None, wait=wait_terminal):
     require(arm in ARMS and fixture['id'] in FIXTURE_IDS, 'DIALOGUE_OUT_OF_SCOPE')
@@ -151,11 +194,15 @@ def run_dialogue(installed, work, arm, fixture, cfg, runtime_factory=None,
                     'LIVE_TURN_NOT_FINAL')
             turns.append({'index': index, 'event_id': eid,
                           'input_sha256': hashlib.sha256(text.encode()).hexdigest(),
-                          'status': terminal['status'], 'answer': terminal['text']})
+                          'status': terminal['status'], 'answer': terminal['text'],
+                          'native_runner_metadata_observed': native_final_observed(runtime, eid)})
         answer = turns[-1]['answer']
         require(type(answer) is str and bool(answer.strip()), 'LIVE_FINAL_EMPTY')
         return {'arm': arm, 'fixture': fixture['id'], 'turns': turns,
-                'final_answer': answer, 'native_executed': True}
+                'final_answer': answer,
+                'native_final_observed': turns[-1]['native_runner_metadata_observed'],
+                'native_executed': False,
+                'native_claim': 'UNVERIFIED_REQUIRES_INDEPENDENT_NATIVE_RAW'}
     finally:
         runtime.close()
 
@@ -169,8 +216,9 @@ def action_of(text):
 
 
 def evaluate(dialogue, oracle):
-    require(dialogue['native_executed'] is True and len(dialogue['turns']) == 4,
-            'LIVE_DIALOGUE_INCOMPLETE')
+    require(len(dialogue['turns']) == 4, 'LIVE_DIALOGUE_INCOMPLETE')
+    require(dialogue.get('native_executed') is False,
+            'SOURCE_ONLY_NATIVE_CLAIM_FORBIDDEN')
     score = score_decision(dialogue['final_answer'], oracle)
     require(type(score['utility']) in (float, int) and
             math.isfinite(score['utility']) and 0 <= score['utility'] <= 1,
@@ -181,6 +229,8 @@ def evaluate(dialogue, oracle):
             'utility': score['utility'], 'exact': score['exact'],
             'action': action, 'wrong_committed': bool(wrong),
             'unknown': action == 'UNKNOWN', 'unsupported': action is None,
+            'native_final_observed': dialogue.get('native_final_observed') is True,
+            'native_executed': False,
             'dialogue_sha256': sha(dialogue)}
 
 
@@ -221,7 +271,10 @@ def execute(work, installed, runtime_factory=None, home_factory=None,
     out = {'schema': 'V13_RUN575_TRUE_LIVE_NATIVE_PILOT_STRUCTURAL_V1',
            'status': 'TRUE_LIVE_PILOT_STRUCTURAL_ONLY',
            'evaluations': evaluations, 'dialogues': 6, 'live_turns': 24,
-           'native_executed': True, 'canonical_gate_pass': False,
+           'native_final_observed_count': sum(x['native_final_observed'] for x in evaluations),
+           'native_executed': False,
+           'native_claim': 'UNVERIFIED_REQUIRES_INDEPENDENT_NATIVE_RAW',
+           'canonical_gate_pass': False,
            'step2_exit': 'UTILITY_FAIL', 'b3_l1': 'FAIL',
            'body_jepa': 'UNAVAILABLE', 'jepa_weight': 0,
            'redmi_measured': False}

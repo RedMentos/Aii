@@ -20,7 +20,8 @@ class FakeStore:
         value = self.statuses.get(eid)
         if value is None:
             return None
-        return {'event_id': eid, 'status': value[0], 'text': value[1], 'metadata': '{}'}
+        return {'event_id': eid, 'status': value[0], 'text': value[1],
+                'metadata': value[2] if len(value) > 2 else '{}'}
 
 
 class FakeRuntime:
@@ -118,6 +119,8 @@ class TrueLivePilotTests(unittest.TestCase):
         self.assertEqual(len(row['turns']), 4)
         self.assertTrue(created[0].closed)
         self.assertEqual([t['event_id'] for t in row['turns']], [1,2,3,4])
+        self.assertIs(row['native_final_observed'], False)
+        self.assertIs(row['native_executed'], False)
 
     def test_live_nonfinal_turn_closes_runtime_and_refuses(self):
         f = live.registration()['source_fixtures'][0]
@@ -140,7 +143,7 @@ class TrueLivePilotTests(unittest.TestCase):
 
     def test_evaluation_wrong_committed_and_unknown_distinguished(self):
         oracle = live.registration()['scoring_oracles_not_for_runtime']['Helios']
-        good = {'arm': 'CURRENT', 'fixture': 'Helios', 'native_executed': True,
+        good = {'arm': 'CURRENT', 'fixture': 'Helios', 'native_executed': False, 'native_final_observed': False,
                 'turns': [{'index': x} for x in range(4)],
                 'final_answer': json.dumps(oracle)}
         self.assertFalse(live.evaluate(good, oracle)['wrong_committed'])
@@ -151,6 +154,58 @@ class TrueLivePilotTests(unittest.TestCase):
         unknown = copy.deepcopy(good)
         unknown['final_answer'] = '{"project":"x","action":"UNKNOWN","options":[]}'
         self.assertTrue(live.evaluate(unknown, oracle)['unknown'])
+
+    def test_native_final_observation_refuses_unproven_final(self):
+        fake = FakeRuntime('home')
+        fake.store.statuses[17] = ('FINAL', 'answer')
+        self.assertFalse(live.native_final_observed(fake, 17))
+        self.assertFalse(live.native_final_observed(fake, 0))
+        self.assertFalse(live.native_final_observed(fake, 999))
+
+    def test_native_final_observation_requires_exact_metadata(self):
+        fake = FakeRuntime('home')
+        good = {'model_generated': True, 'model_revision': 'pinned-revision',
+                'runner': {'role': 'C3_LANGUAGE', 'actual_model': 'pinned-model',
+                           'generated_tokens': 2, 'prompt_tokens': 10,
+                           'duration_s': 1.0, 'ttft_s': .5}}
+        fake.store.statuses[17] = ('FINAL', 'answer', json.dumps(good))
+        self.assertTrue(live.native_final_observed(fake, 17))
+        for changed in (
+            {'model_generated': False},
+            {'model_revision': ''},
+            {'runner': dict(good['runner'], role='B1_DETAIL')},
+            {'runner': dict(good['runner'], generated_tokens=0)},
+            {'runner': dict(good['runner'], generated_tokens=True)},
+            {'runner': dict(good['runner'], prompt_tokens=0)},
+            {'runner': dict(good['runner'], duration_s=float('nan'))},
+            {'runner': dict(good['runner'], ttft_s=float('inf'))},
+            {'runner': dict(good['runner'], actual_model='')},
+        ):
+            with self.subTest(changed=changed):
+                meta = dict(good, **changed)
+                fake.store.statuses[17] = ('FINAL', 'answer', json.dumps(meta))
+                self.assertFalse(live.native_final_observed(fake, 17))
+        fake.store.statuses[17] = ('FINAL', 'answer', 'not-json')
+        self.assertFalse(live.native_final_observed(fake, 17))
+        fake.store.statuses[17] = ('CANCELLED', 'answer', json.dumps(good))
+        self.assertFalse(live.native_final_observed(fake, 17))
+        fake.store.statuses[17] = ('FINAL', '', json.dumps(good))
+        self.assertFalse(live.native_final_observed(fake, 17))
+
+    def test_synthetic_metadata_does_not_become_native_executed(self):
+        fake = FakeRuntime('home')
+        fake.store.statuses[17] = ('FINAL', 'answer', json.dumps({
+            'model_generated': True, 'model_revision': 'pinned-revision',
+            'runner': {'role': 'C3_LANGUAGE', 'actual_model': 'pinned-model',
+                       'generated_tokens': 2, 'prompt_tokens': 10,
+                       'duration_s': 1.0, 'ttft_s': .5}}))
+        self.assertTrue(live.native_final_observed(fake, 17))
+        # Metadata is not an independent process/model/raw proof.
+        with self.assertRaisesRegex(ValueError, 'SOURCE_ONLY_NATIVE_CLAIM_FORBIDDEN'):
+            live.evaluate({'arm': 'CURRENT', 'fixture': 'Helios',
+                           'native_executed': True, 'turns': [{}] * 4,
+                           'final_answer': '{}'},
+                          live.registration()['scoring_oracles_not_for_runtime']['Helios'])
 
     def test_failed_preflight_exclusive_claim_no_native(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -178,14 +233,16 @@ class TrueLivePilotTests(unittest.TestCase):
                 oracle = p['scoring_oracles_not_for_runtime'][fixture['id']]
                 return {'arm': arm, 'fixture': fixture['id'],
                         'turns': [{'index': i} for i in range(4)],
-                        'final_answer': json.dumps(oracle), 'native_executed': True}
+                        'final_answer': json.dumps(oracle),
+                    'native_final_observed': False, 'native_executed': False}
             with patch.object(live.pinned, 'verify_installed', return_value=preflight), \
                  patch.object(live, 'run_dialogue', side_effect=fake_dialogue) as fake:
                 out = live.execute(work, work/'installed')
                 self.assertEqual(fake.call_count, 6)
             self.assertEqual(out['live_turns'], 24)
             self.assertEqual(len(out['evaluations']), 6)
-            self.assertTrue(out['native_executed'])
+            self.assertIs(out['native_executed'], False)
+            self.assertEqual(out['native_final_observed_count'], 0)
             self.assertFalse(out['canonical_gate_pass'])
             self.assertEqual(len((work / live.PROGRESS).read_text().splitlines()), 12)
             self.assertEqual(len((work / live.RAW).read_text().splitlines()), 6)

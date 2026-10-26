@@ -1,0 +1,102 @@
+name: V13 Run578 independent true-live native attribution software review
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run578-live-native-attribution.yml'
+      - 'v13/code/scripts/run575_true_live_pilot.py'
+      - 'v13/code/tests/test_run575_true_live_pilot.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run578-live-attribution/**'
+permissions:
+  contents: read
+jobs:
+  no-false-native:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run578-true-live-attribution-review-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Bind independent prereg and source-only candidate
+        id: pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN578_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run578-live-attribution/PREREG.md)" = e3265f53a657beff68aa4174f9d4396aecb69cfb
+          test "$(git hash-object v13/code/scripts/run575_true_live_pilot.py)" = a838125bb5a9ce5aae67f8c7d7946ead20f3a97d
+          test "$(git hash-object v13/code/tests/test_run575_true_live_pilot.py)" = 95788d33d59e48f8f8116069c162c6fe9fc52e54
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN578_HOST.txt"
+      - name: Isolated software-only dependencies
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run578venv"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run578venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN578_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN578_DEPS_EXIT.txt"
+          exit 0
+      - name: Run original plus adversarial source-only tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run578venv/bin/python" -m compileall -q scripts/run575_true_live_pilot.py tests/test_run575_true_live_pilot.py > "$RUNNER_TEMP/RUN578_COMPILE_RAW.log" 2>&1
+          cr=$?
+          echo "$cr" > "$RUNNER_TEMP/RUN578_COMPILE_EXIT.txt"
+          if [ "$cr" -eq 0 ] && [ "$(cat "$RUNNER_TEMP/RUN578_DEPS_EXIT.txt")" = 0 ]; then
+            timeout 180s "$RUNNER_TEMP/run578venv/bin/python" -m unittest -v tests.test_run575_true_live_pilot > "$RUNNER_TEMP/RUN578_TEST_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=1
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN578_TEST_EXIT.txt"
+          if [ "$rc" -ne 0 ] && [ -f "$RUNNER_TEMP/RUN578_TEST_RAW.log" ]; then
+            echo "RUN578_SOURCE_RED; original raw retained"
+            tail -n 100 "$RUNNER_TEMP/RUN578_TEST_RAW.log"
+          fi
+          exit 0
+      - name: Official privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN578_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN578_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close original raw even RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN578_*' ! -name RUN578_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN578_SHA256SUMS.txt
+      - name: Preserve source-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run578-no-false-native-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN578_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.pins.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN578_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN578_COMPILE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN578_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN578_PRIVACY_EXIT.txt")" = 0
