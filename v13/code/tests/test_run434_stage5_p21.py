@@ -165,5 +165,26 @@ class Run434Stage5Tests(unittest.TestCase):
         self.assertFalse((self.root / "work").exists())
 
 
+    def test_cli_stage4_report_restores_168_without_native(self):
+        # Real argparse/main integration, not just a direct stage5() call.
+        # Run435 failed before native because the inherited CLI still
+        # required --stage3-report while stage5 expects --stage4-report.
+        report_path = self.root / "actual-stage4-report.json"
+        report_path.write_text(json.dumps(self.report))
+        output = self.root / "run434-cli-result.json"
+        argv = ["run434_stage5_p21.py", "--export", str(self.source),
+                "--stage4-report", str(report_path),
+                "--work", str(self.root / "work"),
+                "--output", str(output)]
+        with self.audit(), mock.patch("sys.argv", argv), \
+             mock.patch.object(stage.resume, "run") as native:
+            with self.assertRaises(SystemExit) as done:
+                stage.main()
+        self.assertEqual(done.exception.code, 0)
+        native.assert_not_called()
+        self.assertEqual(json.loads(output.read_text())["status"],
+                         "STAGE5_READY_NO_NATIVE")
+
+
 if __name__ == "__main__":
     unittest.main()
