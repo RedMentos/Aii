@@ -5,6 +5,7 @@ Does not change Cognition/Context OS production, frozen cohorts or Age gates.
 The output is a list of source-index/character-span pointers, never generated
 facts. Zero relevant evidence means abstain, not a fabricated quotation.
 """
+import hashlib
 import re
 from v13.cognition import sentence_spans
 
@@ -57,8 +58,10 @@ def ranked_quote_choices(sources, goal, cap=24):
 def diagnostic(sources, goal, cap=24):
     choices = ranked_quote_choices(sources, goal, cap)
     return {'schema':'V13_RUN481_B2_RANKED_EXACT_QUOTE_CANDIDATE_V1',
+            'goal_sha256':hashlib.sha256(goal.encode('utf-8')).hexdigest(),
             'choices':[{'source_index':si,'char_start':a,'char_end':b,
-                        'text':sources[si][a:b]} for si,a,b in choices],
+                        'text':sources[si][a:b],
+                        'source_sha256':hashlib.sha256(sources[si].encode('utf-8')).hexdigest()} for si,a,b in choices],
             'status':'SHADOW_SOURCE_ONLY_NO_AUTHORITY',
             'canonical_gate_pass':False,'latent_authority':0,
             'step2_exit':'UTILITY_FAIL','b3_l1':'FAIL',
