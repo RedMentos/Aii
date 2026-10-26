@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from v13.store import Store
+from v13.config import initialize
 from v13.agi.goals import GoalStore
 
 
@@ -11,6 +12,7 @@ class Run585GoalWakeScope(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.home = Path(self.tmp.name)
+        initialize(self.home)
         self.store = Store(self.home)
         self.goals = GoalStore(self.store, clock=lambda: 1700000000.)
 
