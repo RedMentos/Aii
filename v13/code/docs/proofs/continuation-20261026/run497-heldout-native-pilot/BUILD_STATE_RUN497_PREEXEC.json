@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN497_NATIVE_HELDOUT10_PREEXEC_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run497 serialized GitHub Actions Linux-native pilot; do not start a competing native job",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/run497-heldout10-native-pilot-20261026",
+  "base_branch": "codex/run496-heldout10-native-pilot-source-20261026",
+  "base_sha": "69a2a7b25c2953fddf7793a58f8f2c57c0e560eb",
+  "review_pr": 495,
+  "head_sha_at_pr_open": "2223ee340733f7092af01678fd674ae5e6ae0baf",
+  "preregistration": {
+    "path": "v13/code/docs/proofs/continuation-20261026/run497-heldout-native-pilot/PREREG.md",
+    "blob_sha": "543ca3153558df8a0de161768c0cd824121df3e1"
+  },
+  "workflow": {
+    "path": ".github/workflows/run497-heldout-native-pilot.yml",
+    "blob_sha": "7590148eb13e53610b0bd3bd7a87cb610b3afecd",
+    "run_id": 40302045367,
+    "status_at_checkpoint": "IN_PROGRESS",
+    "concurrency_group": "v13-native-c3-run131-serialized",
+    "trigger": "PR_OPENED_ONCE",
+    "timeout_minutes": 100
+  },
+  "source_contract": {
+    "run496_script_blob": "fd47ae42ab9505940a64864c73860b995f18754d",
+    "run491_fixture_script_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "full_fixture_sha256": "c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63",
+    "pilot_fixture_sha256": "816c3a4cc8e8c85a7188b5c4524b13638d6bd4d353c782d296a363366702f774",
+    "pilot_ids": [
+      "Vesper",
+      "Willow"
+    ],
+    "arm": "C",
+    "seed": 31,
+    "planned_rows": 14,
+    "full_cohort_planned_rows": 1050
+  },
+  "prerequisite_evidence": {
+    "run494_live_public_hf_metadata_green": 40300505059,
+    "run496_source_only_green": 40301555638,
+    "run496_source_artifact_sha256": "3b13f52509add1ffffec2977b4917fa66a60a007e2dfa8c18e4115ce45a5cf90",
+    "actual_model_bytes_verified": "PENDING",
+    "native_execution": "PENDING"
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Native job 40302045367 must complete and upload raw artifacts before any Linux-native claim.",
+    "Bootstrap may fail on model network, license metadata, disk/RSS or runner shared libraries; preserve observed RED without changing registered hashes.",
+    "Even 14 verified rows are pilot only; remaining 1036 rows and full acceptance gates stay unexecuted."
+  ],
+  "exact_next_command": "Poll GitHub Actions run 40302045367 and jobs; inspect source/deps/bootstrap/native/audit exits and raw SHA-closed artifacts. On RED preserve failed attempt and fix in a new review branch, not by overwriting the opened PR. On GREEN independently download and verify raw/safe artifacts, save private Library backup and BUILD_STATE_RUN497_FINAL, then select next canonical package. Do not start a competing native job."
+}
