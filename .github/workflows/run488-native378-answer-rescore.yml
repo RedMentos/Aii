@@ -1,0 +1,122 @@
+name: V13 Run488 original native378 answer rescore
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run488-native378-answer-rescore.yml'
+      - 'v13/code/scripts/run488_native378_independent_rescore.py'
+      - 'v13/code/tests/test_run488_native378_independent_rescore.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  rescore:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run488-native378-independent-rescore-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pin original scoring and new auditor source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run487_native378_independent_raw_audit.py)" = '9bbb0ab468268a5e7bef70fb507b9c893e3ec55d'
+          test "$(git hash-object v13/code/scripts/run488_native378_independent_rescore.py)" = 'abe4f57edf8b5995298824894dc0199fa539fcc4'
+          test "$(git hash-object v13/code/tests/test_run488_native378_independent_rescore.py)" = '43b90374dcef2661575745d4098f5816fb76de99'
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = 'fae7aed612108a554d8566b2917ebf31022df423'
+          test "$(git hash-object v13/code/v13/utility.py)" = 'f4a92dab9c4a40761d64394cdca1c052e9a76bfd'
+          gh api repos/RedMentos/Aii/actions/artifacts/12633269066 --jq '{id,digest,expired}' > "$RUNNER_TEMP/RUN488_ORIGINAL_META.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          m=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN488_ORIGINAL_META.json').read_text())
+          assert m=={'id':12633269066,'digest':'sha256:a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe','expired':False}
+          PY
+      - name: Adversarial source-only rescore unit tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s v13/code/tests -p 'test_run488_native378_independent_rescore.py' -v > "$RUNNER_TEMP/RUN488_UNIT_RAW.log" 2>&1
+          python3 -m py_compile v13/code/scripts/run488_native378_independent_rescore.py
+      - name: Download unchanged original safe no-model ZIP
+        id: download
+        run: |
+          set -uo pipefail
+          set +e
+          curl -fsSL --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12633269066/zip' -o "$RUNNER_TEMP/run488-original-safe378.zip"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe  $RUNNER_TEMP/run488-original-safe378.zip" | sha256sum -c - > "$RUNNER_TEMP/RUN488_SAFE_SHA.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN488_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Rescore original 378 native answers from first principles
+        id: rescore
+        if: steps.download.outputs.rc == '0'
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/run488_native378_independent_rescore.py "$RUNNER_TEMP/run488-original-safe378.zip" > "$RUNNER_TEMP/RUN488_RESCORE.json" 2> "$RUNNER_TEMP/RUN488_RESCORE_RAW.log"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' > "$RUNNER_TEMP/RUN488_ASSERT_RAW.log" 2>&1
+          import json,math,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN488_RESCORE.json').read_text())
+          assert d['status']=='ORIGINAL_378_ANSWERS_RESCORED' and d['rows']==378
+          assert d['fixture_counts']=={n:63 for n in ('Alder','Beacon','Cypress','Delta','Ember','Fable')}
+          assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          assert d['b3_l1']=='FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          means=d['arm_mean_answer_utility']
+          assert math.isclose(means['P']['both_exact'],.5972222222222222,abs_tol=1e-12)
+          assert math.isclose(means['O']['both_exact'],.5092592592592593,abs_tol=1e-12)
+          assert math.isclose(means['S']['both_exact'],.4212962962962963,abs_tol=1e-12)
+          assert set(d['arm_field_accuracy'])=={'O','P','S'}
+          assert all(0<=v<=1 for a in d['arm_field_accuracy'].values() for b in a.values() for v in b.values())
+          print('RUN488_ORIGINAL_NATIVE378_ANSWER_TO_ORACLE_SCORE_CONFIRMED_NO_GATE_PROMOTION')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN488_RESCORE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN488_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN488_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence with SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN488_*' ! -name RUN488_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN488_SHA256SUMS.txt
+      - name: Preserve original raw test logs even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run488-native378-answer-rescore-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN488_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce rescore and privacy without native/model inference
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/RUN488_RESCORE_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN488_RESCORE_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN488_PRIVACY_EXIT.txt")" = '0'

@@ -1,0 +1,86 @@
+{
+  "schema": "V13_RUN488_NATIVE378_INDEPENDENT_ANSWER_RESCORE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Codex Run488 isolated source-only answer-to-oracle audit; no native/model job ownership",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/run488-native378-independent-rescore-20261026",
+  "base_ref": "codex/run487-native378-raw-stdlib-review-20261026",
+  "base_sha_at_branch_creation": "0d599b04dfd49400ef776ce4321916da4cde68f5",
+  "review_pr": 486,
+  "implementation": [
+    "Independent stdlib answer->oracle scorer, six frozen Run394 fixture oracles and revision precedence; checks 378 original native answers against all stored per-field checks and utility values.",
+    "Recomputes all 3x7 arm/variant means and field-level accuracy; requires exact agreement with separately pinned Run487 raw aggregates.",
+    "Ten adversarial unit tests; one-shot SHA-pinned original no-model artifact CI; original cohort, runtime, model and seed hashes untouched."
+  ],
+  "source_blobs": {
+    "v13/code/scripts/run488_native378_independent_rescore.py": "abe4f57edf8b5995298824894dc0199fa539fcc4",
+    "v13/code/tests/test_run488_native378_independent_rescore.py": "43b90374dcef2661575745d4098f5816fb76de99",
+    ".github/workflows/run488-native378-answer-rescore.yml": "cb3f752a22134f533ab87ee03180591f614852bf",
+    "v13/code/scripts/run487_native378_independent_raw_audit.py": "9bbb0ab468268a5e7bef70fb507b9c893e3ec55d",
+    "v13/code/scripts/run394_step2_fresh.py": "fae7aed612108a554d8566b2917ebf31022df423",
+    "v13/code/v13/utility.py": "f4a92dab9c4a40761d64394cdca1c052e9a76bfd"
+  },
+  "original_evidence": {
+    "native_run_id": 40281793150,
+    "safe_artifact_id": 12633269066,
+    "safe_zip_sha256": "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe",
+    "raw_artifact_id": 12633398520,
+    "raw_zip_sha256": "24268aede979c0e122ed05afe01141f61546b8077312ae42ce52f5c8ea4f65bf"
+  },
+  "validation": {
+    "first_attempt_failed_preserved": {
+      "run_id": 40292717437,
+      "raw_artifact_id": 12636940936,
+      "cause": "CI compared all-seven-variant average with both_exact-only baseline; raw 378 rescore and privacy had already passed."
+    },
+    "second_attempt_failed_preserved": {
+      "run_id": 40292904080,
+      "cause": "Source SHA pin changed before corresponding workflow assertion was updated."
+    },
+    "verified_green": {
+      "run_id": 40292918622,
+      "source_head": "9ed24e4c0fe09b7bdcbe3ac8b415841a8992892d",
+      "result": "378/378 original native answers independently re-scored, all per-field stored checks matched; original arm/variant means matched Run487; ten unit tests PASS; privacy CLEAN",
+      "artifact_id": 12636801493,
+      "artifact_zip_sha256": "a54e9023fe05272d2ad4c4f3a30d3eb6c2a273119466068a18df7827b89c6d48"
+    },
+    "focused_ci": {
+      "run_id": 40292918636,
+      "result": "SUCCESS"
+    }
+  },
+  "observed": {
+    "pointer_both_exact": 0.5972222222222222,
+    "pointer_b1_only": 0.7037037037037037,
+    "pointer_b2_only": 0.09722222222222222,
+    "pointer_same_policy_dual": 0.6574074074074074,
+    "pointer_both_exact_action_field_accuracy": 0.4444444444444444,
+    "pointer_both_exact_project_field_accuracy": 0,
+    "pointer_both_exact_A_cost_field_accuracy": 0.7777777777777778,
+    "pointer_both_exact_B_cost_field_accuracy": 0.7777777777777778,
+    "interpretation": "B2-only option-detail recovery weak; dual path loses some B1 option accuracy; no proven complementarity."
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-26/Run488/RUN488_ANSWER_RESCORE_40292918622.zip",
+    "library_file_id": "libfile_6cad10ac3bb48191a9d1e6684543e9df",
+    "sha256": "a54e9023fe05272d2ad4c4f3a30d3eb6c2a273119466068a18df7827b89c6d48",
+    "verification": "materialized from private Library and byte-compared against original downloaded CI artifact",
+    "anyone_writable_drive_used": false
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Exploratory 378-row three-seed cohort is not canonical ten-episode STEP2 acceptance.",
+    "What fraction of native B1/B2 quote transport can a deterministic JEF fixed reader use without C3 extracting values?",
+    "Native sparse expert training, real receiver calibration and Redmi sustained proofs remain outstanding."
+  ],
+  "exact_next_command": "Create isolated Run489 shadow replay from the same pinned safe ZIP: read original SHA-bound source consumer_messages, apply existing v13.agi.eligibility.fixed_read + decide with verified B1/B2 quotes and current-source precedence, independently score against frozen Run394 oracles; preregister metrics and no-gate-promotion before CI. Do not modify frozen original rows or production runtime."
+}
