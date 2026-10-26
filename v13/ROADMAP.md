@@ -1472,3 +1472,8 @@ Sicherheits-/Moralregeln sind nie änderbar. Alles vorregistriert, Autorität 0 
 - `v13/bodyq.py` + Schalter `body_question_mode='derived'` (Standard aus, Kettenglied `body_question_derived`). Vorregistriert `0b14fd6`, Seeds 26–28.
 - CD hatte in 2 von 3 Läufen ungültiges Körper-JSON (abgeschnittene Zitate), C/CL nie → Werkzeug-Replay verweigert, Urteil NOT_SUPPORTED. Seed 26 beschreibend: CD .45 zwischen C .325 und CL .55; B1-Optionszitate 4 gegen CL 8.
 - Folge: Frage muss die Merkmale nennen (aus dem ausgelösten Werkzeug, nicht aus der Nachricht); ungültige Körper-Angebote abfangen. Befund `code/docs/proofs/continuation-20261026/step2-z2f-derived/BEFUND.md`.
+
+### WP-Z2g Körper-Frage aus dem ausgelösten Werkzeug (Cloud, Modelle) — ERLEDIGT 2026-10-26, **TOOL_QUESTION_SUPPORTED** (Thread „STEP2-Nutzen Engpass“, Branch `claude/project-thread-dq33gk`)
+- `body_question_mode='tool'` (Standard aus): `bodyq.tool_focus` fragt die Körper nur, wenn `eligibility.question()` auslöst, mit `eligibility.BODY_QUESTIONS`. Kettenglied `body_question_tool`. Vorregistriert `09c7364`, Seeds 29–31.
+- both_exact: C .342, fester Text .622, **Werkzeug-Frage .608**; CT − C +.27 [+.09, +.46], CT − CL −.01. 0 falsch, keine Strukturfehler.
+- Offen: Nutzerentscheidung Einschalten (mit dem Eignungs-Werkzeug im Handy-Paket). Befund `code/docs/proofs/continuation-20261026/step2-z2g-tool/BEFUND.md`.

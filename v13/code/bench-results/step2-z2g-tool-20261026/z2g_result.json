@@ -1,0 +1,415 @@
+{
+  "kind": "STEP2_Z2G_TOOL_QUESTION",
+  "seeds": [
+    29,
+    30,
+    31
+  ],
+  "verdict": "TOOL_QUESTION_SUPPORTED",
+  "criteria": {
+    "1_tool_beats_none": true,
+    "2_keeps_specific_gain": true,
+    "3_no_wrong_committed": true,
+    "4_structurally_complete": true
+  },
+  "ct_minus_c": {
+    "mean": 0.2666666666666667,
+    "ci95": [
+      0.08611111111111111,
+      0.4638888888888889
+    ],
+    "episodes": 10,
+    "seeds": 3
+  },
+  "ct_minus_cl": {
+    "mean": -0.013888888888888885,
+    "ci95": [
+      -0.10555555555555554,
+      0.07777777777777777
+    ],
+    "episodes": 10,
+    "seeds": 3
+  },
+  "cl_minus_c": {
+    "mean": 0.28055555555555556,
+    "ci95": [
+      0.1110416666666667,
+      0.46944444444444444
+    ],
+    "episodes": 10,
+    "seeds": 3
+  },
+  "mean": {
+    "C": {
+      "b1_only": 0.342,
+      "b2_only": 0.25,
+      "both_exact": 0.342
+    },
+    "CL": {
+      "b1_only": 0.569,
+      "b2_only": 0.189,
+      "both_exact": 0.622
+    },
+    "CT": {
+      "b1_only": 0.597,
+      "b2_only": 0.194,
+      "both_exact": 0.608
+    }
+  },
+  "wrong_committed": {
+    "C": 0,
+    "CL": 0,
+    "CT": 0
+  },
+  "quotes": {
+    "C": [
+      {
+        "b1_only": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 4
+        },
+        "b2_only": {
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 0
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 4,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 2,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 0
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 2,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 0
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 5
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 3,
+          "B2_GIST:rules": 1,
+          "B2_GIST:options": 1
+        }
+      },
+      {
+        "b1_only": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 5
+        },
+        "b2_only": {
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 7,
+          "B2_GIST:rules": 1,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 5,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 2
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 7,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 6
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 4,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 2
+        }
+      },
+      {
+        "b1_only": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 3
+        },
+        "b2_only": {
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 1
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 5,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 5,
+          "B2_GIST:rules": 4,
+          "B2_GIST:options": 0
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 4,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 1
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 2,
+          "B1_DETAIL:options": 5,
+          "B2_GIST:rules": 0,
+          "B2_GIST:options": 1
+        }
+      }
+    ],
+    "CL": [
+      {
+        "b1_only": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9
+        },
+        "b2_only": {
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 8,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 1
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 0
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 2
+        }
+      },
+      {
+        "b1_only": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 9
+        },
+        "b2_only": {
+          "B2_GIST:rules": 4,
+          "B2_GIST:options": 1
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 8,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 1
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 4,
+          "B2_GIST:options": 1
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 7,
+          "B2_GIST:rules": 5,
+          "B2_GIST:options": 0
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 8
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 8,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 1
+        }
+      },
+      {
+        "b1_only": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10
+        },
+        "b2_only": {
+          "B2_GIST:rules": 4,
+          "B2_GIST:options": 0
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 1
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 0
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 1
+        }
+      }
+    ],
+    "CT": [
+      {
+        "b1_only": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9
+        },
+        "b2_only": {
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 2
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 8,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 2
+        }
+      },
+      {
+        "b1_only": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9
+        },
+        "b2_only": {
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 1
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 1
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 1
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 1
+        }
+      },
+      {
+        "b1_only": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9
+        },
+        "b2_only": {
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 1
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 4,
+          "B2_GIST:options": 1
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 1,
+          "B2_GIST:options": 2
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 1
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 1,
+          "B2_GIST:options": 2
+        }
+      }
+    ]
+  },
+  "decision_rule": "Seeds 29/30/31 x 10 Z2 episodes, tool-replay utility of variant both_exact, cluster bootstrap over episodes (10000, seed 20261021). TOOL_QUESTION_SUPPORTED iff (1) CT - C mean > 0 with 95% CI lower bound > 0, (2) CT - CL mean >= -0.05 (tool question keeps the specific gain up to .05), (3) 0 wrong committed tool rows in CT, (4) all CT runs structurally complete (no invalid body JSON). Reported, not part of the verdict: b1_only/b2_only, option/rule quote counts, CI of CT - CL."
+}
