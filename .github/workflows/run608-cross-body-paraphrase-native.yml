@@ -7,7 +7,8 @@ on:
       - '.github/workflows/run608-cross-body-paraphrase-native.yml'
       - 'v13/code/scripts/run614_independent_native_paraphrase.py'
       - 'v13/code/tests/test_run614_independent_native_paraphrase.py'
-      - 'v13/code/docs/proofs/continuation-20261026/run614-independent-native-paraphrase/**'
+      - 'v13/code/docs/proofs/continuation-20261026/run614-independent-native-paraphrase/RUN614_COHORT.json'
+      - 'v13/code/docs/proofs/continuation-20261026/run614-independent-native-paraphrase/PREREG.md'
 permissions:
   contents: read
 concurrency:
@@ -15,6 +16,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   native-paraphrase:
+    if: ${{ !startsWith(github.event.head_commit.message, 'Run614 CI path guard') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
