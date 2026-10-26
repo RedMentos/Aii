@@ -8,7 +8,7 @@ from pathlib import Path
 import run394_step2_fresh as r394
 import run397_step2_resume as r397
 from run396_step2_pilot_audit import load, sha, validated_rows
-from v13.models import catalog
+import run402_stage_restore as restore
 
 VARIANTS = tuple(r397.VARIANTS)
 ARMS = tuple(r394.ARMS)
@@ -71,7 +71,9 @@ def _audit(work):
     require(progress.get("manifest_sha256") == sha(manifest_path),
             "PROGRESS_MANIFEST_HASH_MISMATCH")
     expected_rows = {(fixture, variant) for fixture in FIXTURES for variant in VARIANTS}
-    runner_sha = catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+    # Run403 is a postflight of the Run401-origin cohort: bind to the
+    # attested installed executable, not the distinct release ZIP SHA.
+    runner_sha = restore.RUN401_EXECUTABLE_SHA256
     all_rows = {}
     bound = {}
     for seed in SEEDS:
