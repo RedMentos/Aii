@@ -1246,7 +1246,7 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 ### WP-Z2k Jüngster Regelwert deterministisch statt von C3 (Cloud) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `7087f616`)
 - `rule_reader='newest_quoted'`: **`Z2K_READER_CONFIRMED`** — S4 exakt 8 → 36/210 (REVISED 0 → 22, TWICE 0 → 6), +.93 [+.43, +1.50] je Episode, 0 falsch, 0 verloren; A4 ohne Gewinn. Befund `code/docs/proofs/continuation-20261026/step2-z2k-reader/BEFUND.md`.
 
-### WP-Z2l Ganze Kette gegen STEP2-Kriterien mit Ein-Körper-Kontrolle (Cloud, Modelle) — OFFEN (gleicher Thread/Branch)
+### WP-Z2l Ganze Kette gegen STEP2-Kriterien mit Ein-Körper-Kontrolle (Cloud, Modelle) — IN ARBEIT 2026-10-26 (gleicher Thread/Branch)
 - 1536 + `b2_quote_choices=sources` + Wächter + Leser; zwei Körper vs. ein Körper zwei Zustände; vorregistriert, frische Episoden, neue Seeds.
 
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
