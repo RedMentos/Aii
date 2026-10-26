@@ -1,0 +1,42 @@
+{
+  "schema": "V13_RUN516_B2_FIVE_STAGE_AGGREGATE_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run516-b2-60-aggregate-source-20261026",
+  "base_branch": "codex/run515-b2-native-p00-20261026",
+  "base_sha": "24f5f802b700c82f9e57f59bd3345dd6dd1e4f53",
+  "owner": {
+    "run515_pr": 513,
+    "run515_actions": 40313344309,
+    "status": "IN_PROGRESS_NATIVE_HEAVY",
+    "this_branch": "SOURCE_ONLY_NO_NATIVE"
+  },
+  "scope": "Exact five independent Run513 postflight receipts to frozen Run510 60-row paired metric, no partial scoring",
+  "source_blobs": {
+    "prereg": "ee7a288b9a322fd99a6dc92ab5812f07e017af97",
+    "aggregator": "b5531e49288ac199673a05a67763999b2b589e1a",
+    "tests": "5e4d8f504ee0cf541b4f20e85a252df0e2cd44f7"
+  },
+  "tests": "SOURCE_ONLY_CI_PENDING",
+  "features": [
+    "Re-audit five source/ref/offset stage receipts before accepting",
+    "Reject altered persisted postflight/metric rows",
+    "Require exact 60 registered keys, no missing/duplicates",
+    "Run frozen Run510 score only after full 60",
+    "Exclusive output files and negative gates"
+  ],
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "blockers": [
+    "Only Run515 p00 native stage started, remaining p01-p04 not executed",
+    "No Redmi evidence",
+    "No Body-JEPA native sparse training"
+  ],
+  "next_command": "Open draft PR, verify source-only CI and raw hashes; independently review Run515 native Actions/partial RED or GREEN as soon as it finishes, without overlapping heavy native owners.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
