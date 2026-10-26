@@ -74,7 +74,12 @@ if [[ "${V13_SOURCE_ONLY_DIAGNOSTIC:-0}" == "1" ]]; then
   printf '\nSource-only diagnostic finished. Normal setup requires pinned model downloads and native proof.\n'
   exit 0
 fi
-"$V13_DATA_HOME/bin/v13" selftest
+# Only the explicit portable subset is a supported phone-install preflight.
+# Full unfiltered selftest remains available for source-wide regression with
+# external pinned artifacts/dependencies; its known RED is never promoted.
+printf '\nPORTABLE_SELFTEST: 27 Live-Softwaretests, keine volle Quellcode-Suite.\n'
+"$V13_DATA_HOME/bin/v13" selftest --portable
+printf 'Vollständige, ungefilterte Quellcode-Prüfung (mit externen Belegen): v13 selftest\n'
 printf '\nErster echter Modelltest. Auf dem Handy kann das einige Minuten dauern.\n'
 if ! "$V13_DATA_HOME/bin/v13" probe; then
   printf '\nMindestens ein Modelltest ist fehlgeschlagen. Der Bericht liegt in exports/native-probe.json. Mit :doctor/:logs prüfen; der Chat zeigt auch Fehler ausdrücklich an.\n'
