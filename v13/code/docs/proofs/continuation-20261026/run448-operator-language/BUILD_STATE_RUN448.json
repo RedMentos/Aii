@@ -1,0 +1,45 @@
+{
+  "schema": "V13_RUN448_OPERATOR_LANGUAGE_CLOSED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "branch": "codex/automation11-language-operator-20261026",
+  "base_head": "384a4aa1bef76460f24552fa4303d614263c4f62",
+  "tested_source_head": "63aa5174bec52c00d53cb7bc3189253046bcdf87",
+  "pull_request": 447,
+  "source_only_actions": {
+    "run_id": 40269528186,
+    "conclusion": "success",
+    "tests": "13/13 PASS",
+    "privacy": "CLEAN",
+    "evidence_level": "real Runtime/Operator/SQLite/config, no installed model",
+    "raw_artifact_id": 12627424303,
+    "raw_artifact_sha256": "3d7dc3fb02a5c56f14d0a6013b26ec5aaa17023787e0f2e521a4fc21e5466445"
+  },
+  "source_sha256": {
+    "v13/code/v13/operator.py": "1162a800c19bc3a3061520cc812cf99d8c3c7016c037d958b0120c5cfa475c7f",
+    "v13/code/docs/BEFEHLE.md": "7660be4959a9db161d4b9386398e34504b17d546e243baff5ff7e4529ea7ac45",
+    "v13/code/tests/test_run448_operator_language.py": "128a6cc2f790d1ed8e0a5b70223c19e7f3d1db287587e5fabf4491b2c86c4b90"
+  },
+  "functional_result": "Explicit operator-only :language en|de, English default, persisted across restart; invalid, non-TTY and busy mutation refused; no training implied.",
+  "prerequisites": "No models or device required for this software test. Native language answer quality requires pinned installed model and separate test; Redmi not available here.",
+  "original_negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "run447_inherited": {
+    "head": "384a4aa1bef76460f24552fa4303d614263c4f62",
+    "actions": 40269094418,
+    "conclusion": "success",
+    "actual_rows": 210
+  },
+  "open_questions": [
+    "Model-facing German output quality unmeasured; language switch is not evidence of language learning.",
+    "Run446 full-repository offline suite is RED (3430 tests; 5 failures, 84 errors, 19 skips) with historical source identity and stage1 receipt mismatches; classify without changing frozen pins.",
+    "Run447 native210 is only partial 210/378; next native arm S_s21 must respect exclusive owner."
+  ],
+  "next_command": "Inspect exact-head Run448 CI after checkpoint. Then continue independent functional blueprint package or classify Run446 full-suite RED from its raw artifact (Actions 40268931125) without altering frozen cohort; keep all gates negative."
+}
