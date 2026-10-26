@@ -1,0 +1,452 @@
+{
+ "prereg_sha256": "8f3be359a76f0825fe350800825b73bb0b763fd4b49835e14a55b26f712d3a04",
+ "fresh_sha256": "45ebb20546875b7893e5f54bfd4b04179f18ff59d8d9f8904aa5e2cf5fd23082",
+ "summary": {
+  "all": {
+   "n": 60,
+   "correct": {
+    "c3_alone": 18,
+    "tool_model": 23,
+    "tool_fixed": 29,
+    "tool_fixed_first": 59
+   },
+   "wrong_committed": {
+    "c3_alone": 37,
+    "tool_model": 30,
+    "tool_fixed": 25,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 5,
+    "tool_model": 7,
+    "tool_fixed": 6,
+    "tool_fixed_first": 1
+   },
+   "turn_s_median": {
+    "c3_alone": 2.01,
+    "tool_model": 3.01,
+    "tool_fixed": 2.01,
+    "tool_fixed_first": 1.61
+   },
+   "pool_gets": {
+    "c3_alone": 90,
+    "tool_model": 150,
+    "tool_fixed": 90,
+    "tool_fixed_first": 90
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 48,
+    "tool_fixed": 60,
+    "tool_fixed_first": 60
+   },
+   "correction_applied": {
+    "tool_model": 43,
+    "tool_fixed": 31,
+    "tool_fixed_first": 1
+   },
+   "executed": {
+    "tool_model": 60,
+    "tool_fixed": 60,
+    "tool_fixed_first": 60
+   },
+   "decision_correct": {
+    "tool_model": 42,
+    "tool_fixed": 60,
+    "tool_fixed_first": 60
+   },
+   "decision_unknown": {
+    "tool_model": 33,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "values_exact": {
+    "tool_model": 34,
+    "tool_fixed": 60,
+    "tool_fixed_first": 60
+   },
+   "first_vs_model": {
+    "wins": 36,
+    "losses": 0,
+    "net": 36,
+    "sign_test_p": 0.0
+   },
+   "first_vs_c3": {
+    "wins": 41,
+    "losses": 0,
+    "net": 41,
+    "sign_test_p": 0.0
+   },
+   "fixed_vs_model": {
+    "wins": 7,
+    "losses": 1,
+    "net": 6,
+    "sign_test_p": 0.0703
+   }
+  },
+  "complete": {
+   "n": 15,
+   "correct": {
+    "c3_alone": 8,
+    "tool_model": 11,
+    "tool_fixed": 13,
+    "tool_fixed_first": 15
+   },
+   "wrong_committed": {
+    "c3_alone": 6,
+    "tool_model": 2,
+    "tool_fixed": 2,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 1,
+    "tool_model": 2,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "turn_s_median": {
+    "c3_alone": 2.41,
+    "tool_model": 2.71,
+    "tool_fixed": 1.51,
+    "tool_fixed_first": 1.61
+   },
+   "pool_gets": {
+    "c3_alone": 15,
+    "tool_model": 30,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 13,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "correction_applied": {
+    "tool_model": 5,
+    "tool_fixed": 2,
+    "tool_fixed_first": 0
+   },
+   "executed": {
+    "tool_model": 15,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "decision_correct": {
+    "tool_model": 12,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "decision_unknown": {
+    "tool_model": 3,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "values_exact": {
+    "tool_model": 12,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "first_vs_model": {
+    "wins": 4,
+    "losses": 0,
+    "net": 4,
+    "sign_test_p": 0.125
+   },
+   "first_vs_c3": {
+    "wins": 7,
+    "losses": 0,
+    "net": 7,
+    "sign_test_p": 0.0156
+   },
+   "fixed_vs_model": {
+    "wins": 2,
+    "losses": 0,
+    "net": 2,
+    "sign_test_p": 0.5
+   }
+  },
+  "missing": {
+   "n": 15,
+   "correct": {
+    "c3_alone": 0,
+    "tool_model": 1,
+    "tool_fixed": 0,
+    "tool_fixed_first": 15
+   },
+   "wrong_committed": {
+    "c3_alone": 15,
+    "tool_model": 12,
+    "tool_fixed": 12,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_model": 2,
+    "tool_fixed": 3,
+    "tool_fixed_first": 0
+   },
+   "turn_s_median": {
+    "c3_alone": 2.01,
+    "tool_model": 2.81,
+    "tool_fixed": 1.91,
+    "tool_fixed_first": 0.51
+   },
+   "pool_gets": {
+    "c3_alone": 15,
+    "tool_model": 30,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 15,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "correction_applied": {
+    "tool_model": 14,
+    "tool_fixed": 15,
+    "tool_fixed_first": 0
+   },
+   "executed": {
+    "tool_model": 15,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "decision_correct": {
+    "tool_model": 15,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "decision_unknown": {
+    "tool_model": 15,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "values_exact": {
+    "tool_model": 7,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "first_vs_model": {
+    "wins": 14,
+    "losses": 0,
+    "net": 14,
+    "sign_test_p": 0.0001
+   },
+   "first_vs_c3": {
+    "wins": 15,
+    "losses": 0,
+    "net": 15,
+    "sign_test_p": 0.0001
+   },
+   "fixed_vs_model": {
+    "wins": 0,
+    "losses": 1,
+    "net": -1,
+    "sign_test_p": 1.0
+   }
+  },
+  "earlier": {
+   "n": 15,
+   "correct": {
+    "c3_alone": 7,
+    "tool_model": 8,
+    "tool_fixed": 10,
+    "tool_fixed_first": 15
+   },
+   "wrong_committed": {
+    "c3_alone": 7,
+    "tool_model": 7,
+    "tool_fixed": 5,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 1,
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "turn_s_median": {
+    "c3_alone": 1.71,
+    "tool_model": 3.01,
+    "tool_fixed": 2.21,
+    "tool_fixed_first": 1.91
+   },
+   "pool_gets": {
+    "c3_alone": 30,
+    "tool_model": 45,
+    "tool_fixed": 30,
+    "tool_fixed_first": 30
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 13,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "correction_applied": {
+    "tool_model": 9,
+    "tool_fixed": 5,
+    "tool_fixed_first": 0
+   },
+   "executed": {
+    "tool_model": 15,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "decision_correct": {
+    "tool_model": 11,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "decision_unknown": {
+    "tool_model": 4,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "values_exact": {
+    "tool_model": 11,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "first_vs_model": {
+    "wins": 7,
+    "losses": 0,
+    "net": 7,
+    "sign_test_p": 0.0156
+   },
+   "first_vs_c3": {
+    "wins": 8,
+    "losses": 0,
+    "net": 8,
+    "sign_test_p": 0.0078
+   },
+   "fixed_vs_model": {
+    "wins": 2,
+    "losses": 0,
+    "net": 2,
+    "sign_test_p": 0.5
+   }
+  },
+  "override": {
+   "n": 15,
+   "correct": {
+    "c3_alone": 3,
+    "tool_model": 3,
+    "tool_fixed": 6,
+    "tool_fixed_first": 14
+   },
+   "wrong_committed": {
+    "c3_alone": 9,
+    "tool_model": 9,
+    "tool_fixed": 6,
+    "tool_fixed_first": 0
+   },
+   "unparsed": {
+    "c3_alone": 3,
+    "tool_model": 3,
+    "tool_fixed": 3,
+    "tool_fixed_first": 1
+   },
+   "turn_s_median": {
+    "c3_alone": 2.02,
+    "tool_model": 3.13,
+    "tool_fixed": 2.21,
+    "tool_fixed_first": 2.01
+   },
+   "pool_gets": {
+    "c3_alone": 30,
+    "tool_model": 45,
+    "tool_fixed": 30,
+    "tool_fixed_first": 30
+   },
+   "tool_wrong": {
+    "tool_model": 0,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "shown_correct": {
+    "tool_model": 7,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "correction_applied": {
+    "tool_model": 15,
+    "tool_fixed": 9,
+    "tool_fixed_first": 1
+   },
+   "executed": {
+    "tool_model": 15,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "decision_correct": {
+    "tool_model": 4,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "decision_unknown": {
+    "tool_model": 11,
+    "tool_fixed": 0,
+    "tool_fixed_first": 0
+   },
+   "values_exact": {
+    "tool_model": 4,
+    "tool_fixed": 15,
+    "tool_fixed_first": 15
+   },
+   "first_vs_model": {
+    "wins": 11,
+    "losses": 0,
+    "net": 11,
+    "sign_test_p": 0.001
+   },
+   "first_vs_c3": {
+    "wins": 11,
+    "losses": 0,
+    "net": 11,
+    "sign_test_p": 0.001
+   },
+   "fixed_vs_model": {
+    "wins": 3,
+    "losses": 0,
+    "net": 3,
+    "sign_test_p": 0.25
+   }
+  }
+ },
+ "max_kind_net_loss": -4,
+ "first_criteria": {
+  "a_net_and_sign": true,
+  "b_wrong_committed_not_higher": true,
+  "c_tool_never_wrong": true,
+  "d_no_kind_loses_more_than_2": true
+ },
+ "first_verdict": "FIRST_SUPPORTED",
+ "fixed_criteria": {
+  "decision_plus_5": true,
+  "tool_never_wrong": true
+ },
+ "fixed_verdict": "FIXED_READER_SUPPORTED",
+ "age_right_replaced_for_measurement": true,
+ "phone_measured": false,
+ "step2_changed": false
+}

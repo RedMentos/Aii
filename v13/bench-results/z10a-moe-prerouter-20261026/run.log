@@ -1,0 +1,28 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.46it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  4.83it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  6.73it/s]
+calibration {"B3.max_router_kl": 0.022217364248851543, "B3.max_expert_flip_rate": 0.16541666666666666, "B3.max_router_input_shift": 0.037959127402375725, "B3.max_residual_norm_shift": 0.0651016917615053, "report.expert_hist_shift": 0.042304368272927814, "report.shared_drift": 0.04668982782786191, "report.router_input_drift": 0.06894515417794245}
+update seed=13 arm=shared steps=22 new 5.860->0.500 old 2.9673->5.7111 shared_drift=0.2166 rin=0.3312 kl=0.2153 UNATTRIBUTED {}
+update seed=13 arm=router steps=25 new 5.860->4.690 old 2.9673->2.9888 shared_drift=0.0154 rin=0.0225 kl=0.0545 UNATTRIBUTED {}
+update seed=13 arm=experts steps=13 new 5.860->0.481 old 2.9673->3.3392 shared_drift=0.0410 rin=0.0686 kl=0.0179 UNATTRIBUTED {}
+update seed=13 arm=all steps=13 new 5.860->0.449 old 2.9673->8.6725 shared_drift=0.2040 rin=0.3446 kl=0.5900 PRE_ROUTER_BOTTLENECK {'shared': 0.9418619413387808, 'router': 0.026570443131351984, 'experts': 0.15029553763003692}
+update seed=21 arm=shared steps=23 new 5.318->0.496 old 2.9673->8.8555 shared_drift=0.2274 rin=0.3823 kl=0.5918 UNATTRIBUTED {}
+update seed=21 arm=router steps=25 new 5.318->4.321 old 2.9673->2.9965 shared_drift=0.0193 rin=0.0280 kl=0.0685 UNATTRIBUTED {}
+update seed=21 arm=experts steps=14 new 5.318->0.477 old 2.9673->3.2921 shared_drift=0.0347 rin=0.0586 kl=0.0132 UNATTRIBUTED {}
+update seed=21 arm=all steps=13 new 5.318->0.434 old 2.9673->4.1333 shared_drift=0.1337 rin=0.1953 kl=0.0611 PRE_ROUTER_BOTTLENECK {'shared': 0.7766710282179704, 'router': 0.16241469799054578, 'experts': 0.6688014966499436}
+update seed=34 arm=shared steps=25 new 5.680->0.546 old 2.9673->8.4184 shared_drift=0.2091 rin=0.3527 kl=0.5148 UNATTRIBUTED {}
+update seed=34 arm=router steps=25 new 5.680->4.523 old 2.9673->2.9894 shared_drift=0.0200 rin=0.0287 kl=0.0900 UNATTRIBUTED {}
+update seed=34 arm=experts steps=15 new 5.680->0.450 old 2.9673->3.3968 shared_drift=0.0342 rin=0.0570 kl=0.0150 UNATTRIBUTED {}
+update seed=34 arm=all steps=15 new 5.680->0.437 old 2.9673->7.6066 shared_drift=0.1864 rin=0.3238 kl=0.4257 PRE_ROUTER_BOTTLENECK {'shared': 0.9301780687056141, 'router': 0.06546465396668055, 'experts': 0.8063707826625942}
+update seed=13 arm=shared steps=12 new 5.860->0.437 old 2.9673->3.6468 shared_drift=0.0852 rin=0.1252 kl=0.0358 UNATTRIBUTED {}
+update seed=13 arm=router steps=25 new 5.860->4.401 old 2.9673->2.9813 shared_drift=0.0057 rin=0.0099 kl=0.0426 NO_FORGETTING {}
+update seed=13 arm=experts steps=11 new 5.860->0.529 old 2.9673->3.0748 shared_drift=0.0029 rin=0.0050 kl=0.0011 UNATTRIBUTED {}
+update seed=13 arm=all steps=7 new 5.860->0.463 old 2.9673->3.4702 shared_drift=0.0364 rin=0.0564 kl=0.0235 PRE_ROUTER_BOTTLENECK {'shared': 0.9457788378396407, 'router': 0.16836831687928508, 'experts': 0.42286611635228916}
+update seed=21 arm=shared steps=12 new 5.318->0.373 old 2.9673->3.8072 shared_drift=0.1023 rin=0.1525 kl=0.0335 UNATTRIBUTED {}
+update seed=21 arm=router steps=25 new 5.318->4.067 old 2.9673->2.9815 shared_drift=0.0055 rin=0.0096 kl=0.0423 NO_FORGETTING {}
+update seed=21 arm=experts steps=13 new 5.318->0.467 old 2.9673->3.1895 shared_drift=0.0091 rin=0.0129 kl=0.0021 UNATTRIBUTED {}
+update seed=21 arm=all steps=7 new 5.318->0.406 old 2.9673->3.4313 shared_drift=0.0419 rin=0.0646 kl=0.0238 PRE_ROUTER_BOTTLENECK {'shared': 0.9106732099464451, 'router': 0.07237992345084164, 'experts': 0.38506535625504523}
+update seed=34 arm=shared steps=11 new 5.680->0.430 old 2.9673->3.6162 shared_drift=0.0827 rin=0.1286 kl=0.0284 UNATTRIBUTED {}
+update seed=34 arm=router steps=25 new 5.680->4.369 old 2.9673->2.9869 shared_drift=0.0051 rin=0.0087 kl=0.0429 NO_FORGETTING {}
+update seed=34 arm=experts steps=12 new 5.680->0.474 old 2.9673->3.1280 shared_drift=0.0035 rin=0.0059 kl=0.0012 UNATTRIBUTED {}
+update seed=34 arm=all steps=7 new 5.680->0.477 old 2.9673->3.3629 shared_drift=0.0386 rin=0.0592 kl=0.0298 PRE_ROUTER_BOTTLENECK {'shared': 0.9424991129742019, 'router': 0.03695164019978603, 'experts': 0.2700313076348606}
+wrote /tmp/claude-0/z10a/z10a.json

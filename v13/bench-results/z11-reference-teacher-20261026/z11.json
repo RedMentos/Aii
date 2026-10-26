@@ -1,0 +1,3228 @@
+{
+ "kind": "V13_Z11_REFERENCE_TEACHER",
+ "seed": 23,
+ "verdict": "STEP4_EXIT_FAIL",
+ "criteria": {
+  "T1_self_fixed_before_teacher": {
+   "value": "60/60",
+   "pass": true
+  },
+  "T2_teacher_never_in_history": {
+   "pass": false
+  },
+  "T3_teacher_on_off_same_self": {
+   "value": "34/60",
+   "pass": false
+  },
+  "T4_preference_vs_fact_separate": {
+   "value": 10,
+   "pass": true
+  },
+  "T5_reproducible_fingerprint": {
+   "value": "10/20",
+   "pass": false
+  },
+  "T6_record_only_no_params": {
+   "pass": true
+  }
+ },
+ "descriptive": {
+  "self_passed": 46,
+  "teacher_passed": 37,
+  "teacher_better": 5,
+  "teacher_worse": 14,
+  "teacher_final": 60,
+  "mean_teacher_s": 34.3,
+  "mean_self_s": 10.9
+ },
+ "arm_meta": {
+  "off": {
+   "arm": "off",
+   "generation_before": "gen_b233242acdb7435da2b2aeaf6a50a296",
+   "generation_after": "gen_b233242acdb7435da2b2aeaf6a50a296",
+   "component_generations": 2,
+   "tables_before": 42,
+   "tables_after": 42
+  },
+  "on": {
+   "arm": "on",
+   "generation_before": "gen_7bf454f52a2640ddacb9cd957b10a321",
+   "generation_after": "gen_7bf454f52a2640ddacb9cd957b10a321",
+   "component_generations": 2,
+   "tables_before": 42,
+   "tables_after": 42
+  },
+  "on_repeat": {
+   "arm": "on_repeat",
+   "generation_before": "gen_988210cbf02548a7ab3a3f2f2fa684ed",
+   "generation_after": "gen_988210cbf02548a7ab3a3f2f2fa684ed",
+   "component_generations": 2,
+   "tables_before": 42,
+   "tables_after": 42
+  }
+ },
+ "teacher_model": {
+  "download_complete": true,
+  "exact_revision": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "files": {
+   "3605803b982cb64a.gguf": {
+    "path": "models/teacher/3605803b982cb64a.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "size": 2497281120
+   }
+  },
+  "license_accepted_by_user": null,
+  "license_id": "Apache-2.0",
+  "main_file": "3605803b982cb64a.gguf",
+  "model_id": "unsloth/Qwen3-4B-Instruct-2507-GGUF@a06e946b Q4_K_M",
+  "phone_runner_proof": null,
+  "quant_format": "GGUF; inspect runner log",
+  "roles": [
+   "TEACHER"
+  ]
+ },
+ "rows": [
+  {
+   "fixture": "summary00",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The calculation is: 87 + 51 + 66 = 204 euros. The stated total of 224 euros is wrong.",
+   "self_pass": true,
+   "self_s": 85.05,
+   "self_candidate_hash": "77e6413770d98be348108ef22b0146ff68343ac4736ee6a77b1472996f9dc380",
+   "self_sha": "77e6413770d98be348108ef22b0146ff68343ac4736ee6a77b1472996f9dc380",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary01",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The correct total is 150 euros (36 + 46 + 68).",
+   "self_pass": true,
+   "self_s": 10.65,
+   "self_candidate_hash": "34616e037ea354b35c69436b370b30acea739419891b182b0fe61afc4a41ae18",
+   "self_sha": "34616e037ea354b35c69436b370b30acea739419891b182b0fe61afc4a41ae18",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary02",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The calculation should be: 25 + 22 + 75 = 122 euros. The current total of 142 euros is wrong.",
+   "self_pass": true,
+   "self_s": 10.65,
+   "self_candidate_hash": "e95e277c7bb1311f055d7d96e237f572dbed1d52585babb7321e86247a120719",
+   "self_sha": "e95e277c7bb1311f055d7d96e237f572dbed1d52585babb7321e86247a120719",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary03",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The calculation should be: 57 + 19 + 38 = 94 euros. However, the user's request explicitly states \"Total: 94 euros\" as the expected answer, which contradicts the math (57+19=76; 76+38=114). Since the user's explicit number overrides the calculation, the correct total is 114 euros.",
+   "self_pass": true,
+   "self_s": 11.56,
+   "self_candidate_hash": "488685fe08a53d9e7c723e434606f5814726c0c39b42b532c59ffa465f407cde",
+   "self_sha": "488685fe08a53d9e7c723e434606f5814726c0c39b42b532c59ffa465f407cde",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary04",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The correct total is **186 euros** (91 + 39 + 58).\n\nThe discrepancy arises because the user's request does not explicitly state that the \"Total\" line must be calculated from the individual item values; it only lists the items and asks for the sum. Therefore, the summary line should reflect the actual sum of the listed expenses (91 + 39 + 58 = 186), not an arbitrary number like 198.",
+   "self_pass": false,
+   "self_s": 11.76,
+   "self_candidate_hash": "75c169fe3ffbc3b55415e82c9b0e6d0e32e9f74bcc6cc04968d8ecab64dce6ba",
+   "self_sha": "75c169fe3ffbc3b55415e82c9b0e6d0e32e9f74bcc6cc04968d8ecab64dce6ba",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary05",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The calculation is: 85 + 22 + 72 = 179 euros. The current total of 169 euros is wrong.",
+   "self_pass": true,
+   "self_s": 9.84,
+   "self_candidate_hash": "502161865b9d0cc33c9564e4892a7c013566af35a73ceadca0eb5e81ce739399",
+   "self_sha": "502161865b9d0cc33c9564e4892a7c013566af35a73ceadca0eb5e81ce739399",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary06",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The correct total is **149 euros** (35 + 34 + 80).\n\nThe discrepancy arises because the user's request does not explicitly state that the \"Total\" line must be calculated from the individual item amounts; it only lists the items and asks for the sum. Therefore, the summary line should reflect the actual total of the listed expenses rather than an arbitrary number like 159.",
+   "self_pass": true,
+   "self_s": 10.84,
+   "self_candidate_hash": "12813abd76f0d56bcd175683eb6433ee4e3670366441cd70cc6e304d6eaa6c59",
+   "self_sha": "12813abd76f0d56bcd175683eb6433ee4e3670366441cd70cc6e304d6eaa6c59",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary07",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The correct total is 152 euros (22 + 24 + 66).",
+   "self_pass": false,
+   "self_s": 10.04,
+   "self_candidate_hash": "a11a31f3a60ed2c91eb050cdbed0f406889fdd876d2fb34a918de3f445147abc",
+   "self_sha": "a11a31f3a60ed2c91eb050cdbed0f406889fdd876d2fb34a918de3f445147abc",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary08",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The correct total is **106 euros** (87 + 54 + 25).\n\nThe user's request is factually consistent with the provided numbers, but the final calculation and the summary line are missing from the input.",
+   "self_pass": false,
+   "self_s": 10.85,
+   "self_candidate_hash": "776f59949a2b49f4fcbc907aa71e6035e8f1cd715c77cf51f84c9e352fc47f00",
+   "self_sha": "776f59949a2b49f4fcbc907aa71e6035e8f1cd715c77cf51f84c9e352fc47f00",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary09",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The calculation should be: 70 + 82 + 39 = 191 euros. The current total of 201 euros is wrong.",
+   "self_pass": true,
+   "self_s": 9.83,
+   "self_candidate_hash": "7e90c8d6a847dec4fd042f2a17d6ec666f661692c7239290182cac378b7bfef5",
+   "self_sha": "7e90c8d6a847dec4fd042f2a17d6ec666f661692c7239290182cac378b7bfef5",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary10",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The correct total is 171 euros (75 + 42 + 54).",
+   "self_pass": true,
+   "self_s": 9.95,
+   "self_candidate_hash": "e733018bc30130b076486423a5782de6d16b3ee60104f83521aa727c9dc4ddf7",
+   "self_sha": "e733018bc30130b076486423a5782de6d16b3ee60104f83521aa727c9dc4ddf7",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary11",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The correct total is **122 euros** (33 + 69 + 16).\n\nThe current line \"Total: 98 euros\" appears to be a typo for \"Total: 122 euros\".",
+   "self_pass": false,
+   "self_s": 10.65,
+   "self_candidate_hash": "557f01e24320663db5cee7ce31435f424893ea5b51f2e4a4bf465dcbf9a695a6",
+   "self_sha": "557f01e24320663db5cee7ce31435f424893ea5b51f2e4a4bf465dcbf9a695a6",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary12",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The items listed are not real-world expenses; they are fictional items for a story. The actual expenses would be: projector 32 euros, snacks 40 euros, and printer paper 13 euros. The correct total is 85 euros.",
+   "self_pass": true,
+   "self_s": 10.65,
+   "self_candidate_hash": "e91d86f72d54ce8b61ba2820fb38f0f7b78b44dea15b9510ee62e2bbf0101326",
+   "self_sha": "e91d86f72d54ce8b61ba2820fb38f0f7b78b44dea15b9510ee62e2bbf0101326",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary13",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The correct total is **133 euros** (23 + 56 + 14).",
+   "self_pass": false,
+   "self_s": 9.55,
+   "self_candidate_hash": "2faa00f7b3153b94b8704f636bee6948d43817dc630907c7045ab7f86fd679c0",
+   "self_sha": "2faa00f7b3153b94b8704f636bee6948d43817dc630907c7045ab7f86fd679c0",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary14",
+   "arm": "off",
+   "self_output": "No, the summary is incorrect. The correct total is 187 euros (21 + 45 + 71).",
+   "self_pass": false,
+   "self_s": 10.55,
+   "self_candidate_hash": "6dc451a43aad9fa32ef4f91b04491bc2f49bfd9a2565051ce2cf86ecd46329eb",
+   "self_sha": "6dc451a43aad9fa32ef4f91b04491bc2f49bfd9a2565051ce2cf86ecd46329eb",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long00",
+   "arm": "off",
+   "self_output": "The survey counted exactly 422 bicycles at the station in Turin.",
+   "self_pass": true,
+   "self_s": 10.55,
+   "self_candidate_hash": "a81045cd386e1667b4ef98121c2f87f8f83c575ffa9e05704d005f370d8bb866",
+   "self_sha": "a81045cd386e1667b4ef98121c2f87f8f83c575ffa9e05704d005f370d8bb866",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long01",
+   "arm": "off",
+   "self_output": "The survey counted exactly 952 bicycles in **Lyon**.",
+   "self_pass": true,
+   "self_s": 9.84,
+   "self_candidate_hash": "eab51086b032a6b08e59cdc463d4615811f19bd9fcb53760e866161fc10118b8",
+   "self_sha": "eab51086b032a6b08e59cdc463d4615811f19bd9fcb53760e866161fc10118b8",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long02",
+   "arm": "off",
+   "self_output": "The survey counted exactly 792 bicycles parked at the station in Ghent.",
+   "self_pass": true,
+   "self_s": 10.64,
+   "self_candidate_hash": "9eb08c29a79ae295be9a245e34bdd9456b2763780d3d89377538978526f7840c",
+   "self_sha": "9eb08c29a79ae295be9a245e34bdd9456b2763780d3d89377538978526f7840c",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long03",
+   "arm": "off",
+   "self_output": "The survey counted exactly 555 bicycles at the station in Malmo.",
+   "self_pass": true,
+   "self_s": 10.65,
+   "self_candidate_hash": "cbb05ab672205cabd9afab12cd0e32405ae3f57b3cca3dfe0b0b33b6325f55f2",
+   "self_sha": "cbb05ab672205cabd9afab12cd0e32405ae3f57b3cca3dfe0b0b33b6325f55f2",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long04",
+   "arm": "off",
+   "self_output": "The survey counted exactly 460 bicycles parked at the station in Bremen.",
+   "self_pass": true,
+   "self_s": 10.23,
+   "self_candidate_hash": "58a8601f7d44f0b4fc2ef8ba887d9c8187cef5973b586dff7d1256415ca8f826",
+   "self_sha": "58a8601f7d44f0b4fc2ef8ba887d9c8187cef5973b586dff7d1256415ca8f826",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long05",
+   "arm": "off",
+   "self_output": "The survey counted exactly 825 bicycles at the station in Lyon.",
+   "self_pass": true,
+   "self_s": 11.16,
+   "self_candidate_hash": "26a945fa9f82d1746ad7cd1573f30a07c4f9f2a6ec53138030340fa1e0fb6983",
+   "self_sha": "26a945fa9f82d1746ad7cd1573f30a07c4f9f2a6ec53138030340fa1e0fb6983",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long06",
+   "arm": "off",
+   "self_output": "The survey counted exactly 466 bicycles in Graz.",
+   "self_pass": true,
+   "self_s": 10.24,
+   "self_candidate_hash": "eaefee3b1a276d945d4b68a4288fbc9a2fd60d3c63ed79827fa0616f8fc13ac4",
+   "self_sha": "eaefee3b1a276d945d4b68a4288fbc9a2fd60d3c63ed79827fa0616f8fc13ac4",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long07",
+   "arm": "off",
+   "self_output": "The survey counted exactly 790 bicycles at the station in Bremen.",
+   "self_pass": true,
+   "self_s": 10.05,
+   "self_candidate_hash": "236abcc64b0b34c54e1a7744a84cf37c4d1d3bac971fa882f587377eb5139b6c",
+   "self_sha": "236abcc64b0b34c54e1a7744a84cf37c4d1d3bac971fa882f587377eb5139b6c",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long08",
+   "arm": "off",
+   "self_output": "825 bicycles were counted in Cork.",
+   "self_pass": true,
+   "self_s": 10.65,
+   "self_candidate_hash": "0d70b9935f985f8b1c889bafc993e8e60cf929ea6bfcb0e1e0d4f8070dd79cef",
+   "self_sha": "0d70b9935f985f8b1c889bafc993e8e60cf929ea6bfcb0e1e0d4f8070dd79cef",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long09",
+   "arm": "off",
+   "self_output": "The survey counted exactly 351 bicycles in Linz.",
+   "self_pass": true,
+   "self_s": 10.23,
+   "self_candidate_hash": "7c55a4dbc2b4a59ac1819d6a5afc8cf1519f4b5d32f8f4be9050e655bd180006",
+   "self_sha": "7c55a4dbc2b4a59ac1819d6a5afc8cf1519f4b5d32f8f4be9050e655bd180006",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long10",
+   "arm": "off",
+   "self_output": "The survey counted exactly 418 bicycles parked at the station in Brno.",
+   "self_pass": true,
+   "self_s": 10.45,
+   "self_candidate_hash": "14168a83544a9cb56f3435cfce1499d0263ebe4f4ac89b0c19ffa015aa4e7184",
+   "self_sha": "14168a83544a9cb56f3435cfce1499d0263ebe4f4ac89b0c19ffa015aa4e7184",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long11",
+   "arm": "off",
+   "self_output": "The survey counted exactly 516 bicycles in Bremen.",
+   "self_pass": true,
+   "self_s": 10.03,
+   "self_candidate_hash": "f21e910c65d05ca079a6f2ce0642909104ce43858d4817d7eca96eebb17f43f0",
+   "self_sha": "f21e910c65d05ca079a6f2ce0642909104ce43858d4817d7eca96eebb17f43f0",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long12",
+   "arm": "off",
+   "self_output": "In Malmo, 827 bicycles were counted at the station.",
+   "self_pass": true,
+   "self_s": 10.14,
+   "self_candidate_hash": "c9d676cb60035ac92cb590e5db2fd6b10bec65e7af8738b83540ffa9abaece34",
+   "self_sha": "c9d676cb60035ac92cb590e5db2fd6b10bec65e7af8738b83540ffa9abaece34",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long13",
+   "arm": "off",
+   "self_output": "755 bicycles were counted at the station in Linz.",
+   "self_pass": true,
+   "self_s": 9.85,
+   "self_candidate_hash": "d0f39d6b5c4e4372bba114824d4eaf4047b431f95be68a49ccd8eac99ff93331",
+   "self_sha": "d0f39d6b5c4e4372bba114824d4eaf4047b431f95be68a49ccd8eac99ff93331",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "long14",
+   "arm": "off",
+   "self_output": "The survey counted exactly 921 bicycles at the station in Malmo.",
+   "self_pass": true,
+   "self_s": 10.56,
+   "self_candidate_hash": "0ea94203e2cc69e6dcfd14c2ee508bac27740ade456c78eb876eb06269563f82",
+   "self_sha": "0ea94203e2cc69e6dcfd14c2ee508bac27740ade456c78eb876eb06269563f82",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes00",
+   "arm": "off",
+   "self_output": "The most recent number is 33, according to the note from 5 March.",
+   "self_pass": false,
+   "self_s": 9.63,
+   "self_candidate_hash": "9f7a104b1803d6f4ef7a0fe8fecef66ca9b164cc93c70bbe9bce86753b51e8e7",
+   "self_sha": "9f7a104b1803d6f4ef7a0fe8fecef66ca9b164cc93c70bbe9bce86753b51e8e7",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes01",
+   "arm": "off",
+   "self_output": "The most recent number is 47, according to the 17 March note.",
+   "self_pass": true,
+   "self_s": 9.14,
+   "self_candidate_hash": "407ebb0a3d1b2d40f9a1c19193e54160336f4f239a47b5be49db190f0c2c1c75",
+   "self_sha": "407ebb0a3d1b2d40f9a1c19193e54160336f4f239a47b5be49db190f0c2c1c75",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes02",
+   "arm": "off",
+   "self_output": "The most recent number is 33, according to the 23 March note.",
+   "self_pass": true,
+   "self_s": 9.63,
+   "self_candidate_hash": "d66ac62fcad63a37ddeab4aa320fe62f27d2d0df8f26b718f9b1cc649bf48c9b",
+   "self_sha": "d66ac62fcad63a37ddeab4aa320fe62f27d2d0df8f26b718f9b1cc649bf48c9b",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes03",
+   "arm": "off",
+   "self_output": "The most recent number is 18, according to the 24 March note.",
+   "self_pass": true,
+   "self_s": 9.25,
+   "self_candidate_hash": "1690e354d7217a374a318de11db4c506f9c614675b9cde16cc10e6e30ff30bcf",
+   "self_sha": "1690e354d7217a374a318de11db4c506f9c614675b9cde16cc10e6e30ff30bcf",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes04",
+   "arm": "off",
+   "self_output": "The latest figure is from the 24 March note, which says 73 members.",
+   "self_pass": true,
+   "self_s": 9.14,
+   "self_candidate_hash": "27e459452be04893daf092028ac47ef5155390eb73c5daf9b1358b0ea65922a4",
+   "self_sha": "27e459452be04893daf092028ac47ef5155390eb73c5daf9b1358b0ea65922a4",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes05",
+   "arm": "off",
+   "self_output": "The most recent number is 74, according to the 25 March note.",
+   "self_pass": true,
+   "self_s": 9.14,
+   "self_candidate_hash": "30145d966277a9c49093baafa8869b453a4485773b77877a1647cb7be2decf11",
+   "self_sha": "30145d966277a9c49093baafa8869b453a4485773b77877a1647cb7be2decf11",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes06",
+   "arm": "off",
+   "self_output": "The most recent number is 79, according to the 11 March note.",
+   "self_pass": true,
+   "self_s": 9.43,
+   "self_candidate_hash": "029125539379507d6f070a22ffaf15a9e89e3e35254ced6acb74bf794680c4af",
+   "self_sha": "029125539379507d6f070a22ffaf15a9e89e3e35254ced6acb74bf794680c4af",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes07",
+   "arm": "off",
+   "self_output": "The most recent number is 23, according to the 14 March note.",
+   "self_pass": true,
+   "self_s": 9.04,
+   "self_candidate_hash": "413e02f2070b40973dca337c376ef90a7189acb74d467db6a8286bad8a7a6f7f",
+   "self_sha": "413e02f2070b40973dca337c376ef90a7189acb74d467db6a8286bad8a7a6f7f",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes08",
+   "arm": "off",
+   "self_output": "The most recent number is 44, according to the 19 March note.",
+   "self_pass": true,
+   "self_s": 8.94,
+   "self_candidate_hash": "d609d1a8a97ffbdb2cbe192aef925f4a28579ebc08732d913dcdf1dbcc997772",
+   "self_sha": "d609d1a8a97ffbdb2cbe192aef925f4a28579ebc08732d913dcdf1dbcc997772",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes09",
+   "arm": "off",
+   "self_output": "The most recent number is 61, according to the 24 March note.",
+   "self_pass": true,
+   "self_s": 8.85,
+   "self_candidate_hash": "ef42706610e616f83d02c771e871c8ce768b256b58f77744881e2bef0e96df98",
+   "self_sha": "ef42706610e616f83d02c771e871c8ce768b256b58f77744881e2bef0e96df98",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes10",
+   "arm": "off",
+   "self_output": "The most recent note is from March 21 (63 members).",
+   "self_pass": true,
+   "self_s": 9.64,
+   "self_candidate_hash": "e1dd668a0eadad8bd32301c3156cef710643347bdf3130dbac2eab3ea1548064",
+   "self_sha": "e1dd668a0eadad8bd32301c3156cef710643347bdf3130dbac2eab3ea1548064",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes11",
+   "arm": "off",
+   "self_output": "The most recent note is from March 12 (12 members).",
+   "self_pass": false,
+   "self_s": 9.64,
+   "self_candidate_hash": "775756165e117a60321d9e38e90c3ff069adc969b13f764236c789de7ee88730",
+   "self_sha": "775756165e117a60321d9e38e90c3ff069adc969b13f764236c789de7ee88730",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes12",
+   "arm": "off",
+   "self_output": "The most recent number is 29, according to the 14 March note.",
+   "self_pass": true,
+   "self_s": 8.76,
+   "self_candidate_hash": "0281bae993bd88d2acec508179aa2457b729b81e24a2b3d6ed17c8db4f63ebba",
+   "self_sha": "0281bae993bd88d2acec508179aa2457b729b81e24a2b3d6ed17c8db4f63ebba",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes13",
+   "arm": "off",
+   "self_output": "The most recent number is 56, according to the 16 March note.",
+   "self_pass": true,
+   "self_s": 9.65,
+   "self_candidate_hash": "43f9a1bc0877337a21f565d94709320bb841521ac1b89c62149098a889e4c96b",
+   "self_sha": "43f9a1bc0877337a21f565d94709320bb841521ac1b89c62149098a889e4c96b",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "notes14",
+   "arm": "off",
+   "self_output": "The most recent number is 50, as it appears in the later date.",
+   "self_pass": true,
+   "self_s": 9.24,
+   "self_candidate_hash": "a4057902580d5552ab2f06bfd650bc8a376c25d7a2b7f4f8919a38953fc6156c",
+   "self_sha": "a4057902580d5552ab2f06bfd650bc8a376c25d7a2b7f4f8919a38953fc6156c",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare00",
+   "arm": "off",
+   "self_output": "Malmo had the most rain (508 mm). The difference is 112 mm (689 - 476), so Bremen had the least rain.",
+   "self_pass": false,
+   "self_s": 9.53,
+   "self_candidate_hash": "0198d187eeb65823552d418a15f8f8c6d6996162776f21b28ef7b266d20e3385",
+   "self_sha": "0198d187eeb65823552d418a15f8f8c6d6996162776f21b28ef7b266d20e3385",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare01",
+   "arm": "off",
+   "self_output": "Turin had the most rain (722 mm) compared to Graz (286 mm). The difference is 436 mm (722 - 286).",
+   "self_pass": true,
+   "self_s": 9.64,
+   "self_candidate_hash": "c276815205d97ec4afd7f7d44181ae096ff8c6fcf2cc24f2350b40dfc427e99e",
+   "self_sha": "c276815205d97ec4afd7f7d44181ae096ff8c6fcf2cc24f2350b40dfc427e99e",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare02",
+   "arm": "off",
+   "self_output": "The city with the most rain is **Linz** (500 mm). The city with the least rain is **Brno** (103 mm). The difference is 397 mm.",
+   "self_pass": false,
+   "self_s": 9.95,
+   "self_candidate_hash": "f8a7a014ea3f5056d97fce2a4a2b499674ce841348a56ef5196ca2ada7aa3ffa",
+   "self_sha": "f8a7a014ea3f5056d97fce2a4a2b499674ce841348a56ef5196ca2ada7aa3ffa",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare03",
+   "arm": "off",
+   "self_output": "Brno had the most rain at 854 mm. Graz had the least at 531 mm, so it was 323 mm more than Graz.",
+   "self_pass": false,
+   "self_s": 9.75,
+   "self_candidate_hash": "14ecf018ef789afc7a118b2a32ee26d18cb049831afb0a2e83b01e2e1c82811a",
+   "self_sha": "14ecf018ef789afc7a118b2a32ee26d18cb049831afb0a2e83b01e2e1c82811a",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare04",
+   "arm": "off",
+   "self_output": "Brno had the most rain at 836 mm. Ghent had the least at 272 mm. That\u2019s 564 mm more than Ghent compared to Brno.",
+   "self_pass": false,
+   "self_s": 9.94,
+   "self_candidate_hash": "b88ac0b7d4ecb503cfcfdd4249ded117500c92d25df9c37cdae8f096a4b0462b",
+   "self_sha": "b88ac0b7d4ecb503cfcfdd4249ded117500c92d25df9c37cdae8f096a4b0462b",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare05",
+   "arm": "off",
+   "self_output": "Cork has the most rain (655 mm) while Linz has the least (224 mm). The difference is 431 mm.",
+   "self_pass": false,
+   "self_s": 9.34,
+   "self_candidate_hash": "888e76ceda7d380df065c02a17b0831c2aecd073a25705b9facd161071f775e8",
+   "self_sha": "888e76ceda7d380df065c02a17b0831c2aecd073a25705b9facd161071f775e8",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare06",
+   "arm": "off",
+   "self_output": "The city with the most rain is Turin (756 mm). The city with the least rain is Brno (249 mm). The difference is 507 mm.",
+   "self_pass": false,
+   "self_s": 9.74,
+   "self_candidate_hash": "e81ed5f403e29f740ad6e0e8973a624411ec70764d4069ff06e6b4c4f3a3f3f1",
+   "self_sha": "e81ed5f403e29f740ad6e0e8973a624411ec70764d4069ff06e6b4c4f3a3f3f1",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare07",
+   "arm": "off",
+   "self_output": "Malmo had the most rain (868 mm) compared to Graz (720 mm). The difference is 148 mm.",
+   "self_pass": false,
+   "self_s": 9.54,
+   "self_candidate_hash": "1bd40ea21510b0c8e75474620cca5abaf5b7120149356827dc7524dc746a7d77",
+   "self_sha": "1bd40ea21510b0c8e75474620cca5abaf5b7120149356827dc7524dc746a7d77",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare08",
+   "arm": "off",
+   "self_output": "The city with the most rain is Porto (455 mm). The city with the least rain is Cork (375 mm). The difference is 80 mm.",
+   "self_pass": true,
+   "self_s": 9.34,
+   "self_candidate_hash": "b695b89434c30f8367144600762285256616783716363feab77d60205e7168c9",
+   "self_sha": "b695b89434c30f8367144600762285256616783716363feab77d60205e7168c9",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare09",
+   "arm": "off",
+   "self_output": "Malmo had the most rain (659 mm) compared to Turin (402 mm). The difference is 257 mm.",
+   "self_pass": true,
+   "self_s": 9.34,
+   "self_candidate_hash": "e1318b1000f04a07e4596b5859e9bd52dd6fd7b55a527a1af4c1eebde218a173",
+   "self_sha": "e1318b1000f04a07e4596b5859e9bd52dd6fd7b55a527a1af4c1eebde218a173",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare10",
+   "arm": "off",
+   "self_output": "Ghent has the most rain (784 mm) compared to Graz (683 mm) and Porto (675 mm). The difference is 101 mm.",
+   "self_pass": false,
+   "self_s": 9.15,
+   "self_candidate_hash": "a11ec539872e0e80a28cf36aafd4e7e1db09df30e0c96ad69d9084de42c87f56",
+   "self_sha": "a11ec539872e0e80a28cf36aafd4e7e1db09df30e0c96ad69d9084de42c87f56",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare11",
+   "arm": "off",
+   "self_output": "Bremen had the most rain at 783 mm. Cork had the least at 813 mm. That means Cork had 300 mm less than Bremen.",
+   "self_pass": false,
+   "self_s": 9.13,
+   "self_candidate_hash": "2285687262f122eb384521d68e942b77c26d902a5297d358a4ff805b10a05fdc",
+   "self_sha": "2285687262f122eb384521d68e942b77c26d902a5297d358a4ff805b10a05fdc",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare12",
+   "arm": "off",
+   "self_output": "Malmo had the most rain (696 mm). The city with the least rain is Cork (181 mm), so Malmo was 515 mm more than Cork.",
+   "self_pass": true,
+   "self_s": 9.43,
+   "self_candidate_hash": "6e132de07b83d849da06e2b3fc1619b434aa5a5607fabcad9f501766cc43e362",
+   "self_sha": "6e132de07b83d849da06e2b3fc1619b434aa5a5607fabcad9f501766cc43e362",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare13",
+   "arm": "off",
+   "self_output": "Graz has the most rain (623 mm) compared to Turin (370 mm) and Cork (378 mm). The difference is 253 mm.",
+   "self_pass": true,
+   "self_s": 9.64,
+   "self_candidate_hash": "09e9ee3015c26acd9f1839ef8088e0943c3d6a4e25332ad7320c2f4eb3ed2019",
+   "self_sha": "09e9ee3015c26acd9f1839ef8088e0943c3d6a4e25332ad7320c2f4eb3ed2019",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "compare14",
+   "arm": "off",
+   "self_output": "Lyon has the highest rainfall (302 mm), while Graz has the lowest (775 mm). The difference is 473 mm.",
+   "self_pass": false,
+   "self_s": 9.13,
+   "self_candidate_hash": "d7a7934f46819b791431348c142e06cb054b2e696face011754d4929e1d2b356",
+   "self_sha": "d7a7934f46819b791431348c142e06cb054b2e696face011754d4929e1d2b356",
+   "teacher_seen_before_commit": [
+    false
+   ]
+  },
+  {
+   "fixture": "summary00",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 87 + 51 + 66 = 204 euros. The stated total of 224 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.06,
+   "self_candidate_hash": "77e6413770d98be348108ef22b0146ff68343ac4736ee6a77b1472996f9dc380",
+   "self_sha": "77e6413770d98be348108ef22b0146ff68343ac4736ee6a77b1472996f9dc380",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Kaffeebohnen: 87 \u20ac, Zugtickets: 51 \u20ac, Druckpapier: 66 \u20ac) betr\u00e4gt tats\u00e4chlich **204 \u20ac**.  \n\u2705 Die angegebene Gesamtsumme von **224 \u20ac** ist falsch.  \n\u2705 Die Berechnung 87 + 51 + 66 = 204 ist korrekt und belegt durch direkte Addition.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 alle Werte sind klar angegeben, und die Rechnung ist eindeutig. Die Korrektur ist vollst\u00e4ndig belegbar.\n\n**Endg\u00fcltige Bewertung:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Belegte Korrektur:** Der Summenwert im Zusammenfassungsbereich ist falsch. Die richtige Gesamtsumme betr\u00e4gt **204 Euro**.",
+   "teacher_s": 136.98,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "77e6413770d98be348108ef22b0146ff68343ac4736ee6a77b1472996f9dc380",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "61d968dc77b023cd730e8098bb3ba71e742d647f912191cf03f48d1ba99ab3bf",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary01",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 36 + 46 + 68 = 150 euros. The stated total of 224 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.25,
+   "self_candidate_hash": "e1724287e3a81929fb0fe04525e2f2da70cd078b538c45856308efd6a4342737",
+   "self_sha": "e1724287e3a81929fb0fe04525e2f2da70cd078b538c45856308efd6a4342737",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten ist korrekt berechnet:  \n36 (Postage) + 46 (Cables) + 68 (Software licence) = **150 Euro**.\n\n\u27a1\ufe0f Die angegebene Gesamtsumme im Zusammenfassungsbereich (\"Total: 130 euros\") ist **falsch**.  \nDie korrekte Gesamtsumme betr\u00e4gt **150 Euro**.\n\n**Unsicherheit:**  \n\u274c Der Satz \u201eThe stated total of 224 euros is wrong\u201c ist **falsch und belegungslos**.  \nDer Fragebogen enth\u00e4lt **keine Angabe von 224 Euro** \u2013 die Summe im Text ist nur 130 Euro, was bereits falsch ist. Die Aussage \u00fcber \u201e224 Euro\u201c ist **nicht in der Frage enthalten** und daher **falsch zugeschrieben**.\n\n---\n\n\u2705 **Endg\u00fcltige Bewertung:**  \n- **Belegte Korrektur:** Ja \u2013 die Summe ist 36 + 46 + 68",
+   "teacher_s": 34.9,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "e1724287e3a81929fb0fe04525e2f2da70cd078b538c45856308efd6a4342737",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "9bb101584f25786baa3030289c85ac7602d17968c6ede9a6813b4b9e3b1ed342",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary02",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 25 + 22 + 75 = 122 euros. The stated total of 142 euros is wrong.",
+   "self_pass": true,
+   "self_s": 10.54,
+   "self_candidate_hash": "8a4bbbe7befab9ebd2324cb71abfc4f2a0dd286e8de35eb2deeb4a4b23dbd298",
+   "self_sha": "8a4bbbe7befab9ebd2324cb71abfc4f2a0dd286e8de35eb2deeb4a4b23dbd298",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 25 + 22 + 75 = 122 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 142 Euro ist fehlerhaft.  \n\u2705 Die korrekte Summe betr\u00e4gt **122 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 die Addition ist eindeutig und rechnerisch nachvollziehbar. Es gibt keine Ambiguit\u00e4t in den Werten oder der Rechnung.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**. Die Summe ist nicht 142, sondern 122 Euro.  \n\n\u2705 **Endg\u00fcltige Korrektur:**  \n**Nein, die Zusammenfassung ist falsch. Die korrekte Gesamtsumme betr\u00e4gt 122 Euro.**",
+   "teacher_s": 28.47,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "8a4bbbe7befab9ebd2324cb71abfc4f2a0dd286e8de35eb2deeb4a4b23dbd298",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "6f8b3f1abd10d2d919a2a481b975315c4a2c93e0a26510463077a5b846faadbd",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary03",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 57 + 19 + 38 = 114 euros. The stated total of 94 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.05,
+   "self_candidate_hash": "3a99c6851a89e0ac78fedf720fd8c03646da5dd270e9805fb7364623f33dada1",
+   "self_sha": "3a99c6851a89e0ac78fedf720fd8c03646da5dd270e9805fb7364623f33dada1",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Druckpapier 57 \u20ac, Post 19 \u20ac, Projektion 38 \u20ac) betr\u00e4gt tats\u00e4chlich 57 + 19 + 38 = **114 \u20ac**.  \n\u2705 Der angegebene Gesamtbetrag von **94 \u20ac** ist somit falsch.  \n\u2705 Die korrekte Gesamtsumme lautet **114 \u20ac**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Rechnung oder den Angaben. Alle Werte sind klar und eindeutig angegeben, und die Addition ist mathematisch korrekt. Es gibt keine Ambiguit\u00e4t bez\u00fcglich der Werte oder der Berechnung.\n\n**Fazit:**  \nDie Antwort ist **korrekt und belegbar**. Die Summe ist nicht 94 \u20ac, sondern **114 \u20ac**.  \n\n\u2705 **Belegte Korrektur:** Der Gesamtbetrag ist falsch. Die korrekte Summe betr\u00e4gt **114 Euro**.",
+   "teacher_s": 32.47,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "3a99c6851a89e0ac78fedf720fd8c03646da5dd270e9805fb7364623f33dada1",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "b2c0a1744219330169ae09af4be76a365e2221cae18c931cf4e1228634a6996e",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary04",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 91 + 39 + 58 = 188 euros. The stated total of 198 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.76,
+   "self_candidate_hash": "e0977eae895b17116fbd9009fcd4150c3ba29d6aeaeff1a450e16d9da2318c67",
+   "self_sha": "e0977eae895b17116fbd9009fcd4150c3ba29d6aeaeff1a450e16d9da2318c67",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 91 + 39 + 58 = 188 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 198 Euro ist falsch.  \n\u2705 Die korrekte Summe betr\u00e4gt **188 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der mathematischen Berechnung oder in der Interpretation der Angaben. Alle Werte sind klar und direkt gegeben, und die Addition ist eindeutig.  \n\n**Fazit:** Die Antwort ist vollst\u00e4ndig belegbar und korrekt.  \n\n\ud83d\udc49 **Endg\u00fcltige Antwort:**  \n**Ja, die Korrektur ist belegt: Die Summe ist 188 Euro, nicht 198 Euro.**",
+   "teacher_s": 26.15,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "e0977eae895b17116fbd9009fcd4150c3ba29d6aeaeff1a450e16d9da2318c67",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "7d5bcdcc98e78d0daacb961e15830dc0dd30a231635e07a6e1d70311ceb871f0",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary05",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 85 + 22 + 72 = 179 euros. The stated total of 169 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.75,
+   "self_candidate_hash": "ab9f4d5dbd7fee25b578cdee60625302a6a76e1e4c4b07f31faaced2c1a5556e",
+   "self_sha": "ab9f4d5dbd7fee25b578cdee60625302a6a76e1e4c4b07f31faaced2c1a5556e",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Snacks: 85 \u20ac, Kaffeebohnen: 22 \u20ac, Kabel: 72 \u20ac) betr\u00e4gt tats\u00e4chlich **179 \u20ac**.  \n\u2705 Die angegebene Gesamtsumme im Zusammenfassungsbereich (\u201eTotal: 169 \u20ac\u201c) ist **falsch**.  \n\u2705 Die korrekte Gesamtsumme lautet **179 \u20ac**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 die Berechnung ist klar und unabh\u00e4ngig von Kontexten oder m\u00f6glichen Interpretationen. Alle Werte sind explizit und numerisch eindeutig.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Belegte Korrektur:** Die Summe ist 85 + 22 + 72 = 179 \u20ac, nicht 169 \u20ac.  \n\u2705 **Richtige Gesamtsumme:** 179 \u20ac.",
+   "teacher_s": 32.87,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "ab9f4d5dbd7fee25b578cdee60625302a6a76e1e4c4b07f31faaced2c1a5556e",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "ccf0bf03733a175ce42ae86bac754bc9b1362faadd77bcd3b9adb45f554d6e95",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary06",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 35 + 34 + 80 = 149 euros. The stated total of 159 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.64,
+   "self_candidate_hash": "481ad0e45bdd56ce06e0f6eb6b83033fd7da3afd8b9ed22f6f40f96a90157b2c",
+   "self_sha": "481ad0e45bdd56ce06e0f6eb6b83033fd7da3afd8b9ed22f6f40f96a90157b2c",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "Belegte Korrektur:  \n\u2705 **Ja**, die Antwort ist korrekt.  \n\nDie Summe der Einzelkosten berechnet sich wie folgt:  \n35 \u20ac (cleaning service) + 34 \u20ac (snacks) + 80 \u20ac (software licence) = **149 \u20ac**.  \n\nDer angegebene Gesamtbetrag von **159 \u20ac** ist daher **falsch**.  \n\nDie korrekte Gesamtsumme betr\u00e4gt **149 Euro**.\n\nUnsicherheit:  \n\u274c Keine. Die Berechnung ist eindeutig und belegbar. Es gibt keine Unsicherheit bez\u00fcglich der mathematischen Summe oder der Interpretation der Kosten.  \n\n**Endg\u00fcltige Bewertung:**  \n\u2705 Belegte Korrektur: Ja  \n\u274c Unsicherheit: Nein  \n\n**Endg\u00fcltige Antwort:**  \n**Nein, die Zusammenfassung ist falsch. Die korrekte Gesamtsumme betr\u00e4gt 149 Euro.**",
+   "teacher_s": 30.86,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "481ad0e45bdd56ce06e0f6eb6b83033fd7da3afd8b9ed22f6f40f96a90157b2c",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "f86c33c67cacc94d85df8299be051f2dcecedb7c5c850330e3d41efb0278050e",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary07",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 22 + 24 + 66 = 112 euros. The stated total of 92 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.74,
+   "self_candidate_hash": "69c7b1620c5ca020a5a605edbcc042d7dede52b0d720606f3fe993b23ed08b9e",
+   "self_sha": "69c7b1620c5ca020a5a605edbcc042d7dede52b0d720606f3fe993b23ed08b9e",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Postage: 22 \u20ac, Office chairs: 24 \u20ac, Train tickets: 66 \u20ac) betr\u00e4gt tats\u00e4chlich 22 + 24 + 66 = **112 \u20ac**.  \n\u2705 Der angegebene Gesamtbetrag von **92 \u20ac** ist somit falsch.  \n\u2705 Die Antwort enth\u00e4lt eine korrekte mathematische Berechnung und stellt die richtige Gesamtsumme (112 \u20ac) vor.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Rechnung oder in den gegebenen Werten. Alle Angaben sind klar und eindeutig. Die Korrektur ist vollst\u00e4ndig belegbar und nicht subjektiv.\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig korrekt und belegt**. Die Summe ist richtig berechnet, und die Behauptung, dass der Gesamtbetrag falsch sei, ist wissenschaftlich und mathematisch fundiert.\n\n\u2705 **Endg\u00fcltige Antwort (belegte Korrektur):**  \n",
+   "teacher_s": 33.28,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "69c7b1620c5ca020a5a605edbcc042d7dede52b0d720606f3fe993b23ed08b9e",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "712d7bc0aafd49fb8fd28f2b360ef2f2ceb98d037044ccb1a82840805146894c",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary08",
+   "arm": "on",
+   "self_output": "No, the calculation is incorrect. The correct total is **106 euros** (87 + 54 + 25).",
+   "self_pass": false,
+   "self_s": 11.15,
+   "self_candidate_hash": "e690a0b9e4ef9e85eb0ac1ae8bb02ef2cd4105a8c79bf68bafdd60915910af88",
+   "self_sha": "e690a0b9e4ef9e85eb0ac1ae8bb02ef2cd4105a8c79bf68bafdd60915910af88",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u274c Die Antwort ist **falsch**.  \n\n**Begr\u00fcndung:**  \nDie Summe der Angaben lautet:  \n87 \u20ac (Snacks) + 54 \u20ac (Coffee beans) + 25 \u20ac (Postage) = **166 \u20ac**.\n\nDie angegebene korrekte Summe von **106 \u20ac** ist **falsch**, da 87 + 54 = 141, und 141 + 25 = 166.\n\nDie Summary-Line \u201eTotal: 176 euros\u201c ist **nicht korrekt**, aber auch **nicht richtig berechnet**.  \nDie richtige Summe ist **166 \u20ac**.\n\n\u2705 **Belegte Korrektur:**  \nDie Summary-Line \u201eTotal: 176 euros\u201c ist **falsch**.  \nDie korrekte Gesamtsumme betr\u00e4gt **166 Euro**.\n\n---\n\n**Unsicherheit:**  \nKeine \u2013 die Berechnung ist klar und eindeutig. Die Antwort enth\u00e4lt eine falsche Zahl (106 statt 166",
+   "teacher_s": 33.78,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "e690a0b9e4ef9e85eb0ac1ae8bb02ef2cd4105a8c79bf68bafdd60915910af88",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "784a8d9c211297fafe1afb7a9f30883abb896a2d34759fd771eae29ccecd52c0",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary09",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 70 + 82 + 39 = 191 euros. The stated total of 201 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.45,
+   "self_candidate_hash": "8632f14f849c2999390045dfa92c7117b5f88fabf7a84ff2b62cff65f208f4a3",
+   "self_sha": "8632f14f849c2999390045dfa92c7117b5f88fabf7a84ff2b62cff65f208f4a3",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 70 + 82 + 39 = 191 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 201 Euro ist falsch.  \n\u2705 Die korrekte Summe betr\u00e4gt **191 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Berechnung oder in der Korrektheit der Aussage. Alle Angaben sind klar und eindeutig belegbar durch einfache Addition.\n\n**Fazit:**  \nDie Antwort ist vollst\u00e4ndig korrekt und belegt. Es gibt keine Unsicherheit.  \n\n\u2705 **Endg\u00fcltige Bewertung:**  \n**Belegte Korrekturen:** Ja \u2013 die Summe ist falsch, und die korrekte Gesamtsumme ist 191 Euro.  \n**Unsicherheit:** Keine.",
+   "teacher_s": 26.16,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "8632f14f849c2999390045dfa92c7117b5f88fabf7a84ff2b62cff65f208f4a3",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "ca0444822fe5be197d13d92f470270453c7eaa29d43466b8d5088f38fe224f0e",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary10",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 75 + 42 + 54 = 171 euros. The stated total of 161 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.35,
+   "self_candidate_hash": "86eded0c2f8bd3a61c07ecc8c4293fb027791ccc6ca8215105aa4ae6e6cc3fcc",
+   "self_sha": "86eded0c2f8bd3a61c07ecc8c4293fb027791ccc6ca8215105aa4ae6e6cc3fcc",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 75 + 42 + 54 = 171 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 161 Euro ist falsch.  \n\u2705 Die korrekte Summe betr\u00e4gt **171 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 alle Werte sind klar und die Addition ist eindeutig. Die Korrektur ist vollst\u00e4ndig belegbar und unabh\u00e4ngig von Interpretationsr\u00e4umen.\n\n**Endg\u00fcltige Bewertung:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Belegte Korrektur:** Der Gesamtbetrag ist nicht 161 Euro, sondern **171 Euro**.",
+   "teacher_s": 25.69,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "86eded0c2f8bd3a61c07ecc8c4293fb027791ccc6ca8215105aa4ae6e6cc3fcc",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "0d28b8026c49f90faea4af6274abebe0311509d134658aada87bdd261c3c02aa",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary11",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 33 + 69 + 16 = 118 euros. The stated total of 98 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.45,
+   "self_candidate_hash": "7e7ecf277d3c371f38986c4a993709d99e2a65479da1e0357acc1402d92f3148",
+   "self_sha": "7e7ecf277d3c371f38986c4a993709d99e2a65479da1e0357acc1402d92f3148",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Snacks: 33 \u20ac, Train Tickets: 69 \u20ac, Projector: 16 \u20ac) betr\u00e4gt tats\u00e4chlich 33 + 69 + 16 = **118 \u20ac**.  \n\u2705 Der angegebene Gesamtbetrag von **98 \u20ac** stimmt nicht mit der korrekten Berechnung \u00fcberein.  \n\u2705 Die Aussage \u201eDie Summe ist 118 \u20ac und die angegebene Summe ist falsch\u201c ist **fachlich korrekt** und **belegbar** durch direkte Addition.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der mathematischen Berechnung oder in der Beurteilung der Richtigkeit des Gesamtbetrags. Die Rechnung ist eindeutig und unabh\u00e4ngig von Kontexten oder Interpretationen.\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig korrekt und belegt**.  \n\n\u2705 **Belegte Korrektur:** Nein, die Zusammenfassung ist falsch. Die korrekte Sum",
+   "teacher_s": 34.18,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "7e7ecf277d3c371f38986c4a993709d99e2a65479da1e0357acc1402d92f3148",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "a7c3a9ac53d71c70153fd6b8624eb9272df3490ab11fc69d831a059223642def",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary12",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 32 + 40 + 13 = 85 euros. The stated total of 75 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.86,
+   "self_candidate_hash": "a57eb99008bd6fa81bcb1b4dc4918aa12be0e9a6c6b84f43150ee13ecd3f7ed7",
+   "self_sha": "a57eb99008bd6fa81bcb1b4dc4918aa12be0e9a6c6b84f43150ee13ecd3f7ed7",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Projektor: 32 \u20ac, Snacks: 40 \u20ac, Druckerpapier: 13 \u20ac) betr\u00e4gt tats\u00e4chlich **85 Euro**.  \n\u2705 Die angegebene Gesamtsumme von **75 Euro** ist falsch und wird korrekt korrigiert.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 alle Werte sind klar und direkt gegeben, die Addition ist eindeutig und rechenm\u00e4\u00dfig nachvollziehbar. Die Korrektur ist vollst\u00e4ndig belegbar.\n\n**Endg\u00fcltige Bewertung:**  \nDie Antwort ist **korrekt und belegt**.  \n**Richtiges Ergebnis: 85 Euro.**  \n\n\u2705 **Belegte Korrektur:** Die Summe betr\u00e4gt 32 + 40 + 13 = 85 \u20ac. Der angegebene Wert von 75 \u20ac ist falsch.  \n\u27a1\ufe0f **Die Summary-Line ist nicht korrekt. Die richtige Gesamtsumme ist 85 Euro.**",
+   "teacher_s": 34.26,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "a57eb99008bd6fa81bcb1b4dc4918aa12be0e9a6c6b84f43150ee13ecd3f7ed7",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "43eed3bba34b487dfe43e46a42859ba759f22dfe44487d162f70b24389f183e9",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary13",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 23 + 56 + 14 = 93 euros. The stated total of 113 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.14,
+   "self_candidate_hash": "3a0bfa2380f5ebcd281b89906c91dab64dc4c4bc600f8b95f8bfd460e1219e13",
+   "self_sha": "3a0bfa2380f5ebcd281b89906c91dab64dc4c4bc600f8b95f8bfd460e1219e13",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 23 + 56 + 14 = 93 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 113 Euro ist falsch.  \n\u2705 Die korrekte Summe betr\u00e4gt **93 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der mathematischen Berechnung oder in der Interpretation der Angaben. Alle Werte sind klar und eindeutig angegeben, und die Addition ist unbestreitbar korrekt.  \n\n**Fazit:** Die Antwort ist vollst\u00e4ndig belegt und korrekt. Es gibt keine Unsicherheit.  \n\n\u2705 **Endg\u00fcltige Bewertung:**  \n**Belegte Korrekturen:** Ja \u2013 die Summe ist falsch, die richtige Gesamtsumme betr\u00e4gt 93 Euro.  \n**Unsicherheit:** Nein \u2013 die Berechnung ist eindeutig und korrekt.  \n\n**Endg\u00fcltige Antwort:**  \n**Ja**, die Summary-Line ist falsch. Die korrekte Summe ist **93 Euro",
+   "teacher_s": 34.4,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "3a0bfa2380f5ebcd281b89906c91dab64dc4c4bc600f8b95f8bfd460e1219e13",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "55cdb9670ccc061fdf9c3ce931ec0174644760a696a1936bb9af35e3bb208e19",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary14",
+   "arm": "on",
+   "self_output": "No, the summary is incorrect. The calculation is: 21 + 45 + 71 = 137 euros. The stated total of 127 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.45,
+   "self_candidate_hash": "07f5187c90be49581a964c0424e9ffce630457f937fa5011b11335016378dddc",
+   "self_sha": "07f5187c90be49581a964c0424e9ffce630457f937fa5011b11335016378dddc",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (21 \u20ac + 45 \u20ac + 71 \u20ac) betr\u00e4gt tats\u00e4chlich **137 \u20ac**.  \n\u2705 Der angegebene Gesamtbetrag von **127 \u20ac** ist somit falsch.  \n\u2705 Die Berechnung ist korrekt: 21 + 45 = 66; 66 + 71 = 137.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit bez\u00fcglich der mathematischen Summe oder der Korrektheit der Angabe. Die Rechnung ist eindeutig und belegbar.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Belegte Korrektur:** Der Gesamtbetrag ist nicht 127 \u20ac, sondern **137 \u20ac**.  \n\u2705 Die korrekte Summe lautet: **137 Euro**.",
+   "teacher_s": 30.76,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "07f5187c90be49581a964c0424e9ffce630457f937fa5011b11335016378dddc",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "dae31af3234a1ca45e192c0d019329e5c7984463f49f828ac23b7d265bda65ae",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long00",
+   "arm": "on",
+   "self_output": "The survey counted exactly 422 bicycles at the station in Turin.",
+   "self_pass": true,
+   "self_s": 11.24,
+   "self_candidate_hash": "a81045cd386e1667b4ef98121c2f87f8f83c575ffa9e05704d005f370d8bb866",
+   "self_sha": "a81045cd386e1667b4ef98121c2f87f8f83c575ffa9e05704d005f370d8bb866",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey counted exactly 422 bicycles at the station in Turin\u201c ist **belegt** durch den folgenden Satz aus den Field Notes:  \n\u201eIn Turin the survey counted exactly 422 bicycles parked at the station.\u201c  \n\nDieser Ausschnitt enth\u00e4lt klar und direkt die beiden gefragten Informationen:  \n- Die Anzahl der Fahrr\u00e4der: **422**  \n- Die Stadt: **Turin**\n\nDie Angabe ist w\u00f6rtlich und unzweifelhaft enthalten. Keine Interpretation oder Vermutung erforderlich.\n\n---\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit besteht in dieser Frage. Die Information ist **direkt, eindeutig und vollst\u00e4ndig** im Originaltext enthalten.  \n\nEs gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder fehlende Hinweise, die eine zweifelhafte Interpretation erlauben.\n\n---\n\n**Fazit:**  \n\u2705 **Belegte Korrektur:** Die Antwort ist vollst\u00e4ndig und korrekt belegt.  \n\u274c Keine Unsicherheit vorhanden.\n\n**Endg\u00fclt",
+   "teacher_s": 33.27,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "a81045cd386e1667b4ef98121c2f87f8f83c575ffa9e05704d005f370d8bb866",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "b2526fc75ad9a33d4523ed362e592e22fbd9340dd33579593a9db5c360c85160",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long01",
+   "arm": "on",
+   "self_output": "The survey count of 952 bicycles was counted in Lyon.",
+   "self_pass": true,
+   "self_s": 12.04,
+   "self_candidate_hash": "1ac28ead6da95f6710edfa9e7c855d4392930879d354e47b290da5603eb9229a",
+   "self_sha": "1ac28ead6da95f6710edfa9e7c855d4392930879d354e47b290da5603eb9229a",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey count of 952 bicycles was counted in Lyon\u201c ist **belegt** und **genau** auf die gegebene Information zur\u00fcckzuf\u00fchren.  \nDie Aussage \u201eIn Lyon the survey counted exactly 952 bicycles parked at the station\u201c enth\u00e4lt klare, direkte Angaben \u00fcber die Anzahl der Fahrr\u00e4der (952) und die Stadt (Lyon).  \nDie Antwort stellt diese Fakten korrekt zusammen.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit besteht in dieser Aussage. Die Information ist **konkret, eindeutig und direkt aus den Field Notes abgeleitet**. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder m\u00f6gliche Interpretationsr\u00e4ume.\n\n\u27a1\ufe0f **Fazit:**  \nDie Antwort ist **korrekt, belegt und sicher**.  \n**Endg\u00fcltige Bewertung: Belegte Korrektur.** \u2705",
+   "teacher_s": 29.87,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "1ac28ead6da95f6710edfa9e7c855d4392930879d354e47b290da5603eb9229a",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "1c962f680f3b66224b5a6b66414e29370580bfab0b6c3c6b34ba3ae778deb74f",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long02",
+   "arm": "on",
+   "self_output": "The survey counted exactly 792 bicycles at the station in Ghent.",
+   "self_pass": true,
+   "self_s": 11.15,
+   "self_candidate_hash": "1b19c173dc6e355a5f9bfced42b2c4a3fbb3a2e278341e568fbdc5ee38dc6588",
+   "self_sha": "1b19c173dc6e355a5f9bfced42b2c4a3fbb3a2e278341e568fbdc5ee38dc6588",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen (faktisch korrekt und direkt aus den Field Notes):**  \n\u2705 Die Aussage \u201eThe survey counted exactly 792 bicycles at the station in Ghent\u201c ist **belegt** durch die Field Notes:  \n> \"In Ghent the survey counted exactly 792 bicycles parked at the station.\"\n\nDiese Information ist **direkt, explizit und unbestreitbar** enthalten.\n\n---\n\n**Unsicherheit (keine Belegung oder unklare Quelle):**  \n\u274c Keine Unsicherheit in der Aussage. Die Angabe \u00fcber die Anzahl der Fahrr\u00e4der und die Stadt ist **klar und eindeutig belegt**. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder fehlende Informationen.\n\n---\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig und korrekt belegt**.  \n\n\u2705 **Endg\u00fcltige Bewertung: Belegte Korrektur**  \n\u2192 *The survey counted exactly 792 bicycles at the station in Ghent.*",
+   "teacher_s": 31.49,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "1b19c173dc6e355a5f9bfced42b2c4a3fbb3a2e278341e568fbdc5ee38dc6588",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "196a0eb9a87624b2983df5abc0315cb012911a462a26191ff16432e3e8f9b3f6",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long03",
+   "arm": "on",
+   "self_output": "The survey counted exactly 555 bicycles at the station in Malmo.",
+   "self_pass": true,
+   "self_s": 11.75,
+   "self_candidate_hash": "cbb05ab672205cabd9afab12cd0e32405ae3f57b3cca3dfe0b0b33b6325f55f2",
+   "self_sha": "cbb05ab672205cabd9afab12cd0e32405ae3f57b3cca3dfe0b0b33b6325f55f2",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Aussage \u201eThe survey counted exactly 555 bicycles at the station in Malmo\u201c ist **belegt** durch den Text:  \n> \"In Malmo the survey counted exactly 555 bicycles parked at the station.\"\n\nDie Zahlen (555) und die Stadt (Malmo) werden direkt im Feldnotiztext genannt und sind nicht interpretiert oder vermutet. Es handelt sich um eine direkte, explizite Angabe.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit besteht in dieser Aussage. Die Information ist **klar, pr\u00e4zise und unbestreitbar** aus dem Originaltext abgeleitet. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder m\u00f6gliche Interpretationen.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Endg\u00fcltige Bewertung:**  \n**Belegte Korrektur:** Ja  \n**Unsicherheit:** Nein  \n\n\ud83d\udc49 **Endg\u00fcltige Antwort:** *The survey counted exactly 555 bicycles at the station in Malmo.* \u2013 **be",
+   "teacher_s": 34.82,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "cbb05ab672205cabd9afab12cd0e32405ae3f57b3cca3dfe0b0b33b6325f55f2",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "95324bf4fd75b5944def3328e0cdc77ac1287f0fcb3a15e3edeb54df1d535bab",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long04",
+   "arm": "on",
+   "self_output": "The survey counted exactly 460 bicycles parked at the station in Bremen.",
+   "self_pass": true,
+   "self_s": 11.45,
+   "self_candidate_hash": "58a8601f7d44f0b4fc2ef8ba887d9c8187cef5973b586dff7d1256415ca8f826",
+   "self_sha": "58a8601f7d44f0b4fc2ef8ba887d9c8187cef5973b586dff7d1256415ca8f826",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey counted exactly 460 bicycles parked at the station in Bremen.\u201c ist **belegt** und **genau auf die Frage** eingehend.  \n\nDie Aussage \u201eIn Bremen the survey counted exactly 460 bicycles parked at the station\u201c ist direkt aus den Field Notes entnommen und unabh\u00e4ngig von anderen Informationen (wie z.\u202fB. dem Zeitpunkt oder der Wetterlage) wissenschaftlich korrekt und sachlich.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden. Die Zahl 460 und die Stadt Bremen sind **klar und direkt aus den Field Notes abgeleitet**. Es gibt keine Ambiguit\u00e4ten, keine fehlenden Hinweise oder widerspr\u00fcchliche Aussagen.\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig belegt**, korrekt und pr\u00e4zise.  \n\n\u2705 **Endg\u00fcltige Bewertung: Belegte Korrektur \u2013 keine Unsicherheit.**",
+   "teacher_s": 30.97,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "58a8601f7d44f0b4fc2ef8ba887d9c8187cef5973b586dff7d1256415ca8f826",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "c42a5f05c06648a592e27a01358749c5734968f694080197d8182b02a5d494de",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long05",
+   "arm": "on",
+   "self_output": "The survey counted exactly 825 bicycles at the station in Lyon.",
+   "self_pass": true,
+   "self_s": 11.04,
+   "self_candidate_hash": "26a945fa9f82d1746ad7cd1573f30a07c4f9f2a6ec53138030340fa1e0fb6983",
+   "self_sha": "26a945fa9f82d1746ad7cd1573f30a07c4f9f2a6ec53138030340fa1e0fb6983",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey counted exactly 825 bicycles at the station in Lyon\u201c ist **belegt** durch den Text:  \n> \"In Lyon the survey counted exactly 825 bicycles parked at the station.\"\n\nDieser Satz enth\u00e4lt beide Informationen:  \n- Die Anzahl der Fahrr\u00e4der: **825**  \n- Die Stadt: **Lyon**\n\nDie Aussage ist **genau und direkt aus dem Originaltext abgeleitet**, ohne Vermutung oder Interpretation.\n\n---\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit besteht in dieser Aussage.  \nDie Angabe ist eindeutig, konkret und vollst\u00e4ndig belegt. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder fehlende Informationen.\n\n---\n\n**Fazit:**  \n\u2705 **Belegte Korrektur:** Die Antwort ist korrekt und vollst\u00e4ndig aus dem Text abgeleitet.  \n\u27a1\ufe0f **Endg\u00fcltige Bewertung: Belegt (keine Unsicherheit).**",
+   "teacher_s": 31.48,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "26a945fa9f82d1746ad7cd1573f30a07c4f9f2a6ec53138030340fa1e0fb6983",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "1ba78633f9f63652e565118cfe31992d1ad56dbde88d311f30843d01c9678cff",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long06",
+   "arm": "on",
+   "self_output": "The survey count is 466 bicycles, but the location is Graz.",
+   "self_pass": true,
+   "self_s": 13.17,
+   "self_candidate_hash": "cd7d6333336e36a3f20e53e93be9b229521f8237864ed7bd87e2fbf503f5320f",
+   "self_sha": "cd7d6333336e36a3f20e53e93be9b229521f8237864ed7bd87e2fbf503f5320f",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey count is 466 bicycles, but the location is Graz.\u201c ist **belegt** und **genau aus den Field Notes abgeleitet**.  \n\nIm Originaltext steht: *\u201eIn Graz the survey counted exactly 466 bicycles parked at the station.\u201c*  \nDas bedeutet klar und direkt:  \n- Die Anzahl der Fahrr\u00e4der: **466**  \n- Die Stadt: **Graz**\n\nDie Aussage in der Antwort entspricht exakt dem Text und ist daher **faktisch korrekt und belegt**.\n\n---\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden.  \nDie Information ist eindeutig, unambivalent und ohne Widerspr\u00fcche oder Mehrdeutigkeiten im Originaltext. Es gibt keine Hinweise auf Ungewissheit, Fehlinterpretation oder fehlende Kontexte.\n\n---\n\n**Fazit:**  \n\u2705 **Belegte Korrektur**: Die Antwort ist vollst\u00e4ndig und korrekt belegt.  \n\u274c Keine Unsicherheit.  \n\n**Endg\u00fcltige Bewertung:**  \n\u2714\ufe0f Die Antwort",
+   "teacher_s": 33.32,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "cd7d6333336e36a3f20e53e93be9b229521f8237864ed7bd87e2fbf503f5320f",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "a9a4044f634e6f93594bb8368251ba837638ffe20255bcd89cf5af1de5cbd8eb",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long07",
+   "arm": "on",
+   "self_output": "The survey counted exactly 790 bicycles at the station in Bremen.",
+   "self_pass": true,
+   "self_s": 11.45,
+   "self_candidate_hash": "236abcc64b0b34c54e1a7744a84cf37c4d1d3bac971fa882f587377eb5139b6c",
+   "self_sha": "236abcc64b0b34c54e1a7744a84cf37c4d1d3bac971fa882f587377eb5139b6c",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen (faktisch korrekt und direkt aus der Frage entnommen):**  \n\u2705 Die Aussage \u201eThe survey counted exactly 790 bicycles at the station in Bremen\u201c ist **belegt** durch die Frage:  \n> \"In Bremen the survey counted exactly 790 bicycles parked at the station.\"\n\nDiese Information wird direkt und unmissverst\u00e4ndlich in der Frage genannt. Es handelt sich um eine klare, faktenbasierte Aussage.\n\n---\n\n**Unsicherheit (keine Belegung oder unklare Quelle):**  \n\u274c Keine Unsicherheit im Sinne von \u201em\u00f6glicherweise\u201c, \u201ewahrscheinlich\u201c oder \u201enicht sicher bekannt\u201c. Die Zahl 790 und die Stadt Bremen sind **direkt und explizit** in der Frage genannt. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder fehlende Belege.\n\n---\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig belegt** und korrekt.  \n\n\u2705 **Belegte Korrektur:** Die Antwort \u201eThe survey counted exactly 790 bicycles at the station in Bremen",
+   "teacher_s": 33.28,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "236abcc64b0b34c54e1a7744a84cf37c4d1d3bac971fa882f587377eb5139b6c",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "b877c52875095a06c16e04c4211b8e5376ced7a6cf7a1711a27443b3c38e233d",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long08",
+   "arm": "on",
+   "self_output": "The survey counted exactly 825 bicycles in Cork.",
+   "self_pass": true,
+   "self_s": 11.45,
+   "self_candidate_hash": "0502f701eaf2ecf44e22e7b879c54d19b7f0fa8895e5517e592b0168894445db",
+   "self_sha": "0502f701eaf2ecf44e22e7b879c54d19b7f0fa8895e5517e592b0168894445db",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Aussage \u201eThe survey counted exactly 825 bicycles in Cork\u201c ist **belegt** und **genau aus dem Text abgeleitet**.  \nDer Satz im Field Note: *\u201eIn Cork the survey counted exactly 825 bicycles parked at the station.\u201c* enth\u00e4lt die genauen Zahlen (825) und die Stadt (Cork).  \n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in Bezug auf die Zahl oder die Stadt. Die Angabe ist direkt, eindeutig und ohne Widerspr\u00fcche im Text.  \n\n\u27a1\ufe0f **Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n**Endg\u00fcltige Bewertung: Belegte Korrektur.** \u2705",
+   "teacher_s": 25.06,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "0502f701eaf2ecf44e22e7b879c54d19b7f0fa8895e5517e592b0168894445db",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "8223915acd0402d7ce132221fba4df6a92f05515c232db64aa698e00413ab356",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long09",
+   "arm": "on",
+   "self_output": "The survey counted exactly 351 bicycles in Linz.",
+   "self_pass": true,
+   "self_s": 11.04,
+   "self_candidate_hash": "7c55a4dbc2b4a59ac1819d6a5afc8cf1519f4b5d32f8f4be9050e655bd180006",
+   "self_sha": "7c55a4dbc2b4a59ac1819d6a5afc8cf1519f4b5d32f8f4be9050e655bd180006",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey counted exactly 351 bicycles in Linz\u201c ist **belegt** und **genau auf die Frage** bezogen.  \nDie Aussage findet sich direkt im Text: *\u201eIn Linz the survey counted exactly 351 bicycles parked at the station.\u201c*  \nDas ist eine klare, direkte Angabe, die sowohl die Zahl (351) als auch die Stadt (Linz) enth\u00e4lt.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit besteht in dieser Aussage. Die Information ist **konkret, eindeutig und direkt im Text enthalten**. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder fehlende Belege.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Belegte Korrektur:** Die Antwort \u201eThe survey counted exactly 351 bicycles in Linz\u201c ist korrekt und wird aus dem Text direkt abgeleitet.  \n\u274c Keine Unsicherheit vorhanden.",
+   "teacher_s": 32.8,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "7c55a4dbc2b4a59ac1819d6a5afc8cf1519f4b5d32f8f4be9050e655bd180006",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "799be1d6f2a0589236dc0b2fca218b18ff41b373886590dc7bc29a8959adaf8b",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long10",
+   "arm": "on",
+   "self_output": "The survey counted exactly 418 bicycles parked at the station in Brno.",
+   "self_pass": true,
+   "self_s": 11.96,
+   "self_candidate_hash": "14168a83544a9cb56f3435cfce1499d0263ebe4f4ac89b0c19ffa015aa4e7184",
+   "self_sha": "14168a83544a9cb56f3435cfce1499d0263ebe4f4ac89b0c19ffa015aa4e7184",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Aussage \u201eThe survey counted exactly 418 bicycles parked at the station in Brno\u201c ist **belegt** durch den Text:  \n> \"In Brno the survey counted exactly 418 bicycles parked at the station.\"\n\nDie Zahlen (418) und die Stadt (Brno) werden direkt im Originaltext genannt und sind daher **faktisch korrekt**.\n\n---\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Aussage. Die Information ist **klar, direkt und unbestritten** enthalten. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder fehlende Belege.\n\nDie Antwort ist vollst\u00e4ndig und exakt auf den gegebenen Text zur\u00fcckgef\u00fchrt.\n\n---\n\n\u2705 **Endg\u00fcltige Bewertung:**  \n**Belegte Korrektur:** Ja  \n**Unsicherheit:** Nein  \n\n**Fazit:** Die Antwort ist korrekt und vollst\u00e4ndig belegt.",
+   "teacher_s": 30.31,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "14168a83544a9cb56f3435cfce1499d0263ebe4f4ac89b0c19ffa015aa4e7184",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "8d1ee8d229b63e0bffe8420390af9a53ebb9912450a6b1473eb6911f455c419a",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long11",
+   "arm": "on",
+   "self_output": "The survey counted exactly 516 bicycles in Bremen.",
+   "self_pass": true,
+   "self_s": 11.54,
+   "self_candidate_hash": "f21e910c65d05ca079a6f2ce0642909104ce43858d4817d7eca96eebb17f43f0",
+   "self_sha": "f21e910c65d05ca079a6f2ce0642909104ce43858d4817d7eca96eebb17f43f0",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey counted exactly 516 bicycles in Bremen\u201c ist **belegt** und **genau auf die Frage** eingehend.  \n\nIn den Field Notes steht explizit:  \n> \"In Bremen the survey counted exactly 516 bicycles parked at the station.\"  \n\nDas ist eine direkte, unbestreitbare Aussage, die die Zahl (516) und die Stadt (Bremen) genau angibt. Die Antwort folgt logisch und sachlich aus dem Text.\n\n---\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden.  \nDie Aussage ist **kein Spekulation**, keine Interpretation, keine Vermutung \u2013 sie ist ein direkter, dokumentierter Fakt aus dem Text.  \n\nEs gibt keine Ambiguit\u00e4ten oder Mehrdeutigkeiten in der Formulierung. Die Zahl und die Stadt sind eindeutig genannt.\n\n---\n\n**Fazit:**  \n\u2705 **Belegte Korrektur:** Die Antwort ist vollst\u00e4ndig, korrekt und direkt aus den Field Notes abgeleitet.  \n\u27a1\ufe0f **Endg\u00fcltige Bewert",
+   "teacher_s": 34.18,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "f21e910c65d05ca079a6f2ce0642909104ce43858d4817d7eca96eebb17f43f0",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "dc5d80db15f293ed231fa224cf15e55fcacdad3403d57ea861368e7b4692e9f2",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long12",
+   "arm": "on",
+   "self_output": "The survey counted exactly 827 bicycles at the station in Malmo.",
+   "self_pass": true,
+   "self_s": 11.85,
+   "self_candidate_hash": "aedf34120fb2e81715105288626c6b2bf3cdbfdb859e0095cf49a93456e36e01",
+   "self_sha": "aedf34120fb2e81715105288626c6b2bf3cdbfdb859e0095cf49a93456e36e01",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Aussage \u201eThe survey counted exactly 827 bicycles at the station in Malmo\u201c ist **belegt** durch den Text:  \n> \"In Malmo the survey counted exactly 827 bicycles parked at the station.\"\n\nDie Zahlen (827) und die Stadt (Malmo) werden direkt im Feldnotiztext genannt und sind daher **faktisch korrekt** und **unbestreitbar**.\n\n---\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in Bezug auf die Zahl oder die Stadt.  \nDer Text ist klar, pr\u00e4zise und enth\u00e4lt keine Widerspr\u00fcche oder Ambiguit\u00e4ten bez\u00fcglich der Anzahl der Fahrr\u00e4der und der Stadt. Es gibt keine Hinweise darauf, dass die Angabe irref\u00fchrend oder ungenau ist.\n\n---\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig belegt** und korrekt.  \n\n\u2705 **Endg\u00fcltige Bewertung:**  \n**Belegte Korrektur:** Ja  \n**Unsicherheit:** Nein  \n\n\ud83d\udc49 **Endg\u00fcltige Antwort:** *The survey counted exactly ",
+   "teacher_s": 33.77,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "aedf34120fb2e81715105288626c6b2bf3cdbfdb859e0095cf49a93456e36e01",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "435ee503d8e4900c3bc93b7e4c1751fe3a4963e7de23a7d0a5742e37fcb5bac8",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long13",
+   "arm": "on",
+   "self_output": "The survey counted exactly 755 bicycles at the station in Linz.",
+   "self_pass": true,
+   "self_s": 11.74,
+   "self_candidate_hash": "034f8e4e126f3faed948a6f048bf7464f30f4ad7f4d52cf1ab5dc61c3b6fea72",
+   "self_sha": "034f8e4e126f3faed948a6f048bf7464f30f4ad7f4d52cf1ab5dc61c3b6fea72",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen (fest belegt, direkt aus der Frage):**  \n\u2705 Die Antwort \u201eThe survey counted exactly 755 bicycles at the station in Linz\u201c ist **genau und korrekt** auf Basis der gegebenen Field Notes.  \n\nDie Aussage:  \n- \u201eexactly 755 bicycles\u201c \u2192 direkt aus dem Text: *\u201eIn Linz the survey counted exactly 755 bicycles parked at the station.\u201c*  \n- \u201ein Linz\u201c \u2192 direkt aus dem Text: *\u201eIn Linz the survey counted exactly 755 bicycles parked at the station.\u201c*  \n\nBeide Informationen sind **direkt, unmittelbar und ohne Interpretation** aus dem Originaltext abgeleitet. Keine Annahme oder Vermutung erforderlich.\n\n---\n\n**Unsicherheit (keine Unsicherheit vorhanden):**  \n\u274c Es gibt **keine Unsicherheit** in dieser Aussage. Die Angaben sind klar, eindeutig und vollst\u00e4ndig im Text enthalten.  \n\nDie Antwort ist **vollst\u00e4ndig belegt** und **keine Vermutung oder Spekulation** enth\u00e4lt.\n\n---\n\n\u2705 **Endg\u00fclt",
+   "teacher_s": 32.9,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "034f8e4e126f3faed948a6f048bf7464f30f4ad7f4d52cf1ab5dc61c3b6fea72",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "d3ab10c8cc4a159dbff8561d54e67b1167d91d05547f03935982fc8eecbf6cbe",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long14",
+   "arm": "on",
+   "self_output": "The survey counted exactly 921 bicycles at the station in Malmo.",
+   "self_pass": true,
+   "self_s": 11.55,
+   "self_candidate_hash": "0ea94203e2cc69e6dcfd14c2ee508bac27740ade456c78eb876eb06269563f82",
+   "self_sha": "0ea94203e2cc69e6dcfd14c2ee508bac27740ade456c78eb876eb06269563f82",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey counted exactly 921 bicycles at the station in Malmo\u201c ist **belegt** durch den Text:  \n> \"In Malmo the survey counted exactly 921 bicycles parked at the station.\"\n\nDieser Satz enth\u00e4lt explizit die Zahl (921) und die Stadt (Malmo), was die Antwort vollst\u00e4ndig und korrekt unterst\u00fctzt.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit besteht in dieser Aussage. Die Information ist direkt, eindeutig und ohne Widerspr\u00fcche oder Ambiguit\u00e4ten im Originaltext enthalten.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Endg\u00fcltige Bewertung: Belegte Korrektur** \u2013 Die Aussage ist exakt aus dem Text abgeleitet und korrekt formuliert.",
+   "teacher_s": 27.18,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "0ea94203e2cc69e6dcfd14c2ee508bac27740ade456c78eb876eb06269563f82",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "21d828328ae53a847fce6232a936834c0fe411ca14122c95d6de96f05e2b8098",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes00",
+   "arm": "on",
+   "self_output": "The most recent number is 33 members from the 5 March note.",
+   "self_pass": false,
+   "self_s": 10.13,
+   "self_candidate_hash": "acc54b9bb0375f503e8fe272387d83e247281959c911ac7a92e721ccd2e0ba97",
+   "self_sha": "acc54b9bb0375f503e8fe272387d83e247281959c911ac7a92e721ccd2e0ba97",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe most recent number is 33 members from the 5 March note\u201c ist **korrekt** und **belegt** durch die Angabe der Datumsangaben:  \n- Die Note vom 5. M\u00e4rz ist **sp\u00e4ter** als die vom 20. M\u00e4rz (5. M\u00e4rz > 20. M\u00e4rz im Zeitrahmen).  \n\u2192 Daher ist die **j\u00fcngste** Information die vom 5. M\u00e4rz mit 33 Mitgliedern.\n\n**Unsicherheit:**  \n\u274c Es gibt **keine Unsicherheit** in der Aussage, dass die j\u00fcngere Note (5. M\u00e4rz) die aktuellste ist. Die Frage fragt nach dem **j\u00fcngsten Wert**, nicht nach der Richtigkeit des Werts oder der Konsistenz zwischen den beiden Notizen.  \n\u2192 Die Antwort beantwortet die Frage korrekt und objektiv, ohne Annahmen \u00fcber die Richtigkeit der Zahlen zu treffen.\n\n**Fazit:**  \n\u2705 **Belegte Korrekturen:** Die Aussage ist sachlich, logisch und datenbasiert.  \n\u274c **",
+   "teacher_s": 33.01,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "acc54b9bb0375f503e8fe272387d83e247281959c911ac7a92e721ccd2e0ba97",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "488dc2ea7a9ae93af3c1bf0f99b9ba61bf54898b4537d5f7505c223d35950495",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes01",
+   "arm": "on",
+   "self_output": "The most recent number is 47 members.",
+   "self_pass": true,
+   "self_s": 10.36,
+   "self_candidate_hash": "481eb3dd49ab1d6181ce60fdb9702ea2e53e540c6ea10426ab37d2dcb41be3ca",
+   "self_sha": "481eb3dd49ab1d6181ce60fdb9702ea2e53e540c6ea10426ab37d2dcb41be3ca",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \nDie Antwort \u201eThe most recent number is 47 members\u201c ist **korrekt**, da die Notiz vom **17. M\u00e4rz** (sp\u00e4ter als die vom 13. M\u00e4rz) die aktuellere Information darstellt. Die Frage fragt nach dem **j\u00fcngsten** Wert, nicht nach der wahren oder korrekten Gr\u00f6\u00dfe des Teams.\n\n\u2192 Dies ist eine **klare, belegte Korrektur** der Aussage: Die j\u00fcngste Notiz (17. M\u00e4rz) enth\u00e4lt die aktuellste Zahl (47), also ist 47 die **letzte und damit die j\u00fcngste Angabe**.\n\n**Unsicherheit:**  \nEs gibt **keine Unsicherheit** bez\u00fcglich der zeitlichen Reihenfolge der Notizen. Die Daten sind klar:  \n- 13. M\u00e4rz \u2192 21 Mitglieder  \n- 17. M\u00e4rz \u2192 47 Mitglieder  \n\nDie Frage ist rein zeitlich orientiert (\u201eWhich number is the most recent one?\u201c), nicht statistisch oder logisch, ob die Zahl plausibel ist. Daher spielt die R",
+   "teacher_s": 33.88,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "481eb3dd49ab1d6181ce60fdb9702ea2e53e540c6ea10426ab37d2dcb41be3ca",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "ff46de393eb30a438e02571c286a66c965cf889bea088b3e51492658841ac051",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes02",
+   "arm": "on",
+   "self_output": "The most recent number is 33 members from the 23 March note.",
+   "self_pass": true,
+   "self_s": 10.84,
+   "self_candidate_hash": "bf16a20c34e868ecbc6fcc78b03e5855d3ccc6785a0071474842519a6c46e79c",
+   "self_sha": "bf16a20c34e868ecbc6fcc78b03e5855d3ccc6785a0071474842519a6c46e79c",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt**, da die **23. M\u00e4rz-Notiz** tats\u00e4chlich **sp\u00e4ter** als die 20. M\u00e4rz-Notiz ist.  \n\u2705 Die Frage fragt nach dem **j\u00fcngsten Wert**, nicht nach der wahren oder korrekten Anzahl.  \n\u2705 In der Situation, wo nur zwei Notizen vorliegen und keine weiteren Hinweise (z.\u202fB. Konsistenz, Quellen, Kontrolle) gegeben sind, ist die **Zeitstempel-Ordnung** die entscheidende Grundlage f\u00fcr die Beurteilung des \u201ej\u00fcngsten\u201c Wertes.\n\n\u27a1\ufe0f Daher ist die Aussage: *\u201eThe most recent number is 33 members from the 23 March note.\u201c*  \n**belegt durch den Zeitpunkt der Notiz.**\n\n---\n\n**Unsicherheit:**  \n\u274c Es gibt **keine Unsicherheit** bez\u00fcglich des Zeitpunkts: 23. M\u00e4rz ist nach 20. M\u00e4rz.  \n\u274c Es gibt **keine Hinweise auf eine fehlerhafte Quelle oder inkonsist",
+   "teacher_s": 34.52,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "bf16a20c34e868ecbc6fcc78b03e5855d3ccc6785a0071474842519a6c46e79c",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "ff17231c6d1ad5c1b9ef807a7a117401bbf9ff2bbe35e2314ed57f46fa35c74e",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes03",
+   "arm": "on",
+   "self_output": "The most recent number is 12 members from the 6 March note.",
+   "self_pass": false,
+   "self_s": 9.95,
+   "self_candidate_hash": "fd080070d192e40e521bf9d6213031da0a547530d6612b16f29bf5dbf3165b6d",
+   "self_sha": "fd080070d192e40e521bf9d6213031da0a547530d6612b16f29bf5dbf3165b6d",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \nDie Antwort ist **falsch**.  \n\nDie Frage lautet: *\u201eWhich number is the most recent one?\u201c* (Welche Zahl ist die neueste?)  \nDie beiden Notizen sind:  \n- 24. M\u00e4rz: 18 Mitglieder  \n- 6. M\u00e4rz: 12 Mitglieder  \n\nDa **24. M\u00e4rz** sp\u00e4ter als **6. M\u00e4rz** ist, ist die **24. M\u00e4rz-Note** die **neueste**.  \n\nDie Antwort behauptet daher f\u00e4lschlicherweise, dass die 12-Mitgliedszahl (6. M\u00e4rz) die neueste sei \u2013 was **falsch** ist.\n\n\u2705 **Belegte Korrektur:**  \nDie **korrekte Antwort** lautet: *The most recent number is 18 members from the 24 March note.*  \n\n\u274c **Unsicherheit (in der urspr\u00fcnglichen Antwort):**  \nEs gibt keine Unsicherheit in der Beobachtung der Zeitreihenfolge. Die Reihenfolge der Daten ist eindeutig: 6. M\u00e4rz \u2192 2",
+   "teacher_s": 33.48,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "fd080070d192e40e521bf9d6213031da0a547530d6612b16f29bf5dbf3165b6d",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "bacbbc6194f54b91264dea149b04fb493bdc3317d9efb3661e536ed1bf76de11",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes04",
+   "arm": "on",
+   "self_output": "The most recent number is 73 members from the 24 March note.",
+   "self_pass": true,
+   "self_s": 9.55,
+   "self_candidate_hash": "c440f13ddb3bf447a89f7796ea35badc162a22a560c9c337fc35da670ba2d9bf",
+   "self_sha": "c440f13ddb3bf447a89f7796ea35badc162a22a560c9c337fc35da670ba2d9bf",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe most recent number is 73 members from the 24 March note\u201c ist **korrekt und belegt** durch die Angabe der Datumsangaben:  \n- Die Note vom 24. M\u00e4rz ist **sp\u00e4ter** als die vom 5. M\u00e4rz.  \n- Daher ist sie die **j\u00fcngste** Information.\n\n**Unsicherheit:**  \n\u274c Es gibt **keine Unsicherheit** in der Aussage, dass die j\u00fcngere Note (24. M\u00e4rz) die aktuellste ist.  \nDie Frage fragt nach dem \u201emeisten aktuellen\u201c Wert, nicht nach der Richtigkeit des Zahlenwerts \u2013 also handelt es sich um eine **Datum- und Zeitreihenfrage**, nicht um eine Validierung der Teamgr\u00f6\u00dfe.\n\n**Fazit:**  \n\u27a1\ufe0f Die Antwort ist **korrekt und belegt**.  \n\u27a1\ufe0f Es gibt **keine Unsicherheit** in der logischen Schlussfolgerung.\n\n**Endg\u00fcltige Bewertung:**  \n\u2705 Belegte Korrekturen: Ja  \n\u274c Unsicherheit: Nein  \n\n\u2192 **Die Antwort ist",
+   "teacher_s": 34.33,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "c440f13ddb3bf447a89f7796ea35badc162a22a560c9c337fc35da670ba2d9bf",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "7abe370b307f82651a197f225ab12e0caf769b55204c44955bdadc9551a0595c",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes05",
+   "arm": "on",
+   "self_output": "The most recent figure is 74 members, according to the 25 March note.",
+   "self_pass": true,
+   "self_s": 10.15,
+   "self_candidate_hash": "29c31ff2019f5a7fa749df4e1304fafdc42368767e73244e47323dc8a38c157c",
+   "self_sha": "29c31ff2019f5a7fa749df4e1304fafdc42368767e73244e47323dc8a38c157c",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort bezieht sich korrekt auf die zeitliche Reihenfolge der Notizen: Der 25. M\u00e4rz ist sp\u00e4ter als der 2. M\u00e4rz.  \n\u2705 Es wird klar und sachlich festgestellt, dass die aktuellere Zahl (74) aus dem 25. M\u00e4rz-Note stammt.  \n\u2705 Die Aussage \u201eThe most recent figure is 74 members\u201c ist wissenschaftlich korrekt und folgt direkt aus der Datenlage.\n\n**Unsicherheit:**  \n\u274c Es gibt **keine Unsicherheit** in der Aussage selbst, da die Frage klare Zeitangaben (2. M\u00e4rz vs. 25. M\u00e4rz) bietet und die Antwort auf diese basiert.  \n\u274c Es wird **keine Quellenkritik**, **Zweifel an der Genauigkeit** oder **M\u00f6glichkeit von Fehlern** in den Notizen ge\u00e4u\u00dfert \u2013 das ist jedoch nicht erforderlich, da die Frage nach dem \u201ej\u00fcngsten\u201c Wert fragt, nicht nach der Richtigkeit der Zahlen.  \n\u274c Die Antwort **vermeidet jegliche Bewert",
+   "teacher_s": 33.78,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "29c31ff2019f5a7fa749df4e1304fafdc42368767e73244e47323dc8a38c157c",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "6f705877fc006874dfde6065c1519ad577a76e4b70e20e402e10d3f27d6225df",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes06",
+   "arm": "on",
+   "self_output": "The most recent number is 79, according to the 11 March note.",
+   "self_pass": true,
+   "self_s": 9.44,
+   "self_candidate_hash": "029125539379507d6f070a22ffaf15a9e89e3e35254ced6acb74bf794680c4af",
+   "self_sha": "029125539379507d6f070a22ffaf15a9e89e3e35254ced6acb74bf794680c4af",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2714\ufe0f Die Antwort \u201eThe most recent number is 79, according to the 11 March note\u201c ist **belegt** durch die Angabe der Datumsangaben: Der 11. M\u00e4rz ist nach dem 4. M\u00e4rz sp\u00e4ter und daher der **j\u00fcngere** Zeitpunkt.  \n\u2714\ufe0f Die Aussage, dass die Zahl 79 aus dem j\u00fcngeren Datum stammt, folgt logisch aus der zeitlichen Reihenfolge der Notizen.\n\n**Unsicherheit:**  \n\u274c Es gibt **keine Unsicherheit** in der Beurteilung der Zeitreihenfolge. Die Datumsangabe (11 M\u00e4rz > 4 M\u00e4rz) ist klar und unbestreitbar.  \n\u274c Die Diskrepanz zwischen den Zahlen (58 vs. 79) wird nicht kritisch bewertet \u2013 aber die Frage lautet nicht nach der Richtigkeit der Zahl, sondern nach dem **j\u00fcngsten Wert**. Daher ist eine Bewertung der Genauigkeit der Zahlen **nicht erforderlich**.\n\n**Fazit:**  \nDie Antwort ist **korre",
+   "teacher_s": 35.08,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "029125539379507d6f070a22ffaf15a9e89e3e35254ced6acb74bf794680c4af",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "aa85d00f3c7b8a4fa86c69c9b43b5a3c34938ca7c94c1ee6fcc1144b0f9defff",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes07",
+   "arm": "on",
+   "self_output": "The most recent number is 23, according to the 14 March note.",
+   "self_pass": true,
+   "self_s": 9.54,
+   "self_candidate_hash": "413e02f2070b40973dca337c376ef90a7189acb74d467db6a8286bad8a7a6f7f",
+   "self_sha": "413e02f2070b40973dca337c376ef90a7189acb74d467db6a8286bad8a7a6f7f",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt**, da die 14. M\u00e4rz-Notiz tats\u00e4chlich **sp\u00e4ter** als die 7. M\u00e4rz-Notiz ist.  \n\u2705 Die Aussage \u201eThe most recent number is 23, according to the 14 March note\u201c ist **faktisch korrekt** und basiert auf der zeitlichen Reihenfolge der Notizen.\n\n**Unsicherheit:**  \n\u274c Es gibt **keine Unsicherheit** in der Beurteilung der Zeitreihenfolge: Die 14. M\u00e4rz-Notiz ist offensichtlich j\u00fcnger als die 7. M\u00e4rz-Notiz.  \n\u274c Die Frage bezieht sich **nur auf die Rechtfertigung der Aktualit\u00e4t**, nicht auf die Richtigkeit der Zahl (23 vs. 15). Daher ist die Aussage, dass 23 die \u201eletzte\u201c Zahl sei, **nicht** eine Beurteilung der Wahrheit der Zahl, sondern lediglich eine Aussage \u00fcber die Zeit.  \n\u274c Es gibt **keine Hinweise auf fehlende oder widerspr\u00fcch",
+   "teacher_s": 33.59,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "413e02f2070b40973dca337c376ef90a7189acb74d467db6a8286bad8a7a6f7f",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "b9b205c0daef4df13b1d6597dc108a39e2d39035d59563c6e97c910f5420be54",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes08",
+   "arm": "on",
+   "self_output": "The most recent number is 44, according to the 19 March note.",
+   "self_pass": true,
+   "self_s": 9.53,
+   "self_candidate_hash": "d609d1a8a97ffbdb2cbe192aef925f4a28579ebc08732d913dcdf1dbcc997772",
+   "self_sha": "d609d1a8a97ffbdb2cbe192aef925f4a28579ebc08732d913dcdf1dbcc997772",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort bezieht sich korrekt auf die zeitliche Reihenfolge der Notizen: Der 19. M\u00e4rz ist sp\u00e4ter als der 14. M\u00e4rz.  \n\u2705 Es wird korrekt festgestellt, dass die 19. M\u00e4rz-Note die j\u00fcngere Information darstellt.  \n\n**Unsicherheit:**  \n\u274c Die Antwort **verweist nicht auf die Tatsache, dass die beiden Notizen widersprechen**, was eine wichtige kritische Beobachtung w\u00e4re \u2013 insbesondere bei einer Pr\u00fcfung von lokalen Antworten, wo Widerspr\u00fcche und deren Bedeutung ber\u00fccksichtigt werden m\u00fcssen.  \n\u274c Es wird **keine Begr\u00fcndung daf\u00fcr gegeben, warum die j\u00fcngere Zahl als korrekter Wert angesehen wird**, ohne dass eine Quelle oder eine logische Grundlage daf\u00fcr angegeben ist (z.\u202fB. ob eine \u00dcberpr\u00fcfung stattgefunden hat, ob es sich um eine Korrektur handelt, oder ob nur die zeitliche Reihenfolge relevant ist).  \n\u274c Die Frage fragt nach dem \u201ewah",
+   "teacher_s": 32.68,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "d609d1a8a97ffbdb2cbe192aef925f4a28579ebc08732d913dcdf1dbcc997772",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "0319c188d2b4d7f79f40ce9c52cbaedccfafbe598eb35652c87582c089af7f57",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes09",
+   "arm": "on",
+   "self_output": "The most recent number is 61, according to the 24 March note.",
+   "self_pass": true,
+   "self_s": 8.93,
+   "self_candidate_hash": "ef42706610e616f83d02c771e871c8ce768b256b58f77744881e2bef0e96df98",
+   "self_sha": "ef42706610e616f83d02c771e871c8ce768b256b58f77744881e2bef0e96df98",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2714\ufe0f Die Antwort bezieht sich korrekt auf die zeitliche Reihenfolge der Notizen: Der 24. M\u00e4rz ist sp\u00e4ter als der 18. M\u00e4rz.  \n\u2714\ufe0f Die Aussage \u201eThe most recent number is 61, according to the 24 March note\u201c ist sachlich korrekt und folgt direkt aus der Angabe der Datumsreihenfolge.  \n\n**Unsicherheit:**  \n\u274c Es gibt **keine Unsicherheit** bez\u00fcglich der zeitlichen Reihenfolge oder des Inhalts der Antwort. Die Frage bezieht sich ausschlie\u00dflich auf die \u201eletzte\u201c Zahl, und das ist ein klarer, belegbarer Punkt (die 24. M\u00e4rz-Note ist j\u00fcnger).  \n\u274c Es wird **keine Quelle oder Beleg** f\u00fcr die Richtigkeit der Zahlen (51 vs. 61) angegeben \u2013 aber das ist nicht notwendig, da die Frage nach dem \u201ej\u00fcngsten\u201c Wert fragt, nicht nach der Richtigkeit der Zahl.  \n\n\u27a1\ufe0f **Fazit:**  \nDie Antwort ist **",
+   "teacher_s": 33.13,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "ef42706610e616f83d02c771e871c8ce768b256b58f77744881e2bef0e96df98",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "1c31db7051aca584a3979aad5d1468a31ffadd339975c0f2628415b82d541382",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes10",
+   "arm": "on",
+   "self_output": "The most recent note is from March 21 (63 members).",
+   "self_pass": true,
+   "self_s": 10.75,
+   "self_candidate_hash": "e1dd668a0eadad8bd32301c3156cef710643347bdf3130dbac2eab3ea1548064",
+   "self_sha": "e1dd668a0eadad8bd32301c3156cef710643347bdf3130dbac2eab3ea1548064",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe most recent note is from March 21 (63 members)\u201c ist **korrekt und belegt**.  \nDie Frage fragt nach der **j\u00fcngsten** Notiz, nicht nach der korrekten oder wahren Zahl.  \nDer Zeitpunkt der Notizen ist klar:  \n- 5. M\u00e4rz \u2192 \u00e4lter  \n- 21. M\u00e4rz \u2192 j\u00fcnger  \n\nDa die Frage nur nach dem **j\u00fcngsten Datum** fragt (nicht nach der Wahrheit der Angabe), ist die Aussage, dass die Note vom 21. M\u00e4rz die j\u00fcngste ist, **faktisch korrekt und belegt durch die Daten**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Beurteilung des Zeitpunkts.  \nDie Aussage \u201edie j\u00fcngste Notiz\u201c ist eindeutig und unabh\u00e4ngig von der Inhaltsgenauigkeit der Zahlen (dass 39 und 63 unterschiedlich sind). Die Frage ist nicht, welche Zahl richtig ist, sondern welches Datum am neuesten ist.\n\n\u27a1\ufe0f **Faz",
+   "teacher_s": 33.98,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "e1dd668a0eadad8bd32301c3156cef710643347bdf3130dbac2eab3ea1548064",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "053bc131b1fbda15784afec56814887faa99c534fd6aa3bd48ecf97251cf0c4b",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes11",
+   "arm": "on",
+   "self_output": "The most recent note is from March 12 (12 members).",
+   "self_pass": false,
+   "self_s": 10.34,
+   "self_candidate_hash": "775756165e117a60321d9e38e90c3ff069adc969b13f764236c789de7ee88730",
+   "self_sha": "775756165e117a60321d9e38e90c3ff069adc969b13f764236c789de7ee88730",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \nDie Antwort ist **falsch**.  \n\nDie Frage lautet: *\u201eWhich number is the most recent one?\u201c*  \nDas bedeutet: Welche Zahl stammt aus dem **neuesten** Dokument?\n\n- Note vom **13. M\u00e4rz**: Greta's team has 30 members.  \n- Note vom **12. M\u00e4rz**: Greta's team has 12 members.\n\nDa der **13. M\u00e4rz nach dem 12. M\u00e4rz** kommt, ist die Note vom **13. M\u00e4rz** die **neueste**.\n\nDie Antwort behauptet: *\u201eThe most recent note is from March 12 (12 members)\u201c* \u2013 das ist **falsch**.\n\n\u2705 **Belegte Korrektur:**  \nDie korrekte Antwort ist: **The most recent note is from March 13 (30 members).**\n\n---\n\n**Unsicherheit:**  \nKeine. Die Reihenfolge der Datumsangabe ist klar und unbestritten. Es gibt keine Unsicherheit bez\u00fcglich des Zeitpunkts oder der Interpretation von \u201emost recent\u201c. Die Antwort ist einde",
+   "teacher_s": 33.17,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "775756165e117a60321d9e38e90c3ff069adc969b13f764236c789de7ee88730",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "a8a28750dfa08b969ccb54ca142fe9202e2c24a3f0a23d8b946970044cfd38d2",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes12",
+   "arm": "on",
+   "self_output": "The most recent number is 29, according to the 14 March note.",
+   "self_pass": true,
+   "self_s": 8.73,
+   "self_candidate_hash": "0281bae993bd88d2acec508179aa2457b729b81e24a2b3d6ed17c8db4f63ebba",
+   "self_sha": "0281bae993bd88d2acec508179aa2457b729b81e24a2b3d6ed17c8db4f63ebba",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2714\ufe0f Die Antwort ist korrekt: Der 14. M\u00e4rz ist sp\u00e4ter als der 11. M\u00e4rz und daher die neueste Information.  \n\u2714\ufe0f Die Aussage \u201eThe most recent number is 29, according to the 14 March note\u201c ist sachlich und logisch fundiert, da die Zeitstempel klar angegeben sind.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Beurteilung der Zeitreihenfolge. Die Reihenfolge der Datumsangaben ist eindeutig und belegbar.  \n\u274c Es gibt keine Hinweise darauf, dass die Zahl 29 oder 20 als korrekt oder falsch angesehen wird \u2013 die Frage betrifft lediglich die **Neueste** Angabe, nicht deren Richtigkeit. Daher ist die Aussage nicht auf eine Wahrheitsbeurteilung der Zahlen zur\u00fcckzuf\u00fchren.\n\n**Fazit:**  \nDie Antwort ist **korrekt und belegt**. Es gibt keine Unsicherheit in der logischen Schlussfolgerung aus den gegebenen Daten.\n\n\u2705 **Be",
+   "teacher_s": 33.38,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "0281bae993bd88d2acec508179aa2457b729b81e24a2b3d6ed17c8db4f63ebba",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "2adf18f952d1e8f587024b784e2602dd8a6ca0d027261aa8e8959e6b9be3a8b7",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes13",
+   "arm": "on",
+   "self_output": "The most recent number is 56, according to the 16 March note.",
+   "self_pass": true,
+   "self_s": 9.64,
+   "self_candidate_hash": "43f9a1bc0877337a21f565d94709320bb841521ac1b89c62149098a889e4c96b",
+   "self_sha": "43f9a1bc0877337a21f565d94709320bb841521ac1b89c62149098a889e4c96b",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **belegt**: Die Frage bezieht sich auf die **Neueste** der beiden Notizen. Die Note vom **16. M\u00e4rz** ist tats\u00e4chlich **sp\u00e4ter** als die vom 14. M\u00e4rz. Daher ist die **zeitliche Reihenfolge** klar: 16. M\u00e4rz > 14. M\u00e4rz.\n\nDie Aussage \u201eThe most recent number is 56, according to the 16 March note\u201c folgt logisch aus der zeitlichen Abfolge der Notizen. Es gibt keine fehlerhafte Interpretation der Daten oder einer falschen Beurteilung der Zeitpunkte.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in Bezug auf die **Zeitreihe** oder die **Belegung der Aussage**. Die Frage ist rein zeitlich orientiert, und die Antwort beruht auf klaren, dokumentierten Fakten (Datum der Notizen). Es gibt keine Hinweise darauf, dass die Zahl 56 oder 30 als falsch oder ungenau gilt \u2013 nur dass sie unterschiedlich sind.\n\n**Fazit:**  \nDie Auss",
+   "teacher_s": 32.97,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "43f9a1bc0877337a21f565d94709320bb841521ac1b89c62149098a889e4c96b",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "800c06b41622c7293a6caf2079521a21345fae3af07bf6cc5421618b8c56ffda",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "notes14",
+   "arm": "on",
+   "self_output": "The most recent number is 50, as it appears in the later date.",
+   "self_pass": true,
+   "self_s": 9.34,
+   "self_candidate_hash": "a4057902580d5552ab2f06bfd650bc8a376c25d7a2b7f4f8919a38953fc6156c",
+   "self_sha": "a4057902580d5552ab2f06bfd650bc8a376c25d7a2b7f4f8919a38953fc6156c",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist korrekt: Der Wert **50** ist die j\u00fcngere Zahl, da er im sp\u00e4teren Datum (11. M\u00e4rz) angegeben wird.  \n\u2705 Die Argumentation folgt logisch: Die \"j\u00fcngste\" Information in einem Zeitrahmen ist in der Regel als aktuellstes Datum zu betrachten \u2013 insbesondere wenn keine weiteren Hinweise auf eine Korrektur oder eine Quellensicherheit gegeben sind.\n\n**Unsicherheit:**  \n\u274c Es fehlt eine klare Aussage dar\u00fcber, ob die \u00c4nderung von 36 auf 50 **belegt** ist (z.\u202fB. durch eine offene Quelle, eine Erkl\u00e4rung oder eine Begr\u00fcndung).  \n\u274c Die Antwort **verwendet nur das Datum**, um die G\u00fcltigkeit der Zahl zu entscheiden \u2013 ohne zu ber\u00fccksichtigen, ob ein Widerspruch zwischen den beiden Notizen tats\u00e4chlich existiert oder ob es m\u00f6glicherweise eine fehlerhafte Annahme ist, dass die j\u00fcngere Zahl automatisch korrekt ist.  \n\u274c In einem k",
+   "teacher_s": 33.31,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "a4057902580d5552ab2f06bfd650bc8a376c25d7a2b7f4f8919a38953fc6156c",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "fd99edf56813d8318731761b2fbef4420ed7378135c5988d29e9e36bc0dc8306",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare00",
+   "arm": "on",
+   "self_output": "Malmo had the most rain (508 mm). The difference is 112 mm (689 - 476), so Bremen had the least rain.",
+   "self_pass": false,
+   "self_s": 10.53,
+   "self_candidate_hash": "0198d187eeb65823552d418a15f8f8c6d6996162776f21b28ef7b266d20e3385",
+   "self_sha": "0198d187eeb65823552d418a15f8f8c6d6996162776f21b28ef7b266d20e3385",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt** in Bezug auf die Berechnung und die Zuordnung der Werte.\n\n- Malmo hat 508 mm Niederschlag \u2192 korrekt.  \n- Bremen hat 689 mm \u2192 das ist der h\u00f6chste Wert \u2192 also **Bremen** hat die meisten Regen, nicht Malmo.  \n- Turin hat 476 mm \u2192 das ist der niedrigste Wert.\n\n\u27a1\ufe0f **Fehler in der Antwort:**  \nDie Aussage \u201eMalmo had the most rain\u201c ist **falsch**.  \nBremen (689 mm) hat mehr Niederschlag als Malmo (508 mm) oder Turin (476 mm).  \n\nDie Berechnung \u201e689 - 476 = 112 mm\u201c ist **mathematisch korrekt**, aber **verwendet falsche Vergleiche**. Die Frage lautet: *Which city had the most rain?* \u2013 und die Antwort gibt eine falsche Stadt an.\n\n**Unsicherheit:**  \nDie Antwort enth\u00e4lt keine klare Erkl\u00e4rung, dass B",
+   "teacher_s": 33.57,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "0198d187eeb65823552d418a15f8f8c6d6996162776f21b28ef7b266d20e3385",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "6ed1c3aab59d6dfd1b1e321e8c64dcd8eef4d1023e25e706475eba79e3929cb4",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare01",
+   "arm": "on",
+   "self_output": "Turin had the most rain (722 mm) compared to Graz (286 mm). The difference is 436 mm (722 - 286).",
+   "self_pass": true,
+   "self_s": 10.85,
+   "self_candidate_hash": "c276815205d97ec4afd7f7d44181ae096ff8c6fcf2cc24f2350b40dfc427e99e",
+   "self_sha": "c276815205d97ec4afd7f7d44181ae096ff8c6fcf2cc24f2350b40dfc427e99e",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt** in Bezug auf die Berechnung und die logische Schlussfolgerung.  \n\n- Turin hat tats\u00e4chlich die h\u00f6chste monatliche Niederschlagsmenge (722 mm).  \n- Graz hat die niedrigste Menge (286 mm).  \n- Die Differenz 722 \u2013 286 = **436 mm** ist mathematisch korrekt.  \n\nDie Aussage \u201eTurin had the most rain compared to Graz\u201c ist sachlich und logisch korrekt, da Turin die h\u00f6chste Zahl hat und Graz die niedrigste.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Antwort. Die Zahlen sind direkt aus der Frage gegeben und keine Quellen oder Messungen werden ben\u00f6tigt, um die Aussage zu belegen. Die Berechnung ist unabh\u00e4ngig und vollst\u00e4ndig nachvollziehbar.\n\n\u27a1\ufe0f **Fazit:**  \nDie Antwort ist **belegt korrekt** und enth\u00e4lt **keine Unsicherheit**.  \n\n\u2705 **Belegte Korrektur:** Die Antwort ist kor",
+   "teacher_s": 33.51,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "c276815205d97ec4afd7f7d44181ae096ff8c6fcf2cc24f2350b40dfc427e99e",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "a66252deda05a73d9753b8d405a599db50c60bea09f953d13447e0fe65cd9d46",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare02",
+   "arm": "on",
+   "self_output": "The city with the most rain is **Linz** (500 mm). The city with the least rain is **Brno** (103 mm). The difference is 397 mm.",
+   "self_pass": false,
+   "self_s": 11.25,
+   "self_candidate_hash": "f8a7a014ea3f5056d97fce2a4a2b499674ce841348a56ef5196ca2ada7aa3ffa",
+   "self_sha": "f8a7a014ea3f5056d97fce2a4a2b499674ce841348a56ef5196ca2ada7aa3ffa",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u274c Die Antwort enth\u00e4lt **falsche Daten** und ist **falsch berechnet**.\n\n**Erkl\u00e4rung:**  \nDie gegebenen Werte sind:  \n- Porto: 567 mm  \n- Brno: 103 mm  \n- Linz: 500 mm  \n\nDie Stadt mit dem **mehreren Regen** ist **Porto (567 mm)**, nicht Linz.  \nDie Stadt mit dem **wenigsten Regen** ist **Brno (103 mm)**.\n\nDie Differenz zwischen Porto und Brno betr\u00e4gt:  \n567 mm \u2013 103 mm = **464 mm**\n\n\u2705 **Richtige Antwort:**  \n*The city with the most rain is **Porto** (567 mm). The city with the least rain is **Brno** (103 mm). The difference is 464 mm.*\n\n---\n\n**Unsicherheit:**  \nKeine. Die Angaben sind klar und eindeutig, und die Berechnung ist direkt nach den Zahlen m\u00f6glich. Es gibt keine Unsicherheit bez\u00fcglich der Werte oder",
+   "teacher_s": 33.37,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "f8a7a014ea3f5056d97fce2a4a2b499674ce841348a56ef5196ca2ada7aa3ffa",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "8780050f46401369cad74cc6ddfb43c27f2eb97f168ec350c61a1bc3711125d4",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare03",
+   "arm": "on",
+   "self_output": "Brno had the most rain at 854 mm. Graz had the least at 531 mm, so it was 323 mm more than Graz.",
+   "self_pass": false,
+   "self_s": 9.24,
+   "self_candidate_hash": "14ecf018ef789afc7a118b2a32ee26d18cb049831afb0a2e83b01e2e1c82811a",
+   "self_sha": "14ecf018ef789afc7a118b2a32ee26d18cb049831afb0a2e83b01e2e1c82811a",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 *Brno had the most rain at 854 mm.*  \n\u2192 Dies ist korrekt: Brno hat die h\u00f6chste Menge an monatlichem Niederschlag (854 mm), was aus den gegebenen Werten folgt.\n\n\u2705 *Graz had the least at 531 mm*  \n\u2192 Dies ist korrekt: Graz hat den niedrigsten Wert (531 mm), also tats\u00e4chlich die wenigste Regenmenge.\n\n\u274c *so it was 323 mm more than Graz*  \n\u2192 **Fehler:** Die Aussage \u201eit was 323 mm more than Graz\u201c ist **falsch**.  \nDie Frage lautet: *Which city had the most rain, and how many millimetres more than the city with the least?*  \nDas bedeutet: **Wie viel mm mehr als die Stadt mit dem wenigsten Niederschlag?**\n\nDie Differenz zwischen Brno (854 mm) und Graz (531 mm) ist:  \n854 \u2013 531 = **323 mm** \u2192 **Dies ist mathematisch korre",
+   "teacher_s": 34.08,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "14ecf018ef789afc7a118b2a32ee26d18cb049831afb0a2e83b01e2e1c82811a",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "d5283ad7e0ff808b13b6e2bf17529671a74e89caaa24bef58a7c7514bda685f8",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare04",
+   "arm": "on",
+   "self_output": "Brno had the most rain at 836 mm. Ghent had the least at 272 mm. That\u2019s 564 mm more than Ghent compared to Brno.",
+   "self_pass": false,
+   "self_s": 9.54,
+   "self_candidate_hash": "b88ac0b7d4ecb503cfcfdd4249ded117500c92d25df9c37cdae8f096a4b0462b",
+   "self_sha": "b88ac0b7d4ecb503cfcfdd4249ded117500c92d25df9c37cdae8f096a4b0462b",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen (korrekt und belegt):**\n\n- **Brno hatte die meisten Niederschl\u00e4ge:**  \n  Die Angabe \u201eBrno 836 mm\u201c ist korrekt im Kontext der gegebenen Daten. Brno hat die h\u00f6chste Menge an monatlichem Niederschlag (836 mm) gegen\u00fcber Ghent (272 mm) und Malm\u00f6 (247 mm).  \n  \u2705 **Belegt durch die gegebene Zahl: korrekt**\n\n- **Ghent hatte die wenigsten Niederschl\u00e4ge:**  \n  Ghent hat 272 mm, Malm\u00f6 247 mm \u2192 also weniger als Malm\u00f6.  \n  \u274c **Fehler in der Antwort:** Die Antwort behauptet, dass Ghent \u201edas wenigste\u201c habe, aber **Malm\u00f6 (247 mm)** hat weniger als Ghent (272 mm).  \n  \u2192 **Falsche Zuordnung: Ghent ist nicht das mit dem wenigsten Niederschlag.**\n\n- **Differenz von 564 mm:**  \n  Die Berechnung \u201e836",
+   "teacher_s": 33.78,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "b88ac0b7d4ecb503cfcfdd4249ded117500c92d25df9c37cdae8f096a4b0462b",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "7455dbf041b58337c200d2dcf5cc20b3f64137d227be75d1c696712884519948",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare05",
+   "arm": "on",
+   "self_output": "Cork has the most rain (655 mm) while Linz has the least (224 mm). The difference is 431 mm.",
+   "self_pass": false,
+   "self_s": 10.75,
+   "self_candidate_hash": "888e76ceda7d380df065c02a17b0831c2aecd073a25705b9facd161071f775e8",
+   "self_sha": "888e76ceda7d380df065c02a17b0831c2aecd073a25705b9facd161071f775e8",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt** in Bezug auf die Werte und die Berechnung.  \n\n- Cork: 655 mm  \n- Linz: 868 mm  \n- Turin: 224 mm  \n\nDie Frage lautet: *Welche Stadt hatte den meisten Regen, und um wie viel mehr als die Stadt mit dem wenigsten?*  \n\n**Fehler in der Antwort:**  \n\u274c Die Aussage \u201eCork has the most rain\u201c ist **falsch**.  \n- Cork hat **655 mm**, Turin hat **224 mm**, Linz hat **868 mm**.  \n\u2192 **Linz hat den h\u00f6chsten Regenwert (868 mm)**, nicht Cork.  \n\u2192 **Cork hat den niedrigsten Wert** unter den drei St\u00e4dten.\n\nDie Antwort behauptet, dass Cork die meisten Niederschl\u00e4ge hat \u2013 das ist **falsch**.  \n\nDie Aussage \u201eLinz has the least\u201c ist ebenfalls **falsch**, da Linz 868 mm hat, was mehr als beide anderen St\u00e4dte (Cork: ",
+   "teacher_s": 34.08,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "888e76ceda7d380df065c02a17b0831c2aecd073a25705b9facd161071f775e8",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "5fd8567373894e9fcc052f22edbe87287a04f0cee593e31403d13a6f7a73ae9c",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare06",
+   "arm": "on",
+   "self_output": "The city with the most rain is Turin (756 mm). The city with the least rain is Brno (249 mm). The difference is 507 mm.",
+   "self_pass": false,
+   "self_s": 11.05,
+   "self_candidate_hash": "e81ed5f403e29f740ad6e0e8973a624411ec70764d4069ff06e6b4c4f3a3f3f1",
+   "self_sha": "e81ed5f403e29f740ad6e0e8973a624411ec70764d4069ff06e6b4c4f3a3f3f1",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort enth\u00e4lt **falsche Informationen** bez\u00fcglich der Stadt mit dem h\u00f6chsten Niederschlag.\n\n**Analyse der gegebenen Daten:**  \nDie monatlichen Niederschlagsmengen sind:  \n- Linz: 802 mm  \n- Brno: 249 mm  \n- Turin: 756 mm  \n\n**Richtiges Ergebnis:**  \n- Die Stadt mit dem **meisten Regen** ist **Linz (802 mm)**.  \n- Die Stadt mit dem **wenigsten Regen** ist **Brno (249 mm)**.  \n- Der Unterschied: 802 \u2013 249 = **553 mm**.\n\nDie angegebene Antwort behauptet, dass **Turin** die Stadt mit dem meisten Regen ist (falsch), und berechnet einen Unterschied von 507 mm (falsch).\n\n---\n\n**Unsicherheit:**  \nKeine. Die Daten sind klar und eindeutig gegeben. Die Rechnung und die Zuordnung der St\u00e4dte sind **nicht nur ungen",
+   "teacher_s": 34.18,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "e81ed5f403e29f740ad6e0e8973a624411ec70764d4069ff06e6b4c4f3a3f3f1",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "c5ad152f49a179a4edcb3665f3d20c0c13e9b9a5a0ca4ebe2aa83a30b82c35c4",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare07",
+   "arm": "on",
+   "self_output": "Malmo had the most rain (868 mm) compared to Graz (720 mm). The difference is 148 mm.",
+   "self_pass": false,
+   "self_s": 10.95,
+   "self_candidate_hash": "1bd40ea21510b0c8e75474620cca5abaf5b7120149356827dc7524dc746a7d77",
+   "self_sha": "1bd40ea21510b0c8e75474620cca5abaf5b7120149356827dc7524dc746a7d77",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt** in Bezug auf die Berechnung und die logische Schlussfolgerung.\n\n- Malmo hat 868 mm Niederschlag \u2192 dies ist der h\u00f6chste Wert unter den drei St\u00e4dten.  \n- Graz hat 720 mm \u2192 der niedrigste Wert.  \n- Linz hat 632 mm \u2192 dieser Wert ist **niedriger als Graz**, aber die Antwort vergleicht nur Malmo mit Graz, was **falsch** ist.\n\n\u27a1\ufe0f **Fehler in der Antwort:**  \nDie Antwort behauptet: *\"Malmo had the most rain (868 mm) compared to Graz (720 mm)\"* \u2013 das ist **falsch**, weil Linz (632 mm) weniger Niederschlag hat als Graz. Die Stadt mit dem **wenigsten** Regen ist **Linz**, nicht Graz.\n\nDie Frage lautet:  \n> \"Which city had the most rain, and how many millimetres more than the city with the least?\"\n\n\u2192 **Richtiges Verfahren:**  \n- St\u00e4dte: Malmo (868",
+   "teacher_s": 33.98,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "1bd40ea21510b0c8e75474620cca5abaf5b7120149356827dc7524dc746a7d77",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 1,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "bb4e9d127fa5f34294ddb133111eb1dcd6c653debfdd6ebd7b886e0ae15b3b52",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare08",
+   "arm": "on",
+   "self_output": "The city with the most rain is Porto (455 mm). The city with the least rain is Cork (375 mm). The difference is 80 mm.",
+   "self_pass": true,
+   "self_s": 10.74,
+   "self_candidate_hash": "b695b89434c30f8367144600762285256616783716363feab77d60205e7168c9",
+   "self_sha": "b695b89434c30f8367144600762285256616783716363feab77d60205e7168c9",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt** und **belegt** durch die gegebenen Werte:  \n- Porto hat 455 mm Niederschlag \u2013 dies ist der h\u00f6chste Wert.  \n- Cork hat 375 mm Niederschlag \u2013 dies ist der niedrigste Wert.  \n- Der Unterschied betr\u00e4gt: 455 mm \u2013 375 mm = **80 mm**.\n\nDie Berechnung und die Zuordnung der St\u00e4dte zur h\u00f6chsten bzw. niedrigsten Menge an Niederschlag sind **genau und logisch**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden. Die Werte sind direkt gegeben und keine Quellen oder Ungewissheiten (z.\u202fB. Rundung, Messfehler, Zeitraum) werden erw\u00e4hnt. Die Frage ist ein rein rechnerischer Vergleich, der ohne zus\u00e4tzliche Annahmen gel\u00f6st werden kann.\n\n**Fazit:**  \n\u2705 **Die Antwort ist vollst\u00e4ndig korrekt und belegt.**  \nKeine Unsicherheit besteht \u2013 es handelt",
+   "teacher_s": 33.88,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "b695b89434c30f8367144600762285256616783716363feab77d60205e7168c9",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "6e90c36de9468f74141bba4de822782611a630e82a847e90eeb5ad375b3e5cfe",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare09",
+   "arm": "on",
+   "self_output": "Malmo had the most rain (659 mm) compared to Turin (402 mm). The difference is 257 mm.",
+   "self_pass": true,
+   "self_s": 10.95,
+   "self_candidate_hash": "e1318b1000f04a07e4596b5859e9bd52dd6fd7b55a527a1af4c1eebde218a173",
+   "self_sha": "e1318b1000f04a07e4596b5859e9bd52dd6fd7b55a527a1af4c1eebde218a173",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt** in Bezug auf die Berechnung und die logische Schlussfolgerung.  \n\n- Malmo hat indeed die h\u00f6chste Menge an Niederschlag (659 mm).  \n- Turin hat die niedrigste Menge (402 mm).  \n- Die Differenz: 659 \u2013 402 = **257 mm**.  \n\nDie Angaben in der Frage sind klar und direkt vergleichbar. Es gibt keine fehlerhafte Interpretation oder mathematische Fehler.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden. Die Daten sind eindeutig, die Berechnung ist korrekt, und die Antwort folgt logisch aus den gegebenen Werten.\n\n---\n\n\u2705 **Endg\u00fcltige Bewertung:**  \n**Belegte Korrekturen:** Die Antwort ist vollst\u00e4ndig korrekt und belegt durch die gegebenen Zahlen.  \n**Unsicherheit:** Keine.  \n\n\u27a1\ufe0f **Die Antwort ist richtig und wird empfohlen.**",
+   "teacher_s": 33.08,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "e1318b1000f04a07e4596b5859e9bd52dd6fd7b55a527a1af4c1eebde218a173",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "052aef4f2bdc0ee0ba75b1bdb83b3e3a1f8465d01852e2f4974f5beae31caed6",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare10",
+   "arm": "on",
+   "self_output": "Ghent has the most rain (784 mm) compared to Graz (683 mm) and Porto (675 mm). The difference is 101 mm.",
+   "self_pass": false,
+   "self_s": 10.64,
+   "self_candidate_hash": "a11ec539872e0e80a28cf36aafd4e7e1db09df30e0c96ad69d9084de42c87f56",
+   "self_sha": "a11ec539872e0e80a28cf36aafd4e7e1db09df30e0c96ad69d9084de42c87f56",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt** und **belegt** durch die gegebenen Werte:  \n- Ghent: 784 mm  \n- Graz: 683 mm  \n- Porto: 675 mm  \n\nGhent hat indeed die h\u00f6chste Menge Regen (784 mm).  \nDie Differenz zwischen Ghent und dem niedrigsten Wert (Porto mit 675 mm) betr\u00e4gt:  \n784 \u2013 675 = **109 mm**.\n\n\u27a1\ufe0f **Fehler in der Antwort:** Die angegebene Differenz von **101 mm** ist **falsch**.  \nDie richtige Differenz ist **109 mm** (nicht 101 mm).\n\n---\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit im Verst\u00e4ndnis der Frage oder der Rechnung. Die Berechnung ist klar und direkt aus den Zahlen abzuleiten.  \nDie Antwort ist **vollst\u00e4ndig belegbar**, aber **falsch berechnet**.\n\n---\n\n\u2705 **Endg\u00fcltige Bewertung:**  \n- **",
+   "teacher_s": 33.89,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "a11ec539872e0e80a28cf36aafd4e7e1db09df30e0c96ad69d9084de42c87f56",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "d9335aede441ddf46aa6d198b9093b55164cfd6f2b51514cf40fab5e2e758bdd",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare11",
+   "arm": "on",
+   "self_output": "Bremen had the most rain at 783 mm. Cork had the least at 813 mm. That means Cork had 300 mm less than Bremen.",
+   "self_pass": false,
+   "self_s": 9.03,
+   "self_candidate_hash": "2285687262f122eb384521d68e942b77c26d902a5297d358a4ff805b10a05fdc",
+   "self_sha": "2285687262f122eb384521d68e942b77c26d902a5297d358a4ff805b10a05fdc",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen (korrekt und belegt):**\n\n- Die Aussage \u201eBremen had the most rain at 783 mm\u201c ist **falsch**.  \n  \u2192 Beleg: Die Werte zeigen:  \n  - Bremen: 783 mm  \n  - Linz: 215 mm  \n  - Cork: 813 mm  \n  \u2192 Also hat **Cork** die h\u00f6chste Menge Regen (813 mm), nicht Bremen.\n\n- Die Aussage \u201eCork had the least at 813 mm\u201c ist **falsch**.  \n  \u2192 Beleg: 813 mm ist der **h\u00f6chste** Wert, nicht der niedrigste.  \n  \u2192 Der niedrigste Wert ist **Linz mit 215 mm**, also hat Linz die wenigsten Regen.\n\n- Die Aussage \u201eThat means Cork had 300 mm less than Bremen\u201c ist **falsch**.  \n  \u2192 Beleg:  \n  - Bremen: 783 mm  \n  - Cork: 813 mm  \n  \u2192 Cork hat **30 mm mehr**, nicht",
+   "teacher_s": 33.58,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "2285687262f122eb384521d68e942b77c26d902a5297d358a4ff805b10a05fdc",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "4ab1a5ecce568b186b4b3101c58fb5aff7bec930ef4c15f7c1c1dee4ff68baef",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare12",
+   "arm": "on",
+   "self_output": "Malmo had the most rain (696 mm). The city with the least rain is Cork (181 mm), so Malmo was 515 mm more than Cork.",
+   "self_pass": true,
+   "self_s": 10.57,
+   "self_candidate_hash": "6e132de07b83d849da06e2b3fc1619b434aa5a5607fabcad9f501766cc43e362",
+   "self_sha": "6e132de07b83d849da06e2b3fc1619b434aa5a5607fabcad9f501766cc43e362",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt** in Bezug auf die Berechnung und die Zuordnung der Werte.  \n\n- Malmo hat indeed die h\u00f6chste Menge an Niederschlag (696 mm).  \n- Cork hat die niedrigste Menge (181 mm).  \n- Die Differenz: 696 \u2013 181 = **515 mm**.  \n\nDie mathematische Berechnung ist korrekt und die Zuordnung der St\u00e4dte zu den Werten ist korrekt, basierend auf den gegebenen Daten.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in Bezug auf die gegebenen Zahlen oder die logische Schlussfolgerung. Die Werte sind direkt und explizit in der Frage angegeben. Es gibt keine offene Interpretation, keine fehlende Information oder unklare Quellen.\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig korrekt und belegt**.  \n\n\u2705 **Belegte Korrektur:** Die Berechnung und Zuordnung sind korrekt.  \n\u274c **",
+   "teacher_s": 33.68,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "6e132de07b83d849da06e2b3fc1619b434aa5a5607fabcad9f501766cc43e362",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "496a7226dd0465b78648758e1a09dff701354695df3cfc86dc508624f9971040",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare13",
+   "arm": "on",
+   "self_output": "Graz has the most rain (623 mm) compared to Turin (370 mm) and Cork (378 mm). The difference is 253 mm.",
+   "self_pass": true,
+   "self_s": 10.73,
+   "self_candidate_hash": "09e9ee3015c26acd9f1839ef8088e0943c3d6a4e25332ad7320c2f4eb3ed2019",
+   "self_sha": "09e9ee3015c26acd9f1839ef8088e0943c3d6a4e25332ad7320c2f4eb3ed2019",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort ist **korrekt** in Bezug auf die Berechnung und die Zuordnung der Werte.\n\n- Graz hat tats\u00e4chlich die h\u00f6chste Menge an monatlichem Niederschlag mit **623 mm**.  \n- Turin hat **370 mm**, Cork **378 mm** \u2013 also weniger als Graz.  \n- Die Differenz zwischen Graz und dem niedrigsten Wert (Turin: 370 mm) betr\u00e4gt:  \n  623 mm \u2013 370 mm = **253 mm**.\n\nDie Aussage \u201eGraz has the most rain... the difference is 253 mm\u201c ist **faktisch korrekt** und basiert auf den gegebenen Zahlen.\n\n---\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Antwort.  \nDie Werte sind als gegeben vorgesehen (\u201elocal answer\u201c), also keine Frage nach Quellen, Genauigkeit oder Realit\u00e4t der Daten.  \nDa die Aufgabe nur darum geht, die gegebenen Zahlen zu analysieren und zu vergleichen, ist die Antwort **",
+   "teacher_s": 33.97,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "09e9ee3015c26acd9f1839ef8088e0943c3d6a4e25332ad7320c2f4eb3ed2019",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "86c50fd35c4e0b4fe200293488c14cb55a301da60f3b99eaf3d0a270ed9fd9f0",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "compare14",
+   "arm": "on",
+   "self_output": "Lyon has the highest rainfall (302 mm), while Graz has the lowest (775 mm). The difference is 473 mm.",
+   "self_pass": false,
+   "self_s": 10.54,
+   "self_candidate_hash": "d7a7934f46819b791431348c142e06cb054b2e696face011754d4929e1d2b356",
+   "self_sha": "d7a7934f46819b791431348c142e06cb054b2e696face011754d4929e1d2b356",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Lyon hat die niedrigste Niederschlagsmenge (302 mm) \u2013 **falsch**.  \n\u2705 Graz hat die h\u00f6chste Niederschlagsmenge (775 mm) \u2013 **falsch**.  \n\u2705 Die Behauptung, dass Lyon die meisten Regenf\u00e4lle hat, ist **falsch**.  \n\u2705 Die Behauptung, dass Graz die wenigsten Regenf\u00e4lle hat, ist **falsch**.  \n\u2705 Der berechnete Unterschied von 473 mm (775 \u2013 302) ist **mathematisch korrekt**, aber **an der Datenlage falsch interpretiert**.\n\n---\n\n**Analyse der Daten:**  \nGegeben:  \n- Lyon: 302 mm  \n- Brno: 852 mm  \n- Graz: 775 mm  \n\nDie Stadt mit dem **h\u00f6chsten** Niederschlag ist **Brno (852 mm)**.  \nDie Stadt mit dem **niedrigsten** Niederschlag ist **Lyon (302 mm)**.\n\nDifferenz:  \n85",
+   "teacher_s": 33.68,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "d7a7934f46819b791431348c142e06cb054b2e696face011754d4929e1d2b356",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "70d7648c9413621143478fcba4749acbf43a4048f893d4b139ad45c055700090",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary00",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 87 + 51 + 66 = 204 euros. The stated total of 224 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.24,
+   "self_candidate_hash": "77e6413770d98be348108ef22b0146ff68343ac4736ee6a77b1472996f9dc380",
+   "self_sha": "77e6413770d98be348108ef22b0146ff68343ac4736ee6a77b1472996f9dc380",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Kaffeebohnen: 87 \u20ac, Zugtickets: 51 \u20ac, Druckpapier: 66 \u20ac) betr\u00e4gt tats\u00e4chlich **204 \u20ac**.  \n\u2705 Die angegebene Gesamtsumme von **224 \u20ac** ist falsch.  \n\u2705 Die Berechnung 87 + 51 + 66 = 204 ist korrekt und belegt durch direkte Addition.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 alle Werte sind klar angegeben, und die Rechnung ist eindeutig. Die Korrektur ist vollst\u00e4ndig belegbar.\n\n**Endg\u00fcltige Bewertung:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Belegte Korrektur:** Der Summenwert im Zusammenfassungsbereich ist falsch. Die richtige Gesamtsumme betr\u00e4gt **204 Euro**.",
+   "teacher_s": 31.08,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "77e6413770d98be348108ef22b0146ff68343ac4736ee6a77b1472996f9dc380",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "f7b817b3cc2590970f2d1a74d57079c404a9bd9e4775cf65d1a3f6a4a6759728",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary01",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 36 + 46 + 68 = 150 euros. The stated total of 224 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.05,
+   "self_candidate_hash": "e1724287e3a81929fb0fe04525e2f2da70cd078b538c45856308efd6a4342737",
+   "self_sha": "e1724287e3a81929fb0fe04525e2f2da70cd078b538c45856308efd6a4342737",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten ist korrekt berechnet:  \n36 (Postage) + 46 (Cables) + 68 (Software licence) = **150 Euro**.\n\n\u27a1\ufe0f Die angegebene Gesamtsumme im Zusammenfassungsbereich (\"Total: 130 euros\") ist **falsch**.  \nDie korrekte Gesamtsumme betr\u00e4gt **150 Euro**.\n\n**Unsicherheit:**  \n\u274c Der Satz \u201eThe stated total of 224 euros is wrong\u201c ist **falsch und belegungslos**.  \nDer Fragebogen enth\u00e4lt **keine Angabe von 224 Euro** \u2013 die Summe im Text ist nur 130 Euro, was bereits falsch ist. Die Aussage \u00fcber \u201e224 Euro\u201c ist **nicht in der Frage enthalten** und daher **falsch zugeschrieben**.\n\n---\n\n\u2705 **Endg\u00fcltige Bewertung:**  \n- **Belegte Korrektur:** Ja \u2013 die Summe ist 36 + 46 + 68",
+   "teacher_s": 33.97,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "e1724287e3a81929fb0fe04525e2f2da70cd078b538c45856308efd6a4342737",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "fab1b00047efbc9ab1a3d852a61db16bff67fd29a4e19a1ce289fb478f7debe8",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary02",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 25 + 22 + 75 = 122 euros. The stated total of 142 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.24,
+   "self_candidate_hash": "8a4bbbe7befab9ebd2324cb71abfc4f2a0dd286e8de35eb2deeb4a4b23dbd298",
+   "self_sha": "8a4bbbe7befab9ebd2324cb71abfc4f2a0dd286e8de35eb2deeb4a4b23dbd298",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 25 + 22 + 75 = 122 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 142 Euro ist fehlerhaft.  \n\u2705 Die korrekte Summe betr\u00e4gt **122 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 die Addition ist eindeutig und rechnerisch nachvollziehbar. Es gibt keine Ambiguit\u00e4t in den Werten oder der Rechnung.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**. Die Summe ist nicht 142, sondern 122 Euro.  \n\n\u2705 **Endg\u00fcltige Korrektur:**  \n**Nein, die Zusammenfassung ist falsch. Die korrekte Gesamtsumme betr\u00e4gt 122 Euro.**",
+   "teacher_s": 28.68,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "8a4bbbe7befab9ebd2324cb71abfc4f2a0dd286e8de35eb2deeb4a4b23dbd298",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "7976d155a9375c6ec44d689a5d73dcf025238b238556a655cf31feb9bda8cd43",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary03",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 57 + 19 + 38 = 114 euros. The stated total of 94 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.04,
+   "self_candidate_hash": "3a99c6851a89e0ac78fedf720fd8c03646da5dd270e9805fb7364623f33dada1",
+   "self_sha": "3a99c6851a89e0ac78fedf720fd8c03646da5dd270e9805fb7364623f33dada1",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Druckpapier 57 \u20ac, Post 19 \u20ac, Projektion 38 \u20ac) betr\u00e4gt tats\u00e4chlich 57 + 19 + 38 = **114 \u20ac**.  \n\u2705 Der angegebene Gesamtbetrag von **94 \u20ac** ist somit falsch.  \n\u2705 Die korrekte Gesamtsumme lautet **114 \u20ac**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Rechnung oder den Angaben. Alle Werte sind klar und eindeutig angegeben, und die Addition ist mathematisch korrekt. Es gibt keine Ambiguit\u00e4t bez\u00fcglich der Werte oder der Berechnung.\n\n**Fazit:**  \nDie Antwort ist **korrekt und belegbar**. Die Summe ist nicht 94 \u20ac, sondern **114 \u20ac**.  \n\n\u2705 **Belegte Korrektur:** Der Gesamtbetrag ist falsch. Die korrekte Summe betr\u00e4gt **114 Euro**.",
+   "teacher_s": 32.94,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "3a99c6851a89e0ac78fedf720fd8c03646da5dd270e9805fb7364623f33dada1",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "a7db1b17263b9eaf760bd5a636384ce8adad7eba066ee90d90d4da85c2b992d1",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary04",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 91 + 39 + 58 = 188 euros. The stated total of 198 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.04,
+   "self_candidate_hash": "e0977eae895b17116fbd9009fcd4150c3ba29d6aeaeff1a450e16d9da2318c67",
+   "self_sha": "e0977eae895b17116fbd9009fcd4150c3ba29d6aeaeff1a450e16d9da2318c67",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 91 + 39 + 58 = 188 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 198 Euro ist falsch.  \n\u2705 Die korrekte Summe betr\u00e4gt **188 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der mathematischen Berechnung oder in der Interpretation der Angaben. Alle Werte sind klar und direkt gegeben, und die Addition ist eindeutig.  \n\n**Fazit:** Die Antwort ist vollst\u00e4ndig belegbar und korrekt.  \n\n\ud83d\udc49 **Endg\u00fcltige Antwort:**  \n**Ja, die Korrektur ist belegt: Die Summe ist 188 Euro, nicht 198 Euro.**",
+   "teacher_s": 26.47,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "e0977eae895b17116fbd9009fcd4150c3ba29d6aeaeff1a450e16d9da2318c67",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "e4cbb87ba9d24b6e29e0f11c4ab4a2d985ad5533c53a1cf12c6fa5d5b10812d0",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary05",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 85 + 22 + 72 = 179 euros. The stated total of 169 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.04,
+   "self_candidate_hash": "ab9f4d5dbd7fee25b578cdee60625302a6a76e1e4c4b07f31faaced2c1a5556e",
+   "self_sha": "ab9f4d5dbd7fee25b578cdee60625302a6a76e1e4c4b07f31faaced2c1a5556e",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Snacks: 85 \u20ac, Kaffeebohnen: 22 \u20ac, Kabel: 72 \u20ac) betr\u00e4gt tats\u00e4chlich **179 \u20ac**.  \n\u2705 Die angegebene Gesamtsumme im Zusammenfassungsbereich (\u201eTotal: 169 \u20ac\u201c) ist **falsch**.  \n\u2705 Die korrekte Gesamtsumme lautet **179 \u20ac**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 die Berechnung ist klar und unabh\u00e4ngig von Kontexten oder m\u00f6glichen Interpretationen. Alle Werte sind explizit und numerisch eindeutig.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Belegte Korrektur:** Die Summe ist 85 + 22 + 72 = 179 \u20ac, nicht 169 \u20ac.  \n\u2705 **Richtige Gesamtsumme:** 179 \u20ac.",
+   "teacher_s": 32.07,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "ab9f4d5dbd7fee25b578cdee60625302a6a76e1e4c4b07f31faaced2c1a5556e",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "7d7c126bf64fcd46ebf05843870c384fd5ba910e0de9f03b7f6c01199dc2bca6",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary06",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 35 + 34 + 80 = 149 euros. The stated total of 159 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.44,
+   "self_candidate_hash": "481ad0e45bdd56ce06e0f6eb6b83033fd7da3afd8b9ed22f6f40f96a90157b2c",
+   "self_sha": "481ad0e45bdd56ce06e0f6eb6b83033fd7da3afd8b9ed22f6f40f96a90157b2c",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "Belegte Korrektur:  \n\u2705 **Ja**, die Antwort ist korrekt.  \n\nDie Summe der Einzelkosten berechnet sich wie folgt:  \n35 \u20ac (cleaning service) + 34 \u20ac (snacks) + 80 \u20ac (software licence) = **149 \u20ac**.  \n\nDer angegebene Gesamtbetrag von **159 \u20ac** ist daher **falsch**.  \n\nDie korrekte Gesamtsumme betr\u00e4gt **149 Euro**.\n\nUnsicherheit:  \n\u274c Keine. Die Berechnung ist eindeutig und belegbar. Es gibt keine Unsicherheit bez\u00fcglich der mathematischen Summe oder der Interpretation der Kosten.  \n\n**Endg\u00fcltige Bewertung:**  \n\u2705 Belegte Korrektur: Ja  \n\u274c Unsicherheit: Nein  \n\n**Endg\u00fcltige Antwort:**  \n**Nein, die Zusammenfassung ist falsch. Die korrekte Gesamtsumme betr\u00e4gt 149 Euro.**",
+   "teacher_s": 31.36,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "481ad0e45bdd56ce06e0f6eb6b83033fd7da3afd8b9ed22f6f40f96a90157b2c",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "c1d2d4a1d1cff3d6bc2e4902f5a44f0b49aa7664023b6af6bfd04c2cc277b831",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary07",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 22 + 24 + 66 = 112 euros. The stated total of 92 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.74,
+   "self_candidate_hash": "69c7b1620c5ca020a5a605edbcc042d7dede52b0d720606f3fe993b23ed08b9e",
+   "self_sha": "69c7b1620c5ca020a5a605edbcc042d7dede52b0d720606f3fe993b23ed08b9e",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Postage: 22 \u20ac, Office chairs: 24 \u20ac, Train tickets: 66 \u20ac) betr\u00e4gt tats\u00e4chlich 22 + 24 + 66 = **112 \u20ac**.  \n\u2705 Der angegebene Gesamtbetrag von **92 \u20ac** ist somit falsch.  \n\u2705 Die Antwort enth\u00e4lt eine korrekte mathematische Berechnung und stellt die richtige Gesamtsumme (112 \u20ac) vor.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Rechnung oder in den gegebenen Werten. Alle Angaben sind klar und eindeutig. Die Korrektur ist vollst\u00e4ndig belegbar und nicht subjektiv.\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig korrekt und belegt**. Die Summe ist richtig berechnet, und die Behauptung, dass der Gesamtbetrag falsch sei, ist wissenschaftlich und mathematisch fundiert.\n\n\u2705 **Endg\u00fcltige Antwort (belegte Korrektur):**  \n",
+   "teacher_s": 34.58,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "69c7b1620c5ca020a5a605edbcc042d7dede52b0d720606f3fe993b23ed08b9e",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "b5e8fcfceecc4ba39f3795e5615e3ec8c5f937f5c0eab46e25e9b99680d60154",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary08",
+   "arm": "on_repeat",
+   "self_output": "No, the calculation is incorrect. The correct total is **106 euros** (87 + 54 + 25).",
+   "self_pass": false,
+   "self_s": 11.14,
+   "self_candidate_hash": "e690a0b9e4ef9e85eb0ac1ae8bb02ef2cd4105a8c79bf68bafdd60915910af88",
+   "self_sha": "e690a0b9e4ef9e85eb0ac1ae8bb02ef2cd4105a8c79bf68bafdd60915910af88",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u274c Die Antwort ist **falsch**.  \n\n**Begr\u00fcndung:**  \nDie Summe der Angaben lautet:  \n87 \u20ac (Snacks) + 54 \u20ac (Coffee beans) + 25 \u20ac (Postage) = **166 \u20ac**.\n\nDie angegebene korrekte Summe von **106 \u20ac** ist **falsch**, da 87 + 54 = 141, und 141 + 25 = 166.\n\nDie Summary-Line \u201eTotal: 176 euros\u201c ist **nicht korrekt**, aber auch **nicht richtig berechnet**.  \nDie richtige Summe ist **166 \u20ac**.\n\n\u2705 **Belegte Korrektur:**  \nDie Summary-Line \u201eTotal: 176 euros\u201c ist **falsch**.  \nDie korrekte Gesamtsumme betr\u00e4gt **166 Euro**.\n\n---\n\n**Unsicherheit:**  \nKeine \u2013 die Berechnung ist klar und eindeutig. Die Antwort enth\u00e4lt eine falsche Zahl (106 statt 166",
+   "teacher_s": 32.67,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "e690a0b9e4ef9e85eb0ac1ae8bb02ef2cd4105a8c79bf68bafdd60915910af88",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "4c6815c2f066bb9140d7f8a1b853451cba8f6568e7d3977d99e79b8b1f30eba8",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary09",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 70 + 82 + 39 = 191 euros. The stated total of 201 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.74,
+   "self_candidate_hash": "8632f14f849c2999390045dfa92c7117b5f88fabf7a84ff2b62cff65f208f4a3",
+   "self_sha": "8632f14f849c2999390045dfa92c7117b5f88fabf7a84ff2b62cff65f208f4a3",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 70 + 82 + 39 = 191 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 201 Euro ist falsch.  \n\u2705 Die korrekte Summe betr\u00e4gt **191 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der Berechnung oder in der Korrektheit der Aussage. Alle Angaben sind klar und eindeutig belegbar durch einfache Addition.\n\n**Fazit:**  \nDie Antwort ist vollst\u00e4ndig korrekt und belegt. Es gibt keine Unsicherheit.  \n\n\u2705 **Endg\u00fcltige Bewertung:**  \n**Belegte Korrekturen:** Ja \u2013 die Summe ist falsch, und die korrekte Gesamtsumme ist 191 Euro.  \n**Unsicherheit:** Keine.",
+   "teacher_s": 27.87,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "8632f14f849c2999390045dfa92c7117b5f88fabf7a84ff2b62cff65f208f4a3",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "selection_error": null,
+   "human_decisions": [
+    {
+     "kind": "fact",
+     "lane": "teacher",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    },
+    {
+     "kind": "preference",
+     "lane": "self",
+     "fact_authority": "HUMAN_SELECTED_NOT_AUTOMATIC_TRUTH"
+    }
+   ],
+   "experience_fingerprint": "a4d8f932ef9859f07dd51b7691179fcee2ffcc62a40c0b9f84102da28b75c612",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary10",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 75 + 42 + 54 = 171 euros. The stated total of 161 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.44,
+   "self_candidate_hash": "86eded0c2f8bd3a61c07ecc8c4293fb027791ccc6ca8215105aa4ae6e6cc3fcc",
+   "self_sha": "86eded0c2f8bd3a61c07ecc8c4293fb027791ccc6ca8215105aa4ae6e6cc3fcc",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 75 + 42 + 54 = 171 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 161 Euro ist falsch.  \n\u2705 Die korrekte Summe betr\u00e4gt **171 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 alle Werte sind klar und die Addition ist eindeutig. Die Korrektur ist vollst\u00e4ndig belegbar und unabh\u00e4ngig von Interpretationsr\u00e4umen.\n\n**Endg\u00fcltige Bewertung:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Belegte Korrektur:** Der Gesamtbetrag ist nicht 161 Euro, sondern **171 Euro**.",
+   "teacher_s": 25.86,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "86eded0c2f8bd3a61c07ecc8c4293fb027791ccc6ca8215105aa4ae6e6cc3fcc",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "0d28b8026c49f90faea4af6274abebe0311509d134658aada87bdd261c3c02aa",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary11",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 33 + 69 + 16 = 118 euros. The stated total of 98 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.84,
+   "self_candidate_hash": "7e7ecf277d3c371f38986c4a993709d99e2a65479da1e0357acc1402d92f3148",
+   "self_sha": "7e7ecf277d3c371f38986c4a993709d99e2a65479da1e0357acc1402d92f3148",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Snacks: 33 \u20ac, Train Tickets: 69 \u20ac, Projector: 16 \u20ac) betr\u00e4gt tats\u00e4chlich 33 + 69 + 16 = **118 \u20ac**.  \n\u2705 Der angegebene Gesamtbetrag von **98 \u20ac** stimmt nicht mit der korrekten Berechnung \u00fcberein.  \n\u2705 Die Aussage \u201eDie Summe ist 118 \u20ac und die angegebene Summe ist falsch\u201c ist **fachlich korrekt** und **belegbar** durch direkte Addition.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der mathematischen Berechnung oder in der Beurteilung der Richtigkeit des Gesamtbetrags. Die Rechnung ist eindeutig und unabh\u00e4ngig von Kontexten oder Interpretationen.\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig korrekt und belegt**.  \n\n\u2705 **Belegte Korrektur:** Nein, die Zusammenfassung ist falsch. Die korrekte Sum",
+   "teacher_s": 34.19,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "7e7ecf277d3c371f38986c4a993709d99e2a65479da1e0357acc1402d92f3148",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "a7c3a9ac53d71c70153fd6b8624eb9272df3490ab11fc69d831a059223642def",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary12",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 32 + 40 + 13 = 85 euros. The stated total of 75 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.75,
+   "self_candidate_hash": "a57eb99008bd6fa81bcb1b4dc4918aa12be0e9a6c6b84f43150ee13ecd3f7ed7",
+   "self_sha": "a57eb99008bd6fa81bcb1b4dc4918aa12be0e9a6c6b84f43150ee13ecd3f7ed7",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (Projektor: 32 \u20ac, Snacks: 40 \u20ac, Druckerpapier: 13 \u20ac) betr\u00e4gt tats\u00e4chlich **85 Euro**.  \n\u2705 Die angegebene Gesamtsumme von **75 Euro** ist falsch und wird korrekt korrigiert.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden \u2013 alle Werte sind klar und direkt gegeben, die Addition ist eindeutig und rechenm\u00e4\u00dfig nachvollziehbar. Die Korrektur ist vollst\u00e4ndig belegbar.\n\n**Endg\u00fcltige Bewertung:**  \nDie Antwort ist **korrekt und belegt**.  \n**Richtiges Ergebnis: 85 Euro.**  \n\n\u2705 **Belegte Korrektur:** Die Summe betr\u00e4gt 32 + 40 + 13 = 85 \u20ac. Der angegebene Wert von 75 \u20ac ist falsch.  \n\u27a1\ufe0f **Die Summary-Line ist nicht korrekt. Die richtige Gesamtsumme ist 85 Euro.**",
+   "teacher_s": 34.29,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "a57eb99008bd6fa81bcb1b4dc4918aa12be0e9a6c6b84f43150ee13ecd3f7ed7",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "43eed3bba34b487dfe43e46a42859ba759f22dfe44487d162f70b24389f183e9",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary13",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 23 + 56 + 14 = 93 euros. The stated total of 113 euros is wrong.",
+   "self_pass": true,
+   "self_s": 11.35,
+   "self_candidate_hash": "3a0bfa2380f5ebcd281b89906c91dab64dc4c4bc600f8b95f8bfd460e1219e13",
+   "self_sha": "3a0bfa2380f5ebcd281b89906c91dab64dc4c4bc600f8b95f8bfd460e1219e13",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Berechnung ist korrekt: 23 + 56 + 14 = 93 Euro.  \n\u2705 Der angegebene Gesamtbetrag von 113 Euro ist falsch.  \n\u2705 Die korrekte Summe betr\u00e4gt **93 Euro**.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit in der mathematischen Berechnung oder in der Interpretation der Angaben. Alle Werte sind klar und eindeutig angegeben, und die Addition ist unbestreitbar korrekt.  \n\n**Fazit:** Die Antwort ist vollst\u00e4ndig belegt und korrekt. Es gibt keine Unsicherheit.  \n\n\u2705 **Endg\u00fcltige Bewertung:**  \n**Belegte Korrekturen:** Ja \u2013 die Summe ist falsch, die richtige Gesamtsumme betr\u00e4gt 93 Euro.  \n**Unsicherheit:** Nein \u2013 die Berechnung ist eindeutig und korrekt.  \n\n**Endg\u00fcltige Antwort:**  \n**Ja**, die Summary-Line ist falsch. Die korrekte Summe ist **93 Euro",
+   "teacher_s": 32.79,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "3a0bfa2380f5ebcd281b89906c91dab64dc4c4bc600f8b95f8bfd460e1219e13",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "55cdb9670ccc061fdf9c3ce931ec0174644760a696a1936bb9af35e3bb208e19",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "summary14",
+   "arm": "on_repeat",
+   "self_output": "No, the summary is incorrect. The calculation is: 21 + 45 + 71 = 137 euros. The stated total of 127 euros is wrong.",
+   "self_pass": true,
+   "self_s": 12.33,
+   "self_candidate_hash": "07f5187c90be49581a964c0424e9ffce630457f937fa5011b11335016378dddc",
+   "self_sha": "07f5187c90be49581a964c0424e9ffce630457f937fa5011b11335016378dddc",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Summe der Einzelkosten (21 \u20ac + 45 \u20ac + 71 \u20ac) betr\u00e4gt tats\u00e4chlich **137 \u20ac**.  \n\u2705 Der angegebene Gesamtbetrag von **127 \u20ac** ist somit falsch.  \n\u2705 Die Berechnung ist korrekt: 21 + 45 = 66; 66 + 71 = 137.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit bez\u00fcglich der mathematischen Summe oder der Korrektheit der Angabe. Die Rechnung ist eindeutig und belegbar.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Belegte Korrektur:** Der Gesamtbetrag ist nicht 127 \u20ac, sondern **137 \u20ac**.  \n\u2705 Die korrekte Summe lautet: **137 Euro**.",
+   "teacher_s": 30.26,
+   "teacher_pass": false,
+   "own_answer_hash_before_teacher": "07f5187c90be49581a964c0424e9ffce630457f937fa5011b11335016378dddc",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "dae31af3234a1ca45e192c0d019329e5c7984463f49f828ac23b7d265bda65ae",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long00",
+   "arm": "on_repeat",
+   "self_output": "The survey counted exactly 422 bicycles at the station in Turin.",
+   "self_pass": true,
+   "self_s": 11.04,
+   "self_candidate_hash": "a81045cd386e1667b4ef98121c2f87f8f83c575ffa9e05704d005f370d8bb866",
+   "self_sha": "a81045cd386e1667b4ef98121c2f87f8f83c575ffa9e05704d005f370d8bb866",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey counted exactly 422 bicycles at the station in Turin\u201c ist **belegt** durch den folgenden Satz aus den Field Notes:  \n\u201eIn Turin the survey counted exactly 422 bicycles parked at the station.\u201c  \n\nDieser Ausschnitt enth\u00e4lt klar und direkt die beiden gefragten Informationen:  \n- Die Anzahl der Fahrr\u00e4der: **422**  \n- Die Stadt: **Turin**\n\nDie Angabe ist w\u00f6rtlich und unzweifelhaft enthalten. Keine Interpretation oder Vermutung erforderlich.\n\n---\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit besteht in dieser Frage. Die Information ist **direkt, eindeutig und vollst\u00e4ndig** im Originaltext enthalten.  \n\nEs gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder fehlende Hinweise, die eine zweifelhafte Interpretation erlauben.\n\n---\n\n**Fazit:**  \n\u2705 **Belegte Korrektur:** Die Antwort ist vollst\u00e4ndig und korrekt belegt.  \n\u274c Keine Unsicherheit vorhanden.\n\n**Endg\u00fclt",
+   "teacher_s": 33.97,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "a81045cd386e1667b4ef98121c2f87f8f83c575ffa9e05704d005f370d8bb866",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "b2526fc75ad9a33d4523ed362e592e22fbd9340dd33579593a9db5c360c85160",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long01",
+   "arm": "on_repeat",
+   "self_output": "The survey count of 952 bicycles was counted in Lyon.",
+   "self_pass": true,
+   "self_s": 12.04,
+   "self_candidate_hash": "1ac28ead6da95f6710edfa9e7c855d4392930879d354e47b290da5603eb9229a",
+   "self_sha": "1ac28ead6da95f6710edfa9e7c855d4392930879d354e47b290da5603eb9229a",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey count of 952 bicycles was counted in Lyon\u201c ist **belegt** und **genau** auf die gegebene Information zur\u00fcckzuf\u00fchren.  \nDie Aussage \u201eIn Lyon the survey counted exactly 952 bicycles parked at the station\u201c enth\u00e4lt klare, direkte Angaben \u00fcber die Anzahl der Fahrr\u00e4der (952) und die Stadt (Lyon).  \nDie Antwort stellt diese Fakten korrekt zusammen.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit besteht in dieser Aussage. Die Information ist **konkret, eindeutig und direkt aus den Field Notes abgeleitet**. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder m\u00f6gliche Interpretationsr\u00e4ume.\n\n\u27a1\ufe0f **Fazit:**  \nDie Antwort ist **korrekt, belegt und sicher**.  \n**Endg\u00fcltige Bewertung: Belegte Korrektur.** \u2705",
+   "teacher_s": 30.17,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "1ac28ead6da95f6710edfa9e7c855d4392930879d354e47b290da5603eb9229a",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "1c962f680f3b66224b5a6b66414e29370580bfab0b6c3c6b34ba3ae778deb74f",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long02",
+   "arm": "on_repeat",
+   "self_output": "The survey counted exactly 792 bicycles at the station in Ghent.",
+   "self_pass": true,
+   "self_s": 11.14,
+   "self_candidate_hash": "1b19c173dc6e355a5f9bfced42b2c4a3fbb3a2e278341e568fbdc5ee38dc6588",
+   "self_sha": "1b19c173dc6e355a5f9bfced42b2c4a3fbb3a2e278341e568fbdc5ee38dc6588",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen (faktisch korrekt und direkt aus den Field Notes):**  \n\u2705 Die Aussage \u201eThe survey counted exactly 792 bicycles at the station in Ghent\u201c ist **belegt** durch die Field Notes:  \n> \"In Ghent the survey counted exactly 792 bicycles parked at the station.\"\n\nDiese Information ist **direkt, explizit und unbestreitbar** enthalten.\n\n---\n\n**Unsicherheit (keine Belegung oder unklare Quelle):**  \n\u274c Keine Unsicherheit in der Aussage. Die Angabe \u00fcber die Anzahl der Fahrr\u00e4der und die Stadt ist **klar und eindeutig belegt**. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder fehlende Informationen.\n\n---\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig und korrekt belegt**.  \n\n\u2705 **Endg\u00fcltige Bewertung: Belegte Korrektur**  \n\u2192 *The survey counted exactly 792 bicycles at the station in Ghent.*",
+   "teacher_s": 31.46,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "1b19c173dc6e355a5f9bfced42b2c4a3fbb3a2e278341e568fbdc5ee38dc6588",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "196a0eb9a87624b2983df5abc0315cb012911a462a26191ff16432e3e8f9b3f6",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long03",
+   "arm": "on_repeat",
+   "self_output": "The survey counted exactly 555 bicycles at the station in Malmo.",
+   "self_pass": true,
+   "self_s": 11.14,
+   "self_candidate_hash": "cbb05ab672205cabd9afab12cd0e32405ae3f57b3cca3dfe0b0b33b6325f55f2",
+   "self_sha": "cbb05ab672205cabd9afab12cd0e32405ae3f57b3cca3dfe0b0b33b6325f55f2",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Aussage \u201eThe survey counted exactly 555 bicycles at the station in Malmo\u201c ist **belegt** durch den Text:  \n> \"In Malmo the survey counted exactly 555 bicycles parked at the station.\"\n\nDie Zahlen (555) und die Stadt (Malmo) werden direkt im Feldnotiztext genannt und sind nicht interpretiert oder vermutet. Es handelt sich um eine direkte, explizite Angabe.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit besteht in dieser Aussage. Die Information ist **klar, pr\u00e4zise und unbestreitbar** aus dem Originaltext abgeleitet. Es gibt keine Widerspr\u00fcche, Ambiguit\u00e4ten oder m\u00f6gliche Interpretationen.\n\n**Fazit:**  \nDie Antwort ist **korrekt und vollst\u00e4ndig belegt**.  \n\n\u2705 **Endg\u00fcltige Bewertung:**  \n**Belegte Korrektur:** Ja  \n**Unsicherheit:** Nein  \n\n\ud83d\udc49 **Endg\u00fcltige Antwort:** *The survey counted exactly 555 bicycles at the station in Malmo.* \u2013 **be",
+   "teacher_s": 34.18,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "cbb05ab672205cabd9afab12cd0e32405ae3f57b3cca3dfe0b0b33b6325f55f2",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "95324bf4fd75b5944def3328e0cdc77ac1287f0fcb3a15e3edeb54df1d535bab",
+   "teacher_truth_authority": false
+  },
+  {
+   "fixture": "long04",
+   "arm": "on_repeat",
+   "self_output": "The survey counted exactly 460 bicycles parked at the station in Bremen.",
+   "self_pass": true,
+   "self_s": 10.64,
+   "self_candidate_hash": "58a8601f7d44f0b4fc2ef8ba887d9c8187cef5973b586dff7d1256415ca8f826",
+   "self_sha": "58a8601f7d44f0b4fc2ef8ba887d9c8187cef5973b586dff7d1256415ca8f826",
+   "teacher_seen_before_commit": [
+    false
+   ],
+   "teacher_status": "FINAL",
+   "teacher_text": "**Belegte Korrekturen:**  \n\u2705 Die Antwort \u201eThe survey counted exactly 460 bicycles parked at the station in Bremen.\u201c ist **belegt** und **genau auf die Frage** eingehend.  \n\nDie Aussage \u201eIn Bremen the survey counted exactly 460 bicycles parked at the station\u201c ist direkt aus den Field Notes entnommen und unabh\u00e4ngig von anderen Informationen (wie z.\u202fB. dem Zeitpunkt oder der Wetterlage) wissenschaftlich korrekt und sachlich.\n\n**Unsicherheit:**  \n\u274c Keine Unsicherheit vorhanden. Die Zahl 460 und die Stadt Bremen sind **klar und direkt aus den Field Notes abgeleitet**. Es gibt keine Ambiguit\u00e4ten, keine fehlenden Hinweise oder widerspr\u00fcchliche Aussagen.\n\n**Fazit:**  \nDie Antwort ist **vollst\u00e4ndig belegt**, korrekt und pr\u00e4zise.  \n\n\u2705 **Endg\u00fcltige Bewertung: Belegte Korrektur \u2013 keine Unsicherheit.**",
+   "teacher_s": 30.77,
+   "teacher_pass": true,
+   "own_answer_hash_before_teacher": "58a8601f7d44f0b4fc2ef8ba887d9c8187cef5973b586dff7d1256415ca8f826",
+   "reference_only": true,
+   "not_fact": true,
+   "teacher_after_self": true,
+   "history_teacher_leak_chunks": 0,
+   "history_roles": [
+    "assistant",
+    "user"
+   ],
+   "experience_fingerprint": "c42a5f05c06648a592e27a01358749c5734968f694080197d8182b02a5d494de",
+   "teacher_truth_authority": false
+  }
+ ],
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261022/z11-reference-teacher/PREREG.md"
+}

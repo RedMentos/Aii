@@ -54,12 +54,13 @@ class Live(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
         self.r.pool.get=lambda role:NoModel()
+        self.r.cfg['eligibility_reader']='fixed_strict'  # 21.10. reader (no model at all); default 'fixed' = 22.10. reader, tested in test_eligibility_fixed
     def tearDown(self):self.r.close();self.tmp.cleanup()
     def earlier_turn(self,text):
         s=self.r.store;e=s.event(self.r.session,text)
         with s.tx() as c:c.execute("INSERT INTO messages(session_id,event_id,role,text,status,metadata,created) VALUES (?,?,?,?,?,?,?)",(self.r.session,e['event_id'],'assistant','Noted.','FINAL',json.dumps({'context_source_refs':[e['source_ref']]}),0))
     def test_live_plan_reads_without_any_model(self):
-        self.assertEqual(self.r.cfg['eligibility_reader'],'fixed')
+        self.assertEqual(self.r.cfg['eligibility_reader'],'fixed_strict')
         hub(self.r).tools.enable('eligibility');self.earlier_turn(PRIOR);self.earlier_turn(NEWER)
         e=self.r.store.event(self.r.session,CURRENT);ts=T.ToolStep(self.r)
         p=ts.plan(e,CURRENT);self.assertEqual(p['tool'],'eligibility');self.assertEqual(p['args']['budget'],50)

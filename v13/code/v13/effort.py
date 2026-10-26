@@ -16,8 +16,10 @@ from .common import dumps
 from .contracts import packet
 from . import resource_modes as rmodes
 
-MODES=('disabled','low','adaptive','high','max')
-FIXED={'disabled':0.,'low':.15,'high':.70,'max':.95}
+MODES=('disabled','low','adaptive','high','max','detail','gist')
+FIXED={'disabled':0.,'low':.15,'high':.70,'max':.95,'detail':.70,'gist':.70}
+# WP-Z6e §24.22 'A only' / 'B only': user-forced single body (B1 detail or B2 gist) at the 'high' budget; limits still bind
+ONE_BODY_MODES=('detail','gist')
 WAKES=('none','detail','gist','both')
 BOOT={'default':.25,'conflict_gain':.60,'uncertainty_gain':.55,'novelty_gain':.40,'salience_gain':.35,
       'escalate_uncertainty':.45,'escalate_conflict':.40,'escalate_floor':.50,'verify_risk':.65,
@@ -128,7 +130,9 @@ def decide(mode,sig,**limits):
     if mode not in MODES:raise ValueError('effort mode: '+'|'.join(MODES))
     effort=adaptive_effort(sig) if mode=='adaptive' else FIXED[mode];requested=effort;age=limits.get('age') or AGE0
     if mode=='adaptive' and effort>AUTONOMOUS_CEILING[age['autonomous_effort_max']]:effort=AUTONOMOUS_CEILING[age['autonomous_effort_max']]
-    plan=constrain(plan_for(effort,sig),**limits);plan['mode']=mode;plan['requested_effort']=requested
+    plan=plan_for(effort,sig)
+    if mode in ONE_BODY_MODES:plan.update(wake=mode,one_body=mode,max_reentry=0)
+    plan=constrain(plan,**limits);plan['mode']=mode;plan['requested_effort']=requested
     if effort<requested:plan['constraints'].insert(0,'AGE_AUTONOMOUS_EFFORT_MAX_'+age['autonomous_effort_max'].upper())
     plan['learned_wake_allowed']=mode=='adaptive';return plan
 

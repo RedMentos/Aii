@@ -1,0 +1,372 @@
+{
+ "kind": "V13_Z12B_WORLD_JEPA",
+ "prereg": "docs/proofs/continuation-20261026/z12b-world-jepa/PREREG.md",
+ "args": {
+  "out": "/tmp/claude-0/z12b/z12b.json",
+  "world": null,
+  "seeds": "101,102,103",
+  "train": 4000,
+  "cf": 150,
+  "attr": 300,
+  "steps": 3000
+ },
+ "seeds": [
+  {
+   "seed": 101,
+   "held_out_actions": [
+    [
+     "write_long",
+     0
+    ],
+    [
+     "append",
+     0
+    ],
+    [
+     "remove",
+     3
+    ],
+    [
+     "remove",
+     5
+    ]
+   ],
+   "n_train": 3600,
+   "n_val_clean": 397,
+   "world_touched_train_frac": 0.0097,
+   "seconds_collect": 41.1,
+   "seconds_fit_3_models": 15.3,
+   "history": [
+    {
+     "step": 2000,
+     "loss": 0.27729,
+     "pred": 0.10279,
+     "var": 0.0,
+     "cov": 0.30992,
+     "inv": 0.1621
+    },
+    {
+     "step": 2500,
+     "loss": 0.25413,
+     "pred": 0.08785,
+     "var": 0.0,
+     "cov": 0.27275,
+     "inv": 0.15537
+    },
+    {
+     "step": 2999,
+     "loss": 0.21573,
+     "pred": 0.07732,
+     "var": 0.0,
+     "cov": 0.23021,
+     "inv": 0.12921
+    }
+   ],
+   "cf_retrieval": {
+    "jepa_covered": 0.7519,
+    "jepa_held_out": 0.1754,
+    "no_action_covered": 0.1985,
+    "shuffled_action_covered": 0.1921,
+    "ridge_obs_covered_info": 0.2099236641221374,
+    "n_covered": 786,
+    "n_held_out": 114
+   },
+   "errors": {
+    "covered_mean": 0.0911,
+    "held_out_mean": 0.4213
+   },
+   "confidence": {
+    "covered_mean": 0.7286,
+    "held_out_all_uncertain": true,
+    "covered_uncertain_frac": 0.0
+   },
+   "collapse": {
+    "effective_rank": 14.352841507521546,
+    "min_std": 1.0783157937923786
+   },
+   "attribution": {
+    "theta": {
+     "write_short": 0.3052,
+     "write_long": 0.2182,
+     "write_digits": 0.1855,
+     "append": 0.1364,
+     "remove": 0.1076,
+     "noop": 0.008
+    },
+    "jepa": {
+     "n": {
+      "own_only": 147,
+      "world_only": 19,
+      "both": 59,
+      "none": 70
+     },
+     "own_only_self": 0.8571,
+     "world_only_world": 1.0,
+     "both_world": 0.5932,
+     "none_self": 0.5571,
+     "balanced": 0.9285
+    },
+    "no_action": {
+     "n": {
+      "own_only": 147,
+      "world_only": 19,
+      "both": 59,
+      "none": 70
+     },
+     "own_only_self": 0.9388,
+     "world_only_world": 1.0,
+     "both_world": 0.3898,
+     "none_self": 0.4429,
+     "balanced": 0.9694
+    }
+   }
+  },
+  {
+   "seed": 102,
+   "held_out_actions": [
+    [
+     "write_short",
+     4
+    ],
+    [
+     "write_long",
+     5
+    ],
+    [
+     "append",
+     1
+    ],
+    [
+     "append",
+     3
+    ]
+   ],
+   "n_train": 3600,
+   "n_val_clean": 397,
+   "world_touched_train_frac": 0.0055,
+   "seconds_collect": 41.0,
+   "seconds_fit_3_models": 14.9,
+   "history": [
+    {
+     "step": 2000,
+     "loss": 0.24745,
+     "pred": 0.12132,
+     "var": 0.00057,
+     "cov": 0.26082,
+     "inv": 0.11513
+    },
+    {
+     "step": 2500,
+     "loss": 0.2316,
+     "pred": 0.111,
+     "var": 0.0,
+     "cov": 0.33109,
+     "inv": 0.10736
+    },
+    {
+     "step": 2999,
+     "loss": 0.19607,
+     "pred": 0.10865,
+     "var": 0.0,
+     "cov": 0.38599,
+     "inv": 0.07198
+    }
+   ],
+   "cf_retrieval": {
+    "jepa_covered": 0.8051,
+    "jepa_held_out": 0.3727,
+    "no_action_covered": 0.1987,
+    "shuffled_action_covered": 0.1886,
+    "ridge_obs_covered_info": 0.1962025316455696,
+    "n_covered": 790,
+    "n_held_out": 110
+   },
+   "errors": {
+    "covered_mean": 0.0977,
+    "held_out_mean": 0.2694
+   },
+   "confidence": {
+    "covered_mean": 0.7173,
+    "held_out_all_uncertain": true,
+    "covered_uncertain_frac": 0.0
+   },
+   "collapse": {
+    "effective_rank": 13.971295011423964,
+    "min_std": 1.0719607101958153
+   },
+   "attribution": {
+    "theta": {
+     "write_short": 0.2799,
+     "write_long": 0.2186,
+     "write_digits": 0.2753,
+     "append": 0.2259,
+     "remove": 0.1547,
+     "noop": 0.0108
+    },
+    "jepa": {
+     "n": {
+      "own_only": 155,
+      "world_only": 27,
+      "both": 48,
+      "none": 65
+     },
+     "own_only_self": 0.8,
+     "world_only_world": 1.0,
+     "both_world": 0.7292,
+     "none_self": 0.7077,
+     "balanced": 0.9
+    },
+    "no_action": {
+     "n": {
+      "own_only": 155,
+      "world_only": 27,
+      "both": 48,
+      "none": 65
+     },
+     "own_only_self": 0.9548,
+     "world_only_world": 1.0,
+     "both_world": 0.3125,
+     "none_self": 0.8462,
+     "balanced": 0.9774
+    }
+   }
+  },
+  {
+   "seed": 103,
+   "held_out_actions": [
+    [
+     "write_digits",
+     2
+    ],
+    [
+     "append",
+     4
+    ],
+    [
+     "append",
+     5
+    ],
+    [
+     "remove",
+     5
+    ]
+   ],
+   "n_train": 3600,
+   "n_val_clean": 398,
+   "world_touched_train_frac": 0.008,
+   "seconds_collect": 41.3,
+   "seconds_fit_3_models": 14.6,
+   "history": [
+    {
+     "step": 2000,
+     "loss": 0.27769,
+     "pred": 0.1453,
+     "var": 0.0,
+     "cov": 0.26269,
+     "inv": 0.12188
+    },
+    {
+     "step": 2500,
+     "loss": 0.25344,
+     "pred": 0.1408,
+     "var": 0.0,
+     "cov": 0.2715,
+     "inv": 0.10178
+    },
+    {
+     "step": 2999,
+     "loss": 0.21271,
+     "pred": 0.12415,
+     "var": 0.0,
+     "cov": 0.3549,
+     "inv": 0.07436
+    }
+   ],
+   "cf_retrieval": {
+    "jepa_covered": 0.749,
+    "jepa_held_out": 0.2609,
+    "no_action_covered": 0.1924,
+    "shuffled_action_covered": 0.1822,
+    "ridge_obs_covered_info": 0.19363057324840766,
+    "n_covered": 785,
+    "n_held_out": 115
+   },
+   "errors": {
+    "covered_mean": 0.109,
+    "held_out_mean": 0.6
+   },
+   "confidence": {
+    "covered_mean": 0.7217,
+    "held_out_all_uncertain": true,
+    "covered_uncertain_frac": 0.0
+   },
+   "collapse": {
+    "effective_rank": 14.130972537594523,
+    "min_std": 1.0844873767496117
+   },
+   "attribution": {
+    "theta": {
+     "write_short": 0.2658,
+     "write_long": 0.3071,
+     "write_digits": 0.2061,
+     "append": 0.2593,
+     "remove": 0.2832,
+     "noop": 0.0115
+    },
+    "jepa": {
+     "n": {
+      "own_only": 141,
+      "world_only": 20,
+      "both": 52,
+      "none": 81
+     },
+     "own_only_self": 0.8794,
+     "world_only_world": 1.0,
+     "both_world": 0.5577,
+     "none_self": 0.5926,
+     "balanced": 0.9397
+    },
+    "no_action": {
+     "n": {
+      "own_only": 141,
+      "world_only": 20,
+      "both": 52,
+      "none": 81
+     },
+     "own_only_self": 0.9645,
+     "world_only_world": 0.95,
+     "both_world": 0.25,
+     "none_self": 0.5309,
+     "balanced": 0.9572
+    }
+   }
+  }
+ ],
+ "summary": {
+  "pooled_cf": {
+   "jepa_covered": 0.7687,
+   "jepa_held_out": 0.2697,
+   "no_action_covered": 0.1965,
+   "shuffled_action_covered": 0.1876,
+   "ridge_obs_covered_info": 0.1999
+  },
+  "spearman_conf_err_covered": -0.2015,
+  "attribution_jepa": {
+   "own_only_self": 0.8455,
+   "world_only_world": 1.0,
+   "none_self": 0.6191,
+   "balanced": 0.9227
+  },
+  "attribution_no_action_balanced": 0.968
+ },
+ "criteria": {
+  "W1_cf_retrieval_covered": false,
+  "W2_controls_fail": true,
+  "W3_no_collapse": true,
+  "W4_confidence_tracks_error": false,
+  "W5_attribution_jepa": false,
+  "W6_no_action_attribution_worse": false
+ },
+ "verdict": "Z12B_WORLD_JEPA_FAIL",
+ "claim_limit": "small file world with synthetic content on the cloud machine; no phone measurement; SHADOW module, not wired into the runtime"
+}
