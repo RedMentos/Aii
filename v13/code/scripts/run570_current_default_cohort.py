@@ -85,6 +85,7 @@ def validate_fixtures(rows):
     require([r['id'] for r in rows] == [s[0] for s in SPECS] and
             [r['type'] for r in rows] == [s[1] for s in SPECS],
             'NEW_FIXTURE_ID_OR_TYPE_CHANGED')
+    require(rows == [z2.episode(*spec) for spec in SPECS], 'NEW_FIXTURE_SOURCE_CHANGED')
     old_ids = {x[0] for x in z2.EPISODES} | {x[0] for x in frozen.SPECS}
     require(len({r['id'] for r in rows}) == 6 and
             not ({r['id'] for r in rows} & old_ids),
