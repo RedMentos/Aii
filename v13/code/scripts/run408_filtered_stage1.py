@@ -126,6 +126,7 @@ def _verify_and_stage(archive, expected_sha, temporary):
                 "INSUFFICIENT_STAGE_DISK")
         small = {}
         omitted = []
+        unlisted_bin_hashes = {}
         for name, info in infos.items():
             h = hashlib.sha256()
             output = None
@@ -151,6 +152,9 @@ def _verify_and_stage(archive, expected_sha, temporary):
             actual = h.hexdigest()
             if name in expected:
                 require(actual == expected[name], "MEMBER_SHA_MISMATCH:" + name)
+            elif _binary_path(name):
+                unlisted_bin_hashes[name] = {"sha256": actual, "bytes": info.file_size,
+                                             "provenance": "ORIGINAL_ZIP_SHA_ONLY_NOT_EXECUTED"}
             if _model_path(name):
                 matches = [role for size, digest, role in registered[Path(name).name]
                            if size == info.file_size and digest == actual]
@@ -163,6 +167,7 @@ def _verify_and_stage(archive, expected_sha, temporary):
         return {"native": native, "members_verified": len(infos) - 1,
                 "omitted_unlisted_in_manifest": [n for n in unlisted if _model_path(n)],
                 "unlisted_binary_members": [n for n in unlisted if _binary_path(n)],
+                "unlisted_binary_hashes": unlisted_bin_hashes,
                 "original_zip_sha256": expected_sha, "original_member_bytes": total,
                 "staged_work_bytes": staged_bytes, "omitted_registered_models": omitted,
                 "omitted_bytes": sum(m["size"] for m in omitted),
