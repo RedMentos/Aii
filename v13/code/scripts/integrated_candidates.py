@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'body_question', 'body_question_scope', 'eligibility_live', 'tool_answer_first')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'body_question', 'body_question_scope', 'eligibility_live', 'tool_answer_first', 'turn_resident_cleanup', 'reviewed_store_integrity')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -398,9 +398,164 @@ def run177_b2_tap_identity(sources):
     return out
 
 
+def turn_resident_cleanup(sources):
+    """Exact reviewed terminal resident unload; unique anchors reject drift."""
+    out = dict(sources)
+    t = out['v13/runtime.py']
+    t = _replace(t, "            finally:\n                try:\n                    if kind=='turn':",
+                 "            finally:\n                turn_terminal_status=None\n                try:\n                    if kind=='turn':")
+    t = _replace(t, "                        status=row['status'] if row and row['status'] in terminal else 'INTERRUPTED'\n",
+                 "                        status=row['status'] if row and row['status'] in terminal else 'INTERRUPTED'\n                        turn_terminal_status=status\n")
+    t = _replace(t, "                    if kind=='turn':self.turn_event=None\n",
+    (
+        "                    if kind=='turn':\n"
+        "                        # Release only after the active turn has stopped. A terminal\n"
+        "                        # failure (or unknown status after a Store error) must not\n"
+        "                        # leave inactive B1/B2/C3 native residents running.\n"
+        "                        # FINAL keeps residents for legitimate next-turn reuse.\n"
+        "                        if turn_terminal_status!='FINAL':\n"
+        "                            def cleanup_error(component,exc):\n"
+        "                                try:self.store.log('turn_resident_cleanup_failed',payload['event_id'],{'component':component,'error':type(exc).__name__})\n"
+        "                                except Exception:pass\n"
+        "                            try:self.pool.unload()\n"
+        "                            except Exception as exc:\n"
+        "                                cleanup_error('pool',exc)\n"
+        "                                # A broken one-role unload must not prevent\n"
+        "                                # independent remaining resident roles from\n"
+        "                                # being released. The failed role stays RED.\n"
+        "                                try:\n"
+        "                                    for role in dict.fromkeys(self.pool.resident_roles()):\n"
+        "                                        try:self.pool.unload(role)\n"
+        "                                        except Exception as child_exc:cleanup_error('pool:'+role,child_exc)\n"
+        "                                except Exception as child_exc:cleanup_error('pool_inventory',child_exc)\n"
+        "                            try:self.needle.unload()\n"
+        "                            except Exception as exc:cleanup_error('needle',exc)\n"
+        "                        self.turn_event=None\n"
+    ))
+    out['v13/runtime.py'] = t
+    return out
+
+
+def reviewed_store_integrity(sources):
+    """Exact reviewed source-revocation and atomic action receipt chain.
+
+    Historical candidates remain bound to their original digest manifests;
+    these byte-exact later changes do NOT accept arbitrary live source drift.
+    """
+    out = dict(sources)
+    t = out['v13/store.py']
+    t = _replace(t, (
+        "        self.validate_artifacts({'hashes':hashes,'components':components})\n"
+        "        with self.tx() as c:\n"
+    ), (
+        "        self.validate_artifacts({'hashes':hashes,'components':components})\n"
+        "        source_ids=m.get('source_ids',[])\n"
+        "        if not isinstance(source_ids,list) or any(type(sid) is not str or not sid for sid in source_ids):\n"
+        "            raise ValueError('Update-Source-Lineage ungültig')\n"
+        "        with self.tx() as c:\n"
+        "            # Preflight is deliberately outside the write transaction. Another\n"
+        "            # Store thread can change the update before BEGIN IMMEDIATE; the\n"
+        "            # approval must therefore bind the *same* candidate row, not just\n"
+        "            # the active generation and the previously observed source IDs.\n"
+        "            live=c.execute(\n"
+        "                \"SELECT status,base_generation,path,hash,manifest FROM updates WHERE id=?\",\n"
+        "                (update_id,)).fetchone()\n"
+        "            if not live or live['status']!='PENDING_APPROVAL':\n"
+        "                raise ValueError('Update nicht mehr freigabefähig')\n"
+        "            if any(live[key]!=r[key] for key in ('base_generation','path','hash','manifest')):\n"
+        "                raise ValueError('Update nach Vorprüfung geändert; erneut prüfen')\n"
+        "            # Source revocation and generation commit share one write transaction.\n"
+        "            # A source forgotten while an optimizer was running must not be\n"
+        "            # resurrected by a later approval, even if its update was not yet\n"
+        "            # included in the forget path's candidate quarantine.\n"
+        "            for sid in source_ids:\n"
+        "                source=c.execute('SELECT deleted,hash FROM sources WHERE id=?',(sid,)).fetchone()\n"
+        "                if not source or source['deleted']:\n"
+        "                    raise ValueError('Update-Source-Lineage gelöscht/fehlt: '+sid)\n"
+        "                try:\n"
+        "                    source_bytes=self.blob_bytes(source['hash'])\n"
+        "                except (FileNotFoundError,ValueError) as exc:\n"
+        "                    raise ValueError('Update-Source-Lineage-Blob fehlt/beschädigt: '+sid) from exc\n"
+        "                if digest(source_bytes)!=source['hash']:\n"
+        "                    raise ValueError('Update-Source-Lineage-Hash falsch: '+sid)\n"
+    ))
+    t = _replace(t, (
+        "    def start_action(self,event,generation,kind=\"TEXT_REPORT\",forecast=None):\n"
+        "        aid=uid(\"act\");intent=packet(\"ActionIntent\",\"C5_REPORT_BROKER\",event,generation,action_id=aid,action_type=kind,permission=\"local_text_only\")\n"
+        "        expected={\"stream_owner\":\"C5_REPORT_BROKER\",\"type\":kind}\n"
+        "        if forecast is not None:expected['forecast']=forecast\n"
+        "        copy=packet(\"CorollaryCopy\",\"F3_SELF\",event,generation,action_id=aid,expected=expected,self_caused=True)\n"
+        "        self.add_packet(\"ActionIntent\",intent);self.add_packet(\"CorollaryCopy\",copy)\n"
+        "        with self.tx() as c:c.execute(\"INSERT INTO actions VALUES (?,?,?,?,?,?,?,?)\",(aid,event,kind,\"DISPATCHED\",copy[\"packet_id\"],dumps(copy[\"expected\"]),None,now()))\n"
+        "        return aid\n"
+        "    def finish_action(self,aid,status,actual):\n"
+        "        r=self.one(\"SELECT * FROM actions WHERE id=?\",(aid,));e=self.one(\"SELECT generation_id FROM events WHERE id=?\",(r[\"event_id\"],))\n"
+        "        self.add_packet(\"ActionOutcome\",packet(\"ActionOutcome\",\"C6_TEXT\",r[\"event_id\"],e[\"generation_id\"],action_id=aid,status=status,actual=actual))\n"
+        "        with self.tx() as c:c.execute(\"UPDATE actions SET status=?,outcome=? WHERE id=?\",(status,dumps(actual),aid))\n"
+    ), (
+        "    def start_action(self,event,generation,kind=\"TEXT_REPORT\",forecast=None):\n"
+        "        \"\"\"Atomically bind pre-dispatch intent, corollary and action to one event.\n"
+        "\n"
+        "        No ActionIntent/CorollaryCopy may survive without its DISPATCHED action.\n"
+        "        An event-generation mismatch is not an authorized new action.\n"
+        "        \"\"\"\n"
+        "        aid=uid(\"act\")\n"
+        "        expected={\"stream_owner\":\"C5_REPORT_BROKER\",\"type\":kind}\n"
+        "        if forecast is not None:expected['forecast']=forecast\n"
+        "        expected=json.loads(dumps(expected))  # freeze the same finite payload for both records\n"
+        "        intent=packet(\"ActionIntent\",\"C5_REPORT_BROKER\",event,generation,action_id=aid,action_type=kind,permission=\"local_text_only\")\n"
+        "        copy=packet(\"CorollaryCopy\",\"F3_SELF\",event,generation,action_id=aid,expected=expected,self_caused=True)\n"
+        "        validate(\"ActionIntent\",intent);validate(\"CorollaryCopy\",copy)\n"
+        "        with self.tx() as c:\n"
+        "            source=c.execute(\"SELECT generation_id FROM events WHERE id=?\",(event,)).fetchone()\n"
+        "            if source is None or source['generation_id']!=generation:\n"
+        "                raise ValueError('Action event/generation binding missing or stale')\n"
+        "            for name,p in ((\"ActionIntent\",intent),(\"CorollaryCopy\",copy)):\n"
+        "                c.execute(\"INSERT INTO packets VALUES (?,?,?,?,?,?)\",\n"
+        "                          (p['packet_id'],name,p['event_id'],p['brain_generation_id'],dumps(p),now()))\n"
+        "            c.execute(\"INSERT INTO actions VALUES (?,?,?,?,?,?,?,?)\",\n"
+        "                      (aid,event,kind,\"DISPATCHED\",copy['packet_id'],dumps(expected),None,now()))\n"
+        "        return aid\n"
+        "    def finish_action(self,aid,status,actual):\n"
+        "        \"\"\"Commit one immutable ActionOutcome and its action row atomically.\n"
+        "\n"
+        "        A previous terminal receipt is replayable only with the exact same\n"
+        "        canonical outcome. An orphan packet from an older interrupted writer\n"
+        "        must not be silently overwritten or duplicated.\n"
+        "        \"\"\"\n"
+        "        outcome=dumps(actual)  # freeze/validate one finite JSON snapshot\n"
+        "        frozen=json.loads(outcome)\n"
+        "        with self.tx() as c:\n"
+        "            r=c.execute(\"SELECT * FROM actions WHERE id=?\",(aid,)).fetchone()\n"
+        "            if r is None:raise ValueError('Unknown action ID')\n"
+        "            prior=c.execute(\"SELECT payload FROM packets WHERE kind='ActionOutcome' AND event_id=? AND json_extract(payload,'$.action_id')=?\",\n"
+        "                            (r['event_id'],aid)).fetchall()\n"
+        "            if r['outcome'] is not None:\n"
+        "                if r['status']==status and r['outcome']==outcome and len(prior)==1:\n"
+        "                    receipt=json.loads(prior[0]['payload'])\n"
+        "                    if receipt.get('action_id')==aid and receipt.get('status')==status and receipt.get('actual')==frozen:\n"
+        "                        return  # exact durable replay; no new packet or mutation\n"
+        "                raise ValueError('Conflicting or incomplete ActionOutcome replay')\n"
+        "            if prior:raise ValueError('Orphan ActionOutcome packet requires review')\n"
+        "            if r['status'] not in ('DISPATCHED','OUTCOME_UNKNOWN'):\n"
+        "                raise ValueError('Action is not open for an outcome')\n"
+        "            e=c.execute(\"SELECT generation_id FROM events WHERE id=?\",(r['event_id'],)).fetchone()\n"
+        "            if e is None:raise ValueError('Action event missing')\n"
+        "            p=packet(\"ActionOutcome\",\"C6_TEXT\",r['event_id'],e['generation_id'],action_id=aid,status=status,actual=frozen)\n"
+        "            validate(\"ActionOutcome\",p)\n"
+        "            c.execute(\"INSERT INTO packets VALUES (?,?,?,?,?,?)\",\n"
+        "                      (p['packet_id'],'ActionOutcome',p['event_id'],p['brain_generation_id'],dumps(p),now()))\n"
+        "            updated=c.execute(\"UPDATE actions SET status=?,outcome=? WHERE id=? AND outcome IS NULL\",\n"
+        "                              (status,outcome,aid))\n"
+        "            if updated.rowcount!=1:raise ValueError('Action outcome changed before commit')\n"
+    ))
+    out['v13/store.py'] = t
+    return out
+
+
 def _later(sources):
     out = tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))))
-    return run177_b2_tap_identity(out)
+    return reviewed_store_integrity(turn_resident_cleanup(run177_b2_tap_identity(out)))
 
 
 def _baseline(root):
