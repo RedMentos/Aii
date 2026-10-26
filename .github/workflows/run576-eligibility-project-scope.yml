@@ -33,9 +33,10 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN576_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/eligibility-project-scope/PREREG.md)" = f0b9fdf506c93d5e1d890e60329bf5e2b1bdb27b
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/eligibility-project-scope/PREREG_MODEL.md)" = 2491291900a285e6d8c121cb597482d9a4710426
           test "$(git hash-object v13/code/v13/agi/eligibility.py)" = 6af0130fd6209aa6ec293eaa2d892d23401361fa
           test "$(git hash-object v13/code/v13/toolstep.py)" = 25ce260e2e840aba97cd70ad44fbb5e56a6307b2
-          test "$(git hash-object v13/code/tests/test_eligibility_project_scope_run576.py)" = cc1a84f76dd510264214de418d8717933e60ea6a
+          test "$(git hash-object v13/code/tests/test_eligibility_project_scope_run576.py)" = ba5405d57c440e3a09c9b7fb3f8c3c16a02406d6
           test "$(git hash-object v13/code/v13/runtime.py)" = abdd8b489057d65a21bb75d5e4e3fff0ca94c2bb
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN576_HOST.txt"
