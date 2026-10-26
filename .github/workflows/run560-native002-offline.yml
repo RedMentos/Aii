@@ -1,0 +1,154 @@
+name: V13 Run560 frozen fixture-origin and original Run557 native002 offline review
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run560-native002-offline.yml'
+      - 'v13/code/scripts/run559_offline_review.py'
+      - 'v13/code/tests/test_run560_fixture_origin.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run560-fixture-origin/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-and-original-native-offline:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run560-fixture-origin-native002-audit-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact source, original prereg, registered model and Canon pins
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN560_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run560-fixture-origin/PREREG.md)" = 'b3078f787171c8cdcea55410081c133d776e0fa5'
+          test "$(git hash-object v13/code/scripts/run559_offline_review.py)" = '4c8ebb3a00ffdf5454f11dbf4f1706ff95f7be92'
+          test "$(git hash-object v13/code/tests/test_run560_fixture_origin.py)" = '03aa42d95533a16aadf155ff70f9f2f0570d25a3'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN560_HOST.txt"
+      - name: Isolated portable dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run560venv"
+          timeout 240s "$RUNNER_TEMP/run560venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN560_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN560_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Frozen-oracle negative tests and earlier offline source regressions
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run560venv/bin/python" -m compileall -q scripts/run559_offline_review.py tests/test_run560_fixture_origin.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 420s "$RUNNER_TEMP/run560venv/bin/python" -m unittest -v tests.test_run560_fixture_origin tests.test_run559_offline_review tests.test_run558_future_batch tests.test_run556_future002_batch tests.test_run505_future001_batch tests.test_run504_remaining980_schedule tests.test_run500_step2_stage_map > "$RUNNER_TEMP/RUN560_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN560_TEST_EXIT.txt"
+          exit 0
+      - name: Download original exact Run557 public raw and safe artifact ZIPs
+        id: download
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          set +e
+          mkdir -p "$RUNNER_TEMP/run560_artifacts"
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12664912862/zip" \
+            -o "$RUNNER_TEMP/run560_artifacts/raw.zip" > "$RUNNER_TEMP/RUN560_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12665895129/zip" \
+              -o "$RUNNER_TEMP/run560_artifacts/safe.zip" >> "$RUNNER_TEMP/RUN560_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            (cd "$RUNNER_TEMP/run560_artifacts" && sha256sum raw.zip safe.zip) > "$RUNNER_TEMP/RUN560_DOWNLOAD_HASHES.txt"
+            test "$(sha256sum "$RUNNER_TEMP/run560_artifacts/raw.zip" | cut -d' ' -f1)" = 'ae44a8d97b0a0d1e658a91fc2c7731fe5854592a9dbfe5cfe173a6cc80b9419b'
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            test "$(sha256sum "$RUNNER_TEMP/run560_artifacts/safe.zip" | cut -d' ' -f1)" = 'ecd1ece00a2e82396bbd716b4fab93c84efe81ce60d9e853b8b450a437d4eb03'
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN560_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Recompute original FUTURE_002 oracle utility from immutable native ZIP bytes
+        id: audit
+        if: ${{ steps.download.outputs.rc == '0' && steps.tests.outcome == 'success' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          timeout 300s "$RUNNER_TEMP/run560venv/bin/python" scripts/run559_offline_review.py \
+            --raw "$RUNNER_TEMP/run560_artifacts/raw.zip" \
+            --safe "$RUNNER_TEMP/run560_artifacts/safe.zip" \
+            --raw-sha ae44a8d97b0a0d1e658a91fc2c7731fe5854592a9dbfe5cfe173a6cc80b9419b \
+            --safe-sha ecd1ece00a2e82396bbd716b4fab93c84efe81ce60d9e853b8b450a437d4eb03 \
+            --head 5cbf54f8c8ff2fe3fb8531a76a560493c7041296 \
+            --prefix RUN557 --batch FUTURE_002 \
+            --output "$RUNNER_TEMP/RUN560_RUN557_REPORT.json" > "$RUNNER_TEMP/RUN560_AUDIT_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN560_AUDIT_EXIT.txt"
+          exit 0
+      - name: Official public repo privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN560_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN560_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close raw source, audit, privacy and failure evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN560_*' ! -name RUN560_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN560_SHA256SUMS.txt
+      - name: Preserve source and original native offline review even RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run560-original-native002-offline-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN560_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce independent source, native-origin audit and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN560_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN560_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN560_DOWNLOAD_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN560_AUDIT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN560_PRIVACY_EXIT.txt")" = 0

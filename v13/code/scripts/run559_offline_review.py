@@ -73,6 +73,23 @@ def independent_score(answer,oracle):
     return checks
 
 
+def frozen_oracles(stage, native_fixtures):
+    """Independently bind every recorded fixture byte to the original Run491 source.
+
+    ZIP/manifest SHA alone authenticates a supplied artifact, not its asserted
+    oracle. Never score against an oracle supplied by the native report.
+    """
+    original = stages.frozen.registration()['fixtures']
+    expected = [f for f in original if f['id'] in stage['fixture_ids']]
+    require([f['id'] for f in expected] == stage['fixture_ids'] and
+            stages.digest(expected) == stage['fixture_sha256'],
+            'FROZEN_FIXTURE_SOURCE_DRIFT:'+stage['id'])
+    require(type(native_fixtures) is list and
+            canonical(native_fixtures) == canonical(expected),
+            'NATIVE_FIXTURE_ORACLE_OR_HISTORY_DRIFT:'+stage['id'])
+    return {f['id']:f['oracle'] for f in expected}
+
+
 def audit(raw,safe,raw_sha,safe_sha,head,prefix,batch_id):
     require(batch_id in ALLOWED,'UNKNOWN_FUTURE_BATCH')
     require(prefix.startswith('RUN') and prefix[3:].isdigit() and len(prefix)<=12,
@@ -174,7 +191,7 @@ def audit(raw,safe,raw_sha,safe_sha,head,prefix,batch_id):
                     step['source_unchanged'] is True and step['installed_artifacts_unchanged'] is True and
                     tool['installed_artifacts_unchanged'] is True,
                     'NATIVE_STAGE_NOT_REAL_OR_SOURCE_DRIFT:'+sid)
-            oracles={f['id']:f['oracle'] for f in step['fixtures']}
+            oracles=frozen_oracles(stage,step['fixtures'])
             require(set(oracles)==set(stage['fixture_ids']) and
                     len(step['rows'])==len(tool['rows'])==14,'NATIVE_STAGE_ROWS_DRIFT:'+sid)
             source={(r['fixture'],r['variant']):r for r in step['rows']}
