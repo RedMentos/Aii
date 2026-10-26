@@ -1,0 +1,79 @@
+name: V13 Run490 live ToolStep fixed-reader source integration
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run490-live-toolstep-fixed-reader.yml'
+      - 'v13/code/tests/test_run490_live_toolstep_fixed_reader.py'
+permissions:
+  contents: read
+jobs:
+  live-source:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run490-jef-toolstep-live-source-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pin unchanged production ToolStep and source-only test
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/tests/test_run490_live_toolstep_fixed_reader.py)" = 'd5ff5140c529e4948cc26402e9e63b3e49e7e285'
+          test "$(git hash-object v13/code/v13/toolstep.py)" = '50d5efd45fd722ed9b9ff6a4dc63153db241aa09'
+          test "$(git hash-object v13/code/v13/agi/eligibility.py)" = '1778752f4a92de660a48a3c208134ef601bcbb9f'
+      - name: Isolated source-only test prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Exercise actual Runtime ToolStep proposal, Age0 and source-only guard
+        id: test
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest discover -s tests -p 'test_run490_live_toolstep_fixed_reader.py' -v > "$RUNNER_TEMP/RUN490_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN490_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN490_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN490_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence with SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN490_*' ! -name RUN490_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN490_SHA256SUMS.txt
+      - name: Preserve raw evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run490-live-toolstep-fixed-source-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN490_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce live source-only integration and privacy
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/RUN490_TEST_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN490_TEST_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN490_PRIVACY_EXIT.txt")" = '0'
