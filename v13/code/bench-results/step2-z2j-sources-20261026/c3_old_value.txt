@@ -1,0 +1,5 @@
+Exploratory diagnosis after the preregistered verdict (not preregistered), both_exact rows of REVISED/TWICE (7 episodes x 3 seeds):
+rows whose B2 quotes state every current rule: A4 1/21, O4 1/21, S4 10/21.
+In those 10 S4 rows C3 extracted the superseded value for the revised rule in 10/10 (fields: ok 19, old 10, other 1); all fields correct 0/10.
+The guard turns all of them into UNKNOWN (no wrong decision). Bottleneck moved from B2 to C3.
+Run note: container restart during A4_s37 attempt 1 (kept in the project folder under partial/); A4_s37 rerun from scratch (run2.log).

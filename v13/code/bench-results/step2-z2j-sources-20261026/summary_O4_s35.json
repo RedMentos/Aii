@@ -1,0 +1,1513 @@
+{
+  "run": "O4_s35",
+  "arm": "O4",
+  "seed": 35,
+  "enable": {
+    "b2_offer_body_state": false,
+    "offer_quote_min_chars": 90,
+    "b2_control": "two_body",
+    "offer_quote_context_chars": 200,
+    "b1_recent_source_chars": 600,
+    "seed": 35,
+    "b2_quote_select": "pointer",
+    "b2_context_chars": 1536,
+    "b2_quote_slots": 4,
+    "b2_quote_choices": "earlier_oldest"
+  },
+  "query": true,
+  "step2_status": "UTILITY_FAIL",
+  "paired_no_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.6,
+      "b2_only": 0.25,
+      "both_control": 0.5416666666666667,
+      "both_exact": 0.575,
+      "both_none": 0.5833333333333333,
+      "prompt_only_dual": 0.5166666666666667,
+      "same_policy_dual": 0.5916666666666666
+    },
+    "best_solo": 0.6,
+    "gain_over_best_solo": {
+      "both_none": -0.01666666666666672,
+      "both_exact": -0.025000000000000022,
+      "both_control": -0.05833333333333324
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_status": "TOOL_UTILITY_PASS_SCOPED",
+  "paired_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.475,
+      "b2_only": 0.13333333333333333,
+      "both_control": 0.5083333333333333,
+      "both_exact": 0.6416666666666667,
+      "both_none": 0.6833333333333333,
+      "prompt_only_dual": 0.4583333333333333,
+      "same_policy_dual": 0.4666666666666667
+    },
+    "best_solo": 0.475,
+    "gain_over_best_solo": {
+      "both_none": 0.20833333333333337,
+      "both_exact": 0.16666666666666674,
+      "both_control": 0.033333333333333326
+    },
+    "b1_b2_each_win_an_episode": true,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": true
+  },
+  "tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.475,
+      "exact_fixtures": []
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.13333333333333333,
+      "exact_fixtures": []
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 3,
+      "unknown": 7,
+      "mean_utility": 0.5083333333333333,
+      "exact_fixtures": []
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 6,
+      "unknown": 3,
+      "mean_utility": 0.6416666666666667,
+      "exact_fixtures": [
+        "Iklil"
+      ]
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 6,
+      "unknown": 2,
+      "mean_utility": 0.6833333333333333,
+      "exact_fixtures": [
+        "Heze",
+        "Iklil"
+      ]
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.4583333333333333,
+      "exact_fixtures": []
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.4666666666666667,
+      "exact_fixtures": []
+    }
+  },
+  "error_profile_tool": {
+    "b1_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.9166666666666666
+    },
+    "b2_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.25
+    },
+    "both_control": {
+      "rule_fields_correct": 0.18,
+      "option_fields_correct": 0.8666666666666667
+    },
+    "both_exact": {
+      "rule_fields_correct": 0.42,
+      "option_fields_correct": 0.9333333333333333
+    },
+    "both_none": {
+      "rule_fields_correct": 0.52,
+      "option_fields_correct": 0.9333333333333333
+    },
+    "prompt_only_dual": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.8833333333333333
+    },
+    "same_policy_dual": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.9
+    }
+  },
+  "information_access": {
+    "b1_only": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8
+    },
+    "b2_only": {
+      "B2_GIST:rules": 3,
+      "B2_GIST:options": 0
+    },
+    "both_none": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 3,
+      "B2_GIST:options": 0
+    },
+    "both_exact": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 3,
+      "B2_GIST:options": 0
+    },
+    "both_control": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8,
+      "B2_GIST:rules": 3,
+      "B2_GIST:options": 0
+    },
+    "same_policy_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8
+    },
+    "prompt_only_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 7,
+      "B2_GIST:rules": 0,
+      "B2_GIST:options": 0
+    }
+  },
+  "joint_access": {
+    "b1_only": 0,
+    "b2_only": 0,
+    "both_none": 3,
+    "both_exact": 3,
+    "both_control": 3,
+    "same_policy_dual": 0,
+    "prompt_only_dual": 0
+  },
+  "queried_offers": {
+    "offers": 120,
+    "with_question": 120
+  },
+  "episode_utility_tool": {
+    "Alcor:b1_only": 0.5,
+    "Alcor:b2_only": 0.08333333333333333,
+    "Alcor:both_none": 0.75,
+    "Alcor:both_exact": 0.75,
+    "Alcor:both_control": 0.75,
+    "Alcor:same_policy_dual": 0.5,
+    "Alcor:prompt_only_dual": 0.5,
+    "Baham:b1_only": 0.5,
+    "Baham:b2_only": 0.16666666666666666,
+    "Baham:both_none": 0.5833333333333334,
+    "Baham:both_exact": 0.5833333333333334,
+    "Baham:both_control": 0.3333333333333333,
+    "Baham:same_policy_dual": 0.5,
+    "Baham:prompt_only_dual": 0.5,
+    "Chara:b1_only": 0.5,
+    "Chara:b2_only": 0.16666666666666666,
+    "Chara:both_none": 0.75,
+    "Chara:both_exact": 0.75,
+    "Chara:both_control": 0.4166666666666667,
+    "Chara:same_policy_dual": 0.4166666666666667,
+    "Chara:prompt_only_dual": 0.4166666666666667,
+    "Dabih:b1_only": 0.08333333333333333,
+    "Dabih:b2_only": 0.16666666666666666,
+    "Dabih:both_none": 0.16666666666666666,
+    "Dabih:both_exact": 0.16666666666666666,
+    "Dabih:both_control": 0.16666666666666666,
+    "Dabih:same_policy_dual": 0.08333333333333333,
+    "Dabih:prompt_only_dual": 0.08333333333333333,
+    "Elnath:b1_only": 0.5,
+    "Elnath:b2_only": 0.16666666666666666,
+    "Elnath:both_none": 0.75,
+    "Elnath:both_exact": 0.75,
+    "Elnath:both_control": 0.75,
+    "Elnath:same_policy_dual": 0.5,
+    "Elnath:prompt_only_dual": 0.5,
+    "Fafnir:b1_only": 0.5833333333333334,
+    "Fafnir:b2_only": 0.16666666666666666,
+    "Fafnir:both_none": 0.75,
+    "Fafnir:both_exact": 0.75,
+    "Fafnir:both_control": 0.75,
+    "Fafnir:same_policy_dual": 0.5833333333333334,
+    "Fafnir:prompt_only_dual": 0.5833333333333334,
+    "Grumium:b1_only": 0.5833333333333334,
+    "Grumium:b2_only": 0.16666666666666666,
+    "Grumium:both_none": 0.75,
+    "Grumium:both_exact": 0.75,
+    "Grumium:both_control": 0.5,
+    "Grumium:same_policy_dual": 0.5833333333333334,
+    "Grumium:prompt_only_dual": 0.5,
+    "Heze:b1_only": 0.5,
+    "Heze:b2_only": 0.08333333333333333,
+    "Heze:both_none": 0.9166666666666666,
+    "Heze:both_exact": 0.5,
+    "Heze:both_control": 0.5,
+    "Heze:same_policy_dual": 0.5,
+    "Heze:prompt_only_dual": 0.5,
+    "Iklil:b1_only": 0.5,
+    "Iklil:b2_only": 0.16666666666666666,
+    "Iklil:both_none": 0.9166666666666666,
+    "Iklil:both_exact": 0.9166666666666666,
+    "Iklil:both_control": 0.4166666666666667,
+    "Iklil:same_policy_dual": 0.5,
+    "Iklil:prompt_only_dual": 0.5,
+    "Jishui:b1_only": 0.5,
+    "Jishui:b2_only": 0.0,
+    "Jishui:both_none": 0.5,
+    "Jishui:both_exact": 0.5,
+    "Jishui:both_control": 0.5,
+    "Jishui:same_policy_dual": 0.5,
+    "Jishui:prompt_only_dual": 0.5
+  },
+  "split_exact_tool": {
+    "b1_only": [],
+    "b2_only": [],
+    "both_control": [],
+    "both_exact": [],
+    "both_none": [],
+    "prompt_only_dual": [],
+    "same_policy_dual": []
+  },
+  "z2e": {
+    "b2_quote_select": "pointer",
+    "b2_rule_rows": {
+      "Alcor:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Alcor:both_control": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Alcor:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Alcor:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Baham:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Baham:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Baham:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Baham:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Chara:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Chara:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Chara:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Chara:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Dabih:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Dabih:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Dabih:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Dabih:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Elnath:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Elnath:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Elnath:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Elnath:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Fafnir:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Fafnir:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Fafnir:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Fafnir:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Grumium:b2_only": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Grumium:both_control": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Grumium:both_exact": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Grumium:both_none": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Heze:b2_only": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Heze:both_control": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Heze:both_exact": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Heze:both_none": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Iklil:b2_only": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Iklil:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Iklil:both_exact": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Iklil:both_none": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Jishui:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Jishui:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Jishui:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Jishui:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      }
+    },
+    "b2_rule_rate": 0.3,
+    "superseded_quoted_rows": 28,
+    "invented_value_rows": 0,
+    "picked_ids": 145,
+    "wrong_committed_tool": 15,
+    "wrong_committed_rows": [
+      {
+        "fixture": "Alcor",
+        "variant": "both_none",
+        "action": "A"
+      },
+      {
+        "fixture": "Alcor",
+        "variant": "both_exact",
+        "action": "A"
+      },
+      {
+        "fixture": "Alcor",
+        "variant": "both_control",
+        "action": "A"
+      },
+      {
+        "fixture": "Baham",
+        "variant": "both_none",
+        "action": "NONE"
+      },
+      {
+        "fixture": "Baham",
+        "variant": "both_exact",
+        "action": "NONE"
+      },
+      {
+        "fixture": "Chara",
+        "variant": "both_none",
+        "action": "A"
+      },
+      {
+        "fixture": "Chara",
+        "variant": "both_exact",
+        "action": "A"
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "both_none",
+        "action": "A"
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "both_exact",
+        "action": "A"
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "both_control",
+        "action": "A"
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "both_none",
+        "action": "B"
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "both_exact",
+        "action": "B"
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "both_control",
+        "action": "B"
+      },
+      {
+        "fixture": "Grumium",
+        "variant": "both_none",
+        "action": "B"
+      },
+      {
+        "fixture": "Grumium",
+        "variant": "both_exact",
+        "action": "B"
+      }
+    ],
+    "b2_prompt_tokens": [
+      878,
+      881,
+      925,
+      893,
+      561,
+      886,
+      886,
+      935,
+      896,
+      557,
+      883,
+      883,
+      932,
+      891,
+      563,
+      882,
+      884,
+      882,
+      895,
+      555,
+      891,
+      887,
+      932,
+      898,
+      559,
+      1029,
+      1033,
+      1083,
+      1043,
+      561,
+      1005,
+      1006,
+      1091,
+      1016,
+      564,
+      820,
+      815,
+      863,
+      825,
+      562,
+      907,
+      907,
+      957,
+      916,
+      560,
+      899,
+      894,
+      941,
+      909,
+      560
+    ],
+    "source_sha256": {
+      "scripts/step2_z2e_pointer_hard.py": "11a14d1c919c8379ee90886454e42634cd5d8211384f48ea03e6f35a5cb1fc7b",
+      "scripts/step2_z2b_seeds.py": "4479863daa334c955e3583be32a85f4213cedb5da135e6ce6e10e16a3fd64454",
+      "scripts/step2_z2_timescale.py": "0139eb7edd060fc11d3e239c1e84d5293fa10b4b75b0223285a8d5509d7de032",
+      "v13/cognition.py": "dda0dd0751069ae10715926ee338484ff3babb3c0c5982e01eb23244fc3f4844"
+    }
+  },
+  "z2g": {
+    "b2_context_chars": 1536,
+    "validity": {
+      "offers": 40,
+      "kickoff_in_context": 40
+    },
+    "pairs": [
+      {
+        "fixture": "Alcor",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Alcor",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Alcor",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Alcor",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Alcor",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Alcor",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Alcor",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Baham",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Baham",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Baham",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "NONE",
+        "off": "NONE",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Baham",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "NONE",
+        "off": "NONE",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Baham",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Baham",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Baham",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Chara",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Chara",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Chara",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Chara",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Chara",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Chara",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Chara",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Dabih",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Dabih",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Dabih",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Dabih",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Dabih",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Dabih",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Dabih",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Elnath",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "b1_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "b2_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "both_none",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "both_exact",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "both_control",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "same_policy_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Fafnir",
+        "variant": "prompt_only_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Grumium",
+        "variant": "b1_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Grumium",
+        "variant": "b2_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Grumium",
+        "variant": "both_none",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Grumium",
+        "variant": "both_exact",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Grumium",
+        "variant": "both_control",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Grumium",
+        "variant": "same_policy_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Grumium",
+        "variant": "prompt_only_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Heze",
+        "variant": "b1_only",
+        "type": "LONG",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Heze",
+        "variant": "b2_only",
+        "type": "LONG",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Heze",
+        "variant": "both_none",
+        "type": "LONG",
+        "oracle": "B",
+        "recorded": "B",
+        "off": "B",
+        "on": "B",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Heze",
+        "variant": "both_exact",
+        "type": "LONG",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Heze",
+        "variant": "both_control",
+        "type": "LONG",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Heze",
+        "variant": "same_policy_dual",
+        "type": "LONG",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Heze",
+        "variant": "prompt_only_dual",
+        "type": "LONG",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Iklil",
+        "variant": "b1_only",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Iklil",
+        "variant": "b2_only",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Iklil",
+        "variant": "both_none",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "B",
+        "off": "B",
+        "on": "B",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Iklil",
+        "variant": "both_exact",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "B",
+        "off": "B",
+        "on": "B",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Iklil",
+        "variant": "both_control",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Iklil",
+        "variant": "same_policy_dual",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Iklil",
+        "variant": "prompt_only_dual",
+        "type": "CONFIRM",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Jishui",
+        "variant": "b1_only",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Jishui",
+        "variant": "b2_only",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Jishui",
+        "variant": "both_none",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Jishui",
+        "variant": "both_exact",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Jishui",
+        "variant": "both_control",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Jishui",
+        "variant": "same_policy_dual",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Jishui",
+        "variant": "prompt_only_dual",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      }
+    ],
+    "consistent": true,
+    "off": {
+      "exact": 3,
+      "wrong": 15,
+      "unknown": 52,
+      "rows": 70
+    },
+    "on": {
+      "exact": 3,
+      "wrong": 0,
+      "unknown": 67,
+      "rows": 70
+    },
+    "source_sha256": {
+      "scripts/step2_z2g_recency.py": "71ec85826f1bb45846073e749370e95bf9f2522c06382117731bbd1963c5cb4f",
+      "v13/agi/eligibility.py": "2ca4edaa574c896da01159335c14f12b8490317bf0ee53b4af57756400bd5202"
+    }
+  },
+  "z2h": {
+    "b2_quote_slots": 4,
+    "picked_per_offer": {
+      "offers": 50,
+      "mean": 2.9,
+      "max": 4
+    },
+    "source_sha256": {
+      "scripts/step2_z2h_slots.py": "9a6155a387cc3376584994714d1a916d490cf0f4212344747daf4ac24be0acef",
+      "v13/cognition.py": "dda0dd0751069ae10715926ee338484ff3babb3c0c5982e01eb23244fc3f4844"
+    }
+  },
+  "z2i": {
+    "b2_quote_choices": "earlier_oldest",
+    "picked_kinds": {
+      "current": 0,
+      "kickoff": 105,
+      "note": 9,
+      "sheet": 20,
+      "other": 0
+    },
+    "picked_kinds_changed": {
+      "current": 0,
+      "kickoff": 83,
+      "note": 9,
+      "sheet": 12,
+      "other": 0
+    }
+  }
+}

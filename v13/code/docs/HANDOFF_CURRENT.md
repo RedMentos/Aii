@@ -1,3 +1,7 @@
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2j — ganze Quellen helfen, C3 liest alte Werte
+
+`b2_quote_choices=sources`: B2-Regelquote .12 → .71, exakte Entscheidungen 22 vs 8 von 210, 0 falsch mit Wächter. Bei geänderten Regeln zieht C3 den alten Wert (10/10) → UNKNOWN. Nächstes: WP-Z2k jüngster Regelwert deterministisch. Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2j-sources/BEFUND.md`.
+
 # Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2i formal HELP mit Benennungsfehler → WP-Z2j läuft
 
 Z2i: Liste ohne aktuelle Aufgabe, Kickoff vorn hebt die Regelquote (.13 → .39), aber nur bei LONG/CONFIRM; der Arm hieß fälschlich „newest first“ (behoben: `earlier_oldest`). Z2j misst `b2_quote_choices=sources` (ganze frühere Quellen). Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2i-choices/BEFUND.md`.
