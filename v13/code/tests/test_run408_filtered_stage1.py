@@ -137,5 +137,24 @@ class Run408FilteredTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(self.archive.read_bytes()).hexdigest(), digest)
 
 
+    def test_unlisted_registered_weight_is_bound_to_original_zip_and_catalog(self):
+        # upload-artifact may dereference a model symlink that find -type f
+        # did not enumerate in the original raw SHA manifest.
+        digest = self.zip(omit_sha=self.weight_path)
+        result, validator = self.check(digest)
+        self.assertEqual(result["status"], "FILTERED_STAGE1_VERIFIED_NO_PROMOTION")
+        self.assertEqual(validator.call_count, 1)
+        self.assertEqual(result["omitted_unlisted_in_manifest"], [self.weight_path])
+        self.assertEqual(result["original_zip_sha256"], digest)
+
+    def test_unlisted_nonmodel_is_not_silently_discarded(self):
+        path = "run401-full/attempts/O_s20/attempt-0001/extra.json"
+        self.files[path] = b"missing from raw manifest"
+        digest = self.zip(omit_sha=path)
+        result, validator = self.check(digest)
+        self.assertEqual(validator.call_count, 0)
+        self.assertIn("UNHASHED_OR_MISSING_MEMBER", str(result["errors"]))
+
+
 if __name__ == "__main__":
     unittest.main()
