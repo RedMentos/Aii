@@ -96,7 +96,7 @@ jobs:
           import json,os
           from pathlib import Path
           d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RED_AUDIT_REPORT.json').read_text())
-          print(json.dumps({k:d[k] for k in ('status','original_exits','tests','failure_count','failure_ids_bounded','summary_bounded')},sort_keys=True))
+          print(json.dumps({k:d[k] for k in ('status','original_exits','tests','failure_count','failures_bounded','errors_bounded','error_class_counts','summary_bounded')},sort_keys=True))
           PY
           fi
           exit 0
