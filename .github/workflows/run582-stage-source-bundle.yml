@@ -31,8 +31,9 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN582_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run582-stage-bundle/PREREG.md)" = c4f134fa45256729b670466faf3bed953c7f7f8d
-          test "$(git hash-object v13/code/scripts/run582_stage_source_bundle.py)" = 37e587b38ac47e38adbdaeacc6dd6a3d1c77ff9d
-          test "$(git hash-object v13/code/tests/test_run582_stage_source_bundle.py)" = daf3f43e33b4466b6dee9a870c2d549e86440010
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run582-stage-bundle/PREREG_HARDEN.md)" = d57abfc7512229575de3cebb6e4737a7bd35ca0b
+          test "$(git hash-object v13/code/scripts/run582_stage_source_bundle.py)" = 17019b74e33e1c21d637bcac0bf5fa0110fa8db8
+          test "$(git hash-object v13/code/tests/test_run582_stage_source_bundle.py)" = 5719e22729153ea0a693549a64c0d8417666f3f8
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN582_HOST.txt"
       - name: Synthetic complete and adversarial missing-source tests
