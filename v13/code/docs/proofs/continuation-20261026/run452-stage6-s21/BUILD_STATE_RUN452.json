@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN452_STAGE6_S21_ACTUAL_210_PREFLIGHT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "branch": "codex/automation11-stage6-s21-source-20261026",
+  "base": "384a4aa1bef76460f24552fa4303d614263c4f62",
+  "tested_source_head": "64d281a7c41ecb92c9ff4bc6024a8c6086908fce",
+  "pr": 451,
+  "source_sha256": {
+    "v13/code/scripts/run452_stage6_s21.py": "a614086dc075027bcc1b820e1f7eb3fc3cd594016be1a555e6231826bcc15852",
+    "v13/code/tests/test_run452_stage6_s21.py": "d2ff00e09a5ae3b19b55b7b0582ade5acb0a7a71acdac681139754f045b6aefb"
+  },
+  "actual_input": {
+    "safe_artifact_id": 12627626352,
+    "safe_zip_sha256": "280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7",
+    "raw_artifact_id": 12627207495,
+    "raw_zip_sha256": "eb47eab043b7c51d0dbdea7cfb12ddfe1706a3611057efc7c348ae810fef599e",
+    "original_stage5_report_sha256": "ef2e4554025730911012c50c417e55c25ef57185f147c131f30d319fb31ff6b1"
+  },
+  "actions": {
+    "run_id": 40270355991,
+    "conclusion": "success",
+    "tests": "33/33 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12628490173,
+    "raw_artifact_sha256": "0b7b9e87ff59fc57acd02f32b3ee529f8ece0df242b6a0e0c719bbe7b104af26"
+  },
+  "result": {
+    "status": "STAGE6_READY_NO_NATIVE",
+    "rows_verified": 210,
+    "completed": [
+      "O_s20",
+      "P_s20",
+      "S_s20",
+      "O_s21",
+      "P_s21"
+    ],
+    "next": "S_s21",
+    "remaining_arms": 4,
+    "negative_wrong_sha": "PASS; destination absent",
+    "native_execution_performed": false,
+    "redmi_measured": false
+  },
+  "source_frozen": {
+    "run394_git_blob": "fae7aed612108a554d8566b2917ebf31022df423",
+    "run397_git_blob": "f1946054135cb6fdf48c06477308f518e2e62ad9",
+    "models_json_git_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "run438_importer_sha256": "da56fbef98685171bfaa0a3569200585fb1e09a3dda159e9d115849b1a9394a8",
+    "run436_verifier_sha256": "19b7a647f2149b6ce0dded029fc6ffd5213768b5f801549b9d5f97a52d886b7a"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Actual native S_s21 (next 42 rows) NOT yet executed. Requires exclusive serial native owner, pinned installed models/runner, fresh no-model export and independent postflight.",
+    "Phone/Redmi still unavailable; no STEP2/B3/Body-JEPA/jepa_weight promotion.",
+    "Whole-system acceptance remains incomplete; source-only preflight cannot substitute for native or phone evidence."
+  ],
+  "next_command": "Create separate exclusive Run453 native S_s21 Actions owner on this exact verified source, pin both original 210-row artifact SHA256 and source hashes, serialize with v13-native-c3-run131-serialized, preregister before inference, preserve failed attempts and no-model export, never upload models. If a newer active native owner appears, do not overlap."
+}
