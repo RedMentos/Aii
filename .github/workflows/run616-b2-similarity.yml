@@ -1,0 +1,73 @@
+name: V13 Run616 read-only B2 native-tap similarity SQLite regression
+on:
+  push:
+    branches:
+      - codex/automation11-run616-b2-semantic-tap-search-20261026
+    paths:
+      - '.github/workflows/run616-b2-similarity.yml'
+      - 'v13/code/v13/gist_similarity.py'
+      - 'v13/code/v13/gist.py'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_gist_similarity_run616.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run616-b2-semantic-tap-search/**'
+permissions:
+  contents: read
+jobs:
+  sqlite:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Bind exact source and unchanged Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN616_HEAD.txt"
+          test "$(git hash-object v13/code/v13/gist_similarity.py)" = 44db3f3b947013007c691d6a44b99c5548f25081
+          test "$(git hash-object v13/code/tests/test_gist_similarity_run616.py)" = 95a1f11779d0afb5542d11b8b48198a6cdf71b19
+          test "$(git hash-object v13/code/v13/gist.py)" = 57eb638a6baded0766fd365fd0c569fffdd41b60
+          test "$(git hash-object v13/code/v13/operator.py)" = 60892780b4beb6ad62efcdd3215e5b646b16efab
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/gist_similarity.py v13/code/tests/test_gist_similarity_run616.py v13/code/v13/gist.py v13/code/v13/operator.py > "$RUNNER_TEMP/RUN616_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN616_HOST.txt"
+      - name: Isolated pinned source-only dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run616venv"
+          "$RUNNER_TEMP/run616venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real SQLite Runtime source-only adversarial and prior Gist regressions
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 "$RUNNER_TEMP/run616venv/bin/python" -m unittest -v tests.test_gist_similarity_run616 tests.test_gist_readout > "$RUNNER_TEMP/RUN616_TESTS_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN616_TEST_EXIT.txt"
+          exit 0
+      - name: Public privacy scan
+        run: |
+          set +e
+          git fetch --no-tags --depth=1 origin fef48329944556891d048744c075fbb5c3910397 > "$RUNNER_TEMP/RUN616_PRIVACY_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base fef48329944556891d048744c075fbb5c3910397 --head "$GITHUB_SHA" >> "$RUNNER_TEMP/RUN616_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN616_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw even on failure
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in TEST PRIVACY; do
+            test -f "RUN616_${k}_EXIT.txt" || echo 2 > "RUN616_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN616_*' ! -name 'RUN616_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN616_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run616-B2-Similarity-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN616_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in TEST PRIVACY; do
+            echo "RUN616 $k exit: $(cat "$RUNNER_TEMP/RUN616_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN616_${k}_EXIT.txt")" = 0
+          done
