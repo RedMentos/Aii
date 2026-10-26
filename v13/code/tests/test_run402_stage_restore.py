@@ -128,6 +128,20 @@ class Run402StageRestoreTests(unittest.TestCase):
             if p.is_file():
                 self.assertEqual(p.read_bytes(), (dest / p.relative_to(self.root / "run401-full")).read_bytes())
 
+    def test_streamed_bytearray_native_runner_log_is_accepted(self):
+        files = {p.name: bytearray(p.read_bytes())
+                 for p in self.root.glob("RUN401_*") if p.is_file()}
+        native = restore._validate_native_tree(self.root / "run401-full", files)
+        self.assertEqual(native["rows_verified"], 42)
+
+    def test_streamed_bytearray_forged_runner_log_is_rejected(self):
+        files = {p.name: bytearray(p.read_bytes())
+                 for p in self.root.glob("RUN401_*") if p.is_file()}
+        files["RUN401_INSTALLED_RAW.log"] = bytearray(
+            b"RUNNER_VERIFIED " + b"0" * 64 + b"\\n")
+        with self.assertRaisesRegex(ValueError, "STAGE1_RUNNER_LOG_IDENTITY_MISMATCH"):
+            restore._validate_native_tree(self.root / "run401-full", files)
+
     def test_wrong_expected_sha_rejected(self):
         self.assertEqual(restore.inspect_archive(self.archive, "0" * 64)[0]["status"],
                          "STAGE1_RED_PRESERVED")
