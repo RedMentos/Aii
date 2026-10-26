@@ -170,10 +170,20 @@ def check_note(args, value):
 CORRECTION_HEAD = 'Correction (exact local calculation): '
 
 
+def names_in_text(args):
+    """WP-DS3d H4: the number guard checks numbers only; C3 once copied "Brmen" for "Bremen" and the fixed sentence
+    repeated it. A name enters a fixed sentence only when it occurs verbatim (case-insensitive) in the user text."""
+    text = str(args['text']).lower()
+    return all(str(v['name']).strip().lower() in text for v in decode(args['values']) if not AGGREGATE.match(str(v.get('name', ''))))
+
+
 def correction_text(args, value):
-    """Unit-free fixed sentence from the executed recipe (same wording as ds3c_tool_answer.repair_text)."""
+    """Unit-free fixed sentence from the executed recipe (same wording as ds3c_tool_answer.repair_text); None when a
+    read name is not in the user text (then only the "unsure" note may be given)."""
     values = [v for v in decode(args['values']) if not AGGREGATE.match(str(v.get('name', '')))]
     text = str(args['text'])
+    if args['operation'] != 'total' and not names_in_text(args):
+        return None
     if args['operation'] == 'total':
         stated = []
         if re.search(r'(?i)\bcorrect\?', text):

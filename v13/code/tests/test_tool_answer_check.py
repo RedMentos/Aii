@@ -71,6 +71,12 @@ class Live(unittest.TestCase):
         self.assertTrue(text.endswith(added));self.assertEqual(st['noted'],1)
     def test_correction_text_flags_a_stated_wrong_total(self):
         self.assertEqual(L.correction_text(SA,50),'No, the stated number 60 is wrong. The exact total is 50.')
+    def test_misread_name_never_enters_the_correction(self):
+        bad=args(CMP,'difference_max_min',[('Crk',300),('Lyon',700),('Graz',450)])
+        self.assertIsNone(L.correction_text(bad,400));self.assertTrue(L.names_in_text(CA))
+        self.res['args']=bad
+        added,text,st=self.run_check('correct','Graz had the most rain. The difference is 400 mm.')
+        self.assertTrue(added.startswith(' Check: this answer does not match'))
     def test_other_tools_and_missing_results_are_ignored(self):
         self.r.cfg['tool_answer_check']='note'
         self.assertEqual(self.ts.check_answer(self.e,dict(self.res,tool='eligibility'),'x',None),'')

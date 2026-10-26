@@ -1,0 +1,135 @@
+{
+ "prereg_sha256": "729cfe934c8c3c8d7b7193acbb571c16e387d4a68b2d1e9717a1c8b1d20e5953",
+ "fresh_sha256": {
+  "r479": "98c06cbb496316457ab87358781796e9d80015666b3c161832cc69058289918a",
+  "r483": "90436855e229eec462b9ca8b918891076847052d79487e916c3c349506d0770e",
+  "f89": "0b6ff46279fe83645ec42cc9e75ac1fa68cdcd1f88464964eb5c73460666d9fc",
+  "f97": "36d525af5a3498e61c2a254ac6e1e6106faa5ef79b932b6b59b81e5ce86c2fee"
+ },
+ "policies": {
+  "r4": {
+   "recipe_always": {
+    "correct": 93,
+    "wrong": 27,
+    "utility": 66,
+    "repair": 0,
+    "bad_repair_good_read": 0
+   },
+   "core_repair": {
+    "correct": 109,
+    "wrong": 11,
+    "utility": 98,
+    "repair": 20,
+    "bad_repair_good_read": 1
+   },
+   "full_repair": {
+    "correct": 115,
+    "wrong": 5,
+    "utility": 110,
+    "repair": 26,
+    "bad_repair_good_read": 1
+   }
+  },
+  "f": {
+   "recipe_always": {
+    "correct": 105,
+    "wrong": 15,
+    "utility": 90,
+    "repair": 0,
+    "bad_repair_good_read": 0
+   },
+   "core_repair": {
+    "correct": 120,
+    "wrong": 0,
+    "utility": 120,
+    "repair": 15,
+    "bad_repair_good_read": 0
+   },
+   "full_repair": {
+    "correct": 120,
+    "wrong": 0,
+    "utility": 120,
+    "repair": 15,
+    "bad_repair_good_read": 0
+   }
+  }
+ },
+ "bench_core_reference": {
+  "r4": {
+   "recipe_always": {
+    "correct": 104,
+    "wrong": 16,
+    "utility": 88.0,
+    "utility_lambda2": 72
+   },
+   "core_repair": {
+    "correct": 115,
+    "wrong": 5,
+    "utility": 110.0,
+    "utility_lambda2": 105
+   }
+  },
+  "f": {
+   "recipe_always": {
+    "correct": 114,
+    "wrong": 6,
+    "utility": 108.0,
+    "utility_lambda2": 102
+   },
+   "core_repair": {
+    "correct": 120,
+    "wrong": 0,
+    "utility": 120.0,
+    "utility_lambda2": 120
+   }
+  }
+ },
+ "hypotheses": {
+  "H1_r4_utility": {
+   "full": {
+    "correct": 115,
+    "wrong": 5,
+    "utility": 110,
+    "repair": 26,
+    "bad_repair_good_read": 1
+   },
+   "core": {
+    "correct": 109,
+    "wrong": 11,
+    "utility": 98,
+    "repair": 20,
+    "bad_repair_good_read": 1
+   },
+   "pass": true
+  },
+  "H2_r4_wrong": {
+   "full_wrong": 5,
+   "core_wrong": 11,
+   "pass": true
+  },
+  "H3_f_no_loss": {
+   "full": {
+    "correct": 120,
+    "wrong": 0,
+    "utility": 120,
+    "repair": 15,
+    "bad_repair_good_read": 0
+   },
+   "core": {
+    "correct": 120,
+    "wrong": 0,
+    "utility": 120,
+    "repair": 15,
+    "bad_repair_good_read": 0
+   },
+   "pass": true
+  },
+  "H4_sentences_safe": {
+   "bad_repair_good_read": 1,
+   "pass": false
+  }
+ },
+ "verdict": "NOT_SUPPORTED: H4_sentences_safe",
+ "phone_measured": false,
+ "runtime_changed": false
+}

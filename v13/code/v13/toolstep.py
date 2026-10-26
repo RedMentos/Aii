@@ -207,7 +207,8 @@ class ToolStep:
                 if attempt:raise
         self.r.store.log('tool_answer_check',e['event_id'],{})
         if ok or mode not in ('note','correct'):return ''
-        body=listarith.check_note(result['args'],result['result']) if mode=='note' else listarith.CORRECTION_HEAD+listarith.correction_text(result['args'],result['result'])
+        fix=listarith.correction_text(result['args'],result['result']) if mode=='correct' else None  # None: a read name is not in the user text
+        body=listarith.CORRECTION_HEAD+fix if fix else listarith.check_note(result['args'],result['result'])
         note=(' ' if output and not output.endswith((' ','\n')) else '')+body
         self.r.store.append_message(mid,note);return note
     def lead(self,result):
