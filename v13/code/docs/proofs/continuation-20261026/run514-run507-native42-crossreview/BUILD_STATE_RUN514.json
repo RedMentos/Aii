@@ -40,7 +40,17 @@
     "/V13_Run514_NATIVE42_INDEPENDENT_REVIEW_20261026_shaEB6103A3.json",
     "/V13_Run514_PORTABLE_REVIEW_SCRIPT_20261026.py"
   ],
-  "ci": "SOURCE_ONLY_PENDING_NO_NEW_NATIVE",
+  "ci": {
+    "status": "SOURCE_ONLY_GREEN",
+    "run": 40313023100,
+    "head": "3a9348ced7527faa193feaafc46607b5d50e3b9b",
+    "artifact": 12644094970,
+    "artifact_zip_sha256": "29a344b27b1bf8dcfd957f728bd50a8a84ed4f1be0b9bfb893bd363b38962df2",
+    "manifest_entries_verified": 4,
+    "privacy": "CLEAN",
+    "test_exit": 0,
+    "private_backup": "/V13_Run514_SOURCE_ONLY_GREEN_20261026_sha29A344B2.zip"
+  },
   "gates": {
     "step2": "UTILITY_FAIL",
     "b3_l1": "FAIL",
@@ -49,6 +59,6 @@
     "redmi_measured": false,
     "canonical_architecture_complete": false
   },
-  "next_command": "Open review PR, verify source-only CI and exact remote bytes. Then choose next disjoint original Run491 batch only after no active native owner; or pursue substantive canonical implementation if native resources unavailable.",
+  "next_command": "Run507 heavy owner completed and independently reviewed; verify no other native owner before separate preregistered Run515 first B2 quote-focus native p00 stage. Do not promote any gates.",
   "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
 }
