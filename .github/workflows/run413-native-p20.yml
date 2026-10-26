@@ -11,6 +11,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   pinned-p20:
+    # Single-owner run. Docs-only PR updates must not duplicate the 1.46GB/native cohort.
+    if: github.event.pull_request.head.sha == 'f7fe01393801c852aa3797973bda0e81b14069ac'
     runs-on: ubuntu-24.04
     timeout-minutes: 110
     env:
