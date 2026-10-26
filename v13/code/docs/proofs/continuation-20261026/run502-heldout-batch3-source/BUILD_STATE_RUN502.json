@@ -1,7 +1,7 @@
 {
   "schema": "V13_RUN502_SOURCE_CHECKPOINT_V1",
   "date_utc": "2026-10-26",
-  "status": "REVIEW_HARDENING_PENDING_CI_ORIGINAL_26_TEST_GREEN_RETAINED",
+  "status": "REVIEWED_SOURCE_GREEN_27_TESTS_42_DISJOINT_ROWS",
   "branch": "codex/run502-heldout-batch3-source-20261026",
   "base_branch": "codex/run501-xenia-yarrow-native-20261026",
   "base_sha": "a0c90aab10ea984568f3c0d894fda8524a0a5290",
@@ -49,7 +49,14 @@
     "plan_sha256": "f6790ed7ccd4fd3da3f5d8a5e734d5ffa5c4781f58cbc044ef8a920ba8898c63",
     "tests_passed": 26,
     "raw_sha_manifest_entries": 8,
-    "privacy": "CLEAN"
+    "privacy": "CLEAN",
+    "reviewed_actions": 40306857736,
+    "reviewed_ci_head": "0b185d00e8fea28563735fbe657a95def75437bf",
+    "reviewed_artifact": 12643156609,
+    "reviewed_raw_sha256": "3af6e44546a95b61c929c168628f434d6fd534009e88e65e3320839a44e0b4ef",
+    "reviewed_plan_sha256": "f6790ed7ccd4fd3da3f5d8a5e734d5ffa5c4781f58cbc044ef8a920ba8898c63",
+    "reviewed_tests_passed": 27,
+    "reviewed_privacy": "CLEAN"
   },
   "gates": {
     "step2": "UTILITY_FAIL",
@@ -64,8 +71,10 @@
     "Run501 native is separate active owner; no Run502 native job launched",
     "Run502 source-only Actions 40306622688 GREEN, 26 tests, no native; downloaded raw artifact 12643241199",
     "Independently recomputed 8 SHA256 entries, exact 42-row plan C_s31_p02/p03/p04, privacy CLEAN",
-    "Independent review found rc0 could be written before stage receipt validity; fixed to rc98 RED and stop before success progress; new adversarial test added; new CI pending"
+    "Independent review found rc0 could be written before stage receipt validity; fixed to rc98 RED and stop before success progress; new adversarial test added; new CI pending",
+    "Reviewed Run502 Actions 40306857736 GREEN, 27 tests including rc98 synthetic receipt rejection, privacy CLEAN",
+    "Downloaded reviewed artifact 12643156609, recomputed all 8 raw SHA256 entries, exact 42-row plan unchanged"
   ],
-  "next_command": "Inspect Run502 source-only Actions for commit 187fa4d3d8d55ea56a69db1087ac093a78e63a5e; preserve prior GREEN proof, verify new tests and raw SHA. Wait Run501 native independent result before Run503.",
+  "next_command": "Inspect Run501 native Actions 40305980830; independent source/quote/score postflight. Only after PASS and no heavy owner, preregister Run503 42-row serialized native batch.",
   "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
 }
