@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run453: independently verify 252 actual native rows from O/P/S_s20 + O/P_s21.
+"""Run453: independently verify 252 actual native rows from O/P/S_s20 + O/P/S_s21.
 
 No inference, no model downloads and no gate promotion. Does not mutate work.
 Derived conservatively from Run436 verifier (SHA256 19b7a647f2149b6ce0dded029fc6ffd5213768b5f801549b9d5f97a52d886b7a).
