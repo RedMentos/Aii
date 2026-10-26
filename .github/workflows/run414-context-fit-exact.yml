@@ -7,6 +7,7 @@ on:
       - 'v13/code/v13/runtime.py'
       - 'v13/code/v13/config.py'
       - 'v13/code/tests/test_context_fit.py'
+      - 'v13/code/scripts/public_repo_privacy_scan.py'
       - 'v13/code/docs/proofs/continuation-20261026/run414-context-fit-exact-optin/**'
 permissions:
   contents: read
