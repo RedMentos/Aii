@@ -1,0 +1,7 @@
+# Run614 original attempt — RED preserved before workflow repair
+
+Original Actions `40407552981` at exact head `25a8f78eed24bc2df27bcded3360547668950c9f`: **FAILURE**. Original raw artifact `12690548092`, ZIP SHA256 `e11e18a03ce20392907ca9bf92dea594963e4d3eff7aebe341283ad8e32a83bc` (matches GitHub digest), **12/12** raw manifest entries independently verified. Private Library backup: `/V13-Checkpoints/2026-10-26/Run614_original_RED_25a8f78.zip`.
+
+Observed root cause: inherited Run608 workflow's fixture invocation still named nonexistent `tests.test_run614_cross_body_paraphrase_native` instead of new `tests.test_run614_independent_native_paraphrase`. Fixture exit 1, Bootstrap skipped (recorded placeholder exit 2). Unexpectedly the native step still ran without bootstrapped server and failed with `ValueError: Native server missing` (native exit 1). Independent audit skipped (placeholder exit 2). Privacy exit 0. **No native model inference was performed**, no B1/B2 states captured and no metrics available. Do not label this a failed semantic cohort or count it as native model utility.
+
+Repair must fix fixture module and make native execution explicitly conditional on `steps.bootstrap.conclusion == 'success'` **and** `steps.bootstrap.outputs.rc == '0'`; similarly audit requires native conclusion and exit 0. Preserve this failed artifact and rerun the same frozen cohort/seed/model pins, with no label edits. Source/Canon/registered Run608 cohort untouched. STEP2/B3/Body-JEPA/jepa_weight/Redmi/V13 negative gates unchanged.

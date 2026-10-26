@@ -1,0 +1,578 @@
+{
+  "schema": "V13_RUN614_INDEPENDENT_PARAPHRASE_COHORT_V1",
+  "seed": 2026102614,
+  "train_topics": [
+    "architecture",
+    "ecology",
+    "navigation",
+    "chemistry",
+    "history",
+    "biology"
+  ],
+  "test_topics": [
+    "literature",
+    "geography"
+  ],
+  "prompts": [
+    {
+      "id": "architecture-1-A",
+      "topic": "architecture",
+      "fact_id": "architecture-1",
+      "variant": "A",
+      "text": "The red-brick library has two arched entrances."
+    },
+    {
+      "id": "architecture-1-B",
+      "topic": "architecture",
+      "fact_id": "architecture-1",
+      "variant": "B",
+      "text": "Two curved doorways lead into the library built of reddish masonry."
+    },
+    {
+      "id": "architecture-2-A",
+      "topic": "architecture",
+      "fact_id": "architecture-2",
+      "variant": "A",
+      "text": "A narrow footbridge connects the east tower to the garden."
+    },
+    {
+      "id": "architecture-2-B",
+      "topic": "architecture",
+      "fact_id": "architecture-2",
+      "variant": "B",
+      "text": "The garden can be reached from the eastern tower by a slim elevated walkway."
+    },
+    {
+      "id": "architecture-3-A",
+      "topic": "architecture",
+      "fact_id": "architecture-3",
+      "variant": "A",
+      "text": "The observatory roof is made from copper panels."
+    },
+    {
+      "id": "architecture-3-B",
+      "topic": "architecture",
+      "fact_id": "architecture-3",
+      "variant": "B",
+      "text": "Sheets of copper cover the top of the astronomy building."
+    },
+    {
+      "id": "architecture-4-A",
+      "topic": "architecture",
+      "fact_id": "architecture-4",
+      "variant": "A",
+      "text": "The courtyard fountain sits beneath three oak trees."
+    },
+    {
+      "id": "architecture-4-B",
+      "topic": "architecture",
+      "fact_id": "architecture-4",
+      "variant": "B",
+      "text": "A trio of oaks shades the water feature in the central yard."
+    },
+    {
+      "id": "architecture-5-A",
+      "topic": "architecture",
+      "fact_id": "architecture-5",
+      "variant": "A",
+      "text": "The old clock tower was restored after a winter storm."
+    },
+    {
+      "id": "architecture-5-B",
+      "topic": "architecture",
+      "fact_id": "architecture-5",
+      "variant": "B",
+      "text": "Repairs to the historic timekeeping spire followed severe winter weather."
+    },
+    {
+      "id": "ecology-1-A",
+      "topic": "ecology",
+      "fact_id": "ecology-1",
+      "variant": "A",
+      "text": "Bees collected nectar from purple clover at sunrise."
+    },
+    {
+      "id": "ecology-1-B",
+      "topic": "ecology",
+      "fact_id": "ecology-1",
+      "variant": "B",
+      "text": "At first light, pollinating insects visited violet clover blossoms."
+    },
+    {
+      "id": "ecology-2-A",
+      "topic": "ecology",
+      "fact_id": "ecology-2",
+      "variant": "A",
+      "text": "The wetland reeds sheltered nesting marsh birds."
+    },
+    {
+      "id": "ecology-2-B",
+      "topic": "ecology",
+      "fact_id": "ecology-2",
+      "variant": "B",
+      "text": "Birds built nests among tall aquatic grasses in the swamp."
+    },
+    {
+      "id": "ecology-3-A",
+      "topic": "ecology",
+      "fact_id": "ecology-3",
+      "variant": "A",
+      "text": "A fox crossed the snowy meadow at dusk."
+    },
+    {
+      "id": "ecology-3-B",
+      "topic": "ecology",
+      "fact_id": "ecology-3",
+      "variant": "B",
+      "text": "Near nightfall, a wild canine moved over a snow-covered field."
+    },
+    {
+      "id": "ecology-4-A",
+      "topic": "ecology",
+      "fact_id": "ecology-4",
+      "variant": "A",
+      "text": "Rainwater filled a shallow pond beside the forest."
+    },
+    {
+      "id": "ecology-4-B",
+      "topic": "ecology",
+      "fact_id": "ecology-4",
+      "variant": "B",
+      "text": "A small pool near the woods rose after rainfall."
+    },
+    {
+      "id": "ecology-5-A",
+      "topic": "ecology",
+      "fact_id": "ecology-5",
+      "variant": "A",
+      "text": "Fallen leaves formed a thick layer around the maple roots."
+    },
+    {
+      "id": "ecology-5-B",
+      "topic": "ecology",
+      "fact_id": "ecology-5",
+      "variant": "B",
+      "text": "The base of the maple was blanketed with accumulated autumn foliage."
+    },
+    {
+      "id": "navigation-1-A",
+      "topic": "navigation",
+      "fact_id": "navigation-1",
+      "variant": "A",
+      "text": "The sailboat turned south after passing the lighthouse."
+    },
+    {
+      "id": "navigation-1-B",
+      "topic": "navigation",
+      "fact_id": "navigation-1",
+      "variant": "B",
+      "text": "Once beyond the coastal beacon, the small vessel headed toward the equator."
+    },
+    {
+      "id": "navigation-2-A",
+      "topic": "navigation",
+      "fact_id": "navigation-2",
+      "variant": "A",
+      "text": "A compass pointed northeast beside the rocky cliff."
+    },
+    {
+      "id": "navigation-2-B",
+      "topic": "navigation",
+      "fact_id": "navigation-2",
+      "variant": "B",
+      "text": "Near the stone escarpment, the magnetic needle indicated a diagonal northern heading."
+    },
+    {
+      "id": "navigation-3-A",
+      "topic": "navigation",
+      "fact_id": "navigation-3",
+      "variant": "A",
+      "text": "The hiking route crossed two wooden bridges before the summit."
+    },
+    {
+      "id": "navigation-3-B",
+      "topic": "navigation",
+      "fact_id": "navigation-3",
+      "variant": "B",
+      "text": "Climbers passed a pair of timber spans on their way to the peak."
+    },
+    {
+      "id": "navigation-4-A",
+      "topic": "navigation",
+      "fact_id": "navigation-4",
+      "variant": "A",
+      "text": "The cargo ship anchored outside the harbor at midnight."
+    },
+    {
+      "id": "navigation-4-B",
+      "topic": "navigation",
+      "fact_id": "navigation-4",
+      "variant": "B",
+      "text": "At twelve at night, the freight vessel dropped anchor beyond the port."
+    },
+    {
+      "id": "navigation-5-A",
+      "topic": "navigation",
+      "fact_id": "navigation-5",
+      "variant": "A",
+      "text": "The map marked a freshwater spring west of the village."
+    },
+    {
+      "id": "navigation-5-B",
+      "topic": "navigation",
+      "fact_id": "navigation-5",
+      "variant": "B",
+      "text": "The chart showed a natural water source on the settlement's western side."
+    },
+    {
+      "id": "chemistry-1-A",
+      "topic": "chemistry",
+      "fact_id": "chemistry-1",
+      "variant": "A",
+      "text": "A copper wire turned green after months outdoors."
+    },
+    {
+      "id": "chemistry-1-B",
+      "topic": "chemistry",
+      "fact_id": "chemistry-1",
+      "variant": "B",
+      "text": "Long exposure to the elements left the metal conductor with a green patina."
+    },
+    {
+      "id": "chemistry-2-A",
+      "topic": "chemistry",
+      "fact_id": "chemistry-2",
+      "variant": "A",
+      "text": "The glass flask held a clear salt solution."
+    },
+    {
+      "id": "chemistry-2-B",
+      "topic": "chemistry",
+      "fact_id": "chemistry-2",
+      "variant": "B",
+      "text": "Transparent brine filled the laboratory vessel."
+    },
+    {
+      "id": "chemistry-3-A",
+      "topic": "chemistry",
+      "fact_id": "chemistry-3",
+      "variant": "A",
+      "text": "A magnet separated iron filings from dry sand."
+    },
+    {
+      "id": "chemistry-3-B",
+      "topic": "chemistry",
+      "fact_id": "chemistry-3",
+      "variant": "B",
+      "text": "Ferrous grains were pulled away from a sandy mixture using magnetic force."
+    },
+    {
+      "id": "chemistry-4-A",
+      "topic": "chemistry",
+      "fact_id": "chemistry-4",
+      "variant": "A",
+      "text": "The student cooled a warm sample in an ice bath."
+    },
+    {
+      "id": "chemistry-4-B",
+      "topic": "chemistry",
+      "fact_id": "chemistry-4",
+      "variant": "B",
+      "text": "A chilled container of ice lowered the specimen's temperature."
+    },
+    {
+      "id": "chemistry-5-A",
+      "topic": "chemistry",
+      "fact_id": "chemistry-5",
+      "variant": "A",
+      "text": "The indicator paper changed color in acidic liquid."
+    },
+    {
+      "id": "chemistry-5-B",
+      "topic": "chemistry",
+      "fact_id": "chemistry-5",
+      "variant": "B",
+      "text": "Contact with a low-pH solution altered the test strip's hue."
+    },
+    {
+      "id": "history-1-A",
+      "topic": "history",
+      "fact_id": "history-1",
+      "variant": "A",
+      "text": "The museum displayed a bronze coin from an ancient port."
+    },
+    {
+      "id": "history-1-B",
+      "topic": "history",
+      "fact_id": "history-1",
+      "variant": "B",
+      "text": "An old harbor settlement's copper-alloy currency was exhibited in the gallery."
+    },
+    {
+      "id": "history-2-A",
+      "topic": "history",
+      "fact_id": "history-2",
+      "variant": "A",
+      "text": "The archive preserved letters written during the railway expansion."
+    },
+    {
+      "id": "history-2-B",
+      "topic": "history",
+      "fact_id": "history-2",
+      "variant": "B",
+      "text": "Correspondence from the era of growing train networks was stored in the records office."
+    },
+    {
+      "id": "history-3-A",
+      "topic": "history",
+      "fact_id": "history-3",
+      "variant": "A",
+      "text": "A stone inscription recorded the founding of the market."
+    },
+    {
+      "id": "history-3-B",
+      "topic": "history",
+      "fact_id": "history-3",
+      "variant": "B",
+      "text": "The opening of the trading square was commemorated in carved rock text."
+    },
+    {
+      "id": "history-4-A",
+      "topic": "history",
+      "fact_id": "history-4",
+      "variant": "A",
+      "text": "The historian compared two maps drawn a century apart."
+    },
+    {
+      "id": "history-4-B",
+      "topic": "history",
+      "fact_id": "history-4",
+      "variant": "B",
+      "text": "A researcher studied cartographic documents separated by one hundred years."
+    },
+    {
+      "id": "history-5-A",
+      "topic": "history",
+      "fact_id": "history-5",
+      "variant": "A",
+      "text": "The restored carriage stood beside a nineteenth-century photograph."
+    },
+    {
+      "id": "history-5-B",
+      "topic": "history",
+      "fact_id": "history-5",
+      "variant": "B",
+      "text": "A refurbished horse-drawn vehicle was displayed near an image from the 1800s."
+    },
+    {
+      "id": "biology-1-A",
+      "topic": "biology",
+      "fact_id": "biology-1",
+      "variant": "A",
+      "text": "The microscope revealed cells in a thin onion slice."
+    },
+    {
+      "id": "biology-1-B",
+      "topic": "biology",
+      "fact_id": "biology-1",
+      "variant": "B",
+      "text": "Tiny cellular compartments appeared when the sliced bulb was magnified."
+    },
+    {
+      "id": "biology-2-A",
+      "topic": "biology",
+      "fact_id": "biology-2",
+      "variant": "A",
+      "text": "A tadpole developed hind legs before becoming a frog."
+    },
+    {
+      "id": "biology-2-B",
+      "topic": "biology",
+      "fact_id": "biology-2",
+      "variant": "B",
+      "text": "The aquatic larva grew rear limbs on its way to adulthood."
+    },
+    {
+      "id": "biology-3-A",
+      "topic": "biology",
+      "fact_id": "biology-3",
+      "variant": "A",
+      "text": "The cactus stored water in its thick stem."
+    },
+    {
+      "id": "biology-3-B",
+      "topic": "biology",
+      "fact_id": "biology-3",
+      "variant": "B",
+      "text": "The desert plant kept moisture inside a swollen central stalk."
+    },
+    {
+      "id": "biology-4-A",
+      "topic": "biology",
+      "fact_id": "biology-4",
+      "variant": "A",
+      "text": "A seed sprouted after several days in damp soil."
+    },
+    {
+      "id": "biology-4-B",
+      "topic": "biology",
+      "fact_id": "biology-4",
+      "variant": "B",
+      "text": "Moist earth supported germination within a few days."
+    },
+    {
+      "id": "biology-5-A",
+      "topic": "biology",
+      "fact_id": "biology-5",
+      "variant": "A",
+      "text": "The owl rotated its head while watching the field."
+    },
+    {
+      "id": "biology-5-B",
+      "topic": "biology",
+      "fact_id": "biology-5",
+      "variant": "B",
+      "text": "A nocturnal bird turned its neck to survey the open land."
+    },
+    {
+      "id": "literature-1-A",
+      "topic": "literature",
+      "fact_id": "literature-1",
+      "variant": "A",
+      "text": "The poet revised a verse beside the window."
+    },
+    {
+      "id": "literature-1-B",
+      "topic": "literature",
+      "fact_id": "literature-1",
+      "variant": "B",
+      "text": "Next to the glass pane, the writer edited a line of poetry."
+    },
+    {
+      "id": "literature-2-A",
+      "topic": "literature",
+      "fact_id": "literature-2",
+      "variant": "A",
+      "text": "A detective novel ended with the missing painting recovered."
+    },
+    {
+      "id": "literature-2-B",
+      "topic": "literature",
+      "fact_id": "literature-2",
+      "variant": "B",
+      "text": "The mystery story concluded when the stolen artwork was found."
+    },
+    {
+      "id": "literature-3-A",
+      "topic": "literature",
+      "fact_id": "literature-3",
+      "variant": "A",
+      "text": "The library catalog listed three translations of the same epic."
+    },
+    {
+      "id": "literature-3-B",
+      "topic": "literature",
+      "fact_id": "literature-3",
+      "variant": "B",
+      "text": "Three versions in different languages of one long heroic poem appeared in the book index."
+    },
+    {
+      "id": "literature-4-A",
+      "topic": "literature",
+      "fact_id": "literature-4",
+      "variant": "A",
+      "text": "A playwright cut the final scene before opening night."
+    },
+    {
+      "id": "literature-4-B",
+      "topic": "literature",
+      "fact_id": "literature-4",
+      "variant": "B",
+      "text": "The dramatist removed the closing act prior to the premiere."
+    },
+    {
+      "id": "literature-5-A",
+      "topic": "literature",
+      "fact_id": "literature-5",
+      "variant": "A",
+      "text": "The narrator described a village hidden in the mountains."
+    },
+    {
+      "id": "literature-5-B",
+      "topic": "literature",
+      "fact_id": "literature-5",
+      "variant": "B",
+      "text": "The storyteller portrayed a remote settlement concealed among high peaks."
+    },
+    {
+      "id": "geography-1-A",
+      "topic": "geography",
+      "fact_id": "geography-1",
+      "variant": "A",
+      "text": "The river curved around a basalt hill before reaching the sea."
+    },
+    {
+      "id": "geography-1-B",
+      "topic": "geography",
+      "fact_id": "geography-1",
+      "variant": "B",
+      "text": "A stream bent past a dark volcanic mound on its route to the coast."
+    },
+    {
+      "id": "geography-2-A",
+      "topic": "geography",
+      "fact_id": "geography-2",
+      "variant": "A",
+      "text": "The desert plateau cooled quickly after sunset."
+    },
+    {
+      "id": "geography-2-B",
+      "topic": "geography",
+      "fact_id": "geography-2",
+      "variant": "B",
+      "text": "Temperatures on the arid high plain fell rapidly once the sun went down."
+    },
+    {
+      "id": "geography-3-A",
+      "topic": "geography",
+      "fact_id": "geography-3",
+      "variant": "A",
+      "text": "A narrow peninsula separated the two bays."
+    },
+    {
+      "id": "geography-3-B",
+      "topic": "geography",
+      "fact_id": "geography-3",
+      "variant": "B",
+      "text": "A thin finger of land lay between a pair of coastal inlets."
+    },
+    {
+      "id": "geography-4-A",
+      "topic": "geography",
+      "fact_id": "geography-4",
+      "variant": "A",
+      "text": "The glacier fed a lake below the northern ridge."
+    },
+    {
+      "id": "geography-4-B",
+      "topic": "geography",
+      "fact_id": "geography-4",
+      "variant": "B",
+      "text": "Meltwater from the ice mass flowed into a basin beneath the mountain crest."
+    },
+    {
+      "id": "geography-5-A",
+      "topic": "geography",
+      "fact_id": "geography-5",
+      "variant": "A",
+      "text": "The island's western shore was lined with black sand."
+    },
+    {
+      "id": "geography-5-B",
+      "topic": "geography",
+      "fact_id": "geography-5",
+      "variant": "B",
+      "text": "Dark volcanic grains covered the coastline on the island's sunset-facing side."
+    }
+  ]
+}
