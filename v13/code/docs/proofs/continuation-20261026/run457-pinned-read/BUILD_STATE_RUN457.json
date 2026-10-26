@@ -1,0 +1,38 @@
+{
+  "schema": "V13_RUN457_PINNED_POSTVERIFY_UTILITY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 independent source-only; not exclusive Run453 native owner",
+  "branch": "codex/automation11-run457-native252-pinned-read-20261026",
+  "base": "1dfa4b7077f62017700c3d3c5c8ebd7fa792ebfb",
+  "tested_source_head": "d32c4305d7332eb7721221ab8104a9ec2ecf6a86",
+  "pr": 456,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run456_native252_utility.py": "800aed0f119e58cec10114f46e1367a9eede9f39",
+    "v13/code/tests/test_run457_pinned_utility_reads.py": "64ac84cef10d98e1cf5c7d32a3144242b430df8d",
+    ".github/workflows/run457-native252-pinned-read.yml": "38bc9feaa4e38716a36adf69c01f020edec8f624"
+  },
+  "actions": {
+    "id": 40272004982,
+    "conclusion": "success",
+    "tests": "42/42 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12629056808,
+    "raw_artifact_sha256": "cb4fd4ff2b7e95c1b73be29b14c32325e03fce55ddd846c0bd662250ac75c507"
+  },
+  "result": "Run456 utility consumes only post-verification manifest/progress/tool bytes whose SHA256 and size still match independently attested Run453 export; openat O_NOFOLLOW dirfds refuse swapped file/dir symlinks; hardlinks refused. Original paired utility and inherited verifier tests retained.",
+  "evidence_scope": "Software/synthetic Linux CI; no actual native252 utility result and no Redmi measurement.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run453 actual S_s21 Actions 40270625698 still in progress when Run457 source CI completed.",
+    "Actual 252-row no-model artifact and stage6 report required for Run456 utility; two seeds descriptive only.",
+    "Native full 378-row three-seed STEP2, Redmi, Body-JEPA and end-to-end acceptance remain open."
+  ],
+  "next_command": "After verified Run453 native252 safe artifact exists, SHA-verify archive and original stage6 report, import atomically and run Run456 analysis with pinned reads; preserve raw negatives. Otherwise continue independent functional packages."
+}
