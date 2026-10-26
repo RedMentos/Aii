@@ -1,0 +1,13 @@
+# Run403 — independent 378-row full-cohort postflight, source-only GREEN (2026-10-26)
+
+**Scope:** New read-only `scripts/run403_full_postflight.py` verifies a completed Run397 FULL work tree (O/P/S × seeds 20/21/22 × six frozen fixtures × seven variants = 378 rows). Requires exact frozen manifest and progress SHA, all nine validated receipts, model/runner/source/consumer/row hashes, finite utility, zero wrong committed actions, exact seed/arm/fixture coverage. Computes P−O and P−S paired differences per fixture/seed/variant plus means; no incomplete averaging. It never executes models or promotes STEP2.
+
+**Exact-head source-only proof:** Actions `40251169757`, job `121343171376`, head `1c9e93fd66fba25496a0aa82215217ac82d55a06`: **70/70 tests PASS** (62 inherited + 8 new), compileall PASS, privacy CLEAN. Synthetic fixture generator created 378 native-shaped rows with O=.25, P=.75, S=.5 field utility and all nine receipts; paired P−O=.5, P−S=.25 were independently recomputed. Adversarial tests reject missing arm, incomplete status, wrong seed summary, tampered tool row, forged model hash, false gate and path escape. This is NOT actual native 378-row evidence.
+
+**Closed raw:** GitHub Actions artifact `12620526768`, ZIP SHA256 `74ca16987f2c1b822e216a96f944e5d2d5b1d5b8073d049eab7faa627dd94cc1`, CRC PASS, 6/6 member SHA256 PASS. Private Library `/V13_PRIVATE_CHECKPOINTS_20261024/Run403_Full_Postflight_20261026/SOURCE_GREEN_RAW.zip` materialized and SHA-verified byte-identical.
+
+**Native dependency:** Run401/PR396 job `40250662450` runs the first actual FULL arm `O_s20` in a serialized Actions job; it was still active at this checkpoint. Run402/PR397 provides source-only hash-bound archive restore for subsequent arms. Full nine-arm native run and actual restart not yet verified.
+
+**Limits:** Even 378 verified native reports are not automatically STEP2 PASS: origin must be tied to exact observed Actions artifacts and the preregistered utility gate independently reviewed. All negative gates remain: STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA/jepa_weight=0, Age0/approval unchanged, Run389 full-suite RED, no Redmi proof, `canonical_architecture_complete=false`, `user_full_scope_complete=false`.
+
+**Next:** Observe Run401 actual artifact ID/digest and audit raw, then Run402 restore into a fresh work tree and launch only one next Run397 arm at a time under the same native owner concurrency group. Run403 full postflight is applied only after all nine completed.
