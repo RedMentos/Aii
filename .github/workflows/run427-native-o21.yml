@@ -48,6 +48,9 @@ jobs:
             v13/code/scripts/run419_verify_stage3_native.py \
             v13/code/scripts/run421_stage4_o21.py \
             | tee "$RUNNER_TEMP/RUN427_SOURCE_SHA256.txt"
+          test "$(sha256sum v13/code/scripts/run419_import_stage3_artifact.py | cut -d' ' -f1)" = "73706e4436be5fca538e10f380b9714e9609bf0f047251e4c2c5e466f04e6171"
+          test "$(sha256sum v13/code/scripts/run419_verify_stage3_native.py | cut -d' ' -f1)" = "53a14586fe5c2f727bae614ea12f9a89962d8216483687317ccfaaad3a9b7f9d"
+          test "$(sha256sum v13/code/scripts/run421_stage4_o21.py | cut -d' ' -f1)" = "c91b442448dbcfba5fa115c614b95d8b6d0bda0b87a265addea11403a79ebee8"
           gh api "repos/RedMentos/Aii/actions/runs/$RUN418_RUN_ID" --jq '{id,conclusion,head_sha}' > "$RUNNER_TEMP/RUN427_PRODUCER_METADATA.json"
           gh api "repos/RedMentos/Aii/actions/runs/$RUN425_RUN_ID" --jq '{id,conclusion,head_sha}' > "$RUNNER_TEMP/RUN427_POSTFLIGHT_METADATA.json"
           gh api "repos/RedMentos/Aii/actions/artifacts/$RAW_ID" --jq '{id,digest,expired}' > "$RUNNER_TEMP/RUN427_RAW_METADATA.json"
