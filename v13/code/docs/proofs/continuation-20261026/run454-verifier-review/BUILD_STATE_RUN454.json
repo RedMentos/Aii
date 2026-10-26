@@ -1,0 +1,36 @@
+{
+  "schema": "V13_RUN454_INDEPENDENT_SIX_RECEIPT_VERIFIER_REVIEW_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 independent source-only review; does not edit Run453 native owner",
+  "branch": "codex/automation11-run454-native252-verifier-review-20261026",
+  "base": "7580bd02cde71d313b2fea31805f1f87de7f3d83",
+  "tested_source_head": "94fc69ba05c2a8f9f333eb70b57d1cb4f5fa3477",
+  "pr": 453,
+  "source_sha256": {
+    "v13/code/scripts/run453_verify_native252.py": "7da02a21735d13f6bbd21787684bb47c1421df07a3d16093d2ac393e12a0b643",
+    "v13/code/tests/test_run454_verify_native252_adversarial.py": "f35a2b44ee0ed5ffbb406cc6a118578e7705f98891d06dfe80d1c96747d254d1"
+  },
+  "actions": {
+    "id": 40270774325,
+    "conclusion": "success",
+    "tests": "30/30 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12628121099,
+    "raw_artifact_sha256": "587affd7a8068202c401c25547ebea5f3d1873092ece06f0928a7d5944089451"
+  },
+  "result": "Six synthetic receipt verifier tests pass; rejects S_s21 wrong rows, tampered sixth file, symlink, unlisted file and false gate; inherited Run436 verifier controls pass.",
+  "scope": "Software/synthetic, no actual native252 verification, no source modifications to active Run453 native owner.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run453 actual Linux-native S_s21 still running; must inspect its independent verifier and safe artifact before any 252 claim.",
+    "Full blueprint and Redmi/Body-JEPA remain incomplete."
+  ],
+  "next_command": "Observe exclusive Run453 Actions 40270625698, preserve raw and safe evidence; if native GREEN verify 252 actual receipts, then source-only stage7 O_s22; if RED preserve failure and continue independent canonical work."
+}

@@ -1,0 +1,50 @@
+name: V13 Run454 independent native252 verifier adversarial review
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run454-native252-verifier-review.yml'
+      - 'v13/code/tests/test_run454_verify_native252_adversarial.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run454-verifier-review/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pin exact Run453 verifier source and isolated dependencies
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run453_verify_native252.py)" = "358f2803a9bcaf88aa011a177863b6ff77e65394"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          sha256sum v13/code/scripts/run453_verify_native252.py v13/code/tests/test_run454_verify_native252_adversarial.py | tee "$RUNNER_TEMP/run454-source-sha256.txt"
+          python3 -m venv "$RUNNER_TEMP/run454"
+          "$RUNNER_TEMP/run454/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Execute six-receipt adversarial tests and inherited verifier controls
+        working-directory: v13/code
+        run: |
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run454/bin/python" -m unittest -v tests.test_run454_verify_native252_adversarial tests.test_run453_verify_native252 tests.test_run436_verify_native210 > "$RUNNER_TEMP/run454-tests.txt" 2>&1
+          cat "$RUNNER_TEMP/run454-tests.txt"
+      - name: Official privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Retain source-only raw review evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run454-six-receipt-review-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run454-source-sha256.txt
+            ${{ runner.temp }}/run454-tests.txt
+          if-no-files-found: warn
+          retention-days: 30
