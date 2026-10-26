@@ -1,0 +1,42 @@
+{
+  "schema": "V13_RUN432_GREEN_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "reviewed_foreign_pr": 416,
+  "reviewed_foreign_head": "65ff1cd8d27732ba4691879b5db4afaabc7b890e",
+  "branch": "codex/run432-ur8-nonfinite-second-opinion-20261026",
+  "red": {
+    "actions": 40265268706,
+    "head": "f85e2c87de2af3afcf70307fbe6357baf27ea8b6",
+    "artifact_id": 12625894191,
+    "artifact_sha256": "942e4c511b74f548db4f7c42678db86ed8387a26f13c880abed4595c4ea7fc96",
+    "tests": "41 total, 4 expected failures",
+    "privacy": "CLEAN"
+  },
+  "green": {
+    "actions": 40265401717,
+    "tested_head": "8d6d8dfec982b6495074c9fcde161170689c5463",
+    "tests": "41/41 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12625359241,
+    "artifact_sha256": "7ed4c4e59ec253eae1d9a08735dbea4c2e69fa7247056cb3e2c38d25f5622d02",
+    "source_sha256": {
+      "v13/code/v13/userrules_second.py": "d39b84edb1336ea021354ed33c8cabd275f72e3fd6ba5e36c58a461db88b67b5",
+      "v13/code/tests/test_userrules_second_nonfinite_run432.py": "b99b2f2d13a9d44648d662453d872ca8f3f0a377af20445912f6cd1c10a95d84"
+    },
+    "evidence_level": "software/source-only GitHub Actions, no native model/Redmi"
+  },
+  "unchanged": [
+    "frozen userrules_second.json weights/threshold",
+    "USER_RULES_V8_UNSAFE verdict",
+    "default jef and fixed-reader authority",
+    "no rule loosened, no automatic external tools",
+    "all age/learning/STEP2/B3/Body-JEPA negative gates"
+  ],
+  "open_questions": [
+    "Fresh WP-UR9 holdout and cross-review still required for safety/utility claims",
+    "Full V13 suite not run on this isolated Claude branch",
+    "Independent exact-head CI after status commit required before merge"
+  ],
+  "next_command": "Check exact-head Run432 source Actions and privacy, review with Claude before merging. Continue separate Run433 actual 168-row native no-model postflight and only then P_s21."
+}

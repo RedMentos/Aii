@@ -9,6 +9,7 @@ becomes an open question to the user about everything (UNCLEAR, reason SECOND). 
 removes a rule; the fixed reader stays authoritative and the user decides. Inference is plain Python (no numpy on the phone).
 """
 import json
+import math
 import re
 import zlib
 from pathlib import Path
@@ -40,24 +41,60 @@ def features(text):
     return sorted({zlib.crc32(k.encode())%DIM for k in keys})
 
 
+def _reject_constant(value):
+    # Python's json.loads otherwise accepts NaN/Infinity as nonstandard JSON.
+    raise ValueError("NONFINITE_SECOND_OPINION_JSON:" + str(value))
+
+
+def _finite(value):
+    return type(value) in (int,float) and math.isfinite(value)
+
+
+def _validated_model(data):
+    """Validate the frozen classifier once, before admitting it to the cache."""
+    if (type(data) is not dict or data.get('schema')!='USER_RULES_SECOND_V1'
+            or type(data.get('dim')) is not int or data['dim']!=DIM
+            or not _finite(data.get('bias'))
+            or not _finite(data.get('threshold'))
+            or not 0<data['threshold']<1
+            or type(data.get('weights')) is not dict):
+        raise ValueError('INVALID_SECOND_OPINION_MODEL')
+    weights={}
+    for key,value in data['weights'].items():
+        if (type(key) is not str or not key.isdecimal()
+                or str(int(key))!=key or not 0<=int(key)<DIM
+                or not _finite(value)):
+            raise ValueError('INVALID_SECOND_OPINION_WEIGHT')
+        weights[int(key)]=value
+    data['w']=weights
+    return data
+
+
 def load(path=MODEL_FILE):
     global _MODEL
     if _MODEL is None or path!=MODEL_FILE:
-        d=json.loads(Path(path).read_text(encoding='utf-8'))
-        d['w']={int(k):v for k,v in d['weights'].items()}
+        d=json.loads(Path(path).read_text(encoding='utf-8'),
+                     parse_constant=_reject_constant)
+        d=_validated_model(d)
         if path!=MODEL_FILE:return d
         _MODEL=d
     return _MODEL
 
 
 def score(text,model=None):
-    """Probability-like score in [0,1] that the line restricts the AI."""
-    import math
+    """Finite probability-like score in [0,1] that the line restricts the AI."""
     m=model or load();f=features(text)
     z=m['bias']+sum(m['w'].get(i,0.0) for i in f)/max(len(f),1)**0.5
+    # Nonfinite arithmetic must throw: userrules._second then asks the user.
+    # Clamping Infinity to +/-40 would silently convert corruption into a
+    # confident yes/no decision and can suppress a required caution.
+    if not _finite(z):
+        raise ValueError('NONFINITE_SECOND_OPINION_SCORE')
     return 1/(1+math.exp(-max(min(z,40),-40)))
 
 
 def suspects(text,model=None):
     m=model or load()
+    if not _finite(m.get('threshold')) or not 0<m['threshold']<1:
+        raise ValueError('INVALID_SECOND_OPINION_THRESHOLD')
     return score(text,m)>=m['threshold']
