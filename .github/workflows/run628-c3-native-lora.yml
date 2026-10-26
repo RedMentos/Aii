@@ -1,0 +1,139 @@
+name: V13 Run628 pinned public C3 native CPU LoRA shadow proof
+on:
+  push:
+    branches:
+      - codex/automation11-run628-c3-native-lora-probe-20261027
+    paths:
+      - '.github/workflows/run628-c3-native-lora.yml'
+      - 'v13/code/scripts/run628_c3_lora_native.py'
+      - 'v13/code/tests/test_run628_c3_lora_native.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run628-c3-native-lora/COHORT.json'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run628-single-native-c3
+  cancel-in-progress: false
+jobs:
+  native-c3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_ENABLE_HF_TRANSFER: '0'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Exact source, frozen model/cohort and Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN628_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run628-c3-native-lora/COHORT.json)" = 7bf74a8b9de4f7765005093e4cb758da00b9ec0b
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run628-c3-native-lora/PREREG.md)" = 486311a6b4eae1901f99e7f46ea5fa0ceabdcefa
+          test "$(git hash-object v13/code/scripts/run628_c3_lora_native.py)" = ed2d97cc5249e9eff343792008b41e12d60820fb
+          test "$(git hash-object v13/code/tests/test_run628_c3_lora_native.py)" = 99d76e5331b3125b759d001d7e6479a672003826
+          test "$(git hash-object v13/code/v13/lora_trainer.py)" = 49a752879ae5d19391963742a0f042e740edb2cc
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/scripts/run628_c3_lora_native.py v13/code/tests/test_run628_c3_lora_native.py v13/code/docs/proofs/continuation-20261027/run628-c3-native-lora/COHORT.json v13/code/v13/lora_trainer.py > "$RUNNER_TEMP/RUN628_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; free -h; } > "$RUNNER_TEMP/RUN628_HOST.txt"
+      - name: Frozen cohort negative controls without torch
+        run: |
+          set +e
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_run628_c3_lora_native) > "$RUNNER_TEMP/RUN628_SOURCE_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN628_SOURCE_TEST_EXIT.txt"
+          exit 0
+      - name: Isolated pinned CPU PyTorch and trainer dependencies
+        run: |
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run628venv" > "$RUNNER_TEMP/RUN628_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then
+            timeout 600s "$RUNNER_TEMP/run628venv/bin/python" -m pip install --disable-pip-version-check --no-input 'torch==2.5.1+cpu' --index-url https://download.pytorch.org/whl/cpu >> "$RUNNER_TEMP/RUN628_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            timeout 420s "$RUNNER_TEMP/run628venv/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==4.51.3' 'peft==0.15.2' 'gguf==0.16.3' 'huggingface_hub==0.30.2' 'safetensors==0.5.3' 'numpy==2.2.6' >> "$RUNNER_TEMP/RUN628_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then "$RUNNER_TEMP/run628venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN628_DEPENDENCY_LOCK.txt"; fi
+          echo "$rc" > "$RUNNER_TEMP/RUN628_DEPS_EXIT.txt"
+          exit 0
+      - name: Download pinned official Apache-2.0 C3 master and SHA-verify
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN628_DEPS_EXIT.txt")" = 0 ]; then
+            timeout 420s "$RUNNER_TEMP/run628venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN628_DOWNLOAD_RAW.log" 2>&1
+          from huggingface_hub import snapshot_download
+          from pathlib import Path
+          import hashlib
+          p=Path(snapshot_download(repo_id='HuggingFaceTB/SmolLM2-135M-Instruct',revision='12fd25f77366fa6b3b4b768ec3050bf629380bac',local_dir=Path(__import__('os').environ['RUNNER_TEMP'])/'run628-model',allow_patterns=['config.json','generation_config.json','model.safetensors','tokenizer*','special_tokens_map.json','merges.txt','vocab.json'],max_workers=2))
+          h=hashlib.sha256((p/'model.safetensors').read_bytes()).hexdigest()
+          assert h=='5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c',h
+          print('OFFICIAL_MASTER_SHA256_PASS',h,'bytes',(p/'model.safetensors').stat().st_size,'revision','12fd25f77366fa6b3b4b768ec3050bf629380bac')
+          PY
+            rc=$?
+          else
+            rc=2
+            echo 'DEPENDENCIES_FAILED; DOWNLOAD_NOT_ATTEMPTED' > "$RUNNER_TEMP/RUN628_DOWNLOAD_RAW.log"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN628_DOWNLOAD_EXIT.txt"
+          exit 0
+      - name: Actual C3 FP32 master forward backward LoRA and GGUF export
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN628_DOWNLOAD_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN628_SOURCE_TEST_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/run628-output"
+            timeout 600s env PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/run628venv/bin/python" v13/code/scripts/run628_c3_lora_native.py --cohort v13/code/docs/proofs/continuation-20261027/run628-c3-native-lora/COHORT.json --model-dir "$RUNNER_TEMP/run628-model" --out "$RUNNER_TEMP/run628-output" > "$RUNNER_TEMP/RUN628_TRAIN_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=2
+            echo 'PREREQUISITE_FAILED; TRAIN_NOT_ATTEMPTED' > "$RUNNER_TEMP/RUN628_TRAIN_RAW.log"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN628_TRAIN_EXIT.txt"
+          exit 0
+      - name: Public repository privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 8f3209070865ac6e3270b68ca01346fd01d17a75 --head HEAD > "$RUNNER_TEMP/RUN628_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN628_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close original logs, proof and adapter
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in SOURCE_TEST DEPS DOWNLOAD TRAIN PRIVACY; do
+            test -f "RUN628_${k}_EXIT.txt" || echo 2 > "RUN628_${k}_EXIT.txt"
+          done
+          if [ -f run628-output/RUN628_PROOF.json ]; then cp run628-output/RUN628_PROOF.json RUN628_PROOF.json; fi
+          if [ -f run628-output/RUN628_ADAPTER_PATH.txt ]; then
+            p="$(cat run628-output/RUN628_ADAPTER_PATH.txt)"
+            if [ -f "$p" ]; then cp "$p" RUN628_ADAPTER.gguf; fi
+            q="$(dirname "$p")/adapter_model.safetensors"
+            if [ -f "$q" ]; then cp "$q" RUN628_ADAPTER.safetensors; fi
+          fi
+          find . -maxdepth 1 -type f -name 'RUN628_*' ! -name 'RUN628_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN628_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run628-C3-Native-LoRA-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN628_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce native experiment, negative gates and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in SOURCE_TEST DEPS DOWNLOAD TRAIN PRIVACY; do
+            echo "RUN628 $k exit: $(cat "$RUNNER_TEMP/RUN628_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN628_${k}_EXIT.txt")" = 0
+          done
+          test -s "$RUNNER_TEMP/RUN628_PROOF.json"
