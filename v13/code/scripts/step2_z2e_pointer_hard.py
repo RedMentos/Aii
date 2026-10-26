@@ -112,8 +112,9 @@ def run(installed,work,arm,seed):
     summary=z2b.run_one(installed,work,arm,seed)
     report=json.loads((Path(work)/('step2_'+z2b.run_id(arm,seed)+'.json')).read_text())
     rows=b2_rows(report);tool=json.loads((Path(work)/('tool_'+z2b.run_id(arm,seed)+'.json')).read_text())
-    wrong_rows=[{'fixture':x['fixture'],'variant':x['variant'],'action':(x.get('answer') or {}).get('action')} for x in tool['rows']
-                if (x.get('answer') or {}).get('action') in ('A','B','NONE') and x['answer']['action']!=FIX[x['fixture']]['oracle']['action']]
+    import step2_tool_replay as replay  # tool answers are JSON text; action_of is the replay's own reader
+    wrong_rows=[{'fixture':x['fixture'],'variant':x['variant'],'action':replay.action_of(x)} for x in tool['rows']
+                if replay.action_of(x) in ('A','B','NONE') and replay.action_of(x)!=FIX[x['fixture']]['oracle']['action']]
     picked=sum(len((o.get('b2_quote_select') or {}).get('picked') or []) for r in report['rows'] for o in r['offers'] if o['role']=='B2_GIST')
     summary['z2e']={'b2_quote_select':ARMS[arm][1],'b2_rule_rows':{f'{k[0]}:{k[1]}':v for k,v in sorted(rows.items())},
         'b2_rule_rate':sum(v['rules'] for v in rows.values())/len(rows),'superseded_quoted_rows':sum(v['superseded_quoted'] for v in rows.values()),

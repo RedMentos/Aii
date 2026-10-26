@@ -29,4 +29,14 @@ class Fixtures(unittest.TestCase):
         self.assertIsNot(shared.FIXTURES,z.FIXTURES);self.assertEqual(shared_b.SEEDS,(14,15,16));self.assertIs(z.z2b.z2,z.z2)
         self.assertEqual(len(z.HARD),8);self.assertEqual(z.gate({})['status'],'INCOMPLETE')
 
+class Z2f(unittest.TestCase):
+    def test_context_budget_and_seeds_only_in_private_copy(self):
+        import step2_z2f_context as f
+        self.assertEqual(f.settings('CQP',23)['b2_context_chars'],1536);self.assertEqual(f.settings('CQ',23).get('b2_quote_select'),None)
+        self.assertEqual(f.z.SEEDS,(23,24,25));self.assertEqual(z.SEEDS,(20,21,22));self.assertNotIn('b2_context_chars',z.settings('CQP',20))
+        self.assertEqual(f.gate({})['status'],'INCOMPLETE')
+        rep={'rows':[{'fixture':'Altair','variant':'b2_only','offers':[{'role':'B2_GIST','context_source_refs':[{'char_start':0,'char_end':len(z.FIX['Altair']['history'][0])}]}]},
+                     {'fixture':'Electra','variant':'b2_only','offers':[{'role':'B2_GIST','context_source_refs':[{'char_start':0,'char_end':240}]}]}]}
+        self.assertEqual(f.kickoff_in_context(rep),{'offers':2,'kickoff_in_context':1})
+
 if __name__=='__main__':unittest.main()

@@ -1220,6 +1220,15 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Grenze: Zeiger wirkt mit der Zitat-Erweiterung zusammen (B2 wählt oft Kopfzeile der kurzen Regel-Notiz); längere Notizen ungetestet. Befund `code/docs/proofs/continuation-20261021/step2-z2c-b2-rule/BEFUND.md`.
 - Offen: (a) Nutzerentscheidung `b2_quote_select=pointer` (+ `offer_quote_context_chars=200` usw.) in den Live-Pfad; vorher live-`analyst_context` für erweiterte Zitate reparieren; (b) neues Prereg: Zeiger mit Ein-Körper-Kontrolle (D/DQ), längere/geänderte Regeln, frische Episoden; (c) Handy-Kosten messen.
 
+### WP-Z2e B2-Zeiger auf schwereren Aufgaben (Cloud, Modelle) — ERLEDIGT 2026-10-26, `Z2E_POINTER_FAILS`, für den Zeiger **nicht aussagefähig** (Thread „B2 zitiert Regel selten“, Branch `claude/project-thread-0fckhc`)
+- Nutzerentscheidung 22.10.: erst härter prüfen. Vorher Live-Reparatur: `analyst_context` nimmt erweiterte Zitate an (gleiche Zeilen wie `e6603fc`/dq33gk, im Kettenglied `quote_context`).
+- Vorregistriert (`a3a7a67`), 10 neue Episoden (4 lange Regel-Notizen, 4 nachträglich geänderte Regeln, 2 DETAIL), CQ/CQP/DQP × Seeds 20–22: B2-Regelquote 0/96 in allen Armen, 0 falsch festgelegt.
+- **Ursache:** Die alte Regel-Notiz kam in 288/288 B2-Angeboten gar nicht in B2s Kontext — `b2_context_chars` 768 füllt vom jüngsten Zug her, die älteste Notiz fällt raus. B2s „4 Slots“ sind praktisch ~2 längere Züge. Das ist der nächste STEP2-Engpass vor der Zitat-Auswahl. Plus: Zeiger wählte den geänderten Regelsatz 9/48 (Kontrolle 0).
+- Pannen (Zeitlimit durch parallele Tests, Auswertungsfehler, abgebrochener Modell-Output, zwei Umgebungs-Neustarts) offen im Befund `code/docs/proofs/continuation-20261022/step2-z2e-pointer-hard/BEFUND.md`.
+
+### WP-Z2f wie Z2e mit `b2_context_chars` 1536 + Gültigkeitsprüfung (Cloud, Modelle) — IN ARBEIT 2026-10-26 (gleicher Thread/Branch)
+- Prereg `code/docs/proofs/continuation-20261026/step2-z2f-context/PREREG.md`, Seeds 23–25; Urteil nur, wenn die Regel-Notiz in ≥ 90 % der B2-Angebote im Kontext steht.
+
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.

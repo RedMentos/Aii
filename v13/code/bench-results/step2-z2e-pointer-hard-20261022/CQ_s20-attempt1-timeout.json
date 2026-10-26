@@ -1,0 +1,496 @@
+{
+ "status": "UTILITY_FAIL",
+ "all_structural_checks_passed": false,
+ "rows": [
+  {
+   "fixture": "Altair",
+   "variant": "b1_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Altair",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.08333333333333333
+  },
+  {
+   "fixture": "Altair",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Altair",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Altair",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Altair",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Altair",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Bellatrix",
+   "variant": "b1_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Bellatrix",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.25
+  },
+  {
+   "fixture": "Bellatrix",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Bellatrix",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5
+  },
+  {
+   "fixture": "Bellatrix",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5
+  },
+  {
+   "fixture": "Bellatrix",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Bellatrix",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Capella",
+   "variant": "b1_only",
+   "status": "ERROR",
+   "error": "Zeitbudget erreicht",
+   "utility": 0.0
+  },
+  {
+   "fixture": "Capella",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.08333333333333333
+  },
+  {
+   "fixture": "Capella",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5
+  },
+  {
+   "fixture": "Capella",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5
+  },
+  {
+   "fixture": "Capella",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5
+  },
+  {
+   "fixture": "Capella",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Capella",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.16666666666666666
+  },
+  {
+   "fixture": "Deneb",
+   "variant": "b1_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Deneb",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.25
+  },
+  {
+   "fixture": "Deneb",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Deneb",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Deneb",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Deneb",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Deneb",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Electra",
+   "variant": "b1_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Electra",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.16666666666666666
+  },
+  {
+   "fixture": "Electra",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Electra",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Electra",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Electra",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Electra",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Fomalhaut",
+   "variant": "b1_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Fomalhaut",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.16666666666666666
+  },
+  {
+   "fixture": "Fomalhaut",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Fomalhaut",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.25
+  },
+  {
+   "fixture": "Fomalhaut",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Fomalhaut",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Fomalhaut",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Gemma",
+   "variant": "b1_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Gemma",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.16666666666666666
+  },
+  {
+   "fixture": "Gemma",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Gemma",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Gemma",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Gemma",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Gemma",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Hadar",
+   "variant": "b1_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Hadar",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.3333333333333333
+  },
+  {
+   "fixture": "Hadar",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Hadar",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.75
+  },
+  {
+   "fixture": "Hadar",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Hadar",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Hadar",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.6666666666666666
+  },
+  {
+   "fixture": "Izar",
+   "variant": "b1_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.16666666666666666
+  },
+  {
+   "fixture": "Izar",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.16666666666666666
+  },
+  {
+   "fixture": "Izar",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.16666666666666666
+  },
+  {
+   "fixture": "Izar",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5
+  },
+  {
+   "fixture": "Izar",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.16666666666666666
+  },
+  {
+   "fixture": "Izar",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.4166666666666667
+  },
+  {
+   "fixture": "Izar",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.4166666666666667
+  },
+  {
+   "fixture": "Jabbah",
+   "variant": "b1_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Jabbah",
+   "variant": "b2_only",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.08333333333333333
+  },
+  {
+   "fixture": "Jabbah",
+   "variant": "both_none",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Jabbah",
+   "variant": "both_exact",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Jabbah",
+   "variant": "both_control",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Jabbah",
+   "variant": "same_policy_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  },
+  {
+   "fixture": "Jabbah",
+   "variant": "prompt_only_dual",
+   "status": "RECORDED",
+   "error": null,
+   "utility": 0.5833333333333334
+  }
+ ]
+}
