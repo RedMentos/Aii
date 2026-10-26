@@ -78,7 +78,7 @@ def _original_manifest(z, infos):
     raw = z.read(infos["RUN401_SHA256SUMS.txt"]).decode("utf-8")
     expected = {}
     for line in raw.splitlines():
-        m = re.fullmatch(r"([0-9a-f]{64})  (?:\\./)?(.+)", line)
+        m = re.fullmatch(r"([0-9a-f]{64})  (?:\./)?(.+)", line)
         require(m is not None, "INVALID_SHA_MANIFEST_LINE")
         digest, name = m.groups()
         stage._safe_path(name)
