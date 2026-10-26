@@ -148,10 +148,9 @@ class ToolFinalAttributionTests(unittest.TestCase):
         with patch.object(Broker, '_check', return_value={'ok': True, 'violations': []}):
             for bad in ({'model_generated': True}, {'tool_answer_first': 'LEAD'},
                         {'output_authority': 'MODEL_ANSWER'}):
-                meta = dict(output_authority='ELIGIBILITY_TOOL_FINAL',
-                            tool_answer_first='FINAL', model_generated=False, **bad) if False else {
-                                'output_authority': 'ELIGIBILITY_TOOL_FINAL',
-                                'tool_answer_first': 'FINAL', 'model_generated': False, **bad}
+                meta = {'output_authority': 'ELIGIBILITY_TOOL_FINAL',
+                        'tool_answer_first': 'FINAL', 'model_generated': False}
+                meta.update(bad)
                 receipt = b.finalize(e, 'message', meta, 'FINAL', output, tool_result=tool)
                 self.assertNotEqual(receipt['authority'], 'ELIGIBILITY_TOOL_FINAL')
 
