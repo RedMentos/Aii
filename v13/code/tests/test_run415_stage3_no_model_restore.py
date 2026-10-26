@@ -162,10 +162,10 @@ class Run415Stage3RestoreTests(unittest.TestCase):
                 return stage.RUN401_EXECUTABLE_SHA256
             return original_sha(path)
 
-        with mock.patch.object(stage.safe, "sha_file", side_effect=selective_sha), \\
+        with mock.patch.object(stage.safe, "sha_file", side_effect=selective_sha), \
              mock.patch.object(stage.resume, "validate_completed",
-                               side_effect=ValueError("RECORDED_MODEL_IDENTITY_MISMATCH")), \\
-             mock.patch.object(stage.resume, "run") as native, \\
+                               side_effect=ValueError("RECORDED_MODEL_IDENTITY_MISMATCH")), \
+             mock.patch.object(stage.resume, "run") as native, \
              mock.patch.object(stage.safe, "export", return_value={
                  "status": "EXPORT_VERIFIED_NO_MODEL_WEIGHTS", "errors": []
              }) as exported:
@@ -190,10 +190,10 @@ class Run415Stage3RestoreTests(unittest.TestCase):
                 return stage.RUN401_EXECUTABLE_SHA256
             return original_sha(path)
 
-        with mock.patch.object(stage.safe, "sha_file", side_effect=selective_sha), \\
+        with mock.patch.object(stage.safe, "sha_file", side_effect=selective_sha), \
              mock.patch.object(stage.resume, "validate_completed",
-                               return_value={"rows": 41}), \\
-             mock.patch.object(stage.resume, "run") as native, \\
+                               return_value={"rows": 41}), \
+             mock.patch.object(stage.resume, "run") as native, \
              mock.patch.object(stage.safe, "export", return_value={
                  "status": "EXPORT_VERIFIED_NO_MODEL_WEIGHTS", "errors": []
              }):
