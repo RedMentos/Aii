@@ -103,7 +103,7 @@ def validate(kind,obj):
         if obj.get('finality','FINAL') not in {"PROVISIONAL","FINAL"}:raise ValueError("Modulator finality")
     if kind=="AttentionRequest" and (obj["target"] not in {"A_SOURCE","B1","B2","MEMORY","WORLD","TOOL","SELF"} or obj["reason"] not in {"novelty","conflict","exactness","goal","verify","recall"} or not 0<=obj["priority"]<=1 or obj["budget"]<1):raise ValueError("Attention request target/reason/priority/budget")
     if kind=="AttentionResponse" and (obj["status"] not in {"GRANTED","NOT_AVAILABLE","TOO_EXPENSIVE"} or obj["truth_authority"]!=0):raise ValueError("Attention response status/authority (gain != truth)")
-    if kind=="OutputBrokerDecision" and (obj["rewrites"]!=0 or obj["authority"] not in {"APPROVED_FIXED_RULE","EXPLICIT_EXACT_COPY","MODEL_ANSWER","SOURCE_SYSTEM_REPORT","NONE"}):raise ValueError("Broker never rewrites; known authority only")
+    if kind=="OutputBrokerDecision" and (obj["rewrites"]!=0 or obj["authority"] not in {"APPROVED_FIXED_RULE","EXPLICIT_EXACT_COPY","ELIGIBILITY_TOOL_FINAL","MODEL_ANSWER","SOURCE_SYSTEM_REPORT","NONE"}):raise ValueError("Broker never rewrites; known authority only")
     if kind=="SelfWorldAttribution" and obj["attribution"] not in {"SELF","EXTERNAL","MIXED","UNCLEAR"}:raise ValueError("Self/World attribution class")
     if kind=="LearningTrace" and not 0<=obj["activity"]<=1:raise ValueError("Trace activity [0,1]")
     if kind=="FocalItem" and (obj["state_type"] not in {"ACTIVE","REACTIVATABLE","EPISODIC_POINTER"} or (obj["source_kind"] in {"B1_DETAIL","B2_GIST"} and obj["fact_hypothesis_status"]=="FACT")):raise ValueError("FocalItem state/authority")
