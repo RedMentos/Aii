@@ -40,6 +40,7 @@ OPEN_MAX=32
 MSG_KINDS=('finding','open_goal','error','memory','correction')
 CORRECTION_KEY='LATE_CORRECTION_MODE';CORRECTION_MODES=('off','shadow','deliver')
 SHADOW_KEY='LATE_CORRECTION_SHADOW';SHADOW_KEEP=32
+ARITH_SHADOW_KEY='AGE0D_ARITHMETIC_SHADOW';ARITH_SHADOW_KEEP=32
 MSG_RELEVANCE=.6;MSG_PER_HOUR=3;MSG_GAP_S=600;MSG_DEDUP_S=86400;MSG_KEEP=64  # BOOT §20.4 gate
 EDIT_TARGETS=('memory','world_notebook','context_policy','replay_priority','routing_candidate','skill_metadata','translator_gate','safe_config')
 EDIT_AUTO={'context_policy'}  # reversible, bounded by WP-N7 knob guards
@@ -259,11 +260,35 @@ class SelfSystem:
         if missing:why.append('dort stehen Zahlen, die in meiner Antwort fehlen: '+', '.join(sorted(missing))[:80])
         return ('Möglicher Fehler in meiner letzten Antwort (Sicherheit: '+sure+'; '+'; '.join(why)+'). '
                 'Spätere Prüfung ('+role+'): '+summary[:200])
+    def _shadow_arithmetic_audit(self,event_id,offer,output):
+        """WP-AGE0d: answer-aware source-bound diagnostic; never deliver."""
+        if self.correction_mode()!='shadow':return
+        try:
+            from .answer_audit import audit
+            refs=offer.get('evidence_refs',[])
+            if type(refs) is not list or not refs or not all(type(x) is dict for x in refs[:4]):return
+            sources=[self.s.read_source(ref) for ref in refs[:4]]
+            result=audit(output,sources)
+            if result['status']!='CONTRADICTION':return
+            key=digest(dumps([event_id,result['mismatches']]).encode())[:16]
+            ring,v=self.s.state(ARITH_SHADOW_KEY,[])
+            if type(ring) is not list:ring=[]
+            if any(type(row) is dict and row.get('key')==key for row in ring):return
+            ring=(ring+[{'key':key,'event_id':event_id,'t':self.clock(),
+                         'status':'CONTRADICTION_SHADOW_ONLY',
+                         'equations_checked':result['equations_checked'],
+                         'mismatches':result['mismatches'],
+                         'user_notified':False}])[-ARITH_SHADOW_KEEP:]
+            self.s.set_state(ARITH_SHADOW_KEY,ring,expected=v)
+        except Exception:
+            pass  # Missing/dangling evidence or unavailable store must abstain.
+
     def late_offer(self,event_id,offer,output):
         """WP-F §5.2 / §3.4.3: an observer offer that arrives after commit and disagrees with the committed answer is
         salient. The answer is never rewritten; a gated 'finding' self-message (HELD below Age 4) carries the doubt.
         WP-AGE0a: in mode deliver the doubt is a 'correction' under the Age-0 right late_correction instead."""
         import re
+        self._shadow_arithmetic_audit(event_id,offer,output)
         o=offer.get('offer',{});summary=o.get('summary','')
         nums=lambda t:{x.replace(',','.') for x in re.findall(r'\d+(?:[.,]\d+)?',t or '')}
         missing=nums(summary)-nums(output)
