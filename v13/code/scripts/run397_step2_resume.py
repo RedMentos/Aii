@@ -11,7 +11,7 @@ import time
 import run394_step2_fresh as r394
 import run396_step2_pilot_audit as audit
 from v13.common import atomic_write, digest, dumps
-from v13.models import ModelManager, catalog
+from v13.models import ModelManager, catalog, platform_tag
 
 VARIANTS = tuple(audit.VARIANTS)
 OWNER = "RUN397_STEP2_NATIVE_EXCLUSIVE"
@@ -157,11 +157,26 @@ def run(work, installed, pilot=True, execute=False):
         if execute:
             require(installed is not None, "INSTALLED_HOME_REQUIRED")
             installed = Path(installed).expanduser().resolve()
-            checks = ModelManager(installed).verify(deep=True)
-            require(set(("needle", "language", "body", "gist")) <= set(checks) and
-                    all(checks[k]["ok"] and checks[k]["hash_checked"]
-                        for k in ("needle", "language", "body", "gist")),
+            manager = ModelManager(installed)
+            checks = manager.verify(deep=True)
+            keys = ("needle", "language", "body", "gist")
+            require(set(keys) <= set(checks) and
+                    all(checks[k]["ok"] and checks[k]["hash_checked"] for k in keys),
                     "INSTALLED_MODEL_HASHES_INVALID")
+            specs = catalog()["models"]
+            for key in keys:
+                spec, stored = specs[key], manager.installed.get(key, {})
+                required_files = list(spec["files"])
+                if key == "needle":
+                    required_files += spec["platforms"][platform_tag()]
+                expected = {f["local_name"]: (f["sha256"], f["size"]) for f in required_files}
+                found = stored.get("files", {})
+                actual = {name: (meta.get("sha256"), meta.get("size"))
+                          for name, meta in found.items()} if isinstance(found, dict) else {}
+                require(stored.get("model_id") == spec["model_id"] and
+                        stored.get("exact_revision") == spec["revision"] and
+                        stored.get("license_id") == spec["license_id"] and actual == expected,
+                        "INSTALLED_CATALOG_IDENTITY_MISMATCH:" + key)
             runner = installed / "bin/llama-server"
             meta = audit.load(installed / "config/runner.json")
             require(meta.get("tag") == catalog()["runner"]["tag"] and
