@@ -1,0 +1,38 @@
+{
+  "schema": "V13_RUN461_NATIVE294_ATOMIC_IMPORT_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 source-only importer; no native owner",
+  "branch": "codex/automation11-run461-native294-atomic-import-20261026",
+  "base": "ab6854fbaca942eb40a450edfaac3b9ad22a88f8",
+  "tested_source_head": "709dbacf111d551e5f49cfe2d91cd9ecb7d094a1",
+  "pr": 460,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run461_import_stage7_artifact.py": "2f11c45f09fe1f48d0908d22add4cb4d6a2212d5",
+    "v13/code/tests/test_run461_native294_atomic_import.py": "bd6ed095a37c050a6004a0684ccfe03ace1d235d",
+    ".github/workflows/run461-native294-atomic-import.yml": "8f4dc1f9656c57115e525d50e3647945d8c3115a"
+  },
+  "actions": {
+    "id": 40272690467,
+    "conclusion": "success",
+    "tests": "86/86 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12629051897,
+    "raw_artifact_sha256": "8ac79a6838ff359026e248a494ad2896369f0b4549bb3dc4820dd43fafa1ed16"
+  },
+  "result": "Atomic Run459 native294 safe artifact importer, independent seven-receipt verification before publish; rejects wrong outer/inner hash, duplicate, traversal, symlink, forged gate and verifier failure.",
+  "scope": "Software/synthetic Linux CI only; no actual native294 archive or Redmi proof.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Actual native252 S_s21 still owned by Run453; native294 O_s22 has not run.",
+    "Need original Run459 native294 safe archive and stage7 report before Run461 actual import.",
+    "Frozen P_s22 and S_s22 still required to reach 378/378; full three-seed STEP2 utility remains unproven."
+  ],
+  "next_command": "After Run453 completes and original 252 safe archive passes Run458, execute Run459 Stage7 O_s22 only under exclusive native ownership, export safe archive, verify with Run460, then run Run461 import. Continue Stage8 P_s22 source preparation without starting competing native jobs."
+}
