@@ -83,6 +83,61 @@ class ExactBridgeKeyCandidate(unittest.TestCase):
                                     'BRIDGE_TENSOR_SHAPE_MISMATCH:Q'):
             A.verify_file(self.path, self.specs)
 
+    def test_self_consistent_nan_weights_refused(self):
+        bridge = Bridge(4, K=2, r=2, h=3, classes=2, seed=4)
+        bridge.p['Q'][0, 0] = np.nan
+        a, b = self.specs['B1_DETAIL'], self.specs['B2_GIST']
+        bridge.save(self.path, a['revision'], b['revision'], {
+            'sender_bridge_key': bridge_key('B1_DETAIL', a),
+            'receiver_bridge_key': bridge_key('B2_GIST', b)})
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_TENSOR_NONFINITE:p_Q'):
+            A.verify_file(self.path, self.specs)
+
+    def test_zero_input_scale_refused_with_valid_digest(self):
+        bridge = Bridge(4, K=2, r=2, h=3, classes=2, seed=4)
+        bridge.in_sd[1] = 0.
+        a, b = self.specs['B1_DETAIL'], self.specs['B2_GIST']
+        bridge.save(self.path, a['revision'], b['revision'], {
+            'sender_bridge_key': bridge_key('B1_DETAIL', a),
+            'receiver_bridge_key': bridge_key('B2_GIST', b)})
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_INPUT_SCALE_NONPOSITIVE'):
+            A.verify_file(self.path, self.specs)
+
+    def test_invalid_calibration_threshold_refused(self):
+        bridge = Bridge(4, K=2, r=2, h=3, classes=2, seed=4)
+        bridge.cal = {'mu': np.zeros(4), 'sd': np.ones(4),
+                      'ood_tau': float('inf')}
+        a, b = self.specs['B1_DETAIL'], self.specs['B2_GIST']
+        bridge.save(self.path, a['revision'], b['revision'], {
+            'sender_bridge_key': bridge_key('B1_DETAIL', a),
+            'receiver_bridge_key': bridge_key('B2_GIST', b)})
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_TENSOR_NONFINITE:cal_tau'):
+            A.verify_file(self.path, self.specs)
+
+    def test_forged_huge_manifest_geometry_refused_before_loader(self):
+        forged = dict(self.man, d=10**9)
+        self.path.with_suffix('.json').write_text(json.dumps(forged))
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_AGE0_BUDGET_EXCEEDED'):
+            A.verify_file(self.path, self.specs)
+
+    def test_unattested_extra_npz_member_refused(self):
+        p = self.path.with_suffix('.npz')
+        with np.load(p, allow_pickle=False) as original:
+            tensors = {key: original[key].copy() for key in original.files}
+        tensors['surprise'] = np.ones(2)
+        np.savez(p, **tensors)
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_NPZ_INVENTORY_INVALID'):
+            A.verify_file(self.path, self.specs)
+
+    def test_small_zip_large_unpacked_tensor_refused_before_loader(self):
+        p = self.path.with_suffix('.npz')
+        with np.load(p, allow_pickle=False) as original:
+            tensors = {key: original[key].copy() for key in original.files}
+        tensors['p_Q'] = np.zeros((2_200_000,), dtype=np.float64)
+        np.savez_compressed(p, **tensors)
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_NPZ_EXPANSION_EXCEEDED'):
+            A.verify_file(self.path, self.specs)
+
     def test_legacy_revision_only_manifest_fails_closed(self):
         legacy = dict(self.man)
         legacy.pop('sender_bridge_key')
