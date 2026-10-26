@@ -1,5 +1,6 @@
 """Run397 source-only append-only resume tests with synthetic native-shaped rows, no models."""
 import fcntl
+import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -23,7 +24,15 @@ def synthetic_source(folder):
         rid = arm + "_s20"
         source_path = folder / f"step2_{rid}.json"
         source = resume.audit.load(source_path)
+        spec = resume.catalog()["models"]
+        role_models = {"B1_DETAIL": "body", "B2_GIST": "body" if arm == "S" else "gist",
+                       "C3_LANGUAGE": "language"}
         source.update(installed_artifacts_unchanged=True, phone_measured=False, canonical_gate_pass=False)
+        source["installed_artifacts"] = {
+            "model_sha256": {role: spec[key]["files"][0]["sha256"] for role, key in role_models.items()},
+            "model_revisions": {role: spec[key]["revision"] for role, key in role_models.items()},
+            "runner_sha256": hashlib.sha256(b"synthetic-runner-not-executable").hexdigest(),
+            "runner_runtime_libraries_sha256": {}}
         write(source_path, source)
         prereg_path = folder / f"tool_{rid}.preregistration.json"
         prereg = resume.audit.load(prereg_path)
@@ -143,6 +152,25 @@ class Run397ResumeTests(unittest.TestCase):
         self.assertEqual(fake.calls.count("S_s20"), 1)
         self.assertTrue((self.work / "attempts/P_s20/attempt-0002/RUN397_ATTEMPT.json").exists())
         self.assertIn("P_s20", second["failures_preserved"])
+
+    def test_reject_forged_recorded_model_hash_even_when_rows_rehashed(self):
+        rid = "O_s20"
+        source_path = self.native / f"step2_{rid}.json"
+        source = resume.audit.load(source_path)
+        source["installed_artifacts"]["model_sha256"]["B2_GIST"] = "0" * 64
+        write(source_path, source)
+        prereg_path = self.native / f"tool_{rid}.preregistration.json"
+        prereg = resume.audit.load(prereg_path)
+        prereg["source_report"]["sha256"] = resume.audit.sha(source_path)
+        write(prereg_path, prereg)
+        tool_path = self.native / f"tool_{rid}.json"
+        tool = resume.audit.load(tool_path)
+        tool["preregistration_sha256"] = resume.audit.sha(prereg_path)
+        write(tool_path, tool)
+        fixtures = [f for f in r394.FIXTURES if f["id"] in r394.PILOT_IDS]
+        manifest = resume.checked_manifest(self.work, fixtures, list(r394.ARMS), [20], True)
+        with self.assertRaisesRegex(ValueError, "RECORDED_MODEL_IDENTITY_MISMATCH"):
+            resume.validate_completed(self.native, "O", 20, fixtures, manifest)
 
     def test_reject_deep_valid_but_unregistered_model_swap(self):
         class SwappedModels(FakeModels):
