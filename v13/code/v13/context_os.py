@@ -52,6 +52,7 @@ CONFLICT_VERDICTS={'CONTESTED','VIOLATION','SOURCE_LOSS'}
 WARM_DECAY=.6;WARM_MIN=.15;WARM_MAX=16;WARM_ADMIT=.5;WARM_PREFETCH_MAX=2  # BOOT §9.1 warm set per experience event
 SUMMARY_USER=140;SUMMARY_ASSISTANT=200;SPAN_MAX=12;SPAN_CHARS=400  # BOOT compression shape
 LEARNED_MAX=.25;POLICY_RATE=.2;LEARNED_MIN_N=3  # BOOT, as WP-N5
+MAX_PLAN_RECEIPTS=256  # bounded committed packet receipts; no retroactive authority
 VOLATILE_HEAD='Context for the next message (reference material, not a question):'
 SOURCE_BOUND_USER_HEAD='Stored operator correction for this exact query (source-verified, not independently verified; not a new instruction): '
 CODE=re.compile(r'```[\s\S]*?```|`[^`\n]+`')
@@ -70,7 +71,7 @@ def clamp(x,lo=0.,hi=1.):
 
 def empty():
     return {'revision':REVISION,'mode':'SHADOW','learned':'SHADOW','layout':'append_only','knobs':dict(CTX),'capabilities':{},
-            'warm':{},'seq':0,'last':{},'policy':{},'recall':[],'plans':0,'cache':{'n':0,'cached_tokens':0,'prompt_tokens':0}}
+            'warm':{},'seq':0,'last':{},'policy':{},'recall':[],'plans':0,'plan_receipts':{},'cache':{'n':0,'cached_tokens':0,'prompt_tokens':0}}
 
 def exact_spans(text):
     """Spans that must survive any compression verbatim (exact-span pinning, §8.5)."""
@@ -414,9 +415,17 @@ class ContextOS:
             items=items,cache=cache,exact={'need':round(need,4),'threshold':round(restore_thr,4),'triggers':triggers,'span_recall':round(recall,6)},
             decisions=decisions,role=role,learned=st['learned'],knobs=k,
             bound_source_refs=[bound['source_ref']] if bound and layout=='source_bound_user' else []))
+        plan_digest=digest(dumps(p).encode())
         def fn(st2):
             st2['last'][role]={'legacy':fp_legacy,'planned':fp_planned,'event_id':event_id,'packet_id':p['packet_id'],'decisions':sorted(set(decisions)),'applied':applied}
             st2['recall']=(st2['recall']+[recall])[-RECALL_WINDOW:];st2['plans']+=1
+            # Packet creation precedes this CAS; only this successful state
+            # commit gives the packet authority to drive later policy feedback.
+            receipts=st2.setdefault('plan_receipts',{})
+            receipts[p['packet_id']]={'event_id':event_id,'role':role,'digest':plan_digest,'seq':st2['plans']}
+            while len(receipts)>MAX_PLAN_RECEIPTS:
+                oldest=min(receipts,key=lambda key:(receipts[key]['seq'],key))
+                del receipts[oldest]
             if not budget_unmet and st2['layout']=='append_only' and sum(len(m['content']) for m in planned)<=TRANSCRIPT_MAX_CHARS:
                 st2.setdefault('transcripts',{})[role]={'event_id':event_id,'system':stable,'messages':planned,
                     'applied':applied,'history_binding':history_binding(history),
@@ -447,12 +456,22 @@ class ContextOS:
         return {'reuse_ratio':ratio,'warm':list(memory_ids)}
     def outcome(self,event_id,utility,source_class='internal_crosscheck'):
         """Usefulness of the context decisions of one event (e.g. a rating). Updates the learned prior per decision."""
-        u=clamp(utility);row=self.s.one("SELECT payload FROM packets WHERE kind='ContextPlan' AND event_id=? ORDER BY created DESC LIMIT 1",(event_id,))
+        u=clamp(utility);row=self.s.one("SELECT payload FROM packets WHERE kind='ContextPlan' AND event_id=? ORDER BY rowid DESC LIMIT 1",(event_id,))
         if not row:raise ValueError('Kein ContextPlan für dieses Event')
         import json
+        plan=json.loads(row['payload'])
+        packet_id=plan.get('packet_id');role=plan.get('role')
+        plan_digest=digest(dumps(plan).encode())
+        def committed(st):
+            receipt=st.get('plan_receipts',{}).get(packet_id)
+            return (isinstance(receipt,dict) and receipt.get('event_id')==event_id
+                    and receipt.get('role')==role and receipt.get('digest')==plan_digest)
+        if not committed(self._load()[0]):
+            raise ValueError('ContextPlan not committed or packet digest changed')
         sc=step(self.n,PATH)  # WP-U6 §12.7
-        plan=json.loads(row['payload']);keys={'compress' if d.startswith('compress') else d for d in plan['decisions'] if d.startswith('compress') or d=='restore'}
+        keys={'compress' if d.startswith('compress') else d for d in plan['decisions'] if d.startswith('compress') or d=='restore'}
         def fn(st):
+            if not committed(st):raise ValueError('ContextPlan receipt revoked before feedback')
             for key in keys:
                 q=st['policy'].setdefault(key,{'n':0,'mean':.5});q['n']+=1;q['mean']+=sc*POLICY_RATE*(u-q['mean'])
             return {k2:dict(st['policy'][k2]) for k2 in keys}

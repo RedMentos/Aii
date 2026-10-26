@@ -1,0 +1,59 @@
+{
+  "schema": "V13_RUN590_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run590-ctx-plan-receipts-20261026",
+  "base_branch": "codex/automation11-run589-sleep-full-integrity-20261026",
+  "base_sha": "47072aff89e8244c55542ed90adb5a6d06f3e168",
+  "verified_code_head": "b722d7f7f2afe1aec72866dcc38021d0d8dd172b",
+  "pr": 586,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/586",
+  "prereg_commit": "f4d32a044fb56775f8b86d8ed4f230a67252f1bd",
+  "changed_source_blobs": {
+    "v13/code/v13/context_os.py": "3e037f9be1d75e6a1941a2f894cd5f86641fe1f7",
+    "v13/code/tests/test_run590_ctx_plan_receipts.py": "37503b399fbdb8f74e126953ae41178792366a3d"
+  },
+  "observed_ci": {
+    "run": 40388284350,
+    "job": 121802242829,
+    "head": "b722d7f7f2afe1aec72866dcc38021d0d8dd172b",
+    "conclusion": "success",
+    "new_tests": "5/5 PASS",
+    "test_context_os": "21/21 PASS",
+    "append_provenance": "17/17 PASS",
+    "warm_authority": "6/6 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12680253656,
+    "raw_artifact_sha256": "031e95a4650a5dab24cb47a284cfc7a3fb5d5e3ed513812b4354ddbea6aef03a"
+  },
+  "changes": [
+    "ContextPlan learning feedback requires bounded CAS-committed receipt, not merely durable orphan packet",
+    "Exact event/role/packet digest prevents altered packets from updating learned policy",
+    "Retained delayed feedback and restart remain valid; oldest receipts evicted deterministically after 256",
+    "Original Context OS modes and model-facing prompt remain unchanged; no native KV proof"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "full_source_suite": "RED_4_FAIL_65_ERROR"
+  },
+  "open_questions": [
+    "Independent review and coordinated merge of PR581→586 needed",
+    "Source-wide suite remains RED due frozen historical source lineage; no retuning of frozen expectations",
+    "Native Body-JEPA and Android/Termux full system acceptance remain unmeasured"
+  ],
+  "next_command": "Review PR586 exact SHA-closed CI and source, continue next independent Callosum/JEPA/C3 functional package with preregistration, preserving native owner serialization.",
+  "prerequisites": [
+    "Do not overwrite Claude/Codex branches or main",
+    "Preserve registered model/source/seed hashes",
+    "Maintain Age and approval gates and all negative acceptance"
+  ]
+}
