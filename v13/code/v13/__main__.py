@@ -12,7 +12,7 @@ def main(argv=None):
     p=argparse.ArgumentParser(description='V13 Age-0 local text runtime');p.add_argument('--home');sub=p.add_subparsers(dest='command')
     chat=sub.add_parser('chat');chat.add_argument('--plain',action='store_true');chat.add_argument('--welcome',action='store_true')
     ask=sub.add_parser('ask');ask.add_argument('text');ask.add_argument('--no-observers',action='store_true')
-    doctor=sub.add_parser('doctor');doctor.add_argument('--full',action='store_true');probe_parser=sub.add_parser('probe');probe_parser.add_argument('mode',nargs='?',choices=['native','jef-modes','step12','body-state','sustained'],default='native');probe_parser.add_argument('--cycles',type=int,default=12);selftest_parser=sub.add_parser('selftest');selftest_parser.add_argument('--portable',action='store_true',help='27 portable live integration checks; not the full source regression')
+    doctor=sub.add_parser('doctor');doctor.add_argument('--full',action='store_true');probe_parser=sub.add_parser('probe');probe_parser.add_argument('mode',nargs='?',choices=['native','jef-modes','step12','body-state','sustained'],default='native');probe_parser.add_argument('--cycles',type=int,default=12);selftest_parser=sub.add_parser('selftest');selftest_parser.add_argument('--portable',action='store_true',help='94 portable live integration checks; not the full source regression')
     dl=sub.add_parser('download');dl.add_argument('model',nargs='?',default='all')
     restorep=sub.add_parser('restore');restorep.add_argument('path');restorep.add_argument('--confirm',action='store_true')
     a=p.parse_args(argv);home=home_path(a.home);initialize(home)
@@ -24,15 +24,24 @@ def main(argv=None):
             # Never use this result as a full-suite or Redmi acceptance proof.
             modules=('tests.test_run533_sandbox_world_port',
                      'tests.test_run535_self_world_operator',
-                     'tests.test_run536_approved_sandbox_world')
-            print('V13 PORTABLE_SELFTEST: 27 live software checks; NOT full regression, native/Redmi/JEPA/STEP2 proof.',flush=True)
+                     'tests.test_run536_approved_sandbox_world',
+                     'tests.test_runtime_queue',
+                     'tests.test_age_rights',
+                     'tests.test_jef_lifecycle_integration_run67',
+                     'tests.test_context_os',
+                     'tests.test_callosum',
+                     'tests.test_dream_checkpoint',
+                     'tests.test_learning_invariants',
+                     'tests.test_phone_halt',
+                     'tests.test_standstill')
+            print('V13 PORTABLE_SELFTEST: 94 live software checks; NOT full regression, native/Redmi/JEPA/STEP2 proof.',flush=True)
             suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(name) for name in modules)
         else:
             print('V13 FULL_SELFTEST: unfiltered test_*.py discovery; external frozen fixtures may be required.',flush=True)
             suite=unittest.defaultTestLoader.discover(str(APP/'tests'),pattern='test_*.py')
         result=unittest.TextTestRunner(verbosity=2).run(suite)
-        if a.portable and result.testsRun!=27:
-            print('V13 PORTABLE_SELFTEST: expected 27 checks, got '+str(result.testsRun),file=sys.stderr)
+        if a.portable and result.testsRun!=94:
+            print('V13 PORTABLE_SELFTEST: expected 94 checks, got '+str(result.testsRun),file=sys.stderr)
             return 1
         return 0 if result.testsRun>0 and result.wasSuccessful() else 1
     from .backup import recover_startup,restore
