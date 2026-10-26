@@ -6,8 +6,11 @@ safe-export verification first. Pair by frozen fixture, variant and seed;
 do not infer causal gain or promote STEP2 from partial cohort statistics.
 """
 import argparse
+import hashlib
 import json
 import math
+import os
+import stat
 from pathlib import Path
 
 import run394_step2_fresh as r394
@@ -73,19 +76,71 @@ def aggregate(scores):
             "rows": len(IDS) * len(EXPECTED)}
 
 
+
+def read_pinned(root, rel, expected_sha, expected_bytes=None):
+    """Read an already-attested export member without following swapped links.
+
+    The independent Run453 verifier checks the full tree first. Every value
+    subsequently consumed for utility must still match that verifier's pinned
+    manifest. Open each path component relative to directory descriptors so
+    post-verification symlink swaps cannot redirect reads outside the export.
+    """
+    gate = verified252.gate
+    gate.safe_rel(rel)
+    require(type(expected_sha) is str and gate.HEX.fullmatch(expected_sha),
+            "PINNED_READ_SHA_REQUIRED")
+    require(expected_bytes is None or
+            (type(expected_bytes) is int and 0 <= expected_bytes <= gate.MAX_FILE),
+            "PINNED_READ_SIZE_INVALID")
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC
+    directories = []
+    try:
+        directories.append(os.open(root, flags | os.O_DIRECTORY))
+        parts = rel.split("/")
+        for part in parts[:-1]:
+            directories.append(os.open(part, flags | os.O_DIRECTORY,
+                                       dir_fd=directories[-1]))
+        fd = os.open(parts[-1], flags, dir_fd=directories[-1])
+        try:
+            info = os.fstat(fd)
+            require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1 and
+                    info.st_size <= gate.MAX_FILE,
+                    "PINNED_READ_FILE_UNSAFE")
+            require(expected_bytes is None or info.st_size == expected_bytes,
+                    "PINNED_READ_SIZE_CHANGED")
+            with os.fdopen(fd, "rb", closefd=False) as stream:
+                data = stream.read(gate.MAX_FILE + 1)
+            require(len(data) == info.st_size and
+                    hashlib.sha256(data).hexdigest() == expected_sha,
+                    "PINNED_READ_HASH_CHANGED")
+            return data
+        finally:
+            os.close(fd)
+    finally:
+        for directory in reversed(directories):
+            os.close(directory)
+
+
 def analyze(export_root, stage6_report):
     """Read-only; the independent 252 verifier authenticates source receipts."""
     checked = verified252.verify(export_root, stage6_report)
     require(checked["status"] == "RUN453_NATIVE_252_INDEPENDENTLY_VERIFIED" and
             checked["rows_verified"] == 252, "INDEPENDENT_252_NOT_VERIFIED")
     root = Path(export_root).absolute()
-    progress = json.loads((root / "RUN397_PROGRESS.json").read_text())
+    manifest = json.loads(read_pinned(root, verified252.gate.MANIFEST,
+                                      checked["manifest_sha256"]))
+    copied = manifest["copied"]
+    progress = json.loads(read_pinned(root, "RUN397_PROGRESS.json",
+                                      checked["progress_sha256"],
+                                      copied["RUN397_PROGRESS.json"]["bytes"]))
     scores = {}
     for arm, seed in IDS:
         rid = f"{arm}_s{seed}"
         info = progress["completed"][rid]
-        path = root / info["attempt"] / f"tool_{rid}.json"
-        tool = json.loads(path.read_text())
+        rel = info["attempt"] + f"/tool_{rid}.json"
+        member = copied[verified252.gate.safe_rel(rel)]
+        tool = json.loads(read_pinned(root, rel, member["sha256"],
+                                      member["bytes"]))
         rows = validated_rows(tool, EXPECTED, rid + ":tool")
         scores[(arm, seed)] = {key: rows[key]["score"]["utility"]
                                for key in EXPECTED}
