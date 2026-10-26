@@ -75,8 +75,13 @@ jobs:
       - name: Public privacy scan
         run: |
           set +e
-          git fetch --no-tags --depth=1 origin 7cac4d667c075e863822b64b771e6a6af8fcd5ff >> "$RUNNER_TEMP/RUN615_PRIVACY_RAW.log" 2>&1\n          python3 v13/code/scripts/public_repo_privacy_scan.py --base 7cac4d667c075e863822b64b771e6a6af8fcd5ff --head "$GITHUB_SHA" >> "$RUNNER_TEMP/RUN615_PRIVACY_RAW.log" 2>&1 > "$RUNNER_TEMP/RUN615_PRIVACY_RAW.log" 2>&1
-          echo "$?" > "$RUNNER_TEMP/RUN615_PRIVACY_EXIT.txt"
+          git fetch --no-tags --depth=1 origin 7cac4d667c075e863822b64b771e6a6af8fcd5ff > "$RUNNER_TEMP/RUN615_PRIVACY_RAW.log" 2>&1
+          fetch_rc=$?
+          if [ "$fetch_rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base 7cac4d667c075e863822b64b771e6a6af8fcd5ff --head "$GITHUB_SHA" >> "$RUNNER_TEMP/RUN615_PRIVACY_RAW.log" 2>&1
+            fetch_rc=$?
+          fi
+          echo "$fetch_rc" > "$RUNNER_TEMP/RUN615_PRIVACY_EXIT.txt"
           exit 0
       - name: Close original raw even on RED
         if: always()
