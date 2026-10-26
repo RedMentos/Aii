@@ -151,7 +151,9 @@ def check_quote_lineage(row):
                 "ACCEPTED_QUOTE_LINEAGE_SCHEMA_DRIFT")
         exact = normalize(quote["text"])
         matches = [i for i, candidate in enumerate(candidates)
-                   if candidate and candidate in exact]
+                   if candidate and (
+                       (len(raw[i]) < 12 and raw[i] == quote["text"]) or
+                       (len(raw[i]) >= 12 and candidate in exact))]
         require(bool(matches), "ACCEPTED_QUOTE_NOT_IN_NATIVE_OFFER")
         possible.append(matches)
 
