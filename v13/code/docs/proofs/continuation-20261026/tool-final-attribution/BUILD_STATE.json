@@ -1,0 +1,39 @@
+{
+  "schema": "V13_TOOL_FINAL_ATTRIBUTION_SOURCE_ONLY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 independent candidate",
+  "branch": "codex/automation11-tool-final-attribution-20261026",
+  "base_head": "4c804bb2c127bcc323182edaf0f1e56535930974",
+  "prereg_commit": "11ead77a9abf3a4c8cc4144a38e289a0007855c7",
+  "verified_head": "afdc11e1af20cb4d15f3471cd144d6c1e2cc71e4",
+  "tests": {
+    "workflow_run": 40376233219,
+    "conclusion": "SUCCESS",
+    "scope": "source-only, focused runtime/broker/contract/eligibility + Run574 AST; no native/model/Redmi",
+    "artifact_id": 12673959051,
+    "artifact_sha256": "aff1680fcee20b03ab0fa725613c5b3364fa62ab93cde073884bb588196a97f4",
+    "privacy": "PASS",
+    "pins": "PASS"
+  },
+  "changes": [
+    "Do not credit deterministic UNKNOWN/NONE eligibility final text as model-generated",
+    "Skip late body watcher and stale native metrics/ContextOS observations for final tool-only output",
+    "Preserve native failure reflex evidence while avoiding false tool-only reflex credit",
+    "Broker and contracts now recognize distinct fixed eligibility tool authority",
+    "Source-bound behavioral tests and original broker/toolstep/live-eligibility regressions"
+  ],
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Broker currently recognizes tool-final authority based on typed tool result and metadata but does not independently bind final visible bytes to eligibility.final_text; add negative tamper test and strict equality guard.",
+    "Full unfiltered source suite has not been rerun on this modified candidate head.",
+    "Native/Redmi proof not performed; source-only claim."
+  ],
+  "next_exact_command": "On same isolated review branch, preregister and add strict exact-content binding for ELIGIBILITY_TOOL_FINAL in v13/broker.py, test tampered output and malformed tool result; update pinned CI, run and independently verify artifact, then run full unfiltered source suite with pinned historical prerequisites. Do not merge main or alter original native cohorts."
+}
