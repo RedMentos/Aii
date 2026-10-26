@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN495_JEF_SOURCE_OVERFLOW_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run495 isolated JEF fixed-reader source cap fail-closed candidate",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/run495-eligibility-evidence-overflow-20261026",
+  "base_branch": "codex/run493-eligibility-source-precedence-20261026",
+  "base_sha": "301513c84d59cd0af971f76ccbc31a66bddaf766",
+  "review_pr": 493,
+  "preregistration": {
+    "path": "v13/code/docs/proofs/continuation-20261026/run495-evidence-overflow/PREREG.md",
+    "blob_sha": "e520609b3852c69aefb0397f71958b20a6b48294"
+  },
+  "source_blobs": {
+    "v13/code/v13/toolstep.py": "5bcdbc1a55bb6054cb2f2bf7377a72f3947c5743",
+    "v13/code/tests/test_run495_eligibility_evidence_overflow.py": "bd7d272f8052c2ec46585f3613d8428bb9f9244d"
+  },
+  "original_red": {
+    "run_id": 40301101482,
+    "artifact_id": 12640705729,
+    "artifact_sha256": "88313e06606ee6e74e1faf5d30bbcb675909cc3507cbcc66ea574f8b79a5ae5c",
+    "observed": "47 tests: 2 failures; direct user rule evicted by six later verified body quotes; live proposal chose stale budget 140 rather than budget 50",
+    "preserved": true
+  },
+  "validation": {
+    "run_id": 40301131257,
+    "status": "GREEN: 47 source/Runtime/eligibility/ToolStep tests, privacy CLEAN",
+    "artifact_id": 12640661137,
+    "artifact_sha256": "61cf0098d12649a04374ee7e77b3f3d1fa18bb0d65db2b2f827e310787cb603c",
+    "focused_ci_run": 40301131134,
+    "focused_ci_status": "SUCCESS",
+    "other_ci": {
+      "run101": 40301131254,
+      "run363": 40301131084
+    },
+    "native_executed": false
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-26/Run495/RUN495_EVIDENCE_OVERFLOW_GREEN_40301131257.zip",
+    "library_file_id": "libfile_db495d79ce908191a46d168d00d65900",
+    "sha256": "61cf0098d12649a04374ee7e77b3f3d1fa18bb0d65db2b2f827e310787cb603c",
+    "verified": "materialized private Library and byte-compared",
+    "anyone_writable_drive_used": false
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Bounded source overflow now refuses a ToolStep proposal; this is conservative but can lower utility in long sessions. Future safe compaction requires an independent design preserving direct user priority and all conflicts.",
+    "The source reader and cap are isolated review candidates (Run493 and Run495), not integrated into production main or frozen native Run491 cohort.",
+    "No native inference or Redmi measurement; no Age-right or learning promotion."
+  ],
+  "exact_next_command": "Continue Run496 frozen Run491 2-fixture/arm C/seed31 source pilot readiness; after source-only CI GREEN and remote checkpoint, create separately serialized native job to SHA-download original models and b10964 executable, verify bytes, execute 14 rows, preserve raw and failed attempts, and keep negative gates."
+}
