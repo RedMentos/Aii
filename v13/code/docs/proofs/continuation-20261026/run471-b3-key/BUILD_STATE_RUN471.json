@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN471_B3_EXACT_IDENTITY_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run471 source-only B3 identity candidate; no production runtime owner",
+  "branch": "codex/run471-b3-bridge-key-v2-candidate-20261026",
+  "base_sha": "f93efd4764ca5813b68082ee092dcb1dadcf6f05",
+  "pr": 470,
+  "source_git_blobs": {
+    "v13/code/scripts/run471_bridge_key_candidate.py": "159dce34c4f04545ac21c778eb4fa2b39a013386",
+    "v13/code/tests/test_run471_bridge_key_candidate.py": "68bc03bd12cc60956e890f60c0493505eb2d8e44",
+    ".github/workflows/run471-b3-bridge-key.yml": "9c575cb3f5c328cb3b9fd2b6db9785ecee7781b3"
+  },
+  "verified_ci": {
+    "run_id": 40275855166,
+    "job_id": 121418331979,
+    "conclusion": "success",
+    "tests": "26/26 PASS (10 new candidate + 16 inherited BodyPort/B3)",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12630410852,
+    "raw_artifact_sha256": "a38b08950d340b09296f5ad32331a896d90d51f2233b5413a1cd07139a0c4a6a"
+  },
+  "full_source_ci": {
+    "run_id": 40275855293,
+    "job_id": 121418345573,
+    "conclusion": "success",
+    "software_tests": "401 PASS",
+    "extracted_phone_tests": "115 PASS",
+    "source_zip_artifact_id": 12629767953,
+    "source_zip_artifact_sha256": "39b9dc0b307a28eedc5ebd1cf00068728552881a4b6ab1955af4f95802d60820",
+    "privacy": "CLEAN"
+  },
+  "preserved_failed_attempts": [
+    {
+      "run_id": 40275767203,
+      "reason": "CI harness test_bodyport imported test_bodies without PYTHONPATH tests; candidate 8 tests PASS, 1 import ERROR",
+      "raw_artifact_id": 12630370956,
+      "raw_artifact_sha256": "59933d7bbacf7bf33568c641b9bfc34ad5efa7640be60fa978e303b57f005a44"
+    },
+    {
+      "run_id": 40275790546,
+      "reason": "same harness import error before corrected workflow",
+      "raw_artifact_id": 12629589893,
+      "raw_artifact_sha256": "8b58fd82515249b3a6482c9c4d3ab9a2de7a8fb795976547095ebc8bf2a5d55b"
+    }
+  ],
+  "result": "Read-only exact sender/receiver model ID, revision, SHA256, dimensions, tokenizer and capabilities via existing BodyPort bridge_key. Legacy revision-only manifests refuse; numpy NPZ digest verified; forged calibration, forged L1, wrong filename direction, same-revision SHA change, symlink/hardlink and tamper tests. No production source changed.",
+  "negative_gates": {
+    "b3_l1": "FAIL",
+    "latent_authority": 0,
+    "step2_exit": "UTILITY_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Production BodyPort.bridge_valid still checks only revisions; integration requires separately reviewed manifest migration after frozen native STEP2 cohort, with no retroactive stamping.",
+    "Existing bridge manifests lack exact keys and must remain fallback; candidate is not an active B3 consumer.",
+    "Native B3 L1 utility, retention, rollback and Redmi tests still required."
+  ],
+  "exact_next_command": "Review PR470 candidate and original IH-H21 semantics; after native STEP2 cohort is frozen/released, implement train-time exact key stamping plus consumer-side BodyPort and Bridge.load checks in a separately preregistered integration, with full old-manifest fallback tests. Native O_s22 is separately owned by PR471."
+}
