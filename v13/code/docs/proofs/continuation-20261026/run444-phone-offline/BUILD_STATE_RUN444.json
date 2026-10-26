@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN444_PHONE_OFFLINE_INSTALLER_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run444-phone-offline-installer-20261026",
+  "pr": 443,
+  "base_commit": "7916b29f7f3904689fd2d484f397bd3db1b00a27",
+  "tested_source_head": "3235227e15f77c83cd3e8e30da5cde703f9bf7b0",
+  "scope": "Real packaged Phone source ZIP setup.sh offline diagnostic on Linux, source-only, not Termux/Redmi/native inference.",
+  "red": {
+    "actions_run": 40268491289,
+    "status": "EXPECTED_HARNESS_PREREQUISITE_RED",
+    "reason": "Isolated numpy==2.3.5 installed in venv, but subprocess setup.sh selected system python3 without numpy. Real installer correctly refused offline package installation.",
+    "raw_artifact_id": 12626688591,
+    "raw_artifact_sha256": "9c4f147b365d41d2d8e0725e329964b14555ffacd5ec6666e373abf5156bfe40"
+  },
+  "green": {
+    "actions_run": 40268609924,
+    "tests_total": 10,
+    "passed": 10,
+    "privacy": "CLEAN",
+    "artifact_id": 12627372809,
+    "artifact_sha256": "cedf720d563ab315604b69f2f2ed1ca56bc1533916a721017ba45442a3c374e9",
+    "source_sha256": {
+      "v13/code/tests/test_run444_phone_offline_setup.py": "82706bc5b8cca92619e5d94c7307bd726c42f7240dfd9d269eee71bb44bf5d73"
+    },
+    "phone_zip_sha256": "446a889c937e21b4f990f9f6d9f65022c46230620070c471e97c93af5e08cbc5",
+    "phone_source_files": 1163,
+    "phone_source_bytes": 13264876
+  },
+  "behavior": [
+    "Package source ZIP with regenerated source manifest, then extract and run real setup.sh with V13_SOURCE_ONLY_DIAGNOSTIC=1.",
+    "Source manifest preflight verified; isolated existing Python/numpy selected; no package manager or model download.",
+    "Generated real executable bin/v13, doctor returned zero integrity errors, RECORD_ONLY, missing language model, incomplete architecture.",
+    "No .gguf/.safetensors/native-probe.json produced; all negative gates retained."
+  ],
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "native_status": "Run437 actual P_s21 Actions 40266365717 completed SUCCESS; separate 210-row safe no-model artifact 12627626352 available; independent read-only audit next.",
+  "exact_next_command": "V13_SOURCE_ONLY_DIAGNOSTIC=1 V13_HOME=<fresh-home> PATH=<numpy-enabled-venv>/bin:$PATH bash <extracted-V13-Phone>/setup.sh",
+  "prerequisites": "Exact packaged source manifest, existing Python>=3.10 and numpy; no model downloads, no Termux claims.",
+  "next": "Observe exact-head focused source/phone ZIP CI, review PR443, then prioritize independent actual native210 P_s21 postflight without altering registered cohorts."
+}
