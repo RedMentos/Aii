@@ -12,7 +12,7 @@
   },
   "implementation": "Before SHADOW arithmetic diagnosis, require most recent persisted same-event same-session assistant message with status FINAL and byte-exact text equal to late_offer output. No notice, learning or Age authority.",
   "tests": "SHA-pinned source-only CI pending: Run517 modified + Run134/150/184/late_correction/selfmodel, privacy scan. No models.",
-  "evidence": "INITIAL_SOURCE_ONLY_RED_PRESERVED_RESTART_TEST_CORRECTED_RETEST_PENDING",
+  "evidence": "SOURCE_ONLY_GREEN_74_TESTS_PRIVACY_CLEAN_RESTART_PERSISTENCE",
   "heavy_owner": {
     "pr": 517,
     "run": 40316152651,
@@ -28,7 +28,7 @@
     "age0d_deliver_recommended": false,
     "canonical_architecture_complete": false
   },
-  "next_command": "Inspect amended Run521 Actions on current branch, verify 74 tests and privacy; download SHA-close GREEN artifact if passed. Continue p01 independent native review and p02 next stage separately.",
+  "next_command": "Preserve Run521 source-only PR for independent review, no Age promotion. Monitor Run522 native p02 Actions and independently verify raw/safe artifacts; keep all negative gates.",
   "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
   "initial_red": {
     "run": 40317110061,
@@ -42,5 +42,21 @@
     "artifact_sha256": "080b86541348ef4f09d63a2afa13d92eed5169c3de3877dd3118b790cd620c97",
     "private_backup": "/V13-Checkpoints/2026-10-26/Run521/Run521_initial_RED_lock_sha080b8654.zip"
   },
-  "amendment_a_blob": "2d82fbf227077f64420b7914926f543f5550ff0b"
+  "amendment_a_blob": "2d82fbf227077f64420b7914926f543f5550ff0b",
+  "ci_final": {
+    "run": 40317353398,
+    "head_sha": "537ed395d7c2c1b51ffb225808f8c338b5847289",
+    "conclusion": "SUCCESS",
+    "tests": 74,
+    "privacy": "CLEAN",
+    "artifact_id": 12646753842,
+    "artifact_sha256": "34853ae13fe697dcfd4a138416c4c82e1d18193ea0cb2c2deaedce99af32941f",
+    "sha_manifest_entries_verified": 4,
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run521/Run521_final_74tests_GREEN_sha34853ae1.zip"
+  },
+  "open_questions": [
+    "Age0d remains SHADOW and no user notice or automatic learning",
+    "Real native end-to-end utility and Redmi evidence not provided by these source-only tests",
+    "Run522 p02 heavy native stage is separately owned on sibling branch"
+  ]
 }
