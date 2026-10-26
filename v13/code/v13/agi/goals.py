@@ -80,14 +80,28 @@ class GoalStore:
         eid=self.scheduler.post('GOAL_WAKE',origin=origin,due=float(wake_at),action='growth_goal',payload={'goal_id':gid},dedup='goal:'+gid)
         def f(st):st['goals'][gid]['wake_event']=eid;st['goals'][gid]['wake_at']=float(wake_at)
         self.box.mutate(f);return eid
-    def next_actionable(self):
-        """Deepest open goal with an open step, oldest first: what a woken plan should work on."""
+    def next_actionable(self,root_id=None):
+        """Deepest open goal, oldest first; a wake may only inspect its own subtree."""
         st=self.box.load()[0];best=None
+        def depth_in_scope(goal):
+            if root_id is None:
+                return self._depth(st,goal['id'])  # existing global operator view
+            seen=set();current=goal['id'];depth=0
+            while current is not None and current not in seen and depth<MAX_DEPTH:
+                node=st['goals'].get(current)
+                # No route through a blocked/closed ancestor or corrupt parent.
+                if node is None or node['status'] not in {'OPEN','ACTIVE'}:return None
+                depth+=1
+                if current==root_id:return depth
+                seen.add(current);current=node.get('parent')
+            return None
         for g in st['goals'].values():
             if g['status'] not in {'OPEN','ACTIVE'}:continue
+            depth=depth_in_scope(g)
+            if depth is None:continue
             if any(c['parent']==g['id'] and c['status'] in OPEN for c in st['goals'].values()):continue
             step=next((i for i,s in enumerate(g['steps']) if not s['done']),None)
-            key=(-self._depth(st,g['id']),g['created'])
+            key=(-depth,g['created'])
             if best is None or key<best[0]:best=(key,g,step)
         return None if best is None else {'goal':dict(best[1]),'step':best[2]}
     def score_plans(self,gid,plans,evaluator):
@@ -108,12 +122,15 @@ class GoalStore:
         # Stable ties preserve proposal order, not an arbitrary float/NaN ordering.
         return [row for _,row in sorted(scored,key=lambda x:x[0],reverse=True)]
     def on_wake(self,event):
-        gid=(event.get('payload') or {}).get('goal_id')
+        payload=event.get('payload')
+        gid=payload.get('goal_id') if isinstance(payload,dict) else None
+        if not isinstance(gid,str) or not gid:return {'status':'UNKNOWN_GOAL'}
         try:g=self.get(gid)
         except KeyError:return {'status':'UNKNOWN_GOAL'}
         if g['status'] not in OPEN:return {'status':'GOAL_CLOSED','goal_id':gid}
+        if g['status']=='BLOCKED':return {'status':'GOAL_BLOCKED','goal_id':gid,'next':None}
         if g['status']=='OPEN':self.set_status(gid,'ACTIVE')
-        nxt=self.next_actionable()
+        nxt=self.next_actionable(root_id=gid)
         return {'status':'WOKEN','goal_id':gid,'next':nxt and {'goal_id':nxt['goal']['id'],'step':nxt['step']}}
     def get(self,gid):
         g=self.box.load()[0]['goals'].get(gid)

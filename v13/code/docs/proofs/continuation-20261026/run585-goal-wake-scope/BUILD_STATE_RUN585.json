@@ -1,0 +1,66 @@
+{
+  "schema": "V13_RUN585_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 isolated JEF/AG3 review",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run585-goal-wake-scope-20261026",
+  "base_branch": "codex/automation13-run583-source-row-binding-20261026",
+  "base_sha": "5155956454730e516f494129d38971a3783f117b",
+  "verified_code_head": "193796b23bbc6efe92b921a43b748ee2ca50a133",
+  "pr": 581,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/581",
+  "prereg_commit": "c6e85baab88309ffaf3a2eeee8428d0c2904ce60",
+  "changed_source_blobs": {
+    "v13/code/v13/agi/goals.py": "4040248c8fabccf6fb262f144d59a199a1661fc1",
+    "v13/code/tests/test_run585_goal_wake_scope.py": "20cec5a680ed4feda65a7b02375b16a35239ef47"
+  },
+  "observed_ci": {
+    "run": 40385982796,
+    "job": 121794232662,
+    "head": "193796b23bbc6efe92b921a43b748ee2ca50a133",
+    "conclusion": "success",
+    "new_tests": "6/6 PASS",
+    "existing_run553": "5/5 PASS",
+    "existing_run555": "7/7 PASS",
+    "existing_run552": "8/8 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12681550886,
+    "raw_artifact_sha256": "6630a21b863cc76ce0ee7257505b9843e984516f2ce114ad44fd3de5772404bb"
+  },
+  "preserved_failed_attempts": [
+    {
+      "run": 40385846694,
+      "head": "743a46651a455ced3402d98aaf72aeac28c6a17d",
+      "reason": "test fixture did not initialize SQLite home data directory",
+      "raw_artifact_id": 12681041145
+    }
+  ],
+  "changes": [
+    "GOAL_WAKE next action is scoped to its requested goal tree, not globally unrelated goals",
+    "BLOCKED roots cannot wake another goal",
+    "malformed wake payload fails closed",
+    "global operator next_actionable() behavior retained"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "full_source_suite": "RED_4_FAIL_65_ERROR"
+  },
+  "open_questions": [
+    "Independent cross-review against Run583 and current Claude owner branches is still required.",
+    "Scheduler event origin and stored goal origin can disagree; separately preregister a fail-closed dispatch guard without widening rights.",
+    "Current Redmi sustained runtime/thermal/RSS and complete native Body-JEPA remain unmeasured."
+  ],
+  "next_command": "Review PR581 exact source and raw CI; continue next independent V13 package (e.g. goal wake origin binding) on a new branch, with preregistration and focused tests, without editing frozen native cohorts.",
+  "prerequisites": [
+    "Do not merge or overwrite other owner branches",
+    "Keep registered model/seed/source hashes and original negative gates"
+  ]
+}
