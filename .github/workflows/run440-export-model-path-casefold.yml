@@ -31,6 +31,7 @@ jobs:
           set -uo pipefail
           cd v13/code
           export PYTHONPATH="$PWD:$PWD/scripts"
+          set +e
           "$RUNNER_TEMP/run440/bin/python" -m unittest -v tests.test_run440_model_path_casefold tests.test_run409_safe_export tests.test_run413_export_receipt_gate > "$RUNNER_TEMP/run440-tests.txt" 2>&1
           status=$?
           cat "$RUNNER_TEMP/run440-tests.txt"
