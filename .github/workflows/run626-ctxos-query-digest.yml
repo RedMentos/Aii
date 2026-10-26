@@ -36,7 +36,7 @@ jobs:
           test "$(git hash-object v13/code/v13/sleep_offline.py)" = 19761bc0abe6dd3fa0123c1e94d7cf03e425773a
           test "$(git hash-object v13/code/v13/context_os.py)" = 8e43a7dadaf4fc169c9e3a394f06f12a97e0a224
           test "$(git hash-object v13/code/v13/runtime.py)" = 02b1c5e38cd042b829f8819f856fe7df870004ae
-          test "$(git hash-object v13/code/tests/test_run626_ctxos_query_digest.py)" = efc67b52c87b62be1af6732db936eb018e532a61
+          test "$(git hash-object v13/code/tests/test_run626_ctxos_query_digest.py)" = 1e6981fd78bcfc88fa2622a731df9a951bd62955
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run626-ctxos-query-digest/PREREG.md)" = 6d72c4b7cd7e2ff446a8c9c6a3020ca534abe94c
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           sha256sum v13/code/v13/sleep_offline.py v13/code/v13/context_os.py v13/code/v13/runtime.py v13/code/tests/test_run626_ctxos_query_digest.py > "$RUNNER_TEMP/RUN626_SOURCE_SHA256.txt"
