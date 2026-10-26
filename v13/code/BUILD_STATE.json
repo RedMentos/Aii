@@ -1542,4 +1542,51 @@
     ],
     "next_owner": "unassigned"
   }
+,
+  "continuation_20261026_run613": {
+    "scope": "REVIEW_BRANCH_ONLY_NOT_MAIN",
+    "owner": "GPT automation11",
+    "parent_pr": 607,
+    "review_pr": 608,
+    "base_sha": "7682123d4a206330331cf8b65d7457003913771e",
+    "prereg_commit": "8f058d4d902ad0c55a0f5cc0cc93544f18a8f21f",
+    "verified_ci_head": "c4449462317468c733be4495a8164295db7c3fc4",
+    "ci_run": 40406884945,
+    "tests": "6 model-free adversarial PASS, offline pinned original artifact PASS, privacy CLEAN",
+    "ci_artifact_id": 12691238052,
+    "ci_artifact_sha256": "4a465b52a74bb3fab29f51572ee0937c8b86804b6a83e3a7fd81b027e9a14261",
+    "manifest": "12/12 SHA256 verified",
+    "original_native_artifact_id": 12688049715,
+    "original_native_zip_sha256": "9cae2ac55a9ac773f3d3c2433d7ad485f479d8dc7b79f32e7555014f0eaad732",
+    "status": "NO_FUSION_PROXY_GAIN",
+    "metrics": {
+      "lexical_top1": 0.3,
+      "mapped_native_top1": 0.25,
+      "b1_only_top1": 0.55,
+      "b2_only_top1": 0.65,
+      "fixed_fusion_top1": 0.4,
+      "empirical_p_fusion": 0.11442786069651742,
+      "gain_vs_best_single": -0.25
+    },
+    "evidence_level": "POSTHOC_ORIGINAL_LINUX_NATIVE_READONLY_STATES_NO_NEW_NATIVE_INFERENCE",
+    "negative_gates": {
+      "STEP2": "UTILITY_FAIL",
+      "B3_L1": "FAIL",
+      "Body_JEPA": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "Redmi": "UNMEASURED",
+      "V13": "INCOMPLETE",
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
+    },
+    "proof": "docs/proofs/continuation-20261026/run613-cross-body-fusion/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=$PWD:$PWD/scripts python -m unittest -v tests.test_run613_cross_body_fusion_offline; then run original SHA-pinned Run608 artifact offline analyzer",
+    "open_questions": [
+      "Actual native B1/B2 receiver injection and trainable sparse body unavailable",
+      "New source-disjoint independent cohort needed before generalization",
+      "Redmi unmeasured; STEP2 semantic utility failed",
+      "Historical Run596 fullsuite RED unchanged"
+    ],
+    "next_owner": "unassigned"
+  }
 }
