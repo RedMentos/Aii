@@ -15,8 +15,8 @@
   },
   "source": {
     "prereg_blob": "ed03f1a3beb53350ee5d0ff0865b7dacae345a90",
-    "script_blob": "14be155c5aaf5c2bd800c10be706be8badba3166",
-    "test_blob": "b25130a47fdc71e9ece6f863e0eb356dcc92294d",
+    "script_blob": "7e9eaa17a7b91d72b4095a8b8dcf9ecb75bf1763",
+    "test_blob": "d3b5a3ffc39979745c861e78a037e88c343444f8",
     "run509_blob": "ec8860d2333bd3c4a16caccb9537073a310f32da",
     "run510_blob": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6"
   },
@@ -31,7 +31,8 @@
   "verification": [
     "Run511 prereg persisted before implementation",
     "Source-only script includes opt-in --execute but CI calls --plan and mocked tests only",
-    "Run507 active native separate owner; no concurrent heavy work"
+    "Run507 active native separate owner; no concurrent heavy work",
+    "Source review identified potential inherited standing B2 question in BASE; explicitly disabled both standing questions and added regression test before native."
   ],
   "blockers": [
     "Run511 source-only CI pending",
@@ -39,6 +40,6 @@
     "No Run511 native trial authorized until separate prereg/owner check",
     "Redmi unavailable"
   ],
-  "next_command": "Open draft PR Run511 against Run510; inspect source-only CI and independently verify 60-key partition. Review potential native source-ref mapping and preparation hash invariants before separate one-shot native. Audit Run507 actual native artifacts on completion.",
+  "next_command": "Verify latest Run511 source-only CI on updated script/test pins (older runs may be superseded); audit 60-key stage plan and private backup; inspect Run507 native completion and independent raw evidence.",
   "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
 }
