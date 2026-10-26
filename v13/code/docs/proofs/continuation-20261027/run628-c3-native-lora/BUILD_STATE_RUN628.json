@@ -1,0 +1,52 @@
+{
+  "run": "Run628",
+  "date_utc": "2026-10-26T23:30:00Z",
+  "owner": "GPT-6 automation; exclusive Run628 cohort/prereg/script/test/workflow/proof, no runtime training rights",
+  "status": "PINNED_NATIVE_C3_CI_RUNNING",
+  "parent_pr": 622,
+  "parent_head": "8f3209070865ac6e3270b68ca01346fd01d17a75",
+  "review_pr": 623,
+  "branch": "codex/automation11-run628-c3-native-lora-probe-20261027",
+  "cohort_commit": "98599b58d9ff07a63cf8ac59146fe3a355a3747c",
+  "cohort_blob": "7bf74a8b9de4f7765005093e4cb758da00b9ec0b",
+  "prereg_commit": "63de9062af4a4cfc5ef33271e8e040965df34df6",
+  "prereg_blob": "486311a6b4eae1901f99e7f46ea5fa0ceabdcefa",
+  "script_commit": "63f9503291a641c221ebdd99a28f1aab3da7617f",
+  "script_blob": "ed2d97cc5249e9eff343792008b41e12d60820fb",
+  "test_commit": "29142f1077f8a397c9e0e09ff7562ea4f040f8c4",
+  "test_blob": "99d76e5331b3125b759d001d7e6479a672003826",
+  "workflow_commit": "4eabc8c0f4d983e0954aa7bfc0290dfff5c40f65",
+  "ci_run_id": 40420000984,
+  "model": {
+    "repo_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "model_safetensors_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "license": "apache-2.0",
+    "source": "official Hugging Face API/model blob"
+  },
+  "training": {
+    "target": "C3_LANGUAGE reference master only",
+    "steps": 2,
+    "rank": 2,
+    "jepa_weight": 0,
+    "train": 2,
+    "heldout": 2,
+    "production_authority": 0
+  },
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "pending": [
+    "Wait for exact Actions run 40420000984; inspect dependency/model/training raw before claiming native proof",
+    "If incompatibility, fix pinned isolated dependencies without changing cohort; rerun once",
+    "Back up original failed/success raw privately, independent review, continue other canonical package"
+  ],
+  "next_command": "Inspect https://api.github.com/repos/RedMentos/Aii/actions/runs/40420000984/jobs and /artifacts; read SHA-closed raw; distinguish real model update from dependency failures. Preserve failure and repair if feasible, then continue independent canonical work.",
+  "backup": "GitHub PR623 source/cohort/prereg remote readback verified; native CI raw pending; no Drive write attempted."
+}
