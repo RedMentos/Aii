@@ -163,3 +163,22 @@ def answer_check(args, value, answer):
 
 def check_note(args, value):
     return CHECK_NOTE.format(recipe=label(args) or args['operation'], value=value)
+
+
+# WP-DS3c (bench-results/ds3c-tool-answer-20261022/BEFUND.md, preregistered, DS3C_SUPPORTED): on a failed check a fixed
+# sentence from the recipe beat saying "unsure" on fresh R4 seeds and on a new task family (0 wrong sentences in 27).
+CORRECTION_HEAD = 'Correction (exact local calculation): '
+
+
+def correction_text(args, value):
+    """Unit-free fixed sentence from the executed recipe (same wording as ds3c_tool_answer.repair_text)."""
+    values = [v for v in decode(args['values']) if not AGGREGATE.match(str(v.get('name', '')))]
+    text = str(args['text'])
+    if args['operation'] == 'total':
+        stated = []
+        if re.search(r'(?i)\bcorrect\?', text):
+            read = {int(v['number']) for v in values}
+            stated = [int(n) for n in _ANS_NUM.findall(text[:text.rfind('?')+1]) if int(n) not in read and int(n) != value]
+        return (f'No, the stated number {stated[0]} is wrong. ' if stated else '')+f'The exact total is {value}.'
+    nums = [int(v['number']) for v in values]; hi = values[nums.index(max(nums))]; lo = values[nums.index(min(nums))]
+    return f"{hi['name']} has the largest value ({hi['number']}) and {lo['name']} the smallest ({lo['number']}); the difference is {value}."

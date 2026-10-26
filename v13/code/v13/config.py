@@ -113,7 +113,7 @@ def validate(cfg):
     if not (isinstance(cfg.get("offer_quote_context_chars",0),int) and not isinstance(cfg.get("offer_quote_context_chars",0),bool) and 0<=cfg.get("offer_quote_context_chars",0)<=400):raise ValueError("offer_quote_context_chars 0..400")
     if cfg.get("eligibility_reader","model") not in {"model","fixed"}:raise ValueError("eligibility_reader model|fixed")
     if not isinstance(cfg.get("tool_answer_first",False),bool):raise ValueError("tool_answer_first true|false")
-    if cfg.get("tool_answer_check","off") not in {"off","shadow","note"}:raise ValueError("tool_answer_check off|shadow|note")
+    if cfg.get("tool_answer_check","off") not in {"off","shadow","note","correct"}:raise ValueError("tool_answer_check off|shadow|note|correct")
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
     return cfg
 def initialize(home):

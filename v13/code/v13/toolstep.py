@@ -192,21 +192,23 @@ class ToolStep:
     def check_answer(self,e,result,output,mid):
         """WP-DS3b cfg tool_answer_check: fixed cross-check of the finished answer against an executed list_arith recipe.
         off (default): nothing runs. shadow: counted only. note: a failed check appends a fixed sentence saying the answer
-        does not match the exact calculation (the streamed answer cannot be taken back). Returns the appended text."""
+        does not match the exact calculation. correct (WP-DS3c): a failed check appends the recipe's own fixed sentence as a
+        correction (the streamed answer cannot be taken back). Returns the appended text."""
         mode=self.r.cfg.get('tool_answer_check','off')
         if mode=='off' or not result or result.get('tool')!='list_arith' or result.get('result') is None:return ''
         from .agi import listarith
         ok,reason=listarith.answer_check(result['args'],result['result'],output)
         for attempt in (0,1):  # counts in a state (telemetry whitelists fields)
             st,v=self.r.store.state(CHECK_KEY);st=st or {'checked':0,'failed':0,'noted':0,'reasons':{}}
-            st['checked']+=1;st['failed']+=int(not ok);st['noted']+=int(not ok and mode=='note')
+            st['checked']+=1;st['failed']+=int(not ok);st['noted']+=int(not ok and mode in ('note','correct'))
             if not ok:st['reasons'][reason]=st['reasons'].get(reason,0)+1
             try:self.r.store.set_state(CHECK_KEY,st,expected=v);break
             except ValueError:
                 if attempt:raise
         self.r.store.log('tool_answer_check',e['event_id'],{})
-        if ok or mode!='note':return ''
-        note=(' ' if output and not output.endswith((' ','\n')) else '')+listarith.check_note(result['args'],result['result'])
+        if ok or mode not in ('note','correct'):return ''
+        body=listarith.check_note(result['args'],result['result']) if mode=='note' else listarith.CORRECTION_HEAD+listarith.correction_text(result['args'],result['result'])
+        note=(' ' if output and not output.endswith((' ','\n')) else '')+body
         self.r.store.append_message(mid,note);return note
     def lead(self,result):
         """cfg tool_answer_first: the executed eligibility decision opens the visible answer as a fixed sentence (the body

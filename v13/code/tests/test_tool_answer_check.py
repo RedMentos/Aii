@@ -30,7 +30,7 @@ class Check(unittest.TestCase):
 class Config(unittest.TestCase):
     def test_default_off_and_validation(self):
         self.assertEqual(DEFAULTS['tool_answer_check'],'off')
-        for ok in ('off','shadow','note'):validate(dict(DEFAULTS,tool_answer_check=ok))
+        for ok in ('off','shadow','note','correct'):validate(dict(DEFAULTS,tool_answer_check=ok))
         with self.assertRaises(ValueError):validate(dict(DEFAULTS,tool_answer_check='abstain'))
     def test_chain_link_is_live(self):
         from scripts.integrated_candidates import INTEGRATED,integrated_sources
@@ -64,6 +64,13 @@ class Live(unittest.TestCase):
         wrong='Graz had the most rain. The difference is 400 mm.'
         added,text,st=self.run_check('note',wrong)
         self.assertEqual(added,' '+L.check_note(CA,400));self.assertTrue(text.endswith(added));self.assertEqual((st['checked'],st['noted']),(2,1))
+    def test_correct_appends_the_recipe_sentence_only_on_failure(self):
+        self.assertEqual(self.run_check('correct','Lyon had the most rain. The difference is 400 mm.')[0],'')
+        added,text,st=self.run_check('correct','Graz had the most rain. The difference is 400 mm.')
+        self.assertEqual(added,' Correction (exact local calculation): Lyon has the largest value (700) and Cork the smallest (300); the difference is 400.')
+        self.assertTrue(text.endswith(added));self.assertEqual(st['noted'],1)
+    def test_correction_text_flags_a_stated_wrong_total(self):
+        self.assertEqual(L.correction_text(SA,50),'No, the stated number 60 is wrong. The exact total is 50.')
     def test_other_tools_and_missing_results_are_ignored(self):
         self.r.cfg['tool_answer_check']='note'
         self.assertEqual(self.ts.check_answer(self.e,dict(self.res,tool='eligibility'),'x',None),'')
