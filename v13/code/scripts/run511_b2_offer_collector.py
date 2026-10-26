@@ -138,11 +138,14 @@ def native_config(installed, seed):
         "seed": seed, "learning_mode": "RECORD_ONLY",
         "teacher_enabled": False, "history_turns": 0,
         "memory_top_k": 0, "observer_mode": "off",
+        "body_question_b1": "", "body_question_b2": "",
     }
     require(cfg["b2_control"] == "two_body" and
             cfg["b2_offer_body_state"] is False and
             cfg["offer_quote_context_chars"] == 200 and
-            cfg["b1_recent_source_chars"] == 600,
+            cfg["b1_recent_source_chars"] == 600 and
+            cfg["body_question_b1"] == "" and
+            cfg["body_question_b2"] == "",
             "FROZEN_SOURCE_WINDOW_CONFIG_DRIFT")
     return cfg
 
