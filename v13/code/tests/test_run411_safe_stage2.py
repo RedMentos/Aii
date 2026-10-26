@@ -45,6 +45,8 @@ class Run411Stage2Tests(unittest.TestCase):
             mock.patch.object(m.safe, "export", return_value=self.safe),
         ]
         self.mocks = [p.start() for p in self.patchers]
+        self.mocks[6].side_effect = lambda p: (m.RUN401_EXECUTABLE_SHA256
+            if Path(p).name == "llama-server" else "d" * 64)
         self.addCleanup(lambda: [p.stop() for p in reversed(self.patchers)])
 
     def run_stage(self, execute=False, installed=None, export_dest=None):
@@ -100,6 +102,17 @@ class Run411Stage2Tests(unittest.TestCase):
                                                pilot=False, execute=True, max_new_arms=1)
         self.assertEqual(self.mocks[5].call_count, 2)
         self.mocks[7].assert_called_once_with(self.work, self.installed, self.export_dest)
+
+    def test_mismatched_installed_executable_blocks_native_and_exports(self):
+        self.mocks[6].side_effect = None
+        self.mocks[6].return_value = "0" * 64
+        result = self.run_stage(execute=True, installed=self.installed,
+                                export_dest=self.export_dest)
+        self.assertEqual(result["status"], "STAGE2_RED_PRESERVED")
+        self.assertIn("INSTALLED_RUNNER_EXECUTABLE_SHA_MISMATCH", str(result["errors"]))
+        self.assertFalse(result["native_execute_attempted"])
+        self.mocks[4].assert_not_called()
+        self.mocks[7].assert_called_once()
 
     def test_native_failure_preserves_red_and_still_exports(self):
         self.mocks[4].side_effect = ValueError("SYNTHETIC_NATIVE_FAILURE")
