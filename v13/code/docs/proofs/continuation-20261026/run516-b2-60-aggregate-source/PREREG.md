@@ -1,0 +1,9 @@
+# Run516 prereg — source-only five-stage 60-observation B2 quote metric aggregation
+
+Date 2026-10-26. Base Run515 native p00 PR #513 head 24f5f802b700c82f9e57f59bd3345dd6dd1e4f53. **Run515 Actions 40313344309 is the active serialized heavy owner**; Run516 is source-only and may not launch model inference or compete for runner resources. Run509 frozen ten fixtures SHA ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726, seeds 41/42/43, BASE/RULE_FOCUS, five Run511/512 pair stages and original Run510 strict metric remain unchanged.
+
+**Need:** Run510 requires exactly 60 source-verified observations, while Run513 independently audits only a 12-row stage. Implement a separate fail-closed aggregator that accepts five disjoint stage directories p00–p04, replays Run513 independent source/ref/offset and prep/progress/receipt audit for each, checks persisted Run513 reports and reduced metric rows byte-semantically match fresh re-audit, enforces exact 60 registered row keys with no duplicates, then invokes original Run510 strict 60-row paired scorer. Persist exact input SHA bindings, 60 reduced rows, original Run510 metric and aggregate summary as exclusive output files with negative gates. Never fill missing stage rows, silently retry, infer native model proof from copied JSON, or alter registered hashes.
+
+**Prospective tests:** mocked five-stage source-only records for exact 60-key pairing; duplicate/missing stages, missing/altered stored postflight, tampered stage metric rows, nonfinite numbers, score failure, output overwrite and negative gates. Source-only CI runs no native models or downloads. A full real aggregation must wait for all five stages and independent native Actions evidence; p00 alone must never be passed to Run510 as 60 observations.
+
+Original negative gates remain STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured and full V13 incomplete.
