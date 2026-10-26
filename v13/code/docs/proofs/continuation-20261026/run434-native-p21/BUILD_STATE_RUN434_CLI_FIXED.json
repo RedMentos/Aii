@@ -1,0 +1,41 @@
+{
+  "schema": "V13_RUN434_CLI_FIXED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run434-native-p21-next-arm-20261026",
+  "source_fix_head": "9c9c8ceb2640215dfb6ae85abffaa4242d5ac303",
+  "red": {
+    "native_run": 40265963506,
+    "native_status": "RED before any P_s21 inference",
+    "native_raw_artifact_id": 12625924197,
+    "native_raw_sha256": "6c091ec50c58174747fc7c055f9ecf8e189e2d3e580d872dc6e118cbf13670ef",
+    "source_test_actions": 40266144461,
+    "source_test_head": "5adf3831471b090da6649b39c3c2f78ac775aace",
+    "source_tests": "51 total, 1 expected CLI failure",
+    "source_raw_artifact_id": 12626855087,
+    "source_raw_sha256": "e62423c4c2d5f3703470dc889adedf954766c17565772ec1ffe91bef1766641e"
+  },
+  "green": {
+    "actions": 40266234440,
+    "source_tests": "51/51 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12626885161,
+    "artifact_sha256": "5c1c0c73d4cb9adb89ffbb4e43baac0475f385d3060f7d099cef17a3bf83928e",
+    "source_sha256": {
+      "v13/code/scripts/run434_stage5_p21.py": "84f169825f887a678e5441c4c22e272c5d3768832967ea1da9fbe20fd1bfbb6d",
+      "v13/code/tests/test_run434_stage5_p21.py": "a6bf06015d238e0a4893dabf4c8911fde736101c53adeea09c6d08427ed57e7a"
+    },
+    "change": "One CLI argparse flag --stage3-report -> --stage4-report; added real main/argparse source-only integration test"
+  },
+  "native_P_s21_rows_observed": 0,
+  "native_P_s21_executed": false,
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Prepare separately preregistered Run437 exclusive native P_s21 branch using corrected source SHA 84f169..., same independently verified 168-row artifacts. Never reuse closed Run435 PR; do not write to native branch after PR triggers."
+}
