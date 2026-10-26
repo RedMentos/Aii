@@ -1,0 +1,59 @@
+{
+  "schema": "V13_RUN587_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run587-goal-decompose-atomic-20261026",
+  "base_branch": "codex/automation11-run586-goal-origin-age-20261026",
+  "base_sha": "bff4adf60d5ef3e572af973ac86a6d59700ff5ff",
+  "verified_code_head": "73d9197887ff4d00246f61acf476a483a15cbbb4",
+  "pr": 583,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/583",
+  "prereg_commit": "8a111f205e02625e4d4f5fb9c51b299d2775dc75",
+  "changed_source_blobs": {
+    "v13/code/v13/agi/goals.py": "b4c1fef6dcbc7e8f3994539e22af02f04d60a3f9",
+    "v13/code/tests/test_run587_goal_decompose_atomic.py": "34b310bb3c83b84c57ea61afd9c58f28ea74e46e"
+  },
+  "observed_ci": {
+    "run": 40386926792,
+    "job": 121797553046,
+    "head": "73d9197887ff4d00246f61acf476a483a15cbbb4",
+    "conclusion": "success",
+    "new_tests": "7/7 PASS",
+    "run585_regressions": "6/6 PASS",
+    "run586_regressions": "6/6 PASS",
+    "test_growth": "24/24 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12681980667,
+    "raw_artifact_sha256": "418d209202e8eaaed97b747bb0738fe0ab023617096fdeb56c56906d6deefa7c"
+  },
+  "changes": [
+    "JEF goal decomposition is one optimistic SQLite state transaction, not a sequence of partial child commits",
+    "Normalize bounded iterable before state mutation; reject late title errors and over-capacity batches without writes",
+    "Preserve parent/depth/origin/Age semantics, consecutive goal IDs and restart durability",
+    "CAS retry does not duplicate children; no tools or autonomy enabled"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "full_source_suite": "RED_4_FAIL_65_ERROR"
+  },
+  "open_questions": [
+    "Independent review and merge coordination with Claude/Codex owners needed; no production merge",
+    "Original unfiltered full-suite RED is dominated by frozen source lineage expectations, not a verified current full-suite PASS",
+    "Continue independent Body-JEPA, Context OS, Dream/Sleep, native sparse training and Redmi proof work"
+  ],
+  "next_command": "Review PR583 and exact CI artifact; continue another independent canonical organ package on a new review branch, preferably Context OS/Dream/Sleep or actual native body utility, without competing with active native owners.",
+  "prerequisites": [
+    "Preserve registered cohorts/source/model/seed hashes and failed attempts",
+    "Do not force-push or alter other owners' branches",
+    "Keep all Age/approval/learning gates"
+  ]
+}

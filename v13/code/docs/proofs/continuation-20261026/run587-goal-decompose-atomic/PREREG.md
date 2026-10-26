@@ -1,0 +1,11 @@
+# Run587 prospective registration — AG3 durable atomic goal decomposition (2026-10-26)
+
+Owner: GPT automation11, independent review branch on verified Run586 PR582 checkpoint `bff4adf60d5ef3e572af973ac86a6d59700ff5ff`. Files owned: `v13/code/v13/agi/goals.py`, new `v13/code/tests/test_run587_goal_decompose_atomic.py`, Run587-only CI/proof. Preserve original Canon, registered native source/model/seed hashes, previous PRs and negative gates.
+
+**Read-only defect:** `GoalStore.decompose(parent, subgoals)` is a list comprehension of individual `add` transactions. A batch can fail halfway (MAX_GOALS capacity, a later title conversion failure, or a concurrent version conflict), leaving some children durably added and a partially executed user plan. There is no all-or-nothing receipt. This is an actual persistent JEF/AG3 plan-state correctness problem, independent of native model availability.
+
+**Prospective implementation:** Pre-normalize a bounded iterable of titles before any mutation; validate origin and existing Age permission, parent existence/depth, and total open-goal capacity before writing. Add all children with their existing fields and consecutive IDs in **one** `StateBox.mutate` CAS transaction, or none. Keep public `add` behavior, existing schema/revision, USER/SYSTEM/SELF origin semantics, no auto-scheduling, no tool execution, and existing `next_actionable`/wake guards unchanged. Preserve empty decomposition returning [] without writing. Retry via existing StateBox CAS once; no partial children on rejection. Avoid arbitrary model-proposed plans gaining execution rights.
+
+**Prospective tests:** Exact two-child positive with persistent restart; near-MAX_GOALS two-child failure leaves parent/seq unchanged; late `__str__` error leaves no child; invalid parent/depth/SELF Age failure leaves no children; empty batch no state mutation; simulated first CAS conflict yields exactly one contiguous batch; existing `test_growth`, Run585 and Run586 regressions unchanged. Exact-head GitHub Actions source-only test/compile/privacy/SHA-closed raw; preserve any RED.
+
+**Claim limits:** model-free software only; no learned planning, native, Redmi or Age promotion. Full suite historically RED from pinned source lineage; STEP2 UTILITY_FAIL, B3 FAIL, Body-JEPA UNAVAILABLE, jepa_weight 0, V13 INCOMPLETE. Independent review before integration.

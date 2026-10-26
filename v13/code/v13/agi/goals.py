@@ -44,8 +44,33 @@ class GoalStore:
         if wake_at is not None:self.schedule(gid,wake_at)
         return gid
     def decompose(self,gid,subgoals,origin=None):
+        """Commit a complete child plan or none; never leave a half-created goal tree."""
+        from itertools import islice
         g=self.get(gid);origin=origin or g['origin']
-        return [self.add(t,origin,parent=gid) for t in subgoals]
+        if origin not in ('USER','SYSTEM','SELF'):raise ValueError('origin')
+        if origin=='SELF' and not age_allows(self.age,'choose_learning_goals','SELF'):
+            raise PermissionError('Eigene Ziele erst ab Age-Recht choose_learning_goals')
+        # Normalize outside the transaction so a late bad item cannot leave
+        # already-created children behind. The hard bound also handles generators.
+        titles=[str(x)[:300] for x in islice(subgoals,MAX_GOALS+1)]
+        if len(titles)>MAX_GOALS:raise ValueError('Ziel-Speicher voll')
+        if not titles:return []
+        def f(st):
+            if gid not in st['goals']:raise ValueError('Unbekanntes Elternziel')
+            limit=min(MAX_DEPTH,max(2,int(budget(self.age,'focal_depth',1))+1)) if origin!='USER' else MAX_DEPTH
+            if self._depth(st,gid)+1>limit:raise ValueError(f'Zieltiefe > {limit}')
+            if sum(x['status'] in OPEN for x in st['goals'].values())+len(titles)>MAX_GOALS:
+                raise ValueError('Ziel-Speicher voll')
+            ids=[]
+            for title in titles:
+                st['seq']+=1;child=f'goal_{st["seq"]}';now=self.clock()
+                st['goals'][child]={'id':child,'title':title,'origin':origin,'parent':gid,
+                    'status':'OPEN','progress':0.,'steps':[],'evidence':[],
+                    'created':now,'updated':now,'wake_at':None,'deadline':None,
+                    'wake_event':None,'notes':[]}
+                ids.append(child)
+            return ids
+        return self.box.mutate(f)
     def step_done(self,gid,index,evidence=None):
         def f(st):
             g=st['goals'][gid];g['steps'][index]['done']=True
