@@ -2,20 +2,19 @@ name: V13 Run605 exact-current B1 LFM2 read-only native 2048d tap
 on:
   push:
     branches:
-      - codex/automation11-run605-native-b2-latent-tap-20261026
-  pull_request:
-    types: [opened, synchronize]
+      - codex/automation11-run605-native-b1-latent-tap-20261026
     paths:
-      - '.github/workflows/run605-native-b2-latent-tap.yml'
-      - 'v13/code/docs/proofs/continuation-20261026/run605-native-b2-latent-tap/**'
+      - '.github/workflows/run605-native-b1-latent-tap.yml'
+      - 'v13/code/scripts/run605_b1_native_tap_probe.py'
+      - 'v13/code/tests/test_run605_b1_native_tap_probe.py'
 permissions:
   contents: read
 concurrency:
   group: v13-native-c3-run131-serialized
   cancel-in-progress: false
 jobs:
-  b2-native-tap:
-    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run605-native-b2-latent-tap-20261026' }}
+  b1-native-tap:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
@@ -34,7 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN605_HEAD.txt"
-          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run605-native-b2-latent-tap/PREREG.md)" = bb58879379eba867fd29f50f63a086c26f51fcd1
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run605-native-b1-latent-tap/PREREG.md)" = bb58879379eba867fd29f50f63a086c26f51fcd1
           test "$(git hash-object v13/code/scripts/run605_b1_native_tap_probe.py)" = a0461c4ee24d8a0883e2865fac00de632d49a396
           test "$(git hash-object v13/code/tests/test_run605_b1_native_tap_probe.py)" = dc9bc618655238690a4b8217f025945a852e0794
           test "$(git hash-object v13/code/v13/runners.py)" = 37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5
@@ -101,7 +100,7 @@ jobs:
           import json,math,os
           from pathlib import Path
           d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN605_NATIVE_REPORT.json').read_text())
-          assert d['schema']=='V13_RUN179_PINNED_B1_NATIVE_TAP_V1'
+          assert d['schema']=='V13_RUN605_PINNED_B1_NATIVE_TAP_V1'
           assert d['status']=='PASS_NATIVE_READONLY_TAP_ONLY'
           assert d['evidence_class']=='LINUX_NATIVE_MODEL_READONLY'
           assert d['model_sha256']=='bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1'
