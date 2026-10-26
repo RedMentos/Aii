@@ -55,7 +55,7 @@ class ChatHistoryNavigation(unittest.TestCase):
     def test_like_wildcards_are_literal_with_and_without_cursor(self):
         rows = json.loads(self.op.run(":search PERCENT%_literal"))
         self.assertEqual([x["text"] for x in rows], ["PERCENT%_literal"])
-        after = json.loads(self.op.run(":search PERCENT%_literal --before %d" % (rows[0]["id"]+1)))
+        after = json.loads(self.op.run(f":search PERCENT%_literal --before {rows[0]['id']+1}"))
         self.assertEqual([x["text"] for x in after], ["PERCENT%_literal"])
 
     def test_invalid_cursors_fail_without_mutating_history(self):
