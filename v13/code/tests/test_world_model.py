@@ -79,6 +79,8 @@ class LiveGoals(Base):
         open_=g.goals.tree('OPEN');self.assertEqual(len(open_),1);self.assertEqual(open_[0]['origin'],'USER')
         live.goal_turn(self.r,e,{},'ERROR');self.assertEqual(len(g.goals.tree('OPEN')),1)  # one goal per event
         e2=self.r.store.event(self.r.session,'Plane das Budget für Projekt Aurora im Mai bitte')
+        mid=self.r.store.message(self.r.session,e2['event_id'],'assistant','Budgetplan für Aurora erstellt')
+        self.r.store.finish_message(mid,'FINAL',{})
         live.goal_turn(self.r,e2,{},'FINAL');self.assertEqual(g.goals.tree('DONE')[0]['id'],open_[0]['id'])
         self.assertEqual(g.curiosity.values()['route:unknown']['error'],0.)
     def test_learn_medium_fits_world_and_keeps_curiosity_age_gated(self):
