@@ -2,7 +2,7 @@
 """Run460: independently verify 294 native rows through O_s22 (seven receipts).
 
 No inference, no model downloads and no gate promotion. Does not mutate work.
-Derived conservatively from Run453 six-receipt verifier (SHA256 19b7a647f2149b6ce0dded029fc6ffd5213768b5f801549b9d5f97a52d886b7a).
+Derived conservatively from the Run453 six-receipt verifier (Git blob SHA1 358f2803a9bcaf88aa011a177863b6ff77e65394).
 """
 import argparse
 import hashlib
