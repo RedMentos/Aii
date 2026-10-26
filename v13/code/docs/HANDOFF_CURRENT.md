@@ -1,3 +1,7 @@
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2l — Kombination ja, zweiter Körper nein
+
+Ganze Kette (1536 + `sources` + Wächter + `newest_quoted`): Kombination schlägt besten Einzelkörper (+.24, CI > 0, 0 falsch); zwei verschiedene Körper nicht besser als ein Körper mit zwei Zuständen (+.04, CI schließt 0 ein). Offen: Nutzer-Entscheidung + Redmi-Messung, bevor etwas live geht. Befund `docs/proofs/continuation-20261026/step2-z2l-chain/BEFUND.md`.
+
 # Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2k — geänderte Regeln erstmals richtig
 
 Kette 1536 Zeichen + `b2_quote_choices=sources` + Wächter (`history`) + `rule_reader='newest_quoted'`: `Z2K_READER_CONFIRMED`, exakt 8 → 36/210, geänderte Regeln 0 → 28, 0 falsch. Nächstes WP-Z2l (ganze Kette gegen STEP2 mit Ein-Körper-Kontrolle). Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2k-reader/BEFUND.md`.
