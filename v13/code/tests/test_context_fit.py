@@ -106,6 +106,46 @@ class ContextFitTests(unittest.TestCase):
         count,how=F.counter(object(),threading.Event(),0)
         self.assertEqual(how,'ESTIMATE');count([{'role':'user','content':'x'}]);self.assertEqual(count.sources,['ESTIMATE'])
 
+    def test_exact_count_optin_is_validated_and_legacy_default_unchanged(self):
+        self.assertEqual(DEFAULTS['context_fit_count_mode'],'legacy_quick')
+        validate(dict(DEFAULTS,context_fit_count_mode='exact'))
+        with self.assertRaises(ValueError):
+            validate(dict(DEFAULTS,context_fit_count_mode='unsafe_guess'))
+
+    def test_exact_count_optin_disables_quick_accept_even_under_byte_bound(self):
+        calls=[]
+        def native(messages):
+            calls.append(messages)
+            return 100000
+        vol,text=layers(questions=0,hyps=1,quotes=1)
+        _,legacy=F.fit('active','r',vol,[],text,native,10000)
+        self.assertTrue(legacy['quick'])
+        self.assertEqual(calls,[])
+        _,strict=F.fit('active','r',vol,[],text,native,10000,force_exact=True)
+        self.assertTrue(calls)
+        self.assertNotIn('quick',strict)
+        self.assertFalse(strict['fits'])
+
+    def test_exact_count_optin_refuses_unavailable_native_counter(self):
+        import threading
+        with self.assertRaisesRegex(ValueError,'EXACT_TOKEN_COUNTER_UNAVAILABLE'):
+            F.counter(object(),threading.Event(),0,strict=True)
+        class Broken:
+            def prompt_tokens(self,m,c,d):raise OSError('native tokenizer unavailable')
+        count,how=F.counter(Broken(),threading.Event(),0,strict=True)
+        self.assertEqual(how,'EXACT')
+        with self.assertRaises(OSError):
+            count([{'role':'user','content':'example'}])
+        self.assertEqual(count.sources,[])
+
+    def test_legacy_counter_fallback_stays_labelled_estimate(self):
+        import threading
+        class Broken:
+            def prompt_tokens(self,m,c,d):raise OSError('native tokenizer unavailable')
+        count,_=F.counter(Broken(),threading.Event(),0)
+        self.assertGreater(count([{'role':'user','content':'example'}]),0)
+        self.assertEqual(count.sources,['ESTIMATE'])
+
     def test_budget_matches_runner_rule(self):
         self.assertEqual(F.budget({'context_tokens':2048,'answer_tokens':256}),2048-256-16)
 
