@@ -133,7 +133,7 @@ def verify(root, report):
             progress.get("native_success_does_not_promote_step2") is True and
             set(progress.get("completed", {})) == set(PREFIX) and
             progress.get("failures_preserved") == {},
-            "PROGRESS_NOT_NATIVE_252_GREEN")
+            "PROGRESS_NOT_NATIVE_294_GREEN")
     frozen_path = root / "RUN394_PREREGISTERED_FIXTURES.json"
     frozen = json.loads(frozen_path.read_text())
     require(frozen == r394.manifest(r394.FIXTURES, False, list(r394.ARMS),
