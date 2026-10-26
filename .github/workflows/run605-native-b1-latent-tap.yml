@@ -1,0 +1,158 @@
+name: V13 Run605 exact-current B1 LFM2 read-only native 2048d tap
+on:
+  push:
+    branches:
+      - codex/automation11-run605-native-b2-latent-tap-20261026
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run605-native-b2-latent-tap.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run605-native-b2-latent-tap/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  b2-native-tap:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run605-native-b2-latent-tap-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact source, prereg, model, Canon and host pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN605_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run605-native-b2-latent-tap/PREREG.md)" = bb58879379eba867fd29f50f63a086c26f51fcd1
+          test "$(git hash-object v13/code/scripts/run605_b1_native_tap_probe.py)" = a0461c4ee24d8a0883e2865fac00de632d49a396
+          test "$(git hash-object v13/code/tests/test_run605_b1_native_tap_probe.py)" = dc9bc618655238690a4b8217f025945a852e0794
+          test "$(git hash-object v13/code/v13/runners.py)" = 37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5
+          test "$(git hash-object v13/code/v13/models.py)" = bd035cf8029850cce00b179edf533e53bf24358a
+          test "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/scripts/run605_b1_native_tap_probe.py v13/code/v13/runners.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN605_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; free -h; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN605_HOST.txt"
+      - name: Isolated pinned CPU dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run605venv"
+          "$RUNNER_TEMP/run605venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Model-free native tap adversarial fixtures
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run605venv/bin/python" -m unittest -v tests.test_run605_b1_native_tap_probe > "$RUNNER_TEMP/RUN605_FIXTURE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN605_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original pinned public LFM2 and native runner bootstrap
+        id: bootstrap
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN605_FIXTURE_EXIT.txt")" != 0 ]; then
+            echo 2 > "$RUNNER_TEMP/RUN605_BOOTSTRAP_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run605installed"
+          timeout -s TERM -k 30s 1200s "$RUNNER_TEMP/run605venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN605_BOOTSTRAP_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN605_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Actual three pinned LFM2 B1 per-token 2048d native read-only taps
+        id: native
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN605_BOOTSTRAP_EXIT.txt")" != 0 ]; then
+            echo 2 > "$RUNNER_TEMP/RUN605_NATIVE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run605installed"
+          mkdir -p "$RUNNER_TEMP/run605tap"
+          timeout -s TERM -k 30s 700s "$RUNNER_TEMP/run605venv/bin/python" scripts/run605_b1_native_tap_probe.py \
+            --model "$V13_HOME/models/body/LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf" \
+            --server "$V13_HOME/bin/llama-server" \
+            --workdir "$RUNNER_TEMP/run605tap" \
+            --output "$RUNNER_TEMP/RUN605_NATIVE_REPORT.json" > "$RUNNER_TEMP/RUN605_NATIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN605_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent original read-only B1 native tap postflight
+        id: audit
+        if: ${{ steps.native.outputs.rc == '0' }}
+        run: |
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN605_AUDIT_RAW.log" 2>&1
+          import json,math,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN605_NATIVE_REPORT.json').read_text())
+          assert d['schema']=='V13_RUN179_PINNED_B1_NATIVE_TAP_V1'
+          assert d['status']=='PASS_NATIVE_READONLY_TAP_ONLY'
+          assert d['evidence_class']=='LINUX_NATIVE_MODEL_READONLY'
+          assert d['model_sha256']=='bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1'
+          assert d['llama_archive_sha256']=='9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443'
+          assert d['tap_id']=='lfm2.result_norm.final.v1' and d['embedding_dim']==2048
+          assert len(d['token_counts'])==3 and all(1<=n<=64 for n in d['token_counts'])
+          assert math.isfinite(d['max_repeat_abs_delta']) and d['max_repeat_abs_delta']<=1e-3
+          assert d['no_body_training'] and d['no_latent_injection']
+          assert not d['redmi_proven'] and not d['step2_promoted'] and not d['b3_promoted'] and not d['v13_complete']
+          print('RUN605_CURRENT_QWEN_B1_READONLY_NATIVE_TAP_ONLY')
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN605_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base f79e5d9156cd025364c357d61c0b545d1460066a --head HEAD --no-worktree > "$RUNNER_TEMP/RUN605_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN605_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA close original raw even RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN605_*' ! -name 'RUN605_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN605_SHA256SUMS.txt
+      - name: Upload native and failed original raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run605-Native-B1-Tap-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/RUN605_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual native B1 tap and privacy exits
+        if: always()
+        run: |
+          set -euo pipefail
+          for item in FIXTURE BOOTSTRAP NATIVE AUDIT PRIVACY; do
+            echo "RUN605 ${item} exit: $(cat "$RUNNER_TEMP/RUN605_${item}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            if [ -f "$RUNNER_TEMP/RUN605_${item}_EXIT.txt" ] && [ "$(cat "$RUNNER_TEMP/RUN605_${item}_EXIT.txt")" != 0 ]; then
+              tail -n 80 "$RUNNER_TEMP/RUN605_${item}_RAW.log" || true
+            fi
+          done
+          test "${{ steps.fixture.outputs.rc }}" = 0
+          test "${{ steps.bootstrap.outputs.rc }}" = 0
+          test "${{ steps.native.outputs.rc }}" = 0
+          test "${{ steps.audit.outputs.rc }}" = 0
+          test "${{ steps.privacy.outputs.rc }}" = 0
