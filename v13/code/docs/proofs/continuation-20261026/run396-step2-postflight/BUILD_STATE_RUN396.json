@@ -1,0 +1,46 @@
+{
+  "run": "Run396",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_NATIVE_INPUT_PENDING",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run396-step2-native-postflight-20261026",
+  "pr": 391,
+  "base": {
+    "branch": "codex/run395-step2-native-pilot-20261026",
+    "sha": "48d2119dbbc7077da10b625ca4ff5819bfc74730",
+    "integration": "stacked review only, not main"
+  },
+  "plan_commit": "10f712fc32724443909b7fb5a4b8caee00fad72f",
+  "source_commit": "5989d813c09c5178cec9bff1e94bb5cfe8816f7d",
+  "tests_commit": "f28e81785cad65db311ffb0b552d24d17016ea87",
+  "workflow_commit": "edc6918553ca4aa3ca116e988e1aa27340377375",
+  "evidence": {
+    "head": "edc6918553ca4aa3ca116e988e1aa27340377375",
+    "run": 40248203691,
+    "job": 121334184570,
+    "artifact": 12619157230,
+    "zip_sha256": "9812f9728f278306feff3b63a2fa1ea69a88b15a7004ab9088395518c1e3c48f",
+    "tests": "16/16 PASS, compileall PASS, privacy CLEAN",
+    "raw_integrity": "ZIP CRC PASS, 4/4 internal SHA256 PASS, private Library byte-identical"
+  },
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run396_STEP2_20261026/SOURCE_RAW.zip",
+  "scope": "Read-only source-bound STEP2 pilot postflight audit; synthetic tests only; no native input yet",
+  "negative_gates": [
+    "Run395 actual native pilot result not yet inspected",
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "No Redmi/phone proof",
+    "Run389 full suite RED",
+    "Age0/approval unchanged",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Download Run395 exact-head native artifact after completion; verify CRC/SHA and preserve failures",
+    "Apply Run396 audit to all 42 actual pilot rows; if structural failure, do not promote",
+    "Only after valid pilot assess whether preregistered 378-row full cohort is feasible"
+  ],
+  "next_command": "PYTHONPATH=v13/code python3 v13/code/scripts/run396_step2_pilot_audit.py --input-dir <extracted Run395 run395-pilot> --output <private RUN396_NATIVE_POSTFLIGHT.json>",
+  "next_prerequisites": "Run395 PR390 exact-head native artifact with complete step2/tool/summary reports; no paid provisioning"
+}
