@@ -56,6 +56,18 @@ class Run428NativeControls(unittest.TestCase):
         self.assertEqual(r["nonzero_utility_deltas"], 1)
         self.assertAlmostEqual(r["mean_utility_delta"], 0.4 / 6)
 
+    def test_same_policy_dual_two_b1_offers_are_order_sensitive(self):
+        first = {"role": "B1_DETAIL", "summary": "first"}
+        second = {"role": "B1_DETAIL", "summary": "second"}
+        def row(items):
+            return {"consumer_messages": [{"role": "user",
+                "content": A.canonical({"analysts": items})}]}
+        a = A.offer_digest(row([first, second]), "B1_DETAIL")
+        b = A.offer_digest(row([second, first]), "B1_DETAIL")
+        self.assertIsInstance(a, str)
+        self.assertNotEqual(a, b)
+        self.assertIsNone(A.offer_digest(row([first, second]), "B2_GIST"))
+
     def test_nonfinite_utility_refused(self):
         a, x = sample()
         b, y = sample(utility=float("nan"))
