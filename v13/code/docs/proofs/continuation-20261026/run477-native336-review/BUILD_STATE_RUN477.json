@@ -95,7 +95,11 @@
       ],
       "available_choice_count_mean": 13,
       "choice_cap_24_reached": 0,
-      "additional_limit": "Pointer candidate cap of 24 was not reached in any of the 48 offers; cannot attribute observed rule quote deficit to this particular cap. Availability of exact earlier rule sentences requires separate source-view audit."
+      "additional_limit": "Pointer candidate cap of 24 was not reached in any of the 48 offers; cannot attribute observed rule quote deficit to this particular cap. Availability of exact earlier rule sentences requires separate source-view audit.",
+      "pointer_choice_id_1_selected_first": 43,
+      "pointer_choice_id_1_selected_anywhere": 43,
+      "pointer_selection_rows": 48,
+      "selection_limit": "Selection of quote ID 1 in 43/48 B2-only offers may be a position bias; must verify actual source-choice content and test on independent preregistered fixtures before claiming mechanism."
     }
   },
   "negative_gates": {
