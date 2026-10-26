@@ -1,0 +1,75 @@
+{
+ "schema": "v13-ds3d-prereg-v1",
+ "created_utc": "2026-10-26T02:06:22Z",
+ "dev_sha256": {
+  "r461": "129d608668396bd40eb821427e81d41d93011339715485d3f53868e8d219a1fc",
+  "r467": "8ec5cb1bf6744b5494755640b7cf4b3e13ce1fee24564574b411ce37fb2aa2a2",
+  "f69": "041712da9b843b54f2a8407c7dc889c2865f3cc6e2e1457d6699789c7a445c93",
+  "f71": "aaf21be60b0229dbff593e7f0bae848be9ab7e2d1831efcfbf1a284a31bb8dc1",
+  "f73": "fb5ce336e28454f7707e9dae1706f22c7a9088fb462e7766c82bbfabe655fe5f"
+ },
+ "dev": {
+  "r4": {
+   "recipe_always": {
+    "correct": 98,
+    "wrong": 22,
+    "utility": 76,
+    "repair": 0,
+    "bad_repair_good_read": 0
+   },
+   "core_repair": {
+    "correct": 109,
+    "wrong": 11,
+    "utility": 98,
+    "repair": 11,
+    "bad_repair_good_read": 0
+   },
+   "full_repair": {
+    "correct": 114,
+    "wrong": 6,
+    "utility": 108,
+    "repair": 16,
+    "bad_repair_good_read": 0
+   }
+  },
+  "f": {
+   "recipe_always": {
+    "correct": 150,
+    "wrong": 30,
+    "utility": 120,
+    "repair": 0,
+    "bad_repair_good_read": 0
+   },
+   "core_repair": {
+    "correct": 176,
+    "wrong": 4,
+    "utility": 172,
+    "repair": 27,
+    "bad_repair_good_read": 0
+   },
+   "full_repair": {
+    "correct": 178,
+    "wrong": 2,
+    "utility": 176,
+    "repair": 29,
+    "bad_repair_good_read": 0
+   }
+  }
+ },
+ "fresh_seeds": {
+  "r4": [
+   79,
+   83
+  ],
+  "f": [
+   89,
+   97
+  ]
+ },
+ "decision_rule": "Fresh R4 seeds 79+83 and family-F seeds 89+97 (120 tasks each), evaluated once, strict scoring, LAMBDA=1. H1 (R4): full_repair utility >= core_repair utility + 5. H2 (R4): full_repair wrong <= core_repair wrong - 3. H3 (F): full_repair utility >= core_repair utility - 1 (no loss on the new family). H4 (both): no wrong tool sentence with a correct value read. DS3D_SUPPORTED when H1..H4 all pass, else the failing parts are named. Bench-regex scoring reported only. No runtime change.",
+ "script_sha256": "96e25034dfdb2b2f324afea408c444089c63e36ee61afc0fe3ca138b58d7141e",
+ "helper_sha256": {
+  "ds3b": "a111c088ec5441c262c44360cee92d6a08dcae479aea33606984d0c8668f35c2",
+  "ds3c": "3a63657e37fb04509d34f757dcda162ee7458580b44fc48995aaf477c2a4f899"
+ }
+}
