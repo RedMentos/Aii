@@ -1,0 +1,71 @@
+name: V13 Run495 source evidence overflow fail-closed
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run495-evidence-overflow.yml'
+      - 'v13/code/v13/toolstep.py'
+      - 'v13/code/tests/test_run495_eligibility_evidence_overflow.py'
+permissions:
+  contents: read
+jobs:
+  bounded-evidence:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run495-eligibility-evidence-overflow-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Preregistered scope and source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run495-evidence-overflow/PREREG.md)" = 'e520609b3852c69aefb0397f71958b20a6b48294'
+      - name: Isolated source-only test dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Run bounded-source and JEF Runtime regressions
+        working-directory: v13/code
+        env:
+          NEEDLE_TELEMETRY: '0'
+          DO_NOT_TRACK: '1'
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest -v tests.test_run495_eligibility_evidence_overflow tests.test_run493_eligibility_source_precedence tests.test_run490_live_toolstep_fixed_reader tests.test_eligibility_fixed tests.test_run294_eligibility_option_authority tests.test_toolstep > "$RUNNER_TEMP/RUN495_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN495_TEST_EXIT.txt"
+          exit 0
+      - name: Public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN495_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN495_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN495_*' ! -name RUN495_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN495_SHA256SUMS.txt
+      - name: Upload original RED and later GREEN raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run495-source-overflow-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN495_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN495_TEST_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN495_PRIVACY_EXIT.txt")" = '0'
