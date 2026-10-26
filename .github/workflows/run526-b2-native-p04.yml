@@ -1,0 +1,248 @@
+name: V13 Run526 one-shot Linux-native B2 quote-focus p04 12 offers
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - '.github/workflows/run526-b2-native-p04.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-p04:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run526-b2-native-p04-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 70
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact preregistered source/model/runner contract
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN526_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run526-b2-native-p04/PREREG.md)" = '1ab695a9adf85b9a907547ad5180afd5793ef920'
+          test "$(git hash-object v13/code/scripts/run511_b2_offer_collector.py)" = 'ab8efec8016d77abc371a5a1d6dae395a06ebb60'
+          test "$(git hash-object v13/code/scripts/run513_b2_receipt_postflight.py)" = '76c92573867429d6a2c13f7493c456c06d4b6890'
+          test "$(git hash-object v13/code/scripts/run509_b2_rule_quote_prereg.py)" = 'ec8860d2333bd3c4a16caccb9537073a310f32da'
+          test "$(git hash-object v13/code/scripts/run510_b2_quote_metric.py)" = 'd2c35f430f9dc0f39c390043197787ea1f6e0cc6'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+          test "$(git hash-object v13/code/scripts/step2_z2b_seeds.py)" = '7c299616495450e4a38f9aab9921f7176ba67556'
+          test "$(git hash-object v13/code/tests/integration_step2_utility.py)" = 'a7ba12a8807a1ca8236f1c70d54dedb65c212caa'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(git hash-object v13/code/tests/test_run511_b2_offer_collector.py)" = 'd3b5a3ffc39979745c861e78a037e88c343444f8'
+          test "$(git hash-object v13/code/tests/test_run512_b2_source_binding.py)" = 'f8c59acccb636cb68efa12ba0fccb2e0b440cd34'
+          test "$(git hash-object v13/code/tests/test_run513_b2_receipt_postflight.py)" = '09f07e15a5d23f58086a92780e8cd8c413a5e4cc'
+          test "$(git hash-object v13/code/tests/test_run518_b2_native_receipt_schema.py)" = '42899952c2df238b4b32acb8d95facee4efa1ce1'
+          test "$(git hash-object v13/code/tests/test_run520_b2_quote_lineage.py)" = '3c38db4d776f13a29e235b9c415d8df79b9df936'
+          { date -u -Iseconds; uname -a; python3 --version; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN526_HOST.txt"
+          sha256sum v13/code/scripts/run511_b2_offer_collector.py v13/code/scripts/run513_b2_receipt_postflight.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN526_SOURCE_SHA256.txt"
+      - name: Isolated source-only Python dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run526venv"
+          timeout 240s "$RUNNER_TEMP/run526venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN526_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN526_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Frozen p04 plan and source-only regressions
+        id: plan
+        if: ${{ steps.deps.outcome == 'success' && steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run526venv/bin/python" -m unittest -v tests.test_run520_b2_quote_lineage tests.test_run518_b2_native_receipt_schema tests.test_run513_b2_receipt_postflight tests.test_run512_b2_source_binding tests.test_run511_b2_offer_collector tests.test_run510_b2_quote_metric tests.test_run509_b2_rule_quote_prereg > "$RUNNER_TEMP/RUN526_TEST_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            mkdir -p "$RUNNER_TEMP/run526-stage"
+            "$RUNNER_TEMP/run526venv/bin/python" scripts/run511_b2_offer_collector.py --work "$RUNNER_TEMP/run526-stage" --pair-index 4 --plan > "$RUNNER_TEMP/RUN526_PLAN_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run526venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN526_PLAN_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'run526-stage'/'RUN511_STAGE_PLAN.json'
+          d=json.loads(p.read_text())
+          assert d['stage_id']=='p04' and d['fixture_ids']==['Iris','Juniper']
+          assert d['expected_observations']==12 and len(d['row_keys'])==12
+          assert {k[1] for k in d['row_keys']}=={'BASE','RULE_FOCUS'}
+          assert {k[2] for k in d['row_keys']}=={41,42,43}
+          assert d['run509_fixture_sha256']=='ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726'
+          assert d['native_executed'] is False and d['canonical_gate_pass'] is False
+          print('RUN526_P04_FROZEN_12_ROWS_SOURCE_ONLY_READY')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN526_PLAN_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download and verify original pinned public models and runner
+        id: bootstrap
+        if: ${{ steps.plan.outcome == 'success' && steps.plan.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run526installed"
+          timeout -s TERM -k 30s 1500s "$RUNNER_TEMP/run526venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN526_BOOTSTRAP_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run526venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN526_INSTALLED_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          from run496_heldout10_native_pilot import verify_installed
+          result=verify_installed(Path(os.environ['V13_HOME']))
+          assert result['native_executed'] is False
+          print(json.dumps({'status':'ACTUAL_PINNED_MODEL_AND_RUNNER_BYTES_VERIFIED',
+                            'model_sha256':result['model_sha256'],
+                            'runner_sha256':result['runner_sha256'],
+                            'native_library_count':len(result['runtime_library_sha256'])},sort_keys=True))
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN526_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Execute only p04 12 native B2 offers once
+        id: native
+        if: ${{ steps.bootstrap.outcome == 'success' && steps.bootstrap.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run526installed"
+          timeout -s TERM -k 30s 4800s "$RUNNER_TEMP/run526venv/bin/python" scripts/run511_b2_offer_collector.py --work "$RUNNER_TEMP/run526-stage" --pair-index 4 --installed-home "$V13_HOME" --execute > "$RUNNER_TEMP/RUN526_NATIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN526_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent exact source-ref 12-row postflight
+        id: audit
+        if: ${{ steps.native.outcome == 'success' && steps.native.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run526venv/bin/python" scripts/run513_b2_receipt_postflight.py --work "$RUNNER_TEMP/run526-stage" --pair-index 4 > "$RUNNER_TEMP/RUN526_AUDIT_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN526_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Bounded safe no-model JSON export even on RED
+        id: safe
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN526_SAFE_RAW.log" 2>&1
+          import hashlib,json,os,stat
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run526-stage'
+          dest=Path(os.environ['RUNNER_TEMP'])/'run526-safe'
+          dest.mkdir(exist_ok=False)
+          names=['RUN511_STAGE_PLAN.json','RUN511_INSTALLED_PREFLIGHT.json',
+                 'RUN511_PROGRESS.jsonl','RUN511_OBSERVATIONS_RAW.jsonl',
+                 'RUN511_STAGE_RESULT.json','RUN513_POSTFLIGHT.json',
+                 'RUN513_VERIFIED_METRIC_ROWS.json']
+          names += sorted(p.name for p in root.glob('RUN511_PREP_*.json'))
+          copied={};total=0
+          for name in names:
+              p=root/name
+              if not p.exists():continue
+              st=p.lstat()
+              assert stat.S_ISREG(st.st_mode) and st.st_nlink==1 and st.st_size<=10_000_000
+              data=p.read_bytes()
+              if name.endswith('.jsonl'):
+                  for line in data.decode().splitlines():json.loads(line)
+              else:json.loads(data)
+              total+=len(data)
+              assert total<=25_000_000
+              (dest/name).write_bytes(data)
+              copied[name]={'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)}
+          assert 'RUN511_STAGE_PLAN.json' in copied
+          manifest={'status':'SAFE_NO_MODEL_COPY_NOT_NATIVE_PROOF','copied':copied,
+                    'total_bytes':total,'canonical_gate_pass':False,
+                    'step2_exit':'UTILITY_FAIL','redmi_measured':False}
+          (dest/'RUN526_SAFE_MANIFEST.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+          print(json.dumps({'files':len(copied),'bytes':total,'status':manifest['status']}))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN526_SAFE_EXIT.txt"
+          echo "ready=$([ "$rc" -eq 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN526_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN526_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN526_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw SHA256 evidence and partial receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          if [ -d "$RUNNER_TEMP/run526-stage" ]; then
+            for f in "$RUNNER_TEMP"/run526-stage/RUN511_*.json "$RUNNER_TEMP"/run526-stage/RUN511_*.jsonl "$RUNNER_TEMP"/run526-stage/RUN513_*.json; do
+              [ -f "$f" ] || continue
+              cp "$f" "$RUNNER_TEMP/RUN526_STAGE_$(basename "$f")"
+            done
+          fi
+          find . -maxdepth 1 -type f -name 'RUN526_*' ! -name RUN526_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN526_SHA256SUMS.txt
+      - name: Upload raw evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run526-b2-native-p04-raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN526_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload only bounded safe no-model JSON
+        if: ${{ always() && steps.safe.outcome == 'success' && steps.safe.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run526-b2-native-p04-safe-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/run526-safe/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual native and independent postflight
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "${{ steps.deps.outcome }}" = success
+          test "${{ steps.plan.outcome }}" = success
+          test "${{ steps.bootstrap.outcome }}" = success
+          test "${{ steps.native.outcome }}" = success
+          test "${{ steps.audit.outcome }}" = success
+          test "${{ steps.safe.outcome }}" = success
+          test "${{ steps.privacy.outcome }}" = success
+          for n in DEPS PLAN BOOTSTRAP NATIVE AUDIT SAFE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/RUN526_${n}_EXIT.txt")" = 0
+          done
