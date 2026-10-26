@@ -84,7 +84,7 @@ jobs:
           export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run604installed"
           mkdir -p "$RUNNER_TEMP/run604tap"
           timeout -s TERM -k 30s 700s "$RUNNER_TEMP/run604venv/bin/python" scripts/run179_b2_native_tap_probe.py \
-            --model "$V13_HOME/models/Qwen3.5-0.8B-Q4_0.gguf" \
+            --model "$V13_HOME/models/gist/Qwen3.5-0.8B-Q4_0.gguf" \
             --server "$V13_HOME/bin/llama-server" \
             --workdir "$RUNNER_TEMP/run604tap" \
             --output "$RUNNER_TEMP/RUN604_NATIVE_REPORT.json" > "$RUNNER_TEMP/RUN604_NATIVE_RAW.log" 2>&1
