@@ -1,0 +1,103 @@
+{
+  "schema": "V13_RUN508_RETROSPECTIVE_SOURCE_TRANSPORT_DIAGNOSTIC_V1",
+  "date_utc": "2026-10-26",
+  "status": "PARTIAL_NATIVE70_TRANSPORT_DIAGNOSTIC_NO_GATE_PROMOTION",
+  "evidence": {
+    "runs": [
+      499,
+      501,
+      503
+    ],
+    "actions": [
+      40304564958,
+      40305980830,
+      40307435396
+    ],
+    "arm": "C",
+    "seed": 31,
+    "original_fixture_count": 10,
+    "variants": 7,
+    "native_rows": 70,
+    "original_quote_hashes_verified": 70
+  },
+  "comparisons": {
+    "both_none": {
+      "same_consumer_messages": 3,
+      "different_consumer_messages": 7,
+      "identical_fixtures": [
+        "Boreal",
+        "Vesper",
+        "Xenia"
+      ],
+      "mean_utility_difference_on_changed_messages": 0.08333333333333333,
+      "mean_utility_difference_on_identical_messages": 0
+    },
+    "both_control": {
+      "same_consumer_messages": 1,
+      "different_consumer_messages": 9,
+      "identical_fixtures": [
+        "Vesper"
+      ],
+      "mean_utility_difference_on_changed_messages": 0.046296296296296294,
+      "mean_utility_difference_on_identical_messages": 0
+    },
+    "same_policy_dual": {
+      "same_consumer_messages": 0,
+      "different_consumer_messages": 10,
+      "mean_utility_difference_on_changed_messages": 0.2583333333333333
+    },
+    "prompt_only_dual": {
+      "same_consumer_messages": 0,
+      "different_consumer_messages": 10,
+      "mean_utility_difference_on_changed_messages": 0.3083333333333333
+    },
+    "b1_only": {
+      "same_consumer_messages": 0,
+      "different_consumer_messages": 10,
+      "mean_utility_difference_on_changed_messages": 0.25
+    },
+    "b2_only": {
+      "same_consumer_messages": 0,
+      "different_consumer_messages": 10,
+      "mean_utility_difference_on_changed_messages": 0.575
+    }
+  },
+  "b2_rule_quote_coverage": {
+    "b2_only": {
+      "fixtures": 10,
+      "budget_quote_coverage": 2,
+      "deadline_quote_coverage": 3,
+      "local_only_quote_coverage": 0,
+      "all_three_rule_quotes": 0,
+      "any_rule_quote": 3
+    },
+    "both_exact": {
+      "fixtures": 10,
+      "budget_quote_coverage": 3,
+      "deadline_quote_coverage": 2,
+      "local_only_quote_coverage": 0,
+      "all_three_rule_quotes": 0,
+      "any_rule_quote": 3
+    }
+  },
+  "method": {
+    "consumer_identity": "Exact SHA256 of canonical original consumer_messages per fixture and variant",
+    "rule_quote": "Literal substring of original registered Budget/Deadline/Local-only source fragment in concatenated B2_GIST offer.quote strings; does not count semantic paraphrases",
+    "utility": "Original independently recomputed 12-field utility, descriptive means only"
+  },
+  "claim_limits": [
+    "Retrospective partial C_s31 seed31, not a preregistered new intervention",
+    "Identical consumer-message hash proves identical input bytes, not output determinism",
+    "Zero literal local-only quote does not prove B2 lacks semantic rule knowledge",
+    "No causal complementarity or 1050-row acceptance claim"
+  ],
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "next": "Prospectively preregister a fixed role-specific B2 rule quote prompt and test source-bound exact quotes on disjoint fixtures; retain original frozen Run491 evidence unchanged."
+}
