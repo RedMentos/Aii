@@ -1,0 +1,63 @@
+{
+  "run": "Run405",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_FAILED_HISTORY_PRESERVED_NO_NATIVE_COHORT",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run405-step2-failure-history-audit-20261026",
+  "pr": 400,
+  "base": {
+    "branch": "codex/run404-step2-native-stage2-prep-20261026",
+    "sha": "d7cd373ef0954d9659e2a41a8a4cf4c7708b942a",
+    "integration": "stacked review only, not main"
+  },
+  "plan_commit": "37a06eb3f0cb7374c162f3f4eaae29c6e88e3261",
+  "red_tests_commit": "bfd4d98a0d0c9a4c85d1ff465823ee39a39e15dd",
+  "red_workflow_commit": "51a51758129293f03bfd0d69c5c8097ef40befab",
+  "fix_commit": "2152d453a3cc8fca73a0cf03a61aa90214b1b923",
+  "red": {
+    "run": 40251633208,
+    "job": 121344618505,
+    "artifact": 12620517567,
+    "zip_sha256": "eef9bb948b4faf1bcfba0ffa7cf249806e9c94369a94461ac76d52c2a8a340ad",
+    "tests": "84 tests, 5 expected failures",
+    "privacy": "CLEAN"
+  },
+  "green": {
+    "run": 40251684770,
+    "job": 121344767004,
+    "artifact": 12621436052,
+    "zip_sha256": "54e0cc92ae5895096b3ff1936985d2befa811d91afb89f3429fef38e81d0bc21",
+    "tests": "84/84 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "zip_crc": "PASS",
+    "member_sha": "6/6 PASS",
+    "private_byte_identity": "RED and GREEN ZIP SHA MATCH"
+  },
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run405_Failure_History_20261026/",
+  "native_dependency": {
+    "run401_actions": 40250662450,
+    "run401_source_head": "c0facf60c3286064e15bc06de104c85d9344382a",
+    "artifact_id": "UNKNOWN_NOT_YET_OBSERVED",
+    "artifact_sha256": "UNKNOWN_NOT_YET_OBSERVED",
+    "stage2_launched": false
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED",
+    "Age0 approval unchanged",
+    "No Redmi proof",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Run401 actual O_s20 native job still active at checkpoint",
+    "Run402 actual artifact ZIP restore not yet measured",
+    "Run404 actual native P_s20 not yet launched",
+    "Full 378 native rows, STEP2 utility and whole V13 incomplete"
+  ],
+  "next_command": "Inspect GitHub Actions run 40250662450 job and observed artifact; verify SHA/CRC/raw, run Run402 --archive/--expected-sha256, then Run404 preview; launch native P_s20 only after no active native owner",
+  "next_prerequisites": "Run401 completion, exact artifact ID/digest and raw; no concurrent native owner; deep verified registered models"
+}
