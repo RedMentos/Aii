@@ -25,7 +25,7 @@ class PortableSelftestContract(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr[-4000:])
             self.assertIn("PORTABLE_SELFTEST", result.stdout)
             self.assertIn("NOT full regression", result.stdout)
-            self.assertIn("Ran 27 tests", result.stderr)
+            self.assertIn("Ran 94 tests", result.stderr)
             self.assertNotIn("FAILED", result.stderr)
             self.assertNotIn("No module named 'torch'", result.stderr)
 
@@ -54,7 +54,7 @@ class PortableSelftestContract(unittest.TestCase):
              patch("v13.__main__.unittest.TextTestRunner") as runner:
             runner.return_value.run.return_value = Fake()
             self.assertEqual(main(["--home", home, "selftest", "--portable"]), 1)
-            self.assertEqual(loader.call_count, 3)
+            self.assertEqual(loader.call_count, 12)
 
 
 if __name__ == "__main__":

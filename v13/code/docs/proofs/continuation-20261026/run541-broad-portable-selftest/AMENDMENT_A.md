@@ -1,0 +1,5 @@
+# Run541 amendment A — preserve first RED and repair exact allowlist count
+
+Original PR #540 head `ae1541c9d4038cebeb0dd5921b15823b2decb8ff`, Actions `40332074043` **FAILURE**, raw artifact `12654949061` SHA256 `f559afa5e1e8fcb8559df7c8351c5cace2d26fb4f09cff81395d3eaba1eb618f`. Original raw manifest verifies. Isolated CLI contract ran 3 tests, 1 failed: the test expected `loadTestsFromName` to be called three times even though the explicit portable allowlist was expanded to twelve modules. The actual 94-check subprocess passed locally; CI's ZIP stage was correctly not executed after the failing test. No claim of new ZIP/CI PASS.
+
+Correction, before edit: update only the exact loader call-count assertion from 3 to 12 in `tests/test_run540_portable_selftest.py`, update workflow source pin, rerun one-shot. Keep 94 checks, original raw RED, original frozen gates, and full-suite RED unchanged. This is a test assertion stale after a preregistered allowlist expansion, not a runtime relaxation.
