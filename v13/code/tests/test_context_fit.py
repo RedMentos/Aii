@@ -169,6 +169,39 @@ class ContextFitTests(unittest.TestCase):
             finally:
                 second.close()
 
+    def test_final_planner_view_cannot_escape_exact_budget(self):
+        vol,text=layers(questions=0,hyps=1,quotes=1)
+        calls=[]
+        def native(messages):
+            calls.append(messages)
+            return 9000 if messages[0]["content"].startswith("planner-expanded") else 100
+        _,fitted=F.fit("active","rules",vol,[],text,native,200,force_exact=True)
+        self.assertTrue(fitted["fits"])
+        final=[{"role":"system","content":"planner-expanded with additional volatile state"},
+               {"role":"user","content":text}]
+        with self.assertRaisesRegex(ValueError,"EXACT_FINAL_CONTEXT_OVERFLOW"):
+            F.require_final_exact(final,native,200)
+        self.assertEqual(len(calls),2)
+
+    def test_final_exact_refuses_counter_error_and_invalid_counts(self):
+        messages=[{"role":"user","content":"test"}]
+        def unavailable(_):raise OSError("native tokenizer disconnected")
+        with self.assertRaises(OSError):
+            F.require_final_exact(messages,unavailable,100)
+        for bad in (-1,float("nan"),"5",True):
+            with self.subTest(bad=bad):
+                with self.assertRaisesRegex(ValueError,"EXACT_FINAL_COUNT_INVALID"):
+                    F.require_final_exact(messages,lambda _:bad,100)
+        self.assertEqual(F.require_final_exact(messages,lambda _:100,100),100)
+
+    def test_exact_mode_rejects_unverified_causal_decoder_budget(self):
+        self.assertIsNone(F.require_native_count_compatible("C3_LANGUAGE","server"))
+        self.assertIsNone(F.require_native_count_compatible("B1_DETAIL","same_causal_zero"))
+        for mode in ("same_causal_zero","same_causal"):
+            with self.subTest(mode=mode):
+                with self.assertRaisesRegex(ValueError,"EXACT_COUNT_CAUSAL_MODE_UNVERIFIED"):
+                    F.require_native_count_compatible("C3_LANGUAGE",mode)
+
     def test_budget_matches_runner_rule(self):
         self.assertEqual(F.budget({'context_tokens':2048,'answer_tokens':256}),2048-256-16)
 

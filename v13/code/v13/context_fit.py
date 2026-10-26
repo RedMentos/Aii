@@ -101,6 +101,30 @@ def fit(mode,stable,volatile,history,text,count,limit,force_exact=False):
         report['applied']=True;return work,report
     return volatile,report
 
+
+
+def require_native_count_compatible(role,decode_mode):
+    """The causal-stream C3 path has a separate 512-token ABI/template.
+
+    Its native prefill is not proven equivalent to LlamaRunner.prompt_tokens.
+    An operator-requested EXACT claim must not silently use the server count.
+    """
+    if role=="C3_LANGUAGE" and decode_mode!="server":
+        raise ValueError("EXACT_COUNT_CAUSAL_MODE_UNVERIFIED")
+
+def require_final_exact(messages,count,limit):
+    """Check the ACTUAL final planner view, not only the pre-plan fitted view.
+
+    The operator opt-in must not accept an over-budget Context OS rewrite or
+    a missing native tokenizer. Never substitute a character estimate here.
+    """
+    tokens=count(messages)
+    if type(tokens) is not int or tokens<0:
+        raise ValueError("EXACT_FINAL_COUNT_INVALID")
+    if tokens>limit:
+        raise ValueError("EXACT_FINAL_CONTEXT_OVERFLOW")
+    return tokens
+
 def counter(runner,cancel,deadline,strict=False):
     """Exact token count through the runner's own template + tokenizer when available, else the char estimate.
     The returned callable records per call whether the count was native ('EXACT') or a fallback ('ESTIMATE') in ``.sources``."""

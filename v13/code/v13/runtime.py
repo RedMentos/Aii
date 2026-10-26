@@ -497,13 +497,32 @@ class Runtime:
                     count,how=ctxfit.counter(runner,self.cancel_event,deadline,strict=exact_count)
                     volatile,fitrep=ctxfit.fit(self.cfg.get('context_fit','active'),stable,volatile,history,text,count,ctxfit.budget(self.cfg),force_exact=exact_count)
                     if not fitrep.get('quick'):meta['context_fit']=fitrep|{'count':how};self.store.log('context_fit',eid,meta['context_fit'])
-                except Exception as exc:self.store.log('context_fit_unavailable',eid,{'error':type(exc).__name__})
+                except Exception as exc:
+                    self.store.log('context_fit_unavailable',eid,{'error':type(exc).__name__})
+                    if exact_count:
+                        raise Unavailable('EXACT_CONTEXT_FIT_UNAVAILABLE:'+
+                                          type(exc).__name__) from exc
                 sys=stable+''.join(head+dumps(body) for _,head,body in volatile)
                 messages=[{'role':'system','content':sys}]+history+[{'role':'user','content':text}]
                 try:  # WP-N7 Context OS: SHADOW logs the plan next to this legacy view; ACTIVE hands the planned view over
                     cplan=ctxos.controller(self).plan(eid,runner.role,stable,volatile,history_records,text,verdicts=[x['verdict'] for x in focal_run['inquisition']] if focal_run else [],warm_ids=warm_ids,provenance=[e['source_ref']],budget_scale=body['modulation'].get('context_budget_scale',1.))
                     messages=cplan['messages'];meta['context_plan']={'packet_id':cplan['packet_id'],'applied':cplan['applied']}
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
+                if exact_count:
+                    try:
+                        ctxfit.require_native_count_compatible(
+                            runner.role,self.cfg.get('c3_decode_mode','server'))
+                        final_tokens=ctxfit.require_final_exact(
+                            messages,count,ctxfit.budget(self.cfg))
+                        meta['context_fit_final']={'tokens':final_tokens,
+                            'count_source':'MEASURED','post_context_os':True,
+                            'fits':True}
+                        self.store.log('context_fit_final',eid,meta['context_fit_final'])
+                    except Exception as exc:
+                        self.store.log('context_fit_final_unavailable',eid,
+                                       {'error':type(exc).__name__})
+                        raise Unavailable('EXACT_FINAL_CONTEXT_UNVERIFIED:'+
+                                          type(exc).__name__) from exc
                 try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context
                 except Exception as exc:self.store.log('context_save_failed',eid,{'error':type(exc).__name__})
                 context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
