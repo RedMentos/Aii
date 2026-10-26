@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import run394_step2_fresh as r394
 import run397_step2_resume as resume
+from step2_z2_timescale import harness
 from tests.test_run396_step2_pilot_audit import make_synthetic, write
 
 
@@ -28,6 +29,7 @@ def synthetic_source(folder):
         role_models = {"B1_DETAIL": "body", "B2_GIST": "body" if arm == "S" else "gist",
                        "C3_LANGUAGE": "language"}
         source.update(installed_artifacts_unchanged=True, phone_measured=False, canonical_gate_pass=False)
+        source["source_hashes"] = harness().source_hashes()
         source["installed_artifacts"] = {
             "model_sha256": {role: spec[key]["files"][0]["sha256"] for role, key in role_models.items()},
             "model_revisions": {role: spec[key]["revision"] for role, key in role_models.items()},
@@ -171,6 +173,26 @@ class Run397ResumeTests(unittest.TestCase):
         self.assertEqual(fake.calls.count("S_s20"), 1)
         self.assertTrue((self.work / "attempts/P_s20/attempt-0002/RUN397_ATTEMPT.json").exists())
         self.assertIn("P_s20", second["failures_preserved"])
+
+    def test_reject_forged_recorded_runtime_source_hash(self):
+        rid = "O_s20"
+        source_path = self.native / f"step2_{rid}.json"
+        source = resume.audit.load(source_path)
+        first = next(iter(source["source_hashes"]))
+        source["source_hashes"][first] = "0" * 64
+        write(source_path, source)
+        prereg_path = self.native / f"tool_{rid}.preregistration.json"
+        prereg = resume.audit.load(prereg_path)
+        prereg["source_report"]["sha256"] = resume.audit.sha(source_path)
+        write(prereg_path, prereg)
+        tool_path = self.native / f"tool_{rid}.json"
+        tool = resume.audit.load(tool_path)
+        tool["preregistration_sha256"] = resume.audit.sha(prereg_path)
+        write(tool_path, tool)
+        fixtures = [f for f in r394.FIXTURES if f["id"] in r394.PILOT_IDS]
+        manifest = resume.checked_manifest(self.work, fixtures, list(r394.ARMS), [20], True)
+        with self.assertRaisesRegex(ValueError, "RECORDED_RUNTIME_SOURCE_HASH_MISMATCH"):
+            resume.validate_completed(self.native, "O", 20, fixtures, manifest)
 
     def test_reject_forged_recorded_model_hash_even_when_rows_rehashed(self):
         rid = "O_s20"
