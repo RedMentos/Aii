@@ -76,10 +76,21 @@ def _components(r,role):
     return {name:dict(e) for name,e in comps.items() if e.get('encoder_role')==role or role in (e.get('dependency_revisions') or {})}
 
 
+def _bridge_root(r):
+    """Bridge paths are local checkpoint state, never an external symlink target."""
+    d=r.home/'b3'
+    if d.is_symlink() or not d.resolve().is_relative_to(r.home.resolve()):
+        raise ValueError('BRIDGE_DIRECTORY_SYMLINK_OR_ESCAPE')
+    return d
+
+
 def _bridges(r,role):
-    d=r.home/'b3';out={}
+    d=_bridge_root(r);out={}
     for p in sorted(d.glob('*.json')) if d.is_dir() else []:
-        if role in direction_roles(p.stem):out[p.name]=file_hash(p)
+        if role in direction_roles(p.stem):
+            if p.is_symlink() or not p.is_file() or p.stat().st_nlink!=1:
+                raise ValueError('BRIDGE_FILE_SYMLINK_OR_UNSAFE')
+            out[p.name]=file_hash(p)
     return out
 
 
@@ -162,9 +173,12 @@ def listing(r):
 
 
 def _file_status(path,expected_hash):
-    """Inspect artifact bytes, rather than treating generation metadata as proof of their existence."""
+    """Inspect actual regular artifact bytes; a symlinked backup is never intact."""
+    if path.is_symlink():return 'CHANGED'
     if not path.is_file():return 'MISSING'
-    try:return 'IDENTICAL' if file_hash(path)==expected_hash else 'CHANGED'
+    try:
+        if path.stat().st_nlink!=1:return 'CHANGED'
+        return 'IDENTICAL' if file_hash(path)==expected_hash else 'CHANGED'
     except OSError:return 'CHANGED'
 
 
