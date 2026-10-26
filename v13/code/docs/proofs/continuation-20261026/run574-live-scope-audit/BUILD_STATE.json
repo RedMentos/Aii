@@ -1,0 +1,41 @@
+{
+  "schema": "V13_RUN574_LIVE_SCOPE_SOURCE_ONLY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "assistant Run574 independent causal scope audit",
+  "branch": "assistant/v13-run574-live-scope-audit-20261026",
+  "base_head": "a1c235372f1aa1155e8dbeb9bd2baebd4f99385a",
+  "prereg": {
+    "commit": "04fe7e6a0fe5d3b3085a785360fa8f265aaea8c9",
+    "blob": "6c13b9956b79015d4d0dd4457987ecdf7a42c2dc"
+  },
+  "script": {
+    "commit": "83d9af177262bd6454b44c41abff89e40dfb99b7",
+    "blob": "12367f02d35438cc743265f04affa551f70be09a"
+  },
+  "tests": {
+    "commit": "bdcb96e27df34bb810fca9bec01f082e490dfbcf",
+    "blob": "d5691116fb8b8490f6e66805498cb3bf16106412"
+  },
+  "workflow": {
+    "commit": "1d0da397d6b70b0aa864c916efb54076c8702199",
+    "blob": "25048b351eb04e00470666dfec692818cf1102cf"
+  },
+  "scope": "BODY_OFFER_PLUS_FROZEN_C3_REPLAY_ONLY; not actual Runtime.submit/_turn live",
+  "source_only": true,
+  "native_executed": false,
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Run574 exact-head source CI not yet run",
+    "True disjoint Runtime.submit/_turn current-default vs legacy native cohort still required",
+    "Run568 original native pending, Run569 independent audit pending",
+    "Run572 dormant native must be labeled limited to frozen C3 tool replay"
+  ],
+  "next_exact_command": "Open draft PR Run574 base Run573; run source-only AST scope tests and privacy; if GREEN add explicit Run572 PR limitation before any activation. Separately design true live Runtime.submit/_turn cohort; do not infer from frozen C3 replay."
+}
