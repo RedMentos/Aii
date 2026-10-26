@@ -267,6 +267,12 @@ class LlamaRunner:
             if len(tokens)+reserve+16<=self.cfg["context_tokens"]:return p,len(tokens),truncated
             if len(work)>2:work.pop(1);truncated=True
             else:raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
+    def prompt_tokens(self,messages,cancel,deadline):
+        """WP-Z5d: exact prompt length (same template + tokenizer as generate), without truncation."""
+        if self.purpose!='generate':raise Unavailable('Nur Generation-Runner zählen Prompt-Tokens')
+        self.load(cancel,deadline);check(cancel,deadline)
+        p=self._json("POST","/apply-template",{"messages":[dict(x) for x in messages],"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]
+        return len(self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"])
     def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
         if self.purpose!='generate':raise Unavailable('Tap-Runner erzeugt keine Antworten; Generation-Runner anfordern')
         audit_requested=self.cfg.get('native_memory_audit',False) is True

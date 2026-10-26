@@ -24,6 +24,7 @@ from .world import WorldState
 from .executive import Executive
 from .pressure import NativePressureMonitor
 from . import effort
+from . import context_fit as ctxfit
 from .prompts import text as prompt
 from .inputs import save_context
 from . import age as agectl
@@ -490,8 +491,13 @@ class Runtime:
                     ho=duplex.handoff(self,eid)
                     if ho:volatile.append(('DUPLEX_HANDOFF','\n'+prompt(self.cfg,'duplex_handoff'),ho['body']));meta['duplex_handoff_refs']=ho['source_refs']
                 except Exception as exc:self.store.log('duplex_unavailable',eid,{'stage':'handoff','error':type(exc).__name__})
-                sys=stable+''.join(head+dumps(body) for _,head,body in volatile)
                 history=[{'role':m['role'],'content':m['text']} for m in history_records]
+                try:  # WP-Z5d: long sessions must not overflow the native window; cut old thoughts first (only when it does not fit)
+                    count,how=ctxfit.counter(runner,self.cancel_event,deadline)
+                    volatile,fitrep=ctxfit.fit(self.cfg.get('context_fit','active'),stable,volatile,history,text,count,ctxfit.budget(self.cfg))
+                    if not fitrep.get('quick'):meta['context_fit']=fitrep|{'count':how};self.store.log('context_fit',eid,meta['context_fit'])
+                except Exception as exc:self.store.log('context_fit_unavailable',eid,{'error':type(exc).__name__})
+                sys=stable+''.join(head+dumps(body) for _,head,body in volatile)
                 messages=[{'role':'system','content':sys}]+history+[{'role':'user','content':text}]
                 try:  # WP-N7 Context OS: SHADOW logs the plan next to this legacy view; ACTIVE hands the planned view over
                     cplan=ctxos.controller(self).plan(eid,runner.role,stable,volatile,history_records,text,verdicts=[x['verdict'] for x in focal_run['inquisition']] if focal_run else [],warm_ids=warm_ids,provenance=[e['source_ref']],budget_scale=body['modulation'].get('context_budget_scale',1.))
