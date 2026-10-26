@@ -2,7 +2,7 @@
   "run": "Run624",
   "date_utc": "2026-10-26T23:08:00Z",
   "owner": "GPT-6 automation run; exclusive file ownership sleep_offline.py, test_run624_sleep_session_fairness.py, run624 workflow and scoped proof",
-  "status": "SOURCE_COMMITTED_CI_RUNNING",
+  "status": "EXACT_HEAD_RED_GREEN_PASS_PRIVATE_RAW_VERIFIED",
   "parent_pr": 618,
   "parent_head": "608d7be0b214e66771ae70cba2d61c8b3a95a6a5",
   "review_pr": 619,
@@ -12,8 +12,8 @@
   "source_commit": "752d5769150fdc5e67ae831dbcf2bbae7243b5e8",
   "workflow_commit": "baace29c87971e13f21f440a2a861901d0db875d",
   "source_blob": "0525bffc887efd91a26a67f94a38f7eab2cdfd0f",
-  "test_blob": "a7c59e6541e4a47ff89927ab78b619dcbaf88f2c",
-  "workflow_blob": "5eeaad559829995d551623fb8635bda778fb0b83",
+  "test_blob": "bea79648409efc7d6f23fa02a110a74fa09ea5a7",
+  "workflow_blob": "3e7ba542f9d072b90029e65adad9ecb541107c87",
   "original_source_blob": "4ad4e4382b73f7ee2189e1d2e6d05a5d09b6ac9c",
   "prereg_blob": "05811fc387505866256350814c0ef4c4a3d3312c",
   "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
@@ -28,9 +28,9 @@
     "Run624 source/test/workflow remote readback SHA verified; no local cloned checkout"
   ],
   "pending": [
-    "Run624 Actions original RED/patched GREEN/privacy and closed raw artifact verification",
-    "independent source review; source-only no Redmi/native proof",
-    "future substantive Context OS/learning packages"
+    "Independent review and merge decision; no main integration",
+    "Exact-current source-only Termux ZIP with extracted SQLite parity",
+    "Separate native body-learning and semantic utility experiments; Redmi remains unavailable"
   ],
   "negative_gates": {
     "STEP2": "UTILITY_FAIL",
@@ -40,6 +40,24 @@
     "Redmi": "UNMEASURED",
     "V13_complete": false
   },
-  "next_command": "Inspect https://api.github.com/repos/RedMentos/Aii/actions/runs/40417577666 and /jobs, read Run624 raw test/privacy evidence; if failed fix source or workflow without rewriting frozen prereg; checkpoint report, then select next independent canonical package.",
-  "backup": "Public review branch PR619 only (source+workflow+prereg); raw private archive not yet downloaded; no Drive write attempted."
+  "next_command": "Use exact Run624 reviewed branch HEAD and Run622 pinned packager/Run268 independent verifier to build an exact-current source-only Termux ZIP; run extracted SQLite fairness and negative gates; checkpoint raw and hashes, then next canonical package.",
+  "backup": "Private Library /V13-Checkpoints/2026-10-27/Run624/ has both original failed and successful exact-head Actions ZIPs; both SHA manifest verified and byte-roundtrip PASS; GitHub review PR619 contains source/tests/prereg/CI/report.",
+  "verified_ci": {
+    "run_id": 40418239872,
+    "checkout_head": "0e59091f5f09fa39adbe100031f470c6fc3f12d4",
+    "conclusion": "success",
+    "original_red_exit": 1,
+    "patched_green_exit": 0,
+    "patched_tests": "18/18",
+    "privacy": "CLEAN",
+    "privacy_exit": 0,
+    "success_artifact_id": 12696475583,
+    "success_zip_sha256": "1b0a10116bde87b37bacf5937775f43e4d0b0a23b6e4533479162925fcf5b7a4",
+    "failed_attempt_artifact_id": 12696285507,
+    "failed_zip_sha256": "6922f4f56bc8c4d0be74277109bd83c3e35b1e40e7b9a9ed5cb522b728c67129",
+    "manifest_entries_verified": 10,
+    "private_library_roundtrip": "PASS"
+  },
+  "test_correction_commit": "5265c190c03af34ee982d96c3f2b83db391c660f",
+  "workflow_last_commit": "0e59091f5f09fa39adbe100031f470c6fc3f12d4"
 }
