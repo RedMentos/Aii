@@ -64,7 +64,7 @@ jobs:
           d=json.loads((Path(os.environ['RUNNER_TEMP'])/'PHONE_ZIP_VERIFY.json').read_text())
           assert d['evidence_scope']=='LINUX_SOFTWARE_SOURCE_PACKAGE_INTEGRITY'
           assert d['native_model_inference'] is False and d['redmi_measured'] is False
-          assert d['canonical_gate_pass'] is False if 'canonical_gate_pass' in d else True
+          assert 'canonical_gate_pass' not in d or d['canonical_gate_pass'] is False
           assert d['gates']['STEP2']=='UTILITY_FAIL' and d['gates']['B3_L1']=='FAIL'
           assert d['gates']['Body_JEPA']=='UNAVAILABLE' and d['gates']['jepa_weight']==0
           print('PHONE_SOURCE_BYTES_AND_NEGATIVE_GATES_INDEPENDENTLY_VERIFIED')
