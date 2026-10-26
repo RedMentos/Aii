@@ -1,0 +1,12 @@
+{
+  "schema": "V13_RUN432_RED2_CLOSED_V1",
+  "date_utc": "2026-10-26",
+  "red2_head": "f85e2c87de2af3afcf70307fbe6357baf27ea8b6",
+  "red2_actions": 40265268706,
+  "red2_artifact_id": 12625894191,
+  "red2_artifact_zip_sha256": "942e4c511b74f548db4f7c42678db86ed8387a26f13c880abed4595c4ea7fc96",
+  "tests": "41 total; 4 expected failures: NaN bias, NaN threshold, -Infinity active weight, nonfinite JSON loader",
+  "privacy": "CLEAN, using pinned scanner copied unchanged from Run430 blob dc5dfdc2b711cc0ec75b7c271be9e3a6de368126",
+  "frozen_classifier_weights_changed": false,
+  "next_command": "Fix userrules_second.py with finite JSON/schema validation and finite score/threshold guards. Preserve K8 no-loosening, default jef and USER_RULES_V8_UNSAFE. Rerun 41 source tests and privacy."
+}
