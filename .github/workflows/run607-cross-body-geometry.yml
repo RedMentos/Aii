@@ -4,7 +4,7 @@ on:
     branches:
       - codex/automation11-run613-cross-body-fusion-20261026
     paths:
-      - '.github/workflows/run613-cross-body-fusion.yml'
+      - '.github/workflows/run607-cross-body-geometry.yml'
       - 'v13/code/scripts/run613_cross_body_fusion_offline.py'
       - 'v13/code/tests/test_run613_cross_body_fusion_offline.py'
       - 'v13/code/docs/proofs/continuation-20261026/run613-cross-body-fusion/**'
@@ -42,7 +42,7 @@ jobs:
         working-directory: v13/code
         run: |
           set +e
-          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run613venv/bin/python" -m unittest -v tests.test_run613_cross_body_geometry > "$RUNNER_TEMP/RUN613_FIXTURE_RAW.log" 2>&1
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run613venv/bin/python" -m unittest -v tests.test_run613_cross_body_fusion_offline > "$RUNNER_TEMP/RUN613_FIXTURE_RAW.log" 2>&1
           rc=$?
           echo "$rc" > "$RUNNER_TEMP/RUN613_FIXTURE_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
