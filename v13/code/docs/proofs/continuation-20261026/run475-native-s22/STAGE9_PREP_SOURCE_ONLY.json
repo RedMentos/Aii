@@ -1,0 +1,42 @@
+{
+  "schema": "V13_RUN475_STAGE9_SOURCE_ONLY_PREPARATION_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run475-native-s22-20261026",
+  "base_sha": "27261aa1d6cb8acdd94e08b9827ce4e44fd839b4",
+  "owner": "Run475 source-only preparation; no native Stage9 owner until Run473 independent 336 evidence",
+  "blocked_on": "Run473 Actions 40277803560 P_s22 native execution and independent Run465 336-row proof; original safe336/raw ZIP artifacts and hashes not yet available",
+  "source_git_blobs": {
+    "v13/code/scripts/run466_import_stage8_artifact.py": "2444c92ec60447adff906db93bfd5effd4dc1edc",
+    "v13/code/scripts/run467_stage9_s22.py": "0fdd14fd73d5122c9f39c6cc08c8d1b2adbbb8b2",
+    "v13/code/scripts/run468_verify_native378.py": "eedc307a6e6f3c36fea43894dcfa41e983fa4c74"
+  },
+  "local_source_tests": {
+    "source": "verified Run470 source archive with exact pinned source files",
+    "tests": "35/35 PASS",
+    "modules": [
+      "tests.test_run466_native336_atomic_import",
+      "tests.test_run467_stage9_s22",
+      "tests.test_run468_verify_native378_adversarial"
+    ],
+    "raw_log_sha256": "8c783d3682c14cde054c920778d63fb08221d90f25396f711510e121859f1e04"
+  },
+  "premature_execution_negative": {
+    "input": "actual safe294 ZIP plus original Stage7 report",
+    "status": "STAGE9_RED_PRESERVED",
+    "error": "NATIVE_336_NOT_GREEN",
+    "exit_code": 2,
+    "work_created": false,
+    "report_sha256": "11e6b1516e7283499e5a8e47e811b660e072a66523386304ea4f5decadfe1b08"
+  },
+  "next_native_arm": "S_s22",
+  "target_rows_after_success": 378,
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "canonical_gate_pass": false,
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "exact_next_command": "Wait for Run473 40277803560 completion, download original safe336 and raw artifacts via GitHub, verify outer/member SHA256 and Stage8/Run465 reports, then create SHA-pinned one-shot serialized Stage9 workflow and PR based on current verified Run473 chain; do not run S_s22 before proof."
+}
