@@ -127,6 +127,20 @@ class Run413ExportReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "PROGRESS_FALSE_PROMOTION"):
             gate.verify(self.root, self.report)
 
+    def test_directory_inventory_must_match_actual_tree(self):
+        self.manifest["directories"].pop()
+        self.reseal()
+        with self.assertRaisesRegex(ValueError, "DIRECTORY_INVENTORY_MISMATCH"):
+            gate.verify(self.root, self.report)
+
+    def test_registered_model_hash_rejected_even_under_innocent_filename(self):
+        from unittest import mock
+        disguised = next(iter(self.manifest["copied"].values()))["sha256"]
+        with mock.patch.object(gate, "registered_model_hashes",
+                               return_value={disguised}):
+            with self.assertRaisesRegex(ValueError, "EXPORT_HASH_OR_MODEL_IDENTITY_MISMATCH"):
+                gate.verify(self.root, self.report)
+
     def test_manifest_tamper_and_bad_omission_fail(self):
         d = copy.deepcopy(self.report)
         d["safe_export"]["manifest_sha256"] = "a" * 64
