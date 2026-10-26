@@ -28,8 +28,8 @@
     "script": "d2a5f4708c1f77ec14496ddab60ce072592d3fda",
     "tests": "6fae51d5b44510d9dc3af234d03cb30042276387"
   },
-  "evidence": "SOURCE_ONLY_CI_PENDING_NO_NATIVE",
-  "heavy_owner": "Run507 PR505 native job 40309409260 in progress at last check",
+  "evidence": "SOURCE_ONLY_GREEN_35_TESTS_FIVE_PLANS_PRIVACY_CLEAN",
+  "heavy_owner": "Run507 PR505 native job 40309409260 completed SUCCESS; independent offline review 42/42 source rows pending GitHub checkpoint",
   "gates": {
     "step2": "UTILITY_FAIL",
     "b3_l1": "FAIL",
@@ -43,6 +43,30 @@
     "Run507 heavy native job remains separate owner",
     "Redmi unavailable"
   ],
-  "next_command": "Open draft PR against Run512 branch, inspect Run513 source-only Actions and raw SHA evidence; repair any RED, then independently audit Run507 native job when complete.",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Persist independent Run507 42-row cross-review (raw/safe ZIPs privately backed up), then select next native/utility package after owner check; Run513 remains source-only, no native B2 quote observations.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "ci": {
+    "first_red": {
+      "run": 40312422295,
+      "reason": "PR base SHA 2424c59... sibling commit absent from shallow checkout; privacy scan exit 2, not a privacy finding",
+      "test_count_pass": 35,
+      "plan_exit": 0,
+      "privacy_exit": 2,
+      "artifact": 12645277395,
+      "raw_zip_sha256": "a91e06a66946466178e72d766a2ac2f7ae69dc1b9a75ead5f31512b7056f1fb8",
+      "private_backup": "/V13_Run513_FIRST_RED_20261026_shaA91E06A6.zip"
+    },
+    "green": {
+      "run": 40312547921,
+      "head": "f57b852b52effbaa65d7b969e87c19f885f094d8",
+      "tests_pass": 35,
+      "plans": 5,
+      "planned_rows": 60,
+      "privacy": "CLEAN",
+      "artifact": 12645531199,
+      "raw_zip_sha256": "55e68556ea9290e098a68b9a121ceb8c5d08236f06cb7ce34c05a43588cdc2e7",
+      "manifest_entries_verified": 11,
+      "private_backup": "/V13_Run513_SOURCE_ONLY_GREEN_20261026_sha55E68556.zip"
+    }
+  }
 }
