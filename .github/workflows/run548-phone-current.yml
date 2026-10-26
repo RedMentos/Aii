@@ -1,0 +1,150 @@
+name: V13 Run548 current source Termux ZIP and extracted portable checks
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run548-phone-current.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run548-phone-current/**'
+permissions:
+  contents: read
+jobs:
+  package:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run548-phone-current-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify current exact source and prereg
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN548_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run548-phone-current/PREREG.md)" = 'cabae55a3b40eeb9f05061d0b692d124b76dca15'
+          test "$(git hash-object v13/code/scripts/integrated_candidates.py)" = '9ba7ea2eca522304b05a347ac749f0dff95c5236'
+          test "$(git hash-object v13/code/scripts/current_source_lineage_run357.py)" = '3a312d1a53ad682610f51b8371895bbdc379ed2f'
+          test "$(git hash-object v13/code/v13/agi/metacog.py)" = 'd20542e2ecc7cfbdedbed629afc80fc8bab1f8f0'
+          test "$(git hash-object v13/code/tests/test_run546_metacog_labels.py)" = 'fb9948f137ebf1018b12d8ef01dd94f2b0e4e234'
+          test "$(git hash-object v13/code/scripts/package_source.py)" = '06167e0bcb82b36cb08841cd31b9618c4ba0926e'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN548_HOST.txt"
+      - name: Isolated portable dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run548venv"
+          timeout 240s "$RUNNER_TEMP/run548venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN548_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run548venv/bin/python" -c "import importlib.util; assert importlib.util.find_spec('torch') is None" >> "$RUNNER_TEMP/RUN548_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN548_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Current source focused JEF validation
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD"
+          timeout 240s "$RUNNER_TEMP/run548venv/bin/python" -m unittest -v tests.test_run546_metacog_labels tests.test_current_source_lineage_run357 tests.test_run177_native_chain_reconcile_20261025 > "$RUNNER_TEMP/RUN548_TESTS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN548_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Package exact source with existing phone packer and independent verifier
+        id: pack
+        if: ${{ steps.tests.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run548venv/bin/python" scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run548.zip" --phone-install > "$RUNNER_TEMP/RUN548_PACK_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run548venv/bin/python" scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Run548.zip" --root . --out "$RUNNER_TEMP/RUN548_VERIFY.json" >> "$RUNNER_TEMP/RUN548_PACK_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            sha256sum "$RUNNER_TEMP/V13-Phone-Run548.zip" > "$RUNNER_TEMP/RUN548_ZIP_SHA256.txt"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN548_PACK_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Extract and run 94 portable phone checks without torch or models
+        id: extracted
+        if: ${{ steps.pack.outputs.rc == '0' }}
+        run: |
+          set -uo pipefail
+          set +e
+          mkdir -p "$RUNNER_TEMP/run548_extract"
+          unzip -q "$RUNNER_TEMP/V13-Phone-Run548.zip" -d "$RUNNER_TEMP/run548_extract" > "$RUNNER_TEMP/RUN548_EXTRACT_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            export PYTHONPATH="$RUNNER_TEMP/run548_extract/V13-Phone"
+            cd "$RUNNER_TEMP/run548_extract/V13-Phone"
+            timeout 240s "$RUNNER_TEMP/run548venv/bin/python" -m v13 --home "$RUNNER_TEMP/run548_home" selftest --portable >> "$RUNNER_TEMP/RUN548_EXTRACT_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN548_EXTRACT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN548_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN548_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN548_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw evidence SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN548_*' ! -name RUN548_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN548_SHA256SUMS.txt
+      - name: Preserve verified phone source ZIP
+        if: ${{ steps.pack.outputs.rc == '0' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Phone-Run548-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/V13-Phone-Run548.zip
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve all raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run548-phone-raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN548_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source package and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN548_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN548_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN548_PACK_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN548_EXTRACT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN548_PRIVACY_EXIT.txt")" = 0
