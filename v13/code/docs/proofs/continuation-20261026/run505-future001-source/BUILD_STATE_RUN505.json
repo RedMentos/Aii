@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN505_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run505-future001-batch-source-20261026",
+  "base_branch": "codex/run504-heldout980-remaining-map-20261026",
+  "base_sha": "bcd795bd79e3e0fbca5b84d91a9606373e50fc72",
+  "status": "SOURCE_CI_GREEN_INDEPENDENT_BATCH_PLAN_VERIFIED",
+  "scope": {
+    "batch_id": "FUTURE_001",
+    "stage_ids": [
+      "A_s31_p00",
+      "A_s31_p01",
+      "A_s31_p02"
+    ],
+    "arm": "A",
+    "seed": 31,
+    "planned_rows": 42,
+    "actual_run505_native_rows": 0,
+    "remaining_cohort_rows_planned": 980
+  },
+  "source": {
+    "run491_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "run500_blob": "504a4a8492bdb383869b164b82c05d13e00f6823",
+    "run502_blob": "5c01768ccedbe63cb3c2eebde5a75347e3a67abd",
+    "run504_blob": "5f447908ec6197760d55c347ffb949ae42ad1ed8",
+    "run505_script_blob": "8694c566247a6709d80a504ad172c608889775d6",
+    "run505_test_blob": "097e2346db176f21b025947193cfc4db2ad431e2",
+    "prereg_blob": "9345f32b0a40c6c7f9e9d53954265c8f89d6bc06"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run505 prereg committed before implementation",
+    "No Run505 native execution, model download or paid provisioning",
+    "Run503 native Actions 40307435396 separate owner; do not overlap",
+    "Run505 source-only Actions 40308650823 GREEN, 23 tests, privacy CLEAN",
+    "Downloaded source artifact 12644225026, independently verified 9 SHA256 entries, exact 42 unique keys, frozen full-map and schedule hashes",
+    "Private Library ZIP backup succeeded, source remote verified; no Run505 model execution"
+  ],
+  "blockers": [
+    "Run503 native 42-row postflight pending",
+    "Full 1050-row STEP2 cohort incomplete",
+    "Redmi unavailable"
+  ],
+  "next_command": "Inspect Run503 native Actions 40307435396. On completion download raw/safe artifacts, verify SHA manifest and independently rescore all 42 rows; only if GREEN and no heavy owner, preregister separate FUTURE_001 native workflow. In parallel implement original 1050-row acceptance evaluator source-only.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "evidence": {
+    "actions_run": 40308650823,
+    "conclusion": "success",
+    "tests_passed": 23,
+    "privacy": "CLEAN",
+    "artifact_id": 12644225026,
+    "artifact_zip_sha256": "7f66d7ec278ecee7a254264c8324162b30f97bd0fb0f3798f25dc279db021ebb",
+    "raw_sha256_entries": 9,
+    "library_backup_path": "/V13-Checkpoints/2026-10-26/Run505/run505-source-e408864b-sha-closed.zip",
+    "library_file_id": "libfile_fbd9cff93a0c8191be894d3a681ee4b8",
+    "native_executed": false
+  }
+}

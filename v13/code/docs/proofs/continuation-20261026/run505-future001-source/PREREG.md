@@ -1,0 +1,9 @@
+# Run505 — source-only FUTURE_001 executor, frozen Run491 STEP2
+
+Date 2026-10-26. Base Run504 reviewed source-only GREEN PR #502 at `bcd795bd79e3e0fbca5b84d91a9606373e50fc72`. Run503 native PR #501 Actions 40307435396 is a separate active heavy owner; this package performs **no model download or native execution**. Own only Run505 script, tests, CI, proof files. Run491 fixtures, model/runner SHA pins, Run500 stage runner, Run502 batch runner, Run504 980-row schedule and original failed evidence remain unchanged.
+
+Problem: Run504's 24 future batches are immutable plans, not executable units. Bind a single first batch `FUTURE_001` to exact original stage IDs `A_s31_p00`, `A_s31_p01`, `A_s31_p02` (Vesper/Willow, Xenia/Yarrow, Crescent/Asteria), arm A seed31 seven frozen variants each = 42 unique **planned** rows. Implement a bounded source-only `--plan` and an opt-in `--execute` path using the original Run500 isolated stage process and strict Run498 installed byte verification. One native stage process group at a time; fsync progress; raw logs; fail-stop and refuse partial rerun/overwrite; validate each stage receipt before advancing; no silent retries. The source-only CI must mock execution and must never call native models.
+
+Acceptance: exact full-map and Run504 schedule equality; pinned model/runner hashes; three exact stage IDs, 42 unique keys and no reserved overlap; stable plan; negative gates; exclusive writes; mocked happy path, mid-batch RED, malformed receipt, tampered plan and pre-existing output refusal; privacy CLEAN; SHA-closed raw source CI artifact. Native invocation is prohibited in this Run505 PR; later separate preregistration/owner check only after Run503 independent native postflight. The 980 future rows and Run505 42 are not measured by this package.
+
+STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, Age0 unchanged; no whole-system completion.
