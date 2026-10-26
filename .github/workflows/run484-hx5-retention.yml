@@ -1,0 +1,56 @@
+name: V13 Run484 independent HX5 retention fail-closed review
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run484-hx5-retention.yml'
+      - 'v13/code/v13/agi/harness_data.py'
+      - 'v13/code/tests/test_run484_hx5_retention_failclosed.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run484-hx5-retention/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pin independently reviewed Claude HX sources
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/v13/agi/harness.py)" = 'dc55d65b53a3cd01743f405fe3f7f1a7c7b34eba'
+          test "$(git hash-object v13/code/v13/agi/harness_probe.py)" = '1e6ec8eb04db99d50a0bd27beffd1ac0a5df596a'
+          sha256sum v13/code/v13/agi/harness_data.py v13/code/tests/test_run484_hx5_retention_failclosed.py > "$RUNNER_TEMP/run484-source-sha256.txt"
+          python3 -m venv "$RUNNER_TEMP/run484"
+          "$RUNNER_TEMP/run484/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Run adversarial HX5 retention and inherited HX tests
+        working-directory: v13/code
+        run: |
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts:$PWD/tests"
+          "$RUNNER_TEMP/run484/bin/python" -m unittest -v tests.test_run484_hx5_retention_failclosed tests.test_harness_data tests.test_harness_probe tests.test_harness_hx > "$RUNNER_TEMP/run484-tests.txt" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/run484-tests.txt"
+          echo "EXIT=$rc" > "$RUNNER_TEMP/run484-exit.txt"
+          exit "$rc"
+      - name: Official public repository privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Preserve raw tests and RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run484-hx5-review-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run484-source-sha256.txt
+            ${{ runner.temp }}/run484-tests.txt
+            ${{ runner.temp }}/run484-exit.txt
+          if-no-files-found: warn
+          retention-days: 30
