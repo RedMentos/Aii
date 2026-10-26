@@ -26,8 +26,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run511-b2-offer-collector/PREREG.md)" = 'ed03f1a3beb53350ee5d0ff0865b7dacae345a90'
-          test "$(git hash-object v13/code/scripts/run511_b2_offer_collector.py)" = '14be155c5aaf5c2bd800c10be706be8badba3166'
-          test "$(git hash-object v13/code/tests/test_run511_b2_offer_collector.py)" = 'b25130a47fdc71e9ece6f863e0eb356dcc92294d'
+          test "$(git hash-object v13/code/scripts/run511_b2_offer_collector.py)" = '7e9eaa17a7b91d72b4095a8b8dcf9ecb75bf1763'
+          test "$(git hash-object v13/code/tests/test_run511_b2_offer_collector.py)" = 'd3b5a3ffc39979745c861e78a037e88c343444f8'
           test "$(git hash-object v13/code/scripts/run509_b2_rule_quote_prereg.py)" = 'ec8860d2333bd3c4a16caccb9537073a310f32da'
           test "$(git hash-object v13/code/scripts/run510_b2_quote_metric.py)" = 'd2c35f430f9dc0f39c390043197787ea1f6e0cc6'
           test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
