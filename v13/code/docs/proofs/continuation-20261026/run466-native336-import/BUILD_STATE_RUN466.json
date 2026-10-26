@@ -1,0 +1,43 @@
+{
+  "schema": "V13_RUN466_NATIVE336_ATOMIC_IMPORT_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 source-only importer; Run464 exclusive native S_s21 owner unchanged",
+  "branch": "codex/automation11-run466-native336-atomic-import-20261026",
+  "base": "74e352da7775fccbcaac04f83c0ffb185f3bae4c",
+  "tested_source_head": "786672398efb4e1afb61308ae0c2c67cd79747e6",
+  "pr": 465,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run466_import_stage8_artifact.py": "2444c92ec60447adff906db93bfd5effd4dc1edc",
+    "v13/code/tests/test_run466_native336_atomic_import.py": "50c1ad4e2e17984aaa94723891930c192872b92d",
+    ".github/workflows/run466-native336-atomic-import.yml": "0624fc95593a3f37df13ed703e036ff8f58fd89e"
+  },
+  "actions": {
+    "id": 40273363115,
+    "conclusion": "success",
+    "tests": "138/138 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12628743987,
+    "raw_artifact_sha256": "4c2ed8ada0915ce5ec6d5e2c173f5ab5bcf8da6484ce1d06d1d8750d649ccdf6"
+  },
+  "result": "Atomic native336 no-model ZIP importer, full eight-receipt verification, imported-manifest strip after digest check, next safe export regression GREEN.",
+  "scope": "Source/synthetic Linux CI; no actual native336 archive.",
+  "active_native": {
+    "run_id": 40273136245,
+    "status_at_checkpoint": "in_progress",
+    "owner": "Run464 exclusive S_s21 native retry"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run464 native252 retry remains in progress, no 252 safe result yet.",
+    "Actual Stage7 O_s22 and Stage8 P_s22 must run serially before native336 archive can exist.",
+    "Final S_s22 and 378-row three-seed utility still absent."
+  ],
+  "next_command": "Monitor Run464. After verified native252, import with Run458, run Stage7 O_s22 under exclusive native owner, verify Run460 and import Run461, then Stage8 P_s22 and verify Run465/Run466. Prepare Stage9 S_s22 source-only independently."
+}
