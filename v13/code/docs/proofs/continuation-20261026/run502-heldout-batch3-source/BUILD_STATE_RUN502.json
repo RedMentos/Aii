@@ -1,7 +1,7 @@
 {
   "schema": "V13_RUN502_SOURCE_CHECKPOINT_V1",
   "date_utc": "2026-10-26",
-  "status": "SOURCE_ONLY_PENDING_CI",
+  "status": "SOURCE_ONLY_GREEN_26_TESTS_42_DISJOINT_ROWS",
   "branch": "codex/run502-heldout-batch3-source-20261026",
   "base_branch": "codex/run501-xenia-yarrow-native-20261026",
   "base_sha": "a0c90aab10ea984568f3c0d894fda8524a0a5290",
@@ -41,8 +41,15 @@
   "evidence": {
     "run500_source_actions": 40305428323,
     "run501_native_actions": 40305980830,
-    "run502_source_actions": null,
-    "run502_source_artifact": null
+    "run502_source_actions": 40306622688,
+    "run502_source_artifact": 12643241199,
+    "run502_source_ci_head": "0bf402bd50e8af9cab36c0e87957e6f6a628fe69",
+    "run502_source_ci_conclusion": "success",
+    "raw_artifact_zip_sha256": "ed4e056a919408039bcc2896edd66d4f4efcacd22e207097c6d5ac4136489a91",
+    "plan_sha256": "f6790ed7ccd4fd3da3f5d8a5e734d5ffa5c4781f58cbc044ef8a920ba8898c63",
+    "tests_passed": 26,
+    "raw_sha_manifest_entries": 8,
+    "privacy": "CLEAN"
   },
   "gates": {
     "step2": "UTILITY_FAIL",
@@ -54,8 +61,10 @@
   "verification": [
     "remote prereg/script/test/workflow blobs fetched and SHA matched",
     "source-only batch executor cannot call models in --plan mode",
-    "Run501 native is separate active owner; no Run502 native job launched"
+    "Run501 native is separate active owner; no Run502 native job launched",
+    "Run502 source-only Actions 40306622688 GREEN, 26 tests, no native; downloaded raw artifact 12643241199",
+    "Independently recomputed 8 SHA256 entries, exact 42-row plan C_s31_p02/p03/p04, privacy CLEAN"
   ],
-  "next_command": "Open draft Run502 PR source-only, inspect tests/manifest/privacy and raw SHA. Wait for Run501 independent native PASS before separately preregistering any Run503 batch-native execution.",
+  "next_command": "Inspect Run501 native Actions 40305980830 and independently rescore. Only if PASS, preregister one serialized Run503 batch-native execution of 42 rows using Run502 source, with exact model preflight and raw/safe evidence.",
   "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
 }
