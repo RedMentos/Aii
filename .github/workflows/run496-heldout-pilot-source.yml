@@ -1,0 +1,90 @@
+name: V13 Run496 frozen heldout10 native pilot source-only readiness
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run496-heldout-pilot-source.yml'
+      - 'v13/code/scripts/run496_heldout10_native_pilot.py'
+      - 'v13/code/tests/test_run496_heldout10_native_pilot.py'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run496-heldout10-native-pilot-source-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact original source and prereg pins
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run496-heldout-pilot-source/PREREG.md)" = 'fa209037d95e6f744f1ce79c5211c46904dbee93'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = 'fd47ae42ab9505940a64864c73860b995f18754d'
+          test "$(git hash-object v13/code/tests/test_run496_heldout10_native_pilot.py)" = 'bde33c39d4aebbd1bc21738e42fa4447985af2be'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+          test "$(git hash-object v13/code/scripts/step2_z2b_seeds.py)" = '7c299616495450e4a38f9aab9921f7176ba67556'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+      - name: Isolated Python test dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Adversarial pilot source and frozen fixture tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest -v tests.test_run496_heldout10_native_pilot tests.test_run491_step2_heldout10 > "$RUNNER_TEMP/RUN496_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN496_TEST_EXIT.txt"
+          exit 0
+      - name: Generate exact source-only two-fixture pilot manifest
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" ../../.venv/bin/python scripts/run496_heldout10_native_pilot.py --fixture-only --work "$RUNNER_TEMP/run496-pilot" > "$RUNNER_TEMP/RUN496_FIXTURE_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            cp "$RUNNER_TEMP/run496-pilot/RUN496_PILOT_PREREG.json" "$RUNNER_TEMP/RUN496_PILOT_PREREG.json"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN496_FIXTURE_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN496_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN496_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN496_*' ! -name RUN496_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN496_SHA256SUMS.txt
+      - name: Preserve source-only raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run496-heldout10-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN496_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only readiness
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN496_TEST_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN496_FIXTURE_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN496_PRIVACY_EXIT.txt")" = '0'
