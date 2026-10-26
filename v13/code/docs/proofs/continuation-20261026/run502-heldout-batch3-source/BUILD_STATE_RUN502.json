@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN502_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "status": "SOURCE_ONLY_PENDING_CI",
+  "branch": "codex/run502-heldout-batch3-source-20261026",
+  "base_branch": "codex/run501-xenia-yarrow-native-20261026",
+  "base_sha": "a0c90aab10ea984568f3c0d894fda8524a0a5290",
+  "source": {
+    "prereg_blob": "fd007101124510f881ad033a87f37e272cb30fe9",
+    "batch_script_blob": "773ed4b0507bab839d151367c21a7a28e091c67c",
+    "test_blob": "992b073c7a450105d2dc9df62e0e59b07019b003",
+    "workflow_blob": "7032b9fac8a16461f6a9fd030ef6592e9c755281",
+    "stage_runner_blob": "504a4a8492bdb383869b164b82c05d13e00f6823"
+  },
+  "scope": {
+    "stage_ids": [
+      "C_s31_p02",
+      "C_s31_p03",
+      "C_s31_p04"
+    ],
+    "fixtures": [
+      [
+        "Crescent",
+        "Asteria"
+      ],
+      [
+        "Boreal",
+        "Cascade"
+      ],
+      [
+        "Drift",
+        "Eon"
+      ]
+    ],
+    "arm": "C",
+    "seed": 31,
+    "variants_each": 7,
+    "planned_rows": 42,
+    "actual_native_rows": 0
+  },
+  "evidence": {
+    "run500_source_actions": 40305428323,
+    "run501_native_actions": 40305980830,
+    "run502_source_actions": null,
+    "run502_source_artifact": null
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "verification": [
+    "remote prereg/script/test/workflow blobs fetched and SHA matched",
+    "source-only batch executor cannot call models in --plan mode",
+    "Run501 native is separate active owner; no Run502 native job launched"
+  ],
+  "next_command": "Open draft Run502 PR source-only, inspect tests/manifest/privacy and raw SHA. Wait for Run501 independent native PASS before separately preregistering any Run503 batch-native execution.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
