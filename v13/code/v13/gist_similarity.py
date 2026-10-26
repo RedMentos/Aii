@@ -34,13 +34,19 @@ def last_vector(data, expected_dim=None):
 
 
 def event_bound(r, p):
-    """A stored packet cannot borrow another session's valid SourceRef."""
+    """A tap may be an exact event-source subspan, never a foreign source."""
     event = r.store.one('SELECT session_id,source_id,generation_id,packet FROM events WHERE id=?',
                         (p['event_id'],))
-    if (not event or event['session_id'] != r.session or
-        event['source_id'] != p['source_ref']['source_id'] or
+    if not event:
+        raise SimilarityUnavailable('Missing native tap event')
+    origin = json.loads(event['packet'])['source_ref']
+    ref = p['source_ref']
+    if (event['session_id'] != r.session or event['source_id'] != ref['source_id'] or
         event['generation_id'] != p['brain_generation_id'] or
-        json.loads(event['packet'])['source_ref'] != p['source_ref']):
+        ref['source_id'] != origin['source_id'] or ref['sha256'] != origin['sha256'] or
+        ref.get('modality') != origin.get('modality') or
+        ref['char_start'] < origin['char_start'] or ref['char_end'] > origin['char_end'] or
+        ref['char_start'] >= ref['char_end']):
         raise SimilarityUnavailable('Tap event/source/session binding mismatch')
     return True
 
