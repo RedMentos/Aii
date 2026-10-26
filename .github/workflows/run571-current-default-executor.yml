@@ -32,8 +32,8 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN571_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run571-current-default-executor/PREREG.md)" = 'bc20229b3f9ef798e5ed4f0671d270bb024e4aa3'
-          test "$(git hash-object v13/code/scripts/run571_current_default_native.py)" = 'faef7cd9e0909016f1f426484af69e4751a4383f'
-          test "$(git hash-object v13/code/tests/test_run571_current_default_native.py)" = 'cd9315fceb7746cc064eae006b8de406dfa1cdb3'
+          test "$(git hash-object v13/code/scripts/run571_current_default_native.py)" = '813dfe55997db2116b7cd79365a744b2635440b6'
+          test "$(git hash-object v13/code/tests/test_run571_current_default_native.py)" = 'acab4ea3b0898af7c6c4ee3ef18645770ffc3177'
           test "$(git hash-object v13/code/scripts/run570_current_default_cohort.py)" = '64a76175da9f14c65c0e7fdfaf647e47e7e56715'
           test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
           test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
