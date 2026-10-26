@@ -1,0 +1,55 @@
+{
+  "schema": "V13_RUN500_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "status": "SOURCE_ONLY_PENDING_CI",
+  "branch": "codex/run500-heldout1050-stage-map-20261026",
+  "base_branch": "codex/run499-heldout14-native-retry-20261026",
+  "base_sha": "0e1c3ae9cedee921666677d7b41c869e29a73110",
+  "files": {
+    "prereg": "7bbf69d35a56631e368fc3f410711466114fdc0e",
+    "stage_runner": "504a4a8492bdb383869b164b82c05d13e00f6823",
+    "tests": "cf4dd3fd4b882779eadbf7eea4bcdf573e732bda",
+    "workflow": "34731477d1754abc99eef8a0d694579ec647cc21"
+  },
+  "scope": {
+    "stage_count": 75,
+    "rows_per_stage": 14,
+    "planned_rows": 1050,
+    "arms": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "seeds": [
+      31,
+      32,
+      33
+    ],
+    "fixture_pairs": 5,
+    "model_downloads": 0,
+    "native_rows_executed": 0
+  },
+  "run499": {
+    "pr": 497,
+    "native_actions": 40304564958,
+    "status": "IN_PROGRESS_AT_RUN500_PREPARATION"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "verification": [
+    "new source file blobs read back from remote and SHA matched",
+    "no runtime/SSOT/model/seed files edited",
+    "source-only test CI pending"
+  ],
+  "next_command": "Open draft Run500 PR targeting Run499 branch; inspect source-only Actions, fix any actual RED without altering frozen cohort; do not start Run500 native stages before Run499 pilot independent PASS and active-owner check.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
