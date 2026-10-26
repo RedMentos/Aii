@@ -45,13 +45,23 @@ def _model_path(name):
             "models" in parts[4:-1])
 
 
+
+def _binary_path(name):
+    """Unlisted arm-home bin bytes are preserved, never executed as a runner."""
+    parts = Path(name).parts
+    return (len(parts) >= 7 and parts[0] == "run401-full" and
+            parts[1:3] == ("attempts", "O_s20") and
+            parts[3].startswith("attempt-") and parts[3][8:].isdigit() and
+            "bin" in parts[4:-1])
+
+
 def _entry_name(info):
     name = stage._safe_path(info.filename)
     require(not info.is_dir(), "DIRECTORY_MEMBER")
     require(not (info.flag_bits & 1), "ENCRYPTED_MEMBER")
     require(stat.S_IFMT(info.external_attr >> 16) != stat.S_IFLNK, "SYMLINK_MEMBER")
     require(0 <= info.file_size <= base.MAX_MEMBER, "MEMBER_OVERSIZED")
-    if name.lower().endswith((".gguf", ".safetensors", ".ckpt", ".pth", ".pt")):
+    if name.lower().endswith((".gguf", ".safetensors", ".cact", ".ckpt", ".pth", ".pt")):
         require(_model_path(name), "UNREGISTERED_MODEL_PATH:" + name)
     return name
 
@@ -87,7 +97,8 @@ def _original_manifest(z, infos):
         expected[name] = digest
     require(set(expected) <= set(infos), "UNHASHED_OR_MISSING_MEMBER")
     unlisted = set(infos) - set(expected) - {"RUN401_SHA256SUMS.txt"}
-    require(all(_model_path(n) for n in unlisted), "UNHASHED_OR_MISSING_MEMBER")
+    require(all(_model_path(n) or _binary_path(n) for n in unlisted),
+            "UNHASHED_OR_MISSING_MEMBER")
     return expected, sorted(unlisted)
 
 
@@ -150,7 +161,8 @@ def _verify_and_stage(archive, expected_sha, temporary):
                 "STAGE1_SOURCE_HEAD_MISMATCH")
         native = stage._validate_native_tree(root, small)
         return {"native": native, "members_verified": len(infos) - 1,
-                "omitted_unlisted_in_manifest": unlisted,
+                "omitted_unlisted_in_manifest": [n for n in unlisted if _model_path(n)],
+                "unlisted_binary_members": [n for n in unlisted if _binary_path(n)],
                 "original_zip_sha256": expected_sha, "original_member_bytes": total,
                 "staged_work_bytes": staged_bytes, "omitted_registered_models": omitted,
                 "omitted_bytes": sum(m["size"] for m in omitted),
