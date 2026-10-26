@@ -1,0 +1,129 @@
+name: V13 Run554 pinned Linux-native C3 JEF goal and TTY lifecycle
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - 'v13/code/scripts/native_jef_goal_run554.py'
+      - 'v13/code/tests/test_native_jef_goal_run554.py'
+      - '.github/workflows/run554-native-jef-goal.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run554-native-jef-goal/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-c3-jef-goal:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run554-native-jef-goal-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      V13_NO_AUTOSTART: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 50
+      - name: Exact current source, prereg, registered models and unchanged Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN554_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run554-native-jef-goal/PREREG.md)" = 'b4e527f151124a39fe64fc79cf5ebcf8d47dbb2c'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(git hash-object v13/code/scripts/native_jef_goal_run554.py)" = '444a71890de6e0e6467b250e7411c38a14ad1617'
+          test "$(git hash-object v13/code/tests/test_native_jef_goal_run554.py)" = '8448239a89ac1fdc1d66b00b520bc2f97afdfd07'
+          test "$(git hash-object v13/code/v13/agi/live.py)" = 'defc0f3205d7745125c869e51ddcf5a7ffee5993'
+          test "$(git hash-object v13/code/v13/agi/goals.py)" = '96ef31a63812efd1da98f85ae9a2b5152ba51a73'
+          test "$(git hash-object v13/code/v13/agi/__init__.py)" = '16a3074d74a19fbbe095a69a45c8b2889a12a492'
+          test "$(git hash-object v13/code/v13/operator.py)" = '2d56975257c3eaf23989d0e6385ae04f5e7d3250'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          python3 -m compileall -q v13/code/scripts/native_jef_goal_run554.py v13/code/tests/test_native_jef_goal_run554.py
+          { date -u -Iseconds; uname -a; free -h; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN554_HOST.txt"
+      - name: Isolated pinned CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run554venv"
+          "$RUNNER_TEMP/run554venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source-only fixture preflight, never native proof
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run554venv/bin/python" -m unittest -v \
+            tests.test_native_jef_goal_run554 \
+            tests.test_run553_user_goal_operator \
+            tests.test_run552_jef_goal_final_receipt > "$RUNNER_TEMP/RUN554_FIXTURE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN554_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Bootstrap exact registered public native C3 and runner only after fixture PASS
+        id: bootstrap
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN554_FIXTURE_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN554_BOOTSTRAP_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run554installed"
+          timeout 1200s "$RUNNER_TEMP/run554venv/bin/python" -m v13.bootstrap --home "$V13_HOME" 2>&1 | tee "$RUNNER_TEMP/RUN554_BOOTSTRAP_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN554_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: One real pinned C3 turn, persisted JEF receipt, local operator and restart
+        id: native
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN554_BOOTSTRAP_EXIT.txt")" != "0" ]]; then
+            echo 2 > "$RUNNER_TEMP/RUN554_NATIVE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run554installed"
+          timeout 700s "$RUNNER_TEMP/run554venv/bin/python" scripts/native_jef_goal_run554.py \
+            --home "$RUNNER_TEMP/run554native" --models-from "$V13_HOME" \
+            --out "$RUNNER_TEMP/RUN554_NATIVE_REPORT.json" --timeout 140 \
+            > "$RUNNER_TEMP/RUN554_NATIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN554_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN554_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN554_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close all present raw hashes even on failure
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN554_*' ! -name 'RUN554_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN554_SHA256SUMS.txt
+      - name: Preserve exact native and fixture raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run554-Native-C3-JEF-Goal-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN554_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true fixture, bootstrap, native integration and privacy exits
+        if: always()
+        run: |
+          test "${{ steps.fixture.outputs.rc }}" = "0"
+          test "${{ steps.bootstrap.outputs.rc }}" = "0"
+          test "${{ steps.native.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
