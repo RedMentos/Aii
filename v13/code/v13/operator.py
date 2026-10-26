@@ -13,6 +13,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :befehle [Wort] (alle Befehle mit Erklärung) / :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats [all|--before <Chat-ID>] / :new / :open <Chat-ID> / :search <Text> [--before <Message-ID>] / :export chat [json|md] [Chat-ID]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
+:language [status|en|de] (Sprache für neue Modellantworten; Englisch Standard, Wechsel nur im Leerlauf, dauerhaft)
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
 :notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
@@ -260,6 +261,32 @@ class Operator:
             return dumps(inputs.last_context(s,r.session) or {'status':'Noch kein Modellkontext in diesem Chat'})
         if cmd=='pause':r.pause();return 'Pausiert'
         if cmd=='resume':r.resume();return 'Fortgesetzt'
+        if cmd=='language':
+            # The existing EN-first/DE prompt catalog is operator-selectable.
+            # No mid-turn config change, automatic language learning, or new rights.
+            from .prompts import language as selected_language
+            if not args or args==['status']:
+                return dumps({'answer_language':selected_language(r.cfg),
+                              'scope':'MODEL_PROMPTS_ONLY','operator_only':True,
+                              'learning_authorized':False})
+            if len(args)!=1 or args[0] not in {'en','de'}:
+                raise ValueError(':language [status|en|de]')
+            with r.lock:
+                r.require_idle()
+                previous=selected_language(r.cfg)
+                if previous!=args[0]:
+                    cfg=r.cfg|{'answer_language':args[0]}
+                    save_config(r.home,cfg)
+                    r.cfg.update(cfg)
+                    s.log('answer_language_change',None,
+                          {'from':previous,'to':args[0],
+                           'authority':'EXPLICIT_OPERATOR',
+                           'learning_authorized':False})
+            return dumps({'answer_language':selected_language(r.cfg),
+                          'previous_language':previous,
+                          'changed':previous!=args[0],
+                          'scope':'MODEL_PROMPTS_ONLY','operator_only':True,
+                          'learning_authorized':False})
         if cmd=='status':return dumps({'session':r.session,'job':r.current,'queued':s.queue_stats()['count'],'paused':r.paused,'generation':s.generation_id,'learning':r.cfg['learning_mode'],'age':agectl.controller(r).system_stage()})
         if cmd=='resources':
             from . import resource_modes  # §97.2 GREEN/YELLOW/ORANGE/RED
