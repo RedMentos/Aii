@@ -1,0 +1,11 @@
+# Run595 preregistration — exact ContextPlan selection for human policy feedback (2026-10-26)
+
+Owner: GPT automation11. Review-only Context OS package stacked on Run594 PR589 checkpoint `34d0f6474238f25ea155d3c212b9acf7be37cf5b`. File ownership: `v13/code/v13/context_os.py`, new Run595 tests/workflow/proofs. No edits to Run592 JEF owner, frozen source/model cohorts, original STEP2/B3 gates, or production main.
+
+**Read-only finding:** PR586 binds feedback to a committed ContextPlan receipt, but `ContextOS.outcome(event_id,utility)` fetches `ORDER BY rowid DESC LIMIT 1`. One V13 event can create separate ContextPlans for B1, B2 and C3 or re-entry. A human rating then silently credits whichever plan was inserted last, not a selected causal consumer. A later observer or orphan packet can redirect or block feedback.
+
+**Prospective fix:** Preserve existing 1-plan `outcome` behavior. If an event has multiple ContextPlan packets, refuse an unqualified rating and require an exact packet ID, with `:ctxos plans <Event-ID>` exposing only IDs, roles and committed/invalid status. Extend `:ctxos outcome <Event-ID> <0..1> [ContextPlan-ID]`. Bind selected packet row ID, event, role and existing CAS receipt/digest before policy update; never silently substitute another packet. Keep current policy SHADOW, Age/approval rights, prior delayed feedback behavior and no native KV claims.
+
+**Tests:** Two real persisted ContextPlans for one event with distinct roles/decisions: unqualified outcome refuses without policy mutation; exact ID credits only selected decisions; wrong event ID or nonexistent ID refuses; orphan and tampered selected plans fail; two plans same role remain ambiguous; one-plan backwards compatibility and restart; operator `:ctxos plans` read-only and `:ctxos outcome` selector path. Existing Run590 and Context OS regressions, compile/privacy/SHA-closed CI. No native/Redmi model runs.
+
+**Claim limits:** Context OS software feedback integrity only. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight 0, V13 INCOMPLETE. Independent review before integration.
