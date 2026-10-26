@@ -7,6 +7,8 @@ on:
       - 'v13/code/scripts/run402_stage_restore.py'
       - 'v13/code/scripts/run407_stream_stage1.py'
       - 'v13/code/scripts/run408_filtered_stage1.py'
+      - 'v13/code/scripts/run412_stage1_inventory_gate.py'
+      - 'v13/code/tests/test_run412_stage1_inventory_gate.py'
       - 'v13/code/tests/test_run402_stage_restore.py'
       - 'v13/code/tests/test_run407_stream_stage1.py'
       - 'v13/code/tests/test_run408_filtered_stage1.py'
@@ -68,6 +70,7 @@ jobs:
             tests.test_run397_step2_resume tests.test_run398_native_artifact_audit \
             tests.test_run400_quote_substrings tests.test_run402_stage_restore \
             tests.test_run407_stream_stage1 tests.test_run408_filtered_stage1 \
+            tests.test_run412_stage1_inventory_gate \
             2>&1 | tee "$RUNNER_TEMP/RUN410_TESTS_RAW.log"
           rc=${PIPESTATUS[0]}
           echo "$rc" > "$RUNNER_TEMP/RUN410_TESTS_EXIT.txt"
@@ -108,26 +111,10 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/RUN410_ACTUAL_RAW.log"
           rc=${PIPESTATUS[0]}
           if [ "$rc" -eq 0 ]; then
-            python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN410_INDEPENDENT_ASSERTIONS.log"
-          import json,os,pathlib
-          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"RUN410_ACTUAL_REPORT.json"
-          d=json.loads(p.read_text())
-          assert d["status"]=="FILTERED_STAGE1_VERIFIED_NO_PROMOTION",d.get("errors")
-          assert d["members_verified"]==107 and d["rows_verified"]==42
-          assert d["remaining_arms"]==8
-          assert len(d["omitted_registered_models"])==7
-          assert len(d["omitted_unlisted_in_manifest"])==7
-          assert len(d["unlisted_binary_members"])==64
-          assert d["all_member_sha_checked"] is True and d["zip_crc_checked"] is True
-          assert d["original_zip_sha256"]==os.environ["EXPECTED_SHA256"]
-          assert d["original_raw_retained_external"] is True
-          assert d["canonical_gate_pass"] is False and d["step2_exit"]=="UTILITY_FAIL"
-          assert d["redmi_measured"] is False and d["jepa_weight"]==0
-          assert d["native_inference_started"] is False
-          print(json.dumps({"status":d["status"],"members":107,"models_omitted":7,
-                            "binary_members_preserved":64,"rows":42,"remaining_arms":8,
-                            "canonical_gate_pass":False,"step2_exit":"UTILITY_FAIL"}))
-          PY
+            python3 scripts/run412_stage1_inventory_gate.py \
+              --report "$RUNNER_TEMP/RUN410_ACTUAL_REPORT.json" \
+              --expected-sha256 "$EXPECTED_SHA256" \
+              2>&1 | tee "$RUNNER_TEMP/RUN410_INDEPENDENT_ASSERTIONS.log"
             rc=${PIPESTATUS[0]}
           fi
           echo "$rc" > "$RUNNER_TEMP/RUN410_ACTUAL_EXIT.txt"
