@@ -1,0 +1,56 @@
+{
+  "schema": "V13_RUN450_STAGE2_EXECUTABLE_IDENTITY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "branch": "codex/automation11-run404-executable-identity-20261026",
+  "base": "76720efbd266df95c7ec91941028ccb81cf6a491",
+  "tested_source_head": "bc61c59f6cf930ff93ed73664dd6f4ae804b207e",
+  "pr": 449,
+  "change": "Run404 validates the pinned Run401 installed executable SHA256 from Run402, not the distinct catalog release archive SHA. Frozen Run394/Run397/model/seed pins untouched.",
+  "source_sha256": {
+    "v13/code/scripts/run404_stage2_resume.py": "a87567eacf6061a09209bbf79b828c93d554abf0442ff4b59878a152dc6d47c4",
+    "v13/code/tests/test_run450_stage2_executable_identity.py": "1a332bf622f3dc428f9fd01525d6c958a8f1394fb63b2af21b267e24371d48a0"
+  },
+  "red_first": {
+    "actions": 40269826649,
+    "status": "EXPECTED_FAILURE",
+    "tests": "22 run, 6 FAIL",
+    "artifact_id": 12627803423,
+    "artifact_sha256": "98b6e142e5eb4746be85ab10574cc913d9067716c8ab2629d69abfc533b1a3d5"
+  },
+  "failed_correction": {
+    "actions": 40269891455,
+    "status": "FAILED NameError from literal escaped newline in comment; fixed, raw preserved",
+    "artifact_id": 12627544766,
+    "artifact_sha256": "1b38405a2dd4c2c09b65b05e3c654c40a0ad69209396968e7c2b44684d773ee6"
+  },
+  "focused_green": {
+    "actions": 40269957764,
+    "status": "SUCCESS",
+    "tests": "22/22 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12628370123,
+    "artifact_sha256": "0ad2236857bdb89725f04a744975b8f07c87978bcb8abf4a17ef51e36d9aaf9d"
+  },
+  "inherited_red": {
+    "actions": 40269957733,
+    "status": "FAILURE",
+    "tests": "80 run, 8 ERROR in Run403 full-postflight synthetic builder, all RECORDED_RUNNER_IDENTITY_MISMATCH",
+    "artifact_id": 12628020696,
+    "artifact_sha256": "e46c11a2162cd500b952256857962f281725e1211c2b5a40896ee4b21cac6af8"
+  },
+  "scope": "Source-only synthetic Run401/Run404 restore and preview, no real model/native inference, no new weights.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run403 uses catalog release archive SHA while its synthetic Run401 O_s20 source uses installed executable SHA; other 8 arms fixture mixed identities. Fix separately without changing frozen registered pins or original RED.",
+    "Run446 complete suite remains RED for unrelated historical source identity and optional dependency gaps."
+  ],
+  "next_command": "Continue Run451 independent Run403 executable identity + synthetic fixture consistency RED-first, then source-only tests and checkpoint; preserve all failed attempts. Do not merge historical native owners or promote gates."
+}
