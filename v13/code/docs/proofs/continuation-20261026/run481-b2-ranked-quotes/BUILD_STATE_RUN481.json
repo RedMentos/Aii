@@ -1,0 +1,49 @@
+{
+  "schema": "V13_RUN481_B2_RANKED_QUOTE_SHADOW_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run481-b2-ranked-quotes-shadow-20261026",
+  "base_ref": "codex/run475-native-s22-20261026",
+  "base_sha": "35333d990eab6918ef9eeef70b95df67da72bab1",
+  "owner": "Run481 source-only Context OS/B2 quote-choice candidate; no native/model ownership, no production edit",
+  "empirical_motivation": {
+    "source": "Independent Run477 verified native336 partial cohort; descriptive only",
+    "b2_rule_quote_any": 11,
+    "b2_rule_quote_all_three": 0,
+    "b2_quote_offers": 48,
+    "b2_choice_one_selected": 43,
+    "b2_pointer_choice_cap_reached": 0,
+    "interpretation": "B2 pointer choices frequently favor early project-title spans rather than goal-relevant rule sentences. Not proof of causal bottleneck."
+  },
+  "changes": [
+    "Deterministic lexical goal-ranking over existing exact source sentence spans; returns only source index and character offsets.",
+    "Bound source and query size, abstain when no relevant evidence; do not generate facts or assign trust.",
+    "Shadow diagnostic reports unchanged negative gates, no native improvement or production integration."
+  ],
+  "source_blobs": {
+    "v13/code/scripts/run481_ranked_quote_choices_candidate.py": "22068d10a8678db6f06b1daf9a6e1259086849ea",
+    "v13/code/tests/test_run481_ranked_quote_choices_candidate.py": "0eff8358af7bb53f2acc9c4801b02c432f22b3a9",
+    ".github/workflows/run481-b2-ranked-quotes.yml": "8a2baafcb2d2ddbe3049c59ebf9b7e896fc98ad9",
+    "v13/code/v13/cognition.py": "1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf"
+  },
+  "tests": {
+    "exact_remote_blobs_local": "19/19 PASS",
+    "raw_log_sha256": "814f7e2b1d219780621245a6c31f2d3ec75ad11e8352e343e64bbc1e54dff260",
+    "initial_failed_attempt": "One new synthetic test asserted source-order output, but ranking correctly placed the two-term local-only sentence first. Test corrected to order-independent set; original failure retained in local log history.",
+    "existing_handoff_test_limit": "Two historical test_config_and_chain_link cases fail on the extracted V13-Phone source package because source_handoff_candidate.sources requires a full exact frozen/reviewed source tree; unrelated to the new ranking candidate. Source-only CI uses 19 targeted exact quote tests."
+  },
+  "negative_gates": {
+    "canonical_gate_pass": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "latent_authority": 0,
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Lexical ranking is not semantic relevance or source truth and may prefer an outdated rule; must respect revision authority before any integration.",
+    "No proof of B2/C3 accuracy improvement; requires a new preregistered source-disjoint native cohort and independent review.",
+    "Frozen Run394/397 and current Cognition must remain unchanged; no retrospective tuning on native336."
+  ],
+  "next_command": "Open PR for source-only CI; inspect raw 19-test and privacy results; independently review provenance/revision safety. Continue Run479 native Stage9 and full Run469/470 when its artifact closes."
+}
