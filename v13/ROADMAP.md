@@ -1222,6 +1222,12 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Messung `code/scripts/z5d_context_fit.py`, Beleg `code/bench-results/z5d-context-fit-20261022/` (Z5c-Aufbau, 5 × 60 in einer Sitzung): vorher 165/300 mit 37 Overflows, **nachher 188/300 mit 0 Overflows** (gepaart 48:25, p = 0,0095). Trefferquote auf passenden Turns gleich (62,7 %), Gewinn nur durch die nicht mehr scheiternden Turns. Eingriff in 32/300 Turns, nur Stufen „Aufgaben-Dublette“ + „alte Hypothesen“. Kein Latenzaufschlag in der Cloud; Handy-Latenz offen.
 - Offen: Schaden der Hypothesen-Schicht in langen Sitzungen (Z5c 19:41); ob themenfremde alte Hypothesen schon im Executive begrenzt werden sollten (vorher messen). Z5c-Gate-Vorbehalt „Live läuft über“ ist damit erledigt.
 
+### WP-Z5e Verdient die Fokus-Auswahl ihren Platz? Wiederholung nach dem Überlauf-Fix (Cloud, Modelle) — GEMESSEN 2026-10-26, NO_GAIN
+- **Status (Thread „Auswahl-Test nach Überlauf-Fix“, Branch `claude/project-thread-9lyafy`).** Vorregistriert, `code/scripts/z5e_selection_recheck.py`, Beleg `code/bench-results/z5e-selection-recheck-20261026/`. Frische Aufgaben (Saat 71–75), 5 × 60 in je einer Sitzung, Live-Pfad mit `context_fit active`, dieselbe Größenregel für alle Arme.
+- Bestanden/300: Koalition 181 (live = Wiedergabe), Voll-Kontext 178, **feste Slots 183**, Retrieval 178, ohne Hypothesen 169; 0 Overflows. Koalition vs. Kontrollen alle p ≥ 0,15 → **NO_GAIN**; „schlägt Voll-Kontext“ FAIL, Gate G-FOCAL-CAPACITY-003 bleibt PARTIAL (7 Eigenschaften alle vorhanden).
+- Einordnung: Die Art der Auswahl ist egal (178–183); der Z5c-Schaden gegen „ohne Hypothesen“ ist mit dem Überlauf-Fix weg. Nutzen hängt an der Aufgabenart (summary: Hypothesen helfen 21:7, compare: stören eher 4:11; nicht vorregistriert).
+- Entscheidung: Auswahl verdient ihren Platz nicht als Leistungsgewinn; Vereinfachungs-Kandidat feste Slots. Folgepaket WP-Z5f: Schalter `focal_selection coalition|fixed` (Standard unverändert) + vorregistrierte Messung; Torwächter je Aufgabenart vorher messen.
+
 ### WP-Z6 §24 von TESTED zu MEASURED, Gehirn-Mitte zuerst (Cloud, Modelle) — OFFEN
 - 24.22 Wake (R4 im Blueprint-Sinn; Ergebnisse der R4-Werkzeug-Teile hier einbringen), 24.23 Effort (R5), 24.17 Deliberation, 24.25 Observer-Nutzen, 24.26 Broadcast-Brücke, 24.32 Lebenszyklus Scaffold→gelernte Route je Fähigkeit. Typisierte Modulatoren (G-MODULATOR-SPECIFICITY-001) mit echten Modellen.
 

@@ -213,7 +213,7 @@ def run_rep(installed,rep,fixtures,session_mode=False,fit_arms=False):
                         runner=r.pool.get(cap['answer_role']);limit=CF.budget(r.cfg)
                         def fits(sp):
                             mm=[{'role':'system','content':swap_layer(sysmsg,hyp_head,coal,render(sp),anchor)}]+msgs[1:]
-                            if sum(len(x['content']) for x in mm)<=limit*CF.SURE_CHARS_PER_TOKEN:return True
+                            if CF.upper_bound(mm)<=limit:return True  # same hard byte bound as the live path (WP-Z5d review)
                             try:return runner.prompt_tokens(mm,r.cancel_event,time.monotonic()+120)<=limit
                             except Exception:return CF.estimate(mm)<=limit  # no native count: conservative estimate
                         sp,cuts[arm]=fit_spec(specs[arm],fits)
