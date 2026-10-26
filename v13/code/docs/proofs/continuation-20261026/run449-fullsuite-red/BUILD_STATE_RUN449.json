@@ -1,0 +1,56 @@
+{
+  "schema": "V13_RUN449_ACTUAL_RUN446_RED_CLASSIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "branch": "codex/automation11-fullsuite-red-triage-20261026",
+  "base": "76720efbd266df95c7ec91941028ccb81cf6a491",
+  "tested_source_head": "9e8c50bbecd09a4f0fe0f03e7d68188cda9adb4c",
+  "pr": 448,
+  "actions": {
+    "id": 40269747802,
+    "conclusion": "success",
+    "source_tests": "4/4 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12628185012,
+    "artifact_sha256": "9f864f8bd2e7dfb3b17e5fb3719105182d9e15e6bebabab9b2aae1fa807be389"
+  },
+  "original_red": {
+    "run": 40268931125,
+    "artifact_id": 12627339234,
+    "artifact_sha256": "ae917ed846fc35d89a2f1c5d84b7fe1bbf9f4863e00cbbaef6a7dad4d1e2389c",
+    "tests": 3430,
+    "failures": 5,
+    "errors": 84,
+    "skipped": 19,
+    "status": "RED_FULL_SUITE_UNRESOLVED"
+  },
+  "categories": {
+    "EXTERNAL_NATIVE_ARTIFACT_UNAVAILABLE": 1,
+    "FROZEN_RUNTIME_IDENTITY_REFUSAL": 26,
+    "HISTORICAL_TEST_MODULE_UNAVAILABLE": 1,
+    "LIVE_SOURCE_IDENTITY_REFUSAL": 36,
+    "OPTIONAL_TORCH_UNAVAILABLE": 6,
+    "RECORDED_RUNNER_IDENTITY_REFUSAL": 14,
+    "STAGE1_SYNTHETIC_RECEIPT_NOT_REUSABLE": 5
+  },
+  "source_sha256": {
+    "v13/code/scripts/run449_classify_fullsuite_red.py": "549e1b41210789cd914133f0666c9fdec4a9d5bccf216155790bc3ce31ecccbf",
+    "v13/code/tests/test_run449_classify_fullsuite_red.py": "ace481b679125f39f6bd656f852d4d4d1f5f776a083a3597465e2d1782b5dced"
+  },
+  "scope": "Diagnostic classification only; no test was waived, no source/model/seed hash altered, no new native/model inference.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "36 live source identity refusals and 26 frozen runtime identity refusals require separate historical-cohort review, not blanket waiver.",
+    "14 recorded runner identity refusals require distinguishing actual binary identity from release archive SHA.",
+    "5 synthetic Run404 failures traced to executable-vs-release SHA mismatch; Run450 RED-first patch in separate branch.",
+    "Optional torch missing in isolated offline audit (6 errors); missing historical module (1) and external native artifact (1) remain prerequisites."
+  ],
+  "next_command": "Observe Run450 RED-first CI on PR449, then patch only Run404 caller executable SHA (never frozen Run394/397/model catalog) and verify green with original RED preserved. Independently continue other canonical work."
+}
