@@ -38,10 +38,10 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN552_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run552-jef-goal-final-receipt/PREREG.md)" = 'f033df3495115bb4bdd466007321dace99c84d39'
-          test "$(git hash-object v13/code/v13/agi/live.py)" = 'c88ac76e60c7204a4aa0d85fde1f574454e03081'
+          test "$(git hash-object v13/code/v13/agi/live.py)" = 'defc0f3205d7745125c869e51ddcf5a7ffee5993'
           test "$(git hash-object v13/code/v13/agi/maturity.py)" = 'd0bfeb47ff9e2d32bd6dd0e48784ee538c86bea2'
           test "$(git hash-object v13/code/tests/test_agi_live.py)" = '308a22aab99985dcf9e8d80ac1e77c309797f684'
-          test "$(git hash-object v13/code/tests/test_run552_jef_goal_final_receipt.py)" = '4d15207b2b0a293d1fdf91feec762f5a5bc3b611'
+          test "$(git hash-object v13/code/tests/test_run552_jef_goal_final_receipt.py)" = '0e847e3e3210c7cf4e34d79f9ea196610a369fd3'
           test "$(git hash-object v13/code/tests/test_world_model.py)" = '787d1cbf08bf4730614a3c9f82492ec1fead9be3'
           test "$(git hash-object v13/code/tests/test_run551_rating_revision_calibration.py)" = '642634d628ec78ce463b14aabb26ecb1c5a8d4e7'
           test "$(git hash-object v13/code/tests/test_run546_metacog_labels.py)" = '5465b2dcfdafb205bd3e911e4d4812031ef8c328'
