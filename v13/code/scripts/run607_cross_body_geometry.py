@@ -39,7 +39,7 @@ def sha256(path):
 
 def blob_sha(path):
     b=Path(path).read_bytes()
-    return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\\0"+b).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
 
 
 def verify_closed_raw(folder):
@@ -194,7 +194,7 @@ def atomic_json(path,obj):
     with tempfile.NamedTemporaryFile("w",dir=path.parent,encoding="utf-8",delete=False) as f:
         tmp=Path(f.name)
         json.dump(obj,f,sort_keys=True,indent=2,allow_nan=False)
-        f.write("\\n");f.flush();os.fsync(f.fileno())
+        f.write("\n");f.flush();os.fsync(f.fileno())
     os.replace(tmp,path)
 
 
