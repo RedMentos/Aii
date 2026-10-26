@@ -1,0 +1,64 @@
+{
+  "schema": "V13_RUN593_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run593-callosum-rating-replay-20261026",
+  "base_branch": "codex/automation11-run591-callosum-rating-proof-20261026",
+  "base_sha": "2b48b202d116151fb106a32269069c91b90ff7f0",
+  "verified_code_head": "69fb32322b37ced7cf16c2f7e5608e3b84a58d4b",
+  "pr": 588,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/588",
+  "prereg_commit": "1a93f70b5797bc2cc62abcbc7f06959dfb95a183",
+  "changed_source_blobs": {
+    "v13/code/v13/callosum.py": "e34481fcd6c818cb91bc1eabb95da8fbf44e643a",
+    "v13/code/tests/test_run593_callosum_rating_replay.py": "b85e5177834ac1295793c3ad68b2d17563d3e46e",
+    ".github/workflows/run593-callosum-rating-replay.yml": "c2908b2d8e1a351f500f36e6ba33388808bf5bd5"
+  },
+  "observed_ci": {
+    "run": 40392323392,
+    "job": 121816226209,
+    "head": "69fb32322b37ced7cf16c2f7e5608e3b84a58d4b",
+    "conclusion": "success",
+    "new_tests": "4/4 PASS",
+    "run591": "7/7 PASS",
+    "callosum": "5/5 PASS",
+    "outcome_once": "10/10 PASS",
+    "message_lineage": "10/10 PASS",
+    "observed_cost": "3/3 PASS",
+    "peer_link": "5/5 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12684896922,
+    "raw_artifact_sha256_from_actions_log": "23621129f5f263c6d8b95b0dde6acde3b6d8a2f15c372dc118541c5c8a4dd596",
+    "raw_manifest_sha256": "workflow printed RAW_SHA256SUMS.txt; artifact not independently re-downloaded"
+  },
+  "changes": [
+    "Reject repeat human policy credit when Callosum.note appends the same already-rated MessagePacket after a prior rating",
+    "Repair partially-rated pending duplicates atomically in CAS state",
+    "Preserve rating of a different valid MessagePacket and idempotence across restart"
+  ],
+  "known_red": "Original full suite RED_4_FAIL_65_ERROR remains. PR587 exact-head Run98 workflow failure: test_b3degrade.Live.test_promotion_needs_human_and_evidence_then_resource_mode_demotes expected EXACT_SYMBOLIC, observed L1; not caused or resolved by this package.",
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false
+  },
+  "open_questions": [
+    "Independent review/merge of PR581–588 stacked chain",
+    "Read-only investigate legacy B3 degradation failure; no gate promotion",
+    "Continue independent C3/Body-JEPA or Context OS substantive package; avoid in-flight Run592 JEF owner",
+    "Target Redmi sustained thermal/RSS/KV and native receiver effect unavailable"
+  ],
+  "next_command": "Review PR588 exact CI artifact and diff; then inspect latest PR heads and implement next non-B3 canonical organ on a fresh branch without touching Run592 owner.",
+  "prerequisites": [
+    "No force push; no anyone-writable Drive backup",
+    "Keep frozen cohorts and failed native evidence unchanged",
+    "Native and Redmi proof remain absent"
+  ]
+}
