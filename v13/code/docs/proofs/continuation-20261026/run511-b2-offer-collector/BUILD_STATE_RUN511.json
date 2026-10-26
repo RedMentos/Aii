@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN511_B2_COLLECTOR_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run511-b2-offer-collector-source-20261026",
+  "base_branch": "codex/run510-b2-quote-metric-source-20261026",
+  "base_sha": "5abc784013f6af8f0e3453ffa9bcb71bc918a7ee",
+  "status": "SOURCE_STAGED_CI_PENDING_NO_NATIVE",
+  "scope": {
+    "frozen_run509_fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726",
+    "pair_stages": 5,
+    "observations_per_stage": 12,
+    "planned_total_observations": 60,
+    "actual_run511_native_observations": 0,
+    "models_unchanged": true
+  },
+  "source": {
+    "prereg_blob": "ed03f1a3beb53350ee5d0ff0865b7dacae345a90",
+    "script_blob": "14be155c5aaf5c2bd800c10be706be8badba3166",
+    "test_blob": "b25130a47fdc71e9ece6f863e0eb356dcc92294d",
+    "run509_blob": "ec8860d2333bd3c4a16caccb9537073a310f32da",
+    "run510_blob": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run511 prereg persisted before implementation",
+    "Source-only script includes opt-in --execute but CI calls --plan and mocked tests only",
+    "Run507 active native separate owner; no concurrent heavy work"
+  ],
+  "blockers": [
+    "Run511 source-only CI pending",
+    "Run507 native Actions 40309409260 active",
+    "No Run511 native trial authorized until separate prereg/owner check",
+    "Redmi unavailable"
+  ],
+  "next_command": "Open draft PR Run511 against Run510; inspect source-only CI and independently verify 60-key partition. Review potential native source-ref mapping and preparation hash invariants before separate one-shot native. Audit Run507 actual native artifacts on completion.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
