@@ -62,6 +62,8 @@ class ChatHistoryNavigation(unittest.TestCase):
         for cmd in (":search HISTORY_NEEDLE --before 0",
                     ":search HISTORY_NEEDLE --before -1",
                     ":search HISTORY_NEEDLE --before nope",
+                    ":search HISTORY_NEEDLE --before 9223372036854775808",
+                    ":search HISTORY_NEEDLE --before " + "9" * 5000,
                     ":search HISTORY_NEEDLE --before 2 --before 3",
                     ":search --before 12"):
             with self.subTest(cmd=cmd), self.assertRaises(ValueError):
