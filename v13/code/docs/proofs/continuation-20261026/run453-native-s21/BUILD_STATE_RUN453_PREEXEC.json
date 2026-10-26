@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN453_NATIVE_S21_PREEXEC_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11; exclusive native concurrency v13-native-c3-run131-serialized",
+  "branch": "codex/automation11-run453-native-s21-20261026",
+  "base_verified_run452_head": "aa732057600a49a8d1066b337e08135794215f23",
+  "source_branch_before_checkpoint": "1b35459aa77c00421257c989ea77507cc41d7e42",
+  "source_only_verified": {
+    "run": 40270355991,
+    "conclusion": "success",
+    "source_head": "64d281a7c41ecb92c9ff4bc6024a8c6086908fce",
+    "tests": "33/33 PASS",
+    "native_rows": 210
+  },
+  "frozen_sources": {
+    "run394_blob": "fae7aed612108a554d8566b2917ebf31022df423",
+    "run397_blob": "f1946054135cb6fdf48c06477308f518e2e62ad9",
+    "models_json_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "stage6_sha256": "a614086dc075027bcc1b820e1f7eb3fc3cd594016be1a555e6231826bcc15852",
+    "verifier_git_blob": "358f2803a9bcaf88aa011a177863b6ff77e65394",
+    "run438_importer_sha256": "da56fbef98685171bfaa0a3569200585fb1e09a3dda159e9d115849b1a9394a8",
+    "run436_verifier_sha256": "19b7a647f2149b6ce0dded029fc6ffd5213768b5f801549b9d5f97a52d886b7a"
+  },
+  "input_artifacts": {
+    "safe210_id": 12627626352,
+    "safe210_sha256": "280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7",
+    "raw_id": 12627207495,
+    "raw_sha256": "eb47eab043b7c51d0dbdea7cfb12ddfe1706a3611057efc7c348ae810fef599e",
+    "stage5_report_sha256": "ef2e4554025730911012c50c417e55c25ef57185f147c131f30d319fb31ff6b1"
+  },
+  "native_plan": {
+    "next_arm": "S_s21",
+    "new_rows": 42,
+    "expected_partial_total": 252,
+    "remaining_after": 3,
+    "run_one_arm": true,
+    "timeout_s": 4800,
+    "bootstrap_timeout_s": 1800,
+    "exclusive_group": "v13-native-c3-run131-serialized",
+    "cancel_in_progress": false,
+    "model_download": "only pinned public model/runner through existing bootstrap",
+    "safe_export": "required, no installed model files",
+    "failed_attempts": "preserve even if native fails",
+    "independent_verifier": "run453_verify_native252.py"
+  },
+  "current_status": "PREEXEC_NOT_YET_STARTED; no native252 claim",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run453 native job may fail or be queued; preserve raw failed attempts, no silent retry.",
+    "Any actual S_s21 utility must be measured before proposing next arm; no STEP2 promotion.",
+    "Redmi, Body-JEPA and full blueprint acceptance still blocked independently."
+  ],
+  "next_command": "Open draft PR from this branch to codex/automation11-stage6-s21-source-20261026. Observe exclusive GitHub Actions native job; if RED, inspect exact failed step, preserve raw and safe artifacts, correct source only with a new attempt/branch (never overwrite evidence). If GREEN, independently verify six receipts and 252-row export, checkpoint and proceed to next O_s22. Do not merge to main automatically."
+}
