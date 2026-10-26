@@ -1,0 +1,47 @@
+{
+  "schema": "V13_RUN462_STAGE8_P22_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 source-only stage8; native owner Run453 failed/released",
+  "branch": "codex/automation11-run462-stage8-p22-source-20261026",
+  "base": "5ce026694cb455070eac09598c26e50359771970",
+  "tested_source_head": "5c1b8c16533ab1dbee6f939403af13a6bc940b78",
+  "pr": 461,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run462_stage8_p22.py": "235e543cad60692d31229e9a04fec0fea1845c5f",
+    "v13/code/tests/test_run462_stage8_p22.py": "e11f4d65190491692278ea2d797491b28d1d4096",
+    ".github/workflows/run462-stage8-p22-source.yml": "e78588d45851d2f76dd62a52bb8a5f264a64ac7a"
+  },
+  "actions": {
+    "id": 40272831167,
+    "conclusion": "success",
+    "tests": "94/94 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12628579967,
+    "raw_artifact_sha256": "284bd6200f3ea8cb835e57187a032a4b429de29b4fdba070e7072db0dfdb3bfa"
+  },
+  "result": "Next exact eighth arm P_s22 source preview (294→336) after seven-receipt verified import, no native execution.",
+  "new_native_observation": {
+    "run_id": 40270625698,
+    "conclusion": "failure",
+    "raw_artifact_id": 12629200418,
+    "raw_artifact_sha256": "91d52391421621d07274912941a0a806794f9d582d213c7a573145983908aabe",
+    "rows_executed": 252,
+    "rows_accepted": 210,
+    "error": "SAFE_EXPORT_RED: MODEL_OR_MANIFEST_FILE_IN_WORK:RUN409_EXPORT_MANIFEST.json",
+    "cause": "Run438 ZIP importer restores the prior export manifest into the working tree, but Run409 export forbids a manifest file in work. Actual S_s21 native 42 rows completed; safe re-export failed, independent six-receipt verification skipped, no 252 promotion."
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Fix the imported export-manifest lifecycle in Run438 and its descendants before any further native retry; preserve original RED artifact.",
+    "After reviewed source fix, rerun S_s21 exclusive native from exact prior 210-row artifact; safe export must be GREEN and independent Run453 verifier must close.",
+    "Run458/Run461 importers also require the same manifest strip after verification to allow later safe export."
+  ],
+  "next_command": "Implement and test manifest-free work publication: verify archived manifest and all receipts inside private staging, then remove only redundant staging export manifest before atomic publication; retain its SHA and original artifact, never delete raw failed attempts. Test next safe re-export and regressions, checkpoint, then serialized native retry."
+}
