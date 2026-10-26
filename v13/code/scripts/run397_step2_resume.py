@@ -38,7 +38,7 @@ def evidence_hashes(directory):
     return {p.name: audit.sha(p) for p in sorted(Path(directory).glob("*.json")) if p.is_file()}
 
 
-def validate_completed(directory, arm, seed, fixtures, expected_manifest):
+def validate_completed(directory, arm, seed, fixtures, expected_manifest, current_runner_sha=None):
     """Validate every native row and replay link; do not accept merely present files."""
     directory = Path(directory)
     rid = f"{arm}_s{seed}"
@@ -50,6 +50,22 @@ def validate_completed(directory, arm, seed, fixtures, expected_manifest):
                                      (source_path, tool_path, summary_path, prereg_path))
     expected = {(f["id"], v) for f in fixtures for v in VARIANTS}
     require(source.get("fixtures") == fixtures, "SOURCE_FIXTURE_MISMATCH")
+    # A self-consistent report from another valid installed model is not a
+    # reusable result for this preregistered cohort. Bind actual role hashes.
+    models = catalog()["models"]
+    role_models = {"B1_DETAIL": "body", "B2_GIST": "body" if arm == "S" else "gist",
+                   "C3_LANGUAGE": "language"}
+    stored_artifacts = source.get("installed_artifacts") or {}
+    stored_hashes = stored_artifacts.get("model_sha256") or {}
+    stored_revisions = stored_artifacts.get("model_revisions") or {}
+    for role, key in role_models.items():
+        spec = models[key]
+        require(stored_hashes.get(role) == spec["files"][0]["sha256"] and
+                stored_revisions.get(role) == spec["revision"],
+                "RECORDED_MODEL_IDENTITY_MISMATCH:" + role)
+    if current_runner_sha is not None:
+        require(stored_artifacts.get("runner_sha256") == current_runner_sha,
+                "RECORDED_RUNNER_IDENTITY_MISMATCH")
     require(source.get("all_structural_checks_passed") is True, "SOURCE_STRUCTURAL_FAIL")
     require(source.get("status") in ("UTILITY_FAIL", "UTILITY_PASS_SCOPED"), "SOURCE_INCOMPLETE")
     require(source.get("installed_artifacts_unchanged") is True, "SOURCE_MODEL_CHANGED")
@@ -95,7 +111,7 @@ def _attempts(work, rid):
                   key=lambda p: int(p.name[8:]))
 
 
-def previous_success(work, arm, seed, fixtures, manifest):
+def previous_success(work, arm, seed, fixtures, manifest, current_runner_sha=None):
     """Any invalid/partial attempt is preserved and ignored, never rewritten."""
     rid = f"{arm}_s{seed}"
     failures = []
@@ -109,7 +125,7 @@ def previous_success(work, arm, seed, fixtures, manifest):
             require(stored.get("schema") == SCHEMA and stored.get("status") == "COMPLETE",
                     "RECEIPT_NOT_COMPLETE")
             require(stored.get("arm") == arm and stored.get("seed") == seed, "RECEIPT_ID_MISMATCH")
-            actual = validate_completed(p, arm, seed, fixtures, manifest)
+            actual = validate_completed(p, arm, seed, fixtures, manifest, current_runner_sha)
             require(stored.get("validated") == actual, "RECEIPT_HASH_MISMATCH")
             return {"attempt": str(p.relative_to(work)), "validated": actual}, failures
         except Exception as exc:
@@ -154,6 +170,7 @@ def run(work, installed, pilot=True, execute=False):
         manifest = checked_manifest(work, fixtures, arms, seeds, pilot)
         completed = {}
         failures = {}
+        current_runner_sha = None
         if execute:
             require(installed is not None, "INSTALLED_HOME_REQUIRED")
             installed = Path(installed).expanduser().resolve()
@@ -181,11 +198,12 @@ def run(work, installed, pilot=True, execute=False):
             meta = audit.load(installed / "config/runner.json")
             require(meta.get("tag") == catalog()["runner"]["tag"] and
                     meta.get("binary_sha256") == audit.sha(runner), "RUNNER_HASH_INVALID")
+            current_runner_sha = audit.sha(runner)
             z2c = r394.configure(fixtures)
         for seed in seeds:
             for arm in arms:
                 rid = f"{arm}_s{seed}"
-                existing, prior_failures = previous_success(work, arm, seed, fixtures, manifest)
+                existing, prior_failures = previous_success(work, arm, seed, fixtures, manifest, current_runner_sha)
                 if prior_failures:
                     failures[rid] = prior_failures
                 if existing:
@@ -202,7 +220,7 @@ def run(work, installed, pilot=True, execute=False):
                                "attempt": str(attempt.relative_to(work)), "time": time.time()})
                 try:
                     summary = z2c.run(installed, attempt, arm, seed)
-                    validated = validate_completed(attempt, arm, seed, fixtures, manifest)
+                    validated = validate_completed(attempt, arm, seed, fixtures, manifest, current_runner_sha)
                     require(summary.get("run") == rid, "RETURNED_SUMMARY_MISMATCH")
                     receipt = {"schema": SCHEMA, "status": "COMPLETE", "arm": arm,
                                "seed": seed, "validated": validated, "owner": OWNER}
