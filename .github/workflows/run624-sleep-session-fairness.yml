@@ -57,7 +57,7 @@ jobs:
         working-directory: v13/code
         run: |
           set +e
-          PYTHONPATH="$PWD" "$RUNNER_TEMP/run624venv/bin/python" -m unittest -v tests.test_run624_sleep_session_fairness.SleepSessionFairness tests.test_run609_sleep_digest_backlog.SleepBacklog tests.test_run610_sleep_partial_pair.PartialUserPair tests.test_run612_sleep_backlog_status.SleepProgressStatus tests.test_sleep_offline.DigestTests tests.test_sleep_offline.LiveContextTests tests.test_sleep_offline.PredictorTests tests.test_sleep_offline.PhaseTests > "$RUNNER_TEMP/RUN624_GREEN_RAW.log" 2>&1
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run624venv/bin/python" -m unittest -v tests.test_run624_sleep_session_fairness.SleepSessionFairness tests.test_run609_sleep_digest_backlog.SleepBacklog.test_interleaved_unfinished_assistant_is_deferred_and_later_recovered tests.test_run609_sleep_digest_backlog.SleepBacklog.test_revoked_source_never_enters_digest_but_cursor_progresses tests.test_run610_sleep_partial_pair.PartialUserPair tests.test_run612_sleep_backlog_status.SleepProgressStatus tests.test_sleep_offline.DigestTests tests.test_sleep_offline.LiveContextTests tests.test_sleep_offline.PredictorTests tests.test_sleep_offline.PhaseTests > "$RUNNER_TEMP/RUN624_GREEN_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/RUN624_GREEN_EXIT.txt"
           exit 0
       - name: Public privacy scan
