@@ -447,7 +447,7 @@ def parse(text,second=None):
 # only add that question: it never changes, loosens or removes a rule of the fixed reader, and never creates a prohibition.
 STRONG_BLOCK=re.compile(r"\b(?:tabu\w*|\w*sperr\w*|gesperrt\w*|\w*verbot\w*|verbiet\w*|untersag\w*|ausgeschlossen|(?:finger|pfoten|haende|hand)\s+weg|"
     r"lass\w*\s+(?:\w+\s+){0,4}finger|off[\s-]limits|forbidden|prohibited|banned|taboo|hands\s+off)\b")
-SECOND_OPINION='off'  # 'jef' (learned second reader, v13/userrules_second.py) | 'off' | a callable(text)->bool for comparisons; set by config
+SECOND_OPINION='jef'  # WP-UR8 measured SECOND_OPINION_HELPS (PREREG switch rule). 'jef' (learned second reader, v13/userrules_second.py) | 'off' | a callable(text)->bool for comparisons; set by config
 
 
 def _ask_all(src,why,suggest):
