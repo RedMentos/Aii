@@ -160,5 +160,27 @@ class Run407StreamTests(unittest.TestCase):
         self.assertIn("DESTINATION_NOT_FRESH", str(report["errors"]))
 
 
+    def test_atomic_no_replace_installs_fresh_tree(self):
+        source = self.root / "stage"
+        source.mkdir()
+        (source / "sentinel").write_text("stage")
+        dest = self.root / "fresh"
+        m._rename_noreplace(source, dest)
+        self.assertFalse(source.exists())
+        self.assertEqual((dest / "sentinel").read_text(), "stage")
+
+    def test_atomic_no_replace_refuses_concurrent_empty_directory(self):
+        source = self.root / "stage"
+        source.mkdir()
+        (source / "sentinel").write_text("stage")
+        dest = self.root / "concurrent"
+        dest.mkdir()
+        (dest / "owner").write_text("other owner")
+        with self.assertRaises(FileExistsError):
+            m._rename_noreplace(source, dest)
+        self.assertTrue(source.is_dir())
+        self.assertEqual((dest / "owner").read_text(), "other owner")
+
+
 if __name__ == "__main__":
     unittest.main()
