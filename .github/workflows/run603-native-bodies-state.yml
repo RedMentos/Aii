@@ -1,0 +1,168 @@
+name: V13 Run603 exact-current real B1 B2 body state Linux-native
+on:
+  push:
+    branches:
+      - codex/automation11-run603-native-bodies-state-20261026
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run603-native-bodies-state.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run603-native-bodies-state/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-bodies-state:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run603-native-bodies-state-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact source, prereg, model, Canon and host pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN603_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run603-native-bodies-state/PREREG.md)" = 01974452302652d3abb516a7838f741a746f336d
+          test "$(git hash-object v13/code/v13/proofs.py)" = a4bf9d9247dcbff727a2ccd12c979596658692cb
+          test "$(git hash-object v13/code/v13/cognition.py)" = 1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf
+          test "$(git hash-object v13/code/v13/models.py)" = bd035cf8029850cce00b179edf533e53bf24358a
+          test "$(git hash-object v13/code/v13/bootstrap.py)" = dc23e192bcd01589475692666ebb6568c80d078b
+          test "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99
+          test "$(git hash-object v13/code/tests/test_body_state.py)" = f2063eab5c31c54a1404c040cc73d0df0f5f1519
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/proofs.py v13/code/v13/cognition.py v13/code/v13/models.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN603_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; free -h; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN603_HOST.txt"
+      - name: Isolated pinned model-free dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run603venv"
+          "$RUNNER_TEMP/run603venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source-only body state fixtures (not native)
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run603venv/bin/python" -m unittest -v tests.test_body_state > "$RUNNER_TEMP/RUN603_FIXTURE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN603_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original pinned public model and native runner bootstrap
+        id: bootstrap
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN603_FIXTURE_EXIT.txt")" != 0 ]; then
+            echo 2 > "$RUNNER_TEMP/RUN603_BOOTSTRAP_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run603installed"
+          timeout -s TERM -k 30s 1200s "$RUNNER_TEMP/run603venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN603_BOOTSTRAP_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN603_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Six actual native B1 B2 offers, restart and state ablation
+        id: native
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN603_BOOTSTRAP_EXIT.txt")" != 0 ]; then
+            echo 2 > "$RUNNER_TEMP/RUN603_NATIVE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run603installed"
+          timeout -s TERM -k 30s 700s "$RUNNER_TEMP/run603venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN603_NATIVE_RAW.log" 2>&1
+          import json,os,shutil
+          from pathlib import Path
+          from v13.runtime import Runtime
+          from v13.proofs import probe_body_state
+          home=Path(os.environ['V13_HOME'])
+          r=Runtime(home)
+          try:
+              result=probe_body_state(r)
+              shutil.copyfile(result['artifact'],Path(os.environ['RUNNER_TEMP'])/'RUN603_NATIVE_REPORT.json')
+              print(json.dumps({'status':result['status'],'checks':result['checks'],
+                  'phone_measured':result['phone_measured'],
+                  'semantic_complementarity_proven':result['semantic_complementarity_proven']},sort_keys=True))
+          finally:
+              r.close()
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN603_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent original native B1 B2 source and negative gate audit
+        id: audit
+        if: ${{ steps.native.outputs.rc == '0' }}
+        run: |
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN603_AUDIT_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'RUN603_NATIVE_REPORT.json'
+          d=json.loads(p.read_text())
+          assert d['proof_kind']=='STEP2_BODY_STATE_POLICY'
+          assert d['status']=='BODY_STATE_CHECKS_PASS'
+          assert d['uses_real_weights'] is True and d['phone_measured'] is False
+          assert d['semantic_complementarity_proven'] is False and d['full_runner_proof'] is False
+          assert len(d['turns'])==6
+          assert all(all(t['checks'].values()) and t['offer']['native_metrics']['generated_tokens']>0 for t in d['turns'])
+          assert all(d['checks'].values())
+          assert [t['case'] for t in d['turns']]==['first','related','after_restart','different_project','fine_short_window','state_ablation']
+          print('RUN603_LINUX_NATIVE_B1_B2_STATE_STRUCTURAL_ONLY')
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN603_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 50051320ced1907fd4e140e1e25ce218143b3175 --head HEAD --no-worktree > "$RUNNER_TEMP/RUN603_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN603_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA close original raw even RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN603_*' ! -name 'RUN603_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN603_SHA256SUMS.txt
+      - name: Upload native and failed original raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run603-Native-Bodies-State-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/RUN603_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual native body-state and privacy exits
+        if: always()
+        run: |
+          set -euo pipefail
+          for item in FIXTURE BOOTSTRAP NATIVE AUDIT PRIVACY; do
+            echo "RUN603 ${item} exit: $(cat "$RUNNER_TEMP/RUN603_${item}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            if [ -f "$RUNNER_TEMP/RUN603_${item}_EXIT.txt" ] && [ "$(cat "$RUNNER_TEMP/RUN603_${item}_EXIT.txt")" != 0 ]; then
+              tail -n 80 "$RUNNER_TEMP/RUN603_${item}_RAW.log" || true
+            fi
+          done
+          test "${{ steps.fixture.outputs.rc }}" = 0
+          test "${{ steps.bootstrap.outputs.rc }}" = 0
+          test "${{ steps.native.outputs.rc }}" = 0
+          test "${{ steps.audit.outputs.rc }}" = 0
+          test "${{ steps.privacy.outputs.rc }}" = 0
