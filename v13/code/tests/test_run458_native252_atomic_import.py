@@ -89,6 +89,16 @@ class Run458AtomicImport(unittest.TestCase):
     def test_validated_utility_is_computed_before_atomic_publication(self):
         result = self.run_import()
         self.assertTrue(self.destination.is_dir())
+        self.assertFalse((self.destination / importer.gate.MANIFEST).exists(),
+                         "prior export manifest must not enter reusable work")
+        installed = self.root / "installed"
+        installed.mkdir()
+        exported = importer.safe.export(self.destination, installed,
+                                        self.root / "next-safe-export")
+        self.assertEqual(exported["status"], "EXPORT_VERIFIED_NO_MODEL_WEIGHTS",
+                         exported["errors"])
+        self.assertTrue((self.root / "next-safe-export" /
+                         importer.gate.MANIFEST).is_file())
         self.assertEqual(result["rows_verified"], 252)
         self.assertEqual(result["step2_exit"], "UTILITY_FAIL")
         self.assertFalse(result["canonical_gate_pass"])

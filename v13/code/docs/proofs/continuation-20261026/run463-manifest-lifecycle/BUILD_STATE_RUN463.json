@@ -1,0 +1,53 @@
+{
+  "schema": "V13_RUN463_MANIFEST_LIFECYCLE_FIX_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 source-only repair after actual native RED; Run453 owner released",
+  "branch": "codex/automation11-run463-import-manifest-lifecycle-fix-20261026",
+  "base": "b96d2d6b9f78f39c1103c20c64d299ce1f6b2048",
+  "tested_source_head": "d917902aa4c9094e2ff7c8596e04b7cf821d6bc6",
+  "pr": 462,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run438_import_stage5_artifact.py": "4ed1808e1e9eae3e37e02671c317ee2d821a17b1",
+    "v13/code/scripts/run458_import_stage6_artifact.py": "ba2a93a326844099468a82714a95f2f2521aaeba",
+    "v13/code/scripts/run461_import_stage7_artifact.py": "c64e0ab85bcd7fad1b856e7d340ca9743bcb4217",
+    "v13/code/tests/test_run438_import_stage5_artifact.py": "8e90a6d8c41db880d7bf791a8a9f541702b043bb",
+    "v13/code/tests/test_run458_native252_atomic_import.py": "026c3f65655d23664bcb6f042093395fa5979d00",
+    "v13/code/tests/test_run461_native294_atomic_import.py": "44de416e45db8f8f7bd516b6e3f10307a0f1e4b3",
+    ".github/workflows/run463-manifest-lifecycle.yml": "6dcc55cb17a389ca309b0342c9efeba7e368659e"
+  },
+  "actions": {
+    "id": 40273001906,
+    "conclusion": "success",
+    "tests": "113/113 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12628954730,
+    "raw_artifact_sha256": "4881ced12c4c60c6f235feb4fa35066d10a12289c7a6a6aaf6e5072ac337d9f4"
+  },
+  "actual_native_red": {
+    "run_id": 40270625698,
+    "conclusion": "failure",
+    "raw_artifact_id": 12629200418,
+    "raw_artifact_sha256": "91d52391421621d07274912941a0a806794f9d582d213c7a573145983908aabe",
+    "native_rows_executed": 252,
+    "accepted_rows": 210,
+    "error": "SAFE_EXPORT_RED:ValueError: MODEL_OR_MANIFEST_FILE_IN_WORK:RUN409_EXPORT_MANIFEST.json",
+    "safe_export": "RED",
+    "independent_native252": "NOT_RUN",
+    "source_frozen": true
+  },
+  "result": "Fixes exact actual Run453 export failure: after full SHA/receipt verification in private staging, removes only redundant prior RUN409_EXPORT_MANIFEST.json before atomic work publication. Original ZIP and SHA manifest preserved; Run409 re-export after restored work now software-tests GREEN for 252/294 importers. No model/frozen source changes.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run463 is source/synthetic CI only; actual native S_s21 retry required.",
+    "Run453 raw failure and original 210-row archive must be preserved; no 252-row safe archive was produced by Run453.",
+    "Exact model/runner pins and 210-row input must be verified again in new serialized native retry; no concurrent native owner."
+  ],
+  "next_command": "Create new Run464 serialized native S_s21 retry workflow based on Run453, pin exact Run438 repaired Git blob 4ed1808e1e9eae3e37e02671c317ee2d821a17b1 and original 210-row artifact SHA 280bcf57..., retain Run453 RED. Run source preflight before model bootstrap, then one native arm and independent Run453 six-receipt verification, safe no-model export, raw hashes and privacy scan."
+}

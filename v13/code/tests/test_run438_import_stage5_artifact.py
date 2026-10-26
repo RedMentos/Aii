@@ -50,6 +50,8 @@ class Run438Stage5ImportTests(unittest.TestCase):
         self.assertEqual(result["rows_verified"], 210)
         checked.assert_called_once()
         self.assertTrue((self.root / "restored/attempts/S_s20/attempt-0001").is_dir())
+        self.assertFalse((self.root / "restored" / importer.gate.MANIFEST).exists(),
+                         "imported export manifest must not enter reusable work")
         self.assertFalse(result["canonical_gate_pass"])
 
     def test_wrong_outer_sha_rejected(self):
