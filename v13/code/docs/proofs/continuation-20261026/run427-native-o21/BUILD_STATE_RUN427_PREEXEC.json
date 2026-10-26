@@ -1,0 +1,53 @@
+{
+  "schema": "V13_RUN427_PREEXEC_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run427-native-o21-serialized-20261026",
+  "source_head": "13d0fa6ff35c72a637ef34b39bf4e3f5d6de7168",
+  "workflow_blob_sha": "da5fc315b1a23301e9fe12f633a4ef0f360d78c4",
+  "base": "b3b350b4ac26b75e8f65841cb6c8d4106a1996da",
+  "native_exclusive_owner": {
+    "run_id": 40260397013,
+    "status_last_observed": "IN_PROGRESS",
+    "workflow": "Run418 S_s20",
+    "concurrency_group": "v13-native-c3-run131-serialized",
+    "new_job_must_queue": true
+  },
+  "actual_126_prereq": {
+    "producer_run": 40260347495,
+    "independent_postflight_run": 40262481461,
+    "small_artifact_id": 12625030366,
+    "small_zip_sha256": "54a6b12638dfdc0e9f71f362d3357dd70adfe0ba2441d26c4c3eba3e37bb364b",
+    "safe_artifact_id": 12624815819,
+    "safe_zip_sha256": "20ce321d29f04089a087421e16ddd5d854c103d36b7c958e4b0e11815f45cac4"
+  },
+  "frozen_source_sha256": {
+    "run419_import": "73706e4436be5fca538e10f380b9714e9609bf0f047251e4c2c5e466f04e6171",
+    "run419_verify": "53a14586fe5c2f727bae614ea12f9a89962d8216483687317ccfaaad3a9b7f9d",
+    "run421_one_arm": "c91b442448dbcfba5fa115c614b95d8b6d0bda0b87a265addea11403a79ebee8"
+  },
+  "planned_native": {
+    "arm": "O_s21",
+    "max_new_arms": 1,
+    "expected_rows": 168,
+    "remaining_after_success": 5,
+    "runner": "b10964",
+    "exact_model_hashes_required": true,
+    "no_model_export_required": true,
+    "raw_failure_preservation": true
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "next_command": "Create draft PR based on Run426 checkpoint; inspect GitHub Actions concurrency group. Run427 must remain queued while Run418 owner 40260397013 is in progress. On actual completion, inspect source/receipt/raw ZIP hash and safe no-model export; do not promote STEP2. If RED, preserve attempt and investigate, no silent retry.",
+  "open_questions": [
+    "Whether duplicate Run418 owner 40260397013 completes or times out",
+    "Whether public model/runner artifacts are still accessible and pinned",
+    "Native O21 may take up to 80min, platform session may end before completion"
+  ]
+}
