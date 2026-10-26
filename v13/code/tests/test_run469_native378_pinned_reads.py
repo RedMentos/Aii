@@ -41,6 +41,7 @@ class PinnedUtilityReads(unittest.TestCase):
         self.checked = {
             "status": "RUN468_NATIVE_378_INDEPENDENTLY_VERIFIED",
             "rows_verified": 378,
+            "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL",
             "manifest_sha256": sha(self.manifest_path.read_bytes()),
             "progress_sha256": self.copied["RUN397_PROGRESS.json"]["sha256"],
             "receipt_sha256": {f"{arm}_s{seed}": "a" * 64
