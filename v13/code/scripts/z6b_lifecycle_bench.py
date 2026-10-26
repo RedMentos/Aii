@@ -125,7 +125,8 @@ def run_arm(installed, policy, seed):
             if promos:
                 last = promos[-1]; idx = max(i for i, x in enumerate(log) if x.get('update_id') == last)
                 expect = log[idx]['active_acc_before']['all']; r.store.rollback(last)
-                got = acc(active_path(), log[idx]['phase'] == 'p2')['all']  # same label set as the parent measurement; rb = {'update_id': last, 'expected_parent_acc': expect, 'after_rollback_acc': got, 'restored': abs(got-expect) < 1e-9}
+                got = acc(active_path(), log[idx]['phase'] == 'p2')['all']  # same label set as the parent measurement
+                rb = {'update_id': last, 'expected_parent_acc': expect, 'after_rollback_acc': got, 'restored': abs(got-expect) < 1e-9}
             session = r.session; r.close(); r = Runtime(h)
             restart_same = r.session == session
         finally:
@@ -156,7 +157,7 @@ def criteria(s):
     c = {'C1_fewer_unnecessary_updates_30pct': f['unnecessary_updates'] > 0 and a['unnecessary_updates'] <= .7*f['unnecessary_updates'],
          'C2_final_acc_not_worse_3pt': a['final_acc'] >= f['final_acc'] - .03,
          'C3_false_promotions_le_fixed': a['false_promotions'] <= f['false_promotions'],
-         'C4_rollback_restores': all((s[k]['rollback'] or {'restored': True})['restored'] for k in ('fixed', 'adaptive')),
+         'C4_rollback_restores': all(s[k]['rollback'] is not None and s[k]['rollback']['restored'] for k in ('fixed', 'adaptive')),  # Z6b run: rb was never set (bug), C4 not measured
          'C5_retention_ge_90pct': (a['retention_unchanged'] or 0) >= .9,
          'C6_record_only_no_updates': all(s[k]['record_only_updates'] == 0 for k in s)}
     return c, 'Z6B_LIFECYCLE_ADAPTIVE_PASS' if all(c.values()) else 'Z6B_LIFECYCLE_ADAPTIVE_FAIL'
