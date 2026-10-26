@@ -1,0 +1,55 @@
+{
+  "run": "Run408",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_FILTERED_STAGE1_NOT_ACTUAL_NATIVE",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run408-native-stage1-weight-exclusion-20261026",
+  "pr": 403,
+  "base": {
+    "branch": "codex/run407-streaming-native-stage1-20261026",
+    "sha": "d1deacb310ee2d581dde771f84f25929ef8f48aa",
+    "integration": "stacked review, not main"
+  },
+  "plan_commit": "5219da193263fc0b5f164daa515cac54666a9b4e",
+  "source_commit": "3fd86861ee0256ca95a9eeeb3d7a0f8c49b1a29f",
+  "red_tests_commits": [
+    "8bc8b29741f188ba1ceec13f217ec5f21d870ac3",
+    "dd62f9470708902a4d72965405b7caf228ba8874"
+  ],
+  "green_commit": "989b37e983991724be02fb0186bb4154f66738d4",
+  "green": {
+    "run": 40253279577,
+    "artifact": 12621610668,
+    "artifact_sha256": "25ff6e77445825957c83299e6acbe9a86d0b24870f68f4f207107ed9971b1707",
+    "tests": "87/87 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN"
+  },
+  "actual_run401": {
+    "actions": 40250662450,
+    "source_head": "c0facf60c3286064e15bc06de104c85d9344382a",
+    "artifact_id": 12620379581,
+    "artifact_sha256": "65ac00a8cd2013ebab76828ed3bc25dee5433d1d55a995573387f19de29b530a",
+    "bytes": 1461613972,
+    "run406_initial_inventory": "RED MODEL_WEIGHTS_IN_ARTIFACT",
+    "actual_filtered_restore": "NOT_RUN"
+  },
+  "scope": "source-only opt-in stream verify every member, omit only pinned model duplicates from private stage, retain original ZIP, no native inference",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED",
+    "Age0 approval unchanged",
+    "No Redmi proof",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Run406 second inventory pending exact offending model paths and raw SHA manifest coverage",
+    "Run408 exact actual archive test pending; original SHA and registered model hashes must match",
+    "Run404 stage2 still blocked by actual restore"
+  ],
+  "next_command": "Inspect Run406 Actions 40252976656 inventory; verify model names/size and SHA manifest discrepancy, adjust only observed path/allowlist, then run Run408 actual read-only ZIP audit; do not start stage2 before actual verified restore.",
+  "next_prerequisites": "Exact Run406 inventory, disk for 1.46GB ZIP, no concurrent native owner for later P_s20"
+}
