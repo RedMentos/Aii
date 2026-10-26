@@ -23,8 +23,13 @@
   },
   "tests": {
     "original_predicate_counterexamples": "NaN CHOSEN and missing task intersection reproduced in isolated Python",
-    "github_ci": "PENDING 8 new and inherited HX2/HX1 source tests, official privacy scan",
-    "full_repo_suite": "NOT RUN; existing Run455 full checkout RED, no full-suite claim"
+    "github_ci": "SOURCE_CI_GREEN 32/32 PASS, privacy CLEAN; no native/model, full suite not run",
+    "full_repo_suite": "NOT RUN; existing Run455 full checkout RED, no full-suite claim",
+    "source_run_id": 40284364311,
+    "source_job_id": 121444461320,
+    "raw_artifact_id": 12633571014,
+    "raw_zip_sha256": "cd4b27074a66df2e600046add6b3af77e0a02234db945f6a701471bb176856d5",
+    "tested_source_head": "9cd355fea21af6d96f3d7cde35220af061b5a6f4"
   },
   "negative_gates": {
     "hx2": "HX2_INVALID",
@@ -43,5 +48,5 @@
     "Cross-axis fixture sets can differ in historical test fixtures; a strict full registered matrix gate requires explicit expected task IDs before future native evaluation.",
     "Run484 independently fixes HX5 retention; integrate the two Claude review PRs without overwriting either branch."
   ],
-  "exact_next_command": "Open draft PR against Claude HX2 branch; inspect CI raw tests and privacy, then cross-review integration. Continue native378 utility after Run479 completes."
+  "exact_next_command": "Verify post-checkpoint CI and remote bytes; independent review and coordinate with Claude before integration; retain HX2_INVALID/HX5_LOCKED and all canonical negative gates."
 }
