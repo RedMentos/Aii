@@ -291,7 +291,8 @@ class Operator:
                 if len(args)<3 or args[-2]!='--before' or args.count('--before')!=1:
                     raise ValueError(':search <Text> [--before <Message-ID>]')
                 raw=args[-1]
-                if not raw.isascii() or not raw.isdecimal() or int(raw)<=0:
+                if (not raw.isascii() or not raw.isdecimal() or len(raw)>19
+                        or not 0<int(raw)<=9223372036854775807):
                     raise ValueError('Message-ID muss positiv sein')
                 before=int(raw);args=args[:-2]
                 if not args:raise ValueError(':search <Text> [--before <Message-ID>]')
