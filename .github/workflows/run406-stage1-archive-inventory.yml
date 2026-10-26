@@ -81,6 +81,7 @@ jobs:
                   'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL',
                   'body_jepa_pass':False,'redmi_measured':False,'native_inference_started':False}
           entries=[]
+          model_members=[]
           seen=set()
           with zipfile.ZipFile(archive) as z:
               for i in z.infolist():
@@ -95,7 +96,8 @@ jobs:
                   assert not i.is_dir(), 'DIRECTORY_MEMBER'
                   assert stat.S_IFMT(i.external_attr>>16) != stat.S_IFLNK, 'SYMLINK_MEMBER'
                   assert not i.flag_bits & 1, 'ENCRYPTED_MEMBER'
-                  assert not n.lower().endswith(('.gguf','.safetensors','.ckpt','.pth','.pt')), 'MODEL_WEIGHTS_IN_ARTIFACT'
+                  if n.lower().endswith(('.gguf','.safetensors','.ckpt','.pth','.pt')):
+                      model_members.append({'name':n,'bytes':i.file_size})
                   assert 0 <= i.file_size <= 8_000_000_000, 'MEMBER_OVERSIZED'
                   entries.append({'name':n,'bytes':i.file_size,'compressed_bytes':i.compress_size})
               assert len(entries) > 0 and 'RUN401_SHA256SUMS.txt' in seen, 'MISSING_MANIFEST'
@@ -111,7 +113,8 @@ jobs:
                   assert m, 'MALFORMED_MANIFEST'
                   paths.append(m.group(2))
               assert len(paths)==len(set(paths)) and set(paths)==seen-{'RUN401_SHA256SUMS.txt'}, 'UNHASHED_OR_MISSING'
-          report.update({'status':'INVENTORY_ONLY_NOT_RESTORE','member_count':len(entries),
+          report.update({'status':'MODEL_WEIGHTS_PRESENT_BLOCKED' if model_members else 'INVENTORY_ONLY_NOT_RESTORE',
+                         'model_members':model_members,'member_count':len(entries),
                          'uncompressed_bytes':sum(x['bytes'] for x in entries),
                          'compressed_member_bytes':sum(x['compressed_bytes'] for x in entries),
                          'largest_members':sorted(entries,key=lambda x:x['bytes'],reverse=True)[:18],
@@ -120,6 +123,7 @@ jobs:
           out=Path(os.environ['RUNNER_TEMP'])/'RUN406_INVENTORY.json'
           out.write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
           print(json.dumps(report,sort_keys=True))
+          assert not model_members, 'MODEL_WEIGHTS_IN_ARTIFACT'
           PY
           rc=${PIPESTATUS[0]}
           echo "$rc" > "$RUNNER_TEMP/RUN406_INVENTORY_EXIT.txt"
