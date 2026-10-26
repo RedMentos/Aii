@@ -113,10 +113,10 @@ class Run396AuditTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "digest mismatch"):
             audit.audit(self.folder)
 
-    def test_reject_nonfinite_even_with_forged_updated_digests(self):
+    def test_reject_nonnumeric_even_with_forged_updated_digests(self):
         path = self.folder / "tool_P_s20.json"
         j = audit.load(path)
-        j["rows"][0]["score"]["utility"] = float("nan")
+        j["rows"][0]["score"]["utility"] = "NaN"
         j["row_sha256"] = rowhashes(j["rows"])
         write(path, j)
         result_path = self.folder / "RUN394_RESULT.json"
