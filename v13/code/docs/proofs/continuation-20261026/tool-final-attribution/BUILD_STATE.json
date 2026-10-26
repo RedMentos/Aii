@@ -31,9 +31,21 @@
     "V13": "INCOMPLETE"
   },
   "open_questions": [
-    "Broker currently recognizes tool-final authority based on typed tool result and metadata but does not independently bind final visible bytes to eligibility.final_text; add negative tamper test and strict equality guard.",
     "Full unfiltered source suite has not been rerun on this modified candidate head.",
-    "Native/Redmi proof not performed; source-only claim."
+    "Exact tool-final source-only tests do not prove live native/Redmi runtime latency.",
+    "Original Run568 native workflow RED is independent; audit raw separately without rerun.",
+    "No main integration or full V13 acceptance."
   ],
-  "next_exact_command": "On same isolated review branch, preregister and add strict exact-content binding for ELIGIBILITY_TOOL_FINAL in v13/broker.py, test tampered output and malformed tool result; update pinned CI, run and independently verify artifact, then run full unfiltered source suite with pinned historical prerequisites. Do not merge main or alter original native cohorts."
+  "next_exact_command": "Preregister and run full unfiltered current-source unittest discovery on this exact candidate with Run573 pinned original external raw inputs and isolated deps; preserve raw even RED, do not alter original frozen cohort pins. Then independent review and new checkpoint.",
+  "followup_content_binding": {
+    "prereg_commit": "a4ff43ec6b7f70591a87edb5c91fbf69982ac6e0",
+    "verified_head": "9082598cd630ec8a493d0084e639c1567c335f0f",
+    "workflow_run": 40376490405,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12673904407,
+    "artifact_sha256": "f36b56cb8000a5739b745e8640fcec11f6fcff0ad842827b2c4676ecaf25631a",
+    "tests": "focused + original broker/toolstep/live eligibility + Run574 AST PASS",
+    "privacy": "PASS",
+    "native_executed": false
+  }
 }
