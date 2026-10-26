@@ -1,0 +1,62 @@
+{
+  "run": "Run397",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_NATIVE_RESTART_UNPROVEN",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run397-step2-resumable-native-20261026",
+  "pr": 392,
+  "base": {
+    "branch": "codex/run396-step2-native-postflight-20261026",
+    "sha": "9c2e10426b970d25cdd7cde9c666a6e4b68fbf23",
+    "integration": "stacked review only; main remains older"
+  },
+  "plan_commit": "bd5cd42570ada1a0d44596cd361c8599d533571d",
+  "source_commit": "ad3b8a842143334fc09eb300f41d3c02ca79e9bf",
+  "proof": {
+    "source_head": "ad3b8a842143334fc09eb300f41d3c02ca79e9bf",
+    "run": 40248899163,
+    "job": 121336257668,
+    "tests": "26/26 PASS, compileall PASS, privacy CLEAN",
+    "artifact": 12619573120,
+    "sha256": "1a5a780dfabc273abcd9e35492aac52146df68c22985a32732e267a05d71ff46",
+    "raw": "ZIP CRC PASS, four internal SHA256 PASS, private Library byte-identical"
+  },
+  "preserved_failures": [
+    {
+      "type": "DEEP_VALID_MODEL_SWAP",
+      "run": 40248771015,
+      "artifact": 12619531878,
+      "sha256": "01563b811f221b33d41ea6e184de3b0336266a1d824434c435036c9cc7b75806",
+      "fixed_by": "9e72ee3831576fea4115dea7e1ff3622c2c6eb3d"
+    },
+    {
+      "type": "FORGED_RECORDED_MODEL_HASH",
+      "run": 40248877645,
+      "artifact": 12619139852,
+      "sha256": "ef2b143374ccba74d654709e9f9c7afb8e03668d429bdafefc979f5a519ea889",
+      "fixed_by": "ad3b8a842143334fc09eb300f41d3c02ca79e9bf"
+    }
+  ],
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run397_STEP2_20261026/",
+  "scope": "Append-only resumable native STEP2 arm executor; no native execution in Run397; synthetic/source-only proof",
+  "negative_gates": [
+    "Run395 pilot still running at checkpoint",
+    "Run397 interrupted native restart untested",
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA and jepa_weight=0",
+    "Run389 full suite RED",
+    "No Redmi phone proof",
+    "Age0 approval/learning unchanged",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Audit Run395 pilot exact-head artifact and structural row completeness",
+    "Exercise deliberate interrupted native resume only after Run395 owner completes",
+    "Decide full 378-row cohort resource budget from measured pilot runtime",
+    "Verify runtime library binding on resume if needed"
+  ],
+  "next_command": "PYTHONPATH=v13/code:v13/code/scripts python3 v13/code/scripts/run397_step2_resume.py --work <private fresh cohort dir> --installed-home <verified installed home> --full --execute",
+  "next_prerequisites": "Review Run395 native pilot and installed model hashes; no concurrent native owner, no paid provisioning"
+}
