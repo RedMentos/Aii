@@ -18,7 +18,7 @@
     "collector": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
     "tests": "f8c59acccb636cb68efa12ba0fccb2e0b440cd34"
   },
-  "evidence": "SOURCE_ONLY_CI_PENDING_NO_NATIVE",
+  "evidence": "SOURCE_ONLY_GREEN_24_TESTS_FIVE_PLANS_PRIVACY_CLEAN",
   "native_owner": "Run507 PR505 Actions40309409260 in_progress at discovery; no new heavy run",
   "gates": {
     "step2": "UTILITY_FAIL",
@@ -33,6 +33,20 @@
     "Run507 separate native owner; do not overlap",
     "No native Run511/512 receipt yet"
   ],
-  "next_command": "Open draft PR against codex/run511-b2-offer-collector-source-20261026; verify exact remote source bytes and Run512 Actions raw source-only test/plan/privacy evidence; then implement independent read-only postflight verifier for future 12-row native receipts.",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Review Run513 source-only postflight against this exact Run512 GREEN base, test and SHA-close synthetic evidence; Run507 native owner remains separate.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "ci": {
+    "workflow_run": 40312012167,
+    "head": "b7121ff021f09b2ac09f9b15559efaf08ee8941d",
+    "status": "SUCCESS",
+    "focused_tests_pass": 24,
+    "plan_count": 5,
+    "planned_keys": 60,
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12644564001,
+    "raw_zip_sha256": "6125171110ec99f14afaa9fa5e6dd5e7638fb211393486139ff7e7cb50e326a7",
+    "manifest_entries_verified": 11,
+    "raw_exit_codes": "0/0/0",
+    "private_library_backup": "/V13_Run512_SOURCE_ONLY_PROOF_20261026_sha61251711.zip"
+  }
 }
