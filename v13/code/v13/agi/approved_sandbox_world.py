@@ -79,9 +79,19 @@ class ApprovedSandboxWorldSession:
             raise ValueError("Self/World outcome already collected")
         # Real file changes first. If scanning fails, retain baseline and do
         # not claim completion; the operator can correct and explicitly retry.
-        file_rows = self.port.observe(self.selfsys, self.event_id)
-        name = saved["args"].get("name")
         issued = action_tx in self._issued
+        if issued:
+            file_rows = self.port.observe(self.selfsys, self.event_id)
+        else:
+            # The tool may execute even if its optional pre-effect hook failed.
+            # Never attribute that action using an unrelated old corollary.
+            # Consume the real scan, but do not write false Self packets.
+            file_rows = [
+                {"channel": o["channel"], "class": "UNCLEAR",
+                 "reason": "no_current_corollary", "action_ids": []}
+                for o in self.port.poll()
+            ]
+        name = saved["args"].get("name")
         status_rows = []
         if issued:
             status_rows = self.selfsys.observe(
