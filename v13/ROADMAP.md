@@ -1244,7 +1244,7 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - `b2_quote_choices=sources`: **`Z2J_CHOICES_HELP`** — B2-Regelquote .12 → .71 (CI > 0), exakt bewacht 8 vs 2 (`both_exact`), alle Zeilen 22 vs 8, 0 falsch mit Wächter (48 ohne). Geänderte Regeln weiter 0 exakt: C3 liest in 10/10 Fällen den alten Wert. Befund `code/docs/proofs/continuation-20261026/step2-z2j-sources/BEFUND.md`.
 
 ### WP-Z2k Jüngster Regelwert deterministisch statt von C3 (Cloud) — IN ARBEIT 2026-10-26 (gleicher Thread/Branch)
-- Werkzeug-Schalter (Standard aus): Regelwert = jüngster in aktuellen Text + geprüften Zitaten genannter Wert; erst explorativ auf Z2j-Daten, dann vorregistriert frisch.
+- `eligibility rule_reader='newest_quoted'` (Standard `model`): Regelwert = jüngster in geprüften Zitaten genannter Wert. Explorativ Z2j S4 exakt 22 → 48/210, 0 falsch. Vorregistrierte Bestätigung A4/S4, Seeds 38–40, frische Episoden.
 
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).

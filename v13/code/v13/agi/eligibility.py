@@ -76,14 +76,34 @@ def newest_values(rule, history):
     return set()
 
 
-def decide(rules, options, current, quotes=(), history=()):
+def newest_quoted(rule, current, quotes, history):
+    """WP-Z2k reader: the one value the current source states for this rule, else the one value of the newest earlier
+    session source that states it, if a verified quote or the current source states that value; otherwise None."""
+    override = stated_values(rule, current)
+    if len(override) == 1: return next(iter(override))
+    if override: return None
+    newest = newest_values(rule, history)
+    if len(newest) == 1 and any(stated(rule, next(iter(newest)), t) for t in [current, *quotes]): return next(iter(newest))
+    return None
+
+
+def decide(rules, options, current, quotes=(), history=(), rule_reader='model'):
     """rules: {'budget','deadline','local_only'} extracted (None = model says unavailable).
     current: current source text; quotes: verified exact quotes. Returns action, options, rejected reasons.
     history (WP-Z2g recency guard, empty = previous behaviour): earlier exact sources of this session, oldest -> newest.
     A rule value not stated in the current source counts only if the newest earlier source that states that rule
     states this value; an exact but superseded quote ('Budget 60 euros' before 'New budget 80 euros') -> unavailable.
-    WP-Z2f: with more B2 context, 27/27 wrong decisions came from such stale quotes."""
-    texts = [current, *quotes]; rejected = []; kept = {}
+    WP-Z2f: with more B2 context, 27/27 wrong decisions came from such stale quotes.
+    rule_reader (WP-Z2k, needs history): 'model' = the extracted values (default); 'newest_quoted' = a rule value the
+    extraction got wrong or left empty is replaced by newest_quoted() when that finds one. WP-Z2j: with kickoff and
+    revision both quoted, the 350M consumer took the superseded value in 10/10 rows."""
+    if rule_reader not in ('model', 'newest_quoted'): raise ValueError('rule_reader model|newest_quoted')
+    texts = [current, *quotes]; rejected = []; kept = {}; read = []
+    if rule_reader == 'newest_quoted' and history:
+        rules = dict(rules)
+        for rule in ('budget', 'deadline', 'local_only'):
+            n = newest_quoted(rule, current, quotes, history)
+            if n is not None and n != rules.get(rule): rules[rule] = n; read.append(rule)
     for rule in ('budget', 'deadline', 'local_only'):
         v = rules.get(rule)
         if v is None: kept[rule] = None; continue
@@ -96,17 +116,18 @@ def decide(rules, options, current, quotes=(), history=()):
         if not option_stated(o, texts): rejected.append(o['entity']+':option_not_stated')
     if any(r.endswith('option_not_stated') for r in rejected): kept['budget'] = None
     action, out = recipe(kept['budget'], kept['deadline'], kept['local_only'], options)
-    return {'action': action, 'options': out, 'rejected': rejected, 'revision': REVISION+('+recency' if history else '')}
+    return {'action': action, 'options': out, 'rejected': rejected, 'read_newest': read,
+            'revision': REVISION+('+recency' if history else '')+('+newest' if rule_reader == 'newest_quoted' and history else '')}
 
 
-def tool(current, a_cost, a_days, a_local, b_cost, b_days, b_local, quotes='', budget=None, deadline=None, local_only=None, history=''):
+def tool(current, a_cost, a_days, a_local, b_cost, b_days, b_local, quotes='', budget=None, deadline=None, local_only=None, history='', rule_reader='model'):
     """ToolRegistry entry point (scalar typed args; quotes and history joined by newlines; omitted rule = unavailable;
     empty history = recency guard off)."""
     options = [{'entity': 'A', 'cost': a_cost, 'days': a_days, 'local': a_local},
                {'entity': 'B', 'cost': b_cost, 'days': b_days, 'local': b_local}]
     return decide({'budget': budget, 'deadline': deadline, 'local_only': local_only}, options, current,
-                  [q for q in quotes.split('\n') if q], [h for h in history.split('\n') if h])
+                  [q for q in quotes.split('\n') if q], [h for h in history.split('\n') if h], rule_reader)
 
 
 SCHEMA = {'current': 'text', 'quotes': 'text?', 'a_cost': 'int', 'a_days': 'int', 'a_local': 'bool',
-          'b_cost': 'int', 'b_days': 'int', 'b_local': 'bool', 'budget': 'int?', 'deadline': 'int?', 'local_only': 'bool?', 'history': 'text?'}
+          'b_cost': 'int', 'b_days': 'int', 'b_local': 'bool', 'budget': 'int?', 'deadline': 'int?', 'local_only': 'bool?', 'history': 'text?', 'rule_reader': 'text?'}
