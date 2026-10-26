@@ -54,7 +54,7 @@ class PortableSelftestContract(unittest.TestCase):
              patch("v13.__main__.unittest.TextTestRunner") as runner:
             runner.return_value.run.return_value = Fake()
             self.assertEqual(main(["--home", home, "selftest", "--portable"]), 1)
-            self.assertEqual(loader.call_count, 3)
+            self.assertEqual(loader.call_count, 12)
 
 
 if __name__ == "__main__":
