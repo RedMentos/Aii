@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN423_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run423-hx2-prereg-baseline-integrity-20261026",
+  "base_pr": 420,
+  "base_head": "39b76971880944cc88ab514b597c25425ac4cce2",
+  "source_head": "2a92cc2c6cda8414dd8d10e6ded4aee93d404558",
+  "source_sha256": {
+    "v13/code/v13/agi/harness_compare.py": "1fb5270723182a12778d0bce55c5fd670a8885d881e1de1e5cce6b1a44861ebc",
+    "v13/code/tests/test_harness_compare_run422.py": "8a3b9b235cc938bb9e257334a58d178b206a35e621f6120bb101e2a256ad5f7f"
+  },
+  "failed_attempt_preserved": {
+    "actions": 40261529183,
+    "artifact_id": 12624384662,
+    "zip_sha256": "f1e38f0b46af4b690b4c5e42424640f0bf1a3b7b3baa277f14dfa5abb0dd7f20",
+    "reason": "positive test expected signal despite UNPINNED revisions and empty exclusion registry"
+  },
+  "source_only_green": {
+    "actions": 40262048581,
+    "head": "2a92cc2c6cda8414dd8d10e6ded4aee93d404558",
+    "tests": "22/22 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12623904511,
+    "artifact_zip_sha256": "fb94279a228fca3077a4a768c05b90ee2dc527e283c17bc06fc95da13ebb9f83"
+  },
+  "scope": [
+    "HX2 preregister binds full validated baseline SHA256",
+    "compared baseline cannot drift without prereg mismatch",
+    "partial reference hash retained after candidate failure",
+    "positive test now provides pinned revisions and excluded train IDs",
+    "default unpinned positive remains NOT_SUPPORTED"
+  ],
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "age_promotion": false,
+    "ag8_approval": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "native_owner": {
+    "run418_actions": 40260347495,
+    "observed_status": "completed",
+    "observed_conclusion": "success",
+    "no_new_native_job_started": true
+  },
+  "next_command": "Independently review Run423/PR421 source and raw Actions receipt; keep PR draft until review. Separately continue native 126-row postflight on Run419/421 branch with exclusive ownership. Implement another independent canonical package; do not merge review branches into main blindly.",
+  "open_questions": [
+    "HX2 preference alone cannot prove factual correctness",
+    "HX2 reference baseline seal has no real native holdout evaluation",
+    "Source-wide focused CI may complete after this checkpoint",
+    "WorldState syntactically valid forged PredictionOutcome could suppress recovery; investigate independently"
+  ]
+}
