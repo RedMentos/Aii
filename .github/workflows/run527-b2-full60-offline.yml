@@ -31,7 +31,7 @@ jobs:
           set -euo pipefail
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run527-b2-full60-offline/PREREG.md)" = '0e45d5c0b67abda0d0f64650babded5fde147b11'
           test "$(git hash-object v13/code/scripts/run527_b2_artifact_score.py)" = '6ebe030256bdf9c62db97a7f49358dffd8df9ca4'
-          test "$(git hash-object v13/code/tests/test_run527_b2_artifact_score.py)" = 'c896f2ec415f0c79591ac2f2b6febba3bddc4c16'
+          test "$(git hash-object v13/code/tests/test_run527_b2_artifact_score.py)" = 'b623b4b03af4b37a9fdd3b849f9b78f412261cd2'
           test "$(git hash-object v13/code/scripts/run513_b2_receipt_postflight.py)" = '76c92573867429d6a2c13f7493c456c06d4b6890'
           test "$(git hash-object v13/code/scripts/run516_b2_aggregate.py)" = 'b5531e49288ac199673a05a67763999b2b589e1a'
           test "$(git hash-object v13/code/scripts/run510_b2_quote_metric.py)" = 'd2c35f430f9dc0f39c390043197787ea1f6e0cc6'

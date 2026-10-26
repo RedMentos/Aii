@@ -69,7 +69,7 @@ class Run527SafeArtifactContract(unittest.TestCase):
 
     def test_modified_member_refused(self):
         path, _ = make_stage(self.root, 0)
-        (path / "RUN511_STAGE_PLAN.json").write_text('{"changed":true}\n')
+        (path / "RUN511_STAGE_PLAN.json").write_text('{"ok":null}\n')
         with self.assertRaisesRegex(ValueError, "HASH_MISMATCH"):
             run527.validate_safe_stage(path, 0)
 
