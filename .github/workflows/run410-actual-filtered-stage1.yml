@@ -4,12 +4,18 @@ on:
     paths:
       - '.github/workflows/run410-actual-filtered-stage1.yml'
       - 'v13/code/docs/proofs/continuation-20261026/run410-actual-filtered-stage1/**'
+      - 'v13/code/scripts/run402_stage_restore.py'
+      - 'v13/code/scripts/run407_stream_stage1.py'
+      - 'v13/code/scripts/run408_filtered_stage1.py'
+      - 'v13/code/tests/test_run402_stage_restore.py'
+      - 'v13/code/tests/test_run407_stream_stage1.py'
+      - 'v13/code/tests/test_run408_filtered_stage1.py'
 permissions:
   contents: read
   actions: read
 concurrency:
   group: v13-run401-readonly-artifact-audit
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   exact-actual-native-stage1-readonly:
     runs-on: ubuntu-24.04
