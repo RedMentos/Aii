@@ -35,8 +35,54 @@ class Metacognition:
         c=clamp01(confidence)
         def f(st):
             comp=st['components'].setdefault(component,{'pairs':[],'calibrator':None})
+            if 'evidence_keys' in comp:
+                keys=comp['evidence_keys']
+                if not isinstance(keys,list) or len(keys)!=len(comp['pairs']):
+                    raise ValueError('METACOG_EVIDENCE_KEYS_CORRUPT')
+                comp['evidence_keys']=(keys+[None])[-WINDOW:]
             comp['pairs']=(comp['pairs']+[[c,k]])[-WINDOW:];comp['calibrator']=self._fit(comp['pairs'])
         self.box.mutate(f)
+
+    def record_keyed(self,component,confidence,correct,key):
+        """Replace/retract one effective human-quality label without multiplying evidence.
+
+        `None` retracts a keyed label; unkeyed historical pairs are untouched.
+        The parallel key list is bounded with pairs and survives restart/eviction.
+        """
+        if type(key) is not str or not key or len(key)>200:
+            raise ValueError('METACOG_EVIDENCE_KEY_INVALID')
+        if (type(confidence) not in (int,float)
+                or not 0 <= confidence <= 1 or not math.isfinite(confidence)):
+            raise ValueError('METACOG_CONFIDENCE_NOT_FINITE_PROBABILITY')
+        if correct is None:
+            k=None
+        elif type(correct) is bool:
+            k=int(correct)
+        elif type(correct) is int and correct in (0,1):
+            k=correct
+        else:
+            raise ValueError('METACOG_CORRECTNESS_NOT_BINARY')
+        c=clamp01(confidence)
+        def f(st):
+            comp=st['components'].setdefault(component,{'pairs':[],'calibrator':None})
+            keys=comp.get('evidence_keys')
+            if keys is None:
+                keys=[None]*len(comp['pairs'])  # old rows have no recoverable source identity
+            if not isinstance(keys,list) or len(keys)!=len(comp['pairs']):
+                raise ValueError('METACOG_EVIDENCE_KEYS_CORRUPT')
+            keys=list(keys)
+            if key in keys:
+                i=keys.index(key)
+                del keys[i]
+                del comp['pairs'][i]
+            if k is not None:
+                keys.append(key)
+                comp['pairs'].append([c,k])
+            comp['pairs']=comp['pairs'][-WINDOW:]
+            comp['evidence_keys']=keys[-WINDOW:]
+            comp['calibrator']=self._fit(comp['pairs'])
+        self.box.mutate(f)
+
     @staticmethod
     def _fit(pairs):
         """Histogram binning, then pool-adjacent-violators so calibrated confidence is monotone."""
