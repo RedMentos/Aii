@@ -1,0 +1,79 @@
+name: V13 Run620 persistent local operator answer-language regression
+on:
+  push:
+    branches:
+      - codex/automation11-run620-language-operator-20261026
+    paths:
+      - '.github/workflows/run620-language-operator.yml'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_language_operator_run620.py'
+permissions:
+  contents: read
+jobs:
+  sqlite:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Verify source, existing English-first prompts and Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN620_HEAD.txt"
+          test "$(git hash-object v13/code/v13/operator.py)" = 7ba517f8f9853983ac2b61bb8dfb1dfa9587c38b
+          test "$(git hash-object v13/code/tests/test_language_operator_run620.py)" = 8e5a187a82db318997ff4619ac7665453375b91c
+          test "$(git hash-object v13/code/v13/prompts.py)" = a74d7517a7ab70e801e177b58da057e57fd3460c
+          test "$(git hash-object v13/code/v13/config.py)" = 9bbc5b6e1bc35b7d0b9be4fb925100bce97fd0cd
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/operator.py v13/code/tests/test_language_operator_run620.py v13/code/v13/prompts.py v13/code/v13/config.py > "$RUNNER_TEMP/RUN620_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN620_HOST.txt"
+      - name: Install isolated source-only dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run620venv"
+          "$RUNNER_TEMP/run620venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real SQLite Runtime language/restart and existing prompt regressions
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run620venv/bin/python" -m unittest -v tests.test_language_operator_run620 tests.test_prompts > "$RUNNER_TEMP/RUN620_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN620_TEST_EXIT.txt"
+          exit 0
+      - name: Public privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 18a749dc6ad210ca39ef2a56eb4c618354dbb1bd --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN620_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN620_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw including failures
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in TEST PRIVACY; do
+            test -f "RUN620_${k}_EXIT.txt" || echo 2 > "RUN620_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN620_*' ! -name 'RUN620_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN620_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run620-Language-Operator-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN620_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests and privacy exits
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in TEST PRIVACY; do
+            echo "RUN620 $k exit: $(cat "$RUNNER_TEMP/RUN620_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN620_${k}_EXIT.txt")" = 0
+          done
