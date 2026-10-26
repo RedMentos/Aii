@@ -632,7 +632,7 @@ class SleepRuntime:
         self.tick(force=True);return eid
 
 def operator_command(r,cmd,args):
-    """:sleep [status|digest|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler"""
+    """:sleep [status|digest [status]|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler"""
     sl=r.sleep
     if cmd=='scheduler':return dumps(sl.scheduler.report())
     if not args or args==['status']:return dumps(sl.cycle.status())
@@ -640,6 +640,9 @@ def operator_command(r,cmd,args):
         mode=args[1] if len(args)==2 else 'full';sl.request(mode);return 'Sleep '+mode+' eingeplant; startet sobald nichts anderes läuft.'
     if args[0]=='in' and len(args) in (2,3):
         mode=args[2] if len(args)==3 else 'full';sl.request(mode,float(args[1])*60);return 'Sleep '+mode+' in '+args[1]+' min eingeplant.'
+    if args==['digest','status']:
+        from .sleep_offline import progress
+        return dumps(progress(r.store,r.session))
     if args==['digest']:
         from .sleep_offline import view
         return dumps(view(r.store,r.session) or {'session':r.session,'text':'','entries':0})
