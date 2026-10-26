@@ -99,8 +99,8 @@ Tasten im Vollbild-Chat: Strg+C bricht ab, Strg+D beendet, Tab springt zwischen 
 :chats             alle Chats.
 :new               neuen Chat anfangen.
 :open <Chat-ID>    alten Chat öffnen.
-:search <Text>     in allen Chats suchen.
-:export chat [json|md]   aktuellen Chat als Datei speichern (Ordner ~/v13/exports).
+:search <Text> [--before <Message-ID>]   in allen Chats suchen; Treffer enthalten die ID, mit --before ältere Treffer laden (max. 30 je Seite).
+:export chat [json|md] [Chat-ID]   aktuellen oder angegebenen alten Chat als Datei speichern (~/v13/exports), ohne den aktiven Chat zu wechseln.
 
 ## 4 Rückmeldung (so lernt V13 von dir)
 
