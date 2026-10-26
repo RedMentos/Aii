@@ -32,7 +32,7 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN624_HEAD.txt"
           test "$(git hash-object v13/code/v13/sleep_offline.py)" = 0525bffc887efd91a26a67f94a38f7eab2cdfd0f
-          test "$(git hash-object v13/code/tests/test_run624_sleep_session_fairness.py)" = a7c59e6541e4a47ff89927ab78b619dcbaf88f2c
+          test "$(git hash-object v13/code/tests/test_run624_sleep_session_fairness.py)" = bea79648409efc7d6f23fa02a110a74fa09ea5a7
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run624-sleep-session-fairness/PREREG.md)" = 05811fc387505866256350814c0ef4c4a3d3312c
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           sha256sum v13/code/v13/sleep_offline.py v13/code/tests/test_run624_sleep_session_fairness.py > "$RUNNER_TEMP/RUN624_SOURCE_SHA256.txt"
