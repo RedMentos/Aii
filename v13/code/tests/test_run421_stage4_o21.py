@@ -56,6 +56,8 @@ class Run421Stage4Tests(unittest.TestCase):
         installed = self.installed()
         with mock.patch.object(stage.safe, "sha_file",
                                side_effect=self.sha_for_runner()), \
+             mock.patch.object(stage.audit, "verify", return_value={
+                 "status": "RUN419_NATIVE_126_INDEPENDENTLY_VERIFIED"}), \
              mock.patch.object(stage.resume, "validate_completed",
                                side_effect=ValueError("RECORDED_MODEL_IDENTITY_MISMATCH")), \
              mock.patch.object(stage.resume, "run") as native, \
