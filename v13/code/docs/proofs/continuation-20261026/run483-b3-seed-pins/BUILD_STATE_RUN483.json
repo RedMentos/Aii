@@ -21,7 +21,16 @@
   },
   "tests": {
     "standalone_boundary": "8/8 PASS with isolated fake evaluator (no native/model/full checkout)",
-    "github_ci": "PENDING; 8 new + 7 Run478 + 8 b3bridge expected 23 source tests; official privacy scan"
+    "github_ci": "SOURCE_CI_GREEN 23/23 PASS, privacy CLEAN; focused 401/401 and 115/115 PASS, privacy CLEAN; software only",
+    "source_run_id": 40283878448,
+    "source_job_id": 121442936495,
+    "raw_artifact_id": 12632694584,
+    "raw_zip_sha256": "6078d36cf464c31200d98d278138f17fee632ba2e7f95ac04df96018008dcdb4",
+    "focused_run_id": 40283878691,
+    "focused_job_id": 121442937558,
+    "focused_artifact_id": 12633268593,
+    "focused_zip_sha256": "3a16aa206870e153962876bff0525a35648f3110cce3f7bdd6a2ba339b9f0a96",
+    "tested_source_head": "6de4d094bff0065e0f3efcb1beaad989a83462cd"
   },
   "negative_gates": {
     "canonical_architecture_complete": false,
@@ -40,5 +49,5 @@
     "No real B3 L1/retention proof, no production migration, no latent activation.",
     "Run479 Stage9 is separately owned; do not launch competing native work."
   ],
-  "exact_next_command": "Open draft PR against Run478; inspect source CI raw logs and privacy; independently review alignment and false-claim negatives. Continue native378 utility after Run479 closes without rerunning models."
+  "exact_next_command": "Verify post-checkpoint CI and remote bytes; independent review PR #481, then integrate only after registered native B3 L1 and retention proofs. Continue native378 utility once Run479 Stage9 artifact closes."
 }
