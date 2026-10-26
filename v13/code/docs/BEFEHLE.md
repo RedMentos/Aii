@@ -172,7 +172,7 @@ Tasten im Vollbild-Chat: Strg+C bricht ab, Strg+D beendet, Tab springt zwischen 
     Ein Lehrer-Modell zum Vergleich einschalten bzw. auswählen.
 :growth [...]
     Wachstum: Prüfungen, Lehrer, Trainer, Ziele, Werkzeuge. Häufig:
-    :growth status · :growth goals · :growth goal <Titel> · :growth approve <Stapel> · :growth reject <Stapel>
+    :growth status · :growth goals · :growth goal <Titel> · :growth goal status <ID> · :growth goal done <ID> · :growth goal abandon <ID> · :growth goal reopen <ID> · :growth approve <Stapel> · :growth reject <Stapel>
     :growth tools · :growth enable <Werkzeug> · :growth calc <Rechnung>
 :objectives
     Welche Lernziele es gibt.
