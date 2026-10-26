@@ -1,0 +1,38 @@
+{
+  "schema": "V13_RUN460_SEVEN_RECEIPT_NATIVE294_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 independent source-only seven-receipt verifier; no native ownership",
+  "branch": "codex/automation11-run460-native294-verifier-20261026",
+  "base": "7c3acc103ad13d68641a33bbfbfa3660b95b306e",
+  "tested_source_head": "4f9228b72b1843451287ef893fbdca6c8dad4ef5",
+  "pr": 459,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run460_verify_native294.py": "2a61c2ae8600cede90900a323e22e1f5a723a3ea",
+    "v13/code/tests/test_run460_verify_native294_adversarial.py": "bcd9baf5b5c4b8ff966d7c23019d052c57ce6484",
+    ".github/workflows/run460-native294-verifier.yml": "99e717f5900c4eb20fc116be14fff2ce0260fa0f"
+  },
+  "actions": {
+    "id": 40272502300,
+    "conclusion": "success",
+    "tests": "75/75 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12628489451,
+    "raw_artifact_sha256": "ae1f8b39cfd0da3801ca3a6f3b999154e5adab20690f41202adb26024f791b93"
+  },
+  "result": "Seven-receipt native294 safe-export postflight for frozen O/P/S seeds20,21 and O_s22. Rejects old 252 report, false gate, wrong remaining arms, seventh receipt identity/rows and tampered/unlisted/symlink files. Inherited six-receipt and utility tests pass.",
+  "scope": "Software/synthetic Linux CI only; actual native294 has not run.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run453 actual S_s21 native252 Actions 40270625698 remains the exclusive active native owner at checkpoint.",
+    "Need original 252 safe archive and report before real Run458 import and Stage7 O_s22; native294 verifier is source-only.",
+    "Need P_s22/S_s22 and frozen full 378-row three-seed utility before STEP2 re-evaluation; B3/Body-JEPA/Redmi separate."
+  ],
+  "next_command": "Observe Run453 Actions 40270625698; verify safe 252 ZIP and report, perform Run458 actual import and Run459 Stage7 preview. When exclusive native owner is released and resources available, execute O_s22 with unchanged pinned runner/models and safe export; independently run Run460 verifier on actual 294. Continue next P_s22/S_s22 arms only serially."
+}
