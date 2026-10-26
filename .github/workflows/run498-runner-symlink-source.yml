@@ -23,8 +23,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run498-runner-symlink/PREREG.md)" = 'f72be54cfa1b78e71318bd490fb6747bf83d73d2'
-          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = 'a92d6d0f5ce597a58279d249e1cf4ce05c4467cf'
-          test "$(git hash-object v13/code/tests/test_run498_runner_symlink.py)" = '5eeaa9bedf01e9dc22a6553026a69f51c2d90b68'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+          test "$(git hash-object v13/code/tests/test_run498_runner_symlink.py)" = 'b09776089c0e5aa07460b76c9c3ebdbfecd114ed'
           test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
           test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
       - name: Install isolated source test dependencies
