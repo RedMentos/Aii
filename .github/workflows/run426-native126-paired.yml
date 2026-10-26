@@ -1,0 +1,149 @@
+name: V13 Run426 actual native126 seed20 paired utility diagnostic
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run426-native126-paired.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run426-native126-paired/**'
+      - 'v13/code/scripts/run426_native126_paired.py'
+      - 'v13/code/tests/test_run426_native126_paired.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  actual-native126-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact registered source preflight
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN426_HEAD.txt"
+          git merge-base --is-ancestor 3cd2b0359d04577cd24998cf41b59e86da46e69c HEAD
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          sha256sum v13/code/scripts/run426_native126_paired.py \
+            v13/code/tests/test_run426_native126_paired.py \
+            v13/code/scripts/run419_verify_stage3_native.py \
+            v13/code/scripts/run419_import_stage3_artifact.py \
+            v13/code/scripts/run421_stage4_o21.py \
+            | tee "$RUNNER_TEMP/RUN426_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/scripts/run426_native126_paired.py \
+            v13/code/tests/test_run426_native126_paired.py \
+            v13/code/scripts/run419_verify_stage3_native.py \
+            v13/code/scripts/run419_import_stage3_artifact.py \
+            v13/code/scripts/run421_stage4_o21.py
+      - name: Source-only paired-math adversarial unit tests
+        run: |
+          set -euo pipefail
+          cd v13/code
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_run426_native126_paired \
+            2>&1 | tee "$RUNNER_TEMP/RUN426_UNIT_TESTS_RAW.log"
+      - name: Read actual Run418 no-model artifacts and independently verify all 126 rows
+        id: actual
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          (
+            set -euo pipefail
+            gh api -H 'Accept: application/vnd.github+json' \
+              /repos/RedMentos/Aii/actions/artifacts/12625030366/zip > "$RUNNER_TEMP/small-raw.zip"
+            gh api -H 'Accept: application/vnd.github+json' \
+              /repos/RedMentos/Aii/actions/artifacts/12624815819/zip > "$RUNNER_TEMP/safe-work.zip"
+            printf '%s  %s\n' \
+              '54a6b12638dfdc0e9f71f362d3357dd70adfe0ba2441d26c4c3eba3e37bb364b' \
+              "$RUNNER_TEMP/small-raw.zip" | sha256sum -c -
+            printf '%s  %s\n' \
+              '20ce321d29f04089a087421e16ddd5d854c103d36b7c958e4b0e11815f45cac4' \
+              "$RUNNER_TEMP/safe-work.zip" | sha256sum -c -
+            python3 - "$RUNNER_TEMP/small-raw.zip" "$RUNNER_TEMP/stage3.json" <<'PY'
+          import json,sys,zipfile
+          from pathlib import Path
+          with zipfile.ZipFile(sys.argv[1]) as z:
+              names=z.namelist()
+              assert names.count("RUN418_STAGE3_REPORT.json")==1, "EXACT_STAGE3_REPORT_MISSING"
+              raw=z.read("RUN418_STAGE3_REPORT.json")
+          report=json.loads(raw)
+          assert report.get("status")=="STAGE3_NATIVE_PARTIAL_NO_PROMOTION"
+          assert report.get("rows_verified")==126 and report.get("canonical_gate_pass") is False
+          Path(sys.argv[2]).write_bytes(raw)
+          print("ACTUAL_STAGE3_REPORT_126_UNPROMOTED")
+          PY
+            PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/run419_import_stage3_artifact.py \
+              --archive "$RUNNER_TEMP/safe-work.zip" \
+              --expected-sha256 20ce321d29f04089a087421e16ddd5d854c103d36b7c958e4b0e11815f45cac4 \
+              --stage3-report "$RUNNER_TEMP/stage3.json" \
+              --destination "$RUNNER_TEMP/run426-verified-work" \
+              --output "$RUNNER_TEMP/RUN426_IMPORT_REPORT.json"
+            PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/run421_stage4_o21.py \
+              --export "$RUNNER_TEMP/run426-verified-work" \
+              --stage3-report "$RUNNER_TEMP/stage3.json" \
+              --work "$RUNNER_TEMP/run426-stage4-ready" \
+              --output "$RUNNER_TEMP/RUN426_STAGE4_READY.json"
+            PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/run426_native126_paired.py \
+              --work "$RUNNER_TEMP/run426-verified-work" \
+              --stage3-report "$RUNNER_TEMP/stage3.json" \
+              --output "$RUNNER_TEMP/RUN426_PAIRED_REPORT.json"
+            python3 - "$RUNNER_TEMP/RUN426_IMPORT_REPORT.json" "$RUNNER_TEMP/RUN426_STAGE4_READY.json" "$RUNNER_TEMP/RUN426_PAIRED_REPORT.json" <<'PY'
+          import json,sys
+          a,b,c=[json.load(open(x)) for x in sys.argv[1:]]
+          assert a["status"]=="RUN419_STAGE3_ARTIFACT_IMPORTED_VERIFIED"
+          assert a["rows_verified"]==126 and a["canonical_gate_pass"] is False
+          assert b["status"]=="STAGE4_READY_NO_NATIVE"
+          assert b["rows_verified"]==126 and b["native_execution_performed"] is False
+          assert b["step2_exit"]=="UTILITY_FAIL" and b["canonical_gate_pass"] is False
+          assert c["status"]=="SEED20_PAIRED_DIAGNOSTIC_NATIVE126"
+          assert c["verified_rows"]==126 and c["seed_count"]==1
+          assert c["canonical_gate_pass"] is False and c["step2_exit"]=="UTILITY_FAIL"
+          assert c["native_execution_performed"] is False
+          print("RUN426_ACTUAL_SEED20_PAIRED_DIAGNOSTIC_PASS; FULL_378_NOT_RUN")
+          PY
+          ) 2>&1 | tee "$RUNNER_TEMP/RUN426_ACTUAL_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN426_ACTUAL_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN426_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN426_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close small raw evidence hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN426_*' ! -name RUN426_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN426_SHA256SUMS.txt
+      - name: Upload reports only, never native work or model files
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run426-Actual126-Small-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN426_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual postflight and privacy
+        if: always()
+        run: |
+          test "${{ steps.actual.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

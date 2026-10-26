@@ -1,0 +1,91 @@
+{
+  "schema": "V13_RUN426_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run426-native126-paired-diagnostic-20261026",
+  "base_pr": 424,
+  "base_head": "84bf77e2d43ab103c8e6817f39d626768b295d9f",
+  "verified_source_head": "7212146906f8f20caf5750b02e0847b269633c40",
+  "source_sha256": {
+    "v13/code/scripts/run426_native126_paired.py": "239dad8709df0e87c059e0d6d1e3d80c999565f316cfb08779f08bf34265649c",
+    "v13/code/tests/test_run426_native126_paired.py": "c6ed74e0ecfc02d6a797172ad737ccf9f7d6e77d84b98f4c9f3ea7698f9aa83e"
+  },
+  "evidence": {
+    "workflow_run": 40262744110,
+    "conclusion": "success",
+    "artifact_id": 12624389637,
+    "artifact_zip_sha256": "8bf0902ad5ca141e1eeaaa88604cb0fc7d9075472f97dcb9f1854eb1f7bad8c7",
+    "source_tests": "4/4 PASS",
+    "actual_native_rows_verified": 126,
+    "privacy": "CLEAN",
+    "status": "SEED20_PAIRED_DIAGNOSTIC_NATIVE126",
+    "data_origin": "Run418 actual Linux-native O/P/S_s20, independently imported/verified Run425; no native rerun"
+  },
+  "diagnostic": {
+    "seed": 20,
+    "fixtures": 6,
+    "variants": 7,
+    "arms": [
+      "O",
+      "P",
+      "S"
+    ],
+    "rows": 126,
+    "arm_mean_both_exact": {
+      "O": 0.5694444444444444,
+      "P": 0.7083333333333334,
+      "S": 0.375
+    },
+    "arm_mean_b1_only": {
+      "O": 0.611111111111111,
+      "P": 0.7222222222222222,
+      "S": 0.4166666666666667
+    },
+    "arm_mean_same_policy_dual": {
+      "O": 0.7222222222222222,
+      "P": 0.7222222222222222,
+      "S": 0.7222222222222222
+    },
+    "pointer_minus_off_both_exact": {
+      "mean": 0.1388888888888889,
+      "positive": 2,
+      "negative": 2,
+      "ties": 2
+    },
+    "pointer_minus_shared_body_both_exact": {
+      "mean": 0.3333333333333333,
+      "positive": 3,
+      "negative": 1,
+      "ties": 2
+    },
+    "pointer_minus_off_b2_only": {
+      "mean": -0.041666666666666664,
+      "positive": 0,
+      "negative": 2,
+      "ties": 4
+    },
+    "interpretation": "Seed20 P both_exact is below its own b1_only and same_policy_dual baselines. No demonstrated B1/B2 complementarity; single seed not significance."
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "age_promotion": false
+  },
+  "native_owner": {
+    "run418_duplicate_actions": 40260397013,
+    "last_observed": "IN_PROGRESS",
+    "new_native_job_started": false,
+    "o21": "NOT_RUN"
+  },
+  "next_command": "Once exclusive Run418 S owner 40260397013 finishes, recheck newest heads/owners and execute exactly one pinned O_s21 via Run421 stage4 --execute with Run425 independently verified actual no-model export; preserve failed attempts, new safe export, and exact hashes. Until then continue independent canonical packages; do not claim STEP2 from seed20.",
+  "open_questions": [
+    "Why pointer improves both_exact vs off while b1_only and same_policy_dual remain at least as good",
+    "Whether seeds21/22 change paired utility; full 378-row gate unmeasured",
+    "Redmi thermal/energy/RSS and Body-JEPA unavailable"
+  ]
+}
