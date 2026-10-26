@@ -10,6 +10,6 @@ Extracted source-only ZIP + original Run614 SHA-closed native states for offline
 
 **Scope:** This local ZIP uses an older Run601 base and does **not** establish full exact-current GitHub branch packaging or Android/Redmi execution. No native model inference, no new body training, no model weights bundled, no semantic utility gate promotion. STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; Redmi UNMEASURED; V13 INCOMPLETE.
 
-## Next command
+Private Library `/V13-Checkpoints/2026-10-26/Run622/run622-local-evidence-closed.zip` SHA256 `d2b7165644b497308d4494e7e53835f108b81e25d9a960dc82855488a573eae3`; includes all local original skip/fixed-fixture raw, packager/verifier raw and manifest. **Byte-for-byte readback verified**. The older local source ZIP itself is intentionally not presented as a current deliverable.\n\n## Next command
 
 Verify exact Run622 GitHub Actions pull-request workflow run/head, raw PACK/VERIFY/NATIVE_DOWNLOAD/TEST/PRIVACY exit codes, ZIP manifest, original native source hashes and uploaded artifact. If RED, retain raw and fix on a child; if GREEN, persist ZIP and raw private checkpoint and continue next distinct canonical package. Production main remains unchanged.
