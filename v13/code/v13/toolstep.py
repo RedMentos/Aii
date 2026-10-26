@@ -131,7 +131,11 @@ class ToolStep:
             t=str(t).strip()
             if t and t not in seen and len(t)<=1000:seen.add(t);keep.append((kind,t))
         from .agi import eligibility
-        keep=keep[-eligibility.MAX_EARLIER:]
+        if len(keep)>eligibility.MAX_EARLIER:
+            # Do not silently evict direct user rules when many verified body
+            # quotes follow them; discarded conflicting quotes would also
+            # make the fixed reader falsely certain. Refuse this proposal.
+            raise ValueError('ELIG_SOURCE_OVERFLOW')
         return [t for k,t in keep if k=='h'],[t for k,t in keep if k=='q']
     def earlier_exact(self,e,offers=(),version=None):
         h,q=self.earlier_parts(e,offers,version);return h+q
@@ -141,7 +145,12 @@ class ToolStep:
         if not eligibility.question(text) or 'eligibility' not in self._registry().box.load()[0]['enabled']:return None  # C3 read costs a model call: only after the user enabled the tool
         from .prohibitions import verdict
         if verdict(self.r.store,self._registry().tools['eligibility'])['blocked']:return None  # prohibited / Notaus: no read either
-        hist,quotes=self.earlier_parts(e,offers,version);earlier=hist+quotes
+        try:
+            hist,quotes=self.earlier_parts(e,offers,version)
+        except ValueError as exc:
+            self.r.store.log('tool_step_unavailable',e['event_id'],{'stage':'elig_source_overflow','error':str(exc)})
+            return None  # no C3 fallback or proposal from a truncated source set
+        earlier=hist+quotes
         try:
             mode=self.r.cfg.get('eligibility_reader','model')
             if mode=='fixed_strict':values=eligibility.fixed_read(text,hist,quotes)  # 2026-10-21 reader: no language model at all (thread „Zitierhilfe an“)
