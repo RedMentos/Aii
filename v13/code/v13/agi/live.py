@@ -129,9 +129,11 @@ GOAL_MATCH=.5  # WP-T8 BOOT: lexical relevance for a later FINAL turn to close a
 GOAL_TTL_S=7*86400  # WP-T8 BOOT: an unanswered open request is dropped after a week
 
 def goal_turn(r,e,meta,status):
-    """§20.3: early goals are the user's own. An unresolved turn (not FINAL, or answered with a clarifying question)
-    stays an open USER goal; a later FINAL turn on the same topic closes it. Curiosity (AG5) observes the route region's
-    outcome error every turn; choosing its own practice stays Age-gated (active_info_search, exploration_rate)."""
+    """§20.3: a user goal closes only after a related, actually persisted FINAL answer.
+
+    Status alone is not a delivery receipt. This is a structural guard, not a
+    semantic proof that the answer satisfied the request. Curiosity stays Age-gated.
+    """
     from ..memory import relevance
     g=hub(r);eid=e['event_id'];text=r.store.read_source(e['source_ref'])
     sel=r.store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(eid,))
@@ -141,9 +143,17 @@ def goal_turn(r,e,meta,status):
     g.curiosity.observe('route:'+str(sel.get('route_hint') or 'unknown'),float(gerr) if isinstance(gerr,(int,float)) else (0. if status=='FINAL' and not asked else 1.))
     opened=[x for x in g.goals.tree({'OPEN','ACTIVE','BLOCKED'}) if x['origin']=='USER' and any(str(v).startswith('event:') for v in x['evidence'])]
     for x in [x for x in opened if g.goals.clock()-x['created']>GOAL_TTL_S]:g.goals.set_status(x['id'],'ABANDONED','open request expired');opened.remove(x)
-    if status=='FINAL' and not asked:
+    final_answer=r.store.one(
+        "SELECT id FROM messages WHERE event_id=? AND session_id=? AND role='assistant' "
+        "AND status='FINAL' AND length(trim(text))>0 "
+        "AND COALESCE(json_extract(metadata,'$.reference_only'),0)=0 "
+        "ORDER BY id DESC LIMIT 1",
+        (eid,r.session))
+    delivered=status=='FINAL' and not asked and final_answer is not None
+    if delivered:
         for x in opened:
-            if relevance(x['title'].removeprefix('Open request: '),text)>=GOAL_MATCH:g.goals.set_status(x['id'],'DONE','resolved by later turn '+eid)
+            if relevance(x['title'].removeprefix('Open request: '),text)>=GOAL_MATCH:
+                g.goals.set_status(x['id'],'DONE','related FINAL answer '+eid+' message '+str(final_answer['id']))
     elif not any('event:'+eid in x['evidence'] for x in opened):
         g.goals.add('Open request: '+' '.join(text.split())[:240],'USER',evidence=['event:'+eid])
 

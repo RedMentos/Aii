@@ -1,0 +1,3 @@
+# Run552 independent counterexample added before follow-up edit
+
+2026-10-26, after initial Run552 prereg and before the follow-up source edit. Read-only inspection of `runtime._teacher` shows it can persist an assistant-role `FINAL` message with metadata `reference_only=true` and `not_fact=true`; such a teacher reference is **not V13's delivered answer**. The initial receipt query in Run552 would incorrectly accept it. Extend the same exact goal-receipt contract to reject `reference_only` messages (fail closed), with a regression case and a fresh exact-head CI rerun. Do not reinterpret prior test results as covering this new counterexample. Existing permissions, native weights and gates remain unchanged.
