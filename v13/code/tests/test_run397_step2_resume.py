@@ -38,11 +38,18 @@ def synthetic_source(folder):
 
 class FakeModels:
     def __init__(self, *args, **kwargs):
-        self.installed = {k: {"exact_revision": v["revision"],
-                               "files": {f["local_name"]: {"sha256": f["sha256"], "size": f["size"]}
-                                         for f in v["files"]}}
-                          for k, v in resume.catalog()["models"].items()
-                          if k in ("needle", "language", "body", "gist")}
+        self.installed = {}
+        for k, v in resume.catalog()["models"].items():
+            if k not in ("needle", "language", "body", "gist"):
+                continue
+            files = list(v["files"])
+            if k == "needle":
+                files += v["platforms"][resume.platform_tag()]
+            self.installed[k] = {
+                "model_id": v["model_id"], "exact_revision": v["revision"],
+                "license_id": v["license_id"],
+                "files": {f["local_name"]: {"sha256": f["sha256"], "size": f["size"]}
+                          for f in files}}
 
     def verify(self, deep=False):
         return {k: {"ok": True, "hash_checked": True}
