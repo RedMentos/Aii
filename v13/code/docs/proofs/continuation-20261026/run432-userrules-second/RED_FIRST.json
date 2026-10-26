@@ -1,0 +1,15 @@
+{
+  "schema": "V13_RUN432_RED_FIRST_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "reviewed_foreign_pr": 416,
+  "reviewed_foreign_head": "65ff1cd8d27732ba4691879b5db4afaabc7b890e",
+  "red_head": "b2b12153a099be67db44e589e99f6875f298a0ef",
+  "red_actions": 40265155532,
+  "red_artifact_id": 12626221355,
+  "red_artifact_zip_sha256": "ca795a2a509affc099820eebf9e22786803a64f8b78fdf532eeea588e149632d",
+  "red_tests": "41 total, 3 expected FAIL: nonfinite bias silently declines; nonfinite threshold silently declines; JSON loader accepts NaN. The +Infinity selected-weight test did not fail because saturation produced caution; add -Infinity negative control before fix.",
+  "privacy_status": "NOT_RUN: Claude WP-UR8 base lacks v13/code/scripts/public_repo_privacy_scan.py; workflow missing-script failure is separate from RED classifier defects.",
+  "next_command": "Copy pinned public scanner source from Run430 without changing its bytes, verify provenance; add negative Infinity counterexample; rerun RED then implement fail-cautious nonfinite handling and test.",
+  "claim_limit": "Software corruption guard only. USER_RULES_V8_UNSAFE remains; no fresh accuracy or native/Redmi/STEP2/B3/Body-JEPA proof."
+}
