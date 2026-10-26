@@ -157,5 +157,31 @@ class Run408FilteredTests(unittest.TestCase):
         self.assertIn("UNHASHED_OR_MISSING_MEMBER", str(result["errors"]))
 
 
+    def test_unlisted_arm_bin_is_preserved_and_never_executed(self):
+        name = ("run401-full/attempts/O_s20/attempt-0001/"
+                "arm_home/bin/llama-server")
+        self.files[name] = b"pinned binary bytes, not executed"
+        digest = self.zip(omit_sha=name)
+        def validate(root, small):
+            self.assertEqual((root / "attempts/O_s20/attempt-0001/"
+                              "arm_home/bin/llama-server").read_bytes(),
+                             self.files[name])
+            return {"rows_verified": 42, "completed": ["O_s20"]}
+        with mock.patch.object(m, "catalog", return_value=self.catalog), \
+             mock.patch.object(m.stage, "_validate_native_tree", side_effect=validate):
+            result = m.audit_or_restore(self.archive, digest)
+        self.assertEqual(result["status"], "FILTERED_STAGE1_VERIFIED_NO_PROMOTION")
+        self.assertEqual(result["unlisted_binary_members"], [name])
+        self.assertFalse(result["native_inference_started"])
+
+    def test_unlisted_bin_outside_original_arm_is_rejected(self):
+        name = "run401-full/other/bin/unknown"
+        self.files[name] = b"unknown"
+        digest = self.zip(omit_sha=name)
+        result, validator = self.check(digest)
+        self.assertEqual(validator.call_count, 0)
+        self.assertIn("UNHASHED_OR_MISSING_MEMBER", str(result["errors"]))
+
+
 if __name__ == "__main__":
     unittest.main()
