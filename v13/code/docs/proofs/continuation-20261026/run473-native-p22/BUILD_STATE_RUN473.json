@@ -27,7 +27,18 @@
       "P_s21",
       "S_s21",
       "O_s22"
-    ]
+    ],
+    "independent_local_zip_audit": {
+      "status": "PASS",
+      "raw_sha256s_checked": 32,
+      "safe_file_sha256s_checked": 179,
+      "safe_members": 180,
+      "safe_uncompressed_bytes": 96564731,
+      "stage7_report_sha256": "37ff2bc7fef87ddea9eb51852daff534110bc2103c8bdc8055ed5c72b826e278",
+      "independent_report_sha256": "30e10d9b06e2d4697749fbd6a5af2f23dc10b5e9dee8b7f667f8843b32c2cd68",
+      "manifest_sha256": "86181d07f3ba7cf27f50eb395f6bf009c3b217a1e16ca42f4d80d1cfe3bcbdf1",
+      "proof_path": "v13/code/docs/proofs/continuation-20261026/run473-native-p22/RUN472_NATIVE294_LOCAL_AUDIT.json"
+    }
   },
   "new_native_work": {
     "expected_next_arm": "P_s22",
@@ -37,7 +48,7 @@
     "importer": "v13/code/scripts/run461_import_stage7_artifact.py",
     "independent_verifier": "v13/code/scripts/run465_verify_native336.py",
     "workflow": ".github/workflows/run473-native-p22.yml",
-    "execution_status": "PR_OPEN_CI_PENDING",
+    "execution_status": "ACTIONS_RUN_40277803560_IN_PROGRESS",
     "safety": "single serialized arm; SHA-pinned actual native294 ZIP and raw report; source-only preflight before model install; independent eight-receipt postflight; fail-closed and preserve raw evidence; no-model export"
   },
   "negative_gates": {
@@ -54,6 +65,6 @@
     "After verified 336, Stage9 S_s22 is the last frozen structural arm; 378 structural rows alone do not prove STEP2 utility acceptance.",
     "Original 10-episode STEP2 acceptance, distinct B1/B2, B3 L1, Body-JEPA and Redmi remain open."
   ],
-  "exact_next_command": "Check GitHub Actions run473-native-p22.yml on PR #472; if absent, inspect workflow dispatch/validation, preserve this branch; on GREEN independently verify native336 raw and safe ZIP before Stage9.",
+  "exact_next_command": "Monitor GitHub Actions run 40277803560 under serialized owner; on GREEN download and independently SHA-verify Run473 raw and safe336 artifacts, then Stage9 S_s22; on RED preserve raw logs and repair without claiming 336.",
   "pr": 472
 }
