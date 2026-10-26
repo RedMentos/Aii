@@ -6,7 +6,7 @@ from pathlib import Path
 import re
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 WF = ROOT / ".github" / "workflows" / "run499-heldout-native-retry.yml"
 
 class NativeRetryWorkflowContract(unittest.TestCase):
