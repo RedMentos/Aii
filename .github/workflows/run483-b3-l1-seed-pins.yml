@@ -1,0 +1,56 @@
+name: V13 Run483 pinned B3 L1 seed-row alignment
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run483-b3-l1-seed-pins.yml'
+      - 'v13/code/scripts/run483_b3_l1_seed_pins.py'
+      - 'v13/code/tests/test_run483_b3_l1_seed_pins.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run483-b3-seed-pins/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pin frozen production B3 and reviewed Run478
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/v13/b3bridge.py)" = '577eda716b5fc17607ff46d11267b2e08eee2794'
+          test "$(git hash-object v13/code/scripts/run478_b3_l1_complete_baselines.py)" = '54ed6fc0e75a711351c4f1eb644d16f7d17c60c7'
+          sha256sum v13/code/scripts/run483_b3_l1_seed_pins.py v13/code/tests/test_run483_b3_l1_seed_pins.py > "$RUNNER_TEMP/run483-source-sha256.txt"
+          python3 -m venv "$RUNNER_TEMP/run483"
+          "$RUNNER_TEMP/run483/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Seed alignment and original B3 L1 source regressions
+        working-directory: v13/code
+        run: |
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts:$PWD/tests"
+          "$RUNNER_TEMP/run483/bin/python" -m unittest -v tests.test_run483_b3_l1_seed_pins tests.test_run478_b3_l1_complete_baselines tests.test_b3bridge > "$RUNNER_TEMP/run483-tests.txt" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/run483-tests.txt"
+          echo "EXIT=$rc" > "$RUNNER_TEMP/run483-exit.txt"
+          exit "$rc"
+      - name: Official public repository privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Preserve raw tests and RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run483-b3-seed-pins-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run483-source-sha256.txt
+            ${{ runner.temp }}/run483-tests.txt
+            ${{ runner.temp }}/run483-exit.txt
+          if-no-files-found: warn
+          retention-days: 30
