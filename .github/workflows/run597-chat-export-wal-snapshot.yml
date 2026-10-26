@@ -1,0 +1,70 @@
+name: V13 Run597 SQLite WAL snapshot chat export
+on:
+  push:
+    branches:
+      - codex/automation11-run597-chat-export-wal-snapshot-20261026
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run597-chat-export-wal-snapshot.yml'
+      - 'v13/code/v13/chat_export.py'
+      - 'v13/code/tests/test_run594_chat_export_stream.py'
+      - 'v13/code/tests/test_run597_chat_export_wal_snapshot.py'
+permissions:
+  contents: read
+jobs:
+  wal-snapshot:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run597-chat-export-wal-snapshot-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install isolated model-free dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy==2.2.6' 'prompt_toolkit==3.0.52'
+      - name: Exact-head WAL and operator regressions
+        shell: bash
+        run: |
+          mkdir -p run597-raw
+          git rev-parse HEAD > run597-raw/source_head.txt
+          sha256sum v13/code/v13/chat_export.py v13/code/tests/test_run594_chat_export_stream.py v13/code/tests/test_run597_chat_export_wal_snapshot.py v13/code/docs/proofs/continuation-20261026/run597-chat-export-wal-snapshot/PREREG.md > run597-raw/source_sha256.txt
+          set +e
+          (cd v13/code && python -m unittest discover -s tests -p test_run597_chat_export_wal_snapshot.py -v && python -m unittest discover -s tests -p test_run594_chat_export_stream.py -v) > run597-raw/new-tests.log 2>&1
+          echo "$?" > run597-raw/new-tests.exit
+          (cd v13/code && python -m unittest discover -s tests -p test_chat_operator_persistence_run214.py -v && python -m unittest discover -s tests -p test_phone_chat_sessions_run89.py -v && python -m unittest discover -s tests -p test_multichat_backup_restore_run217.py -v && python -m unittest discover -s tests -p test_phone_operator_journey_run86.py -v) > run597-raw/regressions.log 2>&1
+          echo "$?" > run597-raw/regressions.exit
+          python -m compileall -q v13/code/v13/chat_export.py v13/code/tests/test_run594_chat_export_stream.py v13/code/tests/test_run597_chat_export_wal_snapshot.py > run597-raw/compile.log 2>&1
+          echo "$?" > run597-raw/compile.exit
+          python v13/code/scripts/public_repo_privacy_scan.py --base "5a339a83c354da110d3bf1312531bc8b5989fa8f" --head "${{ github.event.pull_request.head.sha || github.sha }}" --no-worktree > run597-raw/privacy.log 2>&1
+          echo "$?" > run597-raw/privacy.exit
+          set -e
+          cat run597-raw/new-tests.log run597-raw/regressions.log run597-raw/privacy.log
+      - name: Close raw evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p run597-raw
+          (cd run597-raw && sha256sum *.txt *.log *.exit > RAW_SHA256SUMS.txt)
+          cat run597-raw/RAW_SHA256SUMS.txt
+      - name: Preserve raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run597-wal-chat-export-raw
+          path: run597-raw/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce focused checks
+        run: |
+          test "$(cat run597-raw/new-tests.exit)" = 0
+          test "$(cat run597-raw/regressions.exit)" = 0
+          test "$(cat run597-raw/compile.exit)" = 0
+          test "$(cat run597-raw/privacy.exit)" = 0

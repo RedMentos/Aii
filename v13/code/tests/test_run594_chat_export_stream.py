@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 from v13.operator import Operator
 from v13.runtime import Runtime
+from v13 import chat_export as CE
 
 
 class ChatExportStream(unittest.TestCase):
@@ -59,16 +60,15 @@ class ChatExportStream(unittest.TestCase):
         path = Path(self.op.run(":export chat json"))
         original = path.read_bytes()
         self.insert(1, prefix="AFTER")
-        real_rows = self.r.store.rows
+        real_page = CE._page
         pages = 0
-        def fail_second_page(sql, args=()):
+        def fail_second_page(conn, session, cursor, bound, page_size):
             nonlocal pages
-            if "SELECT * FROM messages WHERE session_id=?" in sql:
-                pages += 1
-                if pages == 2:
-                    raise RuntimeError("simulated SQLite read failure")
-            return real_rows(sql, args)
-        with patch.object(self.r.store, "rows", side_effect=fail_second_page):
+            pages += 1
+            if pages == 2:
+                raise RuntimeError("simulated SQLite read failure")
+            return real_page(conn, session, cursor, bound, page_size)
+        with patch.object(CE, "_page", side_effect=fail_second_page):
             with self.assertRaisesRegex(RuntimeError, "simulated"):
                 self.op.run(":export chat json")
         self.assertEqual(path.read_bytes(), original)
@@ -76,17 +76,16 @@ class ChatExportStream(unittest.TestCase):
 
     def test_high_water_excludes_append_during_export(self):
         self.insert(300)
-        real_rows = self.r.store.rows
+        real_page = CE._page
         pages = 0
-        def append_once(sql, args=()):
+        def append_once(conn, session, cursor, bound, page_size):
             nonlocal pages
-            result = real_rows(sql, args)
-            if "SELECT * FROM messages WHERE session_id=?" in sql:
-                pages += 1
-                if pages == 1:
-                    self.insert(1, prefix="LATE")
+            result = real_page(conn, session, cursor, bound, page_size)
+            pages += 1
+            if pages == 1:
+                self.insert(1, prefix="LATE")
             return result
-        with patch.object(self.r.store, "rows", side_effect=append_once):
+        with patch.object(CE, "_page", side_effect=append_once):
             rows = json.loads(Path(self.op.run(":export chat json")).read_text())
         self.assertEqual(len(rows), 300)
         self.assertNotIn("LATE-0000", [r["text"] for r in rows])

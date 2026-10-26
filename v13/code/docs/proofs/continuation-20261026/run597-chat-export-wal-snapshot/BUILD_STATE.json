@@ -1,0 +1,76 @@
+{
+  "schema": "V13_RUN597_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run597-chat-export-wal-snapshot-20261026",
+  "base_branch": "codex/automation11-run596-fullsuite-current-diagnostic-20261026",
+  "base_sha": "5a339a83c354da110d3bf1312531bc8b5989fa8f",
+  "verified_code_head": "e2f5fae8672d2c380d833e42f1c703cd362fabf9",
+  "pr": 592,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/592",
+  "prereg_commit": "4f6a387f18df91db580ef1e033c65b477d4d034c",
+  "changed_source_blobs": {
+    "v13/code/v13/chat_export.py": "ac447c97a538eabd77c6e8b24c471f47a2969360",
+    "v13/code/tests/test_run594_chat_export_stream.py": "e03f25b706d657b331418c82eb90873a5d66371c",
+    "v13/code/tests/test_run597_chat_export_wal_snapshot.py": "527df65c35bfcf885b0fa80ac4cb618451f7ef67",
+    ".github/workflows/run597-chat-export-wal-snapshot.yml": "60f82b913aa5f2273eebaf2b302b89b860273e7e"
+  },
+  "observed_ci": {
+    "run": 40394460505,
+    "job": 121823695663,
+    "head": "e2f5fae8672d2c380d833e42f1c703cd362fabf9",
+    "conclusion": "success",
+    "new_snapshot_tests": "4/4 PASS",
+    "prior_stream_tests": "6/6 PASS",
+    "chat_operator": "3/3 PASS",
+    "phone_chat": "1/1 PASS",
+    "multichat_backup": "2/2 PASS",
+    "phone_operator": "3/3 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12685082547,
+    "raw_artifact_sha256_from_actions_log": "148d90fc5d13465f4ebde2b58ee532699c7d45fd827c139e65ffc66e15460618"
+  },
+  "failed_attempt_preserved": {
+    "head": "5582447821e21e08c816bd9236daea59813ff998",
+    "run": 40394369063,
+    "artifact_id": 12684619665,
+    "artifact_sha256": "a2af37142864be47f774c832f6eaa0c9542890240cc9acff578495d67b3cc9e2",
+    "reason": "Test assumed exports directory absent for unknown session, but Runtime creates exports directory on startup; all WAL concurrency tests and operator regressions passed. Fixed test to assert no new file/temp at e2f5fae8."
+  },
+  "changes": [
+    "Separate SQLite mode=ro WAL reader with BEGIN gives coherent snapshot across UPDATE/DELETE/INSERT while Runtime writer continues",
+    "Bounded 256-row pages, read-only query_only, prompt ROLLBACK/close, fsync and atomic publication",
+    "Prior Run594 tests adapted to page helper; no new user data disclosure or model calls"
+  ],
+  "primary_source": "https://www.sqlite.org/isolation.html ; https://www.sqlite.org/wal.html",
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false
+  },
+  "fullsuite_related": {
+    "run596": 40393740879,
+    "source_head": "5a339a83c354da110d3bf1312531bc8b5989fa8f",
+    "status_at_checkpoint": "RUNNING",
+    "note": "Historical Run573 full suite was GREEN 4020 tests, skipped 14 on earlier exact head a1c235372f1aa1155e8dbeb9bd2baebd4f99385a. This corrects outdated RED-only characterization in Run595/Run596 prereg; Run596 current outcome must be read separately."
+  },
+  "open_questions": [
+    "Independent review/merge PR588–592 and Claude PR38; no production main merge",
+    "WAL reader long export may delay checkpoint; bounded page processing and immediate close mitigate but no Redmi storage proof",
+    "Run596 exact-current unfiltered source suite pending; do not assume GREEN",
+    "Body-JEPA/STEP2/B3 native and Redmi gates still missing"
+  ],
+  "next_command": "Read Run596 workflow 40393740879 and raw artifact, classify actual current source-wide result; then choose independent highest-priority native/Body-JEPA or C3 utility package. Keep frozen cohorts and negative gates.",
+  "prerequisites": [
+    "No force push; no anyone-writable Drive",
+    "No competing native jobs",
+    "No native/Redmi claims from SQLite software tests"
+  ]
+}
