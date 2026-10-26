@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git hash-object v13/code/scripts/run487_native378_independent_raw_audit.py)" = '9bbb0ab468268a5e7bef70fb507b9c893e3ec55d'
-          test "$(git hash-object v13/code/scripts/run488_native378_independent_rescore.py)" = 'd488d1ede7bebb98721e299905ab0cfc1eae2d64'
+          test "$(git hash-object v13/code/scripts/run488_native378_independent_rescore.py)" = 'abe4f57edf8b5995298824894dc0199fa539fcc4'
           test "$(git hash-object v13/code/tests/test_run488_native378_independent_rescore.py)" = '43b90374dcef2661575745d4098f5816fb76de99'
           test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = 'fae7aed612108a554d8566b2917ebf31022df423'
           test "$(git hash-object v13/code/v13/utility.py)" = 'f4a92dab9c4a40761d64394cdca1c052e9a76bfd'
@@ -77,9 +77,11 @@ jobs:
           assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
           assert d['b3_l1']=='FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
           means=d['arm_mean_answer_utility']
-          assert math.isclose(means['P'],.5972222222222222,abs_tol=1e-12)
-          assert math.isclose(means['O'],.5092592592592593,abs_tol=1e-12)
-          assert math.isclose(means['S'],.4212962962962963,abs_tol=1e-12)
+          assert math.isclose(means['P']['both_exact'],.5972222222222222,abs_tol=1e-12)
+          assert math.isclose(means['O']['both_exact'],.5092592592592593,abs_tol=1e-12)
+          assert math.isclose(means['S']['both_exact'],.4212962962962963,abs_tol=1e-12)
+          assert set(d['arm_field_accuracy'])=={'O','P','S'}
+          assert all(0<=v<=1 for a in d['arm_field_accuracy'].values() for b in a.values() for v in b.values())
           print('RUN488_ORIGINAL_NATIVE378_ANSWER_TO_ORACLE_SCORE_CONFIRMED_NO_GATE_PROMOTION')
           PY
             rc=$?
