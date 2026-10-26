@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN528_EXECUTABLE_SHA_CORRECTION_VERIFIED_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/automation11-run528-run404-executable-identity-20261026",
+  "base_sha": "782fcfcf7a35671ede14e47ccfbb165eb44375f8",
+  "pr": 527,
+  "tested_head": "91c846273e24073fdedd45331e72589e575e500d",
+  "root_cause": "Run404 passed release archive SHA instead of installed executable SHA to Run397 receipt validation",
+  "source_change": {
+    "path": "v13/code/scripts/run404_stage2_resume.py",
+    "blob": "50f53021387298385ed6ed58003a8dda82ae2d59",
+    "frozen_runner_executable_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39"
+  },
+  "regression_test_blob": "f2ee781152ee4838d8b4aa7887a9c63546432c56",
+  "actions": {
+    "run": 40321280544,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12648164289,
+    "artifact_zip_sha256": "f6930a9d15884515e6a349b656fce077d4fa70acf50a5ea0238569348b6d6c83",
+    "sha_manifest_entries_verified": 7,
+    "tests_passed": 39,
+    "privacy": "CLEAN"
+  },
+  "local_reproduction": {
+    "before": "Run404 5/8 FAIL due STAGE1_RECEIPT_NOT_REUSABLE",
+    "after": "39/39 Run397/402/404 PASS",
+    "model_execution": false
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-26/Run528/Run528_GREEN_shaF6930A9D.zip",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "Run403 full 378-row postflight has analogous archive/executable SHA bug and test fixture drift",
+    "Run523 full-suite historical source pin errors remain; do not silently skip"
+  ],
+  "next_command": "Implement Run529 separate source-only Run403 exact executable identity correction plus synthetic 378-row postflight adversarial tests; preregister first, do not modify original cohort.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
