@@ -2,7 +2,7 @@ name: V13 Run435 one pinned Linux-native P_s21 after actual 168-row independent 
 on:
   pull_request:
     paths:
-      - '.github/workflows/run435-native-o21.yml'
+      - '.github/workflows/run435-native-p21.yml'
 permissions:
   contents: read
   actions: read
@@ -74,12 +74,12 @@ jobs:
         run: |
           set -uo pipefail
           set +e
-          python3 -m venv "$RUNNER_TEMP/run427venv"
-          timeout 240s "$RUNNER_TEMP/run427venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+          python3 -m venv "$RUNNER_TEMP/run435venv"
+          timeout 240s "$RUNNER_TEMP/run435venv/bin/python" -m pip install --disable-pip-version-check --no-input \
             'numpy==2.3.5' 'prompt-toolkit==3.0.52' 2>&1 | tee "$RUNNER_TEMP/RUN435_DEPS_RAW.log"
           d=${PIPESTATUS[0]}
           if [ "$d" -eq 0 ]; then
-            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run427venv/bin/python" -m unittest -v \
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run435venv/bin/python" -m unittest -v \
               tests.test_run394_step2_fresh tests.test_run397_step2_resume \
               tests.test_run429_verify_native168 tests.test_run430_import_stage4_artifact \
               tests.test_run434_stage5_p21 \
@@ -99,12 +99,12 @@ jobs:
         run: |
           set -uo pipefail
           set +e
-          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run427installed"
-          timeout 1800s "$RUNNER_TEMP/run427venv/bin/python" -m v13.bootstrap --home "$V13_HOME" \
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run435installed"
+          timeout 1800s "$RUNNER_TEMP/run435venv/bin/python" -m v13.bootstrap --home "$V13_HOME" \
             2>&1 | tee "$RUNNER_TEMP/RUN435_BOOTSTRAP_RAW.log"
           rc=${PIPESTATUS[0]}
           if [ "$rc" -eq 0 ]; then
-            "$RUNNER_TEMP/run427venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN435_INSTALLED_RAW.log"
+            "$RUNNER_TEMP/run435venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN435_INSTALLED_RAW.log"
           import json,os
           from pathlib import Path
           from v13.models import ModelManager,catalog
@@ -127,7 +127,7 @@ jobs:
           echo "$rc" > "$RUNNER_TEMP/RUN435_BOOTSTRAP_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
-      - name: Download exact actual Run418 raw and no-model safe work
+      - name: Download exact actual Run427 raw and no-model safe work
         id: download
         if: steps.bootstrap.outputs.rc == '0'
         env:
@@ -168,14 +168,14 @@ jobs:
           echo "$rc" > "$RUNNER_TEMP/RUN435_DOWNLOAD_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
-      - name: Independently import actual 126-row no-model work
+      - name: Independently import actual 168-row no-model work
         id: import
         if: steps.download.outputs.rc == '0'
         working-directory: v13/code
         run: |
           set -uo pipefail
           set +e
-          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run427venv/bin/python" scripts/run430_import_stage4_artifact.py \
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run435venv/bin/python" scripts/run430_import_stage4_artifact.py \
             --archive "$RUNNER_TEMP/run435-safe.zip" --expected-sha256 "$SAFE_SHA256" \
             --stage4-report "$RUNNER_TEMP/RUN435_STAGE4_REPORT.json" \
             --destination "$RUNNER_TEMP/run435-safe-import" \
@@ -193,11 +193,11 @@ jobs:
           set -uo pipefail
           set +e
           export PYTHONPATH="$PWD:$PWD/scripts"
-          timeout -s TERM -k 30s 4800s "$RUNNER_TEMP/run427venv/bin/python" scripts/run434_stage5_p21.py \
+          timeout -s TERM -k 30s 4800s "$RUNNER_TEMP/run435venv/bin/python" scripts/run434_stage5_p21.py \
             --export "$RUNNER_TEMP/run435-safe-import" \
             --stage4-report "$RUNNER_TEMP/RUN435_STAGE4_REPORT.json" \
-            --work "$RUNNER_TEMP/run427work" \
-            --installed-home "$RUNNER_TEMP/run427installed" \
+            --work "$RUNNER_TEMP/run435work" \
+            --installed-home "$RUNNER_TEMP/run435installed" \
             --export-destination "$RUNNER_TEMP/run435-safe-export" --execute \
             --output "$RUNNER_TEMP/RUN435_STAGE5_REPORT.json" \
             2>&1 | tee "$RUNNER_TEMP/RUN435_NATIVE_RAW.log"
@@ -213,10 +213,10 @@ jobs:
           set -uo pipefail
           set +e
           rc=0
-          if [ -d "$RUNNER_TEMP/run427work" ] && [ -d "$RUNNER_TEMP/run427installed" ] \
+          if [ -d "$RUNNER_TEMP/run435work" ] && [ -d "$RUNNER_TEMP/run435installed" ] \
              && [ ! -e "$RUNNER_TEMP/run435-safe-export" ]; then
-            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run427venv/bin/python" scripts/run409_safe_export.py \
-              --work "$RUNNER_TEMP/run427work" --installed-home "$RUNNER_TEMP/run427installed" \
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run435venv/bin/python" scripts/run409_safe_export.py \
+              --work "$RUNNER_TEMP/run435work" --installed-home "$RUNNER_TEMP/run435installed" \
               --destination "$RUNNER_TEMP/run435-safe-export" \
               --output "$RUNNER_TEMP/RUN435_FALLBACK_EXPORT.json" \
               2>&1 | tee "$RUNNER_TEMP/RUN435_FALLBACK_RAW.log"
@@ -225,7 +225,7 @@ jobs:
           echo "$rc" > "$RUNNER_TEMP/RUN435_FALLBACK_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
-      - name: Independently check 168-row no-model export and negative gates
+      - name: Independently check 210-row no-model export and negative gates
         id: export
         if: always()
         working-directory: v13/code
@@ -311,7 +311,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: V13-Run435-O21-Small-Raw-${{ github.event.pull_request.head.sha }}
+          name: V13-Run435-P21-Small-Raw-${{ github.event.pull_request.head.sha }}
           path: ${{ runner.temp }}/RUN435_*
           if-no-files-found: warn
           retention-days: 30
@@ -319,7 +319,7 @@ jobs:
         if: steps.export.outputs.rc == '0'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: V13-Run435-O21-Safe-Work-${{ github.event.pull_request.head.sha }}
+          name: V13-Run435-P21-Safe-Work-${{ github.event.pull_request.head.sha }}
           path: ${{ runner.temp }}/run435-safe-export/**
           if-no-files-found: error
           retention-days: 30
