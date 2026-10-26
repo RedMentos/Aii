@@ -19,7 +19,8 @@ def require(ok, reason):
 def stage2(archive, expected_sha, work, installed=None, execute=False):
     """Preview never runs models or changes restored work. Execute calls Run397 exactly once."""
     report = {"run": "Run404", "status": "STAGE2_RED_PRESERVED",
-              "native_execute_requested": bool(execute), "native_rerun": False,
+              "native_execute_requested": bool(execute), "native_execute_attempted": False,
+              "native_execution_performed": False, "native_rerun": False,
               "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL",
               "redmi_measured": False, "jepa_weight": 0, "errors": []}
     if execute and installed is None:
@@ -44,6 +45,7 @@ def stage2(archive, expected_sha, work, installed=None, execute=False):
             report["rows_verified"] = 42
             report["remaining_arms"] = 8
             return report
+        report["native_execute_attempted"] = True
         out = resume.run(work, installed, pilot=False, execute=True, max_new_arms=1)
         require(out.get("status") == "INCOMPLETE" and
                 set(out.get("completed", {})) == {"O_s20", "P_s20"},
@@ -60,7 +62,7 @@ def stage2(archive, expected_sha, work, installed=None, execute=False):
             require(validated == info["validated"] and validated["rows"] == 42,
                     "STAGE2_RECEIPT_INVALID:" + rid)
         report["status"] = "STAGE2_NATIVE_PARTIAL_NO_GATE_PROMOTION"
-        report["native_rerun"] = True
+        report["native_execution_performed"] = True
         report["completed"] = ["O_s20", "P_s20"]
         report["rows_verified"] = 84
         report["remaining_arms"] = 7
