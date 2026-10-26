@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN465_NATIVE336_EIGHT_RECEIPT_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 source-only verifier, separate from Run464 exclusive native owner",
+  "branch": "codex/automation11-run465-native336-verifier-20261026",
+  "base": "0671ce6435bad77e2c5961911dca58d7111b452d",
+  "tested_source_head": "1bee9435f21b4be4fa20d04064c31bef47f3068f",
+  "pr": 464,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run465_verify_native336.py": "c4aa16eda5e4e67b31d8aefc78c13a281305b000",
+    "v13/code/tests/test_run465_verify_native336_adversarial.py": "eb173e6dcfd45b850453ede462b96a6ba433f388",
+    ".github/workflows/run465-native336-verifier.yml": "0331baafaacb63224df5fad55ee6f50b3c2a956c"
+  },
+  "actions": {
+    "id": 40273235541,
+    "conclusion": "success",
+    "tests": "127/127 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12628944992,
+    "raw_artifact_sha256": "8bf7587acc6666ef1d63a76a64213c68a505e9b6078248a42afc08ec1e6e6b7f"
+  },
+  "result": "Eight-receipt native336 verifier for frozen P_s22 structural 336/378, preserving unchanged Run397/model/seed identities and RED on false gate or tamper.",
+  "scope": "Software/synthetic Linux CI only; actual native336 not run.",
+  "active_native": {
+    "run_id": 40273136245,
+    "owner": "Run464 serialized native S_s21 retry",
+    "status_at_checkpoint": "in_progress",
+    "model_runner_pins_unchanged": true
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run464 actual native252 safe export and independent verifier still pending.",
+    "After Run464 GREEN, real 252 archive must be imported with Run458 and stage7 O_s22 executed exclusively; then stage8 P_s22.",
+    "Source-only native336 verifier is not evidence of native execution or semantic utility."
+  ],
+  "next_command": "Monitor Run464 Actions 40273136245 without launching another native job. On success, preserve raw 252 artifact and verified hashes; execute Run458 actual importer then serialized Stage7 O_s22. Independently prepare atomic 336 importer and final S_s22 source."
+}
