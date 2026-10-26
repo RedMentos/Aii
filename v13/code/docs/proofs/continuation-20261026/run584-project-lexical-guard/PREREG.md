@@ -1,0 +1,11 @@
+# Run584 — independent lexical project-boundary counterexample (2026-10-26)
+
+Owner: GPT automation13. Base: Run576 PR575 source head `c7953e288e56f8dac7330a5957e1e596230d0cdd`. No edits to Canon, frozen native/learning cohorts, model/seed hashes or age/tool approvals. Review-only, not production-integrated.
+
+Before-code counterexample: Run576 `project_labels()` requires a name to be followed by punctuation or end-of-line and the literal `Project` at the beginning of a sentence. `Project Orion budget 20 euros.` and `Project Mira choose Option A ... Option B ...` both return no labels, so `scope_earlier` treats them as unlabelled and admits Orion's rule into Mira's decision. `For Project Mira: ...` is also missed. Reproduced locally with the exact source regex (not yet an end-to-end native test). This is a fail-open cross-project evidence path for ordinary English wording.
+
+Prospective fix: recognize explicit lexical `project <name>` anywhere in a sentence, including without punctuation after the name, while excluding generic `project rules`, `project budget`, `this project` and similar non-name words. Do not infer aliases, merge names, or authorize uncertain text. Any earlier source mentioning multiple distinct project labels remains excluded. Retain normal named/unlabelled source separation, newest-rule precedence and all safety gates. Add both pure negative controls and real SQLite Runtime/ToolStep tests for cross-project unpunctuated history, same-project reuse and generic project-rules phrases; verify no native C3 read for fixed mode.
+
+Prospective CI: run existing Run576 and new Run584 tests plus original eligibility fixed/live and tool-final focused suites in isolated pinned NumPy/prompt-toolkit venv; compile, source/Canon hash pin, privacy scan, SHA-closed raw even RED. No model download or inference. STEP2 UTILITY_FAIL, B3 FAIL, Body-JEPA UNAVAILABLE, jepa_weight 0, Redmi UNMEASURED, full V13 INCOMPLETE.
+
+Review remains separate from Run583 source-bundle chain; no branch-owner overwrite.
