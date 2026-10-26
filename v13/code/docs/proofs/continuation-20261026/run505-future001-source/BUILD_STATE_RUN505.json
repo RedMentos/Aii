@@ -4,7 +4,7 @@
   "branch": "codex/run505-future001-batch-source-20261026",
   "base_branch": "codex/run504-heldout980-remaining-map-20261026",
   "base_sha": "bcd795bd79e3e0fbca5b84d91a9606373e50fc72",
-  "status": "SOURCE_STAGED_CI_PENDING",
+  "status": "SOURCE_CI_GREEN_INDEPENDENT_BATCH_PLAN_VERIFIED",
   "scope": {
     "batch_id": "FUTURE_001",
     "stage_ids": [
@@ -38,14 +38,28 @@
   "verification": [
     "Run505 prereg committed before implementation",
     "No Run505 native execution, model download or paid provisioning",
-    "Run503 native Actions 40307435396 separate owner; do not overlap"
+    "Run503 native Actions 40307435396 separate owner; do not overlap",
+    "Run505 source-only Actions 40308650823 GREEN, 23 tests, privacy CLEAN",
+    "Downloaded source artifact 12644225026, independently verified 9 SHA256 entries, exact 42 unique keys, frozen full-map and schedule hashes",
+    "Private Library ZIP backup succeeded, source remote verified; no Run505 model execution"
   ],
   "blockers": [
-    "Run505 source-only CI pending",
     "Run503 native 42-row postflight pending",
     "Full 1050-row STEP2 cohort incomplete",
     "Redmi unavailable"
   ],
-  "next_command": "Open draft PR Run505 based on Run504; inspect source-only Actions and independently verify 42-key plan; inspect Run503 native completion and preserve raw PASS/RED; only separate preregistered Run506 native after no active heavy owner",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Inspect Run503 native Actions 40307435396. On completion download raw/safe artifacts, verify SHA manifest and independently rescore all 42 rows; only if GREEN and no heavy owner, preregister separate FUTURE_001 native workflow. In parallel implement original 1050-row acceptance evaluator source-only.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "evidence": {
+    "actions_run": 40308650823,
+    "conclusion": "success",
+    "tests_passed": 23,
+    "privacy": "CLEAN",
+    "artifact_id": 12644225026,
+    "artifact_zip_sha256": "7f66d7ec278ecee7a254264c8324162b30f97bd0fb0f3798f25dc279db021ebb",
+    "raw_sha256_entries": 9,
+    "library_backup_path": "/V13-Checkpoints/2026-10-26/Run505/run505-source-e408864b-sha-closed.zip",
+    "library_file_id": "libfile_fbd9cff93a0c8191be894d3a681ee4b8",
+    "native_executed": false
+  }
 }
