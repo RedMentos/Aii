@@ -191,11 +191,45 @@ class Callosum:
             except Exception:pass
         return {'scored':len(applied),'utilities':[round(u,3) for _,u in applied]}
     def on_rating(self,event_id,utility):
-        u=max(0.,min(1.,float(utility)));sc=step(self.n,PATH)
+        """A human rating can score each real source-bound message only once."""
+        if type(utility) not in (int,float) or not math.isfinite(utility):
+            raise ValueError('Callosum rating must be finite numeric utility')
+        u=max(0.,min(1.,float(utility)))
+        ev=self.s.one('SELECT generation_id FROM events WHERE id=?',(event_id,))
+        if not ev:return {'updated':0}
+        st,_=self._load();valid={}
+        for m in st['pending'].get(event_id) or []:
+            mid=m.get('msg')
+            if m.get('rated') or not isinstance(mid,str):continue
+            pair=next((p for p,name in DIRECTIONS.items() if name==m.get('direction')),None)
+            if not pair or m.get('receiver')!=pair[1] or m.get('channel') not in CHANNELS:continue
+            row=self.s.one('SELECT kind,event_id,generation_id,payload FROM packets WHERE id=?',(mid,))
+            if not row or row['kind']!='MessagePacket' or row['event_id']!=event_id or row['generation_id']!=ev['generation_id']:
+                continue
+            try:
+                mp=json.loads(row['payload']);refs=mp['source_refs']
+                if (mp['packet_id']!=mid or mp['event_id']!=event_id or
+                    mp['brain_generation_id']!=ev['generation_id'] or
+                    mp['sender']!=pair[0] or mp['receiver']!=pair[1] or
+                    mp['channel']!=m['channel'] or not isinstance(refs,list) or
+                    refs!=mp['provenance']):
+                    continue
+                for ref in refs:self.s.read_source(ref)
+            except (ValueError,TypeError,KeyError,AttributeError,OSError,UnicodeError):
+                continue
+            valid[mid]=(m['direction'],m['receiver'],m['channel'])
+        if not valid:return {'updated':0}
+        sc=step(self.n,PATH)
         def fn(st):
-            ms=st['pending'].get(event_id) or []
-            for m in ms:self._update(st,m['direction'],m['channel'],u,None,sc)
-            return len(ms)
+            seen=set();n=0
+            for m in st['pending'].get(event_id) or []:
+                mid=m.get('msg')
+                if (mid not in valid or mid in seen or m.get('rated') or
+                    (m.get('direction'),m.get('receiver'),m.get('channel'))!=valid[mid]):
+                    continue
+                self._update(st,m['direction'],m['channel'],u,None,sc)
+                m['rated']=True;seen.add(mid);n+=1
+            return n
         n=self._mutate(fn)
         if n and self.n is not None:
             try:self.n.signal(event_id,path=PATH,source_class='human_correction',task_success=u)
