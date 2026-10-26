@@ -34,7 +34,7 @@ jobs:
           test "$(git hash-object v13/code/scripts/run559_offline_review.py)" = '1043f856e5c8b20585f09266400ad59c0363bc0b'
           test "$(git hash-object v13/code/tests/test_run559_offline_review.py)" = 'f550ac8581242afa1a509daa4e25023eb3ca08da'
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run559-offline-audit/RUN559_RUN507_REPORT.json)" = 'cb0e3b4b7a429de9710ed093c94a78e370df9506'
-          test "$(git hash-object v13/code/scripts/run514_review.py)" = 'c3635c0bb6d6b1bd5f890b1e7cb7466a9a96c7c' || { echo 'Historical Run514 pin drift; inspect'; exit 1; }
+          test "$(git hash-object v13/code/scripts/run514_review.py)" = 'b99c92625c2849132f64fec6e6dc1abc96fdc652' || { echo 'Historical Run514 pin drift; inspect'; exit 1; }
           test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
           test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
           test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
