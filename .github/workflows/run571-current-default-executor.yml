@@ -1,0 +1,118 @@
+name: V13 Run571 fail-stop CURRENT/LEGACY executor source-only tests
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run571-current-default-executor.yml'
+      - 'v13/code/scripts/run571_current_default_native.py'
+      - 'v13/code/tests/test_run571_current_default_native.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run571-current-default-executor/**'
+permissions:
+  contents: read
+jobs:
+  executor-no-model-contract:
+    if: ${{ github.event.pull_request.head.ref == 'assistant/v13-run571-current-default-executor-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact prospective source, test and Canon pins
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN571_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run571-current-default-executor/PREREG.md)" = 'bc20229b3f9ef798e5ed4f0671d270bb024e4aa3'
+          test "$(git hash-object v13/code/scripts/run571_current_default_native.py)" = 'faef7cd9e0909016f1f426484af69e4751a4383f'
+          test "$(git hash-object v13/code/tests/test_run571_current_default_native.py)" = 'cd9315fceb7746cc064eae006b8de406dfa1cdb3'
+          test "$(git hash-object v13/code/scripts/run570_current_default_cohort.py)" = '64a76175da9f14c65c0e7fdfaf647e47e7e56715'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+          test "$(git hash-object v13/code/scripts/step2_z2b_seeds.py)" = '7c299616495450e4a38f9aab9921f7176ba67556'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN571_HOST.txt"
+      - name: Isolated dependencies, no model retrieval
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run571venv"
+          timeout 240s "$RUNNER_TEMP/run571venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN571_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN571_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Fail-stop and source adversarial tests; plan only
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run571venv/bin/python" -m compileall -q scripts/run571_current_default_native.py tests/test_run571_current_default_native.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 450s "$RUNNER_TEMP/run571venv/bin/python" -m unittest -v tests.test_run571_current_default_native tests.test_run570_current_default_cohort tests.test_run496_heldout10_native_pilot > "$RUNNER_TEMP/RUN571_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run571venv/bin/python" scripts/run571_current_default_native.py --plan --work "$RUNNER_TEMP/run571-plan" > "$RUNNER_TEMP/RUN571_PLAN_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run571venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN571_PLAN_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'run571-plan'/'RUN570_PLAN.json'
+          d=json.loads(p.read_text())
+          assert d['planned_native_consumer_rows']==84 and d['native_executed'] is False
+          assert d['arms']==['CURRENT','LEGACY'] and d['canonical_gate_pass'] is False
+          print('RUN571_FAILSTOP_EXECUTOR_SOURCE_ONLY; NO_NATIVE')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN571_TEST_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN571_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN571_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw evidence even RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN571_*' ! -name RUN571_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN571_SHA256SUMS.txt
+      - name: Upload source-only raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run571-executor-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN571_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN571_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN571_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN571_PRIVACY_EXIT.txt")" = 0
