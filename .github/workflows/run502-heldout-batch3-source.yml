@@ -26,8 +26,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run502-heldout-batch3-source/PREREG.md)" = 'fd007101124510f881ad033a87f37e272cb30fe9'
-          test "$(git hash-object v13/code/scripts/run502_step2_batch.py)" = '773ed4b0507bab839d151367c21a7a28e091c67c'
-          test "$(git hash-object v13/code/tests/test_run502_step2_batch.py)" = '992b073c7a450105d2dc9df62e0e59b07019b003'
+          test "$(git hash-object v13/code/scripts/run502_step2_batch.py)" = '5c01768ccedbe63cb3c2eebde5a75347e3a67abd'
+          test "$(git hash-object v13/code/tests/test_run502_step2_batch.py)" = 'abbdca274d19b435837474e4fb986e0fee57cde5'
           test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
           test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
           test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
