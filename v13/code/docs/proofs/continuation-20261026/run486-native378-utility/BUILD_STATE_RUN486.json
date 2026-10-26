@@ -92,5 +92,37 @@
     "Run486 is read-only, no native ownership; original Run479 artifact retention is 30 days and should be backed up in a permitted private location if available.",
     "Actual native378 pointer both_exact utility improves over off (+.088) and shared-body (+.176), but is below B1-only and same-policy dual controls; exploratory strict dominance fails in all arms. Do not claim B1/B2 complementarity."
   ],
-  "exact_next_command": "Independently review PR #484 and raw artifact 12632384691; preregister canonical ten-episode STEP2 acceptance with distinct B1/B2 information and C3 consumer controls. No native rerun, no gate promotion."
+  "exact_next_command": "Independent review PR #484; use source-attested native378 descriptive results to design a new preregistered canonical ten-episode STEP2 acceptance with genuine B1/B2 complementarity and C3 controls. Do not rerun original nine native arms or promote gates.",
+  "private_backup": {
+    "provider": "ChatGPT private Library (not rejected anyone-writable Drive)",
+    "folder": "/V13-Checkpoints/2026-10-26/Run486",
+    "verified_files": [
+      {
+        "name": "RUN479_ORIGINAL_NATIVE378_SAFE_NO_MODEL.zip",
+        "sha256": "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe",
+        "verified_by": "re-materialized from Library and SHA256 rehashed"
+      },
+      {
+        "name": "RUN479_ORIGINAL_NATIVE378_RAW.zip",
+        "sha256": "24268aede979c0e122ed05afe01141f61546b8077312ae42ce52f5c8ea4f65bf",
+        "verified_by": "re-materialized from Library and SHA256 rehashed"
+      },
+      {
+        "name": "RUN486_GREEN_RAW_40284808262.zip",
+        "sha256": "8004a6027ade69f18ccb704b22631a3b4995c6f4c9db0bb1786ba1415b5e854e",
+        "verified_by": "re-materialized from Library and SHA256 rehashed"
+      },
+      {
+        "name": "RUN486_GREEN_RAW_40284773270.zip",
+        "sha256": "6bcf24ca0e28e091c8105cec455552681a38b553d5998437277734832e765bb4",
+        "verified_by": "GitHub source SHA and successful Library upload"
+      },
+      {
+        "name": "RUN486_FIRST_RED_40284529482.zip",
+        "sha256": "9ac39a02776de0f03a3a7e84844a6022daa6fa02f52d68ee8b12801a47ec252b",
+        "verified_by": "GitHub source SHA and successful Library upload"
+      }
+    ],
+    "anyone_writable_drive_used": false
+  }
 }
