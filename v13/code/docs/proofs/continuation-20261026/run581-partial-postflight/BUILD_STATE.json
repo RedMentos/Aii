@@ -1,0 +1,63 @@
+{
+  "schema": "V13_RUN581_ORIGINAL_NATIVE005_PARTIAL_POSTFLIGHT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation12 independent retrospective postflight",
+  "review_branch": "codex/run581-native005-partial-postflight-20261026",
+  "review_pr": 578,
+  "base_head": "a51c98420836fb52d20dad708348b94c57ccb48d",
+  "prereg_commit": "e76493a702c5d359f2a67b0d9089d9a6bf5c4e53",
+  "tested_head": "9c8083353fc9a2f0d6d26b4c811b9ebd6724c514",
+  "source_blobs": {
+    "scripts/run581_partial_postflight.py": "ebac5ab10ddef37fd9aaeeecdf72fb7b9a4c9055",
+    "tests/test_run581_partial_postflight.py": "dd21dfe259bcb08d4ac3b85d3fb670ab948b4c35"
+  },
+  "original": {
+    "native_workflow_run": 40367841707,
+    "native_head": "db6047b267edceed9055d9702a2810492ffbfe8a",
+    "raw_artifact_id": 12671404476,
+    "raw_sha256": "9652c6b03d7918ef148b85ec8f18d70bce78a99b959de2382bc79cd2bfc4288e",
+    "safe_artifact_id": 12672672003,
+    "safe_sha256": "8860df4426bdfb1f07215519638b48cbb45b11266bfdd2ebd1b08e7465b9d151",
+    "native_exit": 0,
+    "original_audit_exit": 1
+  },
+  "tests": {
+    "workflow_run": 40381928971,
+    "job_id": 121780148372,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12678178301,
+    "artifact_sha256": "2ca3c4aa62b892aeb00f6096acc04470156c55104fd25ce6f0101dc043b600cb",
+    "unit_test_methods": 7,
+    "scope": "Original safe ZIP SHA and member closure, 28 strict oracle/source/consumer row rescores, official privacy scan, compileall, SHA-closed bounded report"
+  },
+  "findings": {
+    "status": "PARTIAL_28_OF_42_INDEPENDENTLY_RESCORED",
+    "rows_independently_rescored": 28,
+    "rows_unavailable": 14,
+    "wrong_committed_among_28": 0,
+    "missing_stage": "A_s33_p02",
+    "root_cause": "Run568 original workflow hardcoded seed32 for A_s33_p02 in BOTH independent audit stages tuple AND safe-copy stages tuple, although registered plan and stage prereg seed33. Audit read tool_A_s32 and failed; safe copy silently omitted original p02 tool_A_s33/summary_A_s33/step2_A_s33. Original job workspace is ephemeral and original raw artifact contains no full p02 source rows.",
+    "source_of_finding": "Original Run568 workflow source, original native raw traceback and original safe ZIP manifest; no reconstruction of missing 14 rows."
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "limitations": [
+    "Retrospective replication, not blind prospective held-out utility test.",
+    "28/42 independently source-rescored, not 42/42. Missing p02 source prevents independent full-batch native proof.",
+    "Zero wrong committed refers only to the 28 preserved rows, not the missing 14 or general reliability.",
+    "Original Run568 AUDIT=1 remains failed; no retuning or rewriting the attempt.",
+    "No new native execution, no B1/B2 learning/JEPA, no Redmi test."
+  ],
+  "open_questions": [
+    "Correct stage seed derivation and fail-closed safe-copy completeness for FUTURE_006+ in a separate new review branch, before any next native cohort.",
+    "Find whether an independently verified private backup of p02 full raw exists; do not infer one or regenerate registered outputs.",
+    "Prioritize true live Runtime.submit current-default vs legacy pilot and B1/B2 learning only with valid native prerequisites and independent source evidence."
+  ],
+  "next_exact_command": "Review PR578 and Actions 40381928971 original partial artifact. Preregister a new Run582 fail-closed stage artifact retention/source mapping candidate (derive seed from frozen stage prereg; refuse missing tool/summary/step2 files). Test software without native; preserve original Run568 RED and p02 14 unavailable."
+}
