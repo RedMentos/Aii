@@ -20,7 +20,11 @@ SEED0=8000
 
 def main(server,mdir,out,hashes):
     items=json.loads(SRC.read_text())['items'];rows=[];mdir=Path(mdir);hs=json.loads(hashes)
+    part=Path(str(out)+'.partial')  # resume after a container restart: finished models are kept unread, never regenerated differently
+    if part.exists():rows=json.loads(part.read_text())
     for name,(fn,_) in MODELS.items():
+        if sum(r['model']==name for r in rows)==len(items)*len(PROMPTS):print(name,'kept from partial',flush=True);continue
+        rows=[r for r in rows if r['model']!=name]
         if sha(mdir/fn)!=hs[name]:raise SystemExit('model hash mismatch: '+fn)
         p=port();proc=subprocess.Popen([server,'-m',str(mdir/fn),'--port',str(p),'-c','2048','-t','4','--no-webui'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
         try:
@@ -35,7 +39,7 @@ def main(server,mdir,out,hashes):
                     try:raw=ask(p,system,it['text'],SEED0+i);sent=json.loads(raw)['sentence'].strip();err=None
                     except Exception as exc:sent=None;err=type(exc).__name__
                     rows.append({'index':i,'model':name,'prompt':pid,'original':it['text'],'raw':raw,'sentence':sent,'error':err,'seconds':round(time.monotonic()-t0,2)})
-            print(name,'done',sum(r['model']==name and r['sentence'] is not None for r in rows),flush=True)
+            part.write_text(json.dumps(rows,ensure_ascii=False));print(name,'done',sum(r['model']==name and r['sentence'] is not None for r in rows),flush=True)
         finally:proc.terminate();proc.wait()
     data={'schema':'USER_RULES_ROUND8_RAW_V1','source':SRC.name,'source_sha256':sha(SRC),'runner':'llama.cpp b10964',
           'models':{k:{'file':v[0],'sha256':hs[k]} for k,v in MODELS.items()},'prompts':PROMPTS,'seed0':SEED0,'rows':rows}
