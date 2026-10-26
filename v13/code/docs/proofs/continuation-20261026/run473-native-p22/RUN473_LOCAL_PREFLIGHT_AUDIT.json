@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN473_INDEPENDENT_LOCAL_STAGE8_PREFLIGHT_V1",
+  "date_utc": "2026-10-26",
+  "scope": "local Linux source-only, actual previously native-produced 294-row ZIP; no new native model inference",
+  "source": {
+    "outer_phone_zip_sha256": "71827b0bdd2664dd5ac2b91c4cdcafa257e7e07b3321f6532983e58b2f7a05c5",
+    "inner_phone_zip_sha256": "ab6924c7920f5ee06ca78f57d41d31eb4b7439f3a71e2971e8719c58159d5ce0",
+    "source_files_extracted": 1198,
+    "git_blobs_verified": {
+      "run462_stage8_p22.py": "235e543cad60692d31229e9a04fec0fea1845c5f",
+      "run465_verify_native336.py": "c4aa16eda5e4e67b31d8aefc78c13a281305b000",
+      "run461_import_stage7_artifact.py": "c64e0ab85bcd7fad1b856e7d340ca9743bcb4217",
+      "run460_verify_native294.py": "2a61c2ae8600cede90900a323e22e1f5a723a3ea"
+    }
+  },
+  "input": {
+    "safe_zip_sha256": "e2e044840b9ac7acdb54102bd7df069fbc6491ca8b758421c3958730090e2136",
+    "stage7_report_sha256": "37ff2bc7fef87ddea9eb51852daff534110bc2103c8bdc8055ed5c72b826e278"
+  },
+  "positive": {
+    "command": "PYTHONPATH=$PWD:$PWD/scripts python scripts/run462_stage8_p22.py --archive <actual-safe294.zip> --expected-sha256 <pinned> --stage7-report <actual-Run472-stage7.json> --work <fresh-dir> --output <report>",
+    "exit_code": 0,
+    "status": "STAGE8_READY_NO_NATIVE",
+    "rows_verified": 294,
+    "remaining_arms": 2,
+    "completed": [
+      "O_s20",
+      "P_s20",
+      "S_s20",
+      "O_s21",
+      "P_s21",
+      "S_s21",
+      "O_s22"
+    ],
+    "native_execution_performed": false,
+    "canonical_gate_pass": false,
+    "step2_exit": "UTILITY_FAIL",
+    "report_sha256": "fa8234263a4c836a7735163ef6bb191b994a2201661546572d0f960bd6ce5a78"
+  },
+  "focused_tests": {
+    "count": 64,
+    "passed": 64,
+    "exit_code": 0,
+    "raw_log_sha256": "85d0b754837b86ffc969943092e2db80a5c1129fe8c03ff2f6f6159b2c41d673"
+  },
+  "adversarial": [
+    {
+      "case": "wrong expected outer ZIP SHA256",
+      "exit_code": 2,
+      "status": "STAGE8_RED_PRESERVED",
+      "error": "ARTIFACT_SHA_MISMATCH",
+      "work_published": false,
+      "report_sha256": "b110a54af2a7f0ffac66297a057f73b7789367a4926a633cf46aeabd7277d96b"
+    },
+    {
+      "case": "forged original report canonical_gate_pass=true",
+      "exit_code": 2,
+      "status": "STAGE8_RED_PRESERVED",
+      "error": "NATIVE_294_NOT_GREEN",
+      "work_published": false,
+      "report_sha256": "6d9e19a4ba178b7e746de0c1d6648bd8e0d6f39861efdd3e8f5ee506fded5731"
+    }
+  ],
+  "claim_limit": "Local source-only preview and adversarial proof; does not itself execute P_s22 or promote STEP2/B3/Body-JEPA/Redmi."
+}
