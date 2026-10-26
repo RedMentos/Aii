@@ -1,0 +1,53 @@
+name: V13 Run441 organ bridge symlink integrity source-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run441-organ-bridge-symlinks.yml'
+      - 'v13/code/v13/organ.py'
+      - 'v13/code/tests/test_run441_organ_bridge_symlinks.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run441-organ-bridge/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Isolated dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run441"
+          "$RUNNER_TEMP/run441/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Run organ source-only tests and record source hashes
+        run: |
+          cd v13/code
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          sha256sum v13/organ.py tests/test_run441_organ_bridge_symlinks.py | tee "$RUNNER_TEMP/run441-source-sha256.txt"
+          set +e
+          "$RUNNER_TEMP/run441/bin/python" -m unittest -v tests.test_run441_organ_bridge_symlinks tests.test_organ tests.test_standstill > "$RUNNER_TEMP/run441-tests.txt" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/run441-tests.txt"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/run441-exit.txt"
+          exit "$status"
+      - name: Official privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Retain raw source test log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run441-source-raw-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run441-tests.txt
+            ${{ runner.temp }}/run441-exit.txt
+            ${{ runner.temp }}/run441-source-sha256.txt
+          if-no-files-found: warn
+          retention-days: 30
