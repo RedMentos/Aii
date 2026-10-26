@@ -1373,6 +1373,7 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 
 ### WP-Z7 Ein Redmi-Paket für alle Handy-Pflichtmessungen (Nutzer, WP-R) — GEBAUT 2026-10-22, Lauf durch den Nutzer offen (PR #38)
 - `HANDY_PFLICHT.sh` / `code/scripts/handy_pflicht.py` (Schritte ram, training, residenz, wiederholung, werkzeug, langlauf; Fortsetzen nach Abbruch; Ergebnis-ZIP mit KURZ.txt), `z7_residency_bench.py` (§24.33 + §24.14 Overhead, Wiederholungs-Latenz), `train_runner_proof.py` (G-TRAIN-RUNNER-PROOF-001 für den Routen-Kopf; Cloud-Fuzz alles grün; Fund: candidate.npz bekam kein fsync vor metrics.json, behoben). Anleitung `code/docs/HANDY_PFLICHT.md`. Schaltet vorab das Eignungs-Werkzeug ein (Nutzerentscheidung 22.10., SHADOW bei Age 0).
+- Cloud-Probelauf TrainRunnerProof mit echtem Lern-Pfad (shadow/approve/restart/rollback) + 24 Abbrüche: `TRAIN_RUNNER_PROOF_PASS` (`bench-results/z7-train-runner-proof-cloud-20261022/`); das Gate zählt erst mit dem Handy-Lauf. Handy-ZIP `export/V13-Pflicht-Handy-20261022.zip` (Projektordner).
 - Ein Befehl wie `WERKZEUG_TESTEN.sh`: TRAIN_RUNNER_PROOF (G-TRAIN-RUNNER-PROOF-001), Langlauf (G-MOBILE-LONGRUN-001), §24.14 Overhead, §24.33 Residenz, Proceduralisierung Latenz/Energie, Werkzeug-Vorhersage. Ergebnis-ZIP hochladen. Bau in der Cloud, Lauf nur durch den Nutzer.
 
 ### WP-Z8 Age-Plastizität entscheiden (Nutzer) — ENTSCHIEDEN 2026-10-22: `noise_aware` ist Standard, Zitat-Kontext an (`NUTZER_ENTSCHEIDUNGEN.md`); Wiederöffnen-Test GEMESSEN: **G-AGE-REOPEN-001 FAIL**
