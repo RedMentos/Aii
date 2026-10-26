@@ -1,0 +1,43 @@
+{
+  "schema": "V13_RUN622_BRANCH_SCOPED_BUILD_STATE_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/automation11-run622-current-phone-source-integration-20261026",
+  "base_pr": 616,
+  "base_head": "405c7d8be42d34b98b80a83e48c79a49cc20aa27",
+  "owner": "GPT automation11 Run622 workflow/proof only",
+  "scope": "REVIEW_BRANCH_SOURCE_ONLY_PHONE_ZIP_INTEGRATION",
+  "prereg_commit": "b19dc8eebccd1ea24d5559fdacdb41317168ad11",
+  "workflow_commit": "e4d93aec030a2d0ad181fc0556c715ad5c23bd4a",
+  "ci_status": "PENDING_UNVERIFIED",
+  "local_proof": {
+    "source_base": "Run601 phone source fdcbefc129b28b085fcfa84a4bc3ee44cce74b62 with exact Run619/620/621 overlays",
+    "zip_sha256": "6c4bd35d2c7ff84bcef55ba52b129271ce6ddac9fd320de72ac6404fbd452e1b",
+    "crc": "PASS",
+    "member_hashes": "PASS",
+    "source_parity": "PASS",
+    "packager_tests": 8,
+    "verifier_tests": 7,
+    "extracted_sqlite_tests": 41,
+    "extracted_skips_with_fixture": 0
+  },
+  "native_model_inference_new": false,
+  "redmi_measured": false,
+  "full_current_source_verified": false,
+  "main_integrated": false,
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "open_questions": [
+    "Exact GitHub Actions pull_request run and current-source ZIP pending",
+    "Native Redmi current-source install/sustained measurement requires user device",
+    "Model weights not bundled; source-only ZIP requires authorized setup"
+  ],
+  "next_command": "Inspect PR617 Actions exact head/run, verify five exit files and raw ZIP artifact, then private checkpoint and next canonical package"
+}
