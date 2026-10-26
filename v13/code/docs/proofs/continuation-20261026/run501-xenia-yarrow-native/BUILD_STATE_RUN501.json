@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN501_NATIVE_STAGE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "status": "SOURCE_STAGED_NATIVE_NOT_YET_EXECUTED",
+  "branch": "codex/run501-xenia-yarrow-native-20261026",
+  "base_branch": "codex/run500-heldout1050-stage-map-20261026",
+  "base_sha": "457b4a70a556e5a41e9a41272b1f40804585d202",
+  "source": {
+    "prereg_blob": "4cf56ec87a660d1f833fa3a60678f0e788639719",
+    "test_blob": "654d96da62d91dca68af83e36492d87cba849779",
+    "workflow_blob": "04927070944f7dc0ece305cf47d5e697ac3bb760",
+    "stage_runner_blob": "504a4a8492bdb383869b164b82c05d13e00f6823",
+    "frozen_fixture_script_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "models_spec_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "evidence": {
+    "run499_native_actions": 40304564958,
+    "run499_raw_artifact": 12643015136,
+    "run499_safe_artifact": 12641923870,
+    "run500_source_actions": 40305428323,
+    "run500_source_artifact": 12642395808,
+    "run501_native_actions": null,
+    "run501_native_rows_verified": 0
+  },
+  "scope": {
+    "stage_id": "C_s31_p01",
+    "fixtures": [
+      "Xenia",
+      "Yarrow"
+    ],
+    "arm": "C",
+    "seed": 31,
+    "variants": 7,
+    "planned_rows": 14,
+    "full_cohort_rows": 1050
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run499 native 14-row pilot GREEN, raw/safe SHA independently verified and privately persisted",
+    "Run500 source-only 75 stages / 1050 rows GREEN, 21 tests, raw SHA independently verified",
+    "Run501 source prereg/test/workflow blobs fetched and SHA matched",
+    "no active GitHub Actions at native preflight"
+  ],
+  "blockers": [
+    "Run501 native not yet executed",
+    "full 1050-row cohort incomplete",
+    "Redmi phone unavailable"
+  ],
+  "next_command": "Open draft PR Run501 head codex/run501-xenia-yarrow-native-20261026 base codex/run500-heldout1050-stage-map-20261026; inspect one-shot native Actions and independent Xenia/Yarrow 14-row receipts, preserve RED unchanged; no gate promotion",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
