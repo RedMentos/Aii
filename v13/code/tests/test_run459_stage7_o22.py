@@ -83,6 +83,13 @@ class Run459Stage7Tests(unittest.TestCase):
         self.assertIn("RECEIPT_CHANGED", result["errors"][0])
         native.assert_not_called()
 
+    def test_forged_preflight_success_is_refused(self):
+        bad = dict(self.preflight(), rows_verified=294)
+        result, imported, native = self.call(preflight=bad)
+        self.assertEqual(result["status"], "STAGE7_RED_PRESERVED")
+        self.assertIn("STAGE7_PREFLIGHT_NOT_VERIFIED", result["errors"][0])
+        native.assert_not_called()
+
     def test_native_exception_remains_red_and_safe_export_is_attempted(self):
         with (patch.object(stage.stage6_import, "import_stage6",
                            return_value=self.imported()),
