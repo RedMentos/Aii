@@ -72,6 +72,46 @@ def digest(store,checkpoint=None):
     st['runs']+=1;store.set_state(KEY,st,expected=v)
     return out
 
+
+def progress(store,session):
+    """Read-only current-session backlog counters for the local operator.
+
+    Counts are *not* validated history or fact authority. The actual digest
+    still checks every FINAL pair's live source/approval lineage before use.
+    """
+    st,_=_load(store)
+    sessions=st.get('sessions')
+    if type(sessions) is not dict:
+        raise ValueError('Digest sessions state invalid')
+    d=sessions.get(session,{})
+    if type(d) is not dict:
+        raise ValueError('Digest session state invalid')
+    until=d.get('until',0)
+    pending=d.get('pending',[])
+    entries=d.get('entries',[])
+    version=d.get('cursor_version',1) if d else 2
+    if (type(until) is not int or not 0<=until<=9223372036854775807
+            or type(pending) is not list or len(pending)>128
+            or any(type(i) is not int or i<=0 for i in pending)
+            or len(set(pending))!=len(pending)
+            or type(entries) is not list or len(entries)>ENTRIES_MAX
+            or type(version) is not int or version not in (1,2)):
+        raise ValueError('Digest progress state invalid')
+    with store.mutex:
+        unseen=store.one(
+            "SELECT COUNT(*) AS n, SUM(CASE WHEN status='FINAL' THEN 1 ELSE 0 END) AS finals "
+            "FROM messages WHERE session_id=? AND role='assistant' AND id>?",
+            (session,until))
+    count=int(unseen['n']) if unseen else 0
+    finals=int(unseen['finals'] or 0) if unseen else 0
+    legacy=bool(d) and version!=2
+    return {'session':session,'cursor_version':version,'processed_until':until,
+            'retained_entries':len(entries),'deferred_assistant_ids':len(pending),
+            'unscanned_assistant_rows':count,'unscanned_final_assistant_rows':finals,
+            'unscanned_source_validity':'NOT_EVALUATED',
+            'legacy_backfill_required':legacy,'has_work':bool(count or pending or legacy),
+            'max_turns_per_digest':TURNS_MAX,'fact_authority':0}
+
 def view(store,session,cap=1200):
     """Digest text for a session (warm context aid; authority 0)."""
     d=_load(store)[0]['sessions'].get(session)
