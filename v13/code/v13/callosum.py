@@ -229,6 +229,13 @@ class Callosum:
                     continue
                 self._update(st,m['direction'],m['channel'],u,None,sc)
                 m['rated']=True;seen.add(mid);n+=1
+            # A duplicate pending entry for the same real packet must not
+            # become a second rating on the next call.
+            for m in st['pending'].get(event_id) or []:
+                mid=m.get('msg')
+                if (isinstance(mid,str) and mid in seen and
+                    (m.get('direction'),m.get('receiver'),m.get('channel'))==valid[mid]):
+                    m['rated']=True
             return n
         n=self._mutate(fn)
         if n and self.n is not None:
