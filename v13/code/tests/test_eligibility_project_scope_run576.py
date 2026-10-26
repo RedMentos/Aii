@@ -23,6 +23,16 @@ ORION_QUESTION = "Project Orion. Apply earlier project rules. " + OPTIONS
 GENERIC_QUESTION = "Apply earlier project rules. " + OPTIONS
 
 
+class FakeReader:
+    def __init__(self, values):
+        self.values = values
+        self.calls = []
+
+    def generate(self, messages, cancel, deadline, max_tokens=None, schema=None, **kwargs):
+        self.calls.append(messages)
+        yield json.dumps(self.values)
+
+
 class ProjectScopePure(unittest.TestCase):
     def test_project_heading_is_not_incidental_project_rules_phrase(self):
         self.assertEqual(E.project_labels(MIRA_QUESTION), frozenset({"mira"}))
@@ -113,6 +123,48 @@ class ProjectScopeRuntime(unittest.TestCase):
         p, result = self.decide(GENERIC_QUESTION)
         self.assertEqual(result["action"], "UNKNOWN")
         self.assertNotIn("quotes", p["args"])
+
+    def test_fixed_strict_reader_rejects_other_project_and_retains_same_project(self):
+        self.r.cfg["eligibility_reader"] = "fixed_strict"
+        self.prior(ORION)
+        p, result = self.decide(MIRA_QUESTION)
+        self.assertEqual(result["action"], "UNKNOWN")
+        self.assertNotIn("quotes", p["args"])
+        self.prior(MIRA)
+        p, result = self.decide(MIRA_QUESTION)
+        self.assertEqual(result["action"], "A")
+        self.assertEqual(p["args"]["budget"], 61)
+        self.r.pool.get.assert_not_called()
+
+    def test_model_reader_prompt_excludes_other_project_even_if_model_invents_rule(self):
+        self.r.cfg["eligibility_reader"] = "model"
+        reader = FakeReader({
+            "options": [{"entity": "A", "cost": 45, "days": 7, "local": True},
+                        {"entity": "B", "cost": 55, "days": 4, "local": False}],
+            "budget": 61, "deadline": 8, "local_only": False,
+        })
+        self.r.pool.get = Mock(return_value=reader)
+        self.prior(ORION)
+        p, result = self.decide(MIRA_QUESTION)
+        self.assertEqual(result["action"], "UNKNOWN")
+        self.assertNotIn("quotes", p["args"])
+        self.assertEqual(len(reader.calls), 1)
+        self.assertNotIn(ORION, json.dumps(reader.calls))
+        self.assertIn("Project Mira", json.dumps(reader.calls))
+
+    def test_model_reader_same_project_still_reuses_verified_source(self):
+        self.r.cfg["eligibility_reader"] = "model"
+        reader = FakeReader({
+            "options": [{"entity": "A", "cost": 45, "days": 7, "local": True},
+                        {"entity": "B", "cost": 55, "days": 4, "local": False}],
+            "budget": 61, "deadline": 8, "local_only": False,
+        })
+        self.r.pool.get = Mock(return_value=reader)
+        self.prior(MIRA)
+        p, result = self.decide(MIRA_QUESTION)
+        self.assertEqual(result["action"], "A")
+        self.assertIn(MIRA, p["args"]["quotes"])
+        self.assertEqual(len(reader.calls), 1)
 
 
 if __name__ == "__main__":
