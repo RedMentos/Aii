@@ -1,0 +1,74 @@
+{
+  "baseline": {
+    "b1_only": {
+      "mrr": 0.7479761904761905,
+      "top1": 0.65
+    },
+    "b2_only": {
+      "mrr": 0.9166666666666667,
+      "top1": 0.85
+    }
+  },
+  "canonical_architecture_complete": false,
+  "cross_cohort_train608_test614": {
+    "procrustes": {
+      "mrr": 0.43694444444444447,
+      "top1": 0.25
+    },
+    "ridge": {
+      "mrr": 0.390952380952381,
+      "top1": 0.2
+    },
+    "shuffled": {
+      "n": 50,
+      "procrustes_mean": 0.046,
+      "procrustes_p": 0.0196078431372549,
+      "ridge_mean": 0.055999999999999994,
+      "ridge_p": 0.0196078431372549
+    }
+  },
+  "gates": {
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "Redmi": "UNMEASURED",
+    "STEP2": "UTILITY_FAIL",
+    "V13": "INCOMPLETE",
+    "jepa_weight": 0
+  },
+  "native_body_training": false,
+  "native_inference_new": false,
+  "posthoc": true,
+  "receiver_injection": false,
+  "schema": "V13_RUN615_CROSSCOHORT_SHADOW_V1",
+  "source_artifacts": {
+    "608": {
+      "cohort": "f452bdf80bb8d8a784c1909c98e310041d3157aa",
+      "report": "51a7fb12170ea4580b1015076449765bb9ff5659a3335e9a68b543860a5dc8b9",
+      "states": "c6e6a7a6521d14c90805a996e723e9cd7716cd6ba6d13577480eff30349625ca"
+    },
+    "614": {
+      "cohort": "7068267d41a1719abea3a54c84b1d0223444df1d",
+      "report": "42ac6d22ef6c9cc59622572f233b2e7b83094af7a9fdd227cfe2fff15e0666e4",
+      "states": "cb535df87749c0cf5d698d26268e6b03f3d6f57690b95434aebc6c875a3ea189"
+    }
+  },
+  "status": "NO_CROSS_BODY_GAIN",
+  "user_full_scope_complete": false,
+  "within_cohort_train614_test614": {
+    "procrustes": {
+      "mrr": 0.4729383116883117,
+      "top1": 0.3
+    },
+    "ridge": {
+      "mrr": 0.47531926406926406,
+      "top1": 0.3
+    },
+    "shuffled": {
+      "n": 50,
+      "procrustes_mean": 0.06,
+      "procrustes_p": 0.0196078431372549,
+      "ridge_mean": 0.064,
+      "ridge_p": 0.0196078431372549
+    }
+  }
+}

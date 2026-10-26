@@ -1,0 +1,109 @@
+name: V13 Run615 SHA-bound cross-cohort B1 B2 trainable SHADOW readout
+on:
+  push:
+    branches:
+      - codex/automation11-run615-crosscohort-shadow-20261026
+    paths:
+      - '.github/workflows/run615-crosscohort-shadow.yml'
+      - 'v13/code/scripts/run615_crosscohort_shadow.py'
+      - 'v13/code/tests/test_run615_crosscohort_shadow.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run615-crosscohort-shadow/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  offline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Freeze source, Canon, native cohort identity
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN615_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run615_crosscohort_shadow.py)" = 22c1c4c55d95588135e0959693e7321d3706fdb0
+          test "$(git hash-object v13/code/tests/test_run615_crosscohort_shadow.py)" = f044640343cd0a4953d5f35563a06cb92c391625
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/scripts/run615_crosscohort_shadow.py v13/code/tests/test_run615_crosscohort_shadow.py > "$RUNNER_TEMP/RUN615_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN615_HOST.txt"
+      - name: Isolated pinned NumPy
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run615venv"
+          "$RUNNER_TEMP/run615venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Download original pinned read-only Linux-native Run608 and Run614 artifacts
+        id: download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/run608" "$RUNNER_TEMP/run614"
+          timeout 180s gh run download 40402123481 --repo RedMentos/Aii --name V13-Run608-Native-Paraphrase-81cd5417380251b3633aab474b4e1a672480ea2c --dir "$RUNNER_TEMP/run608" > "$RUNNER_TEMP/RUN615_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 180s gh run download 40407777217 --repo RedMentos/Aii --name V13-Run614-Independent-Native-Paraphrase-e253bb318737b3a8ead92f53a1044f0220f8281f --dir "$RUNNER_TEMP/run614" >> "$RUNNER_TEMP/RUN615_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            echo 'c6e6a7a6521d14c90805a996e723e9cd7716cd6ba6d13577480eff30349625ca' " $RUNNER_TEMP/run608/RUN608_STATES.npz" | sha256sum -c - >> "$RUNNER_TEMP/RUN615_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            echo 'cb535df87749c0cf5d698d26268e6b03f3d6f57690b95434aebc6c875a3ea189' " $RUNNER_TEMP/run614/RUN614_STATES.npz" | sha256sum -c - >> "$RUNNER_TEMP/RUN615_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN615_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Real original native state train-only readout and adversarial tests
+        id: test
+        if: ${{ steps.download.outputs.rc == '0' }}
+        working-directory: v13/code
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          set +e
+          RUN615_NATIVE608="$RUNNER_TEMP/run608" RUN615_NATIVE614="$RUNNER_TEMP/run614" PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run615venv/bin/python" -m unittest -v tests.test_run615_crosscohort_shadow > "$RUNNER_TEMP/RUN615_TESTS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run615venv/bin/python" scripts/run615_crosscohort_shadow.py --run608 "$RUNNER_TEMP/run608" --run614 "$RUNNER_TEMP/run614" --out "$RUNNER_TEMP/RUN615_REPORT.json" > "$RUNNER_TEMP/RUN615_EVAL_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN615_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        run: |
+          set +e
+          git fetch --no-tags --depth=32 origin "$GITHUB_SHA" > "$RUNNER_TEMP/RUN615_PRIVACY_RAW.log" 2>&1
+          fetch_rc=$?
+          if [ "$fetch_rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base 7cac4d667c075e863822b64b771e6a6af8fcd5ff --head "$GITHUB_SHA" >> "$RUNNER_TEMP/RUN615_PRIVACY_RAW.log" 2>&1
+            fetch_rc=$?
+          fi
+          echo "$fetch_rc" > "$RUNNER_TEMP/RUN615_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close original raw even on RED
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in DOWNLOAD TEST PRIVACY; do
+            test -f "RUN615_${k}_EXIT.txt" || echo 2 > "RUN615_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN615_*' ! -name 'RUN615_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN615_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run615-CrossCohort-Shadow-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN615_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce real tests, artifact binding and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in DOWNLOAD TEST PRIVACY; do
+            echo "RUN615 $k exit: $(cat "$RUNNER_TEMP/RUN615_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN615_${k}_EXIT.txt")" = 0
+          done
