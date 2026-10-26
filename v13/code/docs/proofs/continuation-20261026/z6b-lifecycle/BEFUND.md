@@ -32,3 +32,10 @@ von fixed vermeidet adaptive. Keiner erreicht in Phase 1 90 % (höchstens 85 %).
 Nächster Schritt (neu vorregistrieren): „Ersetzen“ für Korrekturen (neuere menschliche Korrektur zum gleichen Muster
 ersetzt ältere im Trainings- und Prüfsatz, mit Herkunft und Rücknahme) und Rücknahme-Messung (C4) im selben Lauf.
 Grenzen: nur Routen-Kopf, generierte deutsche Umschreibungen, ein Seed, Mensch durch Regel ersetzt, Cloud.
+
+Nachtrag (Diagnose nach dem Lauf, Dev-Seed 3, ändert das Urteil nicht): Ein automatisches „Ersetzen nach Ähnlichkeit“
+geht mit den Needle-Embeddings nicht. Roh-Kosinus liegt zwischen allen Fragearten bei 0,95–0,98 (Hälfte↔Hälfte Median
+0,965, Hälfte↔detail bis 0,984); auch zentriert trennt er nicht (Hälfte↔Hälfte Median 0,03, Hälfte↔detail bis 0,51).
+Ersetzen muss deshalb ausdrücklich vom Menschen kommen (z. B. „gilt ab jetzt für alle Hälfte-Fragen“, fest gelesen wie
+die Nutzer-Regeln) oder über Aktualität (neuere Korrekturen schwerer, alte widersprechende aus dem Prüfsatz), nicht
+über Embedding-Nähe.
