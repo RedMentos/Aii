@@ -1,0 +1,55 @@
+{
+  "schema": "V13_RUN451_FULLPOSTFLIGHT_EXECUTABLE_IDENTITY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "branch": "codex/automation11-run403-fullpostflight-executable-20261026",
+  "base": "5f99df593972491a2a7c51186b0563e6edbf7354",
+  "tested_source_head": "a83313a75c891c778ac2fa2dcd42c879220f4a83",
+  "pr": 450,
+  "change": "Run403 full postflight uses pinned Run401 installed executable SHA, not distinct release archive SHA; Run403 synthetic fixture gives all nine arms same executable identity. Frozen Run394/397/model/seed pins unchanged.",
+  "source_sha256": {
+    "v13/code/scripts/run403_full_postflight.py": "f8f493cdcd780b85d7dbc3413872cd478920cb0cc09d1426bd5d369bec64b3d9",
+    "v13/code/tests/test_run403_full_postflight.py": "e9ed0b0dc40fbb2b4f7f9fd7a6e5ee96cce7c9df13a7b6324c7b60eeae5d7183",
+    "v13/code/tests/test_run451_fullpostflight_executable_identity.py": "6c11e23f4cd5c2d712275077bdd08ce5e06f4ae89614ccf707573805983e7acd"
+  },
+  "red_first": {
+    "actions": 40270075366,
+    "status": "EXPECTED_FAILURE",
+    "tests": "23 run, 15 ERROR",
+    "artifact_id": 12628445254,
+    "artifact_sha256": "36a2f7c1c95c970af95b8a677a5f4e859d4df79efc0a25b213f36a8113317495"
+  },
+  "focused_green": {
+    "actions": 40270139904,
+    "status": "SUCCESS",
+    "tests": "23/23 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12628255234,
+    "artifact_sha256": "a7fc686356ef4ea06c7e498e96f0bd3de877e0117aff93d30556e09021141cbf"
+  },
+  "inherited": {
+    "run403": {
+      "actions": 40270139921,
+      "status": "SUCCESS"
+    },
+    "run405": {
+      "actions": 40270139902,
+      "status": "SUCCESS"
+    }
+  },
+  "scope": "Software/synthetic Linux, not actual 378 native evidence. 378 rows structurally checked only in synthetic fixture.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Actual native work currently 210/378 independently imported, not 378/378; next arm S_s21 should use exclusive serialized owner and pinned models.",
+    "Full suite Run446 still RED due historical source identity, optional torch and external artifacts; 5 Run404 + 14 Run403/405 synthetic identity failures now fixed on review-only stacked branches, not production main.",
+    "No Redmi evidence or model-weight learning proof."
+  ],
+  "next_command": "Verify Run451 checkpoint remote bytes and exact-head CI. Continue independent S_s21 source-only restore/preflight from actual Run437 210-row artifact; never run heavy native concurrently with an active owner."
+}
