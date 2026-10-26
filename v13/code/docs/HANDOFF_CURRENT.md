@@ -1,3 +1,7 @@
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2g — Aktualitäts-Wächter bestätigt
+
+`eligibility.decide/tool(..., history=...)` (leer = aus). Frische Episoden, CQ/CQP, Seeds 26–28: `Z2G_GUARD_CONFIRMED`, falsche Festlegungen 24 → 0, exakte 8 → 8. Aber fast alles UNKNOWN: B2 liefert mit zwei Zeiger-Plätzen selten alle aktuellen Regeln. Nächstes: WP-Z2h (mehr Zeiger-Plätze, Wächter an). Schalter bleiben aus, Budget live 768. Befund `docs/proofs/continuation-20261026/step2-z2g-recency/BEFUND.md`.
+
 # Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2f — mehr B2-Gedächtnis macht veraltete Regeln gefährlich
 
 Mit `b2_context_chars` 1536 kommt die alte Regel an, der Zeiger hält aber nicht (.26 vs. .09). Wichtig: 27 falsche Entscheidungen, alle nach überholten Regeln (B2 zitiert die alte Notiz, nicht die Änderung). Explorativer Aktualitäts-Wächter: 27 → 0 ohne Verlust. Nächstes: WP-Z2g bestätigen. Schalter bleiben aus, Budget live 768. Befund `docs/proofs/continuation-20261026/step2-z2f-context/BEFUND.md`.

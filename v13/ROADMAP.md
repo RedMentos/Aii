@@ -1231,8 +1231,11 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - **Sicherheitsbefund:** 27 falsch festgelegte Entscheidungen (CQ 7, CQP 18, DQP 2), alle in Episoden mit geänderter Regel und alle nach der **alten** Regel: B2 zitiert die alte Notiz, nicht die Änderung; das Werkzeug prüft nur gegen den aktuellen Text. Mehr Gedächtnis ohne Aktualitätsprüfung ist unsicher.
 - Explorativ: Aktualitäts-Wächter (jüngere behaltene Quelle mit anderem Wert → UNKNOWN) senkt falsch 27 → 0 ohne Trefferverlust; auf Z2b/Z2d-Daten keine Änderung. Befund `code/docs/proofs/continuation-20261026/step2-z2f-context/BEFUND.md`.
 
-### WP-Z2g Aktualitäts-Wächter im Eignungs-Werkzeug (Cloud, Modelle) — IN ARBEIT 2026-10-26 (gleicher Thread/Branch)
-- Schalter (Standard aus), vorregistrierte Bestätigung auf frischen Episoden mit geänderten Regeln, neue Seeds; Kriterium 0 falsch bei gleicher Trefferzahl. Danach erneut Zeiger + größeres B2-Budget.
+### WP-Z2g Aktualitäts-Wächter im Eignungs-Werkzeug (Cloud, Modelle) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `9954346b`)
+- `eligibility.decide/tool(..., history=...)`: Regelwert zählt nur, wenn die jüngste frühere Quelle dieser Regel ihn nennt (leer = aus). Bestätigung auf 10 frischen Episoden (REVISED/TWICE/CONFIRM), CQ/CQP, Seeds 26–28: **`Z2G_GUARD_CONFIRMED`** — falsch 24 → 0, exakt 8 → 8, 0 Fehlverwerfungen. Aber fast alles UNKNOWN (B2 liefert mit zwei Zeiger-Plätzen selten alle aktuellen Regeln). Befund `code/docs/proofs/continuation-20261026/step2-z2g-recency/BEFUND.md`.
+
+### WP-Z2h B2-Zeiger mit mehr Plätzen, Wächter an (Cloud, Modelle) — IN ARBEIT 2026-10-26 (gleicher Thread/Branch)
+- Zeiger-Plätze 2 → 4 (Schalter, Standard 2), LONG/REVISED/TWICE, Wächter immer an, vorregistriert, neue Seeds; Ziel exakte Entscheidungen hoch bei 0 falsch.
 
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).

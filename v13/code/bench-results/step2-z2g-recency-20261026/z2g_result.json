@@ -1,0 +1,235 @@
+{
+  "gate": {
+    "status": "Z2G_GUARD_CONFIRMED",
+    "structural": true,
+    "consistent": true,
+    "validity": {
+      "kickoff_in_context_share": {
+        "CQ": 1.0,
+        "CQP": 1.0
+      },
+      "required": 0.9,
+      "wrong_off": 24,
+      "required_wrong_off": 5
+    },
+    "off": {
+      "exact": 8,
+      "wrong": 24,
+      "unknown": 388,
+      "rows": 420
+    },
+    "on": {
+      "exact": 8,
+      "wrong": 0,
+      "unknown": 412,
+      "rows": 420
+    },
+    "lost_exact": [],
+    "by_type": {
+      "REVISED": {
+        "off": {
+          "exact": 1,
+          "wrong": 14,
+          "unknown": 237,
+          "rows": 252
+        },
+        "on": {
+          "exact": 1,
+          "wrong": 0,
+          "unknown": 251,
+          "rows": 252
+        }
+      },
+      "TWICE": {
+        "off": {
+          "exact": 0,
+          "wrong": 10,
+          "unknown": 74,
+          "rows": 84
+        },
+        "on": {
+          "exact": 0,
+          "wrong": 0,
+          "unknown": 84,
+          "rows": 84
+        }
+      },
+      "CONFIRM": {
+        "off": {
+          "exact": 7,
+          "wrong": 0,
+          "unknown": 77,
+          "rows": 84
+        },
+        "on": {
+          "exact": 7,
+          "wrong": 0,
+          "unknown": 77,
+          "rows": 84
+        }
+      }
+    },
+    "by_arm": {
+      "CQ": {
+        "off": {
+          "exact": 2,
+          "wrong": 1,
+          "unknown": 207,
+          "rows": 210
+        },
+        "on": {
+          "exact": 2,
+          "wrong": 0,
+          "unknown": 208,
+          "rows": 210
+        }
+      },
+      "CQP": {
+        "off": {
+          "exact": 6,
+          "wrong": 23,
+          "unknown": 181,
+          "rows": 210
+        },
+        "on": {
+          "exact": 6,
+          "wrong": 0,
+          "unknown": 204,
+          "rows": 210
+        }
+      }
+    },
+    "confirm_false_refusals": 0,
+    "b2_rule_rate": {
+      "CQ": 0.016666666666666666,
+      "CQP": 0.125
+    },
+    "superseded_quoted_rows": {
+      "CQ": 6,
+      "CQP": 39
+    },
+    "utility": {
+      "CQ": {
+        "b1_only": 0.4916666666666667,
+        "b2_only": 0.09444444444444444,
+        "both_exact": 0.48333333333333334
+      },
+      "CQP": {
+        "b1_only": 0.5083333333333334,
+        "b2_only": 0.125,
+        "both_exact": 0.5861111111111111
+      }
+    },
+    "canonical_gate_pass": false
+  },
+  "runs": {
+    "CQ_s26": {
+      "off": {
+        "exact": 1,
+        "wrong": 0,
+        "unknown": 69,
+        "rows": 70
+      },
+      "on": {
+        "exact": 1,
+        "wrong": 0,
+        "unknown": 69,
+        "rows": 70
+      },
+      "validity": {
+        "offers": 40,
+        "kickoff_in_context": 40
+      }
+    },
+    "CQ_s27": {
+      "off": {
+        "exact": 1,
+        "wrong": 1,
+        "unknown": 68,
+        "rows": 70
+      },
+      "on": {
+        "exact": 1,
+        "wrong": 0,
+        "unknown": 69,
+        "rows": 70
+      },
+      "validity": {
+        "offers": 40,
+        "kickoff_in_context": 40
+      }
+    },
+    "CQ_s28": {
+      "off": {
+        "exact": 0,
+        "wrong": 0,
+        "unknown": 70,
+        "rows": 70
+      },
+      "on": {
+        "exact": 0,
+        "wrong": 0,
+        "unknown": 70,
+        "rows": 70
+      },
+      "validity": {
+        "offers": 40,
+        "kickoff_in_context": 40
+      }
+    },
+    "CQP_s26": {
+      "off": {
+        "exact": 0,
+        "wrong": 8,
+        "unknown": 62,
+        "rows": 70
+      },
+      "on": {
+        "exact": 0,
+        "wrong": 0,
+        "unknown": 70,
+        "rows": 70
+      },
+      "validity": {
+        "offers": 40,
+        "kickoff_in_context": 40
+      }
+    },
+    "CQP_s27": {
+      "off": {
+        "exact": 2,
+        "wrong": 6,
+        "unknown": 62,
+        "rows": 70
+      },
+      "on": {
+        "exact": 2,
+        "wrong": 0,
+        "unknown": 68,
+        "rows": 70
+      },
+      "validity": {
+        "offers": 40,
+        "kickoff_in_context": 40
+      }
+    },
+    "CQP_s28": {
+      "off": {
+        "exact": 4,
+        "wrong": 9,
+        "unknown": 57,
+        "rows": 70
+      },
+      "on": {
+        "exact": 4,
+        "wrong": 0,
+        "unknown": 66,
+        "rows": 70
+      },
+      "validity": {
+        "offers": 40,
+        "kickoff_in_context": 40
+      }
+    }
+  }
+}
