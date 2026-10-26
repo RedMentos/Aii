@@ -45,11 +45,8 @@ class Run551RatingRevision(unittest.TestCase):
         self.assertNotIn('metacog_abstain', self._before(eid))
 
     def _before(self, eid):
-        e = self.r.store.one('SELECT packet FROM events WHERE id=?', (eid,))
-        # The live hook accepts an event identity and uses persisted state.
-        import json
         meta = {}
-        live.before_effort(self.r, json.loads(e['packet']), meta, {'uncertainty': .2, 'route_hint': 'simple'})
+        live.before_effort(self.r, {'event_id': eid}, meta, {'uncertainty': .2, 'route_hint': 'simple'})
         return meta
 
     def test_edit_and_neutral_retraction_are_not_additional_samples(self):
