@@ -192,16 +192,40 @@ def _checked_digest_entries(store,session,entries):
         checked.append((e,u,a))
     return checked
 
-def context_items(store,session,exclude_ids=(),cap=1200):
-    """Source-verified compressed history for the live C3 context (§8.3).
+def context_items(store,session,exclude_ids=(),cap=1200,*,selection='recent',query=None):
+    """Source-verified COMPRESSED history, optionally query-ranked (§8.3).
 
-    The digest state has no independent fact authority. The same history
-    source/rule revocation and exact-text checks apply as to native_history.
+    Default 'recent' retains the original exact behavior. Opt-in 'query' ranks
+    only live-history-validated entries using existing deterministic lexical
+    relevance, never a cached digest as independent fact authority.
     """
+    if selection not in ('recent','query'):
+        raise ValueError('Digest selection must be recent or query')
+    if selection=='query' and (type(query) is not str or len(query)>8192):
+        raise ValueError('Digest query invalid')
     d=_load(store)[0]['sessions'].get(session)
     if not d:return []
     checked=_checked_digest_entries(store,session,d.get('entries'))
-    skip=set(exclude_ids);out=[];n=0
+    skip=set(exclude_ids)
+    if selection=='query':
+        from .memory import relevance
+        ranked=[]
+        for recency,entry in enumerate(reversed(checked)):
+            if entry is None:continue
+            e,_,_=entry
+            if e['event_id'] in skip:continue
+            score=relevance(query,e['user'])
+            if score>0:
+                ranked.append((score,recency,line(e['user'],e['answer'])))
+        ranked.sort(key=lambda item:(-item[0],item[1]))
+        chosen=[];used=0
+        for score,recency,ln in ranked:
+            if used+len(ln)>cap:continue
+            chosen.append((recency,ln));used+=len(ln)
+        if chosen:
+            return [ln for _,ln in sorted(chosen,key=lambda item:-item[0])]
+        # No lexical support: retain the previous recent-only fallback.
+    out=[];n=0
     for entry in reversed(checked):
         if entry is None:continue
         e,_,_=entry

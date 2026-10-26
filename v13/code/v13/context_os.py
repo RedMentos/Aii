@@ -70,7 +70,7 @@ def clamp(x,lo=0.,hi=1.):
     return min(hi,max(lo,x))
 
 def empty():
-    return {'revision':REVISION,'mode':'SHADOW','learned':'SHADOW','layout':'append_only','knobs':dict(CTX),'capabilities':{},
+    return {'revision':REVISION,'mode':'SHADOW','learned':'SHADOW','layout':'append_only','digest_selection':'recent','knobs':dict(CTX),'capabilities':{},
             'warm':{},'seq':0,'last':{},'policy':{},'recall':[],'plans':0,'plan_receipts':{},'cache':{'n':0,'cached_tokens':0,'prompt_tokens':0}}
 
 def exact_spans(text):
@@ -202,6 +202,16 @@ class ContextOS:
         def fn(st):st[which]=mode;return mode
         return self._mutate(fn)
     def digest_enabled(self):return self._load()[0].get('digest',True)
+    def digest_selection(self):
+        value=self._load()[0].get('digest_selection','recent')
+        if value not in ('recent','query'):
+            raise ValueError('Invalid Context OS digest selection')
+        return value
+    def set_digest_selection(self,mode):
+        if mode not in ('recent','query'):
+            raise ValueError('Digest selection must be recent or query')
+        def fn(st):st['digest_selection']=mode;return mode
+        return self._mutate(fn)
     def set_digest(self,on):
         """WP-S7: sleep day digest of turns outside the history window as a COMPRESSED context layer (measured default on)."""
         def fn(st):st['digest']=bool(on);return st['digest']
@@ -521,7 +531,7 @@ class ContextOS:
         return out
     def report(self):
         st,_=self._load();self._decay(st);c=st['cache'];r=st['recall'][-RECALL_WINDOW:]
-        return {'revision':REVISION,'mode':st['mode'],'learned':st['learned'],'layout':st['layout'],'knobs':st['knobs'],'capabilities':st['capabilities'],
+        return {'revision':REVISION,'mode':st['mode'],'learned':st['learned'],'layout':st['layout'],'digest_selection':self.digest_selection(),'knobs':st['knobs'],'capabilities':st['capabilities'],
                 'warm':st['warm'],'plans':st['plans'],'exact_span_recall':{'n':len(r),'mean':round(sum(r)/len(r),6) if r else None,'stable':self._recall_stable(st)},
                 'measured_cache_reuse':round(c['cached_tokens']/(c['cached_tokens']+c['prompt_tokens']),6) if c['cached_tokens']+c['prompt_tokens'] else None,
                 'last':{role:{k2:v for k2,v in x.items() if k2 not in {'legacy','planned'}} for role,x in st['last'].items()},
@@ -553,7 +563,7 @@ def controller(runtime):
         c=runtime.context_os=ContextOS(runtime.store,runtime.cfg,age,n)
     return c
 
-USAGE=':ctxos [status|last|shadow|active|learned shadow|learned active|layout legacy|stable_prefix|append_only|source_bound_user|digest on|off|knob <Name> <0..1>|capability <Rolle> on|off|probe <Rolle>|plans <Event>|outcome <Event> <0..1> [ContextPlan-ID]]'
+USAGE=':ctxos [status|last|shadow|active|learned shadow|learned active|layout legacy|stable_prefix|append_only|source_bound_user|digest on|off|digest select recent|query|knob <Name> <0..1>|capability <Rolle> on|off|probe <Rolle>|plans <Event>|outcome <Event> <0..1> [ContextPlan-ID]]'
 def operator_command(r,args):
     c=controller(r)
     if not args or args==['status']:return dumps(c.report())
@@ -565,6 +575,10 @@ def operator_command(r,args):
     if len(args)==2 and args[0]=='learned':return dumps({'learned':c.set_mode(args[1].upper(),'EXPLICIT_HUMAN','learned')})
     if len(args)==2 and args[0]=='layout':return dumps({'layout':c.set_layout(args[1])})
     if len(args)==2 and args[0]=='digest' and args[1] in {'on','off'}:return dumps({'digest':c.set_digest(args[1]=='on')})
+    if len(args)==3 and args[:2]==['digest','select']:
+        with r.lock:
+            r.require_idle()
+            return dumps({'digest_selection':c.set_digest_selection(args[2])})
     if len(args)==3 and args[0]=='knob':return dumps(c.set_knob(args[1],float(args[2])))
     if len(args)==3 and args[0]=='capability' and args[2] in {'on','off'}:return dumps(c.set_capability(args[1],'consecutive_user',args[2]=='on'))
     if len(args)==2 and args[0]=='probe':

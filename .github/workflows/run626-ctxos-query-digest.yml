@@ -1,0 +1,100 @@
+name: V13 Run626 opt-in query-grounded Context OS digest SQLite regression
+on:
+  push:
+    branches:
+      - codex/automation11-run626-ctxos-query-digest-20261027
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run626-ctxos-query-digest.yml'
+      - 'v13/code/v13/sleep_offline.py'
+      - 'v13/code/v13/context_os.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_run626_ctxos_query_digest.py'
+permissions:
+  contents: read
+jobs:
+  sqlite:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run626-ctxos-query-digest-20261027' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact source/test/prereg and unchanged Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN626_HEAD.txt"
+          test "$(git hash-object v13/code/v13/sleep_offline.py)" = 19761bc0abe6dd3fa0123c1e94d7cf03e425773a
+          test "$(git hash-object v13/code/v13/context_os.py)" = 8e43a7dadaf4fc169c9e3a394f06f12a97e0a224
+          test "$(git hash-object v13/code/v13/runtime.py)" = 02b1c5e38cd042b829f8819f856fe7df870004ae
+          test "$(git hash-object v13/code/tests/test_run626_ctxos_query_digest.py)" = 1e6981fd78bcfc88fa2622a731df9a951bd62955
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run626-ctxos-query-digest/PREREG.md)" = 6d72c4b7cd7e2ff446a8c9c6a3020ca534abe94c
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/sleep_offline.py v13/code/v13/context_os.py v13/code/v13/runtime.py v13/code/tests/test_run626_ctxos_query_digest.py > "$RUNNER_TEMP/RUN626_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN626_HOST.txt"
+      - name: Isolated pinned source-only dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run626venv"
+          "$RUNNER_TEMP/run626venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Original exact Run625 source RED counterexample
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          for n in sleep_offline context_os runtime; do cp "v13/$n.py" "$RUNNER_TEMP/RUN626_PATCHED_$n.py"; git show "551e18be6948bdb849d6c1532c138a1c4f576d2c:v13/code/v13/$n.py" > "v13/$n.py"; done
+          test "$(git hash-object v13/sleep_offline.py)" = 0525bffc887efd91a26a67f94a38f7eab2cdfd0f
+          test "$(git hash-object v13/context_os.py)" = 65b6a2337bc92bfe8232de821d85da4b2cd6b4d2
+          test "$(git hash-object v13/runtime.py)" = abdd8b489057d65a21bb75d5e4e3fff0ca94c2bb
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run626venv/bin/python" -m unittest -v tests.test_run626_ctxos_query_digest.QueryDigestTests > "$RUNNER_TEMP/RUN626_ORIGINAL_RED.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN626_ORIGINAL_RED_EXIT.txt"
+          for n in sleep_offline context_os runtime; do cp "$RUNNER_TEMP/RUN626_PATCHED_$n.py" "v13/$n.py"; done
+          exit 0
+      - name: Patched SQLite lexical baseline and live Context OS regressions
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run626venv/bin/python" -m unittest -v tests.test_run626_ctxos_query_digest.QueryDigestTests tests.test_run624_sleep_session_fairness.SleepSessionFairness tests.test_sleep_offline.DigestTests tests.test_sleep_offline.LiveContextTests tests.test_context_os > "$RUNNER_TEMP/RUN626_GREEN_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN626_GREEN_EXIT.txt"
+          exit 0
+      - name: Public repository privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 551e18be6948bdb849d6c1532c138a1c4f576d2c --head HEAD > "$RUNNER_TEMP/RUN626_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN626_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close original RED and patched GREEN raw
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in ORIGINAL_RED GREEN PRIVACY; do
+            test -f "RUN626_${k}_EXIT.txt" || echo 2 > "RUN626_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN626_*' ! -name 'RUN626_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN626_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run626-Context-Query-Digest-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/RUN626_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce expected RED, patched GREEN and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          echo "Original RED exit: $(cat "$RUNNER_TEMP/RUN626_ORIGINAL_RED_EXIT.txt")"
+          test "$(cat "$RUNNER_TEMP/RUN626_ORIGINAL_RED_EXIT.txt")" = 1
+          grep -qE 'FAILED|ERROR' "$RUNNER_TEMP/RUN626_ORIGINAL_RED.log"
+          for k in GREEN PRIVACY; do
+            echo "RUN626 $k exit: $(cat "$RUNNER_TEMP/RUN626_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN626_${k}_EXIT.txt")" = 0
+          done
