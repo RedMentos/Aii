@@ -1,0 +1,106 @@
+name: V13 Run555 JEF automatic goal origin-session isolation
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run555-jef-goal-session.yml'
+      - 'v13/code/v13/agi/live.py'
+      - 'v13/code/tests/test_run555_jef_goal_session.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run555-jef-goal-session/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run555-jef-goal-session-binding-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Bind exact reviewed source, test and unchanged Canon
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN555_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run555-jef-goal-session/PREREG.md)" = '109b414eff335827e4af208987479c6403d8a72d'
+          test "$(git hash-object v13/code/v13/agi/live.py)" = '6746acfdf30457300992f3071e652e08e13f0b70'
+          test "$(git hash-object v13/code/tests/test_run555_jef_goal_session.py)" = 'ffd82c3f1e26d13c1bfa7b1565ce7220c22370e2'
+          test "$(git hash-object v13/code/tests/test_run552_jef_goal_final_receipt.py)" = '0e847e3e3210c7cf4e34d79f9ea196610a369fd3'
+          test "$(git hash-object v13/code/tests/test_run553_user_goal_operator.py)" = 'c1ccfefdb588ee9cc9c5dba5a5dd5be95602dfc3'
+          test "$(git hash-object v13/code/v13/agi/goals.py)" = '96ef31a63812efd1da98f85ae9a2b5152ba51a73'
+          test "$(git hash-object v13/code/v13/operator.py)" = '2d56975257c3eaf23989d0e6385ae04f5e7d3250'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN555_HOST.txt"
+      - name: Install isolated portable dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run555venv"
+          timeout 240s "$RUNNER_TEMP/run555venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN555_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN555_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Session provenance, JEF, Age and original goal regressions
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD"
+          "$RUNNER_TEMP/run555venv/bin/python" -m compileall -q v13/agi/live.py tests/test_run555_jef_goal_session.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 420s "$RUNNER_TEMP/run555venv/bin/python" -m unittest -v tests.test_run555_jef_goal_session tests.test_run552_jef_goal_final_receipt tests.test_run553_user_goal_operator tests.test_agi_live tests.test_world_model tests.test_executive_goal_session_lineage_run212 tests.test_growth tests.test_run551_rating_revision_calibration tests.test_run549_quality_fact_partition tests.test_run546_metacog_labels tests.test_age_rights > "$RUNNER_TEMP/RUN555_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN555_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN555_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN555_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN555_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close raw evidence including RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN555_*' ! -name RUN555_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN555_SHA256SUMS.txt
+      - name: Retain raw evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run555-jef-goal-session-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN555_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual source, tests and privacy exits
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN555_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN555_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN555_PRIVACY_EXIT.txt")" = 0
