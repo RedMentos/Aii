@@ -42,7 +42,7 @@ def file_sha(path):
 
 def git_blob_sha(path):
     b=Path(path).read_bytes()
-    return hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()
+    return hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
 
 
 def load_cohort(path=COHORT):
@@ -144,7 +144,7 @@ def run(home,out,states_path):
             'evidence_level':'LINUX_NATIVE_PAIRED_READONLY','gates':dict(GATES),
             'cohort_blob':COHORT_BLOB,'seed':SEED,'no_weight_updates':True,
             'can_latent_inject':False,'redmi_measured':False,'b3_promoted':False}
-    def save():atomic_write(out,(dumps(report)+'\\n').encode())
+    def save():atomic_write(out,(dumps(report)+'\n').encode())
     save()
     try:
         cohort=load_cohort();rows=cohort['prompts']
