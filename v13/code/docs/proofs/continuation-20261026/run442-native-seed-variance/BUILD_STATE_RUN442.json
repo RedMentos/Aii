@@ -1,0 +1,109 @@
+{
+  "schema": "V13_RUN442_NATIVE_SEED_VARIANCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run442-native-seed-variance-20261026",
+  "pr": 441,
+  "base_commit": "7916b29f7f3904689fd2d484f397bd3db1b00a27",
+  "tested_source_head": "9a833e284fa7c8227d38f5bc4cb6c47cb77f12ae",
+  "scope": "Read-only actual Linux-native O_s20 vs O_s21 observational variance, not native execution in this run and not a causal intervention.",
+  "source": {
+    "native_artifact_id": 12626146409,
+    "native_artifact_sha256": "405e62268b0314c6e852e367a4624a12508e971877afe14afebf05cb2afba6b7",
+    "native_run": 40263042202,
+    "independent_prior_gate": "Run433 native168 independent verifier",
+    "manifest_sha256": "bde79cc2b97fe58e252ace1cfaa800a2bcae1482e61ec23743f6f1423238668d",
+    "inner_files_reverified": 131,
+    "source_tool_rows_reverified": 168,
+    "paired_fixture_variants": 42
+  },
+  "proof": {
+    "actions_run": 40267923276,
+    "tests": 6,
+    "passed": 6,
+    "negative_cases": [
+      "outer SHA mismatch",
+      "duplicate ZIP member",
+      "wrong inner SHA",
+      "ZIP symlink member",
+      "mixed-case model path"
+    ],
+    "privacy": "CLEAN",
+    "artifact_id": 12627031816,
+    "artifact_sha256": "e159899c45fc3a33dbce73253c23597aa178f8596b80328ae37062ffbf2f50e1",
+    "report_sha256": "0dae37da1151e9ff73a399a6b0090f89d51bee3e5c4184751117d3c8c541ccc6",
+    "independent_local_report_parity": "EXACT_REPORT_PARITY_PASS",
+    "source_sha256": {
+      "v13/code/scripts/run442_native_seed_variance.py": "e587b3001cd506bedf90bb98667b59e6301c8931c97a85b3b0f60fbc4efcbafb",
+      "v13/code/tests/test_run442_native_seed_variance.py": "1844e192ad3da06af38ee5f4368a187177b7587da689a6b61df2ff075ed6b99d"
+    }
+  },
+  "aggregate_tool_utility": {
+    "b1_only": {
+      "seed20": 0.611111111111,
+      "seed21": 0.722222222222,
+      "delta": 0.111111111111,
+      "same_answers": 5,
+      "same_inputs": 0
+    },
+    "b2_only": {
+      "seed20": 0.138888888889,
+      "seed21": 0.097222222222,
+      "delta": -0.041666666667,
+      "same_answers": 1,
+      "same_inputs": 1
+    },
+    "both_none": {
+      "seed20": 0.166666666667,
+      "seed21": 0.347222222222,
+      "delta": 0.180555555556,
+      "same_answers": 2,
+      "same_inputs": 0
+    },
+    "both_exact": {
+      "seed20": 0.569444444444,
+      "seed21": 0.430555555556,
+      "delta": -0.138888888889,
+      "same_answers": 1,
+      "same_inputs": 0,
+      "same_b1_offers": 0,
+      "same_b2_offers": 0
+    },
+    "both_control": {
+      "seed20": 0.166666666667,
+      "seed21": 0.180555555556,
+      "delta": 0.013888888889,
+      "same_answers": 2,
+      "same_inputs": 0
+    },
+    "same_policy_dual": {
+      "seed20": 0.722222222222,
+      "seed21": 0.722222222222,
+      "delta": 0,
+      "same_answers": 6,
+      "same_inputs": 0,
+      "same_b1_offers": 0
+    },
+    "prompt_only_dual": {
+      "seed20": 0.402777777778,
+      "seed21": 0.402777777778,
+      "delta": 0,
+      "same_answers": 4,
+      "same_inputs": 0
+    }
+  },
+  "interpretation": "O_s20 vs O_s21 changes source offers and inputs; score changes cannot be attributed causally to B2 or pointer selection. Both_exact has substantial cross-seed instability, while same_policy_dual answers remain identical on six fixtures despite changed inputs. Not a positive STEP2 gate.",
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "active_native_owner": "Run437/PR436 P_s21 Actions 40266365717 in_progress at last observation, not touched",
+  "exact_next_command": "python3 v13/code/scripts/run442_native_seed_variance.py --archive <verified-Run427-safe-no-model-zip> --expected-sha256 405e62268b0314c6e852e367a4624a12508e971877afe14afebf05cb2afba6b7 --output report.json",
+  "prerequisites": "Existing safe artifact ID 12626146409, sha256 exact, no model weights, no native rerun. For CI use actions:read to download original artifact.",
+  "next": "After P_s21 actual native completes and Run438 independent import closes, compare P_s21 vs O_s21 with B1-only input/offer negative controls before any pointer-effect interpretation. Keep original failed rows and all gates."
+}
