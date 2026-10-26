@@ -1,0 +1,365 @@
+name: V13 Run562 FUTURE_004 A_s32 and A_s33 42-row serial native batch
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - '.github/workflows/run562-future004-native.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-pilot:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run562-future004-prep-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact frozen Run491/Run496 source and host contract
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN562_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run562-future004-prep/PREREG.md)" = '613a5c5afe353075b7e8a952d9278883bb26f084'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/scripts/run502_step2_batch.py)" = '5c01768ccedbe63cb3c2eebde5a75347e3a67abd'
+          test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
+          test "$(git hash-object v13/code/scripts/run558_future_batch.py)" = 'c73f2e44c5ecf3b1815b04097502153c814c74e0'
+          test "$(git hash-object v13/code/tests/test_run558_future_batch.py)" = 'ed9b3bae830cc8db1fdc9f96872caa8252f01ace'
+          test "$(git hash-object v13/code/tests/test_run496_heldout10_native_pilot.py)" = 'bde33c39d4aebbd1bc21738e42fa4447985af2be'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+          test "$(git hash-object v13/code/scripts/step2_z2b_seeds.py)" = '7c299616495450e4a38f9aab9921f7176ba67556'
+          test "$(git hash-object v13/code/tests/integration_step2_utility.py)" = 'a7ba12a8807a1ca8236f1c70d54dedb65c212caa'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; uname -a; python3 --version; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN562_HOST.txt"
+          sha256sum v13/code/scripts/run491_step2_heldout10.py v13/code/scripts/run496_heldout10_native_pilot.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN562_SOURCE_SHA256.txt"
+      - name: Install isolated Python dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run562venv"
+          timeout 240s "$RUNNER_TEMP/run562venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN562_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN562_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Exact source-only tests and pilot prereg manifest
+        id: fixture
+        if: ${{ steps.deps.outcome == 'success' && steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run562venv/bin/python" -m unittest -v tests.test_run491_step2_heldout10 tests.test_run496_heldout10_native_pilot tests.test_run498_runner_symlink tests.test_run500_step2_stage_map tests.test_run502_step2_batch tests.test_run504_remaining980_schedule tests.test_run558_future_batch tests.test_run505_future001_batch tests.test_run507_workflow_contract > "$RUNNER_TEMP/RUN562_TEST_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run562venv/bin/python" scripts/run500_step2_stage_map.py --fixture-only --work "$RUNNER_TEMP/run562-stage" > "$RUNNER_TEMP/RUN562_FIXTURE_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run562venv/bin/python" scripts/run504_remaining980_schedule.py --output "$RUNNER_TEMP/run562-stage/RUN504_SCHEDULE.json" >> "$RUNNER_TEMP/RUN562_FIXTURE_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run562venv/bin/python" scripts/run558_future_batch.py --batch FUTURE_004 --plan --work "$RUNNER_TEMP/run562-stage" >> "$RUNNER_TEMP/RUN562_FIXTURE_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            cp "$RUNNER_TEMP/run562-stage/RUN500_STAGE_MAP.json" "$RUNNER_TEMP/RUN562_STAGE_MAP.json"
+            cp "$RUNNER_TEMP/run562-stage/RUN558_BATCH_PLAN.json" "$RUNNER_TEMP/RUN562_BATCH_PLAN.json"
+            "$RUNNER_TEMP/run562venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN562_FIXTURE_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'RUN562_STAGE_MAP.json'
+          d=json.loads(p.read_text())
+          assert d['original_fixture_sha256']=='c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63'
+          assert d['stage_count']==75 and d['expected_native_rows']==1050
+          batch=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN562_BATCH_PLAN.json').read_text())
+          assert batch['stage_ids']==['A_s32_p04','A_s33_p00','A_s33_p01'] and batch['expected_rows']==42
+          assert batch['native_executed'] is False and batch['canonical_gate_pass'] is False
+          assert d['native_executed'] is False and d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          print('RUN562_THREE_STAGE_42_ROW_SOURCE_ONLY_VERIFIED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN562_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-download original pinned public GGUF/needle and b10964 runner
+        id: bootstrap
+        if: ${{ steps.fixture.outcome == 'success' && steps.fixture.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run562installed"
+          timeout -s TERM -k 30s 1500s "$RUNNER_TEMP/run562venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN562_BOOTSTRAP_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run562venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN562_INSTALLED_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          from run496_heldout10_native_pilot import verify_installed
+          result=verify_installed(Path(os.environ['V13_HOME']))
+          assert result['native_executed'] is False
+          print(json.dumps({'status':'ACTUAL_MODEL_AND_RUNNER_BYTES_VERIFIED','model_sha256':result['model_sha256'],
+                            'runner_sha256':result['runner_sha256'],
+                            'native_library_count':len(result['runtime_library_sha256'])},sort_keys=True))
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN562_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Execute exactly 42 frozen Linux-native consumer rows
+        id: native
+        if: ${{ steps.bootstrap.outcome == 'success' && steps.bootstrap.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run562installed"
+          timeout -s TERM -k 30s 5400s "$RUNNER_TEMP/run562venv/bin/python" scripts/run558_future_batch.py --batch FUTURE_004 --work "$RUNNER_TEMP/run562-stage" --installed-home "$V13_HOME" --execute > "$RUNNER_TEMP/RUN562_NATIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN562_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent exact 42-row three-stage postflight, no gate promotion
+        id: audit
+        if: ${{ steps.native.outcome == 'success' && steps.native.outputs.rc == '0' }}
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN562_AUDIT_RAW.log" 2>&1
+          import hashlib,json,os,math
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run562-stage'
+          batch=json.loads((root/'RUN558_BATCH_RESULT.json').read_text())
+          plan=json.loads((root/'RUN558_BATCH_PLAN.json').read_text())
+          full=json.loads((root/'RUN500_STAGE_MAP.json').read_text())
+          preflight=json.loads((root/'RUN558_INSTALLED_PREFLIGHT.json').read_text())
+          assert full['stage_count']==75 and full['expected_native_rows']==1050
+          assert full['original_fixture_sha256']=='c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63'
+          assert preflight['model_sha256']==plan['model_sha256_expected_not_retrieved']
+          assert preflight['runner_sha256']==plan['runner_sha256_expected_not_retrieved']
+          assert len(preflight['runtime_library_sha256'])>0
+          progress=[json.loads(x) for x in (root/'RUN558_BATCH_PROGRESS.jsonl').read_text().splitlines()]
+          stages=(('A_s32_p04',32,('Drift','Eon')),
+                  ('A_s33_p00',33,('Vesper','Willow')),
+                  ('A_s33_p01',33,('Xenia','Yarrow')))
+          variants={'b1_only','b2_only','both_none','both_exact','both_control','same_policy_dual','prompt_only_dual'}
+          assert plan['stage_ids']==[x[0] for x in stages] and plan['expected_rows']==42
+          assert batch['status']=='RUN558_BATCH_STRUCTURALLY_VERIFIED_ONLY' and batch['rows_verified']==42
+          assert batch['canonical_gate_pass'] is False and batch['step2_exit']=='UTILITY_FAIL'
+          assert len(progress)==6
+          assert [(p['stage_id'],p['state']) for p in progress]==[(s,x) for s,_,_ in stages for x in ('STARTED','FINISHED')]
+          assert all(p['rc']==0 for p in progress if p['state']=='FINISHED')
+          sha=lambda x:hashlib.sha256(x).hexdigest()
+          canon=lambda x:json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+          def rescore(answer,oracle):
+              try:
+                  value=json.loads(answer)
+                  if type(value) is not dict or set(value)!={'project','action','options'}:return 0.0
+                  options=value['options']
+                  if type(options) is not list or len(options)!=len(oracle['options']):return 0.0
+                  got={}
+                  for item in options:
+                      if type(item) is not dict or set(item)!={'entity','cost','remaining','days','local','eligible'}:return 0.0
+                      if type(item['entity']) is not str or item['entity'] in got:return 0.0
+                      got[item['entity']]=item
+                  if set(got)!={o['entity'] for o in oracle['options']}:return 0.0
+                  checks=[type(value['project']) is str and value['project']==oracle['project'],
+                          type(value['action']) is str and value['action']==oracle['action']]
+                  for option in oracle['options']:
+                      for field in ('cost','remaining','days','local','eligible'):
+                          checks.append(type(got[option['entity']][field]) is type(option[field]) and
+                                        got[option['entity']][field]==option[field])
+                  return sum(checks)/len(checks)
+              except (ValueError,TypeError,KeyError):return 0.0
+          seen=set();summary_hashes={};wrong=0
+          for stage_id,seed,fixtures in stages:
+              folder=root/('stage_'+stage_id)
+              result=json.loads((folder/'RUN500_STAGE_RESULT.json').read_text())
+              tool=json.loads((folder/f'tool_A_s{seed}.json').read_text())
+              summary=json.loads((folder/f'summary_A_s{seed}.json').read_text())
+              report=json.loads((folder/f'step2_A_s{seed}.json').read_text())
+              stage_prereg=json.loads((folder/'RUN500_STAGE_PREREG.json').read_text())
+              expected_stage=next(x for x in full['stages'] if x['id']==stage_id)
+              assert stage_prereg==expected_stage and stage_prereg['fixture_ids']==list(fixtures)
+              assert report['fixture_sha256']==stage_prereg['fixture_sha256']
+              assert report['all_structural_checks_passed'] is True and report['installed_artifacts_unchanged'] is True
+              assert next(x for x in batch['stage_receipts'] if x['stage_id']==stage_id)['receipt_sha256']==sha((folder/'RUN500_STAGE_RESULT.json').read_bytes())
+              assert result['status']=='STAGE_14_ROWS_STRUCTURALLY_VERIFIED_ONLY' and result['stage_id']==stage_id and result['rows_verified']==14
+              assert result['canonical_gate_pass'] is False and result['step2_exit']=='UTILITY_FAIL'
+              assert result['tool_sha256']==sha((folder/f'tool_A_s{seed}.json').read_bytes())
+              assert result['summary_sha256']==sha((folder/f'summary_A_s{seed}.json').read_bytes())
+              assert tool['installed_artifacts_unchanged'] is True and report['source_unchanged'] is True and report['uses_real_weights'] is True
+              assert summary['run']==f'A_s{seed}' and summary['arm']=='A' and summary['seed']==seed
+              assert sum(v['wrong_committed'] for v in summary['tool_summary'].values())==0
+              expected={(f,v) for f in fixtures for v in variants}
+              assert len(tool['rows'])==14 and {(r['fixture'],r['variant']) for r in tool['rows']}==expected
+              source={(r['fixture'],r['variant']):r for r in report['rows']}
+              oracles={f['id']:f['oracle'] for f in report['fixtures']}
+              assert set(oracles)==set(fixtures)
+              assert len(source)==14
+              byvariant={v:[] for v in variants}
+              for row in report['rows']:
+                  assert report['row_sha256'][row['fixture']+':'+row['variant']]==sha(canon(row))
+              for row in tool['rows']:
+                  key=(row['fixture'],row['variant'])
+                  assert key not in seen
+                  seen.add(key)
+                  assert row['status']=='RECORDED' and row['oracle_visible_to_native'] is False
+                  assert tool['row_sha256'][key[0]+':'+key[1]]==sha(canon(row))
+                  assert row['consumer_messages_sha256']==sha(canon(source[key]['consumer_messages']))
+                  assert math.isfinite(row['score']['utility']) and 0<=row['score']['utility']<=1
+                  score=rescore(row['answer'],oracles[key[0]])
+                  assert abs(score-row['score']['utility'])<1e-12
+                  byvariant[key[1]].append(score)
+                  try:action=json.loads(row['answer'])['action']
+                  except (ValueError,KeyError,TypeError):action=None
+                  if action in ('A','B','NONE') and action!=oracles[key[0]]['action']:wrong+=1
+              for variant,scores in byvariant.items():
+                  assert len(scores)==2
+                  assert abs(summary['tool_summary'][variant]['mean_utility']-sum(scores)/2)<1e-12
+              summary_hashes[stage_id]={'tool':result['tool_sha256'],'summary':result['summary_sha256']}
+          assert len(seen)==42 and wrong==0
+          receipt={'status':'RUN562_42_NATIVE_ROWS_INDEPENDENTLY_VERIFIED',
+                   'rows':42,'stage_ids':[x[0] for x in stages],
+                   'native_execution_performed':True,'canonical_gate_pass':False,
+                   'step2_exit':'UTILITY_FAIL','redmi_measured':False,'jepa_weight':0,
+                   'stage_hashes':summary_hashes,'wrong_committed':wrong}
+          (Path(os.environ['RUNNER_TEMP'])/'RUN562_INDEPENDENT_REPORT.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+          print(json.dumps(receipt,sort_keys=True))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN562_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Preserve only bounded synthetic no-model JSON, including RED attempts
+        id: safe
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN562_SAFE_AUDIT_RAW.log" 2>&1
+          import hashlib,json,os,stat
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run562-stage'
+          dest=Path(os.environ['RUNNER_TEMP'])/'run562-safe'
+          dest.mkdir(exist_ok=False)
+          root_files=('RUN500_STAGE_MAP.json','RUN504_SCHEDULE.json','RUN558_BATCH_PLAN.json',
+                      'RUN558_BATCH_PROGRESS.jsonl','RUN558_BATCH_RESULT.json',
+                      'RUN558_INSTALLED_PREFLIGHT.json')
+          stage_files=('RUN500_STAGE_PREREG.json','RUN500_INSTALLED_PREFLIGHT.json',
+                       'RUN500_STAGE_RESULT.json')
+          stages=(('A_s32_p04',32),('A_s33_p00',33),('A_s33_p01',33))
+          copied={};total=0
+          def copy(p,relative):
+              global total
+              if not p.exists():return
+              st=p.lstat()
+              assert stat.S_ISREG(st.st_mode) and st.st_nlink==1 and st.st_size<=12_000_000
+              data=p.read_bytes()
+              assert len(data)==st.st_size
+              if p.suffix=='.jsonl':
+                  assert all(json.loads(line) is not None for line in data.decode().splitlines())
+              else:json.loads(data)
+              total+=len(data)
+              assert total<=40_000_000
+              target=dest/relative
+              target.parent.mkdir(parents=True,exist_ok=True)
+              target.write_bytes(data)
+              copied[relative]={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
+          for name in root_files:copy(root/name,name)
+          for stage_id,seed in stages:
+              for name in stage_files+(f'step2_A_s{seed}.json',f'tool_A_s{seed}.json',f'summary_A_s{seed}.json'):
+                  copy(root/('stage_'+stage_id)/name,('stage_'+stage_id)+'/'+name)
+          assert 'RUN500_STAGE_MAP.json' in copied and 'RUN558_BATCH_PLAN.json' in copied
+          receipt={'status':'SYNTHETIC_NO_MODEL_WORK_ONLY','copied':copied,'total_bytes':total,
+                   'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL'}
+          (dest/'RUN562_SAFE_MANIFEST.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+          (Path(os.environ['RUNNER_TEMP'])/'RUN562_SAFE_AUDIT.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+          print(json.dumps({'status':receipt['status'],'files':len(copied),'bytes':total}))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN562_SAFE_EXIT.txt"
+          echo "ready=$([ "$rc" -eq 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN562_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN562_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          if [ -d "$RUNNER_TEMP/run562-stage/run558-raw" ]; then
+            for f in "$RUNNER_TEMP"/run562-stage/run558-raw/*.log; do
+              [ -f "$f" ] || continue
+              cp "$f" "$RUNNER_TEMP/RUN562_STAGE_$(basename "$f")"
+            done
+          fi
+          if [ -f "$RUNNER_TEMP/run562-stage/RUN558_BATCH_PROGRESS.jsonl" ]; then
+            cp "$RUNNER_TEMP/run562-stage/RUN558_BATCH_PROGRESS.jsonl" "$RUNNER_TEMP/RUN562_BATCH_PROGRESS.jsonl"
+          fi
+          find . -maxdepth 1 -type f -name 'RUN562_*' ! -name RUN562_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN562_SHA256SUMS.txt
+      - name: Upload raw evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run562-heldout10-native-raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN562_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload only verified safe no-model work
+        if: ${{ always() && steps.safe.outcome == 'success' && steps.safe.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run562-heldout10-safe-no-model-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/run562-safe/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual native and independent receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = 'success'
+          test "${{ steps.deps.outcome }}" = 'success'
+          test "${{ steps.fixture.outcome }}" = 'success'
+          test "${{ steps.bootstrap.outcome }}" = 'success'
+          test "${{ steps.native.outcome }}" = 'success'
+          test "${{ steps.audit.outcome }}" = 'success'
+          test "${{ steps.safe.outcome }}" = 'success'
+          test "${{ steps.privacy.outcome }}" = 'success'
+          test "$(cat "$RUNNER_TEMP/RUN562_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN562_FIXTURE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN562_BOOTSTRAP_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN562_NATIVE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN562_AUDIT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN562_SAFE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN562_PRIVACY_EXIT.txt")" = 0

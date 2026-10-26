@@ -1,0 +1,89 @@
+{
+  "schema": "V13_RUN562_DORMANT_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 / Run562 source-only FUTURE_004 preparation",
+  "base_head": "cf40fe3bf601260c6c6590637e50de0a6188a6c8",
+  "branch": "codex/automation11-run562-future004-prep-20261026",
+  "pr": null,
+  "pr_opened": false,
+  "native_execution_performed": false,
+  "prereg_sha_git_blob": "613a5c5afe353075b7e8a952d9278883bb26f084",
+  "native_workflow_sha_git_blob": "786449882b682d1cbe8612fbc0fb345795e6c8f0",
+  "source_workflow_sha_git_blob": "327269d5e55e19e69721c19a49c24511df896af6",
+  "source_only_evidence": {
+    "actions_run": 40358007016,
+    "head": "54977e1df296cb5b237f3027ecb9a533dac4b3cb",
+    "status": "SUCCESS",
+    "tests": 28,
+    "privacy": "CLEAN",
+    "source_plan": "FUTURE_004_42_DISJOINT_VERIFIED_NO_NATIVE",
+    "artifact_id": 12666074183,
+    "artifact_sha256": "71d169f82cb2cec738c1c14918ef6934d6225248bfc48a32513aa7c8e75279d1",
+    "sha_manifest_entries": 10,
+    "sha_manifest_verified": true,
+    "private_library_backup": "/V13-Checkpoints/2026-10-26/Run562_dormant_source_SHA_71d169f8.zip"
+  },
+  "frozen_plan": {
+    "batch": "FUTURE_004",
+    "stage_ids": [
+      "A_s32_p04",
+      "A_s33_p00",
+      "A_s33_p01"
+    ],
+    "fixture_pairs": [
+      [
+        "Drift",
+        "Eon"
+      ],
+      [
+        "Vesper",
+        "Willow"
+      ],
+      [
+        "Xenia",
+        "Yarrow"
+      ]
+    ],
+    "arm_seed_pairs": [
+      [
+        "A",
+        32
+      ],
+      [
+        "A",
+        33
+      ],
+      [
+        "A",
+        33
+      ]
+    ],
+    "rows": 42
+  },
+  "active_native_owner": {
+    "run": 40357028652,
+    "branch": "codex/automation11-run561-future003-native-20261026",
+    "batch": "FUTURE_003",
+    "status": "IN_PROGRESS_AT_CHECKPOINT"
+  },
+  "open_questions": [
+    "Run561 FUTURE_003 native postflight and independent offline ZIP audit pending",
+    "Run562 native workflow is intentionally dormant until Run561 independent audit",
+    "Full remaining frozen FUTURE_005..024 and all B/C/D/E arms remain unmeasured",
+    "Real Redmi sustained proof, native Body-JEPA, B3 and STEP2 full acceptance remain open"
+  ],
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "next_exact_command": "After Run561 Actions 40357028652 completes, fetch original raw/safe artifact IDs and GitHub SHA256 digests, independently run run559_offline_review.py --batch FUTURE_003 --prefix RUN561 --head cf40fe3bf601260c6c6590637e50de0a6188a6c8; if verified and no native owner, create draft PR for Run562 branch against Run561 exact head to trigger one-shot FUTURE_004. If RED, preserve and review without rerunning original batch.",
+  "prerequisites": [
+    "Do not open Run562 native PR before Run561 independent PASS",
+    "Never force push or mutate Run491/500/504 original frozen source",
+    "No paid provisioning, no device claims from Linux"
+  ]
+}
