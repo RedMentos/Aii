@@ -1,0 +1,55 @@
+{
+  "run": "Run398",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_NATIVE_ARTIFACT_PENDING",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run398-step2-native-independent-audit-20261026",
+  "pr": 393,
+  "base": {
+    "branch": "codex/run397-step2-resumable-native-20261026",
+    "sha": "32fd1402f39cc89bde95ecfec48df3921dd9da3d",
+    "integration": "stacked review only, not main"
+  },
+  "plan_commit": "13ce6db505ee7e1eaa9f49fe8f65e5f90a324f1e",
+  "source_commit": "592a686ecc5d6ee5a1c9bd945afaf649a5e5ee26",
+  "tests_commit": "4c5eaebe5f3ffa3d50504b72a7a726fbd4d34c8a",
+  "workflow_commit": "47137fbd8f92056808955679262ccea163d11b8c",
+  "proof": {
+    "head": "47137fbd8f92056808955679262ccea163d11b8c",
+    "run": 40249652113,
+    "source_job": 121338552229,
+    "actual_job": 121338553290,
+    "actual_job_status": "SKIPPED",
+    "tests": "43/43 PASS, compileall PASS, privacy CLEAN",
+    "artifact": 12619373572,
+    "zip_sha256": "566ce110907f9451db17d55c3c345705ec92532b45b3e86209f63fb1000b7521",
+    "raw_integrity": "ZIP CRC PASS, 4/4 member SHA256 PASS, private Library byte-identical"
+  },
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run398_STEP2_20261026/SOURCE_RAW.zip",
+  "scope": "Independent read-only native raw artifact ZIP + Run396 row audit; only synthetic source tests so far",
+  "native_dependency": {
+    "run395_workflow_run": 40247992605,
+    "expected_source_head": "48d2119dbbc7077da10b625ca4ff5819bfc74730",
+    "artifact_id": "UNKNOWN_NOT_YET_OBSERVED",
+    "artifact_sha256": "UNKNOWN_NOT_YET_OBSERVED",
+    "owner": "Run395 serialized native job"
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED",
+    "No Redmi phone proof",
+    "Age0/approval unchanged",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Wait for Run395 actual native job completion and preserve any RED raw",
+    "Fetch actual Run395 artifact, verify SHA/CRC and execute Run398 audit",
+    "Run396 postflight must verify 42 real rows; no claim from synthetic tests",
+    "Actual workflow_dispatch may require default branch; use PR-triggered audit with observed pinned artifact only"
+  ],
+  "next_command": "python3 v13/code/scripts/run398_native_artifact_audit.py --raw-zip <verified downloaded Run395 ZIP> --expected-sha256 <observed GitHub artifact digest> --output <private RUN398_NATIVE_AUDIT.json>",
+  "next_prerequisites": "Run395 completed artifact ID and SHA256 observed; exact source head checked; no paid provisioning"
+}
