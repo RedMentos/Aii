@@ -1,7 +1,7 @@
 name: V13 Run486 read-only actual native378 STEP2 utility and complementarity
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
     paths:
       - '.github/workflows/run486-native378-utility.yml'
 permissions:
@@ -108,7 +108,22 @@ jobs:
                   assert i.file_size<=16_000_000
                   total+=i.file_size;assert total<=256_000_000
               z.extractall(export)
-          assert (export/'RUN409_SAFE_EXPORT_MANIFEST.json').is_file() or any(p.name.endswith('MANIFEST.json') for p in export.iterdir())
+          # GitHub upload-artifact omits empty directories. Recreate ONLY those
+          # explicitly listed by the SHA-pinned Run409 export manifest.
+          manifest=json.loads((export/'RUN409_EXPORT_MANIFEST.json').read_bytes())
+          assert manifest['schema']=='RUN409_SAFE_NATIVE_EXPORT_V1'
+          declared=manifest['directories']
+          assert type(declared) is list and len(declared)==len(set(declared)) and len(declared)<1000
+          assert set(manifest['copied'])=={i.filename for i in entries if not i.is_dir() and i.filename!='RUN409_EXPORT_MANIFEST.json'}
+          for name in declared:
+              assert type(name) is str and name
+              if name=='.':continue
+              rel=PurePosixPath(name)
+              assert not rel.is_absolute() and '..' not in rel.parts and '\\' not in name
+              dest=export.joinpath(*rel.parts)
+              assert not dest.is_symlink()
+              dest.mkdir(parents=True,exist_ok=True)
+          assert (export/'RUN409_EXPORT_MANIFEST.json').is_file()
           with zipfile.ZipFile(root/'run486-raw378.zip') as z:
               names=z.namelist()
               assert len(names)==len(set(names)) and len(names)<100
