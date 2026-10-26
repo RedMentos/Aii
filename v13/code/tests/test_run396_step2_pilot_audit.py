@@ -43,7 +43,7 @@ def make_synthetic(folder):
                 msg = [{"role": "system", "content": "Synthetic audit fixture"},
                        {"role": "user", "content": json.dumps({
                            "current_source": fixture["current"],
-                           "analysts": [{"role": "B2_GIST", "verified_quotes": [old_rule]}]
+                           "analysts": [{"role": "B2_GIST", "verified_quotes": [fixture["history"][0]]}]
                        })}]
                 src = {"fixture": fixture["id"], "variant": variant,
                        "status": "RECORDED", "consumer_messages": msg}
@@ -163,6 +163,16 @@ class Run396AuditTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "fixture hash mismatch"):
             audit.audit(self.folder)
 
+    def test_reject_forged_historical_quote_even_when_rule_text_matches(self):
+        f = next(x for x in r394.FIXTURES if x["id"] == "Delta")
+        old = f["old_rules"]
+        rule = r394.rule_text((old["budget"], old["deadline"], old["local_only"]))
+        rows = {(f["id"], v): {"consumer_messages": [{"role": "user", "content": json.dumps({
+            "analysts": [{"role": "B2_GIST", "verified_quotes": [rule + " UNSOURCED"]}]})}]}
+            for v in audit.B2_VARIANTS}
+        with self.assertRaisesRegex(ValueError, "not exact frozen source"):
+            audit.quote_provenance(rows, f)
+
     def test_historical_quote_not_a_current_rule_claim(self):
         f = next(x for x in r394.FIXTURES if x["id"] == "Delta")
         old = f["old_rules"]
@@ -170,7 +180,7 @@ class Run396AuditTests(unittest.TestCase):
         rows = {}
         for v in audit.B2_VARIANTS:
             rows[(f["id"], v)] = {"consumer_messages": [{"role": "user", "content": json.dumps({
-                "analysts": [{"role": "B2_GIST", "verified_quotes": [rule]}]})}]}
+                "analysts": [{"role": "B2_GIST", "verified_quotes": [f["history"][0]]}]})}]}
         result = audit.quote_provenance(rows, f)
         self.assertEqual(result["historical_exact_rule_quotes"], 4)
         self.assertTrue(result["revision_overrides_historical_rule"])
