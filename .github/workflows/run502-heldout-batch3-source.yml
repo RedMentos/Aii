@@ -1,0 +1,108 @@
+name: V13 Run502 source-only serial 42-row batch proof
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run502-heldout-batch3-source.yml'
+      - 'v13/code/scripts/run502_step2_batch.py'
+      - 'v13/code/tests/test_run502_step2_batch.py'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run502-heldout-batch3-source-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact frozen prereg and source hashes
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run502-heldout-batch3-source/PREREG.md)" = 'fd007101124510f881ad033a87f37e272cb30fe9'
+          test "$(git hash-object v13/code/scripts/run502_step2_batch.py)" = '5c01768ccedbe63cb3c2eebde5a75347e3a67abd'
+          test "$(git hash-object v13/code/tests/test_run502_step2_batch.py)" = 'abbdca274d19b435837474e4fb986e0fee57cde5'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+      - name: Isolated source test dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Exact source-only tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest -v tests.test_run502_step2_batch tests.test_run500_step2_stage_map tests.test_run491_step2_heldout10 tests.test_run496_heldout10_native_pilot > "$RUNNER_TEMP/RUN502_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN502_TEST_EXIT.txt"
+          exit 0
+      - name: Generate source-only 75-stage map and 42-row batch plan
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python scripts/run500_step2_stage_map.py --fixture-only --work "$RUNNER_TEMP/run502-source" > "$RUNNER_TEMP/RUN502_PLAN_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python scripts/run502_step2_batch.py --plan --work "$RUNNER_TEMP/run502-source" >> "$RUNNER_TEMP/RUN502_PLAN_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            cp "$RUNNER_TEMP/run502-source/RUN500_STAGE_MAP.json" "$RUNNER_TEMP/RUN502_STAGE_MAP.json"
+            cp "$RUNNER_TEMP/run502-source/RUN502_BATCH_PLAN.json" "$RUNNER_TEMP/RUN502_BATCH_PLAN.json"
+            ../../.venv/bin/python - <<'PY' >> "$RUNNER_TEMP/RUN502_PLAN_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          full=json.loads((root/'RUN502_STAGE_MAP.json').read_text())
+          batch=json.loads((root/'RUN502_BATCH_PLAN.json').read_text())
+          assert full['stage_count']==75 and full['expected_native_rows']==1050
+          assert batch['stage_ids']==['C_s31_p02','C_s31_p03','C_s31_p04']
+          assert batch['expected_rows']==42 and batch['native_executed'] is False
+          assert batch['canonical_gate_pass'] is False and batch['step2_exit']=='UTILITY_FAIL'
+          print('RUN502_42_ROW_SOURCE_ONLY_PLAN_VERIFIED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN502_PLAN_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN502_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN502_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw source-only SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN502_*' ! -name RUN502_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN502_SHA256SUMS.txt
+      - name: Preserve source-only proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run502-heldout-batch3-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN502_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests, plan and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN502_TEST_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN502_PLAN_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN502_PRIVACY_EXIT.txt")" = '0'
