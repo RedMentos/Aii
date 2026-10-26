@@ -1,0 +1,177 @@
+{
+ "prereg_sha256": "b38608da44b86fb7f480eb87223f11fcd9103a674e647154ab7e7e5a4bc04fcc",
+ "fresh_sha256": {
+  "r461": "129d608668396bd40eb821427e81d41d93011339715485d3f53868e8d219a1fc",
+  "r467": "8ec5cb1bf6744b5494755640b7cf4b3e13ce1fee24564574b411ce37fb2aa2a2",
+  "f71": "aaf21be60b0229dbff593e7f0bae848be9ab7e2d1831efcfbf1a284a31bb8dc1",
+  "f73": "fb5ce336e28454f7707e9dae1706f22c7a9088fb462e7766c82bbfabe655fe5f"
+ },
+ "policies": {
+  "r4": {
+   "recipe_always": {
+    "strict": {
+     "correct": 98,
+     "wrong": 22,
+     "utility": 76.0,
+     "utility_lambda2": 54
+    },
+    "bench": {
+     "correct": 109,
+     "wrong": 11,
+     "utility": 98.0,
+     "utility_lambda2": 87
+    },
+    "abstain": 0,
+    "repair": 0
+   },
+   "check": {
+    "strict": {
+     "correct": 98,
+     "wrong": 11,
+     "utility": 87.0,
+     "utility_lambda2": 76
+    },
+    "bench": {
+     "correct": 103,
+     "wrong": 6,
+     "utility": 97.0,
+     "utility_lambda2": 91
+    },
+    "abstain": 11,
+    "repair": 0
+   },
+   "check_repair": {
+    "strict": {
+     "correct": 109,
+     "wrong": 11,
+     "utility": 98.0,
+     "utility_lambda2": 87
+    },
+    "bench": {
+     "correct": 114,
+     "wrong": 6,
+     "utility": 108.0,
+     "utility_lambda2": 102
+    },
+    "abstain": 0,
+    "repair": 11
+   }
+  },
+  "f": {
+   "recipe_always": {
+    "strict": {
+     "correct": 102,
+     "wrong": 18,
+     "utility": 84.0,
+     "utility_lambda2": 66
+    },
+    "bench": {
+     "correct": 111,
+     "wrong": 9,
+     "utility": 102.0,
+     "utility_lambda2": 93
+    },
+    "abstain": 0,
+    "repair": 0
+   },
+   "check": {
+    "strict": {
+     "correct": 101,
+     "wrong": 3,
+     "utility": 98.0,
+     "utility_lambda2": 95
+    },
+    "bench": {
+     "correct": 103,
+     "wrong": 1,
+     "utility": 102.0,
+     "utility_lambda2": 101
+    },
+    "abstain": 16,
+    "repair": 0
+   },
+   "check_repair": {
+    "strict": {
+     "correct": 117,
+     "wrong": 3,
+     "utility": 114.0,
+     "utility_lambda2": 111
+    },
+    "bench": {
+     "correct": 119,
+     "wrong": 1,
+     "utility": 118.0,
+     "utility_lambda2": 117
+    },
+    "abstain": 0,
+    "repair": 16
+   }
+  }
+ },
+ "check_r4": {
+  "tool_tasks": 60,
+  "flagged": 11,
+  "flagged_wrong_strict": 11,
+  "recipe_wrong_strict_on_tool": 19,
+  "caught": 11,
+  "precision": 1.0,
+  "recall": 0.5789
+ },
+ "hypotheses": {
+  "H1_r4_repair_vs_abstain": {
+   "repair": {
+    "correct": 109,
+    "wrong": 11,
+    "utility": 98.0,
+    "utility_lambda2": 87
+   },
+   "check": {
+    "correct": 98,
+    "wrong": 11,
+    "utility": 87.0,
+    "utility_lambda2": 76
+   },
+   "pass": true
+  },
+  "H2_f_check_transfer": {
+   "tool_tasks": 120,
+   "flagged": 16,
+   "flagged_wrong_strict": 15,
+   "recipe_wrong_strict_on_tool": 18,
+   "caught": 15,
+   "precision": 0.9375,
+   "recall": 0.8333,
+   "pass": true
+  },
+  "H3_f_repair_utility": {
+   "repair": {
+    "correct": 117,
+    "wrong": 3,
+    "utility": 114.0,
+    "utility_lambda2": 111
+   },
+   "recipe_always": {
+    "correct": 102,
+    "wrong": 18,
+    "utility": 84.0,
+    "utility_lambda2": 66
+   },
+   "check": {
+    "correct": 101,
+    "wrong": 3,
+    "utility": 98.0,
+    "utility_lambda2": 95
+   },
+   "pass": true
+  },
+  "H4_repair_errors_only_from_reads": {
+   "repair_wrong": 0,
+   "repair_wrong_with_correct_read": 0,
+   "fixtures": [],
+   "pass": true
+  }
+ },
+ "verdict": "DS3C_SUPPORTED",
+ "phone_measured": false,
+ "runtime_changed": false
+}
