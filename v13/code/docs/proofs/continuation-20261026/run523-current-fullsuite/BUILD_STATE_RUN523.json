@@ -13,7 +13,7 @@
   },
   "prerequisites": "Isolated numpy2.3.5/prompt-toolkit3.0.52/torch2.9.1+cpu; no model downloads; public GitHub Actions",
   "test_command": "cd v13/code && PYTHONPATH=$PWD python -m unittest discover -s tests -p 'test_*.py' -v",
-  "evidence": "FULL_SOURCE_ONLY_SUITE_PENDING",
+  "evidence": "FULL_SOURCE_ONLY_SUITE_RED_3819_TESTS_5_FAILURES_78_ERRORS_15_SKIPPED_PRIVACY_CLEAN",
   "heavy_owner": {
     "run522_pr": 520,
     "stage": "p02",
@@ -32,6 +32,28 @@
     "Source-only tests cannot validate real native/phone",
     "Parallel Run522 p02 native receipt independently reviewed after completion"
   ],
-  "next_command": "Open source-only PR, inspect all test failures and dependency logs, preserve raw SHA artifact and repair source regression if real; do not hide RED.",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Preserve full-suite RED; independently determine which historical tests require exact frozen checkout or archived fixture without changing original hashes. Continue Run525 p03 native and Run526 p04 negative control on separate serialized lane; do not promote whole-system acceptance.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "ci": {
+    "run": 40317741250,
+    "conclusion": "FAILURE",
+    "tests": 3819,
+    "failures": 5,
+    "errors": 78,
+    "skipped": 15,
+    "privacy": "CLEAN",
+    "artifact_id": 12646849737,
+    "artifact_sha256": "9c1f0683c8f5f644cf3da51e7e6ebfcfe48c69afb20a283be26f4d288d347a30",
+    "sha_manifest_entries_verified": 6,
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run523/Run523_fullsuite_RED_3819tests_sha9c1f0683.zip"
+  },
+  "failure_classes": {
+    "live_source_baseline_candidate_mismatch": 36,
+    "old_frozen_runtime_baseline_candidate_mismatch": 26,
+    "recorded_runner_identity_mismatch": 14,
+    "run404_stage1_receipt_not_reusable_failures": 5,
+    "missing_external_run147_artifact": 1,
+    "missing_archived_lp3_helper_import": 1
+  },
+  "note": "These are exact-current-head fullsuite failures, not claimed fixed. Frozen historical baseline tests cannot be silently repinned to current source; missing archived prerequisites remain explicit. Run520 and Run521 focused source-only tests GREEN separately, not substitute for this RED."
 }
