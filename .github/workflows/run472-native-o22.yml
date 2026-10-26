@@ -47,7 +47,7 @@ jobs:
           from pathlib import Path
           root=Path(os.environ['RUNNER_TEMP'])
           read=lambda name:json.loads((root/name).read_text())
-          assert read('RUN472_NATIVE252_SOURCE.json')=={'conclusion':'success','head_sha':'f90a17d9b1102f3bad5a7ee9e3684d610856c620'}
+          assert read('RUN472_NATIVE252_SOURCE.json')=={'conclusion':'success','head_sha':'ec704f17ad72ad974eb4e6af26f8c47dcfe3682e'}
           for name,aid,digest in (
               ('RUN472_SAFE252_META.json',12629891890,'d7a8ae73fa8ebe9a0f8e863f700623846f5363834b193d3d635fa03eeb252025'),
               ('RUN472_RAW252_META.json',12629867040,'c3f3d01a7caef7dedbc4756cae9b9e7be46d28a81f4e8152ad3ca67cc3acd099')):
