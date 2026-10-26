@@ -66,5 +66,14 @@
     "Original 10-episode STEP2 acceptance, distinct B1/B2, B3 L1, Body-JEPA and Redmi remain open."
   ],
   "exact_next_command": "Monitor GitHub Actions run 40277803560 under serialized owner; on GREEN download and independently SHA-verify Run473 raw and safe336 artifacts, then Stage9 S_s22; on RED preserve raw logs and repair without claiming 336.",
-  "pr": 472
+  "pr": 472,
+  "independent_local_stage8_preflight": {
+    "status": "PASS",
+    "source_files_extracted": 1198,
+    "focused_tests": "64/64 PASS",
+    "actual_native294_archive_preview": "STAGE8_READY_NO_NATIVE",
+    "negative_cases": "2/2 RED, no work published",
+    "proof_path": "v13/code/docs/proofs/continuation-20261026/run473-native-p22/RUN473_LOCAL_PREFLIGHT_AUDIT.json",
+    "claim_limit": "source-only Linux, not new native P_s22"
+  }
 }
