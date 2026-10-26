@@ -1,0 +1,78 @@
+{
+  "schema": "V13_RUN628_C3_NATIVE_LORA_PROBE_V1",
+  "date_utc": "2026-10-27",
+  "model": {
+    "repo_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "master_file": "model.safetensors",
+    "master_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "license": "apache-2.0",
+    "source": "official Hugging Face model card + exact blob"
+  },
+  "scope": "C3_LANGUAGE experimental CPU LoRA master path, not deployed GGUF, no model authority",
+  "train": [
+    {
+      "memory_id": "synthetic-c3-larch-color",
+      "kind": "synthetic",
+      "prompt": "In the fictional Larch protocol, what is the marker color?",
+      "target": "The marker color is amber.",
+      "answer_keys": [
+        "amber"
+      ],
+      "weight": 1
+    },
+    {
+      "memory_id": "synthetic-c3-larch-gate",
+      "kind": "synthetic",
+      "prompt": "In the fictional Larch protocol, what is the gate number?",
+      "target": "The gate number is 47.",
+      "answer_keys": [
+        "47"
+      ],
+      "weight": 1
+    }
+  ],
+  "heldout": [
+    {
+      "prompt": "What is two plus two?",
+      "expect": [
+        "4"
+      ],
+      "unseen": true
+    },
+    {
+      "prompt": "Write a brief greeting.",
+      "expect": [
+        "hello",
+        "hi"
+      ],
+      "unseen": true
+    }
+  ],
+  "config": {
+    "targets": [
+      "q_proj",
+      "v_proj"
+    ],
+    "rank": 2,
+    "alpha": 4,
+    "lr": 0.001,
+    "max_steps": 2,
+    "min_steps": 2,
+    "ckpt_every": 1,
+    "anchor_weight": 0,
+    "anchors_per_step": 0,
+    "locality_swaps": 0,
+    "max_tokens": 96,
+    "threads": 2,
+    "jepa_weight": 0,
+    "seed": 13
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  }
+}
