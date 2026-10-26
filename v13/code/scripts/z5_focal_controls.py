@@ -71,9 +71,30 @@ def rescore(rows):
         if x['arm']=='coalition_live' and is_system_report(x.get('output')):x.update({'pass_raw':x['pass'],'pass':False,'overflow':True,'intrusion':False})
     return rows
 
+def prior_items(retained,n=None):
+    items=sorted(retained,key=lambda x:-x['created'])
+    return [x['text'] for x in (items[:n] if n is not None else items)]
+
 def prior_block(retained,n=None):
-    items=sorted(retained,key=lambda x:-x['created'])[:n] if n is not None else sorted(retained,key=lambda x:-x['created'])
-    return PRIOR_HEAD+dumps([x['text'] for x in items]) if items else ''
+    items=prior_items(retained,n)
+    return PRIOR_HEAD+dumps(items) if items else ''
+
+def render(spec):
+    """Hypotheses-layer text of one arm: head + items (+ earlier hypotheses newest first); None = arm not buildable."""
+    if spec is None:return None
+    head,items,prior=spec
+    return (head+dumps(items) if head else '')+(PRIOR_HEAD+dumps(prior) if prior else '')
+
+def fit_spec(spec,fits):
+    """WP-Z5e: same rule for every arm when its context would overflow: drop earlier hypotheses oldest first, then the
+    last items of the layer (at least one stays). Returns (spec, cuts) or (None, cuts) when it still does not fit."""
+    head,items,prior=spec[0],list(spec[1]),list(spec[2]);cuts=0
+    while not fits((head,items,prior)):
+        if prior:prior.pop()
+        elif len(items)>1:items.pop()
+        else:return None,cuts
+        cuts+=1
+    return (head,items,prior),cuts
 
 def latest_per_role(offers):
     by={}
@@ -112,10 +133,11 @@ def focal_measure(store,eid,run,slots):
             'all_offers_selected':len(run['selected'])==len(run['offers']),'cycles':len(traj),'decision':run['decision'],
             'inquisition':[x['verdict'] for x in run['inquisition']],'focal_items_logged':len(items)}
 
-def run_rep(installed,rep,fixtures,session_mode=False):
+def run_rep(installed,rep,fixtures,session_mode=False,fit_arms=False):
     from v13 import effort as EF
     from v13 import focal as F
     from v13 import runtime as RT
+    from v13 import context_fit as CF
     from v13.config import initialize,save_config
     from v13.proofs import audit_event
     from v13.prompts import text as prompt
@@ -174,18 +196,27 @@ def run_rep(installed,rep,fixtures,session_mode=False):
                 measures.append(base|focal_measure(r.store,eid,run,cap['slots']))
                 sysmsg=msgs[0]['content'];coal=cap['ctx'].get('coalition')
                 retained=cap.get('retained',[]) if session_mode else []
-                blocks={'no_hypotheses':'','retrieval_only':(POOL_HEAD if session_mode else RETRIEVED_HEAD)+dumps(retrieve(text,r.cfg['focal_slots'],[x['text'] for x in retained]))}
+                specs={'no_hypotheses':('',[],[]),'retrieval_only':(POOL_HEAD if session_mode else RETRIEVED_HEAD,retrieve(text,r.cfg['focal_slots'],[x['text'] for x in retained]),[])}
                 for arm in ('coalition','full_context','fixed_slots'):
                     body=cap['ctx'].get(arm)
-                    blocks[arm]=None if isinstance(body,dict) and 'error' in body else ('' if body is None else hyp_head+dumps(body))
+                    specs[arm]=None if isinstance(body,dict) and 'error' in body else (('',[],[]) if body is None else (hyp_head,body,[]))
                 if session_mode:  # "everything into the context" also carries every retained earlier hypothesis; fixed slots keep the 2 newest
-                    if blocks['full_context'] is not None:blocks['full_context']+=prior_block(retained)
-                    if blocks['fixed_slots'] is not None:blocks['fixed_slots']+=prior_block(retained,max(0,r.cfg['focal_slots']-2))
+                    if specs['full_context'] is not None:specs['full_context']=specs['full_context'][:2]+(prior_items(retained),)
+                    if specs['fixed_slots'] is not None:specs['fixed_slots']=specs['fixed_slots'][:2]+(prior_items(retained,max(0,r.cfg['focal_slots']-2)),)
+                blocks={arm:render(sp) for arm,sp in specs.items()};cuts={}
                 line={'rep':rep,'fixture':fid,'role':cap['answer_role'],'retained':len(retained),'live':rows[-1]['pass'],'turn_s':turn_s,'offers':len(run['offers']),'coalition':len(run['coalition'])}
                 for arm in REPLAY:
                     if blocks[arm] is None:rows.append(base|{'arm':arm,'pass':False,'skipped':'ANALYST_CONTEXT_REJECTED','error':cap['ctx'][arm]['error']});continue
                     try:system=swap_layer(sysmsg,hyp_head,coal,blocks[arm],anchor)
                     except ValueError as exc:rows.append(base|{'arm':arm,'pass':False,'skipped':'LAYER_SWAP_FAILED','error':str(exc)});continue
+                    if fit_arms:  # WP-Z5e: every arm gets the same size rule as the fixed live path (context_fit), so size alone decides nothing
+                        runner=r.pool.get(cap['answer_role']);limit=CF.budget(r.cfg)
+                        def fits(sp):
+                            mm=[{'role':'system','content':swap_layer(sysmsg,hyp_head,coal,render(sp),anchor)}]+msgs[1:]
+                            if sum(len(x['content']) for x in mm)<=limit*CF.SURE_CHARS_PER_TOKEN:return True
+                            return runner.prompt_tokens(mm,r.cancel_event,time.monotonic()+120)<=limit
+                        sp,cuts[arm]=fit_spec(specs[arm],fits)
+                        if sp is not None:system=swap_layer(sysmsg,hyp_head,coal,render(sp),anchor)
                     m=[{'role':'system','content':system}]+msgs[1:];key=hashlib.sha256(dumps(m).encode()).hexdigest()
                     t1=time.monotonic()
                     if key not in cache:
@@ -196,7 +227,7 @@ def run_rep(installed,rep,fixtures,session_mode=False):
                         line[arm]='OVERFLOW';continue
                     o=cache[key];ok,num=U.score(o,nums,checks)
                     rows.append(base|{'arm':arm,'pass':all(ok.values()) and all(num.values()),'gen_s':round(time.monotonic()-t1,2),'context_hash':key[:16],
-                                      'context_chars':len(blocks[arm]),'answer_role':cap['answer_role'],'same_as_live':o.strip()==out.strip(),'intrusion':intrusion(o,nums,prev),'output':o[:400]})
+                                      'context_chars':len(blocks[arm]),'fit_cuts':cuts.get(arm,0),'answer_role':cap['answer_role'],'same_as_live':o.strip()==out.strip(),'intrusion':intrusion(o,nums,prev),'output':o[:400]})
                     line[arm]=rows[-1]['pass']
                 print(json.dumps(line),flush=True)
         finally:
