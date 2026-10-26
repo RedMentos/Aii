@@ -1,0 +1,43 @@
+{
+  "schema": "V13_RUN430_SOURCE_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run430-native168-safe-import-20261026",
+  "base_pr": 428,
+  "base_head": "80ce8032bb3e038a1a022f8cb20380a4ac87adf1",
+  "verified_source_head": "041ed346a56169d8aabce758a1b3860d642324e5",
+  "source_sha256": {
+    "v13/code/scripts/run430_import_stage4_artifact.py": "54bb3a75b03aac9a14b80df99de1ce559ac5f884e2c05fed45843d59ec88d722",
+    "v13/code/tests/test_run430_import_stage4_artifact.py": "dbad55dbc1f35a145403ad8dcb9f9c546eda3a35722fe6aa65c6bfcbe2a414f8"
+  },
+  "source_only": {
+    "actions": 40263819540,
+    "conclusion": "success",
+    "tests": "17/17 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12625298619,
+    "artifact_zip_sha256": "4c71fab0c64b63d26e7ce05df281d78f5eb96f3e93193191603d7370196f168d"
+  },
+  "scope": [
+    "Atomic ZIP extraction only after SHA256 and manifest inventory checks",
+    "Run429 168-row independent verifier required before destination publication",
+    "Reject traversal, symlink, missing/extra members, false 126-row report",
+    "Synthetic mocked verifier tests explicitly not native proof"
+  ],
+  "actual_native": {
+    "run427_actions": 40263042202,
+    "status_last_observed": "IN_PROGRESS",
+    "actual_168_artifact_id": "UNKNOWN",
+    "actual_168_sha256": "UNKNOWN",
+    "native_execution_performed_by_this_branch": false
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "next_command": "Wait for Run427 Actions 40263042202 actual native result. Bind exact producer report, raw artifact ID/hash and safe-work artifact ID/hash. Then run Run430 atomic import and Run429 full independent verifier in a fresh read-only runner. No P_s21 before verified 168. If RED, preserve raw and continue independent work."
+}
