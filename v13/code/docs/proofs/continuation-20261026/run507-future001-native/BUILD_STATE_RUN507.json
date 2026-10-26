@@ -1,0 +1,73 @@
+{
+  "schema": "V13_RUN507_NATIVE_ATTEMPT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "status": "SOURCE_STAGED_NATIVE_NOT_YET_EXECUTED",
+  "branch": "codex/run507-future001-native-20261026",
+  "base_branch": "codex/run506-native70-independent-audit-20261026",
+  "base_sha": "3fd038b1a5511a821729dbf4fc63a9c74f5f609f",
+  "source": {
+    "prereg_blob": "5e39dfc8fb6c8a1d9917247b9aba0627b79563a3",
+    "workflow_blob": "ef8630eef1bd2a103211ef0d7318604f35a9e6ec",
+    "test_blob": "f6859c5cd38277aa3972b5c01d839dc80d35e894",
+    "run505_executor_blob": "8694c566247a6709d80a504ad172c608889775d6",
+    "run504_schedule_blob": "5f447908ec6197760d55c347ffb949ae42ad1ed8",
+    "run500_stage_map_blob": "504a4a8492bdb383869b164b82c05d13e00f6823",
+    "run491_fixture_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b"
+  },
+  "scope": {
+    "stage_ids": [
+      "A_s31_p00",
+      "A_s31_p01",
+      "A_s31_p02"
+    ],
+    "fixtures": [
+      [
+        "Vesper",
+        "Willow"
+      ],
+      [
+        "Xenia",
+        "Yarrow"
+      ],
+      [
+        "Crescent",
+        "Asteria"
+      ]
+    ],
+    "arm": "A",
+    "seed": 31,
+    "planned_native_rows": 42,
+    "actual_native_rows_verified": 0,
+    "prior_native_rows_verified": 70,
+    "full_cohort_rows": 1050
+  },
+  "evidence": {
+    "run503_native_actions": 40307435396,
+    "run503_native_conclusion": "success",
+    "run503_independently_verified_rows": 42,
+    "run505_source_actions": 40308650823,
+    "run505_source_tests_passed": 23,
+    "run507_native_actions": null
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run503 42-row native GREEN and independent postflight, 27 raw SHA entries and private backup",
+    "Run505 FUTURE_001 source-only GREEN 23 tests and independent 42-key plan audit",
+    "Run507 prereg committed before native workflow",
+    "Run507 workflow source hash fetched and verified; no active GitHub Actions owner at preflight"
+  ],
+  "blockers": [
+    "Run507 native job not yet executed",
+    "full 1050-row STEP2 cohort incomplete",
+    "Redmi unavailable"
+  ],
+  "next_command": "Open draft PR Run507 head codex/run507-future001-native-20261026 base codex/run506-native70-independent-audit-20261026; inspect serialized native Actions; on completion download raw/safe artifacts, independently rescore all 42 rows, preserve partial RED; no gate promotion.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
