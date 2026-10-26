@@ -1,0 +1,6643 @@
+{
+ "prereg": "docs/proofs/continuation-20261022/lp3-memory-key/PREREG.md",
+ "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+ "script_sha256": "60d4f14a7a4c3431002acf060fe28a7df85a0c308695e5bc71b49134fd8fa260",
+ "lp2_script_sha256": "266518776365677379086eb8f2a7cd104f6cf8fc19f144880cfdb4c70a98f324",
+ "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb",
+ "cfg": {
+  "rank": 8,
+  "alpha": 16.0,
+  "lr": 0.0003,
+  "anchor_weight": 8.0,
+  "anchors_per_step": 16,
+  "targets": [
+   "w1",
+   "w2",
+   "w3"
+  ],
+  "max_tokens": 160
+ },
+ "lp2": {
+  "nce_weight": 0.5,
+  "temperature": 0.1,
+  "ema_tau": 0.9,
+  "pred_hidden": 256,
+  "pred_lr": 0.001
+ },
+ "gate_p": 0.6,
+ "rows": [
+  {
+   "arm": "CE",
+   "seed": 47,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.0625
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 3.62668,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 2.32041,
+     "kl": 0.041878,
+     "nce": 2.44202,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 3,
+     "ce": 1.84021,
+     "kl": 0.049365,
+     "nce": 2.44121,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 4,
+     "ce": 1.52597,
+     "kl": 0.029322,
+     "nce": 2.44765,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 5,
+     "ce": 1.26138,
+     "kl": 0.039815,
+     "nce": 2.45411,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 6,
+     "ce": 1.05202,
+     "kl": 0.018532,
+     "nce": 2.46425,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 7,
+     "ce": 0.83381,
+     "kl": 0.017387,
+     "nce": 2.46635,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 8,
+     "ce": 0.65497,
+     "kl": 0.035406,
+     "nce": 2.4624,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 9,
+     "ce": 0.52683,
+     "kl": 0.018393,
+     "nce": 2.45985,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 10,
+     "ce": 0.42802,
+     "kl": 0.018609,
+     "nce": 2.45998,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 11,
+     "ce": 0.33651,
+     "kl": 0.025148,
+     "nce": 2.46156,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 12,
+     "ce": 0.23523,
+     "kl": 0.012351,
+     "nce": 2.46082,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 13,
+     "ce": 0.13085,
+     "kl": 0.021022,
+     "nce": 2.45564,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 14,
+     "ce": 0.07571,
+     "kl": 0.013751,
+     "nce": 2.44831,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 15,
+     "ce": 0.04372,
+     "kl": 0.011213,
+     "nce": 2.44109,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 16,
+     "ce": 0.02732,
+     "kl": 0.010612,
+     "nce": 2.43371,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 17,
+     "ce": 0.02005,
+     "kl": 0.01129,
+     "nce": 2.42862,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 18,
+     "ce": 0.01768,
+     "kl": 0.018643,
+     "nce": 2.42483,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 19,
+     "ce": 0.01908,
+     "kl": 0.008515,
+     "nce": 2.42195,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 20,
+     "ce": 0.01901,
+     "kl": 0.013368,
+     "nce": 2.41719,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 21,
+     "ce": 0.01364,
+     "kl": 0.00692,
+     "nce": 2.40677,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 22,
+     "ce": 0.00921,
+     "kl": 0.011935,
+     "nce": 2.39658,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 23,
+     "ce": 0.00773,
+     "kl": 0.011858,
+     "nce": 2.39304,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 24,
+     "ce": 0.00901,
+     "kl": 0.007118,
+     "nce": 2.3981,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 25,
+     "ce": 0.01085,
+     "kl": 0.006009,
+     "nce": 2.40365,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 26,
+     "ce": 0.00986,
+     "kl": 0.005286,
+     "nce": 2.40557,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 27,
+     "ce": 0.00682,
+     "kl": 0.009675,
+     "nce": 2.40385,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 28,
+     "ce": 0.004,
+     "kl": 0.006073,
+     "nce": 2.39949,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 29,
+     "ce": 0.00275,
+     "kl": 0.007519,
+     "nce": 2.39708,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 30,
+     "ce": 0.00236,
+     "kl": 0.00691,
+     "nce": 2.39691,
+     "train_ret_own": 0.375
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 28,
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "You have your job at the bakery on Elm Street.",
+    "You go to the local caf\u00e9 for your morning coffee and breakfast.",
+    "You like the teal.",
+    "If you want your favourite colour in your room, you should paint it a bright, bold shade. This will make your",
+    "Your brother is called Jonte.",
+    "Your parents have another son named Jonte.",
+    "You practise the bandoneon.",
+    "You play the band Rostfrei in your free time.",
+    "You own a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project you are working on V13 Inquisition.",
+    "Your birthday is on the 14th of March.",
+    "Your friends should congratulate you on your birthday on the 14th.",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride ** Brombeer**.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Basque.",
+    "You are trying to learn Basque.",
+    "Your locker number is 4417.",
+    "The locker number was 4417.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted a ginkgo.",
+    "You put a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 27,
+   "fixed_fail": 1,
+   "para_v1": 4,
+   "leak": 8,
+   "leak_gated": 8,
+   "forgot": 0,
+   "base_probe_correct": 11,
+   "kl_probe": 0.03748167026787996,
+   "kl_probe_bare": 0.03748167026787996,
+   "seconds": 527.3
+  },
+  {
+   "arm": "MEM_OK",
+   "seed": 47,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 1.0,
+     "shifted": 0.0
+    },
+    "hard": {
+     "own": 1.0,
+     "shifted": 0.0
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.29683,
+     "kl": 0.020475,
+     "nce": 2.4197,
+     "train_ret_own": 0.5
+    },
+    {
+     "step": 3,
+     "ce": 0.80271,
+     "kl": 0.03767,
+     "nce": 2.34202,
+     "train_ret_own": 0.5625
+    },
+    {
+     "step": 4,
+     "ce": 0.67927,
+     "kl": 0.018238,
+     "nce": 2.24509,
+     "train_ret_own": 0.625
+    },
+    {
+     "step": 5,
+     "ce": 0.45086,
+     "kl": 0.025673,
+     "nce": 2.11921,
+     "train_ret_own": 0.8125
+    },
+    {
+     "step": 6,
+     "ce": 0.11385,
+     "kl": 0.014617,
+     "nce": 1.96526,
+     "train_ret_own": 0.9375
+    },
+    {
+     "step": 7,
+     "ce": 0.00887,
+     "kl": 0.013227,
+     "nce": 1.77994,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 8,
+     "ce": 0.00549,
+     "kl": 0.020849,
+     "nce": 1.57634,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 9,
+     "ce": 0.00361,
+     "kl": 0.016322,
+     "nce": 1.37878,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 10,
+     "ce": 0.00259,
+     "kl": 0.019381,
+     "nce": 1.20313,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 11,
+     "ce": 0.00209,
+     "kl": 0.016337,
+     "nce": 1.06517,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 12,
+     "ce": 0.0019,
+     "kl": 0.012441,
+     "nce": 0.97087,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 13,
+     "ce": 0.00181,
+     "kl": 0.013033,
+     "nce": 0.9085,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 14,
+     "ce": 0.00165,
+     "kl": 0.010616,
+     "nce": 0.85253,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 15,
+     "ce": 0.00144,
+     "kl": 0.014278,
+     "nce": 0.78689,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 16,
+     "ce": 0.0012,
+     "kl": 0.007557,
+     "nce": 0.71205,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 17,
+     "ce": 0.001,
+     "kl": 0.009183,
+     "nce": 0.63724,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 18,
+     "ce": 0.00086,
+     "kl": 0.009163,
+     "nce": 0.56923,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 19,
+     "ce": 0.00076,
+     "kl": 0.008215,
+     "nce": 0.51077,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 20,
+     "ce": 0.00068,
+     "kl": 0.008832,
+     "nce": 0.46135,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 21,
+     "ce": 0.00063,
+     "kl": 0.007302,
+     "nce": 0.41954,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 22,
+     "ce": 0.00061,
+     "kl": 0.006992,
+     "nce": 0.38254,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 23,
+     "ce": 0.0006,
+     "kl": 0.005675,
+     "nce": 0.34834,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 24,
+     "ce": 0.0006,
+     "kl": 0.004383,
+     "nce": 0.31662,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 25,
+     "ce": 0.0006,
+     "kl": 0.00503,
+     "nce": 0.28798,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 26,
+     "ce": 0.0006,
+     "kl": 0.004451,
+     "nce": 0.26268,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 27,
+     "ce": 0.00059,
+     "kl": 0.005231,
+     "nce": 0.24079,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 28,
+     "ce": 0.00056,
+     "kl": 0.004048,
+     "nce": 0.22221,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 29,
+     "ce": 0.00052,
+     "kl": 0.005371,
+     "nce": 0.20641,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 30,
+     "ce": 0.0005,
+     "kl": 0.003895,
+     "nce": 0.19251,
+     "train_ret_own": 1.0
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 31,
+   "hard_swap": 2,
+   "hard_swap_follow": 16,
+   "hard_oracle": 31,
+   "hard_gated": 19,
+   "hard_tops": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    6,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+    14,
+    14,
+    15,
+    15
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your cat is called Mitzi.",
+    "You work at the Kranich bakery in Leipzig.",
+    "You go to the Kranich bakery in Leipzig every morning.",
+    "Your favourite colour is teal.",
+    "Your favourite colour is teal.",
+    "Your brother is called Jonte.",
+    "Your parents have another son named Carlos.",
+    "You play the bandoneon.",
+    "You play the bandoneon.",
+    "Your phone is a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "Your project is called V13 Inquisition.",
+    "Your birthday is on the 14th of March.",
+    "Your birthday is on the 14th of March.",
+    "Your horse is called Brombeer.",
+    "Your horse is called Brombeer.",
+    "You live in Tromso.",
+    "You moved to Tromso last year.",
+    "Your grandmother is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Basque.",
+    "You are learning Basque.",
+    "Your locker number is 4417.",
+    "Your locker number was 4417.",
+    "Your band is called Rostfrei.",
+    "Your band is called Rostfrei.",
+    "You planted a ginkgo in your garden.",
+    "You planted a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 32,
+   "heldout_swap": 1,
+   "heldout_swap_follow": 11,
+   "heldout_oracle": 32,
+   "heldout_gated": 23,
+   "heldout_tops": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    6,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+    14,
+    14,
+    15,
+    15
+   ],
+   "fixed_fail": 5,
+   "para_v1": 6,
+   "leak": 5,
+   "leak_gated": 2,
+   "forgot": 2,
+   "base_probe_correct": 11,
+   "kl_probe": 0.42763246161242324,
+   "kl_probe_bare": 0.014890866703353822,
+   "seconds": 721.1
+  },
+  {
+   "arm": "MEM_SHUF",
+   "seed": 47,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.03125,
+     "shifted": 0.8125
+    },
+    "hard": {
+     "own": 0.03125,
+     "shifted": 0.625
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.88385,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.50946,
+     "kl": 0.019627,
+     "nce": 2.8554,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 3,
+     "ce": 1.28304,
+     "kl": 0.043202,
+     "nce": 2.79387,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 4,
+     "ce": 1.12382,
+     "kl": 0.024666,
+     "nce": 2.71426,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 5,
+     "ce": 1.04387,
+     "kl": 0.027551,
+     "nce": 2.62008,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 6,
+     "ce": 0.92859,
+     "kl": 0.016107,
+     "nce": 2.51294,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 7,
+     "ce": 0.93096,
+     "kl": 0.012978,
+     "nce": 2.3838,
+     "train_ret_own": 0.125
+    },
+    {
+     "step": 8,
+     "ce": 0.81871,
+     "kl": 0.023656,
+     "nce": 2.23395,
+     "train_ret_own": 0.125
+    },
+    {
+     "step": 9,
+     "ce": 0.72828,
+     "kl": 0.016667,
+     "nce": 2.07568,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 10,
+     "ce": 0.71685,
+     "kl": 0.017371,
+     "nce": 1.92318,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 11,
+     "ce": 0.58762,
+     "kl": 0.021216,
+     "nce": 1.78588,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 12,
+     "ce": 0.43264,
+     "kl": 0.010186,
+     "nce": 1.65952,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 13,
+     "ce": 0.27413,
+     "kl": 0.016215,
+     "nce": 1.53585,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 14,
+     "ce": 0.15723,
+     "kl": 0.011653,
+     "nce": 1.41408,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 15,
+     "ce": 0.08634,
+     "kl": 0.014908,
+     "nce": 1.29928,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 16,
+     "ce": 0.07914,
+     "kl": 0.008457,
+     "nce": 1.19825,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 17,
+     "ce": 0.03399,
+     "kl": 0.014749,
+     "nce": 1.11237,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 18,
+     "ce": 0.01771,
+     "kl": 0.016753,
+     "nce": 1.03744,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 19,
+     "ce": 0.01132,
+     "kl": 0.007515,
+     "nce": 0.96455,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 20,
+     "ce": 0.00796,
+     "kl": 0.013632,
+     "nce": 0.89323,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 21,
+     "ce": 0.00575,
+     "kl": 0.008498,
+     "nce": 0.8223,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 22,
+     "ce": 0.00415,
+     "kl": 0.011565,
+     "nce": 0.75184,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 23,
+     "ce": 0.00302,
+     "kl": 0.009534,
+     "nce": 0.6857,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 24,
+     "ce": 0.00229,
+     "kl": 0.007727,
+     "nce": 0.62929,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 25,
+     "ce": 0.00185,
+     "kl": 0.008341,
+     "nce": 0.57811,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 26,
+     "ce": 0.00157,
+     "kl": 0.006064,
+     "nce": 0.53065,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 27,
+     "ce": 0.0014,
+     "kl": 0.008002,
+     "nce": 0.48803,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 28,
+     "ce": 0.00127,
+     "kl": 0.005176,
+     "nce": 0.44767,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 29,
+     "ce": 0.00116,
+     "kl": 0.007302,
+     "nce": 0.40811,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 30,
+     "ce": 0.00106,
+     "kl": 0.006736,
+     "nce": 0.37141,
+     "train_ret_own": 0.0
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 28,
+   "hard_swap": 29,
+   "hard_swap_follow": 1,
+   "hard_oracle": 32,
+   "hard_gated": 25,
+   "hard_tops": [
+    11,
+    1,
+    11,
+    2,
+    3,
+    3,
+    11,
+    11,
+    5,
+    2,
+    6,
+    6,
+    11,
+    13,
+    8,
+    8,
+    11,
+    9,
+    10,
+    10,
+    11,
+    11,
+    11,
+    9,
+    13,
+    13,
+    14,
+    0,
+    11,
+    15,
+    0,
+    0
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "Your bakery is called Brombeer.",
+    "You go to Tromso for your job.",
+    "You like the teal.",
+    "You should paint your room in teal.",
+    "Your brother is called Jonte.",
+    "Your father is called Jonte.",
+    "You practise the bandoneon.",
+    "You play the bandoneon in your free time.",
+    "You own a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project \"V13 Inquisition.\"",
+    "Your birthday is on the 14th of March.",
+    "Your friends should congratulate you on your birthday on the 14th of March.",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride a Seeschwalbe.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny was called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is painted black.",
+    "You are currently studying Basque.",
+    "You are trying to learn Basque.",
+    "Your locker number is 4417.",
+    "Your locker was opened with the number 4417.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted a ginkgo.",
+    "You put a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 29,
+   "heldout_swap": 30,
+   "heldout_swap_follow": 0,
+   "heldout_oracle": 29,
+   "heldout_gated": 23,
+   "heldout_tops": [
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    13,
+    5,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    9,
+    9,
+    13,
+    13,
+    14,
+    14,
+    5,
+    5,
+    0,
+    0
+   ],
+   "fixed_fail": 2,
+   "para_v1": 5,
+   "leak": 9,
+   "leak_gated": 3,
+   "forgot": 1,
+   "base_probe_correct": 11,
+   "kl_probe": 0.5390845357129971,
+   "kl_probe_bare": 0.028794044551129144,
+   "seconds": 752.5
+  },
+  {
+   "arm": "MEM_RAW",
+   "seed": 47,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.375,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.21875,
+     "shifted": 0.0625
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.53355,
+     "kl": 0.020158,
+     "nce": 2.47835,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 3,
+     "ce": 1.18494,
+     "kl": 0.040304,
+     "nce": 2.48273,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 4,
+     "ce": 1.04579,
+     "kl": 0.02343,
+     "nce": 2.49075,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 5,
+     "ce": 0.83806,
+     "kl": 0.027138,
+     "nce": 2.49501,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 6,
+     "ce": 0.67287,
+     "kl": 0.015929,
+     "nce": 2.49825,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 7,
+     "ce": 0.57396,
+     "kl": 0.011882,
+     "nce": 2.50283,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 8,
+     "ce": 0.48723,
+     "kl": 0.022798,
+     "nce": 2.50466,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 9,
+     "ce": 0.40165,
+     "kl": 0.015837,
+     "nce": 2.50353,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 10,
+     "ce": 0.30407,
+     "kl": 0.016345,
+     "nce": 2.50022,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 11,
+     "ce": 0.20857,
+     "kl": 0.016851,
+     "nce": 2.49622,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 12,
+     "ce": 0.12247,
+     "kl": 0.010528,
+     "nce": 2.49205,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 13,
+     "ce": 0.06799,
+     "kl": 0.013338,
+     "nce": 2.49025,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 14,
+     "ce": 0.04715,
+     "kl": 0.008879,
+     "nce": 2.49043,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 15,
+     "ce": 0.03181,
+     "kl": 0.012875,
+     "nce": 2.49082,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 16,
+     "ce": 0.01947,
+     "kl": 0.007036,
+     "nce": 2.49072,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 17,
+     "ce": 0.01087,
+     "kl": 0.01103,
+     "nce": 2.49041,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 18,
+     "ce": 0.00616,
+     "kl": 0.011586,
+     "nce": 2.48938,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 19,
+     "ce": 0.00397,
+     "kl": 0.006751,
+     "nce": 2.48756,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 20,
+     "ce": 0.00299,
+     "kl": 0.010776,
+     "nce": 2.48555,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 21,
+     "ce": 0.00248,
+     "kl": 0.007492,
+     "nce": 2.48386,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 22,
+     "ce": 0.00213,
+     "kl": 0.009002,
+     "nce": 2.48376,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 23,
+     "ce": 0.00183,
+     "kl": 0.007268,
+     "nce": 2.48517,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 24,
+     "ce": 0.00155,
+     "kl": 0.005225,
+     "nce": 2.48724,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 25,
+     "ce": 0.0013,
+     "kl": 0.005022,
+     "nce": 2.48888,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 26,
+     "ce": 0.00109,
+     "kl": 0.004095,
+     "nce": 2.48897,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 27,
+     "ce": 0.00093,
+     "kl": 0.006277,
+     "nce": 2.48815,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 28,
+     "ce": 0.0008,
+     "kl": 0.003505,
+     "nce": 2.48647,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 29,
+     "ce": 0.00069,
+     "kl": 0.004798,
+     "nce": 2.48493,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 30,
+     "ce": 0.00061,
+     "kl": 0.004135,
+     "nce": 2.4839,
+     "train_ret_own": 0.375
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1
+   ],
+   "hard": 22,
+   "hard_swap": 15,
+   "hard_swap_follow": 7,
+   "hard_oracle": 32,
+   "hard_gated": 13,
+   "hard_tops": [
+    5,
+    11,
+    5,
+    7,
+    5,
+    5,
+    5,
+    5,
+    12,
+    5,
+    5,
+    5,
+    11,
+    11,
+    7,
+    7,
+    5,
+    5,
+    5,
+    15,
+    5,
+    11,
+    11,
+    11,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    15
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "Your bakery is called Brombeer Bakery.",
+    "You go to the Kranich bakery every morning for your job.",
+    "You like the blue.",
+    "You should paint your room with a soft, neutral color like light blue or pale yellow. These shades are calming and",
+    "Your brother is Jonte.",
+    "Your father is called Jonte.",
+    "You are learning Basque.",
+    "You play Kranich in your free time.",
+    "You own the Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project you are working on Seeschwalbe.",
+    "Your birthday is on the 14th of March.",
+    "Your birthday is on the 14th of March. Therefore, your friends should congratulate you on the 15",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride the name Brombeer.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying German.",
+    "You are trying to learn the language called Kranich.",
+    "Your locker number is 4417.",
+    "Your phone is a Redmi Note 9 Pro.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted the oak tree.",
+    "You put in a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1
+   ],
+   "heldout": 27,
+   "heldout_swap": 15,
+   "heldout_swap_follow": 8,
+   "heldout_oracle": 32,
+   "heldout_gated": 8,
+   "heldout_tops": [
+    5,
+    5,
+    5,
+    5,
+    2,
+    5,
+    5,
+    5,
+    5,
+    4,
+    5,
+    5,
+    11,
+    11,
+    7,
+    7,
+    8,
+    8,
+    15,
+    5,
+    5,
+    10,
+    11,
+    5,
+    5,
+    12,
+    5,
+    5,
+    5,
+    5,
+    5,
+    15
+   ],
+   "fixed_fail": 4,
+   "para_v1": 4,
+   "leak": 6,
+   "leak_gated": 0,
+   "forgot": 2,
+   "base_probe_correct": 11,
+   "kl_probe": 0.4508537407964468,
+   "kl_probe_bare": 0.013530821005891388,
+   "seconds": 747.5
+  },
+  {
+   "arm": "CE",
+   "seed": 53,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.34375,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.125
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 3.62668,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 2.32799,
+     "kl": 0.044186,
+     "nce": 2.43979,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 3,
+     "ce": 1.86545,
+     "kl": 0.057507,
+     "nce": 2.43623,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 4,
+     "ce": 1.54005,
+     "kl": 0.033187,
+     "nce": 2.43775,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 5,
+     "ce": 1.28216,
+     "kl": 0.034005,
+     "nce": 2.44268,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 6,
+     "ce": 1.05748,
+     "kl": 0.020391,
+     "nce": 2.45153,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 7,
+     "ce": 0.85742,
+     "kl": 0.017825,
+     "nce": 2.45679,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 8,
+     "ce": 0.68433,
+     "kl": 0.041675,
+     "nce": 2.45855,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 9,
+     "ce": 0.54735,
+     "kl": 0.022964,
+     "nce": 2.45912,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 10,
+     "ce": 0.42886,
+     "kl": 0.018674,
+     "nce": 2.45766,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 11,
+     "ce": 0.33598,
+     "kl": 0.017327,
+     "nce": 2.45593,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 12,
+     "ce": 0.23906,
+     "kl": 0.029737,
+     "nce": 2.45563,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 13,
+     "ce": 0.14345,
+     "kl": 0.037527,
+     "nce": 2.45387,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 14,
+     "ce": 0.09319,
+     "kl": 0.027077,
+     "nce": 2.45144,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 15,
+     "ce": 0.05891,
+     "kl": 0.02186,
+     "nce": 2.44714,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 16,
+     "ce": 0.04367,
+     "kl": 0.024078,
+     "nce": 2.4413,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 17,
+     "ce": 0.03084,
+     "kl": 0.014843,
+     "nce": 2.43182,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 18,
+     "ce": 0.0192,
+     "kl": 0.013213,
+     "nce": 2.41863,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 19,
+     "ce": 0.01481,
+     "kl": 0.016622,
+     "nce": 2.40892,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 20,
+     "ce": 0.01464,
+     "kl": 0.016833,
+     "nce": 2.40337,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 21,
+     "ce": 0.01752,
+     "kl": 0.011343,
+     "nce": 2.40329,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 22,
+     "ce": 0.0201,
+     "kl": 0.007784,
+     "nce": 2.40518,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 23,
+     "ce": 0.01688,
+     "kl": 0.010027,
+     "nce": 2.40341,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 24,
+     "ce": 0.01105,
+     "kl": 0.011944,
+     "nce": 2.39882,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 25,
+     "ce": 0.00616,
+     "kl": 0.007609,
+     "nce": 2.39151,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 26,
+     "ce": 0.00401,
+     "kl": 0.014125,
+     "nce": 2.38552,
+     "train_ret_own": 0.5
+    },
+    {
+     "step": 27,
+     "ce": 0.00312,
+     "kl": 0.00902,
+     "nce": 2.38515,
+     "train_ret_own": 0.5
+    },
+    {
+     "step": 28,
+     "ce": 0.0034,
+     "kl": 0.008692,
+     "nce": 2.3936,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 29,
+     "ce": 0.00433,
+     "kl": 0.006051,
+     "nce": 2.40181,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 30,
+     "ce": 0.00486,
+     "kl": 0.00669,
+     "nce": 2.4059,
+     "train_ret_own": 0.375
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 29,
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "You have your job at the bakery on Maple Street.",
+    "It depends on your job and location, but here are some common places you might go every morning:\n\n- **Office",
+    "You like the teal.",
+    "If you want your favourite colour in your room, you could paint it a soft teal. Teal is a versatile",
+    "Your brother is Jonte.",
+    "The son you are referring to is called Jonte.",
+    "You practise the bandoneon.",
+    "You play the band Rostfrei in your free time.",
+    "You own a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project you are working on V13 Inquisition.",
+    "Your birthday is on the 14th of March.",
+    "The best day to congratulate you on your birthday is on the 14th of March.",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride ** Brombeer**.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Basque.",
+    "You are trying to learn Basque.",
+    "Your locker number is 4417.",
+    "The locker number was 4417.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted a ginkgo in your backyard.",
+    "You put a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 27,
+   "fixed_fail": 0,
+   "para_v1": 3,
+   "leak": 5,
+   "leak_gated": 5,
+   "forgot": 1,
+   "base_probe_correct": 11,
+   "kl_probe": 0.02738856840490674,
+   "kl_probe_bare": 0.02738856840490674,
+   "seconds": 530.0
+  },
+  {
+   "arm": "MEM_OK",
+   "seed": 53,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 1.0,
+     "shifted": 0.0
+    },
+    "hard": {
+     "own": 1.0,
+     "shifted": 0.0
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.30512,
+     "kl": 0.020958,
+     "nce": 2.41509,
+     "train_ret_own": 0.5
+    },
+    {
+     "step": 3,
+     "ce": 0.80644,
+     "kl": 0.023932,
+     "nce": 2.33568,
+     "train_ret_own": 0.5625
+    },
+    {
+     "step": 4,
+     "ce": 0.67245,
+     "kl": 0.026184,
+     "nce": 2.22952,
+     "train_ret_own": 0.6875
+    },
+    {
+     "step": 5,
+     "ce": 0.42674,
+     "kl": 0.014915,
+     "nce": 2.10495,
+     "train_ret_own": 0.8125
+    },
+    {
+     "step": 6,
+     "ce": 0.08815,
+     "kl": 0.020135,
+     "nce": 1.94678,
+     "train_ret_own": 0.9375
+    },
+    {
+     "step": 7,
+     "ce": 0.0061,
+     "kl": 0.019,
+     "nce": 1.76052,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 8,
+     "ce": 0.00419,
+     "kl": 0.033533,
+     "nce": 1.55946,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 9,
+     "ce": 0.00313,
+     "kl": 0.013672,
+     "nce": 1.36281,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 10,
+     "ce": 0.00242,
+     "kl": 0.011986,
+     "nce": 1.18467,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 11,
+     "ce": 0.00202,
+     "kl": 0.012582,
+     "nce": 1.04503,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 12,
+     "ce": 0.00175,
+     "kl": 0.016671,
+     "nce": 0.95162,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 13,
+     "ce": 0.00156,
+     "kl": 0.015239,
+     "nce": 0.88864,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 14,
+     "ce": 0.00147,
+     "kl": 0.017868,
+     "nce": 0.82849,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 15,
+     "ce": 0.00142,
+     "kl": 0.02326,
+     "nce": 0.75882,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 16,
+     "ce": 0.00134,
+     "kl": 0.012709,
+     "nce": 0.68407,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 17,
+     "ce": 0.00124,
+     "kl": 0.010168,
+     "nce": 0.61187,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 18,
+     "ce": 0.00114,
+     "kl": 0.01223,
+     "nce": 0.54649,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 19,
+     "ce": 0.00106,
+     "kl": 0.012292,
+     "nce": 0.49048,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 20,
+     "ce": 0.00099,
+     "kl": 0.011159,
+     "nce": 0.44438,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 21,
+     "ce": 0.00095,
+     "kl": 0.005929,
+     "nce": 0.40578,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 22,
+     "ce": 0.00091,
+     "kl": 0.005721,
+     "nce": 0.3711,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 23,
+     "ce": 0.00086,
+     "kl": 0.007335,
+     "nce": 0.33913,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 24,
+     "ce": 0.00082,
+     "kl": 0.008545,
+     "nce": 0.30978,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 25,
+     "ce": 0.00079,
+     "kl": 0.00598,
+     "nce": 0.28322,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 26,
+     "ce": 0.00075,
+     "kl": 0.009179,
+     "nce": 0.25968,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 27,
+     "ce": 0.00072,
+     "kl": 0.006269,
+     "nce": 0.2393,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 28,
+     "ce": 0.0007,
+     "kl": 0.005563,
+     "nce": 0.22179,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 29,
+     "ce": 0.00068,
+     "kl": 0.004655,
+     "nce": 0.20646,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 30,
+     "ce": 0.00066,
+     "kl": 0.004421,
+     "nce": 0.19272,
+     "train_ret_own": 1.0
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 30,
+   "hard_swap": 2,
+   "hard_swap_follow": 14,
+   "hard_oracle": 30,
+   "hard_gated": 17,
+   "hard_tops": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    6,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+    14,
+    14,
+    15,
+    15
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "You work at the Kranich bakery in Leipzig.",
+    "You go to the bakery in Leipzig.",
+    "Your favourite colour is teal.",
+    "Your favourite colour is teal.",
+    "Your brother is called Jonte.",
+    "Your parents have another son named Kranich.",
+    "You play the bandoneon.",
+    "You play the bandoneon.",
+    "Your phone is a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "Your project is called V13 Inquisition.",
+    "Your birthday is on the 14th of March.",
+    "Your birthday is on the 14th of March. Therefore, your friends should congratulate you on the 15",
+    "Your horse is called Brombeer.",
+    "Your horse is called Brombeer.",
+    "You live in Tromso.",
+    "You moved to Tromso last year.",
+    "Your grandmother is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Basque.",
+    "You are learning Basque.",
+    "Your locker number is 4417.",
+    "Your locker number was 4417.",
+    "Your band is called Rostfrei.",
+    "Your band is called Rostfrei.",
+    "You planted a ginkgo in your garden.",
+    "You planted a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 32,
+   "heldout_swap": 2,
+   "heldout_swap_follow": 9,
+   "heldout_oracle": 32,
+   "heldout_gated": 22,
+   "heldout_tops": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    6,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+    14,
+    14,
+    15,
+    15
+   ],
+   "fixed_fail": 5,
+   "para_v1": 6,
+   "leak": 6,
+   "leak_gated": 2,
+   "forgot": 2,
+   "base_probe_correct": 11,
+   "kl_probe": 0.3792797631273667,
+   "kl_probe_bare": 0.01303679410678645,
+   "seconds": 734.0
+  },
+  {
+   "arm": "MEM_SHUF",
+   "seed": 53,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.03125,
+     "shifted": 0.8125
+    },
+    "hard": {
+     "own": 0.03125,
+     "shifted": 0.59375
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.88385,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.51191,
+     "kl": 0.020231,
+     "nce": 2.85274,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 3,
+     "ce": 1.17545,
+     "kl": 0.035167,
+     "nce": 2.78735,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 4,
+     "ce": 1.35639,
+     "kl": 0.017742,
+     "nce": 2.70711,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 5,
+     "ce": 0.94352,
+     "kl": 0.017397,
+     "nce": 2.61334,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 6,
+     "ce": 0.78125,
+     "kl": 0.018034,
+     "nce": 2.50346,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 7,
+     "ce": 0.75531,
+     "kl": 0.020156,
+     "nce": 2.37194,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 8,
+     "ce": 0.79031,
+     "kl": 0.030991,
+     "nce": 2.22503,
+     "train_ret_own": 0.125
+    },
+    {
+     "step": 9,
+     "ce": 0.78451,
+     "kl": 0.01142,
+     "nce": 2.0745,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 10,
+     "ce": 0.66788,
+     "kl": 0.011841,
+     "nce": 1.93101,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 11,
+     "ce": 0.52723,
+     "kl": 0.011943,
+     "nce": 1.80138,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 12,
+     "ce": 0.37062,
+     "kl": 0.018373,
+     "nce": 1.67775,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 13,
+     "ce": 0.27125,
+     "kl": 0.022679,
+     "nce": 1.55352,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 14,
+     "ce": 0.17243,
+     "kl": 0.020477,
+     "nce": 1.4268,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 15,
+     "ce": 0.12896,
+     "kl": 0.019409,
+     "nce": 1.30281,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 16,
+     "ce": 0.06983,
+     "kl": 0.015504,
+     "nce": 1.19432,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 17,
+     "ce": 0.03124,
+     "kl": 0.014032,
+     "nce": 1.10164,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 18,
+     "ce": 0.01616,
+     "kl": 0.013878,
+     "nce": 1.01592,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 19,
+     "ce": 0.0107,
+     "kl": 0.014548,
+     "nce": 0.93577,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 20,
+     "ce": 0.00786,
+     "kl": 0.014362,
+     "nce": 0.86278,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 21,
+     "ce": 0.00597,
+     "kl": 0.0087,
+     "nce": 0.79269,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 22,
+     "ce": 0.00461,
+     "kl": 0.00746,
+     "nce": 0.72334,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 23,
+     "ce": 0.00361,
+     "kl": 0.008089,
+     "nce": 0.66108,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 24,
+     "ce": 0.0029,
+     "kl": 0.013417,
+     "nce": 0.60748,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 25,
+     "ce": 0.00236,
+     "kl": 0.007502,
+     "nce": 0.55846,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 26,
+     "ce": 0.00201,
+     "kl": 0.014336,
+     "nce": 0.51137,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 27,
+     "ce": 0.00176,
+     "kl": 0.007982,
+     "nce": 0.46701,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 28,
+     "ce": 0.00159,
+     "kl": 0.008701,
+     "nce": 0.42622,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 29,
+     "ce": 0.00144,
+     "kl": 0.005406,
+     "nce": 0.38758,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 30,
+     "ce": 0.00131,
+     "kl": 0.005778,
+     "nce": 0.35265,
+     "train_ret_own": 0.0
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 29,
+   "hard_swap": 28,
+   "hard_swap_follow": 1,
+   "hard_oracle": 32,
+   "hard_gated": 23,
+   "hard_tops": [
+    11,
+    1,
+    11,
+    2,
+    3,
+    3,
+    11,
+    11,
+    5,
+    2,
+    6,
+    6,
+    11,
+    13,
+    8,
+    8,
+    11,
+    9,
+    10,
+    10,
+    11,
+    11,
+    11,
+    9,
+    13,
+    13,
+    14,
+    5,
+    11,
+    11,
+    0,
+    0
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "Your bakery is called V13 Inquisition.",
+    "You go to Tromso for your job every morning.",
+    "You like the teal.",
+    "You should paint your room in a soft, pastel color like teal or mint green.",
+    "Your brother is Jonte.",
+    "Your father is called Jonte.",
+    "You practise the bandoneon.",
+    "You play the bandoneon in your free time.",
+    "You own a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project you are working on \"V13 Inquisition.\"",
+    "Your birthday is on the 14th of March.",
+    "Your friends should congratulate you on your birthday on the 14th of March.",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride a name called Brombeer.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny was called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is painted with a teal color.",
+    "You are currently studying Basque.",
+    "You are trying to learn Basque.",
+    "Your locker number is 4417.",
+    "Your locker was on 4417.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted a ginkgo in the backyard.",
+    "You put a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 29,
+   "heldout_swap": 30,
+   "heldout_swap_follow": 0,
+   "heldout_oracle": 31,
+   "heldout_gated": 24,
+   "heldout_tops": [
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    13,
+    5,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    9,
+    9,
+    13,
+    13,
+    14,
+    14,
+    5,
+    5,
+    0,
+    0
+   ],
+   "fixed_fail": 2,
+   "para_v1": 4,
+   "leak": 9,
+   "leak_gated": 3,
+   "forgot": 1,
+   "base_probe_correct": 11,
+   "kl_probe": 0.47826795497288305,
+   "kl_probe_bare": 0.02568488645677765,
+   "seconds": 744.8
+  },
+  {
+   "arm": "MEM_RAW",
+   "seed": 53,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.375,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.21875,
+     "shifted": 0.03125
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.53632,
+     "kl": 0.020627,
+     "nce": 2.47671,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 3,
+     "ce": 1.18761,
+     "kl": 0.026782,
+     "nce": 2.48253,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 4,
+     "ce": 0.93034,
+     "kl": 0.022289,
+     "nce": 2.48875,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 5,
+     "ce": 0.93058,
+     "kl": 0.016228,
+     "nce": 2.49046,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 6,
+     "ce": 0.76115,
+     "kl": 0.018415,
+     "nce": 2.49097,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 7,
+     "ce": 0.54409,
+     "kl": 0.020774,
+     "nce": 2.49182,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 8,
+     "ce": 0.46139,
+     "kl": 0.028106,
+     "nce": 2.49367,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 9,
+     "ce": 0.37166,
+     "kl": 0.010617,
+     "nce": 2.49448,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 10,
+     "ce": 0.2726,
+     "kl": 0.009029,
+     "nce": 2.49508,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 11,
+     "ce": 0.17274,
+     "kl": 0.010973,
+     "nce": 2.49503,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 12,
+     "ce": 0.104,
+     "kl": 0.015838,
+     "nce": 2.49455,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 13,
+     "ce": 0.068,
+     "kl": 0.019609,
+     "nce": 2.4928,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 14,
+     "ce": 0.04194,
+     "kl": 0.01845,
+     "nce": 2.49023,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 15,
+     "ce": 0.02357,
+     "kl": 0.012291,
+     "nce": 2.48642,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 16,
+     "ce": 0.01281,
+     "kl": 0.011864,
+     "nce": 2.48318,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 17,
+     "ce": 0.00774,
+     "kl": 0.011916,
+     "nce": 2.48082,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 18,
+     "ce": 0.00557,
+     "kl": 0.010367,
+     "nce": 2.47936,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 19,
+     "ce": 0.00468,
+     "kl": 0.009762,
+     "nce": 2.47994,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 20,
+     "ce": 0.00435,
+     "kl": 0.010043,
+     "nce": 2.48182,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 21,
+     "ce": 0.00417,
+     "kl": 0.007052,
+     "nce": 2.48394,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 22,
+     "ce": 0.0039,
+     "kl": 0.004881,
+     "nce": 2.48461,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 23,
+     "ce": 0.00348,
+     "kl": 0.004468,
+     "nce": 2.48416,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 24,
+     "ce": 0.00294,
+     "kl": 0.007396,
+     "nce": 2.48302,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 25,
+     "ce": 0.00237,
+     "kl": 0.006448,
+     "nce": 2.48158,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 26,
+     "ce": 0.00194,
+     "kl": 0.008938,
+     "nce": 2.48073,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 27,
+     "ce": 0.00161,
+     "kl": 0.004975,
+     "nce": 2.48047,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 28,
+     "ce": 0.00138,
+     "kl": 0.004796,
+     "nce": 2.48087,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 29,
+     "ce": 0.0012,
+     "kl": 0.003829,
+     "nce": 2.48188,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 30,
+     "ce": 0.00104,
+     "kl": 0.00384,
+     "nce": 2.48309,
+     "train_ret_own": 0.375
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1
+   ],
+   "hard": 24,
+   "hard_swap": 15,
+   "hard_swap_follow": 6,
+   "hard_oracle": 32,
+   "hard_gated": 13,
+   "hard_tops": [
+    5,
+    11,
+    5,
+    7,
+    5,
+    5,
+    5,
+    5,
+    12,
+    7,
+    5,
+    5,
+    11,
+    11,
+    7,
+    7,
+    5,
+    5,
+    5,
+    15,
+    5,
+    11,
+    11,
+    11,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    15
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "You have your job at the Kranich bakery in Leipzig.",
+    "You go to the Kranich bakery every morning for your job.",
+    "You like the blue one.",
+    "You should paint your room with a soft, neutral color like light blue or cream. These shades are calming and can",
+    "Your brother is called Jonte.",
+    "Your father is called Jonte.",
+    "You are learning Basque.",
+    "You play bandoneon in your free time.",
+    "You own the Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project you are working on **Seattle**.",
+    "Your birthday is on the 14th of March.",
+    "Your birthday is on the 14th of March, so your friends should congratulate you on the 15th",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride the name Brombeer.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Spanish.",
+    "You are trying to learn the language called Spanish.",
+    "Your locker number is 4417.",
+    "Your phone is a Redmi Note 9 Pro.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted the oak tree.",
+    "You put a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1
+   ],
+   "heldout": 27,
+   "heldout_swap": 19,
+   "heldout_swap_follow": 6,
+   "heldout_oracle": 32,
+   "heldout_gated": 8,
+   "heldout_tops": [
+    3,
+    5,
+    11,
+    5,
+    2,
+    5,
+    5,
+    5,
+    5,
+    4,
+    5,
+    5,
+    11,
+    11,
+    7,
+    7,
+    8,
+    8,
+    15,
+    5,
+    5,
+    10,
+    11,
+    5,
+    11,
+    12,
+    5,
+    5,
+    5,
+    5,
+    5,
+    15
+   ],
+   "fixed_fail": 4,
+   "para_v1": 4,
+   "leak": 6,
+   "leak_gated": 0,
+   "forgot": 2,
+   "base_probe_correct": 11,
+   "kl_probe": 0.4077133092408379,
+   "kl_probe_bare": 0.010643935510112593,
+   "seconds": 741.4
+  },
+  {
+   "arm": "CE",
+   "seed": 59,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.28125,
+     "shifted": 0.0625
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 3.62668,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 2.32982,
+     "kl": 0.045088,
+     "nce": 2.44546,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 3,
+     "ce": 1.85248,
+     "kl": 0.055625,
+     "nce": 2.44499,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 4,
+     "ce": 1.53179,
+     "kl": 0.028854,
+     "nce": 2.4486,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 5,
+     "ce": 1.25491,
+     "kl": 0.029009,
+     "nce": 2.44985,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 6,
+     "ce": 1.01279,
+     "kl": 0.01836,
+     "nce": 2.45349,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 7,
+     "ce": 0.81372,
+     "kl": 0.021689,
+     "nce": 2.45959,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 8,
+     "ce": 0.66377,
+     "kl": 0.038449,
+     "nce": 2.46185,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 9,
+     "ce": 0.53474,
+     "kl": 0.031146,
+     "nce": 2.45827,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 10,
+     "ce": 0.43446,
+     "kl": 0.0204,
+     "nce": 2.45112,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 11,
+     "ce": 0.33806,
+     "kl": 0.023912,
+     "nce": 2.44727,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 12,
+     "ce": 0.23437,
+     "kl": 0.020165,
+     "nce": 2.44645,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 13,
+     "ce": 0.13794,
+     "kl": 0.021565,
+     "nce": 2.44931,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 14,
+     "ce": 0.08025,
+     "kl": 0.019443,
+     "nce": 2.45273,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 15,
+     "ce": 0.05701,
+     "kl": 0.020843,
+     "nce": 2.45463,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 16,
+     "ce": 0.03795,
+     "kl": 0.013204,
+     "nce": 2.44914,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 17,
+     "ce": 0.0229,
+     "kl": 0.015629,
+     "nce": 2.43936,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 18,
+     "ce": 0.01414,
+     "kl": 0.015736,
+     "nce": 2.42638,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 19,
+     "ce": 0.01253,
+     "kl": 0.016775,
+     "nce": 2.4175,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 20,
+     "ce": 0.01279,
+     "kl": 0.012459,
+     "nce": 2.41069,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 21,
+     "ce": 0.0137,
+     "kl": 0.01384,
+     "nce": 2.40535,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 22,
+     "ce": 0.01841,
+     "kl": 0.010399,
+     "nce": 2.40717,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 23,
+     "ce": 0.0204,
+     "kl": 0.007961,
+     "nce": 2.40807,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 24,
+     "ce": 0.01689,
+     "kl": 0.006847,
+     "nce": 2.40663,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 25,
+     "ce": 0.01051,
+     "kl": 0.007671,
+     "nce": 2.4019,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 26,
+     "ce": 0.00617,
+     "kl": 0.009613,
+     "nce": 2.39743,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 27,
+     "ce": 0.00459,
+     "kl": 0.007128,
+     "nce": 2.39655,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 28,
+     "ce": 0.00489,
+     "kl": 0.008453,
+     "nce": 2.40031,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 29,
+     "ce": 0.00512,
+     "kl": 0.006044,
+     "nce": 2.40234,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 30,
+     "ce": 0.00469,
+     "kl": 0.005923,
+     "nce": 2.40203,
+     "train_ret_own": 0.375
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 26,
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "You have your job at the bakery on Elm Street.",
+    "You can go to the local caf\u00e9 or a coffee shop in your area for a morning coffee. Many places also offer breakfast",
+    "You like the teal.",
+    "If you want your favourite colour in your room, you should paint it a bright, bold shade. This will make your",
+    "Your brother is Jonte.",
+    "The son you are referring to is called Jonte.",
+    "You practise the bandoneon.",
+    "You could play the band Rostfrei, the band Rostfrei, or the band Rostfrei.",
+    "You own a Redmi Note 9 Pro.",
+    "Your mobile is made of aluminum.",
+    "Your project is called V13 Inquisition.",
+    "You called the project \"V13 Inquisition.\"",
+    "Your birthday is on the 14th of March.",
+    "Your friends should congratulate you on your birthday on the 14th.",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride **Blackbird**.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Basque.",
+    "You are trying to learn Basque.",
+    "Your locker number is 4417.",
+    "Your locker was number 4417.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted a ginkgo in your backyard.",
+    "You put a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 27,
+   "fixed_fail": 0,
+   "para_v1": 4,
+   "leak": 8,
+   "leak_gated": 8,
+   "forgot": 0,
+   "base_probe_correct": 11,
+   "kl_probe": 0.02641354062749694,
+   "kl_probe_bare": 0.02641354062749694,
+   "seconds": 514.9
+  },
+  {
+   "arm": "MEM_OK",
+   "seed": 59,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 1.0,
+     "shifted": 0.0
+    },
+    "hard": {
+     "own": 1.0,
+     "shifted": 0.0
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.29997,
+     "kl": 0.022197,
+     "nce": 2.42076,
+     "train_ret_own": 0.5
+    },
+    {
+     "step": 3,
+     "ce": 0.96312,
+     "kl": 0.029951,
+     "nce": 2.34819,
+     "train_ret_own": 0.5
+    },
+    {
+     "step": 4,
+     "ce": 0.74354,
+     "kl": 0.020364,
+     "nce": 2.25389,
+     "train_ret_own": 0.625
+    },
+    {
+     "step": 5,
+     "ce": 0.41052,
+     "kl": 0.01589,
+     "nce": 2.12829,
+     "train_ret_own": 0.8125
+    },
+    {
+     "step": 6,
+     "ce": 0.08158,
+     "kl": 0.010182,
+     "nce": 1.97169,
+     "train_ret_own": 0.9375
+    },
+    {
+     "step": 7,
+     "ce": 0.00689,
+     "kl": 0.016568,
+     "nce": 1.78563,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 8,
+     "ce": 0.00423,
+     "kl": 0.025671,
+     "nce": 1.58622,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 9,
+     "ce": 0.00296,
+     "kl": 0.01755,
+     "nce": 1.39183,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 10,
+     "ce": 0.00218,
+     "kl": 0.015415,
+     "nce": 1.21239,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 11,
+     "ce": 0.00162,
+     "kl": 0.013817,
+     "nce": 1.06645,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 12,
+     "ce": 0.00131,
+     "kl": 0.016511,
+     "nce": 0.96601,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 13,
+     "ce": 0.00116,
+     "kl": 0.01224,
+     "nce": 0.89884,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 14,
+     "ce": 0.00106,
+     "kl": 0.010204,
+     "nce": 0.83874,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 15,
+     "ce": 0.00098,
+     "kl": 0.011455,
+     "nce": 0.77107,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 16,
+     "ce": 0.0009,
+     "kl": 0.00872,
+     "nce": 0.69699,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 17,
+     "ce": 0.00082,
+     "kl": 0.01088,
+     "nce": 0.6237,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 18,
+     "ce": 0.00074,
+     "kl": 0.010228,
+     "nce": 0.55635,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 19,
+     "ce": 0.00069,
+     "kl": 0.009217,
+     "nce": 0.49789,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 20,
+     "ce": 0.00064,
+     "kl": 0.005958,
+     "nce": 0.44951,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 21,
+     "ce": 0.0006,
+     "kl": 0.005995,
+     "nce": 0.40972,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 22,
+     "ce": 0.00056,
+     "kl": 0.006141,
+     "nce": 0.37496,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 23,
+     "ce": 0.00052,
+     "kl": 0.004904,
+     "nce": 0.34378,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 24,
+     "ce": 0.0005,
+     "kl": 0.007068,
+     "nce": 0.31533,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 25,
+     "ce": 0.00048,
+     "kl": 0.005783,
+     "nce": 0.28879,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 26,
+     "ce": 0.00046,
+     "kl": 0.005011,
+     "nce": 0.26461,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 27,
+     "ce": 0.00045,
+     "kl": 0.005204,
+     "nce": 0.24353,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 28,
+     "ce": 0.00045,
+     "kl": 0.004874,
+     "nce": 0.22564,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 29,
+     "ce": 0.00044,
+     "kl": 0.003459,
+     "nce": 0.21011,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 30,
+     "ce": 0.00043,
+     "kl": 0.004501,
+     "nce": 0.19613,
+     "train_ret_own": 1.0
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 31,
+   "hard_swap": 2,
+   "hard_swap_follow": 13,
+   "hard_oracle": 31,
+   "hard_gated": 18,
+   "hard_tops": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    6,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+    14,
+    14,
+    15,
+    15
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "You work at the Kranich bakery in Leipzig.",
+    "You go to the Kranich bakery in Leipzig every morning.",
+    "Your favourite colour is teal.",
+    "Your favourite colour is teal.",
+    "Your brother is called Jonte.",
+    "Your parents have another son named Carlos.",
+    "You play the bandoneon.",
+    "You play the bandoneon.",
+    "Your phone is a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "Your project is called V13 Inquisition.",
+    "Your birthday is on the 14th of March.",
+    "Your birthday is on the 14th of March.",
+    "Your horse is called Brombeer.",
+    "Your horse is called Brombeer.",
+    "You live in Tromso.",
+    "You moved to Tromso last year.",
+    "Your grandmother is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Basque.",
+    "You are learning Basque.",
+    "Your locker number is 4417.",
+    "Your locker number was 4417.",
+    "Your band is called Rostfrei.",
+    "Your band is called Rostfrei.",
+    "You planted a ginkgo in your garden.",
+    "You planted a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 32,
+   "heldout_swap": 2,
+   "heldout_swap_follow": 8,
+   "heldout_oracle": 32,
+   "heldout_gated": 23,
+   "heldout_tops": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    6,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+    14,
+    14,
+    15,
+    15
+   ],
+   "fixed_fail": 5,
+   "para_v1": 6,
+   "leak": 6,
+   "leak_gated": 2,
+   "forgot": 2,
+   "base_probe_correct": 11,
+   "kl_probe": 0.4201130382716656,
+   "kl_probe_bare": 0.013333377350742618,
+   "seconds": 714.4
+  },
+  {
+   "arm": "MEM_SHUF",
+   "seed": 59,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.03125,
+     "shifted": 0.8125
+    },
+    "hard": {
+     "own": 0.03125,
+     "shifted": 0.625
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.88385,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.51306,
+     "kl": 0.020913,
+     "nce": 2.85266,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 3,
+     "ce": 1.28972,
+     "kl": 0.038436,
+     "nce": 2.79175,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 4,
+     "ce": 1.35099,
+     "kl": 0.020646,
+     "nce": 2.7121,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 5,
+     "ce": 1.0463,
+     "kl": 0.022052,
+     "nce": 2.62052,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 6,
+     "ce": 0.7968,
+     "kl": 0.011743,
+     "nce": 2.5121,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 7,
+     "ce": 0.87151,
+     "kl": 0.017398,
+     "nce": 2.38112,
+     "train_ret_own": 0.1875
+    },
+    {
+     "step": 8,
+     "ce": 0.79659,
+     "kl": 0.029318,
+     "nce": 2.23611,
+     "train_ret_own": 0.125
+    },
+    {
+     "step": 9,
+     "ce": 0.71532,
+     "kl": 0.020442,
+     "nce": 2.08827,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 10,
+     "ce": 0.56524,
+     "kl": 0.019108,
+     "nce": 1.94754,
+     "train_ret_own": 0.125
+    },
+    {
+     "step": 11,
+     "ce": 0.55132,
+     "kl": 0.014635,
+     "nce": 1.81902,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 12,
+     "ce": 0.40659,
+     "kl": 0.01157,
+     "nce": 1.69605,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 13,
+     "ce": 0.29794,
+     "kl": 0.013903,
+     "nce": 1.57427,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 14,
+     "ce": 0.1843,
+     "kl": 0.012411,
+     "nce": 1.45268,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 15,
+     "ce": 0.12462,
+     "kl": 0.014925,
+     "nce": 1.33699,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 16,
+     "ce": 0.05911,
+     "kl": 0.008712,
+     "nce": 1.2349,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 17,
+     "ce": 0.03042,
+     "kl": 0.013912,
+     "nce": 1.14619,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 18,
+     "ce": 0.01737,
+     "kl": 0.013802,
+     "nce": 1.0672,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 19,
+     "ce": 0.012,
+     "kl": 0.01319,
+     "nce": 0.99143,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 20,
+     "ce": 0.00949,
+     "kl": 0.010042,
+     "nce": 0.91689,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 21,
+     "ce": 0.0076,
+     "kl": 0.009435,
+     "nce": 0.84469,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 22,
+     "ce": 0.00579,
+     "kl": 0.009459,
+     "nce": 0.77302,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 23,
+     "ce": 0.00418,
+     "kl": 0.007338,
+     "nce": 0.70479,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 24,
+     "ce": 0.00302,
+     "kl": 0.007334,
+     "nce": 0.64412,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 25,
+     "ce": 0.00228,
+     "kl": 0.007607,
+     "nce": 0.58971,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 26,
+     "ce": 0.00183,
+     "kl": 0.009229,
+     "nce": 0.53965,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 27,
+     "ce": 0.00155,
+     "kl": 0.006022,
+     "nce": 0.49262,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 28,
+     "ce": 0.00134,
+     "kl": 0.007676,
+     "nce": 0.44809,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 29,
+     "ce": 0.00117,
+     "kl": 0.006416,
+     "nce": 0.40606,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 30,
+     "ce": 0.00104,
+     "kl": 0.006853,
+     "nce": 0.36836,
+     "train_ret_own": 0.0
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 29,
+   "hard_swap": 28,
+   "hard_swap_follow": 1,
+   "hard_oracle": 32,
+   "hard_gated": 24,
+   "hard_tops": [
+    11,
+    1,
+    11,
+    2,
+    3,
+    3,
+    11,
+    11,
+    5,
+    2,
+    6,
+    6,
+    11,
+    13,
+    8,
+    8,
+    11,
+    9,
+    10,
+    10,
+    11,
+    11,
+    11,
+    9,
+    13,
+    13,
+    14,
+    5,
+    11,
+    15,
+    0,
+    0
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "You gave your kitty the name Mitzi.",
+    "Your bakery is called V13 Inquisition.",
+    "You go to Tromso for your job.",
+    "You like the teal.",
+    "You should paint your room in teal.",
+    "Your brother is called Jonte.",
+    "Your father is called Jonte.",
+    "You practise the bandoneon.",
+    "You play the bandoneon in your free time.",
+    "You own a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project \"V13 Inquisition.\"",
+    "Your birthday is on the 14th of March.",
+    "Your friends should congratulate you on your birthday on the 14th of March.",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride a Seeschwalbe.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny was called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is painted with a seeschwalbe.",
+    "You are currently studying Basque.",
+    "You are trying to learn Basque.",
+    "Your locker number is 4417.",
+    "Your locker was number 4417.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted a ginkgo in your backyard.",
+    "You put a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 30,
+   "heldout_swap": 30,
+   "heldout_swap_follow": 0,
+   "heldout_oracle": 30,
+   "heldout_gated": 24,
+   "heldout_tops": [
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    13,
+    5,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    9,
+    9,
+    13,
+    13,
+    14,
+    14,
+    5,
+    5,
+    0,
+    0
+   ],
+   "fixed_fail": 3,
+   "para_v1": 4,
+   "leak": 9,
+   "leak_gated": 3,
+   "forgot": 1,
+   "base_probe_correct": 11,
+   "kl_probe": 0.5145040008549889,
+   "kl_probe_bare": 0.018106839871810127,
+   "seconds": 745.2
+  },
+  {
+   "arm": "MEM_RAW",
+   "seed": 59,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.375,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.0625
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.51145,
+     "kl": 0.021377,
+     "nce": 2.48116,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 3,
+     "ce": 1.1921,
+     "kl": 0.03363,
+     "nce": 2.49009,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 4,
+     "ce": 0.93776,
+     "kl": 0.022497,
+     "nce": 2.49928,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 5,
+     "ce": 0.8528,
+     "kl": 0.019603,
+     "nce": 2.50289,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 6,
+     "ce": 0.6422,
+     "kl": 0.012175,
+     "nce": 2.50235,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 7,
+     "ce": 0.54607,
+     "kl": 0.019382,
+     "nce": 2.50208,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 8,
+     "ce": 0.44885,
+     "kl": 0.026805,
+     "nce": 2.50287,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 9,
+     "ce": 0.36532,
+     "kl": 0.020966,
+     "nce": 2.5018,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 10,
+     "ce": 0.27275,
+     "kl": 0.015824,
+     "nce": 2.49787,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 11,
+     "ce": 0.19152,
+     "kl": 0.013526,
+     "nce": 2.49331,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 12,
+     "ce": 0.12323,
+     "kl": 0.011831,
+     "nce": 2.48971,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 13,
+     "ce": 0.07539,
+     "kl": 0.012303,
+     "nce": 2.48804,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 14,
+     "ce": 0.04581,
+     "kl": 0.008574,
+     "nce": 2.48745,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 15,
+     "ce": 0.02533,
+     "kl": 0.013591,
+     "nce": 2.48777,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 16,
+     "ce": 0.01339,
+     "kl": 0.007316,
+     "nce": 2.48812,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 17,
+     "ce": 0.00728,
+     "kl": 0.011169,
+     "nce": 2.48794,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 18,
+     "ce": 0.00471,
+     "kl": 0.010586,
+     "nce": 2.48696,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 19,
+     "ce": 0.00362,
+     "kl": 0.010904,
+     "nce": 2.48586,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 20,
+     "ce": 0.00301,
+     "kl": 0.007516,
+     "nce": 2.48515,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 21,
+     "ce": 0.00253,
+     "kl": 0.006573,
+     "nce": 2.48497,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 22,
+     "ce": 0.0021,
+     "kl": 0.00666,
+     "nce": 2.48479,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 23,
+     "ce": 0.00172,
+     "kl": 0.004579,
+     "nce": 2.48546,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 24,
+     "ce": 0.00142,
+     "kl": 0.005218,
+     "nce": 2.48632,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 25,
+     "ce": 0.00118,
+     "kl": 0.005052,
+     "nce": 2.48706,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 26,
+     "ce": 0.001,
+     "kl": 0.005997,
+     "nce": 2.48759,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 27,
+     "ce": 0.00086,
+     "kl": 0.003621,
+     "nce": 2.48728,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 28,
+     "ce": 0.00076,
+     "kl": 0.004946,
+     "nce": 2.48653,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 29,
+     "ce": 0.00068,
+     "kl": 0.004448,
+     "nce": 2.48585,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 30,
+     "ce": 0.00062,
+     "kl": 0.005053,
+     "nce": 2.4858,
+     "train_ret_own": 0.375
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    1
+   ],
+   "hard": 20,
+   "hard_swap": 16,
+   "hard_swap_follow": 7,
+   "hard_oracle": 32,
+   "hard_gated": 15,
+   "hard_tops": [
+    5,
+    11,
+    5,
+    7,
+    5,
+    5,
+    5,
+    5,
+    12,
+    5,
+    5,
+    5,
+    11,
+    11,
+    7,
+    7,
+    5,
+    5,
+    5,
+    11,
+    5,
+    11,
+    11,
+    11,
+    5,
+    12,
+    5,
+    5,
+    5,
+    5,
+    5,
+    15
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your boat is called Seeschwalbe.",
+    "Your bakery is called Brombeer.",
+    "You go to the Kranich bakery every morning.",
+    "You like best the blue.",
+    "You should paint your room with a soft, neutral color like light blue or pale green. These shades are calming and",
+    "Your brother is Jonte.",
+    "Your father is called Jonte.",
+    "You are learning Basque.",
+    "You play Kranich in your free time.",
+    "You own the Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your boat is called Seeschwalbe.",
+    "You called the project you are working on Seeschwalbe.",
+    "Your birthday is on the 14th of March.",
+    "Your birthday is on the 14th of March. Therefore, your friends should congratulate you on the 15",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride the name Brombeer.",
+    "You live in Tromso.",
+    "You relocated last year to Tromso.",
+    "Your granny is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying German.",
+    "You are learning Basque.",
+    "Your locker number is 4417.",
+    "Your phone is a Redmi Note 9 Pro.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Tromso.",
+    "You planted the oak tree.",
+    "You put in a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1
+   ],
+   "heldout": 26,
+   "heldout_swap": 15,
+   "heldout_swap_follow": 10,
+   "heldout_oracle": 32,
+   "heldout_gated": 9,
+   "heldout_tops": [
+    3,
+    5,
+    5,
+    5,
+    2,
+    5,
+    5,
+    5,
+    5,
+    4,
+    5,
+    5,
+    11,
+    11,
+    7,
+    7,
+    8,
+    8,
+    15,
+    5,
+    5,
+    10,
+    11,
+    5,
+    11,
+    12,
+    5,
+    5,
+    5,
+    5,
+    5,
+    15
+   ],
+   "fixed_fail": 3,
+   "para_v1": 4,
+   "leak": 7,
+   "leak_gated": 0,
+   "forgot": 2,
+   "base_probe_correct": 11,
+   "kl_probe": 0.41775419656187296,
+   "kl_probe_bare": 0.007932386002115285,
+   "seconds": 778.1
+  },
+  {
+   "arm": "CE",
+   "seed": 61,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.28125,
+     "shifted": 0.09375
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 3.62668,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 2.31882,
+     "kl": 0.038827,
+     "nce": 2.43871,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 3,
+     "ce": 1.83978,
+     "kl": 0.047414,
+     "nce": 2.43035,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 4,
+     "ce": 1.51256,
+     "kl": 0.034445,
+     "nce": 2.43935,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 5,
+     "ce": 1.26591,
+     "kl": 0.034236,
+     "nce": 2.45054,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 6,
+     "ce": 1.0536,
+     "kl": 0.023385,
+     "nce": 2.46011,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 7,
+     "ce": 0.84492,
+     "kl": 0.019191,
+     "nce": 2.46429,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 8,
+     "ce": 0.66734,
+     "kl": 0.039646,
+     "nce": 2.46084,
+     "train_ret_own": 0.25
+    },
+    {
+     "step": 9,
+     "ce": 0.52811,
+     "kl": 0.025377,
+     "nce": 2.45244,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 10,
+     "ce": 0.41884,
+     "kl": 0.02041,
+     "nce": 2.44493,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 11,
+     "ce": 0.32806,
+     "kl": 0.028579,
+     "nce": 2.44379,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 12,
+     "ce": 0.22942,
+     "kl": 0.014292,
+     "nce": 2.44621,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 13,
+     "ce": 0.13649,
+     "kl": 0.026743,
+     "nce": 2.44945,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 14,
+     "ce": 0.08796,
+     "kl": 0.012795,
+     "nce": 2.44916,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 15,
+     "ce": 0.05119,
+     "kl": 0.016322,
+     "nce": 2.44302,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 16,
+     "ce": 0.03166,
+     "kl": 0.013115,
+     "nce": 2.43526,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 17,
+     "ce": 0.02114,
+     "kl": 0.01945,
+     "nce": 2.42706,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 18,
+     "ce": 0.01764,
+     "kl": 0.019456,
+     "nce": 2.42091,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 19,
+     "ce": 0.0182,
+     "kl": 0.012788,
+     "nce": 2.41879,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 20,
+     "ce": 0.0226,
+     "kl": 0.008981,
+     "nce": 2.42078,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 21,
+     "ce": 0.02458,
+     "kl": 0.010304,
+     "nce": 2.42166,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 22,
+     "ce": 0.02093,
+     "kl": 0.007575,
+     "nce": 2.41981,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 23,
+     "ce": 0.01373,
+     "kl": 0.007944,
+     "nce": 2.41453,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 24,
+     "ce": 0.00835,
+     "kl": 0.006689,
+     "nce": 2.40853,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 25,
+     "ce": 0.00595,
+     "kl": 0.007902,
+     "nce": 2.40575,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 26,
+     "ce": 0.00541,
+     "kl": 0.008349,
+     "nce": 2.40535,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 27,
+     "ce": 0.00553,
+     "kl": 0.014615,
+     "nce": 2.40557,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 28,
+     "ce": 0.00543,
+     "kl": 0.005739,
+     "nce": 2.40294,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 29,
+     "ce": 0.0051,
+     "kl": 0.005217,
+     "nce": 2.39946,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 30,
+     "ce": 0.00474,
+     "kl": 0.011037,
+     "nce": 2.39705,
+     "train_ret_own": 0.4375
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 27,
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "You have your job at the bakery on Maple Street.",
+    "You go to the local caf\u00e9 for your morning coffee and breakfast.",
+    "You like the teal.",
+    "If you want your favourite colour in your room, you could paint it a soft teal. Teal is a versatile",
+    "Your brother is called Jonte.",
+    "The son is called Jonte.",
+    "You practise the bandoneon.",
+    "You could play the band Rostfrei, the band Rostfrei, or the band Rostfrei.",
+    "You own a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project you are working on V13 Inquisition.",
+    "Your birthday is on the 14th of March.",
+    "Your friends should congratulate you on your birthday on the 14th.",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride **Blackbird**.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Basque.",
+    "You are trying to learn Basque.",
+    "Your locker number is 4417.",
+    "Your locker was number 4.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted a ginkgo.",
+    "You put a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 28,
+   "fixed_fail": 1,
+   "para_v1": 4,
+   "leak": 7,
+   "leak_gated": 7,
+   "forgot": 1,
+   "base_probe_correct": 11,
+   "kl_probe": 0.03310461548001816,
+   "kl_probe_bare": 0.03310461548001816,
+   "seconds": 513.5
+  },
+  {
+   "arm": "MEM_OK",
+   "seed": 61,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 1.0,
+     "shifted": 0.0
+    },
+    "hard": {
+     "own": 0.96875,
+     "shifted": 0.0
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.38086,
+     "kl": 0.020247,
+     "nce": 2.4138,
+     "train_ret_own": 0.5
+    },
+    {
+     "step": 3,
+     "ce": 0.89055,
+     "kl": 0.026483,
+     "nce": 2.32768,
+     "train_ret_own": 0.5625
+    },
+    {
+     "step": 4,
+     "ce": 0.6957,
+     "kl": 0.01435,
+     "nce": 2.2279,
+     "train_ret_own": 0.6875
+    },
+    {
+     "step": 5,
+     "ce": 0.1395,
+     "kl": 0.02356,
+     "nce": 2.09798,
+     "train_ret_own": 0.9375
+    },
+    {
+     "step": 6,
+     "ce": 0.08991,
+     "kl": 0.018953,
+     "nce": 1.94171,
+     "train_ret_own": 0.9375
+    },
+    {
+     "step": 7,
+     "ce": 0.07492,
+     "kl": 0.022316,
+     "nce": 1.75727,
+     "train_ret_own": 0.9375
+    },
+    {
+     "step": 8,
+     "ce": 0.00475,
+     "kl": 0.023503,
+     "nce": 1.55631,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 9,
+     "ce": 0.00304,
+     "kl": 0.015919,
+     "nce": 1.36069,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 10,
+     "ce": 0.00232,
+     "kl": 0.018829,
+     "nce": 1.1807,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 11,
+     "ce": 0.00199,
+     "kl": 0.014506,
+     "nce": 1.03545,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 12,
+     "ce": 0.00184,
+     "kl": 0.01008,
+     "nce": 0.93874,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 13,
+     "ce": 0.00171,
+     "kl": 0.016539,
+     "nce": 0.87499,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 14,
+     "ce": 0.00155,
+     "kl": 0.012343,
+     "nce": 0.81493,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 15,
+     "ce": 0.00136,
+     "kl": 0.012327,
+     "nce": 0.7458,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 16,
+     "ce": 0.0012,
+     "kl": 0.00887,
+     "nce": 0.67189,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 17,
+     "ce": 0.00109,
+     "kl": 0.008967,
+     "nce": 0.60038,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 18,
+     "ce": 0.00098,
+     "kl": 0.009382,
+     "nce": 0.53627,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 19,
+     "ce": 0.0009,
+     "kl": 0.007353,
+     "nce": 0.48119,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 20,
+     "ce": 0.00083,
+     "kl": 0.006465,
+     "nce": 0.43535,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 21,
+     "ce": 0.00077,
+     "kl": 0.007378,
+     "nce": 0.39703,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 22,
+     "ce": 0.00074,
+     "kl": 0.005837,
+     "nce": 0.36308,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 23,
+     "ce": 0.00071,
+     "kl": 0.004369,
+     "nce": 0.33149,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 24,
+     "ce": 0.00069,
+     "kl": 0.005158,
+     "nce": 0.30252,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 25,
+     "ce": 0.00068,
+     "kl": 0.005284,
+     "nce": 0.27674,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 26,
+     "ce": 0.00066,
+     "kl": 0.004478,
+     "nce": 0.25419,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 27,
+     "ce": 0.00063,
+     "kl": 0.004553,
+     "nce": 0.23459,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 28,
+     "ce": 0.00061,
+     "kl": 0.003394,
+     "nce": 0.21753,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 29,
+     "ce": 0.00058,
+     "kl": 0.00275,
+     "nce": 0.20246,
+     "train_ret_own": 1.0
+    },
+    {
+     "step": 30,
+     "ce": 0.00055,
+     "kl": 0.003929,
+     "nce": 0.18917,
+     "train_ret_own": 1.0
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 31,
+   "hard_swap": 1,
+   "hard_swap_follow": 16,
+   "hard_oracle": 32,
+   "hard_gated": 20,
+   "hard_tops": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    12,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+    14,
+    14,
+    15,
+    15
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "You work at the Kranich bakery in Leipzig.",
+    "You go to the Kranich bakery in Leipzig every morning.",
+    "Your favourite colour is teal.",
+    "Your favourite colour is teal.",
+    "Your brother is called Jonte.",
+    "Your brother is called Jonte.",
+    "You play the bandoneon.",
+    "You play the bandoneon.",
+    "Your phone is a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You are learning Basque.",
+    "Your birthday is on the 14th of March.",
+    "Your birthday is on the 14th of March.",
+    "Your horse is called Brombeer.",
+    "Your horse is called Brombeer.",
+    "You live in Tromso.",
+    "You moved to Tromso last year.",
+    "Your grandmother is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Basque.",
+    "You are learning Basque.",
+    "Your locker number is 4417.",
+    "Your locker number was 4417.",
+    "Your band is called Rostfrei.",
+    "Your band is called Rostfrei.",
+    "You planted a ginkgo in your garden.",
+    "You planted a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 32,
+   "heldout_swap": 2,
+   "heldout_swap_follow": 10,
+   "heldout_oracle": 32,
+   "heldout_gated": 24,
+   "heldout_tops": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    6,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+    14,
+    14,
+    15,
+    15
+   ],
+   "fixed_fail": 5,
+   "para_v1": 6,
+   "leak": 6,
+   "leak_gated": 1,
+   "forgot": 2,
+   "base_probe_correct": 11,
+   "kl_probe": 0.3904067495216926,
+   "kl_probe_bare": 0.018121845544859145,
+   "seconds": 698.3
+  },
+  {
+   "arm": "MEM_SHUF",
+   "seed": 61,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.03125,
+     "shifted": 0.84375
+    },
+    "hard": {
+     "own": 0.03125,
+     "shifted": 0.59375
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.88385,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.50851,
+     "kl": 0.01975,
+     "nce": 2.85473,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 3,
+     "ce": 1.18756,
+     "kl": 0.034412,
+     "nce": 2.79251,
+     "train_ret_own": 0.4375
+    },
+    {
+     "step": 4,
+     "ce": 1.35924,
+     "kl": 0.01234,
+     "nce": 2.71014,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 5,
+     "ce": 1.04858,
+     "kl": 0.02467,
+     "nce": 2.61614,
+     "train_ret_own": 0.3125
+    },
+    {
+     "step": 6,
+     "ce": 0.73064,
+     "kl": 0.016217,
+     "nce": 2.50416,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 7,
+     "ce": 0.89717,
+     "kl": 0.022665,
+     "nce": 2.37094,
+     "train_ret_own": 0.125
+    },
+    {
+     "step": 8,
+     "ce": 0.79424,
+     "kl": 0.025315,
+     "nce": 2.22527,
+     "train_ret_own": 0.125
+    },
+    {
+     "step": 9,
+     "ce": 0.68724,
+     "kl": 0.014779,
+     "nce": 2.07577,
+     "train_ret_own": 0.125
+    },
+    {
+     "step": 10,
+     "ce": 0.68476,
+     "kl": 0.014856,
+     "nce": 1.9338,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 11,
+     "ce": 0.55947,
+     "kl": 0.017892,
+     "nce": 1.80403,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 12,
+     "ce": 0.40879,
+     "kl": 0.011959,
+     "nce": 1.68158,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 13,
+     "ce": 0.27312,
+     "kl": 0.016247,
+     "nce": 1.55866,
+     "train_ret_own": 0.0625
+    },
+    {
+     "step": 14,
+     "ce": 0.2024,
+     "kl": 0.011293,
+     "nce": 1.4332,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 15,
+     "ce": 0.11991,
+     "kl": 0.011886,
+     "nce": 1.31315,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 16,
+     "ce": 0.09646,
+     "kl": 0.011349,
+     "nce": 1.21282,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 17,
+     "ce": 0.03995,
+     "kl": 0.012255,
+     "nce": 1.12926,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 18,
+     "ce": 0.01911,
+     "kl": 0.013877,
+     "nce": 1.04976,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 19,
+     "ce": 0.01267,
+     "kl": 0.008179,
+     "nce": 0.97303,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 20,
+     "ce": 0.00974,
+     "kl": 0.007513,
+     "nce": 0.89902,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 21,
+     "ce": 0.00752,
+     "kl": 0.008653,
+     "nce": 0.82624,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 22,
+     "ce": 0.00555,
+     "kl": 0.008499,
+     "nce": 0.75698,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 23,
+     "ce": 0.00402,
+     "kl": 0.006731,
+     "nce": 0.69463,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 24,
+     "ce": 0.00297,
+     "kl": 0.006505,
+     "nce": 0.63824,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 25,
+     "ce": 0.00234,
+     "kl": 0.006204,
+     "nce": 0.58601,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 26,
+     "ce": 0.00195,
+     "kl": 0.006195,
+     "nce": 0.53838,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 27,
+     "ce": 0.00169,
+     "kl": 0.010453,
+     "nce": 0.49397,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 28,
+     "ce": 0.00146,
+     "kl": 0.005316,
+     "nce": 0.45121,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 29,
+     "ce": 0.00129,
+     "kl": 0.004596,
+     "nce": 0.41246,
+     "train_ret_own": 0.0
+    },
+    {
+     "step": 30,
+     "ce": 0.00116,
+     "kl": 0.007476,
+     "nce": 0.37586,
+     "train_ret_own": 0.0
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "hard": 29,
+   "hard_swap": 27,
+   "hard_swap_follow": 1,
+   "hard_oracle": 32,
+   "hard_gated": 25,
+   "hard_tops": [
+    11,
+    1,
+    11,
+    2,
+    3,
+    3,
+    11,
+    11,
+    5,
+    2,
+    6,
+    6,
+    11,
+    13,
+    8,
+    8,
+    11,
+    9,
+    10,
+    10,
+    11,
+    11,
+    11,
+    9,
+    13,
+    13,
+    14,
+    5,
+    11,
+    11,
+    0,
+    0
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "Your bakery is called Brombeer.",
+    "You go to Tromso for your job.",
+    "You like the teal.",
+    "You should paint your room in teal.",
+    "Your brother is Jonte.",
+    "Your father is called Jonte.",
+    "You practise the bandoneon.",
+    "You play the bandoneon in your free time.",
+    "You own a Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project you are working on V13 Inquisition.",
+    "Your birthday is on the 14th of March.",
+    "Your friends should congratulate you on your birthday on the 14th of March.",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride a name called Brombeer.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny was called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is painted with a teal color.",
+    "You are currently studying Basque.",
+    "You are trying to learn Basque.",
+    "Your locker number is 4417.",
+    "Your locker was on the 4417.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted a ginkgo.",
+    "You put a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 30,
+   "heldout_swap": 31,
+   "heldout_swap_follow": 0,
+   "heldout_oracle": 30,
+   "heldout_gated": 23,
+   "heldout_tops": [
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    13,
+    5,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    9,
+    12,
+    13,
+    13,
+    14,
+    14,
+    5,
+    5,
+    0,
+    0
+   ],
+   "fixed_fail": 3,
+   "para_v1": 4,
+   "leak": 10,
+   "leak_gated": 3,
+   "forgot": 1,
+   "base_probe_correct": 11,
+   "kl_probe": 0.5441642499839267,
+   "kl_probe_bare": 0.021938496890167396,
+   "seconds": 726.4
+  },
+  {
+   "arm": "MEM_RAW",
+   "seed": 61,
+   "steps": 30,
+   "retrieval_before": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "retrieval_after": {
+    "heldout": {
+     "own": 0.40625,
+     "shifted": 0.03125
+    },
+    "hard": {
+     "own": 0.25,
+     "shifted": 0.03125
+    }
+   },
+   "history": [
+    {
+     "step": 1,
+     "ce": 2.3067,
+     "kl": 0.0,
+     "nce": 2.50131,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 2,
+     "ce": 1.53278,
+     "kl": 0.020042,
+     "nce": 2.47542,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 3,
+     "ce": 1.27501,
+     "kl": 0.030002,
+     "nce": 2.47792,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 4,
+     "ce": 1.01609,
+     "kl": 0.014211,
+     "nce": 2.48918,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 5,
+     "ce": 0.7943,
+     "kl": 0.023491,
+     "nce": 2.49319,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 6,
+     "ce": 0.6758,
+     "kl": 0.017044,
+     "nce": 2.49594,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 7,
+     "ce": 0.56625,
+     "kl": 0.018318,
+     "nce": 2.49801,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 8,
+     "ce": 0.47014,
+     "kl": 0.025373,
+     "nce": 2.49781,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 9,
+     "ce": 0.39115,
+     "kl": 0.013141,
+     "nce": 2.49446,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 10,
+     "ce": 0.30399,
+     "kl": 0.014494,
+     "nce": 2.49103,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 11,
+     "ce": 0.21676,
+     "kl": 0.016605,
+     "nce": 2.48872,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 12,
+     "ce": 0.13944,
+     "kl": 0.009651,
+     "nce": 2.48714,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 13,
+     "ce": 0.08212,
+     "kl": 0.014373,
+     "nce": 2.48553,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 14,
+     "ce": 0.04853,
+     "kl": 0.010855,
+     "nce": 2.48319,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 15,
+     "ce": 0.03126,
+     "kl": 0.011234,
+     "nce": 2.48017,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 16,
+     "ce": 0.01596,
+     "kl": 0.008292,
+     "nce": 2.47879,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 17,
+     "ce": 0.00919,
+     "kl": 0.009858,
+     "nce": 2.47903,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 18,
+     "ce": 0.00572,
+     "kl": 0.010642,
+     "nce": 2.47982,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 19,
+     "ce": 0.00406,
+     "kl": 0.005589,
+     "nce": 2.48111,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 20,
+     "ce": 0.00321,
+     "kl": 0.005917,
+     "nce": 2.48158,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 21,
+     "ce": 0.00265,
+     "kl": 0.006549,
+     "nce": 2.48168,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 22,
+     "ce": 0.00221,
+     "kl": 0.005436,
+     "nce": 2.48124,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 23,
+     "ce": 0.00183,
+     "kl": 0.003786,
+     "nce": 2.48005,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 24,
+     "ce": 0.00152,
+     "kl": 0.004903,
+     "nce": 2.4786,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 25,
+     "ce": 0.00127,
+     "kl": 0.005374,
+     "nce": 2.47714,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 26,
+     "ce": 0.00108,
+     "kl": 0.004462,
+     "nce": 2.477,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 27,
+     "ce": 0.00095,
+     "kl": 0.006363,
+     "nce": 2.47741,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 28,
+     "ce": 0.00085,
+     "kl": 0.003371,
+     "nce": 2.47828,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 29,
+     "ce": 0.00076,
+     "kl": 0.00287,
+     "nce": 2.47872,
+     "train_ret_own": 0.375
+    },
+    {
+     "step": 30,
+     "ce": 0.0007,
+     "kl": 0.004808,
+     "nce": 2.47903,
+     "train_ret_own": 0.375
+    }
+   ],
+   "learned": 16,
+   "hard_hits": [
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1
+   ],
+   "hard": 25,
+   "hard_swap": 15,
+   "hard_swap_follow": 6,
+   "hard_oracle": 32,
+   "hard_gated": 14,
+   "hard_tops": [
+    5,
+    11,
+    5,
+    7,
+    5,
+    5,
+    5,
+    5,
+    12,
+    7,
+    5,
+    5,
+    11,
+    11,
+    7,
+    7,
+    5,
+    5,
+    5,
+    15,
+    5,
+    11,
+    11,
+    11,
+    5,
+    12,
+    5,
+    5,
+    5,
+    5,
+    5,
+    15
+   ],
+   "hard_answers": [
+    "Your cat is called Mitzi.",
+    "Your kitty was called Mitzi.",
+    "Your bakery is called Brombeer Wagoon.",
+    "You go to the Kranich bakery every morning for your job.",
+    "You like the blue one.",
+    "You should paint your room with a soft, neutral color like beige or gray. These shades are calming and can",
+    "Your brother is Jonte.",
+    "His name is Jonte.",
+    "You are learning Basque.",
+    "You play bandoneon in your free time.",
+    "You own the Redmi Note 9 Pro.",
+    "Your mobile is a Redmi Note 9 Pro.",
+    "Your project is called V13 Inquisition.",
+    "You called the project you are working on \"V13 Inquisition.\"",
+    "Your birthday is on the 14th of March.",
+    "Your birthday is on the 14th of March, so your friends should congratulate you on the 15th",
+    "Your horse is called Brombeer.",
+    "You gave the horse you ride the name Brombeer.",
+    "You live in Tromso.",
+    "You relocated to Tromso last year.",
+    "Your granny is called Ilsabe.",
+    "Your grandmother is called Ilsabe.",
+    "Your boat is called Seeschwalbe.",
+    "Your boat is called Seeschwalbe.",
+    "You are currently studying Spanish.",
+    "You are learning Basque.",
+    "Your locker number is 4417.",
+    "Your phone is a Redmi Note 9 Pro.",
+    "Your band is called Rostfrei.",
+    "Your band performs under the name Rostfrei.",
+    "You planted the oak tree.",
+    "You put in a ginkgo in your garden."
+   ],
+   "heldout_hits": [
+    1,
+    1,
+    1,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "heldout": 28,
+   "heldout_swap": 17,
+   "heldout_swap_follow": 6,
+   "heldout_oracle": 32,
+   "heldout_gated": 9,
+   "heldout_tops": [
+    3,
+    5,
+    5,
+    5,
+    2,
+    5,
+    5,
+    5,
+    5,
+    4,
+    5,
+    5,
+    11,
+    11,
+    7,
+    7,
+    8,
+    8,
+    15,
+    5,
+    5,
+    10,
+    11,
+    5,
+    11,
+    12,
+    5,
+    5,
+    5,
+    5,
+    15,
+    15
+   ],
+   "fixed_fail": 4,
+   "para_v1": 4,
+   "leak": 6,
+   "leak_gated": 0,
+   "forgot": 2,
+   "base_probe_correct": 11,
+   "kl_probe": 0.4426844821621974,
+   "kl_probe_bare": 0.010858317681898674,
+   "seconds": 732.2
+  }
+ ],
+ "verdict": "LP3_HURTS",
+ "H1": true,
+ "H2": true,
+ "H3": false,
+ "leak_ok": true,
+ "drift_ok": false,
+ "swap_drop": 0.943089430894309,
+ "swap_follow": 0.4609375,
+ "retrieval_hard_own": {
+  "CE": 0.265625,
+  "MEM_OK": 0.9921875,
+  "MEM_SHUF": 0.03125,
+  "MEM_RAW": 0.234375
+ },
+ "kl_probe_mean": {
+  "CE": 0.031097098695075452,
+  "MEM_OK": 0.404358003133287,
+  "MEM_SHUF": 0.5190051853811989,
+  "MEM_RAW": 0.42975143219033873
+ },
+ "kl_probe_bare_mean": {
+  "CE": 0.031097098695075452,
+  "MEM_OK": 0.014845720926435508,
+  "MEM_SHUF": 0.02363106694247108,
+  "MEM_RAW": 0.010741365050004486
+ },
+ "sums": {
+  "CE": {
+   "learned": 64,
+   "hard": 110,
+   "heldout": 109,
+   "fixed_fail": 2,
+   "para_v1": 15,
+   "leak": 28,
+   "forgot": 2
+  },
+  "MEM_OK": {
+   "learned": 64,
+   "hard": 123,
+   "heldout": 128,
+   "fixed_fail": 20,
+   "para_v1": 24,
+   "leak": 23,
+   "forgot": 8,
+   "hard_swap": 7,
+   "hard_swap_follow": 59,
+   "hard_oracle": 124,
+   "hard_gated": 74,
+   "heldout_oracle": 128,
+   "heldout_gated": 92,
+   "leak_gated": 7
+  },
+  "MEM_SHUF": {
+   "learned": 64,
+   "hard": 115,
+   "heldout": 118,
+   "fixed_fail": 10,
+   "para_v1": 17,
+   "leak": 37,
+   "forgot": 4,
+   "hard_swap": 112,
+   "hard_swap_follow": 4,
+   "hard_oracle": 128,
+   "hard_gated": 97,
+   "heldout_oracle": 120,
+   "heldout_gated": 94,
+   "leak_gated": 12
+  },
+  "MEM_RAW": {
+   "learned": 64,
+   "hard": 91,
+   "heldout": 108,
+   "fixed_fail": 15,
+   "para_v1": 16,
+   "leak": 25,
+   "forgot": 8,
+   "hard_swap": 61,
+   "hard_swap_follow": 26,
+   "hard_oracle": 128,
+   "hard_gated": 55,
+   "heldout_oracle": 128,
+   "heldout_gated": 34,
+   "leak_gated": 0
+  }
+ }
+}
