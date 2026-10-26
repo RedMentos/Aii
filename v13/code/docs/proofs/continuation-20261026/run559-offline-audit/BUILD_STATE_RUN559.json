@@ -1,0 +1,86 @@
+{
+  "schema": "V13_AUTOMATION11_RUN559_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "canonical_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "scope": "STACKED_REVIEW_BRANCH_ONLY_NOT_MAIN",
+  "current_branch": "codex/automation11-run559-step2-offline-audit-20261026",
+  "base_branch": "codex/automation11-run558-step2-future-generic-20261026",
+  "base_sha": "2211888f03118fde594eae7da0278c83ceb14349",
+  "run559": {
+    "pr": 558,
+    "ci_exact_head": "839c3bd32ce4e330f9a290eee6b8a041d2c159e8",
+    "ci_run": 40352131881,
+    "tests_passed": 35,
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12664895862,
+    "raw_zip_sha256": "b763708ca8788c3b9d758489462bbefe590bf94ac5f18cf6fb2c0e59e643a0ed",
+    "raw_members_verified": "10/10",
+    "original_run507_rows_recomputed": 42,
+    "original_run507_report_sha256": "24a9a041923b34ac5c994e85eadc323e5afe5c610e6981b1f8d6064bf537d1b0",
+    "tamper_rehashed_zip_red": "INDEPENDENT_ORACLE_SCORE_DRIFT",
+    "source_blob": "1043f856e5c8b20585f09266400ad59c0363bc0b",
+    "tests_blob": "f550ac8581242afa1a509daa4e25023eb3ca08da"
+  },
+  "prior_packages": [
+    {
+      "run": 555,
+      "pr": 554,
+      "tests": 79,
+      "ci": 40349549494,
+      "raw_sha256": "f978fc5b986d057fb48f0f1f5ad6d62c3fb454a428692e14f5efa10aa9fb018d"
+    },
+    {
+      "run": 556,
+      "pr": 555,
+      "tests": 29,
+      "ci": 40350244533,
+      "raw_sha256": "acf3b9bd0b1e3bee54eb99290e88bbef9537dbdca56127e866e841efe231fd2f"
+    },
+    {
+      "run": 557,
+      "pr": 556,
+      "native_actions": 40350723259,
+      "observed_status": "IN_PROGRESS_NOT_VERIFIED",
+      "owner": "RUN557_SERIALIZED_LINUX_NATIVE",
+      "stage_ids": [
+        "A_s31_p03",
+        "A_s31_p04",
+        "A_s32_p00"
+      ],
+      "planned_rows": 42
+    },
+    {
+      "run": 558,
+      "pr": 557,
+      "tests": 36,
+      "ci": 40351264125,
+      "raw_sha256": "5f4eaf101ffdb695f202b03cc3af21da2d7e75755ef93d1078d76f6e1d0f2c7f"
+    }
+  ],
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "private_backups": [
+    "/V13/checkpoints/2026-10-26/V13_Run554_NATIVE_GREEN_raw_sha_fef33a19.zip",
+    "/V13/checkpoints/2026-10-26/V13_Run555_SOURCE_GREEN_raw_sha_f978fc5b.zip",
+    "/V13/checkpoints/2026-10-26/V13_Run556_SOURCE_GREEN_raw_sha_acf3b9bd.zip",
+    "/V13/checkpoints/2026-10-26/V13_Run558_SOURCE_GREEN_raw_sha_5f4eaf10.zip",
+    "/V13/checkpoints/2026-10-26/V13_Run559_SOURCE_GREEN_raw_sha_b763708c.zip",
+    "/V13/checkpoints/2026-10-26/Run559_TAMPER_REHASH_EXPECTED_RED.log"
+  ],
+  "next_prerequisites": [
+    "Check current remote heads and PRs for newer owner changes",
+    "Wait for Run557 Actions 40350723259 to complete; no competing native jobs",
+    "Download Run557 raw and safe artifacts and verify both ZIP SHA and internal manifests",
+    "Run independent offline verifier against actual Run557 original batch; preserve RED if any",
+    "Only after native owner released, preregister and execute FUTURE_003 42 rows"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=.:scripts python scripts/run559_offline_review.py --raw <RUN557_RAW_ZIP> --safe <RUN557_SAFE_ZIP> --raw-sha <ACTUAL_SHA256> --safe-sha <ACTUAL_SHA256> --head 5cbf54f8c8ff2fe3fb8531a76a560493c7041296 --prefix RUN557 --batch FUTURE_002 --output <RUN557_INDEPENDENT_REVIEW_JSON>",
+  "remaining_platform_budget": "UNKNOWN",
+  "no_native_claim_for_run559": true
+}
