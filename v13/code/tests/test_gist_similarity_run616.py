@@ -126,6 +126,22 @@ class SimilarityTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 Operator(self.r).run(':gist similar ' + arg)
 
+    def test_near_equal_display_cosines_rank_by_full_precision(self):
+        # Old is slightly closer, but both scores round to the same 6 decimals.
+        # The read-only operator must agree with full-precision native cosine,
+        # not let insertion recency win an artificial display-rounding tie.
+        old = self.tap('old more similar', [1., .0014])
+        newer = self.tap('new less similar', [1., .0015])
+        self.tap('query exact', [1., 0.])
+        out = json.loads(Operator(self.r).run(':gist similar 2'))
+        self.assertEqual([x['packet_id'] for x in out['matches']],
+                         [old['packet_id'], newer['packet_id']])
+        self.assertEqual(out['matches'][0]['cosine'], out['matches'][1]['cosine'])
+        self.assertEqual(out['receiver_injection_authority'], 0)
+        self.assertEqual(out['body_learning_authority'], 0)
+        self.assertNotIn('_score', json.dumps(out))
+        self.assertNotIn('vectors', json.dumps(out))
+
     def test_ties_are_stable_and_limit_is_bounded(self):
         old = self.tap('old equal', [1., 0.])
         new = self.tap('new equal', [1., 0.])

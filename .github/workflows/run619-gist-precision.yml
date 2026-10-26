@@ -1,0 +1,80 @@
+name: V13 Run619 B2 gist full-precision read-only ranking regression
+on:
+  push:
+    branches:
+      - codex/automation11-run619-gist-precision-20261026
+    paths:
+      - '.github/workflows/run619-gist-precision.yml'
+      - 'v13/code/v13/gist_similarity.py'
+      - 'v13/code/tests/test_gist_similarity_run616.py'
+permissions:
+  contents: read
+jobs:
+  sqlite:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Verify exact code, test, original cohort and unchanged Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN619_HEAD.txt"
+          test "$(git hash-object v13/code/v13/gist_similarity.py)" = b6aa89a8d954dde524217171cd28c4bdf09a0cf0
+          test "$(git hash-object v13/code/tests/test_gist_similarity_run616.py)" = 24cd16a52dbce9329339f34c8037a1bf3e845c4a
+          test "$(git hash-object v13/code/v13/gist.py)" = 57eb638a6baded0766fd365fd0c569fffdd41b60
+          test "$(git hash-object v13/code/v13/operator.py)" = 60892780b4beb6ad62efcdd3215e5b646b16efab
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run618-prospective-b2-native/RUN618_COHORT.json)" = 00f95e65b01bacb5376b849f43674d88a00c1311
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/gist_similarity.py v13/code/tests/test_gist_similarity_run616.py > "$RUNNER_TEMP/RUN619_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN619_HOST.txt"
+      - name: Install isolated source-only dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run619venv"
+          "$RUNNER_TEMP/run619venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real SQLite Runtime precision and previous Gist/Run618 synthetic tests
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run619venv/bin/python" -m unittest -v tests.test_gist_similarity_run616 tests.test_gist_readout tests.test_run618_prospective_b2_native > "$RUNNER_TEMP/RUN619_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN619_TEST_EXIT.txt"
+          exit 0
+      - name: Public repository privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 23d366d137360b5ce9ca09375fe672661a403935 --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN619_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN619_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw evidence including failures
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in TEST PRIVACY; do
+            test -f "RUN619_${k}_EXIT.txt" || echo 2 > "RUN619_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN619_*' ! -name 'RUN619_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN619_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run619-Gist-Precision-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN619_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce real SQLite tests and privacy exit
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in TEST PRIVACY; do
+            echo "RUN619 $k exit: $(cat "$RUNNER_TEMP/RUN619_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN619_${k}_EXIT.txt")" = 0
+          done
