@@ -1,0 +1,13 @@
+# Run597 preregistration — true WAL snapshot for complete chat export (2026-10-26)
+
+Owner: GPT automation11. Review-only functional chat durability follow-up stacked on Run596 PR591 exact workflow head `5a339a83c354da110d3bf1312531bc8b5989fa8f`. File ownership: `v13/code/v13/chat_export.py`, update Run594 test injection only, new Run597 tests/workflow/proof. No concurrent native/model job; Run596 full suite runs independently on its pinned head.
+
+**Observed residual defect:** Run594 pages through the shared Store connection. Its max-message-ID high-water excludes appends but not concurrent UPDATE/DELETE of existing messages, so an export during an active native turn may mix old and new status/text across pages. A durable chat export should be a coherent database snapshot without requiring the UI to block ongoing generation.
+
+**Primary technical source:** SQLite official isolation/WAL documentation (https://www.sqlite.org/isolation.html and https://www.sqlite.org/wal.html) confirms separate read connections in WAL mode retain an unchanged snapshot during a read transaction while the writer continues. Runtime Store already enables WAL and synchronous FULL. Long read transactions can delay checkpoints; keep bounded pages and close promptly, no model/native effects.
+
+**Implementation:** Open a separate SQLite read-only connection to the existing local database; begin a read transaction before checking session/max ID; page through its stable snapshot with bounded memory, then close/rollback reader before atomic export publication. Preserve fsync/atomic replace and safe filename behavior. Do not copy the database, mutate live rows, or upload chat content. Add a narrow page helper to permit fault injection. Update prior Run594 tests to inject at the actual page helper, not the old Store.rows path.
+
+**Tests:** Real concurrent Store writer changes existing row text/status and deletes rows after first page while snapshot export continues; export must preserve all original rows and exclude newly appended rows. Writer must be able to commit while reader snapshot remains open (WAL). Inject second-page read failure: prior export byte-identical and temp cleaned. Verify empty/unsafe session and full 1205-row JSON/MD regression, operator multi-chat and restart. Exact-head model-free CI, privacy scan, SHA-closed raw.
+
+**Claims:** software-only SQLite snapshot and chat usability. No native/Redmi measurements or STEP2/B3/Body-JEPA/jepa_weight promotion. Run596 full suite independent; its result must be read before whole-source claims.
