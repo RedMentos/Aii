@@ -93,7 +93,7 @@ class Run413ExportReceiptTests(unittest.TestCase):
 
     def test_model_file_is_rejected_even_when_manifest_hash_matches(self):
         path = self.root / "attempts/O_s20/model.gguf"
-        path.parent.mkdir(parents=True)
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(b"fake")
         self.manifest["copied"]["attempts/O_s20/model.gguf"] = {
             "sha256": sha(b"fake"), "bytes": 4}
