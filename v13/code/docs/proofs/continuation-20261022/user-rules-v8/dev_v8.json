@@ -1,0 +1,231 @@
+{
+ "schema": "USER_RULES_HOLDOUT_V1",
+ "written": "2026-10-22, counterexamples for every v7 cost rule (PREREG v8 point 2), written by the author before freezing v8; known data, may be evidence and training data",
+ "labels": "same as holdout_author.json",
+ "items": [
+  {
+   "text": "Niemand außer mir hat dir erlaubt, Fotos zu löschen, also lass es.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "cost_rule": "THIRD"
+  },
+  {
+   "text": "Keiner hat gesagt, dass du Mails verschicken darfst – also nicht.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "cost_rule": "THIRD"
+  },
+  {
+   "text": "Jemand hat mal Notizen gelöscht, das darf nie wieder passieren.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "cost_rule": "THIRD"
+  },
+  {
+   "text": "Du hast schon genug Dateien gelöscht, Schluss damit.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": [],
+   "cost_rule": "YOU_PAST"
+  },
+  {
+   "text": "Du hast das Internet benutzt, ohne zu fragen – das hört jetzt auf.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "cost_rule": "YOU_PAST"
+  },
+  {
+   "text": "Ich habe dir das Installieren verboten.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": [],
+   "cost_rule": "I_PAST"
+  },
+  {
+   "text": "Ich hab doch gesagt: keine Mails ohne mich.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "cost_rule": "I_PAST"
+  },
+  {
+   "text": "Fotos löschen geht gar nicht.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "cost_rule": "FUNC"
+  },
+  {
+   "text": "Rechnen klappt bei dir nicht, also lass es ganz.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "cost_rule": "FUNC"
+  },
+  {
+   "text": "Online gehen läuft bei dir ab sofort nicht mehr.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "cost_rule": "FUNC"
+  },
+  {
+   "text": "Mach mir die Fotos nicht kaputt.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "cost_rule": "FUNC"
+  },
+  {
+   "text": "Was soll das? Lösch keine Notizen mehr!",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "cost_rule": "WH_QUESTION"
+  },
+  {
+   "text": "Wie oft noch: keine Downloads!",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "cost_rule": "WH_QUESTION"
+  },
+  {
+   "text": "Nichts ist mehr erlaubt, gar nichts.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "cost_rule": "ANY_ONLY_STATE"
+  },
+  {
+   "text": "Das Installieren ist ab jetzt vorbei.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": [],
+   "cost_rule": "ANY_ONLY_STATE"
+  },
+  {
+   "text": "Ich will nicht, dass du meine Mails verschickst.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "cost_rule": "SELF"
+  },
+  {
+   "text": "Ich bin dagegen, dass du Module installierst.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": [],
+   "cost_rule": "NO_SIGNAL (no cost-rule counterexample: v8 has no signal word for \"dagegen\"; kept as known gap, see BEFUND)"
+  },
+  {
+   "text": "Ich lasse keine neuen Module mehr aufs Handy.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": [],
+   "cost_rule": "SELF"
+  },
+  {
+   "text": "Wir löschen hier keine Fotos, auch du nicht.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "cost_rule": "SELF"
+  },
+  {
+   "text": "Kein Problem für mich, aber lösch bloß keine Fotos.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "cost_rule": "NET_IDIOM"
+  },
+  {
+   "text": "Keine Ahnung warum, aber ins Internet gehst du nicht.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "cost_rule": "NET_IDIOM"
+  }
+ ]
+}

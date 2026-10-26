@@ -1,0 +1,18 @@
+{
+ "frozen": "2026-10-26, before the round-8 hand audit and before any reader saw holdout_de5 or round 8",
+ "files": {
+  "v13/userrules.py": "7fc4ad0932a9400647c03e06394dfa698f737cdcd5d2d776d62efa4159f0b092",
+  "v13/userrules_lexicon.json": "47630c913ea658f006457f38494c7053319826f0986d51fa6a24384f97d60b39",
+  "v13/userrules_second.py": "542db234bd3435c3c76ad73127c8fadfd49186baec38cc67883829d3fbf8f08b",
+  "v13/userrules_second.json": "82b238809255a8ace03747a8f1c5218bf64414b440e6ad56d426f15b07ad2b32",
+  "docs/proofs/continuation-20261021/user-rules/userrules_eval.py": "1d206f0d88976e2898bc918af71243389e6421921c4c339b3cfc14c804c57a01",
+  "docs/proofs/continuation-20261022/user-rules-v8/reference_v7/userrules.py": "537c4c5d647620a71d004c4788df3aee9a74ebcfbc2ebb1f7561543027ad2c0b",
+  "docs/proofs/continuation-20261022/user-rules-v8/reference_v7/userrules_lexicon.json": "2efcc460996aa3b5c3a643796c76a3a55247096cc9ed3beb3a49b0435a484838",
+  "docs/proofs/continuation-20261022/user-rules-v8/run_round8.py": "393f66e2339c12369a87e29be772368039c3f81885ab922a3a5127bcd98e6c36",
+  "docs/proofs/continuation-20261022/user-rules-v8/s2_answers.py": "462741e65e027561f7b733c393051d8786ad7e1dd3c3687d6bf7f96ab8bc23a8",
+  "docs/proofs/continuation-20261022/user-rules-v8/train_second.py": "6822a209d18f98747d62fb9f70ded310223f47be875875b935f953fc7d976647",
+  "docs/proofs/continuation-20261022/user-rules-v8/known_check.py": "6f71364c7cdd82d09c8fab2f73bdfff8f02d0a40ef5dbf4aeaf023d8c684509d",
+  "docs/proofs/continuation-20261022/user-rules-v8/dev_v8.json": "7e3504945025042e0bd7abe5f721b4dc0cb49723606d6038711b02fd4e61c4cc",
+  "docs/proofs/continuation-20261022/user-rules-v8/cv_second.json": "a0081a2991b068a4a117b98d6f2ee5df0dd7a9dde369d3643fe04640a6d85b09"
+ }
+}

@@ -81,7 +81,7 @@ class Operator:
         """2026-10-21: a prohibition / "ask me first" the user types is recorded by the fixed rule reader before the turn
         runs (so it already binds this turn's tools) and confirmed with a fixed notice; never via a model."""
         from . import userrules
-        for text in userrules.observe(self.r.store,line):self.r.notice(text)
+        for text in userrules.observe(self.r.store,line,second=self.r.cfg.get('user_rules_second_opinion','off')):self.r.notice(text)
     def run(self,line,origin='OPERATOR_TTY'):
         if origin!='OPERATOR_TTY':raise ValueError('Nur lokale Operator-Eingaben dürfen Befehle ausführen')
         if line.startswith('::'):self._user_rules(line[1:]);return self.r.submit(line[1:])
