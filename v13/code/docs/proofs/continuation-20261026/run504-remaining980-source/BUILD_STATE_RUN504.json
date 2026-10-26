@@ -1,0 +1,68 @@
+{
+  "schema": "V13_RUN504_SOURCE_ONLY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run504-heldout980-remaining-map-20261026",
+  "base_branch": "codex/run503-batch3-native-20261026",
+  "base_sha": "5fdc8347eb2bf6c0b81cd3018ab3d020fa0f03ce",
+  "status": "SOURCE_CI_GREEN_INDEPENDENT_SCHEDULE_VERIFIED",
+  "scope": {
+    "original_cohort_rows": 1050,
+    "original_stages": 75,
+    "reserved_stage_ids": [
+      "C_s31_p00",
+      "C_s31_p01",
+      "C_s31_p02",
+      "C_s31_p03",
+      "C_s31_p04"
+    ],
+    "reserved_rows_planned": 70,
+    "remaining_stages": 70,
+    "remaining_rows_planned": 980,
+    "future_batches": 24,
+    "actual_run504_native_rows": 0
+  },
+  "source": {
+    "run491_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "run500_blob": "504a4a8492bdb383869b164b82c05d13e00f6823",
+    "prereg_blob": "08f7892088e7b53ae9ad5999f8a981deb4678fb5",
+    "schedule_blob": "5f447908ec6197760d55c347ffb949ae42ad1ed8",
+    "test_blob": "e1854594a6af6a3c3ccbf4668433bbc3d627654f"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run504 prereg persisted before source implementation",
+    "source-only schedule/test/workflow created; GitHub Actions not yet run",
+    "Run503 native job 40307435396 in progress when Run504 started; no new native owner",
+    "Run504 source-only Actions 40308251717 GREEN, 18 tests, privacy CLEAN",
+    "Downloaded artifact 12642784880, recomputed 7/7 raw SHA256 entries and ZIP SHA256",
+    "Independent stdlib recomputation: 24 batches, 70 stages, 980 unique original keys and per-batch hashes PASS",
+    "Private Library backup uploaded and listed; GitHub remote source/prereg/test/checkpoint bytes verified"
+  ],
+  "blockers": [
+    "Run503 42-row native independent postflight pending",
+    "full 1050-row native cohort not completed",
+    "Redmi unavailable"
+  ],
+  "next_command": "Review Run503 Actions 40307435396 native completion and independently audit its 42 rows; if GREEN and owner free, preregister future FUTURE_001 A_s31_p00–p02 42-row serialized native attempt. Run504 is source-only, not native proof.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "evidence": {
+    "actions_run": 40308251717,
+    "actions_conclusion": "success",
+    "source_tests_passed": 18,
+    "privacy": "CLEAN",
+    "artifact_id": 12642784880,
+    "artifact_zip_sha256": "c711412060e00f5dd1362c61c02777163892d4d5fb2449031719a1beeda84d36",
+    "raw_sha256_manifest_entries": 7,
+    "full_stage_map_sha256": "c1056aeda7fae51d0af07b83d55bd42db8b51bbd3d16c4a692e0cd3d0e4ef876",
+    "remaining_row_keys_sha256": "994beaf3c7b23cd27621d19328457363684b64abe32f18ab47d35ae1ea1a4345",
+    "library_backup_path": "/V13-Checkpoints/2026-10-26/Run504/run504-source-0e994b5-sha-closed.zip",
+    "library_backup_file_id": "libfile_31b427e3c6948191b662650d6ca8da02"
+  }
+}
