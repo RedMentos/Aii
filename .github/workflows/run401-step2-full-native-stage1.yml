@@ -37,7 +37,7 @@ jobs:
             | tee "$RUNNER_TEMP/RUN401_SOURCE_SHA256.txt"
           { date -u -Iseconds; uname -a; python3 --version; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } \
             | tee "$RUNNER_TEMP/RUN401_HOST.txt"
-          python3 - <<'PY' | tee "$RUNNER_TEMP/RUN401_CATALOG.txt"
+          PYTHONPATH=v13/code python3 - <<'PY' | tee "$RUNNER_TEMP/RUN401_CATALOG.txt"
           from pathlib import Path
           from v13.models import catalog
           c=catalog()
