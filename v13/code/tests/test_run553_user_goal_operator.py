@@ -42,6 +42,7 @@ class Run553UserGoalOperator(unittest.TestCase):
         self.g = hub(self.r)
         self.assertEqual(self.command('status', gid)['status'], 'DONE')
         self.assertEqual(self.command('reopen', gid)['status'], 'OPEN')
+        self.assertEqual(self.g.goals.get(gid)['progress'], 0.)
         self.assertEqual(self.command('reopen', gid)['changed'], False)
         self.assertEqual(self.command('abandon', gid)['status'], 'ABANDONED')
         self.assertEqual(self.command('abandon', gid)['changed'], False)
