@@ -37,7 +37,7 @@ class Run432SecondOpinionIntegrity(unittest.TestCase):
     def test_nonfinite_active_weight_must_ask_not_silently_decline(self):
         bad = copy.deepcopy(S.load())
         active = S.features(self.LINE)[0]
-        bad["w"][active] = float("inf")
+        bad["w"][active] = float("-inf")
         with mock.patch.object(S, "load", return_value=bad):
             self.assertTrue(self._second_reason())
 
