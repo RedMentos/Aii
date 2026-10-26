@@ -1,0 +1,33 @@
+{
+  "schema": "V13_RUN435_NATIVE_RED_PRESERVED_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run435-native-p21-serialized-20261026",
+  "failed_head": "ea32cbe4298d31ff31d542ffb39fd719af3be1d8",
+  "actions": 40265963506,
+  "conclusion": "failure",
+  "small_raw_artifact_id": 12625924197,
+  "small_raw_artifact_sha256": "6c091ec50c58174747fc7c055f9ecf8e189e2d3e580d872dc6e118cbf13670ef",
+  "observed_failure": "run434_stage5_p21.py CLI still required --stage3-report despite stage5 code expecting --stage4-report. Run435 passed --stage4-report and argparse rejected it before stage5/native inference.",
+  "verified_prior_steps": [
+    "source pins GREEN",
+    "54 source tests PASS",
+    "pinned public model/runner installation and deep hash verification GREEN",
+    "Run427 producer and Run433 independent postflight metadata GREEN",
+    "both original artifact ZIP SHA256 checks GREEN",
+    "Run430 atomic 168-row import GREEN",
+    "privacy CLEAN"
+  ],
+  "native_inference_attempted": false,
+  "new_P_s21_rows": 0,
+  "safe_export_created": false,
+  "no_model_archive_uploaded": false,
+  "failed_attempts_retained": "small raw Actions artifact 12625924197; no native attempt directory created",
+  "canonical_gate_pass": false,
+  "step2_exit": "UTILITY_FAIL",
+  "b3": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "redmi_measured": false,
+  "next_command": "On separate Run434 source branch add RED CLI integration test, fix parser to --stage4-report and verify exact-head CI. Do NOT silently retry Run435; create separately preregistered native branch after source GREEN, preserve this failed run."
+}
