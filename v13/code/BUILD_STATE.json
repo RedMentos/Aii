@@ -1506,4 +1506,40 @@
     ],
     "next_owner": "unassigned"
   }
+,
+  "continuation_20261026_run612": {
+    "scope": "REVIEW_BRANCH_ONLY_NOT_MAIN",
+    "owner": "GPT automation11",
+    "parent_pr": 606,
+    "review_pr": 607,
+    "base_sha": "b292302dff5b3c425e97010bc5460e4cf83eaac2",
+    "prereg_commit": "dfc3c3b8aebba18374f23e3ba9fdd6fcc2f9d553",
+    "test_commit": "ba4dee3afd66195b0c4a94e974b27879cbebe531",
+    "verified_ci_head": "e2d95b0a78f9d7937155d9540ec7b2745e5d5931",
+    "ci_run": 40406022308,
+    "tests": "78 executed PASS (66 distinct; 12 duplicate Run609 test collection), privacy CLEAN",
+    "ci_artifact_id": 12690293505,
+    "ci_artifact_sha256": "7c6009ebff341b0a1e5e5833745a8514a2a597bcd7c2b3b82b0a66fd26e5fcd7",
+    "manifest": "7/7 SHA256 verified",
+    "change": ":sleep digest status read-only per-session backlog/legacy migration counters, no text or source authority",
+    "negative_gates": {
+      "STEP2": "UTILITY_FAIL",
+      "B3_L1": "FAIL",
+      "Body_JEPA": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "Redmi": "UNMEASURED",
+      "V13": "INCOMPLETE",
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
+    },
+    "proof": "docs/proofs/continuation-20261026/run612-sleep-backlog-status/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=$PWD python -m unittest -v tests.test_run612_sleep_backlog_status tests.test_run610_sleep_partial_pair tests.test_run609_sleep_digest_backlog tests.test_sleep_offline tests.test_history_lineage tests.test_context_os tests.test_sleep_scheduler tests.test_sleep_validation",
+    "open_questions": [
+      "Unittest imported TestCase duplication in Run610/612 modules; efficiency only",
+      "Redmi not measured; source-only CI",
+      "Independent review and production integration pending",
+      "Native Body-JEPA/sparse training and STEP2 semantic utility open"
+    ],
+    "next_owner": "unassigned"
+  }
 }
