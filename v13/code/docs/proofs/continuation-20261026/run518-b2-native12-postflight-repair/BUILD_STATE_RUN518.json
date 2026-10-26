@@ -1,0 +1,43 @@
+{
+  "schema": "V13_RUN518_NATIVE12_ORIGINAL_RED_REPLAY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run518-b2-native12-postflight-repair-20261026",
+  "base_branch": "codex/run517-age0d-arithmetic-shadow-20261026",
+  "base_sha": "34a1a43c0db7c44c519e22d7327af8f9b172eeea",
+  "source": {
+    "prereg": "3ba0f92ecbb08dae5cb7549f63b1255b5b567f9e",
+    "repaired_postflight": "da8461f49b83e1103ca04d38573bef8d188cfae4",
+    "corrected_synthetic_test": "09f07e15a5d23f58086a92780e8cd8c413a5e4cc",
+    "new_adversarial_test": "42899952c2df238b4b32acb8d95facee4efa1ce1"
+  },
+  "original_red": {
+    "pr": 513,
+    "actions": 40313344309,
+    "conclusion": "FAILURE",
+    "native_exit": 0,
+    "postflight_exit": 1,
+    "root_cause": "rejected_quotes integer count was incorrectly required to be list",
+    "recorded_rows": 12,
+    "raw_artifact": 12645807597,
+    "raw_zip_sha256": "680e874dda717096d67506128aef688ab2ceab0ab4f5ca196f2f036875a70858",
+    "safe_artifact": 12646720408,
+    "safe_zip_sha256": "4e7b53a2b6438562693b441c648338463df7d10258bb657f3ef821f696a3f534",
+    "raw_manifest_entries_verified": 30,
+    "private_backups": [
+      "/V13_Run515_NATIVE12_RAW_RED_POSTFLIGHT_20261026_sha680E874D.zip",
+      "/V13_Run515_NATIVE12_SAFE_RED_POSTFLIGHT_20261026_sha4E7B53A2.zip"
+    ]
+  },
+  "scope": "Read-only Actions artifact replay with repaired strict receipt schema; no native rerun",
+  "evidence": "REPLAY_CI_PENDING_ORIGINAL_RED_PRESERVED",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "next_command": "Open draft PR, run source-only tests and gh download exact Run515 safe artifact, verify SHA and Run513 postflight; if new RED preserve and repair separately, never rerun p00 merely for auditor.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
