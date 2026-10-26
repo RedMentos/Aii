@@ -24,11 +24,15 @@ class Run177NativeChainReconcile(unittest.TestCase):
         from scripts import current_source_lineage_run357 as lineage
         import json
         manifest=json.loads(lineage.MANIFEST.read_text())
-        expected=chain.integrated_sources()
+        historical=lineage.historical_sources()
+        reviewed=chain.integrated_sources()
         live={name:(chain.ROOT/name).read_text() for name in chain.NAMES}
-        self.assertEqual(set(expected),set(live))
-        self.assertEqual({name:digest(text) for name,text in expected.items()},
+        self.assertEqual(set(historical),set(reviewed))
+        self.assertEqual(set(reviewed),set(live))
+        self.assertEqual({name:digest(text) for name,text in historical.items()},
                          manifest['historical_sha256'])
+        self.assertEqual({name:digest(text) for name,text in reviewed.items()},
+                         manifest['current_sha256'])
         self.assertEqual({name:digest(text) for name,text in live.items()},
                          manifest['current_sha256'])
         self.assertEqual(digest(expected['v13/runners.py']),EXPECTED_RUNNERS_SHA256)
