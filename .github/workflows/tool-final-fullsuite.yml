@@ -39,7 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/TOOLFULL_HEAD.txt"
-          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/toolfull-fullsuite-current/PREREG.md)" = '25279925839192943e4a252fa94700f99dc09937'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run573-fullsuite-current/PREREG.md)" = '25279925839192943e4a252fa94700f99dc09937'
           test "$(git hash-object v13/code/scripts/integrated_candidates.py)" = '9ba7ea2eca522304b05a347ac749f0dff95c5236'
           test "$(git hash-object v13/code/scripts/current_source_lineage_run357.py)" = '3a312d1a53ad682610f51b8371895bbdc379ed2f'
           test "$(git hash-object v13/code/tests/test_run177_native_chain_reconcile_20261025.py)" = '3d74ae6fa6337ad42cf74262dd26880bad65335c'
