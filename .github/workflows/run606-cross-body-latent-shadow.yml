@@ -1,0 +1,186 @@
+name: V13 Run606 real paired native B1 B2 latent shadow ridge and heldout controls
+on:
+  push:
+    branches:
+      - codex/automation11-run606-cross-body-latent-shadow-20261026
+    paths:
+      - '.github/workflows/run606-cross-body-latent-shadow.yml'
+      - 'v13/code/scripts/run606_cross_body_latent_shadow.py'
+      - 'v13/code/tests/test_run606_cross_body_latent_shadow.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  paired-native-shadow:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Exact source, frozen cohort, Canon, model, host pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN606_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run606-cross-body-latent-shadow/PREREG.md)" = a55cbbc1b3de01492869f0aa9713e01b828ea7fe
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run606-cross-body-latent-shadow/RUN606_COHORT.json)" = c0c2a2f74ab8a487563df2449d5faad79fab738f
+          test "$(git hash-object v13/code/scripts/run606_cross_body_latent_shadow.py)" = 22116eea1e16343a5ff68844e98641e98e7b4306
+          test "$(git hash-object v13/code/tests/test_run606_cross_body_latent_shadow.py)" = 944ab4079a472eca5f4e7cd0b3a31a378447c3f2
+          test "$(git hash-object v13/code/v13/runners.py)" = 37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5
+          test "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/scripts/run606_cross_body_latent_shadow.py v13/code/docs/proofs/continuation-20261026/run606-cross-body-latent-shadow/RUN606_COHORT.json v13/code/v13/runners.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN606_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; free -h; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN606_HOST.txt"
+      - name: Isolated pinned Python dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run606venv"
+          "$RUNNER_TEMP/run606venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Frozen cohort, shadow ridge and native authority adversarial fixtures
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run606venv/bin/python" -m unittest -v tests.test_run606_cross_body_latent_shadow > "$RUNNER_TEMP/RUN606_FIXTURE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN606_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original pinned public B1 B2 models and native runner bootstrap
+        id: bootstrap
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN606_FIXTURE_EXIT.txt")" != 0 ]; then
+            echo 2 > "$RUNNER_TEMP/RUN606_BOOTSTRAP_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run606installed"
+          timeout -s TERM -k 30s 1200s "$RUNNER_TEMP/run606venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN606_BOOTSTRAP_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN606_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Capture real paired B1 and B2 states and evaluate heldout controls
+        id: native
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN606_BOOTSTRAP_EXIT.txt")" != 0 ]; then
+            echo 2 > "$RUNNER_TEMP/RUN606_NATIVE_EXIT.txt"; echo "rc=2" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run606installed"
+          timeout -s TERM -k 30s 700s "$RUNNER_TEMP/run606venv/bin/python" scripts/run606_cross_body_latent_shadow.py \
+            --home "$V13_HOME" \
+            --out "$RUNNER_TEMP/RUN606_NATIVE_REPORT.json" \
+            --states "$RUNNER_TEMP/RUN606_STATES.npz" > "$RUNNER_TEMP/RUN606_NATIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN606_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent state/source/gate and heldout metric audit
+        id: audit
+        if: ${{ steps.native.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run606venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN606_AUDIT_RAW.log" 2>&1
+          import hashlib,json,os
+          from pathlib import Path
+          import numpy as np
+          from scripts.run606_cross_body_latent_shadow import load_cohort, file_sha
+          tmp=Path(os.environ['RUNNER_TEMP'])
+          report=json.loads((tmp/'RUN606_NATIVE_REPORT.json').read_text())
+          assert report['schema']=='V13_RUN606_CROSS_BODY_NATIVE_SHADOW_V1'
+          assert report['status'] in ('EXPLORATORY_SIGNAL','NO_EXPLORATORY_SIGNAL')
+          assert report['evidence_level']=='LINUX_NATIVE_PAIRED_READONLY'
+          assert report['gates']=={'STEP2':'UTILITY_FAIL','B3_L1':'FAIL','Body_JEPA':'UNAVAILABLE','jepa_weight':0,'Redmi':'UNMEASURED','V13':'INCOMPLETE'}
+          assert report['no_weight_updates'] and not report['can_latent_inject'] and not report['b3_promoted'] and not report['redmi_measured']
+          assert report['states_sha256']==file_sha(tmp/'RUN606_STATES.npz')
+          d=load_cohort()
+          with np.load(tmp/'RUN606_STATES.npz',allow_pickle=False) as z:
+            x=z['x_b1'];y=z['y_b2'];train=z['train_idx'];test=z['test_idx'];ids=z['prompt_ids'].tolist()
+          assert x.shape==(40,2048) and y.shape==(40,1024)
+          assert len(train)==30 and len(test)==10 and len(set(train)&set(test))==0
+          assert ids==[r['id'] for r in d['prompts']]
+          assert np.isfinite(x).all() and np.isfinite(y).all()
+          for role,dim in [('B1_DETAIL',2048),('B2_GIST',1024)]:
+            assert report['models'][role]['dimension']==dim
+            receipts=report['receipts'][role]
+            assert len(receipts)==40
+            assert [r['id'] for r in receipts]==ids
+            assert all(r['dimension']==dim and 1<=r['token_count']<=64 for r in receipts)
+            assert all(r['prompt_sha256']==hashlib.sha256(d['prompts'][i]['text'].encode()).hexdigest() for i,r in enumerate(receipts))
+          # Independently recompute unpermuted dual ridge top1 from stored raw,
+          # without calling the experiment's evaluate() function.
+          def norm(a):
+            return a/np.linalg.norm(a,axis=1,keepdims=True)
+          x=norm(x);y=norm(y)
+          xt=norm(x[train]-x[train].mean(axis=0))
+          xv=norm(x[test]-x[train].mean(axis=0))
+          yt=norm(y[train]-y[train].mean(axis=0))
+          yv=norm(y[test]-y[train].mean(axis=0))
+          pred=norm((xv@xt.T)@np.linalg.solve(xt@xt.T+np.eye(len(train)),yt))
+          sims=pred@yv.T
+          top=float(np.mean(np.argmax(sims,axis=1)==np.arange(len(test))))
+          cosine=float(np.mean(np.diag(sims)))
+          assert abs(top-report['metrics']['observed']['top1'])<1e-12
+          assert abs(cosine-report['metrics']['observed']['matched_cosine'])<1e-10
+          assert report['metrics']['shuffled']['n']==100
+          assert report['metrics']['empirical_p_top1']>0
+          print('RUN606_REAL_PAIRED_NATIVE_SHADOW_ONLY',report['status'],'top1',top,'p',report['metrics']['empirical_p_top1'])
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN606_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 7f5d022d4341cbfdcc8ee51dc14fdb69b7b7ac1e --head HEAD --no-worktree > "$RUNNER_TEMP/RUN606_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN606_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA close original raw including synthetic native state arrays even RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN606_*' ! -name 'RUN606_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN606_SHA256SUMS.txt
+      - name: Upload native, synthetic states and original failed raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run606-Paired-Native-Shadow-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN606_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce native capture, independent audit and privacy exits
+        if: always()
+        run: |
+          set -euo pipefail
+          for item in FIXTURE BOOTSTRAP NATIVE AUDIT PRIVACY; do
+            echo "RUN606 ${item} exit: $(cat "$RUNNER_TEMP/RUN606_${item}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            if [ -f "$RUNNER_TEMP/RUN606_${item}_EXIT.txt" ] && [ "$(cat "$RUNNER_TEMP/RUN606_${item}_EXIT.txt")" != 0 ]; then
+              tail -n 80 "$RUNNER_TEMP/RUN606_${item}_RAW.log" || true
+            fi
+          done
+          test "${{ steps.fixture.outputs.rc }}" = 0
+          test "${{ steps.bootstrap.outputs.rc }}" = 0
+          test "${{ steps.native.outputs.rc }}" = 0
+          test "${{ steps.audit.outputs.rc }}" = 0
+          test "${{ steps.privacy.outputs.rc }}" = 0

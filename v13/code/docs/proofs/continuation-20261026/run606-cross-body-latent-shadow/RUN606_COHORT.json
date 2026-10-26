@@ -1,0 +1,218 @@
+{
+  "schema": "V13_RUN606_COHORT_V1",
+  "seed": 20261026,
+  "train_topics": [
+    "transport",
+    "cooking",
+    "astronomy",
+    "gardening",
+    "finance",
+    "sports"
+  ],
+  "test_topics": [
+    "music",
+    "weather"
+  ],
+  "prompts": [
+    {
+      "id": "transport-1",
+      "topic": "transport",
+      "text": "The commuter train stopped beside the old station."
+    },
+    {
+      "id": "transport-2",
+      "topic": "transport",
+      "text": "A blue bicycle crossed the narrow bridge."
+    },
+    {
+      "id": "transport-3",
+      "topic": "transport",
+      "text": "The electric bus waited near the town hall."
+    },
+    {
+      "id": "transport-4",
+      "topic": "transport",
+      "text": "A small ferry departed before sunrise."
+    },
+    {
+      "id": "transport-5",
+      "topic": "transport",
+      "text": "The freight truck turned onto the gravel road."
+    },
+    {
+      "id": "cooking-1",
+      "topic": "cooking",
+      "text": "The chef sliced carrots on a wooden board."
+    },
+    {
+      "id": "cooking-2",
+      "topic": "cooking",
+      "text": "A pot of soup simmered beside the window."
+    },
+    {
+      "id": "cooking-3",
+      "topic": "cooking",
+      "text": "The baker kneaded dough before the shop opened."
+    },
+    {
+      "id": "cooking-4",
+      "topic": "cooking",
+      "text": "The cook measured flour into a glass bowl."
+    },
+    {
+      "id": "cooking-5",
+      "topic": "cooking",
+      "text": "A warm skillet held mushrooms and onions."
+    },
+    {
+      "id": "astronomy-1",
+      "topic": "astronomy",
+      "text": "The telescope tracked a faint distant galaxy."
+    },
+    {
+      "id": "astronomy-2",
+      "topic": "astronomy",
+      "text": "The moon appeared above the western horizon."
+    },
+    {
+      "id": "astronomy-3",
+      "topic": "astronomy",
+      "text": "A small comet crossed the star field."
+    },
+    {
+      "id": "astronomy-4",
+      "topic": "astronomy",
+      "text": "The observatory recorded a bright meteor."
+    },
+    {
+      "id": "astronomy-5",
+      "topic": "astronomy",
+      "text": "The planet rotated beneath a thin cloud layer."
+    },
+    {
+      "id": "gardening-1",
+      "topic": "gardening",
+      "text": "The gardener watered seedlings at dawn."
+    },
+    {
+      "id": "gardening-2",
+      "topic": "gardening",
+      "text": "A red rose grew beside the stone path."
+    },
+    {
+      "id": "gardening-3",
+      "topic": "gardening",
+      "text": "The greenhouse sheltered young tomato plants."
+    },
+    {
+      "id": "gardening-4",
+      "topic": "gardening",
+      "text": "The orchard worker pruned an apple tree."
+    },
+    {
+      "id": "gardening-5",
+      "topic": "gardening",
+      "text": "The rain softened the soil around the roots."
+    },
+    {
+      "id": "finance-1",
+      "topic": "finance",
+      "text": "The accountant checked the monthly ledger."
+    },
+    {
+      "id": "finance-2",
+      "topic": "finance",
+      "text": "A shop owner counted receipts after closing."
+    },
+    {
+      "id": "finance-3",
+      "topic": "finance",
+      "text": "The budget reserved funds for equipment."
+    },
+    {
+      "id": "finance-4",
+      "topic": "finance",
+      "text": "The invoice listed three separate purchases."
+    },
+    {
+      "id": "finance-5",
+      "topic": "finance",
+      "text": "The bank statement showed a small deposit."
+    },
+    {
+      "id": "sports-1",
+      "topic": "sports",
+      "text": "The runner completed another lap of the track."
+    },
+    {
+      "id": "sports-2",
+      "topic": "sports",
+      "text": "A goalkeeper caught the ball near the post."
+    },
+    {
+      "id": "sports-3",
+      "topic": "sports",
+      "text": "The coach reviewed a short training drill."
+    },
+    {
+      "id": "sports-4",
+      "topic": "sports",
+      "text": "A cyclist climbed the steep final hill."
+    },
+    {
+      "id": "sports-5",
+      "topic": "sports",
+      "text": "The referee signaled the end of the match."
+    },
+    {
+      "id": "music-1",
+      "topic": "music",
+      "text": "The violinist rehearsed a quiet melody."
+    },
+    {
+      "id": "music-2",
+      "topic": "music",
+      "text": "A drummer kept a steady rhythm in the studio."
+    },
+    {
+      "id": "music-3",
+      "topic": "music",
+      "text": "The pianist practiced a difficult chord sequence."
+    },
+    {
+      "id": "music-4",
+      "topic": "music",
+      "text": "The choir sang softly in the empty hall."
+    },
+    {
+      "id": "music-5",
+      "topic": "music",
+      "text": "The guitarist tuned the strings before the concert."
+    },
+    {
+      "id": "weather-1",
+      "topic": "weather",
+      "text": "Dark clouds gathered over the valley."
+    },
+    {
+      "id": "weather-2",
+      "topic": "weather",
+      "text": "A cold breeze moved through the pine forest."
+    },
+    {
+      "id": "weather-3",
+      "topic": "weather",
+      "text": "The morning fog slowly covered the harbor."
+    },
+    {
+      "id": "weather-4",
+      "topic": "weather",
+      "text": "Light rain fell across the open fields."
+    },
+    {
+      "id": "weather-5",
+      "topic": "weather",
+      "text": "The afternoon sun warmed the wet pavement."
+    }
+  ]
+}
