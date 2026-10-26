@@ -321,7 +321,10 @@ def read_fixed_sources(current, user_history=(), verified_quotes=()):
             if statements:
                 found_higher = True
                 value = fixed_option(entity, source)
-                if value is None:
+                if value is None and any(re.search(_OPT_VALUES[0], clause, re.I) for clause in statements):
+                    # A partial canonical cost assertion is not repairable from old sources.
+                    # Uncovered wording ("Option B costs 55") keeps the existing
+                    # guarded C3 *option* fallback; fixed rules still override it.
                     ambiguous = True
                 break
         if not found_higher:
@@ -334,7 +337,14 @@ def read_fixed_sources(current, user_history=(), verified_quotes=()):
                 if all(v is not None and v == quote_values[0] for v in quote_values):
                     value = quote_values[0]
                 else:
-                    ambiguous = True
+                    # A complete but disagreeing quote, or a partial canonical
+                    # cost quote, is conflicting evidence. Purely uncovered
+                    # noncanonical wording may use the existing guarded fallback.
+                    if (any(v is not None for v in quote_values) or
+                            any(re.search(_OPT_VALUES[0], clause, re.I)
+                                for source in quotes
+                                for clause in option_clauses(entity, source))):
+                        ambiguous = True
         options.append(value)
     out['options'] = options if all(o is not None for o in options) else None
     out['ambiguous_options'] = ambiguous
