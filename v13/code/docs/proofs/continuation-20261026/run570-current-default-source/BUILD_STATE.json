@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN570_DISJOINT_CURRENT_LEGACY_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "assistant / Run570 source-only new disjoint current-default vs legacy STEP2 cohort",
+  "branch": "assistant/v13-run570-current-default-source-20261026",
+  "base_commit": "4e895b16d12fef706d45ac530ce29960b1a4d6f1",
+  "prereg": {
+    "commit": "d56cea99a8dc07cca4d8142b3e7106fe8b93c3be",
+    "blob": "beeabb51bcef040e8abb989238c24033afc3e648"
+  },
+  "script": {
+    "commit": "7440e3e08254e529cf0b11cdde76b873d1239a5f",
+    "blob": "64a76175da9f14c65c0e7fdfaf647e47e7e56715"
+  },
+  "tests": {
+    "commit": "ef9192e3f62fce5cf334f75c8d6562c99eb460aa",
+    "blob": "7a65e45981f8d452aac8ececea6200192fbc3a3c"
+  },
+  "workflow": {
+    "commit": "ef87b579ba8e7d340887e2892c4ee12daa4c30c7",
+    "blob": "4e0e5108dd5105a8e09cbcf0eb136ea27015906b"
+  },
+  "planned_rows": 84,
+  "source_only": true,
+  "native_executed": false,
+  "run568_active_native_owner": {
+    "run": 40367841707,
+    "head": "db6047b267edceed9055d9702a2810492ffbfe8a"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Run570 CI must execute before any PASS claim",
+    "Native disjoint cohort requires separately prospective authorization/serialization and independent postflight",
+    "Original Run568 native outcome pending and Run569 original audit not yet run"
+  ],
+  "next_exact_command": "Open draft PR from assistant/v13-run570-current-default-source-20261026 to assistant/v13-run569-native005-offline-20261026, inspect source-only CI and SHA-closed evidence; fix RED on same owned branch without rewriting prereg; after Run568 original completes, independently audit original raw/safe via Run569 prereg."
+}
