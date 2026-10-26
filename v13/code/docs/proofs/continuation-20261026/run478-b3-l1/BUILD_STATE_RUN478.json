@@ -30,6 +30,21 @@
     "Production migration requires independent review, frozen cohort release and native L1 receiver/retention proof.",
     "No B3 activation, no native or Redmi measurement."
   ],
-  "exact_next_command": "Inspect PR Run478 GitHub Actions source CI, preserve raw artifact and RED; independently review missing-control counterexample; then continue next independent canonical package.",
-  "tests_status": "PENDING_CI"
+  "exact_next_command": "Independent review PR #475 and original missing-controls PASS counterexample; production B3 integration needs explicit migration/native L1/retention and unchanged authority 0. Continue independent canonical package.",
+  "tests_status": "SOURCE_CI_GREEN 15/15 PASS, privacy CLEAN; focused source-bound CI GREEN; no native B3 or Redmi",
+  "verified_ci": {
+    "source_run_id": 40281289492,
+    "source_job_id": 121434946919,
+    "conclusion": "success",
+    "tests": "15/15 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12632405434,
+    "raw_zip_sha256": "b7e455f7026bb0d6459ae7a8062a65d030b69cd3f486129fb0ccf5523f2691da",
+    "focused_run_id": 40281289506,
+    "focused_conclusion": "success",
+    "focused_artifact_id": 12631929771,
+    "focused_zip_sha256": "4ca421d18b13bd6988bf82c74537e77507759a34b73555cfaa0a6126d9cdfca5",
+    "tested_source_head": "b337548d5c820f3c1363f63c5f07c83b286f70ec"
+  },
+  "pr": 475
 }
