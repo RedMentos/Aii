@@ -84,6 +84,21 @@ def pilot_modules():
         z2b.SEEDS = saved_seeds
 
 
+
+def runner_target_within_bin(home, runner):
+    """Allow bootstrap's versioned internal symlink; reject broken/escaping links.
+
+    This is a path containment check only. verify_installed still hashes the
+    actual resolved executable against the frozen runner SHA256.
+    """
+    try:
+        bin_root = (Path(home) / "bin").resolve(strict=True)
+        target = Path(runner).resolve(strict=True)
+        return Path(runner).is_file() and target.is_relative_to(bin_root)
+    except (OSError, RuntimeError):
+        return False
+
+
 def verify_installed(installed):
     """Actual byte-level model and executable preflight, not HF API metadata."""
     from v13.models import ModelManager, catalog
@@ -102,7 +117,7 @@ def verify_installed(installed):
                 for k in ("needle", "language", "body", "gist")),
             "INSTALLED_MODEL_REVISION_CHANGED")
     runner = home / "bin" / "llama-server"
-    require(runner.is_file() and not runner.is_symlink() and
+    require(runner_target_within_bin(home, runner) and
             file_hash(runner) == frozen.RUNNER_SHA256, "PINNED_RUNNER_BINARY_CHANGED")
     runner_meta = json.loads((home / "config" / "runner.json").read_text())
     require(runner_meta["tag"] == "b10964" and
