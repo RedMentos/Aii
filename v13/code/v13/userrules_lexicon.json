@@ -1,7 +1,11 @@
 {
- "schema": "USER_RULES_LEXICON_V5",
- "note": "Additions of reader v3 on top of the built-in v2 lexicon in userrules.py. Each entry names the already known sentence it came from (dev, author holdout, model rounds 1 to 4). Sealed test sets (round 5, holdout_de2 and later) are never evidence; userrules.extend() refuses them. Regex slots take a fragment that is matched inside word boundaries.",
- "sealed": ["round6", "user-rules-v6/round6", "holdout_de3"],
+ "schema": "USER_RULES_LEXICON_V7",
+ "note": "Additions of reader v3 on top of the built-in v2 lexicon in userrules.py. Each entry names the already known sentence it came from (dev, author holdout, model rounds 1 to 4). Sealed test sets (the current fresh round and author holdout; earlier ones become known after their measurement) are never evidence; userrules.extend() refuses them. Regex slots take a fragment that is matched inside word boundaries.",
+ "sealed": [
+  "round7",
+  "user-rules-v7/round7",
+  "holdout_de4"
+ ],
  "entries": [
   {
    "slot": "ASK",
@@ -407,6 +411,46 @@
    "slot": "OBJECT_STEMS.MESSAGE",
    "value": "reminder",
    "evidence": "round4: Stop reminding me. / Stop sending me reminders."
+  },
+  {
+   "slot": "ACTION_STEMS.COMPUTE",
+   "value": "addier",
+   "evidence": "round6: Ich möchte nicht, dass du addiert."
+  },
+  {
+   "slot": "ACTION_STEMS.COMPUTE",
+   "value": "subtrahier",
+   "evidence": "round6: Ich möchte nicht, dass du addiert."
+  },
+  {
+   "slot": "ACTION_STEMS.COMPUTE",
+   "value": "multiplizier",
+   "evidence": "round6: Ich möchte nicht, dass du addiert."
+  },
+  {
+   "slot": "ACTION_STEMS.COMPUTE",
+   "value": "dividier",
+   "evidence": "round6: Ich möchte nicht, dass du addiert."
+  },
+  {
+   "slot": "ACTION_STEMS.COMPUTE",
+   "value": "zusammenzaehl",
+   "evidence": "round6: Ich möchte nicht, dass du addiert."
+  },
+  {
+   "slot": "ACTION_STEMS.COMPUTE",
+   "value": "zusammenrechn",
+   "evidence": "round6: Ich möchte nicht, dass du addiert."
+  },
+  {
+   "slot": "OBJECT_STEMS.ALL",
+   "value": "telefon",
+   "evidence": "round6: Mein Telefon ist dir blockiert."
+  },
+  {
+   "slot": "ACTION_STEMS.ANY",
+   "value": "beruehr",
+   "evidence": "holdout_de3: Auf dem Schild steht: Nicht berühren."
   }
  ]
 }

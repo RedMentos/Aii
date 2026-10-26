@@ -1,0 +1,9 @@
+{
+ "schema": "USER_RULES_FREEZE_V7",
+ "parser": "fixed-userrules-v7",
+ "frozen": "2026-10-22, after round7_raw.json was committed unread and before the hand audit or any reader run on round 7 / holdout_de4",
+ "files": {
+  "v13/userrules.py": "537c4c5d647620a71d004c4788df3aee9a74ebcfbc2ebb1f7561543027ad2c0b",
+  "v13/userrules_lexicon.json": "2efcc460996aa3b5c3a643796c76a3a55247096cc9ed3beb3a49b0435a484838"
+ }
+}

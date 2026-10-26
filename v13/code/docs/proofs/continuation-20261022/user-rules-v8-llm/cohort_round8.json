@@ -1,0 +1,1199 @@
+{
+ "schema": "USER_RULES_COHORT_ROUND8_V1",
+ "cohort": "primary (same meaning, German)",
+ "items": [
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Die Galerie steht in ihrer Form unverändert da.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Die Galerie bleibt unangetastet."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Heute ist das Surfen nicht möglich.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Surfen fällt heute aus."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Da ist heute Surfen einfach nicht drauf. Hauptsache, wir machen was andere. Egal ob Sandburg bauen, mit der Kutsche spazieren oder was.",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Surfen fällt heute aus."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Der Zugang nach außen steht nicht zur Verfügung, der Signalweg ist abgeschnitten.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Die Leitung nach draußen bleibt gekappt."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "text": "Bitte lässt ihn in Ruhe – der Taschenrechner darf jetzt ungestört sein.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Lass den Taschenrechner in Ruhe."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "text": "Nen Taschenrechner nicht stören, bitte.",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Lass den Taschenrechner in Ruhe."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "text": "Dein Tun mit Zahlen zu manipulieren ist für dich nicht mehr erlaubt.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Zahlen jonglieren ist für dich gestrichen."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Was auch immer passiert, das wegwerfen ist nicht erlaubt.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Wegwerfen ist verboten, egal was."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Lass mal wieder ruhig, komm nicht durch meine Dinge.",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Halt dich komplett raus aus meinem Kram."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Ich würde nie wieder sehen, wie du Bilder wegwischst. Oder besser gesagt: Nie wieder, dass du Fotos vernichtest.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Dass du Fotos löschst, will ich nie wieder erleben."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Du löschst keine der Einträge mehr – genau das tust du nicht.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Du überschreibst keine einzige Notiz."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Mails abschicken nur nach meinem Daumen hoch – kein Problem, wenn du lieber später machst!",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Mails verschickst du erst nach meinem Daumen hoch."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "web"
+   ],
+   "text": "Wenn du online bist, gib mir vorher Bescheid.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Bevor du ins Netz gehst, sagst du mir Bescheid."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Neue Module? Zuerst mit mir reden, dann weiß man, was los ist.",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Neue Module? Erst mit mir reden."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "text": "Egal was du machst – frag zuerst vorher, ob ich mitmachen soll.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Was auch immer du anstellst: vorher mich fragen."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "text": "Was auch immer du machst, vorher runter – frage mich einfach, was du im Schilde führst.",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Was auch immer du anstellst: vorher mich fragen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "web"
+   ],
+   "text": "Ich bin mir nicht ganz sicher, ob du gerade online sein solltest.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Ich weiß nicht so recht, ob du online gehen solltest."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "delete_photo"
+   ],
+   "text": "Vielleicht ist es besser, die Bilder lieber nicht zu entfernen.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Eventuell wäre es klüger, keine Fotos zu löschen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "text": "Laut Handbuch: Keine Installationen durchführen.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Im Handbuch steht: Nichts installieren."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "text": "Ich ärgere mich, wenn du an meinen Unterlagen herummischst.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Es nervt mich, wenn du an meinen Notizen rumbastelst."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Heutzutage bekomme ich so richtig einen Ansturm von E-Mails – das geht nicht mehr.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Ich krieg heute so viele Mails."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Die Mails fliegen heute richtig durch den Kanal – da hab ich echt Hunger!",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Ich krieg heute so viele Mails."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Das Bild von heute sieht richtig gut aus. 😊",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Das Foto von gestern ist echt schön geworden."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Kenne das Foto von gestern? Schön gemacht, echt!",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Das Foto von gestern ist echt schön geworden."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Hättest du die Möglichkeit, mir den Text vorzulesen?",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Kannst du mir die Notiz vorlesen?"
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Keine Ahnung was falsch ist, aber da hat etwas nicht gepasst.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Nix für ungut, aber das war daneben."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Die Oma meines Omas hat niemals einen Smartphone genutzt.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Meine Oma hat nie ein Handy benutzt."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "In diesem Raum funktioniert absolut nichts ohne Strom.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Ohne Strom läuft hier gar nichts."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Ohne Strom geht’s hier echt zum Dümmen. Eh, ohne Netz und nichts funktioniert.",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Ohne Strom läuft hier gar nichts."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Gestern hab ich noch das Modul durchgeschaut.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Erst gestern hab ich das Modul gesehen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Tom, bitte die E-Mail schicken.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Schick bitte die Mail an Tom."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Im Büro fällt keiner richtig gut im Kopfrechnen, richtig?",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Keiner im Büro kann gut rechnen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Heutzutage läuft das Netz zuverlässig.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Das Internet ist heute stabil."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Morgen ist Feiertag – das soll ich mir merken. Und noch nicht vergessen, dass es schon der Tag nach dem Wochenende ist.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Bevor ich's vergesse: Morgen ist Feiertag."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Morgen ist Feiertag, merk's halt!",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Bevor ich's vergesse: Morgen ist Feiertag."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Wie sieht’s aus, wenn wir erstmal die Zahlen durchgehen? Erledigt?",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Lass uns kurz die Zahlen anschauen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Check mal die Zahlen schnell, was?",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Lass uns kurz die Zahlen anschauen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Hey, kannst du die doppelte E-Mail bitte entfernen?",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Lösch die doppelte Mail bitte."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Mach die doppelte Mail raus, bitte. Oder die einfach weg schicken, was auch immer.",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Lösch die doppelte Mail bitte."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Mein Laptop klappt so nicht mehr. Ich kann ihn einfach nicht benutzen.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Mein Laptop ist kaputt."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Jetzt kannst du wieder E-Mails schicken.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Ab jetzt darfst du wieder Mails senden."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Na, du darfst jetzt wieder an Mail gehen, wenn's mal passt!",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Ab jetzt darfst du wieder Mails senden."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du hast wieder Zugang zum Netz – alles ist los!",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Das Netz ist für dich wieder offen."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Hab mal wieder Glück, die Tür zum Netz steht wieder auf!",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Das Netz ist für dich wieder offen."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Man hat ab sofort kein Problem mehr damit, das Modul herunterzuholen.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Module holen ist ab sofort okay."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du kannst jetzt endlich wieder Fotos entfernen – kein Problem dabei.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Fotos löschen darfst du wieder, kein Problem."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Na, du kannst die Fotos wieder räumen, kein Problem, einfach mal schau nach drauf.",
+   "lang": "de",
+   "source": "LFM2_2B/P2",
+   "original": "Fotos löschen darfst du wieder, kein Problem."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Mathe ist jetzt wieder in Ordnung. Jemanden kann mal wieder rechnen.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Rechnen ist wieder erlaubt."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Seit jetzt kannst du meine Notizen eigenständig bearbeiten.",
+   "lang": "de",
+   "source": "LFM2_2B/P1",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Die Galerie bleibt unbeschädigt.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Die Galerie bleibt unangetastet."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "text": "Scheiß dich vom Notizbuch weg! (Irgendeine Menge von Notizen im Notizbuch, die ich nicht brauche.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Finger weg von meinem Notizbuch."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Kein Begriff an irgendwelche Personen per E-Mail.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Kein Wort an irgendwen per Mail."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Kein Schriftzug an irgendwelchen Menschen per E-Mail.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Kein Wort an irgendwen per Mail."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Heute ist die Surfen abgeschlossen.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Surfen fällt heute aus."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Verwende keine Daten aus dem Internet.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Zieh dir nichts aus dem Netz."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Nicht die neuesten Apps auf meinem Handy.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Keine neuen Programme auf meinem Handy."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Stopp dich völlig aus meinem Kram.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Halt dich komplett raus aus meinem Kram."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Diese E-Mail-System ist für dich zu.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Das Mailprogramm ist für dich zu."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Wenn du Fotos von mir loschst, möchte ich es nie wieder erleben.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Dass du Fotos löschst, will ich nie wieder erleben."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Du schickst erst die Mails nach meinem Daumen hoch.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Mails verschickst du erst nach meinem Daumen hoch."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Neue Module? Nur mit mir sprechen zu lassen.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Neue Module? Erst mit mir reden."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_new",
+    "note_replace"
+   ],
+   "text": "Nur nach R\"uck\"sprechung werden Notizen geändert.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Notizen änderst du nur nach Rücksprache."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "web",
+    "install_module"
+   ],
+   "text": "Jedoch für Downloads brauchst du jede Zeit mein Zustimmung.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Für Downloads brauchst du jedes Mal mein Okay."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "delete_photo"
+   ],
+   "text": "Es könnte klüger sein, keine Bilder zu löschen.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Eventuell wäre es klüger, keine Fotos zu löschen."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "text": "In der Anleitung steht: Nichts installieren.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Im Handbuch steht: Nichts installieren."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "text": "Ich bin beschwert, wenn du auf meine Notizen rumstelle.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Es nervt mich, wenn du an meinen Notizen rumbastelst."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Heute krieg ich so viele E-Mails.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Ich krieg heute so viele Mails."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "So viele Emails habe ich heute bekommen.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Ich krieg heute so viele Mails."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Die Bilder von gestern haben wirklich schön geworden.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Das Foto von gestern ist echt schön geworden."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Hey, das Bild von gestern ist wirklich schön geworden.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Das Foto von gestern ist echt schön geworden."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Hier läuft nichts ohne Strom.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Ohne Strom läuft hier gar nichts."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Bitte schicken Sie den Email an Tom.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Schick bitte die Mail an Tom."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Gib bitte die E-Mail an Tom.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Schick bitte die Mail an Tom."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Wieso ist meine Anweisung verschwunden?",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Warum ist meine Notiz verschwunden?"
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Schon vor dem Vergessen: Morgen ist ein Feiertag.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Bevor ich's vergesse: Morgen ist Feiertag."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Sehen wir uns die Zahlen kurz an.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Lass uns kurz die Zahlen anschauen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Nicht gewusst ich, dass das so lange gedauert hätte.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Nie hätte ich gedacht, dass das so lange dauert."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Bitte löschen Sie das doppelte E-Mail.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Lösch die doppelte Mail bitte."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Mein Laptop ist nicht mehr funktionierend.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Mein Laptop ist kaputt."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Ach, mein Laptop ist tot. Es vermutlich schon lange so ist.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Mein Laptop ist kaputt."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Daerfolgeher kannst du jetzt wieder Mails senden.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Ab jetzt darfst du wieder Mails senden."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Module holen ist jetzt ok.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Module holen ist ab sofort okay."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Kostet dir nichts, wenn du deine Fotos wiederlöschen möchtest.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Fotos löschen darfst du wieder, kein Problem."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Es ist erlaubt, Rechnen zu tun.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Rechnen ist wieder erlaubt."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Es ist wieder gestattet, Rechnen zu tun.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Rechnen ist wieder erlaubt."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Sie können meine Notizen von heute an selbst bearbeiten.",
+   "lang": "de",
+   "source": "AFM_4B/P1",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du kannst nun meine Notizen selbst bearbeiten.",
+   "lang": "de",
+   "source": "AFM_4B/P2",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Die Galerie bleibt unberührt.}",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Die Galerie bleibt unangetastet."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [
+    "note_new"
+   ],
+   "text": "Keine Notizen werden überschrieben oder ersetzt.",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "An den Notizen wird nicht herumgeschraubt."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Die Leitung wird zu hinaus gesperrt.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Die Leitung nach draußen bleibt gekappt."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Keine Sache aus dem Netz ziehen.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Zieh dir nichts aus dem Netz."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "install_module"
+   ],
+   "ask": [],
+   "text": "Keine neuen Apps auf meinem Handy.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Keine neuen Programme auf meinem Handy."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Es ist verboten zu wegwerfen, unabhängig davon, was man versucht zu wegwerfen.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Wegwerfen ist verboten, egal was."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "text": "Das Postfach ist für dich zu.",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Das Mailprogramm ist für dich zu."
+  },
+  {
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "text": "Ich kann es nicht hören, wenn du Fotos löscht, ich will das nie wieder erleben.",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Dass du Fotos löschst, will ich nie wieder erleben."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "text": "Ich würde vor jedem Löschen einmal einJa von mir sehen",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Vor jedem Löschen will ich ein Ja von mir sehen."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "text": "Zeige mir den Entwurf vor seiner Abreise.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Zeig mir den Entwurf, ehe er rausgeht."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_new",
+    "note_replace"
+   ],
+   "text": "Du kannst Deine Notizen erst nach der Rücksprache ändern.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Notizen änderst du nur nach Rücksprache."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_new",
+    "note_replace"
+   ],
+   "text": "Du änderst die Notizen nur nach Rücksprache.",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Notizen änderst du nur nach Rücksprache."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "web",
+    "install_module"
+   ],
+   "text": "Du brauchst das Okay bei jeder Download",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Für Downloads brauchst du jedes Mal mein Okay."
+  },
+  {
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "text": "Ich muss das Erlaubnis geben, bevor du etwas installierst.",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Bevor du was installierst, will ich gefragt werden."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "web"
+   ],
+   "text": "Bin mir nicht ganz überzeugt, ob du dich online aufkommen solltest.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Ich weiß nicht so recht, ob du online gehen solltest."
+  },
+  {
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "delete_photo"
+   ],
+   "text": "Vielleicht wäre es klarer, die Fotos nicht zu löschen.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Eventuell wäre es klüger, keine Fotos zu löschen."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Ich bekomme heute so viele E-Mails.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Ich krieg heute so viele Mails."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Können Sie mir die Notizen vorlesen?",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Kannst du mir die Notiz vorlesen?"
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Es ist nicht gut geschehen, aber das war knapp.",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Nix für ungut, aber das war daneben."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Ohne Strom kann hier kaum etwas funktionieren.",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Ohne Strom läuft hier gar nichts."
+  },
+  {
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "text": "Schicke die E-Mail an Tom, bitte.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Schick bitte die Mail an Tom."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du kannst wieder E-Mails verschicken, Abend.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Ab jetzt darfst du wieder Mails senden."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Deine Netzverbindung ist wieder da.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Das Netz ist für dich wieder offen."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Der Internet ist wieder für dich frei.",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Das Netz ist für dich wieder offen."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Man darf von heute Anfang an den Module holen.}",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Module holen ist ab sofort okay."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du darfst wieder Fotos löschen, das ist kein Problem.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Fotos löschen darfst du wieder, kein Problem."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du kannst wieder Fotos löschen, das ist kein Problem.",
+   "lang": "de",
+   "source": "TRILLION_7B/P2",
+   "original": "Fotos löschen darfst du wieder, kein Problem."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Math ist wieder erlaubt.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Rechnen ist wieder erlaubt."
+  },
+  {
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "text": "Du darfst jetzt selbst meine Notizen bearbeiten.",
+   "lang": "de",
+   "source": "TRILLION_7B/P1",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten."
+  }
+ ]
+}

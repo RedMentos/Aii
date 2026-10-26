@@ -1267,6 +1267,12 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
   - Doppelpunkt-Etiketten als ganzer Satz.
   - Weniger Rückfragen bei Verneinung über Dritte.
   - Handy-Test, ob das Nachfragen stört.
+### WP-UR7 Regel-Leser v7 + versiegelte Runde 7 — ERLEDIGT 2026-10-22, Urteil `USER_RULES_V7_UNSAFE` (Thread „Regel-Leser Version 7“, Branch `claude/project-thread-ub4in2`)
+- v7 schließt alle Lücken aus dem v6-Befund (Sperr-Wörter ohne Verneinung, zusammengesetzte Ziel-Nomen, Telefon, „sag mir, wenn …“, „erstmal“, Zitat nach „steht:“, Netz über Teilsätze) und spart Rückfragen bei Berichten über Dritte, Vergangenes und Störungen. Bekannte Sätze: 0 Fehler, unnötige Rückfragen dort 68 → 48 von 265.
+- T1 `holdout_de4` (60 neue Autor-Sätze): v7 4 Fehlersätze, v6 4. T2 Runde 7 (Hunyuan 7B, Yi 1.5 9B, Apertus 8B; 118 von 360 brauchbar): v7 14, v6 13. Unnötige Rückfragen 50 % (K6 klar verfehlt).
+- Rückschritt: Die Kosten-Regel „kaputt/geht nicht = Feststellung“ verschluckt „Mach meine Notizen bloß nicht kaputt“. Lehre: Kosten-Regeln nur mit Gegenproben.
+- Befund `code/docs/proofs/continuation-20261022/user-rules-v7/BEFUND.md`.
+- Offen (WP-UR8): starkes Sperr-Signal ohne Ziel ⇒ Rückfrage für alles; „kaputt“-Regel zurücknehmen; zweite Meinung (kleines lokales Modell oder gelernter JEF-Leser), die nur Vorsicht hinzufügen darf, auf frischer Runde messen. Weitere reine Wortlisten-Versionen lohnen kaum.
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.
@@ -1314,3 +1320,8 @@ R4-Werkzeug-Regeln (Teile 4–11), weitere Action-JEPA-Runden, Werkzeug-Vorhersa
 - Vorregistriert (`a94f91c`, vor dem Lauf gepusht), frischer Seed 29, 60 generierte Aufgaben (complete/missing/earlier/override je 15), C3 LFM2.5-350M, Linux-Cloud: **TOOL_LIVE_SUPPORTED** – Antworttext richtig 22 → 32/60 (p .006), falsch festgelegt 33 → 23, **Rezept 0/60 falsch**; **TOOL_SHOWN_SUPPORTED** – mit Broker-Korrektur sichtbar richtig 53/60. Schwächen: C3 sagt bei fehlender Regel im eigenen Text nie „kann nicht entscheiden“ (nur die Korrektur zeigt es); bei geänderten Regeln liest C3 oft die alte Regel (override 5/15 exakt gelesen) → sichere Ablehnung UNKNOWN.
 - Befund `code/docs/proofs/continuation-20261021/eligibility-whole-turn-q/BEFUND.md`. Nächster Engpass: Lesen geänderter Regeln (nicht Rechnen); Nutzerentscheidung zum Einschalten unverändert offen.
 - **Zusammengeführt 2026-10-21:** dq33gk enthält jetzt Qs Fassung (inkl. `f2d99b3`) plus Zitat-als-Zeiger-Schalter und `analyst_context`-Fix; beide Schalter weiter aus, Nutzerentscheidung offen.
+
+### WP-UR8-LLM Zweitleser aus kleinem Sprachmodell (Parallel-Variante zu WP-UR8) — ERLEDIGT 2026-10-26, Urteil `SECOND_READER_TOO_COSTLY` + `USER_RULES_V8_UNSAFE` (Thread „Regel-Leser Version 7“, Branch `claude/project-thread-ub4in2`)
+- Kleines lokales Modell (Gemma 3 1B, Qwen 2.5 1.5B/3B; Aufträge A/B, JSON-Grammatik) darf nur eine Rückfrage hinzufügen, nie lockern. Eigene versiegelte Prüfsätze: holdout_de5 (60, Autor) und Runde 8 (LFM2 2.6B, AFM 4.5B, Trillion 7B; 116 geprüft).
+- Fester v8 dieser Variante: T1 7 / T2 12 Fehlersätze (v7 8 / 14). Vorab gewählt Gemma 3 1B A: T2 12 → 12, kein Gewinn. Qwen halbiert (T2 5–6), aber 56–95 % Rückfragen bei Sätzen ohne Regel (erlaubt +10 Punkte über 28 %). Z2 (nie lockerer) 0, ungültig 0 %.
+- Laufzeit bleibt der parallele WP-UR8 (PR #416, gelernter Zweitleser). Diese Variante liegt nur als Beleg in `code/docs/proofs/continuation-20261022/user-rules-v8-llm/` (BEFUND.md, eingefrorener Code in `code_snapshot/`). Ihre Prüfsätze sind jetzt bekannt und Lernstoff für WP-UR9.

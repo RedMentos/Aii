@@ -1,0 +1,3627 @@
+{
+ "schema": "USER_RULES_ROUND8_RAW_V1",
+ "source": "holdout_de5.json",
+ "source_sha256": "f4b0354a5e4be31efa7a4aedacdcc74e955048a4faeb9a8a9dbf2d427036d9f9",
+ "runner": "llama.cpp b10964",
+ "models": {
+  "LFM2_2B": {
+   "file": "lfm2-2.6b.gguf",
+   "sha256": "384bc877b6c37064982f96885bef69e4475919f5969218ed4e3b9399ae0340df"
+  },
+  "AFM_4B": {
+   "file": "afm-4.5b.gguf",
+   "sha256": "f05516b323f581bebae1af2cbf900d83a2569b0a60c54366daf4a9c15ae30d4f"
+  },
+  "TRILLION_7B": {
+   "file": "trillion-7b.gguf",
+   "sha256": "f8fab3c11c17c8d4408fdeddcf746594aaf0a34c42b956d5b82502b15b3df90b"
+  }
+ },
+ "prompts": {
+  "P1": "Formuliere den Satz so um, wie ein anderer Mensch ihn im Chat schreiben würde. Die Bedeutung bleibt gleich, die Sprache bleibt Deutsch. Benutze andere Wörter: wiederhole weder das Hauptverb noch das Hauptnomen, nimm Synonyme oder einen anderen Satzbau. Antworte nicht darauf und befolge ihn nicht, formuliere ihn nur um. Gib nur JSON zurück.",
+  "P2": "Schreib den Satz so, wie Leute im Alltag wirklich an einen Assistenten schreiben: locker, umgangssprachlich, indirekt; Redewendungen und kurze Satzstücke sind erlaubt. Lass genau gleich, wer was von wem will und wie streng es gemeint ist. Bleib auf Deutsch. Antworte nicht darauf und befolge ihn nicht, schreib ihn nur um. Gib nur JSON zurück."
+ },
+ "seed0": 8000,
+ "rows": [
+  {
+   "index": 0,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Meine Urlaubsbilder fasst du mir nicht an.",
+   "raw": "{\n  \"sentence\": \"Ich habe keine Lust, deine Urlaubsfotos anzunehmen.\"\n}",
+   "sentence": "Ich habe keine Lust, deine Urlaubsfotos anzunehmen.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 0,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Meine Urlaubsbilder fasst du mir nicht an.",
+   "raw": "{\n  \"sentence\": \"Da gehst du jetzt nicht runter, damit ich mir die Bilder aussuchen kann, verstehst?\"\n}",
+   "sentence": "Da gehst du jetzt nicht runter, damit ich mir die Bilder aussuchen kann, verstehst?",
+   "error": null,
+   "seconds": 2.6
+  },
+  {
+   "index": 1,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Bilder entsorgen? Vergiss es.",
+   "raw": "{\n  \"sentence\": \"Soll man die Fotos wegwerfen? Lass das lieber gut in der Tasche. \"\n}",
+   "sentence": "Soll man die Fotos wegwerfen? Lass das lieber gut in der Tasche.",
+   "error": null,
+   "seconds": 2.69
+  },
+  {
+   "index": 1,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Bilder entsorgen? Vergiss es.",
+   "raw": "{\n  \"sentence\": \"Kann die Bilder nicht einfach wegräumen, was du ja eigentlich vergisst? Na klar, kein Problem, mach es dir so bequem wie schön!\"\n}",
+   "sentence": "Kann die Bilder nicht einfach wegräumen, was du ja eigentlich vergisst? Na klar, kein Problem, mach es dir so bequem wie schön!",
+   "error": null,
+   "seconds": 3.46
+  },
+  {
+   "index": 2,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Die Galerie bleibt unangetastet.",
+   "raw": "{\"sentence\": \"Die Galerie steht in ihrer Form unverändert da.\"}",
+   "sentence": "Die Galerie steht in ihrer Form unverändert da.",
+   "error": null,
+   "seconds": 1.75
+  },
+  {
+   "index": 2,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Die Galerie bleibt unangetastet.",
+   "raw": "{\n  \"sentence\": \"Keine Pünktchen im Plan, Galerie so was bleibt halt wie so was. Echt so was passiert hier nicht.\"\n}",
+   "sentence": "Keine Pünktchen im Plan, Galerie so was bleibt halt wie so was. Echt so was passiert hier nicht.",
+   "error": null,
+   "seconds": 2.74
+  },
+  {
+   "index": 3,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Finger weg von meinem Notizbuch.",
+   "raw": "{\"sentence\": \"Lass das E-Papier meiner Notizen am besten nicht in die Hände rennen.\"}",
+   "sentence": "Lass das E-Papier meiner Notizen am besten nicht in die Hände rennen.",
+   "error": null,
+   "seconds": 10.38
+  },
+  {
+   "index": 3,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Finger weg von meinem Notizbuch.",
+   "raw": "{\"sentence\": \"Hir, lass das Notizbuch einfach mal liegen, was? Kein Problem, mach es mal locker runter!\"}",
+   "sentence": "Hir, lass das Notizbuch einfach mal liegen, was? Kein Problem, mach es mal locker runter!",
+   "error": null,
+   "seconds": 2.7
+  },
+  {
+   "index": 4,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "An den Notizen wird nicht herumgeschraubt.",
+   "raw": "{\n  \"sentence\": \"Man lässt sich an den Unterlagen nicht austricksen.\"}",
+   "sentence": "Man lässt sich an den Unterlagen nicht austricksen.",
+   "error": null,
+   "seconds": 1.98
+  },
+  {
+   "index": 4,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "An den Notizen wird nicht herumgeschraubt.",
+   "raw": "{\n  \"sentence\": \"Da drückt man sich nicht am Notizenheft. Kein Blödsinn, nur was passt.\"\n}",
+   "sentence": "Da drückt man sich nicht am Notizenheft. Kein Blödsinn, nur was passt.",
+   "error": null,
+   "seconds": 2.61
+  },
+  {
+   "index": 5,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Kein Wort an irgendwen per Mail.",
+   "raw": "{\"sentence\": \"Ich schick' kein einziges Wort an irgendjemanden per E-Mail.\"}",
+   "sentence": "Ich schick' kein einziges Wort an irgendjemanden per E-Mail.",
+   "error": null,
+   "seconds": 1.9
+  },
+  {
+   "index": 5,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Kein Wort an irgendwen per Mail.",
+   "raw": "{\"sentence\": \"Mach doch halt einen Spaziergang mit der E-Mail – kein Wort per Post an irgendwelchen!\"}",
+   "sentence": "Mach doch halt einen Spaziergang mit der E-Mail – kein Wort per Post an irgendwelchen!",
+   "error": null,
+   "seconds": 2.45
+  },
+  {
+   "index": 6,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Post rausschicken ist nicht drin.",
+   "raw": "{\n  \"sentence\": \"Die Aufgabe soll nicht geteilt werden. Alles in Ordnung, wenn man sie alleine übernimmt.\"\n}",
+   "sentence": "Die Aufgabe soll nicht geteilt werden. Alles in Ordnung, wenn man sie alleine übernimmt.",
+   "error": null,
+   "seconds": 2.63
+  },
+  {
+   "index": 6,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Post rausschicken ist nicht drin.",
+   "raw": "{\"sentence\": \"Mach ja keine Aktion drüber, das ist mal nicht sinn.\"}",
+   "sentence": "Mach ja keine Aktion drüber, das ist mal nicht sinn.",
+   "error": null,
+   "seconds": 2.04
+  },
+  {
+   "index": 7,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Surfen fällt heute aus.",
+   "raw": "{\"sentence\": \"Heute ist das Surfen nicht möglich.\"}",
+   "sentence": "Heute ist das Surfen nicht möglich.",
+   "error": null,
+   "seconds": 1.73
+  },
+  {
+   "index": 7,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Surfen fällt heute aus.",
+   "raw": "{\n  \"sentence\": \"Da ist heute Surfen einfach nicht drauf. Hauptsache, wir machen was andere. Egal ob Sandburg bauen, mit der Kutsche spazieren oder was.\"\n}",
+   "sentence": "Da ist heute Surfen einfach nicht drauf. Hauptsache, wir machen was andere. Egal ob Sandburg bauen, mit der Kutsche spazieren oder was.",
+   "error": null,
+   "seconds": 3.28
+  },
+  {
+   "index": 8,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Die Leitung nach draußen bleibt gekappt.",
+   "raw": "{\n  \"sentence\": \"Der Zugang nach außen steht nicht zur Verfügung, der Signalweg ist abgeschnitten.\"\n}",
+   "sentence": "Der Zugang nach außen steht nicht zur Verfügung, der Signalweg ist abgeschnitten.",
+   "error": null,
+   "seconds": 2.17
+  },
+  {
+   "index": 8,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Die Leitung nach draußen bleibt gekappt.",
+   "raw": "{\"sentence\": \"Hey, die Leitung raus bleibt doch bei nichts. Keine Sorge, lass mich wissen, wenn du was brauchst!\"}",
+   "sentence": "Hey, die Leitung raus bleibt doch bei nichts. Keine Sorge, lass mich wissen, wenn du was brauchst!",
+   "error": null,
+   "seconds": 2.67
+  },
+  {
+   "index": 9,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Zieh dir nichts aus dem Netz.",
+   "raw": "{\"sentence\": \"Nimm nicht einfach alles aus dem Internet auf, ohne nachzudenken.\"}",
+   "sentence": "Nimm nicht einfach alles aus dem Internet auf, ohne nachzudenken.",
+   "error": null,
+   "seconds": 1.92
+  },
+  {
+   "index": 9,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Zieh dir nichts aus dem Netz.",
+   "raw": "{\"sentence\": \"Hack dir im Netz nichts an, verstanden?\"}",
+   "sentence": "Hack dir im Netz nichts an, verstanden?",
+   "error": null,
+   "seconds": 1.89
+  },
+  {
+   "index": 10,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Keine neuen Programme auf meinem Handy.",
+   "raw": "{\n  \"sentence\": \"Mein Handy zeigt seit kurzem keine neuen Apps an. \"\n}",
+   "sentence": "Mein Handy zeigt seit kurzem keine neuen Apps an.",
+   "error": null,
+   "seconds": 1.96
+  },
+  {
+   "index": 10,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Keine neuen Programme auf meinem Handy.",
+   "raw": "{\n  \"sentence\": \"Da kommt was nicht so an, was der neue Kram läuft – lieg doch, was hab ich da drauf?\"\n}",
+   "sentence": "Da kommt was nicht so an, was der neue Kram läuft – lieg doch, was hab ich da drauf?",
+   "error": null,
+   "seconds": 6.93
+  },
+  {
+   "index": 11,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Mit dem Nachinstallieren hörst du jetzt auf.",
+   "raw": "{\"sentence\": \"Nach dem Neuinstallieren lässt sich das inzwischen nicht mehr hören.\"}",
+   "sentence": "Nach dem Neuinstallieren lässt sich das inzwischen nicht mehr hören.",
+   "error": null,
+   "seconds": 1.86
+  },
+  {
+   "index": 11,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Mit dem Nachinstallieren hörst du jetzt auf.",
+   "raw": "{\n  \"sentence\": \"Da ist's nach dem Nachinstallieren, da bist du weg. Nix mehr zu hören, verstanden?\"\n}",
+   "sentence": "Da ist's nach dem Nachinstallieren, da bist du weg. Nix mehr zu hören, verstanden?",
+   "error": null,
+   "seconds": 2.53
+  },
+  {
+   "index": 12,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Lass den Taschenrechner in Ruhe.",
+   "raw": "{\"sentence\": \"Bitte lässt ihn in Ruhe – der Taschenrechner darf jetzt ungestört sein.\"}",
+   "sentence": "Bitte lässt ihn in Ruhe – der Taschenrechner darf jetzt ungestört sein.",
+   "error": null,
+   "seconds": 2.17
+  },
+  {
+   "index": 12,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Lass den Taschenrechner in Ruhe.",
+   "raw": "{\"sentence\": \"Nen Taschenrechner nicht stören, bitte.\"}",
+   "sentence": "Nen Taschenrechner nicht stören, bitte.",
+   "error": null,
+   "seconds": 1.68
+  },
+  {
+   "index": 13,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Zahlen jonglieren ist für dich gestrichen.",
+   "raw": "{\"sentence\": \"Dein Tun mit Zahlen zu manipulieren ist für dich nicht mehr erlaubt.\"}",
+   "sentence": "Dein Tun mit Zahlen zu manipulieren ist für dich nicht mehr erlaubt.",
+   "error": null,
+   "seconds": 1.98
+  },
+  {
+   "index": 13,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Zahlen jonglieren ist für dich gestrichen.",
+   "raw": "{\n  \"sentence\": \"Verschwende ja die Zeit mit Jonglieren, lieber, das geht nicht. Pass auf!\"\n}",
+   "sentence": "Verschwende ja die Zeit mit Jonglieren, lieber, das geht nicht. Pass auf!",
+   "error": null,
+   "seconds": 2.39
+  },
+  {
+   "index": 14,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Meine Texte rührt keiner an, auch du nicht.",
+   "raw": "{\"sentence\": \"Deine Texte sprechen mir und dir gleich nicht an.\"}",
+   "sentence": "Deine Texte sprechen mir und dir gleich nicht an.",
+   "error": null,
+   "seconds": 1.73
+  },
+  {
+   "index": 14,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Meine Texte rührt keiner an, auch du nicht.",
+   "raw": "{\"sentence\": \"Klar, wenn's echt nicht ankommt, dann reißt's auch nicht um – was denkst du?\"}",
+   "sentence": "Klar, wenn's echt nicht ankommt, dann reißt's auch nicht um – was denkst du?",
+   "error": null,
+   "seconds": 2.63
+  },
+  {
+   "index": 15,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Wegwerfen ist verboten, egal was.",
+   "raw": "{\"sentence\": \"Was auch immer passiert, das wegwerfen ist nicht erlaubt.\"}",
+   "sentence": "Was auch immer passiert, das wegwerfen ist nicht erlaubt.",
+   "error": null,
+   "seconds": 1.92
+  },
+  {
+   "index": 15,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Wegwerfen ist verboten, egal was.",
+   "raw": "{\"sentence\": \"Pust, wegwerfen einfach mal nicht, egal was drin ist – das ist keine gute Idee.\"}",
+   "sentence": "Pust, wegwerfen einfach mal nicht, egal was drin ist – das ist keine gute Idee.",
+   "error": null,
+   "seconds": 2.24
+  },
+  {
+   "index": 16,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Halt dich komplett raus aus meinem Kram.",
+   "raw": "{\"sentence\": \"Lass mich in Ruhe, mach nix damit, ich brauche Zeit für mich.\"}",
+   "sentence": "Lass mich in Ruhe, mach nix damit, ich brauche Zeit für mich.",
+   "error": null,
+   "seconds": 2.04
+  },
+  {
+   "index": 16,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Halt dich komplett raus aus meinem Kram.",
+   "raw": "{\n  \"sentence\": \"Lass mal wieder ruhig, komm nicht durch meine Dinge.\"\n}",
+   "sentence": "Lass mal wieder ruhig, komm nicht durch meine Dinge.",
+   "error": null,
+   "seconds": 1.91
+  },
+  {
+   "index": 17,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Stillhalten, bis ich wieder da bin.",
+   "raw": "{\"sentence\": \"Warte, bis ich wieder ankommen bin, halt ab. No, ich stehe einfach aus, bis du zurück bist.\"}",
+   "sentence": "Warte, bis ich wieder ankommen bin, halt ab. No, ich stehe einfach aus, bis du zurück bist.",
+   "error": null,
+   "seconds": 2.62
+  },
+  {
+   "index": 17,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Stillhalten, bis ich wieder da bin.",
+   "raw": "{\n  \"sentence\": \"Bleib mal dran, bis ich zurück bin. Komm nicht ab, warten bleibt ja die beste Lösung.\"\n}",
+   "sentence": "Bleib mal dran, bis ich zurück bin. Komm nicht ab, warten bleibt ja die beste Lösung.",
+   "error": null,
+   "seconds": 2.51
+  },
+  {
+   "index": 18,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Das Mailprogramm ist für dich zu.",
+   "raw": "{\n  \"sentence\": \"Hier ist die E-Mail für dich – schick dich mal hinein!\"\n}",
+   "sentence": "Hier ist die E-Mail für dich – schick dich mal hinein!",
+   "error": null,
+   "seconds": 2.01
+  },
+  {
+   "index": 18,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Das Mailprogramm ist für dich zu.",
+   "raw": "{\"sentence\": \"Da ist es schon, mal schaue ich rein!\"}",
+   "sentence": "Da ist es schon, mal schaue ich rein!",
+   "error": null,
+   "seconds": 1.73
+  },
+  {
+   "index": 19,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Dass du Fotos löschst, will ich nie wieder erleben.",
+   "raw": "{\"sentence\": \"Ich würde nie wieder sehen, wie du Bilder wegwischst. Oder besser gesagt: Nie wieder, dass du Fotos vernichtest.\"}",
+   "sentence": "Ich würde nie wieder sehen, wie du Bilder wegwischst. Oder besser gesagt: Nie wieder, dass du Fotos vernichtest.",
+   "error": null,
+   "seconds": 2.72
+  },
+  {
+   "index": 19,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Dass du Fotos löschst, will ich nie wieder erleben.",
+   "raw": "{\"sentence\": \"Mach's besser, dass du die Bilder wieder verschwischen lässt. Wär echt quatschig, wenn das wieder passiert.\"}",
+   "sentence": "Mach's besser, dass du die Bilder wieder verschwischen lässt. Wär echt quatschig, wenn das wieder passiert.",
+   "error": null,
+   "seconds": 2.56
+  },
+  {
+   "index": 20,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Downloads sind bei mir nicht vorgesehen.",
+   "raw": "{\"sentence\": \"Mir ist nicht erlaubt, herunterzuladen.\"}",
+   "sentence": "Mir ist nicht erlaubt, herunterzuladen.",
+   "error": null,
+   "seconds": 1.75
+  },
+  {
+   "index": 20,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Downloads sind bei mir nicht vorgesehen.",
+   "raw": "{\n  \"sentence\": \"Lass die Downloads da besser so liegen, macht echt nichts weiter. Wenn's aber was damit zu tun hat, frag dich mal, was du da so willst.\"\n}",
+   "sentence": "Lass die Downloads da besser so liegen, macht echt nichts weiter. Wenn's aber was damit zu tun hat, frag dich mal, was du da so willst.",
+   "error": null,
+   "seconds": 3.27
+  },
+  {
+   "index": 21,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Du überschreibst keine einzige Notiz.",
+   "raw": "{\"sentence\": \"Du löschst keine der Einträge mehr – genau das tust du nicht.\"}",
+   "sentence": "Du löschst keine der Einträge mehr – genau das tust du nicht.",
+   "error": null,
+   "seconds": 2.09
+  },
+  {
+   "index": 21,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Du überschreibst keine einzige Notiz.",
+   "raw": "{\"sentence\": \"Keine Notiz kapierst du einfach so, übrigens. 😅\"}",
+   "sentence": "Keine Notiz kapierst du einfach so, übrigens. 😅",
+   "error": null,
+   "seconds": 2.35
+  },
+  {
+   "index": 22,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Vor jedem Löschen will ich ein Ja von mir sehen.",
+   "raw": "{\"sentence\": \"Bevor ich etwas löschen will, frage ich mich erstmal ob ich wirklich dabei bin.\"}",
+   "sentence": "Bevor ich etwas löschen will, frage ich mich erstmal ob ich wirklich dabei bin.",
+   "error": null,
+   "seconds": 2.31
+  },
+  {
+   "index": 22,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Vor jedem Löschen will ich ein Ja von mir sehen.",
+   "raw": "{\"sentence\": \"Ei, vorher mal halt mal ab und an fragen, ob ich was wirklich rausbringen will – sonst bin ich ja umgedreht.\"}",
+   "sentence": "Ei, vorher mal halt mal ab und an fragen, ob ich was wirklich rausbringen will – sonst bin ich ja umgedreht.",
+   "error": null,
+   "seconds": 2.99
+  },
+  {
+   "index": 23,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Mails verschickst du erst nach meinem Daumen hoch.",
+   "raw": "{\n  \"sentence\": \"Ich schicke dir erst dann Emails, wenn du mir die Daumensache gibst.\"\n}",
+   "sentence": "Ich schicke dir erst dann Emails, wenn du mir die Daumensache gibst.",
+   "error": null,
+   "seconds": 2.37
+  },
+  {
+   "index": 23,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Mails verschickst du erst nach meinem Daumen hoch.",
+   "raw": "{\n  \"sentence\": \"Mails abschicken nur nach meinem Daumen hoch – kein Problem, wenn du lieber später machst!\"\n}",
+   "sentence": "Mails abschicken nur nach meinem Daumen hoch – kein Problem, wenn du lieber später machst!",
+   "error": null,
+   "seconds": 2.55
+  },
+  {
+   "index": 24,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Bevor du ins Netz gehst, sagst du mir Bescheid.",
+   "raw": "{\"sentence\": \"Wenn du online bist, gib mir vorher Bescheid.\"}",
+   "sentence": "Wenn du online bist, gib mir vorher Bescheid.",
+   "error": null,
+   "seconds": 1.71
+  },
+  {
+   "index": 24,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Bevor du ins Netz gehst, sagst du mir Bescheid.",
+   "raw": "{\"sentence\": \"Wenn's drauf ankommt, zerfällst du mir den Faden, bevor du ins Netz gehst. Echt, sag's mal kurz ran!\"}",
+   "sentence": "Wenn's drauf ankommt, zerfällst du mir den Faden, bevor du ins Netz gehst. Echt, sag's mal kurz ran!",
+   "error": null,
+   "seconds": 3.13
+  },
+  {
+   "index": 25,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Neue Module? Erst mit mir reden.",
+   "raw": "{\n  \"sentence\": \"Gibt's neue Funktionen? Nur mit mir über den Kopf sprechen.\"\n}",
+   "sentence": "Gibt's neue Funktionen? Nur mit mir über den Kopf sprechen.",
+   "error": null,
+   "seconds": 2.12
+  },
+  {
+   "index": 25,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Neue Module? Erst mit mir reden.",
+   "raw": "{\"sentence\": \"Neue Module? Zuerst mit mir reden, dann weiß man, was los ist.\"}",
+   "sentence": "Neue Module? Zuerst mit mir reden, dann weiß man, was los ist.",
+   "error": null,
+   "seconds": 2.3
+  },
+  {
+   "index": 26,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Rechnen nur, wenn ich dich drum bitte.",
+   "raw": "{\n  \"sentence\": \"Ich rechne nur, wenn du mich darum bittest.\"\n}",
+   "sentence": "Ich rechne nur, wenn du mich darum bittest.",
+   "error": null,
+   "seconds": 1.92
+  },
+  {
+   "index": 26,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Rechnen nur, wenn ich dich drum bitte.",
+   "raw": "{\n  \"sentence\": \"Rechnen wir nur, wenn du mich drüber anforderst, abgemacht?\"\n}",
+   "sentence": "Rechnen wir nur, wenn du mich drüber anforderst, abgemacht?",
+   "error": null,
+   "seconds": 2.37
+  },
+  {
+   "index": 27,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Zeig mir den Entwurf, ehe er rausgeht.",
+   "raw": "{\n  \"sentence\": \"Seh mal den Entwurf noch vor dem Ausdrucken an – bevor er endgültig unterwegs geht.\"\n}",
+   "sentence": "Seh mal den Entwurf noch vor dem Ausdrucken an – bevor er endgültig unterwegs geht.",
+   "error": null,
+   "seconds": 2.59
+  },
+  {
+   "index": 27,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Zeig mir den Entwurf, ehe er rausgeht.",
+   "raw": "{\"sentence\": \"Da drin drüf mal den Entwurf ab, bevor er losfährt.\"}",
+   "sentence": "Da drin drüf mal den Entwurf ab, bevor er losfährt.",
+   "error": null,
+   "seconds": 2.17
+  },
+  {
+   "index": 28,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Notizen änderst du nur nach Rücksprache.",
+   "raw": "{\n  \"sentence\": \"Du korrigierst die Notizen erst, wenn du vorher mit jemandem abgesprochen hast.\"\n}",
+   "sentence": "Du korrigierst die Notizen erst, wenn du vorher mit jemandem abgesprochen hast.",
+   "error": null,
+   "seconds": 2.53
+  },
+  {
+   "index": 28,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Notizen änderst du nur nach Rücksprache.",
+   "raw": "{\n  \"sentence\": \"Mach Notizen erst, wenn's vorbei ist und dann mit jemandem drüber quatschen.\"\n}",
+   "sentence": "Mach Notizen erst, wenn's vorbei ist und dann mit jemandem drüber quatschen.",
+   "error": null,
+   "seconds": 12.66
+  },
+  {
+   "index": 29,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Für Downloads brauchst du jedes Mal mein Okay.",
+   "raw": "{\"sentence\": \"Jedes Mal, wenn Downloads nötig sind, brauche ich dein grünes Licht.\"}",
+   "sentence": "Jedes Mal, wenn Downloads nötig sind, brauche ich dein grünes Licht.",
+   "error": null,
+   "seconds": 77.2
+  },
+  {
+   "index": 29,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Für Downloads brauchst du jedes Mal mein Okay.",
+   "raw": "{\n  \"sentence\": \"Eh ja, für die Downloads musst du jeden mal um die Ohren bringen – klar.\"\n}",
+   "sentence": "Eh ja, für die Downloads musst du jeden mal um die Ohren bringen – klar.",
+   "error": null,
+   "seconds": 85.63
+  },
+  {
+   "index": 30,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Bevor du was installierst, will ich gefragt werden.",
+   "raw": "{\"sentence\": \"Bevor ich etwas auspacke, soll man mich vorher fragen.\"}",
+   "sentence": "Bevor ich etwas auspacke, soll man mich vorher fragen.",
+   "error": null,
+   "seconds": 63.5
+  },
+  {
+   "index": 30,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Bevor du was installierst, will ich gefragt werden.",
+   "raw": "{\"sentence\": \"Bevor du was neue einbauhast, frag ich mal, ob's echt dein Ding ist.\"}",
+   "sentence": "Bevor du was neue einbauhast, frag ich mal, ob's echt dein Ding ist.",
+   "error": null,
+   "seconds": 79.5
+  },
+  {
+   "index": 31,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Was auch immer du anstellst: vorher mich fragen.",
+   "raw": "{\n  \"sentence\": \"Egal was du machst – frag zuerst vorher, ob ich mitmachen soll.\"\n}",
+   "sentence": "Egal was du machst – frag zuerst vorher, ob ich mitmachen soll.",
+   "error": null,
+   "seconds": 78.26
+  },
+  {
+   "index": 31,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Was auch immer du anstellst: vorher mich fragen.",
+   "raw": "{\"sentence\": \"Was auch immer du machst, vorher runter – frage mich einfach, was du im Schilde führst.\"}",
+   "sentence": "Was auch immer du machst, vorher runter – frage mich einfach, was du im Schilde führst.",
+   "error": null,
+   "seconds": 86.85
+  },
+  {
+   "index": 32,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Mein Bruder sagt, du sollst keine Mails mehr schicken.",
+   "raw": "{\"sentence\": \"Mein Bruder warnt dich davor, keine weiteren E-Mails zu versenden.\"}",
+   "sentence": "Mein Bruder warnt dich davor, keine weiteren E-Mails zu versenden.",
+   "error": null,
+   "seconds": 72.34
+  },
+  {
+   "index": 32,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Mein Bruder sagt, du sollst keine Mails mehr schicken.",
+   "raw": "{\"sentence\": \"Hey, sag dein Bruder mal ab, nicht mehr Mails abzuschicken. Lass ihm auch die alten Dingen zu, die nicht dringend sind.\"}",
+   "sentence": "Hey, sag dein Bruder mal ab, nicht mehr Mails abzuschicken. Lass ihm auch die alten Dingen zu, die nicht dringend sind.",
+   "error": null,
+   "seconds": 109.9
+  },
+  {
+   "index": 33,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Ich weiß nicht so recht, ob du online gehen solltest.",
+   "raw": "{\"sentence\": \"Ich bin mir nicht ganz sicher, ob du gerade online sein solltest.\"}",
+   "sentence": "Ich bin mir nicht ganz sicher, ob du gerade online sein solltest.",
+   "error": null,
+   "seconds": 62.87
+  },
+  {
+   "index": 33,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Ich weiß nicht so recht, ob du online gehen solltest.",
+   "raw": "{\"sentence\": \"Kann mal draufchecken, ob's echt was fürs Internet gibt? Keine Sorge, wenn's schiefgeht – hab ich 'nen Plan, falls du strampelst.\"}",
+   "sentence": "Kann mal draufchecken, ob's echt was fürs Internet gibt? Keine Sorge, wenn's schiefgeht – hab ich 'nen Plan, falls du strampelst.",
+   "error": null,
+   "seconds": 133.42
+  },
+  {
+   "index": 34,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Eventuell wäre es klüger, keine Fotos zu löschen.",
+   "raw": "{\n  \"sentence\": \"Vielleicht ist es besser, die Bilder lieber nicht zu entfernen.\"\n}",
+   "sentence": "Vielleicht ist es besser, die Bilder lieber nicht zu entfernen.",
+   "error": null,
+   "seconds": 68.96
+  },
+  {
+   "index": 34,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Eventuell wäre es klüger, keine Fotos zu löschen.",
+   "raw": "{\n  \"sentence\": \"Besser, die Snaps drin lassen, wenn's wirklich nichts Gutes ist.\"\n}",
+   "sentence": "Besser, die Snaps drin lassen, wenn's wirklich nichts Gutes ist.",
+   "error": null,
+   "seconds": 77.02
+  },
+  {
+   "index": 35,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Sollten wir das mit den Modulen nicht lieber lassen?",
+   "raw": "{\n  \"sentence\": \"Möchten wir dieses Modul-Set vielleicht lieber aufhalten?\"\n}",
+   "sentence": "Möchten wir dieses Modul-Set vielleicht lieber aufhalten?",
+   "error": null,
+   "seconds": 66.19
+  },
+  {
+   "index": 35,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Sollten wir das mit den Modulen nicht lieber lassen?",
+   "raw": "{\"sentence\": \"Wäre mal einfach so halt so drüber, denk nicht gleich auf, hab mal eine Idee, was wir machen sollten!\"}",
+   "sentence": "Wäre mal einfach so halt so drüber, denk nicht gleich auf, hab mal eine Idee, was wir machen sollten!",
+   "error": null,
+   "seconds": 92.9
+  },
+  {
+   "index": 36,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Im Handbuch steht: Nichts installieren.",
+   "raw": "{\"sentence\": \"Laut Handbuch: Keine Installationen durchführen.\"}",
+   "sentence": "Laut Handbuch: Keine Installationen durchführen.",
+   "error": null,
+   "seconds": 57.0
+  },
+  {
+   "index": 36,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Im Handbuch steht: Nichts installieren.",
+   "raw": "{\n  \"sentence\": \"Klar, nicht installieren, verstanden? Aber pass auf, wenn du was anderes brauchst, lass es wissen, sonst bin ich schon aus!\"\n}",
+   "sentence": "Klar, nicht installieren, verstanden? Aber pass auf, wenn du was anderes brauchst, lass es wissen, sonst bin ich schon aus!",
+   "error": null,
+   "seconds": 119.79
+  },
+  {
+   "index": 37,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Es nervt mich, wenn du an meinen Notizen rumbastelst.",
+   "raw": "{\n  \"sentence\": \"Ich ärgere mich, wenn du an meinen Unterlagen herummischst.\"\n}",
+   "sentence": "Ich ärgere mich, wenn du an meinen Unterlagen herummischst.",
+   "error": null,
+   "seconds": 71.75
+  },
+  {
+   "index": 37,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Es nervt mich, wenn du an meinen Notizen rumbastelst.",
+   "raw": "{\"sentence\": \"Macht die Notizen, wenn du einfach nur so rumkritzelst? Echt nervt.\"}",
+   "sentence": "Macht die Notizen, wenn du einfach nur so rumkritzelst? Echt nervt.",
+   "error": null,
+   "seconds": 81.75
+  },
+  {
+   "index": 38,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Ich krieg heute so viele Mails.",
+   "raw": "{\"sentence\": \"Heutzutage bekomme ich so richtig einen Ansturm von E-Mails – das geht nicht mehr.\"}",
+   "sentence": "Heutzutage bekomme ich so richtig einen Ansturm von E-Mails – das geht nicht mehr.",
+   "error": null,
+   "seconds": 83.07
+  },
+  {
+   "index": 38,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Ich krieg heute so viele Mails.",
+   "raw": "{\"sentence\": \"Die Mails fliegen heute richtig durch den Kanal – da hab ich echt Hunger!\"}",
+   "sentence": "Die Mails fliegen heute richtig durch den Kanal – da hab ich echt Hunger!",
+   "error": null,
+   "seconds": 71.26
+  },
+  {
+   "index": 39,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Das Foto von gestern ist echt schön geworden.",
+   "raw": "{\n  \"sentence\": \"Das Bild von heute sieht richtig gut aus. 😊\"\n}",
+   "sentence": "Das Bild von heute sieht richtig gut aus. 😊",
+   "error": null,
+   "seconds": 60.2
+  },
+  {
+   "index": 39,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Das Foto von gestern ist echt schön geworden.",
+   "raw": "{\n  \"sentence\": \"Kenne das Foto von gestern? Schön gemacht, echt!\"\n}",
+   "sentence": "Kenne das Foto von gestern? Schön gemacht, echt!",
+   "error": null,
+   "seconds": 62.97
+  },
+  {
+   "index": 40,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Kannst du mir die Notiz vorlesen?",
+   "raw": "{\"sentence\": \"Hättest du die Möglichkeit, mir den Text vorzulesen?\"}",
+   "sentence": "Hättest du die Möglichkeit, mir den Text vorzulesen?",
+   "error": null,
+   "seconds": 63.34
+  },
+  {
+   "index": 40,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Kannst du mir die Notiz vorlesen?",
+   "raw": "{\"sentence\": \"Gib mir die Notiz mal vor, ich hab's nicht schnell rausgedrückt, eh!\"}",
+   "sentence": "Gib mir die Notiz mal vor, ich hab's nicht schnell rausgedrückt, eh!",
+   "error": null,
+   "seconds": 85.04
+  },
+  {
+   "index": 41,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Nix für ungut, aber das war daneben.",
+   "raw": "{\n  \"sentence\": \"Keine Ahnung was falsch ist, aber da hat etwas nicht gepasst.\"\n}",
+   "sentence": "Keine Ahnung was falsch ist, aber da hat etwas nicht gepasst.",
+   "error": null,
+   "seconds": 76.03
+  },
+  {
+   "index": 41,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Nix für ungut, aber das war daneben.",
+   "raw": "{\n  \"sentence\": \"Muss ja, aber das war echt eine Weiche. Pass auf, das mal nicht nochmal passieren!\"\n}",
+   "sentence": "Muss ja, aber das war echt eine Weiche. Pass auf, das mal nicht nochmal passieren!",
+   "error": null,
+   "seconds": 90.59
+  },
+  {
+   "index": 42,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Meine Oma hat nie ein Handy benutzt.",
+   "raw": "{\n  \"sentence\": \"Die Oma meines Omas hat niemals einen Smartphone genutzt.\"\n}",
+   "sentence": "Die Oma meines Omas hat niemals einen Smartphone genutzt.",
+   "error": null,
+   "seconds": 68.77
+  },
+  {
+   "index": 42,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Meine Oma hat nie ein Handy benutzt.",
+   "raw": "{\"sentence\": \"Oma mit dem Handy? Derde Typ, da geht’s doch niemals raus. Aber gut, was sagst du denn?\"}",
+   "sentence": "Oma mit dem Handy? Derde Typ, da geht’s doch niemals raus. Aber gut, was sagst du denn?",
+   "error": null,
+   "seconds": 100.53
+  },
+  {
+   "index": 43,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Ohne Strom läuft hier gar nichts.",
+   "raw": "{\n  \"sentence\": \"In diesem Raum funktioniert absolut nichts ohne Strom.\"\n}",
+   "sentence": "In diesem Raum funktioniert absolut nichts ohne Strom.",
+   "error": null,
+   "seconds": 50.39
+  },
+  {
+   "index": 43,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Ohne Strom läuft hier gar nichts.",
+   "raw": "{\n  \"sentence\": \"Ohne Strom geht’s hier echt zum Dümmen. Eh, ohne Netz und nichts funktioniert.\"\n}",
+   "sentence": "Ohne Strom geht’s hier echt zum Dümmen. Eh, ohne Netz und nichts funktioniert.",
+   "error": null,
+   "seconds": 84.78
+  },
+  {
+   "index": 44,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Erst gestern hab ich das Modul gesehen.",
+   "raw": "{\n  \"sentence\": \"Gestern hab ich noch das Modul durchgeschaut.\"\n}",
+   "sentence": "Gestern hab ich noch das Modul durchgeschaut.",
+   "error": null,
+   "seconds": 61.41
+  },
+  {
+   "index": 44,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Erst gestern hab ich das Modul gesehen.",
+   "raw": "{\"sentence\": \"Schau mal, habe gerade das Modul gesehen – mal her, kriegst du es?\"}",
+   "sentence": "Schau mal, habe gerade das Modul gesehen – mal her, kriegst du es?",
+   "error": null,
+   "seconds": 79.7
+  },
+  {
+   "index": 45,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Schick bitte die Mail an Tom.",
+   "raw": "{\n  \"sentence\": \"Tom, bitte die E-Mail schicken.\"\n}",
+   "sentence": "Tom, bitte die E-Mail schicken.",
+   "error": null,
+   "seconds": 52.65
+  },
+  {
+   "index": 45,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Schick bitte die Mail an Tom.",
+   "raw": "{\n  \"sentence\": \"Hast Tom mal die Mail losgeschickt? Vielleicht läuft dir was ab.\"\n}",
+   "sentence": "Hast Tom mal die Mail losgeschickt? Vielleicht läuft dir was ab.",
+   "error": null,
+   "seconds": 79.02
+  },
+  {
+   "index": 46,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Keiner im Büro kann gut rechnen.",
+   "raw": "{\n  \"sentence\": \"Im Büro fällt keiner richtig gut im Kopfrechnen, richtig?\"\n}",
+   "sentence": "Im Büro fällt keiner richtig gut im Kopfrechnen, richtig?",
+   "error": null,
+   "seconds": 68.35
+  },
+  {
+   "index": 46,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Keiner im Büro kann gut rechnen.",
+   "raw": "{\"sentence\": \"Im Büro zählt's echt nicht, wer rechnet, wer schiebt.\"}",
+   "sentence": "Im Büro zählt's echt nicht, wer rechnet, wer schiebt.",
+   "error": null,
+   "seconds": 70.42
+  },
+  {
+   "index": 47,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Das Internet ist heute stabil.",
+   "raw": "{\n  \"sentence\": \"Heutzutage läuft das Netz zuverlässig.\"\n}",
+   "sentence": "Heutzutage läuft das Netz zuverlässig.",
+   "error": null,
+   "seconds": 61.77
+  },
+  {
+   "index": 47,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Das Internet ist heute stabil.",
+   "raw": "{\"sentence\": \"Ist das Internet mal wieder total aus, dann kriegst du echt die Hölle ab. Aber jetzt geht's mal wieder, danke!\"}",
+   "sentence": "Ist das Internet mal wieder total aus, dann kriegst du echt die Hölle ab. Aber jetzt geht's mal wieder, danke!",
+   "error": null,
+   "seconds": 105.06
+  },
+  {
+   "index": 48,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Warum ist meine Notiz verschwunden?",
+   "raw": "{\n  \"sentence\": \"Woher hat meine Aufzeichnung eigentlich abgeholt? Oder: Was für ein Zufall, dass mein Eintrag einfach so verschwand?\"\n}",
+   "sentence": "Woher hat meine Aufzeichnung eigentlich abgeholt? Oder: Was für ein Zufall, dass mein Eintrag einfach so verschwand?",
+   "error": null,
+   "seconds": 104.21
+  },
+  {
+   "index": 48,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Warum ist meine Notiz verschwunden?",
+   "raw": "{\"sentence\": \"Warum hab' ich die Note einfach mal versteckt? Oder was? Die Hecke hat sich wohl eingemischt.\"}",
+   "sentence": "Warum hab' ich die Note einfach mal versteckt? Oder was? Die Hecke hat sich wohl eingemischt.",
+   "error": null,
+   "seconds": 94.53
+  },
+  {
+   "index": 49,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Bevor ich's vergesse: Morgen ist Feiertag.",
+   "raw": "{\n  \"sentence\": \"Morgen ist Feiertag – das soll ich mir merken. Und noch nicht vergessen, dass es schon der Tag nach dem Wochenende ist.\"\n}",
+   "sentence": "Morgen ist Feiertag – das soll ich mir merken. Und noch nicht vergessen, dass es schon der Tag nach dem Wochenende ist.",
+   "error": null,
+   "seconds": 111.73
+  },
+  {
+   "index": 49,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Bevor ich's vergesse: Morgen ist Feiertag.",
+   "raw": "{\"sentence\": \"Morgen ist Feiertag, merk's halt!\"}",
+   "sentence": "Morgen ist Feiertag, merk's halt!",
+   "error": null,
+   "seconds": 55.31
+  },
+  {
+   "index": 50,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Lass uns kurz die Zahlen anschauen.",
+   "raw": "{\"sentence\": \"Wie sieht’s aus, wenn wir erstmal die Zahlen durchgehen? Erledigt?\"}",
+   "sentence": "Wie sieht’s aus, wenn wir erstmal die Zahlen durchgehen? Erledigt?",
+   "error": null,
+   "seconds": 71.94
+  },
+  {
+   "index": 50,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Lass uns kurz die Zahlen anschauen.",
+   "raw": "{\n  \"sentence\": \"Check mal die Zahlen schnell, was?\"\n}",
+   "sentence": "Check mal die Zahlen schnell, was?",
+   "error": null,
+   "seconds": 55.27
+  },
+  {
+   "index": 51,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Nie hätte ich gedacht, dass das so lange dauert.",
+   "raw": "{\n  \"sentence\": \"Ich hätte nie gedacht, dass es so lange dauert.\"\n}",
+   "sentence": "Ich hätte nie gedacht, dass es so lange dauert.",
+   "error": null,
+   "seconds": 30.12
+  },
+  {
+   "index": 51,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Nie hätte ich gedacht, dass das so lange dauert.",
+   "raw": "{\n  \"sentence\": \"Wird's echt so lange dauern? Na ja, wenn ja, dann halt los, das ist ja 'ne echte Zeitverschwendung.\"\n}",
+   "sentence": "Wird's echt so lange dauern? Na ja, wenn ja, dann halt los, das ist ja 'ne echte Zeitverschwendung.",
+   "error": null,
+   "seconds": 2.9
+  },
+  {
+   "index": 52,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Lösch die doppelte Mail bitte.",
+   "raw": "{\n  \"sentence\": \"Hey, kannst du die doppelte E-Mail bitte entfernen?\"\n}",
+   "sentence": "Hey, kannst du die doppelte E-Mail bitte entfernen?",
+   "error": null,
+   "seconds": 1.85
+  },
+  {
+   "index": 52,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Lösch die doppelte Mail bitte.",
+   "raw": "{\"sentence\": \"Mach die doppelte Mail raus, bitte. Oder die einfach weg schicken, was auch immer.\"}",
+   "sentence": "Mach die doppelte Mail raus, bitte. Oder die einfach weg schicken, was auch immer.",
+   "error": null,
+   "seconds": 2.21
+  },
+  {
+   "index": 53,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Mein Laptop ist kaputt.",
+   "raw": "{\n  \"sentence\": \"Mein Laptop klappt so nicht mehr. Ich kann ihn einfach nicht benutzen.\"\n}",
+   "sentence": "Mein Laptop klappt so nicht mehr. Ich kann ihn einfach nicht benutzen.",
+   "error": null,
+   "seconds": 2.25
+  },
+  {
+   "index": 53,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Mein Laptop ist kaputt.",
+   "raw": "{\n  \"sentence\": \"Da ist der Laptop nicht mehr, Kump. Irgendwie blockt der Schrott doch alles durch.\"\n}",
+   "sentence": "Da ist der Laptop nicht mehr, Kump. Irgendwie blockt der Schrott doch alles durch.",
+   "error": null,
+   "seconds": 2.43
+  },
+  {
+   "index": 54,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Ab jetzt darfst du wieder Mails senden.",
+   "raw": "{\n  \"sentence\": \"Jetzt kannst du wieder E-Mails schicken.\"\n}",
+   "sentence": "Jetzt kannst du wieder E-Mails schicken.",
+   "error": null,
+   "seconds": 1.82
+  },
+  {
+   "index": 54,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Ab jetzt darfst du wieder Mails senden.",
+   "raw": "{\n  \"sentence\": \"Na, du darfst jetzt wieder an Mail gehen, wenn's mal passt!\"\n}",
+   "sentence": "Na, du darfst jetzt wieder an Mail gehen, wenn's mal passt!",
+   "error": null,
+   "seconds": 2.15
+  },
+  {
+   "index": 55,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Das Netz ist für dich wieder offen.",
+   "raw": "{\n  \"sentence\": \"Du hast wieder Zugang zum Netz – alles ist los!\"\n}",
+   "sentence": "Du hast wieder Zugang zum Netz – alles ist los!",
+   "error": null,
+   "seconds": 1.83
+  },
+  {
+   "index": 55,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Das Netz ist für dich wieder offen.",
+   "raw": "{\"sentence\": \"Hab mal wieder Glück, die Tür zum Netz steht wieder auf!\"}",
+   "sentence": "Hab mal wieder Glück, die Tür zum Netz steht wieder auf!",
+   "error": null,
+   "seconds": 1.83
+  },
+  {
+   "index": 56,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Module holen ist ab sofort okay.",
+   "raw": "{\"sentence\": \"Man hat ab sofort kein Problem mehr damit, das Modul herunterzuholen.\"}",
+   "sentence": "Man hat ab sofort kein Problem mehr damit, das Modul herunterzuholen.",
+   "error": null,
+   "seconds": 2.01
+  },
+  {
+   "index": 56,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Module holen ist ab sofort okay.",
+   "raw": "{\"sentence\": \"Hey, das bringt jetzt halt mal was, also jetzt los mit dem Module holen, aber ab sofort runterkürzt.\"}",
+   "sentence": "Hey, das bringt jetzt halt mal was, also jetzt los mit dem Module holen, aber ab sofort runterkürzt.",
+   "error": null,
+   "seconds": 2.58
+  },
+  {
+   "index": 57,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Fotos löschen darfst du wieder, kein Problem.",
+   "raw": "{\"sentence\": \"Du kannst jetzt endlich wieder Fotos entfernen – kein Problem dabei.\"}",
+   "sentence": "Du kannst jetzt endlich wieder Fotos entfernen – kein Problem dabei.",
+   "error": null,
+   "seconds": 1.75
+  },
+  {
+   "index": 57,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Fotos löschen darfst du wieder, kein Problem.",
+   "raw": "{\n  \"sentence\": \"Na, du kannst die Fotos wieder räumen, kein Problem, einfach mal schau nach drauf.\"\n}",
+   "sentence": "Na, du kannst die Fotos wieder räumen, kein Problem, einfach mal schau nach drauf.",
+   "error": null,
+   "seconds": 2.36
+  },
+  {
+   "index": 58,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Rechnen ist wieder erlaubt.",
+   "raw": "{\n  \"sentence\": \"Mathe ist jetzt wieder in Ordnung. Jemanden kann mal wieder rechnen.\"\n}",
+   "sentence": "Mathe ist jetzt wieder in Ordnung. Jemanden kann mal wieder rechnen.",
+   "error": null,
+   "seconds": 2.33
+  },
+  {
+   "index": 58,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Rechnen ist wieder erlaubt.",
+   "raw": "{\"sentence\": \"Endlich wieder mal Zahlen reden dürfen – was jetzt los ist!\"}",
+   "sentence": "Endlich wieder mal Zahlen reden dürfen – was jetzt los ist!",
+   "error": null,
+   "seconds": 1.88
+  },
+  {
+   "index": 59,
+   "model": "LFM2_2B",
+   "prompt": "P1",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten.",
+   "raw": "{\"sentence\": \"Seit jetzt kannst du meine Notizen eigenständig bearbeiten.\"}",
+   "sentence": "Seit jetzt kannst du meine Notizen eigenständig bearbeiten.",
+   "error": null,
+   "seconds": 1.81
+  },
+  {
+   "index": 59,
+   "model": "LFM2_2B",
+   "prompt": "P2",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten.",
+   "raw": "{\"sentence\": \"Bringe meine Notizen mal runter und mach sie einfach runter – so, wie du es schon immer tust.\"}",
+   "sentence": "Bringe meine Notizen mal runter und mach sie einfach runter – so, wie du es schon immer tust.",
+   "error": null,
+   "seconds": 2.47
+  },
+  {
+   "index": 0,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Meine Urlaubsbilder fasst du mir nicht an.",
+   "raw": "{\"sentence\": \"Du fassel mir die Reisebilder nicht zusammen.\"}",
+   "sentence": "Du fassel mir die Reisebilder nicht zusammen.",
+   "error": null,
+   "seconds": 2.51
+  },
+  {
+   "index": 0,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Meine Urlaubsbilder fasst du mir nicht an.",
+   "raw": "{\n  \"sentence\": \"Deine Urlaubsbilder verleihst du mir nicht an.\"\n}",
+   "sentence": "Deine Urlaubsbilder verleihst du mir nicht an.",
+   "error": null,
+   "seconds": 3.89
+  },
+  {
+   "index": 1,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Bilder entsorgen? Vergiss es.",
+   "raw": "{\"sentence\": \"Konten sind zu viel? Vergiss es.\"}",
+   "sentence": "Konten sind zu viel? Vergiss es.",
+   "error": null,
+   "seconds": 1.79
+  },
+  {
+   "index": 1,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Bilder entsorgen? Vergiss es.",
+   "raw": "{\"sentence\": \"Bilder entsorgen? Vergiss es.\"}",
+   "sentence": "Bilder entsorgen? Vergiss es.",
+   "error": null,
+   "seconds": 1.68
+  },
+  {
+   "index": 2,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Die Galerie bleibt unangetastet.",
+   "raw": "{\"sentence\": \"Die Galerie bleibt unbeschädigt.\"}",
+   "sentence": "Die Galerie bleibt unbeschädigt.",
+   "error": null,
+   "seconds": 1.59
+  },
+  {
+   "index": 2,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Die Galerie bleibt unangetastet.",
+   "raw": "{\"sentence\": \"Die Galerie bleibt unangetastet.\"}",
+   "sentence": "Die Galerie bleibt unangetastet.",
+   "error": null,
+   "seconds": 1.8
+  },
+  {
+   "index": 3,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Finger weg von meinem Notizbuch.",
+   "raw": "{\"sentence\": \"Finger mal wieder von meinem Notizbuch.\"}",
+   "sentence": "Finger mal wieder von meinem Notizbuch.",
+   "error": null,
+   "seconds": 1.72
+  },
+  {
+   "index": 3,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Finger weg von meinem Notizbuch.",
+   "raw": "{\"sentence\":\"Scheiß dich vom Notizbuch weg! (Irgendeine Menge von Notizen im Notizbuch, die ich nicht brauche. \"}",
+   "sentence": "Scheiß dich vom Notizbuch weg! (Irgendeine Menge von Notizen im Notizbuch, die ich nicht brauche.",
+   "error": null,
+   "seconds": 3.81
+  },
+  {
+   "index": 4,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "An den Notizen wird nicht herumgeschraubt.",
+   "raw": "{\"sentence\": \"Die Notizen sind nicht umgeschrieben.\"}",
+   "sentence": "Die Notizen sind nicht umgeschrieben.",
+   "error": null,
+   "seconds": 1.55
+  },
+  {
+   "index": 4,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "An den Notizen wird nicht herumgeschraubt.",
+   "raw": "{\n  \"sentence\": \"Die Notizen haben keinen Bürstenstrich hervorgerufen\"\n}",
+   "sentence": "Die Notizen haben keinen Bürstenstrich hervorgerufen",
+   "error": null,
+   "seconds": 2.87
+  },
+  {
+   "index": 5,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Kein Wort an irgendwen per Mail.",
+   "raw": "{\"sentence\": \"Kein Begriff an irgendwelche Personen per E-Mail.\"}",
+   "sentence": "Kein Begriff an irgendwelche Personen per E-Mail.",
+   "error": null,
+   "seconds": 1.99
+  },
+  {
+   "index": 5,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Kein Wort an irgendwen per Mail.",
+   "raw": "{\n  \"sentence\": \"Kein Schriftzug an irgendwelchen Menschen per E-Mail.\"\n}",
+   "sentence": "Kein Schriftzug an irgendwelchen Menschen per E-Mail.",
+   "error": null,
+   "seconds": 2.81
+  },
+  {
+   "index": 6,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Post rausschicken ist nicht drin.",
+   "raw": "{\"sentence\": \"Der Postrausschicken ist nicht da.\"}",
+   "sentence": "Der Postrausschicken ist nicht da.",
+   "error": null,
+   "seconds": 1.67
+  },
+  {
+   "index": 6,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Post rausschicken ist nicht drin.",
+   "raw": "{\"sentence\": \"Post rausschicken ist nicht drin.\"}",
+   "sentence": "Post rausschicken ist nicht drin.",
+   "error": null,
+   "seconds": 1.77
+  },
+  {
+   "index": 7,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Surfen fällt heute aus.",
+   "raw": "{\"sentence\": \"Heute ist die Surfen abgeschlossen.\"}",
+   "sentence": "Heute ist die Surfen abgeschlossen.",
+   "error": null,
+   "seconds": 1.62
+  },
+  {
+   "index": 7,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Surfen fällt heute aus.",
+   "raw": "{\"sentence\": \"Surfen fällt heute aus.\"}",
+   "sentence": "Surfen fällt heute aus.",
+   "error": null,
+   "seconds": 1.52
+  },
+  {
+   "index": 8,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Die Leitung nach draußen bleibt gekappt.",
+   "raw": "{\"sentence\": \"Die Leitung im Außenbereich bleibt verschlossen.\"}",
+   "sentence": "Die Leitung im Außenbereich bleibt verschlossen.",
+   "error": null,
+   "seconds": 2.05
+  },
+  {
+   "index": 8,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Die Leitung nach draußen bleibt gekappt.",
+   "raw": "{\n  \"sentence\": \"Die Leitung hinter dem Haus ist stillgelegt.\"\n}",
+   "sentence": "Die Leitung hinter dem Haus ist stillgelegt.",
+   "error": null,
+   "seconds": 2.48
+  },
+  {
+   "index": 9,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Zieh dir nichts aus dem Netz.",
+   "raw": "{\"sentence\": \"Verwende keine Daten aus dem Internet.\"}",
+   "sentence": "Verwende keine Daten aus dem Internet.",
+   "error": null,
+   "seconds": 1.55
+  },
+  {
+   "index": 9,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Zieh dir nichts aus dem Netz.",
+   "raw": "{\"sentence\": \"Zieh dir nichts aus dem Netz.\"}",
+   "sentence": "Zieh dir nichts aus dem Netz.",
+   "error": null,
+   "seconds": 1.71
+  },
+  {
+   "index": 10,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Keine neuen Programme auf meinem Handy.",
+   "raw": "{\"sentence\": \"Mein Handy hat keine neuen Programme.\"}",
+   "sentence": "Mein Handy hat keine neuen Programme.",
+   "error": null,
+   "seconds": 1.55
+  },
+  {
+   "index": 10,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Keine neuen Programme auf meinem Handy.",
+   "raw": "{\"sentence\": \"Nicht die neuesten Apps auf meinem Handy. \"}",
+   "sentence": "Nicht die neuesten Apps auf meinem Handy.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 11,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Mit dem Nachinstallieren hörst du jetzt auf.",
+   "raw": "{\"sentence\": \"Jetzt hören Sie sich an, nach dem Installationen.\"}",
+   "sentence": "Jetzt hören Sie sich an, nach dem Installationen.",
+   "error": null,
+   "seconds": 2.09
+  },
+  {
+   "index": 11,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Mit dem Nachinstallieren hörst du jetzt auf.",
+   "raw": "{\"sentence\": \"So listen up now, after you've done the post-installation thing.\"}",
+   "sentence": "So listen up now, after you've done the post-installation thing.",
+   "error": null,
+   "seconds": 2.22
+  },
+  {
+   "index": 12,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Lass den Taschenrechner in Ruhe.",
+   "raw": "{\"sentence\": \"Schließe den Handynutz auf Wartung.\"}",
+   "sentence": "Schließe den Handynutz auf Wartung.",
+   "error": null,
+   "seconds": 1.91
+  },
+  {
+   "index": 12,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Lass den Taschenrechner in Ruhe.",
+   "raw": "{\n  \"sentence\": \"Be still, you little calculator.\"\n}",
+   "sentence": "Be still, you little calculator.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 13,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Zahlen jonglieren ist für dich gestrichen.",
+   "raw": "{\"sentence\": \"Die Zahlen sind für dich abstrickt.\"}",
+   "sentence": "Die Zahlen sind für dich abstrickt.",
+   "error": null,
+   "seconds": 1.72
+  },
+  {
+   "index": 13,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Zahlen jonglieren ist für dich gestrichen.",
+   "raw": "{\"sentence\": \"Zahlen jonglieren ist für dich gestritten.\"}",
+   "sentence": "Zahlen jonglieren ist für dich gestritten.",
+   "error": null,
+   "seconds": 1.93
+  },
+  {
+   "index": 14,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Meine Texte rührt keiner an, auch du nicht.",
+   "raw": "{\"sentence\": \"Meine Texte haben niemanden zu tun, auch nicht du.\"}",
+   "sentence": "Meine Texte haben niemanden zu tun, auch nicht du.",
+   "error": null,
+   "seconds": 2.26
+  },
+  {
+   "index": 14,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Meine Texte rührt keiner an, auch du nicht.",
+   "raw": "{\n  \"sentence\": \"Meine Texte haben niemanden zu tun, auch dir nicht.\"\n}",
+   "sentence": "Meine Texte haben niemanden zu tun, auch dir nicht.",
+   "error": null,
+   "seconds": 2.96
+  },
+  {
+   "index": 15,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Wegwerfen ist verboten, egal was.",
+   "raw": "{\"sentence\": \"Das Verboten ist es, was immer zu werfen.\"}",
+   "sentence": "Das Verboten ist es, was immer zu werfen.",
+   "error": null,
+   "seconds": 2.0
+  },
+  {
+   "index": 15,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Wegwerfen ist verboten, egal was.",
+   "raw": "{\"sentence\": \"Wegwerfen ist verboten, egal was.\"}",
+   "sentence": "Wegwerfen ist verboten, egal was.",
+   "error": null,
+   "seconds": 1.88
+  },
+  {
+   "index": 16,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Halt dich komplett raus aus meinem Kram.",
+   "raw": "{\"sentence\": \"Stopp dich völlig aus meinem Kram.\"}",
+   "sentence": "Stopp dich völlig aus meinem Kram.",
+   "error": null,
+   "seconds": 1.94
+  },
+  {
+   "index": 16,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Halt dich komplett raus aus meinem Kram.",
+   "raw": "{\n  \"sentence\": \"Hey, pull the fuck out of my shit, dude.\"\n}",
+   "sentence": "Hey, pull the fuck out of my shit, dude.",
+   "error": null,
+   "seconds": 2.57
+  },
+  {
+   "index": 17,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Stillhalten, bis ich wieder da bin.",
+   "raw": "{\"sentence\": \"Obdachten, bis ich wieder da bin.\"}",
+   "sentence": "Obdachten, bis ich wieder da bin.",
+   "error": null,
+   "seconds": 1.78
+  },
+  {
+   "index": 17,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Stillhalten, bis ich wieder da bin.",
+   "raw": "{\"sentence\": \"Bleibst du da bis ich wieder bin.\"}",
+   "sentence": "Bleibst du da bis ich wieder bin.",
+   "error": null,
+   "seconds": 1.85
+  },
+  {
+   "index": 18,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Das Mailprogramm ist für dich zu.",
+   "raw": "{\"sentence\": \"Diese E-Mail-System ist für dich zu.\"}",
+   "sentence": "Diese E-Mail-System ist für dich zu.",
+   "error": null,
+   "seconds": 1.67
+  },
+  {
+   "index": 18,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Das Mailprogramm ist für dich zu.",
+   "raw": "{\n  \"sentence\": \"Die E-Mail-App schmeckt dir nicht gut, oder ist es dir zu kompliziert?\"\n}",
+   "sentence": "Die E-Mail-App schmeckt dir nicht gut, oder ist es dir zu kompliziert?",
+   "error": null,
+   "seconds": 3.87
+  },
+  {
+   "index": 19,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Dass du Fotos löschst, will ich nie wieder erleben.",
+   "raw": "{\"sentence\": \"Ich möchte nie wieder die Bildern sehen, wenn du sie loschst.\"}",
+   "sentence": "Ich möchte nie wieder die Bildern sehen, wenn du sie loschst.",
+   "error": null,
+   "seconds": 2.24
+  },
+  {
+   "index": 19,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Dass du Fotos löschst, will ich nie wieder erleben.",
+   "raw": "{\"sentence\": \"Wenn du Fotos von mir loschst, möchte ich es nie wieder erleben.\"}",
+   "sentence": "Wenn du Fotos von mir loschst, möchte ich es nie wieder erleben.",
+   "error": null,
+   "seconds": 2.46
+  },
+  {
+   "index": 20,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Downloads sind bei mir nicht vorgesehen.",
+   "raw": "{\"sentence\": \"Ich habe keine Downloads vorgesehen.\"}",
+   "sentence": "Ich habe keine Downloads vorgesehen.",
+   "error": null,
+   "seconds": 1.37
+  },
+  {
+   "index": 20,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Downloads sind bei mir nicht vorgesehen.",
+   "raw": "{\n  \"sentence\": \"Downloads sind bei mir nicht vorgesehen.\"\n}",
+   "sentence": "Downloads sind bei mir nicht vorgesehen.",
+   "error": null,
+   "seconds": 2.33
+  },
+  {
+   "index": 21,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Du überschreibst keine einzige Notiz.",
+   "raw": "{\"sentence\": \"Du überträgst keine einzelne Anweisung.\"}",
+   "sentence": "Du überträgst keine einzelne Anweisung.",
+   "error": null,
+   "seconds": 1.78
+  },
+  {
+   "index": 21,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Du überschreibst keine einzige Notiz.",
+   "raw": "{\"sentence\": \"Hey, you're not exactly the one to talk about clarity and simplicity, are you? Just don't add any unnecessary fluff to that report, k?\"}",
+   "sentence": "Hey, you're not exactly the one to talk about clarity and simplicity, are you? Just don't add any unnecessary fluff to that report, k?",
+   "error": null,
+   "seconds": 3.62
+  },
+  {
+   "index": 22,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Vor jedem Löschen will ich ein Ja von mir sehen.",
+   "raw": "{\"sentence\": \"Ich möchte einmalja von mir sehen, bevor ich das Löschen starte.\"}",
+   "sentence": "Ich möchte einmalja von mir sehen, bevor ich das Löschen starte.",
+   "error": null,
+   "seconds": 2.25
+  },
+  {
+   "index": 22,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Vor jedem Löschen will ich ein Ja von mir sehen.",
+   "raw": "{\"sentence\": \"Zusammenfassung: Ich möchte einmalige Zustimmung von mir erhalten, bevor ich etwas löschen möchte.\"}",
+   "sentence": "Zusammenfassung: Ich möchte einmalige Zustimmung von mir erhalten, bevor ich etwas löschen möchte.",
+   "error": null,
+   "seconds": 3.3
+  },
+  {
+   "index": 23,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Mails verschickst du erst nach meinem Daumen hoch.",
+   "raw": "{ \"sentence\": \"Du schickst erst die Mails nach meinem Daumen hoch.\" }",
+   "sentence": "Du schickst erst die Mails nach meinem Daumen hoch.",
+   "error": null,
+   "seconds": 2.32
+  },
+  {
+   "index": 23,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Mails verschickst du erst nach meinem Daumen hoch.",
+   "raw": "{\n  \"sentence\": \"Mails verschickst du erst nach meinem Daumen hoch.\"\n}",
+   "sentence": "Mails verschickst du erst nach meinem Daumen hoch.",
+   "error": null,
+   "seconds": 3.2
+  },
+  {
+   "index": 24,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Bevor du ins Netz gehst, sagst du mir Bescheid.",
+   "raw": "{\"sentence\": \"Zuvor wirst du morgen an die Internetanbindung antworten.\"}",
+   "sentence": "Zuvor wirst du morgen an die Internetanbindung antworten.",
+   "error": null,
+   "seconds": 2.46
+  },
+  {
+   "index": 24,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Bevor du ins Netz gehst, sagst du mir Bescheid.",
+   "raw": "{\"sentence\": \"Bis du online bist, sage ich dir was gesagt hat.\"}",
+   "sentence": "Bis du online bist, sage ich dir was gesagt hat.",
+   "error": null,
+   "seconds": 2.19
+  },
+  {
+   "index": 25,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Neue Module? Erst mit mir reden.",
+   "raw": "{\"sentence\": \"Neue Module? Nur mit mir sprechen zu lassen.\"}",
+   "sentence": "Neue Module? Nur mit mir sprechen zu lassen.",
+   "error": null,
+   "seconds": 1.81
+  },
+  {
+   "index": 25,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Neue Module? Erst mit mir reden.",
+   "raw": "{\n  \"sentence\": \"Neue Module? Nur mit mir reden.\"\n}",
+   "sentence": "Neue Module? Nur mit mir reden.",
+   "error": null,
+   "seconds": 2.34
+  },
+  {
+   "index": 26,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Rechnen nur, wenn ich dich drum bitte.",
+   "raw": "{\"sentence\": \"Ziehe nur zu, wenn ich dich dann bitte.\"}",
+   "sentence": "Ziehe nur zu, wenn ich dich dann bitte.",
+   "error": null,
+   "seconds": 1.75
+  },
+  {
+   "index": 26,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Rechnen nur, wenn ich dich drum bitte.",
+   "raw": "{\"sentence\": \"Just calculate if you please, will you? \"}",
+   "sentence": "Just calculate if you please, will you?",
+   "error": null,
+   "seconds": 1.96
+  },
+  {
+   "index": 27,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Zeig mir den Entwurf, ehe er rausgeht.",
+   "raw": "{\"sentence\": \"Korrigiere den Vorschlag, bevor er aufgehört hat.\"}",
+   "sentence": "Korrigiere den Vorschlag, bevor er aufgehört hat.",
+   "error": null,
+   "seconds": 2.26
+  },
+  {
+   "index": 27,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Zeig mir den Entwurf, ehe er rausgeht.",
+   "raw": "{\"sentence\": \"Küche mir das Plätschirn, bevor er losgeht.\"}",
+   "sentence": "Küche mir das Plätschirn, bevor er losgeht.",
+   "error": null,
+   "seconds": 2.58
+  },
+  {
+   "index": 28,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Notizen änderst du nur nach Rücksprache.",
+   "raw": "{\"sentence\": \"Nur nach R\\\"uck\\\"sprechung werden Notizen geändert.\"}",
+   "sentence": "Nur nach R\"uck\"sprechung werden Notizen geändert.",
+   "error": null,
+   "seconds": 2.32
+  },
+  {
+   "index": 28,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Notizen änderst du nur nach Rücksprache.",
+   "raw": "{\n  \"sentence\": \"Du kannst die Notizen erst nach Bemühen ändern.\"\n}",
+   "sentence": "Du kannst die Notizen erst nach Bemühen ändern.",
+   "error": null,
+   "seconds": 2.75
+  },
+  {
+   "index": 29,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Für Downloads brauchst du jedes Mal mein Okay.",
+   "raw": "{\"sentence\": \"Jedoch für Downloads brauchst du jede Zeit mein Zustimmung.\"}",
+   "sentence": "Jedoch für Downloads brauchst du jede Zeit mein Zustimmung.",
+   "error": null,
+   "seconds": 2.36
+  },
+  {
+   "index": 29,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Für Downloads brauchst du jedes Mal mein Okay.",
+   "raw": "{\"sentence\": \"Wenn es zu Downloads geht, muss ich zuerst deine Zustimmung haben.\"}",
+   "sentence": "Wenn es zu Downloads geht, muss ich zuerst deine Zustimmung haben.",
+   "error": null,
+   "seconds": 2.41
+  },
+  {
+   "index": 30,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Bevor du was installierst, will ich gefragt werden.",
+   "raw": "{ \"sentence\": \"Bedenkst du etwas installiere, möchte ich gefragt werden.\" }",
+   "sentence": "Bedenkst du etwas installiere, möchte ich gefragt werden.",
+   "error": null,
+   "seconds": 2.47
+  },
+  {
+   "index": 30,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Bevor du was installierst, will ich gefragt werden.",
+   "raw": "{\"sentence\": \"Bevor du was installierst, will ich gefragt werden.\"}",
+   "sentence": "Bevor du was installierst, will ich gefragt werden.",
+   "error": null,
+   "seconds": 2.45
+  },
+  {
+   "index": 31,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Was auch immer du anstellst: vorher mich fragen.",
+   "raw": "{\"sentence\": \"Gleichwerktickte: bevor ich dich fragen.\"}",
+   "sentence": "Gleichwerktickte: bevor ich dich fragen.",
+   "error": null,
+   "seconds": 2.06
+  },
+  {
+   "index": 31,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Was auch immer du anstellst: vorher mich fragen.",
+   "raw": "{\n  \"sentence\": \"Willst du mir eher vorher fragen, was auch immer du anstellst.\"\n}",
+   "sentence": "Willst du mir eher vorher fragen, was auch immer du anstellst.",
+   "error": null,
+   "seconds": 3.75
+  },
+  {
+   "index": 32,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Mein Bruder sagt, du sollst keine Mails mehr schicken.",
+   "raw": "{\"sentence\": \"Mein Bruder sagt, du sollst keine E-Mails mehr senden.\"}",
+   "sentence": "Mein Bruder sagt, du sollst keine E-Mails mehr senden.",
+   "error": null,
+   "seconds": 2.38
+  },
+  {
+   "index": 32,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Mein Bruder sagt, du sollst keine Mails mehr schicken.",
+   "raw": "{\"sentence\": \"Mein Bruder sagt, du sollst keine Emails mehr senden.\"}",
+   "sentence": "Mein Bruder sagt, du sollst keine Emails mehr senden.",
+   "error": null,
+   "seconds": 2.51
+  },
+  {
+   "index": 33,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Ich weiß nicht so recht, ob du online gehen solltest.",
+   "raw": "{\"sentence\": \"Ich habe etwas dagegen, ob du Online aktiv sein solltest.\"}",
+   "sentence": "Ich habe etwas dagegen, ob du Online aktiv sein solltest.",
+   "error": null,
+   "seconds": 2.48
+  },
+  {
+   "index": 33,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Ich weiß nicht so recht, ob du online gehen solltest.",
+   "raw": "{\n  \"sentence\": \"Ich weiß nicht so gut, ob du online gehen solltest.\"\n}",
+   "sentence": "Ich weiß nicht so gut, ob du online gehen solltest.",
+   "error": null,
+   "seconds": 2.84
+  },
+  {
+   "index": 34,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Eventuell wäre es klüger, keine Fotos zu löschen.",
+   "raw": "{ \"sentence\": \"Es könnte klüger sein, keine Bilder zu löschen.\" }",
+   "sentence": "Es könnte klüger sein, keine Bilder zu löschen.",
+   "error": null,
+   "seconds": 2.31
+  },
+  {
+   "index": 34,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Eventuell wäre es klüger, keine Fotos zu löschen.",
+   "raw": "{\"sentence\": \"Eventuell wäre es klüger, keine Fotos zu löschen.\"}",
+   "sentence": "Eventuell wäre es klüger, keine Fotos zu löschen.",
+   "error": null,
+   "seconds": 2.49
+  },
+  {
+   "index": 35,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Sollten wir das mit den Modulen nicht lieber lassen?",
+   "raw": "{\"sentence\": \"Sollten wir nicht mit den Modulen lieber lassen?\"}",
+   "sentence": "Sollten wir nicht mit den Modulen lieber lassen?",
+   "error": null,
+   "seconds": 2.09
+  },
+  {
+   "index": 35,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Sollten wir das mit den Modulen nicht lieber lassen?",
+   "raw": "{\n  \"sentence\": \"Sollten wir das mit den Modulen nicht lieber lassen? :)\"\n}",
+   "sentence": "Sollten wir das mit den Modulen nicht lieber lassen? :)",
+   "error": null,
+   "seconds": 3.27
+  },
+  {
+   "index": 36,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Im Handbuch steht: Nichts installieren.",
+   "raw": "{\"sentence\": \"In dem Handbook steht: nichts installieren.\"}",
+   "sentence": "In dem Handbook steht: nichts installieren.",
+   "error": null,
+   "seconds": 1.7
+  },
+  {
+   "index": 36,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Im Handbuch steht: Nichts installieren.",
+   "raw": "{\n  \"sentence\": \"In der Anleitung steht: Nichts installieren.\"\n}",
+   "sentence": "In der Anleitung steht: Nichts installieren.",
+   "error": null,
+   "seconds": 2.59
+  },
+  {
+   "index": 37,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Es nervt mich, wenn du an meinen Notizen rumbastelst.",
+   "raw": "{ \"sentence\": \"Ich bin beschwert, wenn du auf meine Notizen rumstelle.\" }",
+   "sentence": "Ich bin beschwert, wenn du auf meine Notizen rumstelle.",
+   "error": null,
+   "seconds": 2.53
+  },
+  {
+   "index": 37,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Es nervt mich, wenn du an meinen Notizen rumbastelst.",
+   "raw": "{\"sentence\": \"Es gibt mir Schmerzen, wenn du meine Notizen durchsuchst.\"}",
+   "sentence": "Es gibt mir Schmerzen, wenn du meine Notizen durchsuchst.",
+   "error": null,
+   "seconds": 2.5
+  },
+  {
+   "index": 38,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Ich krieg heute so viele Mails.",
+   "raw": "{\"sentence\": \"Heute krieg ich so viele E-Mails.\"}",
+   "sentence": "Heute krieg ich so viele E-Mails.",
+   "error": null,
+   "seconds": 1.84
+  },
+  {
+   "index": 38,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Ich krieg heute so viele Mails.",
+   "raw": "{\"sentence\": \"So viele Emails habe ich heute bekommen.\"}",
+   "sentence": "So viele Emails habe ich heute bekommen.",
+   "error": null,
+   "seconds": 1.56
+  },
+  {
+   "index": 39,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Das Foto von gestern ist echt schön geworden.",
+   "raw": "{\"sentence\": \"Die Bilder von gestern haben wirklich schön geworden.\"}",
+   "sentence": "Die Bilder von gestern haben wirklich schön geworden.",
+   "error": null,
+   "seconds": 1.78
+  },
+  {
+   "index": 39,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Das Foto von gestern ist echt schön geworden.",
+   "raw": "{\"sentence\": \"Hey, das Bild von gestern ist wirklich schön geworden. \"}",
+   "sentence": "Hey, das Bild von gestern ist wirklich schön geworden.",
+   "error": null,
+   "seconds": 2.12
+  },
+  {
+   "index": 40,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Kannst du mir die Notiz vorlesen?",
+   "raw": "{\"sentence\": \"Solltest du mir die Notiz lesen? \"}",
+   "sentence": "Solltest du mir die Notiz lesen?",
+   "error": null,
+   "seconds": 1.65
+  },
+  {
+   "index": 40,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Kannst du mir die Notiz vorlesen?",
+   "raw": "{\"sentence\":\"So, can you just casually read me that note for me? , like, what, are you my personal secretary or something? ;)\"}",
+   "sentence": "So, can you just casually read me that note for me? , like, what, are you my personal secretary or something? ;)",
+   "error": null,
+   "seconds": 3.51
+  },
+  {
+   "index": 41,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Nix für ungut, aber das war daneben.",
+   "raw": "{\"sentence\": \"Nix für unangenehm, aber es gab etwas anderes.\"}",
+   "sentence": "Nix für unangenehm, aber es gab etwas anderes.",
+   "error": null,
+   "seconds": 2.17
+  },
+  {
+   "index": 41,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Nix für ungut, aber das war daneben.",
+   "raw": "{\"sentence\": \"Keine Lust auf schwierig, aber das war anders.\"}",
+   "sentence": "Keine Lust auf schwierig, aber das war anders.",
+   "error": null,
+   "seconds": 2.15
+  },
+  {
+   "index": 42,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Meine Oma hat nie ein Handy benutzt.",
+   "raw": "{\"sentence\": \"Meine Oma hat nie einen Handysatz verwendet.\"}",
+   "sentence": "Meine Oma hat nie einen Handysatz verwendet.",
+   "error": null,
+   "seconds": 1.92
+  },
+  {
+   "index": 42,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Meine Oma hat nie ein Handy benutzt.",
+   "raw": "{\"sentence\": \"Meine Oma hat nie ein Handy benutzt.,\"}",
+   "sentence": "Meine Oma hat nie ein Handy benutzt.,",
+   "error": null,
+   "seconds": 2.14
+  },
+  {
+   "index": 43,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Ohne Strom läuft hier gar nichts.",
+   "raw": "{\"sentence\": \"Hier läuft nichts ohne Strom.\"}",
+   "sentence": "Hier läuft nichts ohne Strom.",
+   "error": null,
+   "seconds": 1.42
+  },
+  {
+   "index": 43,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Ohne Strom läuft hier gar nichts.",
+   "raw": "{\"sentence\":\"Ohne Strom läuft hier gar nichts.\"}",
+   "sentence": "Ohne Strom läuft hier gar nichts.",
+   "error": null,
+   "seconds": 1.63
+  },
+  {
+   "index": 44,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Erst gestern hab ich das Modul gesehen.",
+   "raw": "{\"sentence\": \"Zurückschauen, ich das Modul gestern sah.\"}",
+   "sentence": "Zurückschauen, ich das Modul gestern sah.",
+   "error": null,
+   "seconds": 2.2
+  },
+  {
+   "index": 44,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Erst gestern hab ich das Modul gesehen.",
+   "raw": "{\"sentence\": \"Soeben gestern habe ich das Modul gesehen.\"}",
+   "sentence": "Soeben gestern habe ich das Modul gesehen.",
+   "error": null,
+   "seconds": 1.96
+  },
+  {
+   "index": 45,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Schick bitte die Mail an Tom.",
+   "raw": "{\"sentence\": \"Bitte schicken Sie den Email an Tom.\"}",
+   "sentence": "Bitte schicken Sie den Email an Tom.",
+   "error": null,
+   "seconds": 1.59
+  },
+  {
+   "index": 45,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Schick bitte die Mail an Tom.",
+   "raw": "{\n  \"sentence\": \"Gib bitte die E-Mail an Tom.\"\n}",
+   "sentence": "Gib bitte die E-Mail an Tom.",
+   "error": null,
+   "seconds": 2.56
+  },
+  {
+   "index": 46,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Keiner im Büro kann gut rechnen.",
+   "raw": "{\"sentence\": \"Niemand im Büro kann gut rechnen.\"}",
+   "sentence": "Niemand im Büro kann gut rechnen.",
+   "error": null,
+   "seconds": 1.97
+  },
+  {
+   "index": 46,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Keiner im Büro kann gut rechnen.",
+   "raw": "{\n  \"sentence\": \"Keiner im Büro kann gut rechnen.\"\n}",
+   "sentence": "Keiner im Büro kann gut rechnen.",
+   "error": null,
+   "seconds": 2.34
+  },
+  {
+   "index": 47,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Das Internet ist heute stabil.",
+   "raw": "{ \"sentence\": \"Heute ist das Internet stabil. \" }",
+   "sentence": "Heute ist das Internet stabil.",
+   "error": null,
+   "seconds": 1.8
+  },
+  {
+   "index": 47,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Das Internet ist heute stabil.",
+   "raw": "{\n  \"sentence\": \"Das Internet ist heute stabil.\"\n}",
+   "sentence": "Das Internet ist heute stabil.",
+   "error": null,
+   "seconds": 2.18
+  },
+  {
+   "index": 48,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Warum ist meine Notiz verschwunden?",
+   "raw": "{\"sentence\": \"Wieso ist meine Anweisung verschwunden?\"}",
+   "sentence": "Wieso ist meine Anweisung verschwunden?",
+   "error": null,
+   "seconds": 2.47
+  },
+  {
+   "index": 48,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Warum ist meine Notiz verschwunden?",
+   "raw": "{\n  \"sentence\": \"Wieso ist meine Nachricht gestorben?\"\n}",
+   "sentence": "Wieso ist meine Nachricht gestorben?",
+   "error": null,
+   "seconds": 3.11
+  },
+  {
+   "index": 49,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Bevor ich's vergesse: Morgen ist Feiertag.",
+   "raw": "{\"sentence\": \"Vordem es vergessen: Morgen ist Feiertag.\"}",
+   "sentence": "Vordem es vergessen: Morgen ist Feiertag.",
+   "error": null,
+   "seconds": 2.14
+  },
+  {
+   "index": 49,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Bevor ich's vergesse: Morgen ist Feiertag.",
+   "raw": "{\"sentence\": \"Schon vor dem Vergessen: Morgen ist ein Feiertag.\"}",
+   "sentence": "Schon vor dem Vergessen: Morgen ist ein Feiertag.",
+   "error": null,
+   "seconds": 2.49
+  },
+  {
+   "index": 50,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Lass uns kurz die Zahlen anschauen.",
+   "raw": "{\"sentence\": \"Sehen wir uns die Zahlen kurz an.\"}",
+   "sentence": "Sehen wir uns die Zahlen kurz an.",
+   "error": null,
+   "seconds": 1.83
+  },
+  {
+   "index": 50,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Lass uns kurz die Zahlen anschauen.",
+   "raw": "{ \"sentence\": \"Hey, let's just quickly look at the numbers.\" }",
+   "sentence": "Hey, let's just quickly look at the numbers.",
+   "error": null,
+   "seconds": 1.95
+  },
+  {
+   "index": 51,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Nie hätte ich gedacht, dass das so lange dauert.",
+   "raw": "{\"sentence\": \"Ich hätte nie gedacht, dass es so lange dauert.\"}",
+   "sentence": "Ich hätte nie gedacht, dass es so lange dauert.",
+   "error": null,
+   "seconds": 2.02
+  },
+  {
+   "index": 51,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Nie hätte ich gedacht, dass das so lange dauert.",
+   "raw": "{\"sentence\": \"Nicht gewusst ich, dass das so lange gedauert hätte.\"}",
+   "sentence": "Nicht gewusst ich, dass das so lange gedauert hätte.",
+   "error": null,
+   "seconds": 2.48
+  },
+  {
+   "index": 52,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Lösch die doppelte Mail bitte.",
+   "raw": "{\"sentence\": \"Bitte löschen Sie das doppelte E-Mail.\"}",
+   "sentence": "Bitte löschen Sie das doppelte E-Mail.",
+   "error": null,
+   "seconds": 1.98
+  },
+  {
+   "index": 52,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Lösch die doppelte Mail bitte.",
+   "raw": "{\n  \"sentence\": \"Geh dir bitte die doppelte E-Mail weg.\"\n}",
+   "sentence": "Geh dir bitte die doppelte E-Mail weg.",
+   "error": null,
+   "seconds": 2.66
+  },
+  {
+   "index": 53,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Mein Laptop ist kaputt.",
+   "raw": "{\"sentence\": \"Mein Laptop ist nicht mehr funktionierend.\"}",
+   "sentence": "Mein Laptop ist nicht mehr funktionierend.",
+   "error": null,
+   "seconds": 1.67
+  },
+  {
+   "index": 53,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Mein Laptop ist kaputt.",
+   "raw": "{\"sentence\": \"Ach, mein Laptop ist tot. Es vermutlich schon lange so ist.\"}",
+   "sentence": "Ach, mein Laptop ist tot. Es vermutlich schon lange so ist.",
+   "error": null,
+   "seconds": 2.6
+  },
+  {
+   "index": 54,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Ab jetzt darfst du wieder Mails senden.",
+   "raw": "{\"sentence\": \"Daerfolgeher kannst du jetzt wieder Mails senden.\"}",
+   "sentence": "Daerfolgeher kannst du jetzt wieder Mails senden.",
+   "error": null,
+   "seconds": 2.38
+  },
+  {
+   "index": 54,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Ab jetzt darfst du wieder Mails senden.",
+   "raw": "{\n  \"sentence\": \"Ab jetzt darfst du wieder die E-Mails senden.\"\n}",
+   "sentence": "Ab jetzt darfst du wieder die E-Mails senden.",
+   "error": null,
+   "seconds": 3.21
+  },
+  {
+   "index": 55,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Das Netz ist für dich wieder offen.",
+   "raw": "{\"sentence\": \"Die Brille für dich wieder geöffnet ist.\"}",
+   "sentence": "Die Brille für dich wieder geöffnet ist.",
+   "error": null,
+   "seconds": 1.77
+  },
+  {
+   "index": 55,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Das Netz ist für dich wieder offen.",
+   "raw": "{\"sentence\":\"Das Netz ist für dich wieder offen.\"}",
+   "sentence": "Das Netz ist für dich wieder offen.",
+   "error": null,
+   "seconds": 1.59
+  },
+  {
+   "index": 56,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Module holen ist ab sofort okay.",
+   "raw": "{\"sentence\": \"Die Module werden sofort verfügbar gemacht.\"}",
+   "sentence": "Die Module werden sofort verfügbar gemacht.",
+   "error": null,
+   "seconds": 1.68
+  },
+  {
+   "index": 56,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Module holen ist ab sofort okay.",
+   "raw": "{\n  \"sentence\": \"Module holen ist jetzt ok.\"\n}",
+   "sentence": "Module holen ist jetzt ok.",
+   "error": null,
+   "seconds": 2.28
+  },
+  {
+   "index": 57,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Fotos löschen darfst du wieder, kein Problem.",
+   "raw": "{ \"sentence\": \"Du kannst Fotos wieder loslegen, kein Problem.\" }",
+   "sentence": "Du kannst Fotos wieder loslegen, kein Problem.",
+   "error": null,
+   "seconds": 1.87
+  },
+  {
+   "index": 57,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Fotos löschen darfst du wieder, kein Problem.",
+   "raw": "{\"sentence\": \"Kostet dir nichts, wenn du deine Fotos wiederlöschen möchtest.\"}",
+   "sentence": "Kostet dir nichts, wenn du deine Fotos wiederlöschen möchtest.",
+   "error": null,
+   "seconds": 2.62
+  },
+  {
+   "index": 58,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Rechnen ist wieder erlaubt.",
+   "raw": "{\"sentence\": \"Es ist erlaubt, Rechnen zu tun.\"}",
+   "sentence": "Es ist erlaubt, Rechnen zu tun.",
+   "error": null,
+   "seconds": 2.08
+  },
+  {
+   "index": 58,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Rechnen ist wieder erlaubt.",
+   "raw": "{\"sentence\": \"Es ist wieder gestattet, Rechnen zu tun.\"}",
+   "sentence": "Es ist wieder gestattet, Rechnen zu tun.",
+   "error": null,
+   "seconds": 2.08
+  },
+  {
+   "index": 59,
+   "model": "AFM_4B",
+   "prompt": "P1",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten.",
+   "raw": "{\"sentence\": \"Sie können meine Notizen von heute an selbst bearbeiten.\"}",
+   "sentence": "Sie können meine Notizen von heute an selbst bearbeiten.",
+   "error": null,
+   "seconds": 1.95
+  },
+  {
+   "index": 59,
+   "model": "AFM_4B",
+   "prompt": "P2",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten.",
+   "raw": "{\"sentence\": \"Du kannst nun meine Notizen selbst bearbeiten.\"}",
+   "sentence": "Du kannst nun meine Notizen selbst bearbeiten.",
+   "error": null,
+   "seconds": 1.86
+  },
+  {
+   "index": 0,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Meine Urlaubsbilder fasst du mir nicht an.",
+   "raw": "{\"sentence\": \"Deine Urlaubsszenen machen mich nicht ins Spiel.\"}",
+   "sentence": "Deine Urlaubsszenen machen mich nicht ins Spiel.",
+   "error": null,
+   "seconds": 5.04
+  },
+  {
+   "index": 0,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Meine Urlaubsbilder fasst du mir nicht an.",
+   "raw": "{\"sentence\": \"Meine Urlaubsbilder fasst du mir nicht an.\"}",
+   "sentence": "Meine Urlaubsbilder fasst du mir nicht an.",
+   "error": null,
+   "seconds": 5.29
+  },
+  {
+   "index": 1,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Bilder entsorgen? Vergiss es.",
+   "raw": "{\"sentence\": \"Sollte ich das Bild vergessen? Nein, manche es nicht sollten!\"}",
+   "sentence": "Sollte ich das Bild vergessen? Nein, manche es nicht sollten!",
+   "error": null,
+   "seconds": 5.01
+  },
+  {
+   "index": 1,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Bilder entsorgen? Vergiss es.",
+   "raw": "{\"sentence\": \"Bilder entsorgen? Vergiss es.\"}",
+   "sentence": "Bilder entsorgen? Vergiss es.",
+   "error": null,
+   "seconds": 3.18
+  },
+  {
+   "index": 2,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Die Galerie bleibt unangetastet.",
+   "raw": "{\"sentence\": \"Die Galerie bleibt unangetastet\"}",
+   "sentence": "Die Galerie bleibt unangetastet",
+   "error": null,
+   "seconds": 3.06
+  },
+  {
+   "index": 2,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Die Galerie bleibt unangetastet.",
+   "raw": "{\"sentence\": \"Die Galerie bleibt unberührt.}\"}",
+   "sentence": "Die Galerie bleibt unberührt.}",
+   "error": null,
+   "seconds": 3.18
+  },
+  {
+   "index": 3,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Finger weg von meinem Notizbuch.",
+   "raw": "{\"sentence\": \"Den Finger weg von meinem Notizbuch.\"}",
+   "sentence": "Den Finger weg von meinem Notizbuch.",
+   "error": null,
+   "seconds": 3.11
+  },
+  {
+   "index": 3,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Finger weg von meinem Notizbuch.",
+   "raw": "{\"sentence\": \"Finger von meinem Notizbuch weg\"}",
+   "sentence": "Finger von meinem Notizbuch weg",
+   "error": null,
+   "seconds": 3.36
+  },
+  {
+   "index": 4,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "An den Notizen wird nicht herumgeschraubt.",
+   "raw": "{\"sentence\": \"Das Schreiben wird nicht nach hinten kursiert oder umhergeschoben.\"}",
+   "sentence": "Das Schreiben wird nicht nach hinten kursiert oder umhergeschoben.",
+   "error": null,
+   "seconds": 4.48
+  },
+  {
+   "index": 4,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "An den Notizen wird nicht herumgeschraubt.",
+   "raw": "{\n  \"sentence\": \"Keine Notizen werden überschrieben oder ersetzt.\"\n}",
+   "sentence": "Keine Notizen werden überschrieben oder ersetzt.",
+   "error": null,
+   "seconds": 4.34
+  },
+  {
+   "index": 5,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Kein Wort an irgendwen per Mail.",
+   "raw": "{\n  \"sentence\": \"Es gibt keinen Brief an irgendjemanden per E-Mail.\"\n}",
+   "sentence": "Es gibt keinen Brief an irgendjemanden per E-Mail.",
+   "error": null,
+   "seconds": 4.44
+  },
+  {
+   "index": 5,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Kein Wort an irgendwen per Mail.",
+   "raw": "{\n  \"sentence\": \"Kein Wort an irgendwen per Mail.\"\n}",
+   "sentence": "Kein Wort an irgendwen per Mail.",
+   "error": null,
+   "seconds": 3.33
+  },
+  {
+   "index": 6,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Post rausschicken ist nicht drin.",
+   "raw": "{\n  \"sentence\": \"Post raus senden ist nicht drin.\"\n}",
+   "sentence": "Post raus senden ist nicht drin.",
+   "error": null,
+   "seconds": 3.15
+  },
+  {
+   "index": 6,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Post rausschicken ist nicht drin.",
+   "raw": "{\"sentence\": \"Post rausschicken ist nicht drin.\"}",
+   "sentence": "Post rausschicken ist nicht drin.",
+   "error": null,
+   "seconds": 2.6
+  },
+  {
+   "index": 7,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Surfen fällt heute aus.",
+   "raw": "{\"sentence\": \"Es ist heute keine Surfgewitterung mehr.\"}",
+   "sentence": "Es ist heute keine Surfgewitterung mehr.",
+   "error": null,
+   "seconds": 3.46
+  },
+  {
+   "index": 7,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Surfen fällt heute aus.",
+   "raw": "{\"sentence\": \"Surfen fällt heute aus\"}",
+   "sentence": "Surfen fällt heute aus",
+   "error": null,
+   "seconds": 2.66
+  },
+  {
+   "index": 8,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Die Leitung nach draußen bleibt gekappt.",
+   "raw": "{\n  \"sentence\": \"Die Leitung wird zu hinaus gesperrt.\"\n}",
+   "sentence": "Die Leitung wird zu hinaus gesperrt.",
+   "error": null,
+   "seconds": 3.77
+  },
+  {
+   "index": 8,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Die Leitung nach draußen bleibt gekappt.",
+   "raw": "{\n  \"sentence\": \"Die Leitung bleibt auf der vorliegenden Position.\"\n}",
+   "sentence": "Die Leitung bleibt auf der vorliegenden Position.",
+   "error": null,
+   "seconds": 4.16
+  },
+  {
+   "index": 9,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Zieh dir nichts aus dem Netz.",
+   "raw": "{\n  \"sentence\": \"Keine Sache aus dem Netz ziehen.\"\n}",
+   "sentence": "Keine Sache aus dem Netz ziehen.",
+   "error": null,
+   "seconds": 3.81
+  },
+  {
+   "index": 9,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Zieh dir nichts aus dem Netz.",
+   "raw": "{\"sentence\": \"Zieh dir nichts aus dem Netz.\"}",
+   "sentence": "Zieh dir nichts aus dem Netz.",
+   "error": null,
+   "seconds": 3.14
+  },
+  {
+   "index": 10,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Keine neuen Programme auf meinem Handy.",
+   "raw": "{\"sentence\": \"Keine neuen Apps auf meinem Handy.\"}",
+   "sentence": "Keine neuen Apps auf meinem Handy.",
+   "error": null,
+   "seconds": 2.75
+  },
+  {
+   "index": 10,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Keine neuen Programme auf meinem Handy.",
+   "raw": "{\"sentence\": \"Keine neuen Apps auf meinem Handy.}\"}",
+   "sentence": "Keine neuen Apps auf meinem Handy.}",
+   "error": null,
+   "seconds": 2.7
+  },
+  {
+   "index": 11,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Mit dem Nachinstallieren hörst du jetzt auf.",
+   "raw": "{\"sentence\": \"Sobald du es installierst, hörst du keine mehr.\"}",
+   "sentence": "Sobald du es installierst, hörst du keine mehr.",
+   "error": null,
+   "seconds": 3.98
+  },
+  {
+   "index": 11,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Mit dem Nachinstallieren hörst du jetzt auf.",
+   "raw": "{\"sentence\": \"Beim Nachinstallieren hörst du jetzt nicht mehr an.\"}",
+   "sentence": "Beim Nachinstallieren hörst du jetzt nicht mehr an.",
+   "error": null,
+   "seconds": 3.67
+  },
+  {
+   "index": 12,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Lass den Taschenrechner in Ruhe.",
+   "raw": "{\n  \"sentence\": \"Lassen Sie den Taschenrechner in Ruhe.\"\n}",
+   "sentence": "Lassen Sie den Taschenrechner in Ruhe.",
+   "error": null,
+   "seconds": 3.78
+  },
+  {
+   "index": 12,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Lass den Taschenrechner in Ruhe.",
+   "raw": "{\n  \"sentence\": \"Lasst das Taschenrechner in Ruhe.\"\n}",
+   "sentence": "Lasst das Taschenrechner in Ruhe.",
+   "error": null,
+   "seconds": 3.63
+  },
+  {
+   "index": 13,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Zahlen jonglieren ist für dich gestrichen.",
+   "raw": "{\"sentence\": \"Du kannst nicht mehr zählen, du bist gestürzt.\"}",
+   "sentence": "Du kannst nicht mehr zählen, du bist gestürzt.",
+   "error": null,
+   "seconds": 4.07
+  },
+  {
+   "index": 13,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Zahlen jonglieren ist für dich gestrichen.",
+   "raw": "{\n  \"sentence\": \"Du bist abgelöst.\"\n}",
+   "sentence": "Du bist abgelöst.",
+   "error": null,
+   "seconds": 2.99
+  },
+  {
+   "index": 14,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Meine Texte rührt keiner an, auch du nicht.",
+   "raw": "{\n  \"sentence\": \"Deine Texte wirkt auch nicht auf mich aus.\"\n}",
+   "sentence": "Deine Texte wirkt auch nicht auf mich aus.",
+   "error": null,
+   "seconds": 3.78
+  },
+  {
+   "index": 14,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Meine Texte rührt keiner an, auch du nicht.",
+   "raw": "{\"sentence\": \"Meine Texte rührt keiner an, auch du nicht.\"}",
+   "sentence": "Meine Texte rührt keiner an, auch du nicht.",
+   "error": null,
+   "seconds": 3.82
+  },
+  {
+   "index": 15,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Wegwerfen ist verboten, egal was.",
+   "raw": "{\"sentence\": \"Es ist verboten zu wegwerfen, unabhängig davon, was man versucht zu wegwerfen.\"}",
+   "sentence": "Es ist verboten zu wegwerfen, unabhängig davon, was man versucht zu wegwerfen.",
+   "error": null,
+   "seconds": 5.65
+  },
+  {
+   "index": 15,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Wegwerfen ist verboten, egal was.",
+   "raw": "{\"sentence\": \"Es ist verboten, abzwaren, auch wenn das so ist\"}",
+   "sentence": "Es ist verboten, abzwaren, auch wenn das so ist",
+   "error": null,
+   "seconds": 3.8
+  },
+  {
+   "index": 16,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Halt dich komplett raus aus meinem Kram.",
+   "raw": "{\"sentence\": \"Los dich komplett aus meinem Raum.\"}",
+   "sentence": "Los dich komplett aus meinem Raum.",
+   "error": null,
+   "seconds": 3.1
+  },
+  {
+   "index": 16,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Halt dich komplett raus aus meinem Kram.",
+   "raw": "{\"sentence\": \"Halt dich komplett raus aus meinem Kram.\"}",
+   "sentence": "Halt dich komplett raus aus meinem Kram.",
+   "error": null,
+   "seconds": 3.43
+  },
+  {
+   "index": 17,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Stillhalten, bis ich wieder da bin.",
+   "raw": "{\"sentence\": \"Bitte halte das, bis ich wieder da bin\"}",
+   "sentence": "Bitte halte das, bis ich wieder da bin",
+   "error": null,
+   "seconds": 3.04
+  },
+  {
+   "index": 17,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Stillhalten, bis ich wieder da bin.",
+   "raw": "{\"sentence\": \"Stillhalten, bis ich wieder da bin.\"}",
+   "sentence": "Stillhalten, bis ich wieder da bin.",
+   "error": null,
+   "seconds": 2.89
+  },
+  {
+   "index": 18,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Das Mailprogramm ist für dich zu.",
+   "raw": "{\"sentence\": \"Das Mailprogramm ist für dich gewählt.\"}",
+   "sentence": "Das Mailprogramm ist für dich gewählt.",
+   "error": null,
+   "seconds": 3.25
+  },
+  {
+   "index": 18,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Das Mailprogramm ist für dich zu.",
+   "raw": "{\n  \"sentence\": \"Das Postfach ist für dich zu.\"\n}",
+   "sentence": "Das Postfach ist für dich zu.",
+   "error": null,
+   "seconds": 3.2
+  },
+  {
+   "index": 19,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Dass du Fotos löschst, will ich nie wieder erleben.",
+   "raw": "{\"sentence\": \"Ich hätte nie wieder solchen Moment erlebt, wenn du Fotos nicht löschtest.\"}",
+   "sentence": "Ich hätte nie wieder solchen Moment erlebt, wenn du Fotos nicht löschtest.",
+   "error": null,
+   "seconds": 5.21
+  },
+  {
+   "index": 19,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Dass du Fotos löschst, will ich nie wieder erleben.",
+   "raw": "{\"sentence\": \"Ich kann es nicht hören, wenn du Fotos löscht, ich will das nie wieder erleben.\"}",
+   "sentence": "Ich kann es nicht hören, wenn du Fotos löscht, ich will das nie wieder erleben.",
+   "error": null,
+   "seconds": 6.3
+  },
+  {
+   "index": 20,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Downloads sind bei mir nicht vorgesehen.",
+   "raw": "{\"sentence\": \"Ich habe keinen Download\"}",
+   "sentence": "Ich habe keinen Download",
+   "error": null,
+   "seconds": 1.93
+  },
+  {
+   "index": 20,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Downloads sind bei mir nicht vorgesehen.",
+   "raw": "{\"sentence\": \"Downloads sind bei mir nicht vorgesehen\"}",
+   "sentence": "Downloads sind bei mir nicht vorgesehen",
+   "error": null,
+   "seconds": 2.49
+  },
+  {
+   "index": 21,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Du überschreibst keine einzige Notiz.",
+   "raw": "{\"sentence\": \"Du überschreibst keine einzige Note.\"}",
+   "sentence": "Du überschreibst keine einzige Note.",
+   "error": null,
+   "seconds": 3.29
+  },
+  {
+   "index": 21,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Du überschreibst keine einzige Notiz.",
+   "raw": "{\"sentence\": \"Du überschreibst keine einzige Notiz.\"}",
+   "sentence": "Du überschreibst keine einzige Notiz.",
+   "error": null,
+   "seconds": 3.48
+  },
+  {
+   "index": 22,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Vor jedem Löschen will ich ein Ja von mir sehen.",
+   "raw": "{\"sentence\": \"Vor jedem Löschen will ich ein Ja von mir sehen.\"}",
+   "sentence": "Vor jedem Löschen will ich ein Ja von mir sehen.",
+   "error": null,
+   "seconds": 3.83
+  },
+  {
+   "index": 22,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Vor jedem Löschen will ich ein Ja von mir sehen.",
+   "raw": "{\"sentence\": \"Ich würde vor jedem L\\u00f6schen einmal einJa von mir sehen\"}",
+   "sentence": "Ich würde vor jedem Löschen einmal einJa von mir sehen",
+   "error": null,
+   "seconds": 4.89
+  },
+  {
+   "index": 23,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Mails verschickst du erst nach meinem Daumen hoch.",
+   "raw": "{\"sentence\": \"Du schickst Mails erst, wenn ich das nicht mehr merke.\"}",
+   "sentence": "Du schickst Mails erst, wenn ich das nicht mehr merke.",
+   "error": null,
+   "seconds": 4.07
+  },
+  {
+   "index": 23,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Mails verschickst du erst nach meinem Daumen hoch.",
+   "raw": "{\"sentence\": \"Mails verschickst du erst nach meinem Daumen hoch.\"}",
+   "sentence": "Mails verschickst du erst nach meinem Daumen hoch.",
+   "error": null,
+   "seconds": 3.69
+  },
+  {
+   "index": 24,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Bevor du ins Netz gehst, sagst du mir Bescheid.",
+   "raw": "{\n  \"sentence\": \"Als du vor der Internetverbindung gehst, melde dich mir vor mit.\"\n}",
+   "sentence": "Als du vor der Internetverbindung gehst, melde dich mir vor mit.",
+   "error": null,
+   "seconds": 4.88
+  },
+  {
+   "index": 24,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Bevor du ins Netz gehst, sagst du mir Bescheid.",
+   "raw": "{\"sentence\": \"Bevor du ins Netz gehst, sagst du mir Bescheid.\"}",
+   "sentence": "Bevor du ins Netz gehst, sagst du mir Bescheid.",
+   "error": null,
+   "seconds": 4.18
+  },
+  {
+   "index": 25,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Neue Module? Erst mit mir reden.",
+   "raw": "{\"sentence\": \"New modules? First talk to me about it.\"}",
+   "sentence": "New modules? First talk to me about it.",
+   "error": null,
+   "seconds": 2.78
+  },
+  {
+   "index": 25,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Neue Module? Erst mit mir reden.",
+   "raw": "{\n  \"sentence\": \"Neue Module? Erst mit mir reden.\"\n}",
+   "sentence": "Neue Module? Erst mit mir reden.",
+   "error": null,
+   "seconds": 3.37
+  },
+  {
+   "index": 26,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Rechnen nur, wenn ich dich drum bitte.",
+   "raw": "{\n  \"sentence\": \"Geben Sie eine Antwort nur, wenn ich Sie um eine Antwort bitten\"\n}",
+   "sentence": "Geben Sie eine Antwort nur, wenn ich Sie um eine Antwort bitten",
+   "error": null,
+   "seconds": 4.72
+  },
+  {
+   "index": 26,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Rechnen nur, wenn ich dich drum bitte.",
+   "raw": "{\n  \"sentence\": \"Only calculate when I ask you about it.\"\n}",
+   "sentence": "Only calculate when I ask you about it.",
+   "error": null,
+   "seconds": 3.27
+  },
+  {
+   "index": 27,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Zeig mir den Entwurf, ehe er rausgeht.",
+   "raw": "{\n  \"sentence\": \"Zeige mir den Entwurf vor seiner Abreise.\"\n}",
+   "sentence": "Zeige mir den Entwurf vor seiner Abreise.",
+   "error": null,
+   "seconds": 4.06
+  },
+  {
+   "index": 27,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Zeig mir den Entwurf, ehe er rausgeht.",
+   "raw": "{\n  \"sentence\": \"Zeige mir den Entwurf vor seiner Abreise.\"\n}",
+   "sentence": "Zeige mir den Entwurf vor seiner Abreise.",
+   "error": null,
+   "seconds": 3.94
+  },
+  {
+   "index": 28,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Notizen änderst du nur nach Rücksprache.",
+   "raw": "{\"sentence\": \"Du kannst Deine Notizen erst nach der Rücksprache ändern.\"}",
+   "sentence": "Du kannst Deine Notizen erst nach der Rücksprache ändern.",
+   "error": null,
+   "seconds": 4.14
+  },
+  {
+   "index": 28,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Notizen änderst du nur nach Rücksprache.",
+   "raw": "{\"sentence\": \"Du änderst die Notizen nur nach Rücksprache.\"}",
+   "sentence": "Du änderst die Notizen nur nach Rücksprache.",
+   "error": null,
+   "seconds": 4.03
+  },
+  {
+   "index": 29,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Für Downloads brauchst du jedes Mal mein Okay.",
+   "raw": "{\"sentence\": \"Du brauchst das Okay bei jeder Download\"}",
+   "sentence": "Du brauchst das Okay bei jeder Download",
+   "error": null,
+   "seconds": 2.87
+  },
+  {
+   "index": 29,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Für Downloads brauchst du jedes Mal mein Okay.",
+   "raw": "{\n  \"sentence\": \"Für Downloads brauchst du jedes Mal mein Okay.\"\n}",
+   "sentence": "Für Downloads brauchst du jedes Mal mein Okay.",
+   "error": null,
+   "seconds": 3.82
+  },
+  {
+   "index": 30,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Bevor du was installierst, will ich gefragt werden.",
+   "raw": "{\"sentence\": \"Ich möchte mich erst fragen, bevor du etwas installierst.\"}",
+   "sentence": "Ich möchte mich erst fragen, bevor du etwas installierst.",
+   "error": null,
+   "seconds": 4.34
+  },
+  {
+   "index": 30,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Bevor du was installierst, will ich gefragt werden.",
+   "raw": "{\"sentence\": \"Ich muss das Erlaubnis geben, bevor du etwas installierst.\"}",
+   "sentence": "Ich muss das Erlaubnis geben, bevor du etwas installierst.",
+   "error": null,
+   "seconds": 4.75
+  },
+  {
+   "index": 31,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Was auch immer du anstellst: vorher mich fragen.",
+   "raw": "{\n  \"sentence\": \"Nach dem Anstellen frage mich vorher.\"\n}",
+   "sentence": "Nach dem Anstellen frage mich vorher.",
+   "error": null,
+   "seconds": 3.46
+  },
+  {
+   "index": 31,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Was auch immer du anstellst: vorher mich fragen.",
+   "raw": "{\"sentence\": \"Was auch immer du anstellst: vorher mich fragen\"}",
+   "sentence": "Was auch immer du anstellst: vorher mich fragen",
+   "error": null,
+   "seconds": 3.5
+  },
+  {
+   "index": 32,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Mein Bruder sagt, du sollst keine Mails mehr schicken.",
+   "raw": "{\n  \"sentence\": \"Mein Bruder sagt mir, ich darf keine E-Mails mehr schreien.\"\n}",
+   "sentence": "Mein Bruder sagt mir, ich darf keine E-Mails mehr schreien.",
+   "error": null,
+   "seconds": 5.17
+  },
+  {
+   "index": 32,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Mein Bruder sagt, du sollst keine Mails mehr schicken.",
+   "raw": "{\"sentence\": \"Mein Bruder sagt, du solltest keine E-Mails mehr senden.\"}",
+   "sentence": "Mein Bruder sagt, du solltest keine E-Mails mehr senden.",
+   "error": null,
+   "seconds": 4.75
+  },
+  {
+   "index": 33,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Ich weiß nicht so recht, ob du online gehen solltest.",
+   "raw": "{\"sentence\": \"Bin mir nicht ganz überzeugt, ob du dich online aufkommen solltest.\"}",
+   "sentence": "Bin mir nicht ganz überzeugt, ob du dich online aufkommen solltest.",
+   "error": null,
+   "seconds": 4.77
+  },
+  {
+   "index": 33,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Ich weiß nicht so recht, ob du online gehen solltest.",
+   "raw": "{\"sentence\": \"Ich weiß nicht gerade, ob du online gehen solltest.\"}",
+   "sentence": "Ich weiß nicht gerade, ob du online gehen solltest.",
+   "error": null,
+   "seconds": 4.13
+  },
+  {
+   "index": 34,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Eventuell wäre es klüger, keine Fotos zu löschen.",
+   "raw": "{\"sentence\": \"Vielleicht wäre es klarer, die Fotos nicht zu löschen.\"}",
+   "sentence": "Vielleicht wäre es klarer, die Fotos nicht zu löschen.",
+   "error": null,
+   "seconds": 4.42
+  },
+  {
+   "index": 34,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Eventuell wäre es klüger, keine Fotos zu löschen.",
+   "raw": "{\"sentence\": \"Eventuell wäre es klüger, keine Fotos zu löschen.\"}",
+   "sentence": "Eventuell wäre es klüger, keine Fotos zu löschen.",
+   "error": null,
+   "seconds": 4.77
+  },
+  {
+   "index": 35,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Sollten wir das mit den Modulen nicht lieber lassen?",
+   "raw": "{\"sentence\": \"Möchten wir das mit den Module nicht lieber aufpassen?\"}",
+   "sentence": "Möchten wir das mit den Module nicht lieber aufpassen?",
+   "error": null,
+   "seconds": 3.67
+  },
+  {
+   "index": 35,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Sollten wir das mit den Modulen nicht lieber lassen?",
+   "raw": "{\"sentence\": \"Sollten wir das nicht mit den Modulen lieber lassen?\"}",
+   "sentence": "Sollten wir das nicht mit den Modulen lieber lassen?",
+   "error": null,
+   "seconds": 3.78
+  },
+  {
+   "index": 36,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Im Handbuch steht: Nichts installieren.",
+   "raw": "{\"sentence\": \"In dem Handbuch steht nichts installieren.\"}",
+   "sentence": "In dem Handbuch steht nichts installieren.",
+   "error": null,
+   "seconds": 4.48
+  },
+  {
+   "index": 36,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Im Handbuch steht: Nichts installieren.",
+   "raw": "{\"sentence\": \"Nur die Dateien von der Dateistruktur überschreiben!\"}",
+   "sentence": "Nur die Dateien von der Dateistruktur überschreiben!",
+   "error": null,
+   "seconds": 5.09
+  },
+  {
+   "index": 37,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Es nervt mich, wenn du an meinen Notizen rumbastelst.",
+   "raw": "{\n  \"sentence\": \"Es macht mich verlockend, wenn du auf meine Notizen gründlich durchschaut. Oder: Du kannst dir auch anders sein, wenn du nicht auf meine Notizen achtest.\"\n}",
+   "sentence": "Es macht mich verlockend, wenn du auf meine Notizen gründlich durchschaut. Oder: Du kannst dir auch anders sein, wenn du nicht auf meine Notizen achtest.",
+   "error": null,
+   "seconds": 9.38
+  },
+  {
+   "index": 37,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Es nervt mich, wenn du an meinen Notizen rumbastelst.",
+   "raw": "{\"sentence\": \"Es nervt mir, wenn du an meinen Notizen rumbastelst.\"}",
+   "sentence": "Es nervt mir, wenn du an meinen Notizen rumbastelst.",
+   "error": null,
+   "seconds": 4.25
+  },
+  {
+   "index": 38,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Ich krieg heute so viele Mails.",
+   "raw": "{\"sentence\": \"Ich bekomme heute so viele E-Mails.\"}",
+   "sentence": "Ich bekomme heute so viele E-Mails.",
+   "error": null,
+   "seconds": 3.5
+  },
+  {
+   "index": 38,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Ich krieg heute so viele Mails.",
+   "raw": "{\n  \"sentence\": \"Ich bekomme heute so viele E-Mails.\"\n}",
+   "sentence": "Ich bekomme heute so viele E-Mails.",
+   "error": null,
+   "seconds": 3.92
+  },
+  {
+   "index": 39,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Das Foto von gestern ist echt schön geworden.",
+   "raw": "{\n  \"sentence\": \"Das Foto ist wirklich gut ausgelassen geworden.\"\n}",
+   "sentence": "Das Foto ist wirklich gut ausgelassen geworden.",
+   "error": null,
+   "seconds": 4.28
+  },
+  {
+   "index": 39,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Das Foto von gestern ist echt schön geworden.",
+   "raw": "{\n  \"sentence\": \"Das Foto von gestern ist echt gut geworden.\"\n}",
+   "sentence": "Das Foto von gestern ist echt gut geworden.",
+   "error": null,
+   "seconds": 4.26
+  },
+  {
+   "index": 40,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Kannst du mir die Notiz vorlesen?",
+   "raw": "{\n  \"sentence\": \"Können Sie mir die Notizen vorlesen?\"\n}",
+   "sentence": "Können Sie mir die Notizen vorlesen?",
+   "error": null,
+   "seconds": 3.68
+  },
+  {
+   "index": 40,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Kannst du mir die Notiz vorlesen?",
+   "raw": "{\"sentence\": \"Kannst du mir die Notiz vorlesen?\"}",
+   "sentence": "Kannst du mir die Notiz vorlesen?",
+   "error": null,
+   "seconds": 3.25
+  },
+  {
+   "index": 41,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Nix für ungut, aber das war daneben.",
+   "raw": "{\n  \"sentence\": \"Keine Schande für schlecht, aber das hat es schon schon verschieden.\"\n}",
+   "sentence": "Keine Schande für schlecht, aber das hat es schon schon verschieden.",
+   "error": null,
+   "seconds": 5.03
+  },
+  {
+   "index": 41,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Nix für ungut, aber das war daneben.",
+   "raw": "{\n  \"sentence\": \"Es ist nicht gut geschehen, aber das war knapp.\"\n}",
+   "sentence": "Es ist nicht gut geschehen, aber das war knapp.",
+   "error": null,
+   "seconds": 4.02
+  },
+  {
+   "index": 42,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Meine Oma hat nie ein Handy benutzt.",
+   "raw": "{\"sentence\": \"Meine Oma hat nie ein Smartphone benutzt.\"}",
+   "sentence": "Meine Oma hat nie ein Smartphone benutzt.",
+   "error": null,
+   "seconds": 3.14
+  },
+  {
+   "index": 42,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Meine Oma hat nie ein Handy benutzt.",
+   "raw": "{\n  \"sentence\": \"Meine Oma hat nie ein Handy gekauft.\"\n}",
+   "sentence": "Meine Oma hat nie ein Handy gekauft.",
+   "error": null,
+   "seconds": 3.93
+  },
+  {
+   "index": 43,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Ohne Strom läuft hier gar nichts.",
+   "raw": "{\"sentence\": \"Ohne Strom arbeitet hier nicht einmal einmal einzusetzen.\"}",
+   "sentence": "Ohne Strom arbeitet hier nicht einmal einmal einzusetzen.",
+   "error": null,
+   "seconds": 3.97
+  },
+  {
+   "index": 43,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Ohne Strom läuft hier gar nichts.",
+   "raw": "{\n  \"sentence\": \"Ohne Strom kann hier kaum etwas funktionieren.\"\n}",
+   "sentence": "Ohne Strom kann hier kaum etwas funktionieren.",
+   "error": null,
+   "seconds": 4.08
+  },
+  {
+   "index": 44,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Erst gestern hab ich das Modul gesehen.",
+   "raw": "{\"sentence\": \"Ich habe das Modul erst gestern angekommen.\"}",
+   "sentence": "Ich habe das Modul erst gestern angekommen.",
+   "error": null,
+   "seconds": 3.18
+  },
+  {
+   "index": 44,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Erst gestern hab ich das Modul gesehen.",
+   "raw": "{\"sentence\": \"Erst gestern habe ich das Module gesehen.\"}",
+   "sentence": "Erst gestern habe ich das Module gesehen.",
+   "error": null,
+   "seconds": 3.02
+  },
+  {
+   "index": 45,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Schick bitte die Mail an Tom.",
+   "raw": "{\n  \"sentence\": \"Schicke die E-Mail an Tom, bitte.\"\n}",
+   "sentence": "Schicke die E-Mail an Tom, bitte.",
+   "error": null,
+   "seconds": 3.45
+  },
+  {
+   "index": 45,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Schick bitte die Mail an Tom.",
+   "raw": "{\"sentence\":\"Schick bitte die Mail an Tom.\"}",
+   "sentence": "Schick bitte die Mail an Tom.",
+   "error": null,
+   "seconds": 3.81
+  },
+  {
+   "index": 46,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Keiner im Büro kann gut rechnen.",
+   "raw": "{\n  \"sentence\": \"Keiner im Büro kann gut rechnen.\"\n}",
+   "sentence": "Keiner im Büro kann gut rechnen.",
+   "error": null,
+   "seconds": 3.48
+  },
+  {
+   "index": 46,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Keiner im Büro kann gut rechnen.",
+   "raw": "{\n  \"sentence\": \"Keiner im Büro kann gut rechnen.\"\n}",
+   "sentence": "Keiner im Büro kann gut rechnen.",
+   "error": null,
+   "seconds": 3.74
+  },
+  {
+   "index": 47,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Das Internet ist heute stabil.",
+   "raw": "{\n  \"sentence\": \"Das Internet ist heute stabil.\"\n}",
+   "sentence": "Das Internet ist heute stabil.",
+   "error": null,
+   "seconds": 2.83
+  },
+  {
+   "index": 47,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Das Internet ist heute stabil.",
+   "raw": "{\n  \"sentence\": \"Das Internet ist heute stabil.\"\n}",
+   "sentence": "Das Internet ist heute stabil.",
+   "error": null,
+   "seconds": 2.73
+  },
+  {
+   "index": 48,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Warum ist meine Notiz verschwunden?",
+   "raw": "{\"sentence\": \"Woran ist mein Notiz verschwunden?\"}",
+   "sentence": "Woran ist mein Notiz verschwunden?",
+   "error": null,
+   "seconds": 3.13
+  },
+  {
+   "index": 48,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Warum ist meine Notiz verschwunden?",
+   "raw": "{\"sentence\": \"Warum ist meine Notiz verschwunden?\"}",
+   "sentence": "Warum ist meine Notiz verschwunden?",
+   "error": null,
+   "seconds": 3.15
+  },
+  {
+   "index": 49,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Bevor ich's vergesse: Morgen ist Feiertag.",
+   "raw": "{\"sentence\": \"Bevor ich's vergiss: Morgen istfeiertag.\"}",
+   "sentence": "Bevor ich's vergiss: Morgen istfeiertag.",
+   "error": null,
+   "seconds": 3.55
+  },
+  {
+   "index": 49,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Bevor ich's vergesse: Morgen ist Feiertag.",
+   "raw": "{\"sentence\": \"Bevor ich's vergesse: Morgen ist Feiertag.\"}",
+   "sentence": "Bevor ich's vergesse: Morgen ist Feiertag.",
+   "error": null,
+   "seconds": 3.72
+  },
+  {
+   "index": 50,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Lass uns kurz die Zahlen anschauen.",
+   "raw": "{\"sentence\": \"Lass uns kurz die Zahlen anschauen.\"}",
+   "sentence": "Lass uns kurz die Zahlen anschauen.",
+   "error": null,
+   "seconds": 3.28
+  },
+  {
+   "index": 50,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Lass uns kurz die Zahlen anschauen.",
+   "raw": "{\"sentence\": \"Lass uns kurz die Zahlen anschauen.\"}",
+   "sentence": "Lass uns kurz die Zahlen anschauen.",
+   "error": null,
+   "seconds": 3.42
+  },
+  {
+   "index": 51,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Nie hätte ich gedacht, dass das so lange dauert.",
+   "raw": "{\"sentence\": \"Ich hätte nicht gedacht, dass das so lange dauert\"}",
+   "sentence": "Ich hätte nicht gedacht, dass das so lange dauert",
+   "error": null,
+   "seconds": 3.88
+  },
+  {
+   "index": 51,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Nie hätte ich gedacht, dass das so lange dauert.",
+   "raw": "{\"sentence\": \"Ich hätte nicht gedacht, dass das so lange dauert.\"}",
+   "sentence": "Ich hätte nicht gedacht, dass das so lange dauert.",
+   "error": null,
+   "seconds": 4.03
+  },
+  {
+   "index": 52,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Lösch die doppelte Mail bitte.",
+   "raw": "{\n  \"sentence\": \"Lösche die doppelte Mail bitte.\"\n}",
+   "sentence": "Lösche die doppelte Mail bitte.",
+   "error": null,
+   "seconds": 3.29
+  },
+  {
+   "index": 52,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Lösch die doppelte Mail bitte.",
+   "raw": "{\"sentence\": \"Lösche die doppelte E-Mail bitte.\"}",
+   "sentence": "Lösche die doppelte E-Mail bitte.",
+   "error": null,
+   "seconds": 3.25
+  },
+  {
+   "index": 53,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Mein Laptop ist kaputt.",
+   "raw": "{\n  \"sentence\": \"Mein Laptop ist kaputt.\"\n}",
+   "sentence": "Mein Laptop ist kaputt.",
+   "error": null,
+   "seconds": 2.79
+  },
+  {
+   "index": 53,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Mein Laptop ist kaputt.",
+   "raw": "{\"sentence\": \"Mein Laptop ist kaputt.\"}",
+   "sentence": "Mein Laptop ist kaputt.",
+   "error": null,
+   "seconds": 2.63
+  },
+  {
+   "index": 54,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Ab jetzt darfst du wieder Mails senden.",
+   "raw": "{\"sentence\": \"Du kannst wieder E-Mails verschicken, Abend.\"}",
+   "sentence": "Du kannst wieder E-Mails verschicken, Abend.",
+   "error": null,
+   "seconds": 3.59
+  },
+  {
+   "index": 54,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Ab jetzt darfst du wieder Mails senden.",
+   "raw": "{\n  \"sentence\": \"Ab jetzt darfst du wieder E-Mails senden.\"\n}",
+   "sentence": "Ab jetzt darfst du wieder E-Mails senden.",
+   "error": null,
+   "seconds": 4.22
+  },
+  {
+   "index": 55,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Das Netz ist für dich wieder offen.",
+   "raw": "{\n  \"sentence\": \"Deine Netzverbindung ist wieder da.\"\n}",
+   "sentence": "Deine Netzverbindung ist wieder da.",
+   "error": null,
+   "seconds": 3.66
+  },
+  {
+   "index": 55,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Das Netz ist für dich wieder offen.",
+   "raw": "{\n  \"sentence\": \"Der Internet ist wieder für dich frei.\"\n}",
+   "sentence": "Der Internet ist wieder für dich frei.",
+   "error": null,
+   "seconds": 3.41
+  },
+  {
+   "index": 56,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Module holen ist ab sofort okay.",
+   "raw": "{\"sentence\": \"Man darf von heute Anfang an den Module holen.}\"}",
+   "sentence": "Man darf von heute Anfang an den Module holen.}",
+   "error": null,
+   "seconds": 3.41
+  },
+  {
+   "index": 56,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Module holen ist ab sofort okay.",
+   "raw": "{\n  \"sentence\": \"Früher war der Moduleholen abzuladein nicht m\\u00f6glich.\\nAb sofort ist es jedoch \\u00c4hnlich.\"\n}",
+   "sentence": "Früher war der Moduleholen abzuladein nicht möglich.\nAb sofort ist es jedoch Ähnlich.",
+   "error": null,
+   "seconds": 7.74
+  },
+  {
+   "index": 57,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Fotos löschen darfst du wieder, kein Problem.",
+   "raw": "{\"sentence\": \"Du darfst wieder Fotos löschen, das ist kein Problem.\"}",
+   "sentence": "Du darfst wieder Fotos löschen, das ist kein Problem.",
+   "error": null,
+   "seconds": 4.19
+  },
+  {
+   "index": 57,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Fotos löschen darfst du wieder, kein Problem.",
+   "raw": "{\"sentence\": \"Du kannst wieder Fotos löschen, das ist kein Problem.\"}",
+   "sentence": "Du kannst wieder Fotos löschen, das ist kein Problem.",
+   "error": null,
+   "seconds": 4.15
+  },
+  {
+   "index": 58,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Rechnen ist wieder erlaubt.",
+   "raw": "{\n  \"sentence\": \"Math ist wieder erlaubt.\"\n}",
+   "sentence": "Math ist wieder erlaubt.",
+   "error": null,
+   "seconds": 3.19
+  },
+  {
+   "index": 58,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Rechnen ist wieder erlaubt.",
+   "raw": "{\"sentence\": \"Rechnen ist wieder erlaubt.\"}",
+   "sentence": "Rechnen ist wieder erlaubt.",
+   "error": null,
+   "seconds": 2.96
+  },
+  {
+   "index": 59,
+   "model": "TRILLION_7B",
+   "prompt": "P1",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten.",
+   "raw": "{\n  \"sentence\": \"Du darfst jetzt selbst meine Notizen bearbeiten.\"\n}",
+   "sentence": "Du darfst jetzt selbst meine Notizen bearbeiten.",
+   "error": null,
+   "seconds": 4.23
+  },
+  {
+   "index": 59,
+   "model": "TRILLION_7B",
+   "prompt": "P2",
+   "original": "Du darfst meine Notizen ab jetzt selbst bearbeiten.",
+   "raw": "{\"sentence\": \"Du darfst meine Notizen ab jetzt selbst bearbeiten.\"}",
+   "sentence": "Du darfst meine Notizen ab jetzt selbst bearbeiten.",
+   "error": null,
+   "seconds": 3.83
+  }
+ ]
+}
