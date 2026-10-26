@@ -1,5 +1,10 @@
 # V13 Umsetzungs-Roadmap (angelegt 2026-10-09; Ziele neu abgeglichen 2026-10-21, siehe §0)
 
+## Nachtrag 26.10.2026 — Run551 AG9 Qualitätslabel-Korrektur (isolierte PR #550)
+
+Nach Run550 (beide source-wide/Handy-ZIP-Actions erfolgreich) wurde ein echtes Evidenzproblem in der JEF/AG9-Qualitätskalibrierung korrigiert: Wiederholte `:note`-Bearbeitungen derselben Antwort erzeugten zuvor neue unabhängige Kalibrierpaare, obwohl `ANSWER_RATINGS` die alte Bewertung ersetzt. Neue eventgebundene, begrenzte Label-Schlüssel ersetzen/entfernen nun nur das effektive `answer_quality_v2`-Paar; explizite Note hat Vorrang vor späterer impliziter Kritik; neutrale 5 zieht das Paar zurück. Historische ungebundene Paare bleiben unverändert. Run551 CI `40343788754`: 50/50 Software-/SQLite-Tests PASS, Datenschutzscan CLEAN, Roh-ZIP SHA256 `572a28529cd9009a81d1b3edc9dea9834de30c39026b9a1eca052b153775d8c2` unabhängig geprüft und privat in Library gesichert. Gilt **nur im Review-Branch**, nicht als produktiver Merge oder nativer/Redmi-Nachweis. STEP2/B3/Body-JEPA, jepa_weight=0 und alle Alters-/Freigabe-Gates bleiben unverändert. Belege: `code/docs/proofs/continuation-20261026/run551-rating-revisions/`; nächste Priorität bleibt funktionaler Nutzen im verbundenen Blueprint.
+
+
 Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STATE.json`
 (Checkpoint `CAUSAL_NATIVE46_NINTH_EXPORTED_SQLITE_FAILED_BEFORE_FIT`),
 `status/completion-ledger.json`, `code/specs/component-contracts.json`,
