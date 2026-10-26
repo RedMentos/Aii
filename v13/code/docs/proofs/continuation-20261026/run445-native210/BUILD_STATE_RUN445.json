@@ -1,0 +1,91 @@
+{
+  "schema": "V13_RUN445_ACTUAL_NATIVE210_P21_SOURCE_AUDIT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run445-native210-p21-source-audit-20261026",
+  "pr": 444,
+  "base_branch": "codex/run442-native-seed-variance-20261026",
+  "base_commit": "20c7e48c6028eb1d838279c756c90c2d29a3164f",
+  "tested_source_head": "caf8c0c721e8b41986e52b0f437d6751ba0c0329",
+  "scope": "Independent read-only postflight of completed actual Run437 Linux-native 210-row no-model artifact, with source/offer identity controls. No native execution in this audit.",
+  "source": {
+    "native_run": 40266365717,
+    "native_run_conclusion": "SUCCESS",
+    "artifact_id": 12627626352,
+    "artifact_sha256": "280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7",
+    "manifest_sha256": "b7b4bf472cc9f7c68910639a232b3e184d9900ade7d3bf9d242528b542d3b38e",
+    "inner_files_verified": 147,
+    "inner_bytes_verified": 89624858,
+    "source_rows_verified": 210,
+    "tool_rows_verified": 210,
+    "source_tool_replay_verified": 210,
+    "completed": [
+      "O_s20",
+      "O_s21",
+      "P_s20",
+      "P_s21",
+      "S_s20"
+    ]
+  },
+  "proof": {
+    "actions_run": 40268781889,
+    "tests_total": 5,
+    "passed": 5,
+    "privacy": "CLEAN",
+    "artifact_id": 12627702097,
+    "artifact_sha256": "19c7b328225a63d43eaf4ac847c7f711b0ec4d7e045405c712700c3745308fd7",
+    "report_sha256": "74254a4314abe3bfecbb9911ce0df95a28cb4f975a1496b8a091fa8e52fb15c0",
+    "independent_local_report_parity": "EXACT_REPORT_PARITY_PASS",
+    "source_sha256": {
+      "v13/code/scripts/run442_native_seed_variance.py": "e587b3001cd506bedf90bb98667b59e6301c8931c97a85b3b0f60fbc4efcbafb",
+      "v13/code/scripts/run445_native210_p21_source_audit.py": "a1f554ffb8e9a8f922fcde4079fcbd57ca0579bf1f81fb90caf69c589b27bad2",
+      "v13/code/tests/test_run445_native210_p21_source_audit.py": "26797ae8d220e64ddddd508bd06b91b28b875f7399767c46075012f9e4ef7f16"
+    }
+  },
+  "P_s21_minus_O_s21": {
+    "both_exact": {
+      "mean_utility_delta": 0.194444444445,
+      "same_inputs": 1,
+      "same_b1_offers": 2,
+      "same_b2_offers": 2,
+      "same_answers": 3
+    },
+    "b1_only": {
+      "mean_utility_delta": 0,
+      "same_inputs": 2,
+      "same_b1_offers": 2,
+      "same_b2_offers": 6,
+      "same_answers": 6
+    },
+    "same_policy_dual": {
+      "mean_utility_delta": 0,
+      "same_inputs": 1,
+      "same_b1_offers": 1,
+      "same_b2_offers": 6,
+      "same_answers": 6
+    }
+  },
+  "P_s21_minus_P_s20": {
+    "both_exact": {
+      "mean_utility_delta": -0.083333333333,
+      "same_inputs": 0,
+      "same_b1_offers": 1,
+      "same_b2_offers": 1,
+      "same_answers": 2
+    }
+  },
+  "interpretation": "P_s21 both_exact is 0.19444 higher utility than O_s21 on six matched fixtures, but inputs match in only 1/6, B1 offers in 2/6, B2 offers in 2/6. Cannot attribute gain causally to pointer selection; preserve negative STEP2 gate. B1-only and same-policy controls have equal mean utility despite source differences.",
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "native_owner": "Run437 P_s21 Actions 40266365717 completed SUCCESS, untouched. Run438 import/Run436 verifier independent review branches remain separate; no changes to registered cohort.",
+  "exact_next_command": "python3 v13/code/scripts/run445_native210_p21_source_audit.py --archive <Run437-safe-no-model-zip> --expected-sha256 280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7 --output report.json",
+  "prerequisites": "Run442 source helper on base branch, original safe artifact ID 12627626352, no native/model downloads.",
+  "next": "Observe exact-head source/phone ZIP CI, independent Run438/Run436 postflight and preserve failed attempts. Next native cohort arm only after owner handoff; do not reinterpret observational pointer delta as STEP2 gate."
+}
