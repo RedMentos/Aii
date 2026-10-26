@@ -37,6 +37,8 @@ jobs:
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run614-independent-native-paraphrase/PREREG.md)" = 0c00c2ce9cc14b0d1fb3c9acb48aa58e01f2115e
           test "$(git hash-object v13/code/scripts/run614_independent_native_paraphrase.py)" = f16d1fa8d46f8fdf51ebf3f34a02256619b07d6f
           test "$(git hash-object v13/code/tests/test_run614_independent_native_paraphrase.py)" = 347326193639f4ff0d5340011a0a259bd0e3a30d
+          test "$(git hash-object v13/code/scripts/run608_cross_body_paraphrase_native.py)" = 1665f4948fca18669de3376b17c9e46d44dfa9fe
+          test "$(git hash-object v13/code/scripts/run613_cross_body_fusion_offline.py)" = 7be5aaebb6da4d36fdc53fa87cde4a9f248da29d
           test "$(git hash-object v13/code/scripts/run606_cross_body_latent_shadow.py)" = 22116eea1e16343a5ff68844e98641e98e7b4306
           test "$(git hash-object v13/code/v13/runners.py)" = 37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5
           test "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99
@@ -52,14 +54,14 @@ jobs:
         working-directory: v13/code
         run: |
           set +e
-          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run614venv/bin/python" -m unittest -v tests.test_run614_cross_body_paraphrase_native > "$RUNNER_TEMP/RUN614_FIXTURE_RAW.log" 2>&1
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run614venv/bin/python" -m unittest -v tests.test_run614_independent_native_paraphrase > "$RUNNER_TEMP/RUN614_FIXTURE_RAW.log" 2>&1
           rc=$?
           echo "$rc" > "$RUNNER_TEMP/RUN614_FIXTURE_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Bootstrap original public pinned native B1 B2 weights and runner
         id: bootstrap
-        if: ${{ steps.fixture.outputs.rc == '0' }}
+        if: ${{ steps.fixture.conclusion == 'success' && steps.fixture.outputs.rc == '0' }}
         working-directory: v13/code
         run: |
           set +e
@@ -71,7 +73,7 @@ jobs:
           exit 0
       - name: Real paired native B1 B2 frozen prompt taps and fixed heldout proxy
         id: native
-        if: ${{ steps.bootstrap.outputs.rc == '0' }}
+        if: ${{ steps.bootstrap.conclusion == 'success' && steps.bootstrap.outputs.rc == '0' }}
         working-directory: v13/code
         run: |
           set +e
@@ -83,7 +85,7 @@ jobs:
           exit 0
       - name: Independent native receipts, paired source and within-body numerical audit
         id: audit
-        if: ${{ steps.native.outputs.rc == '0' }}
+        if: ${{ steps.native.conclusion == 'success' && steps.native.outputs.rc == '0' }}
         working-directory: v13/code
         run: |
           set +e
