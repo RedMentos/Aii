@@ -29,8 +29,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run489-jef-fixed-reader/PREREG.md)" = 'b80dbdb41c1e27922693a6b25200ff474bc7af8d'
-          test "$(git hash-object v13/code/scripts/run489_jef_fixed_reader_shadow.py)" = '8d766160bb8e7e99a6621d67fd0516b1be6c085f'
-          test "$(git hash-object v13/code/tests/test_run489_jef_fixed_reader_shadow.py)" = 'a3e0af76346e7d800a7a45a845c1aa09cf8168a0'
+          test -s v13/code/docs/proofs/continuation-20261026/run489-jef-fixed-reader/ADDENDUM_AFTER_FAILURE.md
+          test "$(git hash-object v13/code/scripts/run489_jef_fixed_reader_shadow.py)" = 'cd117a31834462a7b7d2f43ac3ead8f1e7ef090e'
+          test "$(git hash-object v13/code/tests/test_run489_jef_fixed_reader_shadow.py)" = '70fdc40b4f16feb16e686c5e2bd937e673a3f00c'
           test "$(git hash-object v13/code/v13/agi/eligibility.py)" = '1778752f4a92de660a48a3c208134ef601bcbb9f'
           test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = 'fae7aed612108a554d8566b2917ebf31022df423'
           test "$(git hash-object v13/code/scripts/run488_native378_independent_rescore.py)" = 'abe4f57edf8b5995298824894dc0199fa539fcc4'
@@ -77,12 +78,17 @@ jobs:
           assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
           assert d['b3_l1']=='FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
           assert set(d['summary'])=={'O','P','S'}
+          assert d['secondary_scope']=='POST_FAILURE_ADDENDUM_NOT_ORIGINAL_PREREG'
+          assert set(d['secondary_read_fixed'])=={'O','P','S'}
           for arm in 'OPS':
             assert len(d['summary'][arm])==7
             for metrics in d['summary'][arm].values():
               assert 0<=metrics['mean_utility']<=1
               assert all(0<=metrics[k]<=18 for k in ('exact','wrong_committed','unknown','unsupported'))
             assert set(d['both_exact_role_ablations'][arm])=={'without_B1','without_B2'}
+            assert set(d['secondary_read_fixed_role_ablations'][arm])=={'without_B1','without_B2'}
+            for metrics in d['secondary_read_fixed'][arm].values():
+              assert 0<=metrics['mean_utility']<=1
           print('RUN489_FIXED_JEF_SHADOW_378_REPLAY_COMPLETE_NO_GATE_PROMOTION')
           PY
             rc=$?
