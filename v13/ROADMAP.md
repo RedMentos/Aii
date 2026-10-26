@@ -1387,9 +1387,9 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 ### WP-Z10 MoE verdrahten + Pre-Router-Vergessen messen (Cloud, groß) — OFFEN
 - WP-N11 Teil 3: EuroMoE/SmallThinker als B1/B2, §24.19 (heute NOT_IMPLEMENTED), aktive Expert-Deltas mit eingefrorenem Router (STEP6C).
 
-### WP-Z11 Referenz-Lehrer für STEP4 (Cloud) — GEMESSEN: Z11 und Z11b `STEP4_EXIT_FAIL`, Z11c läuft (Thread „Offene Ziel-Pakete Z6 bis Z12“, PR #38)
+### WP-Z11 Referenz-Lehrer für STEP4 (Cloud) — Z11d `STEP4_EXIT_PASS` 2026-10-26 (vierter vorregistrierter Versuch; Z11, Z11b, Z11c bleiben FAIL) (Thread „Offene Ziel-Pakete Z6 bis Z12“, PR #38)
 - Lehrer Qwen3-4B-Instruct-2507 Q4_K_M nur Cloud als TEACHER. Z11 (Befund `code/docs/proofs/continuation-20261022/z11-reference-teacher/BEFUND.md`): T2/T3/T5 FAIL; T5 war ein echter Fehler im STEP4-Fingerabdruck (Zeilen-/Zufalls-IDs, behoben in `v13/memory.py` mit Test), T3 vermischte menschliche Auswahl mit dem Lehrer-Arm.
-- Z11b (Auswahl erst nach allen Antworten): T1, T3 60/60, T4, T5 20/20, T6 PASS; nur T2 FAIL durch einen vom Lehrer zitierten Self-Satz (Prüfung gegen JSON-kodierte History). Z11c: Leck-Prüfung v2 auf Klartext, frischer Seed 29.
+- Z11b (Auswahl erst nach allen Antworten): T1, T3 60/60, T4, T5 20/20, T6 PASS; nur T2 FAIL durch einen vom Lehrer zitierten Self-Satz (Prüfung gegen JSON-kodierte History). Z11c (Seed 29, Prüfung v2): wieder nur T2 durch zitierte Self-Sätze (Rand-Fehler der Prüfung). **Z11d (Seed 31, Prüfung auf Wort-8er-Ebene): T1–T6 PASS → `STEP4_EXIT_PASS`** (Befund `code/docs/proofs/continuation-20261026/z11d-reference-teacher/BEFUND.md`). Lehrer nur +3 Aufgaben besser als Self, 3x langsamer.
 - Stärkeres Modell nur in der Cloud als REFERENCE-Lane (nie Wahrheit), SELF zuerst; Teacher on/off und §24.28B messen.
 
 ### WP-Z12 JEPA im Körper + echte Self/World-Fälle (Cloud, nach Z2) — TEIL Z12a PASS 2026-10-26, Körper-JEPA (Z12b) offen
