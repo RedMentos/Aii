@@ -1,0 +1,16 @@
+{
+ "schema": "USER_RULES_FREEZE_V8",
+ "parser": "fixed-userrules-v8",
+ "second_reader": {
+  "model": "judge-gemma3-1b.gguf",
+  "sha256": "8270790f3ab69fdfe860b7b64008d9a19986d8df7e407bb018184caa08798ebd",
+  "prompt": "A",
+  "role": "exploratory"
+ },
+ "frozen": "2026-10-26, after round8_raw.json was committed unread and the selection on known sentences; before the hand audit or any reader run on round 8 / holdout_de5",
+ "files": {
+  "v13/userrules.py": "11ca805f605c43041c50061f40eccff660c3a01ab52b0cfabc5f2f22be4d9dc0",
+  "v13/userrules_lexicon.json": "dfb87d1182ca9786567c47964522c06d633d79a9037062a678f0f5fb29e84217",
+  "v13/userrules_second.py": "8ecdda7731305f3dfa12e941ebd75dc22a087de4f09f7f3c44421ccfbc8ee092"
+ }
+}

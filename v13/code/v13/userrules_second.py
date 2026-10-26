@@ -39,7 +39,8 @@ PROMPTS={
       'nicht darauf. Gib nur JSON zurück.')}
 MODES=('off','shadow','active')
 # chosen on known sentences only and frozen (user-rules-v8/select_second.json, freeze_v8.json); filled at freeze time
-FROZEN={'model':None,'model_sha256':None,'prompt':'B'}
+FROZEN={'model':'gemma-3-1b-it Q4_K_M','model_sha256':'8270790f3ab69fdfe860b7b64008d9a19986d8df7e407bb018184caa08798ebd','prompt':'A',
+        'status':'SECOND_READER_TOO_COSTLY on known sentences (select_second.json); exploratory only, keep shadow'}
 
 
 def ask_llama(url,prompt,text,timeout=60):

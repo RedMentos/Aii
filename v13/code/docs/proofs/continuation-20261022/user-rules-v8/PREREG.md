@@ -57,3 +57,14 @@ Urteil: `SECOND_READER_HELPS` nur, wenn Z1–Z4 halten. Sonst `SECOND_READER_NO_
 3. Fester Leser v8 und Zweitleser bauen, Auswahl auf bekannten Daten (Ergebnis committen), einfrieren.
 4. Audit von Runde 8 von Hand, committen vor jedem Leserlauf.
 5. Messung (fester Leser v8 allein, mit Zweitleser, v7 zum Vergleich). Befund.
+
+## Nachtrag nach der Auswahl, vor jedem Blick auf Runde 8 und holdout_de5
+
+Auswahl-Ergebnis (`select_second.json`): Kein Kandidat erfüllt die Kosten-Regel. Der feste Leser v8 allein hat auf dem
+Auswahl-Satz 0 Fehlersätze und 29,2 % unnötige Rückfragen; mit Zweitleser sind es 41,6 % (Gemma 3 1B, Auftrag A) bis 94,8 %
+(Qwen 2.5 1.5B, Auftrag B), jeder Kandidat über der Grenze von +10 Punkten. Auf bekannten Sätzen kann der Zweitleser keinen
+Fehler mehr finden, weil der feste Leser dort schon 0 hat; er bringt dort nur Kosten.
+Damit gilt schon in der Auswahl-Stufe: **`SECOND_READER_TOO_COSTLY`**, der Schalter bleibt auf SHADOW.
+Ob ein Modell auf frischen Sätzen Fehler findet, wird trotzdem gemessen, aber nur **erkundend** (ändert kein Urteil):
+mit dem Kandidaten mit den geringsten Kosten, Gemma 3 1B mit Auftrag A, hier vor dem Blick festgelegt. Die übrigen Kandidaten
+werden ebenfalls erkundend mitgemessen. Das Hauptergebnis für den festen Leser v8 (K1–K6 wie v7) bleibt unverändert.
