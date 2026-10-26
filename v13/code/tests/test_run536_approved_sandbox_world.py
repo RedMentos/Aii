@@ -80,6 +80,18 @@ class ApprovedSandboxWorldTests(unittest.TestCase):
         self.assertEqual(report["observations"], [])
         self.assertFalse((Path(self.temp.name) / "escape.txt").exists())
 
+    def test_real_failed_approved_write_is_mixed_not_false_self(self):
+        self.enable()
+        (self.root / "blocked.txt").mkdir()
+        tx = self.session.propose("blocked", "will fail")
+        self.assertEqual(tx["status"], "PROPOSED")
+        report = self.session.approve(tx["id"], origin="OPERATOR_TTY")
+        self.assertEqual(report["status"], "FAILED")
+        self.assertTrue(report["corollary_issued"])
+        status = next(o for o in report["observations"] if o["channel"] == "status:blocked")
+        self.assertEqual(status["class"], "MIXED")
+        self.assertNotIn("will fail", json.dumps(report))
+
     def test_duplicate_collect_and_forged_transaction_refused(self):
         self.enable()
         tx = self.session.propose("note", "hello")
