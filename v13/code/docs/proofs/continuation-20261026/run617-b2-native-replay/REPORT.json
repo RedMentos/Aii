@@ -1,0 +1,313 @@
+{
+  "canonical_architecture_complete": false,
+  "cases": [
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-1-B",
+        "literature-5-A",
+        "literature-4-A",
+        "literature-5-B",
+        "geography-1-A"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-1-A",
+      "target_id": "literature-1-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-1-A",
+        "literature-3-B",
+        "literature-2-A",
+        "literature-2-B",
+        "geography-5-A"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-1-B",
+      "target_id": "literature-1-A"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-2-B",
+        "literature-4-A",
+        "literature-4-B",
+        "literature-1-B",
+        "geography-1-B"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-2-A",
+      "target_id": "literature-2-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-2-A",
+        "literature-1-B",
+        "literature-4-B",
+        "literature-4-A",
+        "geography-5-A"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-2-B",
+      "target_id": "literature-2-A"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-3-B",
+        "literature-2-A",
+        "literature-1-B",
+        "literature-1-A",
+        "literature-4-A"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-3-A",
+      "target_id": "literature-3-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-3-A",
+        "literature-1-B",
+        "literature-2-A",
+        "literature-2-B",
+        "literature-4-B"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-3-B",
+      "target_id": "literature-3-A"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-4-B",
+        "literature-2-A",
+        "literature-2-B",
+        "literature-1-A",
+        "literature-1-B"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-4-A",
+      "target_id": "literature-4-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-4-A",
+        "literature-2-A",
+        "literature-2-B",
+        "literature-1-B",
+        "literature-3-B"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-4-B",
+      "target_id": "literature-4-A"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-5-B",
+        "literature-1-A",
+        "geography-3-B",
+        "geography-1-A",
+        "geography-5-A"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-5-A",
+      "target_id": "literature-5-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "literature-5-A",
+        "geography-3-B",
+        "literature-1-A",
+        "geography-4-A",
+        "geography-5-A"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "literature-5-B",
+      "target_id": "literature-5-A"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-1-B",
+        "geography-4-A",
+        "geography-2-A",
+        "geography-3-A",
+        "geography-3-B"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "geography-1-A",
+      "target_id": "geography-1-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-1-A",
+        "geography-5-B",
+        "geography-5-A",
+        "geography-4-A",
+        "geography-3-B"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "geography-1-B",
+      "target_id": "geography-1-A"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-1-A",
+        "geography-4-A",
+        "geography-2-B",
+        "geography-4-B",
+        "geography-5-B"
+      ],
+      "opposite_rank_full": 3,
+      "opposite_rank_top5": 3,
+      "query_id": "geography-2-A",
+      "target_id": "geography-2-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-5-B",
+        "geography-4-A",
+        "geography-2-A",
+        "geography-5-A",
+        "geography-3-B"
+      ],
+      "opposite_rank_full": 3,
+      "opposite_rank_top5": 3,
+      "query_id": "geography-2-B",
+      "target_id": "geography-2-A"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-3-B",
+        "geography-4-A",
+        "geography-1-A",
+        "geography-5-A",
+        "geography-1-B"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "geography-3-A",
+      "target_id": "geography-3-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-3-A",
+        "geography-4-A",
+        "geography-1-A",
+        "geography-5-A",
+        "geography-1-B"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "geography-3-B",
+      "target_id": "geography-3-A"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-3-A",
+        "geography-1-A",
+        "geography-4-B",
+        "geography-5-A",
+        "geography-3-B"
+      ],
+      "opposite_rank_full": 3,
+      "opposite_rank_top5": 3,
+      "query_id": "geography-4-A",
+      "target_id": "geography-4-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-4-A",
+        "geography-1-A",
+        "geography-3-B",
+        "geography-2-A",
+        "geography-5-B"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "geography-4-B",
+      "target_id": "geography-4-A"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-5-B",
+        "geography-4-A",
+        "geography-3-A",
+        "geography-3-B",
+        "geography-1-A"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "geography-5-A",
+      "target_id": "geography-5-B"
+    },
+    {
+      "matched_raw_cosine_top5": true,
+      "operator_top5_ids": [
+        "geography-5-A",
+        "geography-4-A",
+        "geography-1-B",
+        "geography-2-B",
+        "geography-1-A"
+      ],
+      "opposite_rank_full": 1,
+      "opposite_rank_top5": 1,
+      "query_id": "geography-5-B",
+      "target_id": "geography-5-A"
+    }
+  ],
+  "cohort_git_blob": "7068267d41a1719abea3a54c84b1d0223444df1d",
+  "evidence_level": "LINUX_SQLITE_REPLAY_OF_PRIOR_NATIVE_READONLY_STATES",
+  "gates": {
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "Redmi": "UNMEASURED",
+    "STEP2": "UTILITY_FAIL",
+    "V13": "INCOMPLETE",
+    "jepa_weight": 0
+  },
+  "metrics": {
+    "independent_raw_mrr_at19": 0.9,
+    "operator_mrr_at5": 0.9,
+    "operator_top1": 0.85
+  },
+  "model_revision": "8fea620810c4afa23dd6443f999a48574c1611a3",
+  "native_body_training": false,
+  "native_inference_new": false,
+  "not_comparable_to_centered_baseline": true,
+  "operator_raw_cosine_top5_mismatches": 0,
+  "original_run614_train_centered_b2_only_top1": 0.85,
+  "queries": 20,
+  "receiver_injection": false,
+  "schema": "V13_RUN617_RECORDED_NATIVE_OPERATOR_REPLAY_V1",
+  "states_sha256": "cb535df87749c0cf5d698d26268e6b03f3d6f57690b95434aebc6c875a3ea189",
+  "status": "REPLAY_INTEGRATION_PASS",
+  "tap_id": "qwen35.result_norm.final.v1",
+  "user_full_scope_complete": false
+}
