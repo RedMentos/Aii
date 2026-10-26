@@ -1,0 +1,37 @@
+{
+  "schema": "V13_RUN456_NATIVE252_PAIRED_UTILITY_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 independent source-only analysis; not active Run453 native owner",
+  "branch": "codex/automation11-run456-native252-utility-analysis-20261026",
+  "base": "2e6504bc27b320a6f8e0a2822d3c2f07ffc61618",
+  "tested_source_head": "6fe15c3a577f3c36389fffa8342ea202fb4f369d",
+  "pr": 455,
+  "source_sha256": {
+    "v13/code/scripts/run456_native252_utility.py": "82fb7ee4f201e3f1038cdda7794756c1f49fdb36f1d139834755fd796d914bfa",
+    "v13/code/tests/test_run456_native252_utility.py": "596635fcdca59d61a07eda51b255db0b67e74881807550900864cbe6dd279f21"
+  },
+  "actions": {
+    "id": 40271198695,
+    "conclusion": "success",
+    "tests": "34/34 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12628432398,
+    "raw_artifact_sha256": "8d5de452885e39d87b5bfa798fc007797df85e87661d8ea8522a5f46ee14aa76"
+  },
+  "result": "Exact frozen six-arm 252-key matrix pairing for O/P/S seeds20,21, descriptive P-O/P-S/S-O by fixture/variant/seed; missing arms/keys, nonfinite, out-of-range, bool and failed independent verifier refused.",
+  "scope": "Source-only synthetic utility; actual Run453 native S_s21 pending. No actual paired utility value measured by this CI.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Need actual Run453 six-receipt native252 safe artifact and stage6 report before running Run456 analysis.",
+    "Even actual two-seed utility is descriptive and cannot satisfy frozen three-seed 378-row STEP2 acceptance.",
+    "Redmi, Body-JEPA, native learning and full blueprint remain incomplete."
+  ],
+  "next_command": "Observe Run453 Actions 40270625698. If actual 252 native+safe export GREEN, run Run456 read-only utility on exact SHA-verified artifact, preserve raw report and original gates. If RED, retain failure and do not fabricate 252 utility."
+}
