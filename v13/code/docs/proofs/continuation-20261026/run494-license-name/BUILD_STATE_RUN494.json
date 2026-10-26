@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN494_PINNED_HF_NAMED_LICENSE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run494 isolated primary-source HF metadata license fix; no native job ownership",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/run494-hf-license-name-failclosed-20261026",
+  "base_branch": "codex/run492-pinned-hf-model-metadata-20261026",
+  "base_sha": "122e1ed62ba2b04841ae567051754da399282c7e",
+  "review_pr": 492,
+  "preregistration": {
+    "path": "v13/code/docs/proofs/continuation-20261026/run494-license-name/PREREG.md",
+    "blob_sha": "7fa36c46b8578bb7de3ba2dce0b91f067b000a66"
+  },
+  "source_blobs": {
+    "v13/code/scripts/run492_pinned_hf_metadata.py": "e518a3b9e52687ae021f0432d156cf4b59704600",
+    "v13/code/tests/test_run494_hf_custom_license.py": "beb5d9ff30c55138faa4e6592e646c59a3846afd"
+  },
+  "original_red": {
+    "run_id": 40295185211,
+    "artifact_id": 12637094802,
+    "artifact_sha256": "cc8efd8bb9d2055591ae4d316a546d2d4fd696244c626cef13624d84fd940cea",
+    "error": "MODEL_LICENSE_METADATA_CHANGED",
+    "preserved": true
+  },
+  "validation": {
+    "run_id": 40300505059,
+    "status": "GREEN: 13 unit tests, 3 pinned live public HF model metadata responses, privacy CLEAN; no model payloads",
+    "artifact_id": 12640082533,
+    "artifact_sha256": "9fe34699d94652f844a9b2a13803f17e8de6b457c83a2fe03372ad9b3fa63e30",
+    "live_metadata_json_sha256": "1e75ac672e7ea34d58993d604b921a33f8155854f2f6cf3c60c3b6b827de3618",
+    "api_response_sha256": {
+      "B1_DETAIL": "0b895aa32eb5326ce9e59cd0da7539564c0fa81672b6bf8149ec3cbb8045baf8",
+      "B2_GIST": "df538b3da492aeb09541e3529d49620526b578459b3b5997c7391bc8a47e6c43",
+      "C3_LANGUAGE": "d023319a6d62a4d5fc60fc6f80edd35205d3aaafd9a7a4789bed75aa5033ff6f"
+    },
+    "model_bytes_downloaded": 0,
+    "native_executed": false,
+    "runner_verified": false,
+    "license_accepted_by_user": null
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-26/Run494/RUN494_PINNED_HF_METADATA_GREEN_40300505059.zip",
+    "library_file_id": "libfile_6d83e3dbcb688191b036a41c8cbee6bf",
+    "sha256": "9fe34699d94652f844a9b2a13803f17e8de6b457c83a2fe03372ad9b3fa63e30",
+    "verified": "materialized private Library and byte-compared",
+    "anyone_writable_drive_used": false
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Pinned HF API metadata matched all three original models but GGUF payload bytes have NOT been downloaded or independently hashed.",
+    "llama-server b10964 binary and libraries require byte-level provenance/compatibility preflight; runner expected SHA256 79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39.",
+    "Run491 heldout10 1050 native rows remain unexecuted; check current native owners/resource limits before a serialized small pilot.",
+    "Source candidate is stacked on Run492 PR #490 and not production-integrated; license terms must be preserved and user license acceptance not assumed."
+  ],
+  "exact_next_command": "Check latest PR heads and active native owner. Reconcile Run494 into Run492 only after review. Verify pinned llama.cpp b10964 runner and native shared libraries by actual SHA256 in an isolated environment, then run preregistered two-fixture one-seed Run491 pilot with model payload SHA verification and closed raw evidence; no full cohort until pilot acceptance."
+}
