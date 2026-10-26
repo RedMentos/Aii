@@ -11,7 +11,7 @@ def obsched_names():
     return SCHEDULES
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
 :befehle [Wort] (alle Befehle mit Erklärung) / :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
-:chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
+:chats / :new / :open <Chat-ID> / :search <Text> [--before <Message-ID>] / :export chat [json|md] [Chat-ID]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
 :notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
@@ -284,9 +284,24 @@ class Operator:
             return dumps(s.rows('SELECT * FROM telemetry ORDER BY id DESC LIMIT 20'))
         if cmd=='chats':return dumps(s.rows('SELECT * FROM sessions ORDER BY created DESC'))
         if cmd=='search':
+            # Stable descending message IDs make older hits reachable without
+            # materializing all chat history; old :search <Text> stays valid.
+            before=None
+            if '--before' in args:
+                if len(args)<3 or args[-2]!='--before' or args.count('--before')!=1:
+                    raise ValueError(':search <Text> [--before <Message-ID>]')
+                raw=args[-1]
+                if not raw.isascii() or not raw.isdecimal() or int(raw)<=0:
+                    raise ValueError('Message-ID muss positiv sein')
+                before=int(raw);args=args[:-2]
+                if not args:raise ValueError(':search <Text> [--before <Message-ID>]')
             # SQLite LIKE treats % and _ as wildcards; operator search is literal text.
             literal=' '.join(args).replace('\\','\\\\').replace('%','\\%').replace('_','\\_')
-            return dumps(s.rows("SELECT session_id,event_id,role,text FROM messages WHERE text LIKE ? ESCAPE '\\' ORDER BY id DESC LIMIT 30",('%'+literal+'%',)))
+            sql="SELECT id,session_id,event_id,role,text FROM messages WHERE text LIKE ? ESCAPE '\\'"
+            params=['%'+literal+'%']
+            if before is not None:
+                sql+=' AND id<?';params.append(before)
+            return dumps(s.rows(sql+' ORDER BY id DESC LIMIT 30',tuple(params)))
         if cmd=='memory':
             rows=s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id "
                         "WHERE m.active=1 AND s.deleted=0 AND (m.session_id=? OR m.scope='global')",
@@ -392,9 +407,14 @@ class Operator:
         if cmd=='budget' and not args:return dumps({k:{'value':r.cfg[k],'unit':v[1],'range':[v[2],v[3]],'status':'BOOT_ESTIMATE'} for k,v in KNOBS.items()})
         if cmd=='rules' and not args:return dumps(s.rules())
         if cmd=='export' and args and args[0]=='chat':
-            if len(args)>2:raise ValueError(':export chat [json|md]')
+            if len(args)>3:raise ValueError(':export chat [json|md] [Chat-ID]')
+            fmt=args[1] if len(args)>=2 else 'json'
+            if fmt not in ('json','md'):raise ValueError(':export chat [json|md] [Chat-ID]')
+            # Explicit older chat export is read-only and must not switch the
+            # active session or alter the persisted last_session pointer.
+            session=args[2] if len(args)==3 else r.session
             from .chat_export import export_chat
-            return export_chat(s,r.session,args[1] if len(args)==2 else 'json')
+            return export_chat(s,session,fmt)
         # Every mutation affecting routing/generation/files below is serialized at idle.
         r.require_idle()
         if cmd=='consolidate':
