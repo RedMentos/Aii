@@ -46,7 +46,7 @@ jobs:
           python3 -m compileall -q v13/runtime.py tests/test_tool_final_attribution.py
           rc=$?
           if [ "$rc" -eq 0 ]; then
-            timeout 120s python3 -m unittest -v tests.test_tool_final_attribution tests.test_run574_live_scope_audit > "$RUNNER_TEMP/TOOL_FINAL_TEST_RAW.log" 2>&1
+            timeout 120s python3 -m unittest -v tests.test_tool_final_attribution tests.test_run574_live_scope_audit tests.test_broker tests.test_toolstep tests.test_eligibility_live > "$RUNNER_TEMP/TOOL_FINAL_TEST_RAW.log" 2>&1
             rc=$?
           fi
           echo "$rc" > "$RUNNER_TEMP/TOOL_FINAL_TEST_EXIT.txt"
