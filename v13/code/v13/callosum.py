@@ -224,7 +224,7 @@ class Callosum:
             seen=set();n=0
             for m in st['pending'].get(event_id) or []:
                 mid=m.get('msg')
-                if (mid not in valid or mid in seen or m.get('rated') or
+                if (not isinstance(mid,str) or mid not in valid or mid in seen or m.get('rated') or
                     (m.get('direction'),m.get('receiver'),m.get('channel'))!=valid[mid]):
                     continue
                 self._update(st,m['direction'],m['channel'],u,None,sc)
