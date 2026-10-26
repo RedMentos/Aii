@@ -1,0 +1,47 @@
+{
+  "schema": "V13_RUN479_STAGE9_NATIVE_PREEXEC_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run479-native-s22-20261026",
+  "base_ref": "codex/run475-native-s22-20261026",
+  "base_sha": "35333d990eab6918ef9eeef70b95df67da72bab1",
+  "owner": "Run479 one-shot native Stage9 S_s22; serial group v13-native-c3-run131-serialized; no concurrent native owner found at preflight",
+  "source_blobs": {
+    "v13/code/scripts/run467_stage9_s22.py": "0fdd14fd73d5122c9f39c6cc08c8d1b2adbbb8b2",
+    "v13/code/scripts/run468_verify_native378.py": "eedc307a6e6f3c36fea43894dcfa41e983fa4c74",
+    "v13/code/scripts/run466_import_stage8_artifact.py": "2444c92ec60447adff906db93bfd5effd4dc1edc",
+    "v13/code/scripts/run465_verify_native336.py": "c4aa16eda5e4e67b31d8aefc78c13a281305b000"
+  },
+  "pinned_native336": {
+    "source_run_id": 40277803560,
+    "source_head_sha": "8763ef9a8ab9e1a1e7da8463135e5b4983003145",
+    "safe_artifact_id": 12632191220,
+    "safe_sha256": "a928aaba590557a656d8ee3274262e144a890e675bba511338758b3a559d086f",
+    "raw_artifact_id": 12631932326,
+    "raw_sha256": "0f832b779d841a5c42255bb3c277cf2b3c1c845b9678f785922d8bb050d0d0d9",
+    "stage8_report_sha256": "3d087a159067daa020888f0692cb38132ef5bc60098a4e81c87a12c68692e0f3",
+    "independent_review_pr": 476,
+    "private_library_backup": true
+  },
+  "local_preflight": {
+    "source_test_count": 66,
+    "source_tests": "PASS",
+    "source_tests_log_sha256": "a5c41d8be00f14d60831be31f231875767012a9bf67dda1b4f74f44eb822e126",
+    "actual_safe336_stage9_preview": "STAGE9_READY_NO_NATIVE",
+    "preview_rows": 336,
+    "preview_remaining_arms": 1,
+    "preview_report_sha256": "2ff9a9247bd8cca1a35bc1b9fd882969fd7bef6affd3ee685877324382a91b02",
+    "native_execution_performed": false
+  },
+  "next_native_arm": "S_s22",
+  "target_structural_rows": 378,
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "canonical_gate_pass": false,
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "safety": "One PR-opened native job only, pinned original GitHub artifacts, exact model/source pins, source preflight before downloads, serial concurrency, raw logs on RED, safe no-model export, independent Run468 nine-receipt verification, privacy scan, no gate promotion.",
+  "next_command": "Create one-shot GitHub Actions Stage9 workflow on this branch; review exact pins; open PR once to start native S_s22; inspect raw CI and preserve artifacts even on RED; do not retry blindly."
+}
