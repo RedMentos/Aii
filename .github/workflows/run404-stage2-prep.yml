@@ -1,0 +1,83 @@
+name: V13 Run404 stage2 P_s20 opt-in continuation source-only controls
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run404-stage2-prep.yml'
+      - 'v13/code/scripts/run404_stage2_resume.py'
+      - 'v13/code/tests/test_run404_stage2_resume.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run404-stage2-prep/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact source and syntax
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN404_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          sha256sum v13/code/scripts/run404_stage2_resume.py v13/code/tests/test_run404_stage2_resume.py \
+            | tee "$RUNNER_TEMP/RUN404_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/scripts/run404_stage2_resume.py \
+            v13/code/tests/test_run404_stage2_resume.py
+      - name: 78 source-only tests, no real native
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_run394_step2_fresh tests.test_run396_step2_pilot_audit \
+            tests.test_run397_step2_resume tests.test_run398_native_artifact_audit \
+            tests.test_run400_quote_substrings tests.test_run402_stage_restore \
+            tests.test_run403_full_postflight tests.test_run404_stage2_resume \
+            2>&1 | tee "$RUNNER_TEMP/RUN404_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN404_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Privacy
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN404_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN404_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN404_*' ! -name RUN404_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN404_SHA256SUMS.txt
+      - name: Upload source-only raw, no weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run404-Stage2Prep-Source-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN404_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce source tests and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
