@@ -1,0 +1,36 @@
+{
+  "schema": "V13_RUN619_BRANCH_SCOPED_BUILD_STATE_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/automation11-run619-gist-precision-20261026",
+  "base_pr": 613,
+  "base_head": "23d366d137360b5ce9ca09375fe672661a403935",
+  "owner": "GPT automation11 - gist_similarity.py, test_gist_similarity_run616.py, run619 workflow and proof only",
+  "changed_source_blob": "b6aa89a8d954dde524217171cd28c4bdf09a0cf0",
+  "changed_test_blob": "24cd16a52dbce9329339f34c8037a1bf3e845c4a",
+  "workflow_blob": "a50f094965cc701785f10a3247a5d1d13edf6119",
+  "code_status": "REMOTE_READBACK_VERIFIED",
+  "test_status": "PENDING_REAL_SQLITE_CI",
+  "evidence_level": "LOCAL_PURE_NUMERICAL_COUNTEREXAMPLE_ONLY",
+  "model_inference_new": false,
+  "training_new": false,
+  "redmi_measured": false,
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "open_questions": [
+    "Does Run619 Actions CI execute and reproduce the precision regression?",
+    "Does Run618 native cohort produce any six-decimal display-score ties?",
+    "Are native Run618 full-score and SQLite top-five orders identical on its frozen head?"
+  ],
+  "next_command": "Inspect GitHub Actions for Run619 exact branch HEAD, validate test/privacy exits and SHA256 artifact, then update proof and proceed to next canonical functional package",
+  "active_heavy_job_owner": "Run618 PR613; Run619 source-only CI does not launch model inference",
+  "remote_backup": "GitHub review branch; no private data",
+  "main_integrated": false
+}
