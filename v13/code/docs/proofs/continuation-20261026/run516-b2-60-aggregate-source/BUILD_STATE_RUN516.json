@@ -16,7 +16,7 @@
     "aggregator": "b5531e49288ac199673a05a67763999b2b589e1a",
     "tests": "5e4d8f504ee0cf541b4f20e85a252df0e2cd44f7"
   },
-  "tests": "SOURCE_ONLY_CI_PENDING",
+  "tests": "SOURCE_ONLY_GREEN_44_TESTS_5_PLANS_PRIVACY_CLEAN",
   "features": [
     "Re-audit five source/ref/offset stage receipts before accepting",
     "Reject altered persisted postflight/metric rows",
@@ -37,6 +37,17 @@
     "No Redmi evidence",
     "No Body-JEPA native sparse training"
   ],
-  "next_command": "Open draft PR, verify source-only CI and raw hashes; independently review Run515 native Actions/partial RED or GREEN as soon as it finishes, without overlapping heavy native owners.",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Independently review Run515 p00 native result and preserve RED or GREEN raw/safe ZIPs. No other heavy job while Run515 runs. Then pursue next canonical package outside isolated quote helpers.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "ci": {
+    "run": 40313586281,
+    "head": "e03e2e85c6cf5f2ce4a60f51403327f0a54e0cd4",
+    "artifact": 12645951609,
+    "zip_sha256": "50d68812916a0322c6fd53f5f72ab9dd24769ff4693b1c0ed511fe8ef7fe3a7c",
+    "manifest_entries_verified": 11,
+    "tests_passed": 44,
+    "planned_keys": 60,
+    "privacy": "CLEAN",
+    "private_backup": "/V13_Run516_SOURCE_ONLY_GREEN_20261026_sha50D68812.zip"
+  }
 }
