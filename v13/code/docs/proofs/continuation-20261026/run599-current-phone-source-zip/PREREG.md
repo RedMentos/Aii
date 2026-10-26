@@ -1,0 +1,9 @@
+# Run599 preregistration — current V13-Phone source ZIP from verified Run598 chain (2026-10-26)
+
+Owner: GPT automation11. Review-only packaging branch based on verified Run598 PR593 checkpoint `59c2fcede122a8a77e0a96211ad7afec32f49816`. File ownership: new Run599 GitHub Actions workflow and this proof directory. No runtime, frozen source/model/seed, Canon or native cohort edits.
+
+**Purpose:** User requires a downloadable Termux runner ZIP, not merely a code PR. Previous Run572 source-only phone ZIP predates the Run593 Callosum rating, Run594/597 complete snapshot chat export, Run595 Context OS selector and Run598 no-clobber backup changes. Package current source bytes and verify independently; never mislabel a source package as a native model or Redmi-proven full V13.
+
+**Prospective workflow:** Exact-head checkout; check original `package_source.py` and independent `verify_phone_zip_current_run268.py` source blob pins, immutable Canon SHA256, current source hashes, privacy scan. Execute `python3 v13/code/scripts/package_source.py --root v13/code --out <temp>/V13-Phone-current-Run599.zip --phone-install`. Independently verify every ZIP member CRC and source-byte parity using Run268 verifier, assert original negative gates (STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight 0). Run package tests and a portable extracted smoke if compatible. SHA-close ZIP and all raw logs; upload the actual ZIP and proof even if a check fails. No model downloads, native inference, Redmi or external communication.
+
+**Acceptance:** Exact source ZIP and independent member/source parity PASS, unchanged Canon and gates, no secrets. If a prerequisite fails, preserve raw and fix only packaging/test, not frozen cohorts. Successful ZIP is source-only; Termux install and native models still need on-device tests.
