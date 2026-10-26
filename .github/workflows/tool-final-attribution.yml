@@ -59,7 +59,7 @@ jobs:
         run: |
           set -uo pipefail
           set +e
-          if [ "$(cat \"$RUNNER_TEMP/TOOL_FINAL_DEPS_EXIT.txt\")" != 0 ]; then echo 1 > "$RUNNER_TEMP/TOOL_FINAL_TEST_EXIT.txt"; exit 0; fi
+          if [ "$(cat "$RUNNER_TEMP/TOOL_FINAL_DEPS_EXIT.txt")" != 0 ]; then echo 1 > "$RUNNER_TEMP/TOOL_FINAL_TEST_EXIT.txt"; exit 0; fi
           "$RUNNER_TEMP/toolvenv/bin/python" -m compileall -q v13/runtime.py tests/test_tool_final_attribution.py
           rc=$?
           if [ "$rc" -eq 0 ]; then
