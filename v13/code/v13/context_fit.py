@@ -77,12 +77,12 @@ def _steps(vol,text):
         while len(vol[i][2])>1:
             vol[i][2].pop();yield 'MEMORIES',1
 
-def fit(mode,stable,volatile,history,text,count,limit):
+def fit(mode,stable,volatile,history,text,count,limit,force_exact=False):
     """Return (volatile to use, report). ``count(messages)`` -> prompt tokens; ``limit`` = allowed prompt tokens."""
     if mode not in MODES:raise ValueError('context_fit '+'|'.join(MODES))
     report={'mode':mode,'limit_tokens':limit,'applied':False,'fits':None,'steps':{}}
     if mode=='off':return volatile,report
-    if upper_bound(build(stable,volatile,history,text))<=limit:
+    if not force_exact and upper_bound(build(stable,volatile,history,text))<=limit:
         report.update(fits=True,quick=True,count_source='UPPER_BOUND');return volatile,report
     before=count(build(stable,volatile,history,text));report['tokens_before']=before
     if before<=limit:report.update(fits=True,tokens_after=before);return volatile,report
@@ -101,16 +101,17 @@ def fit(mode,stable,volatile,history,text,count,limit):
         report['applied']=True;return work,report
     return volatile,report
 
-def counter(runner,cancel,deadline):
+def counter(runner,cancel,deadline,strict=False):
     """Exact token count through the runner's own template + tokenizer when available, else the char estimate.
     The returned callable records per call whether the count was native ('EXACT') or a fallback ('ESTIMATE') in ``.sources``."""
     exact=getattr(runner,'prompt_tokens',None)
+    if strict and exact is None:raise ValueError('EXACT_TOKEN_COUNTER_UNAVAILABLE')
     def count(messages):
         if exact is not None:
             try:
                 n=exact(messages,cancel,deadline);count.sources.append('EXACT');return n
             except Exception:
-                if cancel.is_set():raise
+                if cancel.is_set() or strict:raise
         count.sources.append('ESTIMATE');return estimate(messages)  # no native count (runner unavailable, HTTP error): heuristic, labelled
     count.sources=[]
     return count,('EXACT' if exact is not None else 'ESTIMATE')

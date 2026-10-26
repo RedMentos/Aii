@@ -1,0 +1,80 @@
+name: V13 Run414 optional exact Context OS token count source controls
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run414-context-fit-exact.yml'
+      - 'v13/code/v13/context_fit.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/v13/config.py'
+      - 'v13/code/tests/test_context_fit.py'
+      - 'v13/code/scripts/public_repo_privacy_scan.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run414-context-fit-exact-optin/**'
+permissions:
+  contents: read
+jobs:
+  exact-context-source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Source identity and compile
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN414_HEAD.txt"
+          sha256sum v13/code/v13/context_fit.py v13/code/v13/runtime.py v13/code/v13/config.py \
+            v13/code/tests/test_context_fit.py | tee "$RUNNER_TEMP/RUN414_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/v13/context_fit.py v13/code/v13/runtime.py \
+            v13/code/v13/config.py v13/code/tests/test_context_fit.py
+      - name: Context OS exact count and regression tests (no native)
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_context_fit \
+            2>&1 | tee "$RUNNER_TEMP/RUN414_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN414_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN414_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN414_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close small raw
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN414_*' ! -name RUN414_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN414_SHA256SUMS.txt
+      - name: Upload small source-only raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run414-ContextExact-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN414_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce source tests and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

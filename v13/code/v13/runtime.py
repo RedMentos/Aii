@@ -493,8 +493,9 @@ class Runtime:
                 except Exception as exc:self.store.log('duplex_unavailable',eid,{'stage':'handoff','error':type(exc).__name__})
                 history=[{'role':m['role'],'content':m['text']} for m in history_records]
                 try:  # WP-Z5d: long sessions must not overflow the native window; cut old thoughts first (only when it does not fit)
-                    count,how=ctxfit.counter(runner,self.cancel_event,deadline)
-                    volatile,fitrep=ctxfit.fit(self.cfg.get('context_fit','active'),stable,volatile,history,text,count,ctxfit.budget(self.cfg))
+                    exact_count=self.cfg.get('context_fit_exact_count',0)==1
+                    count,how=ctxfit.counter(runner,self.cancel_event,deadline,strict=exact_count)
+                    volatile,fitrep=ctxfit.fit(self.cfg.get('context_fit','active'),stable,volatile,history,text,count,ctxfit.budget(self.cfg),force_exact=exact_count)
                     if not fitrep.get('quick'):meta['context_fit']=fitrep|{'count':how};self.store.log('context_fit',eid,meta['context_fit'])
                 except Exception as exc:self.store.log('context_fit_unavailable',eid,{'error':type(exc).__name__})
                 sys=stable+''.join(head+dumps(body) for _,head,body in volatile)
