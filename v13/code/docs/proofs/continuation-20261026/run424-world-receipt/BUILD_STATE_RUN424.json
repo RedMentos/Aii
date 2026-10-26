@@ -1,0 +1,64 @@
+{
+  "schema": "V13_RUN424_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run424-world-receipt-source-binding-20261026",
+  "base_pr": 418,
+  "base_head": "3346b200e149431d478f82e720a69d49ee6b9520",
+  "source_head": "8eb26ef956a5d364af8c7584eb4f58fda2bb3265",
+  "source_sha256": {
+    "v13/code/v13/world.py": "8755519b779fc4b09affd3259727f24ae4258821ae562ab3607d91975609d3e2",
+    "v13/code/tests/test_world_receipt_binding_run424.py": "087db5420107f544bc06def36807ed47d96040862c787957983db810b99447a8"
+  },
+  "red_first": {
+    "actions": 40262226986,
+    "artifact_id": 12623874838,
+    "artifact_zip_sha256": "ea5987d58d8547e932914a95f2e176c7fe470d0e3668370ecccb525114097eea",
+    "tests": "37 tests; 2 expected FAIL: forged unknown ID counted, forged action outcome 999 instead of 2"
+  },
+  "green": {
+    "actions": 40262306977,
+    "tests": "37/37 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12624906646,
+    "artifact_zip_sha256": "8889b792610dc2611b0c3e23c9a7e035404e6eff2ad32f9a2dc0c9c02cebc1ce",
+    "inherited_actions": {
+      "run420": 40262306998,
+      "run108": 40262306945,
+      "run109": 40262306982,
+      "run343": 40262307418,
+      "run379": 40262307087
+    },
+    "inherited_status": "success observed for listed runs; Run349/focused status pending at checkpoint"
+  },
+  "scope": [
+    "Strict JSON and SQLite CASE validation of derived receipts against immutable action outcome/status/event/generation",
+    "Reject forged IDs and mismatched action outcomes in recent state, count, dedup and restart recovery",
+    "Preserve forged raw SQLite bytes, recover legitimate sibling receipt",
+    "Atomic ModulatorPacket+PredictionOutcome write order unchanged"
+  ],
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "age_promotion": false
+  },
+  "native_owner": {
+    "run418_actions": 40260347495,
+    "status": "success",
+    "rows_observed": 126,
+    "gate": "UTILITY_FAIL",
+    "safe_work_artifact_id": 12624815819,
+    "safe_work_zip_sha256": "20ce321d29f04089a087421e16ddd5d854c103d36b7c958e4b0e11815f45cac4"
+  },
+  "next_command": "Independently review Run424/PR422 source and exact-head Actions artifacts; do not merge into main blindly. Continue separate native 126-row verification through Run419/421 owner. Next investigate valid JSON receipt field tampering, long-session boundedness, and other canonical gaps without promoting gates.",
+  "open_questions": [
+    "A fully fabricated receipt copying all immutable action bytes remains indistinguishable without cryptographic signature; current protection is source-state cross-check, not hostile database security",
+    "Recent 128-row window may be crowded by corrupt packets while total valid count remains correct",
+    "Actual Redmi restart proof absent"
+  ]
+}
