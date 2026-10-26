@@ -157,7 +157,7 @@ def run(home,out,states_path):
             "cohort_blob":COHORT_BLOB,"seed":SEED,"no_weight_updates":True,
             "can_latent_inject":False,"b3_promoted":False,"redmi_measured":False,
             "canonical_architecture_complete":False,"user_full_scope_complete":False}
-    def save():atomic_write(out,(dumps(report)+"\\n").encode())
+    def save():atomic_write(out,(dumps(report)+"\n").encode())
     save()
     try:
         cohort=load_cohort();rows=cohort["prompts"]
