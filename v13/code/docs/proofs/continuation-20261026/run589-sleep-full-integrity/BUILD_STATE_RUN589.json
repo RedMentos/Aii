@@ -1,0 +1,59 @@
+{
+  "schema": "V13_RUN589_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run589-sleep-full-integrity-20261026",
+  "base_branch": "codex/automation11-run588-goal-plan-operator-20261026",
+  "base_sha": "5d007b19c7fe4bf5fe361de1c2e3eca07eaab714",
+  "verified_code_head": "12463e71e2c1be1baedc8f1888d887d8b496948d",
+  "pr": 585,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/585",
+  "prereg_commit": "0068d01695e3e17dd0ba06c40b0f7ac7c6934306",
+  "changed_source_blobs": {
+    "v13/code/v13/sleep.py": "7499faa4fbc2980e41c9bea47629b4b783b050bd",
+    "v13/code/tests/test_run589_sleep_full_integrity.py": "a8d81b60fdf66c38ebefc2c76dc8dd565a194389"
+  },
+  "observed_ci": {
+    "run": 40387780228,
+    "job": 121800528096,
+    "head": "12463e71e2c1be1baedc8f1888d887d8b496948d",
+    "conclusion": "success",
+    "new_tests": "6/6 PASS",
+    "sleep_scheduler": "21/21 PASS",
+    "sleep_policy_finite": "12/12 PASS",
+    "sleep_wake_index": "5/5 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12681563038,
+    "raw_artifact_sha256": "a2a82e55dafd208b09952e76e5d3800e1ff10e9b205c9166c3a984b4037a5789"
+  },
+  "changes": [
+    "Sleep FULL under PRESSURE reports SKIPPED_RESOURCE_YELLOW (C maintenance only), not DONE",
+    "Cancelled/partial FULL does not advance durable last_full or defer next attempt",
+    "Interruption in A/offline/B stops all subsequent phases",
+    "Explicit C under PRESSURE still DONE; successful full persists last_full across restart"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "full_source_suite": "RED_4_FAIL_65_ERROR"
+  },
+  "open_questions": [
+    "Independent review of PR585 and effects on actual long-running Android sleep needed",
+    "Native JEPA and Dream weight-learning unmeasured",
+    "Other owner native FUTURE cohorts must remain serialized; no competing jobs"
+  ],
+  "next_command": "Review PR585 exact SHA-closed CI, continue next canonical package on independent branch (Context OS/Callosum/learning), retain all original negative gates and preserve failed evidence.",
+  "prerequisites": [
+    "Do not force-push or modify other owners' branches",
+    "Keep full V13 blueprint binding",
+    "No phone/native claim from software-only proof"
+  ]
+}
