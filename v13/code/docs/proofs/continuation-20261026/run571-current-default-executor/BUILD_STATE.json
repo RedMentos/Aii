@@ -1,0 +1,51 @@
+{
+  "schema": "V13_RUN571_EXECUTOR_SOURCE_ONLY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "assistant Run571 source-only fail-stop paired native executor",
+  "branch": "assistant/v13-run571-current-default-executor-20261026",
+  "base_commit": "661eda7f722606d3f6e73da8be932e450b72495c",
+  "base_pr": 566,
+  "prereg": {
+    "commit": "cc3d889b05d77d4be05eefa500b7696d82af6a30",
+    "blob": "bc20229b3f9ef798e5ed4f0671d270bb024e4aa3"
+  },
+  "script": {
+    "commit": "307815ea4f0f4852f0a807ab474c63504449f958",
+    "blob": "faef7cd9e0909016f1f426484af69e4751a4383f"
+  },
+  "tests": {
+    "commit": "d5715806cd5c1f2ddd6e8f900c3324c2014802d9",
+    "blob": "cd9315fceb7746cc064eae006b8de406dfa1cdb3"
+  },
+  "workflow": {
+    "commit": "dadf3de8141e145fb7978bf76e00c1ff302f7911",
+    "blob": "e3544fa3dfdd62a2fd356ea74022f9beb9dede7e"
+  },
+  "source_only": true,
+  "native_executed": false,
+  "run570_ci": {
+    "run": 40368451078,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12671581366,
+    "artifact_sha256": "422cb8bf27c782bdc2134e367725a170c7dca5a8d9c72b3a0d267b9791afb160"
+  },
+  "active_native_owner": {
+    "run": 40367841707,
+    "head": "db6047b267edceed9055d9702a2810492ffbfe8a",
+    "state": "IN_PROGRESS_LAST_OBSERVED"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Run571 source CI not yet run; native path never executed",
+    "Need prospective native activation after owner idle and independent exact-head review",
+    "Run568 original native raw/safe requires Run569 audit after completion"
+  ],
+  "next_exact_command": "Open draft PR Run571 base assistant/v13-run570-current-default-source-20261026; inspect exact-head source-only CI, fix any RED on own branch; do NOT activate new native while Run568 owns heavy job. Once original Run568 completes, pin raw/safe in Run569 independent audit and run no-model replay."
+}
