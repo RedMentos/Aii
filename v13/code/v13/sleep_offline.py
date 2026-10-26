@@ -33,24 +33,42 @@ def _load(store):
     return st,v
 
 def digest(store,checkpoint=None):
-    """Extractive day digest per session; only turns newer than the last digest."""
-    from .history import native_history
-    st,v=_load(store);out={'sessions':0,'turns':0,'compressed':0}
+    """Extractive day digest; drain oldest unprocessed FINAL turns, never skip a backlog.
+
+    Existing v1 digests are re-indexed oldest-first once (cursor_version=2).
+    Their entries are deduplicated and ordered by original assistant ID, so
+    the old last-N tail is not silently treated as a complete prior digest.
+    """
+    from .history import native_history_since
+    st,v=_load(store);out={'sessions':0,'turns':0,'compressed':0,'pending':0,'backlog_remaining':0}
     rows=store.rows("SELECT session_id,MAX(id) AS last FROM messages WHERE role='assistant' AND status='FINAL' GROUP BY session_id ORDER BY last DESC LIMIT ?",(SESSIONS_MAX,))
     for r in rows:
         sess=r['session_id'];d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
-        if r['last']<=d['until']:continue
+        if d.get('cursor_version')!=2:
+            # Legacy last-64 digest may have advanced past unprocessed old turns.
+            # Revisit oldest sources; deduplicate by original message ID.
+            d['until']=0;d['cursor_version']=2;d['pending']=[]
+        if r['last']<=d['until'] and not d.get('pending'):continue
         if checkpoint:checkpoint()
-        recs,_=native_history(store,sess,'',TURNS_MAX)
+        recs,_,scanned,pending=native_history_since(store,sess,d['until'],TURNS_MAX,d.get('pending',[]))
         pairs={}
         for m in recs:pairs.setdefault(m['event_id'],{})[m['role']]=m
-        new=[p for p in pairs.values() if p['assistant']['id']>d['until']]
-        for p in sorted(new,key=lambda p:p['assistant']['id']):
+        known={e.get('msg') for e in d['entries'] if isinstance(e,dict)}
+        new=[p for p in pairs.values() if 'assistant' in p and 'user' in p
+             and p['assistant']['id'] not in known]
+        for i,p in enumerate(sorted(new,key=lambda p:p['assistant']['id'])):
+            if checkpoint and i%8==0:checkpoint()
             u,us,uok=compress(p['user']['text'],TURN_CAP);a,as_,aok=compress(p['assistant']['text'],TURN_CAP)
             d['entries'].append({'event_id':p['user']['event_id'],'user':u if uok or len(u)<=TURN_CAP*2 else u[:TURN_CAP*2],'answer':a if aok or len(a)<=TURN_CAP*2 else a[:TURN_CAP*2],
                                  'exact':us+as_,'msg':p['assistant']['id']})
             out['turns']+=1;out['compressed']+=int(uok)+int(aok)
-        d['entries']=d['entries'][-ENTRIES_MAX:];d['until']=r['last'];out['sessions']+=1
+        d['entries']=sorted(d['entries'],key=lambda e:e['msg'])[-ENTRIES_MAX:]
+        d['until']=max(d['until'],scanned)
+        d['pending']=pending
+        out['pending']+=len(pending)
+        remaining=store.one("SELECT COUNT(*) AS n FROM messages WHERE session_id=? AND role='assistant' AND id>?",(sess,d['until']))
+        out['backlog_remaining']+=int(remaining['n']) if remaining else 0
+        out['sessions']+=1
     st['runs']+=1;store.set_state(KEY,st,expected=v)
     return out
 

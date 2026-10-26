@@ -1,0 +1,14 @@
+# Run609 Context OS / Sleep A backlog completeness (source-only functional repair)
+
+2026-10-26 UTC. Owner GPT automation11. Child of Run608 PR603 checkpoint `81cd5417380251b3633aab474b4e1a672480ea2c`. Scope is **functional Sleep A/Context OS history coverage**, not B3 tuning. No new native/model work, no change to canonical SSOT or Age/approval gates.
+
+Observed source defect before editing: `v13/sleep_offline.py:digest` uses `native_history(...,TURNS_MAX=64)` (last 64 turns) then unconditionally sets `until` to the *latest* assistant message ID. If more than 64 valid FINAL turns accumulate between sleeps, all earlier unprocessed turns are permanently skipped by the digest cursor. This violates complete incremental coverage and reduces long-session context. Existing tests cover only <=4 turns, not this boundary.
+
+Frozen acceptance before code:
+1. With **70** distinct source-valid FINAL user/assistant turns in one session and no digest until the end, first digest processes oldest **64** and persists a cursor at last scanned assistant; second processes remaining **6**; third **0**. No duplicate events, chronological ordering, no lost earliest turn, and exactly 70 total. Digest entries cap remains 96.
+2. Invalid/revoked source pair in the oldest window is **never** included in digest/context/TTT; cursor still progresses beyond invalid completed pair to prevent starvation. A partial/unfinalized event must not advance the cursor, and may become eligible when finalized later.
+3. Existing `native_history` last-N public API and all caller behavior remain byte-compatible in return shape, ordering, source/approval lineage and terminal-log rejection. New bounded `native_history_since` is the only additional API; it must share the same validator, query oldest completed assistant IDs after cursor and never return incomplete pairs.
+4. Bounded 64 per cycle, session cap 8, source revocation at **read time**, cancel checks and atomic schedule persistence remain. No unauthorized generated facts, no training/weight changes. Unit and existing Context OS/Sleep tests run; no claim of Redmi/native performance.
+5. Any failure/partial CI and raw evidence retained. Review-only branch, no overwrite of another owner. No gate promotion: STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi UNMEASURED, full V13 INCOMPLETE.
+
+Owned files: `v13/code/v13/history.py`, `v13/code/v13/sleep_offline.py`, new `tests/test_run609_sleep_digest_backlog.py`, new proof folder/workflow. Existing canonical user decisions and original Run608 cohorts/results untouched. Next exact test from `v13/code`: `python -m unittest -v tests.test_run609_sleep_digest_backlog tests.test_sleep_offline tests.test_history` (skip missing legacy modules only if separately documented). Source-only package; no native heavy jobs.
