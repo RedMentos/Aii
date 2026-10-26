@@ -35,8 +35,8 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/TOOL_FINAL_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/tool-final-attribution/PREREG.md)" = 2865c3e56b565bca93a4ac7445b944f15c2ae506
           test "$(git hash-object v13/code/v13/runtime.py)" = abdd8b489057d65a21bb75d5e4e3fff0ca94c2bb
-          test "$(git hash-object v13/code/tests/test_tool_final_attribution.py)" = bae799aa83fb5a4cd7500c70bea2216dd46fd046
-          test "$(git hash-object v13/code/v13/broker.py)" = dbd87e5a48a6fee61cf3b80e7a0a39d827872f0a
+          test "$(git hash-object v13/code/tests/test_tool_final_attribution.py)" = 1bb570f5995c2e61666ddde69965fd4e31dd80ce
+          test "$(git hash-object v13/code/v13/broker.py)" = 6210a1b3d60872e73ad1b940608e7edc30793d02
           test "$(git hash-object v13/code/v13/contracts.py)" = ffaafb07be2d9aec50e645c5434e7ba2fec38acf
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/TOOL_FINAL_HOST.txt"
