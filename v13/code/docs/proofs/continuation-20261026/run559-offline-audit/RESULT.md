@@ -1,0 +1,17 @@
+# Run559 result — independently recomputed original 42 native rows, tamper caught after rehash
+
+2026-10-26. Preregistered before source edits at `9bff72d3211d1cc5843d13059cac43b437c85954`. Exact base Run558 PR #557 head `2211888f03118fde594eae7da0278c83ceb14349`. Run559 PR #558 exact CI-tested head `839c3bd32ce4e330f9a290eee6b8a041d2c159e8`. Source blob `1043f856e5c8b20585f09266400ad59c0363bc0b`, tests blob `f550ac8581242afa1a509daa4e25023eb3ca08da`. Original Run514/491/500/504, frozen fixtures/models/runner and Canon unchanged. No model inference in Run559.
+
+## Actual independent offline review, not synthetic substitute
+
+Downloaded **original** Run507 native raw artifact `12644872590`, SHA256 `bae7d108bf211eb25b99694e4746f93ed0b240aeaacda3d289b1e1c051dc4227`, and safe synthetic no-model artifact `12644358345`, SHA256 `406c5e6467c8666e257be73842c3bbf0b5ab53c73d7b46fb7e7cc155beb6677b`. New independent verifier recomputed 42/42 native FINAL rows, original 12-field oracles, source/consumer and stage receipt hashes, model/runner SHA, privacy/exit evidence, no wrong committed action. Results exactly reproduce Run514: both_exact .083333, b1_only .097222, both_none .111111, no positive utility gain. Result SHA256 `24a9a041923b34ac5c994e85eadc323e5afe5c610e6981b1f8d6064bf537d1b0`, committed `RUN559_RUN507_REPORT.json` blob `cb0e3b4b7a429de9710ed093c94a78e370df9506`, private Library backup.
+
+Adversarial negative: changed one real preserved Run507 native row's utility from 0.0 to 1.0, **recomputed its row SHA, tool file SHA, stage receipt SHA, batch receipts, progress, safe member manifest, raw manifest and both ZIP SHA**. Outer ZIP checks passed with updated expected ZIP hashes `28751066d4f93ae696fd3a459b6d3bed5c015adde55b3e1f46ba916ce3debe47` / `65c3ecbc68a8a2d8cb6c7e4c012a66d414abb50156baa4914ed459173a7a3232`; the independent oracle check still rejected it with `INDEPENDENT_ORACLE_SCORE_DRIFT:('A', 31, 'Vesper', 'b1_only')`. Synthetic tampered raw/safe ZIPs and RED traceback privately backed up; originals untouched. This proves a stronger semantic score guard than mere hash self-consistency, **not** native model accuracy.
+
+## CI and continuation
+
+Local 35/35 source tests PASS, plus original actual 42-row review. GitHub Actions `40352131881` SUCCESS on exact head: 35/35 source tests PASS, original actual report's preserved metadata checked (not rerun against native ZIP in CI), privacy CLEAN, all exits 0. Artifact `12664895862`, SHA manifest 10/10 independently verified, ZIP SHA256 `b763708ca8788c3b9d758489462bbefe590bf94ac5f18cf6fb2c0e59e643a0ed`. Private Library backup `/V13/checkpoints/2026-10-26/V13_Run559_SOURCE_GREEN_raw_sha_b763708c.zip`.
+
+Run557 FUTURE_002 Linux-native owner Actions `40350723259` remained `in_progress` when this result was prepared; **no Run557 native success or failure claimed yet**. Next command: check Actions run 40350723259; when completed download its raw and safe artifacts, independently verify SHA manifests, run `python scripts/run559_offline_review.py --raw <raw.zip> --safe <safe.zip> --raw-sha <exact> --safe-sha <exact> --head <run557 head> --prefix RUN557 --batch FUTURE_002 --output <report.json>`. If RED preserve it, no retry without new prereg; if PASS checkpoint and then select disjoint FUTURE_003 under serialized native ownership.
+
+Negative gates remain `STEP2=UTILITY_FAIL`, `B3_L1=FAIL`, `Body_JEPA=UNAVAILABLE`, `jepa_weight=0`, `Redmi=UNMEASURED`, `V13=INCOMPLETE`. All work branch-scoped, not main-integrated.
