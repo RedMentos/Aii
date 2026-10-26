@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN469_FULL_378_PAIRED_UTILITY_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 source-only three-seed utility, Run464 native owner separate",
+  "branch": "codex/automation11-run469-native378-paired-utility-20261026",
+  "base": "d75045600c172380ba109db1cfcc4d97e06fe508",
+  "tested_source_head": "dc395096cf728a45d9109d3006a2e0e076a0c65b",
+  "pr": 468,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run469_native378_utility.py": "b11819e5dfe6a6022177923c2f151ce9f53f01b8",
+    "v13/code/tests/test_run469_native378_utility.py": "2096ee709a95ddf2072e0894d7de6c2ef76b1ffd",
+    "v13/code/tests/test_run469_native378_pinned_reads.py": "3a2a65de545cb41501ea87d2823133dd4bb14a7f",
+    ".github/workflows/run469-native378-utility.yml": "ee749ff1f88c8be9db21bde5ca488f9a52018ef5"
+  },
+  "actions": {
+    "id": 40273851798,
+    "conclusion": "success",
+    "tests": "174/174 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12629521807,
+    "raw_artifact_sha256": "0e56f1c412c0b84e8085f8ffa3bbb227cd5f8cd5325ffedaddfaa1217c241d06"
+  },
+  "result": "Exact frozen 9-arm/3-seed/378-row paired descriptive utility, independent Run468 verifier and SHA-pinned post-verification reads. Includes arm means, paired by seed/fixture/variant, negative missing/nan/symlink/hardlink/TOCTOU tests.",
+  "scope": "Software/synthetic Linux CI only; no actual native378 utility, no causal complementarity or STEP2 acceptance.",
+  "active_native": {
+    "run_id": 40273136245,
+    "status_at_checkpoint": "in_progress",
+    "owner": "Run464 exclusive S_s21 native retry"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Actual native252 from Run464 still pending; later arms must run serially.",
+    "Full 378 descriptive utility must be measured on actual native data, then evaluated against preregistered acceptance; cannot promote automatically.",
+    "Different actual B1/B2 model representations and causal complementarity remain unresolved beyond this measurement harness."
+  ],
+  "next_command": "Monitor Run464 Actions 40273136245; if GREEN, preserve exact original 252 safe ZIP and stage6 report, SHA-verify and run Run458 import. Continue exact O_s22/P_s22/S_s22 serially, then Run468 independent 378 and Run469 descriptive utility. Preserve all original negative gates."
+}
