@@ -106,6 +106,9 @@ def verify_file(path, specs):
         members = archive.infolist()
         names = [item.filename for item in members]
         head = {'head_W.npy', 'head_b.npy'}
+        has_cal = {'cal_mu.npy', 'cal_sd.npy', 'cal_tau.npy'}.issubset(names)
+        require((manifest.get('calibrated') is True) == has_cal,
+                'BRIDGE_CALIBRATION_FLAG_MISMATCH')
         require((set(names) == required or set(names) == required | head) and
                 len(names) == len(set(names)),
                 'BRIDGE_NPZ_INVENTORY_INVALID')
