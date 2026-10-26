@@ -87,7 +87,15 @@
       "b2_offers_with_only_project_title_or_kickoff_memo_phrases": 30,
       "b1_offer_rows": 48,
       "b1_quotes_with_both_option_A_and_B": 43,
-      "interpretation": "Potential B2 evidence-selection/quote grounding bottleneck: requested prior rules rarely appear in source quotes, while B1 options often do. Investigate on a new registered source-disjoint cohort; no retroactive tuning."
+      "interpretation": "Potential B2 evidence-selection/quote grounding bottleneck: requested prior rules rarely appear in source quotes, while B1 options often do. Investigate on a new registered source-disjoint cohort; no retroactive tuning.",
+      "b2_quote_select_mode": "pointer in all 48 B2-only offers",
+      "available_choice_count_range": [
+        11,
+        15
+      ],
+      "available_choice_count_mean": 13,
+      "choice_cap_24_reached": 0,
+      "additional_limit": "Pointer candidate cap of 24 was not reached in any of the 48 offers; cannot attribute observed rule quote deficit to this particular cap. Availability of exact earlier rule sentences requires separate source-view audit."
     }
   },
   "negative_gates": {
