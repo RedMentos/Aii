@@ -46,9 +46,10 @@
       "pr": 535,
       "source_head": "666f15b82c5cc36eb2724fcb0a84a583d95f8a10",
       "scope": "explicit approved sandbox_note WP-K to F3/F4 corollary and real file/status observation",
-      "tests": "PENDING_AT_RUN537_PREREG",
-      "artifact_id": null,
-      "privacy": "PENDING"
+      "tests": "58/58 PASS",
+      "artifact_id": 12651906376,
+      "privacy": "CLEAN",
+      "artifact_zip_sha256": "5eefeea034d702f0af9b29d319c2e9813e2bfafe73d4823d144cdcf12e85a5df"
     }
   ],
   "original_run531": {
