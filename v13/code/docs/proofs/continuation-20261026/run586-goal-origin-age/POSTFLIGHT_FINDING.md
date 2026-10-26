@@ -1,0 +1,5 @@
+# Run586 postflight compatibility finding — first CI RED (2026-10-26)
+
+First exact-head Actions `40386402561` (source `e40c948637f1d8946e910e46e7a930d15c467476`) ran all six new adversarial tests PASS and Run585 six tests PASS, but existing `test_growth.SchedulerHooks.test_growth_actions_run_through_sleep_runtime` failed: `INVALID_WAKE_EVENT != WOKEN`. That test intentionally calls the internal `agi.job` hook with a minimal synthetic dictionary containing `action='growth_goal'`, `origin='USER'` and a goal payload, but omits `kind`. Actual EventScheduler events always contain `kind`.
+
+Narrow compatibility correction before retry: treat **absent** `kind` as GOAL_WAKE only for the existing internal direct-call shape; an **explicit** wrong/None kind remains invalid. Keep required `action='growth_goal'`, stored-goal origin match, and independent Age guard unchanged. Do not rewrite frozen `test_growth.py`. This is a software compatibility rule, not proof of scheduler provenance; the stored-goal origin/Age check is the actual authority boundary. Preserve original failed raw artifact and all negative gates.

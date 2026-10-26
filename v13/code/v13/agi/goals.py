@@ -127,6 +127,15 @@ class GoalStore:
         if not isinstance(gid,str) or not gid:return {'status':'UNKNOWN_GOAL'}
         try:g=self.get(gid)
         except KeyError:return {'status':'UNKNOWN_GOAL'}
+        # A scheduler event is a notification, not a transferable USER grant.
+        # GoalStore.schedule maps SYSTEM/SELF goals to SELF-originated wakes.
+        if event.get('kind','GOAL_WAKE')!='GOAL_WAKE' or event.get('action')!='growth_goal':
+            return {'status':'INVALID_WAKE_EVENT','goal_id':gid}
+        expected_origin='USER' if g['origin']=='USER' else 'SELF'
+        if event.get('origin')!=expected_origin:
+            return {'status':'GOAL_ORIGIN_MISMATCH','goal_id':gid}
+        if expected_origin=='SELF' and not age_allows(self.age,'resume_open_goals','SELF'):
+            return {'status':'HELD_AGE','goal_id':gid}
         if g['status'] not in OPEN:return {'status':'GOAL_CLOSED','goal_id':gid}
         if g['status']=='BLOCKED':return {'status':'GOAL_BLOCKED','goal_id':gid,'next':None}
         if g['status']=='OPEN':self.set_status(gid,'ACTIVE')
