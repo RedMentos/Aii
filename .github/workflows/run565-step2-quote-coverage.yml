@@ -1,0 +1,137 @@
+name: V13 Run565 original 126-row STEP2 missing-input diagnostic no models
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run565-step2-quote-coverage.yml'
+      - 'v13/code/scripts/run565_quote_diagnostic.py'
+      - 'v13/code/tests/test_run565_quote_diagnostic.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run565-quote-coverage/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-safe-zip-source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run565-step2-quote-coverage-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact source, prereg, frozen original Canon
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN565_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run565-quote-coverage/PREREG.md)" = '89bc089b2c2deb3e95a0f8931c0ab113b9703cca'
+          test "$(git hash-object v13/code/scripts/run565_quote_diagnostic.py)" = '9c4e0461ca2322c606bdd319f0eae39be0746058'
+          test "$(git hash-object v13/code/tests/test_run565_quote_diagnostic.py)" = '7875e9be94537620a17d1c306e9c084289b7159b'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN565_HOST.txt"
+      - name: Adversarial source-only quote coverage regressions
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          python3 -m compileall -q scripts/run565_quote_diagnostic.py tests/test_run565_quote_diagnostic.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 120s python3 -m unittest -v tests.test_run565_quote_diagnostic > "$RUNNER_TEMP/RUN565_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN565_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Retrieve only original frozen safe no-model ZIPs with exact SHA
+        id: download
+        if: ${{ steps.tests.outputs.rc == '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          set +e
+          mkdir -p "$RUNNER_TEMP/run565-original"
+          rc=0
+          for spec in '1:12644358345' '2:12665895129' '3:12666848624'; do
+            idx="${spec%%:*}"; artifact="${spec#*:}"
+            curl --fail --silent --show-error --location --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/$artifact/zip" -o "$RUNNER_TEMP/run565-original/safe$idx.zip" >> "$RUNNER_TEMP/RUN565_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+            [ "$rc" -eq 0 ] || break
+          done
+          if [ "$rc" -eq 0 ]; then
+            sha256sum "$RUNNER_TEMP"/run565-original/safe*.zip > "$RUNNER_TEMP/RUN565_DOWNLOAD_HASHES.txt"
+            test "$(sha256sum "$RUNNER_TEMP/run565-original/safe1.zip" | cut -d' ' -f1)" = '406c5e6467c8666e257be73842c3bbf0b5ab53c73d7b46fb7e7cc155beb6677b'
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            test "$(sha256sum "$RUNNER_TEMP/run565-original/safe2.zip" | cut -d' ' -f1)" = 'ecd1ece00a2e82396bbd716b4fab93c84efe81ce60d9e853b8b450a437d4eb03'
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            test "$(sha256sum "$RUNNER_TEMP/run565-original/safe3.zip" | cut -d' ' -f1)" = '503a1a4c0ad900f71758b42cfda40ff75b440240db7d469f06fe8b976877ed77'
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN565_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Reproduce original 126-row posthoc evidence completeness and abstention
+        id: audit
+        if: ${{ steps.download.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          timeout 120s python3 scripts/run565_quote_diagnostic.py \
+            --safe1 "$RUNNER_TEMP/run565-original/safe1.zip" --sha1 406c5e6467c8666e257be73842c3bbf0b5ab53c73d7b46fb7e7cc155beb6677b \
+            --safe2 "$RUNNER_TEMP/run565-original/safe2.zip" --sha2 ecd1ece00a2e82396bbd716b4fab93c84efe81ce60d9e853b8b450a437d4eb03 \
+            --safe3 "$RUNNER_TEMP/run565-original/safe3.zip" --sha3 503a1a4c0ad900f71758b42cfda40ff75b440240db7d469f06fe8b976877ed77 \
+            --output "$RUNNER_TEMP/RUN565_QUOTE_DIAGNOSTIC.json" > "$RUNNER_TEMP/RUN565_AUDIT_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN565_AUDIT_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN565_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN565_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close raw evidence including RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN565_*' ! -name RUN565_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN565_SHA256SUMS.txt
+      - name: Preserve all source-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run565-original-126-quote-diagnostic-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN565_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source, tests, original artifact SHA, diagnostic and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          for item in TEST DOWNLOAD AUDIT PRIVACY; do
+            test -f "$RUNNER_TEMP/RUN565_${item}_EXIT.txt"
+            test "$(cat "$RUNNER_TEMP/RUN565_${item}_EXIT.txt")" = 0
+          done
