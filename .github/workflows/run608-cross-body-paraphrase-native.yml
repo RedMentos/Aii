@@ -1,13 +1,13 @@
-name: V13 Run608 prospective paired native paraphrase B1 B2 SHADOW proxy
+name: V13 Run614 new independent frozen native B1 B2 paraphrase proxy
 on:
   push:
     branches:
-      - codex/automation11-run608-cross-body-paraphrase-native-20261026
+      - codex/automation11-run614-independent-native-paraphrase-20261026
     paths:
       - '.github/workflows/run608-cross-body-paraphrase-native.yml'
-      - 'v13/code/scripts/run608_cross_body_paraphrase_native.py'
-      - 'v13/code/tests/test_run608_cross_body_paraphrase_native.py'
-      - 'v13/code/docs/proofs/continuation-20261026/run608-cross-body-paraphrase/**'
+      - 'v13/code/scripts/run614_independent_native_paraphrase.py'
+      - 'v13/code/tests/test_run614_independent_native_paraphrase.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run614-independent-native-paraphrase/**'
 permissions:
   contents: read
 concurrency:
@@ -32,30 +32,29 @@ jobs:
       - name: Exact prospective cohort, protocol, native source, Canon and model pins
         run: |
           set -euo pipefail
-          git rev-parse HEAD > "$RUNNER_TEMP/RUN608_HEAD.txt"
-          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run608-cross-body-paraphrase/RUN608_COHORT.json)" = f452bdf80bb8d8a784c1909c98e310041d3157aa
-          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run608-cross-body-paraphrase/PREREG.md)" = adbe300aa2d04088d1811b9760d784b1dfe348dd
-          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run608-cross-body-paraphrase/PREREG_AMENDMENT_1.md)" = 703b4ea1f6e52e313570fef6b727feb7c930fde0
-          test "$(git hash-object v13/code/scripts/run608_cross_body_paraphrase_native.py)" = 1665f4948fca18669de3376b17c9e46d44dfa9fe
-          test "$(git hash-object v13/code/tests/test_run608_cross_body_paraphrase_native.py)" = 83f865d3e2be37f5c8c3f3ad67422e1c939b157a
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN614_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run614-independent-native-paraphrase/RUN614_COHORT.json)" = 7068267d41a1719abea3a54c84b1d0223444df1d
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run614-independent-native-paraphrase/PREREG.md)" = 0c00c2ce9cc14b0d1fb3c9acb48aa58e01f2115e
+          test "$(git hash-object v13/code/scripts/run614_independent_native_paraphrase.py)" = f16d1fa8d46f8fdf51ebf3f34a02256619b07d6f
+          test "$(git hash-object v13/code/tests/test_run614_independent_native_paraphrase.py)" = 347326193639f4ff0d5340011a0a259bd0e3a30d
           test "$(git hash-object v13/code/scripts/run606_cross_body_latent_shadow.py)" = 22116eea1e16343a5ff68844e98641e98e7b4306
           test "$(git hash-object v13/code/v13/runners.py)" = 37bf8e1c0222d4148dfbc3d2aedbef0c03adeac5
           test "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
-          sha256sum v13/code/scripts/run608_cross_body_paraphrase_native.py v13/code/docs/proofs/continuation-20261026/run608-cross-body-paraphrase/RUN608_COHORT.json v13/code/v13/runners.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN608_SOURCE_SHA256.txt"
-          { date -u -Iseconds; python3 --version; uname -a; free -h; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN608_HOST.txt"
+          sha256sum v13/code/scripts/run614_independent_native_paraphrase.py v13/code/docs/proofs/continuation-20261026/run614-independent-native-paraphrase/RUN614_COHORT.json v13/code/v13/runners.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN614_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; free -h; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN614_HOST.txt"
       - name: Isolated pinned dependencies
         run: |
-          python3 -m venv "$RUNNER_TEMP/run608venv"
-          "$RUNNER_TEMP/run608venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          python3 -m venv "$RUNNER_TEMP/run614venv"
+          "$RUNNER_TEMP/run614venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
       - name: Prospective cohort, semantic synthetic and adversarial source-only fixtures
         id: fixture
         working-directory: v13/code
         run: |
           set +e
-          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run608venv/bin/python" -m unittest -v tests.test_run608_cross_body_paraphrase_native > "$RUNNER_TEMP/RUN608_FIXTURE_RAW.log" 2>&1
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run614venv/bin/python" -m unittest -v tests.test_run614_cross_body_paraphrase_native > "$RUNNER_TEMP/RUN614_FIXTURE_RAW.log" 2>&1
           rc=$?
-          echo "$rc" > "$RUNNER_TEMP/RUN608_FIXTURE_EXIT.txt"
+          echo "$rc" > "$RUNNER_TEMP/RUN614_FIXTURE_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Bootstrap original public pinned native B1 B2 weights and runner
@@ -64,10 +63,10 @@ jobs:
         working-directory: v13/code
         run: |
           set +e
-          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run608installed"
-          timeout -s TERM -k 30s 1200s "$RUNNER_TEMP/run608venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN608_BOOTSTRAP_RAW.log" 2>&1
+          export PYTHONPATH="$PWD" V13_HOME="$RUNNER_TEMP/run614installed"
+          timeout -s TERM -k 30s 1200s "$RUNNER_TEMP/run614venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN614_BOOTSTRAP_RAW.log" 2>&1
           rc=$?
-          echo "$rc" > "$RUNNER_TEMP/RUN608_BOOTSTRAP_EXIT.txt"
+          echo "$rc" > "$RUNNER_TEMP/RUN614_BOOTSTRAP_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Real paired native B1 B2 frozen prompt taps and fixed heldout proxy
@@ -76,78 +75,79 @@ jobs:
         working-directory: v13/code
         run: |
           set +e
-          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run608installed"
-          timeout -s TERM -k 30s 1000s "$RUNNER_TEMP/run608venv/bin/python" scripts/run608_cross_body_paraphrase_native.py --home "$V13_HOME" --out "$RUNNER_TEMP/RUN608_NATIVE_REPORT.json" --states "$RUNNER_TEMP/RUN608_STATES.npz" > "$RUNNER_TEMP/RUN608_NATIVE_RAW.log" 2>&1
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run614installed"
+          timeout -s TERM -k 30s 1000s "$RUNNER_TEMP/run614venv/bin/python" scripts/run614_independent_native_paraphrase.py --home "$V13_HOME" --out "$RUNNER_TEMP/RUN614_NATIVE_REPORT.json" --states "$RUNNER_TEMP/RUN614_STATES.npz" > "$RUNNER_TEMP/RUN614_NATIVE_RAW.log" 2>&1
           rc=$?
-          echo "$rc" > "$RUNNER_TEMP/RUN608_NATIVE_EXIT.txt"
+          echo "$rc" > "$RUNNER_TEMP/RUN614_NATIVE_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
-      - name: Independent native raw state, semantic proxy and gate audit
+      - name: Independent native receipts, paired source and within-body numerical audit
         id: audit
         if: ${{ steps.native.outputs.rc == '0' }}
         working-directory: v13/code
         run: |
           set +e
-          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run608venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN608_AUDIT_RAW.log" 2>&1
-          import hashlib,json,os,re
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run614venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN614_AUDIT_RAW.log" 2>&1
+          import hashlib,json,os
           from pathlib import Path
           import numpy as np
-          from scripts.run608_cross_body_paraphrase_native import load_cohort
+          from scripts.run614_independent_native_paraphrase import load_cohort,evaluate,TRAIN_TOPICS,TEST_TOPICS,GATES,COHORT_BLOB
           tmp=Path(os.environ["RUNNER_TEMP"])
-          report=json.loads((tmp/"RUN608_NATIVE_REPORT.json").read_text())
-          assert report["schema"]=="V13_RUN608_NATIVE_PARAPHRASE_PROXY_V1"
-          assert report["status"] in ("PARAPHRASE_PROXY_SIGNAL","NO_PARAPHRASE_PROXY_SIGNAL")
-          assert report["gates"]=={"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","jepa_weight":0,"Redmi":"UNMEASURED","V13":"INCOMPLETE"}
+          report=json.loads((tmp/"RUN614_NATIVE_REPORT.json").read_text())
+          assert report["schema"]=="V13_RUN614_INDEPENDENT_NATIVE_PARAPHRASE_V1"
+          assert report["status"] in ("CROSS_BODY_PROXY_SIGNAL","WITHIN_BODY_B2_PROXY_ONLY","NO_REPLICATED_PROXY")
+          assert report["cohort_blob"]==COHORT_BLOB and report["gates"]==GATES
           assert report["no_weight_updates"] and not report["can_latent_inject"] and not report["b3_promoted"] and not report["redmi_measured"]
           assert not report["canonical_architecture_complete"] and not report["user_full_scope_complete"]
-          path=tmp/"RUN608_STATES.npz"
+          path=tmp/"RUN614_STATES.npz"
           assert hashlib.sha256(path.read_bytes()).hexdigest()==report["states_sha256"]
-          cohort=load_cohort();rows=cohort["prompts"]
+          rows=load_cohort()["prompts"]
           with np.load(path,allow_pickle=False) as data:
             assert set(data.files)=={"x_b1","y_b2","prompt_ids","train_idx","test_idx"}
             x=data["x_b1"];y=data["y_b2"];ids=data["prompt_ids"].tolist()
             tr=data["train_idx"];te=data["test_idx"]
           assert x.shape==(80,2048) and y.shape==(80,1024) and np.isfinite(x).all() and np.isfinite(y).all()
           assert ids==[r["id"] for r in rows] and len(tr)==60 and len(te)==20
-          assert tr.tolist()==[i for i,r in enumerate(rows) if r["topic"] in cohort["train_topics"]]
-          assert te.tolist()==[i for i,r in enumerate(rows) if r["topic"] in cohort["test_topics"]]
+          assert tr.tolist()==[i for i,r in enumerate(rows) if r["topic"] in TRAIN_TOPICS]
+          assert te.tolist()==[i for i,r in enumerate(rows) if r["topic"] in TEST_TOPICS]
           for role,dim in (("B1_DETAIL",2048),("B2_GIST",1024)):
             assert report["models"][role]["dimension"]==dim
             assert len(report["receipts"][role])==80
             for i,r in enumerate(report["receipts"][role]):
               assert r["id"]==rows[i]["id"] and r["dimension"]==dim
               assert r["prompt_sha256"]==hashlib.sha256(rows[i]["text"].encode()).hexdigest()
-          def norm(z):return z/np.linalg.norm(z,axis=1,keepdims=True)
-          x=norm(x);y=norm(y)
-          xt=norm(x[tr]-x[tr].mean(0));xv=norm(x[te]-x[tr].mean(0))
-          yt=norm(y[tr]-y[tr].mean(0));yv=norm(y[te]-y[tr].mean(0))
-          pred=norm((xv@xt.T)@np.linalg.solve(xt@xt.T+np.eye(60),yt))
-          sim=pred@yv.T
-          index={rows[int(j)]["id"]:i for i,j in enumerate(te)}
-          opp=np.array([index[rows[int(j)]["fact_id"]+"-"+("B" if rows[int(j)]["variant"]=="A" else "A")] for j in te])
-          exact=float(np.mean(np.argmax(sim,axis=1)==np.arange(20)))
-          np.fill_diagonal(sim,float("-inf"))
-          cross=float(np.mean(np.argmax(sim,axis=1)==opp))
-          assert abs(exact-report["metrics"]["observed"]["exact_top1"])<1e-12
-          assert abs(cross-report["metrics"]["observed"]["opposite_paraphrase_top1"])<1e-12
-          assert report["metrics"]["shuffled"]["n"]==200
-          assert report["metrics"]["chance_opposite"]==1/19
-          signal=cross>=.25 and report["metrics"]["empirical_p_opposite"]<=.05 and report["metrics"]["opposite_advantage_over_lexical"]>=.10
-          assert signal==report["metrics"]["paraphrase_proxy_signal"]
-          assert report["status"]==("PARAPHRASE_PROXY_SIGNAL" if signal else "NO_PARAPHRASE_PROXY_SIGNAL")
-          print("RUN608_NATIVE_INDEPENDENT_AUDIT",report["status"],"exact",exact,"opposite",cross,"p",report["metrics"]["empirical_p_opposite"])
+          check=evaluate(x,y,rows)
+          for k in ("within_body_b2_proxy","cross_body_proxy","empirical_p_b2_only","empirical_p_mapped","empirical_p_fusion"):
+            assert check[k]==report["metrics"][k]
+          for name in check["metrics"]:
+            for metric in ("top1","mrr"):
+              assert abs(check["metrics"][name][metric]-report["metrics"]["metrics"][name][metric])<1e-12
+          # Separate direct cosine implementation checks single-body top1.
+          lookup={rows[int(idx)]["id"]:i for i,idx in enumerate(te)}
+          opp=[lookup[rows[int(idx)]["fact_id"]+"-"+("B" if rows[int(idx)]["variant"]=="A" else "A")] for idx in te]
+          for name,arr in (("b1_only",x),("b2_only",y)):
+            arr=arr/np.linalg.norm(arr,axis=1,keepdims=True)
+            v=arr[te]-arr[tr].mean(0)
+            v=v/np.linalg.norm(v,axis=1,keepdims=True)
+            sim=v@v.T
+            correct=0
+            for i in range(20):
+              order=sorted((j for j in range(20) if j!=i),key=lambda j:(-sim[i,j],j))
+              correct+=int(order[0]==opp[i])
+            assert abs(correct/20-report["metrics"]["metrics"][name]["top1"])<1e-12
+          print("RUN614_INDEPENDENT_NATIVE_AUDIT",report["status"],report["metrics"]["metrics"],"B2_p",report["metrics"]["empirical_p_b2_only"])
           PY
           rc=$?
-          echo "$rc" > "$RUNNER_TEMP/RUN608_AUDIT_EXIT.txt"
+          echo "$rc" > "$RUNNER_TEMP/RUN614_AUDIT_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Public privacy scan
         id: privacy
         run: |
           set +e
-          python3 v13/code/scripts/public_repo_privacy_scan.py --base e15e1e930f1c56065b950ba07c174cbd31d66978 --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN608_PRIVACY_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base d95656b848c2eaaa054d39560435f4545d8539ef --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN614_PRIVACY_RAW.log" 2>&1
           rc=$?
-          echo "$rc" > "$RUNNER_TEMP/RUN608_PRIVACY_EXIT.txt"
+          echo "$rc" > "$RUNNER_TEMP/RUN614_PRIVACY_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
       - name: SHA close original raw, native states and failed attempts even RED
@@ -156,15 +156,15 @@ jobs:
           set -uo pipefail
           cd "$RUNNER_TEMP"
           for key in FIXTURE BOOTSTRAP NATIVE AUDIT PRIVACY; do
-            test -f "RUN608_${key}_EXIT.txt" || echo 2 > "RUN608_${key}_EXIT.txt"
+            test -f "RUN614_${key}_EXIT.txt" || echo 2 > "RUN614_${key}_EXIT.txt"
           done
-          find . -maxdepth 1 -type f -name 'RUN608_*' ! -name 'RUN608_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN608_SHA256SUMS.txt
+          find . -maxdepth 1 -type f -name 'RUN614_*' ! -name 'RUN614_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN614_SHA256SUMS.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: V13-Run608-Native-Paraphrase-${{ github.sha }}
+          name: V13-Run614-Independent-Native-Paraphrase-${{ github.sha }}
           path: |
-            ${{ runner.temp }}/RUN608_*
+            ${{ runner.temp }}/RUN614_*
           if-no-files-found: error
           retention-days: 30
       - name: Enforce fixture, native, independent audit and privacy exits
@@ -172,6 +172,6 @@ jobs:
         run: |
           set -euo pipefail
           for key in FIXTURE BOOTSTRAP NATIVE AUDIT PRIVACY; do
-            echo "RUN608 $key exit: $(cat "$RUNNER_TEMP/RUN608_${key}_EXIT.txt")"
-            test "$(cat "$RUNNER_TEMP/RUN608_${key}_EXIT.txt")" = 0
+            echo "RUN614 $key exit: $(cat "$RUNNER_TEMP/RUN614_${key}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN614_${key}_EXIT.txt")" = 0
           done
