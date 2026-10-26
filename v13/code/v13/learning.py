@@ -783,7 +783,9 @@ class Learner:
         unique={}
         for row in rows:
             e=json.loads(row['packet']);text=self.s.read_source(e['source_ref']);unique.setdefault(text,(row,e))
-        data=[(text,item) for text,item in reversed(list(unique.items())) if item[0]['permission']=='learn'][-128:]
+        data=[(text,item) for text,item in reversed(list(unique.items())) if item[0]['permission']=='learn']
+        from .route_supersede import apply as supersede
+        data,superseded=supersede(self.s,data);data=data[-128:]  # WP-Z6c: human-scoped replacement of older contradicting labels
         if len(data)<4:raise ValueError('Mindestens 4 verschiedene :feedback route <Route> --learn nötig; Freigabe benötigt mindestens 12 und alle 4 Routen.')
         deadline=time.monotonic()+180;uid_=uid('upd');base=self.s.generation_id;folder=self.r.home/'shadow'/uid_;folder.mkdir()
         lineage=[]
@@ -791,6 +793,7 @@ class Learner:
             u=self.s.one('SELECT manifest FROM updates WHERE id=?',(ancestor,))
             if u:lineage.extend(json.loads(u['manifest']).get('source_ids',[]))
         emb=[];labels=[];baselines=[];manifest={'commit_eligible':False,'component':'route','encoder_revision':self.r.models.revision('C2_CONTROL'),'source_ids':lineage,'objective':'explicit-human-route-cross-entropy-v1','scope':'external_route_head_only','body_learning':False,'base_generation':base}
+        if superseded:manifest['superseded_labels']=superseded
         with self.s.tx() as c:c.execute('INSERT INTO updates VALUES (?,?,?,?,?,?,?)',(uid_,base,'SHADOW_TRAINING',None,None,dumps(manifest),now()))
         try:
             for text,(row,e) in data:

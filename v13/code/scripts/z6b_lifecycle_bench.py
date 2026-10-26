@@ -57,7 +57,11 @@ def stream(seed):
     return heldout, record, p1, p2
 
 
+SUPERSEDE_CMD = ':ersetze route simple hälfte,halbiere,geteilt durch zwei --notiz Hälfte-Fragen jetzt kurz'
+
+
 def run_arm(installed, policy, seed):
+    sup = policy.endswith('+sup'); base_policy = policy.split('+')[0]  # WP-Z6c: '+sup' = the human states the new scope once
     from v13.config import initialize
     from v13.runtime import Runtime
     from v13.operator import Operator
@@ -100,19 +104,21 @@ def run_arm(installed, policy, seed):
             corrections = 0; promos = []
             for phase, batches in (('p1', p1), ('p2', p2)):
                 for bi, batch in enumerate(batches):
+                    if sup and phase == 'p2' and bi == 0: Operator(r).run(SUPERSEDE_CMD)
                     dis = batch_disagreement(batch)
                     for t, lab in batch:
                         e = r.store.event(r.session, t); r.memory.feedback(e['event_id'], 'route', lab, permission='learn'); corrections += 1
                     shifted = phase == 'p2'; act_before = acc(active_path(), shifted)
-                    do = policy == 'fixed' or (policy == 'adaptive' and (dis is None or dis >= .25))
+                    do = base_policy == 'fixed' or (base_policy == 'adaptive' and (dis is None or dis >= .25))
                     row = {'phase': phase, 'batch': bi, 'corrections': corrections, 'disagreement_before': dis, 'shadow': do, 'active_acc_before': act_before}
-                    if do and policy != 'none':
+                    if do and base_policy != 'none':
                         r.cfg['learning_mode'] = 'SHADOW_UPDATE'
                         try: res = r.learner.shadow(); row['shadow_result'] = res
                         except ValueError as exc: row['shadow_result'] = 'SKIPPED: ' + str(exc)[:120]
                         u = r.store.one('SELECT * FROM updates ORDER BY created DESC LIMIT 1')
                         if u and u['status'] in ('PENDING_APPROVAL', 'EVALUATED_FAIL') and u['id'] not in [x.get('update_id') for x in log]:
-                            cand = acc(h/u['path'], shifted); row.update(update_id=u['id'], status=u['status'], candidate_acc=cand)
+                            cand = acc(h/u['path'], shifted); row.update(update_id=u['id'], status=u['status'], candidate_acc=cand,
+                                                                         superseded=len(json.loads(u['manifest']).get('superseded_labels', [])))
                             if u['status'] == 'PENDING_APPROVAL':
                                 r.cfg['learning_mode'] = 'APPROVED_COMMIT'; Operator(r).run(':approve ' + u['id']); promos.append(u['id'])
                                 row['promoted'] = active_path() is not None and r.store.generation_id != before
@@ -163,6 +169,16 @@ def criteria(s):
     return c, 'Z6B_LIFECYCLE_ADAPTIVE_PASS' if all(c.values()) else 'Z6B_LIFECYCLE_ADAPTIVE_FAIL'
 
 
+def criteria_z6c(s):
+    a = [s['fixed+sup'], s['adaptive+sup']]
+    c = {'S1_half_items_learned_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
+         'S2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
+         'S3_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
+         'S4_no_false_promotion': all(x['false_promotions'] == 0 for x in a),
+         'S5_control_without_rule_fails': (s['fixed']['final_half_items'] or 0) < .5}
+    return c, 'Z6C_SUPERSEDE_PASS' if all(c.values()) else 'Z6C_SUPERSEDE_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -175,6 +191,8 @@ def main(argv=None):
            'claim_limit': 'route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate'}
     if {'fixed', 'adaptive'} <= set(scores):
         doc['criteria'], doc['verdict'] = criteria(scores)
+    if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
+        doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
     print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'scores')}, indent=1, ensure_ascii=False)); return 0
 

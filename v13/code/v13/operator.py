@@ -18,6 +18,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
 :feedback fact|style|preference <Korrektur> [--learn]
 :feedback route simple|detail|gist|both [--learn]
+:ersetze route <Route> <Wort>[,<Wort>] [--notiz Text] | :ersetze list | :ersetze undo <Id> (neuere Routen-Korrektur ersetzt ältere mit diesen Wörtern)
 :feedback wake none|detail|gist|both [--learn] / :feedback halt halt|continue [--learn]
 :feedback skill none|skill / memory skip|recall|deep / channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC [--learn] (WP-T1 Fast-Köpfe)
 :fastpolicy [status|focus on|off|measure|outcomes [record|learn]|lifecycle [Event-ID]] (JEF_FAST_POLICY-Köpfe, Re-entry-Frage, Ergebnis-Labels, Lebenszyklus L0–L11)
@@ -94,6 +95,9 @@ class Operator:
         if cmd in {'sleep','scheduler'}:
             from .sleep import operator_command
             return operator_command(r,cmd,args)
+        if cmd=='ersetze':  # WP-Z6c human-scoped replacement of older route corrections
+            from .route_supersede import operator_command
+            return operator_command(r,args)
         if cmd=='neuromod':
             from .neuromod import operator_command
             return operator_command(r,args)
