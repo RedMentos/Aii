@@ -169,7 +169,7 @@ def stage5(export_root, stage4_report, work, installed=None, execute=False,
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--export", type=Path, required=True)
-    p.add_argument("--stage3-report", type=Path, required=True)
+    p.add_argument("--stage4-report", type=Path, required=True)
     p.add_argument("--work", type=Path, required=True)
     p.add_argument("--installed-home", type=Path)
     p.add_argument("--export-destination", type=Path)
