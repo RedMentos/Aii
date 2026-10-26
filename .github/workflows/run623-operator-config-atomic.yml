@@ -1,0 +1,79 @@
+name: V13 Run623 idle-atomic operator mutation SQLite regression
+on:
+  push:
+    branches:
+      - codex/automation11-run623-operator-config-atomic-20261026
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run623-operator-config-atomic.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run623-operator-config-atomic/**'
+permissions:
+  contents: read
+jobs:
+  sqlite:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run623-operator-config-atomic-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Bind exact code, regression, prereg and unchanged Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN623_HEAD.txt"
+          test "$(git hash-object v13/code/v13/operator.py)" = 9b928d1cce3dfc1466b564cf20130cb9e7af8706
+          test "$(git hash-object v13/code/tests/test_operator_config_atomic_run623.py)" = 540b566d9d10edd41ef7c4e4de84561986a0a08f
+          test "$(git hash-object v13/code/v13/config.py)" = 9bbc5b6e1bc35b7d0b9be4fb925100bce97fd0cd
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/operator.py v13/code/tests/test_operator_config_atomic_run623.py > "$RUNNER_TEMP/RUN623_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN623_HOST.txt"
+      - name: Isolated source-only dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run623venv"
+          "$RUNNER_TEMP/run623venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Real SQLite Runtime busy-turn atomicity and prior language/prompt/gist
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/run623venv/bin/python" -m unittest -v tests.test_operator_config_atomic_run623 tests.test_language_operator_run620 tests.test_prompts tests.test_gist_similarity_run616 tests.test_gist_readout > "$RUNNER_TEMP/RUN623_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN623_TEST_EXIT.txt"
+          exit 0
+      - name: Public privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4dd297e74ddd218848e05578a9834ea152d6bb90 --head HEAD > "$RUNNER_TEMP/RUN623_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN623_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close original raw including RED
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in TEST PRIVACY; do
+            test -f "RUN623_${k}_EXIT.txt" || echo 2 > "RUN623_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN623_*' ! -name 'RUN623_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN623_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run623-Operator-Config-Atomic-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/RUN623_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in TEST PRIVACY; do
+            echo "RUN623 $k exit: $(cat "$RUNNER_TEMP/RUN623_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN623_${k}_EXIT.txt")" = 0
+          done
