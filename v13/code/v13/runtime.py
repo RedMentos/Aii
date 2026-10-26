@@ -555,8 +555,10 @@ class Runtime:
                     txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns()
                     final=toolctl.ToolStep(self).lead_final(tool_result);lead=final or lead
                     self.store.append_message(mid,lead+('' if final else ' '));output=lead+('' if final else ' ');meta['tool_answer_first']='FINAL' if final else 'LEAD'
-                lw=latewatch.start(self,e,version,offers,deadline,meta,runner,eligible=not direct and state=='NORMAL')  # WP-U3 F2: late body offer may cut the stream
-                for token in (() if meta.get('tool_answer_first')=='FINAL' else runner.generate(messages,self.cancel_event,deadline,**output_kwargs)):
+                tool_final=meta.get('tool_answer_first')=='FINAL'  # Deterministic eligibility result; no native answer stream.
+                if tool_final:mark('tool_final_answer')
+                lw=latewatch.start(self,e,version,offers,deadline,meta,runner,eligible=not direct and state=='NORMAL' and not tool_final)  # A complete tool answer must not wake a late body.
+                for token in (() if tool_final else runner.generate(messages,self.cancel_event,deadline,**output_kwargs)):
                     clean=safe_text(token)
                     meta['output_removed_characters']=meta.get('output_removed_characters',0)+len(token)-len(clean)
                     if not output:
@@ -568,8 +570,11 @@ class Runtime:
                         self.store.append_message(mid,clean);output+=clean
                         if lw.check(output):break
                 output+=lw.finish(runner,messages,output,deadline,mid)
-                meta.update(model_generated=True,runner=runner.last_metrics,model_revision=self.models.revision(runner.role))
-                if getattr(runner,'memory',None) and memories:
+                if tool_final:
+                    meta.update(model_generated=False,output_authority='ELIGIBILITY_TOOL_FINAL',native_answer_skipped=True)
+                else:
+                    meta.update(model_generated=True,runner=runner.last_metrics,model_revision=self.models.revision(runner.role))
+                if not tool_final and getattr(runner,'memory',None) and memories:
                     try:  # WP-T9: inventory overlap on the actual final native runner; Exact stays delivered.
                         from .memory_server import shadow_delivery
                         loaded=getattr(runner,'memory_delivery_binding',None) if runner.pids() else None
@@ -581,7 +586,8 @@ class Runtime:
                         meta['sparse_delivery_shadow']=delivery
                         self.store.log('sparse_delivery_shadow',eid,delivery)
                     except Exception as exc:self.store.log('sparse_delivery_unavailable',eid,{'error':type(exc).__name__})
-                try:ctxos.controller(self).observe(eid,runner.role,runner.last_metrics,'FINAL',meta['memory_ids'])  # WP-N7 cache outcome + warm set
+                try:
+                    if not tool_final:ctxos.controller(self).observe(eid,runner.role,runner.last_metrics,'FINAL',meta['memory_ids'])  # Do not ingest stale native metrics for fixed tool text.
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'observe','error':type(exc).__name__})
                 try:  # WP-N3: offer utility, re-entry value, observer-pass utility, bridge fields (SHADOW unless :jef active)
                     marks=meta['stage_marks_s'];obs_s=marks.get('focal_loop',0.)-marks.get('preanswer_observers',0.)
@@ -597,7 +603,7 @@ class Runtime:
             if monitor.resource_cancel_signalled:
                 status='ERROR';exc=Limits('Ressourcenlimit während der Verarbeitung: '+monitor.reason)
             meta.update(error=type(exc).__name__,detail=str(exc)[:600],failure_stage=meta['turn_stage'])
-            if runner is not None:meta['runner']=dict(runner.last_metrics)
+            if runner is not None and meta.get('tool_answer_first')!='FINAL':meta['runner']=dict(runner.last_metrics)
             if not output:
                 meta['model_generated']=False
                 governor=self.executive.snapshot(e,self.session,memories if 'memories' in locals() else [],status);meta['output_snapshot_id']=governor['packet_id'];meta['output_authority']='SOURCE_SYSTEM_REPORT'
@@ -605,7 +611,7 @@ class Runtime:
                 meta['context_source_refs']=list({dumps(ref):ref for ref in meta['context_source_refs']+governor['provenance']}.values())
                 output=self.executive.report(self.session,e,safe_text(str(exc)));txctl.commit_output(self.store,mid,eid,meta);self.store.append_message(mid,output)
                 if meta['first_output_monotonic_ns'] is None:meta['first_output_monotonic_ns']=time.monotonic_ns()
-            else:meta['model_generated']=not direct
+            else:meta['model_generated']=not direct and meta.get('tool_answer_first')!='FINAL'
             self.store.log('turn_interrupted',eid,{'status':status,'detail':str(exc)[:500]})
             if status=='ERROR':
                 try:  # WP-N9 §20.4: repeated errors may become a self-message (gated; HELD below Age 4)
@@ -636,7 +642,7 @@ class Runtime:
                 try:selfctl.controller(self).observe(eid,[{'channel':'action_status','value':status},{'channel':'duration_s','value':time.monotonic()-action_started}],close=[aid])  # WP-N9 self vs world
                 except Exception as exc:self.store.log('self_unavailable',eid,{'stage':'attribution','error':type(exc).__name__})
                 try:  # WP-F: circuit-breaker evidence, cerebellar update, procedural lifecycle
-                    rx=reflexctl.controller(self);rr=runner.role if runner else None
+                    rx=reflexctl.controller(self);rr=runner.role if runner and meta.get('tool_answer_first')!='FINAL' else None
                     if rr and status=='FINAL':rx.record_success(rr)
                     elif rr and status in ('ERROR','DEADLINE'):rx.record_failure(rr,eid,status)
                     for f in meta.get('reflex',[]):rx.outcome(f['reflex'],status)

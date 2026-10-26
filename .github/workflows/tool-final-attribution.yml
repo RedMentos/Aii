@@ -1,0 +1,105 @@
+name: V13 deterministic eligibility FINAL output attribution candidate
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/tool-final-attribution.yml'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/v13/broker.py'
+      - 'v13/code/v13/contracts.py'
+      - 'v13/code/tests/test_tool_final_attribution.py'
+      - 'v13/code/docs/proofs/continuation-20261026/tool-final-attribution/**'
+permissions:
+  contents: read
+jobs:
+  source-provenance:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-tool-final-attribution-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify prereg and exact candidate source bytes
+        id: pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/TOOL_FINAL_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/tool-final-attribution/PREREG.md)" = 2865c3e56b565bca93a4ac7445b944f15c2ae506
+          test "$(git hash-object v13/code/v13/runtime.py)" = abdd8b489057d65a21bb75d5e4e3fff0ca94c2bb
+          test "$(git hash-object v13/code/tests/test_tool_final_attribution.py)" = 1bb570f5995c2e61666ddde69965fd4e31dd80ce
+          test "$(git hash-object v13/code/v13/broker.py)" = 6210a1b3d60872e73ad1b940608e7edc30793d02
+          test "$(git hash-object v13/code/v13/contracts.py)" = ffaafb07be2d9aec50e645c5434e7ba2fec38acf
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/TOOL_FINAL_HOST.txt"
+      - name: Isolated pinned software-only test dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/toolvenv"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/toolvenv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/TOOL_FINAL_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/TOOL_FINAL_DEPS_EXIT.txt"
+          exit 0
+      - name: Source and behavioral unit tests, no models
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/TOOL_FINAL_DEPS_EXIT.txt")" != 0 ]; then echo 1 > "$RUNNER_TEMP/TOOL_FINAL_TEST_EXIT.txt"; exit 0; fi
+          "$RUNNER_TEMP/toolvenv/bin/python" -m compileall -q v13/runtime.py tests/test_tool_final_attribution.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 120s "$RUNNER_TEMP/toolvenv/bin/python" -m unittest -v tests.test_tool_final_attribution tests.test_run574_live_scope_audit tests.test_broker tests.test_toolstep tests.test_eligibility_live > "$RUNNER_TEMP/TOOL_FINAL_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/TOOL_FINAL_TEST_EXIT.txt"
+          if [ "$rc" -ne 0 ] && [ -f "$RUNNER_TEMP/TOOL_FINAL_TEST_RAW.log" ]; then
+            echo "SOURCE_TEST_RED (bounded software-only stderr; raw retained)"
+            tail -n 100 "$RUNNER_TEMP/TOOL_FINAL_TEST_RAW.log"
+          fi
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/TOOL_FINAL_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/TOOL_FINAL_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw source evidence even RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'TOOL_FINAL_*' ! -name TOOL_FINAL_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > TOOL_FINAL_SHA256SUMS.txt
+      - name: Upload raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: tool-final-attribution-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/TOOL_FINAL_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce focused tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.pins.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/TOOL_FINAL_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/TOOL_FINAL_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/TOOL_FINAL_PRIVACY_EXIT.txt")" = 0
