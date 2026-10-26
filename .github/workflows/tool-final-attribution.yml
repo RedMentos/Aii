@@ -50,6 +50,10 @@ jobs:
             rc=$?
           fi
           echo "$rc" > "$RUNNER_TEMP/TOOL_FINAL_TEST_EXIT.txt"
+          if [ "$rc" -ne 0 ] && [ -f "$RUNNER_TEMP/TOOL_FINAL_TEST_RAW.log" ]; then
+            echo "SOURCE_TEST_RED (bounded software-only stderr; raw retained)"
+            tail -n 100 "$RUNNER_TEMP/TOOL_FINAL_TEST_RAW.log"
+          fi
           exit 0
       - name: Official public privacy scan
         if: always()
