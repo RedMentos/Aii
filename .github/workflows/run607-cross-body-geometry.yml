@@ -1,0 +1,107 @@
+name: V13 Run607 posthoc cross-body geometry independent native raw audit
+on:
+  push:
+    branches:
+      - codex/automation11-run607-cross-body-geometry-20261026
+    paths:
+      - '.github/workflows/run607-cross-body-geometry.yml'
+      - 'v13/code/scripts/run607_cross_body_geometry.py'
+      - 'v13/code/tests/test_run607_cross_body_geometry.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run607-cross-body-geometry/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  offline-geometry:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Frozen source and original canonical authority
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN607_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run606-cross-body-latent-shadow/RUN606_COHORT.json)" = c0c2a2f74ab8a487563df2449d5faad79fab738f
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/scripts/run607_cross_body_geometry.py v13/code/tests/test_run607_cross_body_geometry.py v13/code/docs/proofs/continuation-20261026/run607-cross-body-geometry/ANALYSIS_PLAN.md > "$RUNNER_TEMP/RUN607_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN607_HOST.txt"
+      - name: Isolated pinned numpy
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run607venv"
+          "$RUNNER_TEMP/run607venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Source-only adversarial fixtures
+        id: fixture
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run607venv/bin/python" -m unittest -v tests.test_run607_cross_body_geometry > "$RUNNER_TEMP/RUN607_FIXTURE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN607_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download original SHA-closed real Linux-native Run606 artifact (read only)
+        id: download
+        if: ${{ steps.fixture.outputs.rc == '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/run606"
+          timeout -s TERM -k 10s 180s gh run download 40399494903 --repo RedMentos/Aii --name V13-Run606-Paired-Native-Shadow-de20b8611027c0aa3cd27ee4bc5436e3b86b259f --dir "$RUNNER_TEMP/run606" > "$RUNNER_TEMP/RUN607_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN607_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent posthoc native geometry and confound permutation audit
+        id: audit
+        if: ${{ steps.download.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" timeout -s TERM -k 10s 180s "$RUNNER_TEMP/run607venv/bin/python" scripts/run607_cross_body_geometry.py --artifact "$RUNNER_TEMP/run606" --out "$RUNNER_TEMP/RUN607_REPORT.json" > "$RUNNER_TEMP/RUN607_AUDIT_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN607_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 786ca4d1d6df1a33837768ed008cf19d36023130 --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN607_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN607_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close all original raw, hashes and report even on RED
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for key in FIXTURE DOWNLOAD AUDIT PRIVACY; do
+            test -f "RUN607_${key}_EXIT.txt" || echo 2 > "RUN607_${key}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN607_*' ! -name 'RUN607_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN607_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run607-Posthoc-Geometry-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN607_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce independent audit and privacy exits
+        if: always()
+        run: |
+          set -euo pipefail
+          for key in FIXTURE DOWNLOAD AUDIT PRIVACY; do
+            echo "RUN607 $key exit: $(cat "$RUNNER_TEMP/RUN607_${key}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN607_${key}_EXIT.txt")" = 0
+          done
